@@ -1058,16 +1058,32 @@ Per owner directive 2026-05-14: matrix scope expanded from IMPLEMENTED-only (357
 - Integration tier: **0 gaps** (closed by `backtest/tests/test_dec_integration_coverage.py` + `test_dec_integration_coverage_anomalies.py`)
 - Narrow tiers default to N/A in the dashboard via LAYER_DEFAULT_NA (not real gaps).
 
-**Classification anomalies surfaced (20 items — owner reclassification candidates):**
+**Matrix detection sharpened (Batch 159 — eliminates two false-positive patterns):**
 
-Items tagged DEFERRED or DECIDED in AUDIT_INDEX but whose code IS engine-consumed in the canonical backtest. Either intentionally pre-wired in Phase 1A (in which case the tier should be IMPLEMENTED) or genuinely misclassified.
+The original Batch 158 detection had two over-lenient patterns:
+1. **Module-level config tags counted as YES** — any DEC tagged in `backtest/config.py` (which is at 99% coverage because everything imports from it) was marked engine-consumed even when the adjacent constant was never used elsewhere. **Fixed:** the matrix now checks whether the symbol on the line after a module-level `# DEC-NNN` tag is referenced by any OTHER executing file. If not, status is `DECLARED-ONLY` (declared in config but not engine-consumed).
+2. **`def` line execution counted as function-ran** — Python executes `def funcname(...):` lines at import time to register the function, even when the body never runs. The old detection saw the def-line execute and concluded the function was engine-consumed. **Fixed:** the matrix now skips the signature + any docstring and only counts executed lines INSIDE the function body.
 
-| Tier | IDs |
-|---|---|
-| DEFERRED → YES (16 DECs + 2 BUGs) | DEC-062, DEC-138, DEC-216, DEC-234, DEC-378, DEC-417, DEC-425, DEC-426, DEC-427, DEC-428, DEC-429, DEC-430, DEC-433, DEC-436, DEC-463, DEC-467, BUG-027, BUG-135 |
-| DECIDED → YES (2 BUGs) | BUG-186, BUG-241 |
+**Latest snapshot (2026-05-14, Batch 159 — accurate detection):**
 
-Owner action: review each anomaly in VERIFICATION_MATRIX.md and either (a) reclassify to IMPLEMENTED if pre-wiring is intentional, or (b) un-wire from the engine path if the deferral is correct. Unit + integration test stubs have been added preemptively so the items have coverage either way.
+| Engine status | Count | Meaning |
+|---|---|---|
+| YES | 156 | function body actually executed in canonical backtest |
+| LAZY-WIRED | 3 | import chain confirmed; gating condition not met |
+| FUNC-DEAD | 56 | function exists in active module but body never ran |
+| DECLARED-ONLY | 109 | config constant declared; symbol not consumed externally |
+| N/A | 418 | no source tag (methodology decision, no code expected) |
+| NO / PARTIAL-ORPHAN | 0 | no file-orphaning gaps |
+
+**Sharpened anomaly view (56 IMPLEMENTED items with FUNC-DEAD bodies):**
+
+These are RESOLVED-IMPLEMENTED claims where the helper function exists but is **only called by tests, not by the engine**. Examples: `top_n_losing_trades_per_strategy`, `compute_slippage_bps_advanced`, `check_test_coverage_threshold`, `exponential_decay_weights`, `cross_source_smart_money_cluster`, `build_sector_neutral_hedge`, `iv_pre_earnings_anomaly`, `detect_chart_pattern_skeleton` — see VERIFICATION_MATRIX.md for the full 56.
+
+These are the genuine "wired = grep-found, not engine-consumed" cases the memory feedback (2026-05-12) called out. Owner choice per item:
+- **(a) Wire** the helper into the engine call path (the rigorous fix; matches the RESOLVED-IMPLEMENTED claim)
+- **(b) Reclassify** the AUDIT_INDEX status from RESOLVED-IMPLEMENTED to RESOLVED-DECIDED or PARTIAL-IMPL-HELPER-ONLY (honest classification given current state)
+
+The 20 anomalies from Batch 158 were 16 false-positive (DECLARED-ONLY config tags, now correctly classified) + 4 def-line-only (now correctly counted as FUNC-DEAD with the other 52).
 
 **Newly-wired in Batch 154** (writer.py post-backtest analytics block, previously orphaned with zero importer chain):
 - DEC-082 / DEC-405 → `backtest/results/stress_tests.py` (stress_metrics.json)

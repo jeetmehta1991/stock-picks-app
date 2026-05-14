@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-05-14T18:16:56.574764+00:00",
+  "generated_at": "2026-05-14T19:37:47.719886+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-002": {
       "kind": "DEC",
@@ -34,8 +34,8 @@
     "DEC-006": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-007": {
       "kind": "DEC",
@@ -77,31 +77,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-015": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1400-1420 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-018": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TICKER_STOPOUT_COOLDOWN_DAYS` consumed externally"
     },
     "DEC-019": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-021": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 30-572 executed in backtest/results/writer.py"
     },
     "DEC-027": {
       "kind": "DEC",
@@ -148,8 +148,8 @@
     "DEC-033": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-034": {
       "kind": "DEC",
@@ -172,14 +172,14 @@
     "DEC-037": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-038": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-039": {
       "kind": "DEC",
@@ -191,7 +191,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "evidence": "function body 172-189 executed in backtest/data/universe.py"
     },
     "DEC-041": {
       "kind": "DEC",
@@ -209,7 +209,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/signals/screener.py (91%); adjacent symbol `text` consumed externally"
     },
     "DEC-046": {
       "kind": "DEC",
@@ -281,7 +281,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 128-214 executed in backtest/run_phase1a.py"
+      "evidence": "function body 129-214 executed in backtest/run_phase1a.py"
     },
     "DEC-058": {
       "kind": "DEC",
@@ -304,38 +304,38 @@
     "DEC-061": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-062": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-067": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
     },
     "DEC-070": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-071": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-072": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SMART_MONEY_CONGRESSIONAL_WEIGHTS` consumed externally"
     },
     "DEC-073": {
       "kind": "DEC",
@@ -353,13 +353,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 2136-2157 executed in backtest/results/metrics.py"
     },
     "DEC-076": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-078": {
       "kind": "DEC",
@@ -370,8 +370,8 @@
     "DEC-078A": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1260-1293 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-078B": {
       "kind": "DEC",
@@ -389,31 +389,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 416-468 executed in backtest/results/metrics.py"
+      "evidence": "function body 439-468 executed in backtest/results/metrics.py"
     },
     "DEC-082": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/stress_tests.py (94%)"
+      "evidence": "module-level tag in backtest/results/stress_tests.py (94%); adjacent symbol `Status` consumed externally"
     },
     "DEC-083": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TIERED_MIN_TRADES` consumed externally"
     },
     "DEC-084": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-085": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-086": {
       "kind": "DEC",
@@ -425,37 +425,37 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PORTFOLIO_VOL_TARGET_ANNUALIZED` consumed externally"
     },
     "DEC-088": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PORTFOLIO_VOL_TARGET_ANNUALIZED` consumed externally"
     },
     "DEC-089": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1400-1420 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-090": {
       "kind": "DEC",
       "tier": "UNKNOWN",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-091": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-092": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-093": {
       "kind": "DEC",
@@ -472,8 +472,8 @@
     "DEC-095": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 801-819 executed in backtest/engine/improvements.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-096": {
       "kind": "DEC",
@@ -491,49 +491,49 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
+      "evidence": "module-level tag in backtest/engine/improvements.py (36%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally"
     },
     "DEC-100": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 615-652 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-102": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-106": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-107": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 440-457 executed in backtest/engine/regime_filter.py"
     },
     "DEC-108": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
     },
     "DEC-110": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 500-558 executed in backtest/results/metrics.py"
+      "evidence": "function body 520-558 executed in backtest/results/metrics.py"
     },
     "DEC-111": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 2160-2430 executed in backtest/results/metrics.py"
+      "evidence": "function body 2162-2430 executed in backtest/results/metrics.py"
     },
     "DEC-112": {
       "kind": "DEC",
@@ -556,14 +556,14 @@
     "DEC-116": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-117": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CACHE_METADATA_SCHEMA` consumed externally"
     },
     "DEC-118": {
       "kind": "DEC",
@@ -574,14 +574,14 @@
     "DEC-119": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-120": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-121": {
       "kind": "DEC",
@@ -598,26 +598,26 @@
     "DEC-123": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1447-1467 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-124": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 59-71 executed in backtest/engine/exit_context.py"
+      "evidence": "function body 61-71 executed in backtest/engine/exit_context.py"
     },
     "DEC-125": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-126": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/engine/improvements.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-127": {
       "kind": "DEC",
@@ -629,7 +629,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-129": {
       "kind": "DEC",
@@ -646,8 +646,8 @@
     "DEC-131": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-132": {
       "kind": "DEC",
@@ -664,26 +664,26 @@
     "DEC-134": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1541-1561 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-135": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-136": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PORTFOLIO_REBALANCE_DRIFT_X_TARGET` consumed externally"
     },
     "DEC-138": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-139": {
       "kind": "DEC",
@@ -694,14 +694,14 @@
     "DEC-141": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1564-1589 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-142": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1592-1615 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-143": {
       "kind": "DEC",
@@ -712,14 +712,14 @@
     "DEC-144": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 978-1002 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-145": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1618-1652 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-146": {
       "kind": "DEC",
@@ -736,44 +736,44 @@
     "DEC-148": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1005-1028 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-149": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
     },
     "DEC-150": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-151": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-152": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-153": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/regime_stratified_split.py (94%)"
+      "evidence": "module-level tag in backtest/results/bootstrap_ci.py (69%); adjacent symbol `Status` consumed externally"
     },
     "DEC-155": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
+      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
     },
     "DEC-156": {
       "kind": "DEC",
@@ -796,8 +796,8 @@
     "DEC-159": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 639-689 executed in backtest/engine/improvements.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-160": {
       "kind": "DEC",
@@ -850,8 +850,8 @@
     "DEC-169": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-170": {
       "kind": "DEC",
@@ -880,14 +880,14 @@
     "DEC-174": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-175": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1005-1028 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-176": {
       "kind": "DEC",
@@ -898,20 +898,20 @@
     "DEC-177": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-178": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 692-704 executed in backtest/engine/improvements.py"
+      "evidence": "function body 703-704 executed in backtest/engine/improvements.py"
     },
     "DEC-179": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 305-408 executed in backtest/engine/backtest.py"
+      "evidence": "function body 306-408 executed in backtest/engine/backtest.py"
     },
     "DEC-180": {
       "kind": "DEC",
@@ -935,13 +935,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 692-704 executed in backtest/engine/improvements.py"
+      "evidence": "function body 703-704 executed in backtest/engine/improvements.py"
     },
     "DEC-184": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-185": {
       "kind": "DEC",
@@ -964,8 +964,8 @@
     "DEC-189": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-190": {
       "kind": "DEC",
@@ -1036,8 +1036,8 @@
     "DEC-201": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-202": {
       "kind": "DEC",
@@ -1060,74 +1060,74 @@
     "DEC-205": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-206": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1655-1680 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-207": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-208": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
+      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
     },
     "DEC-209": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 684-740 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-210": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1865-1897 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-211": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1900-1931 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-212": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1683-1718 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-213": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-214": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-215": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-216": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-217": {
       "kind": "DEC",
@@ -1150,8 +1150,8 @@
     "DEC-220": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-222": {
       "kind": "DEC",
@@ -1162,14 +1162,14 @@
     "DEC-225": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 801-819 executed in backtest/engine/improvements.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-227": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-228": {
       "kind": "DEC",
@@ -1198,26 +1198,26 @@
     "DEC-232": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-233": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 910-962 executed in backtest/engine/improvements.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-234": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-235": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 479-491 executed in backtest/engine/backtest.py"
+      "evidence": "function body 480-491 executed in backtest/engine/backtest.py"
     },
     "DEC-236": {
       "kind": "DEC",
@@ -1252,8 +1252,8 @@
     "DEC-241": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 228-287 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-242": {
       "kind": "DEC",
@@ -1282,14 +1282,14 @@
     "DEC-246": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/quant_audit.py (16%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/quant_audit.py never executed"
     },
     "DEC-247": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/deflated_sharpe.py (16%)"
+      "evidence": "module-level tag in backtest/results/deflated_sharpe.py (16%); adjacent symbol `Status` consumed externally"
     },
     "DEC-248": {
       "kind": "DEC",
@@ -1300,20 +1300,20 @@
     "DEC-249": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-250": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/edge_decay.py (93%)"
+      "evidence": "module-level tag in backtest/results/edge_decay.py (93%); adjacent symbol `Status` consumed externally"
     },
     "DEC-251": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-252": {
       "kind": "DEC",
@@ -1325,49 +1325,49 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `INTERLISTED_ROUTING_TRADE_SIZE_THRESHOLD_USD` consumed externally"
     },
     "DEC-254": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-255": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1541-1561 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-256": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-257": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-258": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-259": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-260": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 910-962 executed in backtest/engine/improvements.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-261": {
       "kind": "DEC",
@@ -1384,14 +1384,14 @@
     "DEC-263": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-265": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-266": {
       "kind": "DEC",
@@ -1414,8 +1414,8 @@
     "DEC-269": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-270": {
       "kind": "DEC",
@@ -1444,8 +1444,8 @@
     "DEC-274": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-275": {
       "kind": "DEC",
@@ -1462,8 +1462,8 @@
     "DEC-277": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-278": {
       "kind": "DEC",
@@ -1474,14 +1474,14 @@
     "DEC-279": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 2077-2118 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-280": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-281": {
       "kind": "DEC",
@@ -1504,8 +1504,8 @@
     "DEC-284": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 655-681 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-285": {
       "kind": "DEC",
@@ -1522,8 +1522,8 @@
     "DEC-287": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1979-2037 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-289": {
       "kind": "DEC",
@@ -1534,8 +1534,8 @@
     "DEC-290": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-291": {
       "kind": "DEC",
@@ -1565,7 +1565,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 173-176 executed in backtest/engine/exit_manager.py"
     },
     "DEC-296": {
       "kind": "DEC",
@@ -1582,38 +1582,38 @@
     "DEC-298": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-301": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 64-171 executed in backtest/data/macro.py"
+      "evidence": "function body 78-171 executed in backtest/data/macro.py"
     },
     "DEC-302": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/macro.py (67%)"
+      "evidence": "function body 280-302 executed in backtest/data/macro.py"
     },
     "DEC-303": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 194-203 executed in backtest/data/universe.py"
     },
     "DEC-304": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/macro.py (67%)"
+      "evidence": "function body 444-461 executed in backtest/data/macro.py"
     },
     "DEC-305": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 50-76 executed in backtest/data/fetcher.py"
+      "evidence": "function body 61-76 executed in backtest/data/fetcher.py"
     },
     "DEC-306": {
       "kind": "DEC",
@@ -1625,19 +1625,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 107-262 executed in backtest/data/cache.py"
+      "evidence": "function body 120-262 executed in backtest/data/cache.py"
     },
     "DEC-308": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 265-324 executed in backtest/data/cache.py"
+      "evidence": "function body 276-324 executed in backtest/data/cache.py"
     },
     "DEC-309": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/cache.py (45%)"
+      "evidence": "function body 120-262 executed in backtest/data/cache.py"
     },
     "DEC-310": {
       "kind": "DEC",
@@ -1649,13 +1649,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 120-183 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 136-183 executed in backtest/engine/exit_strategies.py"
     },
     "DEC-312": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 374-452 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 377-452 executed in backtest/engine/exit_strategies.py"
     },
     "DEC-313": {
       "kind": "DEC",
@@ -1667,25 +1667,25 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-315": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/circuit_breakers.py (56%)"
+      "evidence": "module-level tag in backtest/engine/circuit_breakers.py (56%); adjacent symbol `Status` consumed externally"
     },
     "DEC-316": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-317": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
     },
     "DEC-318": {
       "kind": "DEC",
@@ -1703,31 +1703,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 238-290 executed in backtest/data/sentiment.py"
+      "evidence": "function body 243-290 executed in backtest/data/sentiment.py"
     },
     "DEC-321": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/universe.py never executed"
     },
     "DEC-323": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "evidence": "function body 548-563 executed in backtest/data/universe.py"
     },
     "DEC-324": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 280-346 executed in backtest/data/smart_money.py"
+      "evidence": "function body 281-346 executed in backtest/data/smart_money.py"
     },
     "DEC-325": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+      "evidence": "function body 519-555 executed in backtest/data/smart_money.py"
     },
     "DEC-328": {
       "kind": "DEC",
@@ -1738,14 +1738,14 @@
     "DEC-329": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-330": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 757-780 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-331": {
       "kind": "DEC",
@@ -1757,31 +1757,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SMART_MONEY_CONGRESSIONAL_WEIGHTS` consumed externally"
     },
     "DEC-333": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/sentiment.py (53%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/sentiment.py never executed"
     },
     "DEC-334": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1327-1361 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-335": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `COMPOSITE_SCORE_WEIGHTS` consumed externally"
     },
     "DEC-338": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CONVERSION_SHORT_TO_LONG_ENABLED` consumed externally"
     },
     "DEC-339": {
       "kind": "DEC",
@@ -1798,8 +1798,8 @@
     "DEC-341": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/data/universe.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-343": {
       "kind": "DEC",
@@ -1816,56 +1816,56 @@
     "DEC-345": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-347": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-348": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-349": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `EVENT_WINDOW_PRE_DAYS` consumed externally"
     },
     "DEC-350": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-352": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-353": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-354": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CHART_PATTERN_STRATEGIES` consumed externally"
     },
     "DEC-355": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-356": {
       "kind": "DEC",
@@ -1882,44 +1882,44 @@
     "DEC-358": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-359": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-360": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-361": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-362": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-363": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-364": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 224-235 executed in backtest/data/universe.py"
     },
     "DEC-365": {
       "kind": "DEC",
@@ -1930,8 +1930,8 @@
     "DEC-366": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-367": {
       "kind": "DEC",
@@ -1942,20 +1942,20 @@
     "DEC-368": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-369": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-370": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-371": {
       "kind": "DEC",
@@ -1966,8 +1966,8 @@
     "DEC-372": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-373": {
       "kind": "DEC",
@@ -1990,8 +1990,8 @@
     "DEC-376": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-377": {
       "kind": "DEC",
@@ -2002,8 +2002,8 @@
     "DEC-378": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-379": {
       "kind": "DEC",
@@ -2014,20 +2014,20 @@
     "DEC-380": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-381": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 107-262 executed in backtest/data/cache.py"
+      "evidence": "function body 120-262 executed in backtest/data/cache.py"
     },
     "DEC-382": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 265-324 executed in backtest/data/cache.py"
+      "evidence": "function body 276-324 executed in backtest/data/cache.py"
     },
     "DEC-383": {
       "kind": "DEC",
@@ -2063,31 +2063,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
     },
     "DEC-389": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-390": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-391": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 243-290 executed in backtest/data/sentiment.py"
     },
     "DEC-392": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 380-452 executed in backtest/data/universe.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/universe.py never executed"
     },
     "DEC-393": {
       "kind": "DEC",
@@ -2098,8 +2098,8 @@
     "DEC-394": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/data/universe.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-395": {
       "kind": "DEC",
@@ -2110,8 +2110,8 @@
     "DEC-396": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/smart_money.py never executed"
     },
     "DEC-398": {
       "kind": "DEC",
@@ -2128,62 +2128,62 @@
     "DEC-400": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1176-1212 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-401": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/multi_test.py (16%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/results/multi_test.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-402": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 416-468 executed in backtest/results/metrics.py"
+      "evidence": "function body 439-468 executed in backtest/results/metrics.py"
     },
     "DEC-403": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 471-497 executed in backtest/results/metrics.py"
+      "evidence": "function body 484-497 executed in backtest/results/metrics.py"
     },
     "DEC-404": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 561-583 executed in backtest/results/metrics.py"
+      "evidence": "function body 576-583 executed in backtest/results/metrics.py"
     },
     "DEC-405": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/seven_gate_verdict.py (44%)"
+      "evidence": "module-level tag in backtest/results/stress_tests.py (94%); adjacent symbol `Status` consumed externally"
     },
     "DEC-406": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TIERED_MIN_TRADES` consumed externally"
     },
     "DEC-407": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-408": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 290-346 executed in backtest/results/metrics.py"
+      "evidence": "function body 302-346 executed in backtest/results/metrics.py"
     },
     "DEC-409": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 290-346 executed in backtest/results/metrics.py"
+      "evidence": "function body 302-346 executed in backtest/results/metrics.py"
     },
     "DEC-410": {
       "kind": "DEC",
@@ -2201,31 +2201,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 500-558 executed in backtest/results/metrics.py"
+      "evidence": "function body 520-558 executed in backtest/results/metrics.py"
     },
     "DEC-414": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 107-151 executed in backtest/results/metrics.py"
+      "evidence": "function body 123-151 executed in backtest/results/metrics.py"
     },
     "DEC-415": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/rolling_sharpe_test.py (52%)"
+      "evidence": "module-level tag in backtest/results/rolling_sharpe_test.py (52%); adjacent symbol `Status` consumed externally"
     },
     "DEC-416": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 154-225 executed in backtest/results/metrics.py"
+      "evidence": "function body 170-225 executed in backtest/results/metrics.py"
     },
     "DEC-417": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-418": {
       "kind": "DEC",
@@ -2242,8 +2242,8 @@
     "DEC-420": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-421": {
       "kind": "DEC",
@@ -2255,67 +2255,67 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
     },
     "DEC-423": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/bootstrap_ci.py (69%)"
+      "evidence": "function body 30-572 executed in backtest/results/writer.py"
     },
     "DEC-425": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-426": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-427": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-428": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-429": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-430": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-431": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-432": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 610-649 executed in backtest/signals/technical.py"
+      "evidence": "function body 630-649 executed in backtest/signals/technical.py"
     },
     "DEC-433": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-434": {
       "kind": "DEC",
@@ -2327,43 +2327,43 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 2136-2157 executed in backtest/results/metrics.py"
     },
     "DEC-436": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-437": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-438": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CACHE_METADATA_SCHEMA` consumed externally"
     },
     "DEC-439": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-440": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-441": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-442": {
       "kind": "DEC",
@@ -2392,8 +2392,8 @@
     "DEC-446": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/engine/improvements.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-447": {
       "kind": "DEC",
@@ -2416,8 +2416,8 @@
     "DEC-450": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-451": {
       "kind": "DEC",
@@ -2428,8 +2428,8 @@
     "DEC-453": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-454": {
       "kind": "DEC",
@@ -2446,8 +2446,8 @@
     "DEC-456": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-457": {
       "kind": "DEC",
@@ -2459,7 +2459,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `LEAD_LAG_INTRA_SECTOR_STRATEGY` consumed externally"
     },
     "DEC-459": {
       "kind": "DEC",
@@ -2470,14 +2470,14 @@
     "DEC-460": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-461": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/smart_money.py never executed"
     },
     "DEC-462": {
       "kind": "DEC",
@@ -2488,38 +2488,38 @@
     "DEC-463": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-464": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-465": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-466": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-467": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-468": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-486": {
       "kind": "DEC",
@@ -2543,49 +2543,49 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "evidence": "function body 172-189 executed in backtest/data/universe.py"
     },
     "DEC-478": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-479": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-483": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 192-203 executed in backtest/data/universe.py"
+      "evidence": "function body 194-203 executed in backtest/data/universe.py"
     },
     "DEC-484": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-485": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-490": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-489": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-469": {
       "kind": "DEC",
@@ -2651,25 +2651,25 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-492": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-493": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-496": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 224-235 executed in backtest/data/universe.py"
     },
     "DEC-495": {
       "kind": "DEC",
@@ -2681,13 +2681,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "evidence": "function body 58-66 executed in backtest/data/universe.py"
     },
     "DEC-497": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/cache.py (45%)"
+      "evidence": "module-level tag in backtest/data/cache.py (45%); adjacent symbol `logger` consumed externally"
     },
     "DEC-498": {
       "kind": "DEC",
@@ -2699,7 +2699,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 669-756 executed in backtest/data/universe.py"
+      "evidence": "function body 678-756 executed in backtest/data/universe.py"
     },
     "DEC-500": {
       "kind": "DEC",
@@ -2710,20 +2710,20 @@
     "DEC-501": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-502": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-503": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/fetcher.py (25%)"
+      "evidence": "function body 83-101 executed in backtest/data/smart_money.py"
     },
     "DEC-508": {
       "kind": "DEC",
@@ -2735,19 +2735,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/macro.py (67%)"
+      "evidence": "function body 658-700 executed in backtest/data/macro.py"
     },
     "DEC-506": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-505": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `BACKTEST_START` consumed externally"
     },
     "DEC-610": {
       "kind": "DEC",
@@ -2776,14 +2776,14 @@
     "DEC-606": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-605": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-597": {
       "kind": "DEC",
@@ -2812,8 +2812,8 @@
     "DEC-601": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-602": {
       "kind": "DEC",
@@ -2843,7 +2843,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
     },
     "DEC-595": {
       "kind": "DEC",
@@ -2866,8 +2866,8 @@
     "DEC-593": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-589": {
       "kind": "DEC",
@@ -2878,38 +2878,38 @@
     "DEC-590": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 183-342 executed in backtest/engine/improvements.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "DEC-504": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "evidence": "function body 360-363 executed in backtest/data/universe.py"
     },
     "BUG-001": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-002": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-003": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/exit_manager.py (85%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/engine/exit_manager.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-004": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-005": {
       "kind": "BUG",
@@ -2921,7 +2921,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 106-176 executed in backtest/engine/improvements.py"
+      "evidence": "function body 119-176 executed in backtest/engine/improvements.py"
     },
     "BUG-007": {
       "kind": "BUG",
@@ -2939,7 +2939,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 64-133 executed in backtest/signals/technical.py"
+      "evidence": "function body 65-133 executed in backtest/signals/technical.py"
     },
     "BUG-010": {
       "kind": "BUG",
@@ -2951,13 +2951,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 216-226 executed in backtest/signals/screener.py"
+      "evidence": "function body 217-226 executed in backtest/signals/screener.py"
     },
     "BUG-012": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-013": {
       "kind": "BUG",
@@ -2975,7 +2975,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 40-66 executed in backtest/results/metrics.py"
+      "evidence": "function body 61-66 executed in backtest/results/metrics.py"
     },
     "BUG-016": {
       "kind": "BUG",
@@ -2993,7 +2993,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
+      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
     },
     "BUG-019": {
       "kind": "BUG",
@@ -3011,19 +3011,19 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 39-51 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 49-51 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-022": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/signals/screener.py (91%)"
+      "evidence": "module-level tag in backtest/signals/screener.py (91%); adjacent symbol `text` consumed externally"
     },
     "BUG-023": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/signals/screener.py (91%)"
+      "evidence": "module-level tag in backtest/signals/screener.py (91%); adjacent symbol `text` consumed externally"
     },
     "BUG-024": {
       "kind": "BUG",
@@ -3040,50 +3040,50 @@
     "BUG-027": {
       "kind": "BUG",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "function 1017-1116 executed in backtest/engine/improvements.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
     },
     "BUG-028": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 181-215 executed in backtest/signals/technical.py"
+      "evidence": "function body 191-215 executed in backtest/signals/technical.py"
     },
     "BUG-029": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 305-408 executed in backtest/engine/backtest.py"
+      "evidence": "function body 306-408 executed in backtest/engine/backtest.py"
     },
     "BUG-030": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 195-229 executed in backtest/engine/exit_manager.py"
     },
     "BUG-031": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-032": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-033": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-034": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-035": {
       "kind": "BUG",
@@ -3101,7 +3101,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 1197-1243 executed in backtest/engine/improvements.py"
+      "evidence": "function body 1222-1243 executed in backtest/engine/improvements.py"
     },
     "BUG-038": {
       "kind": "BUG",
@@ -3185,13 +3185,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 652-660 executed in backtest/signals/technical.py"
+      "evidence": "function body 658-660 executed in backtest/signals/technical.py"
     },
     "BUG-055": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 477-541 executed in backtest/signals/technical.py"
+      "evidence": "function body 486-541 executed in backtest/signals/technical.py"
     },
     "BUG-056": {
       "kind": "BUG",
@@ -3221,13 +3221,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 986-1020 executed in backtest/signals/screener.py"
+      "evidence": "function body 1006-1020 executed in backtest/signals/screener.py"
     },
     "BUG-061": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-063": {
       "kind": "BUG",
@@ -3293,7 +3293,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 2160-2430 executed in backtest/results/metrics.py"
+      "evidence": "function body 2162-2430 executed in backtest/results/metrics.py"
     },
     "BUG-076": {
       "kind": "BUG",
@@ -3305,13 +3305,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 1121-1204 executed in backtest/signals/screener.py"
+      "evidence": "function body 1132-1204 executed in backtest/signals/screener.py"
     },
     "BUG-078": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 481-617 executed in backtest/engine/exit_manager.py"
+      "evidence": "function body 494-617 executed in backtest/engine/exit_manager.py"
     },
     "BUG-079": {
       "kind": "BUG",
@@ -3323,13 +3323,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 481-617 executed in backtest/engine/exit_manager.py"
+      "evidence": "function body 494-617 executed in backtest/engine/exit_manager.py"
     },
     "BUG-081": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-082": {
       "kind": "BUG",
@@ -3340,8 +3340,8 @@
     "BUG-083": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 1050-1097 executed in backtest/data/smart_money.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/smart_money.py never executed"
     },
     "BUG-084": {
       "kind": "BUG",
@@ -3413,13 +3413,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `STARTING_CAPITAL` consumed externally"
     },
     "BUG-096": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 2497-2582 executed in backtest/results/metrics.py"
+      "evidence": "function body 2512-2582 executed in backtest/results/metrics.py"
     },
     "BUG-097": {
       "kind": "BUG",
@@ -3503,13 +3503,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-111": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/signals/screener.py (91%)"
+      "evidence": "function body 824-830 executed in backtest/signals/screener.py"
     },
     "BUG-112": {
       "kind": "BUG",
@@ -3556,8 +3556,8 @@
     "BUG-186": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "YES",
-      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/smart_money.py never executed"
     },
     "BUG-187": {
       "kind": "BUG",
@@ -3617,25 +3617,25 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 353-439 executed in backtest/data/smart_money.py"
+      "evidence": "function body 384-439 executed in backtest/data/smart_money.py"
     },
     "BUG-271": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/smart_money.py never executed"
     },
     "BUG-272": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
+      "evidence": "function body 83-101 executed in backtest/data/smart_money.py"
     },
     "BUG-273": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
+      "evidence": "function body 83-101 executed in backtest/data/smart_money.py"
     },
     "BUG-274": {
       "kind": "BUG",
@@ -3647,7 +3647,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 1123-1190 executed in backtest/engine/improvements.py"
+      "evidence": "function body 1138-1190 executed in backtest/engine/improvements.py"
     },
     "BUG-276": {
       "kind": "BUG",
@@ -3659,7 +3659,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 107-262 executed in backtest/data/cache.py"
+      "evidence": "function body 120-262 executed in backtest/data/cache.py"
     },
     "BUG-281": {
       "kind": "BUG",
@@ -3689,13 +3689,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 417-478 executed in backtest/engine/exit_manager.py"
+      "evidence": "function body 427-478 executed in backtest/engine/exit_manager.py"
     },
     "BUG-215": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/exit_manager.py (85%)"
+      "evidence": "module-level tag in backtest/engine/exit_manager.py (85%); adjacent symbol `ClosedTrade` consumed externally"
     },
     "BUG-216": {
       "kind": "BUG",
@@ -3706,14 +3706,14 @@
     "BUG-217": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/data/smart_money.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-218": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 271-299 executed in backtest/engine/backtest.py"
+      "evidence": "function body 293-299 executed in backtest/engine/backtest.py"
     },
     "BUG-219": {
       "kind": "BUG",
@@ -3737,7 +3737,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 130-157 executed in backtest/data/universe.py"
+      "evidence": "function body 143-157 executed in backtest/data/universe.py"
     },
     "BUG-223": {
       "kind": "BUG",
@@ -3749,19 +3749,19 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 50-76 executed in backtest/data/fetcher.py"
+      "evidence": "function body 61-76 executed in backtest/data/fetcher.py"
     },
     "BUG-225": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 34-61 executed in backtest/engine/regime_filter.py"
+      "evidence": "function body 52-61 executed in backtest/engine/regime_filter.py"
     },
     "BUG-205": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
+      "evidence": "function body 74-79 executed in backtest/engine/improvements.py"
     },
     "BUG-206": {
       "kind": "BUG",
@@ -3796,8 +3796,8 @@
     "BUG-228": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function 65-82 executed in backtest/data/cache.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/cache.py never executed"
     },
     "BUG-229": {
       "kind": "BUG",
@@ -3809,19 +3809,19 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 120-183 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 136-183 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-231": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 374-452 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 377-452 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-232": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "function body 271-308 executed in backtest/engine/exit_manager.py"
     },
     "BUG-233": {
       "kind": "BUG",
@@ -3839,7 +3839,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AAII_PUB_LAG_DAYS` consumed externally"
     },
     "BUG-236": {
       "kind": "BUG",
@@ -3851,37 +3851,37 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-238": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 181-263 executed in backtest/engine/backtest.py"
+      "evidence": "function body 189-263 executed in backtest/engine/backtest.py"
     },
     "BUG-239": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 271-299 executed in backtest/engine/backtest.py"
+      "evidence": "function body 293-299 executed in backtest/engine/backtest.py"
     },
     "BUG-240": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 280-346 executed in backtest/data/smart_money.py"
+      "evidence": "function body 281-346 executed in backtest/data/smart_money.py"
     },
     "BUG-241": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "YES",
-      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/smart_money.py never executed"
     },
     "BUG-242": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function 106-176 executed in backtest/engine/improvements.py"
+      "evidence": "function body 119-176 executed in backtest/engine/improvements.py"
     },
     "BUG-243": {
       "kind": "BUG",
@@ -3989,7 +3989,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ATR_FALLBACK_PCT` consumed externally"
     },
     "BUG-260": {
       "kind": "BUG",
@@ -4024,8 +4024,8 @@
     "BUG-264": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/universe.py (50%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/data/universe.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-266": {
       "kind": "BUG",
@@ -4054,8 +4054,8 @@
     "BUG-285": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/exit_strategies.py (83%)"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/engine/exit_strategies.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "BUG-114": {
       "kind": "BUG",
@@ -4163,7 +4163,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%)"
+      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TICKER_STOPOUT_COOLDOWN_DAYS` consumed externally"
     },
     "BUG-134": {
       "kind": "BUG",
@@ -4174,8 +4174,8 @@
     "BUG-135": {
       "kind": "BUG",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "BUG-136": {
       "kind": "BUG",

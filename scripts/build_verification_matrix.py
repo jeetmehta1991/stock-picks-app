@@ -213,6 +213,108 @@ def _function_ranges(file_path_str: str) -> List[Tuple[int, int]]:
     return ranges
 
 
+@lru_cache(maxsize=None)
+def _adjacent_symbol(file_path_str: str, tag_line: int) -> Optional[str]:
+    """Look at lines after `tag_line` in `file_path_str` and return the first
+    defined symbol (top-level constant, function, or class name). Used to detect
+    whether a module-level DEC-NNN tag's implementation is actually consumed by
+    other code.
+
+    Returns None if no defining line found in the next 8 lines.
+    """
+    p = Path(file_path_str)
+    try:
+        text = p.read_text(encoding="utf-8", errors="ignore")
+    except Exception:
+        return None
+    lines = text.splitlines()
+    # Look at the next 8 non-blank, non-comment lines after the tag
+    sym_re = re.compile(r"^(?:def |class |async def )?([A-Z_][A-Z0-9_]+|[a-z_][a-z0-9_]+)\s*[:=(]")
+    for i in range(tag_line, min(tag_line + 8, len(lines))):
+        line = lines[i].rstrip()
+        if not line or line.lstrip().startswith("#"):
+            continue
+        # Match constant assignment, function def, class def
+        m = re.match(r"^(?:def\s+|class\s+|async\s+def\s+)?([A-Za-z_][A-Za-z0-9_]+)\s*[(:=]", line)
+        if m:
+            return m.group(1)
+    return None
+
+
+@lru_cache(maxsize=None)
+def _symbol_consumed_externally(symbol: str, defining_file: Path,
+                                  coverage_keys: Tuple[str, ...]) -> bool:
+    """Return True if `symbol` is referenced in any file OTHER than `defining_file`
+    AND that other file has coverage > 0% in the current run.
+
+    `coverage_keys` is a tuple of file paths with non-zero coverage (passed as a
+    hashable arg so the @lru_cache key works).
+    """
+    pattern = re.compile(rf"\b{re.escape(symbol)}\b")
+    defining_norm = str(defining_file).replace("\\", "/")
+    for p in (REPO / "backtest").rglob("*.py"):
+        norm = str(p).replace("\\", "/")
+        if norm == defining_norm:
+            continue
+        if "/tests/" in norm:
+            continue
+        try:
+            text = p.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        if not pattern.search(text):
+            continue
+        # Symbol is referenced. Check if this file has any coverage.
+        rel = str(p.relative_to(REPO)).replace("\\", "/")
+        if rel in coverage_keys or rel.replace("/", "\\") in coverage_keys:
+            return True
+    return False
+
+
+def _function_body_start(file_path: Path, def_start: int, def_end: int) -> int:
+    """Find the line where the function body begins (after `def name(...):` and
+    any signature continuation across multiple lines + after any docstring).
+
+    Python executes the `def` line at import time, registering the function. The
+    body only executes when the function is called. So for engine-consumption
+    detection we need to check executed lines INSIDE the body, not the signature
+    or docstring.
+    """
+    p = Path(file_path)
+    try:
+        lines = p.read_text(encoding="utf-8", errors="ignore").splitlines()
+    except Exception:
+        return def_start + 1
+
+    # Skip signature lines (until we find `:` ending a balanced-paren signature)
+    sig_end = def_start
+    depth = 0
+    for i in range(def_start - 1, min(def_end, len(lines))):
+        line = lines[i]
+        depth += line.count("(") - line.count(")")
+        if depth <= 0 and line.rstrip().endswith(":"):
+            sig_end = i + 1
+            break
+
+    # Skip docstring if present
+    body_start = sig_end + 1
+    if body_start <= len(lines):
+        stripped = lines[body_start - 1].lstrip() if body_start - 1 < len(lines) else ""
+        if stripped.startswith('"""') or stripped.startswith("'''"):
+            quote = stripped[:3]
+            # Single-line docstring
+            if stripped.count(quote) >= 2:
+                body_start = sig_end + 2
+            else:
+                # Multi-line: scan until closing quote
+                for j in range(body_start, min(def_end, len(lines))):
+                    if quote in lines[j]:
+                        body_start = j + 2
+                        break
+
+    return min(body_start, def_end + 1)
+
+
 def _enclosing_range(file_path: Path, line: int) -> Optional[Tuple[int, int]]:
     """Return (start, end) of the function enclosing `line`, or None if module-level."""
     candidates = [(s, e) for s, e in _function_ranges(str(file_path)) if s <= line <= e]
@@ -262,13 +364,32 @@ def is_engine_consumed(hits: List[Tuple[Path, int]], coverage: Dict[str, Dict]) 
             executed = cov["executed_lines"]
             rng = _enclosing_range(f, ln)
             if rng is None:
-                per_file_status.append((rel, "YES"))
-                yes_evidence = yes_evidence or f"module-level tag in {rel} ({cov['percent']:.0f}%)"
+                # Module-level tag. Tighten the YES claim: the module being
+                # loaded (which happens automatically for any imported file)
+                # does NOT prove engine consumption. Look at the adjacent
+                # defined symbol and check if it's referenced by other
+                # executing files. If not -> DECLARED-ONLY (declared but
+                # not consumed by engine).
+                cov_keys = tuple(coverage.keys())
+                adjacent = _adjacent_symbol(str(f), ln)
+                if adjacent and _symbol_consumed_externally(adjacent, f, cov_keys):
+                    per_file_status.append((rel, "YES"))
+                    yes_evidence = yes_evidence or (
+                        f"module-level tag in {rel} ({cov['percent']:.0f}%); "
+                        f"adjacent symbol `{adjacent}` consumed externally"
+                    )
+                else:
+                    per_file_status.append((rel, "DECLARED-ONLY"))
                 continue
             start, end = rng
-            if any(line in executed for line in range(start, end + 1)):
+            # Exclude the `def` line (and any decorator/signature continuation
+            # lines) - they execute at import time regardless of whether the
+            # function body ever runs. Check body lines only.
+            body_start = _function_body_start(f, start, end)
+            body_executed = any(line in executed for line in range(body_start, end + 1))
+            if body_executed:
                 per_file_status.append((rel, "YES"))
-                yes_evidence = yes_evidence or f"function {start}-{end} executed in {rel}"
+                yes_evidence = yes_evidence or f"function body {body_start}-{end} executed in {rel}"
             else:
                 per_file_status.append((rel, "FUNC-DEAD"))
             continue
@@ -302,7 +423,7 @@ def is_engine_consumed(hits: List[Tuple[Path, int]], coverage: Dict[str, Dict]) 
     # is otherwise demonstrably running.
     if "YES" in statuses and "NO" not in statuses:
         return ("YES", yes_evidence or "tagged function executed")
-    if statuses <= {"YES", "LAZY-WIRED", "UNKNOWN"} and ("YES" in statuses or "LAZY-WIRED" in statuses):
+    if statuses <= {"YES", "LAZY-WIRED", "UNKNOWN", "DECLARED-ONLY"} and ("YES" in statuses or "LAZY-WIRED" in statuses):
         return ("LAZY-WIRED",
                 f"import chain exists for all tags; gating condition not met "
                 f"({per_file_status[0][0]})")
@@ -316,6 +437,15 @@ def is_engine_consumed(hits: List[Tuple[Path, int]], coverage: Dict[str, Dict]) 
         return ("FUNC-DEAD", f"function in {dead} never executed")
     if statuses == {"NO"}:
         return ("NO", f"every tagged file is orphaned (e.g. {per_file_status[0][0]})")
+    if statuses <= {"DECLARED-ONLY", "UNKNOWN"} and "DECLARED-ONLY" in statuses:
+        # Tag is module-level (typically in config.py) but the adjacent symbol
+        # isn't referenced by any other executing file - declared in source but
+        # not consumed by the engine. Common pattern: deferred-feature config
+        # constants that haven't been wired yet.
+        rel = next(r for r, s in per_file_status if s == "DECLARED-ONLY")
+        return ("DECLARED-ONLY",
+                f"tagged symbol declared in {rel} but not consumed by any executing file "
+                "(config constant for deferred / unwired feature)")
     return ("N/A", "no coverage data for tagged files")
 
 
@@ -384,7 +514,8 @@ def emit_matrix(items: List[Tuple[str, str, str]], coverage: Dict[str, Dict], so
     lines.append("|" + "|".join(["---"] * len(header)) + "|")
 
     summary = {"engine_YES": 0, "engine_LAZY_WIRED": 0, "engine_PARTIAL_ORPHAN": 0,
-               "engine_FUNC_DEAD": 0, "engine_NO": 0, "engine_NA": 0}
+               "engine_FUNC_DEAD": 0, "engine_NO": 0, "engine_NA": 0,
+               "engine_DECLARED_ONLY": 0}
     by_layer_gap_count = {l: 0 for l in LAYER_ORDER}
     gap_rows: List[Tuple[str, str, str, Dict[str, str]]] = []  # (id, engine_status, evidence, layer_dict)
     # Cross-tier anomaly tracking: items whose promotion-tier doesn't match
@@ -424,6 +555,8 @@ def emit_matrix(items: List[Tuple[str, str, str]], coverage: Dict[str, Dict], so
             summary["engine_FUNC_DEAD"] += 1
         elif engine_status == "NO":
             summary["engine_NO"] += 1
+        elif engine_status == "DECLARED-ONLY":
+            summary["engine_DECLARED_ONLY"] += 1
         else:
             summary["engine_NA"] += 1
 
@@ -461,6 +594,8 @@ def emit_matrix(items: List[Tuple[str, str, str]], coverage: Dict[str, Dict], so
         f"- Engine FUNC-DEAD (function exists but never executed): **{summary['engine_FUNC_DEAD']}**",
         f"- Engine NO (all tagged files orphaned): **{summary['engine_NO']}** "
         "(real wiring gap  -  helper file imported nowhere in the engine path)",
+        f"- Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **{summary['engine_DECLARED_ONLY']}** "
+        "(constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)",
         f"- Engine N/A (no code expected): **{summary['engine_NA']}**",
         "",
         f"### Classification anomalies (tier vs engine mismatch): **{len(anomalies)}**",
