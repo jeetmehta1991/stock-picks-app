@@ -4735,9 +4735,10 @@ def test_dashboard_filter_promotioncell_hidden_tier_span():
     # New pattern: ^v.toLowerCase()$ regex for status columns.
     # DataTables lowercases filter data when caseInsensitive=true (default); regex
     # must also be lowercased or it never matches. v.toLowerCase() fixes the mismatch.
+    # dec-status-filter was removed 2026-05-14 (Promotion supersedes); inv + cav remain.
     exact_count = html.count("`^${v.toLowerCase()}$`")
-    assert exact_count == 3, (
-        f"Expected 3 lowercase-regex ^v.toLowerCase()$ patterns (dec-status, inv-status, cav-status); got {exact_count}"
+    assert exact_count == 2, (
+        f"Expected 2 lowercase-regex ^v.toLowerCase()$ patterns (inv-status, cav-status); got {exact_count}"
     )
     # Old uppercase regex must be gone (it never matched lowercased DT filter data)
     old_upper_count = html.count("`^${v}$`")
@@ -5147,20 +5148,21 @@ def test_dashboard_filter_uses_value_pattern_batch_67():
     assert old_count == 0, (
         f"Old >v< pattern still present ({old_count} occurrences); must be 0"
     )
-    # Status columns use lowercase-regex exact-match (3: dec-status, inv-status, cav-status).
+    # Status columns use lowercase-regex exact-match (2: inv-status, cav-status).
     # DataTables lowercases filter data; regex must also be lowercased to match.
+    # dec-status-filter was removed 2026-05-14 (Promotion column supersedes it).
     exact_count = html.count("`^${v.toLowerCase()}$`")
-    assert exact_count == 3, (
-        f"Expected 3 toLowerCase-regex handlers; got {exact_count}"
+    assert exact_count == 2, (
+        f"Expected 2 toLowerCase-regex handlers (inv, cav); got {exact_count}"
     )
     # Old uppercase `^${{v}}$` must be gone
     old_upper_count = html.count("`^${v}$`")
     assert old_upper_count == 0, (
         f"Old uppercase `^${{v}}$` still present ({old_upper_count}); must be 0"
     )
-    # Promotion columns use plain substring (v, false, false) - 3 handlers
-    # Verify dec-promotion, bug-promotion, inv-promotion each use substring search
-    assert "decTable.column(4).search(v, false, false)" in html, "dec-promotion filter broken"
+    # Promotion columns use plain substring (v, false, false).
+    # dec-promotion now at column 3 (Doc Status column removed), bug-promotion still col 3, inv-promotion col 4
+    assert "decTable.column(3).search(v, false, false)" in html, "dec-promotion filter broken"
     assert "bugTable.column(3).search(v, false, false)" in html, "bug-promotion filter broken"
     assert "invTable.column(4).search(v, false, false)" in html, "inv-promotion filter broken"
 

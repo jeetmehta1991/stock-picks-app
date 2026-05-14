@@ -122,12 +122,6 @@ per CHECKLIST #77 - never reads from memory.
 
     <div class="filter-bar">
       <input id="dec-filter" placeholder="Filter ID / title / theme..." size="40">
-      <select id="dec-status-filter">
-        <option value="">All Doc Statuses (481 visible)</option>
-        <option value="RESOLVED-IMPLEMENTED">RESOLVED-IMPLEMENTED (443)</option>
-        <option value="PARTIAL-IMPL-HELPER-ONLY">PARTIAL-IMPL-HELPER-ONLY (36) - helper exists, engine not consuming</option>
-        <option value="REJECTED">REJECTED (2)</option>
-      </select>
       <select id="dec-promotion-filter">
         <option value="">All promotion tiers (481 visible)</option>
         <option value="IMPLEMENTED">IMPLEMENTED (260) - code+wire+test artifacts confirmed</option>
@@ -159,7 +153,7 @@ per CHECKLIST #77 - never reads from memory.
       <strong title="Compatibility matrix">Cm</strong>. <strong>YES</strong>=test layer covers ID; <strong>no</strong>=layer applies but no coverage (gap); <strong>N/A</strong>=layer doesn't apply to this ID type; <strong>LATER</strong>=applicable but deferred (hover for reason).
     </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
-      <thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Doc Status</th>
+      <thead><tr><th>ID</th><th>Title</th><th>Description</th>
         <th title="Promotion-path tier badge per CHECKLIST #82 (color-coded). Hover for reason.">Promotion</th>
         <th title="Plain-text tier name (sortable / filterable as text). Same value as Promotion column's badge label.">Tier</th>
         <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
@@ -525,7 +519,6 @@ const decRows = D.decisions.map(d => {
     `<code>${d.short_id || d.id}</code>`,
     d.title,
     descCell(d.description),
-    badge(d.status),
     promotionCell(d.promotion_path),
     // Tier column: plain text for sort/filter, matches Promotion badge label
     `<span data-tier="${tier}" style="font-size:11px;font-weight:600">${tier}</span>`,
@@ -543,21 +536,11 @@ const decTable = $('#tbl-decisions').DataTable({
   data: decRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); });
-// FIX 2026-05-10: dec-status-filter searches Doc Status column (index 3,
-// after ID/Title/Description). Was previously column 2 (Description) which
-// caused the dropdown to be effectively non-functional.
-$('#dec-status-filter').on('change', function () {
-  // DataTables lowercases filter data when caseInsensitive=true (default).
-  // Regex must also be lowercased or it never matches. v.toLowerCase() fixes.
-  const v = this.value;
-  decTable.column(3).search(v ? `^${v.toLowerCase()}$` : '', true, false).draw();
-});
+// Doc Status filter removed 2026-05-14: Promotion is more granular (splits
+// RESOLVED-IMPLEMENTED into IMPLEMENTED / DECIDED / DEFERRED by artifact presence).
 $('#dec-promotion-filter').on('change', function () {
-  // FIX 2026-05-13: promotionCell renders badge label + hidden tier-text span.
-  // Stripped text = "LABEL TIER" (e.g. "NEEDS-TEST CODE_ONLY"). Plain substring
-  // search on v (the tier code) matches the hidden-span text correctly.
   const v = this.value;
-  decTable.column(4).search(v, false, false).draw();
+  decTable.column(3).search(v, false, false).draw();
 });
 
 // Bugs table

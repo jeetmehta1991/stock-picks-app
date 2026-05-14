@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T04:56:31.649826+00:00",
+  "generated_at": "2026-05-14T05:09:10.186100+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -34500,10 +34500,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "03eb8272",
+      "subject": "Batch 150: Fix dec/inv/cav status filter dropdowns (case regex + stale options). Pyramid 742/742.",
+      "author": "jeetmehta1991",
+      "rel_time": "12 minutes ago"
+    },
+    {
       "sha": "ed744a04",
       "subject": "@ Batch 149: 12 FALSE-POSITIVE bugs -> OBSOLETE, removed from dashboard. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "17ffee83",
@@ -34527,13 +34533,13 @@
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "66367de1",
@@ -34545,7 +34551,7 @@
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "795744bb",
@@ -34672,17 +34678,11 @@
       "subject": "Batch 145: BUG-005 false-positive - strategies_triggered key consistent via BUG-05 fix. Pyramid 742/742.",
       "author": "jeetmehta1991",
       "rel_time": "23 hours ago"
-    },
-    {
-      "sha": "d462cc08",
-      "subject": "Batch 144: BUG-022 + BUG-023 false-positives - strategy count refs current (108-133 layered). Pyramid 741/741.",
-      "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 9,
-    "modified": 5,
+    "count": 8,
+    "modified": 4,
     "added": 0,
     "untracked": 4,
     "deleted": 0,
@@ -34698,10 +34698,6 @@
       {
         "status": "M",
         "path": "dashboard_stage_2/index.html"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",
