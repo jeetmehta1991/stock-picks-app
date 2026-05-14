@@ -1,7 +1,7 @@
 # Stock Picks & Automated Trading System
 **Stage:** 2 — Strategy Validation | **Phase:** 0A — Multi-API prefetch + universe build (Pass 53; DEC-497)
 **Repo:** jeetmehta1991/stock-picks-app
-**Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons)
+**Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons) | `VERIFICATION_MATRIX.md` (engine-consumption ground truth, coverage-driven - replaces the `wired=yes` grep heuristic that produced ~150 false-positive RESOLVED-IMPLEMENTED claims; regenerate via `scripts/build_verification_matrix.py` after a canonical backtest under `coverage run`)
 
 ---
 

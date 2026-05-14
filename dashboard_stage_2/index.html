@@ -156,6 +156,7 @@ per CHECKLIST #77 - never reads from memory.
       <thead><tr><th>ID</th><th>Title</th><th>Description</th>
         <th title="Promotion-path tier badge per CHECKLIST #82 (color-coded). Hover for reason.">Promotion</th>
         <th title="Plain-text tier name (sortable / filterable as text). Same value as Promotion column's badge label.">Tier</th>
+        <th title="Coverage-driven engine consumption (verification_matrix.json from canonical backtest under coverage). YES=function executed; LAZY-WIRED=lazy-import chain confirmed; FUNC-DEAD=enclosing function never ran; NO=zero coverage and no importer; N/A=no source tag (methodology); UNTESTED=not in matrix (rebuild matrix to populate).">Engine</th>
         <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
@@ -181,6 +182,7 @@ per CHECKLIST #77 - never reads from memory.
     <table id="tbl-bugs" class="display compact" style="width:100%">
       <thead><tr><th>Bug ID</th><th>Title</th><th>Description</th>
         <th title="Promotion-path tier (CHECKLIST #82)">Promotion</th>
+        <th title="Coverage-driven engine consumption (verification_matrix.json). YES=function executed; LAZY-WIRED=import chain confirmed; FUNC-DEAD=function never ran; NO=zero coverage + no importer; N/A=no code expected; UNTESTED=not in matrix.">Engine</th>
         <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
@@ -507,6 +509,24 @@ function promotionCell(p) {
   return `<span data-tier="${tier}" data-label="${label}" title="${reason}" style="background:${p.color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${label}</span><span style="display:none">${tier}</span>`;
 }
 
+// Owner directive 2026-05-14: coverage-driven engine consumption column.
+// Values from verification_matrix.json. Eliminates the grep-based 'wired' false
+// positive that caused ~150 DECs to be marked done without engine consumption.
+function engineCell(status, evidence) {
+  const s = status || 'UNTESTED';
+  const colors = {
+    'YES':        '#10b981',  // green - function actually executed
+    'LAZY-WIRED': '#10b981',  // green - import chain confirmed, condition not met in canonical run
+    'FUNC-DEAD':  '#ef4444',  // red - function exists but never ran (real wiring gap)
+    'NO':         '#ef4444',  // red - file at 0% with no live importer (real gap)
+    'N/A':        '#94a3b8',  // gray - no code expected (methodology decision)
+    'UNTESTED':   '#cbd5e1',  // light gray - not in matrix (rebuild matrix)
+  };
+  const color = colors[s] || '#cbd5e1';
+  const tip = (evidence || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return `<span title="${tip}" style="background:${color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${s}</span>`;
+}
+
 // Decisions table: visible / total / hidden counts (SUPERSEDED + OBSOLETE
 // hidden per owner directive 2026-05-10; remain in AUDIT_INDEX.md)
 document.getElementById('dec-total').textContent = D.decisions.length;
@@ -522,6 +542,7 @@ const decRows = D.decisions.map(d => {
     promotionCell(d.promotion_path),
     // Tier column: plain text for sort/filter, matches Promotion badge label
     `<span data-tier="${tier}" style="font-size:11px;font-weight:600">${tier}</span>`,
+    engineCell(d.coverage_engine, d.coverage_evidence),
     statusCheck(sg.coded),
     statusCheck(sg.wired),
     statusCheck(sg.tested),
@@ -554,6 +575,7 @@ const bugRows = D.bugs.map(b => {
     b.title,
     descCell(b.description),
     promotionCell(b.promotion_path),
+    engineCell(b.coverage_engine, b.coverage_evidence),
     statusCheck(sg.coded),
     statusCheck(sg.wired),
     statusCheck(sg.tested),

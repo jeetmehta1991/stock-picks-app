@@ -1,0 +1,1790 @@
+{
+  "generated_at": "2026-05-14T14:55:59.174332+00:00",
+  "items": {
+    "DEC-001": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-006": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-013": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-015": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1400-1420 executed in backtest/results/metrics.py"
+    },
+    "DEC-018": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-019": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
+    },
+    "DEC-021": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-028": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-033": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-037": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-038": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-040": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "DEC-045": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-052": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-054": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-057": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 128-214 executed in backtest/run_phase1a.py"
+    },
+    "DEC-061": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-067": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-070": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-071": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-072": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-075": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-076": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-078": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-078A": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1260-1293 executed in backtest/results/metrics.py"
+    },
+    "DEC-081": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 416-468 executed in backtest/results/metrics.py"
+    },
+    "DEC-082": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/results/stress_tests.py (74%)"
+    },
+    "DEC-083": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-084": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-085": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-087": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-088": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-089": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1400-1420 executed in backtest/results/metrics.py"
+    },
+    "DEC-091": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-092": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/improvements.py (35%)"
+    },
+    "DEC-095": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 801-819 executed in backtest/engine/improvements.py"
+    },
+    "DEC-098": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/improvements.py (35%)"
+    },
+    "DEC-100": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 615-652 executed in backtest/results/metrics.py"
+    },
+    "DEC-102": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-106": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-107": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-108": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+    },
+    "DEC-110": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 500-558 executed in backtest/results/metrics.py"
+    },
+    "DEC-111": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 2160-2430 executed in backtest/results/metrics.py"
+    },
+    "DEC-116": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-117": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-119": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
+    },
+    "DEC-120": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
+    },
+    "DEC-123": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1447-1467 executed in backtest/results/metrics.py"
+    },
+    "DEC-124": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 59-71 executed in backtest/engine/exit_context.py"
+    },
+    "DEC-125": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-126": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/improvements.py (35%)"
+    },
+    "DEC-128": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-131": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-134": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1541-1561 executed in backtest/results/metrics.py"
+    },
+    "DEC-135": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-136": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-141": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1564-1589 executed in backtest/results/metrics.py"
+    },
+    "DEC-142": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1592-1615 executed in backtest/results/metrics.py"
+    },
+    "DEC-144": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 978-1002 executed in backtest/results/metrics.py"
+    },
+    "DEC-145": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1618-1652 executed in backtest/results/metrics.py"
+    },
+    "DEC-148": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1005-1028 executed in backtest/results/metrics.py"
+    },
+    "DEC-149": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+    },
+    "DEC-150": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-151": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-152": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-153": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/regime_stratified_split.py (94%)"
+    },
+    "DEC-155": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
+    },
+    "DEC-159": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 639-689 executed in backtest/engine/improvements.py"
+    },
+    "DEC-169": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-170": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-171": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-174": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-175": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1005-1028 executed in backtest/results/metrics.py"
+    },
+    "DEC-177": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-178": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 692-704 executed in backtest/engine/improvements.py"
+    },
+    "DEC-179": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 305-408 executed in backtest/engine/backtest.py"
+    },
+    "DEC-183": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 692-704 executed in backtest/engine/improvements.py"
+    },
+    "DEC-184": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-189": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-201": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
+    },
+    "DEC-205": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-206": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1655-1680 executed in backtest/results/metrics.py"
+    },
+    "DEC-207": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-208": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
+    },
+    "DEC-209": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 684-740 executed in backtest/results/metrics.py"
+    },
+    "DEC-210": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1865-1897 executed in backtest/results/metrics.py"
+    },
+    "DEC-211": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1900-1931 executed in backtest/results/metrics.py"
+    },
+    "DEC-212": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1683-1718 executed in backtest/results/metrics.py"
+    },
+    "DEC-213": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-214": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-215": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-220": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-225": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 801-819 executed in backtest/engine/improvements.py"
+    },
+    "DEC-227": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/improvements.py (35%)"
+    },
+    "DEC-232": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-233": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 910-962 executed in backtest/engine/improvements.py"
+    },
+    "DEC-235": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 479-491 executed in backtest/engine/backtest.py"
+    },
+    "DEC-241": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 228-287 executed in backtest/results/metrics.py"
+    },
+    "DEC-246": {
+      "kind": "DEC",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/results/quant_audit.py)"
+    },
+    "DEC-247": {
+      "kind": "DEC",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/results/deflated_sharpe.py)"
+    },
+    "DEC-249": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-250": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/results/edge_decay.py (93%)"
+    },
+    "DEC-251": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-253": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-254": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-255": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1541-1561 executed in backtest/results/metrics.py"
+    },
+    "DEC-256": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-257": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-258": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-259": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-260": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 910-962 executed in backtest/engine/improvements.py"
+    },
+    "DEC-261": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-263": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-265": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-269": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-274": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-275": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-277": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-279": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 2077-2118 executed in backtest/results/metrics.py"
+    },
+    "DEC-280": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/improvements.py (35%)"
+    },
+    "DEC-284": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 655-681 executed in backtest/results/metrics.py"
+    },
+    "DEC-287": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1979-2037 executed in backtest/results/metrics.py"
+    },
+    "DEC-290": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-295": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-298": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-301": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 64-171 executed in backtest/data/macro.py"
+    },
+    "DEC-302": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/macro.py (66%)"
+    },
+    "DEC-303": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-304": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/macro.py (66%)"
+    },
+    "DEC-305": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 50-76 executed in backtest/data/fetcher.py"
+    },
+    "DEC-307": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 107-262 executed in backtest/data/cache.py"
+    },
+    "DEC-308": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 265-324 executed in backtest/data/cache.py"
+    },
+    "DEC-309": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/cache.py (45%)"
+    },
+    "DEC-311": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 120-183 executed in backtest/engine/exit_strategies.py"
+    },
+    "DEC-312": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 374-452 executed in backtest/engine/exit_strategies.py"
+    },
+    "DEC-314": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-315": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/circuit_breakers.py (40%)"
+    },
+    "DEC-316": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-317": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+    },
+    "DEC-318": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-319": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-320": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 238-290 executed in backtest/data/sentiment.py"
+    },
+    "DEC-321": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "DEC-323": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "DEC-324": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 280-346 executed in backtest/data/smart_money.py"
+    },
+    "DEC-325": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+    },
+    "DEC-329": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-330": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 757-780 executed in backtest/results/metrics.py"
+    },
+    "DEC-332": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-333": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/sentiment.py (51%)"
+    },
+    "DEC-334": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1327-1361 executed in backtest/results/metrics.py"
+    },
+    "DEC-335": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-338": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-341": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "DEC-345": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-347": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-348": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-349": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-350": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-352": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-353": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-354": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-355": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-358": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-359": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-360": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-361": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-362": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-363": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-364": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-366": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
+    },
+    "DEC-368": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-369": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-370": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-372": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-376": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-380": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-381": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 107-262 executed in backtest/data/cache.py"
+    },
+    "DEC-382": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 265-324 executed in backtest/data/cache.py"
+    },
+    "DEC-388": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+    },
+    "DEC-389": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-390": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-391": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-392": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 380-452 executed in backtest/data/universe.py"
+    },
+    "DEC-394": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "DEC-396": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+    },
+    "DEC-400": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 1176-1212 executed in backtest/results/metrics.py"
+    },
+    "DEC-401": {
+      "kind": "DEC",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/results/multi_test.py)"
+    },
+    "DEC-402": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 416-468 executed in backtest/results/metrics.py"
+    },
+    "DEC-403": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 471-497 executed in backtest/results/metrics.py"
+    },
+    "DEC-404": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 561-583 executed in backtest/results/metrics.py"
+    },
+    "DEC-405": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/results/stress_tests.py (74%)"
+    },
+    "DEC-406": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-407": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-408": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 290-346 executed in backtest/results/metrics.py"
+    },
+    "DEC-409": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 290-346 executed in backtest/results/metrics.py"
+    },
+    "DEC-413": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 500-558 executed in backtest/results/metrics.py"
+    },
+    "DEC-414": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 107-151 executed in backtest/results/metrics.py"
+    },
+    "DEC-415": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/results/rolling_sharpe_test.py (52%)"
+    },
+    "DEC-416": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 154-225 executed in backtest/results/metrics.py"
+    },
+    "DEC-420": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-422": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-423": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/results/bootstrap_ci.py (45%)"
+    },
+    "DEC-431": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-432": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 610-649 executed in backtest/signals/technical.py"
+    },
+    "DEC-435": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-437": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-438": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-439": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-440": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-441": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-446": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/improvements.py (35%)"
+    },
+    "DEC-450": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-453": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-456": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-458": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-460": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-461": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-462": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-464": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-465": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-466": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-468": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-477": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "DEC-478": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-479": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-483": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 192-203 executed in backtest/data/universe.py"
+    },
+    "DEC-484": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-485": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-490": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-489": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-491": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-492": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-493": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "DEC-496": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-494": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "DEC-497": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/cache.py (45%)"
+    },
+    "DEC-499": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 669-756 executed in backtest/data/universe.py"
+    },
+    "DEC-500": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-501": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-502": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-503": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/fetcher.py (25%)"
+    },
+    "DEC-508": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-507": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/macro.py (66%)"
+    },
+    "DEC-506": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-505": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-609": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-608": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-606": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-605": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-599": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-601": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-594": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 58-127 executed in backtest/engine/backtest.py"
+    },
+    "DEC-595": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-591": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-592": {
+      "kind": "DEC",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-593": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-590": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "function 183-342 executed in backtest/engine/improvements.py"
+    },
+    "DEC-504": {
+      "kind": "DEC",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "BUG-001": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "BUG-002": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "BUG-003": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/exit_manager.py (79%)"
+    },
+    "BUG-004": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "BUG-005": {
+      "kind": "BUG",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/agents/pipeline.py)"
+    },
+    "BUG-006": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 106-176 executed in backtest/engine/improvements.py"
+    },
+    "BUG-007": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-008": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-009": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 64-133 executed in backtest/signals/technical.py"
+    },
+    "BUG-011": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 216-226 executed in backtest/signals/screener.py"
+    },
+    "BUG-012": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "BUG-013": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-014": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-015": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 40-66 executed in backtest/results/metrics.py"
+    },
+    "BUG-016": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-017": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-018": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
+    },
+    "BUG-019": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-021": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 39-51 executed in backtest/engine/exit_strategies.py"
+    },
+    "BUG-022": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/signals/screener.py (91%)"
+    },
+    "BUG-023": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/signals/screener.py (91%)"
+    },
+    "BUG-026": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-028": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 181-215 executed in backtest/signals/technical.py"
+    },
+    "BUG-029": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 305-408 executed in backtest/engine/backtest.py"
+    },
+    "BUG-030": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-031": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-032": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-033": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-034": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-037": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 1197-1243 executed in backtest/engine/improvements.py"
+    },
+    "BUG-052": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-054": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 652-660 executed in backtest/signals/technical.py"
+    },
+    "BUG-055": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 477-541 executed in backtest/signals/technical.py"
+    },
+    "BUG-060": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 986-1020 executed in backtest/signals/screener.py"
+    },
+    "BUG-061": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "BUG-068": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-073": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-074": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-075": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 2160-2430 executed in backtest/results/metrics.py"
+    },
+    "BUG-077": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 1121-1204 executed in backtest/signals/screener.py"
+    },
+    "BUG-078": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 481-617 executed in backtest/engine/exit_manager.py"
+    },
+    "BUG-079": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-080": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 481-617 executed in backtest/engine/exit_manager.py"
+    },
+    "BUG-081": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-083": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 1050-1097 executed in backtest/data/smart_money.py"
+    },
+    "BUG-090": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-095": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-096": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 2497-2582 executed in backtest/results/metrics.py"
+    },
+    "BUG-101": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-102": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-103": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-104": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-106": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-110": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "BUG-111": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/signals/screener.py (91%)"
+    },
+    "BUG-178": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-179": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-180": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-270": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 353-439 executed in backtest/data/smart_money.py"
+    },
+    "BUG-271": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/smart_money.py (24%)"
+    },
+    "BUG-272": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/smart_money.py (24%)"
+    },
+    "BUG-273": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/smart_money.py (24%)"
+    },
+    "BUG-274": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-275": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 1123-1190 executed in backtest/engine/improvements.py"
+    },
+    "BUG-276": {
+      "kind": "BUG",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/agents/pipeline.py)"
+    },
+    "BUG-279": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 107-262 executed in backtest/data/cache.py"
+    },
+    "BUG-284": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-214": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 417-478 executed in backtest/engine/exit_manager.py"
+    },
+    "BUG-215": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/exit_manager.py (79%)"
+    },
+    "BUG-216": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-217": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/smart_money.py (24%)"
+    },
+    "BUG-218": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 271-299 executed in backtest/engine/backtest.py"
+    },
+    "BUG-221": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-222": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 130-157 executed in backtest/data/universe.py"
+    },
+    "BUG-224": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 50-76 executed in backtest/data/fetcher.py"
+    },
+    "BUG-225": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 34-61 executed in backtest/engine/regime_filter.py"
+    },
+    "BUG-205": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/improvements.py (35%)"
+    },
+    "BUG-226": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-227": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-228": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 65-82 executed in backtest/data/cache.py"
+    },
+    "BUG-230": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 120-183 executed in backtest/engine/exit_strategies.py"
+    },
+    "BUG-231": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 374-452 executed in backtest/engine/exit_strategies.py"
+    },
+    "BUG-232": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-233": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-234": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-235": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-236": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-237": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
+    },
+    "BUG-238": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 181-263 executed in backtest/engine/backtest.py"
+    },
+    "BUG-239": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 271-299 executed in backtest/engine/backtest.py"
+    },
+    "BUG-240": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 280-346 executed in backtest/data/smart_money.py"
+    },
+    "BUG-242": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "function 106-176 executed in backtest/engine/improvements.py"
+    },
+    "BUG-244": {
+      "kind": "BUG",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-258": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-264": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/data/universe.py (47%)"
+    },
+    "BUG-285": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/engine/exit_strategies.py (73%)"
+    },
+    "BUG-133": {
+      "kind": "BUG",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    }
+  }
+}

@@ -1112,6 +1112,21 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
     wired = bool(sg.get("wired"))
     tested = bool(sg.get("tested"))
 
+    # Coverage-driven authoritative override (owner directive 2026-05-14).
+    # If verification_matrix.json says the tagged function never executed,
+    # demote any RESOLVED-IMPLEMENTED claim to a NEEDS-WIRING signal so the
+    # earlier failure mode (grep says wired, engine never calls it) can't recur.
+    coverage_engine = item.get("coverage_engine", "UNTESTED")
+    if coverage_engine == "NO":
+        return {"tier": "NOT-CONSUMED", "label": "NOT-CONSUMED", "color": "#ef4444",
+                "reason": "Coverage audit: tagged file is at 0% with no live importer chain. "
+                          "Helper exists but engine call path never reaches it."}
+    if coverage_engine == "FUNC-DEAD":
+        return {"tier": "FUNC-DEAD", "label": "FUNC-DEAD", "color": "#ef4444",
+                "reason": "Coverage audit: enclosing function exists in active module but "
+                          "never executed in the canonical backtest. Add a triggering test "
+                          "or expand the canonical backtest to exercise this path."}
+
     # Status-driven short-circuits (apply regardless of kind)
     if status.startswith("SUPERSEDED"):
         return {"tier": "SUPERSEDED", "label": "SUPERSEDED", "color": "#94a3b8",
@@ -1912,6 +1927,27 @@ def main() -> int:
     print("Computing per-ID status (coded/wired/tested/pushed)...")
     audit_descs = parse_audit_descriptions()  # owner directive 2026-05-09
     print(f"  AUDIT.md descriptions indexed: {len(audit_descs)}")
+
+    # Owner directive 2026-05-14: coverage-driven engine-consumption ground truth.
+    # verification_matrix.json is produced by `scripts/build_verification_matrix.py`
+    # after a canonical backtest under `coverage run`. Overrides the grep-based
+    # 'wired' heuristic which produced ~150 false-positives in earlier passes.
+    # Schema: {"items": {"DEC-NNN": {"engine": "YES|LAZY-WIRED|FUNC-DEAD|NO|N/A",
+    #                                "evidence": "..."}}}
+    verification_matrix = {}
+    vm_path = REPO_ROOT / "verification_matrix.json"
+    if vm_path.exists():
+        try:
+            vm = json.loads(vm_path.read_text(encoding="utf-8"))
+            verification_matrix = vm.get("items", {})
+            print(f"  loaded verification_matrix.json ({len(verification_matrix)} items, "
+                  f"generated_at={vm.get('generated_at', '?')[:19]})")
+        except Exception as exc:
+            print(f"  WARNING: verification_matrix.json load failed: {exc}")
+    else:
+        print("  WARNING: verification_matrix.json missing - run `python "
+              "scripts/build_verification_matrix.py` after a coverage backtest.")
+
     for d in decisions:
         # Normalize ID for grep: AUDIT_INDEX uses "DECISION-001" but actual code/commits use "DEC-001"
         full_id = d["id"]
@@ -1921,6 +1957,10 @@ def main() -> int:
         d["sprint"] = "; ".join(sprint_map.get(short_id, [])) or "-"
         d["dependencies"] = "; ".join(extract_dependencies(d["title"] + " " + d["status"])) or "-"
         d["description"] = audit_descs.get(short_id, "") or audit_descs.get(full_id, "") or ""
+        # Attach coverage-driven engine status from verification_matrix.json (owner directive 2026-05-14)
+        vm_entry = verification_matrix.get(short_id, {})
+        d["coverage_engine"] = vm_entry.get("engine", "UNTESTED")
+        d["coverage_evidence"] = vm_entry.get("evidence", "")
         d["promotion_path"] = compute_promotion_path(d, "decision")
     for b in bugs:
         full_id = b["id"]
@@ -1949,6 +1989,10 @@ def main() -> int:
                 b["resolution_text"] = ai_overlay.get("resolution_text", "")
         elif ai_overlay:
             b["status"] = ai_overlay
+        # Attach coverage-driven engine status (owner directive 2026-05-14)
+        vm_entry = verification_matrix.get(short, {})
+        b["coverage_engine"] = vm_entry.get("engine", "UNTESTED")
+        b["coverage_evidence"] = vm_entry.get("evidence", "")
         b["promotion_path"] = compute_promotion_path(b, "bug")
     for i in invs:
         i["status_grep"] = id_status(i["id"], corpora)
@@ -1956,6 +2000,10 @@ def main() -> int:
         # INVs already carry a 'summary' field extracted from **Observation:**.
         # Promote it to a description alias for HTML rendering consistency.
         i["description"] = i.get("summary", "") or ""
+        # INVs aren't in the verification_matrix (matrix tracks IMPLEMENTED DECs+BUGs),
+        # but mark UNTESTED so the column renders consistently across all tables.
+        i["coverage_engine"] = "UNTESTED"
+        i["coverage_evidence"] = ""
         i["promotion_path"] = compute_promotion_path(i, "investigation")
     for c in cavs:
         c["status_grep"] = id_status(c["id"], corpora)

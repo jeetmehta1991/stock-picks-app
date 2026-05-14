@@ -5167,6 +5167,89 @@ def test_dashboard_filter_uses_value_pattern_batch_67():
     assert "invTable.column(4).search(v, false, false)" in html, "inv-promotion filter broken"
 
 
+def test_verification_matrix_consumed_by_dashboard_batch_155():
+    """Owner directive 2026-05-14: coverage-driven engine consumption ground truth.
+
+    Dashboard must:
+      (a) load verification_matrix.json (machine-readable mirror of VERIFICATION_MATRIX.md)
+      (b) emit `coverage_engine` field on every dec / bug / inv
+      (c) render an Engine column in the decisions + bugs tables
+      (d) use the coverage status as authoritative when compute_promotion_path
+          decides between IMPLEMENTED vs NOT-CONSUMED tiers
+
+    Replaces the prior grep-based wired heuristic that produced ~150 false
+    RESOLVED-IMPLEMENTED claims (memory feedback 2026-05-12).
+    """
+    import json
+    import re
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[2]
+
+    # (a) verification_matrix.json exists and parses
+    vm_path = repo / "verification_matrix.json"
+    assert vm_path.exists(), \
+        "verification_matrix.json missing; run scripts/build_verification_matrix.py"
+    vm = json.loads(vm_path.read_text(encoding="utf-8"))
+    assert "items" in vm and len(vm["items"]) > 0, \
+        "verification_matrix.json must have items dict"
+    # Schema: every item has engine + evidence
+    for iid, entry in list(vm["items"].items())[:5]:
+        assert "engine" in entry and "evidence" in entry, \
+            f"matrix item {iid} missing engine/evidence keys"
+
+    # (b) data.js carries coverage_engine on every dec + bug + inv
+    data_js = (repo / "dashboard_stage_2" / "data.js").read_text(encoding="utf-8")
+    js = re.sub(r"^const STAGE2_DATA = ", "", data_js.strip())
+    js = re.sub(r";$", "", js.strip())
+    d = json.loads(js)
+    for kind in ("decisions", "bugs", "investigations"):
+        for item in d.get(kind, [])[:5]:
+            assert "coverage_engine" in item, \
+                f"{kind[:-1]} {item.get('short_id') or item.get('id')} missing coverage_engine"
+
+    # (c) Engine column rendered in dashboard HTML
+    html = (repo / "dashboard_stage_2" / "index.html").read_text(encoding="utf-8")
+    assert "engineCell(" in html, \
+        "engineCell renderer must be defined in index.html"
+    assert html.count(">Engine</th>") >= 2, \
+        "Engine <th> must appear in both decisions + bugs tables"
+
+    # (d) compute_promotion_path overrides on NO / FUNC-DEAD
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "dash_build", repo / "scripts" / "build_dashboard_stage_2.py")
+    dash = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(dash)
+    # Synthetic NO case
+    no_item = {
+        "status": "RESOLVED-IMPLEMENTED",
+        "coverage_engine": "NO",
+        "status_grep": {"coded": True, "wired": True, "tested": True},
+    }
+    result = dash.compute_promotion_path(no_item, "decision")
+    assert result["tier"] == "NOT-CONSUMED", \
+        f"coverage NO must override IMPLEMENTED claim, got {result['tier']}"
+    # Synthetic FUNC-DEAD case
+    fd_item = {
+        "status": "RESOLVED-IMPLEMENTED",
+        "coverage_engine": "FUNC-DEAD",
+        "status_grep": {"coded": True, "wired": True, "tested": True},
+    }
+    result2 = dash.compute_promotion_path(fd_item, "decision")
+    assert result2["tier"] == "FUNC-DEAD", \
+        f"coverage FUNC-DEAD must override IMPLEMENTED, got {result2['tier']}"
+    # Sanity: YES does NOT change IMPLEMENTED behavior
+    yes_item = {
+        "status": "RESOLVED-IMPLEMENTED",
+        "coverage_engine": "YES",
+        "status_grep": {"coded": True, "wired": True, "tested": True},
+    }
+    result3 = dash.compute_promotion_path(yes_item, "decision")
+    assert result3["tier"] == "IMPLEMENTED", \
+        f"coverage YES must preserve IMPLEMENTED tier, got {result3['tier']}"
+
+
 # ============================================================================
 # Phase 3 Batch 68 - FINAL 9 PARTIAL-SPEC-ONLY -> real impl
 # DEC-439 / 467 / 478 / 485 / 490 / 496 / 501 / 502 / 506

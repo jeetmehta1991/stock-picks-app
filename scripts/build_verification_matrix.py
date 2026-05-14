@@ -439,6 +439,35 @@ def emit_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict], source_
     return "\n".join(lines[:insert_idx] + summary_lines + lines[insert_idx:]) + "\n"
 
 
+def build_json_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict],
+                      source_files: List[Path]) -> Dict:
+    """Machine-readable matrix consumed by build_dashboard_stage_2.py.
+
+    Shape:
+      {
+        "generated_at": iso-timestamp,
+        "items": {
+          "DEC-018": {"engine": "YES", "evidence": "...", "kind": "DEC"},
+          ...
+        }
+      }
+    """
+    from datetime import datetime, timezone
+    out_items: Dict[str, Dict] = {}
+    for kind, item_id in items:
+        hits = grep_id_in_source(item_id, source_files)
+        status, evidence = is_engine_consumed(hits, coverage)
+        out_items[item_id] = {
+            "kind":     kind,
+            "engine":   status,
+            "evidence": evidence,
+        }
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "items":        out_items,
+    }
+
+
 def main() -> int:
     print("Loading implemented items from dashboard data.js ...")
     dec_ids, bug_ids = load_implemented_items()
@@ -453,13 +482,19 @@ def main() -> int:
     source_files = collect_source_files()
     print(f"  source files: {len(source_files)}")
 
-    print("Building matrix ...")
     items = [("DEC", i) for i in dec_ids] + [("BUG", i) for i in bug_ids]
-    md = emit_matrix(items, coverage, source_files)
 
-    out_path = REPO / "VERIFICATION_MATRIX.md"
-    out_path.write_text(md, encoding="utf-8")
-    print(f"Wrote {out_path}")
+    print("Building Markdown matrix ...")
+    md = emit_matrix(items, coverage, source_files)
+    out_md = REPO / "VERIFICATION_MATRIX.md"
+    out_md.write_text(md, encoding="utf-8")
+    print(f"Wrote {out_md}")
+
+    print("Building JSON matrix (machine-readable) ...")
+    j = build_json_matrix(items, coverage, source_files)
+    out_json = REPO / "verification_matrix.json"
+    out_json.write_text(json.dumps(j, indent=2), encoding="utf-8")
+    print(f"Wrote {out_json} ({len(j['items'])} items)")
     return 0
 
 

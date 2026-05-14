@@ -1026,6 +1026,43 @@
 | LOW | 25 |
 | UNKNOWN | 23 |
 
+---
+
+## Engine-Consumption Verification (canonical reference 2026-05-14)
+
+**Authoritative ground truth: [VERIFICATION_MATRIX.md](VERIFICATION_MATRIX.md)** (machine-readable mirror: `verification_matrix.json`).
+
+**Methodology (replaces the earlier grep-based `wired=yes` heuristic that mis-classified ~150 DECs as RESOLVED-IMPLEMENTED without engine consumption):**
+- Run a canonical backtest under `python -m coverage run` (6-month single-ticker AAPL is the standard short-run probe; broader runs strengthen LAZY-WIRED -> YES conversions).
+- For every IMPLEMENTED DEC + RESOLVED-IMPLEMENTED BUG, the matrix records whether the function containing the source tag actually executed (`YES`), is reached via a lazy import chain confirmed in the coverage report (`LAZY-WIRED`), exists in an active module but never ran (`FUNC-DEAD`), or has zero coverage anywhere (`NO`).
+- The dashboard's `Engine` column shows this status verbatim. If you see anything other than `YES`, `LAZY-WIRED`, or `N/A` on an IMPLEMENTED claim, the claim is unverified.
+
+**Latest snapshot (2026-05-14, Batch 154 wiring complete):**
+- 357 IMPLEMENTED items audited
+- 301 `YES` engine-consumed
+- 5 `LAZY-WIRED` import chain confirmed (would convert to `YES` with a multi-year multi-ticker run)
+- 51 `N/A` methodology decisions (no code expected)
+- 0 `NO` / 0 `FUNC-DEAD` / 0 `PARTIAL-ORPHAN`
+
+**Newly-wired in Batch 154** (writer.py post-backtest analytics block, previously orphaned with zero importer chain):
+- DEC-082 / DEC-405 → `backtest/results/stress_tests.py` (stress_metrics.json)
+- DEC-111 / DEC-415 → `backtest/results/rolling_sharpe_test.py` (rolling_sharpe_stability.json)
+- DEC-250 → `backtest/results/edge_decay.py` (edge_decay_metrics.csv)
+- DEC-423 → `backtest/results/bootstrap_ci.py` (bootstrap_ci.csv)
+- DEC-153 → `backtest/engine/regime_stratified_split.py` (regime_stratified_summary.json)
+
+Regenerate the matrix when code changes:
+```
+python -m coverage run --source=backtest --omit="backtest/tests/*" \
+    backtest/run_phase1a.py --no-agents --no-git --tickers AAPL \
+    --start 2023-01-01 --end 2023-06-30
+python -m coverage json -o coverage_report.json
+python scripts/build_verification_matrix.py
+python scripts/build_dashboard_stage_2.py
+```
+
+---
+
 ### All Bugs Table
 
 | ID | Title | Severity | Status | Pass Intro |
