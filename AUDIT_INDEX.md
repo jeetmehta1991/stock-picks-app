@@ -1003,27 +1003,28 @@
 ---
 ## Bug Registry
 
-**Total: 269 unique bug IDs. BUG arc complete 2026-05-13 (Batches 146-162).**
+**Total: 285 unique bug IDs. BUG arc complete 2026-05-13 (Batches 146-162). Counts re-tallied from All Bugs Table 2026-05-14.**
 
 | Status | Count |
 |---|---|
-| RESOLVED-IMPLEMENTED | 179+ |
-| RESOLVED-DECIDED | 60+ |
-| RESOLVED (legacy) | 18 |
-| WILL_RESOLVE_VIA_DEC | 2 |
+| RESOLVED-DECIDED | 176 |
+| RESOLVED-IMPLEMENTED | 83 |
+| RESOLVED (legacy) | 14 |
+| OBSOLETE | 12 |
 | OPEN | 0 |
 
+> Note: ~62% of closures are RESOLVED-DECIDED (phase-scope deferral, false-positive, or methodology-acceptable). Only ~29% have direct engine-consumed code artifacts (RESOLVED-IMPLEMENTED). Owner sampling of RESOLVED-DECIDED classifications recommended before treating the arc as definitively closed.
 
-### Open Bugs by Severity
+### Bug Severity Distribution (all bugs, since 0 OPEN remain)
 
 | Severity | Count |
 |---|---|
-| CRITICAL | 19 |
-| HIGH | 52 |
-| MEDIUM | 67 |
-| LOW | 21 |
-| UNKNOWN | 24 |
+| MEDIUM | 71 |
 | INLINE-ONLY | 71 |
+| HIGH | 66 |
+| CRITICAL | 29 |
+| LOW | 25 |
+| UNKNOWN | 23 |
 
 ### All Bugs Table
 
