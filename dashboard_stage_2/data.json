@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T03:51:44.529144+00:00",
+  "generated_at": "2026-05-14T04:56:31.649826+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -34500,189 +34500,189 @@
   ],
   "recent_commits": [
     {
+      "sha": "ed744a04",
+      "subject": "@ Batch 149: 12 FALSE-POSITIVE bugs -> OBSOLETE, removed from dashboard. Pyramid 626/626.",
+      "author": "jeetmehta1991",
+      "rel_time": "63 minutes ago"
+    },
+    {
       "sha": "17ffee83",
       "subject": "@ Batch 148: BUG-NNN comment tags + 9 regression tests -> all 277 bugs resolved. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "7a4a28b0",
       "subject": "@ Batch 147: 9 AUDIT_INDEX status fixes - pipe chars + status flips. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "f49f0dfd",
       "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "badbaa0c",
       "subject": "Dashboard dropdown filters broken + BUG-258 code files missed in Batch 158. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "c45f110b",
       "subject": "BUG arc complete: update AUDIT_INDEX summary table -- 0 OPEN BUGs remaining.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "c62dd187",
       "subject": "Batch 162: BUG-111 CRITICAL -- break-and-retest strategy variants implemented. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "8372ba6d",
       "subject": "Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix. Pyramid 612/612.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "649d079a",
       "subject": "Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix. Pyramid 611/611.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "1eadb979",
       "subject": "Batch 159: BUG-028/077/079/106 false-positives - fixes already landed pre-batch. Pyramid 610/610.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "a1f835d4",
       "subject": "Batch 158: BUG-226/227 false-positives + BUG-229/245/082/263 decided + BUG-258 ATR_FALLBACK_PCT constant. Pyramid 609/609.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "59ec56f9",
       "subject": "Batch 157: BUG-275/276/279/284/285 RESOLVED-IMPLEMENTED + BUG-277/278 false-positives. bonferroni n=0, cache_key dicts, reversed dates, fixed_4r_2r, gov_contracts None. Pyramid 608/608.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "f5465d36",
       "subject": "Batch 156: BUG-271/272/273 RESOLVED-IMPLEMENTED (gov_contracts Qtr+Year fix, lobbying Amount dtype, congressional House col). BUG-270/274 false-positives. Pyramid 607/607.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "2d1f60bd",
       "subject": "Batch 155: 16 BUGs RESOLVED-DECIDED - site_generator + phase-scope deferrals + false-positives. Pyramid 606/606.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "f429c960",
       "subject": "Batch 154: 20 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 605/605.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "81c8938a",
       "subject": "Batch 153: 26 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 604/604.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "2737066c",
       "subject": "Batch 152: BUG-039/045/047/049/050/062/064/065/085/090/091/109 batch close - 12 decided/false-positives. Pyramid 750/750.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "ddbce342",
       "subject": "Batch 151: BUG-018 active fix - Bonferroni uses len(ALL_STRATEGIES) not hardcoded 60. Pyramid 749/749.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "e68d4644",
       "subject": "Batch 150: BUG-008/009/011/015/017/020/021/024/025/042/043/044 batch close - 12 false-positives + decided. Pyramid 748/748.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "1b3fa64e",
       "subject": "Batch 149: BUG-010/035/051/056/076/105/108/113/182/200-203/210 batch close - 14 Phase 1B agent deferrals. Pyramid 747/747.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "81f5bd07",
       "subject": "Batch 148: BUG-057/063/069-071/093-094/097-100/212 batch close - 12 infra/Stage 3+ deferrals. Pyramid 746/746.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "bb8e4335",
       "subject": "Batch 147: BUG-139-177 + BUG-192-198 batch close - 46 INLINE-ONLY stubs RESOLVED-DECIDED. Pyramid 745/745.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "2504139f",
       "subject": "Batch 146: BUG-114-138 batch close - 24 Phase 1B deferred + BUG-133 false-positive. Pyramid 744/744.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "5a32bf79",
       "subject": "Batch 145: BUG-005 false-positive - strategies_triggered key consistent via BUG-05 fix. Pyramid 742/742.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "d462cc08",
       "subject": "Batch 144: BUG-022 + BUG-023 false-positives - strategy count refs current (108-133 layered). Pyramid 741/741.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
-    },
-    {
-      "sha": "087674c2",
-      "subject": "Batch 143: BUG-007 false-positive - --no-agents flag wired. Pyramid 740/740.",
-      "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 11,
-    "modified": 7,
+    "count": 9,
+    "modified": 5,
     "added": 0,
     "untracked": 4,
     "deleted": 0,
@@ -34693,15 +34693,11 @@
       },
       {
         "status": "M",
-        "path": "AUDIT_INDEX.md"
+        "path": "backtest/tests/test_unit.py"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
+        "path": "dashboard_stage_2/index.html"
       },
       {
         "status": "M",
@@ -34710,10 +34706,6 @@
       {
         "status": "M",
         "path": "output_smoke_test/trade_log_checkpoint.csv"
-      },
-      {
-        "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
       },
       {
         "status": "??",

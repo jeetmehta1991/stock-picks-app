@@ -4732,10 +4732,17 @@ def test_dashboard_filter_promotioncell_hidden_tier_span():
     assert old_count == 0, (
         f"Old >v< raw-HTML pattern still present ({old_count} occurrences); should be 0"
     )
-    # New pattern: ^v$ regex for status columns (exact-token match on stripped text)
-    exact_count = html.count("`^${v}$`")
+    # New pattern: ^v.toLowerCase()$ regex for status columns.
+    # DataTables lowercases filter data when caseInsensitive=true (default); regex
+    # must also be lowercased or it never matches. v.toLowerCase() fixes the mismatch.
+    exact_count = html.count("`^${v.toLowerCase()}$`")
     assert exact_count == 3, (
-        f"Expected 3 exact-match ^v$ patterns (dec-status, inv-status, cav-status); got {exact_count}"
+        f"Expected 3 lowercase-regex ^v.toLowerCase()$ patterns (dec-status, inv-status, cav-status); got {exact_count}"
+    )
+    # Old uppercase regex must be gone (it never matched lowercased DT filter data)
+    old_upper_count = html.count("`^${v}$`")
+    assert old_upper_count == 0, (
+        f"Old uppercase `^${{v}}$` pattern still present ({old_upper_count} occurrences); must be 0"
     )
 
 
@@ -5140,10 +5147,16 @@ def test_dashboard_filter_uses_value_pattern_batch_67():
     assert old_count == 0, (
         f"Old >v< pattern still present ({old_count} occurrences); must be 0"
     )
-    # Status columns use regex exact-match (3: dec-status, inv-status, cav-status)
-    exact_count = html.count("`^${v}$`")
+    # Status columns use lowercase-regex exact-match (3: dec-status, inv-status, cav-status).
+    # DataTables lowercases filter data; regex must also be lowercased to match.
+    exact_count = html.count("`^${v.toLowerCase()}$`")
     assert exact_count == 3, (
-        f"Expected 3 exact-match ^v$ handlers; got {exact_count}"
+        f"Expected 3 toLowerCase-regex handlers; got {exact_count}"
+    )
+    # Old uppercase `^${{v}}$` must be gone
+    old_upper_count = html.count("`^${v}$`")
+    assert old_upper_count == 0, (
+        f"Old uppercase `^${{v}}$` still present ({old_upper_count}); must be 0"
     )
     # Promotion columns use plain substring (v, false, false) - 3 handlers
     # Verify dec-promotion, bug-promotion, inv-promotion each use substring search

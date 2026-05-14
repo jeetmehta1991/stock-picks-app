@@ -123,27 +123,17 @@ per CHECKLIST #77 - never reads from memory.
     <div class="filter-bar">
       <input id="dec-filter" placeholder="Filter ID / title / theme..." size="40">
       <select id="dec-status-filter">
-        <option value="">All Doc Statuses</option>
-        <option value="RESOLVED-DECIDED">RESOLVED-DECIDED</option>
-        <option value="RESOLVED-IMPLEMENTED">RESOLVED-IMPLEMENTED</option>
-        <option value="PARTIAL-SPEC-ONLY">PARTIAL-SPEC-ONLY</option>
-        <option value="PARTIAL-IMPL-HELPER-ONLY">PARTIAL-IMPL-HELPER-ONLY (Batch 69 revert: helper exists, engine doesn't consume)</option>
-        <option value="PENDING">PENDING</option>
-        <option value="PARTIAL">PARTIAL</option>
-        <option value="DEFERRED">DEFERRED</option>
+        <option value="">All Doc Statuses (481 visible)</option>
+        <option value="RESOLVED-IMPLEMENTED">RESOLVED-IMPLEMENTED (443)</option>
+        <option value="PARTIAL-IMPL-HELPER-ONLY">PARTIAL-IMPL-HELPER-ONLY (36) - helper exists, engine not consuming</option>
+        <option value="REJECTED">REJECTED (2)</option>
       </select>
       <select id="dec-promotion-filter">
-        <option value="">All promotion tiers</option>
-        <option value="IMPLEMENTED">IMPLEMENTED (code+wire+test artifacts)</option>
-        <option value="DECIDED">DECIDED (planning/scope/methodology, no code needed)</option>
-        <option value="CODE_ONLY">NEEDS-WIRING (Phase 1A helper not called by engine)</option>
-        <option value="DEFERRED">DEFERRED (Phase 1B+ / Stage 3+ / future sprint)</option>
-        <option value="READY">READY-TO-PROMOTE</option>
-        <option value="TEST_ONLY">NEEDS-CODE (tested but no code)</option>
-        <option value="SPEC_ONLY">SPEC-ONLY (not yet implemented)</option>
-        <option value="BLOCKED">BLOCKED (waiting on dependency)</option>
-        <option value="OPEN">OPEN / PROPOSED</option>
-        <option value="UNKNOWN">UNKNOWN</option>
+        <option value="">All promotion tiers (481 visible)</option>
+        <option value="IMPLEMENTED">IMPLEMENTED (260) - code+wire+test artifacts confirmed</option>
+        <option value="DECIDED">DECIDED (136) - planning/scope/methodology, no code needed</option>
+        <option value="DEFERRED">DEFERRED (83) - Phase 1B+ / Stage 3+ / future sprint</option>
+        <option value="UNKNOWN">UNKNOWN (2) - parsing edge case</option>
       </select>
     </div>
     <p style="font-size:12px;color:#6b7588">
@@ -557,11 +547,10 @@ $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); }
 // after ID/Title/Description). Was previously column 2 (Description) which
 // caused the dropdown to be effectively non-functional.
 $('#dec-status-filter').on('change', function () {
-  // FIX 2026-05-13: DataTables column.search() operates on STRIPPED text
-  // (not raw HTML). Badge cell stripped text = exact status string.
-  // Use regex ^v$ for exact-token match so "PARTIAL" ≠ "PARTIAL-SPEC-ONLY".
+  // DataTables lowercases filter data when caseInsensitive=true (default).
+  // Regex must also be lowercased or it never matches. v.toLowerCase() fixes.
   const v = this.value;
-  decTable.column(3).search(v ? `^${v}$` : '', true, false).draw();
+  decTable.column(3).search(v ? `^${v.toLowerCase()}$` : '', true, false).draw();
 });
 $('#dec-promotion-filter').on('change', function () {
   // FIX 2026-05-13: promotionCell renders badge label + hidden tier-text span.
@@ -619,7 +608,7 @@ $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); }
 // FIX 2026-05-13: DataTables searches stripped text; use ^v$ for exact badge match.
 $('#inv-status-filter').on('change', function () {
   const v = this.value;
-  invTable.column(3).search(v ? `^${v}$` : '', true, false).draw();
+  invTable.column(3).search(v ? `^${v.toLowerCase()}$` : '', true, false).draw();
 });
 $('#inv-promotion-filter').on('change', function () {
   const v = this.value;
@@ -645,7 +634,7 @@ $('#cav-filter').on('keyup', function () { cavTable.search(this.value).draw(); }
 // FIX 2026-05-13: use ^v$ regex for exact match against stripped badge text.
 $('#cav-status-filter').on('change', function () {
   const v = this.value;
-  cavTable.column(3).search(v ? `^${v}$` : '', true, false).draw();
+  cavTable.column(3).search(v ? `^${v.toLowerCase()}$` : '', true, false).draw();
 });
 
 // Learnings table
