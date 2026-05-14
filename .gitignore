@@ -49,3 +49,8 @@ output_smoke_v*/
 data_prefetch/**/_checkpoint*.json
 data_prefetch/**/*.checkpoint
 .phase3_temp/
+
+# Coverage artifacts (build outputs, not source)
+.coverage
+coverage_report.json
+htmlcov/

@@ -125,7 +125,9 @@ def grep_id_in_source(item_id: str, source_files: List[Path]) -> List[Tuple[Path
         for lineno, line in enumerate(text.splitlines(), start=1):
             if any(p.search(line) for p in patterns):
                 hits.append((f, lineno))
-                break  # one hit per file is enough for matrix
+                # No break - record ALL tag locations so function-level coverage
+                # check sees every enclosing function (one tag may be in dead
+                # helper, another in actively-called code).
     return hits
 
 

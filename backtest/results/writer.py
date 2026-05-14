@@ -245,6 +245,160 @@ def write_all_outputs(
                     "multi-dim cube + sweet-spots + pairwise dominance",
                     len(CONTEXT_COLUMN_NAMES))
 
+    # ----- Post-backtest analytics wired 2026-05-14 (Batch 154 per coverage audit).
+    # These were orphaned modules with zero engine importers; now invoked any time
+    # a non-empty trade log is present (NOT gated by trade_exit_detail).
+
+    # DEC-082 + DEC-405 stress-window metrics. Filter trade log to four named
+    # stress regimes (2018Q4 selloff, 2020Q1 COVID, 2022 full year, 2022Q4
+    # inflation); emit per-window verdict + summary counts.
+    try:
+        from backtest.results.stress_tests import (
+            per_stress_metrics,
+            stress_summary,
+        )
+        if (df_trades is not None and not df_trades.empty
+                and "entry_date" in df_trades.columns
+                and "pnl_pct" in df_trades.columns):
+            stress = per_stress_metrics(
+                df_trades, pnl_col="pnl_pct", date_col="entry_date",
+            )
+            stress_out = {
+                "per_window": stress,
+                "summary": stress_summary(stress),
+            }
+            (output_dir / "stress_metrics.json").write_text(
+                json.dumps(stress_out, indent=2, default=str)
+            )
+            logger.info(
+                "Wrote stress_metrics.json (DEC-082/405)  -  %d windows, summary=%s",
+                len(stress), stress_out["summary"],
+            )
+    except Exception as exc:
+        logger.warning("DEC-082/405 stress_metrics emission failed: %s", exc)
+
+    # DEC-111 + DEC-415 rolling 1y Sharpe stability per strategy.
+    # Aggregates daily pnl_pct per strategy then runs 252-day rolling Sharpe;
+    # returns stability verdict (STABLE / UNSTABLE / INSUFFICIENT).
+    try:
+        from backtest.results.rolling_sharpe_test import rolling_sharpe_stability
+        if (df_trades is not None and not df_trades.empty
+                and "strategy" in df_trades.columns
+                and "pnl_pct" in df_trades.columns
+                and "entry_date" in df_trades.columns):
+            daily = (df_trades
+                     .groupby(["strategy", "entry_date"])["pnl_pct"]
+                     .sum().reset_index())
+            per_strategy = {}
+            for strat, group in daily.groupby("strategy"):
+                rets = group.sort_values("entry_date")["pnl_pct"].tolist()
+                per_strategy[str(strat)] = rolling_sharpe_stability(rets)
+            (output_dir / "rolling_sharpe_stability.json").write_text(
+                json.dumps(per_strategy, indent=2, default=str)
+            )
+            logger.info(
+                "Wrote rolling_sharpe_stability.json (DEC-111/415)  -  %d strategies",
+                len(per_strategy),
+            )
+    except Exception as exc:
+        logger.warning("DEC-111/415 rolling_sharpe_stability emission failed: %s", exc)
+
+    # DEC-250 edge-decay haircut on per-strategy raw metrics.
+    # Apply crowding-tier-based Sharpe haircut (10% / 20% / 40%) to each strategy;
+    # produces adjusted Sharpe / WR / PF for downstream gating.
+    try:
+        from backtest.results.edge_decay import (
+            adjusted_metrics,
+            categorize_crowding,
+        )
+        if metrics is not None and not metrics.empty and "strategy" in metrics.columns:
+            ed_rows = []
+            for _, m in metrics.iterrows():
+                strat = str(m.get("strategy", ""))
+                haircut = categorize_crowding(strat)
+                adj = adjusted_metrics(
+                    sharpe_raw=float(m.get("sharpe", 0.0) or 0.0),
+                    win_rate_raw=float(m.get("win_rate", 0.0) or 0.0),
+                    profit_factor_raw=float(m.get("profit_factor", 0.0) or 0.0),
+                    haircut_pct=haircut,
+                )
+                ed_rows.append({"strategy": strat, **adj})
+            if ed_rows:
+                pd.DataFrame(ed_rows).to_csv(
+                    output_dir / "edge_decay_metrics.csv", index=False,
+                )
+                logger.info(
+                    "Wrote edge_decay_metrics.csv (DEC-250)  -  %d strategies",
+                    len(ed_rows),
+                )
+    except Exception as exc:
+        logger.warning("DEC-250 edge_decay_metrics emission failed: %s", exc)
+
+    # DEC-423 bootstrap 95% CI per strategy on trade pnl_pct.
+    # 1000 resamples; emits point Sharpe + CI bounds + method tag.
+    try:
+        from backtest.results.bootstrap_ci import bootstrap_metric
+        if (df_trades is not None and not df_trades.empty
+                and "strategy" in df_trades.columns
+                and "pnl_pct" in df_trades.columns):
+            bs_rows = []
+            for strat, group in df_trades.groupby("strategy"):
+                returns = group["pnl_pct"].tolist()
+                r = bootstrap_metric(returns)
+                bs_rows.append({
+                    "strategy":    str(strat),
+                    "point_sharpe": r.point_estimate,
+                    "ci_low":       r.ci_low,
+                    "ci_high":      r.ci_high,
+                    "n_trades":     r.n,
+                    "method":       r.method,
+                })
+            if bs_rows:
+                pd.DataFrame(bs_rows).to_csv(
+                    output_dir / "bootstrap_ci.csv", index=False,
+                )
+                logger.info(
+                    "Wrote bootstrap_ci.csv (DEC-423)  -  %d strategies",
+                    len(bs_rows),
+                )
+    except Exception as exc:
+        logger.warning("DEC-423 bootstrap_ci emission failed: %s", exc)
+
+    # DEC-153 regime-stratified sample balance check on trade entry dates.
+    # Splits (entry_date, regime) sequence into a stratified 70/30 train/test set;
+    # emits per-regime status (OK vs INSUFFICIENT_SAMPLE) so walk-forward
+    # validation can detect regime-imbalanced folds before evaluating per-regime
+    # verdicts.
+    try:
+        from backtest.engine.regime_stratified_split import (
+            regime_proportions,
+            regime_stratified_split,
+        )
+        if (df_trades is not None and not df_trades.empty
+                and "regime" in df_trades.columns
+                and "entry_date" in df_trades.columns):
+            dates = pd.to_datetime(df_trades["entry_date"]).tolist()
+            regimes = df_trades["regime"].astype(str).tolist()
+            props = regime_proportions(regimes)
+            train_idx, test_idx, rss_summary = regime_stratified_split(
+                dates, regimes,
+            )
+            rss_out = {
+                "proportions": props,
+                "n_train":     len(train_idx),
+                "n_test":      len(test_idx),
+                "per_regime":  rss_summary,
+            }
+            (output_dir / "regime_stratified_summary.json").write_text(
+                json.dumps(rss_out, indent=2, default=str)
+            )
+            logger.info(
+                "Wrote regime_stratified_summary.json (DEC-153)  -  train=%d test=%d",
+                len(train_idx), len(test_idx),
+            )
+    except Exception as exc:
+        logger.warning("DEC-153 regime_stratified_summary emission failed: %s", exc)
+
     # -- Walk-forward validation --
     # Portfolio-level summary with tier-based position sizing
     try:

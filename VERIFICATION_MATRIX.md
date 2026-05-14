@@ -3,7 +3,7 @@
 **Generated:** see `scripts/build_verification_matrix.py`. Per-item ground truth for the 343 IMPLEMENTED claims (DEC + BUG).
 
 Columns:
-- `engine`: did the function containing the source tag execute during the canonical AAPL backtest under coverage? YES = engine-consumed (function body had at least one executed line); LAZY-WIRED = file at 0% coverage but imported by a module that ran (import chain exists, conditional path not exercised by this small backtest — treat as wired until a larger backtest disproves); FUNC-DEAD = function exists in active module but body never executed; NO = tagged file at 0% with no live importer anywhere (real wiring gap); N/A = no source tag found (methodology/scope decision, no code expected).
+- `engine`: did the function containing the source tag execute during the canonical AAPL backtest under coverage? YES = engine-consumed (function body had at least one executed line); LAZY-WIRED = file at 0% coverage but imported by a module that ran (import chain exists, conditional path not exercised by this small backtest  -  treat as wired until a larger backtest disproves); FUNC-DEAD = function exists in active module but body never executed; NO = tagged file at 0% with no live importer anywhere (real wiring gap); N/A = no source tag found (methodology/scope decision, no code expected).
 - 13 pyramid tier columns: YES if any test file in that tier references the ID.
 
 Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents --no-git --tickers AAPL --start 2023-01-01 --end 2023-06-30`
@@ -12,44 +12,32 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 ## Summary
 
 - Total items audited: **357**
-- Engine YES (executed): **290**
+- Engine YES (executed): **301**
 - Engine LAZY-WIRED (all tagged files wired via lazy import chains): **5** (import chain exists; condition gating the call not met in this small backtest)
-- Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **8** (DEC is mentioned in a wired file but the actual helper module has no live importer — real gap)
-- Engine FUNC-DEAD (function exists but never executed): **1**
-- Engine NO (all tagged files orphaned): **2** (real wiring gap — helper file imported nowhere in the engine path)
+- Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **0** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
+- Engine FUNC-DEAD (function exists but never executed): **0**
+- Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
 - Engine N/A (no code expected): **51**
 
 ### Pyramid coverage gaps (count of engine-consumed items missing per tier)
 
-- `unit`: **56** items lack a reference in this tier's test files
-- `smoke`: **282** items lack a reference in this tier's test files
+- `unit`: **65** items lack a reference in this tier's test files
+- `smoke`: **292** items lack a reference in this tier's test files
 - `integration`: **202** items lack a reference in this tier's test files
-- `system`: **291** items lack a reference in this tier's test files
-- `functional`: **290** items lack a reference in this tier's test files
-- `regression`: **291** items lack a reference in this tier's test files
-- `data_integrity`: **292** items lack a reference in this tier's test files
-- `performance`: **294** items lack a reference in this tier's test files
-- `acceptance`: **290** items lack a reference in this tier's test files
-- `property`: **294** items lack a reference in this tier's test files
-- `snapshot`: **294** items lack a reference in this tier's test files
-- `contract`: **288** items lack a reference in this tier's test files
-- `compatibility`: **294** items lack a reference in this tier's test files
+- `system`: **300** items lack a reference in this tier's test files
+- `functional`: **300** items lack a reference in this tier's test files
+- `regression`: **302** items lack a reference in this tier's test files
+- `data_integrity`: **302** items lack a reference in this tier's test files
+- `performance`: **305** items lack a reference in this tier's test files
+- `acceptance`: **300** items lack a reference in this tier's test files
+- `property`: **305** items lack a reference in this tier's test files
+- `snapshot`: **303** items lack a reference in this tier's test files
+- `contract`: **292** items lack a reference in this tier's test files
+- `compatibility`: **305** items lack a reference in this tier's test files
 
 ### Engine-consumption gaps detail
 
-| ID | engine | evidence | unit | integration |
-|---|---|---|---|---|
-| `DEC-082` | NO | every tagged file is orphaned (e.g. backtest/results/stress_tests.py) | no | no |
-| `DEC-111` | PARTIAL-ORPHAN | primary helper backtest/results/rolling_sharpe_test.py has no live importer; another tagged file is wired (mention-only,... | no | no |
-| `DEC-153` | NO | every tagged file is orphaned (e.g. backtest/engine/regime_stratified_split.py) | no | no |
-| `DEC-250` | PARTIAL-ORPHAN | primary helper backtest/results/edge_decay.py has no live importer; another tagged file is wired (mention-only, not actu... | no | no |
-| `DEC-405` | PARTIAL-ORPHAN | primary helper backtest/results/stress_tests.py has no live importer; another tagged file is wired (mention-only, not ac... | no | no |
-| `DEC-415` | PARTIAL-ORPHAN | primary helper backtest/results/rolling_sharpe_test.py has no live importer; another tagged file is wired (mention-only,... | no | no |
-| `DEC-422` | PARTIAL-ORPHAN | primary helper backtest/engine/regime_stratified_split.py has no live importer; another tagged file is wired (mention-on... | YES | YES |
-| `DEC-423` | PARTIAL-ORPHAN | primary helper backtest/results/bootstrap_ci.py has no live importer; another tagged file is wired (mention-only, not ac... | no | no |
-| `DEC-505` | PARTIAL-ORPHAN | primary helper backtest/engine/regime_stratified_split.py has no live importer; another tagged file is wired (mention-on... | YES | YES |
-| `DEC-594` | PARTIAL-ORPHAN | primary helper backtest/engine/regime_stratified_split.py has no live importer; another tagged file is wired (mention-on... | no | YES |
-| `BUG-075` | FUNC-DEAD | function in backtest/results/metrics.py never executed | no | YES |
+None  -  every IMPLEMENTED item has at least its tagged line executed in the canonical backtest.
 
 | ID | engine | unit | smoke | integration | system | functional | regression | data_integrity | performance | acceptance | property | snapshot | contract | compatibility |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -79,7 +67,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-078` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-078A` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-081` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-082` | NO | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `DEC-082` | YES | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-083` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-084` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-085` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -96,7 +84,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-107` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-108` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-110` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-111` | PARTIAL-ORPHAN | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `DEC-111` | YES | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-116` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-117` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-119` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -119,7 +107,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-150` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-151` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-152` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-153` | NO | no | no | no | no | no | no | no | no | no | no | no | YES | no |
+| `DEC-153` | YES | no | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-155` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-159` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-169` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -155,7 +143,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-246` | LAZY-WIRED | no | no | no | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-247` | LAZY-WIRED | no | no | no | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-249` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-250` | PARTIAL-ORPHAN | no | no | no | no | no | no | no | no | no | no | no | YES | no |
+| `DEC-250` | YES | no | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-251` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-253` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-254` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -245,18 +233,18 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-402` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-403` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-404` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-405` | PARTIAL-ORPHAN | no | no | no | no | no | no | no | no | no | no | no | YES | no |
+| `DEC-405` | YES | no | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-406` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-407` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-408` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-409` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-413` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-414` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-415` | PARTIAL-ORPHAN | no | no | no | no | no | no | no | no | no | no | no | YES | no |
+| `DEC-415` | YES | no | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-416` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-420` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-422` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-423` | PARTIAL-ORPHAN | no | no | no | no | no | no | no | no | no | no | no | YES | no |
+| `DEC-422` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-423` | YES | no | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-431` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-432` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-435` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -299,14 +287,14 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-508` | N/A | YES | no | YES | YES | no | YES | no | no | no | no | no | no | no |
 | `DEC-507` | YES | YES | no | YES | YES | no | YES | no | no | no | no | no | no | no |
 | `DEC-506` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-505` | PARTIAL-ORPHAN | YES | YES | YES | YES | YES | no | no | no | no | no | YES | YES | no |
+| `DEC-505` | YES | YES | YES | YES | YES | YES | no | no | no | no | no | YES | YES | no |
 | `DEC-609` | N/A | no | no | no | no | no | no | YES | no | no | no | no | no | no |
 | `DEC-608` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-606` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-605` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-599` | N/A | no | YES | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-601` | YES | YES | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-594` | PARTIAL-ORPHAN | no | no | YES | YES | no | no | YES | no | YES | no | YES | YES | no |
+| `DEC-594` | YES | no | no | YES | YES | no | no | YES | no | YES | no | YES | YES | no |
 | `DEC-595` | N/A | no | YES | no | YES | no | no | no | no | no | no | no | no | no |
 | `DEC-591` | N/A | no | no | no | YES | no | no | YES | no | no | no | no | no | no |
 | `DEC-592` | N/A | no | no | no | no | no | no | YES | no | no | no | no | no | no |
@@ -351,7 +339,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `BUG-068` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-073` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-074` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-075` | FUNC-DEAD | no | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-075` | YES | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-077` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-078` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-079` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |

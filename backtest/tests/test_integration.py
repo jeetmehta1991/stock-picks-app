@@ -3228,6 +3228,97 @@ def test_bug_028_077_079_106_batch159_false_positives():
     assert fill2 == 95.0, f"BUG-106: normal stop hit must fill at stop 95, got {fill2}"
 
 
+def test_writer_wires_5_orphan_analytics_dec_082_111_153_250_405_415_423():
+    """DEC-082/405 stress_tests, DEC-111/415 rolling_sharpe_test, DEC-250
+    edge_decay, DEC-423 bootstrap_ci, DEC-153 regime_stratified_split.
+
+    These 5 modules were orphaned (zero engine importers) per coverage audit
+    2026-05-14. This test verifies write_all_outputs() now invokes them and
+    emits the 5 expected JSON / CSV artifacts on a synthetic trade log.
+    """
+    import json
+    import tempfile
+    from pathlib import Path
+
+    import pandas as pd
+
+    from backtest.results.writer import write_all_outputs
+
+    # Synthetic trade log with required columns + enough rows + a stress-window
+    # date so per_stress_metrics produces a verdict cell with non-zero n_trades.
+    # 2022 full year window: 2022-01-01 to 2022-12-31.
+    trades = []
+    for i in range(60):
+        trades.append({
+            "ticker": "AAPL",
+            "entry_date": f"2022-{(i % 12) + 1:02d}-15",
+            "exit_date":  f"2022-{(i % 12) + 1:02d}-22",
+            "direction": "long",
+            "strategy":  "momo_high" if i % 2 == 0 else "rsi_oversold",
+            "category":  "momentum",
+            "sector":    "Information Technology",
+            "regime":    ["calm", "neutral", "volatile", "crisis"][i % 4],
+            "pnl_pct":   0.02 if i % 3 != 0 else -0.015,
+            "win":       (i % 3) != 0,
+            "hold_days": 5,
+        })
+    df_trades = pd.DataFrame(trades)
+
+    metrics = pd.DataFrame([
+        {"strategy": "momo_high",    "sharpe": 1.2, "win_rate": 0.55, "profit_factor": 1.6},
+        {"strategy": "rsi_oversold", "sharpe": 0.9, "win_rate": 0.52, "profit_factor": 1.4},
+    ])
+
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td)
+        write_all_outputs(
+            df_trades=df_trades,
+            metrics=metrics,
+            skipped=[], cb_log=[], exit_compare=pd.DataFrame(),
+            output_dir=out,
+        )
+
+        # DEC-082/405 -- stress_metrics.json
+        sm_path = out / "stress_metrics.json"
+        assert sm_path.exists(), "DEC-082/405: stress_metrics.json missing"
+        sm = json.loads(sm_path.read_text())
+        assert "per_window" in sm and "summary" in sm
+        assert "2022_full_year" in sm["per_window"], "DEC-405: 2022 stress window missing"
+
+        # DEC-111/415 -- rolling_sharpe_stability.json
+        rs_path = out / "rolling_sharpe_stability.json"
+        assert rs_path.exists(), "DEC-111/415: rolling_sharpe_stability.json missing"
+        rs = json.loads(rs_path.read_text())
+        # 2 strategies in the synthetic trade log
+        assert len(rs) >= 1, "DEC-415: at least 1 strategy's rolling Sharpe expected"
+        for strat, dct in rs.items():
+            assert "stability_verdict" in dct, f"DEC-415: {strat} missing stability_verdict"
+
+        # DEC-250 -- edge_decay_metrics.csv
+        ed_path = out / "edge_decay_metrics.csv"
+        assert ed_path.exists(), "DEC-250: edge_decay_metrics.csv missing"
+        ed_df = pd.read_csv(ed_path)
+        assert "sharpe_adj" in ed_df.columns, "DEC-250: sharpe_adj column missing"
+        assert (ed_df["sharpe_adj"] < ed_df["strategy"].map(
+            {"momo_high": 1.2, "rsi_oversold": 0.9})).all(), \
+            "DEC-250: adjusted Sharpe must be < raw Sharpe (haircut applied)"
+
+        # DEC-423 -- bootstrap_ci.csv
+        bs_path = out / "bootstrap_ci.csv"
+        assert bs_path.exists(), "DEC-423: bootstrap_ci.csv missing"
+        bs_df = pd.read_csv(bs_path)
+        assert "point_sharpe" in bs_df.columns
+        assert "ci_low" in bs_df.columns and "ci_high" in bs_df.columns
+
+        # DEC-153 -- regime_stratified_summary.json
+        rss_path = out / "regime_stratified_summary.json"
+        assert rss_path.exists(), "DEC-153: regime_stratified_summary.json missing"
+        rss = json.loads(rss_path.read_text())
+        assert "proportions" in rss and "per_regime" in rss
+        assert rss["n_train"] + rss["n_test"] > 0, \
+            "DEC-153: stratified split must produce non-empty train+test"
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,
