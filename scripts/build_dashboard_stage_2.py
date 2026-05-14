@@ -1182,6 +1182,18 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
         if status == "DEFERRED":
             return {"tier": "DEFERRED", "label": "DEFERRED", "color": "#3b82f6",
                     "reason": f"Bug deferred per sprint_context: {item.get('sprint_context','')[:100]}"}
+        if "RESOLVED-IMPLEMENTED" in status:
+            if coded and tested:
+                return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
+                        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"}
+            return {"tier": "READY", "label": "RESOLVED-IMPLEMENTED", "color": "#10b981",
+                    "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"}
+        if "RESOLVED-DECIDED" in status:
+            return {"tier": "READY", "label": "RESOLVED-DECIDED", "color": "#10b981",
+                    "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"}
+        if "WILL_RESOLVE" in status:
+            return {"tier": "BLOCKED", "label": "BLOCKED", "color": "#a855f7",
+                    "reason": f"Superseded by migration ({status})"}
         if status in ("RESOLVED", "FIXED", "CLOSED"):
             if coded and tested:
                 return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",

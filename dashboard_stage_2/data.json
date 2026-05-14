@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T00:50:28.086086+00:00",
+  "generated_at": "2026-05-14T01:10:01.577861+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19278,10 +19278,10 @@
       "description": "**File:** `backtest/engine/backtest.py` lines 299 and 325 **Introduced by:** Commit `b430ab36` (our crisis exclusions change)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19317,10 +19317,10 @@
       "description": "**File:** `backtest/engine/exit_manager.py` lines 295 and 297 **Introduced by:** Commit `b430ab36` (our borrow cost change)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19356,10 +19356,10 @@
       "description": "**File:** `backtest/engine/exit_manager.py` lines 73 and 128",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19395,10 +19395,10 @@
       "description": "**File:** `backtest/signals/screener.py` lines 971\u2013974",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19434,10 +19434,10 @@
       "description": "**Reason:** BUG-005 (`strategies_triggered` key mismatch) was logged with severity UNKNOWN at unspecified pass. Pass 52 Stage 5.5 reproduced and root-caused it. Confirmed CRITICAL impact:",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19473,10 +19473,10 @@
       "description": "**Files:** `backtest/engine/exit_manager.py` (`_pnl()`) and `backtest/engine/improvements.py` (`apply_transaction_costs()`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19512,10 +19512,10 @@
       "description": "**Files:** `run_full.sh` lines 13\u201319, `run_tests.sh` lines 13\u201319",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19551,10 +19551,10 @@
       "description": "**File:** `backtest/signals/screener.py` lines 120\u2013121 (`strat_pivot_r2_continuation`) and 515\u2013516 (`strat_morning_star`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19590,10 +19590,10 @@
       "description": "**File:** `backtest/signals/screener.py` line 148 (`strat_camarilla_r3_breakout` short condition)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19630,9 +19630,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -19668,10 +19668,10 @@
       "description": "**File:** `backtest/signals/screener.py` line 244 (`strat_williams_r_oversold`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19707,10 +19707,10 @@
       "description": "**File:** `backtest/signals/screener.py` lines 978, 971\u2013974 and `backtest/engine/backtest.py` deduplication logic",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19746,10 +19746,10 @@
       "description": "**File:** `backtest/data/fetcher.py` lines 224\u2013240 **Called from:** `backtest/engine/backtest.py` inside the trade opening loop",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19785,10 +19785,10 @@
       "description": "**File:** `run_full.sh` \u2014 all 5 batch `--tickers` lists",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19824,10 +19824,10 @@
       "description": "**File:** `backtest/results/metrics.py` lines 41\u201344",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19863,10 +19863,10 @@
       "description": "**File:** `backtest/config.py` line 215 vs `PROJECT_PLAN.md` line 175, `EXPLANATION.md` line 337",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19902,10 +19902,10 @@
       "description": "**Files:** `run_commit.sh` line 57, `scripts/merge_batch_outputs.py` line 117",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19941,10 +19941,10 @@
       "description": "**File:** `backtest/engine/backtest.py` line 621",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -19980,10 +19980,10 @@
       "description": "**Files:** `backtest/data/cache/ohlcv/` (Parquet files), `backtest/data/cache/index.json`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20020,9 +20020,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20058,10 +20058,10 @@
       "description": "**File:** `backtest/engine/exit_strategies.py` lines 28\u201332",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20097,10 +20097,10 @@
       "description": "**File:** `backtest/run_phase1a.py` line 141",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20136,10 +20136,10 @@
       "description": "**File:** `backtest/signals/screener.py` lines 4\u201325",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20176,9 +20176,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20214,10 +20214,10 @@
       "description": "**File:** `run_tests.sh` \u2014 all 5 batch commands",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
       }
     },
     {
@@ -20253,10 +20253,10 @@
       "description": "**File:** `backtest/data/macro.py` lines 138\u2013154 and `backtest/engine/regime_filter.py`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20331,10 +20331,10 @@
       "description": "**File:** `backtest/signals/technical.py` lines 183\u2013200",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20370,10 +20370,10 @@
       "description": "**File:** `backtest/engine/backtest.py` \u2014 `run()` method and `save_all_outputs()`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20409,10 +20409,10 @@
       "description": "**Files:** `backtest/engine/regime_filter.py` line 73 vs `backtest/engine/exit_manager.py` lines 228\u2013231",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20448,10 +20448,10 @@
       "description": "**File:** `backtest/engine/improvements.py` line 119 (`MIN_OOS_TRADES = 30`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20487,10 +20487,10 @@
       "description": "**File:** `backtest/config.py` line 212 and `backtest/engine/improvements.py` line 151",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20526,10 +20526,10 @@
       "description": "**File:** `backtest/config.py` `PASSING_CRITERIA` dict and `backtest/results/metrics.py`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20565,10 +20565,10 @@
       "description": "**File:** `backtest/signals/screener.py` \u2014 all 11 mean reversion strategies fire in all regimes",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20605,9 +20605,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20644,9 +20644,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20682,10 +20682,10 @@
       "description": "**File:** `backtest/engine/improvements.py` lines 525\u2013555",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -20722,9 +20722,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20761,9 +20761,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20800,9 +20800,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20839,9 +20839,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20877,10 +20877,10 @@
       "description": "**File:** `run_full.sh` batch 3 ticker list",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
       }
     },
     {
@@ -20917,9 +20917,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -20955,10 +20955,10 @@
       "description": "**File:** `backtest/tests/test_unit.py`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
       }
     },
     {
@@ -20995,9 +20995,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21034,9 +21034,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21073,9 +21073,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21112,9 +21112,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21150,10 +21150,10 @@
       "description": "**Files:** `EXPLANATION.md`, `PROJECT_PLAN.md`",
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21190,9 +21190,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21229,9 +21229,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21267,10 +21267,10 @@
       "description": "**File:** `backtest/agents/pipeline.py` lines 395\u2013430 (Risk Agent prompt)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -21306,10 +21306,10 @@
       "description": "**File:** `backtest/data/cache/finnhub_news/` \u2014 509 `.parquet` files, all 0 bytes",
       "status": "WILL_RESOLVE_VIA_DEC-440",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "BLOCKED",
+        "label": "BLOCKED",
+        "color": "#a855f7",
+        "reason": "Superseded by migration (WILL_RESOLVE_VIA_DEC-440)"
       }
     },
     {
@@ -21345,10 +21345,10 @@
       "description": "**File:** `backtest/signals/technical.py` lines 586\u2013588",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -21384,10 +21384,10 @@
       "description": "**File:** `backtest/signals/technical.py` lines 508\u2013510",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -21424,9 +21424,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21463,9 +21463,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21502,9 +21502,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21541,9 +21541,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21579,10 +21579,10 @@
       "description": "**File:** `backtest/signals/screener.py` lines 919\u2013923",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -21618,10 +21618,10 @@
       "description": "**File:** `backtest/engine/backtest.py` \u2014 `_process_day()` `open_combos` logic",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -21658,9 +21658,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21697,9 +21697,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21736,9 +21736,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21775,9 +21775,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21814,9 +21814,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21853,9 +21853,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21891,10 +21891,10 @@
       "description": "**File:** `CLAUDE.md`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -21931,9 +21931,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -21969,10 +21969,10 @@
       "description": "**File:** `PROJECT_PLAN.md` Stage 3 infrastructure",
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22008,10 +22008,10 @@
       "description": "**File:** `PROJECT_PLAN.md` Stage 4 design",
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22048,9 +22048,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22086,10 +22086,10 @@
       "description": "**File:** `scripts/prepopulate_cache_index.py` lines 26\u201330",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22125,10 +22125,10 @@
       "description": "**File:** `run_full.sh` \u2014 all 5 batch `--tickers` lists",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22164,10 +22164,10 @@
       "description": "**File:** `backtest/results/metrics.py` lines 40\u201344 (`_max_drawdown`) and lines 120\u2013125 (caller)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22204,9 +22204,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22242,10 +22242,10 @@
       "description": "**File:** `backtest/signals/screener.py` lines 991\u2013992 and `screen_universe()` sort",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22281,10 +22281,10 @@
       "description": "**File:** `backtest/engine/exit_manager.py` lines 421\u2013424 (`process_day_exits` execution order)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22320,10 +22320,10 @@
       "description": "**File:** `backtest/engine/exit_manager.py` lines 277\u2013281 (`check_trailing_stop_hit`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22359,10 +22359,10 @@
       "description": "**Files:** `backtest/engine/backtest.py` line 352 (only entry call) and `backtest/engine/exit_manager.py` (no slippage in close_trade)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22438,9 +22438,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22476,10 +22476,10 @@
       "description": "**File:** `backtest/data/smart_money.py` lines 677\u2013678",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22516,9 +22516,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22555,9 +22555,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22594,9 +22594,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22633,9 +22633,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22672,9 +22672,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22711,9 +22711,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22749,10 +22749,10 @@
       "description": "**File:** `backtest/engine/backtest.py`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22789,9 +22789,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22828,9 +22828,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22867,9 +22867,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22905,10 +22905,10 @@
       "description": "**File:** PROJECT_PLAN.md describes Alpaca paper trading",
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -22944,10 +22944,10 @@
       "description": "**File:** `backtest/engine/backtest.py`",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -22983,10 +22983,10 @@
       "description": "**File:** `backtest/results/metrics.py` \u2014 no benchmark logic",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23023,9 +23023,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23061,10 +23061,10 @@
       "description": "**File:** PROJECT_PLAN.md mentions monitoring but nothing is implemented",
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23101,9 +23101,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23140,9 +23140,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23178,10 +23178,10 @@
       "description": "**Evidence:** Quantified directly from existing trade log.",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23217,10 +23217,10 @@
       "description": "**Evidence:** Direct row-level analysis of trade log.",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23256,10 +23256,10 @@
       "description": "**Evidence:** All 34,727 trades have these field values: - `smart_money_score`: 0 (unique=1) - `congressional_signal`: \"none\" (unique=1) - `insider_signal`: \"none\" (unique=1) - `institutional_signal`: \"none\" (unique=1)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23295,10 +23295,10 @@
       "description": "**Evidence:** `pnl_dollar = pnl_pct \u00d7 100` exactly across all 34,727 trades (max diff = 4.5e-13).",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23335,9 +23335,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23373,10 +23373,10 @@
       "description": "**Evidence:** For all 34,650 trailing-stop exits: - `(exit_price - trailing_stop_at_exit).abs().max()` = **5.0e-5** (rounding noise only) - `(exit_price - trailing_stop_at_exit).abs().mean()` = 5.4e-7",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23413,9 +23413,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23451,10 +23451,10 @@
       "description": "**File:** `backtest/agents/pipeline.py` \u2014 37 `.get()` calls with defaults",
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23491,9 +23491,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23529,10 +23529,10 @@
       "description": "**File:** `backtest/engine/backtest.py` around line 340 (entry execution)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23568,10 +23568,10 @@
       "description": "**Files:** `backtest/signals/screener.py` (13 breakout strategies, none with retest)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23608,9 +23608,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23647,9 +23647,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23686,9 +23686,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23724,10 +23724,10 @@
       "description": "**File:** `backtest/data/fetcher.py` `days_to_next_earnings()` line 200",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23763,10 +23763,10 @@
       "description": "**File:** `backtest/data/fetcher.py` `fetch_info_bulk()` line 170",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23802,10 +23802,10 @@
       "description": "**File:** `backtest/data/macro.py` and prefetch_macro.py",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -23841,10 +23841,10 @@
       "description": "**File:** `prefetch_finnhub_news.py`",
       "status": "WILL_RESOLVE_VIA_DEC-440",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "BLOCKED",
+        "label": "BLOCKED",
+        "color": "#a855f7",
+        "reason": "Superseded by migration (WILL_RESOLVE_VIA_DEC-440)"
       }
     },
     {
@@ -23880,10 +23880,10 @@
       "description": "**File:** `backtest/agents/pipeline.py`",
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23920,9 +23920,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23959,9 +23959,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -23998,9 +23998,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24037,9 +24037,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24076,9 +24076,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24115,9 +24115,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24154,9 +24154,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24193,9 +24193,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24232,9 +24232,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24271,9 +24271,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24310,9 +24310,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24349,9 +24349,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24388,9 +24388,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24427,9 +24427,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24465,10 +24465,10 @@
       "description": "**File:** `backtest/data/smart_money.py` lines 145-180 (function `insider_signal`) **Evidence:** - n=500 random Phase 1B agent cache JSONs: `insider_conviction = \"none\"` in 500/500 (100.0%) - Reproduced in sandbox: `insider_signal(\"AAPL\", date(2024, 6, 1))` returns `{\"signal\": \"n",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24504,10 +24504,10 @@
       "description": "**File:** `backtest/data/smart_money.py` (function `get_gov_contracts`, ~line 250) **Evidence:** - n=500 sample: `gov_contract_signal = \"no_data\"` in 497/500 (99.4%) - Reproduced in sandbox: AAPL has 66 rows of gov_contracts data with columns `Ticker, Amount, Qtr, Year` \u2014 no Date",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24543,10 +24543,10 @@
       "description": "**File:** `backtest/data/smart_money.py` (function `get_lobbying`, ~line 290) **Evidence:** - n=500 sample: `lobbying_signal = \"no_data\"` in 494/500 (98.8%) - Reproduced in sandbox: `get_lobbying(\"AAPL\", date(2024, 6, 1))` returns `{\"total_spend\": 0.0, \"signal\": \"no_data\"}` despi",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24582,10 +24582,10 @@
       "description": "**File:** `backtest/data/smart_money.py` line ~360 (function `congressional_signal`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24621,10 +24621,10 @@
       "description": "**File:** `backtest/data/smart_money.py` (function `institutional_signal`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24660,10 +24660,10 @@
       "description": "**File:** `backtest/engine/improvements.py` line 514",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24699,10 +24699,10 @@
       "description": "**File:** `backtest/agents/pipeline.py` line 591",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24739,9 +24739,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24778,9 +24778,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24816,10 +24816,10 @@
       "description": "**File:** `backtest/data/cache.py` (function `get_ohlcv`)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -24856,9 +24856,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24895,9 +24895,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24934,9 +24934,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -24973,9 +24973,9 @@
       "status": "RESOLVED-DECIDED",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -25011,10 +25011,10 @@
       "description": "**File:** `scripts/prefetch_quiver.py` lines 56-66 (DATE_FIELDS dict)",
       "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25206,10 +25206,10 @@
       "dependencies": "BUG-218",
       "description": "- yfinance `t.info` returns CURRENT analyst data, sector, market cap, IPO date \u2014 applied to historical backtest dates as if PIT-correct. Comments say \"site display only\" but data flows through to result dicts that agents/strategies can read.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25362,10 +25362,10 @@
       "dependencies": "BUG-222",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25518,10 +25518,10 @@
       "dependencies": "BUG-205",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25558,9 +25558,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -25597,9 +25597,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -25636,9 +25636,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -25674,10 +25674,10 @@
       "dependencies": "BUG-226",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25713,10 +25713,10 @@
       "dependencies": "BUG-227",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25792,9 +25792,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -25908,10 +25908,10 @@
       "dependencies": "BUG-232",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25947,10 +25947,10 @@
       "dependencies": "BUG-233",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -25986,10 +25986,10 @@
       "dependencies": "BUG-234",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26025,10 +26025,10 @@
       "dependencies": "BUG-235",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26064,10 +26064,10 @@
       "dependencies": "BUG-236",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26103,10 +26103,10 @@
       "dependencies": "BUG-237",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26142,10 +26142,10 @@
       "dependencies": "BUG-238",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26181,10 +26181,10 @@
       "dependencies": "BUG-239",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26260,9 +26260,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26338,9 +26338,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26376,10 +26376,10 @@
       "dependencies": "BUG-244",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26416,9 +26416,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26455,9 +26455,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26494,9 +26494,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26533,9 +26533,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26572,9 +26572,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26611,9 +26611,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26650,9 +26650,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26689,9 +26689,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26728,9 +26728,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26767,9 +26767,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26806,9 +26806,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26845,9 +26845,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26884,9 +26884,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26923,9 +26923,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -26962,9 +26962,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27001,9 +27001,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27040,9 +27040,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27079,9 +27079,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27117,10 +27117,10 @@
       "dependencies": "BUG-258",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -27157,9 +27157,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27196,9 +27196,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27235,9 +27235,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27274,9 +27274,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27313,9 +27313,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27352,9 +27352,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27430,9 +27430,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27469,9 +27469,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27508,9 +27508,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27547,9 +27547,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27586,9 +27586,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27624,10 +27624,10 @@
       "dependencies": "BUG-285",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -27664,9 +27664,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27702,10 +27702,10 @@
       "dependencies": "BUG-115",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27742,9 +27742,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27780,10 +27780,10 @@
       "dependencies": "BUG-117",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27819,10 +27819,10 @@
       "dependencies": "BUG-118",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27859,9 +27859,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27897,10 +27897,10 @@
       "dependencies": "BUG-120",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27936,10 +27936,10 @@
       "dependencies": "BUG-121",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -27975,10 +27975,10 @@
       "dependencies": "BUG-122",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28014,10 +28014,10 @@
       "dependencies": "BUG-123",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28054,9 +28054,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28092,10 +28092,10 @@
       "dependencies": "BUG-125",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28131,10 +28131,10 @@
       "dependencies": "BUG-126",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28171,9 +28171,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28210,9 +28210,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28248,10 +28248,10 @@
       "dependencies": "BUG-129",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28288,9 +28288,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28326,10 +28326,10 @@
       "dependencies": "BUG-131",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28365,10 +28365,10 @@
       "dependencies": "BUG-132",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28404,10 +28404,10 @@
       "dependencies": "BUG-133",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -28444,9 +28444,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28482,10 +28482,10 @@
       "dependencies": "BUG-135",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Status inherited from linked DEC; coded but missing test"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28522,9 +28522,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28560,10 +28560,10 @@
       "dependencies": "BUG-137",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28600,9 +28600,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28639,9 +28639,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28678,9 +28678,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28716,10 +28716,10 @@
       "dependencies": "BUG-141",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28755,10 +28755,10 @@
       "dependencies": "BUG-142",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28794,10 +28794,10 @@
       "dependencies": "BUG-143",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28833,10 +28833,10 @@
       "dependencies": "BUG-144",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28873,9 +28873,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28911,10 +28911,10 @@
       "dependencies": "BUG-146",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28950,10 +28950,10 @@
       "dependencies": "BUG-147",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -28989,10 +28989,10 @@
       "dependencies": "BUG-148",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29028,10 +29028,10 @@
       "dependencies": "BUG-149",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29067,10 +29067,10 @@
       "dependencies": "BUG-150",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29107,9 +29107,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29145,10 +29145,10 @@
       "dependencies": "BUG-152",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29184,10 +29184,10 @@
       "dependencies": "BUG-153",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29223,10 +29223,10 @@
       "dependencies": "BUG-154",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29262,10 +29262,10 @@
       "dependencies": "BUG-155",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29301,10 +29301,10 @@
       "dependencies": "BUG-156",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29340,10 +29340,10 @@
       "dependencies": "BUG-157",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29379,10 +29379,10 @@
       "dependencies": "BUG-158",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29418,10 +29418,10 @@
       "dependencies": "BUG-159",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29457,10 +29457,10 @@
       "dependencies": "BUG-160",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29497,9 +29497,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29535,10 +29535,10 @@
       "dependencies": "BUG-162",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29574,10 +29574,10 @@
       "dependencies": "BUG-163",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29613,10 +29613,10 @@
       "dependencies": "BUG-164",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29652,10 +29652,10 @@
       "dependencies": "BUG-165",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29691,10 +29691,10 @@
       "dependencies": "BUG-166",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29730,10 +29730,10 @@
       "dependencies": "BUG-167",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29769,10 +29769,10 @@
       "dependencies": "BUG-168",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29809,9 +29809,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29847,10 +29847,10 @@
       "dependencies": "BUG-170",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29886,10 +29886,10 @@
       "dependencies": "BUG-171",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29925,10 +29925,10 @@
       "dependencies": "BUG-172",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -29964,10 +29964,10 @@
       "dependencies": "BUG-173",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30003,10 +30003,10 @@
       "dependencies": "BUG-174",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30043,9 +30043,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30081,10 +30081,10 @@
       "dependencies": "BUG-176",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30121,9 +30121,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30160,9 +30160,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30198,10 +30198,10 @@
       "dependencies": "BUG-193",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30237,10 +30237,10 @@
       "dependencies": "BUG-194",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30276,10 +30276,10 @@
       "dependencies": "BUG-195",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30315,10 +30315,10 @@
       "dependencies": "BUG-196",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30354,10 +30354,10 @@
       "dependencies": "BUG-197",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "READY",
+        "label": "RESOLVED-DECIDED",
+        "color": "#10b981",
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     },
     {
@@ -30394,9 +30394,9 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "RESOLVED-DECIDED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"
       }
     }
   ],
@@ -35054,6 +35054,12 @@
   ],
   "recent_commits": [
     {
+      "sha": "badbaa0c",
+      "subject": "Dashboard dropdown filters broken + BUG-258 code files missed in Batch 158. Pyramid 613/613.",
+      "author": "jeetmehta1991",
+      "rel_time": "15 minutes ago"
+    },
+    {
       "sha": "c45f110b",
       "subject": "BUG arc complete: update AUDIT_INDEX summary table -- 0 OPEN BUGs remaining.",
       "author": "jeetmehta1991",
@@ -35099,7 +35105,7 @@
       "sha": "f5465d36",
       "subject": "Batch 156: BUG-271/272/273 RESOLVED-IMPLEMENTED (gov_contracts Qtr+Year fix, lobbying Amount dtype, congressional House col). BUG-270/274 false-positives. Pyramid 607/607.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "2d1f60bd",
@@ -35207,36 +35213,30 @@
       "sha": "2bae2a1a",
       "subject": "Batch 138: BUG-012 false-positive - dedup ordering by strategy_count desc via BUG-12 fix. Pyramid 735/735.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "98855527",
       "subject": "Batch 137: BUG-006 false-positive - borrow cost single-sourced via DEC-295 Pass 50. Pyramid 734/734.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "f76fc024",
       "subject": "Batch 136: BUG-004 false-positive - avoid direction routed to skip via BUG-04 fix. Pyramid 733/733.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "7bbe25b3",
       "subject": "Batch 135: BUG-003 false-positive - ClosedTrade duplicate removed via BUG-215 Pass 48. Pyramid 732/732.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
-    },
-    {
-      "sha": "767b4b0c",
-      "subject": "Batch 134: BUG-002 false-positive - days var hoisted via BUG-214 fix Pass 48. Pyramid 731/731.",
-      "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 7,
-    "modified": 7,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -35247,27 +35247,11 @@
       },
       {
         "status": "M",
-        "path": "backtest/config.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/exit_strategies.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
-      },
-      {
-        "status": "M",
         "path": "output_smoke_test/trade_log_checkpoint.csv"
+      },
+      {
+        "status": "M",
+        "path": "scripts/build_dashboard_stage_2.py"
       }
     ]
   },
