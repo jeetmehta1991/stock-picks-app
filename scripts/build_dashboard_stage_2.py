@@ -232,9 +232,10 @@ def parse_bug_status_from_audit_index(path: Path) -> dict[str, dict]:
         # path takes over instead of polluting the counter.
         _VALID = {"OPEN", "RESOLVED-IMPLEMENTED", "RESOLVED-DECIDED",
                   "RESOLVED", "DEFERRED", "CRITICAL", "HIGH", "MEDIUM",
-                  "LOW", "INLINE-ONLY"}
+                  "LOW", "INLINE-ONLY", "OBSOLETE", "SUPERSEDED"}
         if status and not (status.startswith("RESOLVED")
                             or status.startswith("WILL_RESOLVE")
+                            or status.startswith("SUPERSEDED")
                             or status in _VALID):
             status = ""
         if status and bug_short not in out:

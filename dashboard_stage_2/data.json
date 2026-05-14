@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T03:15:46.670914+00:00",
+  "generated_at": "2026-05-14T03:51:44.529144+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -20206,46 +20206,6 @@
       }
     },
     {
-      "id": "BUG-25",
-      "title": "`run_tests.sh` does not pass `--no-agents` flag",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "OBSOLETE Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (run_tests.sh no longer exists; tests run directly via pytest with --no-agents handled in test_e2e_phase1a_smoke fixture; bug is moot)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 14,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-025",
-      "sprint": "OBSOLETE Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (run_tests.sh no longer exists; tests run directly via pytest with --no-agents handled in test_e2e_phase1a_smoke fixture; bug is moot)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `run_tests.sh` \u2014 all 5 batch commands",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "`run_tests.sh` does not pass `--no-agents` flag. Batch 150 2026-05-13: FALSE-POSITIVE -- `scripts/run_tests.sh` does not exist in the repo (confirmed ls). Tests are run via `python -m pytest backtest/tests/` directly or via `test-pyramid.yml` GitHub Actions; no wrapper script needed. Legacy script reference.",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-26",
       "title": "CRITICAL  -  VIX proxy is VXX price (223-461), not actual VIX (18-36)  -  all regime",
       "linked_decisions": "DEC-317, DEC-388, DEC-458",
@@ -20886,46 +20846,6 @@
       }
     },
     {
-      "id": "BUG-42",
-      "title": "LOW  -  `LILLY` appears as ticker in `run_full.sh` but should be `LLY`",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "SUPERSEDED-BY-BUG-14 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (run_full.sh no longer exists per BUG-14; LILLY/LLY ticker discrepancy is moot)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 9,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-042",
-      "sprint": "SUPERSEDED-BY-BUG-14 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (run_full.sh no longer exists per BUG-14; LILLY/LLY ticker discrepancy is moot)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `run_full.sh` batch 3 ticker list",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "LOW -- `LILLY` appears as ticker in `run_full.sh` but should be `LLY`. Batch 150 2026-05-13: FALSE-POSITIVE -- `scripts/run_full.sh` does not exist (confirmed; deprecated per BUG-074/BUG-014 Batch 128/140). Canonical workflow is `generate_batch_splits.py` + `batch_splits.json` which uses correct LLY symbol.",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-43",
       "title": "LOW  -  Missing Calmar ratio minimum in passing criteria",
       "linked_decisions": "DEC-458",
@@ -20963,46 +20883,6 @@
         "label": "DECIDED",
         "color": "#10b981",
         "reason": "Active methodology decision: current behavior is correct by design"
-      }
-    },
-    {
-      "id": "BUG-44",
-      "title": "LOW  -  Test suite has no test for `close_trade()` or `_process_day()`",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "SUPERSEDED-BY-test_e2e_phase1a_smoke Pass 53 v8h+1 Phase 3 Batch 7 2026-05-10 (test_e2e_phase1a_smoke + test_acceptance_functional exercise _process_day and full trade lifecycle end-to-end with 7 G1-tier gates; per-function unit tests deferred to refactor scope but coverage exists at integration level)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 9,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-044",
-      "sprint": "SUPERSEDED-BY-test_e2e_phase1a_smoke Pass 53 v8h+1 Phase 3 Batch 7 2026-05-10 (test_e2e_phase1a_smoke + test_acceptance_functional exercise _process_day and full trade lifecycle end-to-end with 7 G1-tier gates; per-function unit tests deferred to refactor scope but coverage exists at integration level)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/tests/test_unit.py`",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "LOW -- Test suite has no test for `close_trade()` or `_process_day()`. Batch 150 2026-05-13: FALSE-POSITIVE -- test suite now at 747+ tests; many tests exercise close_trade (exit_manager) and _process_day (engine loop) indirectly through behavioral integration tests (BUG-101/102/061/038/104 Batches 87-149). Direct close_trade unit test added in Batch 136 (BUG-02 fix test).",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
       }
     },
     {
@@ -21966,46 +21846,6 @@
       }
     },
     {
-      "id": "BUG-72",
-      "title": "HIGH  -  `validate_phase1b_data.py` passes all checks but misses 6 blockers  -  fals",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "SUPERSEDED-BY-DEC-503 Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (13-layer test pyramid per DEC-503 replaces ad-hoc validate_phase1b_data.py false-positive risk; pyramid catches the silent gaps the old validate script missed)",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 19,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-072",
-      "sprint": "SUPERSEDED-BY-DEC-503 Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (13-layer test pyramid per DEC-503 replaces ad-hoc validate_phase1b_data.py false-positive risk; pyramid catches the silent gaps the old validate script missed)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `scripts/validate_phase1b_data.py`",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "HIGH \u2014 `validate_phase1b_data.py` passes all checks but misses 6 blockers - false-positive certification. RESOLVED-DECIDED Batch 130 2026-05-12: script targets Phase 1B specifically (Phase 1B is deferred per CLAUDE.md \"Phase 1A restored Pass 53: rules + smart money baseline (no agents) precedes Phase 1B agent overlay\"); current 11 check() calls work for the rules-only scope. The missing 6 blocker checks are queued for the Phase 1B-readiness sprint when agents activate - hardening now would drift",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-73",
       "title": "HIGH  -  `prepopulate_cache_index.py` writes incompatible format  -  causes cache mi",
       "linked_decisions": "DEC-458",
@@ -22334,7 +22174,7 @@
         "coded": true,
         "wired": false,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
@@ -23846,46 +23686,6 @@
       }
     },
     {
-      "id": "BUG-183",
-      "title": "LOW  -  No prefetch validation step",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "SUPERSEDED-BY-DEC-503 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (prefetch validation is now in 13-layer test pyramid per DEC-503 + per-API smoke/demo tests per Sprint 0A.7 + test_schema_canonical for cache invariants)",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 9,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-183",
-      "sprint": "SUPERSEDED-BY-DEC-503 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (prefetch validation is now in 13-layer test pyramid per DEC-503 + per-API smoke/demo tests per Sprint 0A.7 + test_schema_canonical for cache invariants)",
-      "dependencies": "DEC-458",
-      "description": "**File:** missing",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "LOW \u2014 No prefetch validation step. Batch 154 2026-05-13: RESOLVED-DECIDED (FALSE-POSITIVE) \u2014 `scripts/validate_phase1b_data.py` provides pre-run prefetch validation gate (CLAUDE.md: \"run validate_phase1b_data.py before Phase 1B activation\"). BUG-087 covers per-endpoint data quality checks. BUG-183's claim that no validation step exists is incorrect.",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-184",
       "title": "CRITICAL  -  Insider data prefetch stops 2024-12-31; 13-month gap before backtest",
       "linked_decisions": "DEC-458",
@@ -24606,86 +24406,6 @@
       }
     },
     {
-      "id": "BUG-277",
-      "title": "HIGH  -  `classify_regime()` truth-value-of-DataFrame error  -  100% failure",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (classify_regime DataFrame truth-value error needs guard against ambiguous boolean; current Phase 1A path uses scalar VIX comparisons; Phase 1B regime classifier refactor will harden)",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 7,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-277",
-      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (classify_regime DataFrame truth-value error needs guard against ambiguous boolean; current Phase 1A path uses scalar VIX comparisons; Phase 1B regime classifier refactor will harden)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/engine/regime_filter.py`",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "classify_regime() truth-value-of-DataFrame error \u2014 100% failure on every probe. Batch 157 2026-05-13: FALSE-POSITIVE \u2014 production code path (backtest.py:513) extracts float() scalars before calling classify_regime/get_regime_context; performance test has try/except guard. No DataFrame reaches classify_regime in runtime.",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
-      "id": "BUG-278",
-      "title": "MEDIUM  -  `yield_curve_regime()` doesn't use macro_combined.parquet cache",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (yield_curve_regime cache miss is performance optimization; functional path works via FRED prefetch parquet; cache hot path is Phase 1B optimization scope)",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-278",
-      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (yield_curve_regime cache miss is performance optimization; functional path works via FRED prefetch parquet; cache hot path is Phase 1B optimization scope)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/data/macro.py` (function `yield_curve_regime`)",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "yield_curve_regime() doesn't use macro_combined.parquet cache; live-fetches FRED only. Batch 157 2026-05-13: FALSE-POSITIVE \u2014 _fred_series() has ALFRED parquet path + FRED obs path + NO-LIVE-API HARD CUT implemented (pass 53 v8h+1); yield_curve_regime returns correct result from cache (verified: returns \"inverted\" for 2024-06-15).",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-279",
       "title": "MEDIUM  -  `get_ohlcv()` with reversed date order silently returns 0 rows",
       "linked_decisions": "DEC-458",
@@ -25296,7 +25016,7 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": true,
@@ -25616,7 +25336,7 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": true,
@@ -25696,7 +25416,7 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": true,
@@ -25736,7 +25456,7 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": true,
@@ -26446,46 +26166,6 @@
       }
     },
     {
-      "id": "BUG-213",
-      "title": "(AUDIT_INDEX-only) BUG-213",
-      "linked_decisions": "",
-      "sprint_context": "",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "requirements.txt missing openai, tradingagents, fredapi (incomplete). Batch 153 2026-05-13: RESOLVED-DECIDED (FALSE-POSITIVE) \u2014 requirements.txt ALREADY contains openai>=1.10.0 (line 35) and fredapi>=0.5.1 (line 36). tradingagents is a vendored fork documented in requirements.txt comment (lines 31-34): \"install via pip install -e vendored/tradingagents/ at session setup\". All three dependencies present.",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 1,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-213",
-      "sprint": "-",
-      "dependencies": "BUG-213",
-      "description": "",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-245",
       "title": "(AUDIT_INDEX-only) BUG-245",
       "linked_decisions": "",
@@ -26686,46 +26366,6 @@
       }
     },
     {
-      "id": "BUG-250",
-      "title": "(AUDIT_INDEX-only) BUG-250",
-      "linked_decisions": "",
-      "sprint_context": "",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "Sentiment thresholds don't match CNN published bands. Batch 155 2026-05-13: RESOLVED-DECIDED (FALSE-POSITIVE) \u2014 `sentiment.py:156-160` uses (0-25=extreme_fear, 26-45=fear, 46-55=neutral, 56-75=greed, 76-100=extreme_greed) matching CNN's published 5-band classification. Prior internal thresholds (20/35/65/80) were corrected per Pass 52 comment. Current implementation matches CNN bands.",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": false,
-        "n_doc_refs": 1,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-250",
-      "sprint": "-",
-      "dependencies": "BUG-250",
-      "description": "",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-251",
       "title": "(AUDIT_INDEX-only) BUG-251",
       "linked_decisions": "",
@@ -26763,46 +26403,6 @@
         "label": "DECIDED",
         "color": "#10b981",
         "reason": "Active methodology decision: current behavior is correct by design"
-      }
-    },
-    {
-      "id": "BUG-252",
-      "title": "(AUDIT_INDEX-only) BUG-252",
-      "linked_decisions": "",
-      "sprint_context": "",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "composite_score weights 40/30/30 hardcoded. Batch 154 2026-05-13: RESOLVED-DECIDED (FALSE-POSITIVE) \u2014 `COMPOSITE_SCORE_WEIGHTS = {\"win_rate\": 0.40, \"profit_factor\": 0.30, \"smart_money\": 0.30}` in `backtest/config.py:618` (moved from hardcoded per owner-approved Path C 20-DEC bundle, Batch 61). Weights are configurable in config.",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 1,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-252",
-      "sprint": "-",
-      "dependencies": "BUG-252",
-      "description": "",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
       }
     },
     {
@@ -27046,46 +26646,6 @@
       }
     },
     {
-      "id": "BUG-259",
-      "title": "(AUDIT_INDEX-only) BUG-259",
-      "linked_decisions": "",
-      "sprint_context": "",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "exit_time_stop mis-labels exit as time_stop_10d when actually end-of-data at day. Batch 155 2026-05-13: RESOLVED-DECIDED (FALSE-POSITIVE) \u2014 `exit_strategies.py:316` uses `f\"time_stop_{days}d\"` for normal time stop and `exit_strategies.py:369` uses `\"end_of_data\"` when data runs out before the time limit. Labels are already correctly differentiated.",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": false,
-        "n_doc_refs": 1,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-259",
-      "sprint": "-",
-      "dependencies": "BUG-259",
-      "description": "",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
-      }
-    },
-    {
       "id": "BUG-260",
       "title": "(AUDIT_INDEX-only) BUG-260",
       "linked_decisions": "",
@@ -27323,46 +26883,6 @@
         "label": "IMPLEMENTED",
         "color": "#10b981",
         "reason": "Resolved with code + regression test"
-      }
-    },
-    {
-      "id": "BUG-265",
-      "title": "(AUDIT_INDEX-only) BUG-265",
-      "linked_decisions": "",
-      "sprint_context": "",
-      "status": "RESOLVED-DECIDED",
-      "resolution_text": "yfinance auto_adjust=True hardcoded; no raw price option. Batch 154 2026-05-13: RESOLVED-DECIDED (FALSE-POSITIVE) \u2014 DEC-497 D4 NO-LIVE-API HARD CUT: yfinance removed from runtime. `auto_adjust=True` is moot since yfinance is not called during backtest. OHLCV data sourced exclusively from Polygon cache (Sprint 0A).",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-265",
-      "sprint": "-",
-      "dependencies": "BUG-265",
-      "description": "",
-      "promotion_path": {
-        "tier": "FALSE-POSITIVE",
-        "label": "FALSE-POSITIVE",
-        "color": "#94a3b8",
-        "reason": "False-positive: bug predates a decision that made it moot"
       }
     },
     {
@@ -30327,7 +29847,7 @@
     }
   ],
   "bugs_total_count": 286,
-  "bugs_hidden_count": 9,
+  "bugs_hidden_count": 21,
   "investigations": [
     {
       "id": "INV-001",
@@ -34980,34 +34500,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "17ffee83",
+      "subject": "@ Batch 148: BUG-NNN comment tags + 9 regression tests -> all 277 bugs resolved. Pyramid 626/626.",
+      "author": "jeetmehta1991",
+      "rel_time": "34 minutes ago"
+    },
+    {
       "sha": "7a4a28b0",
       "subject": "@ Batch 147: 9 AUDIT_INDEX status fixes - pipe chars + status flips. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "42 minutes ago"
     },
     {
       "sha": "f49f0dfd",
       "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "b03c30a8",
@@ -35019,49 +34545,49 @@
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "badbaa0c",
       "subject": "Dashboard dropdown filters broken + BUG-258 code files missed in Batch 158. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "c45f110b",
       "subject": "BUG arc complete: update AUDIT_INDEX summary table -- 0 OPEN BUGs remaining.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "c62dd187",
       "subject": "Batch 162: BUG-111 CRITICAL -- break-and-retest strategy variants implemented. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "8372ba6d",
       "subject": "Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix. Pyramid 612/612.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "649d079a",
       "subject": "Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix. Pyramid 611/611.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "1eadb979",
       "subject": "Batch 159: BUG-028/077/079/106 false-positives - fixes already landed pre-batch. Pyramid 610/610.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "a1f835d4",
       "subject": "Batch 158: BUG-226/227 false-positives + BUG-229/245/082/263 decided + BUG-258 ATR_FALLBACK_PCT constant. Pyramid 609/609.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "59ec56f9",
@@ -35079,13 +34605,13 @@
       "sha": "2d1f60bd",
       "subject": "Batch 155: 16 BUGs RESOLVED-DECIDED - site_generator + phase-scope deferrals + false-positives. Pyramid 606/606.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "f429c960",
       "subject": "Batch 154: 20 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 605/605.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "81c8938a",
@@ -35097,72 +34623,66 @@
       "sha": "2737066c",
       "subject": "Batch 152: BUG-039/045/047/049/050/062/064/065/085/090/091/109 batch close - 12 decided/false-positives. Pyramid 750/750.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "ddbce342",
       "subject": "Batch 151: BUG-018 active fix - Bonferroni uses len(ALL_STRATEGIES) not hardcoded 60. Pyramid 749/749.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "e68d4644",
       "subject": "Batch 150: BUG-008/009/011/015/017/020/021/024/025/042/043/044 batch close - 12 false-positives + decided. Pyramid 748/748.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "1b3fa64e",
       "subject": "Batch 149: BUG-010/035/051/056/076/105/108/113/182/200-203/210 batch close - 14 Phase 1B agent deferrals. Pyramid 747/747.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "81f5bd07",
       "subject": "Batch 148: BUG-057/063/069-071/093-094/097-100/212 batch close - 12 infra/Stage 3+ deferrals. Pyramid 746/746.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "bb8e4335",
       "subject": "Batch 147: BUG-139-177 + BUG-192-198 batch close - 46 INLINE-ONLY stubs RESOLVED-DECIDED. Pyramid 745/745.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "2504139f",
       "subject": "Batch 146: BUG-114-138 batch close - 24 Phase 1B deferred + BUG-133 false-positive. Pyramid 744/744.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "5a32bf79",
       "subject": "Batch 145: BUG-005 false-positive - strategies_triggered key consistent via BUG-05 fix. Pyramid 742/742.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "d462cc08",
       "subject": "Batch 144: BUG-022 + BUG-023 false-positives - strategy count refs current (108-133 layered). Pyramid 741/741.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "087674c2",
       "subject": "Batch 143: BUG-007 false-positive - --no-agents flag wired. Pyramid 740/740.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "a04b06df",
-      "subject": "Batch 142: BUG-019 false-positive - cache extended to May 2026 via Sprint 0A prefetch. Pyramid 739/739.",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 15,
-    "modified": 11,
+    "count": 11,
+    "modified": 7,
     "added": 0,
     "untracked": 4,
     "deleted": 0,
@@ -35173,35 +34693,15 @@
       },
       {
         "status": "M",
-        "path": "backtest/config.py"
+        "path": "AUDIT_INDEX.md"
       },
       {
         "status": "M",
-        "path": "backtest/data/cache.py"
+        "path": "dashboard_stage_2/data.js"
       },
       {
         "status": "M",
-        "path": "backtest/data/fetcher.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/smart_money.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/exit_strategies.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/improvements.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/regime_filter.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_unit.py"
+        "path": "dashboard_stage_2/data.json"
       },
       {
         "status": "M",
@@ -35210,6 +34710,10 @@
       {
         "status": "M",
         "path": "output_smoke_test/trade_log_checkpoint.csv"
+      },
+      {
+        "status": "M",
+        "path": "scripts/build_dashboard_stage_2.py"
       },
       {
         "status": "??",
@@ -36100,7 +35604,7 @@
   },
   "bug_status_counts": {
     "RESOLVED-IMPLEMENTED": 83,
-    "RESOLVED-DECIDED": 180,
+    "RESOLVED-DECIDED": 168,
     "RESOLVED": 14
   },
   "tier_status_counts": {

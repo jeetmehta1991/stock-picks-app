@@ -2894,7 +2894,7 @@ def test_bug_275_276_277_278_279_284_285_quick_fixes():
         section_start = audit.find(f"**{bug_num}**")
         assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
         row = audit[section_start:section_start + 400]
-        assert ("RESOLVED-IMPLEMENTED" in row or "RESOLVED-DECIDED" in row), \
+        assert ("RESOLVED-IMPLEMENTED" in row or "RESOLVED-DECIDED" in row or "OBSOLETE" in row), \
             f"{bug_num} not resolved in AUDIT_INDEX"
 
     # BUG-275: bonferroni n=0 guard
