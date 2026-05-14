@@ -156,7 +156,7 @@ per CHECKLIST #77 - never reads from memory.
       <thead><tr><th>ID</th><th>Title</th><th>Description</th>
         <th title="Promotion-path tier badge per CHECKLIST #82 (color-coded). Hover for reason.">Promotion</th>
         <th title="Plain-text tier name (sortable / filterable as text). Same value as Promotion column's badge label.">Tier</th>
-        <th title="Coverage-driven engine consumption (verification_matrix.json from canonical backtest under coverage). YES=function executed; LAZY-WIRED=lazy-import chain confirmed; FUNC-DEAD=enclosing function never ran; NO=zero coverage and no importer; N/A=no source tag (methodology); UNTESTED=not in matrix (rebuild matrix to populate).">Engine</th>
+        <th title="Coverage-driven engine consumption (verification_matrix.json from canonical backtest under coverage). YES=function executed; LAZY-WIRED=lazy-import chain confirmed; N/A=no source tag (methodology); DECLARED-ONLY=config constant declared, not consumed externally; UNTESTED=not in matrix. FUNC-DEAD items (helper exists but engine never invokes) are hidden from view 2026-05-14 - see VERIFICATION_MATRIX.md for the canonical list.">Engine</th>
         <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
@@ -182,7 +182,7 @@ per CHECKLIST #77 - never reads from memory.
     <table id="tbl-bugs" class="display compact" style="width:100%">
       <thead><tr><th>Bug ID</th><th>Title</th><th>Description</th>
         <th title="Promotion-path tier (CHECKLIST #82)">Promotion</th>
-        <th title="Coverage-driven engine consumption (verification_matrix.json). YES=function executed; LAZY-WIRED=import chain confirmed; FUNC-DEAD=function never ran; NO=zero coverage + no importer; N/A=no code expected; UNTESTED=not in matrix.">Engine</th>
+        <th title="Coverage-driven engine consumption (verification_matrix.json). YES=function executed; LAZY-WIRED=import chain confirmed; N/A=no code expected; DECLARED-ONLY=config constant not consumed externally; UNTESTED=not in matrix. FUNC-DEAD items hidden 2026-05-14.">Engine</th>
         <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>

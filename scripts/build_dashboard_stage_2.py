@@ -2019,17 +2019,33 @@ def main() -> int:
     # Owner directive 2026-05-10: hide SUPERSEDED + OBSOLETE bugs from dashboard
     # display (they remain in BUG_REGISTER.md / AUDIT_INDEX.md as canonical record).
     # "If they are moot, lets not clutter the dashboard." Filter at build time.
+    #
+    # Owner directive 2026-05-14 extension: also hide FUNC-DEAD items.
+    # These are helpers whose function body never executes in the canonical
+    # backtest - either intentional (BUG-027 regime_confidence per CLAUDE.md
+    # "no regime confidence scaling in Phase 1A") or genuinely deferred to
+    # Stage 3+. Either way they're not actionable in the current phase; the
+    # full classification remains in VERIFICATION_MATRIX.md as canonical record.
+    HIDDEN_TIERS = ("SUPERSEDED", "OBSOLETE")
+    def _is_hidden(item):
+        tier = (item.get("promotion_path") or {}).get("tier")
+        if tier in HIDDEN_TIERS:
+            return True
+        # FUNC-DEAD on engine = hide regardless of promotion_path tier
+        if item.get("coverage_engine") == "FUNC-DEAD":
+            return True
+        return False
+
     bugs_full = bugs
-    bugs_visible = [b for b in bugs
-                    if b.get("promotion_path", {}).get("tier") not in ("SUPERSEDED", "OBSOLETE")]
+    bugs_visible = [b for b in bugs if not _is_hidden(b)]
     bugs_hidden_count = len(bugs_full) - len(bugs_visible)
 
     # Owner directive 2026-05-10 (Phase 3 Batch 22): same filter for Decisions.
     # SUPERSEDED + OBSOLETE decisions remain in AUDIT_INDEX.md as canonical
     # record but are removed from the dashboard to reduce cognitive load.
+    # FUNC-DEAD items hidden too (per 2026-05-14 extension above).
     decisions_full = decisions
-    decisions_visible = [d for d in decisions
-                         if d.get("promotion_path", {}).get("tier") not in ("SUPERSEDED", "OBSOLETE")]
+    decisions_visible = [d for d in decisions if not _is_hidden(d)]
     decisions_hidden_count = len(decisions_full) - len(decisions_visible)
 
     snapshot = {
