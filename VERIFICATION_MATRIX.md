@@ -14,50 +14,50 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 - Total items audited: **746** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
 
 **By promotion tier:**
-- IMPLEMENTED: 325
-- DECIDED: 211
-- DEFERRED: 172
-- FUNC-DEAD: 36
+- IMPLEMENTED: 353
+- DECIDED: 213
+- DEFERRED: 173
+- FUNC-DEAD: 5
 - UNKNOWN: 2
 
 **By coverage-driven engine status:**
-- Engine YES (executed): **209**
+- Engine YES (executed): **213**
 - Engine LAZY-WIRED (all tagged files wired via lazy import chains): **7** (import chain exists; condition gating the call not met in this small backtest)
 - Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **0** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
-- Engine FUNC-DEAD (function exists but never executed): **5**
+- Engine FUNC-DEAD (function exists but never executed): **1**
 - Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
 - Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **107** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
 - Engine N/A (no code expected): **418**
 
-### Classification anomalies (tier vs engine mismatch): **0**
+### Classification anomalies (tier vs engine mismatch): **3**
 
-None  -  every item's promotion tier matches its coverage-driven engine status. Classifications are internally consistent.
+| ID | Tier | Engine | Note |
+|---|---|---|---|
+| `BUG-186` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
+| `BUG-241` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
+| `BUG-135` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
 
 ### Pyramid coverage gaps (count of engine-consumed items missing per tier)
 
 - `unit`: **0** items lack a reference in this tier's test files
-- `smoke`: **204** items lack a reference in this tier's test files
+- `smoke`: **208** items lack a reference in this tier's test files
 - `integration`: **0** items lack a reference in this tier's test files
-- `system`: **210** items lack a reference in this tier's test files
-- `functional`: **211** items lack a reference in this tier's test files
-- `regression`: **212** items lack a reference in this tier's test files
-- `data_integrity`: **212** items lack a reference in this tier's test files
-- `performance`: **215** items lack a reference in this tier's test files
-- `acceptance`: **210** items lack a reference in this tier's test files
-- `property`: **215** items lack a reference in this tier's test files
-- `snapshot`: **213** items lack a reference in this tier's test files
-- `contract`: **202** items lack a reference in this tier's test files
-- `compatibility`: **215** items lack a reference in this tier's test files
+- `system`: **214** items lack a reference in this tier's test files
+- `functional`: **215** items lack a reference in this tier's test files
+- `regression`: **216** items lack a reference in this tier's test files
+- `data_integrity`: **216** items lack a reference in this tier's test files
+- `performance`: **219** items lack a reference in this tier's test files
+- `acceptance`: **214** items lack a reference in this tier's test files
+- `property`: **219** items lack a reference in this tier's test files
+- `snapshot`: **217** items lack a reference in this tier's test files
+- `contract`: **206** items lack a reference in this tier's test files
+- `compatibility`: **219** items lack a reference in this tier's test files
 
 ### Engine-consumption gaps detail
 
 | ID | engine | evidence | unit | integration |
 |---|---|---|---|---|
-| `DEC-210` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-392` | FUNC-DEAD | function in backtest/data/universe.py never executed | YES | YES |
-| `DEC-420` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `BUG-027` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
-| `BUG-083` | FUNC-DEAD | function in backtest/data/smart_money.py never executed | YES | YES |
 
 | ID | engine | unit | smoke | integration | system | functional | regression | data_integrity | performance | acceptance | property | snapshot | contract | compatibility |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -242,7 +242,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-207` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-208` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-209` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-210` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-210` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-211` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-212` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-213` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -408,7 +408,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-389` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-390` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-391` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-392` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-392` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-393` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-394` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-395` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -434,7 +434,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-417` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-418` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-419` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-420` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-420` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-421` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-422` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-423` | YES | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
@@ -617,7 +617,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `BUG-080` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-081` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-082` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-083` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-083` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-084` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-085` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-086` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |

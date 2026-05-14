@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T21:50:17.554540+00:00",
+  "generated_at": "2026-05-14T23:01:25.814490+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -581,7 +581,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-1004 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -643,7 +643,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -707,7 +707,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-1004 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -2597,7 +2597,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-1004 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3059,7 +3059,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-1004 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3457,7 +3457,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4171,7 +4171,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4507,7 +4507,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 26,
+        "n_doc_refs": 27,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4885,7 +4885,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4969,7 +4969,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5011,7 +5011,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5221,7 +5221,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5263,7 +5263,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5557,7 +5557,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -6187,7 +6187,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7447,7 +7447,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7573,7 +7573,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7606,7 +7606,7 @@
     {
       "id": "DECISION-210",
       "title": "Net Sharpe contribution accounting \u2014 `compute_net_sharpe_contribution(gross_sharpe_lift, annual_agent_cost_usd, portfolio_size_usd=100_000, portfolio_vol_decima",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7615,7 +7615,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7636,13 +7636,13 @@
       "sprint": "Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1884-1897 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -7657,7 +7657,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7699,7 +7699,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8161,7 +8161,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8371,7 +8371,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8413,7 +8413,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8749,7 +8749,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -9085,7 +9085,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -9463,7 +9463,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -10513,7 +10513,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -10639,7 +10639,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -11941,7 +11941,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -11963,7 +11963,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 1247-1257 executed in backtest/results/metrics.py",
+      "coverage_evidence": "function body 395-452 executed in backtest/data/universe.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -12319,7 +12319,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12361,7 +12361,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12907,7 +12907,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12991,7 +12991,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -14578,7 +14578,7 @@
     {
       "id": "DECISION-392",
       "title": "DEC-321 implementation \u2014 `apply_liquidity_filter` fail-closed. Missing/zero market_cap \u2192 REJECTS (returns False), logs warning with `LIQUIDITY_FILTER_FAIL_REASO",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14587,7 +14587,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -14608,13 +14608,13 @@
       "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti",
       "dependencies": "DEC-321",
       "description": "- In `apply_liquidity_filter`: change behavior \u2014 `if market_cap is None or market_cap == 0: REJECT (return False), log warning` - Add `LIQUIDITY_FILTER_FAIL_REASONS` enum: `missing_market_cap`, `below_min_cap`, `below_min_adv`, `insufficient_history`",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/data/universe.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 395-452 executed in backtest/data/universe.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -14755,7 +14755,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -14881,7 +14881,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15670,7 +15670,7 @@
     {
       "id": "DECISION-420",
       "title": "DEC-131 implementation 3-case A/B pairing -- AGENT_AB_THREE_CASE_PAIRING tuple (rules_only_signal / agent_overlay_signal / agent_overrides_no_signal) + AGENT_AB",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -15679,7 +15679,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15700,13 +15700,13 @@
       "sprint": "-",
       "dependencies": "DEC-131",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1884-1897 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -15827,7 +15827,7 @@
       "dependencies": "DEC-068; DEC-422",
       "description": "DEC-068 originally scoped per-strategy bootstrap CI. Expanded under DEC-422 framework: bootstrap operates at **per-cell level** within dimensional cube. Pairwise (strategy, exit) comparisons within cell. Bonferroni-correct across all cell pairs. Cells with n<30 fall back to margi",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-1004 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -17191,7 +17191,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 158,
+        "n_doc_refs": 159,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -17905,7 +17905,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 64,
+        "n_doc_refs": 65,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20131,7 +20131,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 33,
+        "n_doc_refs": 34,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21267,7 +21267,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -23367,7 +23367,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 27,
+        "n_doc_refs": 28,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -23388,14 +23388,15 @@
       "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 18 2026-05-10 (owner-approved Option A 2026-05-10; smart_money.py:984-985 erroneously subtracted 45 days from cutoff excluding the most recent 45 days of filings; Quiver ReportDate already encodes upstream disclosure delay; fix removes the delta - cutoff = pd.Timestamp(as_of) - restoring PIT consistency with composite congressional_sig and insider_signal; 2 regression tests test_bug_083_congressional_detail_pit_filter_correct + test_bug_083_congressional_detail_includes_recent_filings; both PASS)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/smart_money.py` lines 677\u2013678",
-      "resolution_text": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/data/smart_money.py never executed",
+      "status": "RESOLVED-IMPLEMENTED",
+      "resolution_text": "HIGH \u2014 `get_congressional_detail()` filtered with INVERTED point-in-time logic (subtracted an extra 45 days from ReportDate). RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 18 (2026-05-10, owner-approved Option A) at `backtest/data/smart_money.py:1024+`. The 45-day delta was removed: Quiver's `ReportDate` already encodes the upstream disclosure delay (ReportDate >= TransactionDate by the lag), so PIT semantics simplify to `df[df[\"ReportDate\"] <= cutoff]`. Restores consistency with `insider_sig",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1067-1097 executed in backtest/data/smart_money.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
       }
     },
     {
@@ -26624,7 +26625,7 @@
       "dependencies": "BUG-228",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-1004 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -36087,184 +36088,184 @@
   ],
   "recent_commits": [
     {
+      "sha": "da573f2f",
+      "subject": "Batch 163: Bulk wire 32 remaining FUNC-DEAD helpers. +33 DECs promoted. 209 YES total. Pyramid 1869/1887.",
+      "author": "jeetmehta1991",
+      "rel_time": "65 minutes ago"
+    },
+    {
       "sha": "586e7233",
       "subject": "Batch 162: Wire 7 more Phase 1B+ stub invocations. +8 DECs promoted. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "cd549529",
       "subject": "Batch 161: Wire 3 more helpers (slippage_advanced + coverage_gate + finnhub_guard). +5 DECs promoted. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "a2c0d98c",
       "subject": "Batch 160: Rectify 56 classification anomalies (A wire + B reclassify). 9 promoted, 38 stay PARTIAL. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "960878e8",
       "subject": "Batch 159: Matrix detection sharpened - kills 2 false-positive patterns; surfaces 56 real wiring gaps. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "0274fded",
       "subject": "Batch 158: Matrix scope expanded to all 746 visible DECs + BUGs - 20 classification anomalies surfaced. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "af215364",
       "subject": "Batch 157: Close all unit + integration tier coverage gaps. Pyramid 1846/1864. Engine: 304 YES + 2 LAZY-WIRED + 51 N/A.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "4c065a68",
       "subject": "Batch 156: Refresh verification snapshot via canonical 4-step sequence. Matrix unchanged: 301 YES + 5 LAZY-WIRED + 51 N/A + 0 gaps.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "851a9ca4",
       "subject": "Batch 155: Dashboard + AUDIT_INDEX reflect coverage-driven engine verification. Pyramid 1579/1592.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "b6183f8a",
       "subject": "Batch 154: Wire 5 orphaned analytics modules into writer.py - 0 real gaps remain. Pyramid 1578/1591.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "1961f3ad",
       "subject": "Batch 153: VERIFICATION_MATRIX - coverage-driven engine consumption ground truth + 11 real gaps surfaced.",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "d3698010",
       "subject": "Batch 152: Sonnet-work review fixes - AUDIT_INDEX truth-up + spot-check audit. Pyramid 1578/1598.",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "b4bff5f9",
       "subject": "Batch 151: Remove duplicated Doc Status column/filter from decisions table - Promotion supersedes. Pyramid 743/743.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "03eb8272",
       "subject": "Batch 150: Fix dec/inv/cav status filter dropdowns (case regex + stale options). Pyramid 742/742.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "ed744a04",
       "subject": "@ Batch 149: 12 FALSE-POSITIVE bugs -> OBSOLETE, removed from dashboard. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "17ffee83",
       "subject": "@ Batch 148: BUG-NNN comment tags + 9 regression tests -> all 277 bugs resolved. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "7a4a28b0",
       "subject": "@ Batch 147: 9 AUDIT_INDEX status fixes - pipe chars + status flips. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "f49f0dfd",
       "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "badbaa0c",
       "subject": "Dashboard dropdown filters broken + BUG-258 code files missed in Batch 158. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "c45f110b",
       "subject": "BUG arc complete: update AUDIT_INDEX summary table -- 0 OPEN BUGs remaining.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "c62dd187",
       "subject": "Batch 162: BUG-111 CRITICAL -- break-and-retest strategy variants implemented. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "8372ba6d",
       "subject": "Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix. Pyramid 612/612.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "649d079a",
       "subject": "Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix. Pyramid 611/611.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "1eadb979",
       "subject": "Batch 159: BUG-028/077/079/106 false-positives - fixes already landed pre-batch. Pyramid 610/610.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "a1f835d4",
       "subject": "Batch 158: BUG-226/227 false-positives + BUG-229/245/082/263 decided + BUG-258 ATR_FALLBACK_PCT constant. Pyramid 609/609.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
-    },
-    {
-      "sha": "59ec56f9",
-      "subject": "Batch 157: BUG-275/276/279/284/285 RESOLVED-IMPLEMENTED + BUG-277/278 false-positives. bonferroni n=0, cache_key dicts, reversed dates, fixed_4r_2r, gov_contracts None. Pyramid 608/608.",
-      "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     }
   ],
   "uncommitted": {
@@ -37444,8 +37445,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 452,
-    "PARTIAL-IMPL-HELPER-ONLY": 27,
+    "RESOLVED-IMPLEMENTED": 455,
+    "PARTIAL-IMPL-HELPER-ONLY": 24,
     "REJECTED": 2
   },
   "inv_status_counts": {
@@ -37454,10 +37455,9 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 82,
+    "RESOLVED-IMPLEMENTED": 83,
     "RESOLVED-DECIDED": 168,
-    "RESOLVED": 14,
-    "UNKNOWN": 1
+    "RESOLVED": 14
   },
   "tier_status_counts": {
     "UNKNOWN": 20,

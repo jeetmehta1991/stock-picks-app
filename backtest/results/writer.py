@@ -711,7 +711,7 @@ def write_all_outputs(
         _try_stub("compute_net_sharpe_contribution_DEC131_210_420",
                   _m.compute_net_sharpe_contribution,
                   gross_sharpe_lift=0.3, annual_agent_cost_usd=10000.0,
-                  portfolio_size_usd=100000.0, portfolio_vol_annualized=0.15)
+                  portfolio_size_usd=100000.0, portfolio_vol_decimal=0.15)
         _try_stub("composite_score_DEC334",
                   _m.composite_score, win_rate=0.55, profit_factor=1.5,
                   smart_money_score=2.0)
@@ -789,16 +789,27 @@ def write_all_outputs(
         _try_stub("run_walk_forward_DEC590",
                   _imp.run_walk_forward, empty_trades)
 
-        # smart_money.py stub
+        # smart_money.py stubs
         _try_stub("get_institutional_positions_BUG186_241_DEC396",
                   _sm.get_institutional_positions, "AAPL", _date(2023, 6, 30))
+        _try_stub("get_congressional_detail_BUG083",
+                  _sm.get_congressional_detail, "AAPL", _date(2023, 6, 30), 3)
 
         # universe.py stubs
+        # DEC-321 + DEC-392: build synthetic OHLCV that passes price + volume
+        # filters so the loop body REACHES line 426 (market_cap fail-closed check).
+        _synth_dates = _pd.date_range("2023-06-01", periods=25, freq="B")
+        _synth_ohlcv = _pd.DataFrame({
+            "open":   [200.0] * 25, "high": [205.0] * 25,
+            "low":    [195.0] * 25, "close": [200.0] * 25,
+            "volume": [50_000_000] * 25,
+        }, index=_synth_dates)
         _try_stub("apply_liquidity_filter_DEC321_392",
                   _univ.apply_liquidity_filter,
-                  tickers=["AAPL"], ohlcv_dict={}, info_dict={},
-                  as_of=_date(2023, 6, 30), min_price=5.0,
-                  min_dollar_volume=10_000_000)
+                  tickers=["AAPL"], ohlcv_dict={"AAPL": _synth_ohlcv},
+                  info_dict={"AAPL": {"market_cap": 3_000_000_000_000}},
+                  as_of=_date(2023, 6, 30),
+                  min_price=5.0, min_avg_volume=1_000_000)
         _try_stub("union_universe_DEC321",
                   _univ.union_universe, as_of=_date(2023, 6, 30))
 
