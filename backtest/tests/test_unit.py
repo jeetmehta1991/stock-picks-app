@@ -6313,3 +6313,80 @@ def test_dec_403_dec_110_dec_413_dec_404_wired_into_compute_strategy_metrics():
     assert "deflated_sharpe" in m, "DEC-110/DEC-413 deflated_sharpe missing from output"
     assert "psr" in m, "DEC-110/DEC-413 psr missing from output"
     assert "sharpe_at_0bps" in m and "sharpe_at_20bps" in m, "DEC-404 cost sensitivity missing from output"
+
+
+# -----------------------------------------------------------------------------
+# DEC-458: Lead-lag intra-sector rotation strategy
+# -----------------------------------------------------------------------------
+
+def _make_momentum_df(five_day_return: float, n: int = 40) -> "pd.DataFrame":
+    base = 100.0
+    closes = [base] * (n - 5)
+    for i in range(1, 6):
+        closes.append(base * (1 + five_day_return * i / 5))
+    import pandas as pd
+    return pd.DataFrame({
+        "open":   closes,
+        "high":   [c * 1.01 for c in closes],
+        "low":    [c * 0.99 for c in closes],
+        "close":  closes,
+        "volume": [1_000_000] * n,
+    })
+
+
+def test_dec458_lead_lag_fires_on_laggards():
+    """DEC-458: lead_lag_sector_rotation fires on bottom laggards; leader excluded."""
+    from backtest.signals.screener import screen_lead_lag_sector
+    as_of = date(2024, 6, 1)
+    ohlcv = {
+        "LEAD": _make_momentum_df(0.10),
+        "MID1": _make_momentum_df(0.02),
+        "LAG1": _make_momentum_df(-0.03),
+        "LAG2": _make_momentum_df(-0.06),
+    }
+    info = {t: {"sector": "Information Technology"} for t in ohlcv}
+    cands = screen_lead_lag_sector(ohlcv, info, as_of)
+    fired = {c["ticker"] for c in cands}
+    assert "LEAD" not in fired, "Leader should not fire"
+    assert fired, "At least one laggard should fire"
+    for c in cands:
+        s = c["strategies"][0]
+        assert s["strategy"] == "lead_lag_sector_rotation"
+        assert s["direction"] == "long"
+        assert s["category"] == "rotation"
+
+
+def test_dec458_lead_lag_skips_small_sectors():
+    """DEC-458: sectors with <4 members produce no candidates."""
+    from backtest.signals.screener import screen_lead_lag_sector
+    as_of = date(2024, 6, 1)
+    df = _make_momentum_df(0.0)
+    ohlcv = {"A": df, "B": df, "C": df}
+    info = {t: {"sector": "Energy"} for t in ohlcv}
+    assert screen_lead_lag_sector(ohlcv, info, as_of) == []
+
+
+def test_dec458_lead_lag_excludes_etf_sectors():
+    """DEC-458: ETF-proxy sectors (Broad Market, Volatility, etc.) are excluded."""
+    from backtest.signals.screener import screen_lead_lag_sector
+    as_of = date(2024, 6, 1)
+    df = _make_momentum_df(-0.05)
+    ohlcv = {f"T{i}": _make_momentum_df(-0.01 * i) for i in range(5)}
+    info = {t: {"sector": "Broad Market"} for t in ohlcv}
+    assert screen_lead_lag_sector(ohlcv, info, as_of) == []
+
+
+def test_dec458_lead_lag_wired_in_screen_universe():
+    """DEC-458: lead_lag_sector_rotation appears in screen_universe output."""
+    from backtest.signals.screener import screen_universe
+    as_of = date(2024, 6, 1)
+    ohlcv = {
+        "LEAD": _make_momentum_df(0.12),
+        "MID":  _make_momentum_df(0.03),
+        "LAG1": _make_momentum_df(-0.04),
+        "LAG2": _make_momentum_df(-0.07),
+    }
+    info = {t: {"sector": "Financials"} for t in ohlcv}
+    candidates = screen_universe(ohlcv, info, as_of)
+    all_strats = [s["strategy"] for c in candidates for s in c.get("strategies", [])]
+    assert "lead_lag_sector_rotation" in all_strats, "DEC-458 not wired into screen_universe"

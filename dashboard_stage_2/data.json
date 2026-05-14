@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T02:27:06.941571+00:00",
+  "generated_at": "2026-05-14T02:37:31.228467+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -16370,7 +16370,7 @@
       "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
-        "wired": false,
+        "wired": true,
         "tested": true,
         "pushed": true,
         "n_doc_refs": 158,
@@ -16395,10 +16395,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it - wire into backtest.py/screener.py"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"
       }
     },
     {
@@ -35060,22 +35060,28 @@
   ],
   "recent_commits": [
     {
+      "sha": "e6e90dbf",
+      "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "25 minutes ago"
     },
     {
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "49 minutes ago"
+      "rel_time": "59 minutes ago"
     },
     {
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "badbaa0c",
@@ -35099,19 +35105,19 @@
       "sha": "8372ba6d",
       "subject": "Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix. Pyramid 612/612.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "649d079a",
       "subject": "Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix. Pyramid 611/611.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "1eadb979",
       "subject": "Batch 159: BUG-028/077/079/106 false-positives - fixes already landed pre-batch. Pyramid 610/610.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a1f835d4",
@@ -35171,43 +35177,43 @@
       "sha": "1b3fa64e",
       "subject": "Batch 149: BUG-010/035/051/056/076/105/108/113/182/200-203/210 batch close - 14 Phase 1B agent deferrals. Pyramid 747/747.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "81f5bd07",
       "subject": "Batch 148: BUG-057/063/069-071/093-094/097-100/212 batch close - 12 infra/Stage 3+ deferrals. Pyramid 746/746.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "bb8e4335",
       "subject": "Batch 147: BUG-139-177 + BUG-192-198 batch close - 46 INLINE-ONLY stubs RESOLVED-DECIDED. Pyramid 745/745.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "2504139f",
       "subject": "Batch 146: BUG-114-138 batch close - 24 Phase 1B deferred + BUG-133 false-positive. Pyramid 744/744.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "5a32bf79",
       "subject": "Batch 145: BUG-005 false-positive - strategies_triggered key consistent via BUG-05 fix. Pyramid 742/742.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "d462cc08",
       "subject": "Batch 144: BUG-022 + BUG-023 false-positives - strategy count refs current (108-133 layered). Pyramid 741/741.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "087674c2",
       "subject": "Batch 143: BUG-007 false-positive - --no-agents flag wired. Pyramid 740/740.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "a04b06df",
@@ -35232,17 +35238,11 @@
       "subject": "Batch 139: BUG-013 false-positive - yfinance HARD CUT (sister BUG-178). Pyramid 736/736.",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "2bae2a1a",
-      "subject": "Batch 138: BUG-012 false-positive - dedup ordering by strategy_count desc via BUG-12 fix. Pyramid 735/735.",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 7,
-    "modified": 3,
+    "count": 8,
+    "modified": 4,
     "added": 0,
     "untracked": 4,
     "deleted": 0,
@@ -35253,11 +35253,15 @@
       },
       {
         "status": "M",
-        "path": "output_smoke_test/trade_log_checkpoint.csv"
+        "path": "backtest/signals/screener.py"
       },
       {
         "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
+        "path": "backtest/tests/test_unit.py"
+      },
+      {
+        "status": "M",
+        "path": "output_smoke_test/trade_log_checkpoint.csv"
       },
       {
         "status": "??",
@@ -35455,7 +35459,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1262,
+    "total": 1266,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35531,7 +35535,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 464,
+      "test_unit": 468,
       "test_walk_forward_4fold": 6
     }
   },

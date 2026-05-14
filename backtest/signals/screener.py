@@ -1024,6 +1024,100 @@ def validate_entry_zone(
 # SCREENING PIPELINE
 # -----------------------------------------------------------------------------
 
+def screen_lead_lag_sector(
+    ohlcv_dict: dict,
+    info_dict: dict,
+    as_of: date,
+) -> list:
+    """DEC-458: Lead-lag intra-sector momentum cross-ticker candidates.
+
+    Groups tickers by GICS sector, ranks by 5-day momentum (LEAD_LAG_INTRA_SECTOR_STRATEGY
+    spec from config.py). For sectors with >=4 members: fires long on the bottom 2-3
+    laggards (mean-reversion rotation toward sector leader).
+    ETF-proxy sectors excluded so rotation targets are individual equities only.
+    """
+    from backtest.config import LEAD_LAG_INTRA_SECTOR_STRATEGY, ATR_FALLBACK_PCT
+    lookback = LEAD_LAG_INTRA_SECTOR_STRATEGY["lookback_days"]
+
+    ETF_SECTORS = {
+        "Broad Market", "Volatility", "Fixed Income",
+        "Commodities", "Emerging Markets", "International", "Small Cap",
+    }
+
+    sector_members: dict[str, list] = {}
+    for ticker, df in ohlcv_dict.items():
+        if df is None or len(df) < lookback + 2:
+            continue
+        info = info_dict.get(ticker, {})
+        sector = info.get("sector") or info.get("Sector") or "Unknown"
+        if sector in ETF_SECTORS or sector == "Unknown":
+            continue
+        try:
+            close_now  = float(df["close"].iloc[-1])
+            close_back = float(df["close"].iloc[-(lookback + 1)])
+            momentum   = (close_now - close_back) / close_back if close_back > 0 else 0.0
+        except (IndexError, ValueError, ZeroDivisionError):
+            continue
+        sector_members.setdefault(sector, []).append(
+            {"ticker": ticker, "df": df, "momentum": momentum}
+        )
+
+    candidates = []
+    for sector, members in sector_members.items():
+        if len(members) < 4:
+            continue
+        members.sort(key=lambda x: x["momentum"], reverse=True)
+        leader   = members[0]
+        n        = len(members)
+        lag_count = 3 if n >= 5 else 2
+        laggards  = members[n - lag_count:]
+
+        for rank_from_bottom, lag in enumerate(reversed(laggards), 1):
+            ticker = lag["ticker"]
+            df_lag = lag["df"]
+            close  = float(df_lag["close"].iloc[-1])
+            try:
+                atr = float(
+                    (df_lag["high"] - df_lag["low"]).rolling(14).mean().iloc[-1]
+                )
+                if not (atr > 0):
+                    atr = close * ATR_FALLBACK_PCT
+            except Exception:
+                atr = close * ATR_FALLBACK_PCT
+            strat_entry = {
+                "strategy":        "lead_lag_sector_rotation",
+                "direction":       "long",
+                "category":        "rotation",
+                "signals_used":    ["sector_5d_momentum_rank", "intra_sector_lag"],
+                "context_bullets": [
+                    f"Sector {sector}: laggard rank {rank_from_bottom} of {n}",
+                    f"5d return {lag['momentum']:.1%} vs leader {leader['ticker']} ({leader['momentum']:.1%})",
+                    "Rotation signal: mean-reversion toward sector leader",
+                ],
+            }
+            candidates.append({
+                "ticker":             ticker,
+                "as_of":              as_of,
+                "liquidity_ok":       True,
+                "fail_reason":        None,
+                "strategies":         [strat_entry],
+                "long_strategies":    [dict(strat_entry)],
+                "short_strategies":   [],
+                "avoid_strategies":   [],
+                "strategy_count":     1,
+                "long_count":         1,
+                "short_count":        0,
+                "avoid_count":        0,
+                "tech_signal_count":  0,
+                "signals":            {},
+                "last_close":         round(close, 4),
+                "atr":                round(atr, 4),
+                "initial_stop_long":  round(close * 0.90, 4),
+                "initial_stop_short": round(close * 1.10, 4),
+            })
+    return candidates
+
+
 def screen_instrument(
     ticker: str,
     df: pd.DataFrame,
@@ -1124,7 +1218,20 @@ def screen_universe(
         result = screen_instrument(ticker, df, info, as_of, regime)
         if result.get("liquidity_ok") and result.get("strategy_count", 0) >= min_strategies:
             candidates.append(result)
+    # DEC-458: merge lead-lag cross-ticker candidates (sector rotation)
+    lead_lag = screen_lead_lag_sector(ohlcv_dict, info_dict, as_of)
+    existing_map = {c["ticker"]: c for c in candidates}
+    for ll in lead_lag:
+        t = ll["ticker"]
+        if t in existing_map:
+            existing_map[t]["strategies"].extend(ll["strategies"])
+            existing_map[t]["long_strategies"].extend(ll["long_strategies"])
+            existing_map[t]["strategy_count"] += 1
+            existing_map[t]["long_count"] += 1
+        else:
+            candidates.append(ll)
+
     candidates.sort(key=lambda x: (x["strategy_count"], x["tech_signal_count"]), reverse=True)
-    logger.info("screen_universe [%s] regime=%s: %d/%d passed",
-                as_of, regime, len(candidates), len(ohlcv_dict))
+    logger.info("screen_universe [%s] regime=%s: %d/%d passed (incl. %d lead-lag)",
+                as_of, regime, len(candidates), len(ohlcv_dict), len(lead_lag))
     return candidates
