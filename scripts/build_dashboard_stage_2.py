@@ -381,6 +381,7 @@ TEST_PYRAMID_LAYERS = {
         "test_prefetch_scripts_no_unicode.py",
         "test_phase1a_runner_no_unicode.py",
         "test_dec_unit_coverage.py",
+        "test_dec_unit_coverage_anomalies.py",
     ],
     "smoke": [
         "test_smoke.py", "test_e2e_phase1a_smoke.py", "test_e2e.py",
@@ -408,6 +409,7 @@ TEST_PYRAMID_LAYERS = {
         "test_dec513_extended_signals.py", "test_dec514_fill_methodology.py",
         "test_dec517_r_multiple_exits.py", "test_dec518_dec521_exits.py",
         "test_dec_integration_coverage.py",
+        "test_dec_integration_coverage_anomalies.py",
     ],
     "system": [
         "test_gate_pre_phase_1a_entry.py", "test_gates.py",

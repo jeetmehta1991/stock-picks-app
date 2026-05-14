@@ -34,7 +34,8 @@ TEST_PYRAMID_LAYERS: Dict[str, List[str]] = {
              "test_inv041_path_restricted_commits.py",
              "test_prefetch_scripts_no_unicode.py",
              "test_phase1a_runner_no_unicode.py",
-             "test_dec_unit_coverage.py"],
+             "test_dec_unit_coverage.py",
+             "test_dec_unit_coverage_anomalies.py"],
     "smoke": ["test_smoke.py", "test_e2e_phase1a_smoke.py", "test_e2e.py",
               "test_aaii_smoke.py", "test_apewisdom_smoke.py",
               "test_cftc_cot_smoke.py", "test_cnn_fg_smoke.py",
@@ -57,7 +58,8 @@ TEST_PYRAMID_LAYERS: Dict[str, List[str]] = {
                     "test_dec514_fill_methodology.py",
                     "test_dec517_r_multiple_exits.py",
                     "test_dec518_dec521_exits.py",
-                    "test_dec_integration_coverage.py"],
+                    "test_dec_integration_coverage.py",
+                    "test_dec_integration_coverage_anomalies.py"],
     "system": ["test_gate_pre_phase_1a_entry.py", "test_gates.py",
                "test_no_live_api_hard_cut.py", "test_preflight.py"],
     "functional": ["test_doc_count_consistency.py",
@@ -85,26 +87,39 @@ TEST_PYRAMID_LAYERS: Dict[str, List[str]] = {
 LAYER_ORDER = list(TEST_PYRAMID_LAYERS.keys())
 
 
-def load_implemented_items() -> Tuple[List[str], List[str]]:
-    """Read dashboard data.js and return DEC + BUG ID lists with promotion_path.tier == IMPLEMENTED."""
+def load_all_items() -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
+    """Read dashboard data.js and return ALL visible DEC + BUG entries (excluding
+    SUPERSEDED + OBSOLETE which are hidden from the dashboard view).
+
+    Returns (decisions, bugs) where each list contains (id, tier) tuples so the
+    matrix can group its summary by promotion tier (IMPLEMENTED / DECIDED /
+    DEFERRED / etc.). Per owner directive 2026-05-14: expand scope from
+    IMPLEMENTED-only (357) to all visible items so DECIDED/DEFERRED entries also
+    surface in the audit - any that accidentally have engine consumption signals
+    the classification is wrong.
+    """
     data_js = (REPO / "dashboard_stage_2" / "data.js").read_text(encoding="utf-8")
     js = re.sub(r"^const STAGE2_DATA = ", "", data_js.strip())
     js = re.sub(r";$", "", js.strip())
     data = json.loads(js)
 
-    dec_ids: List[str] = []
+    HIDDEN = {"SUPERSEDED", "OBSOLETE"}
+
+    dec_items: List[Tuple[str, str]] = []
     for d in data["decisions"]:
-        tier = (d.get("promotion_path") or {}).get("tier")
-        if tier == "IMPLEMENTED":
-            dec_ids.append(d.get("short_id") or d["id"])
+        tier = (d.get("promotion_path") or {}).get("tier") or "UNKNOWN"
+        if tier in HIDDEN:
+            continue
+        dec_items.append((d.get("short_id") or d["id"], tier))
 
-    bug_ids: List[str] = []
+    bug_items: List[Tuple[str, str]] = []
     for b in data["bugs"]:
-        tier = (b.get("promotion_path") or {}).get("tier")
-        if tier == "IMPLEMENTED":
-            bug_ids.append(b.get("short_id") or b["id"])
+        tier = (b.get("promotion_path") or {}).get("tier") or "UNKNOWN"
+        if tier in HIDDEN:
+            continue
+        bug_items.append((b.get("short_id") or b["id"], tier))
 
-    return dec_ids, bug_ids
+    return dec_items, bug_items
 
 
 def grep_id_in_source(item_id: str, source_files: List[Path]) -> List[Tuple[Path, int]]:
@@ -336,13 +351,18 @@ def collect_source_files() -> List[Path]:
     return [p for p in src.rglob("*.py") if "tests" not in p.parts]
 
 
-def emit_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict], source_files: List[Path]) -> str:
-    """items: list of (kind, id) tuples. kind in {DEC, BUG}."""
+def emit_matrix(items: List[Tuple[str, str, str]], coverage: Dict[str, Dict], source_files: List[Path]) -> str:
+    """items: list of (kind, id, tier) tuples. kind in {DEC, BUG}; tier in {IMPLEMENTED, DECIDED, DEFERRED, ...}."""
     lines: List[str] = []
     lines.append("# VERIFICATION_MATRIX.md")
     lines.append("")
     lines.append("**Generated:** see `scripts/build_verification_matrix.py`. "
-                 "Per-item ground truth for the 343 IMPLEMENTED claims (DEC + BUG).")
+                 "Per-item ground truth for ALL visible DECs + BUGs in scope "
+                 "(IMPLEMENTED / DECIDED / DEFERRED / UNKNOWN tiers; SUPERSEDED + "
+                 "OBSOLETE hidden by the dashboard are excluded). Surfaces both "
+                 "engine-consumption gaps AND classification anomalies "
+                 "(DECIDED/DEFERRED items that ARE engine-consumed - either "
+                 "misclassified or accidentally pre-wired).")
     lines.append("")
     lines.append("Columns:")
     lines.append("- `engine`: did the function containing the source tag execute during the canonical "
@@ -367,11 +387,31 @@ def emit_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict], source_
                "engine_FUNC_DEAD": 0, "engine_NO": 0, "engine_NA": 0}
     by_layer_gap_count = {l: 0 for l in LAYER_ORDER}
     gap_rows: List[Tuple[str, str, str, Dict[str, str]]] = []  # (id, engine_status, evidence, layer_dict)
+    # Cross-tier anomaly tracking: items whose promotion-tier doesn't match
+    # their engine status (e.g. DECIDED with engine=YES means there IS code,
+    # so it shouldn't be DECIDED). Surfaces classification errors.
+    anomalies: List[Tuple[str, str, str, str]] = []  # (id, tier, engine, note)
+    by_tier_count: Dict[str, int] = {}
 
-    for kind, item_id in items:
+    for kind, item_id, tier in items:
+        by_tier_count[tier] = by_tier_count.get(tier, 0) + 1
         hits = grep_id_in_source(item_id, source_files)
         engine_status, evidence = is_engine_consumed(hits, coverage)
         layer_status = grep_id_in_tests(item_id)
+
+        # Anomaly detection:
+        #   - DECIDED with engine=YES -> there IS code; DECIDED (methodology-only) is wrong classification
+        #   - DEFERRED with engine=YES -> helper is already running in current phase; might not actually be deferred
+        #   - IMPLEMENTED with engine=NO/FUNC-DEAD -> claim is wrong (real wiring gap)
+        if tier == "DECIDED" and engine_status == "YES":
+            anomalies.append((item_id, tier, engine_status,
+                              "DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED?"))
+        elif tier == "DEFERRED" and engine_status == "YES":
+            anomalies.append((item_id, tier, engine_status,
+                              "DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification?"))
+        elif tier == "IMPLEMENTED" and engine_status in ("NO", "FUNC-DEAD"):
+            anomalies.append((item_id, tier, engine_status,
+                              "IMPLEMENTED but engine never reaches the tagged code - wiring gap"))
 
         # Tally
         if engine_status == "YES":
@@ -404,7 +444,15 @@ def emit_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict], source_
         "",
         "## Summary",
         "",
-        f"- Total items audited: **{len(items)}**",
+        f"- Total items audited: **{len(items)}** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)",
+        "",
+        "**By promotion tier:**",
+    ]
+    for t in sorted(by_tier_count, key=lambda x: -by_tier_count[x]):
+        summary_lines.append(f"- {t}: {by_tier_count[t]}")
+    summary_lines.extend([
+        "",
+        "**By coverage-driven engine status:**",
         f"- Engine YES (executed): **{summary['engine_YES']}**",
         f"- Engine LAZY-WIRED (all tagged files wired via lazy import chains): **{summary['engine_LAZY_WIRED']}** "
         "(import chain exists; condition gating the call not met in this small backtest)",
@@ -415,9 +463,23 @@ def emit_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict], source_
         "(real wiring gap  -  helper file imported nowhere in the engine path)",
         f"- Engine N/A (no code expected): **{summary['engine_NA']}**",
         "",
+        f"### Classification anomalies (tier vs engine mismatch): **{len(anomalies)}**",
+        "",
+    ])
+    if anomalies:
+        summary_lines.append("| ID | Tier | Engine | Note |")
+        summary_lines.append("|---|---|---|---|")
+        for iid, tier, eng, note in anomalies[:100]:
+            summary_lines.append(f"| `{iid}` | {tier} | {eng} | {note} |")
+        if len(anomalies) > 100:
+            summary_lines.append(f"| ... {len(anomalies) - 100} more ... | | | |")
+    else:
+        summary_lines.append("None  -  every item's promotion tier matches its coverage-driven engine status. Classifications are internally consistent.")
+    summary_lines.extend([
+        "",
         "### Pyramid coverage gaps (count of engine-consumed items missing per tier)",
         "",
-    ]
+    ])
     for l in LAYER_ORDER:
         summary_lines.append(f"- `{l}`: **{by_layer_gap_count[l]}** items lack a reference in this tier's test files")
     summary_lines.append("")
@@ -441,7 +503,7 @@ def emit_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict], source_
     return "\n".join(lines[:insert_idx] + summary_lines + lines[insert_idx:]) + "\n"
 
 
-def build_json_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict],
+def build_json_matrix(items: List[Tuple[str, str, str]], coverage: Dict[str, Dict],
                       source_files: List[Path]) -> Dict:
     """Machine-readable matrix consumed by build_dashboard_stage_2.py.
 
@@ -449,18 +511,19 @@ def build_json_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict],
       {
         "generated_at": iso-timestamp,
         "items": {
-          "DEC-018": {"engine": "YES", "evidence": "...", "kind": "DEC"},
+          "DEC-018": {"engine": "YES", "evidence": "...", "kind": "DEC", "tier": "IMPLEMENTED"},
           ...
         }
       }
     """
     from datetime import datetime, timezone
     out_items: Dict[str, Dict] = {}
-    for kind, item_id in items:
+    for kind, item_id, tier in items:
         hits = grep_id_in_source(item_id, source_files)
         status, evidence = is_engine_consumed(hits, coverage)
         out_items[item_id] = {
             "kind":     kind,
+            "tier":     tier,
             "engine":   status,
             "evidence": evidence,
         }
@@ -471,10 +534,10 @@ def build_json_matrix(items: List[Tuple[str, str]], coverage: Dict[str, Dict],
 
 
 def main() -> int:
-    print("Loading implemented items from dashboard data.js ...")
-    dec_ids, bug_ids = load_implemented_items()
-    print(f"  IMPLEMENTED DECs: {len(dec_ids)}")
-    print(f"  IMPLEMENTED BUGs: {len(bug_ids)}")
+    print("Loading ALL visible items from dashboard data.js (excluding SUPERSEDED/OBSOLETE) ...")
+    dec_items, bug_items = load_all_items()
+    print(f"  Visible DECs: {len(dec_items)}")
+    print(f"  Visible BUGs: {len(bug_items)}")
 
     print("Loading coverage report ...")
     coverage = load_coverage()
@@ -484,7 +547,8 @@ def main() -> int:
     source_files = collect_source_files()
     print(f"  source files: {len(source_files)}")
 
-    items = [("DEC", i) for i in dec_ids] + [("BUG", i) for i in bug_ids]
+    items = ([("DEC", iid, tier) for iid, tier in dec_items]
+             + [("BUG", iid, tier) for iid, tier in bug_items])
 
     print("Building Markdown matrix ...")
     md = emit_matrix(items, coverage, source_files)

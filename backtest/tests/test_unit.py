@@ -5195,8 +5195,8 @@ def test_verification_matrix_consumed_by_dashboard_batch_155():
         "verification_matrix.json must have items dict"
     # Schema: every item has engine + evidence
     for iid, entry in list(vm["items"].items())[:5]:
-        assert "engine" in entry and "evidence" in entry, \
-            f"matrix item {iid} missing engine/evidence keys"
+        assert "engine" in entry and "evidence" in entry and "tier" in entry, \
+            f"matrix item {iid} missing engine/evidence/tier keys"
 
     # (b) data.js carries coverage_engine on every dec + bug + inv
     data_js = (repo / "dashboard_stage_2" / "data.js").read_text(encoding="utf-8")

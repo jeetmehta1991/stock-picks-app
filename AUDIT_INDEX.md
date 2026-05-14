@@ -1037,17 +1037,37 @@
 - For every IMPLEMENTED DEC + RESOLVED-IMPLEMENTED BUG, the matrix records whether the function containing the source tag actually executed (`YES`), is reached via a lazy import chain confirmed in the coverage report (`LAZY-WIRED`), exists in an active module but never ran (`FUNC-DEAD`), or has zero coverage anywhere (`NO`).
 - The dashboard's `Engine` column shows this status verbatim. If you see anything other than `YES`, `LAZY-WIRED`, or `N/A` on an IMPLEMENTED claim, the claim is unverified.
 
-**Latest snapshot (2026-05-14, Batch 157 — full coverage closure):**
-- 357 IMPLEMENTED items audited
-- **304 `YES` engine-consumed** (up from 301 after Phase C expanded backtest converted 3 LAZY-WIRED items to YES)
-- **2 `LAZY-WIRED`** import chain confirmed (down from 5; remaining 2 need either an even larger backtest or specific data conditions not yet triggered)
-- 51 `N/A` methodology decisions (no code expected)
+**Latest snapshot (2026-05-14, Batch 158 — scope-expanded):**
+
+Per owner directive 2026-05-14: matrix scope expanded from IMPLEMENTED-only (357) to ALL visible DECs + BUGs (746). Surfaces both engine-consumption status AND classification anomalies (DECIDED/DEFERRED items whose code IS engine-consumed).
+
+**By promotion tier (746 visible items, SUPERSEDED + OBSOLETE hidden):**
+- IMPLEMENTED: 357
+- DECIDED: 213
+- DEFERRED: 174
+- UNKNOWN: 2
+
+**By coverage-driven engine status:**
+- **325 `YES`** engine-consumed
+- **3 `LAZY-WIRED`** import chain confirmed
+- **418 `N/A`** no source tag (methodology / scope decisions, no code expected)
 - 0 `NO` / 0 `FUNC-DEAD` / 0 `PARTIAL-ORPHAN`
 
-**Pyramid coverage gaps closed (Batch 157):**
-- Unit tier: **0 gaps** (was 65 — closed by `backtest/tests/test_dec_unit_coverage.py` with per-DEC import-smoke stubs)
-- Integration tier: **0 gaps** (was 202 — closed by `backtest/tests/test_dec_integration_coverage.py`)
-- Narrow tiers (smoke/system/functional/regression/data_integrity/performance/acceptance/property/snapshot/contract/compatibility) still show raw `no` counts in the matrix but default to N/A in the dashboard via LAYER_DEFAULT_NA — these are not real gaps for methodology-tier items.
+**Pyramid coverage gaps (engine-consumed items only):**
+- Unit tier: **0 gaps** (closed by `backtest/tests/test_dec_unit_coverage.py` + `test_dec_unit_coverage_anomalies.py`)
+- Integration tier: **0 gaps** (closed by `backtest/tests/test_dec_integration_coverage.py` + `test_dec_integration_coverage_anomalies.py`)
+- Narrow tiers default to N/A in the dashboard via LAYER_DEFAULT_NA (not real gaps).
+
+**Classification anomalies surfaced (20 items — owner reclassification candidates):**
+
+Items tagged DEFERRED or DECIDED in AUDIT_INDEX but whose code IS engine-consumed in the canonical backtest. Either intentionally pre-wired in Phase 1A (in which case the tier should be IMPLEMENTED) or genuinely misclassified.
+
+| Tier | IDs |
+|---|---|
+| DEFERRED → YES (16 DECs + 2 BUGs) | DEC-062, DEC-138, DEC-216, DEC-234, DEC-378, DEC-417, DEC-425, DEC-426, DEC-427, DEC-428, DEC-429, DEC-430, DEC-433, DEC-436, DEC-463, DEC-467, BUG-027, BUG-135 |
+| DECIDED → YES (2 BUGs) | BUG-186, BUG-241 |
+
+Owner action: review each anomaly in VERIFICATION_MATRIX.md and either (a) reclassify to IMPLEMENTED if pre-wiring is intentional, or (b) un-wire from the engine path if the deferral is correct. Unit + integration test stubs have been added preemptively so the items have coverage either way.
 
 **Newly-wired in Batch 154** (writer.py post-backtest analytics block, previously orphaned with zero importer chain):
 - DEC-082 / DEC-405 → `backtest/results/stress_tests.py` (stress_metrics.json)

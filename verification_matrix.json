@@ -1,1790 +1,4475 @@
 {
-  "generated_at": "2026-05-14T17:28:16.634076+00:00",
+  "generated_at": "2026-05-14T18:16:56.574764+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-002": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-003": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-004": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-005": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-006": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-007": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-008": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-009": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-010": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-011": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-012": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-013": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-015": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1400-1420 executed in backtest/results/metrics.py"
     },
     "DEC-018": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-019": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
     },
     "DEC-021": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-027": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-028": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-029": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-029-A": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-029-B": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-029-C": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-031": {
+      "kind": "DEC",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-033": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-034": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-035": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-036": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-037": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-038": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-039": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-040": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
+    "DEC-041": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-043": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-045": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-046": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-047": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-048": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-049": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-050": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-051": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-052": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-053": {
+      "kind": "DEC",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-054": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-055": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-056": {
+      "kind": "DEC",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-057": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 128-214 executed in backtest/run_phase1a.py"
     },
+    "DEC-058": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-059": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-060": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-061": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-062": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-067": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-070": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-071": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-072": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-073": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-074": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-075": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-076": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-078": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-078A": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1260-1293 executed in backtest/results/metrics.py"
     },
+    "DEC-078B": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-079": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-081": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 416-468 executed in backtest/results/metrics.py"
     },
     "DEC-082": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/stress_tests.py (94%)"
     },
     "DEC-083": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-084": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-085": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-086": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-087": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-088": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-089": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1400-1420 executed in backtest/results/metrics.py"
     },
+    "DEC-090": {
+      "kind": "DEC",
+      "tier": "UNKNOWN",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
     "DEC-091": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-092": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
     },
+    "DEC-093": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-094": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-095": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 801-819 executed in backtest/engine/improvements.py"
     },
+    "DEC-096": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-097": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-098": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
     },
     "DEC-100": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 615-652 executed in backtest/results/metrics.py"
     },
     "DEC-102": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-106": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-107": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-108": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 58-127 executed in backtest/engine/backtest.py"
     },
     "DEC-110": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 500-558 executed in backtest/results/metrics.py"
     },
     "DEC-111": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 2160-2430 executed in backtest/results/metrics.py"
     },
+    "DEC-112": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-113": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-114": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-116": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-117": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-118": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-119": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
     },
     "DEC-120": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
     },
+    "DEC-121": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-122": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-123": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1447-1467 executed in backtest/results/metrics.py"
     },
     "DEC-124": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 59-71 executed in backtest/engine/exit_context.py"
     },
     "DEC-125": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-126": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
     },
+    "DEC-127": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-128": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
+    "DEC-129": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-130": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-131": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-132": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-133": {
+      "kind": "DEC",
+      "tier": "UNKNOWN",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-134": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1541-1561 executed in backtest/results/metrics.py"
     },
     "DEC-135": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-136": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-138": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-139": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-141": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1564-1589 executed in backtest/results/metrics.py"
     },
     "DEC-142": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1592-1615 executed in backtest/results/metrics.py"
     },
+    "DEC-143": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-144": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 978-1002 executed in backtest/results/metrics.py"
     },
     "DEC-145": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1618-1652 executed in backtest/results/metrics.py"
     },
+    "DEC-146": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-147": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-148": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1005-1028 executed in backtest/results/metrics.py"
     },
     "DEC-149": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 58-127 executed in backtest/engine/backtest.py"
     },
     "DEC-150": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-151": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-152": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-153": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/regime_stratified_split.py (94%)"
     },
     "DEC-155": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
     },
+    "DEC-156": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-157": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-158": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-159": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 639-689 executed in backtest/engine/improvements.py"
     },
+    "DEC-160": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-161": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-162": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-163": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-164": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-166": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-167": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-168": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-169": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-170": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-171": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-172": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-173": {
+      "kind": "DEC",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-174": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-175": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1005-1028 executed in backtest/results/metrics.py"
     },
+    "DEC-176": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-177": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-178": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 692-704 executed in backtest/engine/improvements.py"
     },
     "DEC-179": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 305-408 executed in backtest/engine/backtest.py"
     },
+    "DEC-180": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-181": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-182": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-183": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 692-704 executed in backtest/engine/improvements.py"
     },
     "DEC-184": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-185": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-187": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-188": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-189": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-190": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-191": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-192": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-193": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-194": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-195": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-196": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-197": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-198": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-199": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-200": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-201": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1423-1444 executed in backtest/results/metrics.py"
     },
+    "DEC-202": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-203": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-204": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-205": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-206": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1655-1680 executed in backtest/results/metrics.py"
     },
     "DEC-207": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-208": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
     },
     "DEC-209": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 684-740 executed in backtest/results/metrics.py"
     },
     "DEC-210": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1865-1897 executed in backtest/results/metrics.py"
     },
     "DEC-211": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1900-1931 executed in backtest/results/metrics.py"
     },
     "DEC-212": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1683-1718 executed in backtest/results/metrics.py"
     },
     "DEC-213": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-214": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-215": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-216": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-217": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-218": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-219": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-220": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-222": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-225": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 801-819 executed in backtest/engine/improvements.py"
     },
     "DEC-227": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
     },
+    "DEC-228": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-229": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-230": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-231": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-232": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-233": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 910-962 executed in backtest/engine/improvements.py"
     },
+    "DEC-234": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
     "DEC-235": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 479-491 executed in backtest/engine/backtest.py"
     },
+    "DEC-236": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-237": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-238": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-239": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-240": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-241": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 228-287 executed in backtest/results/metrics.py"
     },
+    "DEC-242": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-243": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-244": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-245": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-246": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/quant_audit.py (16%)"
     },
     "DEC-247": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/deflated_sharpe.py (16%)"
     },
+    "DEC-248": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-249": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-250": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/edge_decay.py (93%)"
     },
     "DEC-251": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-252": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-253": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-254": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-255": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1541-1561 executed in backtest/results/metrics.py"
     },
     "DEC-256": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-257": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-258": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-259": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-260": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 910-962 executed in backtest/engine/improvements.py"
     },
     "DEC-261": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-262": {
+      "kind": "DEC",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-263": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-265": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-266": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-267": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-268": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-269": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-270": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-271": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-272": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-273": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-274": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-275": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-276": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-277": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-278": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-279": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 2077-2118 executed in backtest/results/metrics.py"
     },
     "DEC-280": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
     },
+    "DEC-281": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-282": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-283": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-284": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 655-681 executed in backtest/results/metrics.py"
     },
+    "DEC-285": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-286": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-287": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1979-2037 executed in backtest/results/metrics.py"
     },
+    "DEC-289": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-290": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-291": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-292": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-293": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-294": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-295": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-296": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-297": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-298": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-301": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 64-171 executed in backtest/data/macro.py"
     },
     "DEC-302": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/macro.py (67%)"
     },
     "DEC-303": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-304": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/macro.py (67%)"
     },
     "DEC-305": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 50-76 executed in backtest/data/fetcher.py"
     },
+    "DEC-306": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-307": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 107-262 executed in backtest/data/cache.py"
     },
     "DEC-308": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 265-324 executed in backtest/data/cache.py"
     },
     "DEC-309": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/cache.py (45%)"
     },
+    "DEC-310": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-311": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 120-183 executed in backtest/engine/exit_strategies.py"
     },
     "DEC-312": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 374-452 executed in backtest/engine/exit_strategies.py"
     },
+    "DEC-313": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-314": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-315": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/circuit_breakers.py (56%)"
     },
     "DEC-316": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-317": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 58-127 executed in backtest/engine/backtest.py"
     },
     "DEC-318": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-319": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-320": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 238-290 executed in backtest/data/sentiment.py"
     },
     "DEC-321": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
     "DEC-323": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
     "DEC-324": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 280-346 executed in backtest/data/smart_money.py"
     },
     "DEC-325": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 446-493 executed in backtest/data/smart_money.py"
     },
+    "DEC-328": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-329": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-330": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 757-780 executed in backtest/results/metrics.py"
     },
+    "DEC-331": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-332": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-333": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/sentiment.py (53%)"
     },
     "DEC-334": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1327-1361 executed in backtest/results/metrics.py"
     },
     "DEC-335": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-338": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-339": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-340": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-341": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
+    "DEC-343": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-344": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-345": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-347": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-348": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-349": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-350": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-352": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-353": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-354": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-355": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-356": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-357": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-358": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-359": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-360": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-361": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-362": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-363": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-364": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-365": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-366": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
     },
+    "DEC-367": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-368": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-369": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-370": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-371": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-372": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-373": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-374": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-375": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-376": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-377": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-378": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-379": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-380": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-381": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 107-262 executed in backtest/data/cache.py"
     },
     "DEC-382": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 265-324 executed in backtest/data/cache.py"
     },
+    "DEC-383": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-384": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-385": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-386": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-387": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-388": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 58-127 executed in backtest/engine/backtest.py"
     },
     "DEC-389": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-390": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-391": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-392": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 380-452 executed in backtest/data/universe.py"
     },
+    "DEC-393": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-394": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
+    "DEC-395": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-396": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 446-493 executed in backtest/data/smart_money.py"
     },
+    "DEC-398": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-399": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-400": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1176-1212 executed in backtest/results/metrics.py"
     },
     "DEC-401": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/multi_test.py (16%)"
     },
     "DEC-402": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 416-468 executed in backtest/results/metrics.py"
     },
     "DEC-403": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 471-497 executed in backtest/results/metrics.py"
     },
     "DEC-404": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 561-583 executed in backtest/results/metrics.py"
     },
     "DEC-405": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/seven_gate_verdict.py (44%)"
     },
     "DEC-406": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-407": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-408": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 290-346 executed in backtest/results/metrics.py"
     },
     "DEC-409": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 290-346 executed in backtest/results/metrics.py"
     },
+    "DEC-410": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-411": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-413": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 500-558 executed in backtest/results/metrics.py"
     },
     "DEC-414": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 107-151 executed in backtest/results/metrics.py"
     },
     "DEC-415": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/rolling_sharpe_test.py (52%)"
     },
     "DEC-416": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 154-225 executed in backtest/results/metrics.py"
     },
-    "DEC-420": {
+    "DEC-417": {
       "kind": "DEC",
+      "tier": "DEFERRED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-418": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-419": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-420": {
+      "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-421": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-422": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-423": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/results/bootstrap_ci.py (69%)"
     },
+    "DEC-425": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-426": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-427": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-428": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-429": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-430": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
     "DEC-431": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-432": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 610-649 executed in backtest/signals/technical.py"
     },
+    "DEC-433": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-434": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-435": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-436": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-437": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-438": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-439": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-440": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-441": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-442": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-443": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-444": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-445": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-446": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
     },
+    "DEC-447": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-448": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-449": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-450": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-451": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-453": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-454": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-455": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-456": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-457": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-458": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-459": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-460": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-461": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-462": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
+    "DEC-463": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
     "DEC-464": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-465": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-466": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "DEC-467": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-468": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-486": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-487": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-488": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-477": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
     "DEC-478": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-479": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-483": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 192-203 executed in backtest/data/universe.py"
     },
     "DEC-484": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-485": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-490": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-489": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-469": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-470": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-471": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-472": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-473": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-474": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-475": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-476": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-480": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-481": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-491": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-492": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-493": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "DEC-496": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-495": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-494": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
     "DEC-497": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/cache.py (45%)"
     },
+    "DEC-498": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-499": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 669-756 executed in backtest/data/universe.py"
     },
     "DEC-500": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-501": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-502": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-503": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/fetcher.py (25%)"
     },
     "DEC-508": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-507": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/macro.py (67%)"
     },
     "DEC-506": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-505": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-610": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-609": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-608": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-607": {
+      "kind": "DEC",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-606": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "DEC-605": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-597": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-598": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-599": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-600": {
+      "kind": "DEC",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-601": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-602": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-603": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-604": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "DEC-596": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-594": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 58-127 executed in backtest/engine/backtest.py"
     },
     "DEC-595": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-591": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-592": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "DEC-593": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "DEC-589": {
+      "kind": "DEC",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "DEC-590": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 183-342 executed in backtest/engine/improvements.py"
     },
     "DEC-504": {
       "kind": "DEC",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
     "BUG-001": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-002": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-003": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/exit_manager.py (85%)"
     },
     "BUG-004": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-005": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "LAZY-WIRED",
       "evidence": "import chain exists for all tags; gating condition not met (backtest/agents/pipeline.py)"
     },
     "BUG-006": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 106-176 executed in backtest/engine/improvements.py"
     },
     "BUG-007": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-008": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-009": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 64-133 executed in backtest/signals/technical.py"
     },
+    "BUG-010": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/agents/pipeline.py)"
+    },
     "BUG-011": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 216-226 executed in backtest/signals/screener.py"
     },
     "BUG-012": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-013": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-014": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-015": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 40-66 executed in backtest/results/metrics.py"
     },
     "BUG-016": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-017": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-018": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1394-1557 executed in backtest/engine/backtest.py"
     },
     "BUG-019": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-020": {
+      "kind": "BUG",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-021": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 39-51 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-022": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/signals/screener.py (91%)"
     },
     "BUG-023": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/signals/screener.py (91%)"
     },
-    "BUG-026": {
+    "BUG-024": {
       "kind": "BUG",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
+    "BUG-026": {
+      "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-027": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "function 1017-1116 executed in backtest/engine/improvements.py"
+    },
     "BUG-028": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 181-215 executed in backtest/signals/technical.py"
     },
     "BUG-029": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 305-408 executed in backtest/engine/backtest.py"
     },
     "BUG-030": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "BUG-031": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "BUG-032": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "BUG-033": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "BUG-034": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "BUG-035": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-036": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-037": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1197-1243 executed in backtest/engine/improvements.py"
     },
+    "BUG-038": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-039": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-040": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-041": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-043": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-045": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-046": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-047": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-048": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-049": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-050": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-051": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-052": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-054": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 652-660 executed in backtest/signals/technical.py"
     },
     "BUG-055": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 477-541 executed in backtest/signals/technical.py"
     },
+    "BUG-056": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-057": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-058": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-059": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-060": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 986-1020 executed in backtest/signals/screener.py"
     },
     "BUG-061": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
+    "BUG-063": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-064": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-065": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-066": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-068": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-069": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-070": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-071": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-073": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-074": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-075": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 2160-2430 executed in backtest/results/metrics.py"
     },
+    "BUG-076": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-077": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1121-1204 executed in backtest/signals/screener.py"
     },
     "BUG-078": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 481-617 executed in backtest/engine/exit_manager.py"
     },
     "BUG-079": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-080": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 481-617 executed in backtest/engine/exit_manager.py"
     },
     "BUG-081": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
+    "BUG-082": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-083": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1050-1097 executed in backtest/data/smart_money.py"
     },
+    "BUG-084": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-085": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-086": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-087": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-088": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-089": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-090": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-091": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-092": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-093": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-094": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-095": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "BUG-096": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 2497-2582 executed in backtest/results/metrics.py"
     },
+    "BUG-097": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-098": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-099": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-100": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-101": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-102": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-103": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-104": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-105": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-106": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-107": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-108": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-109": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-110": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-111": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/signals/screener.py (91%)"
     },
+    "BUG-112": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-113": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-178": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-179": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-180": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-182": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-184": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-186": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "YES",
+      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+    },
+    "BUG-187": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-188": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-189": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-190": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-191": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-199": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-200": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-202": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-203": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-270": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 353-439 executed in backtest/data/smart_money.py"
     },
     "BUG-271": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
     },
     "BUG-272": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
     },
     "BUG-273": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
     },
     "BUG-274": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-275": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 1123-1190 executed in backtest/engine/improvements.py"
     },
     "BUG-276": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "LAZY-WIRED",
       "evidence": "import chain exists for all tags; gating condition not met (backtest/agents/pipeline.py)"
     },
     "BUG-279": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 107-262 executed in backtest/data/cache.py"
     },
+    "BUG-281": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-282": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-283": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-284": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-214": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 417-478 executed in backtest/engine/exit_manager.py"
     },
     "BUG-215": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/exit_manager.py (85%)"
     },
     "BUG-216": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-217": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/smart_money.py (25%)"
     },
     "BUG-218": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 271-299 executed in backtest/engine/backtest.py"
     },
+    "BUG-219": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-220": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-221": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-222": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 130-157 executed in backtest/data/universe.py"
     },
+    "BUG-223": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-224": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 50-76 executed in backtest/data/fetcher.py"
     },
     "BUG-225": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 34-61 executed in backtest/engine/regime_filter.py"
     },
     "BUG-205": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/improvements.py (36%)"
     },
+    "BUG-206": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-210": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-212": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-226": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-227": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-228": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 65-82 executed in backtest/data/cache.py"
     },
+    "BUG-229": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-230": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 120-183 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-231": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 374-452 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-232": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "BUG-233": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-234": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-235": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
     },
     "BUG-236": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-237": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 493-1273 executed in backtest/engine/backtest.py"
     },
     "BUG-238": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 181-263 executed in backtest/engine/backtest.py"
     },
     "BUG-239": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 271-299 executed in backtest/engine/backtest.py"
     },
     "BUG-240": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 280-346 executed in backtest/data/smart_money.py"
     },
+    "BUG-241": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "YES",
+      "evidence": "function 446-493 executed in backtest/data/smart_money.py"
+    },
     "BUG-242": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function 106-176 executed in backtest/engine/improvements.py"
     },
+    "BUG-243": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-244": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-207": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-208": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-209": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-211": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-245": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-246": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-247": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-248": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-249": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-251": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-253": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-254": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-255": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-256": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-257": {
+      "kind": "BUG",
+      "tier": "DECIDED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
     "BUG-258": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-260": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-261": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-262": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-263": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-204": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "BUG-264": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/data/universe.py (50%)"
     },
+    "BUG-266": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-267": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-268": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-269": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-285": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/engine/exit_strategies.py (83%)"
     },
+    "BUG-114": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-115": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-116": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-117": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-118": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-119": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-120": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-121": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-122": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-123": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-124": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-125": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-126": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-127": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-128": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-129": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-132": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
     "BUG-133": {
       "kind": "BUG",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "module-level tag in backtest/config.py (99%)"
+    },
+    "BUG-134": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-135": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "YES",
+      "evidence": "function 1234-1257 executed in backtest/results/metrics.py"
+    },
+    "BUG-136": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-137": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-138": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-139": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-140": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-141": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-142": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-143": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-144": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-145": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-146": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-147": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-148": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-149": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-150": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-151": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-152": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-153": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-154": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-155": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-156": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-157": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-158": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-159": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-160": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-161": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-162": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-163": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-164": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-165": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-166": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-167": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-168": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-169": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-170": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-171": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-172": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-173": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-174": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-175": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-176": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-177": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-192": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-193": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-194": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-195": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-196": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-197": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
+    },
+    "BUG-198": {
+      "kind": "BUG",
+      "tier": "DECIDED",
+      "engine": "N/A",
+      "evidence": "no source tag"
     }
   }
 }
