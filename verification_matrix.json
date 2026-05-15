@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T04:57:42.520704+00:00",
+  "generated_at": "2026-05-15T05:22:16.710773+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
@@ -304,14 +304,14 @@
     "DEC-061": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_TIER_TO_SIZE_MODIFIER` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-062": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_TIER_TO_SIZE_MODIFIER` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-067": {
       "kind": "DEC",
@@ -442,8 +442,8 @@
     "DEC-090": {
       "kind": "DEC",
       "tier": "UNKNOWN",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ETF_TSX_SUBSTITUTION` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-091": {
       "kind": "DEC",
@@ -1210,8 +1210,8 @@
     "DEC-234": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TICKER_LIFECYCLE_FIELDS` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-235": {
       "kind": "DEC",
@@ -1330,8 +1330,8 @@
     "DEC-254": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ETF_TSX_SUBSTITUTION` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-255": {
       "kind": "DEC",
@@ -1390,8 +1390,8 @@
     "DEC-265": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SMOKE_TEST_MIN_TRADES_PER_CELL` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-266": {
       "kind": "DEC",
@@ -2014,8 +2014,8 @@
     "DEC-380": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TICKER_LIFECYCLE_FIELDS` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-381": {
       "kind": "DEC",
@@ -2266,14 +2266,14 @@
     "DEC-425": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_422_TOP_PCT_FILTER` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-426": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SMOKE_TEST_MIN_TRADES_PER_CELL` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-427": {
       "kind": "DEC",
@@ -2284,14 +2284,14 @@
     "DEC-428": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_422_TOP_PCT_FILTER` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-429": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_422_TOP_PCT_FILTER` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-430": {
       "kind": "DEC",
@@ -2302,8 +2302,8 @@
     "DEC-431": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_422_TOP_PCT_FILTER` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-432": {
       "kind": "DEC",
@@ -2488,26 +2488,26 @@
     "DEC-463": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_TOOLKIT_SPECS` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-464": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_TOOLKIT_SPECS` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-465": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_TOOLKIT_SPECS` consumed externally"
+      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
     },
     "DEC-466": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_TOOLKIT_SPECS` consumed externally"
+      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
     },
     "DEC-467": {
       "kind": "DEC",

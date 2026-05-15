@@ -20,25 +20,18 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 - UNKNOWN: 2
 
 **By coverage-driven engine status:**
-- Engine YES (executed): **297**
+- Engine YES (executed): **283**
 - Engine LAZY-WIRED (all tagged files wired via lazy import chains): **0** (import chain exists; condition gating the call not met in this small backtest)
 - Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **0** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
 - Engine FUNC-DEAD (function exists but never executed): **0**
 - Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
-- Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **24** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
+- Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **38** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
 - Engine N/A (no code expected): **424**
 
-### Classification anomalies (tier vs engine mismatch): **10**
+### Classification anomalies (tier vs engine mismatch): **3**
 
 | ID | Tier | Engine | Note |
 |---|---|---|---|
-| `DEC-062` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
-| `DEC-234` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
-| `DEC-425` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
-| `DEC-426` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
-| `DEC-428` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
-| `DEC-429` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
-| `DEC-463` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
 | `BUG-186` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
 | `BUG-241` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
 | `BUG-135` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
@@ -46,18 +39,18 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 ### Pyramid coverage gaps (count of engine-consumed items missing per tier)
 
 - `unit`: **0** items lack a reference in this tier's test files
-- `smoke`: **283** items lack a reference in this tier's test files
+- `smoke`: **269** items lack a reference in this tier's test files
 - `integration`: **0** items lack a reference in this tier's test files
-- `system`: **291** items lack a reference in this tier's test files
-- `functional`: **292** items lack a reference in this tier's test files
-- `regression`: **293** items lack a reference in this tier's test files
-- `data_integrity`: **293** items lack a reference in this tier's test files
-- `performance`: **296** items lack a reference in this tier's test files
-- `acceptance`: **291** items lack a reference in this tier's test files
-- `property`: **296** items lack a reference in this tier's test files
-- `snapshot`: **294** items lack a reference in this tier's test files
-- `contract`: **286** items lack a reference in this tier's test files
-- `compatibility`: **296** items lack a reference in this tier's test files
+- `system`: **277** items lack a reference in this tier's test files
+- `functional`: **278** items lack a reference in this tier's test files
+- `regression`: **279** items lack a reference in this tier's test files
+- `data_integrity`: **279** items lack a reference in this tier's test files
+- `performance`: **282** items lack a reference in this tier's test files
+- `acceptance`: **277** items lack a reference in this tier's test files
+- `property`: **282** items lack a reference in this tier's test files
+- `snapshot`: **280** items lack a reference in this tier's test files
+- `contract`: **272** items lack a reference in this tier's test files
+- `compatibility`: **282** items lack a reference in this tier's test files
 
 ### Engine-consumption gaps detail
 
@@ -115,8 +108,8 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-058` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-059` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-060` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-061` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-062` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-061` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-062` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-067` | YES | YES | no | YES | no | YES | no | no | no | no | no | no | no | no |
 | `DEC-070` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-071` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -138,7 +131,7 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-087` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-088` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-089` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-090` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-090` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-091` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-092` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-093` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -266,7 +259,7 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-231` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-232` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-233` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-234` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-234` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-235` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-236` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-237` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -286,7 +279,7 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-251` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-252` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-253` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-254` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-254` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-255` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-256` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-257` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -296,7 +289,7 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-261` | N/A | no | no | no | no | no | YES | no | no | no | no | no | no | no |
 | `DEC-262` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-263` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-265` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-265` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-266` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-267` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-268` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -400,7 +393,7 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-377` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-378` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-379` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-380` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-380` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-381` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-382` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-383` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -442,13 +435,13 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-421` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-422` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-423` | YES | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
-| `DEC-425` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-426` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-425` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-426` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-427` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-428` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-429` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-428` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-429` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-430` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-431` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-431` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-432` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-433` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-434` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -479,8 +472,8 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `DEC-460` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-461` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-462` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-463` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-464` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-463` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-464` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-465` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-466` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-467` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |

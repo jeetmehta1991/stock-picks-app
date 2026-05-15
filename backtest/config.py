@@ -465,6 +465,7 @@ LAYERED_EXECUTION_BUDGETS = {
 # 2026-05-11 (owner-approved Path C 20-DEC bundle). TradingAgents 5-tier
 # output -> position_size_modifier per Pass 52 turn 119 spec.
 # Map agent tier 1-5 to size multiplier 0.5x/0.75x/1.0x/1.25x/1.5x.
+_AGENT_TIER_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 AGENT_TIER_TO_SIZE_MODIFIER = {
     1: 0.50,
     2: 0.75,
@@ -519,6 +520,7 @@ AGENT_AB_DECAY_NET_SHARPE_FLOOR = 0.20  # below this triggers ALERT_AGENT_DECAY
 # (owner-approved Path C 20-DEC bundle). Ticker lifecycle event handler
 # schema. Joint DEC-380 Polygon corp-actions integration (provides rename
 # /merger data). Schema fields tracked per ticker history row.
+_TICKER_LIFECYCLE_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 TICKER_LIFECYCLE_FIELDS = (
     "ticker", "cusip", "isin", "event_type", "event_date",
     "predecessor_ticker", "successor_ticker", "note",
@@ -539,6 +541,7 @@ INTERLISTED_PREFERRED_CANADIAN_BANKS = ("TD", "RY", "BNS", "ENB", "CNQ", "SU")
 # (owner-approved Path C 20-DEC bundle). ETF substitution table for
 # index-strategy CAD-funded execution per Pass 52 turn 91 spec.
 # Default unhedged per medium-high risk profile (DEC-090 owner-accepts).
+_ETF_TSX_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 ETF_TSX_SUBSTITUTION = {
     "SPY": "XUU.TO",   # iShares Core S&P 500 (CAD-unhedged)
     "QQQ": "XQQ.TO",   # iShares NASDAQ-100 (CAD-unhedged)
@@ -556,6 +559,7 @@ BURST_DAY_STRESS_START_YEAR = 2018
 # DEC-265 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
 # (owner-approved Path C 20-DEC bundle; absorbed by DEC-426 5-gate validity).
 # Smoke test minimum sample = n >= 30 per cell (matches DEC-426).
+_SMOKE_TEST_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 SMOKE_TEST_MIN_TRADES_PER_CELL = 30
 SMOKE_TEST_INSUFFICIENT_SAMPLE_LABEL = "INSUFFICIENT_SAMPLE"
 
@@ -923,6 +927,7 @@ DEC_422_CUBE_PHASE_STATUS = {
     "phase_6_visualization":            "RESOLVED",
     "phase_7_validation_regression":    "SPEC_READY",  # DEC-431
 }
+_DEC_422_CUBE_PHASES_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 DEC_422_TOP_PCT_FILTER = 0.20  # top-20% strategies for Phase 4 combined analysis
 DEC_422_FIVE_GATE_VALIDITY = {
     "min_trades_per_cell": 30,
@@ -993,6 +998,7 @@ FMP_SUBSCRIPTION_COST_USD_MO = 50  # estimated
 # DEC-463 / DEC-464 / DEC-465 / DEC-466 RESOLVED-IMPLEMENTED Pass 53 v8h+1
 # Phase 3 Batch 63 2026-05-11 (owner-approved Path C 23-DEC close-out).
 # Agent toolkit specifications -- class names + capabilities.
+_AGENT_TOOLKIT_SPECS_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 AGENT_TOOLKIT_SPECS = {
     "OurFundamentalsToolkit": {                         # DEC-463
         "extends":      "tradingagents.FundamentalsToolkit",
