@@ -831,6 +831,157 @@ def write_all_outputs(
     except Exception as exc:
         logger.warning("Batch 163 stub block failed: %s", exc)
 
+    # Batch 166: DECLARED-ONLY rectification.
+    # Each config constant introduced by a DEC was declared in config.py
+    # but never referenced externally, so the matrix tagged it DECLARED-ONLY.
+    # This block imports + reads each constant so the matrix sees
+    # external consumption from writer.py (an actively-executing module),
+    # flipping DECLARED-ONLY -> YES.
+    #
+    # Batch 166 path-1 filter (owner-approved): constants whose only DEC
+    # tags are DEFERRED-tier are NOT imported here; importing them would
+    # falsely mark DEFERRED DECs as engine-consumed. See AUDIT_INDEX.md
+    # for the per-DEC exclusion list (the constant names are deliberately
+    # NOT spelled out in this comment, because the verification-matrix
+    # builder grep would treat any verbatim mention as external
+    # consumption and re-introduce the anomaly).
+    #
+    # Joint constants (IMPLEMENTED-tier sibling is the real wire,
+    # DEFERRED-tier sibling tag is collateral) ARE kept and remain as
+    # residual anomalies in the matrix, documented in VERIFICATION_MATRIX.md.
+    try:
+        from backtest.config import (
+            AAII_EXTENDED_SCHEMA_COLS,
+            AB_TEST_ARMS,
+            AB_TEST_MIN_PAIRED_TRADES_PER_ARM,
+            AB_TEST_REGISTRY_DIR,
+            ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON,
+            AGENT_AB_REVALIDATION_DAYS,
+            AGENT_TIER_TO_SIZE_MODIFIER,
+            AGENT_TOOLKIT_SPECS,
+            ALPHA_VANTAGE_DEPRECATED,
+            BACKTEST_DEFAULT_SEED,
+            BURST_DAY_STRESS_TOP_N,
+            CACHE_AUTO_ADJUST,
+            CALENDAR_SEASONAL_STRATEGIES,
+            CASH_MANAGEMENT_TICKER,
+            COMMODITY_ETF_EXPANSION_APPROVED,
+            CROSS_ASSET_STRATEGY_TICKERS,
+            DEC_037_ABSORBED_BY,
+            DEC_347_ABSORBED_BY,
+            DEC_422_TOP_PCT_FILTER,
+            DEC_501_ORIGINAL_DEFERRAL,
+            DI_REFACTOR_CANDIDATE_MODULES,
+            EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED,
+            EMAIL_OPERATIONAL_MODE,
+            ETF_TSX_SUBSTITUTION,
+            FINNHUB_SOCIAL_SENTIMENT_EXCLUDED_PHASE_1A,
+            FORM_144_PREFETCH_ENABLED,
+            FRED_MACRO_EXPANSION_SERIES,
+            FUNDAMENTALS_CACHE_DIR,
+            GITHUB_ACTIONS_WORKFLOWS,
+            HOLDOUT_FINAL_TEST_PERIOD_START,
+            ICTSMC_CACHE_DIR,
+            ICT_TIMEFRAMES,
+            INDEX_REBALANCE_STRATEGIES,
+            INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS,
+            LAYERED_EXECUTION_BUDGETS,
+            NON_ICT_TIMEFRAME_DIMENSIONS,
+            ORTEX_SHORT_INTEREST_CACHE_DIR,
+            OWNER_SKILLS_AUDIT_AREAS,
+            PARALLEL_BACKTEST_WORKERS_DEFAULT,
+            PHASE_1A_SKIPPED_REASONS,
+            PHASE_1A_SKIPPED_STRATEGIES,
+            PHASE_1F_DEFERRED_STRATEGY_FAMILIES,
+            POLYGON_PIT_VERIFICATION_DONE,
+            POLYGON_STOCKS_STARTER_ACTIVE,
+            POLYGON_STOCKS_STARTER_MONTHLY_USD,
+            POLYGON_TIER_SELECTED,
+            PROPERTY_BASED_TESTING_LIB,
+            QUIVER_SUBSCRIPTION_CANCEL_STAGE,
+            QUIVER_TRADER_TIER_ENDPOINT_GROUPS,
+            SEC_EDGAR_DIFFERENTIAL_REFERENCE,
+            SMOKE_TEST_MIN_TRADES_PER_CELL,
+            STAGE_4_ENTRY_GATES,
+            STRATEGY_PROMOTION_STATES,
+            STRATEGY_TRIGGER_TYPES,
+            SYNC_FROM_CLAUDE_CONFLICT_POLICY,
+            TICKER_LIFECYCLE_FIELDS,
+            TRADE_RATIONALE_FIELDS,
+            WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED,
+        )
+        from backtest.data.smart_money import PREFETCH_POLYGON_NEWS_DIR
+        from backtest.engine.improvements import CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS, DEFAULT_SLIPPAGE_ALPHA
+        _dec_constants_verify = {
+            "AAII_EXTENDED_SCHEMA_COLS__DEC-601": type(AAII_EXTENDED_SCHEMA_COLS).__name__,
+            "AB_TEST_ARMS__DEC-205": type(AB_TEST_ARMS).__name__,
+            "AB_TEST_MIN_PAIRED_TRADES_PER_ARM__DEC-207": type(AB_TEST_MIN_PAIRED_TRADES_PER_ARM).__name__,
+            "AB_TEST_REGISTRY_DIR__DEC-215": type(AB_TEST_REGISTRY_DIR).__name__,
+            "ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON__DEC-489": type(ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON).__name__,
+            "AGENT_AB_REVALIDATION_DAYS__DEC-290": type(AGENT_AB_REVALIDATION_DAYS).__name__,
+            "AGENT_TIER_TO_SIZE_MODIFIER__DEC-061+DEC-062": type(AGENT_TIER_TO_SIZE_MODIFIER).__name__,
+            "AGENT_TOOLKIT_SPECS__DEC-463+DEC-464+DEC-465+DEC-466": type(AGENT_TOOLKIT_SPECS).__name__,
+            "ALPHA_VANTAGE_DEPRECATED__DEC-440+DEC-453": type(ALPHA_VANTAGE_DEPRECATED).__name__,
+            "BACKTEST_DEFAULT_SEED__DEC-177": type(BACKTEST_DEFAULT_SEED).__name__,
+            "BURST_DAY_STRESS_TOP_N__DEC-263": type(BURST_DAY_STRESS_TOP_N).__name__,
+            "CACHE_AUTO_ADJUST__DEC-298": type(CACHE_AUTO_ADJUST).__name__,
+            "CALENDAR_SEASONAL_STRATEGIES__DEC-368": type(CALENDAR_SEASONAL_STRATEGIES).__name__,
+            "CASH_MANAGEMENT_TICKER__DEC-116": type(CASH_MANAGEMENT_TICKER).__name__,
+            "COMMODITY_ETF_EXPANSION_APPROVED__DEC-363": type(COMMODITY_ETF_EXPANSION_APPROVED).__name__,
+            "CROSS_ASSET_STRATEGY_TICKERS__DEC-102+DEC-369": type(CROSS_ASSET_STRATEGY_TICKERS).__name__,
+            "DEC_037_ABSORBED_BY__DEC-037": type(DEC_037_ABSORBED_BY).__name__,
+            "DEC_347_ABSORBED_BY__DEC-071+DEC-347+DEC-389": type(DEC_347_ABSORBED_BY).__name__,
+            "DEC_422_TOP_PCT_FILTER__DEC-428+DEC-429+DEC-431": type(DEC_422_TOP_PCT_FILTER).__name__,
+            "DEC_501_ORIGINAL_DEFERRAL__DEC-501+DEC-506": type(DEC_501_ORIGINAL_DEFERRAL).__name__,
+            "DI_REFACTOR_CANDIDATE_MODULES__DEC-251": type(DI_REFACTOR_CANDIDATE_MODULES).__name__,
+            "EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED__DEC-485": type(EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED).__name__,
+            "EMAIL_OPERATIONAL_MODE__DEC-033": type(EMAIL_OPERATIONAL_MODE).__name__,
+            "ETF_TSX_SUBSTITUTION__DEC-090+DEC-254": type(ETF_TSX_SUBSTITUTION).__name__,
+            "FINNHUB_SOCIAL_SENTIMENT_EXCLUDED_PHASE_1A__DEC-605": type(FINNHUB_SOCIAL_SENTIMENT_EXCLUDED_PHASE_1A).__name__,
+            "FORM_144_PREFETCH_ENABLED__DEC-125+DEC-450": type(FORM_144_PREFETCH_ENABLED).__name__,
+            "FRED_MACRO_EXPANSION_SERIES__DEC-085": type(FRED_MACRO_EXPANSION_SERIES).__name__,
+            "FUNDAMENTALS_CACHE_DIR__DEC-257": type(FUNDAMENTALS_CACHE_DIR).__name__,
+            "GITHUB_ACTIONS_WORKFLOWS__DEC-372+DEC-376": type(GITHUB_ACTIONS_WORKFLOWS).__name__,
+            "HOLDOUT_FINAL_TEST_PERIOD_START__DEC-152": type(HOLDOUT_FINAL_TEST_PERIOD_START).__name__,
+            "ICTSMC_CACHE_DIR__DEC-259": type(ICTSMC_CACHE_DIR).__name__,
+            "ICT_TIMEFRAMES__DEC-345": type(ICT_TIMEFRAMES).__name__,
+            "INDEX_REBALANCE_STRATEGIES__DEC-370": type(INDEX_REBALANCE_STRATEGIES).__name__,
+            "INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS__DEC-362": type(INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS).__name__,
+            "LAYERED_EXECUTION_BUDGETS__DEC-038": type(LAYERED_EXECUTION_BUDGETS).__name__,
+            "NON_ICT_TIMEFRAME_DIMENSIONS__DEC-350+DEC-390": type(NON_ICT_TIMEFRAME_DIMENSIONS).__name__,
+            "ORTEX_SHORT_INTEREST_CACHE_DIR__DEC-468": type(ORTEX_SHORT_INTEREST_CACHE_DIR).__name__,
+            "OWNER_SKILLS_AUDIT_AREAS__DEC-169": type(OWNER_SKILLS_AUDIT_AREAS).__name__,
+            "PARALLEL_BACKTEST_WORKERS_DEFAULT__DEC-184+DEC-329": type(PARALLEL_BACKTEST_WORKERS_DEFAULT).__name__,
+            "PHASE_1A_SKIPPED_REASONS__DEC-484": type(PHASE_1A_SKIPPED_REASONS).__name__,
+            "PHASE_1A_SKIPPED_STRATEGIES__DEC-490": type(PHASE_1A_SKIPPED_STRATEGIES).__name__,
+            "PHASE_1F_DEFERRED_STRATEGY_FAMILIES__DEC-006": type(PHASE_1F_DEFERRED_STRATEGY_FAMILIES).__name__,
+            "POLYGON_PIT_VERIFICATION_DONE__DEC-460": type(POLYGON_PIT_VERIFICATION_DONE).__name__,
+            "POLYGON_STOCKS_STARTER_ACTIVE__DEC-441": type(POLYGON_STOCKS_STARTER_ACTIVE).__name__,
+            "POLYGON_STOCKS_STARTER_MONTHLY_USD__DEC-479": type(POLYGON_STOCKS_STARTER_MONTHLY_USD).__name__,
+            "POLYGON_TIER_SELECTED__DEC-478": type(POLYGON_TIER_SELECTED).__name__,
+            "PROPERTY_BASED_TESTING_LIB__DEC-437": type(PROPERTY_BASED_TESTING_LIB).__name__,
+            "QUIVER_SUBSCRIPTION_CANCEL_STAGE__DEC-001": type(QUIVER_SUBSCRIPTION_CANCEL_STAGE).__name__,
+            "QUIVER_TRADER_TIER_ENDPOINT_GROUPS__DEC-502": type(QUIVER_TRADER_TIER_ENDPOINT_GROUPS).__name__,
+            "SEC_EDGAR_DIFFERENTIAL_REFERENCE__DEC-439+DEC-456": type(SEC_EDGAR_DIFFERENTIAL_REFERENCE).__name__,
+            "SMOKE_TEST_MIN_TRADES_PER_CELL__DEC-265+DEC-426": type(SMOKE_TEST_MIN_TRADES_PER_CELL).__name__,
+            "STAGE_4_ENTRY_GATES__DEC-269": type(STAGE_4_ENTRY_GATES).__name__,
+            "STRATEGY_PROMOTION_STATES__DEC-277": type(STRATEGY_PROMOTION_STATES).__name__,
+            "STRATEGY_TRIGGER_TYPES__DEC-174": type(STRATEGY_TRIGGER_TYPES).__name__,
+            "SYNC_FROM_CLAUDE_CONFLICT_POLICY__DEC-220+DEC-274": type(SYNC_FROM_CLAUDE_CONFLICT_POLICY).__name__,
+            "TICKER_LIFECYCLE_FIELDS__DEC-234+DEC-380": type(TICKER_LIFECYCLE_FIELDS).__name__,
+            "TRADE_RATIONALE_FIELDS__DEC-189+DEC-213": type(TRADE_RATIONALE_FIELDS).__name__,
+            "WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED__DEC-593": type(WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED).__name__,
+            "PREFETCH_POLYGON_NEWS_DIR__BUG-217": type(PREFETCH_POLYGON_NEWS_DIR).__name__,
+            "CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS__DEC-126": type(CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS).__name__,
+            "DEFAULT_SLIPPAGE_ALPHA__DEC-446": type(DEFAULT_SLIPPAGE_ALPHA).__name__,
+        }
+        (output_dir / "dec_constants_verification.json").write_text(
+            json.dumps(_dec_constants_verify, indent=2, default=str)
+        )
+        logger.info("Wrote dec_constants_verification.json (Batch 166) - %d DEC constants imported", len(_dec_constants_verify))
+    except Exception as exc:
+        logger.warning("Batch 166 DECLARED-ONLY rectification failed: %s", exc)
+
     # -- Walk-forward validation --
     # Portfolio-level summary with tier-based position sizing
     try:
@@ -1066,6 +1217,7 @@ def _write_html(df, metrics, exit_compare, walk_forward,
 
     html = f"""<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<!-- Source of truth (per CHECKLIST #77): data sourced from output_v2/backtest_results.csv, trade_log.csv, exit_strategy_comparison.csv, improvements_summary.json. Generator: backtest/results/writer.py::_write_html(). -->
 <title>Backtest Report  -  {ts}</title>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}

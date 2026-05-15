@@ -1,19 +1,181 @@
 exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,n,win_rate,avg_pnl_pct,total_pnl_pct,sharpe_proxy
-atr_trail_1x,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.16666666666666666,-1.8179999999999998,-10.908,-1.5759700364094236
-atr_trail_2x,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,13.530366666666666,81.1822,1.5549234057895898
-break_even_at_1r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,6.756,40.536,1.0340413914876856
-breakeven_plus_trail,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,12.472366666666666,74.8342,1.4600694505588316
-class_time_stop,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,11.342999999999998,68.05799999999999,0.9021468452727109
-earnings_blackout,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,18.082083333333333,108.4925,1.3627591041620701
-fixed_3r_2r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,3.9182,23.5092,0.8615546420578644
-hybrid_50pct_target,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,5.739733333333334,34.4384,0.7449368244513292
-ma_exit_ema9,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,8.370416666666666,50.2225,1.128970944891404
-next_pivot_target,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,-4.0721,-24.4326,-1.9131329804240147
-r_multiple_2r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,0.6916500000000001,4.149900000000001,0.25571093672577244
-r_multiple_3r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,2.224,13.344000000000001,0.6060126922916577
-regime_flip,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,8.65515,51.9309,0.7800256960439671
-time_stop_10d,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,7.337583333333332,44.025499999999994,1.1031237006399266
-time_stop_20d,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,8.65515,51.9309,0.7800256960439671
-trailing_10pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,10.940333333333333,65.642,1.1871527605344032
-trailing_15pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,16.55515,99.3309,1.1918321730047121
-trailing_5pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.16666666666666666,-2.931366666666667,-17.5882,-2.3627934822574193
+atr_trail_1x,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.4444444444444444,0.20714444444444446,3.7286000000000006,0.30353686325158236
+atr_trail_1x,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.14285714285714285,-2.286142857142857,-16.003,-1.1989074818747134
+atr_trail_1x,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,-1.7640833333333334,-10.5845,-1.382631055885052
+atr_trail_1x,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.26666666666666666,-1.1000533333333335,-16.5008,-1.468127595678743
+atr_trail_1x,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.0,-1.3732999999999997,-8.239799999999999,-3.9985776841950003
+atr_trail_1x,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.2857142857142857,-0.7493857142857143,-5.2457,-1.1487380349539413
+atr_trail_1x,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.25,0.022124999999999895,0.17699999999999916,0.013419882941216056
+atr_trail_1x,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.4,-0.26352,-1.3175999999999999,-0.17042971106433658
+atr_trail_1x,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.4117647058823529,-0.6457294117647059,-10.9774,-1.4730027974538524
+atr_trail_1x,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.375,-0.23864999999999997,-1.9091999999999998,-0.2878106782934442
+atr_trail_2x,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.3888888888888889,-65.35228333333333,-1176.3410999999999,-0.9649101096994741
+atr_trail_2x,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,12.578271428571428,88.0479,1.283788386592087
+atr_trail_2x,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,2.8898333333333333,17.339,0.3549199990190902
+atr_trail_2x,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.3333333333333333,2.24422,33.6633,0.6933854835720837
+atr_trail_2x,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,1.95285,11.7171,0.7275820671754922
+atr_trail_2x,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.14285714285714285,-1.3696428571428572,-9.5875,-1.5595145618986113
+atr_trail_2x,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.875,14.2831375,114.2651,2.5612244619370985
+atr_trail_2x,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.0,-5.31092,-26.5546,-3.580572513898077
+atr_trail_2x,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.4117647058823529,5.016594117647059,85.2821,1.4257509547334897
+atr_trail_2x,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.375,-0.48987500000000006,-3.9190000000000005,-0.2951700023015271
+break_even_at_1r,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.2222222222222222,6.2815055555555555,113.0671,1.3592776418200463
+break_even_at_1r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.42857142857142855,8.681642857142858,60.7715,0.9485850182949775
+break_even_at_1r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.0,-2.5499666666666667,-15.299800000000001,-1.9119629017566298
+break_even_at_1r,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.13333333333333333,0.2612866666666669,3.9193000000000033,0.12882305438638408
+break_even_at_1r,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.0,-0.8328333333333333,-4.997,-1.424234735687955
+break_even_at_1r,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.0,-1.4091,-9.8637,-2.7088157529835537
+break_even_at_1r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.375,7.3515250000000005,58.812200000000004,1.3084048971836773
+break_even_at_1r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-0.4245799999999999,-2.1228999999999996,-0.5265573377813066
+break_even_at_1r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.11764705882352941,2.933341176470588,49.8668,0.8631259039056662
+break_even_at_1r,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.0,-1.7593874999999999,-14.075099999999999,-2.9601524465247886
+breakeven_plus_trail,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,11.162294444444445,200.9213,2.12044979027553
+breakeven_plus_trail,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,12.68352857142857,88.78469999999999,1.326246423901708
+breakeven_plus_trail,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.16666666666666666,-5.2987166666666665,-31.792299999999997,-1.531449685198143
+breakeven_plus_trail,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.4666666666666667,4.308326666666667,64.6249,1.329316735710797
+breakeven_plus_trail,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,2.5776833333333333,15.4661,0.9548088454310392
+breakeven_plus_trail,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.0,-1.5134428571428573,-10.594100000000001,-2.1124501288022546
+breakeven_plus_trail,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.875,16.160325,129.2826,2.7887029470516804
+breakeven_plus_trail,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-7.015000000000001,-35.075,-2.191879862888427
+breakeven_plus_trail,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.4117647058823529,13.850276470588236,235.4547,2.0473715069079983
+breakeven_plus_trail,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.25,-0.6338624999999999,-5.070899999999999,-0.4824019855793259
+class_time_stop,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,-53.455000000000005,-962.19,-0.995195708193458
+class_time_stop,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.5714285714285714,4.3334,30.333800000000004,0.5252801508792067
+class_time_stop,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,-10.569583333333334,-63.417500000000004,-0.846992764035224
+class_time_stop,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.6,5.80982,87.1473,1.5641158220036429
+class_time_stop,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,5.321116666666668,31.926700000000004,1.2643934871481313
+class_time_stop,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.8571428571428571,1.7592714285714284,12.314899999999998,1.1545167237472833
+class_time_stop,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.75,14.8543,118.8344,2.1397060760483915
+class_time_stop,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.4,-2.6967200000000005,-13.483600000000003,-0.48072531557554504
+class_time_stop,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.6470588235294118,5.690105882352942,96.7318,1.8217213356114514
+class_time_stop,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.5,-0.43776250000000005,-3.5021000000000004,-0.14638933450929728
+earnings_blackout,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.8888888888888888,-106.53098333333334,-1917.5577,-0.47813011673611155
+earnings_blackout,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.5714285714285714,36.07315714285714,252.51209999999998,1.084513214629392
+earnings_blackout,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.8333333333333334,30.70035,184.2021,0.5441840116655118
+earnings_blackout,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.6666666666666666,25.824653333333334,387.3698,1.3271561692042997
+earnings_blackout,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,1.0,90.34025000000001,542.0415,10.768882723810856
+earnings_blackout,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.7142857142857143,1.5241714285714285,10.6692,1.065179683734159
+earnings_blackout,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.75,407.27937499999996,3258.2349999999997,1.8736439222412926
+earnings_blackout,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.8,501.45865999999995,2507.2933,3.26588773481252
+earnings_blackout,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.7058823529411765,55.49153529411765,943.3561,1.7782596035805591
+earnings_blackout,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.75,28.325025,226.6002,1.8278973495260173
+fixed_4r_2r,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5555555555555556,4.417183333333334,79.50930000000001,1.76573771382779
+fixed_4r_2r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.5714285714285714,6.956428571428572,48.695,0.9727913734828201
+fixed_4r_2r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,0.18358333333333357,1.1015000000000015,0.02046941868124738
+fixed_4r_2r,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.4,1.2343933333333335,18.515900000000002,0.38396242667158426
+fixed_4r_2r,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,3.2764666666666664,19.6588,0.7819703046927725
+fixed_4r_2r,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.42857142857142855,1.8468571428571428,12.927999999999999,0.6998383317139105
+fixed_4r_2r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.625,10.1863375,81.4907,1.413512383646664
+fixed_4r_2r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.0,-12.579339999999998,-62.896699999999996,-14.299431667505383
+fixed_4r_2r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.4117647058823529,2.4153470588235297,41.060900000000004,0.8467489410522462
+fixed_4r_2r,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.375,0.66215,5.2972,0.2635877188904449
+hybrid_50pct_target,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,-35.15757222222222,-632.8362999999999,-1.028710720903725
+hybrid_50pct_target,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.8571428571428571,14.193814285714286,99.3567,2.6487294514914153
+hybrid_50pct_target,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,-37.9424,-227.6544,-0.9031300574039866
+hybrid_50pct_target,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.6666666666666666,-2.4354599999999995,-36.53189999999999,-0.24093834961006946
+hybrid_50pct_target,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.6666666666666666,3.1693833333333337,19.0163,0.7197459980763574
+hybrid_50pct_target,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,1.0,3.242671428571428,22.6987,10.175618461213096
+hybrid_50pct_target,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.875,16.760075,134.0806,3.7990649546240913
+hybrid_50pct_target,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-5.72714,-28.6357,-1.3403528315928912
+hybrid_50pct_target,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.7058823529411765,3.830441176470588,65.11749999999999,0.5601419979347524
+hybrid_50pct_target,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.375,-6.0701125,-48.5609,-0.8661788048219624
+ma_exit_ema9,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.2777777777777778,-65.78201666666666,-1184.0763,-0.9718911504802654
+ma_exit_ema9,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.2857142857142857,-0.4526714285714286,-3.1687000000000003,-0.1799780634640671
+ma_exit_ema9,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,-0.8471833333333333,-5.0831,-0.5343267523417329
+ma_exit_ema9,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.3333333333333333,2.95626,44.3439,1.161984271700306
+ma_exit_ema9,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.6666666666666666,2.981333333333333,17.887999999999998,1.293804150930419
+ma_exit_ema9,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.2857142857142857,-0.6128142857142856,-4.2897,-1.1830698195639522
+ma_exit_ema9,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.625,9.4398875,75.5191,2.0949091757775786
+ma_exit_ema9,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.4,-0.7069000000000001,-3.5345000000000004,-0.37759349892321553
+ma_exit_ema9,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.4117647058823529,-0.45067058823529416,-7.6614,-0.6806421202179295
+ma_exit_ema9,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.5,0.6652125,5.3217,0.5040598917184171
+next_pivot_target,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.8333333333333334,1.31405,23.6529,1.0137939581624966
+next_pivot_target,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,-0.6184428571428572,-4.3291,-0.2393363809826972
+next_pivot_target,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.8333333333333334,1.2810333333333332,7.6861999999999995,0.539854664164798
+next_pivot_target,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.9333333333333333,1.3758866666666667,20.6383,1.3493599323622165
+next_pivot_target,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.8333333333333334,0.20268333333333333,1.2161,0.09054874272351993
+next_pivot_target,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.8571428571428571,1.0460571428571428,7.3224,0.5278350885954161
+next_pivot_target,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,1.0,7.960237500000001,63.681900000000006,3.70391316403764
+next_pivot_target,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,1.0,2.80494,14.024700000000001,2.596515147988023
+next_pivot_target,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.9411764705882353,1.4710529411764706,25.0079,2.1480000667075605
+next_pivot_target,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.875,0.60435,4.8348,0.33664249264323814
+r_multiple_2r,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,1.8630333333333335,33.534600000000005,1.4062752812185608
+r_multiple_2r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.5714285714285714,4.261871428571428,29.833099999999998,1.1674372568881655
+r_multiple_2r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,0.09178333333333348,0.5507000000000009,0.02046758838578183
+r_multiple_2r,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.4666666666666667,1.7849066666666666,26.7736,0.981616353751919
+r_multiple_2r,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,-0.028483333333333267,-0.1708999999999996,-0.014559010286848228
+r_multiple_2r,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.42857142857142855,0.7027857142857142,4.919499999999999,0.46559144730559854
+r_multiple_2r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,1.0,12.5364875,100.2919,17.11946850590656
+r_multiple_2r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-2.6048999999999998,-13.0245,-0.7523698457114997
+r_multiple_2r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.4117647058823529,0.9883941176470588,16.802699999999998,0.7443968807278714
+r_multiple_2r,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.375,0.294775,2.3582,0.23411065225029432
+r_multiple_3r,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.4444444444444444,2.6225944444444442,47.2067,1.5856424442058286
+r_multiple_3r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.5714285714285714,7.950957142857143,55.6567,1.589966816304485
+r_multiple_3r,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,2.4663333333333335,14.798,0.41217376484534074
+r_multiple_3r,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.4,2.3287400000000003,34.9311,1.0912128213328136
+r_multiple_3r,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,0.9938833333333336,5.963300000000001,0.38133447673988063
+r_multiple_3r,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.2857142857142857,0.1998,1.3986,0.11811836867511775
+r_multiple_3r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.75,11.589287500000001,92.71430000000001,2.7770228452297334
+r_multiple_3r,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-0.7620199999999997,-3.8100999999999985,-0.14375350527033612
+r_multiple_3r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.29411764705882354,0.7900117647058823,13.4302,0.47911293706287705
+r_multiple_3r,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.25,-0.047637499999999944,-0.38109999999999955,-0.032168515133876543
+regime_flip,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,-56.337577777777774,-1014.0763999999999,-1.0005884638217566
+regime_flip,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,3.9655,27.7585,0.584861235956064
+regime_flip,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.5,-2.506333333333334,-15.038000000000004,-0.21524073278330502
+regime_flip,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.7333333333333333,7.4922200000000005,112.3833,2.081363428064024
+regime_flip,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.8333333333333334,6.376216666666667,38.2573,1.841014592725382
+regime_flip,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.42857142857142855,0.6669857142857143,4.6689,0.451712222166749
+regime_flip,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.75,14.868112499999999,118.94489999999999,2.626469033396468
+regime_flip,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-8.38346,-41.9173,-2.3436022533378873
+regime_flip,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.7058823529411765,3.7186411764705887,63.21690000000001,1.7329330970462504
+regime_flip,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.5,1.3132000000000001,10.505600000000001,0.8059034976554973
+time_stop_10d,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,1.0826500000000001,19.4877,0.6973345073212223
+time_stop_10d,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,6.3346,44.3422,1.2689496070398623
+time_stop_10d,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.5,-0.12529999999999988,-0.7517999999999994,-0.028185808802481806
+time_stop_10d,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.6,5.522686666666667,82.8403,1.5750267311423012
+time_stop_10d,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,0.6346833333333333,3.8080999999999996,0.26038293449237554
+time_stop_10d,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.7142857142857143,-0.2441,-1.7087,-0.18574679601374608
+time_stop_10d,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,1.0,14.8336,118.6688,5.936646762369601
+time_stop_10d,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-5.60542,-28.027099999999997,-1.3863929679586071
+time_stop_10d,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.5294117647058824,1.3252529411764706,22.5293,0.8630334504012402
+time_stop_10d,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.375,-0.07192500000000013,-0.575400000000001,-0.03565584040673586
+time_stop_20d,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,-56.337577777777774,-1014.0763999999999,-1.0005884638217566
+time_stop_20d,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,3.9655,27.7585,0.584861235956064
+time_stop_20d,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.5,-2.506333333333334,-15.038000000000004,-0.21524073278330502
+time_stop_20d,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.7333333333333333,7.4922200000000005,112.3833,2.081363428064024
+time_stop_20d,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.8333333333333334,6.376216666666667,38.2573,1.841014592725382
+time_stop_20d,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.42857142857142855,0.6669857142857143,4.6689,0.451712222166749
+time_stop_20d,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.75,14.868112499999999,118.94489999999999,2.626469033396468
+time_stop_20d,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-8.38346,-41.9173,-2.3436022533378873
+time_stop_20d,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.7058823529411765,3.7186411764705887,63.21690000000001,1.7329330970462504
+time_stop_20d,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.5,1.3132000000000001,10.505600000000001,0.8059034976554973
+trailing_10pct,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.5,-58.28570555555555,-1049.1426999999999,-0.8533007927974687
+trailing_10pct,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,11.7407,82.1849,1.3007427649792436
+trailing_10pct,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.0,-4.98215,-29.892899999999997,-3.8278241857994924
+trailing_10pct,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.5333333333333333,4.045373333333333,60.6806,1.14274027799343
+trailing_10pct,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,-0.29796666666666677,-1.7878000000000007,-0.08376656878097134
+trailing_10pct,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.42857142857142855,0.4152857142857144,2.907000000000001,0.1611980796056027
+trailing_10pct,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.75,14.4695125,115.7561,2.3464684546158563
+trailing_10pct,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.2,-3.67734,-18.3867,-2.2087646072355858
+trailing_10pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.4117647058823529,9.75655882352941,165.86149999999998,1.59227996592867
+trailing_10pct,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.25,0.8752125,7.0017,0.13901015648366694
+trailing_15pct,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.4444444444444444,-53.8329611111111,-968.9932999999999,-0.7810094080807156
+trailing_15pct,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.7142857142857143,9.379985714285713,65.6599,0.935357874358241
+trailing_15pct,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.3333333333333333,0.8307666666666664,4.984599999999999,0.13867797265070536
+trailing_15pct,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.5333333333333333,4.4085399999999995,66.12809999999999,1.1151330983722711
+trailing_15pct,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,47.13401666666667,282.8041,1.7950445136122197
+trailing_15pct,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.2857142857142857,-3.1603,-22.1221,-1.3462795883624108
+trailing_15pct,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.5,28.1120875,224.8967,1.2692002269641474
+trailing_15pct,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.0,-9.19548,-45.9774,-4.5273681719428165
+trailing_15pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.47058823529411764,15.553882352941176,264.416,2.060140433254166
+trailing_15pct,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.25,3.1139,24.9112,0.2975377180986177
+trailing_5pct,neutral,Communication Services,unknown,high_atr_2.5_5pct,long_ge_11d,18,0.3888888888888889,-65.53013888888889,-1179.5425,-0.9677263517631308
+trailing_5pct,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,long_ge_11d,7,0.14285714285714285,-0.5115714285714285,-3.5809999999999995,-0.16628870788819725
+trailing_5pct,neutral,Consumer Discretionary,unknown,crisis_atr_ge_5pct,medium_4_10d,6,0.0,-1.85625,-11.1375,-2.380804700962041
+trailing_5pct,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,15,0.2,-1.1319066666666666,-16.9786,-1.3124313084112154
+trailing_5pct,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,0.8535999999999998,5.121599999999999,0.3718760633570109
+trailing_5pct,neutral,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,7,0.14285714285714285,-2.5504142857142855,-17.852899999999998,-2.9630158565929965
+trailing_5pct,neutral,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,8,0.25,0.26821249999999996,2.1456999999999997,0.17234298599244216
+trailing_5pct,neutral,Information Technology,unknown,crisis_atr_ge_5pct,medium_4_10d,5,0.4,0.37670000000000003,1.8835000000000002,0.2621226446801093
+trailing_5pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,17,0.29411764705882354,-1.1026176470588234,-18.7445,-1.538774989349107
+trailing_5pct,neutral,Information Technology,unknown,mid_atr_1_2.5pct,long_ge_11d,8,0.375,-1.366475,-10.9318,-0.9263832783175338
