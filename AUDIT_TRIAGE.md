@@ -1,4 +1,7 @@
 # AUDIT_TRIAGE.md — Pending Decision Prioritization
+
+**2026-05-15 Batch 178 status:** This static triage file is largely superseded by the live dashboard at https://jeetmehta1991.github.io/stock-picks-app/dashboard_stage_2/ which shows real-time decision/bug/INV status with engine-consumption verification. Current state: 481 visible DECs (260 IMPLEMENTED / 136 DECIDED / 83 DEFERRED / 2 UNKNOWN) + 250 visible BUGs. Phase 1A launch unblocked.
+
 **Last regenerated:** April 2026 (post-Pass 52 Round 1 complete + DEC-346 categorical matrix + DEC-347 lagging-indicator gap + DEC-348 event-calendar suppression logged)
 **Decisions covered:** 251 PENDING (matches AUDIT_INDEX.md actual count, post-Pass-52 Round 1 + DEC-346 + DEC-347 + DEC-348 logged as new pending)
 

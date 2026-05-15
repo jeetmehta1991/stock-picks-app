@@ -1,5 +1,7 @@
 # Theme X53 — Implementation Sequencing & Dependency Map (15 Stage 2 sub-decisions)
 
+**2026-05-15 Batch 178 status:** Theme X53 high-impact engine bugs sub-decision implementation tracked live on https://jeetmehta1991.github.io/stock-picks-app/dashboard_stage_2/ — 36 visible DECs in this theme (largest theme bucket).
+
 **Background:** Theme X53 (High-Impact Engine Bugs) catalogs CRITICAL/HIGH severity bugs in the backtest engine that produce plausible-looking but invalid results. Parent decisions DEC-307-327 are owner-approved per Pass 52; their implementation sub-decisions DEC-381-399 are the engineering work. This document sequences the 15 truly-pending Stage 2 sub-decisions after CHECKLIST #56 deferred 4 Stage 3+ items (DEC-385/386/387/395) to Stage 3 prep theme.
 
 **Scope filter applied:** CHECKLIST #56 (Phase 0 + Stage 2 only) — DEC-385/386/387 (live circuit breaker mechanics) and DEC-395 (paid sector PIT subscription) deferred per L135.

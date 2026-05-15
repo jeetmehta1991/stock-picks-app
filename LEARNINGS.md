@@ -1394,3 +1394,49 @@ L149 is the META-pattern: it's the mechanism by which L145/L146/L147/L148 each g
 **Rule.** When a DEC enumerates N artifact types (N test types, N data sources, N exit methods), pre-flight CHECKLIST must verify count(implemented) == N before claiming the DEC is RESOLVED. A DEC declaring "9 test types" is RESOLVED only when 9 test types have at least one passing test file, not when "lots of tests pass."
 
 **Cross-references.** DEC-503 (9-type pyramid spec); DEC-595 (gate executables); G1-G4 (Day 9 v6 closure builds); L148 (test pyramid layered failure — sister lesson at the data dimension); L149 (spec-without-build at the artifact level — sister lesson at the build dimension).
+
+
+## L151 — Matrix/dashboard cyclical dependency causes 1-item count oscillation (Pass 53 Day 9+ 2026-05-15 Batch 171)
+
+**Pattern.** Two artifacts that both read each other's output AND are each other's source of truth create an unstable steady-state. Concrete instance: `scripts/build_verification_matrix.py` read `dashboard_stage_2/data.js` to scope items; `scripts/build_dashboard_stage_2.py` read `verification_matrix.json` to compute `coverage_engine` then filtered out FUNC-DEAD items from data.js. Matrix marks BUG-027 = FUNC-DEAD → dashboard hides it → next matrix regen scopes data.js → BUG-027 absent → no FUNC-DEAD signal → next dashboard regen un-hides → cycle. Item count oscillated by 1 between regenerations.
+
+**Closure.** Dashboard now emits both `bugs_visible` (UI-consumed) and `bugs_all` (matrix-consumed). Matrix reads `*_all` and applies its own SUPERSEDED+OBSOLETE filter independently. FUNC-DEAD items stay in matrix scope permanently. UI still hides them at presentation. Verified stable across 3 successive regen cycles.
+
+**Rule.** When two pipeline stages have feedback (A's output feeds B; B's output feeds A's scope), the second-order stage must NOT filter the data used as scope by the first stage. Emit a separate "full" view alongside the "filtered" view so each consumer can apply its own filter.
+
+**Cross-references.** Batch 171 commit `5a0ce735a`; matrix builder `scripts/build_verification_matrix.py:load_all_items`; dashboard builder `scripts/build_dashboard_stage_2.py` snapshot construction.
+
+
+## L152 — Canonical-ID extraction must include alphabetic suffix for BIFURCATED IDs (Pass 53 Day 9+ 2026-05-15 Batch 169)
+
+**Pattern.** When refactoring per-ID regex search to set-keyed lookup for performance (Batch 168's 188s → 6.2s dashboard build), the canonical key dropped the optional alphabetic suffix (`DEC-078A` vs `DEC-078B`). Result: DEC-078A returned empty status_grep → compute_promotion_path saw coded=False → re-classified IMPLEMENTED → DECIDED, surfacing as a fresh matrix anomaly.
+
+**Closure.** Canonical key now `(prefix, int_num, suffix)` instead of `(prefix, int_num)`. Regex `(?<![A-Za-z0-9])(DEC|BUG|INV|CAV)-(\d+)([A-Za-z]*)(?!\d)` captures suffix; lookup uses 3-tuple. DEC-078A correctly resolves to IMPLEMENTED again.
+
+**Rule.** When migrating from regex-search to canonical-key lookup, the canonical key must preserve every variation the regex could have matched. ID-system audits: enumerate all suffix conventions before consolidating to a normalized form.
+
+**Cross-references.** Batch 168 perf fix introducing the regression; Batch 169 fix; DEC-078 BIFURCATED into 078A (Stage 2 diagnostic) + 078B (Stage 3+ deferred).
+
+
+## L153 — Wikimedia REST per-IP unauthenticated throttle is < 1 req / 0.5s (Pass 53 Day 9+ 2026-05-15 Batches 174-178)
+
+**Pattern.** Wikipedia revisions prefetch for 1414 articles at 0.5s rate hit massive HTTP 429 Too Many Requests after ~240 successful fetches (17%). Owner-recommended User-Agent identifying the project (`stock-picks-app/0.1 (research; ...)`) did NOT prevent throttle. Ratcheting RATE_LIMIT_SLEEP up: 0.5s → 3.0s → 5.0s. Final: 1412/1414 (99.9%) cached at 5s rate, with only 2 stragglers still 429-blocked.
+
+**Closure.** `scripts/prefetch_wikipedia_revisions.py` defaults to 5.0s rate. Re-running an aborted prefetch skips already-cached tickers via `out_path.exists()` check — so each retry only re-attempts the missing ones.
+
+**Rule.** Public unauthenticated REST APIs have aggressive per-IP throttles that scale down sharply for repeated identical-IP traffic. Budget at least 5s/request for unauthenticated Wikimedia REST. For full-universe prefetch, use OAuth tokens or registered API access where available.
+
+**Cross-references.** Batches 174 (0.5s, 17% success), 176 (3s, 72%), 178 (5s, 99.9%); `scripts/prefetch_wikipedia_revisions.py`.
+
+
+## L154 — Inventory truth-up must be empirical, not declarative (Pass 53 Day 9+ 2026-05-15 Batches 172-175)
+
+**Pattern.** Owner directive "I want everything prefetched. Refer to and Update the API dashboard" surfaced a major staleness gap: the dashboard's authoritative inventory file (`API_ENDPOINT_INVENTORY.md`) carried ~25 rows tagged ACCESSIBLE_NOT_CACHED whose canonical caches actually existed at `data_prefetch/<api>/<endpoint>/` with full 1937-ticker coverage. Examples: Quiver `/historical/twitter/{t}` (1937 cached, marked NEW), AAII Asset Allocation Survey (445 monthly readings, marked NEW), Polygon options_chains (1937 cached, marked NEW). Trusting the inventory text instead of probing `data_prefetch/` produced wasted prefetch attempts and a 27-item false-positive ACCESSIBLE_NOT_CACHED bucket.
+
+Worse pattern: one row claimed `ACCESSIBLE` status (Polygon `/v2/aggs/grouped/locale/us/market/stocks/{date}`) but empirical probe returned `403 NOT_AUTHORIZED` — required Stocks Plus tier, not Starter. Inventory was wrong about the access tier.
+
+**Closure.** Empirical scan of `data_prefetch/` tree before any new prefetch script. Reclassified 27 rows: 25 marked DONE with row-count metadata; 1 demoted to TIER_BLOCKED; pytrends H20 rows marked DEFERRED-PHASE-1C per DEC-599; options per-contract OHLCV marked DEFERRED-PHASE-1B per DEC-600.
+
+**Rule.** Cache-state truth lives in the filesystem (parquet count + non-empty count), NOT in the inventory markdown. Inventory rows tagged "NEW" or "NO" must be verified against `data_prefetch/<path>` row-count before scheduling new fetch work. Dashboard builder should auto-detect cached state from filesystem to prevent inventory drift (current architecture: dashboard reads inventory `Currently cached?` column, which can be stale).
+
+**Cross-references.** Batches 172-175; `dashboard_sprint0a/data.json` final state CACHED 109 / ACCESSIBLE_NOT_CACHED 28; INV-041 path-restricted commit (sister architectural lesson on truth-source discipline).

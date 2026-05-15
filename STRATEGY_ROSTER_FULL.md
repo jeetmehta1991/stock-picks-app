@@ -1,5 +1,7 @@
 # STRATEGY_ROSTER_FULL.md — Complete per-strategy enumeration across all layers
 
+**2026-05-15 Batch 178 status:** No roster changes this session. Layer 1 baseline operational (60 long + 50 short symmetric per Pass 53 expansion). Live per-strategy ranking + regime heatmap: https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/
+
 **Created:** Pass 53 — 2026-05-06 (owner directive Option 2: consolidate every named strategy + close 4 open enumeration gaps)
 **Bulk-approved:** Pass 53 — 2026-05-06 owner "Approve all" — Layer 2A directional split (12), Layer 2B (4), Layer 2C (5), Layer 3B (21) all promoted ✅ RESOLVED-PROPOSED → ✅ RESOLVED-DECIDED.
 **Symmetry expansion approved:** Pass 53 — 2026-05-06 owner directive *"Long bias is not logical. The philosophy is buy the dip and sell the rip."* Added 38 long+short symmetric counterparts across Pivot / Momentum / Trend / Mean Reversion / Breakout / Candle / Confluence categories. **Layer 1 grows 72 → 110 (60L + 50S; ratio ~1.2:1, near-balanced).**

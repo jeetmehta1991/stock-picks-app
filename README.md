@@ -1,8 +1,15 @@
 # Stock Picks & Automated Trading System
 
-**Stage 2 — Strategy Validation** | Phase 0A — Sprint 0A active (DEC-497 multi-API prefetch + universe build complete + Stage 2 NO-LIVE-API refactor pending) | Pass 53 in progress
+**Stage 2 — Strategy Validation** | Phase 0A complete → Phase 1A launch day **2026-05-15** | Pass 53 Day 9+ Batch 178 | 0 strict blockers
 
 A multi-stage swing trading system: rule-based + smart money + multi-agent architecture validating strategies on historical data before any real money risked.
+
+## Live dashboards (GitHub Pages)
+
+- **Landing:** https://jeetmehta1991.github.io/stock-picks-app/
+- **Phase 1A Trade Summary (NEW Batch 177):** https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/ — 12-tab analytical view: strategies, regime heatmap, MAE/MFE, equity curve, walk-forward, smart-money lift, sector breakdown, skipped trades, circuit breaker log, exits, trades, raw.
+- **API endpoint coverage:** https://jeetmehta1991.github.io/stock-picks-app/dashboard_sprint0a/ — 109 CACHED endpoints across 20 APIs.
+- **Decisions + Bugs registry:** https://jeetmehta1991.github.io/stock-picks-app/dashboard_stage_2/ — 481 DECs / 250 BUGs / matrix-verified engine consumption.
 
 ## Architecture (current)
 

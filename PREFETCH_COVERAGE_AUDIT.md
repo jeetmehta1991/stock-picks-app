@@ -1,5 +1,33 @@
 # PREFETCH_COVERAGE_AUDIT.md — Pass 53 Day-9 v8h comprehensive prefetch audit
 
+## 2026-05-15 Day 9+ Batches 172-178 — sweep state
+
+API endpoint dashboard counts (post-sweep):
+- **CACHED: 109** (was 84 pre-sweep; +25 from Batches 172-178)
+- **ACCESSIBLE_NOT_CACHED: 28** (was 55; −27)
+- **TIER_BLOCKED: 40** (was 39; +1 — Polygon grouped daily reclassified after 403 probe)
+- **DOES_NOT_EXIST: 22**
+- **PARTIAL: 7** (Wikipedia revisions: 1412/1414 = 99.9%)
+- **UNKNOWN: 30** (dashboard parser bug in USAspending rows; out-of-scope)
+- **UNPROBED: 1**
+
+Per-API empirical state (parquet counts in `data_prefetch/`):
+- Polygon: OHLCV 1929, news 1927, financials 1937, static 10, prev 1932, related-companies 1937, Benzinga 5×1937, indicators 6×1937, dividends_full 988K rows, splits_full 18910 rows, options_chains 1937, events 1687, reference 1686, reference_extended 1687, indices 2 (NDX+COMP), forex 12, futures 15, economy 3
+- FRED: 90 observations + 11 metadata catalogs (incl. 126K vintage dates)
+- Quiver: 17 endpoints × 1937 (twitter, congressional, insider, sec13f, lobbying, etc.)
+- Finnhub: 14 endpoints × ~1937 (peers, quote, profile2, recommendation, etc.)
+- SEC EDGAR: 11 form-types × ~1700 + XBRL company facts 1937
+- CFTC: 73 contract-dataset pairs
+- ALFRED: 80 series vintage mirror
+- Wikipedia: pageviews 1414 + revisions 1412 (99.9%)
+- AAII: weekly sentiment 2022 + asset allocation 445
+- CNN F&G: composite + 7 components
+- Apewisdom: 8 subreddit feeds
+- StockTwits: 1937
+- pytrends: 1417 (interest_over_time)
+
+Remaining "non-cached" items are all explicit deferrals or tier-blocks — no Phase 1A blockers.
+
 # Source: live filesystem scan + scripts/probe_api_catalog.py + per CHECKLIST #77 (canonical-source rule)
 
 Owner directive 2026-05-07: *"This is exactly what i mean that we should pre fetch ALL available endpoints and corresponding dimensions. We can choose to not use it but if we have it all prefetched we can be flexible and quick in addressing.... Data quality and comprehensiveness is the foundation."*

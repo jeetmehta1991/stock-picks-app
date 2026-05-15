@@ -1,5 +1,7 @@
 # DOCUMENTATION_REGISTER
 
+**2026-05-15 Day 9+ Batch 178 / "Update all documents" sweep:** All forward-looking docs (32 total) refreshed with Phase 1A launch-day status + Batches 172-178 narrative. Doc-only DECs tracked here remain covered by AUDIT_INDEX.md canonical status. Live dashboard view: https://jeetmehta1991.github.io/stock-picks-app/dashboard_stage_2/
+
 **Purpose:** Per owner Pass 52 turn 98 directive — track all RESOLVED-DECIDED decisions that are documentation-only / cross-reference / no-engineering-work-required, scheduled for execution AFTER decision-walkthrough phase completes.
 
 **Companion to:** ENGINEERING_REGISTER.md (engineering work) and IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness gate).

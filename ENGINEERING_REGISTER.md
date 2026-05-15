@@ -1,5 +1,7 @@
 # Engineering Register — Implementation Tracking
 
+**2026-05-15 Batch 178 status:** Live tracking superseded by https://jeetmehta1991.github.io/stock-picks-app/dashboard_stage_2/ (decision/bug status + engine-consumption verification per the coverage-driven verification matrix). Pyramid: 1882 / 14s / 5xf / 0 failed. Phase 1A launch unblocked.
+
 **Generated:** Pass 52 turn 42
 **Purpose:** Per-sub-decision tracking from audit-decided to engineering-implemented
 **Status semantics:**

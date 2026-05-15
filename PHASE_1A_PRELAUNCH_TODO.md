@@ -1,5 +1,49 @@
 # PHASE_1A_PRELAUNCH_TODO.md — Comprehensive pre-Phase-1A pending items
 
+## 2026-05-15 (Day 9+) — LAUNCH DAY STATUS
+
+**Phase 1A launch UNBLOCKED. 0 strict blockers.**
+
+Session 2026-05-15 delivered Batches 166-178:
+
+| Batch | What | Result |
+|---|---|---|
+| 166-167 | DECLARED-ONLY rectification + joint-anomaly elimination | Matrix anomalies 19 → 3 (all pre-existing) |
+| 168 | build_dashboard_stage_2.py perf fix | 188s → 6.2s (30× speedup) |
+| 169 | BUG_REGISTER duplicate-row + suffix-aware canonical-ID | Matrix stable 744 |
+| 170 | 14 SUPERSEDED-BY bugs reclassified | DEFERRED bugs 90 → 76 |
+| 171 | Matrix/dashboard FUNC-DEAD coupling fix | No more oscillation (stable 731) |
+| 172 | Polygon 10 statics + inventory truth-up | CACHED 84 → first jump |
+| 173 | FRED 11 metadata endpoints | 126K vintage dates cached |
+| 174 | Polygon /prev + /related-companies (1932+1937) | per-ticker prev + peer coverage |
+| 175 | API dashboard refresh post-sweep | CACHED 84 → 109 (+25) |
+| 176 | Wikipedia revisions @ 3s rate-limit retry | 72% coverage |
+| 177 | **Phase 1A Trade Summary Dashboard live** | https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/ |
+| 178 | Wikipedia revisions @ 5s rate-limit retry | **99.9% (1412/1414)** |
+
+**Live dashboards (GitHub Pages):**
+- `/` — landing page (3 dashboards)
+- `/dashboard_sprint0a/` — API coverage (109 CACHED / 28 not-cached / 40 tier-blocked / etc.)
+- `/dashboard_stage_2/` — 481 DECs visible / 250 BUGs visible (matrix stable 731)
+- `/dashboard_phase_1a/` — **NEW** 12-tab Phase 1A trade analysis (Sprint 6.5 deliverable delivered early)
+
+**Pyramid:** 1882 passed / 14 skipped / 5 xfailed / **0 failed**.
+
+**Day-8 final verification ritual** (§L) — proceed with launch. Items 1-5 ✅ verified by current pyramid + this session's commits. Items 6-7 (final tag + owner sign-off) pending owner.
+
+**Genuine remaining non-blockers:**
+- 2 Wikipedia tickers still 429-blocked — retry on next refresh
+- 23 phase-tagged tech-debt bugs (Sprint 0A.7 / Layer 2D-3 / Phase 1C — by design)
+- 11 AlphaVantage endpoints — no key (most explicitly redundant)
+- pytrends H20 10 sub-endpoints — DEC-599 explicit Phase-1C defer
+- Polygon options per-contract OHLCV — DEC-600 explicit Phase-1B defer (TB-class)
+- Polygon minute OHLCV — storage-prohibitive defer
+- Polygon grouped daily — 403 TIER_BLOCKED (Stocks Plus upgrade gate)
+- 3 CRITICAL OPEN bugs — BUG-095 Sprint 3, BUG-111 Sprint 8, BUG-218 already bypassed by DEC-497
+
+---
+
+
 ## 2026-05-08 (Day-9 v8h+1) — Tier H/I execution status
 
 **Phase 1A start:** 2026-05-15 (DEC-590; **5 calendar days remaining as of 2026-05-10**)

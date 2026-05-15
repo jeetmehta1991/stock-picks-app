@@ -1,7 +1,9 @@
 # Plain-English Guide to the Trading System
 ## Everything you need to understand, with examples — up to end of Phase 1C
 
-**Last updated:** May 2026 (Pass 53 cumulative)
+**Last updated:** 2026-05-15 (Pass 53 Day 9+ Batch 178 — Phase 1A launch day).
+**Live dashboards (3):** https://jeetmehta1991.github.io/stock-picks-app/ — landing + Sprint 0A API coverage + Stage 2 registry + **NEW** Phase 1A trade analysis (12 tabs, Batch 177).
+**Backtest health:** 1882 tests passing / 0 failed. Matrix stable 731. 109 API endpoints CACHED across 20 APIs.
 **Pass 53 update:** Phase 1A architecture restored across canonical docs. Pass 53 also added: comprehensive signal universe documentation (TRADING_RULES §2A — 6 categories, ~265-275 fields); smart money composite formula with weights matrix (TRADING_RULES §10.8 — was missing pre-Pass-53); API endpoint inventory (TRADING_RULES §13.12 — 16 sources); 5-bucket universe model with B++ schema (T1a/T1b/T1c sub-tiers + Tier 1 ETFs + T2 + T3); universe CSVs moved to top-level `Backtesting universe/` folder; CLAUDE.md HARD RULE for CSV-first data architecture. EXPLANATION.md content below describes the original Phase 1A/1B/1C/1D taxonomy (preserved as primary mental model). The Pass 52 → 53 evolution: original Phase 1A → 1B → 1C → 1D got compressed during Pass 52 turn 119 (DEC-014 absorbed by DEC-422+426); Pass 53 restored Phase 1A as 3 distinct sub-phases (1A baseline → 1A-α rules-only cube → 1A-β scale validation) preceding Phase 1B agent overlay. For canonical taxonomy see PROJECT_PLAN.md §3.6-3.10. EXPLANATION.md retains plain-English flavor of original phasing for reader continuity.
 
 ---

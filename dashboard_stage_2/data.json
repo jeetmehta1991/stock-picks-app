@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T13:54:13.882572+00:00",
+  "generated_at": "2026-05-15T16:59:10.891509+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -69818,191 +69818,191 @@
   ],
   "recent_commits": [
     {
+      "sha": "9bfcf3ee",
+      "subject": "Batch 174: Polygon /prev + /related-companies + partial Wikipedia revisions. Phase C1 complete (Polygon); Phase C3 partial (Wikipedia 240/1414 \u00e2\u20ac\u201d 429 rate-limit pause + retry queued).",
+      "author": "jeetmehta1991",
+      "rel_time": "12 minutes ago"
+    },
+    {
+      "sha": "4c8c6f5c",
+      "subject": "Batch 173: FRED metadata prefetch (Phase B2). 11 parquets covering per-series + global catalogs.",
+      "author": "jeetmehta1991",
+      "rel_time": "50 minutes ago"
+    },
+    {
+      "sha": "612116e8",
+      "subject": "Batch 172: API dashboard truth-up + Polygon statics prefetch (Phase A+B1). Inventory now reflects empirical cache state; 5 new prefetch scripts.",
+      "author": "jeetmehta1991",
+      "rel_time": "52 minutes ago"
+    },
+    {
+      "sha": "5a0ce735",
+      "subject": "Batch 171: Decouple matrix scope from dashboard FUNC-DEAD filter. Matrix stable at 731 items across regen cycles (no more oscillation). Pyramid 1872/1891 (0 failures).",
+      "author": "jeetmehta1991",
+      "rel_time": "3 hours ago"
+    },
+    {
       "sha": "a4ae0f7e",
       "subject": "Batch 170: Reclassify 14 BUG_REGISTER 'SUPERSEDED-BY-X' bugs from RESOLVED-DECIDED to SUPERSEDED status. DEFERRED bug count 90 -> 76. Pyramid 1872/1891 (0 failures).",
       "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "3ba853b3",
       "subject": "Batch 169: BUG_REGISTER duplicate-row fix + suffix-aware canonical-ID extraction. Matrix stable at 744. Pyramid 1872/1891 (0 failures).",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "de2ca227",
       "subject": "Batch 168: build_dashboard_stage_2.py perf fix - 188s -> 6.2s (30x speedup). Pyramid 1872/1891 (0 failures, dashboard perf test now passes).",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "1fa1da92",
       "subject": "Batch 167: Eliminate 8 residual joint anomalies via config.py spacers + writer.py dict-key cleanup. Anomalies 11->3 (all 3 pre-existing). Pyramid 1871/1891 (1 pre-existing dashboard-perf failure desel",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "2ba0bb94",
       "subject": "Batch 166: Filter DECLARED-ONLY rectification to non-DEFERRED constants. Anomalies 19->11. Pyramid 1871/1891 (1 pre-existing dashboard-perf failure unrelated to this change).",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "913a3444",
       "subject": "Batch 165: Hide FUNC-DEAD items from dashboard. BUG-027 no longer shown.",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "432b5a57",
       "subject": "Batch 164: Fix 3 Batch 163 stub bugs + add get_congressional_detail. +4 DECs promoted. 1 FUNC-DEAD left (intentional). Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "da573f2f",
       "subject": "Batch 163: Bulk wire 32 remaining FUNC-DEAD helpers. +33 DECs promoted. 209 YES total. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "586e7233",
       "subject": "Batch 162: Wire 7 more Phase 1B+ stub invocations. +8 DECs promoted. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "cd549529",
       "subject": "Batch 161: Wire 3 more helpers (slippage_advanced + coverage_gate + finnhub_guard). +5 DECs promoted. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "a2c0d98c",
       "subject": "Batch 160: Rectify 56 classification anomalies (A wire + B reclassify). 9 promoted, 38 stay PARTIAL. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "960878e8",
       "subject": "Batch 159: Matrix detection sharpened - kills 2 false-positive patterns; surfaces 56 real wiring gaps. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "0274fded",
       "subject": "Batch 158: Matrix scope expanded to all 746 visible DECs + BUGs - 20 classification anomalies surfaced. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "af215364",
       "subject": "Batch 157: Close all unit + integration tier coverage gaps. Pyramid 1846/1864. Engine: 304 YES + 2 LAZY-WIRED + 51 N/A.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "4c065a68",
       "subject": "Batch 156: Refresh verification snapshot via canonical 4-step sequence. Matrix unchanged: 301 YES + 5 LAZY-WIRED + 51 N/A + 0 gaps.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "851a9ca4",
       "subject": "Batch 155: Dashboard + AUDIT_INDEX reflect coverage-driven engine verification. Pyramid 1579/1592.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "26 hours ago"
     },
     {
       "sha": "b6183f8a",
       "subject": "Batch 154: Wire 5 orphaned analytics modules into writer.py - 0 real gaps remain. Pyramid 1578/1591.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "26 hours ago"
     },
     {
       "sha": "1961f3ad",
       "subject": "Batch 153: VERIFICATION_MATRIX - coverage-driven engine consumption ground truth + 11 real gaps surfaced.",
       "author": "jeetmehta1991",
-      "rel_time": "25 hours ago"
+      "rel_time": "28 hours ago"
     },
     {
       "sha": "d3698010",
       "subject": "Batch 152: Sonnet-work review fixes - AUDIT_INDEX truth-up + spot-check audit. Pyramid 1578/1598.",
       "author": "jeetmehta1991",
-      "rel_time": "25 hours ago"
+      "rel_time": "28 hours ago"
     },
     {
       "sha": "b4bff5f9",
       "subject": "Batch 151: Remove duplicated Doc Status column/filter from decisions table - Promotion supersedes. Pyramid 743/743.",
       "author": "jeetmehta1991",
-      "rel_time": "33 hours ago"
+      "rel_time": "2 days ago"
     },
     {
       "sha": "03eb8272",
       "subject": "Batch 150: Fix dec/inv/cav status filter dropdowns (case regex + stale options). Pyramid 742/742.",
       "author": "jeetmehta1991",
-      "rel_time": "33 hours ago"
+      "rel_time": "2 days ago"
     },
     {
       "sha": "ed744a04",
       "subject": "@ Batch 149: 12 FALSE-POSITIVE bugs -> OBSOLETE, removed from dashboard. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "34 hours ago"
+      "rel_time": "2 days ago"
     },
     {
       "sha": "17ffee83",
       "subject": "@ Batch 148: BUG-NNN comment tags + 9 regression tests -> all 277 bugs resolved. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "35 hours ago"
+      "rel_time": "2 days ago"
     },
     {
       "sha": "7a4a28b0",
       "subject": "@ Batch 147: 9 AUDIT_INDEX status fixes - pipe chars + status flips. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "35 hours ago"
+      "rel_time": "2 days ago"
     },
     {
       "sha": "f49f0dfd",
       "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "35 hours ago"
+      "rel_time": "2 days ago"
     },
     {
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "35 hours ago"
-    },
-    {
-      "sha": "e6e90dbf",
-      "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
-      "author": "jeetmehta1991",
-      "rel_time": "35 hours ago"
-    },
-    {
-      "sha": "66367de1",
-      "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
-      "author": "jeetmehta1991",
-      "rel_time": "2 days ago"
-    },
-    {
-      "sha": "b03c30a8",
-      "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
-      "author": "jeetmehta1991",
-      "rel_time": "2 days ago"
-    },
-    {
-      "sha": "795744bb",
-      "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
-      "author": "jeetmehta1991",
       "rel_time": "2 days ago"
     }
   ],
   "uncommitted": {
-    "count": 43,
-    "modified": 12,
+    "count": 164,
+    "modified": 7,
     "added": 0,
-    "untracked": 30,
+    "untracked": 156,
     "deleted": 1,
     "files": [
       {
@@ -70015,27 +70015,19 @@
       },
       {
         "status": "M",
-        "path": "VERIFICATION_MATRIX.md"
+        "path": "dashboard_sprint0a/data.js"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.js"
+        "path": "dashboard_sprint0a/data.json"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
+        "path": "dashboard_sprint0a/last_run.txt"
       },
       {
         "status": "M",
         "path": "output_smoke_test/trade_log_checkpoint.csv"
-      },
-      {
-        "status": "M",
-        "path": "output_v2/backtest_report.html"
       },
       {
         "status": "M",
@@ -70046,16 +70038,508 @@
         "path": "output_v2/winning_strategies.json"
       },
       {
-        "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ACHR.parquet"
       },
       {
-        "status": "M",
-        "path": "scripts/build_verification_matrix.py"
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ACIW.parquet"
       },
       {
-        "status": "M",
-        "path": "verification_matrix.json"
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ACLS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ACLX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ACMR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ACN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ACVA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ADBE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ADI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ADM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ADMA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ADP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ADPT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AEO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AEP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AERI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AES.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AIMC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AIV.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AIZ.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AJG.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AJRD.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AKAM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALGS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALHC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALK.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALKT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALLE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALLY.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALMS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALNT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ALNY.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMAL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMAM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMAT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMCR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMD.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AME.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMGN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMPG.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AMPH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AOSL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APD.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APEI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APG.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APPS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/APTS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ARHS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ARIS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ARLP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ARM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ARMK.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ARMN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ARNC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AROC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ASC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ASM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ASRT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ASST.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ASTI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ASUR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ATEC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ATGE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ATI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ATLX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ATO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/ATVI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/AZZ.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BAC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BAH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BALL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BAM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BANF.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BAX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BBAI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BBW.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BDX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BEN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BETR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BF-B.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BG.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BHC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BIDU.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BIIB.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BIO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BLCO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BLD.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BLDR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BLFS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BLK.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BLSH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BLU.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BMI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BMR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BMRN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BTDR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BTM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BTU.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BUR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BVH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BVS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BW.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BWA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/BXC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CAH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CAL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CALM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CAMT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CAR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CARR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CART.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CASY.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CAT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CATX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CCEP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CCI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/wikipedia_revisions/CCJ.parquet"
       },
       {
         "status": "??",
@@ -70565,7 +71049,7 @@
     ]
   },
   "structural_drift": {
-    "cached_dir_count": 90,
+    "cached_dir_count": 95,
     "scanned_dir_count": 81,
     "uncovered": [
       "data_prefetch/aaii",
@@ -70573,24 +71057,29 @@
       "data_prefetch/cnn_fg",
       "data_prefetch/cnn_fg/components",
       "data_prefetch/finnhub",
+      "data_prefetch/fred/metadata",
       "data_prefetch/polygon",
       "data_prefetch/polygon/dividends",
       "data_prefetch/polygon/economy",
       "data_prefetch/polygon/futures",
       "data_prefetch/polygon/market_status",
       "data_prefetch/polygon/ohlcv_daily",
+      "data_prefetch/polygon/prev",
       "data_prefetch/polygon/reference_meta",
+      "data_prefetch/polygon/related_companies",
       "data_prefetch/polygon/snapshot",
       "data_prefetch/polygon/splits",
+      "data_prefetch/polygon/static",
       "data_prefetch/quiver/corporatedonors",
       "data_prefetch/quiver/insiders",
       "data_prefetch/quiver/patentmomentum",
       "data_prefetch/quiver/quivernews",
       "data_prefetch/quiver/sec13f",
       "data_prefetch/quiver/sec13fchanges",
-      "data_prefetch/quiver/twitter"
+      "data_prefetch/quiver/twitter",
+      "data_prefetch/wikipedia_revisions"
     ],
-    "uncovered_count": 21
+    "uncovered_count": 26
   },
   "reference_tables": {
     "badges": [

@@ -1,10 +1,11 @@
 # Stock Picks & Automated Trading System — PROJECT_PLAN
 
-**Version:** Pass 52 closure (refreshed Pass 53 turn 126)
-**Status:** Pass 52 audit 100% terminal (462/462 decisions in terminal states); Pass 53 pre-Sprint-1 setup
+**Version:** Pass 53 Day 9+ Batch 178 (refreshed 2026-05-15 launch day)
+**Status:** Phase 0A complete → Phase 1A launch day. 0 strict blockers. 1882 tests passing / 0 failed. 3 live dashboards on GitHub Pages. Matrix stable 731 (no oscillation).
 **Supersedes:** PROJECT_PLAN_v1_outdated.md (April 2026 version, marked outdated post-Pass-52)
 **Historical archive:** PROJECT_PLAN_ARCHIVE.md (pre-April-2026 reference)
 **Companion:** TRADING_RULES_AND_INFORMATION.md (canonical thresholds + criteria reference)
+**Live dashboards:** https://jeetmehta1991.github.io/stock-picks-app/
 
 ---
 

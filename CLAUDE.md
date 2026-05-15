@@ -1,7 +1,15 @@
 # Stock Picks & Automated Trading System
-**Stage:** 2 — Strategy Validation | **Phase:** 0A — Multi-API prefetch + universe build (Pass 53; DEC-497)
+**Stage:** 2 — Strategy Validation | **Phase:** 0A → 1A (launch day 2026-05-15; Pass 53 Day 9+ Batch 178)
 **Repo:** jeetmehta1991/stock-picks-app
 **Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons) | `VERIFICATION_MATRIX.md` (engine-consumption ground truth, coverage-driven - replaces the `wired=yes` grep heuristic that produced ~150 false-positive RESOLVED-IMPLEMENTED claims; regenerate via `scripts/build_verification_matrix.py` after a canonical backtest under `coverage run`)
+
+**Live dashboards (GitHub Pages):** `https://jeetmehta1991.github.io/stock-picks-app/`
+- `/dashboard_sprint0a/` — API endpoint coverage (109 CACHED / 28 ACCESSIBLE_NOT_CACHED / 40 TIER_BLOCKED)
+- `/dashboard_stage_2/` — Decisions + Bugs + INVs registry (481 visible DECs / 250 visible BUGs; matrix stable 731)
+- `/dashboard_phase_1a/` — 12-tab Phase 1A trade analysis (Sprint 6.5 deliverable, delivered early 2026-05-15 Batch 177)
+
+**Latest pyramid (2026-05-15):** 1882 passed / 14 skipped / 5 xfailed / 0 failed.
+**Phase 1A launch status:** 0 strict blockers. Day-8 ritual items 1-5 ✅; items 6-7 (tag + owner sign-off) pending owner.
 
 ---
 

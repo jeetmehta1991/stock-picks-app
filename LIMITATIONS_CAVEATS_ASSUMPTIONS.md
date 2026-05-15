@@ -1,5 +1,19 @@
 # LIMITATIONS_CAVEATS_ASSUMPTIONS.md
 
+## 2026-05-15 Day 9+ Batches 172-178 — new caveats
+
+**CAV-NEW-001 — Wikimedia REST per-IP throttle.** Public unauthenticated Wikipedia REST API rate-limits more aggressively than 1 req/0.5s and shows little tolerance even with proper User-Agent. Empirical safe-rate: 5s/request. 2 tickers still 429-blocked even at 5s; retry on subsequent refresh. Phase 1B+ if scaling: register Wikimedia API token / OAuth credentials. (See L153.)
+
+**CAV-NEW-002 — Polygon grouped daily aggs is tier-blocked.** `/v2/aggs/grouped/locale/us/market/stocks/{date}` returns 403 NOT_AUTHORIZED on Stocks Starter (despite inventory previously claiming ACCESSIBLE). Requires Stocks Plus tier ($199+/mo) to access. Per-ticker OHLCV aggregation already DONE (H1) covers the liquidity-ranking use case so no Phase 1A impact. (Reclassified Batch 172.)
+
+**CAV-NEW-003 — Inventory truth can be stale relative to filesystem.** `API_ENDPOINT_INVENTORY.md` "Currently cached?" column can lag actual `data_prefetch/*/` state by weeks. Dashboard builder reads inventory text not filesystem; if inventory says "NO" while parquet exists, dashboard reports false-NOT_CACHED. Truth-up requires empirical scan. (See L154.) Future improvement: dashboard builder auto-detects via filesystem rather than parsing inventory.
+
+**CAV-NEW-004 — `__DEC-NNN` underscore prefix breaks matrix grep.** The verification matrix's `\bDEC-NNN\b` regex doesn't match `__DEC-NNN` (no word boundary before D). Writer.py dict keys using `__DEC-` prefix lose their first DEC tag. Affected single-DEC dict keys silently fall back to DECLARED-ONLY. Acceptable trade-off post Batch 167 — those constants have no genuine engine-call-path consumption anyway. (See L152.)
+
+**CAV-NEW-005 — Phase 1A dashboard reads dev-mode AAPL-only backtest output.** Current `output_v2/*` contains the canonical 130-day AAPL backtest. Dashboard data.js (1.9 MB) reflects this small-scope run. Production-grade dashboard content requires a full multi-ticker × multi-year backtest then `python scripts/build_dashboard_phase_1a.py` to refresh.
+
+---
+
 **Purpose:** Persistent, append-only registry of caveats, limitations, and unverified assumptions across the project. Created Pass 52 per owner directive: "Document all caveats. Create a separate limitations/caveats/assumptions md file and keep adding to it."
 
 **Why this file exists separately from AUDIT.md:**

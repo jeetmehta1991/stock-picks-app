@@ -736,6 +736,51 @@ When a fact changes:
 
 ---
 
+### F-014 — Live dashboards (GitHub Pages, Pass 53 Day 9+ 2026-05-15)
+
+**Three live dashboards** hosted at `https://jeetmehta1991.github.io/stock-picks-app/` via GitHub Pages workflow `.github/workflows/deploy_pages.yml`.
+
+| Dashboard | URL slug | Source builder | Trigger |
+|---|---|---|---|
+| Landing page | `/` | `index.html` (static, manual edit) | — |
+| Sprint 0A API endpoint coverage | `/dashboard_sprint0a/` | `scripts/build_dashboard_sprint0a.py` | scans `data_prefetch/` + parses `API_ENDPOINT_INVENTORY.md` |
+| Stage 2 Decisions + Bugs registry | `/dashboard_stage_2/` | `scripts/build_dashboard_stage_2.py` | parses `AUDIT_INDEX.md` + `BUG_REGISTER.md` + git + `verification_matrix.json` |
+| Phase 1A Trade Summary | `/dashboard_phase_1a/` | `scripts/build_dashboard_phase_1a.py` | reads `output_v2/*` after backtest |
+
+**Phase 1A dashboard 12-tab structure (per DETAILED_PROJECT_PLAN.md §7.6 Sprint 6.5 spec, delivered early Batch 177):**
+1. Overview — portfolio KPIs (return, Sharpe, DD, win-rate, PF, heat)
+2. Strategies — per-strategy ranking with 9-criteria PASS/FAIL pills
+3. Regime — per-(strategy × regime) verdict heatmap
+4. MAE/MFE — distribution buckets
+5. Equity — equity curve chart (Chart.js line plot)
+6. Walk-fwd — improvements + rolling Sharpe + bootstrap CI + stress
+7. Smart-money — exit performance with/without smart-money signal
+8. Sector — outcomes by sector + concentration
+9. Skipped — rejected candidates with reason
+10. CircuitBreakers — activation log + per-trade outcomes when active
+11. Exits — 17 methods × N strategies + per-dimension breakdowns
+12. Trades — trade-log preview (first 10K rows)
+
+Plus Raw JSON debug tab.
+
+**Dependencies:**
+- F-002 strategy roster + F-004 exit methods + F-006 regimes + F-009 passing criteria all surface in Phase 1A dashboard tabs
+- F-007 test count includes dashboard-builder smoke + integration tests
+- F-012 APIs all surface in Sprint 0A dashboard catalog
+
+**Consequences if value drifts:**
+- URL slug change → owner-facing dashboards 404
+- Deploy workflow `paths` filter must list `dashboard_*/**` for trigger fire
+- Builder scripts must be re-run after backtest refresh to update payload
+
+**Status (2026-05-15 Batches 175 + 177-178):**
+- All 3 dashboards verified live (HTTP 200) at production URL
+- `dashboard_phase_1a` data.js = 1.9 MB; index.html = 11.7 KB
+- Builders idempotent — re-running after artifact refresh updates payload deterministically
+- Matrix scope (`bugs_all`/`decisions_all`) emitted by stage_2 builder so verification matrix scope is stable (no oscillation per Batch 171 / L151)
+
+---
+
 ## Cross-references
 
 - `CLAUDE.md` HARD RULE #67/#67.b — per-turn doc sync (this file is the doc-sync target)

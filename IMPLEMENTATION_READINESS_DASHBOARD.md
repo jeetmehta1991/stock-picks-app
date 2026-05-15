@@ -1,5 +1,12 @@
 # Implementation Readiness Dashboard
 
+**2026-05-15 Day 9+ Batch 178 refresh:** This static md document is superseded by live dashboards. Use the canonical dashboards instead:
+- Decisions + Bugs registry (live): https://jeetmehta1991.github.io/stock-picks-app/dashboard_stage_2/
+- Phase 1A trade analysis: https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/
+- API endpoint coverage: https://jeetmehta1991.github.io/stock-picks-app/dashboard_sprint0a/
+
+Current state (2026-05-15): 481 visible DECs (260 IMPLEMENTED / 136 DECIDED / 83 DEFERRED) + 250 visible BUGs (97 IMPLEMENTED / 77 DECIDED / 76 DEFERRED). Matrix stable at 731 items. Pyramid 1882 / 0 failed. Phase 1A launch unblocked.
+
 **Generated:** Pass 52 turn 36
 **Source-of-truth:** AUDIT_INDEX.md + AUDIT.md history
 **Decision counts:** 461 total / 312 PENDING / 114 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other

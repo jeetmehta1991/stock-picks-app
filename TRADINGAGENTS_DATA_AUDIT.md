@@ -1,5 +1,9 @@
 # TRADINGAGENTS Data Input Audit
 
+# Source: per CHECKLIST #77 — canonical sources are data_prefetch/*/ filesystem state + API_ENDPOINT_INVENTORY.md row-by-row + dashboard_sprint0a/data.json runtime catalog.
+
+**2026-05-15 Day 9+ Batch 178 status:** Phase 1A runs `--no-agents` (rules + smart money baseline). Agent toolkit data feeds for Phase 1B+: Technical (Polygon OHLCV ✅), Fundamentals (Polygon financials 1937 + SEC XBRL 1937 + Polygon Benzinga earnings ✅), News (Polygon news 1927 + Polygon Benzinga analyst_insights 1937 ✅), Risk (FRED 90 series + ALFRED 80 series + CFTC 73 contract-datasets ✅), Sentiment (AAII + CNN F&G + Apewisdom + StockTwits + pytrends ✅; Polygon news Phase 1B wire-up pending per L146 wiring-matrix rule). All Phase 1B data prerequisites cached. Live dashboard cross-reference: https://jeetmehta1991.github.io/stock-picks-app/dashboard_sprint0a/
+
 **Document role:** Per-agent data input requirements vs current feed mapping; gap identification; recommended additional API endpoints; custom toolkit + LangGraph state augmentation specifications.
 
 **Created:** Pass 52 turn 130

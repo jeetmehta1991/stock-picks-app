@@ -1,5 +1,9 @@
 # API Endpoint Utilization Audit (DEC-410)
 
+## 2026-05-15 Day 9+ Batch 178 — sweep close
+
+Post-sweep dashboard state (`dashboard_sprint0a/data.json`): 109 CACHED / 28 ACCESSIBLE_NOT_CACHED / 40 TIER_BLOCKED / 22 DOES_NOT_EXIST / 7 PARTIAL / 30 UNKNOWN / 1 UNPROBED. Inventory truth-up resolved a 25-row staleness gap (L154); see `API_ENDPOINT_INVENTORY.md` for the canonical row-by-row state. New empirical findings: Polygon `/v2/aggs/grouped/locale/us/market/stocks/{date}` returns 403 NOT_AUTHORIZED on Stocks Starter (reclassified TIER_BLOCKED Batch 172). Live dashboard: https://jeetmehta1991.github.io/stock-picks-app/dashboard_sprint0a/
+
 ## 2026-05-08 (Pass 53 Day-9 v8h+1) — PROBE-GROUNDED AMENDMENT (CHECKLIST #77)
 
 **Critical disclosure per CHECKLIST #77 (codified 2026-05-07 evening):** sections below this amendment were authored from training-data memory + audit cross-references. The L131 "honest knowledge limit" disclaimer was present but NOT enforced — multiple downstream audits inherited the unverified endpoint set, leading to 4 audit cycles before owner pushback ("This is horrible performance... 3 passes... still incomplete and these things are not even being flagged").

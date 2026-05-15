@@ -1,5 +1,16 @@
 # OPEN_INVESTIGATIONS.md — Canonical flag tracker
 
+## 2026-05-15 Day 9+ Batches 172-178 status
+
+Three new investigation findings from the prefetch sweep (no new INV-NNN slots — each closed within the session):
+1. **Wikipedia REST per-IP throttle <1 req/0.5s** — captured as L153 (rate-limit lesson) + Batches 174/176/178 ratchet 0.5s → 3s → 5s; final coverage 99.9%. 2 stragglers still 429-blocked, retry on next refresh.
+2. **Inventory truth-up gap (25 ACCESSIBLE_NOT_CACHED stale rows)** — captured as L154 (empirical-not-declarative lesson); all reconciled in Batches 172-175.
+3. **Polygon grouped daily 403 NOT_AUTHORIZED on Starter** — inventory claimed ACCESSIBLE; reclassified TIER_BLOCKED in Batch 172. Not a real prefetch gap; per-ticker OHLCV aggregation (H1 DONE) covers the liquidity-ranking use case.
+
+Open investigations from prior sessions (INV-001..047) remain in their existing slots below.
+
+---
+
 Investigation items flagged but not yet resolved. **Not bugs** (those go in `BUG_REGISTER.md`). **Not deferred specs** (those go in `AUDIT_BACKLOG.md`). This is for "we noticed something odd; not blocking; want to remember."
 
 Format per entry:

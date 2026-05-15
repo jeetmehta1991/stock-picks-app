@@ -1,5 +1,18 @@
 # AUDIT_BACKLOG.md — Master Implementation Backlog (Pass 53 Review-Cycle)
 
+## Pass 53 Day 9+ Batch 178 (2026-05-15 launch day) — 0 strict blockers
+
+Session 2026-05-15 closed Batches 166-178. Highlights:
+- Matrix anomalies 19 → 3 (all pre-existing); FUNC-DEAD coupling oscillation fixed (Batch 171 / L151)
+- DEFERRED bugs 90 → 76 (Batch 170 SUPERSEDED reclassification)
+- API CACHED 84 → 109 (Batches 172-175); inventory truth-up resolved 25-row staleness gap (L154)
+- Sprint 6.5 Phase 1A Trade Summary Dashboard delivered early (Batch 177) — live at `https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/`
+- Wikipedia revisions 0 → 99.9% (Batches 174-178; L153 rate-limit lesson)
+- Doc-builder perf: 188s → 6.2s (Batch 168 canonical-ID pre-extraction; L152 suffix-aware fix)
+- 4 new lessons added: L151-L154
+
+Phase 1A May 15 launch ready. 0 blockers; Day-8 verification ritual items 1-5 ✅.
+
 ## Pass 53 Day-9 v8h+1 close (2026-05-08/09) — T0 triage + 13-layer pyramid + 8 new DECs logged
 
 **8 new DECs logged 2026-05-09 (DEC-597 → DEC-604) - retroactive batch closing the

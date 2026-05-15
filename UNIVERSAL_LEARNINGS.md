@@ -1,6 +1,7 @@
 # Universal Engineering Learnings
 **Author:** Jeet Mehta
 **First compiled:** April 2026
+**Last refreshed:** 2026-05-15 Batch 178 — see LEARNINGS.md L151-L154 for 4 new pattern-level lessons distilled from the Phase 1A launch-readiness sweep (matrix/dashboard cyclic-dep oscillation; canonical-ID extraction needs suffix; Wikimedia REST rate-limit floor; inventory truth must be empirical not declarative).
 **Purpose:** Distilled principles from real project mistakes. Apply to every future project regardless of domain.
 
 Each principle is written as a universal rule, not a project-specific anecdote.

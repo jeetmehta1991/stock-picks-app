@@ -1,5 +1,7 @@
 # Strategy Register — Single Source-of-Truth
 
+**2026-05-15 Batch 178 status:** No strategy roster changes this session. Phase 1A backtest pipeline operates on Layer 1 baseline (60 strategies) per CANONICAL_FACTS.md F-002. Live per-strategy ranking on https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/#strategies tab.
+
 **Generated:** Pass 52 turn 53
 **Purpose:** Canonical enumeration of all trading strategies in the project (current + projected + pending decision)
 **Sourcing rules:**

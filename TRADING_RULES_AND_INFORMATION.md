@@ -1,5 +1,7 @@
 # TRADING_RULES_AND_INFORMATION
 
+**2026-05-15 Day 9+ Batch 178 status:** No rule/threshold changes this session — only inventory + dashboards + Wikipedia revisions prefetch. Canonical thresholds + criteria remain authoritative per §2A signals, §10.8 smart money composite, §13.12 API inventory cross-ref. Live coverage view: https://jeetmehta1991.github.io/stock-picks-app/dashboard_sprint0a/
+
 **Document role:** Canonical home for all trading rules, thresholds, criteria, benchmarks, and parameters across all 5 stages of the project. ENGINEERING_REGISTER references this document instead of duplicating thresholds inline.
 
 **Created:** Pass 52 turn 128
