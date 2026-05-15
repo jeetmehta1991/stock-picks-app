@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T05:22:16.710773+00:00",
+  "generated_at": "2026-05-15T06:32:16.375836+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
@@ -363,7 +363,7 @@
     },
     "DEC-078": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
@@ -375,7 +375,7 @@
     },
     "DEC-078B": {
       "kind": "DEC",
-      "tier": "DEFERRED",
+      "tier": "IMPLEMENTED",
       "engine": "N/A",
       "evidence": "no source tag"
     },

@@ -21,7 +21,7 @@
 
 | Metric | Count |
 |---|---|
-| Total canonical bugs in AUDIT.md (### BUG-NN sections) | 148 |
+| Total canonical bugs in AUDIT.md (### BUG-NN sections) | 147 |
 | Bugs linked to decisions (AUDIT_INDEX.md cross-reference) | 148 (100%) |
 | Bugs unlinked needing separate ENG entry | 0 |
 | Bugs explicitly tagged CRITICAL OPEN in registers | 2 (BUG-095, BUG-111) |
@@ -153,7 +153,6 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-111 | **CRITICAL**  -  No break-and-retest variants of breakout strategies (severity: MEDIUM->HIGH->CRITICAL across Pass 52) | DEC-354 (parent umbrella reopened) + DEC-355/356/357 (3 retest-variant strategies) + DEC-358/359/360/361/362 (5 chart pattern strategies; retest-cross-cutting) | DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants  -  explicit Sprint 8 scope per Pass 53 backlog) |
 | BUG-112 | LOW  -  No ICT/SMC concepts implemented | DEC-458 | DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (ICT/SMC implementation is DEC-261 + DEC-508 Phase 1B scope; smartmoneyconcepts library forked under DEC-045 + 15-cat test plan per DEC-508) |
 | BUG-113 | HIGH  -  Agent action/sizing/exit recommendations ignored by engine | DEC-008, DEC-458 | SUPERSEDED-BY-no-agents-Phase-1A Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (agent recommendations bypass is by --no-agents design in Phase 1A; rules+smart-money baseline precedes Phase 1B agent overlay per CLAUDE.md key design decisions) |
-| BUG-113 | HIGH  -  Agent action/sizing/exit recommendations ignored by engine | DEC-008, DEC-458 | (see linked DEC sprint) |
 | BUG-178 | HIGH  -  Earnings dates fetched live during backtest, no prefetch path | DEC-458 | SUPERSEDED-BY-DEC-497 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (earnings live fetch issue resolved by DEC-497 NO-LIVE-API HARD CUT; days_to_next_earnings reads from calendar prefetch only; sister of BUG-13) |
 | BUG-179 | HIGH  -  yfinance .info fetched live during backtest universe load | DEC-443, DEC-458 | SUPERSEDED-BY-DEC-497 (yfinance .info live calls removed; universe loads from prefetched CSVs) |
 | BUG-180 | HIGH  -  VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26 | DEC-458 | SUPERSEDED-BY-DEC-302 (VIX explicitly prefetched from FRED:VIXCLS; VXX proxy retired) |

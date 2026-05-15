@@ -11,12 +11,12 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 
 ## Summary
 
-- Total items audited: **745** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
+- Total items audited: **744** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
 
 **By promotion tier:**
 - IMPLEMENTED: 357
 - DECIDED: 213
-- DEFERRED: 173
+- DEFERRED: 172
 - UNKNOWN: 2
 
 **By coverage-driven engine status:**
@@ -26,7 +26,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 - Engine FUNC-DEAD (function exists but never executed): **0**
 - Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
 - Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **38** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
-- Engine N/A (no code expected): **424**
+- Engine N/A (no code expected): **423**
 
 ### Classification anomalies (tier vs engine mismatch): **3**
 
@@ -643,7 +643,6 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `BUG-110` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-111` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-112` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-113` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-113` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-178` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-179` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |

@@ -32,15 +32,20 @@ from pathlib import Path
 # Batch 168 perf fix: pre-extract canonical-ID form ONCE per corpus, then
 # id_status does O(1) set/Counter lookups instead of N patterns x M corpora
 # regex scans. Cuts build_dashboard_stage_2.py from ~188s to <10s.
-_CANONICAL_ID_RE = re.compile(r"(?<![A-Za-z0-9])(DEC|BUG|INV|CAV)-(\d+)(?!\d)")
+#
+# Canonical form is (prefix, int_num, suffix) where suffix is the optional
+# trailing alphabetic disambiguator (e.g. DEC-078A vs DEC-078B - distinct
+# items per BIFURCATION pattern). Batch 169 fix: include suffix so the
+# canonical key distinguishes 078 from 078A from 078B.
+_CANONICAL_ID_RE = re.compile(r"(?<![A-Za-z0-9])(DEC|BUG|INV|CAV)-(\d+)([A-Za-z]*)(?!\d)")
 
 
 def _extract_canonical_ids(text: str) -> set:
-    return {(m.group(1), int(m.group(2))) for m in _CANONICAL_ID_RE.finditer(text)}
+    return {(m.group(1), int(m.group(2)), m.group(3)) for m in _CANONICAL_ID_RE.finditer(text)}
 
 
 def _count_canonical_ids(text: str) -> Counter:
-    return Counter((m.group(1), int(m.group(2))) for m in _CANONICAL_ID_RE.finditer(text))
+    return Counter((m.group(1), int(m.group(2)), m.group(3)) for m in _CANONICAL_ID_RE.finditer(text))
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "dashboard_stage_2"
@@ -1034,15 +1039,17 @@ def id_status(id_str: str, corpora: dict) -> dict:
     # int_num) keys. Builder runtime 188s -> <10s. Word-boundary semantics
     # preserved by _CANONICAL_ID_RE which uses the same lookaround pattern
     # as Phase 3 Batch 24's per-ID regex.
-    m = re.match(r"^(BUG|DEC|INV|CAV)-(\d+)$", id_str)
+    # Batch 169 fix: also recognize alphabetic-suffix forms (DEC-078A, DEC-078B
+    # split via BIFURCATION) so they don't fall through to the zeros default.
+    m = re.match(r"^(BUG|DEC|INV|CAV)-(\d+)([A-Za-z]*)$", id_str)
     if not m:
         return {
             "coded": False, "wired": False, "tested": False, "pushed": False,
             "n_doc_refs": 0,
             "pyramid": {layer: False for layer in TEST_PYRAMID_LAYERS},
         }
-    prefix, n = m.group(1), int(m.group(2))
-    key = (prefix, n)
+    prefix, n, suffix = m.group(1), int(m.group(2)), m.group(3)
+    key = (prefix, n, suffix)
     # Owner directive 2026-05-10 (BUG-006 protocol violation finding): try
     # BOTH 2-digit (BUG-02) and 3-digit (BUG-002) override-key forms.
     overrides: dict = {}
