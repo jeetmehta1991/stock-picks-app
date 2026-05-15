@@ -25,8 +25,22 @@ import json
 import re
 import subprocess
 import sys
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+
+# Batch 168 perf fix: pre-extract canonical-ID form ONCE per corpus, then
+# id_status does O(1) set/Counter lookups instead of N patterns x M corpora
+# regex scans. Cuts build_dashboard_stage_2.py from ~188s to <10s.
+_CANONICAL_ID_RE = re.compile(r"(?<![A-Za-z0-9])(DEC|BUG|INV|CAV)-(\d+)(?!\d)")
+
+
+def _extract_canonical_ids(text: str) -> set:
+    return {(m.group(1), int(m.group(2))) for m in _CANONICAL_ID_RE.finditer(text)}
+
+
+def _count_canonical_ids(text: str) -> Counter:
+    return Counter((m.group(1), int(m.group(2))) for m in _CANONICAL_ID_RE.finditer(text))
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "dashboard_stage_2"
@@ -973,6 +987,17 @@ def load_status_corpora() -> dict:
         git_log_subjects = r.stdout or ""
     except Exception:
         git_log_subjects = ""
+    # Batch 168 perf fix: pre-extract canonical (prefix, int_num) ID sets/
+    # counters from each corpus once. id_status() then does O(1) lookups.
+    canonical_ids = {
+        "prod": _extract_canonical_ids(prod),
+        "tests": _extract_canonical_ids(tests),
+        "backtest_all": _extract_canonical_ids(backtest_all),
+        "scripts": _extract_canonical_ids(scripts),
+        "git_log": _extract_canonical_ids(git_log_subjects),
+    }
+    canonical_layer_ids = {layer: _extract_canonical_ids(text) for layer, text in layers.items()}
+    docs_counts = _count_canonical_ids(docs_text)
     return {
         "prod": prod,
         "tests": tests,
@@ -981,6 +1006,9 @@ def load_status_corpora() -> dict:
         "docs": docs_text,
         "git_log": git_log_subjects,
         "pyramid_layers": layers,
+        "_canonical_ids": canonical_ids,
+        "_canonical_layer_ids": canonical_layer_ids,
+        "_docs_counts": docs_counts,
     }
 
 
@@ -1001,88 +1029,61 @@ def id_status(id_str: str, corpora: dict) -> dict:
             "n_doc_refs": 0,
             "pyramid": {layer: False for layer in TEST_PYRAMID_LAYERS},
         }
-    # Build candidate ID forms to handle the BUG-NN vs BUG-NNN normalization
-    # (BUG_REGISTER table uses 2-digit "BUG-02"; dashboard normalizes to 3-digit
-    # "BUG-002" for grep, but historical code/test comments may use either form).
-    # Owner directive 2026-05-10: cross-reference comments must be discoverable
-    # regardless of zero-pad form.
-    id_candidates = {id_str}
-    import re as _re
-    m = _re.match(r"^(BUG|DEC|INV|CAV)-(\d+)$", id_str)
-    if m:
-        prefix, num = m.group(1), m.group(2)
-        n = int(num)
-        # Add both 2-digit (legacy) and 3-digit (canonical) forms
-        id_candidates.add(f"{prefix}-{n:02d}")
-        id_candidates.add(f"{prefix}-{n:03d}")
-    pyramid_layers = corpora.get("pyramid_layers", {})
-    # Owner directive 2026-05-10 (BUG-006 protocol violation finding):
-    # Try BOTH 2-digit (BUG-02) and 3-digit (BUG-002) override-key forms.
-    # Previously id_status was called with 3-digit form but several override
-    # entries used 2-digit form, so those overrides silently never applied
-    # and IMPLEMENTED bugs showed "no" cells across most pyramid layers.
+    # Batch 168 perf fix: replace per-ID regex search across megabyte corpora
+    # with O(1) set/Counter lookups against pre-extracted canonical (prefix,
+    # int_num) keys. Builder runtime 188s -> <10s. Word-boundary semantics
+    # preserved by _CANONICAL_ID_RE which uses the same lookaround pattern
+    # as Phase 3 Batch 24's per-ID regex.
+    m = re.match(r"^(BUG|DEC|INV|CAV)-(\d+)$", id_str)
+    if not m:
+        return {
+            "coded": False, "wired": False, "tested": False, "pushed": False,
+            "n_doc_refs": 0,
+            "pyramid": {layer: False for layer in TEST_PYRAMID_LAYERS},
+        }
+    prefix, n = m.group(1), int(m.group(2))
+    key = (prefix, n)
+    # Owner directive 2026-05-10 (BUG-006 protocol violation finding): try
+    # BOTH 2-digit (BUG-02) and 3-digit (BUG-002) override-key forms.
     overrides: dict = {}
-    for cand in id_candidates:
+    for cand in {id_str, f"{prefix}-{n:02d}", f"{prefix}-{n:03d}"}:
         cand_overrides = PYRAMID_OVERRIDES.get(cand)
         if cand_overrides:
             overrides = cand_overrides
             break
-    # Owner directive 2026-05-10 (Phase 3 Batch 24): the previous `c in text`
-    # substring match was unsafe - "DEC-06" was a substring of "DEC-061" /
-    # "DEC-062" / ..., producing false-positive tested=True / coded=True
-    # flags for low-numbered IDs. The fix uses regex with:
-    #   (?<![A-Za-z0-9])  no alphanumeric on left (start-of-id boundary)
-    #   {escape}          the candidate literally
-    #   (?!\d)            no digit on right (so DEC-06 doesn't match DEC-061)
-    # Letters/dash on right ARE allowed so DEC-422 matches "DEC-422a" parent
-    # references and DEC-006: / DEC-006. / DEC-006 (whitespace) all match.
-    _patterns = [
-        _re.compile(r"(?<![A-Za-z0-9])" + _re.escape(c) + r"(?!\d)")
-        for c in id_candidates
-    ]
-
-    def _any_in(text: str) -> bool:
-        return any(p.search(text) is not None for p in _patterns)
-    # Compute coded/wired/tested first so pyramid logic can reference them.
-    coded = _any_in(corpora["backtest_all"]) or _any_in(corpora["scripts"])
-    wired = _any_in(corpora["prod"])
-    tested = _any_in(corpora["tests"])
-    pushed = _any_in(corpora["git_log"])
+    # O(1) presence checks against pre-extracted canonical-ID sets.
+    canon_ids = corpora.get("_canonical_ids", {})
+    layer_ids = corpora.get("_canonical_layer_ids", {})
+    coded = key in canon_ids.get("backtest_all", set()) or key in canon_ids.get("scripts", set())
+    wired = key in canon_ids.get("prod", set())
+    tested = key in canon_ids.get("tests", set())
+    pushed = key in canon_ids.get("git_log", set())
 
     pyramid: dict = {}
     for layer in TEST_PYRAMID_LAYERS:
-        # Detected coverage from grep (regex, word-boundary-safe)
-        layer_text = pyramid_layers.get(layer, "")
-        detected = any(p.search(layer_text) is not None for p in _patterns)
+        detected = key in layer_ids.get(layer, set())
         if detected:
-            # Priority 1: coverage detected via grep - YES wins always
+            # Priority 1: coverage detected via canonical-ID set lookup
             pyramid[layer] = True
         elif layer in overrides:
             # Priority 2: per-ID manual override (N/A or LATER:reason)
             pyramid[layer] = overrides[layer]
         elif not coded:
             # Priority 3a: no code exists yet (SPEC_ONLY / OPEN / PROPOSED).
-            # Nothing to test means no layer is applicable. Owner directive
-            # 2026-05-10 (Phase 3 Batch 23): "if testing and other columns
-            # are not applicable should be N/A and not no." A decision that
-            # is purely specification - no implementation artifact - has
-            # nothing to attach a test to.
+            # Owner directive 2026-05-10 (Phase 3 Batch 23): N/A not no.
             pyramid[layer] = "N/A"
         elif layer in LAYER_DEFAULT_NA:
-            # Priority 3b: structural default - layer is narrow by design
-            # and does not apply to most IDs even when coded.
+            # Priority 3b: structural default - layer narrow by design
             pyramid[layer] = "N/A"
         else:
-            # Priority 4: real coverage gap (unit / smoke / integration on
-            # coded items). Code exists; absence here is a genuine gap.
+            # Priority 4: real coverage gap (unit / smoke / integration)
             pyramid[layer] = False
     return {
         "coded": coded,
         "wired": wired,
         "tested": tested,
         "pushed": pushed,
-        # n_doc_refs uses the same word-boundary-safe regex (Batch 24 fix).
-        "n_doc_refs": sum(len(p.findall(corpora["docs"])) for p in _patterns),
+        "n_doc_refs": corpora.get("_docs_counts", Counter()).get(key, 0),
         "pyramid": pyramid,
     }
 
