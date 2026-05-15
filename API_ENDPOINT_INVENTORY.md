@@ -350,7 +350,7 @@
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
 | `wikimedia.org/api/rest_v1/metrics/pageviews/per-article/...` | ✅ | date, views, article | YES (1414/1937 = 73%) | top-up to 100% (P2) |
-| Article revision history | ✅ | timestamp, user, comment, size, sha1 per revision | YES (in flight Batch 172) | DONE Batch 172 — `data_prefetch/wikipedia_revisions/` |
+| Article revision history | ✅ | timestamp, user, comment, size, sha1 per revision | YES PARTIAL (270/1414 = 19% Batch 174; retry running with 3s rate-limit) | DONE-PARTIAL Batch 174 — `data_prefetch/wikipedia_revisions/`; retry in flight to fill 1144 missing |
 
 ## 20. USAspending.gov (federal contracts — alternate to Quiver govcontracts)
 
