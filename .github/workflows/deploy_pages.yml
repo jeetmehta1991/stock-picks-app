@@ -1,5 +1,6 @@
 name: Deploy Dashboards to GitHub Pages
 # Updated 2026-05-08: now includes dashboard_stage_2 alongside dashboard_sprint0a
+# Updated 2026-05-15: added dashboard_phase_1a (Phase 1A Trade Summary).
 # Force rebuild 2026-05-08 evening (ensure data.js included in deploy artifact)
 
 # Pass 53 Day-9 v8h+1 owner-mandated 2026-05-08:
@@ -12,6 +13,7 @@ on:
     paths:
       - 'dashboard_sprint0a/**'
       - 'dashboard_stage_2/**'
+      - 'dashboard_phase_1a/**'
       - 'index.html'
       - '.nojekyll'
       - '.github/workflows/deploy_pages.yml'
@@ -41,9 +43,10 @@ jobs:
       - name: Prepare dashboards-only site (excludes data_prefetch/, backtest/, etc.)
         run: |
           set -e
-          mkdir -p _site/dashboard_sprint0a _site/dashboard_stage_2
+          mkdir -p _site/dashboard_sprint0a _site/dashboard_stage_2 _site/dashboard_phase_1a
           cp -r dashboard_sprint0a/* _site/dashboard_sprint0a/
           cp -r dashboard_stage_2/* _site/dashboard_stage_2/
+          cp -r dashboard_phase_1a/* _site/dashboard_phase_1a/
           cp index.html _site/index.html
           touch _site/.nojekyll
           echo "=== Site root contents ==="
@@ -52,6 +55,8 @@ jobs:
           ls -la _site/dashboard_sprint0a
           echo "=== dashboard_stage_2 contents ==="
           ls -la _site/dashboard_stage_2
+          echo "=== dashboard_phase_1a contents ==="
+          ls -la _site/dashboard_phase_1a
           echo "=== Site size ==="
           du -sh _site
 

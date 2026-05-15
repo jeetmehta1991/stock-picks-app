@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Source of truth (per CHECKLIST #77): data sourced from output_v2/* artifacts produced by backtest/run_phase1a.py. Builder: scripts/build_dashboard_phase_1a.py. See DETAILED_PROJECT_PLAN.md §7.6 for the 9-tab spec. -->
+<title>Phase 1A Trade Summary Dashboard</title>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --border:#30363d; --text:#c9d1d9; --accent:#58a6ff; --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --muted:#8b949e; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:1rem;font-size:13px}
+  header{margin-bottom:1rem;padding:1rem;background:var(--panel);border:1px solid var(--border);border-radius:8px}
+  h1{font-size:1.5rem;color:#f0f6fc;margin-bottom:.25rem}
+  .sub{color:var(--muted);font-size:.85rem}
+  .meta{margin-top:.5rem;font-size:.7rem;color:var(--muted)}
+  nav{display:flex;flex-wrap:wrap;gap:.25rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+  .tab-btn{padding:.6rem 1rem;background:transparent;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font-size:.85rem;font-family:inherit}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab-btn:hover{color:var(--text)}
+  section.panel{display:none;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:1rem}
+  section.panel.active{display:block}
+  h2{font-size:1.1rem;color:#f0f6fc;margin-bottom:.5rem;border-bottom:1px solid var(--border);padding-bottom:.4rem}
+  h3{font-size:.95rem;color:var(--accent);margin:1rem 0 .5rem}
+  p.desc{color:var(--muted);font-size:.8rem;margin-bottom:.75rem}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem;margin-bottom:1rem}
+  .kpi{background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:.7rem .9rem}
+  .kpi .v{font-size:1.4rem;font-weight:700;color:#f0f6fc;line-height:1.2}
+  .kpi .l{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.3rem}
+  .kpi .v.good{color:var(--good)} .kpi .v.warn{color:var(--warn)} .kpi .v.bad{color:var(--bad)}
+  .empty{padding:1rem;color:var(--muted);font-style:italic;background:#0d1117;border:1px dashed var(--border);border-radius:6px;text-align:center}
+  table.display{width:100%;font-size:.78rem;color:var(--text)}
+  table.display thead{background:#0d1117;color:var(--muted);text-transform:uppercase;font-size:.7rem;letter-spacing:.04em}
+  table.display thead th{padding:.5rem .6rem;border-bottom:1px solid var(--border)}
+  table.display tbody td{padding:.45rem .6rem;border-bottom:1px solid var(--border)}
+  table.display tbody tr:hover{background:#1c2128}
+  .dataTables_wrapper{color:var(--text);font-size:.78rem}
+  .dataTables_filter input, .dataTables_length select{background:#0d1117;border:1px solid var(--border);color:var(--text);padding:.25rem .4rem;border-radius:4px}
+  .dataTables_paginate .paginate_button{padding:.3rem .55rem;color:var(--muted)!important}
+  .dataTables_paginate .paginate_button.current{background:var(--accent)!important;color:#fff!important;border:none}
+  canvas{max-width:100%}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  @media (max-width:900px){.row{grid-template-columns:1fr}}
+  .pill{display:inline-block;padding:.15rem .45rem;border-radius:10px;font-size:.65rem;font-weight:600}
+  .pill.pass{background:#10b98133;color:var(--good)}
+  .pill.fail{background:#ef444433;color:var(--bad)}
+  .pill.warn{background:#f59e0b33;color:var(--warn)}
+  .pill.muted{background:#30363d;color:var(--muted)}
+  .heatmap{display:grid;gap:2px;font-size:.7rem;margin-top:.5rem}
+  .heatmap .cell{padding:.4rem .3rem;text-align:center;border-radius:3px;border:1px solid var(--border)}
+  details{margin:.5rem 0;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:.4rem .7rem}
+  details summary{cursor:pointer;color:var(--accent);font-size:.85rem;font-weight:600}
+  details pre{margin-top:.4rem;font-size:.7rem;color:var(--muted);white-space:pre-wrap;overflow-x:auto}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Phase 1A Trade Summary Dashboard</h1>
+<div class="sub">Rules + smart-money baseline (no agents). 9-tab analytical view of the canonical Phase 1A backtest.</div>
+<div class="meta" id="meta-line">Loading…</div>
+</header>
+
+<nav id="tabs">
+  <button class="tab-btn active" data-panel="overview">Overview</button>
+  <button class="tab-btn" data-panel="strategies">1. Strategies</button>
+  <button class="tab-btn" data-panel="regime">2. Regime</button>
+  <button class="tab-btn" data-panel="maemfe">3. MAE/MFE</button>
+  <button class="tab-btn" data-panel="equity">4. Equity</button>
+  <button class="tab-btn" data-panel="walkforward">5. Walk-fwd</button>
+  <button class="tab-btn" data-panel="smartmoney">6. Smart-$</button>
+  <button class="tab-btn" data-panel="sector">7. Sector</button>
+  <button class="tab-btn" data-panel="skipped">8. Skipped</button>
+  <button class="tab-btn" data-panel="circuit">9. CircuitBreakers</button>
+  <button class="tab-btn" data-panel="exits">Exits</button>
+  <button class="tab-btn" data-panel="trades">Trades</button>
+  <button class="tab-btn" data-panel="raw">Raw JSON</button>
+</nav>
+
+<section class="panel active" id="overview">
+  <h2>Overview — Portfolio KPIs</h2>
+  <p class="desc">Top-line portfolio metrics from the canonical backtest. Source: output_v2/portfolio_summary.json + portfolio_metrics.json + improvements_summary.json.</p>
+  <div class="kpi-grid" id="overview-kpis"></div>
+  <h3>Trade-level vs portfolio-level metrics</h3>
+  <p class="desc">Per-trade aggregates differ from compounded portfolio returns once position sizing + heat caps apply. BUG-95 portfolio implementation makes both viewable.</p>
+  <table id="overview-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="strategies">
+  <h2>1. Per-strategy ranking</h2>
+  <p class="desc">All evaluated strategies with their core 9-criteria scores. PASS/FAIL pills reflect the overall thresholds per CLAUDE.md. Click headers to sort.</p>
+  <div class="kpi-grid" id="strat-kpis"></div>
+  <table id="strategies-table" class="display compact"></table>
+  <h3>Winning strategies (declared)</h3>
+  <pre id="winning-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<section class="panel" id="regime">
+  <h2>2. Per-regime verdict heatmap</h2>
+  <p class="desc">Per-(strategy × regime) PASS/FAIL/INSUFFICIENT_DATA verdict. Source: output_v2/strategy_regime_matrix.json.</p>
+  <div id="regime-heatmap"></div>
+  <h3>Stratified summary</h3>
+  <pre id="regime-summary-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<section class="panel" id="maemfe">
+  <h2>3. MAE / MFE distribution</h2>
+  <p class="desc">Maximum Adverse / Favorable Excursion buckets — how often does a trade go against you before turning, and how much potential leave on the table.</p>
+  <div class="row">
+    <div><h3>MAE buckets</h3><table id="mae-table" class="display compact"></table></div>
+    <div><h3>MFE buckets</h3><table id="mfe-table" class="display compact"></table></div>
+  </div>
+</section>
+
+<section class="panel" id="equity">
+  <h2>4. Equity curve</h2>
+  <p class="desc">Compounded portfolio equity (DEC-491 Parquet). Source: output_v2/equity_curve.parquet.</p>
+  <div class="kpi-grid" id="equity-kpis"></div>
+  <canvas id="equity-chart" height="120"></canvas>
+</section>
+
+<section class="panel" id="walkforward">
+  <h2>5. Walk-forward + improvements</h2>
+  <p class="desc">Walk-forward windows + improvements_summary + rolling-Sharpe stability + bootstrap CI + stress metrics.</p>
+  <h3>Improvements summary</h3>
+  <pre id="improvements-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+  <h3>Rolling Sharpe stability</h3>
+  <pre id="rolling-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+  <h3>Bootstrap CI</h3>
+  <table id="bootstrap-table" class="display compact"></table>
+  <h3>Stress metrics</h3>
+  <pre id="stress-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<section class="panel" id="smartmoney">
+  <h2>6. Smart-money signal lift</h2>
+  <p class="desc">Performance with / without smart-money signal present at entry. Source: output_v2/exit_by_smart_money_signal_present.csv + congressional_correlation.csv.</p>
+  <h3>Smart-money present at entry</h3>
+  <table id="smartmoney-table" class="display compact"></table>
+  <h3>Congressional trade correlation</h3>
+  <table id="congressional-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="sector">
+  <h2>7. Sector breakdown</h2>
+  <p class="desc">Per-sector trade outcomes + sector concentration over time.</p>
+  <h3>Outcomes by sector</h3>
+  <table id="sector-table" class="display compact"></table>
+  <h3>Sector concentration</h3>
+  <table id="sector-conc-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="skipped">
+  <h2>8. Skipped trades</h2>
+  <p class="desc">Candidates rejected by entry gates (liquidity / regime / circuit breaker / earnings / ticker-cooldown). First 5000 rows.</p>
+  <table id="skipped-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="circuit">
+  <h2>9. Circuit breaker log</h2>
+  <p class="desc">Circuit-breaker activations during backtest + per-trade exit outcomes when active.</p>
+  <h3>Activation log</h3>
+  <table id="cb-log-table" class="display compact"></table>
+  <h3>Trade outcomes when CB active during hold</h3>
+  <table id="cb-active-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="exits">
+  <h2>Exit method comparison</h2>
+  <p class="desc">Cross-cutting exit-method analysis. Multi-dimensional cube + best-per-strategy + pairwise comparison.</p>
+  <h3>Best exit per strategy</h3>
+  <table id="exit-best-table" class="display compact"></table>
+  <h3>Exit comparison (17 methods × N strategies)</h3>
+  <table id="exit-comparison-table" class="display compact"></table>
+  <h3>Multi-dim cube (sample)</h3>
+  <table id="exit-cube-table" class="display compact"></table>
+  <h3>Per-dimension exit breakdowns</h3>
+  <div id="exit-breakdowns"></div>
+</section>
+
+<section class="panel" id="trades">
+  <h2>Trade log (preview)</h2>
+  <p class="desc">First 10,000 trades from output_v2/trade_log.parquet (DEC-491 Parquet schema). For full trade-level audit, download the parquet.</p>
+  <table id="trades-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="raw">
+  <h2>Raw payload (debug)</h2>
+  <p class="desc">All payload keys + counts — use for cross-checking dashboard parsing.</p>
+  <pre id="raw-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

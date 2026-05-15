@@ -1,0 +1,255 @@
+// Phase 1A Trade Summary Dashboard — vanilla JS + DataTables + Chart.js
+// Consumes window.PHASE_1A_DATA emitted by scripts/build_dashboard_phase_1a.py
+const D = window.PHASE_1A_DATA || {};
+
+// ---- helpers ----
+const $ = (sel) => document.querySelector(sel);
+const fmtNum = (v, dp = 2) => v === null || v === undefined || Number.isNaN(v) ? "—" : Number(v).toFixed(dp);
+const fmtPct = (v, dp = 1) => v === null || v === undefined ? "—" : (Number(v) * (Math.abs(v) > 1 ? 1 : 100)).toFixed(dp) + "%";
+const fmtInt = (v) => v === null || v === undefined ? "—" : Math.round(Number(v)).toLocaleString();
+function kpi(value, label, cls) {
+  return `<div class="kpi"><div class="v ${cls || ''}">${value}</div><div class="l">${label}</div></div>`;
+}
+function emptyMsg(target, msg) {
+  $(target).innerHTML = `<div class="empty">${msg}</div>`;
+}
+function buildTable(selector, rows, opts = {}) {
+  if (!rows || rows.length === 0) {
+    const el = document.querySelector(selector);
+    if (el) el.outerHTML = `<div class="empty">No data</div>`;
+    return;
+  }
+  const cols = opts.columns || Object.keys(rows[0]).map(k => ({ title: k, data: k, defaultContent: "—" }));
+  $(selector).innerHTML = "<thead><tr>" + cols.map(c => `<th>${c.title}</th>`).join("") + "</tr></thead>";
+  // eslint-disable-next-line no-undef
+  $(window).ready(() => $(selector));
+  jQuery(selector).DataTable({
+    data: rows,
+    columns: cols,
+    pageLength: opts.pageLength || 15,
+    order: opts.order || [],
+    deferRender: true,
+    autoWidth: false,
+  });
+}
+
+// ---- tab switching ----
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  });
+});
+
+// ---- header meta ----
+const generated = D.generated_at || "?";
+const tradeCount = (D.trade_log_preview || []).length;
+const stratCount = (D.backtest_results || []).length;
+$("#meta-line").textContent = `Generated ${generated.slice(0, 19)} UTC · ${stratCount} strategies · ${tradeCount} trades shown · source: ${D.source_dir || 'output_v2'}`;
+
+// ---- TAB: Overview ----
+function renderOverview() {
+  const psum = D.portfolio_summary || {};
+  const pmetrics = D.portfolio_metrics || {};
+  const imps = D.improvements_summary || {};
+  const ret = psum.portfolio_return_pct ?? psum.total_return_pct;
+  const heat = psum.max_portfolio_heat_pct;
+  const sharpe = pmetrics.sharpe ?? psum.sharpe;
+  const dd = pmetrics.max_dd ?? psum.max_drawdown_pct;
+  const winRate = psum.win_rate ?? psum.win_rate_pct;
+  const pf = psum.profit_factor;
+  const totalTrades = psum.total_trades ?? psum.n_trades;
+  const passingStrategies = (D.backtest_results || []).filter(r => (r.passes_all || r.passing) === true || r.passes_all === "True").length;
+  const kpis = [
+    kpi(fmtPct(ret, 1), "Portfolio return", (ret ?? 0) >= 0 ? "good" : "bad"),
+    kpi(fmtNum(sharpe, 2), "Sharpe ratio", (sharpe ?? 0) >= 1 ? "good" : (sharpe ?? 0) >= 0.7 ? "warn" : "bad"),
+    kpi(fmtPct(dd, 1), "Max drawdown", "warn"),
+    kpi(fmtPct(winRate, 1), "Win rate", (winRate ?? 0) >= 0.55 ? "good" : "warn"),
+    kpi(fmtNum(pf, 2), "Profit factor", (pf ?? 0) >= 1.5 ? "good" : (pf ?? 0) >= 1.3 ? "warn" : "bad"),
+    kpi(fmtPct(heat, 1), "Max portfolio heat"),
+    kpi(fmtInt(totalTrades), "Total trades"),
+    kpi(`${passingStrategies}/${stratCount}`, "Passing strategies", passingStrategies > 0 ? "good" : "bad"),
+  ];
+  $("#overview-kpis").innerHTML = kpis.join("");
+
+  // Overview table — merge psum + pmetrics into key-value pairs
+  const kvRows = [];
+  for (const [k, v] of Object.entries(psum)) kvRows.push({ source: "portfolio_summary", key: k, value: String(v) });
+  for (const [k, v] of Object.entries(pmetrics)) kvRows.push({ source: "portfolio_metrics", key: k, value: String(v) });
+  for (const [k, v] of Object.entries(imps).slice(0, 30)) kvRows.push({ source: "improvements_summary", key: k, value: typeof v === "object" ? JSON.stringify(v).slice(0, 80) : String(v) });
+  buildTable("#overview-table", kvRows, { pageLength: 25, order: [[0, "asc"]] });
+}
+
+// ---- TAB: Strategies ----
+function renderStrategies() {
+  const rows = D.backtest_results || [];
+  if (!rows.length) { emptyMsg("#strat-kpis", "No backtest_results.csv"); return; }
+  const passing = rows.filter(r => r.passes_all === true || r.passes_all === "True").length;
+  const avgSharpe = rows.reduce((a, r) => a + (Number(r.sharpe) || 0), 0) / rows.length;
+  const avgPF = rows.reduce((a, r) => a + (Number(r.profit_factor) || 0), 0) / rows.length;
+  $("#strat-kpis").innerHTML = [
+    kpi(rows.length, "Strategies evaluated"),
+    kpi(passing, "Passing all 9 gates", passing > 0 ? "good" : "bad"),
+    kpi(fmtNum(avgSharpe, 2), "Avg Sharpe"),
+    kpi(fmtNum(avgPF, 2), "Avg profit factor"),
+  ].join("");
+  // Columns — auto-detect
+  const cols = Object.keys(rows[0]).map(k => ({
+    title: k, data: k,
+    render: (v) => {
+      if (v === null || v === undefined) return "—";
+      if (typeof v === "boolean") return v ? '<span class="pill pass">PASS</span>' : '<span class="pill fail">FAIL</span>';
+      if (typeof v === "number") return Number.isInteger(v) ? v.toLocaleString() : v.toFixed(3);
+      return String(v);
+    },
+  }));
+  buildTable("#strategies-table", rows, { columns: cols, pageLength: 25 });
+  $("#winning-pre").textContent = JSON.stringify(D.winning_strategies || {}, null, 2);
+}
+
+// ---- TAB: Regime ----
+function renderRegime() {
+  const matrix = D.strategy_regime_matrix || {};
+  const strategies = Object.keys(matrix);
+  const wrap = $("#regime-heatmap");
+  if (!strategies.length) { wrap.innerHTML = '<div class="empty">No strategy_regime_matrix.json</div>'; return; }
+  const regimes = Array.from(new Set(strategies.flatMap(s => Object.keys(matrix[s] || {}))));
+  let html = `<div class="heatmap" style="grid-template-columns: 250px repeat(${regimes.length}, minmax(80px, 1fr))">`;
+  html += `<div class="cell" style="background:#0d1117;color:var(--muted);font-weight:600">Strategy ↓ / Regime →</div>`;
+  for (const r of regimes) html += `<div class="cell" style="background:#0d1117;color:var(--muted);font-weight:600">${r}</div>`;
+  for (const s of strategies) {
+    html += `<div class="cell" style="background:#0d1117;text-align:left;font-weight:500">${s}</div>`;
+    for (const r of regimes) {
+      const cell = matrix[s][r] || {};
+      const v = cell.verdict || cell.status || cell;
+      let bg = "#30363d", color = "var(--muted)";
+      if (v === "PASS") { bg = "#10b98155"; color = "#10b981"; }
+      else if (v === "FAIL") { bg = "#ef444455"; color = "#ef4444"; }
+      else if (v === "INSUFFICIENT_DATA") { bg = "#f59e0b33"; color = "#f59e0b"; }
+      html += `<div class="cell" style="background:${bg};color:${color}" title="${JSON.stringify(cell)}">${typeof v === 'string' ? v : ''}</div>`;
+    }
+  }
+  html += "</div>";
+  wrap.innerHTML = html;
+  $("#regime-summary-pre").textContent = JSON.stringify(D.regime_stratified_summary || {}, null, 2);
+}
+
+// ---- TAB: MAE/MFE ----
+function renderMaeMfe() {
+  buildTable("#mae-table", D.mae_bucket || []);
+  buildTable("#mfe-table", D.mfe_bucket || []);
+}
+
+// ---- TAB: Equity ----
+function renderEquity() {
+  const curve = D.equity_curve || [];
+  const psum = D.portfolio_summary || {};
+  const pmetrics = D.portfolio_metrics || {};
+  $("#equity-kpis").innerHTML = [
+    kpi(curve.length, "Days"),
+    kpi(fmtPct(pmetrics.total_return ?? psum.portfolio_return_pct, 1), "Total return"),
+    kpi(fmtNum(pmetrics.sharpe, 2), "Sharpe"),
+    kpi(fmtPct(pmetrics.max_dd, 1), "Max DD"),
+    kpi(fmtNum(pmetrics.alpha, 2), "Alpha vs SPY"),
+    kpi(fmtNum(pmetrics.beta, 2), "Beta vs SPY"),
+  ].join("");
+  if (!curve.length) return;
+  const labels = curve.map(p => p.date);
+  const data = curve.map(p => Number(p.equity));
+  new Chart(document.getElementById("equity-chart"), {
+    type: "line",
+    data: { labels, datasets: [{ label: "Portfolio equity", data, borderColor: "#58a6ff", backgroundColor: "rgba(88,166,255,0.1)", fill: true, tension: 0.1, pointRadius: 0 }] },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: "#c9d1d9" } } },
+      scales: {
+        x: { ticks: { color: "#8b949e", maxTicksLimit: 10 }, grid: { color: "#30363d" } },
+        y: { ticks: { color: "#8b949e" }, grid: { color: "#30363d" } },
+      },
+    },
+  });
+}
+
+// ---- TAB: Walk-forward ----
+function renderWalkForward() {
+  $("#improvements-pre").textContent = JSON.stringify(D.improvements_summary || {}, null, 2);
+  $("#rolling-pre").textContent = JSON.stringify(D.rolling_sharpe_stability || {}, null, 2);
+  $("#stress-pre").textContent = JSON.stringify(D.stress_metrics || {}, null, 2);
+  buildTable("#bootstrap-table", D.bootstrap_ci || []);
+}
+
+// ---- TAB: Smart Money ----
+function renderSmartMoney() {
+  buildTable("#smartmoney-table", D.smart_money_exit || []);
+  buildTable("#congressional-table", D.congressional_correlation || []);
+}
+
+// ---- TAB: Sector ----
+function renderSector() {
+  buildTable("#sector-table", D.by_sector || []);
+  buildTable("#sector-conc-table", D.sector_concentration || []);
+}
+
+// ---- TAB: Skipped ----
+function renderSkipped() {
+  buildTable("#skipped-table", D.skipped_trades || [], { pageLength: 25 });
+}
+
+// ---- TAB: Circuit breakers ----
+function renderCircuit() {
+  buildTable("#cb-log-table", D.circuit_breaker_log || []);
+  buildTable("#cb-active-table", D.cb_by_active || []);
+}
+
+// ---- TAB: Exits ----
+function renderExits() {
+  buildTable("#exit-best-table", D.exit_best || []);
+  buildTable("#exit-comparison-table", D.exit_comparison || []);
+  buildTable("#exit-cube-table", (D.exit_methods || []).slice(0, 200));
+  // Per-dimension breakdowns
+  const breakdowns = D.exit_breakdowns || {};
+  const wrap = $("#exit-breakdowns");
+  wrap.innerHTML = "";
+  for (const [name, rows] of Object.entries(breakdowns)) {
+    if (!rows || !rows.length) continue;
+    const id = `bd-${name.replace(/[^a-z0-9]/gi, "_")}`;
+    const det = document.createElement("details");
+    det.innerHTML = `<summary>${name} (${rows.length} rows)</summary><table id="${id}" class="display compact"></table>`;
+    wrap.appendChild(det);
+    setTimeout(() => buildTable("#" + id, rows, { pageLength: 10 }), 0);
+  }
+}
+
+// ---- TAB: Trades ----
+function renderTrades() {
+  const rows = D.trade_log_preview || [];
+  buildTable("#trades-table", rows, { pageLength: 25 });
+}
+
+// ---- TAB: Raw ----
+function renderRaw() {
+  const summary = {};
+  for (const [k, v] of Object.entries(D)) {
+    if (Array.isArray(v)) summary[k] = `array[${v.length}]`;
+    else if (v && typeof v === "object") summary[k] = `object{${Object.keys(v).length}}`;
+    else summary[k] = String(v).slice(0, 80);
+  }
+  $("#raw-pre").textContent = JSON.stringify(summary, null, 2);
+}
+
+// ---- Render all ----
+try { renderOverview(); } catch (e) { console.error("overview:", e); }
+try { renderStrategies(); } catch (e) { console.error("strategies:", e); }
+try { renderRegime(); } catch (e) { console.error("regime:", e); }
+try { renderMaeMfe(); } catch (e) { console.error("maemfe:", e); }
+try { renderEquity(); } catch (e) { console.error("equity:", e); }
+try { renderWalkForward(); } catch (e) { console.error("walkforward:", e); }
+try { renderSmartMoney(); } catch (e) { console.error("smartmoney:", e); }
+try { renderSector(); } catch (e) { console.error("sector:", e); }
+try { renderSkipped(); } catch (e) { console.error("skipped:", e); }
+try { renderCircuit(); } catch (e) { console.error("circuit:", e); }
+try { renderExits(); } catch (e) { console.error("exits:", e); }
+try { renderTrades(); } catch (e) { console.error("trades:", e); }
+try { renderRaw(); } catch (e) { console.error("raw:", e); }
