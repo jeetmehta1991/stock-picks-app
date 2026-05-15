@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T06:32:16.375836+00:00",
+  "generated_at": "2026-05-15T12:51:14.224720+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
@@ -3037,6 +3037,12 @@
       "engine": "N/A",
       "evidence": "no source tag"
     },
+    "BUG-027": {
+      "kind": "BUG",
+      "tier": "DEFERRED",
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/improvements.py never executed"
+    },
     "BUG-028": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
@@ -3079,12 +3085,6 @@
       "engine": "YES",
       "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
     },
-    "BUG-035": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
     "BUG-036": {
       "kind": "BUG",
       "tier": "DECIDED",
@@ -3100,12 +3100,6 @@
     "BUG-038": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
-    "BUG-039": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
@@ -3163,12 +3157,6 @@
       "engine": "N/A",
       "evidence": "no source tag"
     },
-    "BUG-051": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
     "BUG-052": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
@@ -3186,18 +3174,6 @@
       "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 486-541 executed in backtest/signals/technical.py"
-    },
-    "BUG-056": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
-    "BUG-057": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
     },
     "BUG-058": {
       "kind": "BUG",
@@ -3289,12 +3265,6 @@
       "engine": "YES",
       "evidence": "function body 2162-2430 executed in backtest/results/metrics.py"
     },
-    "BUG-076": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
     "BUG-077": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
@@ -3352,12 +3322,6 @@
     "BUG-086": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
-    "BUG-087": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
@@ -3463,12 +3427,6 @@
       "engine": "N/A",
       "evidence": "no source tag"
     },
-    "BUG-105": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
     "BUG-106": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
@@ -3478,18 +3436,6 @@
     "BUG-107": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
-    "BUG-108": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
-    "BUG-109": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
@@ -3511,12 +3457,6 @@
       "engine": "N/A",
       "evidence": "no source tag"
     },
-    "BUG-113": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
     "BUG-178": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
@@ -3532,12 +3472,6 @@
     "BUG-180": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
-    "BUG-182": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },
@@ -3577,21 +3511,9 @@
       "engine": "N/A",
       "evidence": "no source tag"
     },
-    "BUG-191": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
     "BUG-199": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
-    },
-    "BUG-200": {
-      "kind": "BUG",
-      "tier": "DEFERRED",
       "engine": "N/A",
       "evidence": "no source tag"
     },

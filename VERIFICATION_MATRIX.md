@@ -11,22 +11,22 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 
 ## Summary
 
-- Total items audited: **744** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
+- Total items audited: **731** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
 
 **By promotion tier:**
 - IMPLEMENTED: 357
 - DECIDED: 213
-- DEFERRED: 172
+- DEFERRED: 159
 - UNKNOWN: 2
 
 **By coverage-driven engine status:**
 - Engine YES (executed): **283**
 - Engine LAZY-WIRED (all tagged files wired via lazy import chains): **0** (import chain exists; condition gating the call not met in this small backtest)
 - Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **0** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
-- Engine FUNC-DEAD (function exists but never executed): **0**
+- Engine FUNC-DEAD (function exists but never executed): **1**
 - Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
 - Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **38** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
-- Engine N/A (no code expected): **423**
+- Engine N/A (no code expected): **409**
 
 ### Classification anomalies (tier vs engine mismatch): **3**
 
@@ -54,7 +54,9 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 
 ### Engine-consumption gaps detail
 
-None  -  every IMPLEMENTED item has at least its tagged line executed in the canonical backtest.
+| ID | engine | evidence | unit | integration |
+|---|---|---|---|---|
+| `BUG-027` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 
 | ID | engine | unit | smoke | integration | system | functional | regression | data_integrity | performance | acceptance | property | snapshot | contract | compatibility |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -564,6 +566,7 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `BUG-023` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-024` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-026` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-027` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-028` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-029` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-030` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -571,11 +574,9 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `BUG-032` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-033` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-034` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-035` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-036` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-037` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-038` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-039` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-040` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-041` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-043` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -585,12 +586,9 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `BUG-048` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-049` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-050` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-051` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-052` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-054` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-055` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-056` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-057` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-058` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-059` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-060` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -606,7 +604,6 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `BUG-073` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-074` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-075` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-076` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-077` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-078` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-079` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -617,7 +614,6 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `BUG-084` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-085` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-086` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-087` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-088` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-089` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-090` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -635,28 +631,21 @@ None  -  every IMPLEMENTED item has at least its tagged line executed in the can
 | `BUG-102` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-103` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-104` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-105` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-106` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-107` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-108` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `BUG-109` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-110` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-111` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-112` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-113` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-178` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-179` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-180` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-182` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-184` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-186` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-187` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-188` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-189` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-190` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-191` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-199` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-200` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-202` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-203` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-270` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
