@@ -31,7 +31,7 @@ import requests
 CACHE = Path("data_prefetch/wikipedia_revisions")
 CACHE.mkdir(parents=True, exist_ok=True)
 PAGEVIEWS_DIR = Path("data_prefetch/wikipedia")
-RATE_LIMIT_SLEEP = 3.0  # Wikimedia REST rate-limits aggressively above this
+RATE_LIMIT_SLEEP = 5.0  # Wikimedia REST rate-limits aggressively; 5s for unauth (Batch 176 retry; prior 3s still hit 429 for 398 tickers)
 TIMEOUT = 30
 HEADERS = {"User-Agent": "stock-picks-app/0.1 (research; github.com/jeetmehta1991/stock-picks-app)"}
 
