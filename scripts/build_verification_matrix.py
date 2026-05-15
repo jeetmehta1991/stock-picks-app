@@ -88,15 +88,23 @@ LAYER_ORDER = list(TEST_PYRAMID_LAYERS.keys())
 
 
 def load_all_items() -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
-    """Read dashboard data.js and return ALL visible DEC + BUG entries (excluding
-    SUPERSEDED + OBSOLETE which are hidden from the dashboard view).
+    """Read dashboard data.js and return ALL DEC + BUG entries (excluding
+    SUPERSEDED + OBSOLETE which the matrix treats as out-of-scope).
 
     Returns (decisions, bugs) where each list contains (id, tier) tuples so the
     matrix can group its summary by promotion tier (IMPLEMENTED / DECIDED /
-    DEFERRED / etc.). Per owner directive 2026-05-14: expand scope from
-    IMPLEMENTED-only (357) to all visible items so DECIDED/DEFERRED entries also
-    surface in the audit - any that accidentally have engine consumption signals
-    the classification is wrong.
+    DEFERRED / FUNC-DEAD / etc.). Per owner directive 2026-05-14: expand scope
+    from IMPLEMENTED-only (357) to all items so DECIDED/DEFERRED entries
+    surface for classification anomaly detection.
+
+    Batch 171 (2026-05-15) decouple fix: prefer `decisions_all` + `bugs_all`
+    over `decisions` + `bugs`. The latter are the dashboard's UI-visible
+    lists (FUNC-DEAD filter applied); the former include hidden items.
+    Reading the _all lists breaks the prior matrix <-> dashboard FUNC-DEAD
+    coupling oscillation, where a FUNC-DEAD-hidden item would fall out of
+    matrix scope on next regen, lose its FUNC-DEAD signal, and re-enter
+    on the regen after that. Fallback to `decisions` / `bugs` preserves
+    compatibility with pre-Batch-171 data.js snapshots.
     """
     data_js = (REPO / "dashboard_stage_2" / "data.js").read_text(encoding="utf-8")
     js = re.sub(r"^const STAGE2_DATA = ", "", data_js.strip())
@@ -105,15 +113,18 @@ def load_all_items() -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
 
     HIDDEN = {"SUPERSEDED", "OBSOLETE"}
 
+    decisions_source = data.get("decisions_all", data.get("decisions", []))
+    bugs_source = data.get("bugs_all", data.get("bugs", []))
+
     dec_items: List[Tuple[str, str]] = []
-    for d in data["decisions"]:
+    for d in decisions_source:
         tier = (d.get("promotion_path") or {}).get("tier") or "UNKNOWN"
         if tier in HIDDEN:
             continue
         dec_items.append((d.get("short_id") or d["id"], tier))
 
     bug_items: List[Tuple[str, str]] = []
-    for b in data["bugs"]:
+    for b in bugs_source:
         tier = (b.get("promotion_path") or {}).get("tier") or "UNKNOWN"
         if tier in HIDDEN:
             continue

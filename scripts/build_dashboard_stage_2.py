@@ -2056,12 +2056,23 @@ def main() -> int:
     decisions_visible = [d for d in decisions if not _is_hidden(d)]
     decisions_hidden_count = len(decisions_full) - len(decisions_visible)
 
+    # Batch 171 (2026-05-15): emit *_all alongside *_visible so the
+    # verification-matrix builder can use a stable, hidden-inclusive scope.
+    # This breaks the prior FUNC-DEAD coupling oscillation: when matrix
+    # scoped to data.js[*]_visible, a FUNC-DEAD-hidden item would fall out
+    # of matrix scope on next regen, lose its FUNC-DEAD signal, get
+    # re-included by the next dashboard build, and oscillate by 1 item
+    # depending on regen order. Now matrix reads _all and the item is
+    # always in scope with stable engine status. UI continues to read
+    # the *_visible lists.
     snapshot = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "decisions": decisions_visible,
+        "decisions_all": decisions_full,
         "decisions_total_count": len(decisions_full),
         "decisions_hidden_count": decisions_hidden_count,
         "bugs": bugs_visible,
+        "bugs_all": bugs_full,
         "bugs_total_count": len(bugs_full),
         "bugs_hidden_count": bugs_hidden_count,
         "investigations": invs,

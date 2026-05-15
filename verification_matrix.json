@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T12:51:14.224720+00:00",
+  "generated_at": "2026-05-15T13:49:19.511504+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
@@ -3039,7 +3039,7 @@
     },
     "BUG-027": {
       "kind": "BUG",
-      "tier": "DEFERRED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/engine/improvements.py never executed"
     },

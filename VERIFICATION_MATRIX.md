@@ -16,8 +16,9 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 **By promotion tier:**
 - IMPLEMENTED: 357
 - DECIDED: 213
-- DEFERRED: 159
+- DEFERRED: 158
 - UNKNOWN: 2
+- FUNC-DEAD: 1
 
 **By coverage-driven engine status:**
 - Engine YES (executed): **283**
