@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T14:30:55.924044+00:00",
+  "generated_at": "2026-05-15T16:47:42.479360+00:00",
   "universe_size": 1937,
   "tier_counts": {
     "T1ETF": 27,
@@ -60,7 +60,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "high",
@@ -171,7 +171,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "description",
@@ -249,13 +249,13 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "tickers",
           "coded": true,
           "wired": true,
-          "n_refs": 7
+          "n_refs": 10
         },
         {
           "field": "title",
@@ -375,7 +375,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -440,7 +440,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -498,7 +498,7 @@
           "field": "active",
           "coded": true,
           "wired": false,
-          "n_refs": 7
+          "n_refs": 9
         },
         {
           "field": "cik",
@@ -576,7 +576,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "type",
@@ -654,7 +654,7 @@
           "field": "active",
           "coded": true,
           "wired": false,
-          "n_refs": 7
+          "n_refs": 9
         },
         {
           "field": "address_json",
@@ -774,7 +774,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "total_employees",
@@ -899,7 +899,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -971,7 +971,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -1136,7 +1136,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "total_offer_size",
@@ -1183,7 +1183,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "high",
@@ -1239,7 +1239,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "high",
@@ -1313,7 +1313,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "high",
@@ -1456,7 +1456,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "underlying_ticker",
@@ -1493,7 +1493,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "cpi",
@@ -1561,7 +1561,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "model_1_year",
@@ -1635,7 +1635,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "yield_1_year",
@@ -1756,7 +1756,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "firm",
@@ -1798,7 +1798,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -1919,7 +1919,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "firm",
@@ -1997,7 +1997,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "time",
@@ -2100,7 +2100,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "date_status",
@@ -2202,7 +2202,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "time",
@@ -2294,7 +2294,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "eps_method",
@@ -2414,7 +2414,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "time",
@@ -2530,7 +2530,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "value",
@@ -2581,7 +2581,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "value",
@@ -2632,7 +2632,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "value",
@@ -2683,7 +2683,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "value",
@@ -2734,7 +2734,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "value",
@@ -2787,7 +2787,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "histogram",
@@ -3936,13 +3936,13 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "momentum",
@@ -4384,7 +4384,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -4463,7 +4463,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -4542,7 +4542,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -4621,7 +4621,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -4700,7 +4700,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -4779,7 +4779,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -4858,7 +4858,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -4937,7 +4937,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -5016,7 +5016,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -5095,7 +5095,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -5174,7 +5174,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -5320,7 +5320,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "value",
@@ -5355,7 +5355,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "realtime_end",
@@ -5373,7 +5373,7 @@
           "field": "series_id",
           "coded": true,
           "wired": false,
-          "n_refs": 10
+          "n_refs": 21
         },
         {
           "field": "value",
@@ -5416,7 +5416,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "bullish",
@@ -5523,7 +5523,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "stock_funds_pct",
@@ -5629,7 +5629,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         }
       ]
     },
@@ -8258,7 +8258,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "name",
@@ -8362,7 +8362,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "upvotes",
@@ -8411,15 +8411,15 @@
       "field_statuses": [
         {
           "field": "article",
-          "coded": false,
+          "coded": true,
           "wired": false,
-          "n_refs": 0
+          "n_refs": 5
         },
         {
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "views",
@@ -8471,7 +8471,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "query_label",
@@ -8489,7 +8489,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         }
       ]
     },
@@ -8704,7 +8704,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 287
+          "n_refs": 290
         },
         {
           "field": "weburl",
@@ -9398,7 +9398,7 @@
           "field": "series",
           "coded": true,
           "wired": false,
-          "n_refs": 3
+          "n_refs": 6
         },
         {
           "field": "symbol",
@@ -9437,7 +9437,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "epsActual",
@@ -9517,7 +9517,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 401
+          "n_refs": 403
         },
         {
           "field": "exchange",
@@ -128866,22 +128866,22 @@
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v2/aggs/grouped/locale/us/market/stocks/{date}`",
-      "tier_status": "ACCESSIBLE",
+      "tier_status": "TIER_BLOCKED",
       "cached_status": "NOT_CACHED",
       "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
-      "sample_fields": "T, v, vw, o, c, h, l, t",
-      "action": "NEW \u2014 daily snapshot capture for liquidity ranking"
+      "final_bucket": "TIER_BLOCKED",
+      "sample_fields": "NOT_AUTHORIZED on Stocks Starter",
+      "action": "Stocks Plus tier required \u2014 alternative: per-ticker OHLCV aggregation (DONE H1)"
     },
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v2/aggs/ticker/{t}/prev`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 172,
+      "final_bucket": "CACHED",
       "sample_fields": "T, v, vw, o, c, h, l, t",
-      "action": "NEW \u2014 daily previous-close capture"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/prev/`"
     },
     {
       "api_label": "Polygon Stocks Starter",
@@ -128917,21 +128917,21 @@
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v3/reference/tickers/types`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 25,
+      "final_bucket": "CACHED",
       "sample_fields": "code, description, asset_class, locale",
-      "action": "NEW \u2014 small static, cache once"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/tickers_types.parquet`"
     },
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v1/related-companies/{t}`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 172,
+      "final_bucket": "CACHED",
       "sample_fields": "ticker",
-      "action": "NEW \u2014 peer-companies signal (P2)"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/related_companies/`"
     },
     {
       "api_label": "Polygon Stocks Starter",
@@ -128997,51 +128997,51 @@
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v3/reference/conditions`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 130,
+      "final_bucket": "CACHED",
       "sample_fields": "id, type, name, asset_class, data_types",
-      "action": "NEW \u2014 small static, cache once"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/conditions.parquet`"
     },
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v3/reference/exchanges`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 52,
+      "final_bucket": "CACHED",
       "sample_fields": "id, type, asset_class, locale, name, acronym, mic, operating_mic",
-      "action": "NEW \u2014 small static"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/exchanges.parquet`"
     },
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v1/marketstatus/upcoming`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 24,
+      "final_bucket": "CACHED",
       "sample_fields": "date, exchange, name, status",
-      "action": "NEW \u2014 cache once"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/marketstatus_upcoming.parquet`"
     },
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v1/marketstatus/now`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 1,
+      "final_bucket": "CACHED",
       "sample_fields": "afterHours, currencies, earlyHours, exchanges, indicesGroups, market, serverTime",
-      "action": "Stage 3+ daily snapshot capture"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/marketstatus_now.parquet` (Stage 3+ re-capture cadence)"
     },
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v2/snapshot/locale/us/markets/stocks/tickers`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 12615,
+      "final_bucket": "CACHED",
       "sample_fields": "ticker, todaysChangePerc, todaysChange, updated, day, min, prevDay",
-      "action": "Stage 3+ daily capture"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/snapshot_all.parquet`"
     },
     {
       "api_label": "Polygon Stocks Starter",
@@ -129051,17 +129051,17 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "ticker, status, request_id",
-      "action": "Stage 3+ daily capture"
+      "action": "redundant with snapshot_all \u2014 skip"
     },
     {
       "api_label": "Polygon Stocks Starter",
       "endpoint_path": "`/v2/snapshot/locale/us/markets/stocks/{direction}` (gainers/losers)",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 21,
+      "final_bucket": "CACHED",
       "sample_fields": "(same shape as full market)",
-      "action": "Stage 3+ daily top-movers capture"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/snapshot_movers_{gainers,losers}.parquet`"
     },
     {
       "api_label": "Polygon Stocks Starter",
@@ -129071,7 +129071,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "market_status, name, ticker, type, session, last_minute",
-      "action": "Stage 3+ unified snapshot"
+      "action": "redundant with snapshot_all \u2014 skip"
     },
     {
       "api_label": "Polygon Stocks Starter",
@@ -129327,11 +129327,11 @@
       "api_label": "Polygon Indices Basic",
       "endpoint_path": "`/v3/reference/tickers?market=indices`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 13037,
+      "final_bucket": "CACHED",
       "sample_fields": "ticker, name, market, locale, active, source_feed",
-      "action": "NEW small static \u2014 cache once"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/tickers_indices.parquet`"
     },
     {
       "api_label": "Polygon Indices Basic",
@@ -129347,11 +129347,11 @@
       "api_label": "Polygon Options Basic",
       "endpoint_path": "`/v3/reference/options/contracts`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 1937,
+      "final_bucket": "CACHED",
       "sample_fields": "cfi, contract_type, exercise_style, expiration_date, primary_exchange, shares_per_contract, strike_price, ticker",
-      "action": "NEW \u2014 chain reference per underlying (P1 H10)"
+      "action": "DONE per DEC-600 \u2014 `data_prefetch/polygon/options_chains/`"
     },
     {
       "api_label": "Polygon Options Basic",
@@ -129361,7 +129361,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "t, o, h, l, c, v, vw, n",
-      "action": "NEW \u2014 per-contract OHLCV (large; P1 H10)"
+      "action": "DEFERRED-PHASE-1B per DEC-600 \u2014 on-demand fetch only"
     },
     {
       "api_label": "Polygon Options Basic",
@@ -129467,11 +129467,11 @@
       "api_label": "Polygon Forex/Currencies Basic",
       "endpoint_path": "`/v3/reference/tickers?market=fx`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 1208,
+      "final_bucket": "CACHED",
       "sample_fields": "ticker, name, market, locale, active, currency_symbol, currency_name, base_currency_symbol",
-      "action": "NEW \u2014 small static"
+      "action": "DONE Batch 172 \u2014 `data_prefetch/polygon/static/tickers_fx.parquet`"
     },
     {
       "api_label": "Polygon Forex/Currencies Basic",
@@ -129657,11 +129657,11 @@
       "api_label": "Quiver Quant Trader",
       "endpoint_path": "`/historical/twitter/{t}`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 1937,
+      "final_bucket": "CACHED",
       "sample_fields": "(empty for AAPL \u2014 re-probe with non-AAPL)",
-      "action": "NEW \u2014 full universe smoke + prefetch"
+      "action": "DONE Batch 170 (was stale-NEW) \u2014 `data_prefetch/quiver/twitter/`"
     },
     {
       "api_label": "Quiver Quant Trader",
@@ -129917,18 +129917,18 @@
       "api_label": "FRED",
       "endpoint_path": "`/fred/series`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "series metadata (id, title, frequency, units, etc.)",
-      "action": "NEW \u2014 series metadata"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/series.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/series/observations`",
       "tier_status": "ACCESSIBLE",
       "cached_status": "CACHED",
-      "cached_count": 87,
+      "cached_count": 90,
       "final_bucket": "CACHED",
       "sample_fields": "date, value",
       "action": "DONE H15; ongoing"
@@ -129937,21 +129937,21 @@
       "api_label": "FRED",
       "endpoint_path": "`/fred/series/categories`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "category_id, name",
-      "action": "NEW \u2014 find related series"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/series_categories.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/series/release`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "release_id, name",
-      "action": "NEW \u2014 release schedule"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/series_release.parquet`"
     },
     {
       "api_label": "FRED",
@@ -129961,77 +129961,77 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "matching series",
-      "action": "NEW \u2014 discovery"
+      "action": "DEFERRED \u2014 on-demand only"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/series/tags`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "tag_name, group_id",
-      "action": "NEW"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/series_tags.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/series/updates`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "recently-updated series",
-      "action": "NEW \u2014 staleness check"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/series_updates.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/series/vintagedates`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "vintage_date list",
-      "action": "NEW \u2014 ALFRED PIT support"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/series_vintagedates.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/category` (and 5 sub)",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "category metadata + traversal",
-      "action": "NEW"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/category_*.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/release` (and 6 sub)",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "release metadata + dates + series + sources + tags + related",
-      "action": "NEW"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/releases.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/source` (and 2 sub)",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "source metadata + releases",
-      "action": "NEW"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/sources.parquet`"
     },
     {
       "api_label": "FRED",
       "endpoint_path": "`/fred/tags`, `/fred/related_tags`, `/fred/tags/series`",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 173,
+      "final_bucket": "CACHED",
       "sample_fields": "tag metadata + linked series",
-      "action": "NEW"
+      "action": "DONE Batch 173 \u2014 `data_prefetch/fred/metadata/tags.parquet`"
     },
     {
       "api_label": "FRED",
@@ -130721,7 +130721,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(multi-window aggregate)",
-      "action": "NEW H20 P2"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130731,7 +130731,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(hourly resolution)",
-      "action": "NEW H20 P2 (rate-limited)"
+      "action": "DEFERRED-PHASE-1C per DEC-599 (rate-limited)"
     },
     {
       "api_label": "pytrends",
@@ -130741,7 +130741,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "region, value",
-      "action": "NEW H20 P2 \u2014 geographic"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130751,7 +130751,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(Dict of DataFrames)",
-      "action": "NEW H20 P2 \u2014 co-search"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130761,7 +130761,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(Dict of DataFrames)",
-      "action": "NEW H20 P2"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130771,7 +130771,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(daily trending)",
-      "action": "NEW"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130781,7 +130781,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(realtime trending)",
-      "action": "NEW"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130791,7 +130791,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(annual top searches)",
-      "action": "NEW"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130801,7 +130801,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(keyword suggestions)",
-      "action": "NEW"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130811,7 +130811,7 @@
       "cached_count": null,
       "final_bucket": "ACCESSIBLE_NOT_CACHED",
       "sample_fields": "(taxonomy)",
-      "action": "NEW"
+      "action": "DEFERRED-PHASE-1C per DEC-599"
     },
     {
       "api_label": "pytrends",
@@ -130837,21 +130837,21 @@
       "api_label": "AAII",
       "endpoint_path": "Asset Allocation Survey",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
+      "cached_status": "CACHED",
+      "cached_count": 445,
+      "final_bucket": "CACHED",
       "sample_fields": "(monthly stocks/bonds/cash %)",
-      "action": "NEW manual download (P3)"
+      "action": "DONE (was stale-NEW) \u2014 `data_prefetch/aaii/asset_allocation_survey.parquet`"
     },
     {
       "api_label": "AAII",
       "endpoint_path": "Investor Confidence Index",
-      "tier_status": "ACCESSIBLE",
+      "tier_status": "PARTIAL",
       "cached_status": "NOT_CACHED",
       "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
-      "sample_fields": "(quarterly)",
-      "action": "NEW manual download (P3)"
+      "final_bucket": "PARTIAL",
+      "sample_fields": "(quarterly; AAII-published variant uncertain)",
+      "action": "DEFERRED-P3 \u2014 manual download requires source-URL research"
     },
     {
       "api_label": "CNN Fear & Greed",
@@ -130947,11 +130947,11 @@
       "api_label": "Wikipedia Pageviews",
       "endpoint_path": "Article revision history",
       "tier_status": "ACCESSIBLE",
-      "cached_status": "NOT_CACHED",
-      "cached_count": null,
-      "final_bucket": "ACCESSIBLE_NOT_CACHED",
-      "sample_fields": "revision_count per day",
-      "action": "NEW \u2014 content-volatility proxy (P2)"
+      "cached_status": "CACHED",
+      "cached_count": 270,
+      "final_bucket": "CACHED",
+      "sample_fields": "timestamp, user, comment, size, sha1 per revision",
+      "action": "DONE-PARTIAL Batch 174 \u2014 `data_prefetch/wikipedia_revisions/`; retry in flight to fill 1144 missing"
     },
     {
       "api_label": "USAspending.gov",
@@ -131205,11 +131205,11 @@
     }
   ],
   "catalog_bucket_counts": {
-    "CACHED": 84,
-    "ACCESSIBLE_NOT_CACHED": 55,
+    "CACHED": 109,
+    "ACCESSIBLE_NOT_CACHED": 28,
+    "TIER_BLOCKED": 40,
     "DOES_NOT_EXIST": 22,
-    "TIER_BLOCKED": 39,
-    "PARTIAL": 6,
+    "PARTIAL": 7,
     "UNKNOWN": 30,
     "UNPROBED": 1
   },
