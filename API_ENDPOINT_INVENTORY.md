@@ -52,27 +52,27 @@
 | `/v2/aggs/ticker/{t}/range/1/day/...` | ✅ | t, o, h, l, c, v, vw, n | YES (1937 + vw + n via 2026-05-08 re-fetch) | DONE H1 |
 | `/v2/aggs/ticker/{t}/range/1/minute/...` | ✅ | t, o, h, l, c, v, vw, n | NO | NEW prefetch — minute-level for top-liquid only (storage caveat) |
 | `/v1/open-close/{t}/{date}` | ✅ | status, from, symbol, open, high, low, close, volume | NO | redundant with daily aggs — skip |
-| `/v2/aggs/grouped/locale/us/market/stocks/{date}` | ✅ | T, v, vw, o, c, h, l, t | NO (used for T3 build only) | NEW — daily snapshot capture for liquidity ranking |
-| `/v2/aggs/ticker/{t}/prev` | ✅ | T, v, vw, o, c, h, l, t | NO | NEW — daily previous-close capture |
+| `/v2/aggs/grouped/locale/us/market/stocks/{date}` | 🔴 403 | NOT_AUTHORIZED on Stocks Starter | NO | Stocks Plus tier required — alternative: per-ticker OHLCV aggregation (DONE H1) |
+| `/v2/aggs/ticker/{t}/prev` | ✅ | T, v, vw, o, c, h, l, t | YES (in flight Batch 172) | DONE Batch 172 — `data_prefetch/polygon/prev/` |
 | `/v3/reference/tickers` | ✅ | ticker, name, market, locale, primary_exchange, type, active, currency_name | YES (universe build) | top up periodically |
 | `/v3/reference/tickers/{t}` (basic) | ✅ | 16 base fields | YES (1686/1937) | superseded by reference_extended |
 | `/v3/reference/tickers/{t}` (extended) | ✅ | + phone, description, total_employees, composite_figi, share_class_figi, round_lot, address, branding | YES (1686/1937 via H4 2026-05-08) | DONE — INV-030 RESOLVED |
-| `/v3/reference/tickers/types` | ✅ | code, description, asset_class, locale | NO | NEW — small static, cache once |
-| `/v1/related-companies/{t}` | ✅ | ticker | NO | NEW — peer-companies signal (P2) |
+| `/v3/reference/tickers/types` | ✅ | code, description, asset_class, locale | YES (25 rows, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/tickers_types.parquet` |
+| `/v1/related-companies/{t}` | ✅ | ticker | YES (in flight Batch 172) | DONE Batch 172 — `data_prefetch/polygon/related_companies/` |
 | `/v2/reference/news` | ✅ | id, publisher, title, author, published_utc, article_url, tickers, image_url, **insights[]**, sentiment, sentiment_reasoning | YES (1937/1937, with per-ticker insights) | DONE H2 |
 | `/v3/reference/dividends` | ✅ | cash_amount, currency, declaration_date, dividend_type, ex_dividend_date, frequency, id, pay_date, record_date, ticker | YES (100,000 records / 10,984 tickers) | DONE H3 — INV-017 RESOLVED |
 | `/v3/reference/splits` | ✅ | execution_date, id, split_from, split_to, ticker | YES (27,590 records / 18,909 tickers) | DONE H3 |
 | `/vX/reference/ipos` | ✅ | ticker, last_updated, announced_date, issuer_name, currency_code, max_shares_offered, primary_exchange, security_type | YES (6,264 records) | DONE H3 |
 | `/v3/reference/tickers/{t}/events` | 🔴 404 | — | YES (1687 files via legacy script) | URL mismatch — investigate actual path used by working prefetch |
 | `/vX/reference/financials` | ✅ | start_date, end_date, timeframe, fiscal_period, fiscal_year, cik, sic, tickers, financials_json | YES (1746/1937) | parse financials_json into structured columns (local) |
-| `/v3/reference/conditions` | ✅ | id, type, name, asset_class, data_types | NO | NEW — small static, cache once |
-| `/v3/reference/exchanges` | ✅ | id, type, asset_class, locale, name, acronym, mic, operating_mic | NO | NEW — small static |
-| `/v1/marketstatus/upcoming` | ✅ | date, exchange, name, status | NO (stub dir) | NEW — cache once |
-| `/v1/marketstatus/now` | ✅ | afterHours, currencies, earlyHours, exchanges, indicesGroups, market, serverTime | NO | Stage 3+ daily snapshot capture |
-| `/v2/snapshot/locale/us/markets/stocks/tickers` | ✅ | ticker, todaysChangePerc, todaysChange, updated, day, min, prevDay | NO | Stage 3+ daily capture |
-| `/v2/snapshot/locale/us/markets/stocks/tickers/{t}` | ✅ | ticker, status, request_id | NO | Stage 3+ daily capture |
-| `/v2/snapshot/locale/us/markets/stocks/{direction}` (gainers/losers) | ✅ | (same shape as full market) | NO | Stage 3+ daily top-movers capture |
-| `/v3/snapshot` (unified) | ✅ | market_status, name, ticker, type, session, last_minute | NO | Stage 3+ unified snapshot |
+| `/v3/reference/conditions` | ✅ | id, type, name, asset_class, data_types | YES (130 rows, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/conditions.parquet` |
+| `/v3/reference/exchanges` | ✅ | id, type, asset_class, locale, name, acronym, mic, operating_mic | YES (52 rows, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/exchanges.parquet` |
+| `/v1/marketstatus/upcoming` | ✅ | date, exchange, name, status | YES (24 rows, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/marketstatus_upcoming.parquet` |
+| `/v1/marketstatus/now` | ✅ | afterHours, currencies, earlyHours, exchanges, indicesGroups, market, serverTime | YES (1-time snapshot Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/marketstatus_now.parquet` (Stage 3+ re-capture cadence) |
+| `/v2/snapshot/locale/us/markets/stocks/tickers` | ✅ | ticker, todaysChangePerc, todaysChange, updated, day, min, prevDay | YES (12615 rows 1-time, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/snapshot_all.parquet` |
+| `/v2/snapshot/locale/us/markets/stocks/tickers/{t}` | ✅ | ticker, status, request_id | NO (per-ticker variant; aggregate snapshot covers) | redundant with snapshot_all — skip |
+| `/v2/snapshot/locale/us/markets/stocks/{direction}` (gainers/losers) | ✅ | (same shape as full market) | YES (21+21 rows 1-time, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/snapshot_movers_{gainers,losers}.parquet` |
+| `/v3/snapshot` (unified) | ✅ | market_status, name, ticker, type, session, last_minute | NO (superset of snapshot endpoints) | redundant with snapshot_all — skip |
 | `/v1/indicators/sma/{t}` | ✅ | results.values[].timestamp, value | YES (in flight 2026-05-08) | DONE H6 — sma_50, sma_200 windows cached |
 | `/v1/indicators/ema/{t}` | ✅ | results.values[].timestamp, value | YES (in flight) | DONE H6 — ema_20, ema_50 windows |
 | `/v1/indicators/rsi/{t}` | ✅ | results.values[].timestamp, value | YES (in flight) | DONE H6 — window=14 |
@@ -103,15 +103,15 @@
 | `/v2/aggs/ticker/I:DJI/range/1/day/...` | 🔴 403 | — | — | S&P license gate — workaround: DIA ETF |
 | `/v2/aggs/ticker/I:RUT/range/1/day/...` | 🔴 403 | — | — | S&P license gate — workaround: IWM ETF |
 | `/v2/aggs/ticker/I:OEX/range/1/day/...` | 🔴 403 | — | — | S&P license gate |
-| `/v3/reference/tickers?market=indices` | ✅ | ticker, name, market, locale, active, source_feed | NO | NEW small static — cache once |
+| `/v3/reference/tickers?market=indices` | ✅ | ticker, name, market, locale, active, source_feed | YES (13037 rows, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/tickers_indices.parquet` |
 | `/v3/snapshot/indices` | 🔴 403 | NOT_AUTHORIZED | — | tier-gated |
 
 ## 3. Polygon Options Basic (free, partial)
 
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
-| `/v3/reference/options/contracts` | ✅ | cfi, contract_type, exercise_style, expiration_date, primary_exchange, shares_per_contract, strike_price, ticker | NO | NEW — chain reference per underlying (P1 H10) |
-| `/v2/aggs/ticker/{O:contract}/range/1/day/...` | ✅ | t, o, h, l, c, v, vw, n | NO | NEW — per-contract OHLCV (large; P1 H10) |
+| `/v3/reference/options/contracts` | ✅ | cfi, contract_type, exercise_style, expiration_date, primary_exchange, shares_per_contract, strike_price, ticker | YES (1937/1937 cached) | DONE per DEC-600 — `data_prefetch/polygon/options_chains/` |
+| `/v2/aggs/ticker/{O:contract}/range/1/day/...` | ✅ | t, o, h, l, c, v, vw, n | NO (deferred Phase 1B+ per DEC-600 — TB-class storage) | DEFERRED-PHASE-1B per DEC-600 — on-demand fetch only |
 | `/v3/snapshot/options/{ticker}` | 🔴 403 | NOT_AUTHORIZED | — | tier-gated (Stocks Advanced) |
 | `/v3/trades/{O:contract}` | 🔴 403 | — | — | tier-gated |
 | `/v3/quotes/{O:contract}` | 🔴 403 | — | — | tier-gated |
@@ -132,7 +132,7 @@
 | `/v2/aggs/ticker/C:EURUSD/range/1/day/...` | ✅ | t, o, h, l, c, v, vw, n | YES (12/12 pairs cached 2026-05-08) | DONE H9 |
 | `/v2/aggs/ticker/C:USDJPY/range/1/day/...` | ✅ | (same) | YES | DONE |
 | 10 more pairs (GBPUSD/USDCAD/USDCHF/AUDUSD/NZDUSD/USDCNY/USDMXN/USDINR/USDKRW/USDBRL) | ✅ | (same) | YES (12/12) | DONE |
-| `/v3/reference/tickers?market=fx` | ✅ | ticker, name, market, locale, active, currency_symbol, currency_name, base_currency_symbol | NO | NEW — small static |
+| `/v3/reference/tickers?market=fx` | ✅ | ticker, name, market, locale, active, currency_symbol, currency_name, base_currency_symbol | YES (1208 rows, Batch 172) | DONE Batch 172 — `data_prefetch/polygon/static/tickers_fx.parquet` |
 | `/v1/conversion/USD/EUR` | 🔴 403 | NOT_AUTHORIZED | — | tier-gated |
 
 ## 6. Polygon Economy (free, included)
@@ -166,7 +166,7 @@
 | `/historical/govcontracts/{t}` | ✅ | Ticker, Amount, Qtr, Year (only 4 fields — confirmed at API level) | YES (1937/1937) | INV-024 reframed; alternate source needed for daily granularity |
 | `/historical/lobbying/{t}` | ✅ | Date, Amount, Client, Issue, Specific_Issue, Registrant, Ticker | YES (1937/1937) | continue |
 | `/historical/wallstreetbets/{t}` | ✅ | Date, Ticker, Mentions, Rank, Sentiment | YES (1937/1937) | continue |
-| `/historical/twitter/{t}` | ✅ (sparse) | (empty for AAPL — re-probe with non-AAPL) | NO | NEW — full universe smoke + prefetch |
+| `/historical/twitter/{t}` | ✅ (sparse) | (empty for AAPL — re-probe with non-AAPL) | YES (1937/1937 cached) | DONE Batch 170 (was stale-NEW) — `data_prefetch/quiver/twitter/` |
 | `/historical/spacs/{t}` | ✅ | Date, Ticker, Mentions, Rank, Sentiment | YES (in flight via H12) | DONE H13 |
 | `/live/insiders?ticker=` | ✅ | Ticker, Date, Name, AcquiredDisposedCode, TransactionCode, Shares, PricePerShare, SharesOwnedFollowing, fileDate, officerTitle, isDirector, isOfficer, isTenPercentOwner, isOther, directOrIndirectOwnership, uploaded | YES (1937/1937) | continue |
 | `/live/sec13f?ticker=` | ✅ | Date, ReportPeriod, Name, Ticker, Fund, Class, Value, Shares, SH/PRN, Put/Call, Direction | YES (1937/1937) | continue |
@@ -197,18 +197,18 @@
 
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
-| `/fred/series` | ✅ | series metadata (id, title, frequency, units, etc.) | NO | NEW — series metadata |
-| `/fred/series/observations` | ✅ | date, value | YES (87 series cached + 30 added 2026-05-08) | DONE H15; ongoing |
-| `/fred/series/categories` | ✅ | category_id, name | NO | NEW — find related series |
-| `/fred/series/release` | ✅ | release_id, name | NO | NEW — release schedule |
-| `/fred/series/search` | ✅ | matching series | NO | NEW — discovery |
-| `/fred/series/tags` | ✅ | tag_name, group_id | NO | NEW |
-| `/fred/series/updates` | ✅ | recently-updated series | NO | NEW — staleness check |
-| `/fred/series/vintagedates` | ✅ | vintage_date list | NO | NEW — ALFRED PIT support |
-| `/fred/category` (and 5 sub) | ✅ | category metadata + traversal | NO | NEW |
-| `/fred/release` (and 6 sub) | ✅ | release metadata + dates + series + sources + tags + related | NO | NEW |
-| `/fred/source` (and 2 sub) | ✅ | source metadata + releases | NO | NEW |
-| `/fred/tags`, `/fred/related_tags`, `/fred/tags/series` | ✅ | tag metadata + linked series | NO | NEW |
+| `/fred/series` | ✅ | series metadata (id, title, frequency, units, etc.) | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/series.parquet` |
+| `/fred/series/observations` | ✅ | date, value | YES (90 series cached) | DONE H15; ongoing |
+| `/fred/series/categories` | ✅ | category_id, name | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/series_categories.parquet` |
+| `/fred/series/release` | ✅ | release_id, name | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/series_release.parquet` |
+| `/fred/series/search` | ✅ | matching series | NO (discovery; usage-driven, not bulk-prefetchable) | DEFERRED — on-demand only |
+| `/fred/series/tags` | ✅ | tag_name, group_id | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/series_tags.parquet` |
+| `/fred/series/updates` | ✅ | recently-updated series | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/series_updates.parquet` |
+| `/fred/series/vintagedates` | ✅ | vintage_date list | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/series_vintagedates.parquet` |
+| `/fred/category` (and 5 sub) | ✅ | category metadata + traversal | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/category_*.parquet` |
+| `/fred/release` (and 6 sub) | ✅ | release metadata + dates + series + sources + tags + related | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/releases.parquet` |
+| `/fred/source` (and 2 sub) | ✅ | source metadata + releases | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/sources.parquet` |
+| `/fred/tags`, `/fred/related_tags`, `/fred/tags/series` | ✅ | tag metadata + linked series | YES (in flight Batch 173) | DONE Batch 173 — `data_prefetch/fred/metadata/tags.parquet` |
 | 87 cached series (post 2026-05-08 H15) | ✅ | date, value per series | YES | DONE H15 |
 | `DEXJPUS` | 🔴 500 | persistent error (likely deprecated) | NO | INV-042 — workaround: Polygon Forex C:USDJPY (DONE) |
 
@@ -312,16 +312,16 @@
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
 | `interest_over_time(kw_list)` | ✅ | date, search_volume_index, query_label | YES (1417/1937 = 73%) | top-up to 100% (P2) |
-| `multirange_interest_over_time` | ✅ | (multi-window aggregate) | NO | NEW H20 P2 |
-| `get_historical_interest` | ✅ | (hourly resolution) | NO | NEW H20 P2 (rate-limited) |
-| `interest_by_region` | ✅ | region, value | NO | NEW H20 P2 — geographic |
-| `related_topics` | ✅ | (Dict of DataFrames) | NO | NEW H20 P2 — co-search |
-| `related_queries` | ✅ | (Dict of DataFrames) | NO | NEW H20 P2 |
-| `trending_searches` | ✅ | (daily trending) | NO | NEW |
-| `realtime_trending_searches` | ✅ | (realtime trending) | NO | NEW |
-| `top_charts(year)` | ✅ | (annual top searches) | NO | NEW |
-| `suggestions(keyword)` | ✅ | (keyword suggestions) | NO | NEW |
-| `categories` | ✅ | (taxonomy) | NO | NEW |
+| `multirange_interest_over_time` | ✅ | (multi-window aggregate) | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `get_historical_interest` | ✅ | (hourly resolution) | NO | DEFERRED-PHASE-1C per DEC-599 (rate-limited) |
+| `interest_by_region` | ✅ | region, value | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `related_topics` | ✅ | (Dict of DataFrames) | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `related_queries` | ✅ | (Dict of DataFrames) | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `trending_searches` | ✅ | (daily trending) | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `realtime_trending_searches` | ✅ | (realtime trending) | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `top_charts(year)` | ✅ | (annual top searches) | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `suggestions(keyword)` | ✅ | (keyword suggestions) | NO | DEFERRED-PHASE-1C per DEC-599 |
+| `categories` | ✅ | (taxonomy) | NO | DEFERRED-PHASE-1C per DEC-599 |
 | `build_payload` | ✅ (helper) | n/a | n/a | helper, used internally |
 
 ## 17. AAII (web download, no API)
@@ -329,8 +329,8 @@
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
 | Weekly Investor Sentiment Survey CSV | ✅ | survey_date, bullish_pct, bearish_pct, neutral_pct, bull_bear_spread | YES (325 weekly readings) | extend with 8_week_avg, historical_avg, S&P close (H21 P3) |
-| Asset Allocation Survey | ✅ | (monthly stocks/bonds/cash %) | NO | NEW manual download (P3) |
-| Investor Confidence Index | ✅ | (quarterly) | NO | NEW manual download (P3) |
+| Asset Allocation Survey | ✅ | (monthly stocks/bonds/cash %) | YES (445 monthly readings) | DONE (was stale-NEW) — `data_prefetch/aaii/asset_allocation_survey.parquet` |
+| Investor Confidence Index | ⚠ | (quarterly; AAII-published variant uncertain) | NO | DEFERRED-P3 — manual download requires source-URL research |
 
 ## 18. CNN Fear & Greed (web scrape)
 
@@ -350,7 +350,7 @@
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
 | `wikimedia.org/api/rest_v1/metrics/pageviews/per-article/...` | ✅ | date, views, article | YES (1414/1937 = 73%) | top-up to 100% (P2) |
-| Article revision history | ✅ | revision_count per day | NO | NEW — content-volatility proxy (P2) |
+| Article revision history | ✅ | timestamp, user, comment, size, sha1 per revision | YES (in flight Batch 172) | DONE Batch 172 — `data_prefetch/wikipedia_revisions/` |
 
 ## 20. USAspending.gov (federal contracts — alternate to Quiver govcontracts)
 
