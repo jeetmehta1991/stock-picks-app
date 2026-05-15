@@ -25,7 +25,15 @@ from pathlib import Path
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
-OUT_DIR = REPO / "output_v2"
+# Batch 180: support --source flag for swapping between output_v2 (dev-mode
+# canonical AAPL 130-day backtest) and richer runs (smoke v4, dress rehearsal).
+# Default remains output_v2 for compatibility with the canonical regen flow.
+import argparse
+_parser = argparse.ArgumentParser()
+_parser.add_argument("--source", default="output_v2",
+                     help="Source output directory (e.g. output_smoke_v4_cross_regime)")
+_args, _ = _parser.parse_known_args()
+OUT_DIR = REPO / _args.source
 DASH = REPO / "dashboard_phase_1a"
 DASH.mkdir(parents=True, exist_ok=True)
 
@@ -114,7 +122,8 @@ def build() -> dict:
     cb_by_active = load_csv("exit_by_circuit_breaker_active_during_hold.csv")
 
     # ---- Trade-level + exit breakdowns (cross-tab) ----
-    trade_log = load_parquet("trade_log.parquet", head=10000)
+    # Batch 180: fall back to CSV if parquet missing (smoke runs emit CSV-only)
+    trade_log = load_parquet("trade_log.parquet", head=10000) or load_csv("trade_log.csv", head=10000)
     exit_methods = load_csv("exit_method_multi_dim_cube.csv")
     exit_best = load_csv("exit_strategy_best.csv")
     exit_comparison = load_csv("exit_strategy_comparison.csv")
