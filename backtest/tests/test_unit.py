@@ -6684,6 +6684,28 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch190_avoid_tier_blocks_both_directions():
+    """Batch 190 (INV-049 fix): AVOID confidence tier must block BOTH long
+    AND short trades. Prior bug: line blocked only direction=='long', so 88
+    AVOID-short trades fell through in Phase 1A baseline (avg PnL -2.79%).
+    Source-level test verifying the asymmetry is gone."""
+    import inspect
+    from backtest.engine import backtest as eng
+    src = inspect.getsource(eng)
+    # The old asymmetric pattern must be gone
+    assert 'tier == "AVOID" and direction == "long"' not in src, (
+        "Batch 190: AVOID-long-only block must be removed (block both directions)"
+    )
+    # New block must be present
+    assert 'if tier == "AVOID":' in src, (
+        "Batch 190: must block AVOID regardless of direction"
+    )
+    # Skip reason must reference the batch
+    assert "avoid_tier" in src and "batch190" in src, (
+        "Batch 190: skip reason must tag batch190 for audit"
+    )
+
+
 def test_batch189_regime_stratifier_accepts_engine_vocabulary():
     """Batch 189 (INV-051 fix): regime stratifier must accept BOTH the engine's
     bull/neutral/bear/crisis vocabulary AND the DEC-542 calm/neutral/volatile/crisis

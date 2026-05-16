@@ -795,12 +795,13 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ## INV-049 — AVOID-tier confidence trades fire at 39% of executed trades (Pass 53 Day 9+ 2026-05-16 Phase 1A baseline)
 
-- **Observation:** Phase 1A baseline (67-tkr canonical run, output_phase_1a_launch/) closed 225 trades over 1044 days. Per-confidence-tier breakdown: HIGH 136 / **AVOID 88** / EXCEPTIONAL 1. AVOID tier accounts for **39% of all trades** despite the documented gate semantics that AVOID = skip entry. Average PnL for AVOID trades: -2.70% (worst of all tiers). Average PnL for HIGH: +0.68%. The system would be net positive if AVOID-tier trades were genuinely blocked at entry.
-- **Two hypotheses:**
-  1. **Entry-gate bypass bug** — the AVOID tier label is computed correctly but the engine's entry filter doesn't skip on it. Look at `backtest/engine/backtest.py` candidate-evaluation flow for tier checks.
-  2. **Post-entry tier downgrade** — trades enter at HIGH tier but the confidence_tier column reflects the LATEST tier (re-evaluated mid-hold). In that case the column is misleading: AVOID is an outcome, not an entry decision.
-- **Evidence to disambiguate:** check whether `confidence_tier` is the entry-time tier or current/exit-time tier. If schema doc says entry-time → bug. If exit-time → schema rename to `confidence_tier_at_exit` + add `confidence_tier_at_entry`.
-- **Phase 1A-β impact:** if this is bug #1, fixing it could materially improve baseline P&L. If hypothesis #2, no engine fix needed but trade_log schema needs disambiguation.
+**RESOLVED-IMPLEMENTED Batch 190 2026-05-16** (asymmetric gate fixed; AVOID blocks both directions).
+
+- **Observation:** Phase 1A baseline (67-tkr canonical run, output_phase_1a_launch/) closed 225 trades over 1044 days. Per-confidence-tier breakdown: HIGH 136 / **AVOID 88** / EXCEPTIONAL 1. AVOID tier accounts for **39% of all trades**. Average PnL for AVOID trades: -2.70% (worst of all tiers). Average PnL for HIGH: +0.68%.
+- **Root cause (Batch 190 diagnosis):** `backtest/engine/backtest.py:1056` had `if tier == "AVOID" and direction == "long":` — only LONG AVOID was blocked. AVOID-short fell through with no further gate. Comment said "may be evaluated as short setup separately" but no short-thesis confirmation gate was ever added. All 88 AVOID-tier trades in the baseline were AVOID-shorts (matches 89 total shorts - 1 non-AVOID short = 88).
+- **Fix (Batch 190):** changed to `if tier == "AVOID":` — block both long and short. Skip reason tagged `avoid_tier_{direction}_blocked_batch190` for audit. If a future Phase 1B short-thesis confirmation signal is added (e.g., congressional sell + insider sell + 13F outflow combined), we can re-introduce an opt-in AVOID-short path.
+- **Schema clarification:** `confidence_tier` IS the entry-time tier (set at `confidence_tier=tier` line 1220 right before `open_trades.append`). No exit-time tier currently tracked. Confirmed via source-read.
+- **Expected impact on baseline rerun (Batch 191):** ~88 fewer trades; remaining ~137 trades should show improved aggregate PnL (eliminate worst-performing 88).
 - **Joint:** DEC-021 tier mapping; DEC-061/062 tier-to-size modifier; F-008 position sizing tiers; CLAUDE.md Approved Rules "Position sizing: tiered 5/4/3/1.5/0.75% by confidence tier".
 
 

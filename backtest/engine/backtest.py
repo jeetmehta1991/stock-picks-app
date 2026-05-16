@@ -1052,12 +1052,21 @@ class BacktestEngine:
                 else:
                     tier = preliminary_tier
 
-                # Skip AVOID tier long trades (may be evaluated as short setup separately)
-                if tier == "AVOID" and direction == "long":
+                # Batch 190 (INV-049 fix): block AVOID tier for BOTH directions.
+                # Prior code blocked only AVOID-long with comment "may be
+                # evaluated as short setup separately" -- but the intended
+                # short-thesis confirmation gate was never added, so AVOID-short
+                # trades fell through unfiltered. Phase 1A baseline empirically
+                # showed 88 AVOID-short trades averaging -2.79% PnL (worst of
+                # all tier-direction combos), confirming the asymmetry was
+                # behaviorally incorrect. Block both directions; if future
+                # Phase 1B adds an explicit short-thesis confirmation signal,
+                # we can re-introduce an opt-in path for AVOID-short.
+                if tier == "AVOID":
                     self.skipped_trades.append({
                         "ticker": ticker, "date": as_of,
                         "strategy": strat_entry["strategy"],
-                        "reason": "avoid_tier_long_blocked",
+                        "reason": f"avoid_tier_{direction}_blocked_batch190",
                     })
                     continue
 
