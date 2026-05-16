@@ -235,6 +235,45 @@ def get_momentum_watchlist_pit(as_of: date) -> list[str]:
         return []
 
 
+def get_master_universe() -> list[str]:
+    """
+    Return ALL ~1937 unique tickers from the Master Dedup CSV (DEC-504 / Pass 53).
+
+    Reads `Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv`
+    which contains the union of all 5 tiers (T1a + T1c + T1ETF + T2 + T3) with
+    resolved_tier precedence applied. This is the Phase 1A-beta / 1B-alpha scope.
+
+    Unlike `union_universe(as_of)` which returns PIT-active tickers for a single
+    date, this returns EVERY ticker that was active in ANY tier at ANY point
+    during the backtest window. The engine's existing PIT loaders handle per-day
+    activation via `(added_date IS NULL OR added_date <= as_of) AND (removed_date
+    IS NULL OR removed_date > as_of)` so passing the full set is safe.
+
+    Phase 1A-beta (Batch 181 2026-05-15 owner-approved):
+      - Replaces `config.UNIVERSE = SP50 + ETFS = 67 tickers` (legacy Phase 1A
+        baseline scope) with the canonical 1937-ticker Master Dedup.
+      - Test grid: 117 strategies x 1937 tickers x 17 exit methods ~ 3.85M cells.
+      - Runtime estimate: 5-7 days single-threaded; 1-2 days with batch
+        parallelization via scripts/generate_batch_splits.py.
+
+    Source: per CHECKLIST #77 - canonical CSV path. CANONICAL_FACTS.md F-005.
+    """
+    csv_path = UNIVERSE_DIR / "Master Universe_Deduplicated_All Tiers_May 2026.csv"
+    if not csv_path.exists():
+        logger.error("Master Dedup CSV missing: %s", csv_path)
+        return []
+    try:
+        df = pd.read_csv(csv_path, comment="#")
+    except Exception as exc:
+        logger.error("Master Dedup CSV read failed: %s", exc)
+        return []
+    col = "Symbol" if "Symbol" in df.columns else df.columns[0]
+    tickers = sorted(df[col].dropna().astype(str).str.upper().str.strip().unique().tolist())
+    logger.info("Master Universe (Phase 1A-beta scope): %d unique tickers loaded from %s",
+                len(tickers), csv_path.name)
+    return tickers
+
+
 def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
     """
     Union of all 5 universe buckets at `as_of` (DEC-040 cross-tier loader).

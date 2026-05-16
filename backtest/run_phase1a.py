@@ -143,7 +143,7 @@ def main():
     p.add_argument("--no-git",     action="store_true",  help="Suppress git commits during run (for parallel batches - commit manually at end)")
     p.add_argument("--no-news",    action="store_true",  help="Disable news sentiment (for A/B comparison)")
     p.add_argument("--tickers",    type=str, default=None, help="Comma-separated list of tickers for batch test")
-    p.add_argument("--phase",      type=str, default="1a", choices=["1a","1b","1c","1d"])
+    p.add_argument("--phase",      type=str, default="1a", choices=["1a","1a-beta","1b","1c","1d"])
     p.add_argument("--start",      type=str)
     p.add_argument("--end",        type=str)
     p.add_argument("--max-cands",  type=int, default=10)
@@ -178,6 +178,13 @@ def main():
         if args.tickers:
             universe = [t.strip() for t in args.tickers.split(",")]
             print(f"\nBATCH TEST MODE: {start} -> {end} | {len(universe)} tickers: {universe}")
+        # Phase 1A-beta: full 1937-ticker Master Dedup (DEC-504 5-tier resolved precedence)
+        # Owner-approved 2026-05-15 Batch 181 - supersedes the legacy 67-ticker
+        # config.UNIVERSE for the production-scale validation run.
+        elif args.phase == "1a-beta":
+            from backtest.data.universe import get_master_universe
+            universe = get_master_universe()
+            print(f"\nPhase 1A-beta: {start} -> {end} | {len(universe)} instruments (Master Dedup 5-tier per DEC-504)")
         # Phase 1B+ uses full S&P 500 + ETFs universe
         elif args.phase in ("1b", "1c", "1d"):
             from backtest.data.universe import get_sp500_constituents, ETFS_FULL

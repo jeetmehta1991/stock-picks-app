@@ -6583,3 +6583,30 @@ def test_bug_264_universe_docstring_no_wikipedia():
         "BUG-264: universe.py must not runtime-fetch from Wikipedia"
     assert "static CSV" in mod_src or "BUG-264" in mod_src or "closes BUG-264" in mod_src, \
         "BUG-264: docstring should reference static CSV pattern"
+
+
+def test_batch181_master_universe_loader_returns_5_tier_dedup():
+    """Batch 181 Phase 1A-β engine wiring: get_master_universe() must return the
+    full Master Dedup 5-tier set (~1937 tickers per DEC-504), not the legacy
+    config.UNIVERSE 67-ticker SP50+ETFs scope."""
+    from backtest.data.universe import get_master_universe
+    tickers = get_master_universe()
+    assert isinstance(tickers, list), "must return list"
+    assert len(tickers) > 1500, f"Master Dedup must have ~1937 tickers, got {len(tickers)}"
+    assert len(tickers) < 2500, f"sanity ceiling - got {len(tickers)} (suspicious)"
+    # Spot-check tier diversity: must contain examples from T1a (AAPL), T1ETF (SPY)
+    upper = {t.upper() for t in tickers}
+    assert "AAPL" in upper, "T1a S&P 500 representative missing"
+    assert "SPY" in upper, "T1ETF representative missing"
+    # Must be sorted + deduplicated
+    assert tickers == sorted(tickers), "must be sorted"
+    assert len(tickers) == len(set(tickers)), "must be deduplicated"
+
+
+def test_batch181_run_phase1a_accepts_1a_beta():
+    """Batch 181: --phase 1a-beta argparse choice + uses get_master_universe."""
+    import inspect
+    import backtest.run_phase1a as r
+    src = inspect.getsource(r)
+    assert "1a-beta" in src, "Batch 181: --phase 1a-beta choice missing"
+    assert "get_master_universe" in src, "Batch 181: 1a-beta branch must call get_master_universe"
