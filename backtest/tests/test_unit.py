@@ -6610,3 +6610,15 @@ def test_batch181_run_phase1a_accepts_1a_beta():
     src = inspect.getsource(r)
     assert "1a-beta" in src, "Batch 181: --phase 1a-beta choice missing"
     assert "get_master_universe" in src, "Batch 181: 1a-beta branch must call get_master_universe"
+
+
+def test_batch185_max_open_positions_25():
+    """Batch 185 owner directive 2026-05-16: max_open_positions raised 10 -> 25.
+    Driver: INV-053 - portfolio_gate_max_open_positions_10 was 27% of all
+    skips in Phase 1A baseline; needs more headroom at 1937-ticker scope.
+    Regression guard: future changes must be explicit."""
+    from backtest.config import LIVE_TRADING_RULES
+    assert LIVE_TRADING_RULES["max_open_positions"] == 25, (
+        f"Batch 185: max_open_positions must be 25 (owner directive 2026-05-16); "
+        f"got {LIVE_TRADING_RULES['max_open_positions']}"
+    )

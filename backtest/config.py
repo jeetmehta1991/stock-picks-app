@@ -371,7 +371,14 @@ def get_sector_criteria(sector: str) -> dict:
 
 LIVE_TRADING_RULES = {
     "max_positions_per_ticker": 1,      # backtest: unlimited. live: 1 position per ticker max
-    "max_open_positions":       10,     # total simultaneous positions
+    # max_open_positions raised 10 -> 25 per owner directive 2026-05-16 (Batch 185).
+    # Driver: INV-053 from Phase 1A baseline - portfolio_gate_max_open_positions_10
+    # was the #1 skip reason (46607 / 172544 = 27% of all rejections at 67-ticker
+    # scope). At 1937-ticker Phase 1A-beta scope candidate volume scales ~30x and
+    # the 10-cap would dominate even harder. 25-cap relaxes the bottleneck while
+    # keeping concentration risk bounded (25 positions * max-tier 5% = 125% gross
+    # exposure ceiling; tiered avg sizing keeps realistic exposure ~50-75%).
+    "max_open_positions":       25,     # total simultaneous positions
     "drawdown_25pct_threshold": 0.10,   # portfolio drawdown > 10% -> reduce sizes 25%
     "drawdown_50pct_threshold": 0.20,   # portfolio drawdown > 20% -> reduce sizes 50%
     "drawdown_suspend_threshold": 0.30, # portfolio drawdown > 30% -> suspend new entries
