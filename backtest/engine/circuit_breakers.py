@@ -26,11 +26,20 @@ from datetime import date
 from typing import Dict, List, Optional
 
 
-# DEC-515 Level 6 default thresholds — REVISIT_AFTER_BACKTEST per DEC-581
-# Class B Bonferroni-corrected tuning post-Phase-1B-α empirical results.
-LEVEL_6_DD_HALT_THRESHOLD = 0.15      # 15% portfolio DD-from-peak triggers halt
-LEVEL_6_RECOVERY_THRESHOLD = 0.05     # peak must recover 5% above halt-level to resume
-LEVEL_6_MIN_PEAK_HISTORY_DAYS = 30    # require ≥30 days of peak history before activation
+# DEC-515 Level 6 default thresholds - REVISIT_AFTER_BACKTEST per DEC-581
+# Class B Bonferroni-corrected tuning post-Phase-1B-alpha empirical results.
+# Batch 193 (Phase 1A baseline regression) owner-approved 2026-05-16
+# Option B: relax thresholds + add hard-stop timeout. Pre-Batch-193 the halt
+# was a permanent freeze (resume condition "halt_equity * 1.05" was
+# unreachable once halted because no new entries are permitted; only existing
+# open positions could lift equity, which they cannot reliably do off the
+# halt-level). Phase 1A Batch 192 baseline trapped 4 years of trading
+# behind a single halt fired on 2022-06-16. Post-Batch-193 the halt is a
+# temporary pause, not a freeze.
+LEVEL_6_DD_HALT_THRESHOLD = 0.20      # 20% portfolio DD-from-peak triggers halt (matches Passing-Criteria #5 max DD)
+LEVEL_6_RECOVERY_THRESHOLD = 0.025    # peak must recover 2.5% above halt-level to resume early
+LEVEL_6_MIN_PEAK_HISTORY_DAYS = 30    # require >=30 days of peak history before activation
+LEVEL_6_MAX_HALT_DURATION_DAYS = 60   # hard-stop auto-resume timeout (regardless of recovery threshold)
 
 
 @dataclass
@@ -52,6 +61,7 @@ def update_level_6_state(
     recovery_threshold: float = LEVEL_6_RECOVERY_THRESHOLD,
     min_history_days: int = LEVEL_6_MIN_PEAK_HISTORY_DAYS,
     days_since_start: int = 0,
+    max_halt_duration_days: int = LEVEL_6_MAX_HALT_DURATION_DAYS,
 ) -> Dict[str, object]:
     """Update Level 6 state with today's portfolio equity.
 
@@ -59,16 +69,23 @@ def update_level_6_state(
       - halt_active: bool (True = no new entries permitted)
       - dd_from_peak: float (current DD as decimal, e.g. -0.12 for -12%)
       - rolling_peak_equity: float
-      - event: 'halt_triggered' | 'halt_resumed' | None
+      - event: 'halt_triggered' | 'halt_resumed' | 'halt_resumed_timeout' | None
 
     Logic:
       1. Update rolling peak (peak = max(peak, current_equity)).
       2. Compute dd_from_peak = (current_equity - peak) / peak.
       3. If not halted:
-           - If dd_from_peak ≤ -dd_threshold AND days_since_start ≥ min_history_days
-             → trigger halt; record halt_equity + target_resume_equity.
+           - If dd_from_peak <= -dd_threshold AND days_since_start >= min_history_days
+             -> trigger halt; record halt_equity + target_resume_equity.
       4. If halted:
-           - If current_equity ≥ target_resume_equity → resume (clear halt flag).
+           - If current_equity >= target_resume_equity -> resume (clear halt flag).
+           - ELSE if (as_of - halt_triggered_date).days >= max_halt_duration_days
+             -> auto-resume via timeout (Batch 193 off-ramp). Required because
+             the halt itself blocks new entries, so existing positions must
+             deliver the recovery on their own; if they cannot within
+             max_halt_duration_days, force release rather than freeze
+             indefinitely (Phase 1A Batch 192 trapped 4 years behind a single
+             halt fired on 2022-06-16).
     """
     event: Optional[str] = None
 
@@ -89,7 +106,7 @@ def update_level_6_state(
             state.halt_triggered = True
             state.halt_triggered_date = as_of
             state.halt_equity = current_equity
-            # Resume when current_equity ≥ peak_at_halt × (1 - dd_threshold + recovery_threshold)
+            # Resume when current_equity >= halt_equity * (1 + recovery_threshold)
             # i.e. recovery off the halt-level
             state.target_resume_equity = current_equity * (1 + recovery_threshold)
             state.halt_log.append({
@@ -102,7 +119,7 @@ def update_level_6_state(
             })
             event = "halt_triggered"
     else:
-        # Halted — check resume condition
+        # Halted - check resume condition (recovery threshold OR timeout)
         if current_equity >= state.target_resume_equity:
             state.halt_triggered = False
             state.halt_log.append({
@@ -112,6 +129,20 @@ def update_level_6_state(
                 "resume_threshold": state.target_resume_equity,
             })
             event = "halt_resumed"
+        elif (state.halt_triggered_date is not None
+                and (as_of - state.halt_triggered_date).days >= max_halt_duration_days):
+            # Batch 193 timeout off-ramp: halt auto-releases after
+            # max_halt_duration_days regardless of recovery threshold.
+            state.halt_triggered = False
+            state.halt_log.append({
+                "date": as_of,
+                "event": "halt_resumed_timeout",
+                "current_equity": current_equity,
+                "resume_threshold": state.target_resume_equity,
+                "halt_triggered_date": state.halt_triggered_date,
+                "halt_duration_days": (as_of - state.halt_triggered_date).days,
+            })
+            event = "halt_resumed_timeout"
 
     return {
         "halt_active": state.halt_triggered,

@@ -6684,6 +6684,106 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch193_level6_threshold_relaxed_to_20pct():
+    """Batch 193 (Phase 1A Batch 192 regression fix owner-approved 2026-05-16
+    Option B): LEVEL_6_DD_HALT_THRESHOLD raised 0.15 -> 0.20 and
+    LEVEL_6_RECOVERY_THRESHOLD relaxed 0.05 -> 0.025. 20% matches
+    Passing-Criteria #5 max DD, gives portfolio more breathing room before
+    halting. 2.5% recovery is easier to achieve via existing open positions
+    when no new entries are permitted."""
+    from backtest.engine.circuit_breakers import (
+        LEVEL_6_DD_HALT_THRESHOLD,
+        LEVEL_6_RECOVERY_THRESHOLD,
+        LEVEL_6_MIN_PEAK_HISTORY_DAYS,
+    )
+    assert LEVEL_6_DD_HALT_THRESHOLD == 0.20, (
+        "Batch 193: DD threshold must be 0.20 (was 0.15)"
+    )
+    assert LEVEL_6_RECOVERY_THRESHOLD == 0.025, (
+        "Batch 193: recovery threshold must be 0.025 (was 0.05)"
+    )
+    # min_history unchanged
+    assert LEVEL_6_MIN_PEAK_HISTORY_DAYS == 30
+
+
+def test_batch193_level6_auto_resume_timeout():
+    """Batch 193 (Phase 1A Batch 192 regression fix owner-approved 2026-05-16
+    Option B): Level 6 halt must auto-resume after LEVEL_6_MAX_HALT_DURATION_DAYS
+    even if recovery threshold not met. Pre-batch the halt was a permanent
+    freeze (resume condition unreachable because halt blocks new entries,
+    leaving only existing positions to lift equity). Phase 1A Batch 192
+    baseline trapped 4 years of trading behind a single halt fired 2022-06-16."""
+    from datetime import date, timedelta
+    from backtest.engine.circuit_breakers import (
+        Level6State,
+        update_level_6_state,
+        LEVEL_6_MAX_HALT_DURATION_DAYS,
+    )
+
+    assert LEVEL_6_MAX_HALT_DURATION_DAYS == 60, (
+        "Batch 193: max halt duration must be 60 days"
+    )
+
+    state = Level6State()
+    start = date(2022, 1, 1)
+
+    # Day 0: equity = 100, builds the peak.
+    update_level_6_state(state, 100.0, start, days_since_start=0)
+    assert state.rolling_peak_equity == 100.0
+    # Day 35: equity drops to 75 (-25% from peak), past min_history -> halt triggers
+    halt_date = start + timedelta(days=35)
+    r = update_level_6_state(state, 75.0, halt_date, days_since_start=35)
+    assert r["halt_active"] is True, "Batch 193: -25% DD must trigger halt"
+    assert state.halt_triggered_date == halt_date
+
+    # Day 35+30: equity still depressed at 73 (well below resume threshold 75*1.025=76.875)
+    mid_halt = halt_date + timedelta(days=30)
+    r = update_level_6_state(state, 73.0, mid_halt, days_since_start=65)
+    assert r["halt_active"] is True, (
+        "Batch 193: halt must remain active before timeout"
+    )
+
+    # Day 35+60: timeout fires -> auto-resume regardless of recovery threshold
+    timeout_date = halt_date + timedelta(days=60)
+    r = update_level_6_state(state, 73.0, timeout_date, days_since_start=95)
+    assert r["halt_active"] is False, (
+        "Batch 193: halt must auto-resume after 60-day timeout"
+    )
+    assert r["event"] == "halt_resumed_timeout"
+    # halt_log records the timeout event
+    timeout_events = [e for e in state.halt_log if e.get("event") == "halt_resumed_timeout"]
+    assert len(timeout_events) == 1
+    assert timeout_events[0]["halt_duration_days"] == 60
+
+
+def test_batch193_level6_recovery_path_still_works():
+    """Batch 193: legitimate recovery (current_equity >= halt_equity * 1.025)
+    must still resume the halt before the 60-day timeout fires. The timeout
+    is an off-ramp, not a replacement for the recovery condition."""
+    from datetime import date, timedelta
+    from backtest.engine.circuit_breakers import (
+        Level6State,
+        update_level_6_state,
+    )
+
+    state = Level6State()
+    start = date(2022, 1, 1)
+    update_level_6_state(state, 100.0, start, days_since_start=0)
+    # Trigger halt at -25% DD
+    halt_date = start + timedelta(days=35)
+    update_level_6_state(state, 75.0, halt_date, days_since_start=35)
+    assert state.halt_triggered
+
+    # Day 35+10: equity recovers to 77 (>= 75 * 1.025 = 76.875) -> normal resume
+    resume_date = halt_date + timedelta(days=10)
+    r = update_level_6_state(state, 77.0, resume_date, days_since_start=45)
+    assert r["halt_active"] is False, "Batch 193: 2.5% recovery must release halt"
+    assert r["event"] == "halt_resumed"
+    # No timeout event
+    timeout_events = [e for e in state.halt_log if e.get("event") == "halt_resumed_timeout"]
+    assert len(timeout_events) == 0
+
+
 def test_batch191_macro_event_windows_narrowed():
     """Batch 191 (INV-053 optimization owner-approved 2026-05-16): macro event
     suppression windows must be narrowed per event type. CPI / NFP suppress
