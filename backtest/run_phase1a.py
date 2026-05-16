@@ -141,6 +141,12 @@ def main():
     p.add_argument("--dry-run",    action="store_true")
     p.add_argument("--no-agents",  action="store_true")
     p.add_argument("--no-git",     action="store_true",  help="Suppress git commits during run (for parallel batches - commit manually at end)")
+    # Batch 187 (INV-050): decouple walk-forward suppression from --no-git.
+    # Prior: walk_forward=not args.no_git -- coupled WF to git suppression.
+    # Now: WF runs by default; explicit --no-walk-forward needed to disable
+    # (used in parallel-batch mode where merge_batch_outputs.py recomputes WF).
+    p.add_argument("--no-walk-forward", action="store_true",
+                   help="Disable per-run walk-forward (use for parallel-batch mode; merge recomputes on combined trade log)")
     p.add_argument("--no-news",    action="store_true",  help="Disable news sentiment (for A/B comparison)")
     p.add_argument("--tickers",    type=str, default=None, help="Comma-separated list of tickers for batch test")
     p.add_argument("--phase",      type=str, default="1a", choices=["1a","1a-beta","1b","1c","1d"])
@@ -207,20 +213,26 @@ def main():
             print(f"  Estimated cost: ~${est_cost:.1f} CAD ({days} days x {avg_passing:.0f} avg candidates x 11 agents x $0.00035)")
             print(f"Estimated cost: ~${est_cost:.1f} USD (Haiku) - proceeding automatically")
 
+    # Batch 187 (INV-050): walk-forward decoupled from --no-git. WF runs by
+    # default; --no-walk-forward needed to disable. This fixes the bug where
+    # baseline canonical runs (which use --no-git for clean output) silently
+    # skipped walk-forward and reported walk_forward_summary {total: 0}.
+    walk_forward_enabled = not args.no_walk_forward
     engine = BacktestEngine(
         universe=universe, start=start, end=end,
         phase=phase_key, max_candidates_per_day=args.max_cands,
         run_agents=agents, output_dir=args.output_dir,
         disable_news=args.no_news,
-        walk_forward=not args.no_git,  # suppress per-batch WF - run on merged result only
+        walk_forward=walk_forward_enabled,
     )
     if args.no_git:
         import os
         os.environ["BACKTEST_NO_GIT"] = "1"
         print("[WARN]  --no-git: parallel batch mode")
         print("   - Git operations suppressed - commit manually when all batches complete")
-        print("   - Per-batch walk-forward suppressed - run on merged result only")
         print("   Command: git status -> git add [dirs] -> git commit -> git pull --rebase -> git push")
+    if args.no_walk_forward:
+        print("[INFO] --no-walk-forward: WF disabled for this run (use merge_batch_outputs.py to compute WF on combined trade log)")
 
     if args.no_news:
         print("[WARN]  News sentiment DISABLED - A/B comparison mode")

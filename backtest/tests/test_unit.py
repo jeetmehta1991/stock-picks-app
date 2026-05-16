@@ -6682,3 +6682,28 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     assert 'not pc["macro_correlation"]' in src, (
         "Batch 186: macro_correlation must be opt-in via 'not pc[\"macro_correlation\"]'"
     )
+
+
+def test_batch187_walk_forward_decoupled_from_no_git():
+    """Batch 187 (INV-050): walk-forward must be decoupled from --no-git.
+    Prior bug: walk_forward=not args.no_git coupled them, so baseline runs
+    with --no-git silently skipped WF and reported {total: 0}.
+    Fix: explicit --no-walk-forward flag; WF runs by default."""
+    import inspect
+    import backtest.run_phase1a as r
+    src = inspect.getsource(r)
+    # New flag present
+    assert '"--no-walk-forward"' in src, (
+        "Batch 187: --no-walk-forward argparse flag must be added"
+    )
+    # Old coupling removed at the binding site: BacktestEngine call must NOT
+    # use walk_forward=not args.no_git anymore. Allow comment references to
+    # the prior pattern for historical documentation; check non-comment lines.
+    code_lines = [l for l in src.splitlines() if not l.lstrip().startswith("#")]
+    code_only = "\n".join(code_lines)
+    assert "walk_forward=not args.no_git" not in code_only, (
+        "Batch 187: walk_forward=not args.no_git binding must be removed (comment references ok)"
+    )
+    assert "walk_forward_enabled" in src or "not args.no_walk_forward" in src, (
+        "Batch 187: walk_forward must derive from no_walk_forward flag"
+    )
