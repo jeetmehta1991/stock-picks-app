@@ -1,0 +1,16 @@
+strategy,sharpe_adj,win_rate_adj,profit_factor_adj,haircut_pct_applied
+hull_rsi,0.0,0.8,inf,0.4
+pivot_r2_continuation,0.0,0.54,1.78858,0.2
+williams_stoch_dual,0.0,0.45,2.4253299999999998,0.2
+bollinger_lower,0.0,0.36963,1.05634,0.2
+pivot_r1_breakout,0.0,0.27999999999999997,0.8909,0.4
+bollinger_tight,0.0,0.29997,1.11358,0.2
+cpr_narrow_bullish,0.0,0.27855,0.5979,0.2
+williams_r_oversold,0.0,0.27693,1.04689,0.2
+stochrsi_oversold,0.0,0.1524,0.2037,0.4
+ichimoku_cloud_breakout,0.0,0.0,0.0,0.4
+cmf_flip,0.0,0.0,0.0,0.2
+prev_day_low_bounce,0.0,0.0,0.0,0.2
+pivot_s3_capitulation,0.0,0.0,0.0,0.2
+camarilla_r3_breakout,0.0,0.0,0.0,0.4
+macd_crossover,0.0,0.0,0.0,0.4
