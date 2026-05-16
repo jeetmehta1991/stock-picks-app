@@ -1,4 +1,4 @@
-"""DEC-153 — Regime-stratified train/test split (Pass 53 build per DEC-594 same-commit).
+"""DEC-153 - Regime-stratified train/test split (Pass 53 build per DEC-594 same-commit).
 
 Joint with DEC-109 walk-forward + DEC-422 cube per-regime verdicts.
 
@@ -21,9 +21,18 @@ from typing import Dict, List, Sequence, Tuple
 import numpy as np
 import pandas as pd
 
-# Per DEC-542 — 4-class regime collapse from prior 6-class
-REGIME_CLASSES = ("calm", "neutral", "volatile", "crisis")
-DEFAULT_MIN_PER_REGIME = 20  # min samples per regime per split (≥30 recommended; 20 floor)
+# Batch 189 (INV-051 fix) - accept BOTH vocabularies:
+#   - Engine runtime taxonomy (regime_filter.py classify_regime):
+#       bull / neutral / bear / crisis   (CANONICAL_FACTS F-006)
+#   - DEC-542 4-class spec / DEC-153 stratifier original docstring:
+#       calm / neutral / volatile / crisis
+# These are orthogonal axes (trend vs volatility) that overlap only at
+# 'neutral' and 'crisis'. Prior bug: REGIME_CLASSES used only the
+# DEC-542 vocab, so engine outputs bull/bear silently dropped to
+# 'unknown' bucket, collapsing all train/test into neutral-only.
+# Fix: include the union of both vocabularies.
+REGIME_CLASSES = ("bull", "neutral", "bear", "crisis", "calm", "volatile")
+DEFAULT_MIN_PER_REGIME = 20  # min samples per regime per split (>=30 recommended; 20 floor)
 
 
 def regime_stratified_split(
@@ -51,7 +60,7 @@ def regime_stratified_split(
         - Within each regime, indices are sorted chronologically (preserves time-ordering
           within strata). This avoids accidentally training on future-relative-to-test
           observations within a regime.
-        - Indices are NOT globally chronological — train and test interleave in time.
+        - Indices are NOT globally chronological - train and test interleave in time.
           This is INTENTIONAL: stratification is the goal; chronological purity is preserved
           via DEC-505 walk-forward fold boundaries (folds are time-disjoint; stratification
           happens INSIDE each fold's date range).
@@ -70,7 +79,7 @@ def regime_stratified_split(
     for i, label in enumerate(regime_labels):
         if label in by_regime:
             by_regime[label].append(i)
-        # Skip 'unknown' or other labels — not assigned to either set
+        # Skip 'unknown' or other labels - not assigned to either set
 
     for regime, idx_list in by_regime.items():
         n = len(idx_list)

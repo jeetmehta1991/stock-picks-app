@@ -6684,6 +6684,38 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch189_regime_stratifier_accepts_engine_vocabulary():
+    """Batch 189 (INV-051 fix): regime stratifier must accept BOTH the engine's
+    bull/neutral/bear/crisis vocabulary AND the DEC-542 calm/neutral/volatile/crisis
+    spec. Prior bug: REGIME_CLASSES only had calm/neutral/volatile/crisis so
+    engine outputs bull/bear silently dropped, collapsing everything into
+    neutral-only (Phase 1A baseline regime_stratified_summary showed
+    proportions {neutral: 1.0} despite engine emitting bull/bear trades)."""
+    import pandas as pd
+    from backtest.engine.regime_stratified_split import (
+        REGIME_CLASSES, regime_stratified_split, regime_proportions,
+    )
+    # Must include both axes
+    for r in ("bull", "neutral", "bear", "crisis", "calm", "volatile"):
+        assert r in REGIME_CLASSES, f"Batch 189: REGIME_CLASSES must include '{r}'"
+
+    # Engine-vocab regression: input bull/bear/neutral/crisis must NOT collapse to neutral
+    n = 200
+    dates = pd.date_range("2022-01-01", periods=n, freq="B").tolist()
+    # 50 of each: bull / neutral / bear / crisis
+    regimes = ["bull"] * 50 + ["neutral"] * 50 + ["bear"] * 50 + ["crisis"] * 50
+    train, test, summary = regime_stratified_split(dates, regimes)
+    # Each regime should have non-zero train + test (50 split 70/30 = 35 train + 15 test)
+    for r in ("bull", "neutral", "bear", "crisis"):
+        assert summary[r] > 0, f"Batch 189: regime '{r}' must have train samples; got 0"
+        assert summary[f"{r}_test"] > 0, f"Batch 189: regime '{r}' must have test samples"
+
+    # Proportions must reflect ALL 4 regimes (each ~25%)
+    props = regime_proportions(regimes)
+    for r in ("bull", "neutral", "bear", "crisis"):
+        assert props[r] > 0.2, f"Batch 189: regime '{r}' proportion must be ~25%; got {props[r]}"
+
+
 def test_batch188_dispersion_cb_numerical_guard():
     """Batch 188 (INV-052 fix): dispersion_circuit_breaker must guard against
     near-zero rolling_std producing absurd z-scores (Phase 1A baseline saw
