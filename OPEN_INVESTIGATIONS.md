@@ -791,3 +791,68 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   - (B) Run a one-shot migration script reading + coercing + rewriting all ~13K parquets (~5-10 min wallclock; compression-preserving).
   - (C) Update prefetch scripts to write datetime64 going forward + run migration on existing.
 - **Joint:** J2 H22 broad sweep (7033 prior cases done; this is residual); CHECKLIST #78 per-addressal pyramid (the reason this is its own INV instead of bundled into H22 verify).
+
+
+## INV-049 — AVOID-tier confidence trades fire at 39% of executed trades (Pass 53 Day 9+ 2026-05-16 Phase 1A baseline)
+
+- **Observation:** Phase 1A baseline (67-tkr canonical run, output_phase_1a_launch/) closed 225 trades over 1044 days. Per-confidence-tier breakdown: HIGH 136 / **AVOID 88** / EXCEPTIONAL 1. AVOID tier accounts for **39% of all trades** despite the documented gate semantics that AVOID = skip entry. Average PnL for AVOID trades: -2.70% (worst of all tiers). Average PnL for HIGH: +0.68%. The system would be net positive if AVOID-tier trades were genuinely blocked at entry.
+- **Two hypotheses:**
+  1. **Entry-gate bypass bug** — the AVOID tier label is computed correctly but the engine's entry filter doesn't skip on it. Look at `backtest/engine/backtest.py` candidate-evaluation flow for tier checks.
+  2. **Post-entry tier downgrade** — trades enter at HIGH tier but the confidence_tier column reflects the LATEST tier (re-evaluated mid-hold). In that case the column is misleading: AVOID is an outcome, not an entry decision.
+- **Evidence to disambiguate:** check whether `confidence_tier` is the entry-time tier or current/exit-time tier. If schema doc says entry-time → bug. If exit-time → schema rename to `confidence_tier_at_exit` + add `confidence_tier_at_entry`.
+- **Phase 1A-β impact:** if this is bug #1, fixing it could materially improve baseline P&L. If hypothesis #2, no engine fix needed but trade_log schema needs disambiguation.
+- **Joint:** DEC-021 tier mapping; DEC-061/062 tier-to-size modifier; F-008 position sizing tiers; CLAUDE.md Approved Rules "Position sizing: tiered 5/4/3/1.5/0.75% by confidence tier".
+
+
+## INV-050 — Walk-forward folds suppressed when --no-git active (Pass 53 Day 9+ 2026-05-16 Phase 1A baseline)
+
+- **Observation:** Phase 1A baseline `improvements_summary.json` reports `walk_forward_summary: {total: 0, robust: 0, overfit: 0}`. With 4-year OOS window (2022-05-05 → 2026-05-05) + 1-year folds per DEC-505, expected 3-4 folds. Root cause: `run_phase1a.py:208`:
+
+      walk_forward=not args.no_git,  # suppress per-batch WF - run on merged result only
+
+  This suppresses walk-forward intentionally for parallel-batch mode (where merge would re-compute), but the canonical baseline run also used `--no-git` (single batch). Walk-forward thus did not run on the baseline output even though the run was not a parallel-batch fragment.
+- **Phase 1A-β impact:** the 5 parallel batches will correctly suppress WF and the merge_batch_outputs.py step will re-compute it. But the baseline gap is real — re-run with `--walk-forward-only` flag (if exists) or run on merged baseline output.
+- **Recommended action:** Decouple WF suppression from `--no-git`. Add explicit `--no-walk-forward` flag. Re-run WF on baseline output as a separate post-processing step.
+- **Joint:** DEC-505 (4-fold WF + Polygon cache window); DEC-109 (rolling 5yr/1yr walk-forward); `backtest/run_phase1a.py:208`; `scripts/merge_batch_outputs.py`.
+
+
+## INV-051 — Regime-stratified CV stratifier collapses to neutral-only (Pass 53 Day 9+ 2026-05-16 Phase 1A baseline)
+
+- **Observation:** Phase 1A baseline `regime_stratified_summary.json` shows:
+
+      proportions:   {calm: 0.0, neutral: 1.0, volatile: 0.0, crisis: 0.0}
+      per_regime:
+        calm:     0 train,  0 test, INSUFFICIENT_SAMPLE
+        neutral: 40 train, 17 test, INSUFFICIENT_SAMPLE
+        volatile: 0 train,  0 test, INSUFFICIENT_SAMPLE
+        crisis:   0 train,  0 test, INSUFFICIENT_SAMPLE
+
+  But the per-trade `regime` column has 123 bull / 45 bear / 57 neutral. The stratifier is mapping ALL trades into the `neutral` regime bucket for cross-val purposes. Either the stratifier uses a different regime-naming convention (calm/neutral/volatile/crisis vs bull/neutral/bear/crisis) without translation, OR the stratifier inputs are unfiltered NaN-defaulting to neutral.
+- **Phase 1A-β impact:** Phase 1A-β cube populator (DEC-422) needs per-regime stratification. If stratifier doesn't map correctly, the verdict cube will under-resolve regime cells.
+- **Recommended action:** Locate stratifier code (likely `backtest/results/metrics.py:compute_regime_stratified_summary` or similar). Verify regime label vocabulary alignment with per-trade `regime` column. Map bull/bear/neutral/crisis → calm/neutral/volatile/crisis if that's the intended translation, OR rename one side to consolidate.
+- **Joint:** F-006 regime taxonomy (4 types); DEC-106 8-input classifier; DEC-422 cube populator.
+
+
+## INV-052 — Dispersion circuit breaker fires z-score 379 outlier (Pass 53 Day 9+ 2026-05-16 Phase 1A baseline)
+
+- **Observation:** Phase 1A baseline `circuit_breaker_log.csv` shows 74 dispersion-CB activations over 4 years. Real-world activations are at z=3-7 (extreme but plausible). One activation on 2022-06-09 reports **z_score=379.0763** with `today_dispersion=1.732546`. A z-score of 379 implies dispersion is 379 standard deviations above mean — physically impossible. Almost certainly a numerical edge case: very small stddev in rolling window (e.g., division-by-near-zero) or NaN handling.
+- **Phase 1A-β impact:** at 1937-ticker scope, dispersion calc may hit similar edge cases more often. Could cause spurious entry blocks or stop-out cascades.
+- **Recommended action:** Find the dispersion-CB calc site. Add guard: if rolling stddev < epsilon (e.g., 1e-6), skip z-score calc or cap at z=10. Or use median absolute deviation (MAD) as more robust denominator.
+- **Joint:** DEC-128 dispersion circuit breaker; engine `dispersion_cb_triggered_dec128` event tag.
+
+
+## INV-053 — Entry funnel rejects 99.87% of candidates (172544 skipped vs 225 executed) (Pass 53 Day 9+ 2026-05-16 Phase 1A baseline)
+
+- **Observation:** Phase 1A baseline 4-year run rejected **172,544 candidate trades** vs 225 executed. Rejection rate **99.87%**. Top reasons:
+  - 46,607 (27%): `portfolio_gate_max_open_positions_10_reached`
+  - 45,601 (26%): `vol_target_scaled_1.5x`
+  - ~33,000 (19%): event suppression (NFP/CPI/FOMC/earnings d-2 → d+1)
+  - remainder: liquidity / regime / cooldown / etc.
+
+  **Interpretation:** the system is generating ~770 candidates/day on average but most days are gated out. With a 10-position cap (DEC-070-adjacent), once 10 positions are open new candidates are skipped regardless of merit. The `vol_target_scaled_1.5x` reason is harder to parse — appears to be a per-trade sizing decision rather than a skip.
+- **Phase 1A-β impact:** At 1937-ticker scope, candidate volume scales ~30×. Even at same 0.13% acceptance, expect ~6,750 executed trades over 4 years (vs 225 in baseline). That's a meaningful sample for Bonferroni validity per strategy. **But:** the portfolio_gate_max_open_positions_10 cap is independent of universe size — it will continue to be the dominant gate. Consider raising the position cap for 1A-β to let more trades through.
+- **Recommended action:**
+  - (A) Audit the funnel — confirm each rejection reason is correct semantically (e.g., is `vol_target_scaled_1.5x` actually a skip or a sizing event mis-tagged as skip).
+  - (B) Document the max-open-positions=10 cap's interaction with universe size. Consider tier-aware scaling (e.g., cap=20 at full universe) for Phase 1A-β.
+  - (C) Add a "rejection-reason concentration" metric to detect when one gate dominates abnormally.
+- **Joint:** DEC-070 portfolio-level exit logic (the 10-cap origin); DEC-348 event suppression windows; CLAUDE.md "Max candidates/day: 10".
