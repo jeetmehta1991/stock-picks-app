@@ -97,6 +97,12 @@ class BacktestEngine:
         self.open_trades:         list[OpenTrade]   = []
         self.closed_trades:       list[ClosedTrade] = []
         self.skipped_trades:      list[dict]        = []
+        # Batch 191 (INV-053 optimization): sizing decisions are NOT skips
+        # (the trade still proceeds at the scaled size). Pre-batch baseline
+        # mis-logged 92,345 vol_target / per_pos_vol / dd_band entries to
+        # skipped_trades.csv polluting rejection accounting (53.5% of
+        # "rejects" were actually sizing decisions). Owner-approved 2026-05-16.
+        self.sizing_log:          list[dict]        = []
         self.circuit_breaker_log: list[dict]        = []
         # DEC-515 Level 6 CB state  -  Pass 53 Day-9-evening v5 engine wiring
         # per DEC-594 same-commit. Persistent state across days within a run.
@@ -1005,27 +1011,36 @@ class BacktestEngine:
                 # tolerant strategies (DEC-013 attribute) bypass via per-
                 # strategy override (deferred to attribute-honoring batch).
                 from backtest.config import (EVENT_WINDOW_PRE_DAYS,
-                                              EVENT_WINDOW_POST_DAYS)
+                                              EVENT_WINDOW_POST_DAYS,
+                                              EVENT_WINDOWS_BATCH191)
                 _event_suppressed = False
                 _suppression_reason = None
                 if earn_days is not None:
                     # earn_days is positive when earnings ahead, negative after
-                    # Suppress if -post_days <= earn_days <= pre_days (-3..+1)
+                    # Earnings retains DEC-349 default window (pre=1, post=3).
                     if -EVENT_WINDOW_POST_DAYS <= earn_days <= EVENT_WINDOW_PRE_DAYS:
                         _event_suppressed = True
                         _suppression_reason = (
                             f"EVENT_SUPPRESSION_EARNINGS_d{earn_days}_dec348"
                         )
                 # Macro events (FOMC/CPI/NFP) -- macro['near_high_impact_event']
-                # already populated upstream
+                # already populated upstream. Batch 191 owner-approved 2026-05-16:
+                # per-event-type windows replace the single DEC-349 window for
+                # macro types. CPI / NFP: d=0 only. FOMC: d-1 + d=0 (Lucca-Moench
+                # pre-FOMC drift). Unknown event types fall back to DEC-349 default.
                 if not _event_suppressed and macro.get("near_high_impact_event"):
                     days_to_event = macro.get("event_days_away")
+                    ev_type = macro.get("event_type", "macro")
+                    ev_type_upper = ev_type.upper()
+                    _pre, _post = EVENT_WINDOWS_BATCH191.get(
+                        ev_type_upper,
+                        (EVENT_WINDOW_PRE_DAYS, EVENT_WINDOW_POST_DAYS),
+                    )
                     if days_to_event is not None and \
-                            -EVENT_WINDOW_POST_DAYS <= days_to_event <= EVENT_WINDOW_PRE_DAYS:
-                        ev_type = macro.get("event_type", "macro")
+                            -_post <= days_to_event <= _pre:
                         _event_suppressed = True
                         _suppression_reason = (
-                            f"EVENT_SUPPRESSION_{ev_type.upper()}_d{days_to_event}_dec348"
+                            f"EVENT_SUPPRESSION_{ev_type_upper}_d{days_to_event}_dec348"
                         )
                 if _event_suppressed:
                     self.skipped_trades.append({
@@ -1124,26 +1139,33 @@ class BacktestEngine:
                         (size_pct / size_pct_pre_per_pos)
                         if size_pct_pre_per_pos > 0 else 1.0
                     )
+                    # Batch 191 (INV-053 optimization) owner-approved 2026-05-16:
+                    # sizing scalers (DD-band, portfolio vol-target, per-position
+                    # vol-target) route to sizing_log.csv NOT skipped_trades.csv.
+                    # These are sizing decisions; the entry still proceeds at the
+                    # scaled size. Pre-batch baseline mis-logged 92,345 of these
+                    # to skipped_trades.csv polluting rejection accounting
+                    # (53.5% of all "skips" were actually sizing events).
                     if dd_mult < 1.0 and size_pct > 0:
-                        self.skipped_trades.append({
+                        self.sizing_log.append({
                             "ticker": ticker, "date": as_of,
                             "strategy": strat_entry["strategy"],
-                            "reason": f"dd_band_scaled_{dd_mult}x",
+                            "scaler": "dd_band",
+                            "multiplier": round(float(dd_mult), 4),
                         })
                     if vol_scale != 1.0 and size_pct > 0:
-                        self.skipped_trades.append({
+                        self.sizing_log.append({
                             "ticker": ticker, "date": as_of,
                             "strategy": strat_entry["strategy"],
-                            "reason": f"vol_target_scaled_{round(vol_scale, 3)}x",
+                            "scaler": "portfolio_vol_target",
+                            "multiplier": round(float(vol_scale), 4),
                         })
-                        # NOTE: this entry is informational; entry still proceeds
-                        # at the scaled size. The skipped_trades log captures it
-                        # for post-run analysis of DD-band activation.
                     if per_pos_mult != 1.0 and size_pct > 0:
-                        self.skipped_trades.append({
+                        self.sizing_log.append({
                             "ticker": ticker, "date": as_of,
                             "strategy": strat_entry["strategy"],
-                            "reason": f"per_pos_vol_scaled_{round(per_pos_mult, 3)}x",
+                            "scaler": "per_position_vol_target",
+                            "multiplier": round(float(per_pos_mult), 4),
                         })
                     if size_pct > 0:
                         ok, reason = self.portfolio.can_open(
@@ -1548,6 +1570,7 @@ class BacktestEngine:
             df_trades=df_trades,
             metrics=metrics,
             skipped=self.skipped_trades,
+            sizing_log=self.sizing_log,
             cb_log=self.circuit_breaker_log,
             exit_compare=exit_compare,
             trade_exit_detail=trade_exit_detail,

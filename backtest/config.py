@@ -607,8 +607,31 @@ DROPPED_STRATEGY_REEVAL_DAYS = 90
 # (replaces symmetric window_days=2) per Pass 52 turn 89 spec:
 # pre_days=1, post_days=3 (pre-event drift ~1d; post-event vol persists 2-3d).
 # REVISIT_AFTER_BACKTEST tag for Phase 1B-alpha empirical tuning.
+# Retained as DEFAULT fallback used by earnings suppression (Batch 191
+# narrowing applies only to macro event types CPI / NFP / FOMC).
 EVENT_WINDOW_PRE_DAYS  = 1
 EVENT_WINDOW_POST_DAYS = 3
+
+# Batch 191 (INV-053 optimization) owner-approved 2026-05-16: narrow macro
+# event suppression windows to reduce 99.87% baseline rejection rate.
+# Empirical motivation: Phase 1A baseline 2025 returned 225 executed vs
+# 172,544 skipped trades; 27,401 (15.9%) were EVENT_SUPPRESSION_* rejects
+# across CPI / NFP / FOMC with d-2..d+1 windows. Literature support:
+#   - CPI / NFP: macro shock concentrated at d=0 announcement; pre-event
+#     drift and post-event continuation are routinely tradable. Suppressing
+#     d-2 / d-1 / d+1 discards tradable signal without empirical justification.
+#   - FOMC: Lucca-Moench (2015) "Pre-FOMC Announcement Drift" documents
+#     significant pre-FOMC equity drift in the 24h window. Suppress d-1..d=0.
+# Per-event-type windows replace single EVENT_WINDOW_* for macro events.
+# Convention: condition is `-post_days <= days_to_event <= pre_days` where
+# days_to_event>0 means event is N days ahead (pre-event), days_to_event<0
+# means event was N days ago (post-event), days_to_event=0 means event day.
+# REVISIT_AFTER_BACKTEST tag for Phase 1B-alpha empirical re-tuning.
+EVENT_WINDOWS_BATCH191: dict[str, tuple[int, int]] = {
+    "CPI":  (0, 0),  # event day only (no pre / no post)
+    "NFP":  (0, 0),  # event day only
+    "FOMC": (1, 0),  # d-1 + d=0 (Lucca-Moench pre-FOMC drift)
+}
 
 # BUG-34 RESOLVED-IMPLEMENTED Batch 109 2026-05-12 (owner-approved option C
 # 2026-05-12): per-strategy regime-blocklist config. Maps strategy name

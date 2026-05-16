@@ -32,7 +32,7 @@ from backtest.results.bootstrap_ci import (
 
 
 # ---------------------------------------------------------------------------
-# DEC-153 — Regime-stratified split
+# DEC-153 - Regime-stratified split
 # ---------------------------------------------------------------------------
 def test_dec153_basic_split():
     dates = pd.date_range("2024-01-01", periods=400, freq="D")
@@ -40,8 +40,11 @@ def test_dec153_basic_split():
     labels = ["calm"] * 100 + ["neutral"] * 100 + ["volatile"] * 100 + ["crisis"] * 100
     train, test, summary = regime_stratified_split(dates, labels, train_frac=0.7)
     assert len(train) + len(test) == 400
-    # Each regime should have ~70 in train, ~30 in test
-    for regime in REGIME_CLASSES:
+    # Each regime IN THE INPUT should have ~70 in train, ~30 in test.
+    # Batch 189 (INV-051) expanded REGIME_CLASSES to include bull/bear; this
+    # test feeds only the DEC-542 4-class vocabulary so we assert over the
+    # input regimes specifically (not all REGIME_CLASSES).
+    for regime in ("calm", "neutral", "volatile", "crisis"):
         assert summary[regime] >= 65, f"{regime} train low: {summary[regime]}"
         assert summary[f"{regime}_test"] >= 25, f"{regime} test low: {summary[f'{regime}_test']}"
         assert summary[f"{regime}_status"] == "OK"
@@ -53,8 +56,10 @@ def test_dec153_insufficient_sample():
     train, test, summary = regime_stratified_split(
         dates, labels, train_frac=0.7, min_per_regime=20
     )
-    # All regimes should fail INSUFFICIENT_SAMPLE since each has only 5
-    for regime in REGIME_CLASSES:
+    # All regimes in the input should fail INSUFFICIENT_SAMPLE (each has only 5).
+    # Batch 189: assert over the 4 input regimes specifically (not all
+    # REGIME_CLASSES which now includes bull/bear with 0 samples).
+    for regime in ("calm", "neutral", "volatile", "crisis"):
         assert summary[f"{regime}_status"] == "INSUFFICIENT_SAMPLE"
 
 
@@ -86,7 +91,7 @@ def test_dec153_chronological_order_within_regime():
 
 
 # ---------------------------------------------------------------------------
-# DEC-401 — Holm-Bonferroni
+# DEC-401 - Holm-Bonferroni
 # ---------------------------------------------------------------------------
 def test_dec401_bonferroni_basic():
     pvals = [0.01, 0.04, 0.03, 0.005]
@@ -107,7 +112,7 @@ def test_dec401_holm_less_conservative_than_bonferroni():
 def test_dec401_holm_step_down_logic():
     """Smallest p-value tested at alpha/m; next at alpha/(m-1); etc."""
     # pvals: 0.01, 0.02, 0.03; m=3; alpha=0.05
-    # Holm: p_(1)=0.01 vs 0.05/3=0.0167 → reject; p_(2)=0.02 vs 0.05/2=0.025 → reject; p_(3)=0.03 vs 0.05/1=0.05 → reject
+    # Holm: p_(1)=0.01 vs 0.05/3=0.0167 -> reject; p_(2)=0.02 vs 0.05/2=0.025 -> reject; p_(3)=0.03 vs 0.05/1=0.05 -> reject
     rejected, adj = holm_bonferroni([0.01, 0.02, 0.03], alpha=0.05)
     assert all(rejected)
 
@@ -133,10 +138,10 @@ def test_dec401_invalid_pvalues_rejected():
 
 
 # ---------------------------------------------------------------------------
-# DEC-423 — Bootstrap CI
+# DEC-423 - Bootstrap CI
 # ---------------------------------------------------------------------------
 def test_dec423_sharpe_ratio_basic():
-    # Constant 0.001 daily return, 0 std → Sharpe = 0 (per safety branch)
+    # Constant 0.001 daily return, 0 std -> Sharpe = 0 (per safety branch)
     assert sharpe_ratio([0.001] * 252) == 0.0
     # Constant returns
     assert sharpe_ratio([]) == 0.0

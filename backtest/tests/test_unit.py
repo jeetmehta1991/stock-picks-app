@@ -6684,6 +6684,115 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch191_macro_event_windows_narrowed():
+    """Batch 191 (INV-053 optimization owner-approved 2026-05-16): macro event
+    suppression windows must be narrowed per event type. CPI / NFP suppress
+    d=0 only (pre=0, post=0). FOMC suppresses d-1 + d=0 (pre=1, post=0,
+    Lucca-Moench pre-FOMC drift). Earnings retains DEC-349 default
+    (pre=1, post=3). Engine consumption must read EVENT_WINDOWS_BATCH191
+    when event_type in {CPI, NFP, FOMC}, fall back to DEC-349 default
+    otherwise. Pre-batch baseline produced 27,401 macro-event suppressions
+    (15.9% of all rejects) on the d-2..d+1 window."""
+    import inspect
+    from backtest.config import (
+        EVENT_WINDOWS_BATCH191,
+        EVENT_WINDOW_PRE_DAYS,
+        EVENT_WINDOW_POST_DAYS,
+    )
+    from backtest.engine import backtest as eng
+
+    # Config must declare expected per-event windows
+    assert EVENT_WINDOWS_BATCH191["CPI"] == (0, 0), (
+        "Batch 191: CPI must suppress d=0 only"
+    )
+    assert EVENT_WINDOWS_BATCH191["NFP"] == (0, 0), (
+        "Batch 191: NFP must suppress d=0 only"
+    )
+    assert EVENT_WINDOWS_BATCH191["FOMC"] == (1, 0), (
+        "Batch 191: FOMC must suppress d-1 + d=0 (Lucca-Moench)"
+    )
+    # Earnings retains DEC-349 default
+    assert EVENT_WINDOW_PRE_DAYS == 1, "Batch 191: earnings pre must remain DEC-349 default"
+    assert EVENT_WINDOW_POST_DAYS == 3, "Batch 191: earnings post must remain DEC-349 default"
+
+    # Engine must import + use EVENT_WINDOWS_BATCH191 in macro-event branch
+    src = inspect.getsource(eng)
+    assert "EVENT_WINDOWS_BATCH191" in src, (
+        "Batch 191: backtest.py must import EVENT_WINDOWS_BATCH191"
+    )
+    assert "EVENT_WINDOWS_BATCH191.get(" in src, (
+        "Batch 191: macro-event branch must look up per-event window via .get()"
+    )
+
+    # Simulate suppression logic for each event type
+    def is_suppressed(ev_type, days_to_event):
+        pre, post = EVENT_WINDOWS_BATCH191.get(
+            ev_type.upper(),
+            (EVENT_WINDOW_PRE_DAYS, EVENT_WINDOW_POST_DAYS),
+        )
+        return -post <= days_to_event <= pre
+
+    # CPI: only d=0 suppressed (the 4 pre-batch tagged days d-2/d-1/d0/d+1
+    # should now collapse to d=0 only)
+    assert is_suppressed("CPI", 0) is True
+    assert is_suppressed("CPI", 1) is False, "Batch 191: CPI d-1 (event tomorrow) must NOT suppress"
+    assert is_suppressed("CPI", -1) is False, "Batch 191: CPI d+1 (event yesterday) must NOT suppress"
+    assert is_suppressed("CPI", -2) is False
+    # NFP: same as CPI
+    assert is_suppressed("NFP", 0) is True
+    assert is_suppressed("NFP", 1) is False
+    assert is_suppressed("NFP", -1) is False
+    # FOMC: d-1 (days_to_event=+1) and d=0 both suppressed; d+1 NOT
+    assert is_suppressed("FOMC", 1) is True, "Batch 191: FOMC must suppress d-1"
+    assert is_suppressed("FOMC", 0) is True
+    assert is_suppressed("FOMC", -1) is False, "Batch 191: FOMC d+1 post-event must NOT suppress"
+    # Unknown event type: fall back to DEC-349 default (-3..+1)
+    assert is_suppressed("UNKNOWN_MACRO", 1) is True
+    assert is_suppressed("UNKNOWN_MACRO", -3) is True
+    assert is_suppressed("UNKNOWN_MACRO", -4) is False
+
+
+def test_batch191_sizing_log_separated_from_skipped_trades():
+    """Batch 191 (INV-053 optimization owner-approved 2026-05-16): sizing
+    decisions (DD-band, portfolio vol-target, per-position vol-target) must
+    route to sizing_log NOT skipped_trades. Pre-batch baseline mis-logged
+    92,345 sizing events to skipped_trades.csv (53.5% of all "rejects" were
+    actually sizing decisions; the trade still proceeded). Writer must emit
+    sizing_log.csv as a separate file."""
+    import inspect
+    from backtest.engine import backtest as eng
+    from backtest.results import writer as wr
+
+    # Engine: sizing_log attribute must exist
+    src = inspect.getsource(eng)
+    assert "self.sizing_log" in src, (
+        "Batch 191: engine must define self.sizing_log list attribute"
+    )
+    # Sizing entries must use sizing_log.append, NOT skipped_trades.append
+    code_lines = [l for l in src.splitlines() if not l.lstrip().startswith("#")]
+    code = "\n".join(code_lines)
+    # The 3 scaler tags must NOT appear as a skipped_trades reason value
+    assert 'reason": f"dd_band_scaled_' not in code, (
+        "Batch 191: dd_band_scaled must route to sizing_log, not skipped_trades"
+    )
+    assert 'reason": f"vol_target_scaled_' not in code, (
+        "Batch 191: vol_target_scaled must route to sizing_log, not skipped_trades"
+    )
+    assert 'reason": f"per_pos_vol_scaled_' not in code, (
+        "Batch 191: per_pos_vol_scaled must route to sizing_log, not skipped_trades"
+    )
+    # The sizing_log.append calls must reference the 3 scaler types
+    for scaler in ("dd_band", "portfolio_vol_target", "per_position_vol_target"):
+        assert f'"scaler": "{scaler}"' in code, (
+            f"Batch 191: sizing_log must record scaler='{scaler}'"
+        )
+
+    # Writer: sizing_log param + sizing_log.csv emission
+    wsrc = inspect.getsource(wr.write_all_outputs)
+    assert "sizing_log" in wsrc, "Batch 191: write_all_outputs must accept sizing_log"
+    assert "sizing_log.csv" in wsrc, "Batch 191: writer must emit sizing_log.csv"
+
+
 def test_batch190_avoid_tier_blocks_both_directions():
     """Batch 190 (INV-049 fix): AVOID confidence tier must block BOTH long
     AND short trades. Prior bug: line blocked only direction=='long', so 88

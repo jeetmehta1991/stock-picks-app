@@ -26,6 +26,7 @@ def write_all_outputs(
     bonferroni:         dict          = None,
     output_dir:         Path          = Path("output"),
     portfolio:          "object"      = None,   # BUG-95 sub-batch 5
+    sizing_log:         list          = None,   # Batch 191 (INV-053)
 ):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1147,6 +1148,17 @@ def write_all_outputs(
     # -- Skipped + circuit breakers --
     pd.DataFrame(skipped).to_csv(output_dir / "skipped_trades.csv", index=False)
     pd.DataFrame(cb_log).to_csv(output_dir / "circuit_breaker_log.csv", index=False)
+
+    # Batch 191 (INV-053 optimization) owner-approved 2026-05-16: separate
+    # sizing decisions from rejection accounting. sizing_log captures DD-band,
+    # portfolio vol-target, and per-position vol-target multipliers applied
+    # at entry; the trade still proceeds at the scaled size. Pre-batch
+    # baseline mis-logged these to skipped_trades.csv polluting analysis
+    # (53.5% of "rejects" were actually sizing decisions).
+    if sizing_log is not None:
+        pd.DataFrame(sizing_log).to_csv(
+            output_dir / "sizing_log.csv", index=False,
+        )
 
     # -- HTML report --
     _write_html(df_trades, metrics, exit_compare, walk_forward,
