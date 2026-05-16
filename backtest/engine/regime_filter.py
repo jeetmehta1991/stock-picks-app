@@ -204,15 +204,29 @@ def dispersion_circuit_breaker(
     rolling_mean = daily_disp.iloc[-(window + 1):-1].mean()
     rolling_std = daily_disp.iloc[-(window + 1):-1].std()
     today_disp = float(daily_disp.iloc[-1])
-    if rolling_std == 0 or pd.isna(rolling_std):
+    # Batch 188 (INV-052 fix): numerical guard for near-zero rolling_std.
+    # When the rolling window has very low dispersion variability (calm
+    # period after correction), even a modest dispersion uptick produces
+    # an astronomical z-score (Phase 1A baseline saw z=379 on 2022-06-09
+    # with today_dispersion=1.73 and inferred rolling_std~0.005). Two
+    # guards: (1) min rolling_std floor 1e-3 = treat as zero-stddev case;
+    # (2) z-score cap at 10.0 for reporting + triggering. Real activations
+    # at z=3-7 still work; z>10 is mathematically dominant signal but
+    # numerically suspect (treat as triggered but capped).
+    STDDEV_FLOOR = 1e-3
+    Z_CAP = 10.0
+    if rolling_std == 0 or pd.isna(rolling_std) or rolling_std < STDDEV_FLOOR:
         return {"triggered": False, "z_score": 0.0,
-                "today_dispersion": today_disp, "note": "zero_rolling_std"}
+                "today_dispersion": today_disp,
+                "note": "zero_rolling_std" if (rolling_std == 0 or pd.isna(rolling_std))
+                        else f"rolling_std_below_floor_{STDDEV_FLOOR}_batch188"}
     z = (today_disp - rolling_mean) / rolling_std
+    z_capped = min(float(z), Z_CAP) if z > 0 else max(float(z), -Z_CAP)
     return {
-        "triggered":         bool(z > sigma_threshold),
-        "z_score":           round(float(z), 4),
+        "triggered":         bool(z_capped > sigma_threshold),
+        "z_score":           round(z_capped, 4),
         "today_dispersion":  round(today_disp, 6),
-        "note":              "TRIGGERED" if z > sigma_threshold else "ok",
+        "note":              "TRIGGERED" if z_capped > sigma_threshold else "ok",
     }
 
 

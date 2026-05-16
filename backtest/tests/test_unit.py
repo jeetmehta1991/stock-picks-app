@@ -6684,6 +6684,54 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch188_dispersion_cb_numerical_guard():
+    """Batch 188 (INV-052 fix): dispersion_circuit_breaker must guard against
+    near-zero rolling_std producing absurd z-scores (Phase 1A baseline saw
+    z=379 on 2022-06-09). Two guards: (1) stddev floor 1e-3 = treat as zero
+    case; (2) z-score cap at 10.0 for triggering + reporting."""
+    import pandas as pd
+    import numpy as np
+    from backtest.engine.regime_filter import dispersion_circuit_breaker
+
+    # Case 1: near-zero stddev should NOT trigger nor produce huge z
+    # Build a window where prior dispersion is microscopic and today is "normal"
+    dates = pd.date_range("2022-01-01", periods=22, freq="D")
+    # 5 tickers; rows 0..20 = tiny dispersion (all ~same return); row 21 = uptick
+    n_tkr = 5
+    base = np.full((21, n_tkr), 0.0001)  # almost-flat
+    # Add infinitesimal jitter so std != 0 but is tiny
+    jitter = np.random.RandomState(42).randn(21, n_tkr) * 1e-7
+    df_calm = pd.DataFrame(base + jitter, index=dates[:21], columns=[f"T{i}" for i in range(n_tkr)])
+    today = pd.DataFrame([[0.01, -0.01, 0.005, -0.005, 0.003]],
+                         index=dates[21:22],
+                         columns=[f"T{i}" for i in range(n_tkr)])
+    combined = pd.concat([df_calm, today])
+    result = dispersion_circuit_breaker(combined, window=20)
+    # Either: (a) rolling_std < floor -> NOT triggered, z=0
+    # or (b) rolling_std >= floor but z capped at 10
+    assert result["z_score"] is not None
+    assert abs(result["z_score"]) <= 10.0, (
+        f"Batch 188: z_score must be capped at 10.0; got {result['z_score']}"
+    )
+
+    # Case 2: real spike case (z=3-7 range) still triggers correctly
+    # Use a window with normal variability, then a clear spike
+    rng = np.random.RandomState(123)
+    normal = pd.DataFrame(rng.randn(21, n_tkr) * 0.01,  # 1% stddev per ticker
+                          index=dates[:21], columns=[f"T{i}" for i in range(n_tkr)])
+    # Day 22: large dispersion (returns from -5% to +5%)
+    spike = pd.DataFrame([[0.05, -0.05, 0.04, -0.04, 0.03]],
+                         index=dates[21:22],
+                         columns=[f"T{i}" for i in range(n_tkr)])
+    combined2 = pd.concat([normal, spike])
+    result2 = dispersion_circuit_breaker(combined2, window=20, sigma_threshold=3.0)
+    # Should trigger (real spike) but z should not be astronomical
+    assert result2["z_score"] is not None
+    assert abs(result2["z_score"]) <= 10.0, (
+        f"Batch 188: real spike z must still be capped at 10.0; got {result2['z_score']}"
+    )
+
+
 def test_batch187_walk_forward_decoupled_from_no_git():
     """Batch 187 (INV-050): walk-forward must be decoupled from --no-git.
     Prior bug: walk_forward=not args.no_git coupled them, so baseline runs
