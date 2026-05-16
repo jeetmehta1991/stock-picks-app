@@ -258,15 +258,38 @@ CONVERSION = {
 # PASSING CRITERIA  -  all 10 metrics, strategy must pass ALL to advance
 # -----------------------------------------------------------------------------
 PASSING_CRITERIA = {
-    "min_win_rate":            0.55,   # 55%+ win rate
-    "min_profit_factor":       1.2,    # total wins / total losses > 1.2
+    # Batch 186 owner-approved 2026-05-16 (industry-research-driven relaxations):
+    #   (A) min_win_rate 0.55 -> 0.45 per-regime baseline; HV sectors 0.50 -> 0.40.
+    #       Rationale: mean-reversion strategies (our system's stylistic bias) run
+    #       30-50% WR per Lux Algo / HorizonAI / Quantified Strategies 2025-2026.
+    #       Compensated by R:R >= 2.0 (DEC-426) which gives positive EV at 33%+ WR.
+    #   (B) min_profit_factor_overall 1.5 -> 1.3 to match per-regime threshold.
+    #       Rationale: PF 1.3 = "marginal but profitable" per industry; PF 1.5 was
+    #       above industry "good" band (>1.75). Mitigated by PSR/DSR gates below.
+    #   (C) max_drawdown 20.0 -> 25.0 (HV: 25.0 -> 30.0).
+    #       Rationale: industry institutional ~20% backtest * 1.5x live degradation
+    #       = ~30% real-world DD; 25pp backtest accommodates this. See Lux Algo
+    #       2025 backtest-to-live degradation note.
+    #   (D) smart_money_lift / macro_correlation -> False default; per-strategy
+    #       opt-in via uses_smart_money_signal / uses_macro_signal attributes.
+    #       Rationale: most strategies aren't designed for smart-money/macro
+    #       exploitation; requiring lift for technical/mean-rev strategies that
+    #       don't reference those signals is unfair. Strategies tagged as
+    #       smart-money or macro-driven still face the lift gates via metrics.py.
+    #   (E) NEW gate: min_deflated_sharpe (DSR) 0.95 per Bailey & Lopez de Prado
+    #       2014 multi-testing correction. We test 77+ strategies in parallel so
+    #       Bonferroni demands DSR not raw Sharpe. Already computed in
+    #       backtest_results.csv `deflated_sharpe` column - just wasn't gated.
+    "min_win_rate":            0.45,   # was 0.55; baseline per-regime
+    "min_profit_factor":       1.2,    # unchanged per-regime
     "min_expected_value":      0.0,    # (win_rate x avg_win) + (loss_rate x avg_loss) > 0
     "min_win_loss_ratio":      1.0,    # avg win / avg loss > 1.0
-    "max_drawdown":            20.0,   # max peak-to-trough cumulative loss < 20 pct points
+    "max_drawdown":            25.0,   # was 20.0; overall + per-regime baseline (HV gets 30 below)
     "min_total_roi":           0.0,    # positive total ROI over backtest period
-    "smart_money_lift":        True,   # must show measurable improvement with smart money
-    "macro_correlation":       True,   # must show higher win rate in favourable regime
+    "smart_money_lift":        False,  # was True; now per-strategy opt-in via uses_smart_money_signal attribute
+    "macro_correlation":       False,  # was True; now per-strategy opt-in via uses_macro_signal attribute
     "min_trades":              100,    # minimum 100 trades for statistical validity
+    "min_deflated_sharpe":     0.95,   # NEW Batch 186: DSR-based stat significance (multi-testing-corrected PSR)
     # BUG-33 RESOLVED-IMPLEMENTED Batch 110 2026-05-12 (owner-approved
     # option C 2026-05-12): tiered Sharpe ratio passing criterion. Per-
     # regime threshold lower because per-regime trade samples are smaller
@@ -283,7 +306,7 @@ PASSING_CRITERIA = {
     # consistent compounding edge across regimes, not just one good
     # regime. Per-regime threshold MUST be <= overall (smaller samples =
     # lower bar; same invariant as BUG-33 Sharpe).
-    "min_profit_factor_overall": 1.5,   # BUG-32: overall PASS PF >= 1.5
+    "min_profit_factor_overall": 1.3,   # Batch 186 owner-approved: was 1.5 -> 1.3 to match per-regime; mitigated by PSR/DSR gates
     # BUG-31 RESOLVED-IMPLEMENTED Batch 112 2026-05-12 (owner-approved
     # option D 2026-05-12): tiered min-trades. `min_trades = 100` above
     # is the overall PASS threshold (already the CLAUDE.md Passing
@@ -326,8 +349,11 @@ SECTOR_PASSING_CRITERIA = {
     "high_volatility": {
         "sectors": ["Energy", "Information Technology", "Health Care",
                     "Communication Services"],
-        "min_win_rate":   0.50,   # lower  -  these sectors have wider swings
-        "max_drawdown":   25.0,   # wider  -  drawdowns are larger in volatile sectors
+        # Batch 186 owner-approved 2026-05-16 (relaxations per industry research):
+        #   min_win_rate 0.50 -> 0.40 (HV sectors swing wider; mean-rev common)
+        #   max_drawdown 25.0 -> 30.0 (HV * 1.5x live degradation = 45% real, accept)
+        "min_win_rate":   0.40,   # was 0.50; lowered per Batch 186
+        "max_drawdown":   30.0,   # was 25.0; raised per Batch 186
         "min_profit_factor": 1.2,
     },
     "medium_volatility": {

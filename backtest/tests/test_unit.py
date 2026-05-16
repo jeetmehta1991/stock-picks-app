@@ -6622,3 +6622,63 @@ def test_batch185_max_open_positions_25():
         f"Batch 185: max_open_positions must be 25 (owner directive 2026-05-16); "
         f"got {LIVE_TRADING_RULES['max_open_positions']}"
     )
+
+
+def test_batch186_passing_criteria_relaxations():
+    """Batch 186 owner-approved 2026-05-16: 4 threshold relaxations + DSR gate
+    per industry research (Lux Algo / Bailey-Lopez de Prado / Quantified Strategies).
+    Regression guard: future tightening must be explicit."""
+    from backtest.config import PASSING_CRITERIA, SECTOR_PASSING_CRITERIA
+    # (A) Win rate per-regime baseline 0.55 -> 0.45
+    assert PASSING_CRITERIA["min_win_rate"] == 0.45, (
+        f"Batch 186: min_win_rate must be 0.45 (was 0.55); got {PASSING_CRITERIA['min_win_rate']}"
+    )
+    # (A) High-volatility sector win rate 0.50 -> 0.40
+    assert SECTOR_PASSING_CRITERIA["high_volatility"]["min_win_rate"] == 0.40, (
+        f"Batch 186: HV min_win_rate must be 0.40 (was 0.50)"
+    )
+    # (B) Profit factor overall 1.5 -> 1.3
+    assert PASSING_CRITERIA["min_profit_factor_overall"] == 1.3, (
+        f"Batch 186: min_profit_factor_overall must be 1.3 (was 1.5); "
+        f"got {PASSING_CRITERIA['min_profit_factor_overall']}"
+    )
+    # (C) Max drawdown 20.0 -> 25.0 baseline
+    assert PASSING_CRITERIA["max_drawdown"] == 25.0, (
+        f"Batch 186: max_drawdown must be 25.0 (was 20.0); got {PASSING_CRITERIA['max_drawdown']}"
+    )
+    # (C) High-volatility max drawdown 25.0 -> 30.0
+    assert SECTOR_PASSING_CRITERIA["high_volatility"]["max_drawdown"] == 30.0, (
+        f"Batch 186: HV max_drawdown must be 30.0 (was 25.0)"
+    )
+    # (D) Smart money + macro correlation default to False (per-strategy opt-in)
+    assert PASSING_CRITERIA["smart_money_lift"] is False, (
+        f"Batch 186: smart_money_lift global default must be False (per-strategy opt-in)"
+    )
+    assert PASSING_CRITERIA["macro_correlation"] is False, (
+        f"Batch 186: macro_correlation global default must be False (per-strategy opt-in)"
+    )
+    # (E) NEW: DSR gate at 0.95
+    assert PASSING_CRITERIA["min_deflated_sharpe"] == 0.95, (
+        f"Batch 186: min_deflated_sharpe must be 0.95 per Bailey-Lopez de Prado 2014; "
+        f"got {PASSING_CRITERIA.get('min_deflated_sharpe', 'MISSING')}"
+    )
+
+
+def test_batch186_verdict_wires_dsr_and_optin_signals():
+    """Batch 186 metrics.py compute_overall_verdict wiring: passes dict must
+    include `deflated_sharpe` key AND smart_money_lift / macro_correlation
+    must be opt-in gated by pc flag."""
+    import inspect
+    from backtest.results import metrics
+    src = inspect.getsource(metrics)
+    # DSR gate present
+    assert '"deflated_sharpe":' in src and "min_deflated_sharpe" in src, (
+        "Batch 186: metrics.py must gate on min_deflated_sharpe in passes dict"
+    )
+    # Per-strategy opt-in pattern: (not pc["flag"]) or ...
+    assert 'not pc["smart_money_lift"]' in src, (
+        "Batch 186: smart_money_lift must be opt-in via 'not pc[\"smart_money_lift\"]'"
+    )
+    assert 'not pc["macro_correlation"]' in src, (
+        "Batch 186: macro_correlation must be opt-in via 'not pc[\"macro_correlation\"]'"
+    )

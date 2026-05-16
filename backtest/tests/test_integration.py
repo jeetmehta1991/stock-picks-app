@@ -1463,10 +1463,13 @@ def test_bug_31_config_documents_bug_origin():
 def test_bug_32_passing_criteria_emits_tiered_profit_factor_overall():
     """BUG-32 Batch 111: tiered profit-factor threshold. Owner-approved
     option C 2026-05-12: 1.2 per-regime (kept; high-vol 1.3) / 1.5 overall.
+    Batch 186 owner-approved 2026-05-16: overall relaxed 1.5 -> 1.3 per
+    industry-research-driven gating relaxation (matches per-regime).
     """
     from backtest.config import PASSING_CRITERIA
     assert "min_profit_factor_overall" in PASSING_CRITERIA
-    assert PASSING_CRITERIA["min_profit_factor_overall"] == 1.5
+    # Batch 186: 1.5 -> 1.3
+    assert PASSING_CRITERIA["min_profit_factor_overall"] == 1.3
     # Per-regime (unchanged) MUST be <= overall (smaller samples = lower bar)
     assert PASSING_CRITERIA["min_profit_factor"] <= PASSING_CRITERIA["min_profit_factor_overall"]
 

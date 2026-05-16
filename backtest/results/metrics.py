@@ -2335,6 +2335,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
 
     SM_LIFT_THRESHOLD    = 0.03   # >= 3pp win rate improvement required
     MACRO_CORR_THRESHOLD = 0.05   # >= 5pp win rate diff required
+    # Batch 186: DSR (Deflated Sharpe Ratio) gate per Bailey & Lopez de Prado 2014.
+    # Industry-canonical multi-testing-corrected PSR; threshold default 0.95.
+    dsr_value = psr_dict.get("deflated_sharpe") if isinstance(psr_dict, dict) else None
     passes = {
         "win_rate":           win_rate >= pc["min_win_rate"],
         "profit_factor":      pf >= pc["min_profit_factor"],
@@ -2342,9 +2345,18 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "win_loss_ratio":     wl_r >= pc["min_win_loss_ratio"],
         "max_drawdown":       mdd >= -pc["max_drawdown"],
         "total_roi":          roi > pc["min_total_roi"],
-        "smart_money_lift":   (sm_lift is None) or (sm_lift >= SM_LIFT_THRESHOLD),
-        "macro_correlation":  (macro_corr is None) or (macro_corr >= MACRO_CORR_THRESHOLD),
+        # Batch 186 owner-approved 2026-05-16: smart_money_lift / macro_correlation
+        # now per-strategy opt-in. When pc[flag] is False (the new default), the
+        # gate auto-passes - strategies that don't use these signals aren't
+        # penalized. Phase 1B will tag opt-in strategies via per-strategy
+        # uses_smart_money_signal / uses_macro_signal attributes (future work).
+        "smart_money_lift":   (not pc["smart_money_lift"]) or (sm_lift is None) or (sm_lift >= SM_LIFT_THRESHOLD),
+        "macro_correlation":  (not pc["macro_correlation"]) or (macro_corr is None) or (macro_corr >= MACRO_CORR_THRESHOLD),
         "trade_count":        n >= pc["min_trades"],
+        # Batch 186 NEW gate: DSR (multi-testing-corrected PSR per Bailey-Lopez 2014).
+        # None means insufficient sample - auto-passes to avoid double-penalty
+        # with the n>=30 / trade_count gates already in place.
+        "deflated_sharpe":    (dsr_value is None) or (dsr_value >= pc.get("min_deflated_sharpe", 0.95)),
         # regime_verdicts replaces per-regime count  -  see regime_verdicts and best_regimes
     }
     passes_all = all(passes.values())
