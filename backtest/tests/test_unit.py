@@ -6684,6 +6684,38 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch197_deflated_sharpe_guards_negative_radicand():
+    """Batch 197 (Phase 1A-beta batch_2 crash fix 2026-05-17): the deflated
+    Sharpe formula uses (1 - (excess_kurt/4) * sharpe^2)**0.5 whose radicand
+    can be NEGATIVE when (excess_kurt/4) * sharpe^2 > 1.0 (high kurtosis +
+    nontrivial Sharpe), producing a complex number that crashes round().
+    The pre-batch denominator_sq guard had different sign convention and did
+    NOT cover this case. Regression test reproduces the crash case + verifies
+    the guard returns deflated_sharpe=None (not complex)."""
+    from backtest.results.metrics import _deflated_sharpe
+
+    # Reproduce the batch_2 crash case: high excess kurtosis (e.g. kurt=11
+    # -> excess_kurt=8) + sharpe~1 -> (8/4) * 1**2 = 2 -> radicand = -1.
+    # denominator_sq by contrast: 1 - 0*1 + 2*1 = 3 > 0 (passes pre-existing guard).
+    out = _deflated_sharpe(sharpe=1.0, n_trades=50, skew=0.0, kurtosis=11.0)
+    assert out["deflated_sharpe"] is None, (
+        "Batch 197: negative-radicand case must yield deflated_sharpe=None, "
+        f"got {out['deflated_sharpe']!r}"
+    )
+    assert out["psr"] is not None, (
+        "Batch 197: PSR must still compute when only deflated is invalid"
+    )
+
+    # More extreme: kurt=20, sharpe=2 -> excess=17 -> (17/4) * 4 = 17 -> radicand=-16
+    out2 = _deflated_sharpe(sharpe=2.0, n_trades=100, skew=0.5, kurtosis=20.0)
+    assert out2["deflated_sharpe"] is None
+
+    # Sanity: normal cases still produce a value
+    out3 = _deflated_sharpe(sharpe=1.0, n_trades=100, skew=0.0, kurtosis=3.0)
+    assert out3["deflated_sharpe"] is not None
+    assert isinstance(out3["deflated_sharpe"], (int, float))
+
+
 def test_batch193_level6_threshold_relaxed_to_20pct():
     """Batch 193 (Phase 1A Batch 192 regression fix owner-approved 2026-05-16
     Option B): LEVEL_6_DD_HALT_THRESHOLD raised 0.15 -> 0.20 and

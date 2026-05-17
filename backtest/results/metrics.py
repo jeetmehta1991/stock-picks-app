@@ -524,6 +524,15 @@ def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float)
         skew = 0.0
         kurtosis = 3.0  # normal kurtosis baseline
     excess_kurt = kurtosis - 3.0 if kurtosis >= 3.0 else 0.0
+    # Batch 197 (Phase 1A-beta batch_2 crash fix 2026-05-17): the deflated
+    # Sharpe formula uses (1 - (kurt/4) * sharpe^2)**0.5 whose radicand can be
+    # NEGATIVE when (excess_kurt/4) * sharpe^2 > 1.0 (high excess kurtosis +
+    # nontrivial Sharpe), producing a complex number that crashes round().
+    # The pre-batch denominator_sq guard does NOT cover this -- denominator_sq
+    # uses + skew * sharpe terms whereas the deflated formula uses
+    # - excess_kurt term, so the radicands are orthogonal. Both branches
+    # (scipy + scipy-less) now guard the deflated radicand independently.
+    deflated_radicand = 1.0 - (excess_kurt / 4.0) * sharpe**2
     try:
         from scipy.stats import norm
         denominator_sq = 1.0 - skew * sharpe + (excess_kurt / 4.0) * sharpe**2
@@ -532,9 +541,12 @@ def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float)
         denom = (denominator_sq / (n_trades - 1)) ** 0.5
         z = sharpe / denom if denom > 0 else 0
         psr = float(norm.cdf(z))
-        deflated = sharpe * (1.0 - (excess_kurt / 4.0) * sharpe**2) ** 0.5
-        if np.isnan(deflated) or np.isinf(deflated):
+        if deflated_radicand <= 0:
             deflated = None
+        else:
+            deflated = sharpe * deflated_radicand ** 0.5
+            if np.isnan(deflated) or np.isinf(deflated):
+                deflated = None
         return {
             "psr": round(psr, 4),
             "deflated_sharpe": round(deflated, 4) if deflated is not None else None,
@@ -550,7 +562,12 @@ def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float)
         denom = (denominator_sq / (n_trades - 1)) ** 0.5
         z = sharpe / denom if denom > 0 else 0
         psr = 0.5 * (1.0 + erf(z / sqrt(2.0)))
-        deflated = sharpe * (1.0 - (excess_kurt / 4.0) * sharpe**2) ** 0.5 if denominator_sq > 0 else None
+        if deflated_radicand <= 0:
+            deflated = None
+        else:
+            deflated = sharpe * deflated_radicand ** 0.5
+            if np.isnan(deflated) or np.isinf(deflated):
+                deflated = None
         return {
             "psr": round(psr, 4),
             "deflated_sharpe": round(deflated, 4) if deflated is not None else None,
