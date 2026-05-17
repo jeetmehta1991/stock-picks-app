@@ -6684,6 +6684,83 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch203_regime_selector_default_allows_uncharacterized():
+    """Batch 203 (regime SELECTOR per AMH research review owner-approved
+    2026-05-17): strategies NOT in STRATEGY_REGIME_AFFINITY default to
+    allow-all-regimes so existing behavior is preserved on day 1; only
+    explicit affinity entries gate. This matches the existing
+    STRATEGY_REGIME_BLOCKLIST opt-in semantics (config.py)."""
+    from backtest.engine.regime_selector import (
+        should_strategy_fire_in_regime,
+        STRATEGY_REGIME_AFFINITY,
+    )
+    for r in ("bull", "neutral", "bear", "crisis"):
+        assert should_strategy_fire_in_regime("brand_new_strategy_not_in_map", r) is True
+    # Unknown regime: always block (fail-closed per DEC-316)
+    assert should_strategy_fire_in_regime("anything", "unknown") is False
+
+
+def test_batch203_regime_selector_enforces_affinity():
+    """Batch 203: strategies WITH affinity entries only fire in permitted regimes."""
+    from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    # bollinger_lower: allow neutral+bear, block bull+crisis (Mag-7 fade trap)
+    assert should_strategy_fire_in_regime("bollinger_lower", "neutral") is True
+    assert should_strategy_fire_in_regime("bollinger_lower", "bear") is True
+    assert should_strategy_fire_in_regime("bollinger_lower", "bull") is False
+    assert should_strategy_fire_in_regime("bollinger_lower", "crisis") is False
+    # pivot_r1_breakout: allow bull+neutral, block bear+crisis
+    assert should_strategy_fire_in_regime("pivot_r1_breakout", "bull") is True
+    assert should_strategy_fire_in_regime("pivot_r1_breakout", "bear") is False
+    # cmf_flip: allow all regimes (regime-agnostic)
+    for r in ("bull", "neutral", "bear", "crisis"):
+        assert should_strategy_fire_in_regime("cmf_flip", r) is True
+    # Short-side: bear/crisis only
+    assert should_strategy_fire_in_regime("hull_rsi_short", "bear") is True
+    assert should_strategy_fire_in_regime("hull_rsi_short", "bull") is False
+
+
+def test_batch203_regime_selector_custom_affinity_override():
+    """Batch 203: caller can pass an affinity dict for tests / scenarios
+    without mutating the module-level STRATEGY_REGIME_AFFINITY."""
+    from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    custom = {"my_strategy": {"crisis"}}
+    assert should_strategy_fire_in_regime("my_strategy", "crisis", affinity=custom) is True
+    assert should_strategy_fire_in_regime("my_strategy", "bull",   affinity=custom) is False
+    # Strategy not in CUSTOM map -> default allow-all (no fallback to module-level)
+    assert should_strategy_fire_in_regime("other_strategy", "bull", affinity=custom) is True
+
+
+def test_batch203_vix_sizing_inverse_percentile():
+    """Batch 203 (Cederburg-Johnson-Maio 2024 VIX-managed portfolios):
+    sizing multiplier scales inversely with VIX percentile. Bounded
+    [0.3, 1.5] per paper."""
+    from backtest.engine.regime_selector import vix_percentile_sizing_multiplier
+    vix_hist = list(range(10, 41)) * 10  # 310 obs, VIX 10..40
+    mult_low = vix_percentile_sizing_multiplier(10.0, vix_hist)
+    assert 1.4 <= mult_low <= 1.5, f"low-VIX must yield max_mult ~1.5, got {mult_low}"
+    mult_hi = vix_percentile_sizing_multiplier(40.0, vix_hist)
+    assert 0.3 <= mult_hi <= 0.45, f"high-VIX must yield min_mult ~0.3, got {mult_hi}"
+    mult_med = vix_percentile_sizing_multiplier(25.0, vix_hist)
+    assert 0.8 <= mult_med <= 1.2, f"median-VIX must yield ~1.0, got {mult_med}"
+    # Missing/insufficient -> no-op (1.0)
+    assert vix_percentile_sizing_multiplier(None, vix_hist) == 1.0
+    assert vix_percentile_sizing_multiplier(20.0, None) == 1.0
+    assert vix_percentile_sizing_multiplier(20.0, []) == 1.0
+    assert vix_percentile_sizing_multiplier(20.0, [15.0] * 10) == 1.0
+
+
+def test_batch203_regime_position_count_cap():
+    """Batch 203: regime-conditional position-count caps per AMH risk
+    research. Static cap-25 was too loose for crisis."""
+    from backtest.engine.regime_selector import regime_position_count_cap
+    assert regime_position_count_cap("bull")    == 40
+    assert regime_position_count_cap("neutral") == 25
+    assert regime_position_count_cap("bear")    == 15
+    assert regime_position_count_cap("crisis")  == 10
+    assert regime_position_count_cap("unknown") == 5
+    assert regime_position_count_cap("nonsense_regime") == 25
+
+
 def test_batch201_merge_batch_outputs_imports_resolve():
     """Batch 201 (Issue 1 fix 2026-05-17): merge_batch_outputs.py's
     metrics-recompute branch had imports referencing run_walk_forward and

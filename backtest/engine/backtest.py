@@ -918,6 +918,28 @@ class BacktestEngine:
                     })
                     continue
 
+                # Batch 203 (regime SELECTOR per AMH research review owner-
+                # approved 2026-05-17): the BUG-34 blocklist is a hard
+                # exclusion; the SELECTOR adds a soft regime-affinity
+                # filter. Strategies in STRATEGY_REGIME_AFFINITY only fire
+                # in their permitted regime set; unmapped strategies retain
+                # default allow-all behavior. Phase 1A-beta showed
+                # strong regime-coupling (-117pp 2022 / +517 2024 / +792
+                # 2025) but no selection mechanism. Affinity initialized
+                # from Phase 1A-beta carriers analysis; owner re-tunes
+                # post-Phase-1B-alpha empirical verdicts.
+                from backtest.engine.regime_selector import (
+                    should_strategy_fire_in_regime,
+                )
+                if not should_strategy_fire_in_regime(
+                        strat_entry["strategy"], regime):
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": strat_entry["strategy"],
+                        "reason": f"regime_affinity_block_{regime}_batch203",
+                    })
+                    continue
+
                 # Crisis long exclusions  -  block long entries on specific tickers
                 # that are data-confirmed wrong-directional in crisis regime
                 if direction == "long" and crisis_flag:
@@ -1139,6 +1161,39 @@ class BacktestEngine:
                         (size_pct / size_pct_pre_per_pos)
                         if size_pct_pre_per_pos > 0 else 1.0
                     )
+                    # Batch 203 (VIX-conditional sizing overlay per Cederburg
+                    # Johnson Maio 2024 Finance Research Letters): scale by
+                    # inverse-percentile of VIX over trailing 252 days.
+                    # Bounded [0.3, 1.5] per paper. Stacks AFTER per-position
+                    # vol-target so this is the outermost market-context
+                    # multiplier. Paper documents Sharpe +71% on US equity
+                    # overlay backtest with the same scaling rule.
+                    from backtest.engine.regime_selector import (
+                        vix_percentile_sizing_multiplier,
+                    )
+                    _vix_history = getattr(self, "_vix_history_cache", None)
+                    if _vix_history is None and hasattr(self, "spy_df"):
+                        # Lazy-init VIX history from macro cache if available
+                        try:
+                            _vix_history = list(
+                                self.macro_data.get("vix", {}).values()
+                            ) if hasattr(self, "macro_data") else None
+                        except Exception:
+                            _vix_history = None
+                        self._vix_history_cache = _vix_history
+                    _vix_today = macro.get("vix") if isinstance(macro, dict) else None
+                    vix_mult = vix_percentile_sizing_multiplier(
+                        _vix_today, _vix_history,
+                    )
+                    size_pct_pre_vix = size_pct
+                    size_pct = size_pct * vix_mult
+                    if vix_mult != 1.0 and size_pct_pre_vix > 0:
+                        self.sizing_log.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "scaler": "vix_percentile_batch203",
+                            "multiplier": round(float(vix_mult), 4),
+                        })
                     # Batch 191 (INV-053 optimization) owner-approved 2026-05-16:
                     # sizing scalers (DD-band, portfolio vol-target, per-position
                     # vol-target) route to sizing_log.csv NOT skipped_trades.csv.
@@ -1168,9 +1223,23 @@ class BacktestEngine:
                             "multiplier": round(float(per_pos_mult), 4),
                         })
                     if size_pct > 0:
+                        # Batch 203 (regime-conditional cap per AMH research):
+                        # cap = min(LIVE_TRADING_RULES base, regime cap).
+                        # bull:40 / neutral:25 / bear:15 / crisis:10 / unknown:5.
+                        # Bear/crisis tightening protects capital in adverse
+                        # regimes; static cap-25 was too loose for crisis (per
+                        # Phase 1A-beta 2022 -117pp loss year).
+                        from backtest.engine.regime_selector import (
+                            regime_position_count_cap,
+                        )
+                        _regime_cap = regime_position_count_cap(regime)
+                        _effective_cap = min(
+                            LIVE_TRADING_RULES["max_open_positions"],
+                            _regime_cap,
+                        )
                         ok, reason = self.portfolio.can_open(
                             ticker=ticker, size_pct=size_pct,
-                            max_positions=LIVE_TRADING_RULES["max_open_positions"],
+                            max_positions=_effective_cap,
                             drawdown_suspend_pct=(
                                 LIVE_TRADING_RULES["drawdown_suspend_threshold"] * 100.0
                             ),

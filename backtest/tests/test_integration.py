@@ -306,8 +306,9 @@ def test_dec_317_dec_388_engine_imports_get_vix_smoothed():
 
 def test_bug_095_engine_can_open_gate_wired():
     """BUG-95 sub-batch 4: backtest.py must call self.portfolio.can_open()
-    inside _process_day with max_positions from LIVE_TRADING_RULES and skip
-    entry on gate denial.
+    inside _process_day with max_positions sourced from LIVE_TRADING_RULES
+    (potentially via min(base_cap, regime_cap) per Batch 203) and skip entry
+    on gate denial.
     """
     import inspect
     from backtest.engine import backtest as bt_module
@@ -317,8 +318,15 @@ def test_bug_095_engine_can_open_gate_wired():
         "Engine must call self.portfolio.can_open() inside _process_day")
     assert "LIVE_TRADING_RULES" in src, (
         "Engine must import LIVE_TRADING_RULES for can_open gate")
-    assert "max_positions=LIVE_TRADING_RULES" in src, (
-        "Engine must pass max_open_positions from LIVE_TRADING_RULES")
+    # Batch 203 wrapping: LIVE_TRADING_RULES["max_open_positions"] is composed
+    # with regime_position_count_cap via min(). Original literal pin
+    # `max_positions=LIVE_TRADING_RULES` no longer holds; verify the upstream
+    # source (LIVE_TRADING_RULES) is still consumed AND that the call site
+    # passes a max_positions kwarg.
+    assert 'LIVE_TRADING_RULES["max_open_positions"]' in src, (
+        "Engine must read LIVE_TRADING_RULES['max_open_positions']")
+    assert "max_positions=" in src, (
+        "Engine must pass max_positions kwarg to can_open()")
     assert "drawdown_suspend_threshold" in src, (
         "Engine must pass drawdown_suspend_threshold to can_open")
     assert "portfolio_gate_" in src, (
