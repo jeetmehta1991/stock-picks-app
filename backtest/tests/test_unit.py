@@ -6684,6 +6684,88 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch206_williams_r_oversold_connors_rsi2_path():
+    """Batch 206 (Connors stack 2026-05-17): williams_r_oversold long
+    fires on EITHER williams_r_oversold OR rsi_2<5 (short-window extreme).
+    Phase 1A-beta showed this strategy at Sharpe 0.30 (best in oversold
+    family) on 82 trades; opening the RSI(2) path increases fill rate
+    while preserving the 200-EMA regime gate + CMF confirmation."""
+    from backtest.signals.screener import strat_williams_r_oversold
+    # rsi_2<5 fires even when williams_r_oversold is False
+    s = {
+        "williams_r_oversold": False,
+        "williams_r": -50.0,
+        "rsi_2": 3.0,
+        "price_above_ema_200": True,
+        "cmf_positive": True,
+    }
+    r = strat_williams_r_oversold(s)
+    assert r["fires"] is True and r["direction"] == "long"
+
+    # Both False -> no fire
+    s["rsi_2"] = 50.0
+    assert strat_williams_r_oversold(s)["fires"] is False
+
+    # 200-EMA gate still enforced
+    s["rsi_2"] = 3.0
+    s["price_above_ema_200"] = False
+    assert strat_williams_r_oversold(s)["fires"] is False
+
+
+def test_batch206_stochrsi_oversold_adds_regime_gate():
+    """Batch 206: strat_stochrsi_oversold must require price_above_ema_200
+    for long entry. Phase 1A-beta showed -1.01 expected_value across 132
+    trades indicating bias toward firing in downtrends without the gate."""
+    from backtest.signals.screener import strat_stochrsi_oversold
+    s = {
+        "stochrsi_oversold": True,
+        "stochrsi_cross_up": True,
+        "rsi_14": 40.0,
+        "price_above_ema_200": False,
+    }
+    r = strat_stochrsi_oversold(s)
+    assert not r["fires"] or r["direction"] != "long", (
+        "Batch 206: stochrsi_oversold long must NOT fire when price below 200-EMA"
+    )
+    s["price_above_ema_200"] = True
+    r2 = strat_stochrsi_oversold(s)
+    assert r2["fires"] is True
+
+
+def test_batch206_ultimate_oscillator_connors_rsi2_path():
+    """Batch 206: ultimate_oscillator must accept rsi_2<5 as alternate
+    long primary. UO had Sharpe 0.49 on 27 trades in Phase 1A-beta - best
+    oversold-family risk-adjusted but small sample. Connors path opens
+    new entries without sacrificing the 200-SMA regime gate."""
+    from backtest.signals.screener import strat_ultimate_oscillator
+    s = {
+        "uo_oversold": False,
+        "uo": 50.0,
+        "rsi_2": 3.0,
+        "price_above_sma_200": True,
+    }
+    r = strat_ultimate_oscillator(s)
+    assert r["fires"] is True and r["direction"] == "long"
+
+
+def test_batch206_rsi_oversold_rsi2_path_opens_inactive_strategy():
+    """Batch 206: strat_rsi_oversold (0 trades in Phase 1A-beta) gains
+    Connors RSI(2)<5 path so it can actually fire. 200-EMA regime gate
+    added in addition to existing 50-SMA pullback context."""
+    from backtest.signals.screener import strat_rsi_oversold
+    # rsi_14=50 (NOT below 35) but rsi_2=3 -> fires via Connors path
+    s = {
+        "rsi_2": 3.0, "rsi_14": 50.0,
+        "price_above_sma_50": True,
+        "price_above_ema_200": True,
+    }
+    r = strat_rsi_oversold(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # 200-EMA gate enforced
+    s["price_above_ema_200"] = False
+    assert strat_rsi_oversold(s)["fires"] is False
+
+
 def test_batch205_compute_vwap_emits_anchored_vwap_signals():
     """Batch 205 (Pivot optimization 2026-05-17): compute_vwap must emit
     avwap_252low / avwap_50low / avwap_20high and the above_*/pct_from_*

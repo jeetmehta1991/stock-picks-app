@@ -279,16 +279,34 @@ def strat_hull_rsi(s):
 
 
 def strat_williams_r_oversold(s):
-    # BUG-11 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
-    # short branch uses explicit default value (s.get("williams_r", 0) > -20)
-    # to prevent firing incorrectly when key absent. Signal defined at
-    # technical.py:323 as canonical "williams_r_oversold": v < -80.
-    fl = (s.get("williams_r_oversold") and s.get("price_above_ema_200") and s.get("cmf_positive"))
-    fs = (s.get("williams_r", 0) > -20 and not s.get("price_above_ema_200") and not s.get("cmf_positive"))
+    """Williams %R oversold-bounce. Batch 206 (Connors stack 2026-05-17):
+    primary entry is Williams %R OR Connors RSI(2) extreme; both confirm
+    short-window oversold. 200-EMA regime gate preserved (current best-
+    performing strategy in Phase 1A-beta with Sharpe 0.30; intent is to
+    tighten further without losing fill rate).
+
+    BUG-11 RESOLVED-IMPLEMENTED Pass 53 v8h+1: short branch uses explicit
+    default to prevent firing when key absent.
+    """
+    rsi_2 = s.get("rsi_2", 50)
+    above_200 = s.get("price_above_ema_200", False)
+    fl = (
+        (s.get("williams_r_oversold") or (rsi_2 < 5))
+        and above_200
+        and s.get("cmf_positive")
+    )
+    fs = (
+        (s.get("williams_r", 0) > -20 or (rsi_2 > 95))
+        and (not above_200)
+        and (not s.get("cmf_positive"))
+    )
     return _strat3(fl, fs, "momentum",
-        ["williams_r_oversold","above_ema_200","cmf_positive"], ["williams_r_overbought","below_ema_200","cmf_negative"],
-        [f"Williams %R oversold  -  below -80","Above 200 EMA  -  uptrend context","CMF positive"],
-        [f"Williams %R overbought  -  above -20","Below 200 EMA  -  downtrend context","CMF negative"])
+        ["williams_r_oversold_or_rsi_2<5", "above_ema_200", "cmf_positive"],
+        ["williams_r_overbought_or_rsi_2>95", "below_ema_200", "cmf_negative"],
+        ["Williams %R oversold OR Connors RSI(2)<5 (short-window extreme)",
+         "Above 200 EMA (regime gate)", "CMF positive"],
+        ["Williams %R overbought OR RSI(2)>95",
+         "Below 200 EMA (bear regime)", "CMF negative"])
 
 
 def strat_roc_burst(s):
@@ -310,12 +328,28 @@ def strat_awesome_oscillator(s):
 
 
 def strat_stochrsi_oversold(s):
-    fl = (s.get("stochrsi_oversold") and s.get("stochrsi_cross_up") and s.get("rsi_14", 50) < 55)
-    fs = (s.get("stochrsi_overbought") and s.get("stochrsi_cross_dn") and s.get("rsi_14", 50) > 45)
+    """StochRSI oversold-bounce. Batch 206 (Connors stack 2026-05-17):
+    add 200-EMA regime gate (Connors discipline). StochRSI cross-up is
+    a momentum-turn signal; without the regime gate it fires aggressively
+    in downtrends (Phase 1A-beta showed -1.01 expected_value at 132
+    trades, indicating the strategy fires inside bear/downtrend bias)."""
+    rsi_2 = s.get("rsi_2", 50)
+    above_200 = s.get("price_above_ema_200", True)
+    fl = (
+        s.get("stochrsi_oversold") and s.get("stochrsi_cross_up")
+        and s.get("rsi_14", 50) < 55 and above_200
+    )
+    fs = (
+        s.get("stochrsi_overbought") and s.get("stochrsi_cross_dn")
+        and s.get("rsi_14", 50) > 45 and (not above_200)
+    )
     return _strat3(fl, fs, "momentum",
-        ["stochrsi_oversold","stochrsi_cross_up","rsi_14<55"], ["stochrsi_overbought","stochrsi_cross_dn","rsi_14>45"],
-        ["StochRSI oversold  -  below 20","K crossed above D  -  momentum turning up","RSI not overbought"],
-        ["StochRSI overbought  -  above 80","K crossed below D  -  momentum turning down","RSI not oversold"])
+        ["stochrsi_oversold", "stochrsi_cross_up", "rsi_14<55", "above_ema_200"],
+        ["stochrsi_overbought", "stochrsi_cross_dn", "rsi_14>45", "below_ema_200"],
+        ["StochRSI oversold - below 20", "K crossed above D - momentum turning up",
+         "RSI not overbought", "Above 200 EMA (regime gate)"],
+        ["StochRSI overbought - above 80", "K crossed below D - momentum turning down",
+         "RSI not oversold", "Below 200 EMA (bear regime)"])
 
 
 def strat_ppo_crossover(s):
@@ -328,12 +362,28 @@ def strat_ppo_crossover(s):
 
 
 def strat_ultimate_oscillator(s):
-    fl = (s.get("uo_oversold") and s.get("price_above_sma_200"))
-    fs = (s.get("uo", 50) > 70 and not s.get("price_above_sma_200"))
+    """Ultimate Oscillator oversold-bounce. Batch 206 (Connors stack
+    2026-05-17): primary signal upgraded to (uo_oversold OR rsi_2<5).
+    UO already has 200-SMA regime gate; preserved as-is. Phase 1A-beta
+    showed UO is the best Sharpe (0.49) carrier in the oversold family
+    but only 27 trades; stacking with RSI(2) increases fill rate without
+    sacrificing regime discipline."""
+    rsi_2 = s.get("rsi_2", 50)
+    fl = (
+        (s.get("uo_oversold") or (rsi_2 < 5))
+        and s.get("price_above_sma_200")
+    )
+    fs = (
+        (s.get("uo", 50) > 70 or (rsi_2 > 95))
+        and not s.get("price_above_sma_200")
+    )
     return _strat3(fl, fs, "momentum",
-        ["uo_oversold","price_above_sma_200"], ["uo_overbought","price_below_sma_200"],
-        [f"Ultimate Oscillator below 30  -  oversold","Above 200 SMA  -  uptrend context"],
-        [f"Ultimate Oscillator above 70  -  overbought","Below 200 SMA  -  downtrend context"])
+        ["uo_oversold_or_rsi_2<5", "price_above_sma_200"],
+        ["uo_overbought_or_rsi_2>95", "price_below_sma_200"],
+        ["Ultimate Oscillator below 30 OR Connors RSI(2)<5",
+         "Above 200 SMA (regime gate)"],
+        ["Ultimate Oscillator above 70 OR RSI(2)>95",
+         "Below 200 SMA (bear regime)"])
 
 
 # -----------------------------------------------------------------------------
@@ -426,12 +476,34 @@ def strat_supertrend_macd(s):
 # -----------------------------------------------------------------------------
 
 def strat_rsi_oversold(s):
-    fl = (s.get("rsi_14", 50) < 35 and s.get("price_above_sma_50"))
-    fs = (s.get("rsi_14", 50) > 65 and not s.get("price_above_sma_50"))
+    """RSI oversold dip-buy. Batch 206 (Connors stack 2026-05-17): upgrade
+    primary signal to (rsi_2<5 OR rsi_14<35). Connors discipline: short-
+    window RSI(2) extreme is the canonical mean-reversion trigger, with
+    long-window RSI(14) as the slower-moving fallback. Adds 200-EMA
+    regime gate (Connors filter) in addition to 50-SMA pullback context.
+    Strategy had 0 trades in Phase 1A-beta with rsi_14<35 alone (rarely
+    triggers); the rsi_2<5 path opens the strategy to fire on intraday
+    extremes."""
+    rsi_2 = s.get("rsi_2", 50)
+    rsi_14 = s.get("rsi_14", 50)
+    above_200 = s.get("price_above_ema_200", True)
+    fl = (
+        (rsi_2 < 5 or rsi_14 < 35)
+        and s.get("price_above_sma_50")
+        and above_200
+    )
+    fs = (
+        (rsi_2 > 95 or rsi_14 > 65)
+        and (not s.get("price_above_sma_50"))
+        and (not above_200)
+    )
     return _strat3(fl, fs, "mean_reversion",
-        ["rsi_14<35","price_above_sma_50"], ["rsi_14>65","price_below_sma_50"],
-        [f"RSI-14 oversold  -  below 35","Above 50 SMA  -  buying dip in uptrend"],
-        [f"RSI-14 overbought  -  above 65","Below 50 SMA  -  selling rally in downtrend"])
+        ["rsi_2<5_or_rsi_14<35", "price_above_sma_50", "price_above_ema_200"],
+        ["rsi_2>95_or_rsi_14>65", "price_below_sma_50", "price_below_ema_200"],
+        ["Connors RSI(2)<5 OR RSI(14)<35", "Above 50 SMA - buying dip",
+         "Above 200 EMA (regime gate)"],
+        ["RSI(2)>95 OR RSI(14)>65", "Below 50 SMA - selling rally",
+         "Below 200 EMA (bear regime)"])
 
 
 def strat_rsi9_extreme(s):
