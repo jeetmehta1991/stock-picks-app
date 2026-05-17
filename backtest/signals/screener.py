@@ -416,21 +416,86 @@ def strat_cmf_flip(s):
 
 
 def strat_bollinger_lower(s):
-    fl = (s.get("bb_20_20_touch_lower") and s.get("rsi_14", 50) < 40 and s.get("adx", 30) < 30)
-    fs = (s.get("bb_20_20_touch_upper") and s.get("rsi_14", 50) > 60 and s.get("adx", 30) < 30)
+    """Bollinger lower-band mean-reversion. Batch 204 (2026-05-17 owner-approved
+    research review): stacked with Connors RSI(2)<5 OR vanilla RSI(14)<40
+    AND price > 200-EMA regime gate (Connors discipline filter from
+    Quantified Strategies 2024 backtest). VIX-conditional threshold:
+    in low-VIX bands tighten to RSI(14)<35; in high-VIX bands loosen to
+    RSI(14)<45 (Atlantis-Press Su 2024 multi-indicator confluence study).
+    """
+    rsi_2 = s.get("rsi_2", 50)
+    rsi_14 = s.get("rsi_14", 50)
+    above_200 = s.get("price_above_ema_200", True)
+    adx_ok = s.get("adx", 30) < 30
+    # VIX-conditional RSI threshold (defaults to 40 when no VIX context)
+    if s.get("vix_band_low"):
+        rsi_thr_long, rsi_thr_short = 35, 65
+    elif s.get("vix_band_high"):
+        rsi_thr_long, rsi_thr_short = 45, 55
+    else:
+        rsi_thr_long, rsi_thr_short = 40, 60
+    # Long: BB touch lower AND (Connors RSI(2)<5 OR vanilla RSI<thr) AND
+    # regime gate (price > 200-EMA) AND no strong trend.
+    rsi_long_ok = (rsi_2 < 5) or (rsi_14 < rsi_thr_long)
+    fl = (s.get("bb_20_20_touch_lower") and rsi_long_ok and above_200 and adx_ok)
+    # Short: opposite side; no regime gate flip required (still requires
+    # NOT above 200-EMA via the same boolean).
+    rsi_short_ok = (rsi_2 > 95) or (rsi_14 > rsi_thr_short)
+    fs = (s.get("bb_20_20_touch_upper") and rsi_short_ok and (not above_200) and adx_ok)
     return _strat3(fl, fs, "mean_reversion",
-        ["bb_20_20_touch_lower","rsi_14<40","adx<30"], ["bb_20_20_touch_upper","rsi_14>60","adx<30"],
-        ["Price at lower Bollinger Band  -  statistically extreme low","RSI oversold","No strong trend"],
-        ["Price at upper Bollinger Band  -  statistically extreme high","RSI overbought","No strong trend"])
+        ["bb_20_20_touch_lower", f"rsi_2<5_or_rsi_14<{rsi_thr_long}",
+         "price_above_ema_200", "adx<30"],
+        ["bb_20_20_touch_upper", f"rsi_2>95_or_rsi_14>{rsi_thr_short}",
+         "price_below_ema_200", "adx<30"],
+        [f"Price at lower Bollinger Band - statistically extreme low",
+         f"RSI(2)<5 Connors extreme OR RSI(14)<{rsi_thr_long}",
+         "Price above 200-EMA (regime gate)", "No strong trend"],
+        [f"Price at upper Bollinger Band - statistically extreme high",
+         f"RSI(2)>95 OR RSI(14)>{rsi_thr_short}",
+         "Price below 200-EMA (bear regime)", "No strong trend"])
 
 
 def strat_bollinger_tight(s):
-    fl = ((s.get("bb_20_15_touch_lower") or s.get("bb_20_20_touch_lower")) and s.get("rsi_14", 50) < 45)
-    fs = ((s.get("bb_20_15_touch_upper") or s.get("bb_20_20_touch_upper")) and s.get("rsi_14", 50) > 55)
+    """Tight Bollinger touch mean-reversion. Batch 204 (owner-approved
+    research review 2026-05-17): same stacking discipline as
+    strat_bollinger_lower but uses tighter 1.5-sigma band and a softer
+    RSI threshold (Bollinger 1.5sig is by definition more frequent so
+    requires less-stringent oscillator confirmation).
+    """
+    rsi_2 = s.get("rsi_2", 50)
+    rsi_14 = s.get("rsi_14", 50)
+    above_200 = s.get("price_above_ema_200", True)
+    # VIX-conditional threshold (slightly looser than bollinger_lower since
+    # the 1.5sig band is more frequent)
+    if s.get("vix_band_low"):
+        rsi_thr_long, rsi_thr_short = 40, 60
+    elif s.get("vix_band_high"):
+        rsi_thr_long, rsi_thr_short = 50, 50
+    else:
+        rsi_thr_long, rsi_thr_short = 45, 55
+    rsi_long_ok = (rsi_2 < 10) or (rsi_14 < rsi_thr_long)
+    fl = (
+        (s.get("bb_20_15_touch_lower") or s.get("bb_20_20_touch_lower"))
+        and rsi_long_ok
+        and above_200
+    )
+    rsi_short_ok = (rsi_2 > 90) or (rsi_14 > rsi_thr_short)
+    fs = (
+        (s.get("bb_20_15_touch_upper") or s.get("bb_20_20_touch_upper"))
+        and rsi_short_ok
+        and (not above_200)
+    )
     return _strat3(fl, fs, "mean_reversion",
-        ["bb_touch_lower_tight","rsi_14<45"], ["bb_touch_upper_tight","rsi_14>55"],
-        ["Price at tight lower Bollinger Band  -  extreme low","RSI oversold"],
-        ["Price at tight upper Bollinger Band  -  extreme high","RSI overbought"])
+        ["bb_touch_lower_tight", f"rsi_2<10_or_rsi_14<{rsi_thr_long}",
+         "price_above_ema_200"],
+        ["bb_touch_upper_tight", f"rsi_2>90_or_rsi_14>{rsi_thr_short}",
+         "price_below_ema_200"],
+        ["Price at tight lower Bollinger Band - extreme low",
+         f"RSI(2)<10 OR RSI(14)<{rsi_thr_long}",
+         "Price above 200-EMA (regime gate)"],
+        ["Price at tight upper Bollinger Band - extreme high",
+         f"RSI(2)>90 OR RSI(14)>{rsi_thr_short}",
+         "Price below 200-EMA (bear regime)"])
 
 
 def strat_bollinger_upper_short(s):
@@ -1124,10 +1189,17 @@ def screen_instrument(
     info: dict,
     as_of: date,
     regime: str = "neutral",
+    vix_value: float = None,
+    vix_history: list = None,
 ) -> dict:
     """
     Run single instrument through full pipeline.
     Returns candidate dict with all strategies triggered, signals, and bullets.
+
+    Batch 204 (Bollinger optimization 2026-05-17): optional VIX context
+    kwargs flow through to compute_macro_overlays so regime-aware
+    strategies (bollinger_*) can read vix_percentile/vix_band from the
+    signals dict. When None, behavior is unchanged.
     """
     # Liquidity already checked at universe load time (annually)
     # Light check: price > 0 and sufficient history only
@@ -1139,6 +1211,11 @@ def screen_instrument(
     if not signals:
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": True,
                 "fail_reason": "no_signals", "strategies": []}
+    # Batch 204: layer macro overlays (VIX percentile + band) so strategies
+    # can read regime-aware fields inline. No-op when vix_value/history None.
+    if vix_value is not None and vix_history is not None:
+        from backtest.signals.technical import compute_macro_overlays
+        signals = compute_macro_overlays(signals, vix_value, vix_history)
 
     triggered_long  = []
     triggered_short = []
@@ -1210,12 +1287,23 @@ def screen_universe(
     as_of: date,
     regime: str = "neutral",
     min_strategies: int = 1,
+    vix_value: float = None,
+    vix_history: list = None,
 ) -> list:
-    """Screen all instruments. Returns candidates sorted by strategy count."""
+    """Screen all instruments. Returns candidates sorted by strategy count.
+
+    Batch 204: optional VIX context kwargs flow through to each
+    screen_instrument call so regime-aware strategies see the
+    vix_percentile / vix_band overlays. Backward-compatible: when None,
+    behavior is unchanged.
+    """
     candidates = []
     for ticker, df in ohlcv_dict.items():
         info   = info_dict.get(ticker, {"ticker": ticker})
-        result = screen_instrument(ticker, df, info, as_of, regime)
+        result = screen_instrument(
+            ticker, df, info, as_of, regime,
+            vix_value=vix_value, vix_history=vix_history,
+        )
         if result.get("liquidity_ok") and result.get("strategy_count", 0) >= min_strategies:
             candidates.append(result)
     # DEC-458: merge lead-lag cross-ticker candidates (sector rotation)

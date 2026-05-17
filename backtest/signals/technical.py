@@ -187,9 +187,15 @@ def compute_rsi(df: pd.DataFrame) -> dict:
     RSI per Wilder (1978) uses `ewm(alpha=1/p, adjust=False)` which gives equal
     weight to all historical periods via exponential decay. Fix applies Wilder
     smoothing in the fallback path; pandas_ta path already uses Wilder internally.
+
+    Batch 204 (Bollinger optimization 2026-05-17): added RSI(2) Connors-RSI
+    period. Larry Connors' canonical mean-reversion gate: RSI(2) < 5 entry
+    + price > 200-MA filter. Documented Sharpe lift on equity backtests
+    (Quantified Strategies 2024). Period 2 is short-window noise-heavy
+    on purpose; Connors discipline requires combination with regime filter.
     """
     result = {}
-    for p in [9, 14, 21]:
+    for p in [2, 9, 14, 21]:
         if len(df) < p + 2:
             continue
         if _HAS_TA:
@@ -1055,6 +1061,54 @@ def compute_all_signals(df: pd.DataFrame) -> dict:
     signals.update(compute_candles(df))
     signals.update(compute_break_retest_signals(df))  # BUG-111
     return {k: v for k, v in signals.items() if v is not None}
+
+
+def compute_macro_overlays(
+    signals: dict,
+    vix_value: float = None,
+    vix_history: list = None,
+    lookback_days: int = 252,
+) -> dict:
+    """Batch 204 (Bollinger optimization 2026-05-17): add VIX context overlays
+    to a per-ticker signals dict so strategies can read regime-aware fields
+    (vix_percentile, vix_band) inline. Existing strategies remain backward-
+    compatible: when vix_value/history are None, no new keys are added.
+
+    Adds (when inputs available):
+      - vix_value: today's raw VIX
+      - vix_percentile: percentile of today's VIX within trailing
+        lookback_days distribution [0.0, 1.0]
+      - vix_band: 'low' (<33rd pct), 'mid' (33-66), 'high' (>66th pct)
+      - vix_band_low / vix_band_mid / vix_band_high: bool flags for
+        strategy condition reuse
+
+    Per Cederburg-Johnson-Maio (2024) VIX-managed portfolios: regime
+    bucketing by VIX percentile is the canonical low-cost macro-overlay
+    used by institutional volatility strategies.
+    """
+    if vix_value is None or vix_history is None:
+        return signals
+    arr = [v for v in vix_history if v is not None]
+    if len(arr) < 20:
+        return signals
+    if len(arr) > lookback_days:
+        arr = arr[-lookback_days:]
+    n = len(arr)
+    pct = sum(1 for v in arr if v <= vix_value) / n
+    if pct < 1.0 / 3:
+        band = "low"
+    elif pct < 2.0 / 3:
+        band = "mid"
+    else:
+        band = "high"
+    out = dict(signals)
+    out["vix_value"]      = round(float(vix_value), 2)
+    out["vix_percentile"] = round(pct, 4)
+    out["vix_band"]       = band
+    out["vix_band_low"]   = band == "low"
+    out["vix_band_mid"]   = band == "mid"
+    out["vix_band_high"]  = band == "high"
+    return out
 
 
 def count_bullish_signals(signals: dict) -> int:

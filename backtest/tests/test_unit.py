@@ -6684,6 +6684,95 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch204_rsi_2_added_to_compute_rsi():
+    """Batch 204 (Bollinger optimization 2026-05-17): compute_rsi must
+    emit rsi_2 alongside rsi_9/14/21 to support Connors RSI(2) gate.
+    Larry Connors discipline (Quantified Strategies 2024 backtest): RSI(2)
+    is the canonical short-window mean-reversion oscillator."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.technical import compute_rsi
+    rng = np.random.default_rng(42)
+    closes = 100 + np.cumsum(rng.normal(0, 1, 250))
+    df = pd.DataFrame({"close": closes})
+    out = compute_rsi(df)
+    assert "rsi_2" in out, "Batch 204: compute_rsi must emit rsi_2"
+    assert "rsi_9" in out
+    assert "rsi_14" in out
+    assert "rsi_21" in out
+    assert 0 <= out["rsi_2"] <= 100
+
+
+def test_batch204_compute_macro_overlays_adds_vix_band():
+    """Batch 204: compute_macro_overlays adds vix_percentile + vix_band
+    to signals dict when VIX context is supplied; no-op when missing."""
+    from backtest.signals.technical import compute_macro_overlays
+    hist = list(range(10, 41)) * 10  # VIX 10..40, 310 obs
+    out_low = compute_macro_overlays({"rsi_14": 30.0}, vix_value=10.0, vix_history=hist)
+    assert out_low["vix_band"] == "low"
+    assert out_low["vix_band_low"] is True
+    assert out_low["rsi_14"] == 30.0
+    out_hi = compute_macro_overlays({"rsi_14": 30.0}, vix_value=40.0, vix_history=hist)
+    assert out_hi["vix_band"] == "high"
+    out_none = compute_macro_overlays({"rsi_14": 30.0}, vix_value=None, vix_history=hist)
+    assert "vix_band" not in out_none
+    out_none2 = compute_macro_overlays({"rsi_14": 30.0}, vix_value=20.0, vix_history=None)
+    assert "vix_band" not in out_none2
+    out_short = compute_macro_overlays({"rsi_14": 30.0}, vix_value=20.0, vix_history=[15.0] * 10)
+    assert "vix_band" not in out_short
+
+
+def test_batch204_bollinger_lower_requires_200ema_regime_gate():
+    """Batch 204: strat_bollinger_lower must require price_above_ema_200
+    for long entry (Connors regime-gate discipline). Without the gate,
+    the strategy fades mega-cap-driven uptrends (Mag-7 fade trap)."""
+    from backtest.signals.screener import strat_bollinger_lower
+    s = {
+        "bb_20_20_touch_lower": True, "bb_20_20_touch_upper": False,
+        "rsi_2": 3.0, "rsi_14": 30.0, "adx": 20.0,
+        "price_above_ema_200": False,
+    }
+    r = strat_bollinger_lower(s)
+    assert not r["fires"] or r["direction"] != "long", (
+        "Batch 204: bollinger_lower long must NOT fire when price below 200-EMA"
+    )
+    s["price_above_ema_200"] = True
+    r2 = strat_bollinger_lower(s)
+    assert r2["fires"] is True
+    assert r2["direction"] == "long"
+
+
+def test_batch204_bollinger_lower_connors_rsi2_path():
+    """Batch 204: RSI(2)<5 fires even when RSI(14) is moderate.
+    Connors canonical: short-window oscillator extreme is the primary
+    entry signal, long-window RSI is the fallback."""
+    from backtest.signals.screener import strat_bollinger_lower
+    s = {
+        "bb_20_20_touch_lower": True, "bb_20_20_touch_upper": False,
+        "rsi_2": 3.0, "rsi_14": 50.0,  # NOT conventionally oversold
+        "adx": 20.0, "price_above_ema_200": True,
+    }
+    r = strat_bollinger_lower(s)
+    assert r["fires"] is True
+    assert r["direction"] == "long"
+
+
+def test_batch204_bollinger_vix_band_adjusts_threshold():
+    """Batch 204: VIX-low band tightens RSI threshold (35 vs 40); VIX-high
+    band loosens (45 vs 40). Atlantis-Press Su 2024 confluence study."""
+    from backtest.signals.screener import strat_bollinger_lower
+    s_low = {
+        "bb_20_20_touch_lower": True, "bb_20_20_touch_upper": False,
+        "rsi_2": 30.0, "rsi_14": 42.0, "adx": 20.0,
+        "price_above_ema_200": True, "vix_band_low": True,
+    }
+    assert strat_bollinger_lower(s_low)["fires"] is False
+    s_hi = dict(s_low)
+    s_hi["vix_band_low"] = False
+    s_hi["vix_band_high"] = True
+    assert strat_bollinger_lower(s_hi)["fires"] is True
+
+
 def test_batch203_regime_selector_default_allows_uncharacterized():
     """Batch 203 (regime SELECTOR per AMH research review owner-approved
     2026-05-17): strategies NOT in STRATEGY_REGIME_AFFINITY default to

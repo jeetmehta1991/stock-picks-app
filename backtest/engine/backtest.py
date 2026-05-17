@@ -639,7 +639,30 @@ class BacktestEngine:
                 self.portfolio.add_benchmark_point(as_of, today_prices["SPY"])
 
         # -- 5. Screen universe  -  no daily liquidity filter --
-        candidates     = screen_universe(ohlcv_pit, self.info_dict, as_of, regime)
+        # Batch 204 (Bollinger optimization 2026-05-17): pass VIX context so
+        # macro-overlay-aware strategies (bollinger_lower / bollinger_tight)
+        # can read vix_percentile + vix_band from the per-ticker signals
+        # dict. When VIX history unavailable, extra kwargs are no-ops.
+        _vix_today_for_screen = None
+        _vix_history_for_screen = None
+        if hasattr(self, "_vix_series") and getattr(self, "_vix_series", None) is not None:
+            try:
+                _vs = self._vix_series
+                if hasattr(_vs.index, "date"):
+                    _sliced = _vs[_vs.index.date <= as_of]
+                else:
+                    _sliced = _vs[_vs.index <= as_of]
+                if len(_sliced) > 0:
+                    _vix_today_for_screen = float(_sliced.iloc[-1])
+                    _vix_history_for_screen = _sliced.tolist()
+            except Exception:
+                _vix_today_for_screen = None
+                _vix_history_for_screen = None
+        candidates     = screen_universe(
+            ohlcv_pit, self.info_dict, as_of, regime,
+            vix_value=_vix_today_for_screen,
+            vix_history=_vix_history_for_screen,
+        )
         active_signals = {c["ticker"]: c for c in candidates}
         sent           = sentiment_snapshot(as_of)
 
