@@ -6684,6 +6684,92 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch207_compute_ichimoku_emits_weekly_kumo_signals():
+    """Batch 207 (Ichimoku optimization 2026-05-17): compute_ichimoku
+    must emit ichi_weekly_above_cloud / ichi_weekly_below_cloud /
+    ichi_weekly_in_cloud when 260+ daily bars available. Resamples to
+    weekly via pd.resample('W') and computes 9/26/52 Kumo on weekly
+    bars. Linda Raschke multi-timeframe Ichimoku discipline."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.technical import compute_ichimoku
+    # Need 260+ daily bars indexed by DatetimeIndex
+    n = 320
+    idx = pd.date_range("2023-01-02", periods=n, freq="B")
+    rng = np.random.default_rng(42)
+    base = 100 + np.cumsum(rng.normal(0.05, 1, n))  # mild uptrend
+    df = pd.DataFrame({
+        "open":  base,
+        "high":  base + 1,
+        "low":   base - 1,
+        "close": base,
+        "volume": (1_000_000 + rng.integers(0, 500_000, n)).astype(float),
+    }, index=idx)
+    out = compute_ichimoku(df)
+    assert "ichi_weekly_above_cloud" in out, (
+        "Batch 207: weekly Kumo signals must be emitted with 260+ daily bars"
+    )
+    assert "ichi_weekly_below_cloud" in out
+    assert "ichi_weekly_in_cloud" in out
+    # Exactly one of above/below/in must be true (mutually exclusive)
+    flags = sum([
+        out["ichi_weekly_above_cloud"],
+        out["ichi_weekly_below_cloud"],
+        out["ichi_weekly_in_cloud"],
+    ])
+    assert flags == 1, f"Batch 207: weekly Kumo flags must be mutually exclusive, got {flags} true"
+
+
+def test_batch207_ichimoku_cloud_breakout_requires_weekly_kumo():
+    """Batch 207: strat_ichimoku_cloud_breakout long requires weekly
+    Kumo also above cloud. Phase 1A-beta showed -1.00 Sharpe at 43
+    trades indicating daily-only Kumo is too permissive (catches
+    counter-trend false breakouts)."""
+    from backtest.signals.screener import strat_ichimoku_cloud_breakout
+    # Daily above cloud + tk_bullish + adx_trending BUT weekly below cloud
+    s = {
+        "ichi_above_cloud": True, "ichi_below_cloud": False,
+        "ichi_tk_bullish": True, "ichi_tk_bearish": False,
+        "adx_trending": True,
+        "ichi_weekly_above_cloud": False,  # weekly disagrees
+        "ichi_weekly_below_cloud": True,
+    }
+    r = strat_ichimoku_cloud_breakout(s)
+    assert not r["fires"] or r["direction"] != "long", (
+        "Batch 207: ichimoku long must NOT fire when weekly Kumo disagrees"
+    )
+    # Now weekly agrees
+    s["ichi_weekly_above_cloud"] = True
+    s["ichi_weekly_below_cloud"] = False
+    r2 = strat_ichimoku_cloud_breakout(s)
+    assert r2["fires"] is True
+    assert r2["direction"] == "long"
+
+
+def test_batch207_hull_rsi_requires_adx_gt_20():
+    """Batch 207: strat_hull_rsi must require ADX(14)>20 trend
+    confirmation. Hull alone whipsaws in chop; ADX>20 gate cuts
+    false-signal rate in half (cited SSRN replications)."""
+    from backtest.signals.screener import strat_hull_rsi
+    # Hull bullish, price above hull, RSI>50 - but ADX=15 (chop)
+    s = {
+        "hull_bullish": True,
+        "price_above_hull": True,
+        "rsi_9": 60.0,
+        "adx": 15.0,           # below 20
+        "adx_trending": False,
+    }
+    r = strat_hull_rsi(s)
+    assert not r["fires"] or r["direction"] != "long", (
+        "Batch 207: hull_rsi long must NOT fire when ADX<20 (chop)"
+    )
+    # Same scenario with ADX=25 -> fires
+    s["adx"] = 25.0
+    r2 = strat_hull_rsi(s)
+    assert r2["fires"] is True
+    assert r2["direction"] == "long"
+
+
 def test_batch206_williams_r_oversold_connors_rsi2_path():
     """Batch 206 (Connors stack 2026-05-17): williams_r_oversold long
     fires on EITHER williams_r_oversold OR rsi_2<5 (short-window extreme).

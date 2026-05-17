@@ -606,7 +606,7 @@ def compute_ichimoku(df: pd.DataFrame) -> dict:
     close   = _safe_float(df["close"].iloc[-1])
     above_cloud = close > max(sa,sb) if sa and sb else False
     below_cloud = close < min(sa,sb) if sa and sb else False
-    return {
+    out = {
         "ichi_tenkan":      round(t,4), "ichi_kijun": round(k,4),
         "ichi_senkou_a":    round(sa,4), "ichi_senkou_b": round(sb,4),
         "ichi_above_cloud": above_cloud, "ichi_below_cloud": below_cloud,
@@ -616,6 +616,34 @@ def compute_ichimoku(df: pd.DataFrame) -> dict:
         "ichi_tk_cross_dn": t < k and pt >= pk,
         "ichi_cloud_thick": abs(sa-sb) > abs(sa)*0.01 if sa else False,
     }
+    # Batch 207 (Ichimoku optimization 2026-05-17): multi-timeframe Kumo
+    # gate per Linda Raschke. Resample daily -> weekly to compute the
+    # weekly Ichimoku cloud position; use as regime filter for daily
+    # entries. Requires >=52 weeks (52*5 = 260 daily bars) for full
+    # weekly Senkou B (mid_52 weekly).
+    if len(df) >= 260 and isinstance(df.index, pd.DatetimeIndex):
+        try:
+            wk = df.resample("W").agg({
+                "high": "max", "low": "min", "close": "last",
+                "open": "first", "volume": "sum",
+            }).dropna()
+            if len(wk) >= 52:
+                def wmid(p): return (wk["high"].rolling(p).max() + wk["low"].rolling(p).min()) / 2
+                w_tenkan  = wmid(9)
+                w_kijun   = wmid(26)
+                w_senkou_a = ((w_tenkan + w_kijun) / 2).shift(26)
+                w_senkou_b = wmid(52).shift(26)
+                wsa = _safe_float(w_senkou_a.iloc[-1])
+                wsb = _safe_float(w_senkou_b.iloc[-1])
+                wclose = _safe_float(wk["close"].iloc[-1])
+                w_above = wclose > max(wsa, wsb) if wsa and wsb else False
+                w_below = wclose < min(wsa, wsb) if wsa and wsb else False
+                out["ichi_weekly_above_cloud"] = w_above
+                out["ichi_weekly_below_cloud"] = w_below
+                out["ichi_weekly_in_cloud"]    = not (w_above or w_below)
+        except Exception:
+            pass
+    return out
 
 
 def compute_supertrend(df: pd.DataFrame, period: int = 7, mult: float = 3.0) -> dict:

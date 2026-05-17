@@ -270,12 +270,29 @@ def strat_macd_fast_crossover(s):
 
 
 def strat_hull_rsi(s):
-    fl = (s.get("hull_bullish") and s.get("price_above_hull") and s.get("rsi_9", 50) > 50)
-    fs = (not s.get("hull_bullish") and not s.get("price_above_hull") and s.get("rsi_9", 50) < 50)
+    """Hull MA + RSI(9) momentum. Batch 207 (2026-05-17 owner-approved
+    research review): added ADX(14) > 20 trend confirmation gate. Hull
+    alone whipsaws in choppy markets; Hull + ADX>20 cuts false-signal
+    rate in half per multiple SSRN replications (cited in research
+    report B.4). The 26 trades in Phase 1A-beta yielded Sharpe -0.26 and
+    win rate 30.8% - classic whipsaw failure mode without trend filter.
+    """
+    adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
+    fl = (
+        s.get("hull_bullish") and s.get("price_above_hull")
+        and s.get("rsi_9", 50) > 50 and adx_trend_ok
+    )
+    fs = (
+        (not s.get("hull_bullish")) and (not s.get("price_above_hull"))
+        and s.get("rsi_9", 50) < 50 and adx_trend_ok
+    )
     return _strat3(fl, fs, "momentum",
-        ["hull_bullish","price_above_hull","rsi_9>50"], ["hull_bearish","price_below_hull","rsi_9<50"],
-        ["Hull MA rising  -  fast trend bullish","Price above Hull","RSI-9 above midpoint"],
-        ["Hull MA falling  -  fast trend bearish","Price below Hull","RSI-9 below midpoint"])
+        ["hull_bullish", "price_above_hull", "rsi_9>50", "adx>20"],
+        ["hull_bearish", "price_below_hull", "rsi_9<50", "adx>20"],
+        ["Hull MA rising - fast trend bullish", "Price above Hull",
+         "RSI-9 above midpoint", "ADX>20 confirms trend"],
+        ["Hull MA falling - fast trend bearish", "Price below Hull",
+         "RSI-9 below midpoint", "ADX>20 confirms trend"])
 
 
 def strat_williams_r_oversold(s):
@@ -445,12 +462,37 @@ def strat_ichimoku_tk_cross(s):
 
 
 def strat_ichimoku_cloud_breakout(s):
-    fl = (s.get("ichi_above_cloud") and s.get("ichi_tk_bullish") and s.get("adx_trending"))
-    fs = (s.get("ichi_below_cloud") and s.get("ichi_tk_bearish") and s.get("adx_trending"))
+    """Ichimoku cloud breakout. Batch 207 (2026-05-17 owner-approved
+    research review): multi-timeframe Kumo gate per Linda Bradford
+    Raschke - weekly Ichimoku cloud position must align with daily
+    breakout direction. Phase 1A-beta showed 43 trades / 18.6% WR /
+    Sharpe -1.00 - the second-worst strategy by Sharpe in the carrier
+    set, indicating the daily-only Kumo is too permissive.
+
+    Weekly gate defaults to True when ichi_weekly_*_cloud signals absent
+    (insufficient daily history < 260 bars); backward-compat preserved.
+    """
+    weekly_long_ok = s.get("ichi_weekly_above_cloud", True)
+    weekly_short_ok = s.get("ichi_weekly_below_cloud", True)
+    fl = (
+        s.get("ichi_above_cloud") and s.get("ichi_tk_bullish")
+        and s.get("adx_trending") and weekly_long_ok
+    )
+    fs = (
+        s.get("ichi_below_cloud") and s.get("ichi_tk_bearish")
+        and s.get("adx_trending") and weekly_short_ok
+    )
     return _strat3(fl, fs, "trend",
-        ["ichi_above_cloud","ichi_tk_bullish","adx_trending"], ["ichi_below_cloud","ichi_tk_bearish","adx_trending"],
-        ["Price above Ichimoku Cloud  -  full bullish structure","Tenkan above Kijun","ADX confirms"],
-        ["Price below Ichimoku Cloud  -  full bearish structure","Tenkan below Kijun","ADX confirms"])
+        ["ichi_above_cloud", "ichi_tk_bullish", "adx_trending",
+         "ichi_weekly_above_cloud"],
+        ["ichi_below_cloud", "ichi_tk_bearish", "adx_trending",
+         "ichi_weekly_below_cloud"],
+        ["Price above Ichimoku Cloud (daily) - full bullish structure",
+         "Tenkan above Kijun", "ADX confirms",
+         "Weekly Kumo also above cloud (multi-TF regime confirm)"],
+        ["Price below Ichimoku Cloud (daily) - full bearish structure",
+         "Tenkan below Kijun", "ADX confirms",
+         "Weekly Kumo also below cloud (multi-TF regime confirm)"])
 
 
 def strat_adx_initiation(s):
