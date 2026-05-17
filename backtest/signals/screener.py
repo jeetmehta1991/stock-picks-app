@@ -1125,7 +1125,111 @@ def strat_break_retest_confluence(s):
 #  PENDING strategy-additive). Run `len(ALL_STRATEGIES)` for current count.
 # -----------------------------------------------------------------------------
 
+def strat_avwap_252_breakout(s):
+    """Batch 208 (new strategy family 2026-05-17 owner-approved research review).
+    Anchored VWAP from 252-day swing low breakout. Brian Shannon (2022)
+    Maximum Trading Gains With Anchored VWAP, CMT Association whitepaper.
+
+    Long: price reclaims AVWAP-252-low (was below, now above) + volume
+    confirms + RSI not extreme-overbought. Marks an institutional-level
+    inflection - the year's accumulation-distribution reference.
+
+    Short: price loses AVWAP-252-low to the downside + volume confirms.
+    Symmetric inverse for distribution / breakdown days.
+    """
+    above_252 = s.get("above_avwap_252low", False)
+    pct_from_252 = s.get("pct_from_avwap_252low", 0.0)
+    vol_ok = s.get("vol_spike_15x", False)
+    rsi_14 = s.get("rsi_14", 50)
+    # Long: just reclaimed (close to AVWAP but above) + volume + RSI not capped
+    fl = (
+        above_252
+        and abs(pct_from_252) < 2.0   # within 2% of AVWAP (close to inflection)
+        and vol_ok
+        and rsi_14 < 70
+    )
+    # Short: just lost (close below AVWAP) + volume + RSI not capped
+    fs = (
+        (not above_252)
+        and abs(pct_from_252) < 2.0
+        and vol_ok
+        and rsi_14 > 30
+    )
+    return _strat3(fl, fs, "vwap",
+        ["above_avwap_252low", "near_avwap_252low<2pct", "vol_spike_1.5x", "rsi_14<70"],
+        ["below_avwap_252low", "near_avwap_252low<2pct", "vol_spike_1.5x", "rsi_14>30"],
+        ["Price reclaimed Anchored VWAP from 252d low - institutional accumulation",
+         "Close to AVWAP inflection (within 2%)", "Volume 1.5x ADV(20)",
+         "RSI not extreme overbought"],
+        ["Price lost Anchored VWAP from 252d low - distribution",
+         "Close to AVWAP inflection (within 2%)", "Volume 1.5x ADV(20)",
+         "RSI not extreme oversold"])
+
+
+def strat_avwap_50_reclaim(s):
+    """Batch 208: AVWAP-50-low reclaim with confirming momentum. Higher-
+    frequency variant of the 252-low strategy targeting recent-leg
+    reclaims rather than annual-reference inflections. Pairs naturally
+    with the 50-day momentum window."""
+    above_50 = s.get("above_avwap_50low", False)
+    pct_from_50 = s.get("pct_from_avwap_50low", 0.0)
+    macd_bull = s.get("macd_12_26_9_bullish", False)
+    # Long: just reclaimed AVWAP-50 + MACD turning bullish
+    fl = (
+        above_50
+        and abs(pct_from_50) < 1.5
+        and macd_bull
+        and s.get("price_above_ema_200", True)  # require uptrend regime
+    )
+    # Short: just lost AVWAP-50 + MACD turning bearish
+    fs = (
+        (not above_50)
+        and abs(pct_from_50) < 1.5
+        and (not macd_bull)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat3(fl, fs, "vwap",
+        ["above_avwap_50low", "near_avwap_50low<1.5pct", "macd_bullish",
+         "price_above_ema_200"],
+        ["below_avwap_50low", "near_avwap_50low<1.5pct", "macd_bearish",
+         "price_below_ema_200"],
+        ["Price reclaimed Anchored VWAP from 50d low - recent leg accumulation",
+         "Within 1.5% of AVWAP inflection", "MACD bullish",
+         "Above 200 EMA (regime gate)"],
+        ["Price lost Anchored VWAP from 50d low - recent leg distribution",
+         "Within 1.5% of AVWAP inflection", "MACD bearish",
+         "Below 200 EMA (bear regime)"])
+
+
+def strat_avwap_20high_rejection_short(s):
+    """Batch 208: short-side rejection at AVWAP from 20-day swing high.
+    Recent high acts as resistance; price tests then rejects with
+    bearish candle + volume. Designed to fire in neutral/bear regime
+    (high-quality short setup per Anchored VWAP discipline)."""
+    pct_from_20h = s.get("pct_from_avwap_20high", 0.0)
+    fires = (
+        not s.get("above_avwap_20high", True)  # below 20-high AVWAP
+        and abs(pct_from_20h) < 1.0
+        and (s.get("shooting_star") or s.get("bearish_engulfing"))
+        and s.get("vol_spike_15x", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat(fires, "short", "vwap",
+        ["below_avwap_20high", "near_avwap_20high<1pct",
+         "shooting_star_or_bearish_engulfing", "vol_spike_1.5x",
+         "price_below_ema_200"],
+        ["Price tested Anchored VWAP from 20d high and rejected",
+         "Within 1% of AVWAP inflection",
+         "Bearish reversal candle confirms sellers",
+         "Volume 1.5x ADV(20)",
+         "Below 200 EMA (bear regime confirmation)"])
+
+
 ALL_STRATEGIES = {
+    # Anchored VWAP family (3 - Batch 208 2026-05-17 owner-approved research review)
+    "avwap_252_breakout":           strat_avwap_252_breakout,
+    "avwap_50_reclaim":             strat_avwap_50_reclaim,
+    "avwap_20high_rejection_short": strat_avwap_20high_rejection_short,
     # Pivot (10)
     "pivot_s1_bounce":          strat_pivot_s1_bounce,
     "pivot_s2_bounce":          strat_pivot_s2_bounce,

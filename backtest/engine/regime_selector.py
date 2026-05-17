@@ -95,6 +95,11 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "cmf_flip":                 {"bull", "neutral", "bear", "crisis"},
     "force_index_breakout":     {"bull", "neutral", "bear", "crisis"},
     "volume_spike_breakout":    {"bull", "neutral", "bear", "crisis"},
+    # AVWAP family (Batch 208): allow all regimes; signal self-gates via
+    # above_avwap_* + 200-EMA logic inside the strategy itself.
+    "avwap_252_breakout":           {"bull", "neutral", "bear", "crisis"},
+    "avwap_50_reclaim":             {"bull", "neutral"},
+    "avwap_20high_rejection_short": {"neutral", "bear", "crisis"},
     # Short-side: bear/crisis only
     "bollinger_upper_short":    {"bear", "crisis"},
     "rsi_overbought_short":     {"bear", "crisis"},

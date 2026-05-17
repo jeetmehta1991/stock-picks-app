@@ -6684,6 +6684,78 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch208_avwap_strategies_registered_in_ALL_STRATEGIES():
+    """Batch 208 (new strategy family 2026-05-17): 3 Anchored VWAP
+    strategies must be registered in ALL_STRATEGIES so the screener
+    iterates them per ticker. Brian Shannon 2022 AVWAP discipline."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    for name in ("avwap_252_breakout", "avwap_50_reclaim",
+                 "avwap_20high_rejection_short"):
+        assert name in ALL_STRATEGIES, f"Batch 208: {name} must be registered"
+
+
+def test_batch208_avwap_252_breakout_long_fires_near_reclaim():
+    """Batch 208: avwap_252_breakout long fires when price is just above
+    AVWAP-252-low (within 2%) with volume confirmation."""
+    from backtest.signals.screener import strat_avwap_252_breakout
+    s = {
+        "above_avwap_252low": True,
+        "pct_from_avwap_252low": 0.5,  # 0.5% above (near inflection)
+        "vol_spike_15x": True,
+        "rsi_14": 50.0,
+    }
+    r = strat_avwap_252_breakout(s)
+    assert r["fires"] is True and r["direction"] == "long"
+
+    # Beyond 2% from AVWAP -> no fire (no longer "near inflection")
+    s["pct_from_avwap_252low"] = 5.0
+    assert strat_avwap_252_breakout(s)["fires"] is False
+
+    # Volume missing -> no fire
+    s["pct_from_avwap_252low"] = 0.5
+    s["vol_spike_15x"] = False
+    assert strat_avwap_252_breakout(s)["fires"] is False
+
+
+def test_batch208_avwap_50_reclaim_requires_200ema_regime():
+    """Batch 208: avwap_50_reclaim long requires price > 200-EMA (regime
+    gate). Short side requires price below 200-EMA (symmetric)."""
+    from backtest.signals.screener import strat_avwap_50_reclaim
+    s = {
+        "above_avwap_50low": True,
+        "pct_from_avwap_50low": 0.5,
+        "macd_12_26_9_bullish": True,
+        "price_above_ema_200": False,  # bear regime
+    }
+    r = strat_avwap_50_reclaim(s)
+    assert not r["fires"] or r["direction"] != "long"
+
+    s["price_above_ema_200"] = True
+    r2 = strat_avwap_50_reclaim(s)
+    assert r2["fires"] is True
+    assert r2["direction"] == "long"
+
+
+def test_batch208_avwap_20high_rejection_short_requires_bear_regime():
+    """Batch 208: avwap_20high_rejection_short requires below 200-EMA
+    (bear regime confirmation) + bearish reversal candle."""
+    from backtest.signals.screener import strat_avwap_20high_rejection_short
+    s = {
+        "above_avwap_20high": False,
+        "pct_from_avwap_20high": 0.5,
+        "shooting_star": True,
+        "bearish_engulfing": False,
+        "vol_spike_15x": True,
+        "price_above_ema_200": False,
+    }
+    r = strat_avwap_20high_rejection_short(s)
+    assert r["fires"] is True and r["direction"] == "short"
+
+    # In bull regime -> NOT fires
+    s["price_above_ema_200"] = True
+    assert strat_avwap_20high_rejection_short(s)["fires"] is False
+
+
 def test_batch207_compute_ichimoku_emits_weekly_kumo_signals():
     """Batch 207 (Ichimoku optimization 2026-05-17): compute_ichimoku
     must emit ichi_weekly_above_cloud / ichi_weekly_below_cloud /
