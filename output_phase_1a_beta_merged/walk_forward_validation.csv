@@ -1,0 +1,26 @@
+strategy,verdict,sector,fold_1_is_trades,fold_1_is_win_rate,fold_1_is_pf,fold_1_oos_trades,fold_1_oos_win_rate,fold_1_oos_pf,fold_1_oos_sufficient,fold_1_wr_degradation,fold_2_is_trades,fold_2_is_win_rate,fold_2_is_pf,fold_2_oos_trades,fold_2_oos_win_rate,fold_2_oos_pf,fold_2_oos_sufficient,fold_2_wr_degradation,fold_3_is_trades,fold_3_is_win_rate,fold_3_is_pf,fold_3_oos_trades,fold_3_oos_win_rate,fold_3_oos_pf,fold_3_oos_sufficient,fold_3_wr_degradation,fold_4_is_trades,fold_4_is_win_rate,fold_4_is_pf,fold_4_oos_trades,fold_4_oos_win_rate,fold_4_oos_pf,fold_4_oos_sufficient,fold_4_wr_degradation
+pivot_r1_breakout,FAILS_BOTH,Consumer Staples,0,0,0,115,0.2435,0.745,True,,115,0.2435,0.745,100,0.4,1.377,True,0.1565,215,0.3163,1.013,121,0.2893,0.808,True,-0.027,336,0.3065,0.935,160,0.4625,1.904,True,0.156
+stochrsi_oversold,INSUFFICIENT_OOS_DATA,Materials,0,0,0,69,0.2464,0.434,True,,69,0.2464,0.434,21,0.2381,0.93,False,-0.0083,90,0.2444,0.572,26,0.3846,2.161,False,0.1402,116,0.2759,0.804,16,0.5,1.077,False,0.2241
+camarilla_r3_breakout,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+cmf_flip,INSUFFICIENT_OOS_DATA,Unknown,0,0,0,23,0.3043,0.664,False,,23,0.3043,0.664,5,0.4,1.816,False,0.0957,28,0.3214,0.865,16,0.125,0.555,False,-0.1964,44,0.25,0.744,6,0.1667,0.326,False,-0.0833
+supertrend_macd,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,13,0.3846,1.974,False,,13,0.3846,1.974,0,0.0,0.0,False,,15,0.3333,1.586,0,0.0,0.0,False,,17,0.2941,1.312,0,0.0,0.0,False,
+williams_r_oversold,INSUFFICIENT_OOS_DATA,Financials,0,0,0,25,0.28,1.605,False,,25,0.28,1.605,14,0.4286,1.661,False,0.1486,39,0.3333,1.621,15,0.6,2.127,False,0.2667,54,0.4074,1.702,28,0.4286,1.666,False,0.0212
+ultimate_oscillator,INSUFFICIENT_OOS_DATA,Consumer Staples,0,0,0,7,0.5714,1.678,False,,7,0.5714,1.678,0,0.0,0.0,False,,11,0.7273,6.624,9,0.3333,1.293,False,-0.394,20,0.55,3.13,7,0.2857,0.054,False,-0.2643
+pivot_r2_continuation,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,21,0.2381,0.174,False,,21,0.2381,0.174,15,0.2667,0.461,False,0.0286,36,0.25,0.282,24,0.1667,0.333,False,-0.0833,60,0.2167,0.302,18,0.2778,1.514,False,0.0611
+pivot_s2_bounce,INSUFFICIENT_OOS_DATA,Materials,0,0,0,12,0.3333,0.946,False,,12,0.3333,0.946,0,0.0,0.0,False,,13,0.3077,0.819,0,0.0,0.0,False,,14,0.2857,0.703,0,0.0,0.0,False,
+ichimoku_cloud_breakout,INSUFFICIENT_OOS_DATA,Health Care,0,0,0,16,0.1875,0.114,False,,16,0.1875,0.114,6,0.1667,0.858,False,-0.0208,22,0.1818,0.28,7,0.2857,1.027,False,0.1039,29,0.2069,0.5,14,0.1429,0.143,False,-0.064
+williams_stoch_dual,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,5,0.0,0.0,0,0.0,0.0,False,
+pivot_s3_capitulation,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,8,0.375,0.324,False,,8,0.375,0.324,0,0.0,0.0,False,,8,0.375,0.324,0,0.0,0.0,False,,11,0.3636,0.339,0,0.0,0.0,False,
+macd_crossover,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,6,0.5,2.999,0,0.0,0.0,False,,8,0.625,3.539,0,0.0,0.0,False,
+hull_rsi,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,7,0.0,0.0,False,,7,0.0,0.0,0,0.0,0.0,False,,11,0.0909,0.032,9,0.5556,2.227,False,0.4647,20,0.3,0.712,6,0.3333,0.699,False,0.0333
+parabolic_sar_flip,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+macd_fast_crossover,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+morning_star,INSUFFICIENT_OOS_DATA,Financials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+prev_day_low_bounce,INSUFFICIENT_OOS_DATA,Consumer Staples,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+pivot_s1_bounce,INSUFFICIENT_OOS_DATA,Communication Services,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+adx_initiation,INSUFFICIENT_OOS_DATA,Materials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+prev_day_high_break,INSUFFICIENT_OOS_DATA,Materials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+camarilla_s3_bounce,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+bollinger_tight,WEAK,Information Technology,0,0,0,217,0.4101,1.665,True,,217,0.4101,1.665,71,0.3521,0.759,True,-0.058,288,0.3958,1.4,116,0.3793,1.518,True,-0.0165,404,0.3911,1.434,101,0.3762,0.954,True,-0.0149
+bollinger_lower,WEAK,Information Technology,0,0,0,338,0.3905,1.02,True,,338,0.3905,1.02,102,0.3627,1.166,True,-0.0278,440,0.3841,1.053,152,0.3487,0.945,True,-0.0354,592,0.375,1.026,123,0.439,1.499,True,0.064
+cpr_narrow_bullish,WEAK,Energy,0,0,0,57,0.1754,0.206,True,,57,0.1754,0.206,38,0.4474,1.91,True,0.272,95,0.2842,0.684,37,0.2162,0.705,True,-0.068,132,0.2652,0.689,17,0.5882,1.67,False,0.323
