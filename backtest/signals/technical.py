@@ -163,7 +163,7 @@ def compute_vwap(df: pd.DataFrame) -> dict:
     vwap   = _safe_float(vwap_s.iloc[-1])
     std    = _safe_float(tp.tail(20).std())
     close  = _safe_float(df["close"].iloc[-1])
-    return {
+    out = {
         "vwap":          round(vwap, 4),
         "vwap_upper_1":  round(vwap + std, 4),
         "vwap_upper_2":  round(vwap + 2*std, 4),
@@ -172,6 +172,40 @@ def compute_vwap(df: pd.DataFrame) -> dict:
         "above_vwap":    close > vwap,
         "pct_from_vwap": round((close - vwap) / vwap * 100, 3) if vwap else 0,
     }
+    # Batch 205 (Pivot/CPR optimization 2026-05-17): Anchored VWAP per
+    # Brian Shannon (2022) "Maximum Trading Gains With Anchored VWAP".
+    # Anchor at recent swing low / high to compute institutional reference
+    # level. Pivot/CPR breakouts above AVWAP are markedly higher quality
+    # than naive pivot breaks (CMT Association whitepaper). Three anchors:
+    #   - 252-day swing low (1-year reference)
+    #   -  50-day swing low (recent leg)
+    #   -  20-day swing high (recent breakout reference)
+    for lookback, key in [(252, "252low"), (50, "50low"), (20, "20high")]:
+        if len(df) < lookback + 5:
+            continue
+        window = df.tail(lookback)
+        if "high" in key:
+            anchor_idx = window["high"].idxmax()
+        else:
+            anchor_idx = window["low"].idxmin()
+        try:
+            anchor_pos = df.index.get_loc(anchor_idx)
+        except KeyError:
+            continue
+        # Slice from anchor forward
+        post = df.iloc[anchor_pos:]
+        if len(post) < 2:
+            continue
+        tp_post = (post["high"] + post["low"] + post["close"]) / 3
+        vol_post = post["volume"]
+        avwap_s = (tp_post * vol_post).cumsum() / vol_post.cumsum().replace(0, np.nan)
+        avwap = _safe_float(avwap_s.iloc[-1])
+        if avwap <= 0:
+            continue
+        out[f"avwap_{key}"]              = round(avwap, 4)
+        out[f"above_avwap_{key}"]        = close > avwap
+        out[f"pct_from_avwap_{key}"]     = round((close - avwap) / avwap * 100, 3)
+    return out
 
 
 # -----------------------------------------------------------------------------

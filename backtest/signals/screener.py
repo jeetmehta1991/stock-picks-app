@@ -120,30 +120,95 @@ def strat_pivot_s3_capitulation(s):
 
 
 def strat_pivot_r1_breakout(s):
-    fl = (s.get("above_r1") and s.get("vol_spike_15x") and s.get("macd_12_26_9_bullish"))
-    fs = (s.get("below_s1") and s.get("vol_spike_15x") and not s.get("macd_12_26_9_bullish"))
+    """Pivot R1 breakout. Batch 205 (Pivot optimization 2026-05-17 owner-
+    approved research review): stacked with Anchored VWAP gate (Brian
+    Shannon 2022) + DiNapoli volume confirmation. AVWAP-from-252-day-low
+    is the institutional reference level; breakouts above R1 that ALSO
+    hold above AVWAP are markedly higher quality than R1 breaks in
+    isolation.
+
+    AVWAP gate defaults to True when avwap signals are absent (e.g.
+    insufficient history) so backward-compat is preserved.
+    """
+    avwap_long_ok = s.get("above_avwap_252low", True) and s.get("above_avwap_50low", True)
+    avwap_short_ok = (not s.get("above_avwap_252low", False)) and (not s.get("above_avwap_50low", False))
+    fl = (
+        s.get("above_r1") and s.get("vol_spike_15x")
+        and s.get("macd_12_26_9_bullish") and avwap_long_ok
+    )
+    fs = (
+        s.get("below_s1") and s.get("vol_spike_15x")
+        and (not s.get("macd_12_26_9_bullish")) and avwap_short_ok
+    )
     return _strat3(fl, fs, "pivot",
-        ["above_r1","vol_spike_1.5x","macd_bullish"], ["below_s1","vol_spike_1.5x","macd_bearish"],
-        ["Price broke above R1 resistance","Volume confirms institutional buying","MACD positive"],
-        ["Price broke below S1 support","Volume confirms institutional selling","MACD negative"])
+        ["above_r1", "vol_spike_1.5x", "macd_bullish",
+         "above_avwap_252low", "above_avwap_50low"],
+        ["below_s1", "vol_spike_1.5x", "macd_bearish",
+         "below_avwap_252low", "below_avwap_50low"],
+        ["Price broke above R1 resistance",
+         "Volume 1.5x ADV(20) - institutional buying",
+         "MACD positive",
+         "Above Anchored VWAP (252d low + 50d low) - institutional reference"],
+        ["Price broke below S1 support",
+         "Volume 1.5x ADV(20) - institutional selling",
+         "MACD negative",
+         "Below Anchored VWAP (252d low + 50d low) - distribution"])
 
 
 def strat_pivot_r2_continuation(s):
-    fl = (s.get("above_r2") and s.get("adx_trending") and s.get("ema_50_200_bullish"))
-    fs = (s.get("below_s2") and s.get("adx_trending") and not s.get("ema_50_200_bullish"))
+    """Pivot R2 trend-continuation. Batch 205: requires AVWAP + 2x volume
+    (stronger threshold than R1 since R2 is the secondary breakout) +
+    EMA 50/200 trend confirmation."""
+    avwap_long_ok = s.get("above_avwap_252low", True) and s.get("above_avwap_50low", True)
+    avwap_short_ok = (not s.get("above_avwap_252low", False)) and (not s.get("above_avwap_50low", False))
+    # Stronger volume confirmation for R2 (2x ADV instead of 1.5x)
+    fl = (
+        s.get("above_r2") and s.get("adx_trending")
+        and s.get("ema_50_200_bullish") and avwap_long_ok
+        and s.get("vol_spike_2x", s.get("vol_spike_15x", False))
+    )
+    fs = (
+        s.get("below_s2") and s.get("adx_trending")
+        and (not s.get("ema_50_200_bullish")) and avwap_short_ok
+        and s.get("vol_spike_2x", s.get("vol_spike_15x", False))
+    )
     return _strat3(fl, fs, "pivot",
-        ["above_r2","adx_trending","ema_50_200_bullish"], ["below_s2","adx_trending","ema_50_200_bearish"],
-        ["Price above R2  -  strong trend continuation","ADX confirms trend","Above 50/200 EMA"],
-        ["Price below S2  -  strong downtrend continuation","ADX confirms trend","Below 50/200 EMA"])
+        ["above_r2", "adx_trending", "ema_50_200_bullish",
+         "vol_spike_2x", "above_avwap_252low_and_50low"],
+        ["below_s2", "adx_trending", "ema_50_200_bearish",
+         "vol_spike_2x", "below_avwap_252low_and_50low"],
+        ["Price above R2 - strong trend continuation",
+         "ADX confirms trend", "Above 50/200 EMA",
+         "Volume 2x ADV - heavy participation",
+         "Above Anchored VWAP - institutional reference"],
+        ["Price below R2 - strong downtrend continuation",
+         "ADX confirms trend", "Below 50/200 EMA",
+         "Volume 2x ADV - heavy participation",
+         "Below Anchored VWAP - distribution"])
 
 
 def strat_cpr_narrow_bullish(s):
-    fl = (s.get("cpr_narrow") and s.get("above_cpr") and s.get("rsi_14", 50) > 50)
-    fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50)
+    """Central Pivot Range narrow breakout. Batch 205: stacked with
+    Anchored VWAP gate per Brian Shannon. Narrow CPR + above CPR + above
+    AVWAP is the canonical institutional-grade directional day signal.
+    """
+    avwap_long_ok = s.get("above_avwap_50low", True)
+    avwap_short_ok = not s.get("above_avwap_50low", False)
+    fl = (
+        s.get("cpr_narrow") and s.get("above_cpr")
+        and s.get("rsi_14", 50) > 50 and avwap_long_ok
+    )
+    fs = (
+        s.get("cpr_narrow") and s.get("below_cpr")
+        and s.get("rsi_14", 50) < 50 and avwap_short_ok
+    )
     return _strat3(fl, fs, "pivot",
-        ["cpr_narrow","above_cpr","rsi_14>50"], ["cpr_narrow","below_cpr","rsi_14<50"],
-        ["Narrow CPR  -  directional day likely","Above CPR  -  bullish daily bias","RSI above 50"],
-        ["Narrow CPR  -  directional day likely","Below CPR  -  bearish daily bias","RSI below 50"])
+        ["cpr_narrow", "above_cpr", "rsi_14>50", "above_avwap_50low"],
+        ["cpr_narrow", "below_cpr", "rsi_14<50", "below_avwap_50low"],
+        ["Narrow CPR - directional day likely", "Above CPR - bullish daily bias",
+         "RSI above 50", "Above Anchored VWAP (50d low) - institutional reference"],
+        ["Narrow CPR - directional day likely", "Below CPR - bearish daily bias",
+         "RSI below 50", "Below Anchored VWAP (50d low) - distribution"])
 
 
 def strat_camarilla_s3_bounce(s):

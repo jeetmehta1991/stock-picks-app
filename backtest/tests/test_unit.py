@@ -6684,6 +6684,104 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch205_compute_vwap_emits_anchored_vwap_signals():
+    """Batch 205 (Pivot optimization 2026-05-17): compute_vwap must emit
+    avwap_252low / avwap_50low / avwap_20high and the above_*/pct_from_*
+    counterparts. Brian Shannon (2022) "Maximum Trading Gains With
+    Anchored VWAP" CMT whitepaper: AVWAP anchored at swing low/high is
+    the institutional reference level for pivot breakouts."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.technical import compute_vwap
+    rng = np.random.default_rng(42)
+    closes = 100 + np.cumsum(rng.normal(0, 1, 300))
+    highs = closes + 1
+    lows  = closes - 1
+    vols  = (1_000_000 + rng.integers(0, 500_000, 300)).astype(float)
+    df = pd.DataFrame({"high": highs, "low": lows, "close": closes, "volume": vols})
+    out = compute_vwap(df)
+    assert "avwap_252low" in out, "Batch 205: compute_vwap must emit avwap_252low"
+    assert "above_avwap_252low" in out
+    assert "pct_from_avwap_252low" in out
+    assert "avwap_50low" in out
+    assert "above_avwap_50low" in out
+    assert "avwap_20high" in out
+    assert "above_avwap_20high" in out
+    # AVWAP values must be positive
+    assert out["avwap_252low"] > 0
+    assert out["avwap_50low"]  > 0
+
+
+def test_batch205_pivot_r1_requires_avwap_gate():
+    """Batch 205: strat_pivot_r1_breakout must require above_avwap_252low
+    AND above_avwap_50low for long entries. AVWAP gate filters out R1
+    breakouts that occur below the institutional reference (failed
+    breakouts more likely)."""
+    from backtest.signals.screener import strat_pivot_r1_breakout
+    # All entry conditions met EXCEPT AVWAP
+    s = {
+        "above_r1": True, "below_s1": False,
+        "vol_spike_15x": True,
+        "macd_12_26_9_bullish": True,
+        "above_avwap_252low": False,  # below institutional reference
+        "above_avwap_50low": False,
+    }
+    r = strat_pivot_r1_breakout(s)
+    assert not r["fires"] or r["direction"] != "long", (
+        "Batch 205: pivot_r1 long must NOT fire when below AVWAP"
+    )
+    # All conditions met INCLUDING AVWAP
+    s["above_avwap_252low"] = True
+    s["above_avwap_50low"]  = True
+    r2 = strat_pivot_r1_breakout(s)
+    assert r2["fires"] is True
+    assert r2["direction"] == "long"
+
+
+def test_batch205_pivot_r2_requires_2x_volume():
+    """Batch 205: pivot_r2_continuation upgrades volume gate from 1.5x
+    to 2x ADV(20) (DiNapoli discipline for stronger trend signals).
+    Falls back to vol_spike_15x when vol_spike_2x missing."""
+    from backtest.signals.screener import strat_pivot_r2_continuation
+    s = {
+        "above_r2": True, "below_s2": False,
+        "adx_trending": True,
+        "ema_50_200_bullish": True,
+        "above_avwap_252low": True, "above_avwap_50low": True,
+        "vol_spike_2x": False,    # 2x not met
+        "vol_spike_15x": True,    # 1.5x met
+    }
+    # vol_spike_2x missing -> falls back to vol_spike_15x. With 1.5x
+    # available (but not 2x), strategy uses vol_spike_15x as fallback.
+    # Since vol_spike_2x is False, the test should still fire when
+    # vol_spike_2x evaluates falsy -> fallback to vol_spike_15x.
+    r = strat_pivot_r2_continuation(s)
+    # Either both present and 2x preferred, or only 15x present and used.
+    # The fallback construct s.get('vol_spike_2x', s.get('vol_spike_15x'))
+    # returns False (2x is explicitly False), so r should NOT fire.
+    assert r["fires"] is False, (
+        "Batch 205: r2_continuation must require 2x volume when explicit "
+        "vol_spike_2x=False (no fallback when key present-and-False)"
+    )
+    # Now with 2x true
+    s["vol_spike_2x"] = True
+    r2 = strat_pivot_r2_continuation(s)
+    assert r2["fires"] is True
+
+
+def test_batch205_cpr_narrow_bullish_avwap_gate():
+    """Batch 205: cpr_narrow_bullish requires above_avwap_50low for long."""
+    from backtest.signals.screener import strat_cpr_narrow_bullish
+    s = {
+        "cpr_narrow": True, "above_cpr": True, "below_cpr": False,
+        "rsi_14": 55, "above_avwap_50low": False,
+    }
+    r = strat_cpr_narrow_bullish(s)
+    assert not r["fires"] or r["direction"] != "long"
+    s["above_avwap_50low"] = True
+    assert strat_cpr_narrow_bullish(s)["fires"] is True
+
+
 def test_batch204_rsi_2_added_to_compute_rsi():
     """Batch 204 (Bollinger optimization 2026-05-17): compute_rsi must
     emit rsi_2 alongside rsi_9/14/21 to support Connors RSI(2) gate.
