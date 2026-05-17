@@ -1,0 +1,1072 @@
+exit_a,exit_b,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,a_total_pnl_pct,b_total_pnl_pct,edge,dominates,n_a,n_b
+atr_trail_1x,atr_trail_2x,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,12.011800000000001,-45.2851,False,15,15
+atr_trail_1x,break_even_at_1r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-33.2084,-0.06490000000000151,False,15,15
+atr_trail_1x,breakeven_plus_trail,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,7.374999999999997,-40.6483,False,15,15
+atr_trail_1x,class_time_stop,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,61.1502,-94.42349999999999,False,15,15
+atr_trail_1x,earnings_blackout,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,22.426899999999986,-55.70019999999998,False,15,15
+atr_trail_1x,fixed_4r_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,40.6014,-73.87469999999999,False,15,15
+atr_trail_1x,hybrid_50pct_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-90.93440000000001,57.66110000000001,True,15,15
+atr_trail_1x,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-18.8542,-14.4191,False,15,15
+atr_trail_1x,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-7.422599999999999,-25.8507,False,15,15
+atr_trail_1x,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-2.6015000000000006,-30.671799999999998,False,15,15
+atr_trail_1x,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,0.4037000000000006,-33.677,False,15,15
+atr_trail_1x,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,10.218500000000002,-43.4918,False,15,15
+atr_trail_1x,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-4.913200000000001,-28.3601,False,15,15
+atr_trail_1x,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,10.218500000000002,-43.4918,False,15,15
+atr_trail_1x,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,20.0702,-53.3435,False,15,15
+atr_trail_1x,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-55.7847,22.511400000000002,True,15,15
+atr_trail_1x,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2733,-17.2403,-16.032999999999998,False,15,15
+atr_trail_2x,break_even_at_1r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-33.2084,45.2202,True,15,15
+atr_trail_2x,breakeven_plus_trail,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,7.374999999999997,4.636800000000004,True,15,15
+atr_trail_2x,class_time_stop,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,61.1502,-49.1384,False,15,15
+atr_trail_2x,earnings_blackout,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,22.426899999999986,-10.415099999999985,False,15,15
+atr_trail_2x,fixed_4r_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,40.6014,-28.589599999999997,False,15,15
+atr_trail_2x,hybrid_50pct_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-90.93440000000001,102.9462,True,15,15
+atr_trail_2x,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-18.8542,30.866,True,15,15
+atr_trail_2x,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-7.422599999999999,19.4344,True,15,15
+atr_trail_2x,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-2.6015000000000006,14.613300000000002,True,15,15
+atr_trail_2x,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,0.4037000000000006,11.6081,True,15,15
+atr_trail_2x,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,10.218500000000002,1.7932999999999986,True,15,15
+atr_trail_2x,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-4.913200000000001,16.925,True,15,15
+atr_trail_2x,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,10.218500000000002,1.7932999999999986,True,15,15
+atr_trail_2x,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,20.0702,-8.058399999999999,False,15,15
+atr_trail_2x,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-55.7847,67.79650000000001,True,15,15
+atr_trail_2x,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,12.011800000000001,-17.2403,29.252100000000002,True,15,15
+break_even_at_1r,breakeven_plus_trail,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,7.374999999999997,-40.5834,False,15,15
+break_even_at_1r,class_time_stop,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,61.1502,-94.3586,False,15,15
+break_even_at_1r,earnings_blackout,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,22.426899999999986,-55.63529999999999,False,15,15
+break_even_at_1r,fixed_4r_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,40.6014,-73.8098,False,15,15
+break_even_at_1r,hybrid_50pct_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,-90.93440000000001,57.72600000000001,True,15,15
+break_even_at_1r,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,-18.8542,-14.354199999999999,False,15,15
+break_even_at_1r,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,-7.422599999999999,-25.7858,False,15,15
+break_even_at_1r,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,-2.6015000000000006,-30.606899999999996,False,15,15
+break_even_at_1r,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,0.4037000000000006,-33.6121,False,15,15
+break_even_at_1r,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,10.218500000000002,-43.4269,False,15,15
+break_even_at_1r,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,-4.913200000000001,-28.295199999999998,False,15,15
+break_even_at_1r,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,10.218500000000002,-43.4269,False,15,15
+break_even_at_1r,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,20.0702,-53.2786,False,15,15
+break_even_at_1r,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,-55.7847,22.576300000000003,True,15,15
+break_even_at_1r,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-33.2084,-17.2403,-15.968099999999996,False,15,15
+breakeven_plus_trail,class_time_stop,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,61.1502,-53.7752,False,15,15
+breakeven_plus_trail,earnings_blackout,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,22.426899999999986,-15.05189999999999,False,15,15
+breakeven_plus_trail,fixed_4r_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,40.6014,-33.2264,False,15,15
+breakeven_plus_trail,hybrid_50pct_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,-90.93440000000001,98.30940000000001,True,15,15
+breakeven_plus_trail,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,-18.8542,26.229199999999995,True,15,15
+breakeven_plus_trail,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,-7.422599999999999,14.797599999999996,True,15,15
+breakeven_plus_trail,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,-2.6015000000000006,9.976499999999998,True,15,15
+breakeven_plus_trail,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,0.4037000000000006,6.971299999999997,True,15,15
+breakeven_plus_trail,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,10.218500000000002,-2.843500000000005,False,15,15
+breakeven_plus_trail,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,-4.913200000000001,12.288199999999998,True,15,15
+breakeven_plus_trail,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,10.218500000000002,-2.843500000000005,False,15,15
+breakeven_plus_trail,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,20.0702,-12.695200000000003,False,15,15
+breakeven_plus_trail,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,-55.7847,63.1597,True,15,15
+breakeven_plus_trail,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,7.374999999999997,-17.2403,24.615299999999998,True,15,15
+class_time_stop,earnings_blackout,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,22.426899999999986,38.72330000000001,True,15,15
+class_time_stop,fixed_4r_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,40.6014,20.5488,True,15,15
+class_time_stop,hybrid_50pct_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,-90.93440000000001,152.08460000000002,True,15,15
+class_time_stop,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,-18.8542,80.0044,True,15,15
+class_time_stop,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,-7.422599999999999,68.5728,True,15,15
+class_time_stop,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,-2.6015000000000006,63.7517,True,15,15
+class_time_stop,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,0.4037000000000006,60.7465,True,15,15
+class_time_stop,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,10.218500000000002,50.93169999999999,True,15,15
+class_time_stop,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,-4.913200000000001,66.0634,True,15,15
+class_time_stop,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,10.218500000000002,50.93169999999999,True,15,15
+class_time_stop,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,20.0702,41.08,True,15,15
+class_time_stop,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,-55.7847,116.9349,True,15,15
+class_time_stop,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,-17.2403,78.3905,True,15,15
+earnings_blackout,fixed_4r_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,40.6014,-18.174500000000013,False,15,15
+earnings_blackout,hybrid_50pct_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,-90.93440000000001,113.3613,True,15,15
+earnings_blackout,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,-18.8542,41.28109999999998,True,15,15
+earnings_blackout,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,-7.422599999999999,29.849499999999985,True,15,15
+earnings_blackout,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,-2.6015000000000006,25.028399999999987,True,15,15
+earnings_blackout,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,0.4037000000000006,22.023199999999985,True,15,15
+earnings_blackout,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,10.218500000000002,12.208399999999983,True,15,15
+earnings_blackout,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,-4.913200000000001,27.340099999999985,True,15,15
+earnings_blackout,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,10.218500000000002,12.208399999999983,True,15,15
+earnings_blackout,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,20.0702,2.356699999999986,True,15,15
+earnings_blackout,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,-55.7847,78.21159999999999,True,15,15
+earnings_blackout,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,22.426899999999986,-17.2403,39.66719999999999,True,15,15
+fixed_4r_2r,hybrid_50pct_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,-90.93440000000001,131.5358,True,15,15
+fixed_4r_2r,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,-18.8542,59.4556,True,15,15
+fixed_4r_2r,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,-7.422599999999999,48.024,True,15,15
+fixed_4r_2r,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,-2.6015000000000006,43.2029,True,15,15
+fixed_4r_2r,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,0.4037000000000006,40.1977,True,15,15
+fixed_4r_2r,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,10.218500000000002,30.382899999999996,True,15,15
+fixed_4r_2r,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,-4.913200000000001,45.5146,True,15,15
+fixed_4r_2r,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,10.218500000000002,30.382899999999996,True,15,15
+fixed_4r_2r,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,20.0702,20.5312,True,15,15
+fixed_4r_2r,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,-55.7847,96.3861,True,15,15
+fixed_4r_2r,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,40.6014,-17.2403,57.8417,True,15,15
+hybrid_50pct_target,ma_exit_ema9,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,-18.8542,-72.08020000000002,False,15,15
+hybrid_50pct_target,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,-7.422599999999999,-83.51180000000001,False,15,15
+hybrid_50pct_target,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,-2.6015000000000006,-88.33290000000001,False,15,15
+hybrid_50pct_target,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,0.4037000000000006,-91.33810000000001,False,15,15
+hybrid_50pct_target,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,10.218500000000002,-101.15290000000002,False,15,15
+hybrid_50pct_target,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,-4.913200000000001,-86.02120000000001,False,15,15
+hybrid_50pct_target,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,10.218500000000002,-101.15290000000002,False,15,15
+hybrid_50pct_target,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,20.0702,-111.00460000000001,False,15,15
+hybrid_50pct_target,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,-55.7847,-35.14970000000001,False,15,15
+hybrid_50pct_target,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-90.93440000000001,-17.2403,-73.6941,False,15,15
+ma_exit_ema9,next_pivot_target,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,-7.422599999999999,-11.4316,False,15,15
+ma_exit_ema9,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,-2.6015000000000006,-16.252699999999997,False,15,15
+ma_exit_ema9,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,0.4037000000000006,-19.2579,False,15,15
+ma_exit_ema9,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,10.218500000000002,-29.0727,False,15,15
+ma_exit_ema9,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,-4.913200000000001,-13.940999999999999,False,15,15
+ma_exit_ema9,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,10.218500000000002,-29.0727,False,15,15
+ma_exit_ema9,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,20.0702,-38.9244,False,15,15
+ma_exit_ema9,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,-55.7847,36.9305,True,15,15
+ma_exit_ema9,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-18.8542,-17.2403,-1.6138999999999974,False,15,15
+next_pivot_target,r_multiple_2r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,-2.6015000000000006,-4.821099999999999,False,15,15
+next_pivot_target,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,0.4037000000000006,-7.8263,False,15,15
+next_pivot_target,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,10.218500000000002,-17.6411,False,15,15
+next_pivot_target,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,-4.913200000000001,-2.5093999999999985,False,15,15
+next_pivot_target,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,10.218500000000002,-17.6411,False,15,15
+next_pivot_target,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,20.0702,-27.4928,False,15,15
+next_pivot_target,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,-55.7847,48.3621,True,15,15
+next_pivot_target,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-7.422599999999999,-17.2403,9.817700000000002,True,15,15
+r_multiple_2r,r_multiple_3r,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-2.6015000000000006,0.4037000000000006,-3.005200000000001,False,15,15
+r_multiple_2r,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-2.6015000000000006,10.218500000000002,-12.820000000000004,False,15,15
+r_multiple_2r,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-2.6015000000000006,-4.913200000000001,2.3117,True,15,15
+r_multiple_2r,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-2.6015000000000006,10.218500000000002,-12.820000000000004,False,15,15
+r_multiple_2r,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-2.6015000000000006,20.0702,-22.6717,False,15,15
+r_multiple_2r,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-2.6015000000000006,-55.7847,53.1832,True,15,15
+r_multiple_2r,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-2.6015000000000006,-17.2403,14.6388,True,15,15
+r_multiple_3r,regime_flip,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,0.4037000000000006,10.218500000000002,-9.814800000000002,False,15,15
+r_multiple_3r,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,0.4037000000000006,-4.913200000000001,5.316900000000001,True,15,15
+r_multiple_3r,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,0.4037000000000006,10.218500000000002,-9.814800000000002,False,15,15
+r_multiple_3r,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,0.4037000000000006,20.0702,-19.6665,False,15,15
+r_multiple_3r,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,0.4037000000000006,-55.7847,56.1884,True,15,15
+r_multiple_3r,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,0.4037000000000006,-17.2403,17.644000000000002,True,15,15
+regime_flip,time_stop_10d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,-4.913200000000001,15.131700000000002,True,15,15
+regime_flip,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,10.218500000000002,0.0,False,15,15
+regime_flip,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,20.0702,-9.851699999999997,False,15,15
+regime_flip,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,-55.7847,66.0032,True,15,15
+regime_flip,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,-17.2403,27.458800000000004,True,15,15
+time_stop_10d,time_stop_20d,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-4.913200000000001,10.218500000000002,-15.131700000000002,False,15,15
+time_stop_10d,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-4.913200000000001,20.0702,-24.9834,False,15,15
+time_stop_10d,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-4.913200000000001,-55.7847,50.8715,True,15,15
+time_stop_10d,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-4.913200000000001,-17.2403,12.327100000000002,True,15,15
+time_stop_20d,trailing_10pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,20.0702,-9.851699999999997,False,15,15
+time_stop_20d,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,-55.7847,66.0032,True,15,15
+time_stop_20d,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,10.218500000000002,-17.2403,27.458800000000004,True,15,15
+trailing_10pct,trailing_15pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,20.0702,-55.7847,75.8549,True,15,15
+trailing_10pct,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,20.0702,-17.2403,37.310500000000005,True,15,15
+trailing_15pct,trailing_5pct,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,-55.7847,-17.2403,-38.544399999999996,False,15,15
+atr_trail_1x,atr_trail_2x,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,124.3869,-131.855,False,13,13
+atr_trail_1x,break_even_at_1r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,33.397,-40.8651,False,13,13
+atr_trail_1x,breakeven_plus_trail,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,391.00260000000003,-398.4707,False,13,13
+atr_trail_1x,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,205.28910000000002,-212.7572,False,13,13
+atr_trail_1x,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,295.3916,-302.8597,False,13,13
+atr_trail_1x,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,149.3936,-156.86169999999998,False,13,13
+atr_trail_1x,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,167.2668,-174.73489999999998,False,13,13
+atr_trail_1x,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,197.718,-205.18609999999998,False,13,13
+atr_trail_1x,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,101.65880000000001,-109.1269,False,13,13
+atr_trail_1x,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,65.63900000000001,-73.1071,False,13,13
+atr_trail_1x,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,120.5908,-128.0589,False,13,13
+atr_trail_1x,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,206.5929,-214.06099999999998,False,13,13
+atr_trail_1x,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,105.05290000000001,-112.52100000000002,False,13,13
+atr_trail_1x,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,206.5929,-214.06099999999998,False,13,13
+atr_trail_1x,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,141.04379999999998,-148.51189999999997,False,13,13
+atr_trail_1x,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,248.48489999999998,-255.95299999999997,False,13,13
+atr_trail_1x,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,-7.4681,-3.8459000000000003,-3.6221999999999994,False,13,13
+atr_trail_2x,break_even_at_1r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,33.397,90.9899,True,13,13
+atr_trail_2x,breakeven_plus_trail,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,391.00260000000003,-266.61570000000006,False,13,13
+atr_trail_2x,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,205.28910000000002,-80.90220000000002,False,13,13
+atr_trail_2x,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,295.3916,-171.00469999999999,False,13,13
+atr_trail_2x,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,149.3936,-25.006699999999995,False,13,13
+atr_trail_2x,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,167.2668,-42.87989999999999,False,13,13
+atr_trail_2x,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,197.718,-73.33109999999999,False,13,13
+atr_trail_2x,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,101.65880000000001,22.728099999999984,True,13,13
+atr_trail_2x,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,65.63900000000001,58.74789999999999,True,13,13
+atr_trail_2x,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,120.5908,3.7960999999999956,True,13,13
+atr_trail_2x,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,206.5929,-82.20599999999999,False,13,13
+atr_trail_2x,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,105.05290000000001,19.33399999999999,True,13,13
+atr_trail_2x,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,206.5929,-82.20599999999999,False,13,13
+atr_trail_2x,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,141.04379999999998,-16.65689999999998,False,13,13
+atr_trail_2x,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,248.48489999999998,-124.09799999999998,False,13,13
+atr_trail_2x,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,124.3869,-3.8459000000000003,128.2328,True,13,13
+break_even_at_1r,breakeven_plus_trail,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,391.00260000000003,-357.60560000000004,False,13,13
+break_even_at_1r,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,205.28910000000002,-171.89210000000003,False,13,13
+break_even_at_1r,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,295.3916,-261.9946,False,13,13
+break_even_at_1r,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,149.3936,-115.9966,False,13,13
+break_even_at_1r,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,167.2668,-133.8698,False,13,13
+break_even_at_1r,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,197.718,-164.321,False,13,13
+break_even_at_1r,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,101.65880000000001,-68.26180000000002,False,13,13
+break_even_at_1r,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,65.63900000000001,-32.24200000000001,False,13,13
+break_even_at_1r,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,120.5908,-87.19380000000001,False,13,13
+break_even_at_1r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,206.5929,-173.1959,False,13,13
+break_even_at_1r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,105.05290000000001,-71.6559,False,13,13
+break_even_at_1r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,206.5929,-173.1959,False,13,13
+break_even_at_1r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,141.04379999999998,-107.64679999999998,False,13,13
+break_even_at_1r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,248.48489999999998,-215.0879,False,13,13
+break_even_at_1r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,33.397,-3.8459000000000003,37.2429,True,13,13
+breakeven_plus_trail,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,205.28910000000002,185.7135,True,13,13
+breakeven_plus_trail,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,295.3916,95.61100000000005,True,13,13
+breakeven_plus_trail,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,149.3936,241.60900000000004,True,13,13
+breakeven_plus_trail,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,167.2668,223.73580000000004,True,13,13
+breakeven_plus_trail,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,197.718,193.28460000000004,True,13,13
+breakeven_plus_trail,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,101.65880000000001,289.3438,True,13,13
+breakeven_plus_trail,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,65.63900000000001,325.3636,True,13,13
+breakeven_plus_trail,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,120.5908,270.4118,True,13,13
+breakeven_plus_trail,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,206.5929,184.40970000000004,True,13,13
+breakeven_plus_trail,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,105.05290000000001,285.9497,True,13,13
+breakeven_plus_trail,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,206.5929,184.40970000000004,True,13,13
+breakeven_plus_trail,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,141.04379999999998,249.95880000000005,True,13,13
+breakeven_plus_trail,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,248.48489999999998,142.51770000000005,True,13,13
+breakeven_plus_trail,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,-3.8459000000000003,394.84850000000006,True,13,13
+class_time_stop,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,295.3916,-90.10249999999996,False,13,13
+class_time_stop,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,149.3936,55.89550000000003,True,13,13
+class_time_stop,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,167.2668,38.02230000000003,True,13,13
+class_time_stop,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,197.718,7.57110000000003,True,13,13
+class_time_stop,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,101.65880000000001,103.6303,True,13,13
+class_time_stop,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,65.63900000000001,139.6501,True,13,13
+class_time_stop,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,120.5908,84.69830000000002,True,13,13
+class_time_stop,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,206.5929,-1.303799999999967,False,13,13
+class_time_stop,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,105.05290000000001,100.23620000000001,True,13,13
+class_time_stop,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,206.5929,-1.303799999999967,False,13,13
+class_time_stop,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,141.04379999999998,64.24530000000004,True,13,13
+class_time_stop,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,248.48489999999998,-43.19579999999996,False,13,13
+class_time_stop,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,205.28910000000002,-3.8459000000000003,209.13500000000002,True,13,13
+earnings_blackout,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,149.3936,145.998,True,13,13
+earnings_blackout,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,167.2668,128.1248,True,13,13
+earnings_blackout,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,197.718,97.6736,True,13,13
+earnings_blackout,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,101.65880000000001,193.73279999999997,True,13,13
+earnings_blackout,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,65.63900000000001,229.75259999999997,True,13,13
+earnings_blackout,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,120.5908,174.80079999999998,True,13,13
+earnings_blackout,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,206.5929,88.7987,True,13,13
+earnings_blackout,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,105.05290000000001,190.33869999999996,True,13,13
+earnings_blackout,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,206.5929,88.7987,True,13,13
+earnings_blackout,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,141.04379999999998,154.3478,True,13,13
+earnings_blackout,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,248.48489999999998,46.9067,True,13,13
+earnings_blackout,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,295.3916,-3.8459000000000003,299.23749999999995,True,13,13
+fixed_4r_2r,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,167.2668,-17.873199999999997,False,13,13
+fixed_4r_2r,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,197.718,-48.3244,False,13,13
+fixed_4r_2r,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,101.65880000000001,47.73479999999998,True,13,13
+fixed_4r_2r,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,65.63900000000001,83.75459999999998,True,13,13
+fixed_4r_2r,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,120.5908,28.80279999999999,True,13,13
+fixed_4r_2r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,206.5929,-57.199299999999994,False,13,13
+fixed_4r_2r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,105.05290000000001,44.340699999999984,True,13,13
+fixed_4r_2r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,206.5929,-57.199299999999994,False,13,13
+fixed_4r_2r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,141.04379999999998,8.349800000000016,True,13,13
+fixed_4r_2r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,248.48489999999998,-99.09129999999999,False,13,13
+fixed_4r_2r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,149.3936,-3.8459000000000003,153.2395,True,13,13
+hybrid_50pct_target,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,197.718,-30.4512,False,13,13
+hybrid_50pct_target,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,101.65880000000001,65.60799999999998,True,13,13
+hybrid_50pct_target,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,65.63900000000001,101.62779999999998,True,13,13
+hybrid_50pct_target,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,120.5908,46.67599999999999,True,13,13
+hybrid_50pct_target,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,206.5929,-39.3261,False,13,13
+hybrid_50pct_target,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,105.05290000000001,62.21389999999998,True,13,13
+hybrid_50pct_target,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,206.5929,-39.3261,False,13,13
+hybrid_50pct_target,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,141.04379999999998,26.223000000000013,True,13,13
+hybrid_50pct_target,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,248.48489999999998,-81.21809999999999,False,13,13
+hybrid_50pct_target,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,167.2668,-3.8459000000000003,171.1127,True,13,13
+ma_exit_ema9,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,101.65880000000001,96.05919999999998,True,13,13
+ma_exit_ema9,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,65.63900000000001,132.07899999999998,True,13,13
+ma_exit_ema9,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,120.5908,77.12719999999999,True,13,13
+ma_exit_ema9,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,206.5929,-8.874899999999997,False,13,13
+ma_exit_ema9,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,105.05290000000001,92.66509999999998,True,13,13
+ma_exit_ema9,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,206.5929,-8.874899999999997,False,13,13
+ma_exit_ema9,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,141.04379999999998,56.67420000000001,True,13,13
+ma_exit_ema9,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,248.48489999999998,-50.76689999999999,False,13,13
+ma_exit_ema9,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,197.718,-3.8459000000000003,201.5639,True,13,13
+next_pivot_target,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,65.63900000000001,36.019800000000004,True,13,13
+next_pivot_target,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,120.5908,-18.931999999999988,False,13,13
+next_pivot_target,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,206.5929,-104.93409999999997,False,13,13
+next_pivot_target,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,105.05290000000001,-3.3940999999999946,False,13,13
+next_pivot_target,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,206.5929,-104.93409999999997,False,13,13
+next_pivot_target,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,141.04379999999998,-39.38499999999996,False,13,13
+next_pivot_target,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,248.48489999999998,-146.82609999999997,False,13,13
+next_pivot_target,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,101.65880000000001,-3.8459000000000003,105.50470000000001,True,13,13
+r_multiple_2r,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,65.63900000000001,120.5908,-54.95179999999999,False,13,13
+r_multiple_2r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,65.63900000000001,206.5929,-140.95389999999998,False,13,13
+r_multiple_2r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,65.63900000000001,105.05290000000001,-39.4139,False,13,13
+r_multiple_2r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,65.63900000000001,206.5929,-140.95389999999998,False,13,13
+r_multiple_2r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,65.63900000000001,141.04379999999998,-75.40479999999997,False,13,13
+r_multiple_2r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,65.63900000000001,248.48489999999998,-182.84589999999997,False,13,13
+r_multiple_2r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,65.63900000000001,-3.8459000000000003,69.48490000000001,True,13,13
+r_multiple_3r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,120.5908,206.5929,-86.00209999999998,False,13,13
+r_multiple_3r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,120.5908,105.05290000000001,15.537899999999993,True,13,13
+r_multiple_3r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,120.5908,206.5929,-86.00209999999998,False,13,13
+r_multiple_3r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,120.5908,141.04379999999998,-20.452999999999975,False,13,13
+r_multiple_3r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,120.5908,248.48489999999998,-127.89409999999998,False,13,13
+r_multiple_3r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,120.5908,-3.8459000000000003,124.4367,True,13,13
+regime_flip,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,105.05290000000001,101.53999999999998,True,13,13
+regime_flip,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,206.5929,0.0,False,13,13
+regime_flip,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,141.04379999999998,65.54910000000001,True,13,13
+regime_flip,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,248.48489999999998,-41.891999999999996,False,13,13
+regime_flip,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,-3.8459000000000003,210.4388,True,13,13
+time_stop_10d,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,105.05290000000001,206.5929,-101.53999999999998,False,13,13
+time_stop_10d,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,105.05290000000001,141.04379999999998,-35.99089999999997,False,13,13
+time_stop_10d,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,105.05290000000001,248.48489999999998,-143.43199999999996,False,13,13
+time_stop_10d,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,105.05290000000001,-3.8459000000000003,108.89880000000001,True,13,13
+time_stop_20d,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,141.04379999999998,65.54910000000001,True,13,13
+time_stop_20d,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,248.48489999999998,-41.891999999999996,False,13,13
+time_stop_20d,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,206.5929,-3.8459000000000003,210.4388,True,13,13
+trailing_10pct,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,141.04379999999998,248.48489999999998,-107.4411,False,13,13
+trailing_10pct,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,141.04379999999998,-3.8459000000000003,144.88969999999998,True,13,13
+trailing_15pct,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,248.48489999999998,-3.8459000000000003,252.33079999999998,True,13,13
+atr_trail_1x,atr_trail_2x,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-52.2953,-19.505200000000002,False,16,16
+atr_trail_1x,break_even_at_1r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-95.5363,23.735799999999998,True,16,16
+atr_trail_1x,breakeven_plus_trail,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,38.7835,-110.584,False,16,16
+atr_trail_1x,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-30.8712,-40.9293,False,16,16
+atr_trail_1x,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,578.5006,-650.3010999999999,False,16,16
+atr_trail_1x,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-13.239599999999996,-58.560900000000004,False,16,16
+atr_trail_1x,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,22.4371,-94.2376,False,16,16
+atr_trail_1x,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-32.1935,-39.607,False,16,16
+atr_trail_1x,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-47.7346,-24.0659,False,16,16
+atr_trail_1x,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-69.852,-1.9484999999999957,False,16,16
+atr_trail_1x,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-92.6591,20.858599999999996,True,16,16
+atr_trail_1x,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-33.9016,-37.8989,False,16,16
+atr_trail_1x,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-60.883500000000005,-10.916999999999994,False,16,16
+atr_trail_1x,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-33.9016,-37.8989,False,16,16
+atr_trail_1x,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-97.8176,26.0171,True,16,16
+atr_trail_1x,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,83.02270000000001,-154.8232,False,16,16
+atr_trail_1x,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-71.8005,-55.6271,-16.1734,False,16,16
+atr_trail_2x,break_even_at_1r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-95.5363,43.241,True,16,16
+atr_trail_2x,breakeven_plus_trail,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,38.7835,-91.0788,False,16,16
+atr_trail_2x,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-30.8712,-21.424099999999996,False,16,16
+atr_trail_2x,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,578.5006,-630.7959,False,16,16
+atr_trail_2x,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-13.239599999999996,-39.0557,False,16,16
+atr_trail_2x,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,22.4371,-74.7324,False,16,16
+atr_trail_2x,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-32.1935,-20.101799999999997,False,16,16
+atr_trail_2x,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-47.7346,-4.560699999999997,False,16,16
+atr_trail_2x,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-69.852,17.556700000000006,True,16,16
+atr_trail_2x,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-92.6591,40.3638,True,16,16
+atr_trail_2x,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-33.9016,-18.393699999999995,False,16,16
+atr_trail_2x,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-60.883500000000005,8.588200000000008,True,16,16
+atr_trail_2x,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-33.9016,-18.393699999999995,False,16,16
+atr_trail_2x,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-97.8176,45.5223,True,16,16
+atr_trail_2x,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,83.02270000000001,-135.318,False,16,16
+atr_trail_2x,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-52.2953,-55.6271,3.331800000000001,True,16,16
+break_even_at_1r,breakeven_plus_trail,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,38.7835,-134.3198,False,16,16
+break_even_at_1r,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-30.8712,-64.6651,False,16,16
+break_even_at_1r,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,578.5006,-674.0369,False,16,16
+break_even_at_1r,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-13.239599999999996,-82.2967,False,16,16
+break_even_at_1r,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,22.4371,-117.9734,False,16,16
+break_even_at_1r,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-32.1935,-63.3428,False,16,16
+break_even_at_1r,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-47.7346,-47.8017,False,16,16
+break_even_at_1r,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-69.852,-25.684299999999993,False,16,16
+break_even_at_1r,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-92.6591,-2.877200000000002,False,16,16
+break_even_at_1r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-33.9016,-61.634699999999995,False,16,16
+break_even_at_1r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-60.883500000000005,-34.65279999999999,False,16,16
+break_even_at_1r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-33.9016,-61.634699999999995,False,16,16
+break_even_at_1r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-97.8176,2.2813000000000017,True,16,16
+break_even_at_1r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,83.02270000000001,-178.55900000000003,False,16,16
+break_even_at_1r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-95.5363,-55.6271,-39.9092,False,16,16
+breakeven_plus_trail,class_time_stop,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-30.8712,69.65469999999999,True,16,16
+breakeven_plus_trail,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,578.5006,-539.7171,False,16,16
+breakeven_plus_trail,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-13.239599999999996,52.02309999999999,True,16,16
+breakeven_plus_trail,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,22.4371,16.346399999999996,True,16,16
+breakeven_plus_trail,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-32.1935,70.977,True,16,16
+breakeven_plus_trail,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-47.7346,86.5181,True,16,16
+breakeven_plus_trail,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-69.852,108.63550000000001,True,16,16
+breakeven_plus_trail,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-92.6591,131.4426,True,16,16
+breakeven_plus_trail,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-33.9016,72.6851,True,16,16
+breakeven_plus_trail,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-60.883500000000005,99.667,True,16,16
+breakeven_plus_trail,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-33.9016,72.6851,True,16,16
+breakeven_plus_trail,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-97.8176,136.6011,True,16,16
+breakeven_plus_trail,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,83.02270000000001,-44.23920000000002,False,16,16
+breakeven_plus_trail,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,38.7835,-55.6271,94.41059999999999,True,16,16
+class_time_stop,earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,578.5006,-609.3718,False,16,16
+class_time_stop,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-13.239599999999996,-17.631600000000006,False,16,16
+class_time_stop,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,22.4371,-53.3083,False,16,16
+class_time_stop,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-32.1935,1.3222999999999985,True,16,16
+class_time_stop,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-47.7346,16.8634,True,16,16
+class_time_stop,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-69.852,38.9808,True,16,16
+class_time_stop,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-92.6591,61.78789999999999,True,16,16
+class_time_stop,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-33.9016,3.0304,True,16,16
+class_time_stop,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-60.883500000000005,30.012300000000003,True,16,16
+class_time_stop,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-33.9016,3.0304,True,16,16
+class_time_stop,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-97.8176,66.9464,True,16,16
+class_time_stop,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,83.02270000000001,-113.89390000000002,False,16,16
+class_time_stop,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-30.8712,-55.6271,24.755899999999997,True,16,16
+earnings_blackout,fixed_4r_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-13.239599999999996,591.7402,True,16,16
+earnings_blackout,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,22.4371,556.0635,True,16,16
+earnings_blackout,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-32.1935,610.6940999999999,True,16,16
+earnings_blackout,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-47.7346,626.2352,True,16,16
+earnings_blackout,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-69.852,648.3525999999999,True,16,16
+earnings_blackout,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-92.6591,671.1596999999999,True,16,16
+earnings_blackout,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-33.9016,612.4022,True,16,16
+earnings_blackout,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-60.883500000000005,639.3841,True,16,16
+earnings_blackout,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-33.9016,612.4022,True,16,16
+earnings_blackout,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-97.8176,676.3181999999999,True,16,16
+earnings_blackout,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,83.02270000000001,495.4779,True,16,16
+earnings_blackout,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,-55.6271,634.1277,True,16,16
+fixed_4r_2r,hybrid_50pct_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,22.4371,-35.6767,False,16,16
+fixed_4r_2r,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-32.1935,18.953900000000004,True,16,16
+fixed_4r_2r,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-47.7346,34.495000000000005,True,16,16
+fixed_4r_2r,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-69.852,56.61240000000001,True,16,16
+fixed_4r_2r,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-92.6591,79.4195,True,16,16
+fixed_4r_2r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-33.9016,20.662000000000006,True,16,16
+fixed_4r_2r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-60.883500000000005,47.64390000000001,True,16,16
+fixed_4r_2r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-33.9016,20.662000000000006,True,16,16
+fixed_4r_2r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-97.8176,84.578,True,16,16
+fixed_4r_2r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,83.02270000000001,-96.26230000000001,False,16,16
+fixed_4r_2r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-13.239599999999996,-55.6271,42.3875,True,16,16
+hybrid_50pct_target,ma_exit_ema9,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-32.1935,54.6306,True,16,16
+hybrid_50pct_target,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-47.7346,70.1717,True,16,16
+hybrid_50pct_target,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-69.852,92.2891,True,16,16
+hybrid_50pct_target,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-92.6591,115.0962,True,16,16
+hybrid_50pct_target,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-33.9016,56.3387,True,16,16
+hybrid_50pct_target,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-60.883500000000005,83.32060000000001,True,16,16
+hybrid_50pct_target,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-33.9016,56.3387,True,16,16
+hybrid_50pct_target,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-97.8176,120.2547,True,16,16
+hybrid_50pct_target,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,83.02270000000001,-60.585600000000014,False,16,16
+hybrid_50pct_target,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,22.4371,-55.6271,78.0642,True,16,16
+ma_exit_ema9,next_pivot_target,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-47.7346,15.5411,True,16,16
+ma_exit_ema9,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-69.852,37.658500000000004,True,16,16
+ma_exit_ema9,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-92.6591,60.465599999999995,True,16,16
+ma_exit_ema9,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-33.9016,1.7081000000000017,True,16,16
+ma_exit_ema9,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-60.883500000000005,28.690000000000005,True,16,16
+ma_exit_ema9,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-33.9016,1.7081000000000017,True,16,16
+ma_exit_ema9,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-97.8176,65.6241,True,16,16
+ma_exit_ema9,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,83.02270000000001,-115.21620000000001,False,16,16
+ma_exit_ema9,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-32.1935,-55.6271,23.4336,True,16,16
+next_pivot_target,r_multiple_2r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,-69.852,22.117400000000004,True,16,16
+next_pivot_target,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,-92.6591,44.924499999999995,True,16,16
+next_pivot_target,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,-33.9016,-13.832999999999998,False,16,16
+next_pivot_target,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,-60.883500000000005,13.148900000000005,True,16,16
+next_pivot_target,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,-33.9016,-13.832999999999998,False,16,16
+next_pivot_target,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,-97.8176,50.083,True,16,16
+next_pivot_target,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,83.02270000000001,-130.75730000000001,False,16,16
+next_pivot_target,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-47.7346,-55.6271,7.892499999999998,True,16,16
+r_multiple_2r,r_multiple_3r,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-69.852,-92.6591,22.80709999999999,True,16,16
+r_multiple_2r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-69.852,-33.9016,-35.9504,False,16,16
+r_multiple_2r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-69.852,-60.883500000000005,-8.968499999999999,False,16,16
+r_multiple_2r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-69.852,-33.9016,-35.9504,False,16,16
+r_multiple_2r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-69.852,-97.8176,27.965599999999995,True,16,16
+r_multiple_2r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-69.852,83.02270000000001,-152.87470000000002,False,16,16
+r_multiple_2r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-69.852,-55.6271,-14.224900000000005,False,16,16
+r_multiple_3r,regime_flip,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-92.6591,-33.9016,-58.75749999999999,False,16,16
+r_multiple_3r,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-92.6591,-60.883500000000005,-31.77559999999999,False,16,16
+r_multiple_3r,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-92.6591,-33.9016,-58.75749999999999,False,16,16
+r_multiple_3r,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-92.6591,-97.8176,5.158500000000004,True,16,16
+r_multiple_3r,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-92.6591,83.02270000000001,-175.6818,False,16,16
+r_multiple_3r,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-92.6591,-55.6271,-37.032,False,16,16
+regime_flip,time_stop_10d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,-60.883500000000005,26.981900000000003,True,16,16
+regime_flip,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,-33.9016,0.0,False,16,16
+regime_flip,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,-97.8176,63.916,True,16,16
+regime_flip,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,83.02270000000001,-116.92430000000002,False,16,16
+regime_flip,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,-55.6271,21.725499999999997,True,16,16
+time_stop_10d,time_stop_20d,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-60.883500000000005,-33.9016,-26.981900000000003,False,16,16
+time_stop_10d,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-60.883500000000005,-97.8176,36.934099999999994,True,16,16
+time_stop_10d,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-60.883500000000005,83.02270000000001,-143.9062,False,16,16
+time_stop_10d,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-60.883500000000005,-55.6271,-5.256400000000006,False,16,16
+time_stop_20d,trailing_10pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,-97.8176,63.916,True,16,16
+time_stop_20d,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,83.02270000000001,-116.92430000000002,False,16,16
+time_stop_20d,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-33.9016,-55.6271,21.725499999999997,True,16,16
+trailing_10pct,trailing_15pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-97.8176,83.02270000000001,-180.8403,False,16,16
+trailing_10pct,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,-97.8176,-55.6271,-42.1905,False,16,16
+trailing_15pct,trailing_5pct,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,83.02270000000001,-55.6271,138.64980000000003,True,16,16
+atr_trail_1x,atr_trail_2x,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,11.095799999999997,-32.3232,False,10,10
+atr_trail_1x,break_even_at_1r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-15.783099999999997,-5.444300000000002,False,10,10
+atr_trail_1x,breakeven_plus_trail,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,4.231300000000001,-25.4587,False,10,10
+atr_trail_1x,class_time_stop,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,37.0657,-58.293099999999995,False,10,10
+atr_trail_1x,earnings_blackout,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-52.959399999999995,31.731999999999996,True,10,10
+atr_trail_1x,fixed_4r_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-5.6097,-15.6177,False,10,10
+atr_trail_1x,hybrid_50pct_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,18.8363,-40.0637,False,10,10
+atr_trail_1x,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-5.0901000000000005,-16.1373,False,10,10
+atr_trail_1x,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,1.5754000000000001,-22.802799999999998,False,10,10
+atr_trail_1x,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-15.070199999999998,-6.157200000000001,False,10,10
+atr_trail_1x,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-9.222199999999999,-12.0052,False,10,10
+atr_trail_1x,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,18.6312,-39.858599999999996,False,10,10
+atr_trail_1x,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-1.5050999999999988,-19.7223,False,10,10
+atr_trail_1x,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,18.6312,-39.858599999999996,False,10,10
+atr_trail_1x,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,21.936300000000003,-43.163700000000006,False,10,10
+atr_trail_1x,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,13.013299999999994,-34.24069999999999,False,10,10
+atr_trail_1x,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-21.2274,-11.907300000000003,-9.320099999999996,False,10,10
+atr_trail_2x,break_even_at_1r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-15.783099999999997,26.878899999999994,True,10,10
+atr_trail_2x,breakeven_plus_trail,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,4.231300000000001,6.864499999999996,True,10,10
+atr_trail_2x,class_time_stop,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,37.0657,-25.969900000000003,False,10,10
+atr_trail_2x,earnings_blackout,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-52.959399999999995,64.05519999999999,True,10,10
+atr_trail_2x,fixed_4r_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-5.6097,16.705499999999997,True,10,10
+atr_trail_2x,hybrid_50pct_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,18.8363,-7.740500000000004,False,10,10
+atr_trail_2x,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-5.0901000000000005,16.185899999999997,True,10,10
+atr_trail_2x,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,1.5754000000000001,9.520399999999997,True,10,10
+atr_trail_2x,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-15.070199999999998,26.165999999999997,True,10,10
+atr_trail_2x,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-9.222199999999999,20.317999999999998,True,10,10
+atr_trail_2x,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,18.6312,-7.535400000000003,False,10,10
+atr_trail_2x,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-1.5050999999999988,12.600899999999996,True,10,10
+atr_trail_2x,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,18.6312,-7.535400000000003,False,10,10
+atr_trail_2x,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,21.936300000000003,-10.840500000000006,False,10,10
+atr_trail_2x,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,13.013299999999994,-1.9174999999999969,False,10,10
+atr_trail_2x,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,11.095799999999997,-11.907300000000003,23.0031,True,10,10
+break_even_at_1r,breakeven_plus_trail,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,4.231300000000001,-20.0144,False,10,10
+break_even_at_1r,class_time_stop,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,37.0657,-52.8488,False,10,10
+break_even_at_1r,earnings_blackout,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,-52.959399999999995,37.1763,True,10,10
+break_even_at_1r,fixed_4r_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,-5.6097,-10.173399999999997,False,10,10
+break_even_at_1r,hybrid_50pct_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,18.8363,-34.6194,False,10,10
+break_even_at_1r,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,-5.0901000000000005,-10.692999999999998,False,10,10
+break_even_at_1r,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,1.5754000000000001,-17.3585,False,10,10
+break_even_at_1r,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,-15.070199999999998,-0.7128999999999994,False,10,10
+break_even_at_1r,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,-9.222199999999999,-6.560899999999998,False,10,10
+break_even_at_1r,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,18.6312,-34.4143,False,10,10
+break_even_at_1r,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,-1.5050999999999988,-14.277999999999999,False,10,10
+break_even_at_1r,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,18.6312,-34.4143,False,10,10
+break_even_at_1r,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,21.936300000000003,-37.7194,False,10,10
+break_even_at_1r,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,13.013299999999994,-28.79639999999999,False,10,10
+break_even_at_1r,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.783099999999997,-11.907300000000003,-3.8757999999999946,False,10,10
+breakeven_plus_trail,class_time_stop,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,37.0657,-32.8344,False,10,10
+breakeven_plus_trail,earnings_blackout,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,-52.959399999999995,57.19069999999999,True,10,10
+breakeven_plus_trail,fixed_4r_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,-5.6097,9.841000000000001,True,10,10
+breakeven_plus_trail,hybrid_50pct_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,18.8363,-14.605,False,10,10
+breakeven_plus_trail,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,-5.0901000000000005,9.3214,True,10,10
+breakeven_plus_trail,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,1.5754000000000001,2.655900000000001,True,10,10
+breakeven_plus_trail,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,-15.070199999999998,19.301499999999997,True,10,10
+breakeven_plus_trail,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,-9.222199999999999,13.4535,True,10,10
+breakeven_plus_trail,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,18.6312,-14.399899999999999,False,10,10
+breakeven_plus_trail,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,-1.5050999999999988,5.7364,True,10,10
+breakeven_plus_trail,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,18.6312,-14.399899999999999,False,10,10
+breakeven_plus_trail,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,21.936300000000003,-17.705000000000002,False,10,10
+breakeven_plus_trail,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,13.013299999999994,-8.781999999999993,False,10,10
+breakeven_plus_trail,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,4.231300000000001,-11.907300000000003,16.138600000000004,True,10,10
+class_time_stop,earnings_blackout,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,-52.959399999999995,90.0251,True,10,10
+class_time_stop,fixed_4r_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,-5.6097,42.675399999999996,True,10,10
+class_time_stop,hybrid_50pct_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,18.8363,18.2294,True,10,10
+class_time_stop,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,-5.0901000000000005,42.1558,True,10,10
+class_time_stop,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,1.5754000000000001,35.4903,True,10,10
+class_time_stop,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,-15.070199999999998,52.1359,True,10,10
+class_time_stop,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,-9.222199999999999,46.2879,True,10,10
+class_time_stop,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,18.6312,18.4345,True,10,10
+class_time_stop,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,-1.5050999999999988,38.5708,True,10,10
+class_time_stop,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,18.6312,18.4345,True,10,10
+class_time_stop,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,21.936300000000003,15.129399999999997,True,10,10
+class_time_stop,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,13.013299999999994,24.052400000000006,True,10,10
+class_time_stop,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,-11.907300000000003,48.973,True,10,10
+earnings_blackout,fixed_4r_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,-5.6097,-47.3497,False,10,10
+earnings_blackout,hybrid_50pct_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,18.8363,-71.7957,False,10,10
+earnings_blackout,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,-5.0901000000000005,-47.869299999999996,False,10,10
+earnings_blackout,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,1.5754000000000001,-54.5348,False,10,10
+earnings_blackout,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,-15.070199999999998,-37.889199999999995,False,10,10
+earnings_blackout,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,-9.222199999999999,-43.737199999999994,False,10,10
+earnings_blackout,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,18.6312,-71.5906,False,10,10
+earnings_blackout,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,-1.5050999999999988,-51.454299999999996,False,10,10
+earnings_blackout,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,18.6312,-71.5906,False,10,10
+earnings_blackout,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,21.936300000000003,-74.8957,False,10,10
+earnings_blackout,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,13.013299999999994,-65.97269999999999,False,10,10
+earnings_blackout,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-52.959399999999995,-11.907300000000003,-41.052099999999996,False,10,10
+fixed_4r_2r,hybrid_50pct_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,18.8363,-24.446,False,10,10
+fixed_4r_2r,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,-5.0901000000000005,-0.5195999999999996,False,10,10
+fixed_4r_2r,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,1.5754000000000001,-7.1851,False,10,10
+fixed_4r_2r,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,-15.070199999999998,9.460499999999998,True,10,10
+fixed_4r_2r,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,-9.222199999999999,3.612499999999999,True,10,10
+fixed_4r_2r,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,18.6312,-24.2409,False,10,10
+fixed_4r_2r,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,-1.5050999999999988,-4.104600000000001,False,10,10
+fixed_4r_2r,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,18.6312,-24.2409,False,10,10
+fixed_4r_2r,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,21.936300000000003,-27.546000000000003,False,10,10
+fixed_4r_2r,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,13.013299999999994,-18.622999999999994,False,10,10
+fixed_4r_2r,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.6097,-11.907300000000003,6.297600000000003,True,10,10
+hybrid_50pct_target,ma_exit_ema9,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,-5.0901000000000005,23.9264,True,10,10
+hybrid_50pct_target,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,1.5754000000000001,17.2609,True,10,10
+hybrid_50pct_target,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,-15.070199999999998,33.9065,True,10,10
+hybrid_50pct_target,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,-9.222199999999999,28.058500000000002,True,10,10
+hybrid_50pct_target,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,18.6312,0.20510000000000161,True,10,10
+hybrid_50pct_target,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,-1.5050999999999988,20.3414,True,10,10
+hybrid_50pct_target,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,18.6312,0.20510000000000161,True,10,10
+hybrid_50pct_target,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,21.936300000000003,-3.1000000000000014,False,10,10
+hybrid_50pct_target,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,13.013299999999994,5.8230000000000075,True,10,10
+hybrid_50pct_target,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.8363,-11.907300000000003,30.743600000000004,True,10,10
+ma_exit_ema9,next_pivot_target,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,1.5754000000000001,-6.665500000000001,False,10,10
+ma_exit_ema9,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,-15.070199999999998,9.980099999999997,True,10,10
+ma_exit_ema9,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,-9.222199999999999,4.1320999999999986,True,10,10
+ma_exit_ema9,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,18.6312,-23.7213,False,10,10
+ma_exit_ema9,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,-1.5050999999999988,-3.5850000000000017,False,10,10
+ma_exit_ema9,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,18.6312,-23.7213,False,10,10
+ma_exit_ema9,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,21.936300000000003,-27.026400000000002,False,10,10
+ma_exit_ema9,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,13.013299999999994,-18.103399999999993,False,10,10
+ma_exit_ema9,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-5.0901000000000005,-11.907300000000003,6.817200000000002,True,10,10
+next_pivot_target,r_multiple_2r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,-15.070199999999998,16.645599999999998,True,10,10
+next_pivot_target,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,-9.222199999999999,10.7976,True,10,10
+next_pivot_target,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,18.6312,-17.055799999999998,False,10,10
+next_pivot_target,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,-1.5050999999999988,3.080499999999999,True,10,10
+next_pivot_target,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,18.6312,-17.055799999999998,False,10,10
+next_pivot_target,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,21.936300000000003,-20.3609,False,10,10
+next_pivot_target,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,13.013299999999994,-11.437899999999994,False,10,10
+next_pivot_target,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,1.5754000000000001,-11.907300000000003,13.482700000000003,True,10,10
+r_multiple_2r,r_multiple_3r,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.070199999999998,-9.222199999999999,-5.847999999999999,False,10,10
+r_multiple_2r,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.070199999999998,18.6312,-33.7014,False,10,10
+r_multiple_2r,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.070199999999998,-1.5050999999999988,-13.5651,False,10,10
+r_multiple_2r,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.070199999999998,18.6312,-33.7014,False,10,10
+r_multiple_2r,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.070199999999998,21.936300000000003,-37.0065,False,10,10
+r_multiple_2r,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.070199999999998,13.013299999999994,-28.083499999999994,False,10,10
+r_multiple_2r,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-15.070199999999998,-11.907300000000003,-3.162899999999995,False,10,10
+r_multiple_3r,regime_flip,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-9.222199999999999,18.6312,-27.8534,False,10,10
+r_multiple_3r,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-9.222199999999999,-1.5050999999999988,-7.7171,False,10,10
+r_multiple_3r,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-9.222199999999999,18.6312,-27.8534,False,10,10
+r_multiple_3r,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-9.222199999999999,21.936300000000003,-31.158500000000004,False,10,10
+r_multiple_3r,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-9.222199999999999,13.013299999999994,-22.235499999999995,False,10,10
+r_multiple_3r,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-9.222199999999999,-11.907300000000003,2.685100000000004,True,10,10
+regime_flip,time_stop_10d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,-1.5050999999999988,20.1363,True,10,10
+regime_flip,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,18.6312,0.0,False,10,10
+regime_flip,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,21.936300000000003,-3.305100000000003,False,10,10
+regime_flip,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,13.013299999999994,5.617900000000006,True,10,10
+regime_flip,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,-11.907300000000003,30.538500000000003,True,10,10
+time_stop_10d,time_stop_20d,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-1.5050999999999988,18.6312,-20.1363,False,10,10
+time_stop_10d,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-1.5050999999999988,21.936300000000003,-23.4414,False,10,10
+time_stop_10d,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-1.5050999999999988,13.013299999999994,-14.518399999999993,False,10,10
+time_stop_10d,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,-1.5050999999999988,-11.907300000000003,10.402200000000004,True,10,10
+time_stop_20d,trailing_10pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,21.936300000000003,-3.305100000000003,False,10,10
+time_stop_20d,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,13.013299999999994,5.617900000000006,True,10,10
+time_stop_20d,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,18.6312,-11.907300000000003,30.538500000000003,True,10,10
+trailing_10pct,trailing_15pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,21.936300000000003,13.013299999999994,8.923000000000009,True,10,10
+trailing_10pct,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,21.936300000000003,-11.907300000000003,33.84360000000001,True,10,10
+trailing_15pct,trailing_5pct,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,13.013299999999994,-11.907300000000003,24.920599999999997,True,10,10
+atr_trail_1x,atr_trail_2x,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-22.145799999999998,3.983799999999995,True,19,19
+atr_trail_1x,break_even_at_1r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-20.2519,2.0898999999999965,True,19,19
+atr_trail_1x,breakeven_plus_trail,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-15.694699999999997,-2.467300000000005,False,19,19
+atr_trail_1x,class_time_stop,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-70.3192,52.15719999999999,True,19,19
+atr_trail_1x,earnings_blackout,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,258.16360000000003,-276.3256,False,19,19
+atr_trail_1x,fixed_4r_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-31.782099999999996,13.620099999999994,True,19,19
+atr_trail_1x,hybrid_50pct_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,35.9223,-54.0843,False,19,19
+atr_trail_1x,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-6.5668000000000015,-11.595200000000002,False,19,19
+atr_trail_1x,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,8.137,-26.299000000000003,False,19,19
+atr_trail_1x,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,1.2050000000000023,-19.367000000000004,False,19,19
+atr_trail_1x,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-6.2097000000000016,-11.952300000000001,False,19,19
+atr_trail_1x,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-30.6898,12.5278,True,19,19
+atr_trail_1x,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,17.6646,-35.8266,False,19,19
+atr_trail_1x,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-30.6898,12.5278,True,19,19
+atr_trail_1x,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-16.234,-1.9280000000000008,False,19,19
+atr_trail_1x,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-72.1699,54.00789999999999,True,19,19
+atr_trail_1x,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-18.162000000000003,-18.2951,0.13309999999999889,True,19,19
+atr_trail_2x,break_even_at_1r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-20.2519,-1.8938999999999986,False,19,19
+atr_trail_2x,breakeven_plus_trail,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-15.694699999999997,-6.4511,False,19,19
+atr_trail_2x,class_time_stop,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-70.3192,48.1734,True,19,19
+atr_trail_2x,earnings_blackout,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,258.16360000000003,-280.30940000000004,False,19,19
+atr_trail_2x,fixed_4r_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-31.782099999999996,9.636299999999999,True,19,19
+atr_trail_2x,hybrid_50pct_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,35.9223,-58.0681,False,19,19
+atr_trail_2x,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-6.5668000000000015,-15.578999999999997,False,19,19
+atr_trail_2x,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,8.137,-30.282799999999998,False,19,19
+atr_trail_2x,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,1.2050000000000023,-23.3508,False,19,19
+atr_trail_2x,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-6.2097000000000016,-15.936099999999996,False,19,19
+atr_trail_2x,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-30.6898,8.544000000000004,True,19,19
+atr_trail_2x,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,17.6646,-39.8104,False,19,19
+atr_trail_2x,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-30.6898,8.544000000000004,True,19,19
+atr_trail_2x,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-16.234,-5.911799999999996,False,19,19
+atr_trail_2x,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-72.1699,50.024100000000004,True,19,19
+atr_trail_2x,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-22.145799999999998,-18.2951,-3.8506999999999962,False,19,19
+break_even_at_1r,breakeven_plus_trail,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-15.694699999999997,-4.557200000000002,False,19,19
+break_even_at_1r,class_time_stop,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-70.3192,50.067299999999996,True,19,19
+break_even_at_1r,earnings_blackout,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,258.16360000000003,-278.4155,False,19,19
+break_even_at_1r,fixed_4r_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-31.782099999999996,11.530199999999997,True,19,19
+break_even_at_1r,hybrid_50pct_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,35.9223,-56.1742,False,19,19
+break_even_at_1r,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-6.5668000000000015,-13.685099999999998,False,19,19
+break_even_at_1r,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,8.137,-28.3889,False,19,19
+break_even_at_1r,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,1.2050000000000023,-21.4569,False,19,19
+break_even_at_1r,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-6.2097000000000016,-14.042199999999998,False,19,19
+break_even_at_1r,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-30.6898,10.437900000000003,True,19,19
+break_even_at_1r,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,17.6646,-37.9165,False,19,19
+break_even_at_1r,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-30.6898,10.437900000000003,True,19,19
+break_even_at_1r,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-16.234,-4.017899999999997,False,19,19
+break_even_at_1r,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-72.1699,51.918,True,19,19
+break_even_at_1r,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-20.2519,-18.2951,-1.9567999999999977,False,19,19
+breakeven_plus_trail,class_time_stop,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-70.3192,54.6245,True,19,19
+breakeven_plus_trail,earnings_blackout,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,258.16360000000003,-273.85830000000004,False,19,19
+breakeven_plus_trail,fixed_4r_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-31.782099999999996,16.0874,True,19,19
+breakeven_plus_trail,hybrid_50pct_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,35.9223,-51.617,False,19,19
+breakeven_plus_trail,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-6.5668000000000015,-9.127899999999997,False,19,19
+breakeven_plus_trail,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,8.137,-23.831699999999998,False,19,19
+breakeven_plus_trail,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,1.2050000000000023,-16.8997,False,19,19
+breakeven_plus_trail,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-6.2097000000000016,-9.484999999999996,False,19,19
+breakeven_plus_trail,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-30.6898,14.995100000000004,True,19,19
+breakeven_plus_trail,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,17.6646,-33.3593,False,19,19
+breakeven_plus_trail,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-30.6898,14.995100000000004,True,19,19
+breakeven_plus_trail,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-16.234,0.5393000000000043,True,19,19
+breakeven_plus_trail,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-72.1699,56.4752,True,19,19
+breakeven_plus_trail,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-15.694699999999997,-18.2951,2.600400000000004,True,19,19
+class_time_stop,earnings_blackout,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,258.16360000000003,-328.4828,False,19,19
+class_time_stop,fixed_4r_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-31.782099999999996,-38.537099999999995,False,19,19
+class_time_stop,hybrid_50pct_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,35.9223,-106.2415,False,19,19
+class_time_stop,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-6.5668000000000015,-63.752399999999994,False,19,19
+class_time_stop,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,8.137,-78.4562,False,19,19
+class_time_stop,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,1.2050000000000023,-71.5242,False,19,19
+class_time_stop,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-6.2097000000000016,-64.1095,False,19,19
+class_time_stop,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-30.6898,-39.62939999999999,False,19,19
+class_time_stop,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,17.6646,-87.9838,False,19,19
+class_time_stop,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-30.6898,-39.62939999999999,False,19,19
+class_time_stop,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-16.234,-54.08519999999999,False,19,19
+class_time_stop,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-72.1699,1.8507000000000033,True,19,19
+class_time_stop,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-70.3192,-18.2951,-52.02409999999999,False,19,19
+earnings_blackout,fixed_4r_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-31.782099999999996,289.94570000000004,True,19,19
+earnings_blackout,hybrid_50pct_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,35.9223,222.24130000000002,True,19,19
+earnings_blackout,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-6.5668000000000015,264.73040000000003,True,19,19
+earnings_blackout,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,8.137,250.02660000000003,True,19,19
+earnings_blackout,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,1.2050000000000023,256.95860000000005,True,19,19
+earnings_blackout,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-6.2097000000000016,264.37330000000003,True,19,19
+earnings_blackout,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-30.6898,288.8534,True,19,19
+earnings_blackout,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,17.6646,240.49900000000002,True,19,19
+earnings_blackout,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-30.6898,288.8534,True,19,19
+earnings_blackout,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-16.234,274.3976,True,19,19
+earnings_blackout,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-72.1699,330.3335,True,19,19
+earnings_blackout,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,-18.2951,276.4587,True,19,19
+fixed_4r_2r,hybrid_50pct_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,35.9223,-67.70439999999999,False,19,19
+fixed_4r_2r,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,-6.5668000000000015,-25.215299999999996,False,19,19
+fixed_4r_2r,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,8.137,-39.9191,False,19,19
+fixed_4r_2r,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,1.2050000000000023,-32.9871,False,19,19
+fixed_4r_2r,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,-6.2097000000000016,-25.572399999999995,False,19,19
+fixed_4r_2r,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,-30.6898,-1.0922999999999945,False,19,19
+fixed_4r_2r,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,17.6646,-49.44669999999999,False,19,19
+fixed_4r_2r,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,-30.6898,-1.0922999999999945,False,19,19
+fixed_4r_2r,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,-16.234,-15.548099999999994,False,19,19
+fixed_4r_2r,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,-72.1699,40.3878,True,19,19
+fixed_4r_2r,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-31.782099999999996,-18.2951,-13.486999999999995,False,19,19
+hybrid_50pct_target,ma_exit_ema9,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,-6.5668000000000015,42.4891,True,19,19
+hybrid_50pct_target,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,8.137,27.7853,True,19,19
+hybrid_50pct_target,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,1.2050000000000023,34.717299999999994,True,19,19
+hybrid_50pct_target,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,-6.2097000000000016,42.132000000000005,True,19,19
+hybrid_50pct_target,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,-30.6898,66.6121,True,19,19
+hybrid_50pct_target,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,17.6646,18.2577,True,19,19
+hybrid_50pct_target,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,-30.6898,66.6121,True,19,19
+hybrid_50pct_target,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,-16.234,52.1563,True,19,19
+hybrid_50pct_target,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,-72.1699,108.09219999999999,True,19,19
+hybrid_50pct_target,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,35.9223,-18.2951,54.2174,True,19,19
+ma_exit_ema9,next_pivot_target,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,8.137,-14.703800000000001,False,19,19
+ma_exit_ema9,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,1.2050000000000023,-7.771800000000004,False,19,19
+ma_exit_ema9,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,-6.2097000000000016,-0.3571,False,19,19
+ma_exit_ema9,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,-30.6898,24.123,True,19,19
+ma_exit_ema9,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,17.6646,-24.2314,False,19,19
+ma_exit_ema9,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,-30.6898,24.123,True,19,19
+ma_exit_ema9,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,-16.234,9.667200000000001,True,19,19
+ma_exit_ema9,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,-72.1699,65.6031,True,19,19
+ma_exit_ema9,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.5668000000000015,-18.2951,11.7283,True,19,19
+next_pivot_target,r_multiple_2r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,1.2050000000000023,6.931999999999999,True,19,19
+next_pivot_target,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,-6.2097000000000016,14.346700000000002,True,19,19
+next_pivot_target,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,-30.6898,38.826800000000006,True,19,19
+next_pivot_target,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,17.6646,-9.5276,False,19,19
+next_pivot_target,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,-30.6898,38.826800000000006,True,19,19
+next_pivot_target,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,-16.234,24.371000000000002,True,19,19
+next_pivot_target,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,-72.1699,80.3069,True,19,19
+next_pivot_target,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,8.137,-18.2951,26.432100000000002,True,19,19
+r_multiple_2r,r_multiple_3r,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,1.2050000000000023,-6.2097000000000016,7.414700000000003,True,19,19
+r_multiple_2r,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,1.2050000000000023,-30.6898,31.894800000000004,True,19,19
+r_multiple_2r,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,1.2050000000000023,17.6646,-16.4596,False,19,19
+r_multiple_2r,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,1.2050000000000023,-30.6898,31.894800000000004,True,19,19
+r_multiple_2r,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,1.2050000000000023,-16.234,17.439000000000004,True,19,19
+r_multiple_2r,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,1.2050000000000023,-72.1699,73.3749,True,19,19
+r_multiple_2r,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,1.2050000000000023,-18.2951,19.500100000000003,True,19,19
+r_multiple_3r,regime_flip,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.2097000000000016,-30.6898,24.4801,True,19,19
+r_multiple_3r,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.2097000000000016,17.6646,-23.8743,False,19,19
+r_multiple_3r,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.2097000000000016,-30.6898,24.4801,True,19,19
+r_multiple_3r,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.2097000000000016,-16.234,10.0243,True,19,19
+r_multiple_3r,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.2097000000000016,-72.1699,65.9602,True,19,19
+r_multiple_3r,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-6.2097000000000016,-18.2951,12.0854,True,19,19
+regime_flip,time_stop_10d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,17.6646,-48.3544,False,19,19
+regime_flip,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,-30.6898,0.0,False,19,19
+regime_flip,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,-16.234,-14.4558,False,19,19
+regime_flip,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,-72.1699,41.48009999999999,True,19,19
+regime_flip,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,-18.2951,-12.3947,False,19,19
+time_stop_10d,time_stop_20d,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,17.6646,-30.6898,48.3544,True,19,19
+time_stop_10d,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,17.6646,-16.234,33.8986,True,19,19
+time_stop_10d,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,17.6646,-72.1699,89.83449999999999,True,19,19
+time_stop_10d,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,17.6646,-18.2951,35.9597,True,19,19
+time_stop_20d,trailing_10pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,-16.234,-14.4558,False,19,19
+time_stop_20d,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,-72.1699,41.48009999999999,True,19,19
+time_stop_20d,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-30.6898,-18.2951,-12.3947,False,19,19
+trailing_10pct,trailing_15pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-16.234,-72.1699,55.9359,True,19,19
+trailing_10pct,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-16.234,-18.2951,2.0610999999999997,True,19,19
+trailing_15pct,trailing_5pct,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,-72.1699,-18.2951,-53.87479999999999,False,19,19
+atr_trail_1x,atr_trail_2x,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-21.2103,35.3213,True,10,10
+atr_trail_1x,break_even_at_1r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,38.5053,-24.394299999999994,False,10,10
+atr_trail_1x,breakeven_plus_trail,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,132.1722,-118.0612,False,10,10
+atr_trail_1x,class_time_stop,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-4.1333,18.244300000000003,True,10,10
+atr_trail_1x,earnings_blackout,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,1768.0439,-1753.9328999999998,False,10,10
+atr_trail_1x,fixed_4r_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-5.822800000000001,19.933800000000005,True,10,10
+atr_trail_1x,hybrid_50pct_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-0.3514000000000017,14.462400000000004,True,10,10
+atr_trail_1x,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,12.627799999999999,1.4832000000000036,True,10,10
+atr_trail_1x,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,15.825000000000001,-1.7139999999999986,False,10,10
+atr_trail_1x,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,13.581200000000003,0.5297999999999998,True,10,10
+atr_trail_1x,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-37.100899999999996,51.2119,True,10,10
+atr_trail_1x,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-39.0105,53.121500000000005,True,10,10
+atr_trail_1x,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,25.2197,-11.108699999999997,False,10,10
+atr_trail_1x,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-39.0105,53.121500000000005,True,10,10
+atr_trail_1x,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,15.895299999999999,-1.7842999999999964,False,10,10
+atr_trail_1x,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,13.329100000000002,0.7819000000000003,True,10,10
+atr_trail_1x,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,14.111000000000002,-6.758100000000001,20.869100000000003,True,10,10
+atr_trail_2x,break_even_at_1r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,38.5053,-59.715599999999995,False,10,10
+atr_trail_2x,breakeven_plus_trail,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,132.1722,-153.3825,False,10,10
+atr_trail_2x,class_time_stop,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,-4.1333,-17.076999999999998,False,10,10
+atr_trail_2x,earnings_blackout,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,1768.0439,-1789.2541999999999,False,10,10
+atr_trail_2x,fixed_4r_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,-5.822800000000001,-15.3875,False,10,10
+atr_trail_2x,hybrid_50pct_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,-0.3514000000000017,-20.8589,False,10,10
+atr_trail_2x,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,12.627799999999999,-33.8381,False,10,10
+atr_trail_2x,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,15.825000000000001,-37.0353,False,10,10
+atr_trail_2x,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,13.581200000000003,-34.7915,False,10,10
+atr_trail_2x,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,-37.100899999999996,15.890599999999996,True,10,10
+atr_trail_2x,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,-39.0105,17.8002,True,10,10
+atr_trail_2x,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,25.2197,-46.43,False,10,10
+atr_trail_2x,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,-39.0105,17.8002,True,10,10
+atr_trail_2x,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,15.895299999999999,-37.105599999999995,False,10,10
+atr_trail_2x,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,13.329100000000002,-34.5394,False,10,10
+atr_trail_2x,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-21.2103,-6.758100000000001,-14.4522,False,10,10
+break_even_at_1r,breakeven_plus_trail,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,132.1722,-93.6669,False,10,10
+break_even_at_1r,class_time_stop,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,-4.1333,42.6386,True,10,10
+break_even_at_1r,earnings_blackout,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,1768.0439,-1729.5385999999999,False,10,10
+break_even_at_1r,fixed_4r_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,-5.822800000000001,44.3281,True,10,10
+break_even_at_1r,hybrid_50pct_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,-0.3514000000000017,38.856700000000004,True,10,10
+break_even_at_1r,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,12.627799999999999,25.877499999999998,True,10,10
+break_even_at_1r,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,15.825000000000001,22.680299999999995,True,10,10
+break_even_at_1r,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,13.581200000000003,24.924099999999996,True,10,10
+break_even_at_1r,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,-37.100899999999996,75.6062,True,10,10
+break_even_at_1r,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,-39.0105,77.5158,True,10,10
+break_even_at_1r,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,25.2197,13.285599999999999,True,10,10
+break_even_at_1r,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,-39.0105,77.5158,True,10,10
+break_even_at_1r,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,15.895299999999999,22.61,True,10,10
+break_even_at_1r,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,13.329100000000002,25.176199999999994,True,10,10
+break_even_at_1r,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,38.5053,-6.758100000000001,45.2634,True,10,10
+breakeven_plus_trail,class_time_stop,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,-4.1333,136.3055,True,10,10
+breakeven_plus_trail,earnings_blackout,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,1768.0439,-1635.8717,False,10,10
+breakeven_plus_trail,fixed_4r_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,-5.822800000000001,137.995,True,10,10
+breakeven_plus_trail,hybrid_50pct_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,-0.3514000000000017,132.52360000000002,True,10,10
+breakeven_plus_trail,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,12.627799999999999,119.54440000000001,True,10,10
+breakeven_plus_trail,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,15.825000000000001,116.3472,True,10,10
+breakeven_plus_trail,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,13.581200000000003,118.59100000000001,True,10,10
+breakeven_plus_trail,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,-37.100899999999996,169.2731,True,10,10
+breakeven_plus_trail,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,-39.0105,171.1827,True,10,10
+breakeven_plus_trail,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,25.2197,106.9525,True,10,10
+breakeven_plus_trail,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,-39.0105,171.1827,True,10,10
+breakeven_plus_trail,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,15.895299999999999,116.27690000000001,True,10,10
+breakeven_plus_trail,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,13.329100000000002,118.8431,True,10,10
+breakeven_plus_trail,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,132.1722,-6.758100000000001,138.93030000000002,True,10,10
+class_time_stop,earnings_blackout,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,1768.0439,-1772.1771999999999,False,10,10
+class_time_stop,fixed_4r_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,-5.822800000000001,1.6895000000000007,True,10,10
+class_time_stop,hybrid_50pct_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,-0.3514000000000017,-3.7818999999999985,False,10,10
+class_time_stop,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,12.627799999999999,-16.7611,False,10,10
+class_time_stop,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,15.825000000000001,-19.9583,False,10,10
+class_time_stop,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,13.581200000000003,-17.7145,False,10,10
+class_time_stop,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,-37.100899999999996,32.9676,True,10,10
+class_time_stop,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,-39.0105,34.8772,True,10,10
+class_time_stop,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,25.2197,-29.353,False,10,10
+class_time_stop,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,-39.0105,34.8772,True,10,10
+class_time_stop,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,15.895299999999999,-20.028599999999997,False,10,10
+class_time_stop,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,13.329100000000002,-17.462400000000002,False,10,10
+class_time_stop,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-4.1333,-6.758100000000001,2.6248000000000005,True,10,10
+earnings_blackout,fixed_4r_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,-5.822800000000001,1773.8666999999998,True,10,10
+earnings_blackout,hybrid_50pct_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,-0.3514000000000017,1768.3953,True,10,10
+earnings_blackout,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,12.627799999999999,1755.4161,True,10,10
+earnings_blackout,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,15.825000000000001,1752.2188999999998,True,10,10
+earnings_blackout,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,13.581200000000003,1754.4626999999998,True,10,10
+earnings_blackout,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,-37.100899999999996,1805.1447999999998,True,10,10
+earnings_blackout,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,-39.0105,1807.0544,True,10,10
+earnings_blackout,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,25.2197,1742.8241999999998,True,10,10
+earnings_blackout,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,-39.0105,1807.0544,True,10,10
+earnings_blackout,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,15.895299999999999,1752.1486,True,10,10
+earnings_blackout,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,13.329100000000002,1754.7148,True,10,10
+earnings_blackout,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,-6.758100000000001,1774.802,True,10,10
+fixed_4r_2r,hybrid_50pct_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,-0.3514000000000017,-5.471399999999999,False,10,10
+fixed_4r_2r,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,12.627799999999999,-18.4506,False,10,10
+fixed_4r_2r,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,15.825000000000001,-21.647800000000004,False,10,10
+fixed_4r_2r,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,13.581200000000003,-19.404000000000003,False,10,10
+fixed_4r_2r,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,-37.100899999999996,31.278099999999995,True,10,10
+fixed_4r_2r,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,-39.0105,33.1877,True,10,10
+fixed_4r_2r,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,25.2197,-31.0425,False,10,10
+fixed_4r_2r,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,-39.0105,33.1877,True,10,10
+fixed_4r_2r,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,15.895299999999999,-21.7181,False,10,10
+fixed_4r_2r,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,13.329100000000002,-19.151900000000005,False,10,10
+fixed_4r_2r,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-5.822800000000001,-6.758100000000001,0.9352999999999998,True,10,10
+hybrid_50pct_target,ma_exit_ema9,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,12.627799999999999,-12.9792,False,10,10
+hybrid_50pct_target,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,15.825000000000001,-16.1764,False,10,10
+hybrid_50pct_target,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,13.581200000000003,-13.932600000000004,False,10,10
+hybrid_50pct_target,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,-37.100899999999996,36.7495,True,10,10
+hybrid_50pct_target,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,-39.0105,38.659099999999995,True,10,10
+hybrid_50pct_target,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,25.2197,-25.5711,False,10,10
+hybrid_50pct_target,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,-39.0105,38.659099999999995,True,10,10
+hybrid_50pct_target,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,15.895299999999999,-16.2467,False,10,10
+hybrid_50pct_target,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,13.329100000000002,-13.680500000000004,False,10,10
+hybrid_50pct_target,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-0.3514000000000017,-6.758100000000001,6.406699999999999,True,10,10
+ma_exit_ema9,next_pivot_target,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,15.825000000000001,-3.1972000000000023,False,10,10
+ma_exit_ema9,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,13.581200000000003,-0.9534000000000038,False,10,10
+ma_exit_ema9,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,-37.100899999999996,49.728699999999996,True,10,10
+ma_exit_ema9,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,-39.0105,51.6383,True,10,10
+ma_exit_ema9,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,25.2197,-12.5919,False,10,10
+ma_exit_ema9,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,-39.0105,51.6383,True,10,10
+ma_exit_ema9,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,15.895299999999999,-3.2675,False,10,10
+ma_exit_ema9,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,13.329100000000002,-0.7013000000000034,False,10,10
+ma_exit_ema9,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,12.627799999999999,-6.758100000000001,19.3859,True,10,10
+next_pivot_target,r_multiple_2r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,13.581200000000003,2.2437999999999985,True,10,10
+next_pivot_target,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,-37.100899999999996,52.9259,True,10,10
+next_pivot_target,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,-39.0105,54.8355,True,10,10
+next_pivot_target,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,25.2197,-9.394699999999998,False,10,10
+next_pivot_target,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,-39.0105,54.8355,True,10,10
+next_pivot_target,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,15.895299999999999,-0.07029999999999781,False,10,10
+next_pivot_target,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,13.329100000000002,2.495899999999999,True,10,10
+next_pivot_target,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.825000000000001,-6.758100000000001,22.5831,True,10,10
+r_multiple_2r,r_multiple_3r,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.581200000000003,-37.100899999999996,50.6821,True,10,10
+r_multiple_2r,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.581200000000003,-39.0105,52.5917,True,10,10
+r_multiple_2r,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.581200000000003,25.2197,-11.638499999999997,False,10,10
+r_multiple_2r,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.581200000000003,-39.0105,52.5917,True,10,10
+r_multiple_2r,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.581200000000003,15.895299999999999,-2.3140999999999963,False,10,10
+r_multiple_2r,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.581200000000003,13.329100000000002,0.25210000000000043,True,10,10
+r_multiple_2r,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.581200000000003,-6.758100000000001,20.3393,True,10,10
+r_multiple_3r,regime_flip,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-37.100899999999996,-39.0105,1.9096000000000046,True,10,10
+r_multiple_3r,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-37.100899999999996,25.2197,-62.3206,False,10,10
+r_multiple_3r,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-37.100899999999996,-39.0105,1.9096000000000046,True,10,10
+r_multiple_3r,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-37.100899999999996,15.895299999999999,-52.996199999999995,False,10,10
+r_multiple_3r,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-37.100899999999996,13.329100000000002,-50.43,False,10,10
+r_multiple_3r,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-37.100899999999996,-6.758100000000001,-30.342799999999997,False,10,10
+regime_flip,time_stop_10d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,25.2197,-64.2302,False,10,10
+regime_flip,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,-39.0105,0.0,False,10,10
+regime_flip,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,15.895299999999999,-54.9058,False,10,10
+regime_flip,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,13.329100000000002,-52.339600000000004,False,10,10
+regime_flip,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,-6.758100000000001,-32.2524,False,10,10
+time_stop_10d,time_stop_20d,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,25.2197,-39.0105,64.2302,True,10,10
+time_stop_10d,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,25.2197,15.895299999999999,9.3244,True,10,10
+time_stop_10d,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,25.2197,13.329100000000002,11.890599999999997,True,10,10
+time_stop_10d,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,25.2197,-6.758100000000001,31.977800000000002,True,10,10
+time_stop_20d,trailing_10pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,15.895299999999999,-54.9058,False,10,10
+time_stop_20d,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,13.329100000000002,-52.339600000000004,False,10,10
+time_stop_20d,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,-39.0105,-6.758100000000001,-32.2524,False,10,10
+trailing_10pct,trailing_15pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.895299999999999,13.329100000000002,2.5661999999999967,True,10,10
+trailing_10pct,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,15.895299999999999,-6.758100000000001,22.653399999999998,True,10,10
+trailing_15pct,trailing_5pct,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,13.329100000000002,-6.758100000000001,20.087200000000003,True,10,10
+atr_trail_1x,atr_trail_2x,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,-11.9238,13.3502,True,16,16
+atr_trail_1x,break_even_at_1r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,-11.2353,12.6617,True,16,16
+atr_trail_1x,breakeven_plus_trail,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,61.089299999999994,-59.66289999999999,False,16,16
+atr_trail_1x,class_time_stop,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,51.6594,-50.233,False,16,16
+atr_trail_1x,earnings_blackout,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,438.08619999999996,-436.65979999999996,False,16,16
+atr_trail_1x,fixed_4r_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,6.299200000000002,-4.872800000000002,False,16,16
+atr_trail_1x,hybrid_50pct_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,75.1315,-73.7051,False,16,16
+atr_trail_1x,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,46.808899999999994,-45.38249999999999,False,16,16
+atr_trail_1x,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,-6.033000000000002,7.459400000000002,True,16,16
+atr_trail_1x,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,22.8327,-21.406299999999998,False,16,16
+atr_trail_1x,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,-3.9440999999999984,5.370499999999998,True,16,16
+atr_trail_1x,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,41.9237,-40.497299999999996,False,16,16
+atr_trail_1x,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,52.2204,-50.794,False,16,16
+atr_trail_1x,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,41.9237,-40.497299999999996,False,16,16
+atr_trail_1x,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,34.1403,-32.7139,False,16,16
+atr_trail_1x,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,106.82679999999999,-105.40039999999999,False,16,16
+atr_trail_1x,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,1.4263999999999997,-2.0829999999999993,3.509399999999999,True,16,16
+atr_trail_2x,break_even_at_1r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,-11.2353,-0.6884999999999994,False,16,16
+atr_trail_2x,breakeven_plus_trail,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,61.089299999999994,-73.0131,False,16,16
+atr_trail_2x,class_time_stop,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,51.6594,-63.5832,False,16,16
+atr_trail_2x,earnings_blackout,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,438.08619999999996,-450.01,False,16,16
+atr_trail_2x,fixed_4r_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,6.299200000000002,-18.223000000000003,False,16,16
+atr_trail_2x,hybrid_50pct_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,75.1315,-87.0553,False,16,16
+atr_trail_2x,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,46.808899999999994,-58.732699999999994,False,16,16
+atr_trail_2x,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,-6.033000000000002,-5.890799999999998,False,16,16
+atr_trail_2x,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,22.8327,-34.7565,False,16,16
+atr_trail_2x,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,-3.9440999999999984,-7.979700000000001,False,16,16
+atr_trail_2x,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,41.9237,-53.8475,False,16,16
+atr_trail_2x,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,52.2204,-64.1442,False,16,16
+atr_trail_2x,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,41.9237,-53.8475,False,16,16
+atr_trail_2x,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,34.1403,-46.0641,False,16,16
+atr_trail_2x,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,106.82679999999999,-118.75059999999999,False,16,16
+atr_trail_2x,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.9238,-2.0829999999999993,-9.840800000000002,False,16,16
+break_even_at_1r,breakeven_plus_trail,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,61.089299999999994,-72.32459999999999,False,16,16
+break_even_at_1r,class_time_stop,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,51.6594,-62.8947,False,16,16
+break_even_at_1r,earnings_blackout,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,438.08619999999996,-449.32149999999996,False,16,16
+break_even_at_1r,fixed_4r_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,6.299200000000002,-17.5345,False,16,16
+break_even_at_1r,hybrid_50pct_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,75.1315,-86.3668,False,16,16
+break_even_at_1r,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,46.808899999999994,-58.0442,False,16,16
+break_even_at_1r,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,-6.033000000000002,-5.202299999999998,False,16,16
+break_even_at_1r,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,22.8327,-34.068,False,16,16
+break_even_at_1r,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,-3.9440999999999984,-7.291200000000002,False,16,16
+break_even_at_1r,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,41.9237,-53.159,False,16,16
+break_even_at_1r,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,52.2204,-63.4557,False,16,16
+break_even_at_1r,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,41.9237,-53.159,False,16,16
+break_even_at_1r,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,34.1403,-45.375600000000006,False,16,16
+break_even_at_1r,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,106.82679999999999,-118.06209999999999,False,16,16
+break_even_at_1r,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-11.2353,-2.0829999999999993,-9.1523,False,16,16
+breakeven_plus_trail,class_time_stop,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,51.6594,9.429899999999996,True,16,16
+breakeven_plus_trail,earnings_blackout,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,438.08619999999996,-376.9969,False,16,16
+breakeven_plus_trail,fixed_4r_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,6.299200000000002,54.790099999999995,True,16,16
+breakeven_plus_trail,hybrid_50pct_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,75.1315,-14.042200000000008,False,16,16
+breakeven_plus_trail,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,46.808899999999994,14.2804,True,16,16
+breakeven_plus_trail,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,-6.033000000000002,67.1223,True,16,16
+breakeven_plus_trail,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,22.8327,38.25659999999999,True,16,16
+breakeven_plus_trail,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,-3.9440999999999984,65.03339999999999,True,16,16
+breakeven_plus_trail,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,41.9237,19.165599999999998,True,16,16
+breakeven_plus_trail,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,52.2204,8.868899999999996,True,16,16
+breakeven_plus_trail,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,41.9237,19.165599999999998,True,16,16
+breakeven_plus_trail,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,34.1403,26.94899999999999,True,16,16
+breakeven_plus_trail,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,106.82679999999999,-45.7375,False,16,16
+breakeven_plus_trail,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,61.089299999999994,-2.0829999999999993,63.17229999999999,True,16,16
+class_time_stop,earnings_blackout,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,438.08619999999996,-386.42679999999996,False,16,16
+class_time_stop,fixed_4r_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,6.299200000000002,45.3602,True,16,16
+class_time_stop,hybrid_50pct_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,75.1315,-23.472100000000005,False,16,16
+class_time_stop,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,46.808899999999994,4.850500000000004,True,16,16
+class_time_stop,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,-6.033000000000002,57.6924,True,16,16
+class_time_stop,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,22.8327,28.8267,True,16,16
+class_time_stop,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,-3.9440999999999984,55.6035,True,16,16
+class_time_stop,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,41.9237,9.735700000000001,True,16,16
+class_time_stop,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,52.2204,-0.5609999999999999,False,16,16
+class_time_stop,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,41.9237,9.735700000000001,True,16,16
+class_time_stop,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,34.1403,17.519099999999995,True,16,16
+class_time_stop,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,106.82679999999999,-55.167399999999994,False,16,16
+class_time_stop,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,51.6594,-2.0829999999999993,53.742399999999996,True,16,16
+earnings_blackout,fixed_4r_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,6.299200000000002,431.787,True,16,16
+earnings_blackout,hybrid_50pct_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,75.1315,362.95469999999995,True,16,16
+earnings_blackout,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,46.808899999999994,391.27729999999997,True,16,16
+earnings_blackout,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,-6.033000000000002,444.1192,True,16,16
+earnings_blackout,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,22.8327,415.2535,True,16,16
+earnings_blackout,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,-3.9440999999999984,442.03029999999995,True,16,16
+earnings_blackout,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,41.9237,396.16249999999997,True,16,16
+earnings_blackout,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,52.2204,385.8658,True,16,16
+earnings_blackout,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,41.9237,396.16249999999997,True,16,16
+earnings_blackout,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,34.1403,403.94589999999994,True,16,16
+earnings_blackout,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,106.82679999999999,331.25939999999997,True,16,16
+earnings_blackout,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,-2.0829999999999993,440.1692,True,16,16
+fixed_4r_2r,hybrid_50pct_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,75.1315,-68.8323,False,16,16
+fixed_4r_2r,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,46.808899999999994,-40.509699999999995,False,16,16
+fixed_4r_2r,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,-6.033000000000002,12.332200000000004,True,16,16
+fixed_4r_2r,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,22.8327,-16.533499999999997,False,16,16
+fixed_4r_2r,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,-3.9440999999999984,10.2433,True,16,16
+fixed_4r_2r,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,41.9237,-35.6245,False,16,16
+fixed_4r_2r,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,52.2204,-45.9212,False,16,16
+fixed_4r_2r,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,41.9237,-35.6245,False,16,16
+fixed_4r_2r,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,34.1403,-27.8411,False,16,16
+fixed_4r_2r,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,106.82679999999999,-100.52759999999999,False,16,16
+fixed_4r_2r,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6.299200000000002,-2.0829999999999993,8.382200000000001,True,16,16
+hybrid_50pct_target,ma_exit_ema9,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,46.808899999999994,28.32260000000001,True,16,16
+hybrid_50pct_target,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,-6.033000000000002,81.1645,True,16,16
+hybrid_50pct_target,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,22.8327,52.2988,True,16,16
+hybrid_50pct_target,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,-3.9440999999999984,79.0756,True,16,16
+hybrid_50pct_target,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,41.9237,33.207800000000006,True,16,16
+hybrid_50pct_target,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,52.2204,22.911100000000005,True,16,16
+hybrid_50pct_target,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,41.9237,33.207800000000006,True,16,16
+hybrid_50pct_target,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,34.1403,40.9912,True,16,16
+hybrid_50pct_target,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,106.82679999999999,-31.69529999999999,False,16,16
+hybrid_50pct_target,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,75.1315,-2.0829999999999993,77.2145,True,16,16
+ma_exit_ema9,next_pivot_target,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,-6.033000000000002,52.841899999999995,True,16,16
+ma_exit_ema9,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,22.8327,23.976199999999995,True,16,16
+ma_exit_ema9,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,-3.9440999999999984,50.75299999999999,True,16,16
+ma_exit_ema9,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,41.9237,4.8851999999999975,True,16,16
+ma_exit_ema9,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,52.2204,-5.411500000000004,False,16,16
+ma_exit_ema9,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,41.9237,4.8851999999999975,True,16,16
+ma_exit_ema9,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,34.1403,12.66859999999999,True,16,16
+ma_exit_ema9,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,106.82679999999999,-60.0179,False,16,16
+ma_exit_ema9,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,46.808899999999994,-2.0829999999999993,48.89189999999999,True,16,16
+next_pivot_target,r_multiple_2r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,22.8327,-28.8657,False,16,16
+next_pivot_target,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,-3.9440999999999984,-2.0889000000000038,False,16,16
+next_pivot_target,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,41.9237,-47.9567,False,16,16
+next_pivot_target,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,52.2204,-58.2534,False,16,16
+next_pivot_target,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,41.9237,-47.9567,False,16,16
+next_pivot_target,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,34.1403,-40.173300000000005,False,16,16
+next_pivot_target,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,106.82679999999999,-112.85979999999999,False,16,16
+next_pivot_target,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-6.033000000000002,-2.0829999999999993,-3.950000000000003,False,16,16
+r_multiple_2r,r_multiple_3r,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,22.8327,-3.9440999999999984,26.776799999999998,True,16,16
+r_multiple_2r,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,22.8327,41.9237,-19.090999999999998,False,16,16
+r_multiple_2r,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,22.8327,52.2204,-29.3877,False,16,16
+r_multiple_2r,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,22.8327,41.9237,-19.090999999999998,False,16,16
+r_multiple_2r,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,22.8327,34.1403,-11.307600000000004,False,16,16
+r_multiple_2r,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,22.8327,106.82679999999999,-83.99409999999999,False,16,16
+r_multiple_2r,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,22.8327,-2.0829999999999993,24.915699999999998,True,16,16
+r_multiple_3r,regime_flip,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-3.9440999999999984,41.9237,-45.867799999999995,False,16,16
+r_multiple_3r,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-3.9440999999999984,52.2204,-56.1645,False,16,16
+r_multiple_3r,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-3.9440999999999984,41.9237,-45.867799999999995,False,16,16
+r_multiple_3r,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-3.9440999999999984,34.1403,-38.0844,False,16,16
+r_multiple_3r,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-3.9440999999999984,106.82679999999999,-110.77089999999998,False,16,16
+r_multiple_3r,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,-3.9440999999999984,-2.0829999999999993,-1.861099999999999,False,16,16
+regime_flip,time_stop_10d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,52.2204,-10.296700000000001,False,16,16
+regime_flip,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,41.9237,0.0,False,16,16
+regime_flip,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,34.1403,7.783399999999993,True,16,16
+regime_flip,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,106.82679999999999,-64.9031,False,16,16
+regime_flip,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,-2.0829999999999993,44.006699999999995,True,16,16
+time_stop_10d,time_stop_20d,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,52.2204,41.9237,10.296700000000001,True,16,16
+time_stop_10d,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,52.2204,34.1403,18.080099999999995,True,16,16
+time_stop_10d,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,52.2204,106.82679999999999,-54.606399999999994,False,16,16
+time_stop_10d,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,52.2204,-2.0829999999999993,54.303399999999996,True,16,16
+time_stop_20d,trailing_10pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,34.1403,7.783399999999993,True,16,16
+time_stop_20d,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,106.82679999999999,-64.9031,False,16,16
+time_stop_20d,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,41.9237,-2.0829999999999993,44.006699999999995,True,16,16
+trailing_10pct,trailing_15pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,34.1403,106.82679999999999,-72.6865,False,16,16
+trailing_10pct,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,34.1403,-2.0829999999999993,36.2233,True,16,16
+trailing_15pct,trailing_5pct,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,106.82679999999999,-2.0829999999999993,108.90979999999999,True,16,16

@@ -1,0 +1,12 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,composite_score,recommended
+bollinger_tight,earnings_blackout,124,0.6774,7.271,77.9468,9665.3982,-270.6482,867.7,57.1,True
+bollinger_lower,earnings_blackout,190,0.6947,5.5119,48.867,9284.7349,-279.8623,835.4,57.79,True
+stochrsi_oversold,earnings_blackout,27,0.7037,3.8327,40.0773,1082.088,-174.8261,946.3,58.15,True
+pivot_r1_breakout,earnings_blackout,121,0.6033,2.5474,20.4156,2470.2929,-481.2929,647.5,54.13,True
+cpr_narrow_bullish,next_pivot_target,21,0.9048,6.4062,2.2801,47.8819,-8.4491,12.7,83.52,True
+cmf_flip,class_time_stop,9,0.7778,9.3476,15.2056,136.8505,-16.3939,36.3,66.52,True
+ultimate_oscillator,class_time_stop,6,0.6667,5.2617,5.4456,32.6733,-3.9185,38.5,80.79,True
+williams_r_oversold,r_multiple_2r,26,0.5,2.6174,3.6315,94.419,-11.5631,7.4,62.66,True
+pivot_r2_continuation,hybrid_50pct_target,12,0.75,3.2288,5.5721,66.8647,-10.0,109.3,75.0,True
+hull_rsi,earnings_blackout,6,0.8333,121.5483,208.7636,1252.5814,0.0,597.3,93.33,True
+ichimoku_cloud_breakout,ma_exit_ema9,8,0.625,1.9056,1.4922,11.9376,-13.1818,2.5,62.4,True
