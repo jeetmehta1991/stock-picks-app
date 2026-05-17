@@ -131,11 +131,21 @@ def main():
     print(f"  [OK] {len(trade_log_clean)} total trades from {len(input_dirs)} batches")
 
     # -- 2. Re-compute strategy metrics on combined trade log --
+    # Batch 201 (Issue-1 fix): prior imports referenced run_walk_forward and
+    # run_bonferroni from backtest.results.metrics where they DO NOT exist
+    # (run_walk_forward lives in backtest.engine.improvements;
+    # run_bonferroni was never defined - the bonferroni helper is
+    # bonferroni_adjusted_threshold in improvements). The bad top-level
+    # import made the whole try-block fail before compute_all_metrics ever
+    # ran, forcing every merge to fall back to concat of batch results
+    # (statistically wrong - 5 strategies appearing in 5 batches would each
+    # surface 5 times with batch-local averages, not 1 row with combined
+    # metrics). Phase 1A-beta merge surfaced this. Fix: only import what
+    # actually exists at module top; walk-forward retains its inner import
+    # from improvements.
     print("\nRe-computing strategy metrics on combined trade log...")
     try:
-        from backtest.results.metrics import (compute_all_metrics,
-                                               run_walk_forward,
-                                               run_bonferroni)
+        from backtest.results.metrics import compute_all_metrics
         # compute_all_metrics returns a single DataFrame
         metrics_df = compute_all_metrics(trade_log_clean)
         metrics_df.to_csv(output_dir / "backtest_results.csv", index=False)
@@ -171,12 +181,42 @@ def main():
             print(f"  [OK] {filename}: {len(df)} rows")
 
     # -- 4. Re-compute portfolio summary --
+    # Batch 201 (Issue-2 fix): the 5 batches ran as 5 INDEPENDENT portfolios
+    # each at 100% capital allocation. Concat of trade logs preserves the
+    # batch-local position_size_pct values, so max_portfolio_heat_pct
+    # computed on the concat'd log measures "sum of all 5 batches' open
+    # heats", which is the wrong semantic for the merged-portfolio
+    # interpretation. Phase 1A-beta merge reported 417% heat - clearly an
+    # artifact (a real single portfolio cannot exceed 100% heat without
+    # leverage). Correction: emit BOTH semantics in the JSON:
+    #   - max_portfolio_heat_pct           = unified-portfolio (scaled by 1/N)
+    #   - max_portfolio_heat_pct_concat    = original concat'd value
+    # This preserves auditability AND gives downstream consumers
+    # (dashboards, reports) a sensible default. Same applies to
+    # avg_position_size_pct.
     try:
         from backtest.results.metrics import compute_portfolio_summary
+        n_batches = max(len(input_dirs), 1)
         port = compute_portfolio_summary(trade_log_clean)
+        # Preserve concat-semantics value, then rescale for unified portfolio
+        concat_heat = port.get("max_portfolio_heat_pct", 0)
+        concat_avg_size = port.get("avg_position_size_pct", 0)
+        port["max_portfolio_heat_pct_concat"] = concat_heat
+        port["avg_position_size_pct_concat"]  = concat_avg_size
+        port["max_portfolio_heat_pct"]        = round(concat_heat / n_batches, 1)
+        port["avg_position_size_pct"]         = round(concat_avg_size / n_batches, 2)
+        port["n_batches_merged"]              = n_batches
+        port["heat_semantics_note"]           = (
+            f"max_portfolio_heat_pct rescaled by 1/{n_batches} from concat "
+            "value to approximate unified-portfolio heat (each batch ran at "
+            "100% capital allocation; merged represents 1 portfolio holding "
+            "the union of trades sized against combined capital). Use "
+            "max_portfolio_heat_pct_concat for raw concat aggregate."
+        )
         (output_dir / "portfolio_summary.json").write_text(json.dumps(port, indent=2))
         print(f"\n  [OK] Portfolio return: {port.get('portfolio_return_pct',0):.1f}%")
-        print(f"  [OK] Max portfolio heat: {port.get('max_portfolio_heat_pct',0):.1f}%")
+        print(f"  [OK] Max heat (unified): {port['max_portfolio_heat_pct']:.1f}%  "
+              f"(concat: {concat_heat:.1f}% / {n_batches} batches)")
     except Exception as e:
         print(f"  [WARN]  Portfolio summary failed: {e}")
 

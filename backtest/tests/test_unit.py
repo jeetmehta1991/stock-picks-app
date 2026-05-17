@@ -6684,6 +6684,84 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch201_merge_batch_outputs_imports_resolve():
+    """Batch 201 (Issue 1 fix 2026-05-17): merge_batch_outputs.py's
+    metrics-recompute branch had imports referencing run_walk_forward and
+    run_bonferroni from backtest.results.metrics where they DO NOT exist.
+    The bad top-level import in the try-block failed BEFORE compute_all_metrics
+    ran, forcing every merge to fall back to concat of batch results.
+
+    Regression test: verify that the imports the merge script uses still
+    resolve at import time, and that the non-existent symbols are NOT
+    reintroduced. Surfaces during Phase 1A-beta merge."""
+    # The merge script's actual imports must all resolve
+    from backtest.results.metrics import compute_all_metrics, compute_portfolio_summary
+    from backtest.engine.improvements import run_walk_forward, walk_forward_to_df
+
+    # Symbols that previously broke the merge MUST NOT be importable from
+    # backtest.results.metrics (catches accidental reintroduction)
+    import backtest.results.metrics as _metrics_module
+    assert not hasattr(_metrics_module, "run_walk_forward"), (
+        "Batch 201: run_walk_forward must NOT be in metrics module "
+        "(it lives in backtest.engine.improvements). If you moved it, "
+        "update merge_batch_outputs.py accordingly."
+    )
+    assert not hasattr(_metrics_module, "run_bonferroni"), (
+        "Batch 201: run_bonferroni was never defined and should remain so"
+    )
+
+    # And the script source itself must not reintroduce the bad imports
+    import inspect
+    from pathlib import Path
+    script_src = (Path(__file__).parent.parent.parent
+                  / "scripts" / "merge_batch_outputs.py").read_text(encoding="utf-8")
+    assert "from backtest.results.metrics import" in script_src
+    # Get the metrics-import block (after the comment, before next blank line)
+    import re
+    bad_pattern = re.compile(
+        r"from backtest\.results\.metrics import\s*\([^)]*run_walk_forward[^)]*\)",
+        re.DOTALL,
+    )
+    assert not bad_pattern.search(script_src), (
+        "Batch 201: merge script must NOT import run_walk_forward from metrics"
+    )
+    bad_pattern2 = re.compile(
+        r"from backtest\.results\.metrics import\s*\([^)]*run_bonferroni[^)]*\)",
+        re.DOTALL,
+    )
+    assert not bad_pattern2.search(script_src), (
+        "Batch 201: merge script must NOT import run_bonferroni from metrics"
+    )
+
+
+def test_batch201_merge_portfolio_heat_unified_semantics():
+    """Batch 201 (Issue 2 fix 2026-05-17): N-batch merged trade log
+    aggregated max_portfolio_heat_pct via compute_portfolio_summary gives the
+    SUM of per-batch open heats, not the unified-portfolio heat. Phase
+    1A-beta merge produced 417% heat across 5 batches (clearly artifact -
+    a real single portfolio cannot exceed 100% without leverage).
+
+    Fix: merge_batch_outputs.py rescales heat + avg_position_size by
+    1/N_batches and emits BOTH semantics. This test verifies the script
+    contains the rescale step + emits the _concat fields."""
+    from pathlib import Path
+    script_src = (Path(__file__).parent.parent.parent
+                  / "scripts" / "merge_batch_outputs.py").read_text(encoding="utf-8")
+    # Required keys
+    assert 'port["max_portfolio_heat_pct_concat"]' in script_src
+    assert 'port["avg_position_size_pct_concat"]' in script_src
+    assert 'port["n_batches_merged"]' in script_src
+    # Rescale must divide by n_batches (not hardcode 5)
+    assert "concat_heat / n_batches" in script_src
+    assert "concat_avg_size / n_batches" in script_src
+    # Heat semantics note must be present so downstream consumers can
+    # surface the caveat to readers
+    assert "heat_semantics_note" in script_src
+    # n_batches must default to >=1 to avoid division-by-zero when called
+    # with an empty input_dirs list (defensive)
+    assert "max(len(input_dirs), 1)" in script_src
+
+
 def test_batch197_deflated_sharpe_guards_negative_radicand():
     """Batch 197 (Phase 1A-beta batch_2 crash fix 2026-05-17): the deflated
     Sharpe formula uses (1 - (excess_kurt/4) * sharpe^2)**0.5 whose radicand
