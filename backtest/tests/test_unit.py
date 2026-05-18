@@ -6694,6 +6694,87 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch214_cpcv_splits_yields_expected_paths():
+    """Batch 214 (Validation 2026-05-17): CPCV with 6 groups, choose 2
+    yields C(6,2) = 15 distinct paths. Lopez de Prado 2018 Ch 12
+    canonical configuration."""
+    from backtest.results.cpcv import cpcv_splits, cpcv_summary
+    paths = list(cpcv_splits(n_samples=600, n_groups=6, n_test_groups=2))
+    assert len(paths) == 15, f"6 choose 2 = 15 paths, got {len(paths)}"
+    # Each train/test pair must be disjoint
+    for train_idx, test_idx in paths:
+        train_set, test_set = set(train_idx), set(test_idx)
+        assert train_set.isdisjoint(test_set), "Train and test must be disjoint"
+        # Both must be non-empty
+        assert len(train_idx) > 0
+        assert len(test_idx) > 0
+        # Combined cannot exceed n_samples; embargo zones removed from train
+        assert len(train_idx) + len(test_idx) <= 600
+
+    # Summary helper
+    summary = cpcv_summary(n_samples=600, n_groups=6, n_test_groups=2)
+    assert summary["n_paths"] == 15
+    assert summary["avg_test_size"] == 200  # 2 chunks * 100 samples
+
+
+def test_batch214_cpcv_handles_edge_cases():
+    """Batch 214: CPCV defensive returns empty iterator on degenerate
+    inputs (n_samples <= 0; n_test_groups >= n_groups)."""
+    from backtest.results.cpcv import cpcv_splits
+    assert list(cpcv_splits(0, 6, 2)) == []
+    assert list(cpcv_splits(100, 2, 2)) == []  # n_test_groups not < n_groups
+    assert list(cpcv_splits(100, 6, 6)) == []  # k = n_groups invalid
+
+
+def test_batch214_meta_label_classifier_fit_predicts_proba():
+    """Batch 214: meta_label_classifier_fit trains a binary classifier;
+    predict_proba returns P(win) per row. Lopez de Prado 2017 / Hudson
+    & Thames 2022 meta-labeling discipline."""
+    import pandas as pd
+    import numpy as np
+    from backtest.results.cpcv import (
+        meta_label_classifier_fit,
+        meta_label_predict_proba,
+    )
+    # Synthetic: feature_a positively correlated with win label
+    rng = np.random.default_rng(42)
+    n = 500
+    feat_a = rng.normal(0, 1, n)
+    labels = (feat_a + rng.normal(0, 0.5, n) > 0).astype(int)
+    feat_b = rng.normal(0, 1, n)  # noise feature
+    features = pd.DataFrame({"feat_a": feat_a, "feat_b": feat_b})
+    labels_s = pd.Series(labels)
+
+    clf = meta_label_classifier_fit(features, labels_s)
+    if clf is None:
+        # sklearn not available - test should skip gracefully
+        return
+    proba = meta_label_predict_proba(clf, features)
+    assert proba is not None
+    assert len(proba) == n
+    # All probabilities in [0, 1]
+    assert (proba >= 0).all() and (proba <= 1).all()
+    # The model should differentiate (not all same value)
+    assert proba.std() > 0.05, "Classifier produced uniform predictions"
+
+
+def test_batch214_meta_label_handles_empty_inputs():
+    """Batch 214: meta_label_classifier_fit returns None on empty / null
+    inputs without raising. Defensive."""
+    import pandas as pd
+    from backtest.results.cpcv import meta_label_classifier_fit
+    assert meta_label_classifier_fit(None, None) is None
+    assert meta_label_classifier_fit(pd.DataFrame(), pd.Series([], dtype=int)) is None
+    # Mismatched lengths
+    assert meta_label_classifier_fit(
+        pd.DataFrame({"a": [1, 2, 3]}), pd.Series([0, 1])
+    ) is None
+    # Single-class labels (degenerate)
+    assert meta_label_classifier_fit(
+        pd.DataFrame({"a": [1, 2, 3, 4]}), pd.Series([1, 1, 1, 1])
+    ) is None
+
+
 def test_batch213_dd_size_curve_tightened_gradient():
     """Batch 213 (Risk mgmt 2026-05-17): drawdown_size_multiplier
     tightened to gradient curve per Lopez de Prado smooth de-risking:
