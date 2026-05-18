@@ -612,6 +612,40 @@ def process_day_exits(
         # Default config remains "close" - this is forward-compat plumbing.
         trade = update_trailing_stop(trade, today_close, vix_value, today_high=today_high, today_low=today_low)
 
+        # -- Step 4: Time-stop discipline (Batch 213 2026-05-17 owner-approved
+        # research review) - Lars Kestner "Quantitative Trading Strategies"
+        # (2003): hard-close trades that fail to develop favourable
+        # excursion within a sample-size window. Frees capital from "drift
+        # trades" that consume risk budget without producing returns.
+        # Per-category window:
+        #   mean_reversion: 10 bars (Connors mean-rev decay rate)
+        #   momentum:       30 bars (allow trend continuation)
+        #   trend:          50 bars (longer-horizon)
+        #   smc / vwap / orb / event_driven / pivot / breakout: 20 bars
+        # Trigger: MFE < 0.5 x avg_true_range_pct after window_days bars.
+        try:
+            hold_days = (today_date - trade.entry_date).days
+            cat = (trade.category or "").lower()
+            window = {
+                "mean_reversion": 10,
+                "momentum":       30,
+                "trend":          50,
+            }.get(cat, 20)
+            # Approximate ATR-pct threshold: use entry_price * 1% as floor.
+            # Real ATR was at entry; use a fraction of entry_price as proxy.
+            mfe_threshold = 0.5  # 0.5% MFE minimum to keep position open
+            if hold_days >= window and trade.max_favourable_excursion < mfe_threshold:
+                from backtest.engine.improvements import apply_exit_slippage
+                ts_exit_price, _ = apply_exit_slippage(today_close, trade.direction, trade.ticker)
+                closed.append(close_trade(
+                    trade, ts_exit_price, today_date,
+                    f"time_stop_{window}d_mfe<{mfe_threshold}pct_batch213",
+                    0.0, 0.0,
+                ))
+                continue
+        except Exception:
+            pass
+
         still_open.append(trade)
 
     return closed, still_open

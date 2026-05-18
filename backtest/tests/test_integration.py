@@ -375,8 +375,14 @@ def test_dec_091_engine_wires_drawdown_size_multiplier():
 
 def test_dec_091_engine_scales_size_by_dd_band_behavior():
     """DEC-091 wiring behavior: 12% DD -> drawdown_size_multiplier returns
-    0.75 -> engine applies it to TIER_POSITION_SIZE_PCT yielding the
-    band-reduced size.
+    0.5 (Batch 213 tightened gradient curve, was 0.75 pre-batch) ->
+    engine applies it to TIER_POSITION_SIZE_PCT yielding the band-reduced
+    size.
+
+    Batch 213 (Risk mgmt 2026-05-17 owner-approved research review):
+    DD-band curve tightened from {<10:1.0, 10-20:0.75, 20-30:0.5, >=30:0}
+    to {<5:1.0, 5-10:0.8, 10-15:0.5, 15-20:0.25, >=20:0} per Lopez de
+    Prado smooth de-risking. 12% DD now hits the 10-15% band -> 0.5.
     """
     from datetime import date
     from backtest.engine.backtest import BacktestEngine
@@ -386,9 +392,10 @@ def test_dec_091_engine_scales_size_by_dd_band_behavior():
     p.equity_curve.append((date(2024, 1, 1), 100_000.0))
     p._equity_peak = 100_000.0
     p.equity_curve.append((date(2024, 1, 2), 88_000.0))   # 12% DD
-    assert p.drawdown_size_multiplier() == 0.75
+    assert p.drawdown_size_multiplier() == 0.5
     base = TIER_POSITION_SIZE_PCT["HIGH"]
-    assert base * p.drawdown_size_multiplier() == 0.0225
+    # base 3% * 0.5 = 1.5%
+    assert base * p.drawdown_size_multiplier() == 0.015
 
 
 def test_dec_088_engine_wires_vol_target_scale_factor():

@@ -2638,27 +2638,37 @@ def _portfolio_with_dd(starting=100_000.0, current_equity=None):
     return p
 
 
-def test_dec_091_drawdown_multiplier_full_size_below_10pct():
-    """DEC-091: DD < 10% -> multiplier 1.0."""
-    p = _portfolio_with_dd(100_000.0, 95_000.0)  # 5% DD
+def test_dec_091_drawdown_multiplier_full_size_below_5pct():
+    """DEC-091 / Batch 213 tightened curve: DD <5% -> multiplier 1.0.
+    Pre-Batch-213 ladder used DD<10% threshold; tightened per research
+    review (owner-approved 2026-05-17) to add 5% early-warning band."""
+    # 3% DD -> 1.0 (below 5% threshold)
+    p = _portfolio_with_dd(100_000.0, 97_000.0)
     assert p.drawdown_size_multiplier() == 1.0
 
 
-def test_dec_091_drawdown_multiplier_075_at_10pct():
-    """DEC-091 spec test signal: 12% DD -> size * 0.75."""
+def test_dec_091_drawdown_multiplier_080_at_5pct():
+    """Batch 213 new band: DD >=5% AND <10% -> 0.8 (early-warning)."""
+    p = _portfolio_with_dd(100_000.0, 94_000.0)  # 6% DD
+    assert p.drawdown_size_multiplier() == 0.8
+
+
+def test_dec_091_drawdown_multiplier_050_at_10pct():
+    """Batch 213 tightened: DD >=10% AND <15% -> 0.5 (was 0.75 pre-batch)."""
     p = _portfolio_with_dd(100_000.0, 88_000.0)  # 12% DD
-    assert p.drawdown_size_multiplier() == 0.75
-
-
-def test_dec_091_drawdown_multiplier_050_at_20pct():
-    """DEC-091 spec test signal: 22% DD -> size * 0.5."""
-    p = _portfolio_with_dd(100_000.0, 78_000.0)  # 22% DD
     assert p.drawdown_size_multiplier() == 0.5
 
 
-def test_dec_091_drawdown_multiplier_halt_at_30pct():
-    """DEC-091 spec test signal: 32% DD -> entry rejected (multiplier 0.0)."""
-    p = _portfolio_with_dd(100_000.0, 68_000.0)  # 32% DD
+def test_dec_091_drawdown_multiplier_025_at_15pct():
+    """Batch 213 new band: DD >=15% AND <20% -> 0.25 (pre-halt)."""
+    p = _portfolio_with_dd(100_000.0, 83_000.0)  # 17% DD
+    assert p.drawdown_size_multiplier() == 0.25
+
+
+def test_dec_091_drawdown_multiplier_halt_at_20pct():
+    """Batch 213 tightened: DD >=20% -> 0.0 halt (was 30% pre-batch).
+    Matches DEC-515 Level 6 default 20% DD halt threshold."""
+    p = _portfolio_with_dd(100_000.0, 78_000.0)  # 22% DD
     assert p.drawdown_size_multiplier() == 0.0
 
 
@@ -6682,6 +6692,98 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     assert 'not pc["macro_correlation"]' in src, (
         "Batch 186: macro_correlation must be opt-in via 'not pc[\"macro_correlation\"]'"
     )
+
+
+def test_batch213_dd_size_curve_tightened_gradient():
+    """Batch 213 (Risk mgmt 2026-05-17): drawdown_size_multiplier
+    tightened to gradient curve per Lopez de Prado smooth de-risking:
+      <5%: 1.0   >=5%: 0.8   >=10%: 0.5   >=15%: 0.25   >=20%: 0.0
+    Pre-batch ladder (10/20/30%) was too coarse; new curve adds 5%
+    early-warning and 15% pre-halt steps."""
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    # Simulate equity at various DD levels
+    p.equity_curve = [(None, 100_000.0), (None, 100_000.0)]  # peak
+    # 0% DD -> 1.0
+    p.equity_curve.append((None, 100_000.0))
+    assert p.drawdown_size_multiplier() == 1.0
+    # 6% DD -> 0.8 (Batch 213 new band)
+    p.equity_curve.append((None, 94_000.0))
+    assert p.drawdown_size_multiplier() == 0.8
+    # 12% DD -> 0.5
+    p.equity_curve.append((None, 88_000.0))
+    assert p.drawdown_size_multiplier() == 0.5
+    # 16% DD -> 0.25 (Batch 213 new band)
+    p.equity_curve.append((None, 84_000.0))
+    assert p.drawdown_size_multiplier() == 0.25
+    # 22% DD -> halt at 0.0
+    p.equity_curve.append((None, 78_000.0))
+    assert p.drawdown_size_multiplier() == 0.0
+
+
+def test_batch213_time_stop_triggers_after_window():
+    """Batch 213: time-stop closes trades that fail to develop MFE > 0.5pct
+    within per-category window (mean-reversion: 10 bars; momentum: 30;
+    trend: 50; default: 20). Kestner discipline."""
+    from datetime import date, timedelta
+    from backtest.engine.backtest import OpenTrade
+    from backtest.engine.exit_manager import process_day_exits
+
+    # Mean-reversion trade entered 11 business days ago, low MFE
+    entry_d = date(2024, 1, 2)
+    today = date(2024, 1, 18)  # ~12 calendar days = ~10 business days
+    trade = OpenTrade(
+        ticker="TEST", entry_date=entry_d, entry_price=100.0,
+        direction="long", strategy="rsi_oversold", category="mean_reversion",
+        sector="Unknown", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=100.0, regime_at_entry="neutral",
+        signals_at_entry={}, context_bullets=[], context_paragraph="",
+        confidence_tier="MEDIUM",
+        trade_id="TEST_test",
+    )
+    trade.max_favourable_excursion = 0.1  # only 0.1% MFE - fails threshold
+
+    bars = {"TEST": {"open": 99.5, "high": 100.0, "low": 99.0, "close": 99.5,
+                     "prev_close": 99.0}}
+    closed, still_open = process_day_exits(
+        [trade], bars, today, vix_value=20.0,
+        regime="neutral", active_signals={}, circuit_breaker_log=[],
+    )
+    # Trade should have been closed with time_stop reason
+    assert len(closed) == 1
+    assert "time_stop" in closed[0].exit_reason
+    assert "batch213" in closed[0].exit_reason
+
+
+def test_batch213_time_stop_skips_when_mfe_above_threshold():
+    """Batch 213: time-stop must NOT close trades that have developed
+    MFE > 0.5% (still working - give them room to run)."""
+    from datetime import date
+    from backtest.engine.backtest import OpenTrade
+    from backtest.engine.exit_manager import process_day_exits
+
+    entry_d = date(2024, 1, 2)
+    today = date(2024, 1, 18)
+    trade = OpenTrade(
+        ticker="TEST", entry_date=entry_d, entry_price=100.0,
+        direction="long", strategy="rsi_oversold", category="mean_reversion",
+        sector="Unknown", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=102.0, regime_at_entry="neutral",
+        signals_at_entry={}, context_bullets=[], context_paragraph="",
+        confidence_tier="MEDIUM",
+        trade_id="TEST_test",
+    )
+    trade.max_favourable_excursion = 2.0  # 2% MFE - well above threshold
+
+    bars = {"TEST": {"open": 101, "high": 102, "low": 100.5, "close": 101.5,
+                     "prev_close": 101}}
+    closed, still_open = process_day_exits(
+        [trade], bars, today, vix_value=20.0,
+        regime="neutral", active_signals={}, circuit_breaker_log=[],
+    )
+    # Trade should remain open (no time_stop close)
+    time_stop_closes = [c for c in closed if "time_stop" in c.exit_reason]
+    assert len(time_stop_closes) == 0
 
 
 def test_batch212_half_kelly_fraction_basic():

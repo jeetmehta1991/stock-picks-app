@@ -267,24 +267,27 @@ class Portfolio:
         """DEC-091 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 54 2026-05-11
         (owner-approved Path C; closes DEC-022 SUPERSEDED_BY_DEC-091).
 
-        Tiered drawdown re-sizing per Pass 52 turn 67 owner spec:
-          DD < 10%:  multiplier 1.0 (no reduction)
-          DD >= 10%: multiplier 0.75
-          DD >= 20%: multiplier 0.5
-          DD >= 30%: multiplier 0.0 (halt new entries; matches the existing
-                     can_open drawdown_suspend_pct gate)
-
-        Returns float in {0.0, 0.5, 0.75, 1.0}. Engine integration (call this
-        before can_open to scale size_pct) deferred to follow-on decision to
-        preserve current backtest behavior; current scope is helper.
+        Batch 213 (Risk mgmt 2026-05-17 owner-approved research review):
+        tightened to research-recommended gradient curve per Lopez de Prado
+        smooth-de-risking discipline. Pre-batch ladder (10/20/30%) was too
+        coarse - jumping from full size to 50% on a single bad day
+        creates path-dependence on the exact drawdown depth. New curve:
+          DD <  5%: multiplier 1.0
+          DD >=  5%: 0.8 (early-warning de-risk)
+          DD >= 10%: 0.5
+          DD >= 15%: 0.25
+          DD >= 20%: 0.0 (halt; matches DEC-515 Level 6 default 20% DD)
+        Returns float in {0.0, 0.25, 0.5, 0.8, 1.0}.
         """
         dd = self.current_drawdown_pct()
-        if dd >= 30.0:
-            return 0.0
         if dd >= 20.0:
-            return 0.5
+            return 0.0
+        if dd >= 15.0:
+            return 0.25
         if dd >= 10.0:
-            return 0.75
+            return 0.5
+        if dd >= 5.0:
+            return 0.8
         return 1.0
 
     def realized_portfolio_vol_annualized(
