@@ -1125,6 +1125,96 @@ def strat_break_retest_confluence(s):
 #  PENDING strategy-additive). Run `len(ALL_STRATEGIES)` for current count.
 # -----------------------------------------------------------------------------
 
+def strat_smc_bos_continuation(s):
+    """Batch 210 (SMC/ICT family 2026-05-17 owner-approved research review).
+    Break of Structure continuation: market makes a new structural high
+    (BOS up) after a CHoCH; trend-continuation entry. Quantum Algo Mar
+    2026 backtest: combined SMC stack achieved 61% WR / 2.17 PF / +2.27R
+    average on 2,600 trades over 26 months.
+    """
+    fl = (
+        s.get("smc_bos_bullish", False)
+        and s.get("price_above_ema_200", True)
+    )
+    fs = (
+        s.get("smc_bos_bearish", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat3(fl, fs, "smc",
+        ["smc_bos_bullish", "price_above_ema_200"],
+        ["smc_bos_bearish", "price_below_ema_200"],
+        ["Break of Structure (continuation) up - new structural high",
+         "Above 200 EMA (regime gate)"],
+        ["Break of Structure (continuation) down - new structural low",
+         "Below 200 EMA (bear regime)"])
+
+
+def strat_smc_choch_reversal(s):
+    """Batch 210: Change of Character reversal. CHoCH marks the FIRST
+    structural shift opposing the prior trend; high-conviction reversal
+    setup per ICT/SMC discipline. Pairs with FVG-aligned entry."""
+    fl = (
+        s.get("smc_choch_bullish", False)
+        and s.get("smc_fvg_bullish_active", False)
+    )
+    fs = (
+        s.get("smc_choch_bearish", False)
+        and s.get("smc_fvg_bearish_active", False)
+    )
+    return _strat3(fl, fs, "smc",
+        ["smc_choch_bullish", "smc_fvg_bullish_active"],
+        ["smc_choch_bearish", "smc_fvg_bearish_active"],
+        ["Change of Character bullish (reversal)",
+         "Bullish Fair Value Gap active - confluence"],
+        ["Change of Character bearish (reversal)",
+         "Bearish Fair Value Gap active - confluence"])
+
+
+def strat_smc_order_block_bounce(s):
+    """Batch 210: Order block bounce. Bullish OB = last opposing
+    (bearish) candle before an impulse up; price returning to this zone
+    acts as institutional support. Symmetric for bearish OB."""
+    fl = (
+        s.get("smc_ob_bullish_active", False)
+        and s.get("rsi_14", 50) < 45  # pullback context
+        and s.get("price_above_ema_200", True)
+    )
+    fs = (
+        s.get("smc_ob_bearish_active", False)
+        and s.get("rsi_14", 50) > 55
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat3(fl, fs, "smc",
+        ["smc_ob_bullish_active", "rsi_14<45", "price_above_ema_200"],
+        ["smc_ob_bearish_active", "rsi_14>55", "price_below_ema_200"],
+        ["Bullish Order Block active - institutional support zone",
+         "RSI pullback context", "Above 200 EMA"],
+        ["Bearish Order Block active - institutional resistance zone",
+         "RSI rally context", "Below 200 EMA"])
+
+
+def strat_smc_liquidity_sweep_reversal(s):
+    """Batch 210: Liquidity sweep reversal. Price sweeps a cluster of
+    equal highs/lows (taking out stops), then reverses. Classic ICT
+    'stop hunt' pattern. Pairs with CHoCH for additional reversal
+    confirmation."""
+    fl = (
+        s.get("smc_liquidity_swept_dn", False)  # lows swept -> bullish reversal
+        and (s.get("smc_choch_bullish", False) or s.get("smc_bos_bullish", False))
+    )
+    fs = (
+        s.get("smc_liquidity_swept_up", False)
+        and (s.get("smc_choch_bearish", False) or s.get("smc_bos_bearish", False))
+    )
+    return _strat3(fl, fs, "smc",
+        ["smc_liquidity_swept_dn", "smc_choch_or_bos_bullish"],
+        ["smc_liquidity_swept_up", "smc_choch_or_bos_bearish"],
+        ["Liquidity sweep down (stops taken below low cluster)",
+         "Followed by bullish CHoCH/BOS - reversal confirmed"],
+        ["Liquidity sweep up (stops taken above high cluster)",
+         "Followed by bearish CHoCH/BOS - reversal confirmed"])
+
+
 def strat_pead_long(s):
     """Batch 209 (PEAD module 2026-05-17 owner-approved research review).
     Post-Earnings Announcement Drift long entry per Bernard-Thomas (1989)
@@ -1270,6 +1360,11 @@ def strat_avwap_20high_rejection_short(s):
 
 
 ALL_STRATEGIES = {
+    # SMC / ICT family (4 - Batch 210 2026-05-17 owner-approved research review)
+    "smc_bos_continuation":         strat_smc_bos_continuation,
+    "smc_choch_reversal":           strat_smc_choch_reversal,
+    "smc_order_block_bounce":       strat_smc_order_block_bounce,
+    "smc_liquidity_sweep_reversal": strat_smc_liquidity_sweep_reversal,
     # PEAD family (2 - Batch 209 2026-05-17 owner-approved research review)
     "pead_long":                    strat_pead_long,
     "pead_short":                   strat_pead_short,
@@ -1554,6 +1649,15 @@ def screen_instrument(
         pead = compute_pead_signals(ticker, df, as_of)
         if pead:
             signals.update(pead)
+    except Exception:
+        pass
+    # Batch 210: SMC / ICT signals via vendored smartmoneyconcepts library.
+    # Returns empty dict when library unavailable or insufficient history.
+    try:
+        from backtest.signals.smc_ict import compute_smc_signals
+        smc_out = compute_smc_signals(df)
+        if smc_out:
+            signals.update(smc_out)
     except Exception:
         pass
 

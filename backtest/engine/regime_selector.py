@@ -105,6 +105,13 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # Bernard-Thomas effect is documented robust across regimes.
     "pead_long":                    {"bull", "neutral", "bear", "crisis"},
     "pead_short":                   {"bull", "neutral", "bear", "crisis"},
+    # SMC / ICT family (Batch 210): structural / liquidity signals are
+    # regime-agnostic per Quantum Algo 2026 backtest; strategies self-
+    # gate via 200-EMA inside the long/short branches.
+    "smc_bos_continuation":         {"bull", "neutral", "bear", "crisis"},
+    "smc_choch_reversal":           {"bull", "neutral", "bear", "crisis"},
+    "smc_order_block_bounce":       {"bull", "neutral", "bear", "crisis"},
+    "smc_liquidity_sweep_reversal": {"bull", "neutral", "bear", "crisis"},
     # Short-side: bear/crisis only
     "bollinger_upper_short":    {"bear", "crisis"},
     "rsi_overbought_short":     {"bear", "crisis"},

@@ -6684,6 +6684,57 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch210_smc_strategies_registered():
+    """Batch 210 (SMC/ICT family 2026-05-17): 4 SMC strategies registered."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    for name in (
+        "smc_bos_continuation",
+        "smc_choch_reversal",
+        "smc_order_block_bounce",
+        "smc_liquidity_sweep_reversal",
+    ):
+        assert name in ALL_STRATEGIES, f"Batch 210: {name} must be registered"
+
+
+def test_batch210_compute_smc_signals_handles_missing_data():
+    """Batch 210: compute_smc_signals returns empty dict on empty input
+    or missing columns (no raise)."""
+    import pandas as pd
+    from backtest.signals.smc_ict import compute_smc_signals
+    assert compute_smc_signals(pd.DataFrame()) == {}
+    # Missing required columns
+    bad_df = pd.DataFrame({"foo": [1, 2, 3]})
+    assert compute_smc_signals(bad_df) == {}
+
+
+def test_batch210_smc_bos_continuation_long_fires_with_regime():
+    """Batch 210: smc_bos_continuation long fires on BOS bullish + 200-EMA
+    regime gate."""
+    from backtest.signals.screener import strat_smc_bos_continuation
+    s = {
+        "smc_bos_bullish": True,
+        "smc_bos_bearish": False,
+        "price_above_ema_200": True,
+    }
+    r = strat_smc_bos_continuation(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # Without regime gate -> no fire
+    s["price_above_ema_200"] = False
+    assert strat_smc_bos_continuation(s)["fires"] is False
+
+
+def test_batch210_smc_choch_reversal_requires_fvg_confluence():
+    """Batch 210: CHoCH reversal requires same-direction FVG active
+    (confluence). Single-signal CHoCH alone insufficient."""
+    from backtest.signals.screener import strat_smc_choch_reversal
+    # CHoCH alone -> no fire
+    s = {"smc_choch_bullish": True, "smc_fvg_bullish_active": False}
+    assert strat_smc_choch_reversal(s)["fires"] is False
+    # CHoCH + FVG -> fire
+    s["smc_fvg_bullish_active"] = True
+    assert strat_smc_choch_reversal(s)["fires"] is True
+
+
 def test_batch209_pead_strategies_registered():
     """Batch 209 (PEAD module 2026-05-17): pead_long + pead_short
     registered in ALL_STRATEGIES."""
