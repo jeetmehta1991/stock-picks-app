@@ -1177,6 +1177,96 @@ def strat_orb_stocks_in_play_short(s):
          "Below 200 EMA (bear regime confirmation)"])
 
 
+def strat_insider_cluster_long(s):
+    """Batch 222 (insider clusters 2026-05-18 owner-approved). Cluster of
+    insider buys (>=2 unique insiders, open-market purchases, last 30
+    days) -> documented ~7pct 12-month alpha.
+
+    Source: Cohen-Malloy-Pomorski 2012 JF "Decoding Inside Information";
+    Akbas-Jiang-Koch 2024 RFS update confirming post-publication.
+    """
+    fires = (
+        s.get("insider_cluster_active", False)
+        and s.get("price_above_ema_200", True)
+    )
+    n = s.get("insider_unique_buyers_30d", 0)
+    return _strat(fires, "long", "event_driven",
+        ["insider_cluster_active", "price_above_ema_200"],
+        [f"Insider buying cluster: {n} unique insiders bought "
+         f"open-market in last 30 days",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_insider_cluster_with_director_long(s):
+    """Batch 222: Higher-conviction insider variant - cluster requires
+    at least 1 DIRECTOR (board member) as a buyer. Director purchases
+    are documented as having higher signal value than purely-officer
+    transactions (Lakonishok-Lee 2001 RFS)."""
+    fires = (
+        s.get("insider_cluster_active", False)
+        and s.get("insider_director_buyers_30d", 0) >= 1
+        and s.get("price_above_ema_200", True)
+    )
+    n = s.get("insider_unique_buyers_30d", 0)
+    n_dir = s.get("insider_director_buyers_30d", 0)
+    return _strat(fires, "long", "event_driven",
+        ["insider_cluster_active", "insider_director>=1",
+         "price_above_ema_200"],
+        [f"Insider cluster: {n} unique buyers incl. {n_dir} director(s)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_xs_quality_top_quintile_long(s):
+    """Batch 222 (quality factor 2026-05-18). Long top-quintile gross
+    profitability + 200-EMA gate. Source: Novy-Marx 2013 JFE; Asness-
+    Frazzini-Pedersen 2019 RAS 'Quality Minus Junk'. Documented
+    Sharpe 0.8-1.1 standalone; combined with momentum reaches 1.4."""
+    fires = (
+        s.get("xs_quality_top_quintile", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "factor",
+        ["xs_quality_top_quintile", "price_above_ema_200"],
+        ["Top quintile gross profitability (Novy-Marx 2013)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_xs_momentum_quality_combined(s):
+    """Batch 222: Quality-momentum joint signal. Top-decile 12-1
+    momentum AND top-quintile gross profitability. Asness-Moskowitz-
+    Pedersen 2013 JF documents Sharpe approaches 1.4 in this
+    combination. Higher conviction than either factor alone."""
+    fires = (
+        s.get("xs_momentum_top_decile", False)
+        and s.get("xs_quality_top_quintile", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "factor",
+        ["xs_momentum_top_decile", "xs_quality_top_quintile",
+         "price_above_ema_200"],
+        ["Top-decile 12-1 momentum",
+         "Top-quintile gross profitability",
+         "Above 200 EMA - quality-momentum joint signal"])
+
+
+def strat_pead_with_insider_confirmation_long(s):
+    """Batch 222: PEAD positive surprise + concurrent insider buying
+    cluster = high-conviction post-earnings drift. Insider activity is
+    independent confirmation that the earnings move is fundamental
+    rather than noise."""
+    fires = (
+        s.get("within_pead_window", False)
+        and s.get("pead_positive_surprise", False)
+        and s.get("insider_cluster_active", False)
+    )
+    return _strat(fires, "long", "event_driven",
+        ["within_pead_window", "pead_positive_surprise",
+         "insider_cluster_active"],
+        ["Within PEAD drift window (<=60d post-earnings)",
+         "Positive earnings surprise (YoY+ AND ann-ret>+2pct)",
+         "Concurrent insider buying cluster - independent confirmation"])
+
+
 def strat_xs_momentum_top_decile(s):
     """Batch 220 (cross-sectional factor 2026-05-18 owner-approved research
     review). Long top decile of 12-1 momentum (Moskowitz-Ooi-Pedersen 2012
@@ -1830,6 +1920,12 @@ ALL_STRATEGIES = {
     "smc_choch_reversal":           strat_smc_choch_reversal,
     "smc_order_block_bounce":       strat_smc_order_block_bounce,
     "smc_liquidity_sweep_reversal": strat_smc_liquidity_sweep_reversal,
+    # Event-driven + quality factor (5 - Batch 222 2026-05-18 owner-approved)
+    "insider_cluster_long":                strat_insider_cluster_long,
+    "insider_cluster_with_director_long":  strat_insider_cluster_with_director_long,
+    "xs_quality_top_quintile_long":        strat_xs_quality_top_quintile_long,
+    "xs_momentum_quality_combined":        strat_xs_momentum_quality_combined,
+    "pead_with_insider_confirmation_long": strat_pead_with_insider_confirmation_long,
     # Cross-sectional factor strategies (4 - Batch 220 2026-05-18 owner-approved)
     "xs_momentum_top_decile":           strat_xs_momentum_top_decile,
     "xs_momentum_bottom_decile_short":  strat_xs_momentum_bottom_decile_short,
@@ -2152,6 +2248,16 @@ def screen_instrument(
         pead = compute_pead_signals(ticker, df, as_of)
         if pead:
             signals.update(pead)
+    except Exception:
+        pass
+    # Batch 222: insider buying cluster signals (Quiver SEC Form 4).
+    # No-op when global insiders parquet missing or ticker has no
+    # qualifying transactions in lookback.
+    try:
+        from backtest.signals.insider_buying import compute_insider_cluster_signals
+        insider = compute_insider_cluster_signals(ticker, as_of)
+        if insider:
+            signals.update(insider)
     except Exception:
         pass
     # Batch 210: SMC / ICT signals via vendored smartmoneyconcepts library.

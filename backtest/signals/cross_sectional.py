@@ -204,8 +204,117 @@ def compute_cross_sectional_features(
         except Exception:
             pass
 
+    # Batch 222: quality factor (gross profitability decile) from Polygon
+    # financials. Source: Novy-Marx 2013 JFE; Asness-Frazzini-Pedersen
+    # 2019 RAS. Merges into per-ticker output dict alongside momentum/
+    # beta/IVOL/MAX factors.
+    try:
+        quality_features = compute_quality_factor(
+            list(closes.columns), as_of,
+        )
+        for ticker, q_dict in quality_features.items():
+            out.setdefault(ticker, {})
+            out[ticker].update(q_dict)
+    except Exception:
+        pass
+
     # Drop tickers with no factor features computed
     return {t: v for t, v in out.items() if v}
+
+
+def compute_quality_factor(
+    universe_tickers: list,
+    as_of: date,
+    polygon_financials_dir: Optional[str] = None,
+) -> dict:
+    """Cross-sectional gross-profitability quality factor.
+
+    Batch 222 (2026-05-18 owner-approved research review Top-10 #2).
+    Source: Novy-Marx 2013 JFE "The Other Side of Value: The Gross
+    Profitability Premium"; Asness-Frazzini-Pedersen 2019 RAS
+    "Quality Minus Junk".
+
+    Gross profitability = (revenues - cost_of_revenue) / total_assets,
+    point-in-time from prefetched Polygon financials filings up to as_of.
+
+    Returns dict-of-dicts {ticker: {xs_quality_gross_profitability,
+    xs_quality_decile, xs_quality_top_quintile, xs_quality_bottom_quintile}}.
+
+    Defensive: returns empty dict when no Polygon financials are available.
+    Tickers with missing financials data are absent from output.
+    """
+    from pathlib import Path
+    if polygon_financials_dir is None:
+        polygon_financials_dir = (
+            Path(__file__).parent.parent.parent
+            / "data_prefetch" / "polygon" / "financials"
+        )
+    else:
+        polygon_financials_dir = Path(polygon_financials_dir)
+    if not polygon_financials_dir.exists():
+        return {}
+    quality_map = {}
+    for ticker in universe_tickers:
+        safe_ticker = ticker.replace(".", "-")
+        fin_path = polygon_financials_dir / f"{safe_ticker}.parquet"
+        if not fin_path.exists():
+            continue
+        try:
+            df = pd.read_parquet(fin_path)
+            if df.empty or "financials_json" not in df.columns:
+                continue
+            # Filter to filings on/before as_of
+            if "filing_date" in df.columns:
+                df["filing_date_dt"] = pd.to_datetime(df["filing_date"], errors="coerce").dt.date
+                df = df[df["filing_date_dt"].notna()]
+                df = df[df["filing_date_dt"] <= as_of]
+            if df.empty:
+                continue
+            df = df.sort_values("filing_date_dt") if "filing_date_dt" in df.columns else df
+            # Use most recent quarterly filing
+            recent = df[df.get("fiscal_period").isin(["Q1", "Q2", "Q3", "Q4"])] if "fiscal_period" in df.columns else df
+            if recent.empty:
+                continue
+            most_recent = recent.iloc[-1]
+            fj = most_recent.get("financials_json")
+            if not isinstance(fj, dict):
+                continue
+            income = fj.get("income_statement", {}) if isinstance(fj.get("income_statement"), dict) else {}
+            balance = fj.get("balance_sheet", {}) if isinstance(fj.get("balance_sheet"), dict) else {}
+            def _val(d, k):
+                v = d.get(k)
+                if isinstance(v, dict) and "value" in v:
+                    try:
+                        return float(v["value"])
+                    except (TypeError, ValueError):
+                        return None
+                return None
+            revenues = _val(income, "revenues")
+            cor = _val(income, "cost_of_revenue")
+            assets = _val(balance, "assets")
+            if revenues is None or cor is None or assets is None or assets <= 0:
+                continue
+            gross_profit = revenues - cor
+            gp_assets = gross_profit / assets
+            quality_map[ticker] = gp_assets
+        except Exception:
+            continue
+    if not quality_map:
+        return {}
+    q_s = pd.Series(quality_map).dropna()
+    if q_s.empty:
+        return {}
+    deciles = _safe_decile(q_s)
+    out = {}
+    for ticker, val in q_s.items():
+        d = int(deciles.get(ticker, 5))
+        out[ticker] = {
+            "xs_quality_gross_profitability": round(float(val), 4),
+            "xs_quality_decile":               d,
+            "xs_quality_top_quintile":         d >= 9,
+            "xs_quality_bottom_quintile":      d <= 2,
+        }
+    return out
 
 
 def _safe_decile(s: pd.Series) -> pd.Series:

@@ -120,6 +120,14 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "xs_momentum_bottom_decile_short":  {"bear", "crisis"},
     "xs_low_beta_long":                 {"bull", "neutral"},
     "xs_combined_momentum_low_ivol":    {"bull", "neutral", "bear"},
+    # Event-driven + quality (Batch 222): insider clusters work across
+    # all regimes (Cohen-Malloy-Pomorski 2012); quality factor long-
+    # only in bull/neutral; PEAD+insider confirmation similarly long-bias.
+    "insider_cluster_long":                {"bull", "neutral", "bear", "crisis"},
+    "insider_cluster_with_director_long":  {"bull", "neutral", "bear", "crisis"},
+    "xs_quality_top_quintile_long":        {"bull", "neutral"},
+    "xs_momentum_quality_combined":        {"bull", "neutral"},
+    "pead_with_insider_confirmation_long": {"bull", "neutral", "bear", "crisis"},
     # PO3 + multi-TF (Batch 217): self-gate via 200-EMA + weekly/monthly
     # biases; symmetric pairs get explicit regime restrictions.
     "po3_bullish":                  {"bull", "neutral"},

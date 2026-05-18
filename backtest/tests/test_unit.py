@@ -7024,6 +7024,72 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch222_strategies_registered():
+    """Batch 222 (event-driven + quality factor 2026-05-18 owner-approved):
+    5 new strategies registered."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    for name in (
+        "insider_cluster_long",
+        "insider_cluster_with_director_long",
+        "xs_quality_top_quintile_long",
+        "xs_momentum_quality_combined",
+        "pead_with_insider_confirmation_long",
+    ):
+        assert name in ALL_STRATEGIES, f"Batch 222: {name} must be registered"
+
+
+def test_batch222_insider_cluster_long_requires_cluster_and_regime():
+    """Batch 222: insider_cluster_long fires only on insider_cluster_active
+    + 200-EMA gate. Cohen-Malloy-Pomorski 2012 documented ~7pct alpha."""
+    from backtest.signals.screener import strat_insider_cluster_long
+    s = {
+        "insider_cluster_active": True,
+        "insider_unique_buyers_30d": 3,
+        "price_above_ema_200": True,
+    }
+    r = strat_insider_cluster_long(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    s["insider_cluster_active"] = False
+    assert strat_insider_cluster_long(s)["fires"] is False
+    s["insider_cluster_active"] = True
+    s["price_above_ema_200"] = False
+    assert strat_insider_cluster_long(s)["fires"] is False
+
+
+def test_batch222_insider_director_variant_requires_director():
+    """Batch 222: director variant requires at least 1 director buyer
+    (higher signal value per Lakonishok-Lee 2001 RFS)."""
+    from backtest.signals.screener import strat_insider_cluster_with_director_long
+    s = {
+        "insider_cluster_active": True,
+        "insider_unique_buyers_30d": 3,
+        "insider_director_buyers_30d": 0,  # no directors
+        "price_above_ema_200": True,
+    }
+    assert strat_insider_cluster_with_director_long(s)["fires"] is False
+    s["insider_director_buyers_30d"] = 1
+    assert strat_insider_cluster_with_director_long(s)["fires"] is True
+
+
+def test_batch222_quality_top_quintile_long():
+    """Batch 222: top-quintile gross profitability + 200-EMA gate."""
+    from backtest.signals.screener import strat_xs_quality_top_quintile_long
+    s = {"xs_quality_top_quintile": True, "price_above_ema_200": True}
+    assert strat_xs_quality_top_quintile_long(s)["fires"] is True
+    s["xs_quality_top_quintile"] = False
+    assert strat_xs_quality_top_quintile_long(s)["fires"] is False
+
+
+def test_batch222_compute_insider_cluster_signals_no_data():
+    """Batch 222: compute_insider_cluster_signals returns empty dict
+    when ticker has no recent qualifying transactions / data miss."""
+    from datetime import date
+    from backtest.signals.insider_buying import compute_insider_cluster_signals
+    # Use a clearly-nonexistent ticker
+    out = compute_insider_cluster_signals("NONEXISTENT_TICKER_ZYX", date(2024, 6, 1))
+    assert out == {}
+
+
 def test_batch221_passing_criteria_adds_sortino_calmar_regime():
     """Batch 221 (validation gates 2026-05-18 owner-approved): config
     PASSING_CRITERIA must define min_sortino_overall, min_sortino_per_regime,
