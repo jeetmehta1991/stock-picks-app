@@ -648,6 +648,62 @@ STRATEGY_REGIME_BLOCKLIST: dict[str, list[str]] = {
     # "strat_rsi_overbought_short": ["bear"],
 }
 
+# Batch 218 (research-review deprecations 2026-05-18 owner-approved):
+# strategies with no replicable peer-reviewed edge in 2015-2024 literature
+# are excluded from the screener loop. This shrinks the multi-testing
+# denominator (M) for the Bonferroni / Deflated-Sharpe gates, materially
+# relaxing the effective DSR threshold for strategies that DO have
+# replicable edges. Per agent research report Section A.2:
+#   - Golden/death cross variants: Zakamulin 2014 JAM ~0 alpha vs buy-hold
+#     since 1990; signal anticipates the trend it's supposed to detect
+#   - Awesome Osc / PPO / TEMA / Force Index / MFI: Marshall-Cahan 2008
+#     PBFJ + Park-Irwin 2007 JES survey - no replicable peer-reviewed edge
+#   - Parabolic SAR: Park-Irwin 2007 - dead since Lukac-Brorsen-Irwin 1988
+#   - Candlestick patterns: Marshall-Young-Cahan 2008 PBFJ tested all
+#     major candles on Japanese equities (origin!) - all null;
+#     Horton 2009 JBF confirmed for US equities
+#   - Plain MACD crossover: Hudson-Atanasova-Urquhart 2022 IRFA null
+#   - Williams stoch dual: 5 trades 0% WR in Phase 1A-beta + no peer-
+#     reviewed edge for the dual-indicator combo
+#   - Camarilla R3/S3 plain: heuristic with no replicable edge
+#     (Marshall-Cahan 2008); fired 1-2 trades each in Phase 1A-beta
+#
+# These strategies are NOT deleted - function bodies remain in
+# screener.py for audit + future re-evaluation. They are filtered from
+# the screen_instrument iteration loop at runtime via this set.
+DEPRECATED_STRATEGIES: set[str] = {
+    # Moving-average crossovers (Zakamulin 2014; Faber 2013)
+    "golden_cross_50_200",
+    "golden_cross_9_21",
+    "golden_cross_20_50",
+    "golden_cross_volume",
+    "death_cross_50_200_volume",
+    # Indicator-derivative singles (Marshall-Cahan 2008; Park-Irwin 2007)
+    "awesome_oscillator",
+    "ppo_crossover",
+    "tema_dema",
+    "force_index_breakout",
+    "mfi_oversold",
+    # Parabolic SAR (Park-Irwin 2007)
+    "parabolic_sar_flip",
+    "parabolic_sar_flip_short",
+    # Candlestick patterns (Marshall-Young-Cahan 2008; Horton 2009)
+    "morning_star",
+    "evening_star_short",
+    "three_white_soldiers",
+    "doji_at_support",
+    "bullish_engulfing_support",
+    "shooting_star_short",
+    # Williams %R dual-indicator combo (no peer-reviewed edge; null Phase 1A-beta)
+    "williams_stoch_dual",
+    # Plain MACD crossover variants (Hudson-Atanasova-Urquhart 2022)
+    "macd_crossover",
+    "macd_crossover_short",
+    # Camarilla R3/S3 plain (Marshall-Cahan 2008; heuristic)
+    "camarilla_r3_breakout",
+    "camarilla_s3_bounce",
+}
+
 # BUG-235 RESOLVED-IMPLEMENTED Batch 99 2026-05-12: AAII Investor Sentiment
 # Survey closes Wednesday close, AAII publishes results Thursday morning.
 # A Wed-dated survey is NOT tradeable on Wed itself -- it's tradeable from

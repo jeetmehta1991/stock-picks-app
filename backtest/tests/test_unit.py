@@ -7024,6 +7024,76 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch218_deprecated_strategies_defined():
+    """Batch 218 (research-review deprecations 2026-05-18 owner-approved):
+    DEPRECATED_STRATEGIES set contains 22-23 strategies with no replicable
+    peer-reviewed edge per literature 2015-2024. Removes them from the
+    multi-testing denominator (M) for Bonferroni / DSR gates."""
+    from backtest.config import DEPRECATED_STRATEGIES
+    # Sanity: set is populated and contains the expected dead-evidence families
+    assert isinstance(DEPRECATED_STRATEGIES, set)
+    assert len(DEPRECATED_STRATEGIES) >= 22, (
+        f"Expected >=22 deprecated strategies, got {len(DEPRECATED_STRATEGIES)}"
+    )
+    # Spot-check the canonical dead families from the agent research report
+    must_deprecate = {
+        "golden_cross_50_200", "golden_cross_9_21", "golden_cross_20_50",
+        "death_cross_50_200_volume",
+        "awesome_oscillator", "ppo_crossover", "tema_dema",
+        "force_index_breakout", "mfi_oversold",
+        "parabolic_sar_flip", "parabolic_sar_flip_short",
+        "morning_star", "evening_star_short", "three_white_soldiers",
+        "doji_at_support", "bullish_engulfing_support", "shooting_star_short",
+        "williams_stoch_dual",
+        "macd_crossover", "macd_crossover_short",
+        "camarilla_r3_breakout", "camarilla_s3_bounce",
+    }
+    missing = must_deprecate - DEPRECATED_STRATEGIES
+    assert not missing, f"Batch 218: must-deprecate strategies missing: {missing}"
+
+
+def test_batch218_deprecated_strategies_NOT_in_screener_loop():
+    """Batch 218: screen_instrument must skip strategies in
+    DEPRECATED_STRATEGIES. Source-level pin verifying the filter is
+    wired at the loop site."""
+    import inspect
+    from backtest.signals import screener as scr
+    src = inspect.getsource(scr)
+    # The skip line must be present immediately inside the for-loop
+    assert "DEPRECATED_STRATEGIES" in src, (
+        "Batch 218: screen_instrument must import DEPRECATED_STRATEGIES"
+    )
+    assert "if name in _DEPRECATED" in src or "if name in DEPRECATED_STRATEGIES" in src, (
+        "Batch 218: screen loop must skip deprecated strategies via membership test"
+    )
+
+
+def test_batch218_kept_strategies_not_accidentally_deprecated():
+    """Batch 218 defensive: strategies we PROVED have edge in Phase 1A-beta
+    or are net-new from Batches 209-217 (PEAD/SMC/AVWAP/ORB/PO3/multi-TF)
+    must NOT be in DEPRECATED_STRATEGIES."""
+    from backtest.config import DEPRECATED_STRATEGIES
+    # Phase 1A-beta empirically-validated (best Sharpe in family or proven sample)
+    must_keep = [
+        "bollinger_lower", "bollinger_tight", "pivot_r1_breakout",
+        "williams_r_oversold",  # Phase 1A-beta best Sharpe (0.30) on 82 trades
+        "ultimate_oscillator",   # Phase 1A-beta Sharpe 0.49 on 27 trades
+        "stochrsi_oversold", "cpr_narrow_bullish",
+        "ichimoku_cloud_breakout", "hull_rsi", "supertrend_macd",
+        # New families from Batches 208-217 (literature-backed)
+        "avwap_252_breakout", "avwap_50_reclaim",
+        "pead_long", "pead_short",
+        "smc_bos_continuation", "smc_choch_reversal",
+        "orb_stocks_in_play_long",
+        "po3_bullish", "weekly_bias_pullback_long",
+    ]
+    accidental = [s for s in must_keep if s in DEPRECATED_STRATEGIES]
+    assert not accidental, (
+        f"Batch 218: empirically-validated or research-backed strategies "
+        f"must NOT be deprecated: {accidental}"
+    )
+
+
 def test_batch217_po3_multi_tf_strategies_registered():
     """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved): 9 new
     strategies registered (2 PO3 + 2 PO3+HTF + 2 HTF-aligned breakout

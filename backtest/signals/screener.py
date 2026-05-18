@@ -2116,7 +2116,14 @@ def screen_instrument(
     # downstream diagnostics but excluded from all_triggered / strategy_count.
     triggered_avoid = []
 
+    # Batch 218 (research-review deprecations 2026-05-18 owner-approved):
+    # skip strategies in DEPRECATED_STRATEGIES (no replicable peer-reviewed
+    # edge in 2015-2024 literature). Shrinks the multi-testing denominator
+    # for Bonferroni/DSR gates without deleting strategy function bodies.
+    from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
     for name, fn in ALL_STRATEGIES.items():
+        if name in _DEPRECATED:
+            continue
         try:
             result = fn(signals)
             if not result["fires"]:
