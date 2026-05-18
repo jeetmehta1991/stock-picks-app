@@ -1,0 +1,613 @@
+exit_a,exit_b,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,a_total_pnl_pct,b_total_pnl_pct,edge,dominates,n_a,n_b
+atr_trail_1x,atr_trail_2x,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,3.8085000000000013,-8.360100000000001,False,11,11
+atr_trail_1x,break_even_at_1r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-11.8949,7.3433,True,11,11
+atr_trail_1x,breakeven_plus_trail,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,2.938599999999999,-7.490199999999999,False,11,11
+atr_trail_1x,class_time_stop,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-11.977099999999998,7.425499999999999,True,11,11
+atr_trail_1x,earnings_blackout,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,149.5569,-154.10850000000002,False,11,11
+atr_trail_1x,fixed_4r_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-34.8778,30.3262,True,11,11
+atr_trail_1x,hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,25.7842,-30.3358,False,11,11
+atr_trail_1x,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-4.730500000000001,0.1789000000000014,True,11,11
+atr_trail_1x,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-3.545299999999999,-1.0063000000000009,False,11,11
+atr_trail_1x,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,27.421300000000002,-31.972900000000003,False,11,11
+atr_trail_1x,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-20.835699999999996,16.284099999999995,True,11,11
+atr_trail_1x,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-20.010299999999994,15.458699999999993,True,11,11
+atr_trail_1x,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,6.851400000000001,-11.403,False,11,11
+atr_trail_1x,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-20.010299999999994,15.458699999999993,True,11,11
+atr_trail_1x,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-38.6698,34.1182,True,11,11
+atr_trail_1x,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,-39.19579999999999,34.64419999999999,True,11,11
+atr_trail_1x,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.5516,4.1072,-8.6588,False,11,11
+atr_trail_2x,break_even_at_1r,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-11.8949,15.703400000000002,True,11,11
+atr_trail_2x,breakeven_plus_trail,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,2.938599999999999,0.8699000000000021,True,11,11
+atr_trail_2x,class_time_stop,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-11.977099999999998,15.785599999999999,True,11,11
+atr_trail_2x,earnings_blackout,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,149.5569,-145.7484,False,11,11
+atr_trail_2x,fixed_4r_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-34.8778,38.6863,True,11,11
+atr_trail_2x,hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,25.7842,-21.975699999999996,False,11,11
+atr_trail_2x,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-4.730500000000001,8.539000000000001,True,11,11
+atr_trail_2x,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-3.545299999999999,7.3538,True,11,11
+atr_trail_2x,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,27.421300000000002,-23.6128,False,11,11
+atr_trail_2x,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-20.835699999999996,24.644199999999998,True,11,11
+atr_trail_2x,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-20.010299999999994,23.818799999999996,True,11,11
+atr_trail_2x,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,6.851400000000001,-3.0428999999999995,False,11,11
+atr_trail_2x,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-20.010299999999994,23.818799999999996,True,11,11
+atr_trail_2x,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-38.6698,42.478300000000004,True,11,11
+atr_trail_2x,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,-39.19579999999999,43.00429999999999,True,11,11
+atr_trail_2x,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,3.8085000000000013,4.1072,-0.2986999999999984,False,11,11
+break_even_at_1r,breakeven_plus_trail,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,2.938599999999999,-14.833499999999999,False,11,11
+break_even_at_1r,class_time_stop,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-11.977099999999998,0.0821999999999985,True,11,11
+break_even_at_1r,earnings_blackout,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,149.5569,-161.45180000000002,False,11,11
+break_even_at_1r,fixed_4r_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-34.8778,22.9829,True,11,11
+break_even_at_1r,hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,25.7842,-37.6791,False,11,11
+break_even_at_1r,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-4.730500000000001,-7.164399999999999,False,11,11
+break_even_at_1r,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-3.545299999999999,-8.3496,False,11,11
+break_even_at_1r,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,27.421300000000002,-39.3162,False,11,11
+break_even_at_1r,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-20.835699999999996,8.940799999999996,True,11,11
+break_even_at_1r,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-20.010299999999994,8.115399999999994,True,11,11
+break_even_at_1r,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,6.851400000000001,-18.7463,False,11,11
+break_even_at_1r,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-20.010299999999994,8.115399999999994,True,11,11
+break_even_at_1r,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-38.6698,26.774900000000002,True,11,11
+break_even_at_1r,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,-39.19579999999999,27.30089999999999,True,11,11
+break_even_at_1r,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.8949,4.1072,-16.0021,False,11,11
+breakeven_plus_trail,class_time_stop,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-11.977099999999998,14.915699999999998,True,11,11
+breakeven_plus_trail,earnings_blackout,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,149.5569,-146.6183,False,11,11
+breakeven_plus_trail,fixed_4r_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-34.8778,37.8164,True,11,11
+breakeven_plus_trail,hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,25.7842,-22.845599999999997,False,11,11
+breakeven_plus_trail,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-4.730500000000001,7.6691,True,11,11
+breakeven_plus_trail,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-3.545299999999999,6.483899999999998,True,11,11
+breakeven_plus_trail,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,27.421300000000002,-24.4827,False,11,11
+breakeven_plus_trail,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-20.835699999999996,23.774299999999997,True,11,11
+breakeven_plus_trail,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-20.010299999999994,22.948899999999995,True,11,11
+breakeven_plus_trail,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,6.851400000000001,-3.9128000000000016,False,11,11
+breakeven_plus_trail,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-20.010299999999994,22.948899999999995,True,11,11
+breakeven_plus_trail,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-38.6698,41.6084,True,11,11
+breakeven_plus_trail,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,-39.19579999999999,42.13439999999999,True,11,11
+breakeven_plus_trail,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,2.938599999999999,4.1072,-1.1686000000000005,False,11,11
+class_time_stop,earnings_blackout,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,149.5569,-161.53400000000002,False,11,11
+class_time_stop,fixed_4r_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-34.8778,22.9007,True,11,11
+class_time_stop,hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,25.7842,-37.7613,False,11,11
+class_time_stop,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-4.730500000000001,-7.246599999999997,False,11,11
+class_time_stop,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-3.545299999999999,-8.431799999999999,False,11,11
+class_time_stop,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,27.421300000000002,-39.3984,False,11,11
+class_time_stop,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-20.835699999999996,8.858599999999997,True,11,11
+class_time_stop,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-20.010299999999994,8.033199999999995,True,11,11
+class_time_stop,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,6.851400000000001,-18.8285,False,11,11
+class_time_stop,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-20.010299999999994,8.033199999999995,True,11,11
+class_time_stop,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-38.6698,26.692700000000002,True,11,11
+class_time_stop,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,-39.19579999999999,27.21869999999999,True,11,11
+class_time_stop,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-11.977099999999998,4.1072,-16.0843,False,11,11
+earnings_blackout,fixed_4r_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-34.8778,184.43470000000002,True,11,11
+earnings_blackout,hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,25.7842,123.77270000000001,True,11,11
+earnings_blackout,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-4.730500000000001,154.28740000000002,True,11,11
+earnings_blackout,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-3.545299999999999,153.1022,True,11,11
+earnings_blackout,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,27.421300000000002,122.13560000000001,True,11,11
+earnings_blackout,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-20.835699999999996,170.39260000000002,True,11,11
+earnings_blackout,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-20.010299999999994,169.5672,True,11,11
+earnings_blackout,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,6.851400000000001,142.7055,True,11,11
+earnings_blackout,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-20.010299999999994,169.5672,True,11,11
+earnings_blackout,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-38.6698,188.22670000000002,True,11,11
+earnings_blackout,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,-39.19579999999999,188.7527,True,11,11
+earnings_blackout,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,149.5569,4.1072,145.4497,True,11,11
+fixed_4r_2r,hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,25.7842,-60.662,False,11,11
+fixed_4r_2r,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,-4.730500000000001,-30.1473,False,11,11
+fixed_4r_2r,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,-3.545299999999999,-31.332500000000003,False,11,11
+fixed_4r_2r,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,27.421300000000002,-62.2991,False,11,11
+fixed_4r_2r,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,-20.835699999999996,-14.042100000000005,False,11,11
+fixed_4r_2r,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,-20.010299999999994,-14.867500000000007,False,11,11
+fixed_4r_2r,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,6.851400000000001,-41.7292,False,11,11
+fixed_4r_2r,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,-20.010299999999994,-14.867500000000007,False,11,11
+fixed_4r_2r,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,-38.6698,3.7920000000000016,True,11,11
+fixed_4r_2r,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,-39.19579999999999,4.317999999999991,True,11,11
+fixed_4r_2r,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-34.8778,4.1072,-38.985,False,11,11
+hybrid_50pct_target,ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,-4.730500000000001,30.514699999999998,True,11,11
+hybrid_50pct_target,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,-3.545299999999999,29.329499999999996,True,11,11
+hybrid_50pct_target,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,27.421300000000002,-1.6371000000000038,False,11,11
+hybrid_50pct_target,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,-20.835699999999996,46.619899999999994,True,11,11
+hybrid_50pct_target,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,-20.010299999999994,45.79449999999999,True,11,11
+hybrid_50pct_target,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,6.851400000000001,18.932799999999997,True,11,11
+hybrid_50pct_target,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,-20.010299999999994,45.79449999999999,True,11,11
+hybrid_50pct_target,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,-38.6698,64.45400000000001,True,11,11
+hybrid_50pct_target,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,-39.19579999999999,64.97999999999999,True,11,11
+hybrid_50pct_target,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,25.7842,4.1072,21.677,True,11,11
+ma_exit_ema9,next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,-3.545299999999999,-1.1852000000000023,False,11,11
+ma_exit_ema9,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,27.421300000000002,-32.1518,False,11,11
+ma_exit_ema9,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,-20.835699999999996,16.105199999999996,True,11,11
+ma_exit_ema9,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,-20.010299999999994,15.279799999999993,True,11,11
+ma_exit_ema9,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,6.851400000000001,-11.581900000000001,False,11,11
+ma_exit_ema9,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,-20.010299999999994,15.279799999999993,True,11,11
+ma_exit_ema9,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,-38.6698,33.9393,True,11,11
+ma_exit_ema9,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,-39.19579999999999,34.46529999999999,True,11,11
+ma_exit_ema9,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-4.730500000000001,4.1072,-8.837700000000002,False,11,11
+next_pivot_target,r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,27.421300000000002,-30.9666,False,11,11
+next_pivot_target,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,-20.835699999999996,17.290399999999998,True,11,11
+next_pivot_target,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,-20.010299999999994,16.464999999999996,True,11,11
+next_pivot_target,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,6.851400000000001,-10.3967,False,11,11
+next_pivot_target,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,-20.010299999999994,16.464999999999996,True,11,11
+next_pivot_target,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,-38.6698,35.124500000000005,True,11,11
+next_pivot_target,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,-39.19579999999999,35.650499999999994,True,11,11
+next_pivot_target,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-3.545299999999999,4.1072,-7.652499999999998,False,11,11
+r_multiple_2r,r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,27.421300000000002,-20.835699999999996,48.257,True,11,11
+r_multiple_2r,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,27.421300000000002,-20.010299999999994,47.431599999999996,True,11,11
+r_multiple_2r,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,27.421300000000002,6.851400000000001,20.5699,True,11,11
+r_multiple_2r,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,27.421300000000002,-20.010299999999994,47.431599999999996,True,11,11
+r_multiple_2r,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,27.421300000000002,-38.6698,66.09110000000001,True,11,11
+r_multiple_2r,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,27.421300000000002,-39.19579999999999,66.6171,True,11,11
+r_multiple_2r,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,27.421300000000002,4.1072,23.314100000000003,True,11,11
+r_multiple_3r,regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.835699999999996,-20.010299999999994,-0.8254000000000019,False,11,11
+r_multiple_3r,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.835699999999996,6.851400000000001,-27.687099999999997,False,11,11
+r_multiple_3r,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.835699999999996,-20.010299999999994,-0.8254000000000019,False,11,11
+r_multiple_3r,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.835699999999996,-38.6698,17.834100000000007,True,11,11
+r_multiple_3r,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.835699999999996,-39.19579999999999,18.360099999999996,True,11,11
+r_multiple_3r,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.835699999999996,4.1072,-24.942899999999995,False,11,11
+regime_flip,time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,6.851400000000001,-26.861699999999995,False,11,11
+regime_flip,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,-20.010299999999994,0.0,False,11,11
+regime_flip,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,-38.6698,18.65950000000001,True,11,11
+regime_flip,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,-39.19579999999999,19.185499999999998,True,11,11
+regime_flip,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,4.1072,-24.117499999999993,False,11,11
+time_stop_10d,time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,6.851400000000001,-20.010299999999994,26.861699999999995,True,11,11
+time_stop_10d,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,6.851400000000001,-38.6698,45.5212,True,11,11
+time_stop_10d,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,6.851400000000001,-39.19579999999999,46.04719999999999,True,11,11
+time_stop_10d,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,6.851400000000001,4.1072,2.744200000000001,True,11,11
+time_stop_20d,trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,-38.6698,18.65950000000001,True,11,11
+time_stop_20d,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,-39.19579999999999,19.185499999999998,True,11,11
+time_stop_20d,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-20.010299999999994,4.1072,-24.117499999999993,False,11,11
+trailing_10pct,trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-38.6698,-39.19579999999999,0.5259999999999891,True,11,11
+trailing_10pct,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-38.6698,4.1072,-42.777,False,11,11
+trailing_15pct,trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,-39.19579999999999,4.1072,-43.30299999999999,False,11,11
+atr_trail_1x,atr_trail_2x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,93.2268,-106.1652,False,18,18
+atr_trail_1x,break_even_at_1r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,-25.9458,13.007399999999999,True,18,18
+atr_trail_1x,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,90.2583,-103.1967,False,18,18
+atr_trail_1x,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,93.5396,-106.478,False,18,18
+atr_trail_1x,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,382.97360000000003,-395.91200000000003,False,18,18
+atr_trail_1x,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,67.8792,-80.8176,False,18,18
+atr_trail_1x,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,43.0637,-56.0021,False,18,18
+atr_trail_1x,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,19.914099999999998,-32.8525,False,18,18
+atr_trail_1x,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,42.6569,-55.5953,False,18,18
+atr_trail_1x,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,56.9512,-69.8896,False,18,18
+atr_trail_1x,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,79.1011,-92.0395,False,18,18
+atr_trail_1x,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,94.5401,-107.4785,False,18,18
+atr_trail_1x,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,57.2815,-70.2199,False,18,18
+atr_trail_1x,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,94.5401,-107.4785,False,18,18
+atr_trail_1x,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,14.230999999999995,-27.169399999999996,False,18,18
+atr_trail_1x,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,133.1019,-146.0403,False,18,18
+atr_trail_1x,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-12.9384,-11.417099999999998,-1.5213000000000019,False,18,18
+atr_trail_2x,break_even_at_1r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,-25.9458,119.17259999999999,True,18,18
+atr_trail_2x,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,90.2583,2.9684999999999917,True,18,18
+atr_trail_2x,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,93.5396,-0.31279999999999575,False,18,18
+atr_trail_2x,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,382.97360000000003,-289.7468,False,18,18
+atr_trail_2x,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,67.8792,25.3476,True,18,18
+atr_trail_2x,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,43.0637,50.1631,True,18,18
+atr_trail_2x,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,19.914099999999998,73.3127,True,18,18
+atr_trail_2x,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,42.6569,50.5699,True,18,18
+atr_trail_2x,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,56.9512,36.2756,True,18,18
+atr_trail_2x,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,79.1011,14.125699999999995,True,18,18
+atr_trail_2x,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,94.5401,-1.3132999999999981,False,18,18
+atr_trail_2x,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,57.2815,35.945299999999996,True,18,18
+atr_trail_2x,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,94.5401,-1.3132999999999981,False,18,18
+atr_trail_2x,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,14.230999999999995,78.9958,True,18,18
+atr_trail_2x,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,133.1019,-39.8751,False,18,18
+atr_trail_2x,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.2268,-11.417099999999998,104.6439,True,18,18
+break_even_at_1r,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,90.2583,-116.20410000000001,False,18,18
+break_even_at_1r,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,93.5396,-119.4854,False,18,18
+break_even_at_1r,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,382.97360000000003,-408.91940000000005,False,18,18
+break_even_at_1r,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,67.8792,-93.82499999999999,False,18,18
+break_even_at_1r,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,43.0637,-69.0095,False,18,18
+break_even_at_1r,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,19.914099999999998,-45.859899999999996,False,18,18
+break_even_at_1r,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,42.6569,-68.6027,False,18,18
+break_even_at_1r,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,56.9512,-82.89699999999999,False,18,18
+break_even_at_1r,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,79.1011,-105.0469,False,18,18
+break_even_at_1r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,94.5401,-120.48589999999999,False,18,18
+break_even_at_1r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,57.2815,-83.2273,False,18,18
+break_even_at_1r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,94.5401,-120.48589999999999,False,18,18
+break_even_at_1r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,14.230999999999995,-40.17679999999999,False,18,18
+break_even_at_1r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,133.1019,-159.0477,False,18,18
+break_even_at_1r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.9458,-11.417099999999998,-14.5287,False,18,18
+breakeven_plus_trail,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,93.5396,-3.2812999999999874,False,18,18
+breakeven_plus_trail,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,382.97360000000003,-292.7153,False,18,18
+breakeven_plus_trail,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,67.8792,22.379100000000008,True,18,18
+breakeven_plus_trail,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,43.0637,47.19460000000001,True,18,18
+breakeven_plus_trail,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,19.914099999999998,70.3442,True,18,18
+breakeven_plus_trail,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,42.6569,47.601400000000005,True,18,18
+breakeven_plus_trail,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,56.9512,33.307100000000005,True,18,18
+breakeven_plus_trail,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,79.1011,11.157200000000003,True,18,18
+breakeven_plus_trail,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,94.5401,-4.28179999999999,False,18,18
+breakeven_plus_trail,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,57.2815,32.976800000000004,True,18,18
+breakeven_plus_trail,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,94.5401,-4.28179999999999,False,18,18
+breakeven_plus_trail,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,14.230999999999995,76.02730000000001,True,18,18
+breakeven_plus_trail,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,133.1019,-42.843599999999995,False,18,18
+breakeven_plus_trail,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,90.2583,-11.417099999999998,101.6754,True,18,18
+class_time_stop,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,382.97360000000003,-289.434,False,18,18
+class_time_stop,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,67.8792,25.660399999999996,True,18,18
+class_time_stop,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,43.0637,50.475899999999996,True,18,18
+class_time_stop,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,19.914099999999998,73.62549999999999,True,18,18
+class_time_stop,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,42.6569,50.88269999999999,True,18,18
+class_time_stop,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,56.9512,36.58839999999999,True,18,18
+class_time_stop,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,79.1011,14.43849999999999,True,18,18
+class_time_stop,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,94.5401,-1.0005000000000024,False,18,18
+class_time_stop,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,57.2815,36.25809999999999,True,18,18
+class_time_stop,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,94.5401,-1.0005000000000024,False,18,18
+class_time_stop,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,14.230999999999995,79.3086,True,18,18
+class_time_stop,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,133.1019,-39.56230000000001,False,18,18
+class_time_stop,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,93.5396,-11.417099999999998,104.95669999999998,True,18,18
+earnings_blackout,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,67.8792,315.09440000000006,True,18,18
+earnings_blackout,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,43.0637,339.90990000000005,True,18,18
+earnings_blackout,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,19.914099999999998,363.0595,True,18,18
+earnings_blackout,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,42.6569,340.3167,True,18,18
+earnings_blackout,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,56.9512,326.02240000000006,True,18,18
+earnings_blackout,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,79.1011,303.87250000000006,True,18,18
+earnings_blackout,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,94.5401,288.43350000000004,True,18,18
+earnings_blackout,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,57.2815,325.69210000000004,True,18,18
+earnings_blackout,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,94.5401,288.43350000000004,True,18,18
+earnings_blackout,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,14.230999999999995,368.74260000000004,True,18,18
+earnings_blackout,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,133.1019,249.87170000000003,True,18,18
+earnings_blackout,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,382.97360000000003,-11.417099999999998,394.39070000000004,True,18,18
+fixed_4r_2r,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,43.0637,24.8155,True,18,18
+fixed_4r_2r,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,19.914099999999998,47.9651,True,18,18
+fixed_4r_2r,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,42.6569,25.222299999999997,True,18,18
+fixed_4r_2r,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,56.9512,10.927999999999997,True,18,18
+fixed_4r_2r,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,79.1011,-11.221900000000005,False,18,18
+fixed_4r_2r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,94.5401,-26.660899999999998,False,18,18
+fixed_4r_2r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,57.2815,10.597699999999996,True,18,18
+fixed_4r_2r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,94.5401,-26.660899999999998,False,18,18
+fixed_4r_2r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,14.230999999999995,53.6482,True,18,18
+fixed_4r_2r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,133.1019,-65.2227,False,18,18
+fixed_4r_2r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,67.8792,-11.417099999999998,79.2963,True,18,18
+hybrid_50pct_target,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,19.914099999999998,23.1496,True,18,18
+hybrid_50pct_target,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,42.6569,0.40679999999999694,True,18,18
+hybrid_50pct_target,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,56.9512,-13.887500000000003,False,18,18
+hybrid_50pct_target,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,79.1011,-36.037400000000005,False,18,18
+hybrid_50pct_target,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,94.5401,-51.4764,False,18,18
+hybrid_50pct_target,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,57.2815,-14.217800000000004,False,18,18
+hybrid_50pct_target,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,94.5401,-51.4764,False,18,18
+hybrid_50pct_target,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,14.230999999999995,28.832700000000003,True,18,18
+hybrid_50pct_target,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,133.1019,-90.0382,False,18,18
+hybrid_50pct_target,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,43.0637,-11.417099999999998,54.480799999999995,True,18,18
+ma_exit_ema9,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,42.6569,-22.742800000000003,False,18,18
+ma_exit_ema9,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,56.9512,-37.0371,False,18,18
+ma_exit_ema9,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,79.1011,-59.187000000000005,False,18,18
+ma_exit_ema9,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,94.5401,-74.626,False,18,18
+ma_exit_ema9,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,57.2815,-37.3674,False,18,18
+ma_exit_ema9,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,94.5401,-74.626,False,18,18
+ma_exit_ema9,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,14.230999999999995,5.683100000000003,True,18,18
+ma_exit_ema9,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,133.1019,-113.18780000000001,False,18,18
+ma_exit_ema9,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,19.914099999999998,-11.417099999999998,31.331199999999995,True,18,18
+next_pivot_target,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,56.9512,-14.2943,False,18,18
+next_pivot_target,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,79.1011,-36.4442,False,18,18
+next_pivot_target,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,94.5401,-51.883199999999995,False,18,18
+next_pivot_target,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,57.2815,-14.624600000000001,False,18,18
+next_pivot_target,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,94.5401,-51.883199999999995,False,18,18
+next_pivot_target,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,14.230999999999995,28.425900000000006,True,18,18
+next_pivot_target,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,133.1019,-90.445,False,18,18
+next_pivot_target,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,42.6569,-11.417099999999998,54.074,True,18,18
+r_multiple_2r,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,56.9512,79.1011,-22.149900000000002,False,18,18
+r_multiple_2r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,56.9512,94.5401,-37.588899999999995,False,18,18
+r_multiple_2r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,56.9512,57.2815,-0.33030000000000115,False,18,18
+r_multiple_2r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,56.9512,94.5401,-37.588899999999995,False,18,18
+r_multiple_2r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,56.9512,14.230999999999995,42.720200000000006,True,18,18
+r_multiple_2r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,56.9512,133.1019,-76.1507,False,18,18
+r_multiple_2r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,56.9512,-11.417099999999998,68.3683,True,18,18
+r_multiple_3r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,79.1011,94.5401,-15.438999999999993,False,18,18
+r_multiple_3r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,79.1011,57.2815,21.8196,True,18,18
+r_multiple_3r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,79.1011,94.5401,-15.438999999999993,False,18,18
+r_multiple_3r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,79.1011,14.230999999999995,64.87010000000001,True,18,18
+r_multiple_3r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,79.1011,133.1019,-54.0008,False,18,18
+r_multiple_3r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,79.1011,-11.417099999999998,90.51820000000001,True,18,18
+regime_flip,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,57.2815,37.258599999999994,True,18,18
+regime_flip,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,94.5401,0.0,False,18,18
+regime_flip,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,14.230999999999995,80.3091,True,18,18
+regime_flip,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,133.1019,-38.561800000000005,False,18,18
+regime_flip,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,-11.417099999999998,105.9572,True,18,18
+time_stop_10d,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,57.2815,94.5401,-37.258599999999994,False,18,18
+time_stop_10d,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,57.2815,14.230999999999995,43.05050000000001,True,18,18
+time_stop_10d,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,57.2815,133.1019,-75.8204,False,18,18
+time_stop_10d,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,57.2815,-11.417099999999998,68.6986,True,18,18
+time_stop_20d,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,14.230999999999995,80.3091,True,18,18
+time_stop_20d,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,133.1019,-38.561800000000005,False,18,18
+time_stop_20d,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,94.5401,-11.417099999999998,105.9572,True,18,18
+trailing_10pct,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,14.230999999999995,133.1019,-118.8709,False,18,18
+trailing_10pct,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,14.230999999999995,-11.417099999999998,25.648099999999992,True,18,18
+trailing_15pct,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,133.1019,-11.417099999999998,144.519,True,18,18
+atr_trail_1x,atr_trail_2x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-1.2279999999999984,-24.2212,False,21,21
+atr_trail_1x,break_even_at_1r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-8.078,-17.371199999999998,False,21,21
+atr_trail_1x,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,42.0847,-67.53389999999999,False,21,21
+atr_trail_1x,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-25.4891,0.03990000000000293,True,21,21
+atr_trail_1x,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-1162.4495,1137.0003,True,21,21
+atr_trail_1x,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-41.6684,16.2192,True,21,21
+atr_trail_1x,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-1718.1487000000002,1692.6995000000002,True,21,21
+atr_trail_1x,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-2.2954999999999997,-23.153699999999997,False,21,21
+atr_trail_1x,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,16.9973,-42.4465,False,21,21
+atr_trail_1x,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,21.2545,-46.7037,False,21,21
+atr_trail_1x,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-31.489599999999996,6.040399999999998,True,21,21
+atr_trail_1x,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-27.7996,2.350400000000004,True,21,21
+atr_trail_1x,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,22.0229,-47.4721,False,21,21
+atr_trail_1x,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-27.7996,2.350400000000004,True,21,21
+atr_trail_1x,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-11.984499999999997,-13.4647,False,21,21
+atr_trail_1x,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,29.372600000000006,-54.8218,False,21,21
+atr_trail_1x,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.449199999999998,-5.031199999999998,-20.418,False,21,21
+atr_trail_2x,break_even_at_1r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-8.078,6.850000000000001,True,21,21
+atr_trail_2x,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,42.0847,-43.3127,False,21,21
+atr_trail_2x,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-25.4891,24.261100000000003,True,21,21
+atr_trail_2x,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-1162.4495,1161.2214999999999,True,21,21
+atr_trail_2x,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-41.6684,40.4404,True,21,21
+atr_trail_2x,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-1718.1487000000002,1716.9207000000001,True,21,21
+atr_trail_2x,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-2.2954999999999997,1.0675000000000012,True,21,21
+atr_trail_2x,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,16.9973,-18.225299999999997,False,21,21
+atr_trail_2x,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,21.2545,-22.482499999999998,False,21,21
+atr_trail_2x,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-31.489599999999996,30.261599999999998,True,21,21
+atr_trail_2x,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-27.7996,26.571600000000004,True,21,21
+atr_trail_2x,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,22.0229,-23.250899999999998,False,21,21
+atr_trail_2x,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-27.7996,26.571600000000004,True,21,21
+atr_trail_2x,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-11.984499999999997,10.756499999999999,True,21,21
+atr_trail_2x,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,29.372600000000006,-30.600600000000004,False,21,21
+atr_trail_2x,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.2279999999999984,-5.031199999999998,3.8032,True,21,21
+break_even_at_1r,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,42.0847,-50.1627,False,21,21
+break_even_at_1r,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-25.4891,17.4111,True,21,21
+break_even_at_1r,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-1162.4495,1154.3715,True,21,21
+break_even_at_1r,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-41.6684,33.5904,True,21,21
+break_even_at_1r,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-1718.1487000000002,1710.0707000000002,True,21,21
+break_even_at_1r,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-2.2954999999999997,-5.7825,False,21,21
+break_even_at_1r,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,16.9973,-25.0753,False,21,21
+break_even_at_1r,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,21.2545,-29.3325,False,21,21
+break_even_at_1r,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-31.489599999999996,23.411599999999996,True,21,21
+break_even_at_1r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-27.7996,19.721600000000002,True,21,21
+break_even_at_1r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,22.0229,-30.1009,False,21,21
+break_even_at_1r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-27.7996,19.721600000000002,True,21,21
+break_even_at_1r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-11.984499999999997,3.9064999999999976,True,21,21
+break_even_at_1r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,29.372600000000006,-37.45060000000001,False,21,21
+break_even_at_1r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-8.078,-5.031199999999998,-3.046800000000001,False,21,21
+breakeven_plus_trail,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-25.4891,67.5738,True,21,21
+breakeven_plus_trail,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-1162.4495,1204.5342,True,21,21
+breakeven_plus_trail,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-41.6684,83.75309999999999,True,21,21
+breakeven_plus_trail,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-1718.1487000000002,1760.2334,True,21,21
+breakeven_plus_trail,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-2.2954999999999997,44.380199999999995,True,21,21
+breakeven_plus_trail,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,16.9973,25.0874,True,21,21
+breakeven_plus_trail,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,21.2545,20.830199999999998,True,21,21
+breakeven_plus_trail,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-31.489599999999996,73.5743,True,21,21
+breakeven_plus_trail,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-27.7996,69.8843,True,21,21
+breakeven_plus_trail,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,22.0229,20.061799999999998,True,21,21
+breakeven_plus_trail,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-27.7996,69.8843,True,21,21
+breakeven_plus_trail,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-11.984499999999997,54.069199999999995,True,21,21
+breakeven_plus_trail,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,29.372600000000006,12.712099999999992,True,21,21
+breakeven_plus_trail,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,42.0847,-5.031199999999998,47.115899999999996,True,21,21
+class_time_stop,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-1162.4495,1136.9604,True,21,21
+class_time_stop,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-41.6684,16.179299999999998,True,21,21
+class_time_stop,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-1718.1487000000002,1692.6596000000002,True,21,21
+class_time_stop,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-2.2954999999999997,-23.1936,False,21,21
+class_time_stop,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,16.9973,-42.4864,False,21,21
+class_time_stop,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,21.2545,-46.7436,False,21,21
+class_time_stop,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-31.489599999999996,6.000499999999995,True,21,21
+class_time_stop,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-27.7996,2.310500000000001,True,21,21
+class_time_stop,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,22.0229,-47.512,False,21,21
+class_time_stop,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-27.7996,2.310500000000001,True,21,21
+class_time_stop,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-11.984499999999997,-13.504600000000003,False,21,21
+class_time_stop,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,29.372600000000006,-54.861700000000006,False,21,21
+class_time_stop,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-25.4891,-5.031199999999998,-20.457900000000002,False,21,21
+earnings_blackout,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-41.6684,-1120.7811,False,21,21
+earnings_blackout,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-1718.1487000000002,555.6992000000002,True,21,21
+earnings_blackout,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-2.2954999999999997,-1160.154,False,21,21
+earnings_blackout,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,16.9973,-1179.4468,False,21,21
+earnings_blackout,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,21.2545,-1183.704,False,21,21
+earnings_blackout,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-31.489599999999996,-1130.9598999999998,False,21,21
+earnings_blackout,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-27.7996,-1134.6499,False,21,21
+earnings_blackout,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,22.0229,-1184.4723999999999,False,21,21
+earnings_blackout,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-27.7996,-1134.6499,False,21,21
+earnings_blackout,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-11.984499999999997,-1150.465,False,21,21
+earnings_blackout,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,29.372600000000006,-1191.8220999999999,False,21,21
+earnings_blackout,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1162.4495,-5.031199999999998,-1157.4183,False,21,21
+fixed_4r_2r,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,-1718.1487000000002,1676.4803000000002,True,21,21
+fixed_4r_2r,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,-2.2954999999999997,-39.3729,False,21,21
+fixed_4r_2r,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,16.9973,-58.6657,False,21,21
+fixed_4r_2r,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,21.2545,-62.9229,False,21,21
+fixed_4r_2r,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,-31.489599999999996,-10.178800000000003,False,21,21
+fixed_4r_2r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,-27.7996,-13.868799999999997,False,21,21
+fixed_4r_2r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,22.0229,-63.6913,False,21,21
+fixed_4r_2r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,-27.7996,-13.868799999999997,False,21,21
+fixed_4r_2r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,-11.984499999999997,-29.6839,False,21,21
+fixed_4r_2r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,29.372600000000006,-71.041,False,21,21
+fixed_4r_2r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-41.6684,-5.031199999999998,-36.6372,False,21,21
+hybrid_50pct_target,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,-2.2954999999999997,-1715.8532000000002,False,21,21
+hybrid_50pct_target,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,16.9973,-1735.1460000000002,False,21,21
+hybrid_50pct_target,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,21.2545,-1739.4032000000002,False,21,21
+hybrid_50pct_target,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,-31.489599999999996,-1686.6591000000003,False,21,21
+hybrid_50pct_target,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,-27.7996,-1690.3491000000001,False,21,21
+hybrid_50pct_target,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,22.0229,-1740.1716000000001,False,21,21
+hybrid_50pct_target,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,-27.7996,-1690.3491000000001,False,21,21
+hybrid_50pct_target,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,-11.984499999999997,-1706.1642000000002,False,21,21
+hybrid_50pct_target,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,29.372600000000006,-1747.5213,False,21,21
+hybrid_50pct_target,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1718.1487000000002,-5.031199999999998,-1713.1175000000003,False,21,21
+ma_exit_ema9,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,16.9973,-19.2928,False,21,21
+ma_exit_ema9,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,21.2545,-23.55,False,21,21
+ma_exit_ema9,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,-31.489599999999996,29.194099999999995,True,21,21
+ma_exit_ema9,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,-27.7996,25.5041,True,21,21
+ma_exit_ema9,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,22.0229,-24.3184,False,21,21
+ma_exit_ema9,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,-27.7996,25.5041,True,21,21
+ma_exit_ema9,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,-11.984499999999997,9.688999999999997,True,21,21
+ma_exit_ema9,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,29.372600000000006,-31.668100000000006,False,21,21
+ma_exit_ema9,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.2954999999999997,-5.031199999999998,2.7356999999999987,True,21,21
+next_pivot_target,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,21.2545,-4.257200000000001,False,21,21
+next_pivot_target,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,-31.489599999999996,48.48689999999999,True,21,21
+next_pivot_target,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,-27.7996,44.7969,True,21,21
+next_pivot_target,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,22.0229,-5.025600000000001,False,21,21
+next_pivot_target,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,-27.7996,44.7969,True,21,21
+next_pivot_target,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,-11.984499999999997,28.981799999999996,True,21,21
+next_pivot_target,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,29.372600000000006,-12.375300000000006,False,21,21
+next_pivot_target,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.9973,-5.031199999999998,22.028499999999998,True,21,21
+r_multiple_2r,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,21.2545,-31.489599999999996,52.744099999999996,True,21,21
+r_multiple_2r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,21.2545,-27.7996,49.054100000000005,True,21,21
+r_multiple_2r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,21.2545,22.0229,-0.7683999999999997,False,21,21
+r_multiple_2r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,21.2545,-27.7996,49.054100000000005,True,21,21
+r_multiple_2r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,21.2545,-11.984499999999997,33.239,True,21,21
+r_multiple_2r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,21.2545,29.372600000000006,-8.118100000000005,False,21,21
+r_multiple_2r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,21.2545,-5.031199999999998,26.2857,True,21,21
+r_multiple_3r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-31.489599999999996,-27.7996,-3.689999999999994,False,21,21
+r_multiple_3r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-31.489599999999996,22.0229,-53.512499999999996,False,21,21
+r_multiple_3r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-31.489599999999996,-27.7996,-3.689999999999994,False,21,21
+r_multiple_3r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-31.489599999999996,-11.984499999999997,-19.5051,False,21,21
+r_multiple_3r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-31.489599999999996,29.372600000000006,-60.8622,False,21,21
+r_multiple_3r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-31.489599999999996,-5.031199999999998,-26.458399999999997,False,21,21
+regime_flip,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,22.0229,-49.822500000000005,False,21,21
+regime_flip,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,-27.7996,0.0,False,21,21
+regime_flip,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,-11.984499999999997,-15.815100000000005,False,21,21
+regime_flip,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,29.372600000000006,-57.172200000000004,False,21,21
+regime_flip,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,-5.031199999999998,-22.768400000000003,False,21,21
+time_stop_10d,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,22.0229,-27.7996,49.822500000000005,True,21,21
+time_stop_10d,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,22.0229,-11.984499999999997,34.0074,True,21,21
+time_stop_10d,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,22.0229,29.372600000000006,-7.349700000000006,False,21,21
+time_stop_10d,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,22.0229,-5.031199999999998,27.0541,True,21,21
+time_stop_20d,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,-11.984499999999997,-15.815100000000005,False,21,21
+time_stop_20d,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,29.372600000000006,-57.172200000000004,False,21,21
+time_stop_20d,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-27.7996,-5.031199999999998,-22.768400000000003,False,21,21
+trailing_10pct,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-11.984499999999997,29.372600000000006,-41.3571,False,21,21
+trailing_10pct,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-11.984499999999997,-5.031199999999998,-6.953299999999999,False,21,21
+trailing_15pct,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,29.372600000000006,-5.031199999999998,34.403800000000004,True,21,21
+atr_trail_1x,atr_trail_2x,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,72.3871,-26.5649,False,10,10
+atr_trail_1x,break_even_at_1r,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,33.3402,12.482,True,10,10
+atr_trail_1x,breakeven_plus_trail,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,28.319700000000005,17.502499999999998,True,10,10
+atr_trail_1x,class_time_stop,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,13.744900000000001,32.0773,True,10,10
+atr_trail_1x,earnings_blackout,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,402.9774,-357.1552,False,10,10
+atr_trail_1x,fixed_4r_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-11.743999999999998,57.5662,True,10,10
+atr_trail_1x,hybrid_50pct_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,38.4623,7.359900000000003,True,10,10
+atr_trail_1x,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-6.3053,52.127500000000005,True,10,10
+atr_trail_1x,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-7.607399999999999,53.4296,True,10,10
+atr_trail_1x,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-25.191100000000002,71.0133,True,10,10
+atr_trail_1x,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-25.3259,71.1481,True,10,10
+atr_trail_1x,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-9.222299999999994,55.0445,True,10,10
+atr_trail_1x,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,55.1047,-9.282499999999999,False,10,10
+atr_trail_1x,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-9.222299999999994,55.0445,True,10,10
+atr_trail_1x,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,25.359900000000003,20.4623,True,10,10
+atr_trail_1x,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,31.907600000000002,13.9146,True,10,10
+atr_trail_1x,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,45.8222,-12.3128,58.135000000000005,True,10,10
+atr_trail_2x,break_even_at_1r,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,33.3402,39.0469,True,10,10
+atr_trail_2x,breakeven_plus_trail,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,28.319700000000005,44.0674,True,10,10
+atr_trail_2x,class_time_stop,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,13.744900000000001,58.6422,True,10,10
+atr_trail_2x,earnings_blackout,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,402.9774,-330.59029999999996,False,10,10
+atr_trail_2x,fixed_4r_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-11.743999999999998,84.1311,True,10,10
+atr_trail_2x,hybrid_50pct_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,38.4623,33.924800000000005,True,10,10
+atr_trail_2x,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-6.3053,78.6924,True,10,10
+atr_trail_2x,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-7.607399999999999,79.9945,True,10,10
+atr_trail_2x,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-25.191100000000002,97.57820000000001,True,10,10
+atr_trail_2x,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-25.3259,97.71300000000001,True,10,10
+atr_trail_2x,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-9.222299999999994,81.6094,True,10,10
+atr_trail_2x,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,55.1047,17.282400000000003,True,10,10
+atr_trail_2x,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-9.222299999999994,81.6094,True,10,10
+atr_trail_2x,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,25.359900000000003,47.0272,True,10,10
+atr_trail_2x,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,31.907600000000002,40.4795,True,10,10
+atr_trail_2x,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,72.3871,-12.3128,84.6999,True,10,10
+break_even_at_1r,breakeven_plus_trail,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,28.319700000000005,5.020499999999998,True,10,10
+break_even_at_1r,class_time_stop,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,13.744900000000001,19.5953,True,10,10
+break_even_at_1r,earnings_blackout,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,402.9774,-369.6372,False,10,10
+break_even_at_1r,fixed_4r_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-11.743999999999998,45.0842,True,10,10
+break_even_at_1r,hybrid_50pct_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,38.4623,-5.122099999999996,False,10,10
+break_even_at_1r,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-6.3053,39.645500000000006,True,10,10
+break_even_at_1r,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-7.607399999999999,40.9476,True,10,10
+break_even_at_1r,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-25.191100000000002,58.5313,True,10,10
+break_even_at_1r,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-25.3259,58.6661,True,10,10
+break_even_at_1r,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-9.222299999999994,42.5625,True,10,10
+break_even_at_1r,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,55.1047,-21.764499999999998,False,10,10
+break_even_at_1r,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-9.222299999999994,42.5625,True,10,10
+break_even_at_1r,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,25.359900000000003,7.9803,True,10,10
+break_even_at_1r,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,31.907600000000002,1.4326000000000008,True,10,10
+break_even_at_1r,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,33.3402,-12.3128,45.653000000000006,True,10,10
+breakeven_plus_trail,class_time_stop,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,13.744900000000001,14.574800000000003,True,10,10
+breakeven_plus_trail,earnings_blackout,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,402.9774,-374.6577,False,10,10
+breakeven_plus_trail,fixed_4r_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-11.743999999999998,40.063700000000004,True,10,10
+breakeven_plus_trail,hybrid_50pct_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,38.4623,-10.142599999999995,False,10,10
+breakeven_plus_trail,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-6.3053,34.62500000000001,True,10,10
+breakeven_plus_trail,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-7.607399999999999,35.9271,True,10,10
+breakeven_plus_trail,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-25.191100000000002,53.5108,True,10,10
+breakeven_plus_trail,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-25.3259,53.6456,True,10,10
+breakeven_plus_trail,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-9.222299999999994,37.542,True,10,10
+breakeven_plus_trail,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,55.1047,-26.784999999999997,False,10,10
+breakeven_plus_trail,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-9.222299999999994,37.542,True,10,10
+breakeven_plus_trail,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,25.359900000000003,2.9598000000000013,True,10,10
+breakeven_plus_trail,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,31.907600000000002,-3.5878999999999976,False,10,10
+breakeven_plus_trail,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,28.319700000000005,-12.3128,40.63250000000001,True,10,10
+class_time_stop,earnings_blackout,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,402.9774,-389.23249999999996,False,10,10
+class_time_stop,fixed_4r_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-11.743999999999998,25.4889,True,10,10
+class_time_stop,hybrid_50pct_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,38.4623,-24.717399999999998,False,10,10
+class_time_stop,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-6.3053,20.0502,True,10,10
+class_time_stop,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-7.607399999999999,21.3523,True,10,10
+class_time_stop,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-25.191100000000002,38.93600000000001,True,10,10
+class_time_stop,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-25.3259,39.070800000000006,True,10,10
+class_time_stop,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-9.222299999999994,22.967199999999995,True,10,10
+class_time_stop,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,55.1047,-41.3598,False,10,10
+class_time_stop,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-9.222299999999994,22.967199999999995,True,10,10
+class_time_stop,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,25.359900000000003,-11.615000000000002,False,10,10
+class_time_stop,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,31.907600000000002,-18.1627,False,10,10
+class_time_stop,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,13.744900000000001,-12.3128,26.0577,True,10,10
+earnings_blackout,fixed_4r_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-11.743999999999998,414.72139999999996,True,10,10
+earnings_blackout,hybrid_50pct_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,38.4623,364.51509999999996,True,10,10
+earnings_blackout,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-6.3053,409.2827,True,10,10
+earnings_blackout,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-7.607399999999999,410.5848,True,10,10
+earnings_blackout,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-25.191100000000002,428.1685,True,10,10
+earnings_blackout,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-25.3259,428.3033,True,10,10
+earnings_blackout,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-9.222299999999994,412.1997,True,10,10
+earnings_blackout,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,55.1047,347.8727,True,10,10
+earnings_blackout,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-9.222299999999994,412.1997,True,10,10
+earnings_blackout,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,25.359900000000003,377.6175,True,10,10
+earnings_blackout,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,31.907600000000002,371.0698,True,10,10
+earnings_blackout,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,402.9774,-12.3128,415.29019999999997,True,10,10
+fixed_4r_2r,hybrid_50pct_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,38.4623,-50.2063,False,10,10
+fixed_4r_2r,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,-6.3053,-5.438699999999998,False,10,10
+fixed_4r_2r,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,-7.607399999999999,-4.136599999999999,False,10,10
+fixed_4r_2r,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,-25.191100000000002,13.447100000000004,True,10,10
+fixed_4r_2r,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,-25.3259,13.581900000000003,True,10,10
+fixed_4r_2r,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,-9.222299999999994,-2.5217000000000045,False,10,10
+fixed_4r_2r,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,55.1047,-66.8487,False,10,10
+fixed_4r_2r,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,-9.222299999999994,-2.5217000000000045,False,10,10
+fixed_4r_2r,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,25.359900000000003,-37.1039,False,10,10
+fixed_4r_2r,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,31.907600000000002,-43.6516,False,10,10
+fixed_4r_2r,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-11.743999999999998,-12.3128,0.5688000000000013,True,10,10
+hybrid_50pct_target,ma_exit_ema9,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,-6.3053,44.7676,True,10,10
+hybrid_50pct_target,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,-7.607399999999999,46.0697,True,10,10
+hybrid_50pct_target,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,-25.191100000000002,63.653400000000005,True,10,10
+hybrid_50pct_target,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,-25.3259,63.7882,True,10,10
+hybrid_50pct_target,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,-9.222299999999994,47.68459999999999,True,10,10
+hybrid_50pct_target,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,55.1047,-16.642400000000002,False,10,10
+hybrid_50pct_target,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,-9.222299999999994,47.68459999999999,True,10,10
+hybrid_50pct_target,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,25.359900000000003,13.102399999999996,True,10,10
+hybrid_50pct_target,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,31.907600000000002,6.554699999999997,True,10,10
+hybrid_50pct_target,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,38.4623,-12.3128,50.775099999999995,True,10,10
+ma_exit_ema9,next_pivot_target,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,-7.607399999999999,1.3020999999999994,True,10,10
+ma_exit_ema9,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,-25.191100000000002,18.885800000000003,True,10,10
+ma_exit_ema9,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,-25.3259,19.0206,True,10,10
+ma_exit_ema9,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,-9.222299999999994,2.9169999999999936,True,10,10
+ma_exit_ema9,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,55.1047,-61.410000000000004,False,10,10
+ma_exit_ema9,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,-9.222299999999994,2.9169999999999936,True,10,10
+ma_exit_ema9,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,25.359900000000003,-31.665200000000002,False,10,10
+ma_exit_ema9,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,31.907600000000002,-38.212900000000005,False,10,10
+ma_exit_ema9,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-6.3053,-12.3128,6.007499999999999,True,10,10
+next_pivot_target,r_multiple_2r,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,-25.191100000000002,17.583700000000004,True,10,10
+next_pivot_target,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,-25.3259,17.718500000000002,True,10,10
+next_pivot_target,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,-9.222299999999994,1.6148999999999942,True,10,10
+next_pivot_target,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,55.1047,-62.7121,False,10,10
+next_pivot_target,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,-9.222299999999994,1.6148999999999942,True,10,10
+next_pivot_target,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,25.359900000000003,-32.9673,False,10,10
+next_pivot_target,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,31.907600000000002,-39.515,False,10,10
+next_pivot_target,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-7.607399999999999,-12.3128,4.7054,True,10,10
+r_multiple_2r,r_multiple_3r,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.191100000000002,-25.3259,0.13479999999999848,True,10,10
+r_multiple_2r,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.191100000000002,-9.222299999999994,-15.968800000000009,False,10,10
+r_multiple_2r,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.191100000000002,55.1047,-80.2958,False,10,10
+r_multiple_2r,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.191100000000002,-9.222299999999994,-15.968800000000009,False,10,10
+r_multiple_2r,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.191100000000002,25.359900000000003,-50.551,False,10,10
+r_multiple_2r,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.191100000000002,31.907600000000002,-57.09870000000001,False,10,10
+r_multiple_2r,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.191100000000002,-12.3128,-12.878300000000003,False,10,10
+r_multiple_3r,regime_flip,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.3259,-9.222299999999994,-16.103600000000007,False,10,10
+r_multiple_3r,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.3259,55.1047,-80.4306,False,10,10
+r_multiple_3r,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.3259,-9.222299999999994,-16.103600000000007,False,10,10
+r_multiple_3r,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.3259,25.359900000000003,-50.6858,False,10,10
+r_multiple_3r,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.3259,31.907600000000002,-57.23350000000001,False,10,10
+r_multiple_3r,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-25.3259,-12.3128,-13.013100000000001,False,10,10
+regime_flip,time_stop_10d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,55.1047,-64.327,False,10,10
+regime_flip,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,-9.222299999999994,0.0,False,10,10
+regime_flip,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,25.359900000000003,-34.5822,False,10,10
+regime_flip,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,31.907600000000002,-41.12989999999999,False,10,10
+regime_flip,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,-12.3128,3.090500000000006,True,10,10
+time_stop_10d,time_stop_20d,neutral,Materials,unknown,mid_15_25,long_ge_11d,55.1047,-9.222299999999994,64.327,True,10,10
+time_stop_10d,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,55.1047,25.359900000000003,29.744799999999998,True,10,10
+time_stop_10d,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,55.1047,31.907600000000002,23.1971,True,10,10
+time_stop_10d,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,55.1047,-12.3128,67.4175,True,10,10
+time_stop_20d,trailing_10pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,25.359900000000003,-34.5822,False,10,10
+time_stop_20d,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,31.907600000000002,-41.12989999999999,False,10,10
+time_stop_20d,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,-9.222299999999994,-12.3128,3.090500000000006,True,10,10
+trailing_10pct,trailing_15pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,25.359900000000003,31.907600000000002,-6.547699999999999,False,10,10
+trailing_10pct,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,25.359900000000003,-12.3128,37.672700000000006,True,10,10
+trailing_15pct,trailing_5pct,neutral,Materials,unknown,mid_15_25,long_ge_11d,31.907600000000002,-12.3128,44.2204,True,10,10
