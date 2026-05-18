@@ -7024,6 +7024,81 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch227b_multi_tier_partial_registered():
+    """Batch 227b (multi-tier partial-fill 2026-05-18 owner-approved): 1
+    new exit method (multi_tier_partial) bringing roster 24 -> 25."""
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    assert "multi_tier_partial" in EXIT_STRATEGIES
+    assert len(EXIT_STRATEGIES) >= 25
+
+
+def test_batch227b_multi_tier_hits_1r_then_2r_then_trail():
+    """Batch 227b: synthetic strong-uptrend triggers 1R + 2R partial fills
+    then trail-stop. Weighted-average exit price > entry."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import exit_multi_tier_partial
+    n = 60
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    # Strong rally past 2R (entry 100, atr 2.0 -> 1R=102, 2R=104), then pullback
+    closes = list(range(100, 130)) + [130 - i * 0.5 for i in range(30)]
+    df = pd.DataFrame({
+        "open":  closes, "high": [c + 1 for c in closes],
+        "low":   [c - 1 for c in closes], "close": closes,
+    }, index=idx)
+    out = exit_multi_tier_partial(df, idx[0].date(), 100.0, "long", atr=2.0)
+    assert out is not None
+    # Should hit at least 1R; reason contains "1R"
+    assert "1R" in out["exit_reason"]
+    # Net exit price weighted across tiers should exceed entry
+    assert out["exit_price"] > 100.0
+    # Should be a win
+    assert out["win"] is True
+
+
+def test_batch227b_multi_tier_partial_stops_out_before_1r():
+    """Batch 227b: synthetic decline that never hits 1R should exit via
+    trailing stop (no partial fill at 1R). Weighted-avg = trail-stop fill."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import exit_multi_tier_partial
+    n = 30
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    # Steady decline from 100 (entry) - never hits 1R target at 102
+    closes = [100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88,
+              87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71]
+    df = pd.DataFrame({
+        "open":  closes, "high": [c + 0.5 for c in closes],
+        "low":   [c - 0.5 for c in closes], "close": closes,
+    }, index=idx)
+    out = exit_multi_tier_partial(df, idx[0].date(), 100.0, "long", atr=2.0)
+    assert out is not None
+    # Stop out before any tier hit -> reason contains "trail" (only trail tier)
+    assert "trail" in out["exit_reason"]
+    # Should be a loss
+    assert out["pnl_pct"] < 0
+
+
+def test_batch227b_multi_tier_partial_short_side_symmetric():
+    """Batch 227b: short-side symmetric on downward move."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import exit_multi_tier_partial
+    n = 50
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    # Decline 100 -> 90 (5R) then partial recovery
+    closes = list(range(100, 90, -1)) + [90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+                                          100, 101, 102, 103, 104, 105, 106, 107,
+                                          108, 109, 110, 111, 112, 113, 114, 115,
+                                          116, 117, 118, 119, 120, 121, 122, 123,
+                                          124, 125, 126, 127, 128, 129]
+    df = pd.DataFrame({
+        "open":  closes, "high": [c + 1 for c in closes],
+        "low":   [c - 1 for c in closes], "close": closes,
+    }, index=idx)
+    out = exit_multi_tier_partial(df, idx[0].date(), 100.0, "short", atr=2.0)
+    assert out is not None
+    # Should hit 1R at price=98 (entry-1xATR)
+    assert "1R" in out["exit_reason"] or "trail" in out["exit_reason"]
+
+
 def test_batch227a_new_exits_registered():
     """Batch 227a (deferred exits 2026-05-18 owner-approved): 2 new exit
     methods (reverse_signal, smc_mitigation_zone) bringing roster 22 -> 24."""

@@ -175,8 +175,9 @@ def test_exit_registry_count_after_dec517_518_521():
     # Batch 226 (2026-05-18 research review exit gap): +4 (chandelier,
     #   atr_trail_vix_conditional, mfe_lockin_trail, atr_trail_mae_conditional)
     # Batch 227a (2026-05-18 deferred): +2 (reverse_signal, smc_mitigation_zone).
-    # Total: 18 + 4 + 2 = 24.
-    assert len(EXIT_STRATEGIES) == 24, (
-        f"Expected 24 exit methods after DEC-517/518/521 + Batch 226 + 227a; "
+    # Batch 227b (2026-05-18 multi-tier partial-fill): +1 (multi_tier_partial).
+    # Total: 18 + 4 + 2 + 1 = 25.
+    assert len(EXIT_STRATEGIES) == 25, (
+        f"Expected 25 exit methods after DEC-517/518/521 + Batch 226 + 227a + 227b; "
         f"got {len(EXIT_STRATEGIES)}"
     )

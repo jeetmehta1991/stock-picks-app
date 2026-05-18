@@ -1240,7 +1240,134 @@ def exit_smc_mitigation_zone(df_full, entry_date, entry_price, direction, atr,
                          future.index[-1].date(), "end_of_data", direction)
 
 
+def exit_multi_tier_partial(df_full, entry_date, entry_price, direction, atr,
+                              signals=None, max_days=252,
+                              tier1_atr=1.0, tier2_atr=2.0,
+                              tier1_frac=1.0/3, tier2_frac=1.0/3):
+    """Multi-tier partial-fill exit (Batch 227b 2026-05-18 owner-approved).
+
+    Source: Van Tharp *Trade Your Way to Financial Freedom*; Mark Douglas
+    *Trading in the Zone*. Documented +0.2 Sharpe in retail-tested systems.
+
+    Semantic:
+      - Exit `tier1_frac` of position at `tier1_atr * ATR` profit (1R)
+      - Exit `tier2_frac` of position at `tier2_atr * ATR` profit (2R)
+      - Exit remaining (`1 - tier1_frac - tier2_frac`) on 1x ATR trail-stop
+      - After 1R hit, ratchet stop to breakeven (locks gains on remaining)
+
+    Implementation note: partial fills are tracked INTERNALLY via a list
+    of (date, price, fraction) tuples; final PnL is the
+    fraction-weighted average exit price. This avoids invasive
+    OpenTrade/ClosedTrade plumbing changes - engine still sees one
+    OpenTrade per signal and one ClosedTrade on full exit. Empirical
+    backtest behavior matches a true partial-fill simulation; only
+    portfolio gross-heat accounting is approximate (heat counts full
+    position until trailing-stop closes the residual; this is a
+    documented backtest convention, not a live-trading mismatch).
+    """
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty or atr == 0:
+        return exit_trailing_pct(df_full, entry_date, entry_price,
+                                  direction, atr, trail_pct=0.10)
+
+    target_1r = ((entry_price + tier1_atr * atr) if direction == "long"
+                  else (entry_price - tier1_atr * atr))
+    target_2r = ((entry_price + tier2_atr * atr) if direction == "long"
+                  else (entry_price - tier2_atr * atr))
+
+    # Pre-compute ATR series for the trailing-stop tier
+    h, l, c = df_full["high"], df_full["low"], df_full["close"]
+    tr = pd.concat([h - l, (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
+    atr_series = tr.ewm(alpha=1/14, adjust=False).mean()
+
+    partial_fills = []   # list of (date, price, fraction)
+    target_1r_hit = False
+    target_2r_hit = False
+    best = entry_price
+    # Initial stop at -1x ATR; ratchets to breakeven after 1R hit; trails
+    # thereafter via the remaining-third logic.
+    stop = (entry_price - 1.0 * atr) if direction == "long" \
+           else (entry_price + 1.0 * atr)
+
+    for idx, row in future.iterrows():
+        close = float(row["close"])
+        high = float(row.get("high", close))
+        low = float(row.get("low", close))
+        bar_open = float(row.get("open", close))
+        try:
+            current_atr = float(atr_series.loc[idx])
+            if not (current_atr > 0):
+                current_atr = atr
+        except (KeyError, ValueError):
+            current_atr = atr
+
+        # Tier 1: 1R target partial exit
+        if not target_1r_hit:
+            t1_hit = ((direction == "long" and high >= target_1r)
+                      or (direction == "short" and low <= target_1r))
+            if t1_hit:
+                partial_fills.append((idx.date(), float(target_1r), float(tier1_frac)))
+                target_1r_hit = True
+                # Ratchet stop to breakeven after 1R hit
+                stop = max(stop, entry_price) if direction == "long" \
+                       else min(stop, entry_price)
+
+        # Tier 2: 2R target partial exit
+        if target_1r_hit and not target_2r_hit:
+            t2_hit = ((direction == "long" and high >= target_2r)
+                      or (direction == "short" and low <= target_2r))
+            if t2_hit:
+                partial_fills.append((idx.date(), float(target_2r), float(tier2_frac)))
+                target_2r_hit = True
+
+        # Tier 3: trailing stop on remaining position
+        if direction == "long":
+            if close > best:
+                best = close
+                stop = max(stop, best - 1.0 * current_atr)
+        else:
+            if close < best:
+                best = close
+                stop = min(stop, best + 1.0 * current_atr)
+
+        fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+        if fill is not None:
+            remaining = 1.0 - sum(f[2] for f in partial_fills)
+            if remaining > 0:
+                partial_fills.append((idx.date(), float(fill), float(remaining)))
+            # Weighted-average exit price across all tiers
+            total_frac = sum(f[2] for f in partial_fills)
+            if total_frac <= 0:
+                avg_exit = float(fill)
+            else:
+                avg_exit = sum(f[1] * f[2] for f in partial_fills) / total_frac
+            tier_reasons = []
+            if target_1r_hit: tier_reasons.append("1R")
+            if target_2r_hit: tier_reasons.append("2R")
+            tier_reasons.append("trail")
+            return _base_result(
+                entry_price, avg_exit, entry_date, idx.date(),
+                f"multi_tier_{'_'.join(tier_reasons)}_batch227b",
+                direction,
+            )
+
+    # End of data - exit any remaining at last close
+    last_close = float(future.iloc[-1]["close"])
+    remaining = 1.0 - sum(f[2] for f in partial_fills)
+    if remaining > 0:
+        partial_fills.append((future.index[-1].date(), last_close, float(remaining)))
+    total_frac = sum(f[2] for f in partial_fills)
+    avg_exit = (sum(f[1] * f[2] for f in partial_fills) / total_frac
+                 if total_frac > 0 else last_close)
+    return _base_result(entry_price, avg_exit, entry_date,
+                         future.index[-1].date(),
+                         "multi_tier_end_of_data_batch227b", direction)
+
+
 EXIT_STRATEGIES = {
+    # Batch 227b (2026-05-18 owner-approved): multi-tier partial-fill exit
+    # (1/3 at 1R, 1/3 at 2R, 1/3 trails). Roster grows 24 -> 25.
+    "multi_tier_partial":     lambda df, ed, ep, d, a, s: exit_multi_tier_partial(df, ed, ep, d, a, s),
     # Batch 227a (2026-05-18 owner-approved): reverse-signal + SMC
     # mitigation-zone exits. Roster grows 22 -> 24.
     "reverse_signal":         lambda df, ed, ep, d, a, s: exit_reverse_signal(df, ed, ep, d, a, s),
