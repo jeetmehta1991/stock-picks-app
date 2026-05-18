@@ -7024,6 +7024,112 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch220_cross_sectional_features_emits_factor_ranks():
+    """Batch 220 (cross-sectional factor 2026-05-18 owner-approved):
+    compute_cross_sectional_features returns dict-of-dicts with
+    xs_momentum_decile, xs_beta_decile, xs_ivol_decile,
+    xs_max_anomaly_decile per ticker. Moskowitz-Ooi-Pedersen 2012 JFE +
+    Ang-Hodrick-Xing-Zhang 2006 + Bali-Cakici-Whitelaw 2011."""
+    import pandas as pd
+    import numpy as np
+    from datetime import date
+    from backtest.signals.cross_sectional import compute_cross_sectional_features
+    rng = np.random.default_rng(42)
+    n = 300
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    # Synthesize 15 tickers + SPY benchmark with varying momentum profiles
+    ohlcv = {}
+    for i, ticker in enumerate(["SPY"] + [f"T{j}" for j in range(15)]):
+        # Vary drift to create cross-sectional momentum dispersion
+        drift = 0.05 + (i - 7) * 0.02   # SPY=0.07/-tickers spread
+        base = 100 + np.cumsum(rng.normal(drift, 0.8, n))
+        ohlcv[ticker] = pd.DataFrame({
+            "open":  base, "high": base + 1, "low": base - 1,
+            "close": base, "volume": rng.integers(1_000_000, 5_000_000, n).astype(float),
+        }, index=idx)
+    out = compute_cross_sectional_features(ohlcv, as_of=date(2025, 1, 1))
+    # At least 10 tickers should have factor features
+    assert len(out) >= 10, f"Expected 10+ tickers with XS features, got {len(out)}"
+    # Spot-check a non-benchmark ticker has the expected keys
+    sample = next((v for k, v in out.items() if k != "SPY"), None)
+    assert sample is not None
+    for key in (
+        "xs_momentum_12_1", "xs_momentum_decile", "xs_momentum_top_decile",
+        "xs_beta", "xs_beta_decile",
+        "xs_ivol", "xs_ivol_decile", "xs_avoid_high_ivol",
+        "xs_max_anomaly", "xs_max_anomaly_decile", "xs_avoid_high_max",
+    ):
+        assert key in sample, f"Batch 220: missing factor key {key}"
+    # Deciles in [1, 10]
+    assert 1 <= sample["xs_momentum_decile"] <= 10
+    assert 1 <= sample["xs_beta_decile"] <= 10
+
+
+def test_batch220_xs_momentum_top_decile_long_fires():
+    """Batch 220: xs_momentum_top_decile long fires only on top decile
+    + IVOL/MAX filters pass + 200-EMA gate."""
+    from backtest.signals.screener import strat_xs_momentum_top_decile
+    s = {
+        "xs_momentum_top_decile": True,
+        "xs_avoid_high_ivol": True,
+        "xs_avoid_high_max": True,
+        "price_above_ema_200": True,
+    }
+    r = strat_xs_momentum_top_decile(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # IVOL filter rejects
+    s["xs_avoid_high_ivol"] = False
+    assert strat_xs_momentum_top_decile(s)["fires"] is False
+    # MAX filter rejects
+    s["xs_avoid_high_ivol"] = True
+    s["xs_avoid_high_max"] = False
+    assert strat_xs_momentum_top_decile(s)["fires"] is False
+    # Regime gate rejects
+    s["xs_avoid_high_max"] = True
+    s["price_above_ema_200"] = False
+    assert strat_xs_momentum_top_decile(s)["fires"] is False
+
+
+def test_batch220_xs_low_beta_long_requires_filters():
+    """Batch 220: BAB long requires xs_low_beta_decile + 200-EMA +
+    not-high-IVOL."""
+    from backtest.signals.screener import strat_xs_low_beta_long
+    s = {
+        "xs_low_beta_decile": True,
+        "price_above_ema_200": True,
+        "xs_avoid_high_ivol": True,
+    }
+    assert strat_xs_low_beta_long(s)["fires"] is True
+
+
+def test_batch220_xs_combined_momentum_low_ivol():
+    """Batch 220: combined momentum + low-IVOL (Asness-Moskowitz-Pedersen
+    2013 quality-momentum). Requires top-decile momentum AND IVOL decile
+    <=3 (bottom 30%) AND 200-EMA gate."""
+    from backtest.signals.screener import strat_xs_combined_momentum_low_ivol
+    s = {
+        "xs_momentum_top_decile": True,
+        "xs_ivol_decile": 2,
+        "price_above_ema_200": True,
+    }
+    assert strat_xs_combined_momentum_low_ivol(s)["fires"] is True
+    # IVOL too high -> no fire
+    s["xs_ivol_decile"] = 7
+    assert strat_xs_combined_momentum_low_ivol(s)["fires"] is False
+
+
+def test_batch220_factor_strategies_registered():
+    """Batch 220: 4 new factor strategies registered in ALL_STRATEGIES."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    for name in (
+        "xs_momentum_top_decile",
+        "xs_momentum_bottom_decile_short",
+        "xs_low_beta_long",
+        "xs_combined_momentum_low_ivol",
+    ):
+        assert name in ALL_STRATEGIES, f"Batch 220: {name} must be registered"
+
+
 def test_batch219_hrp_per_strategy_weight_basic():
     """Batch 219 (HRP wiring 2026-05-18 owner-approved): per-strategy
     HRP-relative multiplier from trade log. Returns hrp_weight /

@@ -1177,6 +1177,77 @@ def strat_orb_stocks_in_play_short(s):
          "Below 200 EMA (bear regime confirmation)"])
 
 
+def strat_xs_momentum_top_decile(s):
+    """Batch 220 (cross-sectional factor 2026-05-18 owner-approved research
+    review). Long top decile of 12-1 momentum (Moskowitz-Ooi-Pedersen 2012
+    JFE; refreshed Goyal-Jegadeesh-Subrahmanyam 2024 RFS - Sharpe 1.2-1.6
+    net of costs 1985-2023). Single highest-ROI addition per the review.
+
+    Filters: IVOL filter (Ang-Hodrick-Xing-Zhang 2006 - avoid top IVOL
+    decile) + MAX filter (Bali-Cakici-Whitelaw 2011 - avoid top MAX decile)
+    + 200-EMA regime gate."""
+    fires = (
+        s.get("xs_momentum_top_decile", False)
+        and s.get("xs_avoid_high_ivol", True)
+        and s.get("xs_avoid_high_max", True)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "factor",
+        ["xs_momentum_top_decile", "xs_avoid_high_ivol",
+         "xs_avoid_high_max", "price_above_ema_200"],
+        ["Cross-sectional 12-1 momentum top decile",
+         "Not in top IVOL decile (Ang-Hodrick-Xing-Zhang filter)",
+         "Not in top MAX-anomaly decile (Bali-Cakici-Whitelaw filter)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_xs_momentum_bottom_decile_short(s):
+    """Batch 220: Symmetric short on bottom-decile 12-1 momentum +
+    below-200-EMA regime gate."""
+    fires = (
+        s.get("xs_momentum_bottom_decile", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat(fires, "short", "factor",
+        ["xs_momentum_bottom_decile", "price_below_ema_200"],
+        ["Cross-sectional 12-1 momentum bottom decile",
+         "Below 200 EMA (bear regime)"])
+
+
+def strat_xs_low_beta_long(s):
+    """Batch 220: Betting-against-beta (Frazzini-Pedersen 2014 JFE;
+    Blitz-van Vliet 2024 JPM update). Long bottom-2-decile beta names
+    + bullish or neutral regime gate. Low-beta names systematically
+    outperform on a risk-adjusted basis."""
+    fires = (
+        s.get("xs_low_beta_decile", False)
+        and s.get("price_above_ema_200", True)
+        and s.get("xs_avoid_high_ivol", True)
+    )
+    return _strat(fires, "long", "factor",
+        ["xs_low_beta_decile", "price_above_ema_200", "xs_avoid_high_ivol"],
+        ["Bottom-2-decile beta vs SPY (BAB tilt)",
+         "Above 200 EMA", "Not high-IVOL"])
+
+
+def strat_xs_combined_momentum_low_ivol(s):
+    """Batch 220: Combined factor signal - top-decile momentum AND
+    bottom-quintile IVOL (high quality momentum). Asness-Moskowitz-
+    Pedersen 2013 JF "Value and Momentum Everywhere" documented Sharpe
+    approaches 1.4 when momentum combined with quality/low-vol filter."""
+    fires = (
+        s.get("xs_momentum_top_decile", False)
+        and s.get("xs_ivol_decile", 5) <= 3   # bottom 30% IVOL = high quality
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "factor",
+        ["xs_momentum_top_decile", "xs_ivol_decile<=3",
+         "price_above_ema_200"],
+        ["Top-decile 12-1 momentum",
+         "Bottom-quintile IVOL (high quality momentum)",
+         "Above 200 EMA - regime gate"])
+
+
 def strat_po3_bullish(s):
     """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved). Power of 3
     bullish daily candle: open near top, manipulation sweeps below
@@ -1759,6 +1830,11 @@ ALL_STRATEGIES = {
     "smc_choch_reversal":           strat_smc_choch_reversal,
     "smc_order_block_bounce":       strat_smc_order_block_bounce,
     "smc_liquidity_sweep_reversal": strat_smc_liquidity_sweep_reversal,
+    # Cross-sectional factor strategies (4 - Batch 220 2026-05-18 owner-approved)
+    "xs_momentum_top_decile":           strat_xs_momentum_top_decile,
+    "xs_momentum_bottom_decile_short":  strat_xs_momentum_bottom_decile_short,
+    "xs_low_beta_long":                 strat_xs_low_beta_long,
+    "xs_combined_momentum_low_ivol":    strat_xs_combined_momentum_low_ivol,
     # PO3 + multi-TF (9 - Batch 217 2026-05-18 owner-approved)
     "po3_bullish":                  strat_po3_bullish,
     "po3_bearish":                  strat_po3_bearish,
@@ -2035,6 +2111,7 @@ def screen_instrument(
     regime: str = "neutral",
     vix_value: float = None,
     vix_history: list = None,
+    xs_features: dict = None,
 ) -> dict:
     """
     Run single instrument through full pipeline.
@@ -2044,6 +2121,13 @@ def screen_instrument(
     kwargs flow through to compute_macro_overlays so regime-aware
     strategies (bollinger_*) can read vix_percentile/vix_band from the
     signals dict. When None, behavior is unchanged.
+
+    Batch 220 (cross-sectional infrastructure 2026-05-18): xs_features
+    is the per-ticker dict from compute_cross_sectional_features (called
+    once in screen_universe before iteration). Merged into the signals
+    dict so factor strategies can read xs_momentum_decile, xs_beta_decile,
+    xs_ivol_decile, xs_max_anomaly_decile. None when universe-wide
+    compute was not run (backward-compatible).
     """
     # Liquidity already checked at universe load time (annually)
     # Light check: price > 0 and sufficient history only
@@ -2079,6 +2163,10 @@ def screen_instrument(
             signals.update(smc_out)
     except Exception:
         pass
+    # Batch 220: merge cross-sectional factor ranks from the universe-
+    # wide pre-pass. No-op when xs_features is None.
+    if xs_features:
+        signals.update(xs_features)
     # Batch 217: PO3 daily candle + multi-TF (weekly/monthly bias) +
     # HTF alignment. Each helper returns empty dict on insufficient
     # data; merged in order so strategy gates can read po3_*,
@@ -2190,13 +2278,28 @@ def screen_universe(
     screen_instrument call so regime-aware strategies see the
     vix_percentile / vix_band overlays. Backward-compatible: when None,
     behavior is unchanged.
+
+    Batch 220 (cross-sectional infrastructure 2026-05-18 owner-approved):
+    pre-compute universe-wide factor ranks ONCE before per-ticker
+    iteration; inject per-ticker rank into each ticker's signals via
+    screen_instrument kwarg. Factor strategies (xs_momentum_*,
+    xs_low_beta_*, IVOL/MAX filters) read these injected ranks. Defaults
+    to no-op when ohlcv_dict has insufficient history or compute fails.
     """
+    # Batch 220 cross-sectional pre-pass
+    xs_features = {}
+    try:
+        from backtest.signals.cross_sectional import compute_cross_sectional_features
+        xs_features = compute_cross_sectional_features(ohlcv_dict, as_of)
+    except Exception:
+        xs_features = {}
     candidates = []
     for ticker, df in ohlcv_dict.items():
         info   = info_dict.get(ticker, {"ticker": ticker})
         result = screen_instrument(
             ticker, df, info, as_of, regime,
             vix_value=vix_value, vix_history=vix_history,
+            xs_features=xs_features.get(ticker),
         )
         if result.get("liquidity_ok") and result.get("strategy_count", 0) >= min_strategies:
             candidates.append(result)

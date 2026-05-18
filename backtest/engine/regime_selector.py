@@ -112,6 +112,14 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "smc_choch_reversal":           {"bull", "neutral", "bear", "crisis"},
     "smc_order_block_bounce":       {"bull", "neutral", "bear", "crisis"},
     "smc_liquidity_sweep_reversal": {"bull", "neutral", "bear", "crisis"},
+    # Cross-sectional factor (Batch 220): momentum top decile allow
+    # bull/neutral; bottom decile short in bear/crisis; BAB long in
+    # bull/neutral; momentum+low-IVOL combined allow all (filter is
+    # self-gating).
+    "xs_momentum_top_decile":           {"bull", "neutral"},
+    "xs_momentum_bottom_decile_short":  {"bear", "crisis"},
+    "xs_low_beta_long":                 {"bull", "neutral"},
+    "xs_combined_momentum_low_ivol":    {"bull", "neutral", "bear"},
     # PO3 + multi-TF (Batch 217): self-gate via 200-EMA + weekly/monthly
     # biases; symmetric pairs get explicit regime restrictions.
     "po3_bullish":                  {"bull", "neutral"},
