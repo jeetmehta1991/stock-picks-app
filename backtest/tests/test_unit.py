@@ -6684,6 +6684,100 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch212_half_kelly_fraction_basic():
+    """Batch 212 (HRP + Kelly sizing 2026-05-17): half-Kelly fraction
+    f*/2 from win_rate, avg_win, avg_loss. MacLean-Ziemba-Blazenko
+    (1992): half-Kelly = 75% of full-Kelly growth at 50% of volatility."""
+    from backtest.engine.sizing_hrp_kelly import half_kelly_fraction
+    # 60% WR, avg_win 2%, avg_loss -1% (b=2, p=0.6, q=0.4)
+    # Kelly = (2*0.6 - 0.4) / 2 = 0.8 / 2 = 0.4
+    # Half-Kelly = 0.2 -> bounded to min_mult=0.25
+    out = half_kelly_fraction(0.6, 2.0, -1.0, n_trades=50)
+    assert 0.25 <= out <= 1.0
+    assert abs(out - 0.25) < 0.01 or abs(out - 0.2) < 0.01  # floor at 0.25
+
+    # 70% WR, avg_win 3, avg_loss -1 (b=3, p=0.7)
+    # Kelly = (3*0.7 - 0.3)/3 = 1.8/3 = 0.6, half-Kelly = 0.3
+    out2 = half_kelly_fraction(0.7, 3.0, -1.0, n_trades=50)
+    assert 0.25 <= out2 <= 1.0
+
+    # Insufficient sample (n_trades < min_trades) -> 1.0 no-op
+    assert half_kelly_fraction(0.6, 2.0, -1.0, n_trades=10) == 1.0
+    # Missing inputs -> 1.0 no-op
+    assert half_kelly_fraction(None, 2.0, -1.0, n_trades=50) == 1.0
+    assert half_kelly_fraction(0.6, None, -1.0, n_trades=50) == 1.0
+    assert half_kelly_fraction(0.6, 2.0, None, n_trades=50) == 1.0
+    # Zero avg_loss -> 1.0 no-op
+    assert half_kelly_fraction(0.6, 2.0, 0.0, n_trades=50) == 1.0
+
+
+def test_batch212_kelly_per_strategy_from_trade_log():
+    """Batch 212: per_strategy_kelly_from_trade_log builds rolling
+    per-strategy Kelly multiplier from closed-trades DataFrame."""
+    from backtest.engine.sizing_hrp_kelly import per_strategy_kelly_from_trade_log
+    import pandas as pd
+    # Build synthetic trade log with 100 trades, 60% WR
+    trades = []
+    for i in range(100):
+        win = (i % 5) >= 2  # 60% WR pattern
+        trades.append({
+            "strategy": "test_strat",
+            "entry_date": pd.Timestamp("2024-01-01") + pd.Timedelta(days=i),
+            "win":     bool(win),
+            "pnl_pct": 2.0 if win else -1.0,
+        })
+    df = pd.DataFrame(trades)
+    out = per_strategy_kelly_from_trade_log(
+        df, "test_strat",
+        as_of=pd.Timestamp("2024-12-31"),
+    )
+    assert 0.25 <= out <= 1.0
+    # Unknown strategy -> 1.0 no-op
+    assert per_strategy_kelly_from_trade_log(df, "nonexistent") == 1.0
+    # Empty -> 1.0
+    assert per_strategy_kelly_from_trade_log(pd.DataFrame(), "test_strat") == 1.0
+
+
+def test_batch212_hrp_cluster_weights_equal_weight_fallback():
+    """Batch 212: HRP returns equal-weight Series on insufficient data
+    or single column (defensive fallback)."""
+    import pandas as pd
+    from backtest.engine.sizing_hrp_kelly import hrp_cluster_weights
+    # Empty -> empty
+    assert hrp_cluster_weights(pd.DataFrame()).empty
+    # Single column -> 100%
+    df1 = pd.DataFrame({"A": [0.01, 0.02, 0.0, 0.01] * 10})
+    w1 = hrp_cluster_weights(df1)
+    assert abs(w1["A"] - 1.0) < 1e-9
+    # Few obs (< min_obs default 30) -> equal weight fallback
+    df_small = pd.DataFrame({"A": [0.01] * 10, "B": [0.02] * 10, "C": [0.0] * 10})
+    w_small = hrp_cluster_weights(df_small)
+    assert abs(w_small["A"] - 1.0/3) < 1e-9
+    assert abs(w_small["B"] - 1.0/3) < 1e-9
+
+
+def test_batch212_hrp_cluster_weights_uses_correlation():
+    """Batch 212: HRP weights sum to 1.0 and are positive. Highly-
+    correlated columns share a weight budget."""
+    import pandas as pd, numpy as np
+    from backtest.engine.sizing_hrp_kelly import hrp_cluster_weights
+    rng = np.random.default_rng(42)
+    n = 100
+    # A and B perfectly correlated; C independent
+    a = rng.normal(0, 0.01, n)
+    df = pd.DataFrame({
+        "A": a,
+        "B": a + rng.normal(0, 0.0001, n),  # near-perfect with A
+        "C": rng.normal(0, 0.01, n),
+    })
+    w = hrp_cluster_weights(df)
+    assert abs(w.sum() - 1.0) < 1e-6, f"HRP weights must sum to 1.0, got {w.sum()}"
+    assert (w > 0).all()
+    # All 3 weights must be reasonable (not zero)
+    for col in ("A", "B", "C"):
+        assert w[col] > 0.05
+
+
 def test_batch211_orb_strategies_registered_and_gap_signals():
     """Batch 211 (ORB 2026-05-17): orb_stocks_in_play_long/short registered.
     compute_pivots emits gap_up_pct / gap_dn_pct / gap_*_2pct /

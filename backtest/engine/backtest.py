@@ -1184,6 +1184,42 @@ class BacktestEngine:
                         (size_pct / size_pct_pre_per_pos)
                         if size_pct_pre_per_pos > 0 else 1.0
                     )
+                    # Batch 212 (Lopez de Prado half-Kelly per-strategy
+                    # 2026-05-17 owner-approved research review): scale by
+                    # per-strategy half-Kelly fraction derived from rolling
+                    # 252-day trade log. MacLean-Ziemba-Blazenko (1992):
+                    # half-Kelly = 75% of full-Kelly growth at 50% of
+                    # volatility. Falls back to 1.0 (no-op) when sample
+                    # too small or stats missing. Stacks BEFORE VIX overlay
+                    # so VIX adjustment applies on the Kelly-adjusted base.
+                    try:
+                        from backtest.engine.sizing_hrp_kelly import (
+                            per_strategy_kelly_from_trade_log,
+                        )
+                        _closed_log = pd.DataFrame([
+                            {
+                                "strategy": ct.strategy,
+                                "entry_date": ct.entry_date,
+                                "win": getattr(ct, "win", None),
+                                "pnl_pct": getattr(ct, "pnl_pct", None),
+                            }
+                            for ct in getattr(self, "closed_trades", [])
+                        ])
+                        kelly_mult = per_strategy_kelly_from_trade_log(
+                            _closed_log, strat_entry["strategy"],
+                            as_of=pd.Timestamp(as_of),
+                        )
+                    except Exception:
+                        kelly_mult = 1.0
+                    size_pct_pre_kelly = size_pct
+                    size_pct = size_pct * kelly_mult
+                    if kelly_mult != 1.0 and size_pct_pre_kelly > 0:
+                        self.sizing_log.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "scaler": "half_kelly_batch212",
+                            "multiplier": round(float(kelly_mult), 4),
+                        })
                     # Batch 203 (VIX-conditional sizing overlay per Cederburg
                     # Johnson Maio 2024 Finance Research Letters): scale by
                     # inverse-percentile of VIX over trailing 252 days.
