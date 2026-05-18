@@ -1177,6 +1177,133 @@ def strat_orb_stocks_in_play_short(s):
          "Below 200 EMA (bear regime confirmation)"])
 
 
+def strat_po3_bullish(s):
+    """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved). Power of 3
+    bullish daily candle: open near top, manipulation sweeps below
+    prior-day low, distribution closes in upper third of range. ICT
+    pattern marking institutional accumulation after a stop hunt."""
+    fires = (
+        s.get("po3_bullish", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "po3",
+        ["po3_bullish", "price_above_ema_200"],
+        ["Bullish PO3 daily candle: sweep below prior low + close upper third",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_po3_bearish(s):
+    """Batch 217: Symmetric bearish PO3 daily."""
+    fires = (
+        s.get("po3_bearish", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat(fires, "short", "po3",
+        ["po3_bearish", "price_below_ema_200"],
+        ["Bearish PO3 daily candle: sweep above prior high + close lower third",
+         "Below 200 EMA (bear regime)"])
+
+
+def strat_po3_htf_aligned_long(s):
+    """Batch 217: PO3 bullish + weekly bias bullish - high-conviction
+    long with higher-timeframe directional alignment."""
+    fires = (
+        s.get("po3_bullish", False)
+        and s.get("weekly_bias_bull", False)
+    )
+    return _strat(fires, "long", "po3",
+        ["po3_bullish", "weekly_bias_bull"],
+        ["Bullish PO3 daily candle",
+         "Weekly bias bullish - higher-TF alignment"])
+
+
+def strat_po3_htf_aligned_short(s):
+    """Batch 217: Symmetric for bearish PO3 with weekly bear bias."""
+    fires = (
+        s.get("po3_bearish", False)
+        and s.get("weekly_bias_bear", False)
+    )
+    return _strat(fires, "short", "po3",
+        ["po3_bearish", "weekly_bias_bear"],
+        ["Bearish PO3 daily candle",
+         "Weekly bias bearish - higher-TF alignment"])
+
+
+def strat_htf_aligned_breakout_long(s):
+    """Batch 217: Multi-timeframe-aligned daily breakout. Daily breakout
+    above prev-day high + weekly + monthly biases both bullish. Triple-
+    timeframe confluence per Brian Shannon discipline."""
+    fires = (
+        s.get("above_prev_high", False)
+        and s.get("vol_spike_15x", False)
+        and s.get("htf_aligned_bull", False)
+    )
+    return _strat(fires, "long", "multi_timeframe",
+        ["above_prev_high", "vol_spike_1.5x", "htf_aligned_bull"],
+        ["Price broke above previous day's high",
+         "Volume 1.5x ADV(20) - institutional participation",
+         "Weekly + Monthly bias both bullish - HTF aligned"])
+
+
+def strat_htf_aligned_breakout_short(s):
+    """Batch 217: Symmetric short on prev-day low break + HTF bearish."""
+    fires = (
+        s.get("below_prev_low", False)
+        and s.get("vol_spike_15x", False)
+        and s.get("htf_aligned_bear", False)
+    )
+    return _strat(fires, "short", "multi_timeframe",
+        ["below_prev_low", "vol_spike_1.5x", "htf_aligned_bear"],
+        ["Price broke below previous day's low",
+         "Volume 1.5x ADV(20) - institutional participation",
+         "Weekly + Monthly bias both bearish - HTF aligned"])
+
+
+def strat_weekly_bias_pullback_long(s):
+    """Batch 217: Weekly bull bias + daily pullback (RSI(14)<40) +
+    bullish reversal candle = high-quality long. Trades WITH the weekly
+    trend after a daily oversold pullback."""
+    fires = (
+        s.get("weekly_bias_bull", False)
+        and s.get("rsi_14", 50) < 40
+        and (s.get("hammer") or s.get("bullish_engulfing"))
+    )
+    return _strat(fires, "long", "multi_timeframe",
+        ["weekly_bias_bull", "rsi_14<40", "bullish_reversal_candle"],
+        ["Weekly bias bullish - trade WITH weekly trend",
+         "Daily RSI<40 - oversold pullback",
+         "Bullish reversal candle (hammer or engulfing)"])
+
+
+def strat_weekly_bias_pullback_short(s):
+    """Batch 217: Symmetric weekly bear bias + daily rally pullback."""
+    fires = (
+        s.get("weekly_bias_bear", False)
+        and s.get("rsi_14", 50) > 60
+        and (s.get("shooting_star") or s.get("bearish_engulfing"))
+    )
+    return _strat(fires, "short", "multi_timeframe",
+        ["weekly_bias_bear", "rsi_14>60", "bearish_reversal_candle"],
+        ["Weekly bias bearish - trade WITH weekly trend",
+         "Daily RSI>60 - overbought rally",
+         "Bearish reversal candle (shooting star or engulfing)"])
+
+
+def strat_monthly_bias_momentum_long(s):
+    """Batch 217: Monthly bull bias + positive 6-month momentum + daily
+    breakout = swing-trade long with structural multi-TF backing."""
+    fires = (
+        s.get("monthly_bias_bull", False)
+        and s.get("monthly_momentum_pos", False)
+        and s.get("above_prev_high", False)
+    )
+    return _strat(fires, "long", "multi_timeframe",
+        ["monthly_bias_bull", "monthly_momentum_pos", "above_prev_high"],
+        ["Monthly bias bullish + positive 6-month momentum",
+         "Daily breakout above previous high",
+         "Triple-TF structural confluence"])
+
+
 def strat_smc_fvg_retest_long(s):
     """Batch 216 (SMC expansion 2026-05-18 owner-approved): price returned
     to an unmitigated bullish Fair Value Gap zone -> long entry.
@@ -1632,6 +1759,16 @@ ALL_STRATEGIES = {
     "smc_choch_reversal":           strat_smc_choch_reversal,
     "smc_order_block_bounce":       strat_smc_order_block_bounce,
     "smc_liquidity_sweep_reversal": strat_smc_liquidity_sweep_reversal,
+    # PO3 + multi-TF (9 - Batch 217 2026-05-18 owner-approved)
+    "po3_bullish":                  strat_po3_bullish,
+    "po3_bearish":                  strat_po3_bearish,
+    "po3_htf_aligned_long":         strat_po3_htf_aligned_long,
+    "po3_htf_aligned_short":        strat_po3_htf_aligned_short,
+    "htf_aligned_breakout_long":    strat_htf_aligned_breakout_long,
+    "htf_aligned_breakout_short":   strat_htf_aligned_breakout_short,
+    "weekly_bias_pullback_long":    strat_weekly_bias_pullback_long,
+    "weekly_bias_pullback_short":   strat_weekly_bias_pullback_short,
+    "monthly_bias_momentum_long":   strat_monthly_bias_momentum_long,
     # SMC / ICT expansion (13 - Batch 216 2026-05-18 owner-approved)
     "smc_fvg_retest_long":          strat_smc_fvg_retest_long,
     "smc_fvg_retest_short":         strat_smc_fvg_retest_short,
@@ -1940,6 +2077,30 @@ def screen_instrument(
         smc_out = compute_smc_signals(df)
         if smc_out:
             signals.update(smc_out)
+    except Exception:
+        pass
+    # Batch 217: PO3 daily candle + multi-TF (weekly/monthly bias) +
+    # HTF alignment. Each helper returns empty dict on insufficient
+    # data; merged in order so strategy gates can read po3_*,
+    # weekly_*, monthly_*, htf_aligned_* keys.
+    try:
+        from backtest.signals.multi_timeframe import (
+            compute_po3_signal,
+            compute_weekly_bias,
+            compute_monthly_bias,
+            compute_htf_alignment,
+        )
+        po3 = compute_po3_signal(df)
+        if po3:
+            signals.update(po3)
+        weekly = compute_weekly_bias(df)
+        if weekly:
+            signals.update(weekly)
+        monthly = compute_monthly_bias(df)
+        if monthly:
+            signals.update(monthly)
+        if weekly or monthly:
+            signals.update(compute_htf_alignment(weekly, monthly))
     except Exception:
         pass
 

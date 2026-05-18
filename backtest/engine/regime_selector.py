@@ -112,6 +112,17 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "smc_choch_reversal":           {"bull", "neutral", "bear", "crisis"},
     "smc_order_block_bounce":       {"bull", "neutral", "bear", "crisis"},
     "smc_liquidity_sweep_reversal": {"bull", "neutral", "bear", "crisis"},
+    # PO3 + multi-TF (Batch 217): self-gate via 200-EMA + weekly/monthly
+    # biases; symmetric pairs get explicit regime restrictions.
+    "po3_bullish":                  {"bull", "neutral"},
+    "po3_bearish":                  {"bear", "crisis"},
+    "po3_htf_aligned_long":         {"bull", "neutral"},
+    "po3_htf_aligned_short":        {"bear", "crisis"},
+    "htf_aligned_breakout_long":    {"bull", "neutral"},
+    "htf_aligned_breakout_short":   {"bear", "crisis"},
+    "weekly_bias_pullback_long":    {"bull", "neutral"},
+    "weekly_bias_pullback_short":   {"bear", "crisis"},
+    "monthly_bias_momentum_long":   {"bull", "neutral"},
     # SMC expansion (Batch 216): all variants self-gate via 200-EMA;
     # allow all regimes for symmetric long/short pairs; restrict
     # explicit-long to bull/neutral and explicit-short to bear/crisis.

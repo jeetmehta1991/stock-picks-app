@@ -7024,6 +7024,158 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch217_po3_multi_tf_strategies_registered():
+    """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved): 9 new
+    strategies registered (2 PO3 + 2 PO3+HTF + 2 HTF-aligned breakout
+    + 2 weekly-bias pullback + 1 monthly-bias momentum)."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    new_names = [
+        "po3_bullish", "po3_bearish",
+        "po3_htf_aligned_long", "po3_htf_aligned_short",
+        "htf_aligned_breakout_long", "htf_aligned_breakout_short",
+        "weekly_bias_pullback_long", "weekly_bias_pullback_short",
+        "monthly_bias_momentum_long",
+    ]
+    for name in new_names:
+        assert name in ALL_STRATEGIES, f"Batch 217: {name} must be registered"
+
+
+def test_batch217_compute_po3_signal_detects_bullish():
+    """Batch 217: compute_po3_signal po3_bullish=True when today sweeps
+    below prior low, closes above open, in upper third of range."""
+    import pandas as pd
+    from backtest.signals.multi_timeframe import compute_po3_signal
+    df = pd.DataFrame({
+        "open":  [100, 99],
+        "high":  [102, 105],
+        "low":   [99,  98],
+        "close": [101, 104],
+        "volume":[1e6, 2e6],
+    })
+    out = compute_po3_signal(df)
+    assert out["po3_bullish"] is True
+    assert out["po3_bearish"] is False
+    assert out["po3_sweep_below_prior_low"] is True
+    assert out["po3_close_position"] > 0.66
+
+
+def test_batch217_compute_po3_signal_detects_bearish():
+    """Batch 217: bearish PO3."""
+    import pandas as pd
+    from backtest.signals.multi_timeframe import compute_po3_signal
+    df = pd.DataFrame({
+        "open":  [100, 102],
+        "high":  [102, 105],
+        "low":   [99,  97],
+        "close": [101, 98],
+        "volume":[1e6, 2e6],
+    })
+    out = compute_po3_signal(df)
+    assert out["po3_bearish"] is True
+    assert out["po3_bullish"] is False
+
+
+def test_batch217_compute_weekly_bias_emits_signals():
+    """Batch 217: compute_weekly_bias emits bias signals after >=100
+    daily bars + >=22 weekly bars after resample."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.multi_timeframe import compute_weekly_bias
+    rng = np.random.default_rng(7)
+    n = 200
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    base = 100 + np.cumsum(rng.normal(0.1, 0.5, n))
+    df = pd.DataFrame({
+        "open":  base, "high": base + 1, "low": base - 1,
+        "close": base, "volume": rng.integers(1_000_000, 5_000_000, n).astype(float),
+    }, index=idx)
+    out = compute_weekly_bias(df)
+    for key in [
+        "weekly_close", "weekly_ema_10", "weekly_ema_20",
+        "weekly_above_ema_10", "weekly_above_ema_20",
+        "weekly_bias_bull", "weekly_bias_bear",
+        "weekly_momentum_4w", "weekly_momentum_pos",
+    ]:
+        assert key in out, f"Batch 217: weekly bias must emit {key}"
+    # Bull and bear mutually exclusive
+    assert not (out["weekly_bias_bull"] and out["weekly_bias_bear"])
+
+
+def test_batch217_compute_monthly_bias_emits_signals():
+    """Batch 217: monthly bias requires 260+ daily bars."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.multi_timeframe import compute_monthly_bias
+    rng = np.random.default_rng(11)
+    n = 400
+    idx = pd.date_range("2023-01-01", periods=n, freq="B")
+    base = 100 + np.cumsum(rng.normal(0.1, 0.5, n))
+    df = pd.DataFrame({
+        "open":  base, "high": base + 1, "low": base - 1,
+        "close": base, "volume": rng.integers(1_000_000, 5_000_000, n).astype(float),
+    }, index=idx)
+    out = compute_monthly_bias(df)
+    for key in [
+        "monthly_close", "monthly_sma_6", "monthly_sma_12",
+        "monthly_above_sma_6", "monthly_above_sma_12",
+        "monthly_bias_bull", "monthly_bias_bear",
+        "monthly_momentum_6m", "monthly_momentum_pos",
+    ]:
+        assert key in out, f"Batch 217: monthly bias must emit {key}"
+
+
+def test_batch217_htf_alignment_composes_weekly_and_monthly():
+    """Batch 217: compute_htf_alignment combines weekly+monthly bias."""
+    from backtest.signals.multi_timeframe import compute_htf_alignment
+    # Both bull -> aligned_bull
+    out = compute_htf_alignment(
+        {"weekly_bias_bull": True, "weekly_bias_bear": False},
+        {"monthly_bias_bull": True, "monthly_bias_bear": False},
+    )
+    assert out["htf_aligned_bull"] is True
+    assert out["htf_aligned_bear"] is False
+    assert out["htf_disagreement"] is False
+    # Disagreement
+    out2 = compute_htf_alignment(
+        {"weekly_bias_bull": True, "weekly_bias_bear": False},
+        {"monthly_bias_bull": False, "monthly_bias_bear": True},
+    )
+    assert out2["htf_disagreement"] is True
+    # Empty -> empty
+    assert compute_htf_alignment({}, {}) == {}
+
+
+def test_batch217_po3_bullish_strategy_requires_regime_gate():
+    """Batch 217: strat_po3_bullish requires po3_bullish + 200-EMA gate."""
+    from backtest.signals.screener import strat_po3_bullish
+    s = {"po3_bullish": True, "price_above_ema_200": True}
+    assert strat_po3_bullish(s)["fires"] is True
+    s["price_above_ema_200"] = False
+    assert strat_po3_bullish(s)["fires"] is False
+
+
+def test_batch217_htf_aligned_breakout_long_requires_triple_confluence():
+    """Batch 217: htf_aligned_breakout_long needs prev_high break + 1.5x
+    volume + htf_aligned_bull."""
+    from backtest.signals.screener import strat_htf_aligned_breakout_long
+    s = {"above_prev_high": True, "vol_spike_15x": True,
+         "htf_aligned_bull": True}
+    assert strat_htf_aligned_breakout_long(s)["fires"] is True
+    s["htf_aligned_bull"] = False
+    assert strat_htf_aligned_breakout_long(s)["fires"] is False
+
+
+def test_batch217_weekly_bias_pullback_long_requires_oversold_reversal():
+    """Batch 217: weekly_bias_pullback_long requires weekly_bias_bull +
+    RSI<40 + (hammer or bullish_engulfing)."""
+    from backtest.signals.screener import strat_weekly_bias_pullback_long
+    s = {"weekly_bias_bull": True, "rsi_14": 35.0,
+         "hammer": True, "bullish_engulfing": False}
+    assert strat_weekly_bias_pullback_long(s)["fires"] is True
+    s["rsi_14"] = 50.0
+    assert strat_weekly_bias_pullback_long(s)["fires"] is False
+
+
 def test_batch216_smc_expansion_strategies_registered():
     """Batch 216 (SMC expansion 2026-05-18 owner-approved): 13 new SMC
     strategies registered in ALL_STRATEGIES bringing total SMC roster
