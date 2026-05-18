@@ -112,6 +112,23 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "smc_choch_reversal":           {"bull", "neutral", "bear", "crisis"},
     "smc_order_block_bounce":       {"bull", "neutral", "bear", "crisis"},
     "smc_liquidity_sweep_reversal": {"bull", "neutral", "bear", "crisis"},
+    # SMC expansion (Batch 216): all variants self-gate via 200-EMA;
+    # allow all regimes for symmetric long/short pairs; restrict
+    # explicit-long to bull/neutral and explicit-short to bear/crisis.
+    "smc_fvg_retest_long":          {"bull", "neutral"},
+    "smc_fvg_retest_short":         {"bear", "crisis"},
+    "smc_inverse_fvg":              {"bull", "neutral", "bear", "crisis"},
+    "smc_breaker_block_long":       {"bull", "neutral"},
+    "smc_breaker_block_short":      {"bear", "crisis"},
+    "smc_mitigation_block_long":    {"bull", "neutral"},
+    "smc_mitigation_block_short":   {"bear", "crisis"},
+    "smc_discount_long":            {"bull", "neutral"},
+    "smc_premium_short":            {"bear", "crisis"},
+    "smc_ote_long":                 {"bull", "neutral"},
+    "smc_ote_short":                {"bear", "crisis"},
+    "smc_equal_highs_sweep_short":  {"neutral", "bear", "crisis"},
+    "smc_equal_lows_sweep_long":    {"bull", "neutral", "bear"},
+    "smc_bos_retest_entry":         {"bull", "neutral", "bear", "crisis"},
     # ORB stocks-in-play (Batch 211): allow long in bull/neutral
     # (Zarattini criterion + 200-EMA gate); short in bear/crisis.
     "orb_stocks_in_play_long":      {"bull", "neutral"},

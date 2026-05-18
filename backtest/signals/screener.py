@@ -1177,6 +1177,218 @@ def strat_orb_stocks_in_play_short(s):
          "Below 200 EMA (bear regime confirmation)"])
 
 
+def strat_smc_fvg_retest_long(s):
+    """Batch 216 (SMC expansion 2026-05-18 owner-approved): price returned
+    to an unmitigated bullish Fair Value Gap zone -> long entry.
+    FVG = institutional 3-bar imbalance; retests of bullish FVGs are
+    canonical ICT continuation entries."""
+    fires = (
+        s.get("smc_fvg_retest_long_zone", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "smc",
+        ["smc_fvg_retest_long_zone", "price_above_ema_200"],
+        ["Price inside unmitigated bullish Fair Value Gap zone",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_smc_fvg_retest_short(s):
+    """Batch 216: bearish FVG retest -> short entry. Symmetric to long."""
+    fires = (
+        s.get("smc_fvg_retest_short_zone", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat(fires, "short", "smc",
+        ["smc_fvg_retest_short_zone", "price_below_ema_200"],
+        ["Price inside unmitigated bearish Fair Value Gap zone",
+         "Below 200 EMA (bear regime)"])
+
+
+def strat_smc_inverse_fvg(s):
+    """Batch 216: Inverse FVG - bullish FVG was invalidated (price closed
+    below) -> the zone flips role and acts as resistance (short).
+    Symmetric for bearish FVG invalidated upward (long).
+    ICT 'IFVG' concept: a failed institutional imbalance becomes the new
+    opposing reference."""
+    fl = s.get("smc_inverse_fvg_bullish", False)
+    fs = s.get("smc_inverse_fvg_bearish", False)
+    return _strat3(fl, fs, "smc",
+        ["smc_inverse_fvg_bullish"],
+        ["smc_inverse_fvg_bearish"],
+        ["Inverse FVG (bearish FVG broken upward) - role flips to support"],
+        ["Inverse FVG (bullish FVG broken downward) - role flips to resistance"])
+
+
+def strat_smc_breaker_block_short(s):
+    """Batch 216: Breaker block short - bullish OB that was mitigated +
+    price now below bottom -> the OB flips role and becomes resistance.
+    Classic ICT 'breaker block' reversal setup."""
+    fires = (
+        s.get("smc_breaker_block_bearish", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat(fires, "short", "smc",
+        ["smc_breaker_block_bearish", "price_below_ema_200"],
+        ["Bullish Order Block mitigated + price below - role flipped to resistance",
+         "Below 200 EMA (bear regime)"])
+
+
+def strat_smc_breaker_block_long(s):
+    """Batch 216: Breaker block long - bearish OB that was mitigated +
+    price now above top -> flips to support."""
+    fires = (
+        s.get("smc_breaker_block_bullish", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "smc",
+        ["smc_breaker_block_bullish", "price_above_ema_200"],
+        ["Bearish Order Block mitigated + price above - role flipped to support",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_smc_mitigation_block_long(s):
+    """Batch 216: Price entering an UN-mitigated bullish Order Block
+    zone - the institutional zone is being mitigated NOW. Lower-risk
+    entry than waiting for the OB to fully play out; pairs naturally
+    with subsequent CHoCH/BOS confirmation."""
+    fires = (
+        s.get("smc_mitigation_block_long", False)
+        and s.get("price_above_ema_200", True)
+        and s.get("rsi_14", 50) < 50
+    )
+    return _strat(fires, "long", "smc",
+        ["smc_mitigation_block_long", "price_above_ema_200", "rsi_14<50"],
+        ["Price inside bullish Order Block zone - mitigation underway",
+         "Above 200 EMA (regime gate)",
+         "RSI pullback context (not overbought)"])
+
+
+def strat_smc_mitigation_block_short(s):
+    """Batch 216: Symmetric mitigation block short."""
+    fires = (
+        s.get("smc_mitigation_block_short", False)
+        and (not s.get("price_above_ema_200", True))
+        and s.get("rsi_14", 50) > 50
+    )
+    return _strat(fires, "short", "smc",
+        ["smc_mitigation_block_short", "price_below_ema_200", "rsi_14>50"],
+        ["Price inside bearish Order Block zone - mitigation underway",
+         "Below 200 EMA (bear regime)",
+         "RSI rally context (not oversold)"])
+
+
+def strat_smc_discount_long(s):
+    """Batch 216: Premium/Discount filter - long only when price is in
+    DISCOUNT zone (below 50% of recent dealing range) AND there is
+    bullish structure (BOS bullish OR CHoCH bullish). ICT discipline:
+    'buy low, sell high' inside the dealing range. Mitigates against
+    chasing tops in an uptrend."""
+    fires = (
+        s.get("smc_in_discount_zone", False)
+        and (s.get("smc_bos_bullish", False) or s.get("smc_choch_bullish", False))
+        and s.get("price_above_ema_200", True)
+    )
+    pct = s.get("smc_dealing_range_pct", 0.5)
+    return _strat(fires, "long", "smc",
+        ["smc_in_discount_zone", "smc_bos_or_choch_bullish", "price_above_ema_200"],
+        [f"Price at {pct*100:.0f}% of dealing range - discount zone",
+         "Bullish BOS or CHoCH - structural support",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_smc_premium_short(s):
+    """Batch 216: Premium short - symmetric inverse of discount long.
+    Price in top 50% of dealing range + bearish structure."""
+    fires = (
+        s.get("smc_in_premium_zone", False)
+        and (s.get("smc_bos_bearish", False) or s.get("smc_choch_bearish", False))
+        and (not s.get("price_above_ema_200", True))
+    )
+    pct = s.get("smc_dealing_range_pct", 0.5)
+    return _strat(fires, "short", "smc",
+        ["smc_in_premium_zone", "smc_bos_or_choch_bearish", "price_below_ema_200"],
+        [f"Price at {pct*100:.0f}% of dealing range - premium zone",
+         "Bearish BOS or CHoCH - structural resistance",
+         "Below 200 EMA (bear regime)"])
+
+
+def strat_smc_ote_long(s):
+    """Batch 216: Optimal Trade Entry long - Fibonacci 62-79%
+    retracement zone after bullish CHoCH/BOS. ICT canonical 'sweet
+    spot' for high-conviction trend continuation entries."""
+    fires = (
+        s.get("smc_ote_long_zone", False)
+        and (s.get("smc_bos_bullish", False) or s.get("smc_choch_bullish", False))
+    )
+    pct = s.get("smc_retracement_pct", 0.0)
+    return _strat(fires, "long", "smc",
+        ["smc_ote_long_zone", "smc_bos_or_choch_bullish"],
+        [f"OTE zone: {pct:.0f}% retracement (62-79% Fib)",
+         "Bullish BOS/CHoCH - structural backdrop"])
+
+
+def strat_smc_ote_short(s):
+    """Batch 216: Symmetric OTE short."""
+    fires = (
+        s.get("smc_ote_short_zone", False)
+        and (s.get("smc_bos_bearish", False) or s.get("smc_choch_bearish", False))
+    )
+    pct = s.get("smc_retracement_pct", 0.0)
+    return _strat(fires, "short", "smc",
+        ["smc_ote_short_zone", "smc_bos_or_choch_bearish"],
+        [f"OTE zone: {pct:.0f}% retracement (62-79% Fib)",
+         "Bearish BOS/CHoCH - structural backdrop"])
+
+
+def strat_smc_equal_highs_sweep_short(s):
+    """Batch 216: Equal-highs cluster swept (taking out stops above
+    cluster) + bearish FVG below = high-conviction reversal short.
+    Classic ICT stop-hunt-then-reverse pattern."""
+    fires = (
+        s.get("smc_equal_highs_swept", False)
+        and s.get("smc_fvg_bearish_active", False)
+    )
+    return _strat(fires, "short", "smc",
+        ["smc_equal_highs_swept", "smc_fvg_bearish_active"],
+        ["Equal-highs cluster swept - buy-side liquidity taken",
+         "Bearish FVG active below - reversal confluence"])
+
+
+def strat_smc_equal_lows_sweep_long(s):
+    """Batch 216: Equal-lows cluster swept + bullish FVG above =
+    high-conviction reversal long."""
+    fires = (
+        s.get("smc_equal_lows_swept", False)
+        and s.get("smc_fvg_bullish_active", False)
+    )
+    return _strat(fires, "long", "smc",
+        ["smc_equal_lows_swept", "smc_fvg_bullish_active"],
+        ["Equal-lows cluster swept - sell-side liquidity taken",
+         "Bullish FVG active above - reversal confluence"])
+
+
+def strat_smc_bos_retest_entry(s):
+    """Batch 216: BOS retest - price returns to within 0.5pct of a
+    recently-broken structure level. Empirically higher hit rate than
+    naive BOS continuation per ICT discipline (allow the broken level
+    to confirm-as-support before adding risk)."""
+    fl = (
+        s.get("smc_bos_retest_long", False)
+        and s.get("price_above_ema_200", True)
+    )
+    fs = (
+        s.get("smc_bos_retest_short", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    return _strat3(fl, fs, "smc",
+        ["smc_bos_retest_long", "price_above_ema_200"],
+        ["smc_bos_retest_short", "price_below_ema_200"],
+        ["Price retesting broken structure level (BOS bullish)",
+         "Above 200 EMA (regime gate)"],
+        ["Price retesting broken structure level (BOS bearish)",
+         "Below 200 EMA (bear regime)"])
+
+
 def strat_smc_bos_continuation(s):
     """Batch 210 (SMC/ICT family 2026-05-17 owner-approved research review).
     Break of Structure continuation: market makes a new structural high
@@ -1420,6 +1632,21 @@ ALL_STRATEGIES = {
     "smc_choch_reversal":           strat_smc_choch_reversal,
     "smc_order_block_bounce":       strat_smc_order_block_bounce,
     "smc_liquidity_sweep_reversal": strat_smc_liquidity_sweep_reversal,
+    # SMC / ICT expansion (13 - Batch 216 2026-05-18 owner-approved)
+    "smc_fvg_retest_long":          strat_smc_fvg_retest_long,
+    "smc_fvg_retest_short":         strat_smc_fvg_retest_short,
+    "smc_inverse_fvg":              strat_smc_inverse_fvg,
+    "smc_breaker_block_short":      strat_smc_breaker_block_short,
+    "smc_breaker_block_long":       strat_smc_breaker_block_long,
+    "smc_mitigation_block_long":    strat_smc_mitigation_block_long,
+    "smc_mitigation_block_short":   strat_smc_mitigation_block_short,
+    "smc_discount_long":            strat_smc_discount_long,
+    "smc_premium_short":            strat_smc_premium_short,
+    "smc_ote_long":                 strat_smc_ote_long,
+    "smc_ote_short":                strat_smc_ote_short,
+    "smc_equal_highs_sweep_short":  strat_smc_equal_highs_sweep_short,
+    "smc_equal_lows_sweep_long":    strat_smc_equal_lows_sweep_long,
+    "smc_bos_retest_entry":         strat_smc_bos_retest_entry,
     # PEAD family (2 - Batch 209 2026-05-17 owner-approved research review)
     "pead_long":                    strat_pead_long,
     "pead_short":                   strat_pead_short,

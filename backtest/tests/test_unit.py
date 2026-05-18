@@ -7024,6 +7024,161 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch216_smc_expansion_strategies_registered():
+    """Batch 216 (SMC expansion 2026-05-18 owner-approved): 13 new SMC
+    strategies registered in ALL_STRATEGIES bringing total SMC roster
+    from 4 (Batch 210) to 17."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    new_smc = [
+        "smc_fvg_retest_long", "smc_fvg_retest_short", "smc_inverse_fvg",
+        "smc_breaker_block_short", "smc_breaker_block_long",
+        "smc_mitigation_block_long", "smc_mitigation_block_short",
+        "smc_discount_long", "smc_premium_short",
+        "smc_ote_long", "smc_ote_short",
+        "smc_equal_highs_sweep_short", "smc_equal_lows_sweep_long",
+        "smc_bos_retest_entry",
+    ]
+    for name in new_smc:
+        assert name in ALL_STRATEGIES, f"Batch 216: {name} must be registered"
+    # All 17 SMC strategies (4 + 13)
+    smc_total = [k for k in ALL_STRATEGIES if k.startswith("smc_")]
+    assert len(smc_total) >= 17, (
+        f"Expected 17+ smc_* strategies, got {len(smc_total)}"
+    )
+
+
+def test_batch216_smc_fvg_retest_long_requires_zone_and_regime():
+    """Batch 216: smc_fvg_retest_long fires only when price is INSIDE
+    an unmitigated bullish FVG zone AND price > 200-EMA."""
+    from backtest.signals.screener import strat_smc_fvg_retest_long
+    s = {"smc_fvg_retest_long_zone": True, "price_above_ema_200": True}
+    r = strat_smc_fvg_retest_long(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    s["price_above_ema_200"] = False
+    assert strat_smc_fvg_retest_long(s)["fires"] is False
+    s["price_above_ema_200"] = True
+    s["smc_fvg_retest_long_zone"] = False
+    assert strat_smc_fvg_retest_long(s)["fires"] is False
+
+
+def test_batch216_smc_inverse_fvg_handles_both_directions():
+    """Batch 216: smc_inverse_fvg fires long on inverse_fvg_bullish
+    (bearish FVG broken upward) and short on inverse_fvg_bearish."""
+    from backtest.signals.screener import strat_smc_inverse_fvg
+    s = {"smc_inverse_fvg_bullish": True, "smc_inverse_fvg_bearish": False}
+    r = strat_smc_inverse_fvg(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    s = {"smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": True}
+    r = strat_smc_inverse_fvg(s)
+    assert r["fires"] is True and r["direction"] == "short"
+    s = {"smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": False}
+    assert strat_smc_inverse_fvg(s)["fires"] is False
+
+
+def test_batch216_smc_discount_long_requires_zone_and_structure():
+    """Batch 216: discount_long requires (in discount zone) AND (BOS or
+    CHoCH bullish) AND (price > 200-EMA). Strict confluence per ICT
+    discipline."""
+    from backtest.signals.screener import strat_smc_discount_long
+    # All conditions met
+    s = {
+        "smc_in_discount_zone": True,
+        "smc_bos_bullish": True,
+        "smc_choch_bullish": False,
+        "smc_dealing_range_pct": 0.3,
+        "price_above_ema_200": True,
+    }
+    r = strat_smc_discount_long(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # Out of discount zone -> no fire
+    s["smc_in_discount_zone"] = False
+    assert strat_smc_discount_long(s)["fires"] is False
+    # In zone but no structure -> no fire
+    s["smc_in_discount_zone"] = True
+    s["smc_bos_bullish"] = False
+    assert strat_smc_discount_long(s)["fires"] is False
+    # CHoCH bullish (alternate structure) also acceptable
+    s["smc_choch_bullish"] = True
+    assert strat_smc_discount_long(s)["fires"] is True
+
+
+def test_batch216_smc_ote_long_requires_fib_zone_and_structure():
+    """Batch 216: OTE long fires in 62-79% Fib retracement zone with
+    bullish BOS/CHoCH backdrop."""
+    from backtest.signals.screener import strat_smc_ote_long
+    s = {
+        "smc_ote_long_zone": True,
+        "smc_bos_bullish": True,
+        "smc_retracement_pct": 70.0,
+    }
+    r = strat_smc_ote_long(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # Without structure -> no fire
+    s["smc_bos_bullish"] = False
+    s["smc_choch_bullish"] = False
+    assert strat_smc_ote_long(s)["fires"] is False
+
+
+def test_batch216_smc_equal_highs_sweep_short_confluence():
+    """Batch 216: equal_highs_sweep_short requires (equal-highs swept)
+    AND (bearish FVG below). Both must be true."""
+    from backtest.signals.screener import strat_smc_equal_highs_sweep_short
+    s = {"smc_equal_highs_swept": True, "smc_fvg_bearish_active": True}
+    r = strat_smc_equal_highs_sweep_short(s)
+    assert r["fires"] is True and r["direction"] == "short"
+    s["smc_fvg_bearish_active"] = False
+    assert strat_smc_equal_highs_sweep_short(s)["fires"] is False
+
+
+def test_batch216_smc_bos_retest_handles_both_directions():
+    """Batch 216: bos_retest_entry fires long on bos_retest_long +
+    regime gate; short symmetric."""
+    from backtest.signals.screener import strat_smc_bos_retest_entry
+    s_long = {"smc_bos_retest_long": True, "smc_bos_retest_short": False,
+              "price_above_ema_200": True}
+    r = strat_smc_bos_retest_entry(s_long)
+    assert r["fires"] is True and r["direction"] == "long"
+    s_short = {"smc_bos_retest_long": False, "smc_bos_retest_short": True,
+               "price_above_ema_200": False}
+    r2 = strat_smc_bos_retest_entry(s_short)
+    assert r2["fires"] is True and r2["direction"] == "short"
+
+
+def test_batch216_compute_smc_signals_emits_new_keys():
+    """Batch 216: compute_smc_signals must emit the new Batch 216 keys
+    when given 260+ daily bars (the SMC library's swing-detection
+    history threshold is exceeded)."""
+    import io, contextlib, pandas as pd, numpy as np
+    from backtest.signals.smc_ict import compute_smc_signals
+    rng = np.random.default_rng(7)
+    n = 320
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    base = 100 + np.cumsum(rng.normal(0, 1, n))
+    df = pd.DataFrame({
+        "open":  base,
+        "high":  base + 1 + rng.uniform(0, 1, n),
+        "low":   base - 1 - rng.uniform(0, 1, n),
+        "close": base + rng.normal(0, 0.3, n),
+        "volume": rng.integers(1_000_000, 5_000_000, n).astype(float),
+    }, index=idx)
+    with contextlib.redirect_stdout(io.StringIO()):
+        out = compute_smc_signals(df)
+    # Batch 216 new keys - all should be present (booleans default False
+    # when zones not active; dealing range pct always emitted)
+    for key in [
+        "smc_fvg_retest_long_zone", "smc_fvg_retest_short_zone",
+        "smc_inverse_fvg_bullish", "smc_inverse_fvg_bearish",
+        "smc_breaker_block_bullish", "smc_breaker_block_bearish",
+        "smc_mitigation_block_long", "smc_mitigation_block_short",
+        "smc_dealing_range_pct", "smc_in_discount_zone",
+        "smc_in_premium_zone",
+        "smc_bos_retest_long", "smc_bos_retest_short",
+    ]:
+        assert key in out, f"Batch 216: compute_smc_signals must emit {key}"
+    # Dealing range pct must be in [0, 1]
+    assert 0.0 <= out["smc_dealing_range_pct"] <= 1.0
+
+
 def test_batch210_smc_strategies_registered():
     """Batch 210 (SMC/ICT family 2026-05-17): 4 SMC strategies registered."""
     from backtest.signals.screener import ALL_STRATEGIES
