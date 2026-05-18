@@ -1126,13 +1126,24 @@ class BacktestEngine:
                         _suppression_reason = (
                             f"EVENT_SUPPRESSION_{ev_type_upper}_d{days_to_event}_dec348"
                         )
+                # Batch 224 (pre-FOMC sleeve 2026-05-18): strategies tagged
+                # in STRATEGIES_BYPASS_EVENT_SUPPRESSION are explicitly
+                # designed to TRADE INTO macro event windows (e.g.
+                # Lucca-Moench 2015 pre-FOMC drift). Bypass the suppression
+                # gate for these strategies; non-tagged strategies still
+                # respect Batch 191 windows.
                 if _event_suppressed:
-                    self.skipped_trades.append({
-                        "ticker": ticker, "date": as_of,
-                        "strategy": strat_entry["strategy"],
-                        "reason": _suppression_reason,
-                    })
-                    continue
+                    from backtest.config import STRATEGIES_BYPASS_EVENT_SUPPRESSION
+                    if strat_entry["strategy"] in STRATEGIES_BYPASS_EVENT_SUPPRESSION:
+                        # Strategy explicitly trades events; do not suppress
+                        pass
+                    else:
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "reason": _suppression_reason,
+                        })
+                        continue
 
                 # Trailing stop
                 if direction == "long":

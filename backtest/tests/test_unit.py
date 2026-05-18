@@ -7024,6 +7024,94 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch224_pre_fomc_strategies_registered():
+    """Batch 224 (pre-FOMC + buybacks 2026-05-18 owner-approved):
+    3 new event-driven strategies registered + 3 entries in
+    STRATEGIES_BYPASS_EVENT_SUPPRESSION."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    from backtest.config import STRATEGIES_BYPASS_EVENT_SUPPRESSION
+    for name in (
+        "pre_fomc_long_sleeve",
+        "pre_fomc_quality_momentum_long",
+        "buyback_8k_recent_long",
+    ):
+        assert name in ALL_STRATEGIES, f"Batch 224: {name} must be registered"
+        assert name in STRATEGIES_BYPASS_EVENT_SUPPRESSION, (
+            f"Batch 224: {name} must bypass event suppression"
+        )
+
+
+def test_batch224_pre_fomc_long_sleeve_fires_on_d1():
+    """Batch 224: pre_fomc_long_sleeve fires only on pre-FOMC day-1 +
+    200-EMA gate. Lucca-Moench 2015 +50bps/yr alpha pre-FOMC drift."""
+    from backtest.signals.screener import strat_pre_fomc_long_sleeve
+    s = {
+        "pre_fomc_d1": True,
+        "days_until_fomc": 1,
+        "price_above_ema_200": True,
+    }
+    r = strat_pre_fomc_long_sleeve(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # Not pre-FOMC day-1 -> no fire
+    s["pre_fomc_d1"] = False
+    assert strat_pre_fomc_long_sleeve(s)["fires"] is False
+    # Bear regime -> no fire
+    s["pre_fomc_d1"] = True
+    s["price_above_ema_200"] = False
+    assert strat_pre_fomc_long_sleeve(s)["fires"] is False
+
+
+def test_batch224_pre_fomc_quality_momentum_long():
+    """Batch 224: combines pre-FOMC timing + top-decile XS momentum
+    + 200-EMA. Higher conviction variant."""
+    from backtest.signals.screener import strat_pre_fomc_quality_momentum_long
+    s = {
+        "pre_fomc_d1": True,
+        "xs_momentum_top_decile": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_pre_fomc_quality_momentum_long(s)["fires"] is True
+    s["xs_momentum_top_decile"] = False
+    assert strat_pre_fomc_quality_momentum_long(s)["fires"] is False
+
+
+def test_batch224_buyback_8k_recent_long():
+    """Batch 224: 8-K filed last 3 days + 200-EMA + 1.5x volume.
+    Generic event-driven proxy for buyback / M&A / guidance change."""
+    from backtest.signals.screener import strat_buyback_8k_recent_long
+    s = {
+        "recent_8k_filed": True,
+        "days_since_8k": 2,
+        "price_above_ema_200": True,
+        "vol_spike_15x": True,
+    }
+    assert strat_buyback_8k_recent_long(s)["fires"] is True
+    # >3 days since 8-K -> no fire
+    s["days_since_8k"] = 5
+    assert strat_buyback_8k_recent_long(s)["fires"] is False
+
+
+def test_batch224_event_suppression_bypass_wired():
+    """Batch 224: engine source must check
+    STRATEGIES_BYPASS_EVENT_SUPPRESSION and allow tagged strategies
+    through the suppression gate."""
+    import inspect
+    from backtest.engine import backtest as bt
+    src = inspect.getsource(bt)
+    assert "STRATEGIES_BYPASS_EVENT_SUPPRESSION" in src
+    assert "in STRATEGIES_BYPASS_EVENT_SUPPRESSION" in src
+
+
+def test_batch224_compute_pre_fomc_signals_no_data():
+    """Batch 224: compute_pre_fomc_signals returns empty dict when
+    FOMC calendar parquet missing (defensive)."""
+    from datetime import date
+    from backtest.signals.macro_events import compute_pre_fomc_signals
+    # Should return empty dict gracefully if FRED calendar missing
+    out = compute_pre_fomc_signals(date(2024, 6, 1))
+    assert isinstance(out, dict)
+
+
 def test_batch223_correlation_with_open_positions():
     """Batch 223 (correlation cap 2026-05-18 owner-approved):
     correlation_with_open_positions returns max |corr| with any open

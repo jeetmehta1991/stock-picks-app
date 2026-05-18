@@ -1177,6 +1177,70 @@ def strat_orb_stocks_in_play_short(s):
          "Below 200 EMA (bear regime confirmation)"])
 
 
+def strat_pre_fomc_long_sleeve(s):
+    """Batch 224 (pre-FOMC drift 2026-05-18 owner-approved research review).
+    Lucca-Moench 2015 JF "The Pre-FOMC Announcement Drift": +50bps/yr
+    alpha concentrating in 24h preceding FOMC announcements. Refined
+    by Cieslak-Pang 2024 conditional on yield-curve slope.
+
+    Reverses Batch 191 FOMC suppression for the LONG sleeve via
+    STRATEGIES_BYPASS_EVENT_SUPPRESSION (config.py). Long entry on the
+    pre-FOMC day (d-1) when broad bullish context holds.
+    """
+    fires = (
+        s.get("pre_fomc_d1", False)
+        and s.get("price_above_ema_200", True)
+    )
+    days = s.get("days_until_fomc", -1)
+    return _strat(fires, "long", "event_driven",
+        ["pre_fomc_d1", "price_above_ema_200"],
+        [f"Pre-FOMC day-1 (FOMC in {days} day) - Lucca-Moench drift",
+         "Above 200 EMA - bullish backdrop"])
+
+
+def strat_pre_fomc_quality_momentum_long(s):
+    """Batch 224: Higher-conviction pre-FOMC variant - require top-decile
+    cross-sectional momentum (Goyal-Jegadeesh 2024) on top of pre-FOMC
+    timing. Combines macro-event drift with quality-momentum selection."""
+    fires = (
+        s.get("pre_fomc_d1", False)
+        and s.get("xs_momentum_top_decile", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "event_driven",
+        ["pre_fomc_d1", "xs_momentum_top_decile", "price_above_ema_200"],
+        ["Pre-FOMC day-1 (Lucca-Moench drift)",
+         "Top-decile cross-sectional 12-1 momentum (quality momentum)",
+         "Above 200 EMA - regime gate"])
+
+
+def strat_buyback_8k_recent_long(s):
+    """Batch 224: Generic 8-K filing in last 5 days as a corporate-event
+    proximity signal. NOT a true buyback-only filter (requires 8-K item-
+    level text parsing to isolate Item 8.01 Other Events / Item 7.01
+    Reg FD); this is a placeholder/proxy. Manconi-Peyer-Vermaelen 2019
+    JFQA documented 4pct/yr abnormal return on filtered buybacks; the
+    8-K proxy captures a broader corporate-event population.
+
+    True buyback parsing deferred to a future batch with 8-K text
+    extraction (likely PyMuPDF + regex on Item 8.01 text). For now
+    this strategy fires on RECENT 8-K + bullish context as a generic
+    event-driven long.
+    """
+    fires = (
+        s.get("recent_8k_filed", False)
+        and s.get("days_since_8k", -1) <= 3
+        and s.get("price_above_ema_200", True)
+        and s.get("vol_spike_15x", False)
+    )
+    return _strat(fires, "long", "event_driven",
+        ["recent_8k_filed", "days_since_8k<=3", "price_above_ema_200",
+         "vol_spike_1.5x"],
+        ["Recent 8-K filed (last 3 days) - corporate event proxy",
+         "Above 200 EMA - bullish backdrop",
+         "Volume 1.5x ADV(20) - market reacting to event"])
+
+
 def strat_insider_cluster_long(s):
     """Batch 222 (insider clusters 2026-05-18 owner-approved). Cluster of
     insider buys (>=2 unique insiders, open-market purchases, last 30
@@ -1920,6 +1984,10 @@ ALL_STRATEGIES = {
     "smc_choch_reversal":           strat_smc_choch_reversal,
     "smc_order_block_bounce":       strat_smc_order_block_bounce,
     "smc_liquidity_sweep_reversal": strat_smc_liquidity_sweep_reversal,
+    # Pre-FOMC + 8-K event-driven (3 - Batch 224 2026-05-18 owner-approved)
+    "pre_fomc_long_sleeve":                strat_pre_fomc_long_sleeve,
+    "pre_fomc_quality_momentum_long":      strat_pre_fomc_quality_momentum_long,
+    "buyback_8k_recent_long":              strat_buyback_8k_recent_long,
     # Event-driven + quality factor (5 - Batch 222 2026-05-18 owner-approved)
     "insider_cluster_long":                strat_insider_cluster_long,
     "insider_cluster_with_director_long":  strat_insider_cluster_with_director_long,
@@ -2258,6 +2326,22 @@ def screen_instrument(
         insider = compute_insider_cluster_signals(ticker, as_of)
         if insider:
             signals.update(insider)
+    except Exception:
+        pass
+    # Batch 224: macro event signals (pre-FOMC proximity) + recent 8-K
+    # filing flag (buyback proxy). Pre-FOMC signals are universe-wide
+    # (same value for all tickers on a given day); 8-K is per-ticker.
+    try:
+        from backtest.signals.macro_events import (
+            compute_pre_fomc_signals,
+            compute_recent_8k_signal,
+        )
+        pre_fomc = compute_pre_fomc_signals(as_of)
+        if pre_fomc:
+            signals.update(pre_fomc)
+        recent_8k = compute_recent_8k_signal(ticker, as_of)
+        if recent_8k:
+            signals.update(recent_8k)
     except Exception:
         pass
     # Batch 210: SMC / ICT signals via vendored smartmoneyconcepts library.

@@ -697,6 +697,21 @@ STRATEGY_REGIME_BLOCKLIST: dict[str, list[str]] = {
 # These strategies are NOT deleted - function bodies remain in
 # screener.py for audit + future re-evaluation. They are filtered from
 # the screen_instrument iteration loop at runtime via this set.
+# Batch 224 (pre-FOMC + buybacks 2026-05-18 owner-approved research review
+# Top-10 #9): strategies in this set BYPASS the Batch 191 event suppression
+# gate. They are explicitly designed to fire DURING macro event windows
+# (e.g., pre-FOMC long sleeve - Lucca-Moench 2015 documented +50bps/yr
+# alpha in the 24h preceding FOMC announcements). The engine's event
+# suppression check inside backtest.py respects this set so the long
+# sleeve isn't blocked by the suppression intended for non-event
+# strategies.
+STRATEGIES_BYPASS_EVENT_SUPPRESSION: set[str] = {
+    "pre_fomc_long_sleeve",
+    "pre_fomc_quality_momentum_long",
+    "buyback_8k_recent_long",
+}
+
+
 DEPRECATED_STRATEGIES: set[str] = {
     # Moving-average crossovers (Zakamulin 2014; Faber 2013)
     "golden_cross_50_200",

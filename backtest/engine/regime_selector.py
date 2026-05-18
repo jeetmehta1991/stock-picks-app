@@ -128,6 +128,12 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "xs_quality_top_quintile_long":        {"bull", "neutral"},
     "xs_momentum_quality_combined":        {"bull", "neutral"},
     "pead_with_insider_confirmation_long": {"bull", "neutral", "bear", "crisis"},
+    # Pre-FOMC + 8-K event-driven (Batch 224): allow long-bias regimes.
+    # Lucca-Moench drift is documented robust through 2015; conditional
+    # on bullish backdrop per Cieslak-Pang 2024.
+    "pre_fomc_long_sleeve":                {"bull", "neutral"},
+    "pre_fomc_quality_momentum_long":      {"bull", "neutral"},
+    "buyback_8k_recent_long":              {"bull", "neutral"},
     # PO3 + multi-TF (Batch 217): self-gate via 200-EMA + weekly/monthly
     # biases; symmetric pairs get explicit regime restrictions.
     "po3_bullish":                  {"bull", "neutral"},
