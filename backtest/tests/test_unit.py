@@ -7024,6 +7024,58 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch221_passing_criteria_adds_sortino_calmar_regime():
+    """Batch 221 (validation gates 2026-05-18 owner-approved): config
+    PASSING_CRITERIA must define min_sortino_overall, min_sortino_per_regime,
+    min_calmar, min_regimes_passing."""
+    from backtest.config import PASSING_CRITERIA
+    assert PASSING_CRITERIA.get("min_sortino_overall") == 1.0
+    assert PASSING_CRITERIA.get("min_sortino_per_regime") == 0.7
+    assert PASSING_CRITERIA.get("min_calmar") == 0.5
+    assert PASSING_CRITERIA.get("min_regimes_passing") == 2
+
+
+def test_batch221_compute_pbo_cscv_basic():
+    """Batch 221: PBO (Probability of Backtest Overfitting) via CSCV.
+    Bailey-Borwein-Lopez de Prado-Zhu 2017 J. Comp. Finance."""
+    import pandas as pd
+    import numpy as np
+    from backtest.results.cpcv import compute_pbo_cscv
+    # Synthesize a perf matrix where IS-best is also OOS-best (low PBO)
+    rng = np.random.default_rng(42)
+    n_periods = 200
+    n_strats = 20
+    # Build correlated returns where 1 strategy has consistent edge
+    base = rng.normal(0, 0.02, (n_periods, n_strats))
+    base[:, 0] += 0.005  # strategy 0 has consistent positive drift
+    df = pd.DataFrame(base, columns=[f"s{i}" for i in range(n_strats)])
+    out = compute_pbo_cscv(df, n_partitions=8)
+    assert "pbo" in out
+    assert out["pbo"] is not None
+    # PBO should be in [0, 1]
+    assert 0.0 <= out["pbo"] <= 1.0
+    # Verdict should be one of the categorical values
+    assert out["verdict"] in ("ok", "warning", "overfit", "n/a")
+
+
+def test_batch221_compute_pbo_handles_edge_cases():
+    """Batch 221: PBO returns None on empty / single-strategy /
+    insufficient periods."""
+    import pandas as pd
+    from backtest.results.cpcv import compute_pbo_cscv
+    # Empty
+    out = compute_pbo_cscv(pd.DataFrame())
+    assert out["pbo"] is None
+    # Single strategy
+    out2 = compute_pbo_cscv(pd.DataFrame({"only": [0.01] * 100}))
+    assert out2["pbo"] is None
+    # Insufficient periods (less than n_partitions=16)
+    out3 = compute_pbo_cscv(pd.DataFrame({
+        "a": [0.01] * 10, "b": [0.02] * 10,
+    }), n_partitions=16)
+    assert out3["pbo"] is None
+
+
 def test_batch220_cross_sectional_features_emits_factor_ranks():
     """Batch 220 (cross-sectional factor 2026-05-18 owner-approved):
     compute_cross_sectional_features returns dict-of-dicts with

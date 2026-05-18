@@ -175,6 +175,134 @@ def meta_label_classifier_fit(
         return None
 
 
+def compute_pbo_cscv(
+    perf_matrix: pd.DataFrame,
+    n_partitions: int = 16,
+) -> dict:
+    """Probability of Backtest Overfitting (PBO) via Combinatorially
+    Symmetric Cross-Validation (CSCV).
+
+    Batch 221 (validation 2026-05-18 owner-approved research review).
+    Source: Bailey-Borwein-Lopez de Prado-Zhu 2017 *Journal of
+    Computational Finance* "The probability of backtest overfitting".
+
+    Mechanism:
+      1. Partition the time axis of perf_matrix (rows=periods,
+         cols=strategies) into S equal contiguous chunks
+      2. For each combination of S/2 chunks (IS) vs S/2 chunks (OOS):
+         a. Identify the IS-best strategy (highest mean return)
+         b. Compute its OOS rank vs the strategy population
+         c. Compute logit of OOS-rank-percentile (0=worst, 1=best)
+      3. PBO = P(IS-winner is below OOS median) = fraction of paths
+         where IS-best has OOS rank <= 50th percentile
+
+    Interpretation:
+      - PBO < 0.5  -> roster is not overfit (IS winners tend to OOS-win)
+      - PBO >= 0.5 -> roster is overfit (IS winners are no better than
+                     random OOS); strategy selection process is broken
+      - PBO ~= 1.0 -> SEVERELY overfit
+
+    Inputs:
+      perf_matrix: DataFrame indexed by date with strategy returns as
+        columns. Period returns (daily / weekly / monthly OK).
+      n_partitions: number of CSCV partitions (default 16, paper
+        recommended). Must be even; will be coerced.
+
+    Returns dict:
+      - pbo:            float in [0, 1] (lower is better)
+      - n_combinations: int (number of IS/OOS combinations evaluated)
+      - logits:         list of OOS-rank-logit values
+      - interpretation: string interpretation
+      - verdict:        "ok" / "warning" / "overfit"
+
+    Returns {"pbo": None, ...} on insufficient data.
+    """
+    if perf_matrix is None or perf_matrix.empty:
+        return {"pbo": None, "n_combinations": 0, "logits": [],
+                "interpretation": "empty_input", "verdict": "n/a"}
+    n_strategies = perf_matrix.shape[1]
+    if n_strategies < 2:
+        return {"pbo": None, "n_combinations": 0, "logits": [],
+                "interpretation": "single_strategy", "verdict": "n/a"}
+    n_periods = perf_matrix.shape[0]
+    if n_periods < n_partitions:
+        return {"pbo": None, "n_combinations": 0, "logits": [],
+                "interpretation": "insufficient_periods", "verdict": "n/a"}
+    # Coerce n_partitions to even
+    if n_partitions % 2 != 0:
+        n_partitions += 1
+    # Partition rows into n_partitions chunks
+    chunk_size = n_periods // n_partitions
+    if chunk_size < 1:
+        return {"pbo": None, "n_combinations": 0, "logits": [],
+                "interpretation": "chunks_too_small", "verdict": "n/a"}
+    chunks = [
+        perf_matrix.iloc[i * chunk_size: (i + 1) * chunk_size]
+        for i in range(n_partitions)
+    ]
+    # Iterate combinations of S/2 IS chunks
+    half = n_partitions // 2
+    logits = []
+    below_median_count = 0
+    total_count = 0
+    from itertools import combinations
+    for is_chunks_idx in combinations(range(n_partitions), half):
+        is_chunks_idx_set = set(is_chunks_idx)
+        oos_chunks_idx = [i for i in range(n_partitions) if i not in is_chunks_idx_set]
+        is_df  = pd.concat([chunks[i] for i in is_chunks_idx])
+        oos_df = pd.concat([chunks[i] for i in oos_chunks_idx])
+        if is_df.empty or oos_df.empty:
+            continue
+        # Strategy mean returns IS + OOS
+        is_means  = is_df.mean()
+        oos_means = oos_df.mean()
+        if is_means.empty or oos_means.empty:
+            continue
+        # IS-best strategy (highest mean)
+        try:
+            is_winner = is_means.idxmax()
+        except Exception:
+            continue
+        if pd.isna(is_winner) or is_winner not in oos_means.index:
+            continue
+        # OOS rank of IS-winner (1 = lowest, n = highest)
+        oos_ranks = oos_means.rank(method="average")
+        winner_rank = float(oos_ranks[is_winner])
+        # Rank percentile (0..1)
+        oos_pctile = (winner_rank - 0.5) / len(oos_means)
+        oos_pctile = max(min(oos_pctile, 0.999), 0.001)  # avoid log(0)
+        # Logit
+        try:
+            import math
+            logit = math.log(oos_pctile / (1.0 - oos_pctile))
+            logits.append(logit)
+        except Exception:
+            pass
+        if winner_rank <= len(oos_means) / 2.0:
+            below_median_count += 1
+        total_count += 1
+    if total_count == 0:
+        return {"pbo": None, "n_combinations": 0, "logits": [],
+                "interpretation": "no_valid_combinations", "verdict": "n/a"}
+    pbo = below_median_count / total_count
+    if pbo < 0.4:
+        verdict = "ok"
+        interp = "roster_not_overfit"
+    elif pbo < 0.6:
+        verdict = "warning"
+        interp = "borderline_overfit"
+    else:
+        verdict = "overfit"
+        interp = "roster_overfit"
+    return {
+        "pbo":            round(pbo, 4),
+        "n_combinations": total_count,
+        "logits":         [round(l, 4) for l in logits[:50]],  # cap for storage
+        "interpretation": interp,
+        "verdict":        verdict,
+    }
+
+
 def meta_label_predict_proba(clf, features: pd.DataFrame) -> Optional[np.ndarray]:
     """Predict win-probability for each row in features. Returns None on
     error or when clf is None."""

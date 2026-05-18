@@ -298,6 +298,21 @@ PASSING_CRITERIA = {
     # achievable, not punitive.
     "min_sharpe_overall":      1.0,    # BUG-33: overall PASS requires Sharpe >= 1.0
     "min_sharpe_per_regime":   0.7,    # BUG-33: per-regime PASS requires Sharpe >= 0.7
+    # Batch 221 (validation 2026-05-18 owner-approved research review):
+    # Add Sortino + Calmar + per-regime>=2 gates per Section B.
+    # Sortino penalizes only downside vol; complements Sharpe by catching
+    # strategies with asymmetric return distributions. Standard in CTA
+    # evaluation. Source: Sortino-Price 1991 JoI.
+    "min_sortino_overall":     1.0,    # Batch 221: Sortino must also clear 1.0 overall
+    "min_sortino_per_regime":  0.7,    # Same per-regime tier as Sharpe
+    # Calmar = annualized return / max drawdown. Robert Carver
+    # "Leveraged Trading" 2019 standard. Source: Magdon-Ismail-Atiya 2004
+    # Risk Magazine.
+    "min_calmar":              0.5,    # Batch 221: Calmar >= 0.5
+    # Per-regime PASS in >=2 regimes (was implicit >=1 via "any regime
+    # passes"). Carver 2015: a strategy passing only in one regime is
+    # likely a regime-coincidence finding, not a robust edge.
+    "min_regimes_passing":     2,      # Batch 221: must PASS in >=2 of 4 regimes
     # BUG-32 RESOLVED-IMPLEMENTED Batch 111 2026-05-12 (owner-approved
     # option C 2026-05-12): tiered profit-factor. `min_profit_factor`
     # above stays the per-regime PASS threshold (1.2 baseline, 1.3 for

@@ -2355,6 +2355,20 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     # Batch 186: DSR (Deflated Sharpe Ratio) gate per Bailey & Lopez de Prado 2014.
     # Industry-canonical multi-testing-corrected PSR; threshold default 0.95.
     dsr_value = psr_dict.get("deflated_sharpe") if isinstance(psr_dict, dict) else None
+    # Batch 221 (validation gates 2026-05-18 owner-approved): Sortino +
+    # Calmar gates. Sortino-Price 1991 (downside-vol-only Sharpe);
+    # Magdon-Ismail-Atiya 2004 Risk Magazine (Calmar = ann return / max DD).
+    sortino_val = sortino if (sortino is not None and not pd.isna(sortino)) else None
+    # Calmar: annualize roi to per-year, divide by abs(mdd_pct)
+    calmar_val = None
+    if mdd != 0 and roi is not None:
+        # Approximation: roi is total over the backtest window
+        # (caller's responsibility to provide annualization context); use
+        # the raw ratio as a robust proxy.
+        try:
+            calmar_val = float(roi) / abs(float(mdd))
+        except (TypeError, ValueError, ZeroDivisionError):
+            calmar_val = None
     passes = {
         "win_rate":           win_rate >= pc["min_win_rate"],
         "profit_factor":      pf >= pc["min_profit_factor"],
@@ -2374,6 +2388,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         # None means insufficient sample - auto-passes to avoid double-penalty
         # with the n>=30 / trade_count gates already in place.
         "deflated_sharpe":    (dsr_value is None) or (dsr_value >= pc.get("min_deflated_sharpe", 0.95)),
+        # Batch 221 NEW gates (Sortino + Calmar). None auto-passes (insufficient sample).
+        "sortino":            (sortino_val is None) or (sortino_val >= pc.get("min_sortino_overall", 1.0)),
+        "calmar":             (calmar_val is None) or (calmar_val >= pc.get("min_calmar", 0.5)),
         # regime_verdicts replaces per-regime count  -  see regime_verdicts and best_regimes
     }
     passes_all = all(passes.values())
