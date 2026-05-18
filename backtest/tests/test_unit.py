@@ -7024,6 +7024,90 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch227a_new_exits_registered():
+    """Batch 227a (deferred exits 2026-05-18 owner-approved): 2 new exit
+    methods (reverse_signal, smc_mitigation_zone) bringing roster 22 -> 24."""
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    assert "reverse_signal" in EXIT_STRATEGIES
+    assert "smc_mitigation_zone" in EXIT_STRATEGIES
+    assert len(EXIT_STRATEGIES) >= 24
+
+
+def test_batch227a_reverse_signal_evaluators_defined():
+    """Batch 227a: REVERSE_SIGNAL_EVALUATORS maps key entry strategies."""
+    from backtest.engine.exit_strategies import REVERSE_SIGNAL_EVALUATORS
+    must_map = {
+        "bollinger_lower", "bollinger_tight",
+        "rsi_oversold", "williams_r_oversold",
+        "pivot_r1_breakout", "pivot_r2_continuation",
+        "bollinger_upper_short", "rsi_overbought_short",
+    }
+    for k in must_map:
+        assert k in REVERSE_SIGNAL_EVALUATORS, f"Batch 227a: {k} must have reverse evaluator"
+
+
+def test_batch227a_bb_upper_touch_evaluator():
+    """Batch 227a: _bb_upper_touch detects close above mean + 2*std."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import _bb_upper_touch
+    closes = [100] * 20 + [120]
+    df = pd.DataFrame({"close": closes})
+    assert _bb_upper_touch(df) is True
+    closes2 = [100, 101, 99, 100, 100] * 4 + [101]
+    df2 = pd.DataFrame({"close": closes2})
+    assert _bb_upper_touch(df2) is False
+
+
+def test_batch227a_rsi14_overbought_evaluator():
+    """Batch 227a: _rsi14_overbought returns True when RSI > 65."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import _rsi14_overbought
+    closes = list(range(100, 130))
+    df = pd.DataFrame({"close": closes})
+    assert _rsi14_overbought(df) is True
+
+
+def test_batch227a_reverse_signal_fallback_when_no_mapping():
+    """Batch 227a: unmapped strategy -> fallback to atr_trail."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import exit_reverse_signal
+    n = 30
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    closes = list(range(100, 130))
+    df = pd.DataFrame({
+        "open": closes, "high": [c + 1 for c in closes],
+        "low": [c - 1 for c in closes], "close": closes,
+    }, index=idx)
+    out = exit_reverse_signal(df, idx[0].date(), 100.0, "long", atr=2.0,
+                                signals={"strategy_name": "unknown_strategy"})
+    assert out["exit_reason"] in (
+        "atr_trailing_stop", "end_of_data", "trailing_stop",
+    )
+
+
+def test_batch227a_smc_mitigation_zone_completes_with_synthetic_data():
+    """Batch 227a: exit_smc_mitigation_zone runs end-to-end on synthetic
+    OHLCV (may exit via SMC, trail-safety, or end-of-data)."""
+    import pandas as pd
+    import numpy as np
+    from backtest.engine.exit_strategies import exit_smc_mitigation_zone
+    rng = np.random.default_rng(42)
+    n = 200
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    base = 100 + np.cumsum(rng.normal(0, 1, n))
+    df = pd.DataFrame({
+        "open":  base, "high": base + 1, "low": base - 1,
+        "close": base, "volume": rng.integers(1_000_000, 5_000_000, n).astype(float),
+    }, index=idx)
+    out = exit_smc_mitigation_zone(df, idx[0].date(), 100.0, "long", atr=2.0)
+    assert out is not None
+    assert out["exit_reason"] in (
+        "smc_mitigation_batch227a",
+        "smc_trail_safety_batch227a",
+        "end_of_data",
+    )
+
+
 def test_batch226_new_exits_registered():
     """Batch 226 (exits gap fill 2026-05-18 owner-approved): 4 new exit
     methods registered (chandelier_3x, atr_trail_vix_conditional,

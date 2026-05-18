@@ -172,10 +172,11 @@ def test_dec521_callable_via_registry():
 def test_exit_registry_count_after_dec517_518_521():
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
     # 13 baseline (incl. regime_flip) + 3 DEC-517 + 1 DEC-518 + 1 DEC-521 = 18.
-    # Batch 226 (2026-05-18 owner-approved research review exit gap):
-    # +4 new exit methods (chandelier_3x, atr_trail_vix_conditional,
-    # mfe_lockin_trail, atr_trail_mae_conditional) -> 22.
-    assert len(EXIT_STRATEGIES) == 22, (
-        f"Expected 22 exit methods after DEC-517/518/521 + Batch 226; "
+    # Batch 226 (2026-05-18 research review exit gap): +4 (chandelier,
+    #   atr_trail_vix_conditional, mfe_lockin_trail, atr_trail_mae_conditional)
+    # Batch 227a (2026-05-18 deferred): +2 (reverse_signal, smc_mitigation_zone).
+    # Total: 18 + 4 + 2 = 24.
+    assert len(EXIT_STRATEGIES) == 24, (
+        f"Expected 24 exit methods after DEC-517/518/521 + Batch 226 + 227a; "
         f"got {len(EXIT_STRATEGIES)}"
     )

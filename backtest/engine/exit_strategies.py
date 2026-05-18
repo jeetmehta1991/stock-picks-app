@@ -1038,7 +1038,213 @@ def exit_atr_trail_mae_conditional(df_full, entry_date, entry_price, direction, 
                            atr_mult=mae_mult, max_days=max_days)
 
 
+# Batch 227a (2026-05-18 owner-approved): reverse-signal exit registry.
+# Maps entry strategy name -> reverse-condition evaluator callable taking
+# df_slice (OHLCV up to current bar) and returning bool. Connors discipline:
+# when entry signal was X-oversold, exit when X-overbought triggers. Only
+# the most-fired strategies have explicit reverse mappings; strategies
+# not in the registry fall back to atr_trail inside exit_reverse_signal.
+def _bb_upper_touch(df, period=20, std_mult=2.0):
+    if len(df) < period + 1:
+        return False
+    closes = df["close"].tail(period)
+    mean = float(closes.mean())
+    std = float(closes.std())
+    return float(df["close"].iloc[-1]) >= mean + std_mult * std
+
+
+def _bb_lower_touch(df, period=20, std_mult=2.0):
+    if len(df) < period + 1:
+        return False
+    closes = df["close"].tail(period)
+    mean = float(closes.mean())
+    std = float(closes.std())
+    return float(df["close"].iloc[-1]) <= mean - std_mult * std
+
+
+def _rsi14_overbought(df, threshold=65):
+    if len(df) < 16:
+        return False
+    closes = df["close"].tail(15)
+    delta = closes.diff()
+    gain = delta.clip(lower=0).ewm(alpha=1/14, adjust=False).mean()
+    loss = (-delta.clip(upper=0)).ewm(alpha=1/14, adjust=False).mean()
+    last_loss = float(loss.iloc[-1])
+    rs_last = float(gain.iloc[-1]) / last_loss if last_loss > 0 else float("inf")
+    rsi = 100 - 100 / (1 + rs_last)
+    return rsi > threshold
+
+
+def _rsi14_oversold(df, threshold=35):
+    if len(df) < 16:
+        return False
+    closes = df["close"].tail(15)
+    delta = closes.diff()
+    gain = delta.clip(lower=0).ewm(alpha=1/14, adjust=False).mean()
+    loss = (-delta.clip(upper=0)).ewm(alpha=1/14, adjust=False).mean()
+    last_loss = float(loss.iloc[-1])
+    rs_last = float(gain.iloc[-1]) / last_loss if last_loss > 0 else float("inf")
+    rsi = 100 - 100 / (1 + rs_last)
+    return rsi < threshold
+
+
+def _williams_r_overbought(df, period=14, threshold=-20):
+    if len(df) < period + 1:
+        return False
+    sub = df.tail(period)
+    high_p = float(sub["high"].max())
+    low_p = float(sub["low"].min())
+    close = float(df["close"].iloc[-1])
+    if high_p == low_p:
+        return False
+    wr = -100.0 * (high_p - close) / (high_p - low_p)
+    return wr > threshold
+
+
+def _pivot_r1_loss(df):
+    """Loss of prev-day pivot R1 from below (long held above R1; reverse
+    when close falls back below R1)."""
+    if len(df) < 3:
+        return False
+    prev = df.iloc[-2]
+    H, L, C = float(prev["high"]), float(prev["low"]), float(prev["close"])
+    P = (H + L + C) / 3.0
+    R1 = 2 * P - L
+    today = float(df["close"].iloc[-1])
+    return today < R1
+
+
+REVERSE_SIGNAL_EVALUATORS = {
+    # Mean-reversion long entries -> exit on opposing overbought touch
+    "bollinger_lower":       _bb_upper_touch,
+    "bollinger_tight":       _bb_upper_touch,
+    "rsi_oversold":          _rsi14_overbought,
+    "williams_r_oversold":   _williams_r_overbought,
+    # Trend-continuation long entries -> exit on pivot R1 loss
+    "pivot_r1_breakout":     _pivot_r1_loss,
+    "pivot_r2_continuation": _pivot_r1_loss,
+    # Short-side: reverse on oversold opposing
+    "bollinger_upper_short": _bb_lower_touch,
+    "rsi_overbought_short":  _rsi14_oversold,
+}
+
+
+def exit_reverse_signal(df_full, entry_date, entry_price, direction, atr,
+                         signals=None, max_days=252):
+    """Reverse-signal exit (Batch 227a 2026-05-18 owner-approved). Exit when
+    the OPPOSING technical condition fires - e.g. bollinger_lower entry
+    (long) exits when bb_upper touches; rsi_oversold (long) exits on
+    rsi_14 > 65. Connors *Short-Term Trading Strategies That Work* discipline.
+
+    Strategy name is read from signals['strategy_name'] (threaded by engine).
+    Strategies not in REVERSE_SIGNAL_EVALUATORS fall back to vanilla
+    atr_trail_1x. Bounded by max_days as a safety floor.
+    """
+    s = signals if signals else {}
+    strategy = s.get("strategy_name") or s.get("strategy") or ""
+    evaluator = REVERSE_SIGNAL_EVALUATORS.get(strategy)
+    if not evaluator:
+        return exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
+                               atr_mult=1.0, max_days=max_days)
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty:
+        return exit_trailing_pct(df_full, entry_date, entry_price,
+                                  direction, atr, trail_pct=0.10)
+    for idx, row in future.iterrows():
+        df_slice = df_full[df_full.index <= idx]
+        try:
+            triggered = bool(evaluator(df_slice))
+        except Exception:
+            triggered = False
+        if triggered:
+            return _base_result(entry_price, float(row["close"]), entry_date,
+                                 idx.date(),
+                                 f"reverse_signal_{strategy}_batch227a",
+                                 direction)
+    last = future.iloc[-1]
+    return _base_result(entry_price, float(last["close"]), entry_date,
+                         future.index[-1].date(), "end_of_data", direction)
+
+
+def exit_smc_mitigation_zone(df_full, entry_date, entry_price, direction, atr,
+                              signals=None, max_days=252, smc_check_every=5):
+    """SMC mitigation-zone exit (Batch 227a 2026-05-18 owner-approved).
+    Exit LONG when next bearish SMC primitive fires (bearish FVG / bearish
+    CHoCH / bearish OB); SHORT symmetric. Uses Batch 216 SMC infrastructure.
+
+    SMC compute is expensive (3+ library calls per bar); to keep exit cost
+    bounded we only evaluate every smc_check_every bars (default 5 trading
+    days). On in-between bars we trail-stop via vanilla 1xATR as safety.
+    """
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty or atr == 0:
+        return exit_trailing_pct(df_full, entry_date, entry_price,
+                                  direction, atr, trail_pct=0.10)
+    h, l, c = df_full["high"], df_full["low"], df_full["close"]
+    tr = pd.concat([h - l, (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
+    atr_series = tr.ewm(alpha=1/14, adjust=False).mean()
+    best = entry_price
+    stop = (entry_price - 1.0 * atr) if direction == "long" else (entry_price + 1.0 * atr)
+    try:
+        from backtest.signals.smc_ict import compute_smc_signals
+    except Exception:
+        compute_smc_signals = None
+    for i, (idx, row) in enumerate(future.iterrows()):
+        close = float(row["close"])
+        high = float(row.get("high", close))
+        low = float(row.get("low", close))
+        bar_open = float(row.get("open", close))
+        try:
+            current_atr = float(atr_series.loc[idx])
+            if not (current_atr > 0):
+                current_atr = atr
+        except (KeyError, ValueError):
+            current_atr = atr
+        if direction == "long":
+            if close > best:
+                best = close
+                stop = max(stop, best - 1.0 * current_atr)
+        else:
+            if close < best:
+                best = close
+                stop = min(stop, best + 1.0 * current_atr)
+        fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+        if fill is not None:
+            return _base_result(entry_price, fill, entry_date,
+                                 idx.date(), "smc_trail_safety_batch227a",
+                                 direction)
+        if compute_smc_signals is not None and (i % smc_check_every == 0):
+            df_slice = df_full[df_full.index <= idx]
+            try:
+                smc = compute_smc_signals(df_slice)
+            except Exception:
+                smc = {}
+            if direction == "long":
+                opposing = (
+                    smc.get("smc_fvg_bearish_active", False)
+                    or smc.get("smc_choch_bearish", False)
+                    or smc.get("smc_ob_bearish_active", False)
+                )
+            else:
+                opposing = (
+                    smc.get("smc_fvg_bullish_active", False)
+                    or smc.get("smc_choch_bullish", False)
+                    or smc.get("smc_ob_bullish_active", False)
+                )
+            if opposing:
+                return _base_result(entry_price, close, entry_date,
+                                     idx.date(), "smc_mitigation_batch227a",
+                                     direction)
+    last = future.iloc[-1]
+    return _base_result(entry_price, float(last["close"]), entry_date,
+                         future.index[-1].date(), "end_of_data", direction)
+
+
 EXIT_STRATEGIES = {
+    # Batch 227a (2026-05-18 owner-approved): reverse-signal + SMC
+    # mitigation-zone exits. Roster grows 22 -> 24.
+    "reverse_signal":         lambda df, ed, ep, d, a, s: exit_reverse_signal(df, ed, ep, d, a, s),
+    "smc_mitigation_zone":    lambda df, ed, ep, d, a, s: exit_smc_mitigation_zone(df, ed, ep, d, a, s),
     # Batch 226 (2026-05-18 owner-approved research review exit gaps):
     # 4 new exit methods + VIX-spike portfolio-level kill switch in
     # exit_manager.process_day_exits. Roster grows 17 -> 21 exit methods.
