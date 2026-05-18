@@ -1125,6 +1125,58 @@ def strat_break_retest_confluence(s):
 #  PENDING strategy-additive). Run `len(ALL_STRATEGIES)` for current count.
 # -----------------------------------------------------------------------------
 
+def strat_orb_stocks_in_play_long(s):
+    """Batch 211 (ORB stocks-in-play 2026-05-17 owner-approved research review).
+    Opening Range Breakout for "stocks in play" per Zarattini-Barbon-Aziz
+    (2024) SSRN 4729284 "A Profitable Day Trading Strategy For The U.S.
+    Equity Market". Paper documents +1,600% return / Sharpe 2.81 on Top-20
+    high-volume stocks-in-play with intraday 5-min ORB.
+
+    DAILY-BAR APPROXIMATION: true intraday ORB requires 5-min bars (this
+    engine operates on daily). Daily proxy uses:
+      - "in-play" filter: gap_up_pct > +2% (vs prev close) - market is
+        reacting to overnight catalyst, matching Zarattini's stocks-in-play
+        criteria
+      - "ORB high break" proxy: close > today's open (close-above-open
+        is the daily-bar analogue of breaking the opening range high)
+      - Volume confirmation: 2x ADV(20) (Zarattini emphasizes institutional
+        participation as a primary edge)
+      - 200-EMA regime gate (long-only buy bias)
+    """
+    fires = (
+        s.get("gap_up_2pct", False)
+        and s.get("close_above_open", False)
+        and s.get("vol_spike_2x", False)
+        and s.get("price_above_ema_200", True)
+    )
+    gap = s.get("gap_up_pct", 0.0)
+    return _strat(fires, "long", "orb",
+        ["gap_up_pct>2", "close_above_open", "vol_spike_2x", "price_above_ema_200"],
+        [f"Gap up +{gap:.1f}% - in-play catalyst",
+         "Close above open - intraday momentum positive",
+         "Volume 2x ADV(20) - institutional participation",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_orb_stocks_in_play_short(s):
+    """Batch 211: Symmetric short for gap-down stocks-in-play.
+    Daily-bar proxy: gap_dn_pct > 2%, close < open, 2x volume, below
+    200-EMA regime gate."""
+    fires = (
+        s.get("gap_dn_2pct", False)
+        and s.get("close_below_open", False)
+        and s.get("vol_spike_2x", False)
+        and (not s.get("price_above_ema_200", True))
+    )
+    gap = s.get("gap_dn_pct", 0.0)
+    return _strat(fires, "short", "orb",
+        ["gap_dn_pct>2", "close_below_open", "vol_spike_2x", "price_below_ema_200"],
+        [f"Gap down -{gap:.1f}% - in-play catalyst",
+         "Close below open - intraday momentum negative",
+         "Volume 2x ADV(20) - institutional participation",
+         "Below 200 EMA (bear regime confirmation)"])
+
+
 def strat_smc_bos_continuation(s):
     """Batch 210 (SMC/ICT family 2026-05-17 owner-approved research review).
     Break of Structure continuation: market makes a new structural high
@@ -1360,6 +1412,9 @@ def strat_avwap_20high_rejection_short(s):
 
 
 ALL_STRATEGIES = {
+    # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
+    "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
+    "orb_stocks_in_play_short":     strat_orb_stocks_in_play_short,
     # SMC / ICT family (4 - Batch 210 2026-05-17 owner-approved research review)
     "smc_bos_continuation":         strat_smc_bos_continuation,
     "smc_choch_reversal":           strat_smc_choch_reversal,

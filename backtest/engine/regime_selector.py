@@ -112,6 +112,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "smc_choch_reversal":           {"bull", "neutral", "bear", "crisis"},
     "smc_order_block_bounce":       {"bull", "neutral", "bear", "crisis"},
     "smc_liquidity_sweep_reversal": {"bull", "neutral", "bear", "crisis"},
+    # ORB stocks-in-play (Batch 211): allow long in bull/neutral
+    # (Zarattini criterion + 200-EMA gate); short in bear/crisis.
+    "orb_stocks_in_play_long":      {"bull", "neutral"},
+    "orb_stocks_in_play_short":     {"bear", "crisis"},
     # Short-side: bear/crisis only
     "bollinger_upper_short":    {"bear", "crisis"},
     "rsi_overbought_short":     {"bear", "crisis"},

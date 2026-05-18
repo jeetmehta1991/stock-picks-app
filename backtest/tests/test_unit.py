@@ -6684,6 +6684,69 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch211_orb_strategies_registered_and_gap_signals():
+    """Batch 211 (ORB 2026-05-17): orb_stocks_in_play_long/short registered.
+    compute_pivots emits gap_up_pct / gap_dn_pct / gap_*_2pct /
+    close_above_open / close_below_open signals."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    from backtest.signals.technical import compute_pivots
+    import pandas as pd
+    # Strategies registered
+    assert "orb_stocks_in_play_long" in ALL_STRATEGIES
+    assert "orb_stocks_in_play_short" in ALL_STRATEGIES
+    # Signal emission: gap up of 3% with close above open
+    df = pd.DataFrame({
+        "high":  [100, 105], "low": [99, 102], "close": [100, 104], "open": [100, 103],
+    })
+    out = compute_pivots(df)
+    assert "gap_up_pct" in out
+    assert out["gap_up_pct"] > 0
+    assert "gap_up_2pct" in out
+    # bool-like check covers numpy True_ and built-in True
+    assert bool(out["gap_up_2pct"]) is True  # 3% > 2% threshold
+    assert bool(out["close_above_open"]) is True
+
+
+def test_batch211_orb_long_requires_gap_volume_and_regime():
+    """Batch 211: orb_stocks_in_play_long requires gap_up_2pct +
+    close_above_open + vol_spike_2x + price_above_ema_200."""
+    from backtest.signals.screener import strat_orb_stocks_in_play_long
+    # All conditions met
+    s = {
+        "gap_up_2pct": True, "gap_up_pct": 3.5,
+        "close_above_open": True,
+        "vol_spike_2x": True,
+        "price_above_ema_200": True,
+    }
+    r = strat_orb_stocks_in_play_long(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # Missing each requirement individually -> no fire
+    for missing_key in ("gap_up_2pct", "close_above_open", "vol_spike_2x"):
+        s_copy = dict(s); s_copy[missing_key] = False
+        assert strat_orb_stocks_in_play_long(s_copy)["fires"] is False, (
+            f"Batch 211: ORB long must NOT fire when {missing_key}=False"
+        )
+    # 200-EMA gate enforced
+    s["price_above_ema_200"] = False
+    assert strat_orb_stocks_in_play_long(s)["fires"] is False
+
+
+def test_batch211_orb_short_symmetric():
+    """Batch 211: orb_stocks_in_play_short symmetric on gap-down."""
+    from backtest.signals.screener import strat_orb_stocks_in_play_short
+    s = {
+        "gap_dn_2pct": True, "gap_dn_pct": 3.5,
+        "close_below_open": True,
+        "vol_spike_2x": True,
+        "price_above_ema_200": False,  # bear regime
+    }
+    r = strat_orb_stocks_in_play_short(s)
+    assert r["fires"] is True and r["direction"] == "short"
+    # Bull regime -> short must NOT fire
+    s["price_above_ema_200"] = True
+    assert strat_orb_stocks_in_play_short(s)["fires"] is False
+
+
 def test_batch210_smc_strategies_registered():
     """Batch 210 (SMC/ICT family 2026-05-17): 4 SMC strategies registered."""
     from backtest.signals.screener import ALL_STRATEGIES

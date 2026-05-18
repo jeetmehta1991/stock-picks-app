@@ -130,6 +130,19 @@ def compute_pivots(df: pd.DataFrame) -> dict:
         "above_prev_high": today > H,  "below_prev_low":  today < L,
         "near_prev_high":  near(H),    "near_prev_low":   near(L),
         "near_prev_close": near(C),
+        # Batch 211 (ORB stocks-in-play 2026-05-17): gap pct + intraday
+        # range signals for ORB-style daily-bar entries. True intraday
+        # ORB (5-min bars per Zarattini 2024 SSRN 4729284) requires
+        # minute-bar pipeline; daily proxy uses today's open vs prev
+        # close as the gap and today's range as a same-day breakout
+        # confirmation. Acknowledged approximation - documented in
+        # ORB strategies inline.
+        "gap_up_pct":      round((df["open"].iloc[-1] - C) / C * 100, 3) if C else 0.0,
+        "gap_dn_pct":      round((C - df["open"].iloc[-1]) / C * 100, 3) if C else 0.0,
+        "gap_up_2pct":     ((df["open"].iloc[-1] - C) / C) > 0.02 if C else False,
+        "gap_dn_2pct":     ((C - df["open"].iloc[-1]) / C) > 0.02 if C else False,
+        "close_above_open": today > df["open"].iloc[-1],
+        "close_below_open": today < df["open"].iloc[-1],
     }
 
 
