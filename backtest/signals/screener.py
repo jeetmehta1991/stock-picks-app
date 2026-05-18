@@ -1125,6 +1125,50 @@ def strat_break_retest_confluence(s):
 #  PENDING strategy-additive). Run `len(ALL_STRATEGIES)` for current count.
 # -----------------------------------------------------------------------------
 
+def strat_pead_long(s):
+    """Batch 209 (PEAD module 2026-05-17 owner-approved research review).
+    Post-Earnings Announcement Drift long entry per Bernard-Thomas (1989)
+    *Journal of Accounting Research* + Garfinkel-Hribar-Hsiao (2024)
+    update. Strong positive earnings surprise + YoY growth -> 60 trading
+    days of price drift continuation.
+
+    Long: within 60d of last earnings filing AND positive YoY EPS growth
+    AND positive announcement-day return (>+2%).
+    """
+    fires = (
+        s.get("within_pead_window", False)
+        and s.get("pead_positive_surprise", False)
+    )
+    yoy = s.get("earnings_eps_yoy_growth", 0.0)
+    ann = s.get("earnings_announcement_return", 0.0)
+    return _strat(fires, "long", "event_driven",
+        ["within_pead_window", "pead_positive_surprise",
+         "earnings_eps_yoy_growth>0", "announcement_return>+2pct"],
+        [f"Within PEAD drift window (<=60d post-earnings)",
+         f"YoY EPS growth: {yoy*100:.1f}%",
+         f"Announcement-day return: {ann*100:.1f}% (>+2% surprise threshold)",
+         "Bernard-Thomas (1989) 60-day drift continuation"])
+
+
+def strat_pead_short(s):
+    """Batch 209: PEAD short - symmetric for negative-surprise drift.
+    Documented effect: bottom-decile-surprise stocks underperform for
+    same 60-day window (Garfinkel et al. 2024)."""
+    fires = (
+        s.get("within_pead_window", False)
+        and s.get("pead_negative_surprise", False)
+    )
+    yoy = s.get("earnings_eps_yoy_growth", 0.0)
+    ann = s.get("earnings_announcement_return", 0.0)
+    return _strat(fires, "short", "event_driven",
+        ["within_pead_window", "pead_negative_surprise",
+         "earnings_eps_yoy_growth<0", "announcement_return<-2pct"],
+        [f"Within PEAD drift window (<=60d post-earnings)",
+         f"YoY EPS growth: {yoy*100:.1f}% (negative)",
+         f"Announcement-day return: {ann*100:.1f}% (<-2% surprise)",
+         "Bernard-Thomas 60-day drift continuation (negative)"])
+
+
 def strat_avwap_252_breakout(s):
     """Batch 208 (new strategy family 2026-05-17 owner-approved research review).
     Anchored VWAP from 252-day swing low breakout. Brian Shannon (2022)
@@ -1226,6 +1270,9 @@ def strat_avwap_20high_rejection_short(s):
 
 
 ALL_STRATEGIES = {
+    # PEAD family (2 - Batch 209 2026-05-17 owner-approved research review)
+    "pead_long":                    strat_pead_long,
+    "pead_short":                   strat_pead_short,
     # Anchored VWAP family (3 - Batch 208 2026-05-17 owner-approved research review)
     "avwap_252_breakout":           strat_avwap_252_breakout,
     "avwap_50_reclaim":             strat_avwap_50_reclaim,
@@ -1499,6 +1546,16 @@ def screen_instrument(
     if vix_value is not None and vix_history is not None:
         from backtest.signals.technical import compute_macro_overlays
         signals = compute_macro_overlays(signals, vix_value, vix_history)
+    # Batch 209: PEAD signals (post-earnings drift). No-op when financials
+    # prefetch missing for this ticker. Strategy gates inside strat_pead_*
+    # check within_pead_window / pead_positive_surprise / etc.
+    try:
+        from backtest.signals.pead import compute_pead_signals
+        pead = compute_pead_signals(ticker, df, as_of)
+        if pead:
+            signals.update(pead)
+    except Exception:
+        pass
 
     triggered_long  = []
     triggered_short = []

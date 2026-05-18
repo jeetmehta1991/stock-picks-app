@@ -6684,6 +6684,63 @@ def test_batch186_verdict_wires_dsr_and_optin_signals():
     )
 
 
+def test_batch209_pead_strategies_registered():
+    """Batch 209 (PEAD module 2026-05-17): pead_long + pead_short
+    registered in ALL_STRATEGIES."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert "pead_long" in ALL_STRATEGIES
+    assert "pead_short" in ALL_STRATEGIES
+
+
+def test_batch209_pead_long_requires_window_and_positive_surprise():
+    """Batch 209: pead_long fires only when within 60d post-earnings AND
+    positive surprise (YoY EPS growth AND announcement-day return > +2%).
+    Bernard-Thomas 1989 / Garfinkel-Hribar-Hsiao 2024."""
+    from backtest.signals.screener import strat_pead_long
+    # All conditions met
+    s = {
+        "within_pead_window": True,
+        "pead_positive_surprise": True,
+        "earnings_eps_yoy_growth": 0.25,
+        "earnings_announcement_return": 0.05,
+    }
+    r = strat_pead_long(s)
+    assert r["fires"] is True and r["direction"] == "long"
+    # Outside window -> no fire
+    s["within_pead_window"] = False
+    assert strat_pead_long(s)["fires"] is False
+    # In window but no positive surprise -> no fire
+    s["within_pead_window"] = True
+    s["pead_positive_surprise"] = False
+    assert strat_pead_long(s)["fires"] is False
+
+
+def test_batch209_pead_short_requires_negative_surprise():
+    """Batch 209: pead_short fires only on within-window + negative
+    surprise (YoY EPS contraction AND announcement-day return < -2%)."""
+    from backtest.signals.screener import strat_pead_short
+    s = {
+        "within_pead_window": True,
+        "pead_negative_surprise": True,
+        "earnings_eps_yoy_growth": -0.15,
+        "earnings_announcement_return": -0.05,
+    }
+    r = strat_pead_short(s)
+    assert r["fires"] is True and r["direction"] == "short"
+    s["pead_negative_surprise"] = False
+    assert strat_pead_short(s)["fires"] is False
+
+
+def test_batch209_compute_pead_signals_handles_missing_data():
+    """Batch 209: compute_pead_signals returns empty dict when ticker
+    has no financials prefetch / unknown ticker (no raise)."""
+    from backtest.signals.pead import compute_pead_signals
+    from datetime import date
+    import pandas as pd
+    out = compute_pead_signals("NONEXISTENT_TICKER_ZYX", pd.DataFrame(), date(2024, 6, 1))
+    assert out == {}
+
+
 def test_batch208_avwap_strategies_registered_in_ALL_STRATEGIES():
     """Batch 208 (new strategy family 2026-05-17): 3 Anchored VWAP
     strategies must be registered in ALL_STRATEGIES so the screener

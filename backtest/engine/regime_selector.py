@@ -100,6 +100,11 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "avwap_252_breakout":           {"bull", "neutral", "bear", "crisis"},
     "avwap_50_reclaim":             {"bull", "neutral"},
     "avwap_20high_rejection_short": {"neutral", "bear", "crisis"},
+    # PEAD family (Batch 209): event-driven; allow all regimes (signal
+    # self-gates via within_pead_window + pead_*_surprise inside strategy).
+    # Bernard-Thomas effect is documented robust across regimes.
+    "pead_long":                    {"bull", "neutral", "bear", "crisis"},
+    "pead_short":                   {"bull", "neutral", "bear", "crisis"},
     # Short-side: bear/crisis only
     "bollinger_upper_short":    {"bear", "crisis"},
     "rsi_overbought_short":     {"bear", "crisis"},
