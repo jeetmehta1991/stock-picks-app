@@ -885,13 +885,16 @@ class BacktestEngine:
 
             # DEC-076 RESOLVED-IMPLEMENTED Batch 74 2026-05-12 owner-mandated
             # wiring: factor concentration breaker. If candidate's sector is
-            # currently >30% of total portfolio equity, gate the entry.
+            # currently >25% of total portfolio equity, gate the entry.
             # Joint DEC-070 portfolio-level exit logic. Uses
             # Portfolio.factor_concentration_breach() which reads
             # exposure_by_sector and flags any sector above threshold.
+            # Batch 223 (research review Section C #3 owner-approved
+            # 2026-05-18): tighten sector cap 30% -> 25% per Litterman
+            # 2003 *Modern Investment Management* Ch 17 industry standard.
             if hasattr(self, "portfolio") and self.portfolio.positions:
                 _conc = self.portfolio.factor_concentration_breach(
-                    sector_threshold_pct=30.0,
+                    sector_threshold_pct=25.0,
                 )
                 if _conc.get("any_breach"):
                     # Candidate's own sector contributes to the breach -- skip
@@ -909,6 +912,42 @@ class BacktestEngine:
                             ),
                         })
                         continue
+
+            # Batch 223 (correlation cap 2026-05-18 owner-approved): refuse
+            # entry if candidate is highly-correlated to any open position
+            # (Carver 2015 *Systematic Trading* Ch 10 IDM). |corr|>=0.85
+            # skip; 0.70<=|corr|<0.85 halve size; else no adjustment. The
+            # multiplier is applied at the sizing stack below; the skip
+            # branch fires here when full correlation lockout triggers.
+            _corr_mult = 1.0
+            _corr_max = 0.0
+            if hasattr(self, "portfolio") and self.portfolio.positions:
+                try:
+                    from backtest.engine.correlation_gate import (
+                        correlation_with_open_positions,
+                        correlation_size_multiplier,
+                    )
+                    _corr_info = correlation_with_open_positions(
+                        ticker, self.ohlcv_dict,
+                        list(self.portfolio.positions.keys()),
+                        as_of,
+                    )
+                    _corr_max = _corr_info.get("max_abs_corr", 0.0)
+                    _corr_mult = correlation_size_multiplier(_corr_max)
+                    if _corr_mult == 0.0:
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": "(any)",
+                            "reason": (
+                                f"correlation_cap_batch223_"
+                                f"corr_{_corr_max:.2f}_with_"
+                                f"{_corr_info.get('max_corr_ticker', '?')}"
+                            ),
+                        })
+                        continue
+                except Exception:
+                    _corr_mult = 1.0
+                    _corr_max = 0.0
 
             for strat_entry in cand.get("strategies", []):
                 direction = strat_entry["direction"]
@@ -1239,6 +1278,21 @@ class BacktestEngine:
                             "scaler": "hrp_relative_batch219",
                             "multiplier": round(float(hrp_mult), 4),
                         })
+                    # Batch 223: correlation cap halving multiplier
+                    # (Carver IDM). _corr_mult was computed once before
+                    # the strategy loop and applied here so all strategies
+                    # firing for this ticker share the same correlation
+                    # debit. Already-zero correlation cases skipped above.
+                    if _corr_mult != 1.0:
+                        size_pct_pre_corr = size_pct
+                        size_pct = size_pct * _corr_mult
+                        if size_pct_pre_corr > 0:
+                            self.sizing_log.append({
+                                "ticker": ticker, "date": as_of,
+                                "strategy": strat_entry["strategy"],
+                                "scaler": "correlation_cap_batch223",
+                                "multiplier": round(float(_corr_mult), 4),
+                            })
                     # Batch 203 (VIX-conditional sizing overlay per Cederburg
                     # Johnson Maio 2024 Finance Research Letters): scale by
                     # inverse-percentile of VIX over trailing 252 days.

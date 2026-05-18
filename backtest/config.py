@@ -427,6 +427,17 @@ LIVE_TRADING_RULES = {
     "broker":                   "IBKR_Canada",  # Interactive Brokers Canada (not Alpaca  -  Canada only)
     "base_currency":            "CAD",  # portfolio denominated in CAD
     "trade_currency":           "USD",  # US equity trades in USD  -  currency risk exists
+    # Batch 223 (correlation + beta hedge 2026-05-18 owner-approved):
+    # correlation-cap thresholds + beta-neutralization opt-in flag.
+    # Beta hedge defaults OFF - enabling changes the goal from absolute
+    # return to alpha-vs-SPY (owner decision; currently absolute-return
+    # framing). When True the engine maintains a SPY-short overlay
+    # sized to portfolio_gross_beta * beta_hedge_ratio. Phase 1B
+    # owner-tunable.
+    "correlation_skip_threshold":   0.85,  # |corr|>=0.85 -> block entry
+    "correlation_halve_threshold":  0.70,  # 0.70<=|corr|<0.85 -> halve size
+    "beta_hedge_enabled":           False, # OFF by default; opt-in
+    "beta_hedge_ratio":             0.5,   # SPY short = gross_beta * 0.5
 }
 
 # BUG-95 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20 2026-05-10

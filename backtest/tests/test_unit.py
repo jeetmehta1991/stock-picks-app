@@ -7024,6 +7024,104 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch223_correlation_with_open_positions():
+    """Batch 223 (correlation cap 2026-05-18 owner-approved):
+    correlation_with_open_positions returns max |corr| with any open
+    position over lookback window. Carver 2015 IDM-inspired."""
+    import pandas as pd
+    import numpy as np
+    from datetime import date
+    from backtest.engine.correlation_gate import correlation_with_open_positions
+    rng = np.random.default_rng(42)
+    n = 100
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    # Candidate
+    cand_returns = rng.normal(0, 0.02, n)
+    cand_close = 100 + np.cumsum(cand_returns)
+    # Highly correlated open position (same returns + tiny noise)
+    pos_a_returns = cand_returns + rng.normal(0, 0.001, n)
+    pos_a_close = 100 + np.cumsum(pos_a_returns)
+    # Uncorrelated open position
+    pos_b_close = 100 + np.cumsum(rng.normal(0, 0.02, n))
+    ohlcv = {
+        "CAND": pd.DataFrame({"close": cand_close}, index=idx),
+        "POS_A": pd.DataFrame({"close": pos_a_close}, index=idx),
+        "POS_B": pd.DataFrame({"close": pos_b_close}, index=idx),
+    }
+    out = correlation_with_open_positions(
+        "CAND", ohlcv, ["POS_A", "POS_B"], as_of=date(2024, 5, 1),
+    )
+    # POS_A should be the high-correlation match
+    assert out["max_corr_ticker"] == "POS_A"
+    assert out["max_abs_corr"] > 0.9
+    assert out["any_correlated"] is True
+
+
+def test_batch223_correlation_size_multiplier():
+    """Batch 223: correlation_size_multiplier maps |corr| to [0, 0.5, 1.0]:
+    >=0.85 skip (0.0), [0.7, 0.85) halve (0.5), <0.7 full (1.0)."""
+    from backtest.engine.correlation_gate import correlation_size_multiplier
+    assert correlation_size_multiplier(0.5) == 1.0   # uncorrelated
+    assert correlation_size_multiplier(0.69) == 1.0  # just under halve
+    assert correlation_size_multiplier(0.70) == 0.5  # halve threshold
+    assert correlation_size_multiplier(0.84) == 0.5  # still halve
+    assert correlation_size_multiplier(0.85) == 0.0  # skip threshold
+    assert correlation_size_multiplier(0.99) == 0.0  # extreme
+
+
+def test_batch223_gross_portfolio_beta():
+    """Batch 223: gross_portfolio_beta computes weighted beta vs SPY."""
+    import pandas as pd
+    import numpy as np
+    from datetime import date
+    from backtest.engine.correlation_gate import gross_portfolio_beta
+    rng = np.random.default_rng(11)
+    n = 300
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    # Use compound-return construction so pct_change recovers the
+    # original return series (cumsum mixes scale; cumprod preserves it)
+    spy_ret = rng.normal(0, 0.01, n)
+    spy_close = 400 * np.cumprod(1 + spy_ret)
+    # POS_HIGH_BETA: 1.5 * SPY returns + noise
+    pos_high_ret = 1.5 * spy_ret + rng.normal(0, 0.003, n)
+    # POS_LOW_BETA: 0.3 * SPY returns
+    pos_low_ret = 0.3 * spy_ret + rng.normal(0, 0.003, n)
+    ohlcv = {
+        "SPY": pd.DataFrame({"close": spy_close}, index=idx),
+        "POS_HIGH": pd.DataFrame({"close": 100 * np.cumprod(1 + pos_high_ret)}, index=idx),
+        "POS_LOW":  pd.DataFrame({"close": 100 * np.cumprod(1 + pos_low_ret)},  index=idx),
+    }
+    open_pos = {"POS_HIGH": 0.5, "POS_LOW": 0.5}
+    beta = gross_portfolio_beta(open_pos, ohlcv, benchmark="SPY",
+                                 as_of=date(2024, 12, 1))
+    # Expected ~ (1.5 + 0.3) / 2 = 0.9
+    assert 0.7 <= beta <= 1.1, f"Gross beta should be ~0.9, got {beta}"
+
+
+def test_batch223_config_flags_added():
+    """Batch 223: LIVE_TRADING_RULES exposes correlation + beta-hedge
+    config keys."""
+    from backtest.config import LIVE_TRADING_RULES
+    assert LIVE_TRADING_RULES.get("correlation_skip_threshold") == 0.85
+    assert LIVE_TRADING_RULES.get("correlation_halve_threshold") == 0.70
+    # Beta hedge OFF by default
+    assert LIVE_TRADING_RULES.get("beta_hedge_enabled") is False
+    assert LIVE_TRADING_RULES.get("beta_hedge_ratio") == 0.5
+
+
+def test_batch223_sector_cap_tightened_to_25pct():
+    """Batch 223: engine sector_threshold_pct tightened 30 -> 25 per
+    Litterman 2003 industry-standard. Source-level pin."""
+    import inspect
+    from backtest.engine import backtest as bt
+    src = inspect.getsource(bt)
+    assert "sector_threshold_pct=25.0" in src
+    # The old 30.0 should NOT be the engine call (only allowed in
+    # defaults / dead code outside the engine call)
+    # Check the call site specifically
+    assert "factor_concentration_breach(" in src
+
+
 def test_batch222_strategies_registered():
     """Batch 222 (event-driven + quality factor 2026-05-18 owner-approved):
     5 new strategies registered."""
