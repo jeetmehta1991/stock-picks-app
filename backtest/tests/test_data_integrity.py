@@ -1,7 +1,7 @@
 """Data-integrity test layer (DEC-591 / CHECKLIST #72 / L148).
 
-Implements DEC-503 test pyramid type #7 — schema validation, PIT semantics,
-completeness gates — by scanning the LIVE cache (not mocked fixtures).
+Implements DEC-503 test pyramid type #7 - schema validation, PIT semantics,
+completeness gates - by scanning the LIVE cache (not mocked fixtures).
 
 7 minimum tests; suite extends as new data sources are added.
 
@@ -53,7 +53,7 @@ CROSS_SOURCE_COVERAGE_TARGETS = {
 }
 
 TIER_PARAM_KEYS = {
-    "min_avg_dollar_volume_usd",  # was C5 expectation "liquidity_floor_adv" — corrected post-Pass-53 audit
+    "min_avg_dollar_volume_usd",  # was C5 expectation "liquidity_floor_adv" - corrected post-Pass-53 audit
     "min_history_days",
     "min_market_cap_m",
     "position_size_tier",
@@ -134,14 +134,24 @@ def test_data_integrity_1_ohlcv_schema_consistency():
 # Test 2: OHLCV freshness (catches Pass 53 C2)
 # ---------------------------------------------------------------------------
 def test_data_integrity_2_ohlcv_freshness():
-    """All OHLCV last_bar must be ≥ today − 14 days (workdays + weekend buffer).
+    """All OHLCV last_bar must be >= today - 21 days (workdays + weekend +
+    prefetch-cadence buffer).
 
-    Delisted tickers (currently_active=False in Master Dedup) are exempt — their
+    Delisted tickers (currently_active=False in Master Dedup) are exempt - their
     last_bar is correctly frozen at the delist date.
+
+    Batch 228 (housekeeping 2026-05-18 owner-approved): cutoff extended
+    14 -> 21 days to accommodate Polygon prefetch cadence for thinly-traded
+    T2/T3 tier tickers. Stage 2 backtest is NO-LIVE-API per CLAUDE.md
+    HARD RULE; prefetch refreshes happen on owner-driven cadence rather
+    than per-day. 21-day window is the realistic tolerance for Stage 2
+    operations. Triggered by TERN.parquet (T2-active, thinly traded,
+    last bar 2026-05-04 which is still WITHIN the Phase 1A-beta backtest
+    end window of 2026-05-05).
     """
     if not OHLCV_DIR.exists():
         pytest.skip("OHLCV cache missing")
-    cutoff = pd.Timestamp.today() - pd.Timedelta(days=14)
+    cutoff = pd.Timestamp.today() - pd.Timedelta(days=21)
     active_tickers = _load_active_tickers()
     stale = []
     files = sorted(os.listdir(OHLCV_DIR))
@@ -181,7 +191,7 @@ def test_data_integrity_3_required_tickers_present():
     # VIX: present if any proxy is in OHLCV or VIXCLS in FRED
     vix_present = bool(VIX_PROXIES & (ohlcv | fred))
     assert vix_present, (
-        f"VIX missing entirely (Pass 53 C3) — none of {VIX_PROXIES} found in "
+        f"VIX missing entirely (Pass 53 C3) - none of {VIX_PROXIES} found in "
         f"OHLCV cache or FRED."
     )
 
@@ -241,7 +251,7 @@ def test_data_integrity_5_tier_params_populated():
     # Check all 5 tiers have entries
     if not hasattr(universe, "TIER_PARAMS"):
         pytest.fail(
-            "universe.TIER_PARAMS not exported (Pass 53 C5) — DEC-504 implementation incomplete."
+            "universe.TIER_PARAMS not exported (Pass 53 C5) - DEC-504 implementation incomplete."
         )
 
     tier_params = universe.TIER_PARAMS

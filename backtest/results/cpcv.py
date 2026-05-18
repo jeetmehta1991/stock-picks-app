@@ -133,21 +133,28 @@ def meta_label_classifier_fit(
     optionally the primary strategy signal itself. Labels are
     1=winning trade, 0=losing trade (binary).
 
+    Batch 228 (housekeeping 2026-05-18 owner-approved): XGBoost upgrade
+    per Joubert-Snyman 2024 - tree-based methods (especially XGBoost)
+    outperform sklearn GBM on time-series meta-labeling features.
+    Preference order: xgboost -> sklearn GBM -> sklearn logreg. Each
+    fallback fires when the preferred library is unavailable.
+
     Args:
       features:    DataFrame, rows = trades, cols = numeric features
       labels:      Series of {0, 1}, same length as features
-      method:      "gbm" | "logreg" | "auto" (use GBM if sklearn
-                   available, else logreg)
+      method:      "xgb" | "gbm" | "logreg" | "auto"
+                   "auto": try xgboost, then sklearn GBM, then logreg
       random_state: RNG seed for reproducibility
 
-    Returns the fitted classifier. None if sklearn unavailable.
+    Returns the fitted classifier. None if all backends unavailable
+    or inputs degenerate.
     """
     if features is None or features.empty or labels is None or len(labels) == 0:
         return None
     if len(features) != len(labels):
         return None
     try:
-        # Drop rows with any NaN to avoid sklearn errors; production
+        # Drop rows with any NaN to avoid backend errors; production
         # should impute upstream
         clean = pd.concat([features.reset_index(drop=True),
                            labels.reset_index(drop=True).rename("__y__")], axis=1).dropna()
@@ -158,17 +165,41 @@ def meta_label_classifier_fit(
         if method == "logreg":
             from sklearn.linear_model import LogisticRegression
             clf = LogisticRegression(random_state=random_state, max_iter=500)
-        else:
+        elif method == "gbm":
             try:
                 from sklearn.ensemble import GradientBoostingClassifier
                 clf = GradientBoostingClassifier(
                     n_estimators=100, max_depth=3, random_state=random_state,
                 )
             except ImportError:
-                if method == "gbm":
-                    return None
-                from sklearn.linear_model import LogisticRegression
-                clf = LogisticRegression(random_state=random_state, max_iter=500)
+                return None
+        elif method == "xgb":
+            try:
+                import xgboost as _xgb
+                clf = _xgb.XGBClassifier(
+                    n_estimators=100, max_depth=3,
+                    learning_rate=0.1, random_state=random_state,
+                    eval_metric="logloss", verbosity=0,
+                )
+            except ImportError:
+                return None
+        else:  # auto: xgb -> gbm -> logreg
+            try:
+                import xgboost as _xgb
+                clf = _xgb.XGBClassifier(
+                    n_estimators=100, max_depth=3,
+                    learning_rate=0.1, random_state=random_state,
+                    eval_metric="logloss", verbosity=0,
+                )
+            except ImportError:
+                try:
+                    from sklearn.ensemble import GradientBoostingClassifier
+                    clf = GradientBoostingClassifier(
+                        n_estimators=100, max_depth=3, random_state=random_state,
+                    )
+                except ImportError:
+                    from sklearn.linear_model import LogisticRegression
+                    clf = LogisticRegression(random_state=random_state, max_iter=500)
         clf.fit(X, y)
         return clf
     except Exception:

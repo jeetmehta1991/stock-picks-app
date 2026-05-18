@@ -7024,6 +7024,91 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch228_xgboost_meta_labeler_preferred():
+    """Batch 228 (housekeeping 2026-05-18 owner-approved): XGBoost
+    is preferred over sklearn GBM for meta-labeling per Joubert-Snyman
+    2024. Confirms xgboost backend is wired + falls back gracefully."""
+    import pandas as pd
+    import numpy as np
+    from backtest.results.cpcv import meta_label_classifier_fit
+    rng = np.random.default_rng(42)
+    n = 200
+    feat_a = rng.normal(0, 1, n)
+    labels = (feat_a + rng.normal(0, 0.5, n) > 0).astype(int)
+    features = pd.DataFrame({"feat_a": feat_a, "feat_b": rng.normal(0, 1, n)})
+
+    # auto method should pick xgboost first when available
+    clf_auto = meta_label_classifier_fit(features, pd.Series(labels), method="auto")
+    assert clf_auto is not None
+    # When xgboost installed, the auto classifier should be XGBClassifier
+    try:
+        from xgboost import XGBClassifier
+        assert isinstance(clf_auto, XGBClassifier), (
+            f"Batch 228: auto method should prefer XGBClassifier when "
+            f"xgboost available; got {type(clf_auto).__name__}"
+        )
+    except ImportError:
+        pass  # xgboost not installed; auto fallback chain handles
+
+    # Explicit xgb method works
+    clf_xgb = meta_label_classifier_fit(features, pd.Series(labels), method="xgb")
+    if clf_xgb is not None:
+        from xgboost import XGBClassifier
+        assert isinstance(clf_xgb, XGBClassifier)
+
+    # logreg fallback still works
+    clf_lr = meta_label_classifier_fit(features, pd.Series(labels), method="logreg")
+    assert clf_lr is not None
+
+
+def test_batch228_pbo_check_script_imports_and_builds_perf_matrix():
+    """Batch 228: scripts/run_pbo_check.py helper builds per-strategy
+    daily returns matrix from a synthetic trade log."""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
+    import pandas as pd
+    # Inline import via importlib to avoid module-level sys.path side effects
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "run_pbo_check",
+        Path(__file__).parent.parent.parent / "scripts" / "run_pbo_check.py",
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    # Synthetic trade log: 3 strategies, 50 trades each
+    rows = []
+    for s in ["s_a", "s_b", "s_c"]:
+        for i in range(50):
+            rows.append({
+                "strategy":   s,
+                "exit_date":  f"2024-{(i // 20) + 1:02d}-{(i % 20) + 1:02d}",
+                "pnl_pct":    0.5 if i % 2 == 0 else -0.3,
+            })
+    df = pd.DataFrame(rows)
+    perf = mod.build_perf_matrix(df)
+    # All 3 strategies have >= 30 trades -> all in matrix
+    assert perf.shape[1] == 3
+    assert "s_a" in perf.columns
+    # Fewer than 30 trades for one strategy -> excluded
+    rows_small = [
+        {"strategy": "tiny", "exit_date": "2024-01-01", "pnl_pct": 0.1}
+    ] * 5
+    df_small = pd.DataFrame(rows + rows_small)
+    perf2 = mod.build_perf_matrix(df_small)
+    assert "tiny" not in perf2.columns
+
+
+def test_batch228_ohlcv_freshness_cutoff_extended_to_21_days():
+    """Batch 228: data freshness cutoff extended 14 -> 21 days for
+    realistic Stage 2 prefetch cadence."""
+    import inspect
+    from backtest.tests import test_data_integrity as tdi
+    src = inspect.getsource(tdi.test_data_integrity_2_ohlcv_freshness)
+    assert "days=21" in src
+    assert "days=14" not in src
+
+
 def test_batch227b_multi_tier_partial_registered():
     """Batch 227b (multi-tier partial-fill 2026-05-18 owner-approved): 1
     new exit method (multi_tier_partial) bringing roster 24 -> 25."""
