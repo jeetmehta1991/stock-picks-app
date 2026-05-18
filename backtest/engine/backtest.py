@@ -1192,9 +1192,14 @@ class BacktestEngine:
                     # volatility. Falls back to 1.0 (no-op) when sample
                     # too small or stats missing. Stacks BEFORE VIX overlay
                     # so VIX adjustment applies on the Kelly-adjusted base.
+                    # Batch 219 (HRP wiring 2026-05-18 owner-approved):
+                    # additionally apply per-strategy HRP-relative tilt
+                    # (Lopez de Prado 2016 JPM). Bounded [0.25, 2.0].
+                    # Stacks after Kelly so HRP tilts the Kelly-adjusted size.
                     try:
                         from backtest.engine.sizing_hrp_kelly import (
                             per_strategy_kelly_from_trade_log,
+                            per_strategy_hrp_weight_from_trade_log,
                         )
                         _closed_log = pd.DataFrame([
                             {
@@ -1209,8 +1214,13 @@ class BacktestEngine:
                             _closed_log, strat_entry["strategy"],
                             as_of=pd.Timestamp(as_of),
                         )
+                        hrp_mult = per_strategy_hrp_weight_from_trade_log(
+                            _closed_log, strat_entry["strategy"],
+                            as_of=pd.Timestamp(as_of),
+                        )
                     except Exception:
                         kelly_mult = 1.0
+                        hrp_mult = 1.0
                     size_pct_pre_kelly = size_pct
                     size_pct = size_pct * kelly_mult
                     if kelly_mult != 1.0 and size_pct_pre_kelly > 0:
@@ -1219,6 +1229,15 @@ class BacktestEngine:
                             "strategy": strat_entry["strategy"],
                             "scaler": "half_kelly_batch212",
                             "multiplier": round(float(kelly_mult), 4),
+                        })
+                    size_pct_pre_hrp = size_pct
+                    size_pct = size_pct * hrp_mult
+                    if hrp_mult != 1.0 and size_pct_pre_hrp > 0:
+                        self.sizing_log.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "scaler": "hrp_relative_batch219",
+                            "multiplier": round(float(hrp_mult), 4),
                         })
                     # Batch 203 (VIX-conditional sizing overlay per Cederburg
                     # Johnson Maio 2024 Finance Research Letters): scale by

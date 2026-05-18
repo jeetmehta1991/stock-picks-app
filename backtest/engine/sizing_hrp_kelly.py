@@ -151,6 +151,86 @@ def _inverse_variance_weights(cov: pd.DataFrame) -> pd.Series:
     return pd.Series(ivp, index=cov.columns)
 
 
+def per_strategy_hrp_weight_from_trade_log(
+    trade_log: pd.DataFrame,
+    strategy: str,
+    as_of: Optional[pd.Timestamp] = None,
+    lookback_days: int = 252,
+    entry_col: str = "entry_date",
+    pnl_col: str = "pnl_pct",
+    strategy_col: str = "strategy",
+    min_strategies: int = 3,
+    min_obs: int = 30,
+    min_mult: float = 0.25,
+    max_mult: float = 2.0,
+) -> float:
+    """Compute the per-strategy HRP-relative sizing multiplier.
+
+    Batch 219 (HRP wiring 2026-05-18 owner-approved). Builds the
+    per-strategy daily returns matrix from a closed-trades log, runs
+    hrp_cluster_weights, and returns a tilt multiplier relative to the
+    equal-weight baseline (1/N).
+
+    Returned multiplier semantics:
+      - hrp_weight = HRP's allocation to this strategy (sum-to-1.0)
+      - relative   = hrp_weight * N_strategies (compared to equal-weight)
+      - multiplier = clamp(relative, [min_mult, max_mult])
+
+    A multiplier of 1.0 means HRP gives this strategy exactly its
+    equal-weight share. >1.0 = HRP wants more; <1.0 = HRP wants less.
+    Bounded [0.25, 2.0] to prevent over-tilt on noisy short samples.
+
+    Returns 1.0 (no-op) when:
+      - trade log empty or strategy absent
+      - fewer than min_strategies distinct strategies (HRP undefined)
+      - fewer than min_obs return observations
+      - HRP computation fails (defensive fallback)
+    """
+    if trade_log is None or trade_log.empty:
+        return 1.0
+    if strategy_col not in trade_log.columns or strategy not in trade_log[strategy_col].values:
+        return 1.0
+    df = trade_log.copy()
+    if as_of is not None and entry_col in df.columns:
+        df = df[pd.to_datetime(df[entry_col]) <= as_of]
+        window_start = pd.to_datetime(as_of) - pd.Timedelta(days=lookback_days)
+        df = df[pd.to_datetime(df[entry_col]) >= window_start]
+    if df.empty:
+        return 1.0
+    if entry_col not in df.columns or pnl_col not in df.columns:
+        return 1.0
+    # Aggregate per-strategy daily returns
+    df["__d__"] = pd.to_datetime(df[entry_col]).dt.normalize()
+    grouped = (
+        df.groupby(["__d__", strategy_col])[pnl_col]
+        .sum()
+        .unstack(fill_value=0.0)
+    )
+    if grouped.empty:
+        return 1.0
+    n_strategies = grouped.shape[1]
+    if n_strategies < min_strategies:
+        return 1.0
+    if len(grouped) < min_obs:
+        return 1.0
+    if strategy not in grouped.columns:
+        return 1.0
+    try:
+        weights = hrp_cluster_weights(grouped, min_obs=min_obs)
+    except Exception:
+        return 1.0
+    if weights is None or weights.empty or strategy not in weights.index:
+        return 1.0
+    hrp_w = float(weights[strategy])
+    if hrp_w <= 0:
+        return 1.0
+    equal_w = 1.0 / n_strategies
+    if equal_w <= 0:
+        return 1.0
+    relative = hrp_w / equal_w
+    return float(max(min_mult, min(max_mult, round(relative, 4))))
+
+
 def hrp_cluster_weights(
     returns_df: pd.DataFrame,
     min_obs: int = 30,

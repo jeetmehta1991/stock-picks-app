@@ -7024,6 +7024,68 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch219_hrp_per_strategy_weight_basic():
+    """Batch 219 (HRP wiring 2026-05-18 owner-approved): per-strategy
+    HRP-relative multiplier from trade log. Returns hrp_weight /
+    equal_weight bounded [0.25, 2.0]."""
+    import pandas as pd
+    import numpy as np
+    from backtest.engine.sizing_hrp_kelly import (
+        per_strategy_hrp_weight_from_trade_log,
+    )
+    rng = np.random.default_rng(42)
+    strats = ["s_a", "s_b", "s_c"]
+    dates = pd.date_range("2024-01-01", periods=150, freq="B")
+    trades = []
+    for d in dates:
+        for s in strats:
+            trades.append({
+                "strategy":   s,
+                "entry_date": d,
+                "win":        bool(rng.random() < 0.5),
+                "pnl_pct":    rng.normal(0.5, 1.5),
+            })
+    df = pd.DataFrame(trades)
+    for s in strats:
+        m = per_strategy_hrp_weight_from_trade_log(
+            df, s, as_of=pd.Timestamp("2024-12-31"),
+        )
+        assert 0.25 <= m <= 2.0, f"HRP mult for {s} must be in [0.25, 2.0], got {m}"
+
+
+def test_batch219_hrp_returns_1_on_insufficient_data():
+    """Batch 219: no-op when trade log empty / strategy absent /
+    fewer than min_strategies (default 3)."""
+    import pandas as pd
+    from backtest.engine.sizing_hrp_kelly import (
+        per_strategy_hrp_weight_from_trade_log,
+    )
+    assert per_strategy_hrp_weight_from_trade_log(pd.DataFrame(), "any") == 1.0
+    df = pd.DataFrame({
+        "strategy": ["x", "x"], "entry_date": ["2024-01-01", "2024-01-02"],
+        "pnl_pct": [1.0, 2.0],
+    })
+    assert per_strategy_hrp_weight_from_trade_log(df, "missing") == 1.0
+    # Only 2 strategies -> below min_strategies=3 -> no-op
+    df2 = pd.DataFrame({
+        "strategy":   ["a"] * 50 + ["b"] * 50,
+        "entry_date": pd.date_range("2024-01-01", periods=100, freq="B"),
+        "pnl_pct":    [1.0] * 100,
+    })
+    assert per_strategy_hrp_weight_from_trade_log(df2, "a") == 1.0
+
+
+def test_batch219_hrp_wired_in_engine_sizing_stack():
+    """Batch 219: source-level pin verifying engine imports the HRP
+    helper and applies the multiplier with sizing_log entry."""
+    import inspect
+    from backtest.engine import backtest as bt
+    src = inspect.getsource(bt)
+    assert "per_strategy_hrp_weight_from_trade_log" in src
+    assert "hrp_mult = per_strategy_hrp_weight_from_trade_log" in src
+    assert "hrp_relative_batch219" in src
+
+
 def test_batch218_deprecated_strategies_defined():
     """Batch 218 (research-review deprecations 2026-05-18 owner-approved):
     DEPRECATED_STRATEGIES set contains 22-23 strategies with no replicable
