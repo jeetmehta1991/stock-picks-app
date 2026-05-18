@@ -809,7 +809,243 @@ def exit_break_even_at_1r(df_full, entry_date, entry_price, direction, atr,
                         future.index[-1].date(), "max_days", direction)
 
 
+def exit_chandelier(df_full, entry_date, entry_price, direction, atr,
+                     period=22, atr_mult=3.0, max_days=252):
+    """Chandelier exit (LeBeau-Lucas 1992; refined StockCharts ChartSchool
+    2024). Trail stop from `rolling_high - N*ATR` (long) or
+    `rolling_low + N*ATR` (short). Less whipsaw than vanilla ATR-trail
+    because the anchor is the rolling extreme rather than the close.
+
+    Batch 226 (2026-05-18 owner-approved research review exits gap).
+    Default period=22 / atr_mult=3.0 matches LeBeau's original spec.
+    """
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty or atr == 0:
+        return exit_trailing_pct(df_full, entry_date, entry_price,
+                                  direction, atr, trail_pct=0.10)
+    # Pre-compute rolling ATR (same as exit_atr_trail uses)
+    h, l, c = df_full["high"], df_full["low"], df_full["close"]
+    tr = pd.concat([h - l, (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
+    atr_series = tr.ewm(alpha=1/14, adjust=False).mean()
+    # Rolling extreme over `period` bars
+    rolling_high = h.rolling(period).max()
+    rolling_low  = l.rolling(period).min()
+
+    stop = (entry_price - atr_mult * atr) if direction == "long" \
+           else (entry_price + atr_mult * atr)
+
+    for idx, row in future.iterrows():
+        close = float(row["close"])
+        low   = float(row.get("low",  close))
+        high  = float(row.get("high", close))
+        bar_open = float(row.get("open", close))
+        try:
+            current_atr = float(atr_series.loc[idx])
+            if not (current_atr > 0):
+                current_atr = atr
+        except (KeyError, ValueError):
+            current_atr = atr
+        try:
+            rh = float(rolling_high.loc[idx]) if direction == "long" else None
+            rl = float(rolling_low.loc[idx])  if direction == "short" else None
+        except (KeyError, ValueError):
+            rh, rl = None, None
+        if direction == "long" and rh is not None and not pd.isna(rh):
+            new_stop = rh - atr_mult * current_atr
+            stop = max(stop, new_stop)
+        elif direction == "short" and rl is not None and not pd.isna(rl):
+            new_stop = rl + atr_mult * current_atr
+            stop = min(stop, new_stop)
+        fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+        if fill is not None:
+            return _base_result(entry_price, fill, entry_date,
+                                idx.date(), "chandelier_exit", direction)
+    last = future.iloc[-1]
+    return _base_result(entry_price, float(last["close"]), entry_date,
+                        future.index[-1].date(), "end_of_data", direction)
+
+
+def exit_atr_trail_vix_conditional(df_full, entry_date, entry_price, direction, atr,
+                                    signals=None, base_mult=1.0, max_days=252):
+    """VIX-regime conditional ATR trailing stop. Tighter ATR multiplier
+    in low-VIX (0.75x base), wider in high-VIX (1.5x base). The vix_band
+    signal is set at entry by Batch 204; this exit reads it from the
+    signals dict to set the per-trade ATR multiplier.
+
+    Batch 226 (2026-05-18). Source: TradingSetupsReview 2024 "Ultimate
+    Guide to Volatility Stop-Losses"; addresses the documented
+    whipsaw-in-low-vol / premature-exit-in-high-vol asymmetry.
+
+    Signals dict expected keys (optional; default to base_mult):
+      vix_band_low / vix_band_mid / vix_band_high (Batch 204 macro overlay)
+    """
+    s = signals if signals else {}
+    if s.get("vix_band_low"):
+        atr_mult = base_mult * 0.75
+    elif s.get("vix_band_high"):
+        atr_mult = base_mult * 1.5
+    else:
+        atr_mult = base_mult
+    # Delegate to atr_trail with the VIX-conditional multiplier
+    return exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
+                           atr_mult=atr_mult, max_days=max_days)
+
+
+def exit_mfe_lockin_trail(df_full, entry_date, entry_price, direction, atr,
+                           mfe_threshold_atr=2.0, lock_back_atr=1.0, max_days=252):
+    """MFE-lock-in trailing stop. When unrealized gain reaches
+    `mfe_threshold_atr * ATR`, ratchet the stop to (MFE - lock_back_atr * ATR)
+    to actively defend gains. Before that threshold, behaves like a
+    1xATR trailing stop.
+
+    Batch 226 (2026-05-18). Source: Howard Bandy 2014 *Quantitative
+    Technical Analysis* Ch 8. Solves the "winners give back" failure
+    mode of pure-trailing stops on extended winners.
+    """
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty or atr == 0:
+        return exit_trailing_pct(df_full, entry_date, entry_price,
+                                  direction, atr, trail_pct=0.10)
+    h, l, c = df_full["high"], df_full["low"], df_full["close"]
+    tr = pd.concat([h - l, (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
+    atr_series = tr.ewm(alpha=1/14, adjust=False).mean()
+    best_close = entry_price
+    best_high  = entry_price
+    best_low   = entry_price
+    stop = (entry_price - 1.0 * atr) if direction == "long" \
+           else (entry_price + 1.0 * atr)
+
+    for idx, row in future.iterrows():
+        close = float(row["close"])
+        low   = float(row.get("low",  close))
+        high  = float(row.get("high", close))
+        bar_open = float(row.get("open", close))
+        try:
+            current_atr = float(atr_series.loc[idx])
+            if not (current_atr > 0):
+                current_atr = atr
+        except (KeyError, ValueError):
+            current_atr = atr
+        if direction == "long":
+            if high > best_high:
+                best_high = high
+            mfe = best_high - entry_price
+            mfe_threshold = mfe_threshold_atr * current_atr
+            if mfe >= mfe_threshold:
+                # Lock-in: tighten stop to (best_high - lock_back_atr * ATR)
+                stop = max(stop, best_high - lock_back_atr * current_atr)
+            else:
+                # Pre-threshold: vanilla 1xATR trail from close
+                if close > best_close:
+                    best_close = close
+                    stop = max(stop, best_close - 1.0 * current_atr)
+            fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+            if fill is not None:
+                reason = ("mfe_lockin_trail" if (best_high - entry_price) >= mfe_threshold_atr * current_atr
+                          else "mfe_pre_threshold_trail")
+                return _base_result(entry_price, fill, entry_date,
+                                    idx.date(), reason, direction)
+        else:
+            if low < best_low:
+                best_low = low
+            mfe = entry_price - best_low
+            mfe_threshold = mfe_threshold_atr * current_atr
+            if mfe >= mfe_threshold:
+                stop = min(stop, best_low + lock_back_atr * current_atr)
+            else:
+                if close < best_close:
+                    best_close = close
+                    stop = min(stop, best_close + 1.0 * current_atr)
+            fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+            if fill is not None:
+                reason = ("mfe_lockin_trail" if (entry_price - best_low) >= mfe_threshold_atr * current_atr
+                          else "mfe_pre_threshold_trail")
+                return _base_result(entry_price, fill, entry_date,
+                                    idx.date(), reason, direction)
+    last = future.iloc[-1]
+    return _base_result(entry_price, float(last["close"]), entry_date,
+                        future.index[-1].date(), "end_of_data", direction)
+
+
+def per_strategy_mae_75th_pct_of_winners(
+    trade_log,
+    strategy: str,
+    lookback_days: int = 252,
+    as_of=None,
+    default_atr_mult: float = 1.0,
+):
+    """Compute the 75th-percentile MAE-of-winners for a strategy.
+
+    Batch 226 (2026-05-18; deferred from research review D.4). Source:
+    Sweeney 1988 *TASC*; Bandy 2014 *Quantitative Technical Analysis*.
+    Per-strategy MAE-of-winners distribution gives a tailored stop
+    distance: where most winners survive their worst adverse excursion.
+
+    Returns float ATR multiplier in [0.5, 2.5] derived from |MAE_75| /
+    median(|MAE|). Falls back to default_atr_mult on insufficient data.
+    """
+    import pandas as pd
+    if trade_log is None or trade_log.empty:
+        return default_atr_mult
+    if "strategy" not in trade_log.columns or strategy not in trade_log["strategy"].values:
+        return default_atr_mult
+    df = trade_log[trade_log["strategy"] == strategy].copy()
+    if as_of is not None and "entry_date" in df.columns:
+        df = df[pd.to_datetime(df["entry_date"]) <= as_of]
+        window_start = pd.to_datetime(as_of) - pd.Timedelta(days=lookback_days)
+        df = df[pd.to_datetime(df["entry_date"]) >= window_start]
+    if df.empty or "win" not in df.columns or "mae_pct" not in df.columns:
+        return default_atr_mult
+    winners = df[df["win"] == True]
+    if len(winners) < 20:
+        return default_atr_mult
+    mae_abs = winners["mae_pct"].abs().dropna()
+    if len(mae_abs) < 20:
+        return default_atr_mult
+    try:
+        p75 = float(mae_abs.quantile(0.75))
+        p50 = float(mae_abs.quantile(0.50))
+        if p50 <= 0:
+            return default_atr_mult
+        # Use p75/p50 as a "tightness" ratio - winners that need more
+        # room get larger ATR multipliers.
+        ratio = p75 / p50
+        # Map ratio to ATR multiplier in [0.5, 2.5]
+        mult = float(max(0.5, min(2.5, default_atr_mult * ratio)))
+        return round(mult, 3)
+    except Exception:
+        return default_atr_mult
+
+
+def exit_atr_trail_mae_conditional(df_full, entry_date, entry_price, direction, atr,
+                                     signals=None, max_days=252):
+    """ATR-trailing stop with MAE-conditional multiplier per Sweeney 1988
+    + Bandy 2014. Looks up the strategy's rolling MAE-of-winners 75th
+    percentile from the trade log (threaded via signals['mae_atr_mult']);
+    uses that as the ATR multiplier. Falls back to 1.0 (vanilla 1x ATR
+    trail) when the multiplier is absent.
+
+    Batch 226 (2026-05-18; deferred from research review D.4).
+    """
+    s = signals if signals else {}
+    mae_mult = s.get("mae_atr_mult", 1.0)
+    try:
+        mae_mult = float(mae_mult)
+    except (TypeError, ValueError):
+        mae_mult = 1.0
+    mae_mult = max(0.5, min(2.5, mae_mult))
+    return exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
+                           atr_mult=mae_mult, max_days=max_days)
+
+
 EXIT_STRATEGIES = {
+    # Batch 226 (2026-05-18 owner-approved research review exit gaps):
+    # 4 new exit methods + VIX-spike portfolio-level kill switch in
+    # exit_manager.process_day_exits. Roster grows 17 -> 21 exit methods.
+    "chandelier_3x":              lambda df, ed, ep, d, a, s: exit_chandelier(df, ed, ep, d, a, period=22, atr_mult=3.0),
+    "atr_trail_vix_conditional":  lambda df, ed, ep, d, a, s: exit_atr_trail_vix_conditional(df, ed, ep, d, a, s),
+    "mfe_lockin_trail":           lambda df, ed, ep, d, a, s: exit_mfe_lockin_trail(df, ed, ep, d, a),
+    "atr_trail_mae_conditional":  lambda df, ed, ep, d, a, s: exit_atr_trail_mae_conditional(df, ed, ep, d, a, s),
     "trailing_10pct":       lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.10),
     "trailing_5pct":        lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.05),
     "trailing_15pct":       lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.15),

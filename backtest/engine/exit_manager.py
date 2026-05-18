@@ -486,18 +486,53 @@ def process_day_exits(
     regime: str,
     active_signals: dict,       # {ticker: screener candidate} for conversion check
     circuit_breaker_log: list,
+    vix_history: Optional[list] = None,
 ) -> tuple[list[ClosedTrade], list[OpenTrade]]:
     """
     Process all open trades for a single day.
     Returns (closed_trades, remaining_open_trades).
+
+    Batch 226 (2026-05-18 owner-approved): VIX-spike portfolio-level
+    exit. When VIX rises >5 points in trailing 5 trading days, force-
+    close all LONG positions at today's open (regime-change protection).
+    Source: Cederburg-Johnson-Maio 2024 *Finance Research Letters*
+    VIX-managed portfolios. Skips short positions (VIX spike benefits
+    shorts). vix_history=None disables the check (backward-compatible).
     """
     closed   = []
     still_open = []
+
+    # Batch 226: VIX-spike kill switch
+    vix_spike_active = False
+    if vix_history is not None and vix_value is not None and len(vix_history) >= 6:
+        try:
+            vix_5d_ago = float(vix_history[-6])
+            vix_today  = float(vix_value)
+            if vix_today - vix_5d_ago > 5.0:
+                vix_spike_active = True
+        except (TypeError, ValueError, IndexError):
+            vix_spike_active = False
 
     for trade in open_trades:
         bar = ticker_bars.get(trade.ticker)
         if not bar:
             still_open.append(trade)
+            continue
+
+        # Batch 226: VIX-spike kill switch - force close longs at open
+        if vix_spike_active and trade.direction == "long":
+            try:
+                from backtest.engine.improvements import apply_exit_slippage
+                exit_price, _ = apply_exit_slippage(
+                    bar["open"], trade.direction, trade.ticker,
+                )
+            except Exception:
+                exit_price = bar["open"]
+            closed.append(close_trade(
+                trade, exit_price, today_date,
+                "vix_spike_kill_switch_batch226",
+                0.0, 0.0,
+            ))
             continue
 
         today_open  = bar["open"]

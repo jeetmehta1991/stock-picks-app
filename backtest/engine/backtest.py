@@ -606,9 +606,24 @@ class BacktestEngine:
 
         # -- 4. Process exits --
         active_signals = {}
+        # Batch 226: pass trailing VIX series for VIX-spike kill switch.
+        # Defensive: process_day_exits no-ops when vix_history=None.
+        _vix_history_for_exits = None
+        try:
+            if hasattr(self, "_vix_series") and self._vix_series is not None:
+                _vs = self._vix_series
+                if hasattr(_vs.index, "date"):
+                    _sliced = _vs[_vs.index.date <= as_of]
+                else:
+                    _sliced = _vs[_vs.index <= as_of]
+                if len(_sliced) > 0:
+                    _vix_history_for_exits = _sliced.tolist()
+        except Exception:
+            _vix_history_for_exits = None
         closed_today, self.open_trades = process_day_exits(
             self.open_trades, ticker_bars, as_of,
             vix, regime, active_signals, self.circuit_breaker_log,
+            vix_history=_vix_history_for_exits,
         )
         self.closed_trades.extend(closed_today)
 

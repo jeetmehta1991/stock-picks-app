@@ -24,7 +24,7 @@ def _flat_df(start_date=date(2023, 1, 2), n=30):
 
 
 # ---------------------------------------------------------------------------
-# DEC-518 — Earnings-blackout
+# DEC-518 - Earnings-blackout
 # ---------------------------------------------------------------------------
 def test_dec518_registry_has_earnings_blackout():
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
@@ -43,7 +43,7 @@ def test_dec518_earnings_tolerant_strategies_list():
 
 
 def test_dec518_blackout_exits_at_T_minus_1():
-    """Long entry 2023-01-02; earnings 2023-01-13 → exit at close of 2023-01-12."""
+    """Long entry 2023-01-02; earnings 2023-01-13 -> exit at close of 2023-01-12."""
     from backtest.engine.exit_strategies import exit_earnings_blackout
     df = _flat_df()
     r = exit_earnings_blackout(
@@ -79,7 +79,7 @@ def test_dec518_no_earnings_known_returns_end_of_data():
 
 
 def test_dec518_no_upcoming_earnings_returns_end_of_data():
-    """Earnings in the past → no blackout."""
+    """Earnings in the past -> no blackout."""
     from backtest.engine.exit_strategies import exit_earnings_blackout
     df = _flat_df()
     r = exit_earnings_blackout(
@@ -95,14 +95,14 @@ def test_dec518_callable_via_registry_with_signals_dict():
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
     df = _flat_df()
     fn = EXIT_STRATEGIES["earnings_blackout"]
-    # Without ticker, fetcher fails gracefully → no_earnings_known
+    # Without ticker, fetcher fails gracefully -> no_earnings_known
     r = fn(df, date(2023, 1, 2), 100.0, "long", 2.0,
             {"ticker": "ZZZZ_NOT_REAL", "strategy_name": "momentum_breakout"})
     assert r["exit_reason"] in {"no_earnings_known", "no_upcoming_earnings"}
 
 
 # ---------------------------------------------------------------------------
-# DEC-521 — Per-class time stops
+# DEC-521 - Per-class time stops
 # ---------------------------------------------------------------------------
 def test_dec521_registry_has_class_time_stop():
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
@@ -111,7 +111,7 @@ def test_dec521_registry_has_class_time_stop():
 
 def test_dec521_default_time_stops_per_category():
     from backtest.engine.exit_strategies import get_max_days_for_category
-    # Per spec: pivot 5-10 → 7 default; momentum 20-30 → 25; trend 40-60 → 50
+    # Per spec: pivot 5-10 -> 7 default; momentum 20-30 -> 25; trend 40-60 -> 50
     assert get_max_days_for_category("pivot") == 7
     assert get_max_days_for_category("momentum") == 25
     assert get_max_days_for_category("trend") == 50
@@ -133,7 +133,7 @@ def test_dec521_unknown_category_uses_default():
 
 
 def test_dec521_confluence_returns_default_caller_overrides():
-    """Confluence has None default — caller must compute strictest constituent."""
+    """Confluence has None default - caller must compute strictest constituent."""
     from backtest.engine.exit_strategies import get_max_days_for_category
     assert get_max_days_for_category("confluence") == 30  # falls to default
 
@@ -171,7 +171,11 @@ def test_dec521_callable_via_registry():
 # ---------------------------------------------------------------------------
 def test_exit_registry_count_after_dec517_518_521():
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
-    # 13 baseline (incl. regime_flip) + 3 DEC-517 + 1 DEC-518 + 1 DEC-521 = 18
-    assert len(EXIT_STRATEGIES) == 18, (
-        f"Expected 18 exit methods after DEC-517/518/521; got {len(EXIT_STRATEGIES)}"
+    # 13 baseline (incl. regime_flip) + 3 DEC-517 + 1 DEC-518 + 1 DEC-521 = 18.
+    # Batch 226 (2026-05-18 owner-approved research review exit gap):
+    # +4 new exit methods (chandelier_3x, atr_trail_vix_conditional,
+    # mfe_lockin_trail, atr_trail_mae_conditional) -> 22.
+    assert len(EXIT_STRATEGIES) == 22, (
+        f"Expected 22 exit methods after DEC-517/518/521 + Batch 226; "
+        f"got {len(EXIT_STRATEGIES)}"
     )

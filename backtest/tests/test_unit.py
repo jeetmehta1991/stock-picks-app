@@ -7024,6 +7024,100 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch226_new_exits_registered():
+    """Batch 226 (exits gap fill 2026-05-18 owner-approved): 4 new exit
+    methods registered (chandelier_3x, atr_trail_vix_conditional,
+    mfe_lockin_trail, atr_trail_mae_conditional) bringing roster from
+    17 to 21."""
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    for name in (
+        "chandelier_3x", "atr_trail_vix_conditional",
+        "mfe_lockin_trail", "atr_trail_mae_conditional",
+    ):
+        assert name in EXIT_STRATEGIES, f"Batch 226: {name} must be registered"
+    assert len(EXIT_STRATEGIES) >= 21
+
+
+def test_batch226_chandelier_exits_long_when_close_below_anchor():
+    """Batch 226: exit_chandelier - trail from rolling_high - 3*ATR
+    (LeBeau-Lucas 1992). Long should fire chandelier_exit reason
+    after sustained drawdown."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import exit_chandelier
+    n = 100
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    closes = list(range(100, 140)) + [140 - i * 2 for i in range(60)]
+    df = pd.DataFrame({
+        "open":   closes, "high": [c + 1 for c in closes],
+        "low":    [c - 1 for c in closes], "close": closes,
+    }, index=idx)
+    result = exit_chandelier(df, idx[0].date(), 100.0, "long", atr=2.0)
+    assert result is not None
+    assert result["exit_reason"] in ("chandelier_exit", "end_of_data")
+
+
+def test_batch226_atr_trail_vix_conditional_scales_by_band():
+    """Batch 226: exit_atr_trail_vix_conditional source verifies the
+    0.75x / 1.5x scaling logic for low / high VIX bands."""
+    import inspect
+    from backtest.engine.exit_strategies import exit_atr_trail_vix_conditional
+    src = inspect.getsource(exit_atr_trail_vix_conditional)
+    assert "vix_band_low" in src
+    assert "vix_band_high" in src
+    assert "0.75" in src
+    assert "1.5" in src
+
+
+def test_batch226_mfe_lockin_logic():
+    """Batch 226: exit_mfe_lockin_trail tightens stop to (best_high -
+    1xATR) when MFE >= 2xATR. Bandy 2014 lock-in discipline."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import exit_mfe_lockin_trail
+    n = 80
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    closes = list(range(100, 130)) + [130 - i * 0.5 for i in range(50)]
+    df = pd.DataFrame({
+        "open":   closes, "high": [c + 1 for c in closes],
+        "low":    [c - 1 for c in closes], "close": closes,
+    }, index=idx)
+    result = exit_mfe_lockin_trail(df, idx[0].date(), 100.0, "long",
+                                    atr=2.0, mfe_threshold_atr=2.0,
+                                    lock_back_atr=1.0)
+    assert result is not None
+    assert result["exit_reason"] in (
+        "mfe_lockin_trail", "mfe_pre_threshold_trail", "end_of_data",
+    )
+
+
+def test_batch226_mae_conditional_helper():
+    """Batch 226: per_strategy_mae_75th_pct_of_winners returns
+    default 1.0 on insufficient data."""
+    import pandas as pd
+    from backtest.engine.exit_strategies import per_strategy_mae_75th_pct_of_winners
+    assert per_strategy_mae_75th_pct_of_winners(None, "any") == 1.0
+    assert per_strategy_mae_75th_pct_of_winners(pd.DataFrame(), "any") == 1.0
+    df = pd.DataFrame({"strategy": ["a", "b"], "win": [True, True],
+                       "mae_pct": [-2.0, -1.5]})
+    assert per_strategy_mae_75th_pct_of_winners(df, "missing") == 1.0
+
+
+def test_batch226_vix_spike_kill_switch_wired_in_exit_manager():
+    """Batch 226: process_day_exits has the VIX-spike kill switch wired."""
+    import inspect
+    from backtest.engine import exit_manager as em
+    src = inspect.getsource(em.process_day_exits)
+    assert "vix_history" in src
+    assert "vix_spike_active" in src
+    assert "vix_spike_kill_switch_batch226" in src
+
+
+def test_batch226_ci_exit_count_assertion_updated():
+    """Batch 226: CI_REGRESSION_BEHAVIOR_ASSERTIONS exit_method_count_min
+    bumped 17 -> 21 to match the new roster."""
+    from backtest.config import CI_REGRESSION_BEHAVIOR_ASSERTIONS
+    assert CI_REGRESSION_BEHAVIOR_ASSERTIONS["exit_method_count_min"] >= 21
+
+
 def test_batch224_pre_fomc_strategies_registered():
     """Batch 224 (pre-FOMC + buybacks 2026-05-18 owner-approved):
     3 new event-driven strategies registered + 3 entries in

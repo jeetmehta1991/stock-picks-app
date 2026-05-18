@@ -1039,7 +1039,7 @@ TEST_RUN_AUDIT_GATE_REQUIRED_FIELDS = (
 CI_REGRESSION_WORKFLOW_PATH = ".github/workflows/regression.yml"
 CI_REGRESSION_BEHAVIOR_ASSERTIONS = {
     "vix_threshold_crisis":           40,
-    "exit_method_count_min":          17,
+    "exit_method_count_min":          21,    # Batch 226 +4 (chandelier, vix-conditional, mfe-lockin, mae-conditional)
     "rr_minimum_all_exits":           2.0,   # DEC-353 R:R floor
     "no_negative_position_sizes":     True,
     "no_above_100pct_capital_alloc":  True,
