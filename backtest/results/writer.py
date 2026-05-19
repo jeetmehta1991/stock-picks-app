@@ -38,7 +38,27 @@ def write_all_outputs(
     # JSON-stringified, lossy on read but readable for owner inspection.
     if not df_trades.empty:
         try:
-            df_trades.to_parquet(output_dir / "trade_log.parquet", index=False)
+            # INV-014 fix: sanitize uniformly-empty nested struct columns
+            # before parquet write. pyarrow rejects empty structs with no
+            # child fields (raised on --no-agents runs where agent_reasoning
+            # is empty dict everywhere). Replace empty dict/list with None
+            # so pyarrow infers null type instead of empty struct.
+            df_parquet = df_trades.copy()
+            for col in df_parquet.columns:
+                if df_parquet[col].dtype != "object":
+                    continue
+                non_null = df_parquet[col].dropna()
+                if len(non_null) == 0:
+                    continue
+                # Check if all non-null values are empty containers
+                all_empty = all(
+                    (isinstance(v, dict) and len(v) == 0) or
+                    (isinstance(v, list) and len(v) == 0)
+                    for v in non_null
+                )
+                if all_empty:
+                    df_parquet[col] = None
+            df_parquet.to_parquet(output_dir / "trade_log.parquet", index=False)
             logger.info("Wrote trade_log.parquet (%d trades; nested types preserved)",
                         len(df_trades))
         except Exception as exc:
