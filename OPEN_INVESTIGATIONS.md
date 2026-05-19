@@ -821,7 +821,13 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   This suppresses walk-forward intentionally for parallel-batch mode (where merge would re-compute), but the canonical baseline run also used `--no-git` (single batch). Walk-forward thus did not run on the baseline output even though the run was not a parallel-batch fragment.
 - **Phase 1A-β impact:** the 5 parallel batches will correctly suppress WF and the merge_batch_outputs.py step will re-compute it. But the baseline gap is real — re-run with `--walk-forward-only` flag (if exists) or run on merged baseline output.
 - **Recommended action:** Decouple WF suppression from `--no-git`. Add explicit `--no-walk-forward` flag. Re-run WF on baseline output as a separate post-processing step.
-- **Joint:** DEC-505 (4-fold WF + Polygon cache window); DEC-109 (rolling 5yr/1yr walk-forward); `backtest/run_phase1a.py:208`; `scripts/merge_batch_outputs.py`.
+- **Status:** RESOLVED-IMPLEMENTED 2026-05-19 (was actually fixed in Batch 187 commit `2bea44f26` before this INV was logged; INV entry was stale).
+- **Resolution evidence (verified 2026-05-19):**
+  - [backtest/run_phase1a.py:144-149](backtest/run_phase1a.py#L144-L149) adds `--no-walk-forward` CLI flag with help text
+  - [backtest/run_phase1a.py:220](backtest/run_phase1a.py#L220) decouples: `walk_forward_enabled = not args.no_walk_forward`
+  - Regression test `test_batch187_walk_forward_decoupled_from_no_git` in [backtest/tests/test_unit.py](backtest/tests/test_unit.py) pins the pattern
+  - Current Phase 1A-α launch commands correctly use `--no-walk-forward` explicitly; merge_batch_outputs.py recomputes WF on combined trade log
+- **Joint:** DEC-505 (4-fold WF + Polygon cache window); DEC-109 (rolling 5yr/1yr walk-forward); [backtest/run_phase1a.py](backtest/run_phase1a.py); [scripts/merge_batch_outputs.py](scripts/merge_batch_outputs.py).
 
 
 ## INV-051 — Regime-stratified CV stratifier collapses to neutral-only (Pass 53 Day 9+ 2026-05-16 Phase 1A baseline)
@@ -838,6 +844,9 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   But the per-trade `regime` column has 123 bull / 45 bear / 57 neutral. The stratifier is mapping ALL trades into the `neutral` regime bucket for cross-val purposes. Either the stratifier uses a different regime-naming convention (calm/neutral/volatile/crisis vs bull/neutral/bear/crisis) without translation, OR the stratifier inputs are unfiltered NaN-defaulting to neutral.
 - **Phase 1A-β impact:** Phase 1A-β cube populator (DEC-422) needs per-regime stratification. If stratifier doesn't map correctly, the verdict cube will under-resolve regime cells.
 - **Recommended action:** Locate stratifier code (likely `backtest/results/metrics.py:compute_regime_stratified_summary` or similar). Verify regime label vocabulary alignment with per-trade `regime` column. Map bull/bear/neutral/crisis → calm/neutral/volatile/crisis if that's the intended translation, OR rename one side to consolidate.
+- **Status:** RESOLVED-IMPLEMENTED 2026-05-19 (was actually fixed in Batch 189 commit `c26c2db00` before this INV reached fix-now triage; INV entry was stale).
+- **Resolution evidence (verified 2026-05-19):**
+  - [backtest/engine/regime_stratified_split.py:24-34](backtest/engine/regime_stratified_split.py#L24-L34) widens `REGIME_CLASSES` to union of BOTH vocabularies: `("bull", "neutral", "bear", "crisis", "calm", "volatile")`. Engine emits bull/bear/neutral/crisis; spec defines calm/neutral/volatile/crisis. Both pass through the stratifier without unknown-bucket collapse.
 - **Joint:** F-006 regime taxonomy (4 types); DEC-106 8-input classifier; DEC-422 cube populator.
 
 
@@ -846,6 +855,10 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 - **Observation:** Phase 1A baseline `circuit_breaker_log.csv` shows 74 dispersion-CB activations over 4 years. Real-world activations are at z=3-7 (extreme but plausible). One activation on 2022-06-09 reports **z_score=379.0763** with `today_dispersion=1.732546`. A z-score of 379 implies dispersion is 379 standard deviations above mean — physically impossible. Almost certainly a numerical edge case: very small stddev in rolling window (e.g., division-by-near-zero) or NaN handling.
 - **Phase 1A-β impact:** at 1937-ticker scope, dispersion calc may hit similar edge cases more often. Could cause spurious entry blocks or stop-out cascades.
 - **Recommended action:** Find the dispersion-CB calc site. Add guard: if rolling stddev < epsilon (e.g., 1e-6), skip z-score calc or cap at z=10. Or use median absolute deviation (MAD) as more robust denominator.
+- **Status:** RESOLVED-IMPLEMENTED 2026-05-19 (was actually fixed in Batch 188 commit `5001d31f9` before this INV reached fix-now triage; INV entry was stale).
+- **Resolution evidence (verified 2026-05-19):**
+  - [backtest/engine/regime_filter.py:207-222](backtest/engine/regime_filter.py#L207-L222) adds `STDDEV_FLOOR = 1e-3` + `Z_CAP = 10.0` guards. When rolling_std falls below floor or is NaN/zero, returns triggered=False with note "rolling_std_below_floor_1e-3_batch188". Otherwise caps z-score at +/-10.
+  - Regression test `test_batch188_dispersion_cb_numerical_guard` in [backtest/tests/test_unit.py](backtest/tests/test_unit.py) pins the pattern.
 - **Joint:** DEC-128 dispersion circuit breaker; engine `dispersion_cb_triggered_dec128` event tag.
 
 
