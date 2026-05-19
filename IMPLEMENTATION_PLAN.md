@@ -205,20 +205,43 @@ Already-approved entries from [AUDIT_INDEX.md](AUDIT_INDEX.md) awaiting implemen
 
 ---
 
-## Autonomous execution log (will populate during overnight run)
+## Autonomous execution log
 
 | Time | Event | Status |
 |---|---|---|
 | 2026-05-18 ~17:00 PT | Owner went to sleep; autonomous mandate active | START |
-| TBD | Batch 225 5/5 complete + last_run.txt verified | PENDING |
-| TBD | T0 commit pushed | PENDING |
-| TBD | T5b precompute commit pushed (background; may overlap T1) | PENDING |
+| 2026-05-18 23:33 PT | Doc commit `9b261b3f9` pushed (INV reclassification + IMPLEMENTATION_PLAN.md) | DONE |
+| 2026-05-19 07:17 AM | Batch 225 progress check: ~15% complete at 17h wallclock; projection 3-5 more days | DIAGNOSTIC |
+| 2026-05-19 07:25 AM | 15-min diagnostic: 5 procs 100% CPU continuously, no stall but real workload (`ALL_STRATEGIES = 123 classes` × 1937 tkrs × 1044 days) | DIAGNOSED |
+| 2026-05-19 07:30 AM | Owner approved Option B: abort + T1a-only relaunch | DECISION |
+| 2026-05-19 07:32 AM | 5 Python procs killed; diagnostic checkpoints preserved at `output_phase_1a_beta_abort_diagnostic_20260519/` | ABORTED |
+| 2026-05-19 07:33 AM | T1a batch splits generated: 642 tkrs (614 T1a + 28 ETFs) across 5 batches of 126-129 each | PREPARED |
+| 2026-05-19 07:34 AM | 5 T1a-only batches launched (`output_phase_1a_alpha_batch_[1-5]/`) — task IDs bkp9bijst / bemdusrer / b0fmc612x / bfdq2t3nv / baovho27r | RUNNING |
+| TBD | T1a 5/5 complete | PENDING |
+| TBD | T0 close-out + Dashboards 2+3 refresh | PENDING |
+| TBD | T5b precompute (background; may overlap T1) | PENDING |
 | TBD | T1.1 pairs_trading wired | PENDING |
 | TBD | T1.2 news_sentiment wired | PENDING |
 | TBD | T1.3 calendar_effects wired | PENDING |
 | TBD | T1.4 cross_asset wired | PENDING |
 | TBD | T1.5 volume_profile wired | PENDING |
 | TBD | T2 wiring batches (DEC-062, 138, 216, 230, 231, 234, 246, 365, ...) | PENDING |
+
+### Scope change 2026-05-19 (Batch 235)
+
+**Why:** Batch 225 5-batch Phase 1A-β rerun (1937 tkrs, all strategies) projected ~3-5 more days at observed rate after 17h wallclock with only ~15% progress. Root cause: 123-class strategy ensemble (post Batches 217-233 expansion) × 1937 tkrs × 1044 days = ~13M signal-evals per simulated day.
+
+**Decision (owner-approved Option B 2026-05-19 07:30 AM):**
+- Abort 5-batch Phase 1A-β rerun (sunk cost: ~84 CPU-hours across 5 procs; killed cleanly)
+- Preserve diagnostic checkpoints (5 trade_log_checkpoint.csv files at `output_phase_1a_beta_abort_diagnostic_20260519/`)
+- Relaunch as **Phase 1A-α** (T1a S&P 500 backbone + T1 ETFs = 642 instruments)
+- Strategy ensemble unchanged (123 classes — owner did not approve reduction)
+- New per-batch outputs at `output_phase_1a_alpha_batch_[1-5]/`
+- Expected wallclock: ~5-12h based on 33% of per-day load × parallel-5
+
+**Phase 1A-α gate** (per CLAUDE.md Phase 1A-α definition): rules-only Sharpe ≥ 0.7 OOS at S&P 500 backbone → owner commits $300 Phase 1B-α Haiku budget.
+
+**T2/T3 small-cap coverage** (the Phase 1A-β scope) deferred to follow-on rerun after T1a verdict lands. Sunk-cost is gone either way; what matters is time-to-verdict for the budget decision.
 
 Each commit message will follow the canonical `Batch NNN.M: ... Pyramid X/X green` format.
 
