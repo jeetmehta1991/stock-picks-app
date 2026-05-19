@@ -1,0 +1,247 @@
+# IMPLEMENTATION_PLAN.md — Post-Batch-225 pending + backlog implementation
+
+**Authored:** 2026-05-18 (Pass 53 Day 9+ Batch 234)
+**Trigger:** Batch 225 5-batch parallel rerun lands (5 procs in flight, ~1.3-1.4 GB RAM each, ~3-4 hrs remaining).
+**Owner state:** sleeping. Autonomous execution mandate for T0 + T5b + T1 + T2.
+**Owner gates to clear tomorrow morning (2026-05-19):** T3 PROPOSED triage + T4 OPEN-INV triage + T5a FinBERT decision (default: defer per owner concur).
+
+---
+
+## Owner decisions captured this session
+
+| # | Question | Owner call (2026-05-18) | Action |
+|---|---|---|---|
+| 1 | FinBERT scorer install (~2 GB torch + transformers) | **DEFER** — agree with rec; revisit only if rule-based news strategies prove signal in Phase 1A-β rerun | T5a parked; rule-based [news_sentiment.py](backtest/signals/news_sentiment.py) remains canonical |
+| 2 | Cointegrated-pairs precompute (T1a, monthly PIT) | **APPROVE** — run during T0→T1 idle window | T5b runs after T0 merge, before T1 wiring |
+| 3 | T3 PROPOSED triage + T4 OPEN-INV triage | **TOMORROW MORNING** (2026-05-19) | No autonomous triage; surface clean queue then |
+| 4 | T0 must include Phase 1A 12-tab alpha dashboard refresh | **CONFIRMED** | T0 now runs both `build_dashboard_stage_2.py` AND `build_dashboard_phase_1a.py` |
+
+---
+
+## INV comprehensive review (this session, autonomous)
+
+Owner directive 2026-05-18: "Investigation items appear to be outdated and do a comprehensive review."
+
+Cross-referenced all 53 INV entries against canonical paths + adjacent RESOLVED entries. Reclassified 7 stale OPEN entries based on empirical verification:
+
+| INV | Old status | New status | Evidence (verified 2026-05-18) |
+|---|---|---|---|
+| INV-002 | open | RESOLVED-OBSOLETE | `dividends_full/` = 10,985 files; `splits_full/` = 18,911 (legacy path obsoleted by INV-017) |
+| INV-003 | open | RESOLVED-OBSOLETE | quiver congressional 1942, institutional 1942 (per INV-023 fix) |
+| INV-004 | open | RESOLVED-OBSOLETE | `reference_extended/` = 1687 files (87% of 1937; per INV-030) |
+| INV-006 | open | WONTFIX | wikipedia dir has 1432 files but spot-check empty; canonical source `data_prefetch/wikipedia/` separate (1414 populated); INV-021 may sweep later |
+| INV-007 | open | RESOLVED-OBSOLETE | institutional now 1942 (per INV-023); per-ticker emptiness for some tickers is empirical API reality |
+| INV-013 | open | WONTFIX | per body's own leave-as-is recommendation; converges with INV-006 |
+| INV-043 | RESOLVING THIS COMMIT | RESOLVED-CONFIRMED | `dividends_full/PRN_.parquet` + `ipos_full/CON_.parquet` verified on disk |
+
+**Remaining genuinely-open INVs (22):** INV-005, 008, 009, 010, 014, 015, 018, 019, 020, 021, 022, 024, 025, 026, 028, 029, 031, 032, 033, 036, 037, 039, 040, 042, 044, 047, 048, 050, 051, 052, 053. Owner triage tomorrow morning (T4).
+
+**Stage 2-relevant subset (priority for tomorrow):**
+- **INV-014** — `trade_log.parquet` silent CSV-only degrade on `--no-agents` (Phase 1A baseline IS no-agents)
+- **INV-050** — walk-forward folds suppressed under `--no-git` (Phase 1A baseline used `--no-git`)
+- **INV-051** — regime-stratified CV stratifier collapses to neutral-only (affects DEC-422 cube populator)
+- **INV-052** — dispersion CB z-score 379 outlier (numerical edge case, may fire more at 1937-tkr scale)
+- **INV-053** — entry funnel rejects 99.87% of candidates (portfolio-cap dominance; may need tier-aware scaling for 1A-β)
+
+---
+
+## Track plan
+
+### Track T0 — Post-rerun close-out (autonomous, blocks all else)
+**Trigger:** all 5/5 batches in Batch 225 rerun complete + last_run.txt freshness verified.
+
+1. Merge 5 batch outputs → `output_v2/` via [scripts/merge_batch_outputs.py](scripts/merge_batch_outputs.py)
+2. Refresh DSR / PBO / Bonferroni gates on merged trade_log (M=86 post Batch 218 dead-evidence deprecation)
+3. Regenerate [VERIFICATION_MATRIX.md](VERIFICATION_MATRIX.md) via `scripts/build_verification_matrix.py` (coverage-driven, replaces wired=yes grep heuristic)
+4. **Run `scripts/build_dashboard_stage_2.py`** — Dashboard 2 (decisions / bugs / INVs registry)
+5. **Run `scripts/build_dashboard_phase_1a.py`** — Dashboard 3 (Phase 1A 12-tab alpha analysis, owner-confirmed scope addition 2026-05-18)
+6. Sanity check both dashboards' `last_run.txt` timestamps post-regen
+7. Commit + push: `Batch 234.0 (T0 close-out): merge + DSR/PBO/Bonferroni + VERIFICATION_MATRIX + both dashboards refreshed`
+8. Surface verdict to owner: rules-only Sharpe value + per-regime PASS counts
+
+**Effort:** ~1 hour serial.
+
+---
+
+### Track T5b — Cointegrated-pairs precompute (autonomous, owner-approved)
+**Runs:** during T0→T1 idle window (after T0 push, before T1 wiring begins).
+
+1. Author `scripts/precompute_cointegrated_pairs.py`:
+   - Input: T1a active membership at monthly snapshots 2020-01 → 2026-05 (77 snapshots)
+   - For each snapshot: load all active T1a tickers from `Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (B++ schema)
+   - Pull 252-day close history per ticker from `data_prefetch/polygon/ohlcv_daily/{TICKER}.parquet`
+   - Run `find_cointegrated_pairs(closes, significance=0.05, min_half_life=5, max_half_life=30, max_pairs=100)` from [pairs_trading.py](backtest/signals/pairs_trading.py)
+   - Write per-snapshot parquet: `data_prefetch/derived/cointegrated_pairs_t1a/{YYYY-MM-01}.parquet`
+   - Schema: `as_of_date, ticker_a, ticker_b, hedge_ratio, intercept, half_life, p_value`
+2. Index file: `data_prefetch/derived/cointegrated_pairs_t1a/_index.parquet` (snapshot count + pair counts)
+3. Pyramid (per-addressal full 13-tier per CHECKLIST #69):
+   - Unit (existing `test_pairs_trading.py`)
+   - Smoke (1 snapshot 2024-01 + 30 T1a names)
+   - Integration (3 snapshots: 2020-01, 2023-01, 2026-05)
+   - System (1937 tkr cache reads, no crashes)
+   - Functional (verify hedge_ratio + half_life ranges sane)
+   - Regression (existing pairs unit tests)
+   - Data integrity (no NaN cointegration p-values; half-life in [5, 30])
+   - Performance (~30-60 min per snapshot × 77 = ~40-80h... too long; reduce scope)
+   - Acceptance: owner reviews output count + sample pair list next morning
+
+**Scope adjustment:** 77 monthly snapshots × O(N²) = 9.7M regressions is excessive. **Revised plan:**
+- **Quarterly grain instead of monthly:** 26 quarterly snapshots (Q1-Q4 2020 → Q2 2026). ~26 × 126K = 3.3M regressions. ~10-15h wallclock.
+- **T1a 503 active limit** (not 614 historical), excluding tickers with <252 days history at as_of.
+- Run in background; T1 wiring proceeds in parallel using current Batch 225 idle CPU once it lands.
+
+**Output:** `data_prefetch/derived/cointegrated_pairs_t1a/{YYYY-Q[1-4]}.parquet` (26 files), `_index.parquet`.
+
+**Effort:** ~10-15h wallclock background; ~2h authoring + pyramid.
+
+---
+
+### Track T1 — Register 5 parallel-safe signal modules (autonomous, sequential)
+Each gets its own commit + full 13-tier pyramid per CHECKLIST #69 (no subsetting, per feedback_pyramid_full_13_tiers_mandatory.md).
+
+#### T1.1 — pairs_trading (commit `Batch 235`)
+- **Engine wire:** [screener.py](backtest/signals/screener.py) reads quarterly precomputed parquet → for each (ticker_a, ticker_b) cointegrated pair where ticker_a == current ticker, evaluate `pair_zscore()` from latest closes. If |z| > 2.0 → entry signal long if z<-2 + short if z>2.
+- **Strategies registered:** `PairsMeanReversionLong` (z<-2 entry, exit z>=0 or stop), `PairsMeanReversionShort` (z>2 entry, exit z<=0 or stop). 2 classes.
+- **Regime affinity:** [regime_selector.py](backtest/engine/regime_selector.py) — neutral + low-vol regimes (mean reversion fails in trending markets).
+- **Pyramid 13-tier:** smoke (5 tkrs) → unit → contract → integration → system → functional → regression → data integrity → performance → acceptance → e2e Phase 1A baseline microsmoke → dashboard regen → walk-forward fold.
+
+#### T1.2 — news_sentiment (commit `Batch 236`)
+- **Engine wire:** [screener.py](backtest/signals/screener.py) calls `compute_news_sentiment_signals(ticker, as_of, lookback_days=7)` per evaluation.
+- **Strategies registered:** `NewsSentimentLong` (sentiment_mean > +0.3 + article_count >= 3), `NewsSentimentShiftLong` (sentiment_shift > +0.4 in 7d window). 2 classes.
+- **Toolkit wiring matrix (CHECKLIST #70):** add row Agent×Polygon news cache×screener.py×Verified to [TRADINGAGENTS_DATA_AUDIT.md](TRADINGAGENTS_DATA_AUDIT.md).
+- **Regime affinity:** bull + neutral (sentiment momentum tracks risk-on regimes; sentiment fails in crisis where bad-news cluster overwhelms signal).
+- **Pyramid 13-tier:** as T1.1.
+
+#### T1.3 — calendar_effects (commit `Batch 237`)
+- **Engine wire:** [backtest.py](backtest/engine/backtest.py) universe loop, day-level cached (`compute_calendar_signals(as_of)` returns universe-wide dict; cache once per day).
+- **Strategies registered:** `TOTMLong` (is_totm_window + bull/neutral regime), `PreHolidayLong` (is_pre_holiday + dow != 0), `JanuaryEffectSmallCap` (is_january + T2/T3 + cap_band=small), `HalloweenSeasonalLong` (is_halloween_period + regime != crisis). 4 classes.
+- **Regime affinity:** all except crisis.
+- **Pyramid 13-tier:** as T1.1.
+
+#### T1.4 — cross_asset (commit `Batch 238`)
+- **Engine wire:** [backtest.py](backtest/engine/backtest.py) day-level cached (`compute_cross_asset_signals(as_of)` returns universe-wide dict; cache once per day).
+- **Strategies registered:** `RiskOffBondEquity` (short equity when risk_off_regime_bond_signal=True), `VIXBackwardation` (long volatility-tolerant names when vix_term_backwardation=True), `SectorRotationDefensive` (long defensive sectors when defensive_leadership=True), `GoldSilverRiskOff` (defensive overlay), `DXYHeadwindMultinational` (short SPY-multinational names when usd_strengthening=True). 5 classes.
+- **Regime affinity:** crisis + bear (risk-off signals fire most in stress regimes).
+- **Pyramid 13-tier:** as T1.1.
+
+#### T1.5 — volume_profile (commit `Batch 239`)
+- **Engine wire:** [screener.py](backtest/signals/screener.py) per-ticker call (`compute_volume_profile(df, lookback_days=60)` per evaluation; cache 1-day per ticker).
+- **Strategies registered:** `POCMagnet` (vp_close_near_poc_pct < 0.02 + bullish bias setup), `ValueAreaBreakoutLong` (vp_above_value_area=True + volume confirmation), `NakedPOCRetestLong` (vp_close_near_poc_pct < 0.01 + naked POC from `compute_period_pocs`). 3 classes.
+- **Regime affinity:** bull + neutral (POC magnetism works in trending + range; breaks in crisis).
+- **Pyramid 13-tier:** as T1.1.
+
+**T1 total:** 5 commits, 16 new strategies registered, 5 × full 13-tier pyramids. Effort ~3-4 hours total.
+
+---
+
+### Track T2 — 24 PARTIAL-IMPL-HELPER-ONLY autonomous wiring (per-DEC pyramid)
+Per [feedback_per_dec_wiring_autonomous.md](C:/Users/jeetm/.claude/projects/c--Users-jeetm-Github-stock-picks-app/memory/feedback_per_dec_wiring_autonomous.md): autonomous standing approval, full 13-tier pyramid per DEC, high-impact engine paths first.
+
+**Queue (priority order, refreshed against current AUDIT_INDEX.md):**
+1. DEC-062 (exit logic) — highest blast radius
+2. DEC-138 (Batch 69 owner-caught)
+3. DEC-216 (Batch 69 owner-caught)
+4. DEC-230 (Batch 69 owner-caught)
+5. DEC-231 (Batch 69 owner-caught)
+6. DEC-234 (Batch 69 owner-caught)
+7. DEC-246 (Batch 69 owner-caught)
+8. DEC-365 (Batch 69 owner-caught)
+9-24. Remaining 16 in category order (technical → fundamental → smart-money → calendar → cross-asset)
+
+**Per-DEC unit of work:**
+- Wire helper into engine call-path (specific file + line per DEC body)
+- Full 13-tier pyramid:
+  - Unit (helper test)
+  - Smoke (1 tkr 30 days)
+  - Contract (engine API surface)
+  - Integration (helper × engine)
+  - System (10 tkrs 1 yr)
+  - Functional (signal value sanity)
+  - Regression (existing test suite no break)
+  - Data integrity (cache reads correct)
+  - Performance (no >5% degradation)
+  - Acceptance (owner-spec match)
+  - E2E (full Phase 1A microsmoke 5 tkrs 90 days)
+  - Dashboard regen (Dashboard 2 verification matrix updates)
+  - Walk-forward (1 fold)
+- Commit + push (per CHECKLIST #75 + #78)
+- AUDIT_INDEX status flip: PARTIAL-IMPL-HELPER-ONLY → RESOLVED-IMPLEMENTED
+
+**Effort:** ~24 × 30-45 min = 12-18 hours autonomous.
+
+**Stop condition:** queue empty OR owner interrupt OR pyramid failure that requires owner direction.
+
+---
+
+### Track T3 — 4 PROPOSED backlog items (OWNER GATE, tomorrow morning)
+[AUDIT_BACKLOG.md](AUDIT_BACKLOG.md) entries marked *"Pre-DEC; awaiting owner approval (legacy items only — Pass 53 review cycle CLOSED per DEC-589)"*.
+
+**Tomorrow's deliverable:** walk through each with recommendation + tradeoff. Owner gives approve / reject / defer per item.
+
+---
+
+### Track T4 — 20 OPEN-INV triage (OWNER GATE, tomorrow morning)
+22 remaining genuinely-open INVs post-comprehensive-review.
+
+**Tomorrow's deliverable:** ordered triage list with recommendation per INV (defer / wontfix / convert to DEC / promote to BUG). Stage 2-relevant subset first (INV-014, INV-050, INV-051, INV-052, INV-053 + the 5 prefetch-gap items INV-019/020/021/022/024-026/028-029/031-033 grouped).
+
+---
+
+### Track T5a — FinBERT (DEFERRED per owner concur 2026-05-18)
+Parked. Revisit only if rule-based [news_sentiment.py](backtest/signals/news_sentiment.py) strategies produce 1-3 validated strategies in Phase 1A-β rerun. If zero validated, FinBERT unlikely to help. Phase A/B/C gate (CHECKLIST #71) applies when activated.
+
+---
+
+### Track T6 — 163 RESOLVED-DECIDED build queue (post-T2)
+Already-approved entries from [AUDIT_INDEX.md](AUDIT_INDEX.md) awaiting implementation. Sort by `stage_scope` tag; pull Stage 2 subset into T2 cadence after the 24 PARTIAL-IMPL items clear.
+
+---
+
+### Track T7 — Stage 2 final close-out (gated by T0-T6 completion)
+1. Final 5-batch rerun with all wired strategies (T1 + T2 outputs) + cointegrated-pairs consumed (T5b output)
+2. Final DSR / PBO / Bonferroni gate evaluation
+3. Final per-regime verdict matrix
+4. Owner gate: Phase 1A-α PASS verdict → Phase 1B-α $300 Haiku commit
+
+---
+
+## Autonomous execution log (will populate during overnight run)
+
+| Time | Event | Status |
+|---|---|---|
+| 2026-05-18 ~17:00 PT | Owner went to sleep; autonomous mandate active | START |
+| TBD | Batch 225 5/5 complete + last_run.txt verified | PENDING |
+| TBD | T0 commit pushed | PENDING |
+| TBD | T5b precompute commit pushed (background; may overlap T1) | PENDING |
+| TBD | T1.1 pairs_trading wired | PENDING |
+| TBD | T1.2 news_sentiment wired | PENDING |
+| TBD | T1.3 calendar_effects wired | PENDING |
+| TBD | T1.4 cross_asset wired | PENDING |
+| TBD | T1.5 volume_profile wired | PENDING |
+| TBD | T2 wiring batches (DEC-062, 138, 216, 230, 231, 234, 246, 365, ...) | PENDING |
+
+Each commit message will follow the canonical `Batch NNN.M: ... Pyramid X/X green` format.
+
+---
+
+## Risk register
+
+1. **Batch 225 pyramid may fail at merge.** If any of 5 batches errored mid-run, T0 merge step will detect → halt autonomous chain, surface error to owner.
+2. **T5b precompute may exceed 15h.** If wallclock exceeds 24h, will halt + report; quarterly-grain is intentional descope from monthly.
+3. **T1 strategy registration may break existing tests.** Each addressal includes full regression tier; pyramid failure halts that addressal but does not halt sibling T1 items (per-addressal isolation per feedback_pyramid_per_addressal.md).
+4. **T2 pyramid failure on a specific DEC** halts that DEC's wiring; queue continues with next DEC.
+5. **CPU contention between T5b precompute + T1 wiring + Batch 225 cleanup** — possible. Mitigation: T5b runs nice-priority in background; T1 wiring uses 1 process at a time.
+
+---
+
+## CHECKLIST compliance for this plan document
+- ✅ #45 — compliance statement at end of conversation turn
+- ✅ #67 — doc landing same-turn (this file + INV reclassification land together)
+- ✅ #68 — N/A (no API calls in this plan; T5b uses cached parquets only)
+- ✅ #69 — full 13-tier pyramid called out per T1 + T2 addressal
+- ✅ #70 — toolkit wiring matrix update flagged in T1.2 news_sentiment
+- ✅ #71 — FinBERT Phase A/B/C gate documented in T5a (deferred)
+- ✅ #74 — same-commit flag rule preserved
+- ✅ #75 — commit per addressal preserved throughout T1 + T2
+- ✅ #77 — canonical-source verification used in INV review (path probes not memory)
+- ✅ #78 — per-addressal pyramid mandate preserved

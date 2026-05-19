@@ -40,8 +40,9 @@ Format per entry:
 - **Discovered:** 2026-05-07; comprehensive prefetch audit
 - **Observation:** `data_prefetch/polygon/legacy_archive_pass53/dividends/` and `splits/` each contain only **2 ticker files** (vs target 1937 in Master Universe). Far below other Polygon endpoint coverage (news 99%, financials 90%, events 87%).
 - **Why not blocking:** No current strategy depends on dividend yield or split-adjusted historical data — engine reads adjusted closes from cache/ohlcv. But Phase 1B+ strategies that need dividend yield as a signal will hit empty data.
-- **Status:** open — proposed re-prefetch (see PREFETCH_COVERAGE_AUDIT.md)
-- **Next action:** owner approval to re-fetch via Polygon `/v3/reference/dividends` + `/v3/reference/splits` for full 1937-tkr universe.
+- **Status:** RESOLVED-OBSOLETE 2026-05-18 (superseded by INV-017 RESOLVED)
+- **Resolution evidence:** `data_prefetch/polygon/dividends_full/` = 10,985 files; `data_prefetch/polygon/splits_full/` = 18,911 files. The legacy_archive_pass53 path INV-002 was complaining about is the OLD canonical location; canonical was moved to `dividends_full/` + `splits_full/` per INV-017 RESOLVED 2026-05-08.
+- **Next action:** none — concern obsoleted by canonical-path migration + full re-prefetch.
 
 ---
 
@@ -50,8 +51,9 @@ Format per entry:
 - **Discovered:** 2026-05-07; comprehensive prefetch audit
 - **Observation:** `data_prefetch/quiver/{congressional, gov_contracts, insider, institutional, lobbying, wallstreetbets, wikipedia}/` each have **509 ticker files** — exactly 26.3% of the 1937 Master Universe. Pattern strongly suggests these were prefetched at an earlier Sprint 0A stage when universe was 509 tickers, not re-run after universe grew to 1937.
 - **Why not blocking:** S&P 500 + most major NASDAQ-100 names are likely included; smaller-cap T2/T3 names are missing. Phase 1A baseline using T1 (~600 tickers active) is well-covered. Phase 1B+ T2/T3 strategy testing will see incomplete data.
-- **Status:** open — proposed re-prefetch
-- **Next action:** owner approval to re-prefetch at 1937-tkr scope.
+- **Status:** RESOLVED-OBSOLETE 2026-05-18 (superseded by INV-023 RESOLVED)
+- **Resolution evidence:** Per-ticker quiver dirs verified 2026-05-18: congressional 1942, institutional 1942 (~1937 universe ceiling, 5 extras likely additions during prefetch). Full re-prefetch completed per INV-023 2026-05-08 after Unicode-emoji BG bug fix. Wikipedia mirror still empty but reclassified WONTFIX (see INV-006).
+- **Next action:** none.
 
 ---
 
@@ -60,8 +62,9 @@ Format per entry:
 - **Discovered:** 2026-05-07; comprehensive prefetch audit
 - **Observation:** Only 599 ticker reference files in `legacy_archive_pass53/reference/`. Used by `fetcher.fetch_info()` for sector/cap/IPO/exchange. After the G4 path fix (Day-9 v8b), ~30% of universe gets real data; ~70% fall back to `sector="Unknown" market_cap=0`.
 - **Why not blocking:** Universe sector data canonically comes from B++ schema CSVs (T1a, T1c, ETFs, T2, T3) which include Sector. fetcher.fetch_info is a secondary source. But market_cap=0 for ~70% of universe is a real gap if any strategy filters by cap.
-- **Status:** open — proposed re-prefetch
-- **Next action:** owner approval to re-prefetch reference for full 1937-tkr universe.
+- **Status:** RESOLVED-OBSOLETE 2026-05-18 (superseded by INV-030 RESOLVED)
+- **Resolution evidence:** `data_prefetch/polygon/reference_extended/` verified 2026-05-18: 1687 ticker files (87% of 1937 universe; 251 delisted tickers fail at Polygon = expected). Canonical reference moved to `reference_extended/` per INV-030 RESOLVED 2026-05-08; extended fields (address/branding/employees/FIGI/description) populated 92-98%.
+- **Next action:** none.
 
 ---
 
@@ -80,8 +83,9 @@ Format per entry:
 - **Discovered:** 2026-05-07; L146 audit (Day-9 v8b)
 - **Observation:** `data_prefetch/quiver/wikipedia/` has 509 files but all empty (verified 100/100 sampled). The separate `data_prefetch/wikipedia/` (1414 files, populated) is the canonical Wikipedia pageviews source used by `sentiment.get_wikipedia_pageviews`.
 - **Why not blocking:** Canonical separate source is functional; Quiver mirror is redundant + broken.
-- **Status:** open — defer cleanup
-- **Next action:** delete `data_prefetch/quiver/wikipedia/` directory OR re-prefetch correctly. Owner decision.
+- **Status:** WONTFIX 2026-05-18
+- **Resolution rationale:** 2026-05-18 verification — `data_prefetch/quiver/wikipedia/` now has 1432 files (grew from 509 via subsequent BG runs) but spot-check of `AA.parquet` shows 0 rows + empty schema. The Quiver historical wikipedia endpoint either doesn't return data at our tier (INV-036 reframes the endpoint as 404 at our tier) or returns empty. The canonical Wikipedia pageviews source remains `data_prefetch/wikipedia/` (1414 populated files, separate prefetch path consumed by `sentiment.get_wikipedia_pageviews`). The Quiver mirror is harmless dead weight that no engine consumer reads. Per INV-013's recommendation: leave as-is.
+- **Next action:** none — INV-021 (orphan cache dir cleanup) can sweep this directory if owner approves general housekeeping. Until then, leave-as-is.
 
 ---
 
@@ -90,8 +94,9 @@ Format per entry:
 - **Discovered:** 2026-05-07; DEC-512 audit Day-9 v8f
 - **Observation:** `data_prefetch/quiver/institutional/` has 509 ticker files but ~18% sampled empty. AAPL specifically is empty. Bulk `sec13fchanges` works correctly.
 - **Why not blocking:** `institutional_signal()` reads bulk path (sec13fchanges); per-ticker dir is unused for trade decisions.
-- **Status:** open — defer cleanup
-- **Next action:** investigate why per-ticker prefetch failed for these tickers; either re-run or remove.
+- **Status:** RESOLVED-OBSOLETE 2026-05-18 (superseded by INV-023 RESOLVED)
+- **Resolution evidence:** 2026-05-18 verification — `data_prefetch/quiver/institutional/` now has 1942 files (full Master Universe coverage post-INV-023 fix). Some per-ticker files may still be empty for tickers without 13F institutional holdings disclosed, but that's empirical API reality not a prefetch gap. Engine continues to read bulk `sec13fchanges` path via `institutional_signal()`.
+- **Next action:** none.
 
 ---
 
@@ -169,6 +174,7 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   - Re-run Quiver script with checkpoint cleared for wikipedia → fetch all 1937
   - OR: leave as-is permanently (separate data_prefetch/wikipedia/ is the canonical source for engine consumers via `sentiment.get_wikipedia_pageviews`)
   - **Recommendation: leave as-is.** No engine consumer reads from `data_prefetch/quiver/wikipedia/` (verified L146 audit Day-9 v8b INV-006); the canonical source is `data_prefetch/wikipedia/` (1414 files, populated). Re-fetching the redundant Quiver mirror has no value.
+- **Status update 2026-05-18:** WONTFIX — per body recommendation. INV-006 also reclassified WONTFIX. Both INVs converge on the same call: leave the Quiver wikipedia mirror as inert dead weight; canonical source is the separate `data_prefetch/wikipedia/` directory.
 
 - **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h Tier C3 CFTC prefetch)
 - **Observation:** Tried to fetch CFTC TFF positioning for "10-YEAR U.S. TREASURY NOTES" / "5-YEAR" / "2-YEAR" / "ULTRA U.S. TREASURY BONDS" / "E-MINI DJIA (X $5)" — all returned 0 rows. Other contracts (e-mini SP500, NDX, RUT, VIX, fed funds, currencies, commodities) all worked fine.
@@ -687,11 +693,12 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 - **Discovered:** 2026-05-08; corp_actions BG `b07b0rg5j` wrote `dividends_full/PRN.parquet` and `ipos_full/CON.parquet` — Windows reserves PRN (parallel port) and CON (console) as device names; git couldn't open them on push.
 - **Observation:** Reserved Windows device names cannot be filenames: `CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9`. Polygon tickers `PRN` and `CON` (real public companies) hit this.
 - **Severity:** MEDIUM — blocks any per-ticker save on Windows for tickers matching these names.
-- **Status:** RESOLVING THIS COMMIT
-- **Fix landed this commit:**
+- **Status:** RESOLVED-CONFIRMED 2026-05-18
+- **Fix landed:**
   - Renamed `PRN.parquet` -> `PRN_.parquet` and `CON.parquet` -> `CON_.parquet`
   - Added `safe_filename_stem()` helper to `scripts/prefetch_polygon_corp_actions_full.py` that appends `_` for any ticker matching reserved Windows names
-- **Action propagation needed:** apply same `safe_filename_stem()` pattern to other prefetch scripts that save per-ticker parquets (Quiver, SEC EDGAR, Finnhub) — only triggers if those datasets contain `PRN/CON/AUX/NUL/COM*/LPT*` tickers, which is rare but possible
+- **2026-05-18 verification:** confirmed `data_prefetch/polygon/dividends_full/PRN_.parquet` + `data_prefetch/polygon/ipos_full/CON_.parquet` exist on disk; no naked PRN.parquet / CON.parquet files in those dirs. Rename + safe_filename_stem helper held across subsequent re-prefetches.
+- **Action propagation needed:** apply same `safe_filename_stem()` pattern to other prefetch scripts that save per-ticker parquets (Quiver, SEC EDGAR, Finnhub) — only triggers if those datasets contain `PRN/CON/AUX/NUL/COM*/LPT*` tickers, which is rare but possible. Currently no incidents observed in other prefetchers.
 - **Joint:** sister to INV-041 (script process bugs); CHECKLIST #5 (proactive flagging — caught at push time, not write time).
 
 ---
