@@ -7024,6 +7024,132 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch230_rule_based_sentiment_basic():
+    """Batch 230 (LLM news sentiment 2026-05-18 owner-approved deferred):
+    rule-based sentiment scorer returns [-1, 1] using Loughran-McDonald
+    finance lexicon subset."""
+    from backtest.signals.news_sentiment import _rule_based_sentiment
+    # All positive
+    assert _rule_based_sentiment("beat exceeded strong growth") == 1.0
+    # All negative
+    assert _rule_based_sentiment("missed weak layoffs lawsuit") == -1.0
+    # Neutral (no scoring words)
+    assert _rule_based_sentiment("The company filed a report.") == 0.0
+    # Mixed (1 pos / 1 neg -> 0)
+    score = _rule_based_sentiment("Q3 beat expectations but missed full-year guidance")
+    assert -0.5 <= score <= 0.5
+    # Empty / None
+    assert _rule_based_sentiment("") == 0.0
+    assert _rule_based_sentiment(None) == 0.0
+
+
+def test_batch230_polygon_sentiment_to_score():
+    """Batch 230: maps Polygon's sentiment string to [-1, 0, 1]."""
+    from backtest.signals.news_sentiment import _polygon_sentiment_to_score
+    assert _polygon_sentiment_to_score("positive") == 1.0
+    assert _polygon_sentiment_to_score("Positive") == 1.0
+    assert _polygon_sentiment_to_score("bullish") == 1.0
+    assert _polygon_sentiment_to_score("negative") == -1.0
+    assert _polygon_sentiment_to_score("bearish") == -1.0
+    assert _polygon_sentiment_to_score("neutral") == 0.0
+    assert _polygon_sentiment_to_score("unknown") is None
+    assert _polygon_sentiment_to_score(None) is None
+
+
+def test_batch230_compute_news_sentiment_signals_no_data():
+    """Batch 230: defensive empty dict when ticker has no prefetched news."""
+    from datetime import date
+    from backtest.signals.news_sentiment import compute_news_sentiment_signals
+    out = compute_news_sentiment_signals("NONEXISTENT_TICKER_ZYX", date(2024, 6, 1))
+    assert out == {}
+
+
+def test_batch229_engle_granger_returns_expected_keys():
+    """Batch 229 (deferred-items pairs trading 2026-05-18 owner-approved):
+    engle_granger_cointegration returns dict with cointegrated, hedge_ratio,
+    intercept, adf_pvalue, residuals, note keys. Krauss 2017/2024 JEFM."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.pairs_trading import engle_granger_cointegration
+    rng = np.random.default_rng(42)
+    n = 100
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    s_a = pd.Series(100 + np.cumsum(rng.normal(0, 0.01, n)), index=idx)
+    s_b = pd.Series(50 + np.cumsum(rng.normal(0, 0.01, n)), index=idx)
+    out = engle_granger_cointegration(s_a, s_b)
+    for key in ("cointegrated", "hedge_ratio", "intercept",
+                 "adf_pvalue", "residuals", "note"):
+        assert key in out, f"Batch 229: engle_granger must emit {key}"
+    assert isinstance(out["cointegrated"], bool)
+
+
+def test_batch229_engle_granger_defensive_inputs():
+    """Batch 229: defensive returns on null/insufficient input."""
+    import pandas as pd
+    from backtest.signals.pairs_trading import engle_granger_cointegration
+    # Null input
+    out_null = engle_granger_cointegration(None, None)
+    assert out_null["cointegrated"] is False
+    assert out_null["note"] == "null_input"
+    # Insufficient overlap (<60 obs)
+    s_short = pd.Series([1, 2, 3])
+    out_short = engle_granger_cointegration(s_short, s_short)
+    assert out_short["cointegrated"] is False
+    assert out_short["note"] == "insufficient_overlap"
+
+
+def test_batch229_half_life_detects_mean_reversion():
+    """Batch 229: spread_half_life on synthetic mean-reverting series."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.pairs_trading import spread_half_life
+    rng = np.random.default_rng(11)
+    n = 200
+    # Mean-reverting AR(1) series with theta = -0.1 -> half-life ~ ln(2)/0.1 = 6.93
+    s = [0.0]
+    for _ in range(n - 1):
+        s.append(s[-1] - 0.1 * s[-1] + rng.normal(0, 0.5))
+    out = spread_half_life(pd.Series(s))
+    assert out is not None
+    assert 3 < out < 20, f"Half-life of theta=-0.1 series should be ~6.93, got {out}"
+    # Random walk (no mean reversion) -> half-life should be substantially
+    # larger than the mean-reverting case (noisy on finite samples; allow
+    # None or > 25 days as the post-HFT-survival floor would already reject it)
+    rw = pd.Series(np.cumsum(rng.normal(0, 0.1, n)))
+    rw_hl = spread_half_life(rw)
+    assert rw_hl is None or rw_hl > 25, (
+        f"Random walk half-life should be None or >25 (well beyond the "
+        f"5-30 post-HFT band); got {rw_hl}"
+    )
+
+
+def test_batch229_pair_zscore_returns_float():
+    """Batch 229: pair_zscore computes (spread - mean) / std over window."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.pairs_trading import pair_zscore
+    rng = np.random.default_rng(7)
+    n = 100
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    s_a = pd.Series(100 + np.cumsum(rng.normal(0, 0.01, n)), index=idx)
+    s_b = pd.Series(50 + np.cumsum(rng.normal(0, 0.01, n)), index=idx)
+    z = pair_zscore(s_a, s_b, hedge_ratio=2.0, intercept=0.0, window=60)
+    assert z is not None
+    assert isinstance(z, float)
+    # Insufficient data -> None
+    z_short = pair_zscore(s_a.head(5), s_b.head(5), 2.0, 0.0, 60)
+    assert z_short is None
+
+
+def test_batch229_find_pairs_handles_empty_input():
+    """Batch 229: find_cointegrated_pairs defensive on empty / single-col."""
+    import pandas as pd
+    from backtest.signals.pairs_trading import find_cointegrated_pairs
+    assert find_cointegrated_pairs(pd.DataFrame()) == []
+    df_one = pd.DataFrame({"A": [1, 2, 3]})
+    assert find_cointegrated_pairs(df_one) == []
+
+
 def test_batch228_xgboost_meta_labeler_preferred():
     """Batch 228 (housekeeping 2026-05-18 owner-approved): XGBoost
     is preferred over sklearn GBM for meta-labeling per Joubert-Snyman
