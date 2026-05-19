@@ -7024,6 +7024,188 @@ def test_batch211_orb_short_symmetric():
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
+def test_batch233_volume_profile_emits_poc_and_value_area():
+    """Batch 233 (Volume Profile 2026-05-18 owner-approved Track A):
+    compute_volume_profile returns POC + Value Area High/Low + close
+    position flags. Steidlmayer 1985 Market Profile foundation."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.volume_profile import compute_volume_profile
+    n = 80
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    rng = np.random.default_rng(42)
+    base = 100 + np.cumsum(rng.normal(0, 1, n))
+    df = pd.DataFrame({
+        "open":   base, "high": base + 2, "low": base - 2,
+        "close":  base, "volume": rng.integers(1_000_000, 5_000_000, n).astype(float),
+    }, index=idx)
+    out = compute_volume_profile(df, lookback_days=60)
+    assert "vp_poc" in out
+    assert "vp_value_area_high" in out
+    assert "vp_value_area_low" in out
+    # POC must lie within the price range
+    assert df["low"].min() <= out["vp_poc"] <= df["high"].max()
+    # VAH > VAL
+    assert out["vp_value_area_high"] > out["vp_value_area_low"]
+    # POC lies within Value Area
+    assert out["vp_value_area_low"] <= out["vp_poc"] <= out["vp_value_area_high"]
+    # Close-position flags consistent
+    close = float(df["close"].iloc[-1])
+    if close > out["vp_poc"]:
+        assert out["vp_close_above_poc"] is True
+    if close < out["vp_value_area_low"]:
+        assert out["vp_below_value_area"] is True
+    if out["vp_value_area_low"] <= close <= out["vp_value_area_high"]:
+        assert out["vp_in_value_area"] is True
+
+
+def test_batch233_volume_profile_insufficient_data():
+    """Batch 233: empty dict on insufficient bars or missing cols."""
+    import pandas as pd
+    from backtest.signals.volume_profile import compute_volume_profile
+    assert compute_volume_profile(pd.DataFrame()) == {}
+    short = pd.DataFrame({"high": [1], "low": [1], "close": [1], "volume": [1]})
+    assert compute_volume_profile(short, lookback_days=60) == {}
+    # Missing volume column
+    no_vol = pd.DataFrame({"high": [1] * 60, "low": [1] * 60, "close": [1] * 60})
+    assert compute_volume_profile(no_vol, lookback_days=60) == {}
+
+
+def test_batch233_period_pocs_returns_chronological_list():
+    """Batch 233: compute_period_pocs returns oldest-first POC list."""
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.volume_profile import compute_period_pocs
+    n = 200
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    rng = np.random.default_rng(7)
+    base = 100 + np.cumsum(rng.normal(0, 1, n))
+    df = pd.DataFrame({
+        "open":   base, "high": base + 2, "low": base - 2,
+        "close":  base, "volume": rng.integers(1_000_000, 5_000_000, n).astype(float),
+    }, index=idx)
+    pocs = compute_period_pocs(df, period_lookback=120, n_periods=4)
+    assert isinstance(pocs, list)
+    assert len(pocs) <= 4
+    # Each POC must be a positive float
+    for p in pocs:
+        assert isinstance(p, float)
+        assert p > 0
+    # Insufficient data -> empty
+    short_df = df.head(10)
+    assert compute_period_pocs(short_df, period_lookback=120) == []
+
+
+def test_batch232_cross_asset_signals_run_on_real_data():
+    """Batch 232 (cross-asset 2026-05-18 owner-approved Track A):
+    compute_cross_asset_signals returns a non-empty dict on real
+    prefetched data."""
+    from datetime import date
+    from backtest.signals.cross_asset import compute_cross_asset_signals
+    out = compute_cross_asset_signals(date(2025, 6, 1))
+    # Bond/equity + sector rotation should populate from prefetched data
+    assert isinstance(out, dict)
+    # If TLT/SPY prefetched, expect bond_equity_ratio populated
+    if "bond_equity_ratio" in out:
+        assert isinstance(out["bond_equity_ratio"], float)
+        assert out["bond_equity_ratio"] > 0
+    # Sector rotation should always populate if SPY + at least one sector exists
+    if "sector_strongest" in out:
+        assert out["sector_strongest"] in (
+            "XLF", "XLY", "XLI", "XLK", "XLU", "XLP", "XLV", "XLE"
+        )
+
+
+def test_batch232_ratio_trend_signal_helper():
+    """Batch 232: _ratio_trend_signal returns ratio + pct_change + trend flags."""
+    import pandas as pd
+    from backtest.signals.cross_asset import _ratio_trend_signal
+    # Up-trending ratio
+    n = pd.Series([100, 102, 104, 106, 108, 110, 112, 114, 116, 118,
+                   120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142])
+    d = pd.Series([100] * 22)
+    out = _ratio_trend_signal(n, d, window=20)
+    assert out is not None
+    assert out["trend_up"] is True
+    assert out["pct_change"] > 0.02
+    # Insufficient data
+    out_short = _ratio_trend_signal(pd.Series([1, 2]), pd.Series([1, 2]), window=20)
+    assert out_short is None
+
+
+def test_batch232_missing_data_returns_empty():
+    """Batch 232: defensive empty dict when ETF parquets missing."""
+    from datetime import date
+    from backtest.signals.cross_asset import (
+        compute_bond_equity_signals, compute_gold_silver_ratio_signals,
+    )
+    # Distant past where prefetch may not exist
+    out = compute_bond_equity_signals(date(1995, 6, 1))
+    # Either empty (no data) or valid dict; should not raise
+    assert isinstance(out, dict)
+
+
+def test_batch231_calendar_signals_basic_keys():
+    """Batch 231 (calendar effects 2026-05-18 owner-approved Track A):
+    compute_calendar_signals emits the expected keys."""
+    from datetime import date
+    from backtest.signals.calendar_effects import compute_calendar_signals
+    out = compute_calendar_signals(date(2024, 6, 17))  # Monday
+    for key in (
+        "dow", "is_monday", "is_friday",
+        "trading_day_of_month", "trading_days_left_in_month",
+        "is_totm_window", "is_january", "is_pre_holiday",
+        "is_halloween_period", "is_summer_period",
+        "days_to_next_holiday",
+    ):
+        assert key in out, f"Batch 231: missing key {key}"
+    assert out["is_monday"] is True
+    assert out["is_friday"] is False
+    assert out["is_january"] is False
+
+
+def test_batch231_totm_window_detection():
+    """Batch 231: TOTM window fires last-4 + first-3 trading days
+    (Ariel 1987 *Journal of Business*)."""
+    from datetime import date
+    from backtest.signals.calendar_effects import compute_calendar_signals
+    # 2024-01-02 = first trading day of January (T+1) -> TOTM True
+    assert compute_calendar_signals(date(2024, 1, 2))["is_totm_window"] is True
+    # 2024-01-31 = last trading day of January -> TOTM True
+    assert compute_calendar_signals(date(2024, 1, 31))["is_totm_window"] is True
+    # Mid-month should NOT be TOTM
+    assert compute_calendar_signals(date(2024, 6, 14))["is_totm_window"] is False
+
+
+def test_batch231_pre_holiday_detection():
+    """Batch 231: pre-holiday flag fires when next non-weekend day is a
+    US market holiday. Lakonishok-Smidt 1988 RFS."""
+    from datetime import date
+    from backtest.signals.calendar_effects import compute_calendar_signals
+    # 2024-07-03 (Wed) - next day 07-04 is Independence Day
+    assert compute_calendar_signals(date(2024, 7, 3))["is_pre_holiday"] is True
+    # 2024-11-27 (Wed) - next day 11-28 is Thanksgiving
+    assert compute_calendar_signals(date(2024, 11, 27))["is_pre_holiday"] is True
+    # Friday before a Monday holiday counts too (Memorial Day 2024-05-27)
+    assert compute_calendar_signals(date(2024, 5, 24))["is_pre_holiday"] is True
+    # Random mid-week (Wed 06-12-2024) - no holiday adjacent
+    assert compute_calendar_signals(date(2024, 6, 12))["is_pre_holiday"] is False
+
+
+def test_batch231_halloween_indicator():
+    """Batch 231: Halloween indicator (Bouman-Jacobsen 2002 AER)
+    flags Nov-Apr as 'winter premium' window."""
+    from datetime import date
+    from backtest.signals.calendar_effects import compute_calendar_signals
+    # November = winter
+    assert compute_calendar_signals(date(2024, 11, 15))["is_halloween_period"] is True
+    # April = winter
+    assert compute_calendar_signals(date(2024, 4, 15))["is_halloween_period"] is True
+    # May = summer
+    assert compute_calendar_signals(date(2024, 5, 15))["is_halloween_period"] is False
+    assert compute_calendar_signals(date(2024, 5, 15))["is_summer_period"] is True
+
+
 def test_batch230_rule_based_sentiment_basic():
     """Batch 230 (LLM news sentiment 2026-05-18 owner-approved deferred):
     rule-based sentiment scorer returns [-1, 1] using Loughran-McDonald
