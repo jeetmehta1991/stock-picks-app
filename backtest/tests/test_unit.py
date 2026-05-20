@@ -7341,19 +7341,123 @@ def test_batch267_news_sentiment_shift_zero_when_prior_empty(tmp_path, monkeypat
 
 
 def test_batch267_news_sentiment_strat_fires_on_aliased_keys():
-    """Batch 267 Path B end-to-end: strat_news_sentiment_long must fire
-    when fed signals with the aliased keys + threshold met. This is the
-    integration check that was missing - previously the strategy
-    silently returned None on every tick."""
+    """Batch 267 Path B + Batch 278 gate tightening end-to-end:
+    strat_news_sentiment_long must fire when fed signals with aliased keys
+    + tighter thresholds (mean>0.5, article_count>=5, +200 EMA, +momentum
+    confirm via MACD bullish OR RSI>55)."""
     from backtest.signals.screener import strat_news_sentiment_long
     signals = {
-        "news_sentiment_mean":   0.5,    # >0.3
-        "news_article_count":    5,      # >=3
-        "price_above_ema_200":   True,
+        "news_sentiment_mean":      0.6,    # >0.5 (Batch 278 tightened)
+        "news_article_count":       5,      # >=5 (Batch 278 tightened)
+        "price_above_ema_200":      True,
+        "macd_12_26_9_bullish":     True,   # Batch 278: momentum confirm
     }
     res = strat_news_sentiment_long(signals)
     assert res is not None, "Strategy must fire when entry gates met"
     assert res.get("direction") == "long"
+
+
+def test_batch278_news_sentiment_blocks_loose_signals():
+    """Batch 278 (Tier 2 gate tightening): the stricter mean>0.5 + count>=5
+    + momentum confirm gates must BLOCK signals that would have fired
+    under the old loose thresholds (mean>0.3, count>=3, no momentum gate).
+    """
+    from backtest.signals.screener import strat_news_sentiment_long
+    # Old-loose-but-now-blocked: mean=0.4 (>0.3 old, <0.5 new)
+    signals = {
+        "news_sentiment_mean":      0.4,
+        "news_article_count":       5,
+        "price_above_ema_200":      True,
+        "macd_12_26_9_bullish":     True,
+        "rsi_14":                   60,
+    }
+    res = strat_news_sentiment_long(signals)
+    assert not res["fires"], "mean=0.4 must NOT fire under new threshold >0.5"
+
+    # Article count too low: 4 (>=3 old, <5 new)
+    signals2 = {
+        "news_sentiment_mean":      0.6,
+        "news_article_count":       4,
+        "price_above_ema_200":      True,
+        "macd_12_26_9_bullish":     True,
+    }
+    res2 = strat_news_sentiment_long(signals2)
+    assert not res2["fires"], "count=4 must NOT fire under new >=5 gate"
+
+    # No momentum confirm: MACD bearish + RSI=50
+    signals3 = {
+        "news_sentiment_mean":      0.6,
+        "news_article_count":       6,
+        "price_above_ema_200":      True,
+        "macd_12_26_9_bullish":     False,
+        "rsi_14":                   50,
+    }
+    res3 = strat_news_sentiment_long(signals3)
+    assert not res3["fires"], "Missing momentum confirm must NOT fire"
+
+
+def test_batch278_cup_and_handle_blocks_unconfirmed_breakouts():
+    """Batch 278: cup_and_handle now requires vol_spike_2x + above_ema_50
+    + RSI<70 (O'Neil CANSLIM canonical breakout requires volume)."""
+    from backtest.signals.screener import strat_cup_and_handle_long
+    # Pattern detected but no volume confirm -> should NOT fire
+    signals_no_vol = {
+        "cup_handle_detected":   True,
+        "price_above_ema_200":   True,
+        "price_above_ema_50":    True,
+        "rsi_14":                60,
+        "vol_spike_2x":          False,
+    }
+    res = strat_cup_and_handle_long(signals_no_vol)
+    assert not res["fires"], "cup_and_handle must NOT fire without volume confirm"
+
+    # All gates met -> should fire
+    signals_ok = {
+        "cup_handle_detected":   True,
+        "price_above_ema_200":   True,
+        "price_above_ema_50":    True,
+        "rsi_14":                60,
+        "vol_spike_2x":          True,
+    }
+    res_ok = strat_cup_and_handle_long(signals_ok)
+    assert res_ok["fires"], "cup_and_handle must fire when all gates met"
+
+
+def test_batch278_smc_bos_continuation_requires_volume_and_momentum():
+    """Batch 278: smc_bos_continuation now requires volume confirm
+    (vol_spike_2x OR force_index_breakout) + momentum confirm
+    (RSI direction-aligned)."""
+    from backtest.signals.screener import strat_smc_bos_continuation
+    # Stale BOS signal (from 90 bars ago) without volume confirm -> block
+    signals_stale = {
+        "smc_bos_bullish":        True,
+        "price_above_ema_200":    True,
+        "vol_spike_2x":           False,
+        "force_index_breakout":   False,
+        "rsi_14":                 60,
+    }
+    res = strat_smc_bos_continuation(signals_stale)
+    assert not res["fires"], "Stale BOS without volume confirm must NOT fire"
+
+    # Confirmed BOS -> should fire
+    signals_confirmed = {
+        "smc_bos_bullish":        True,
+        "price_above_ema_200":    True,
+        "vol_spike_2x":           True,
+        "rsi_14":                 60,
+    }
+    res_ok = strat_smc_bos_continuation(signals_confirmed)
+    assert res_ok["fires"], "Confirmed BOS with volume + RSI>50 must fire"
+
+    # Wrong-direction momentum -> block
+    signals_wrong = {
+        "smc_bos_bullish":        True,
+        "price_above_ema_200":    True,
+        "vol_spike_2x":           True,
+        "rsi_14":                 40,    # RSI<50 contradicts bullish BOS
+    }
+    res_wrong = strat_smc_bos_continuation(signals_wrong)
+    assert not res_wrong["fires"], "RSI<50 must block bullish BOS entry"
 
 
 def test_batch267_news_sentiment_shift_strat_fires():
@@ -8751,12 +8855,14 @@ def test_batch210_compute_smc_signals_handles_missing_data():
 
 def test_batch210_smc_bos_continuation_long_fires_with_regime():
     """Batch 210: smc_bos_continuation long fires on BOS bullish + 200-EMA
-    regime gate."""
+    regime gate. Batch 278 added volume confirm + RSI direction gate."""
     from backtest.signals.screener import strat_smc_bos_continuation
     s = {
         "smc_bos_bullish": True,
         "smc_bos_bearish": False,
         "price_above_ema_200": True,
+        "vol_spike_2x": True,        # Batch 278: required
+        "rsi_14": 60,                # Batch 278: required > 50 for long
     }
     r = strat_smc_bos_continuation(s)
     assert r["fires"] is True and r["direction"] == "long"

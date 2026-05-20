@@ -1768,21 +1768,35 @@ def strat_smc_bos_continuation(s):
     (BOS up) after a CHoCH; trend-continuation entry. Quantum Algo Mar
     2026 backtest: combined SMC stack achieved 61% WR / 2.17 PF / +2.27R
     average on 2,600 trades over 26 months.
+
+    Batch 278 (Tier 2 gate tightening 2026-05-20 owner-approved option B):
+    Stage B v2 showed 13 trades / 15.4% WR / -6.60% mean / -86 pp. Root
+    cause: Batch 273's event_recency_bars=90 means BOS signal stays True
+    for up to 90 bars, so entries fire on stale structural breaks where
+    trend may have already reversed. Added: vol_confirms (vol_spike_2x OR
+    force_index_breakout) + momentum confirm (RSI direction-aligned) to
+    require institutional follow-through on the BOS bar.
     """
+    vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_breakout", False)
+    rsi = s.get("rsi_14", 50)
     fl = (
         s.get("smc_bos_bullish", False)
         and s.get("price_above_ema_200", True)
+        and vol_confirms
+        and rsi > 50
     )
     fs = (
         s.get("smc_bos_bearish", False)
         and (not s.get("price_above_ema_200", True))
+        and vol_confirms
+        and rsi < 50
     )
     return _strat3(fl, fs, "smc",
-        ["smc_bos_bullish", "price_above_ema_200"],
-        ["smc_bos_bearish", "price_below_ema_200"],
-        ["Break of Structure (continuation) up - new structural high",
+        ["smc_bos_bullish", "price_above_ema_200", "vol_confirms", "rsi_14>50"],
+        ["smc_bos_bearish", "price_below_ema_200", "vol_confirms", "rsi_14<50"],
+        ["Break of Structure (continuation) up + volume + momentum confirms",
          "Above 200 EMA (regime gate)"],
-        ["Break of Structure (continuation) down - new structural low",
+        ["Break of Structure (continuation) down + volume + momentum confirms",
          "Below 200 EMA (bear regime)"])
 
 
@@ -2026,16 +2040,30 @@ def strat_double_bottom_long(s):
 
 
 def strat_cup_and_handle_long(s):
-    """Batch 252: O'Neil CANSLIM cup-and-handle long."""
+    """Batch 252: O'Neil CANSLIM cup-and-handle long.
+
+    Batch 278 (Tier 2 gate tightening 2026-05-20 owner-approved option B):
+    Stage B v2 showed 12 trades / 16.7% WR / -4.30% mean / -52 pp. Root
+    cause: pattern detection without volume confirmation. O'Neil's CANSLIM
+    canonical setup REQUIRES volume on the handle breakout bar - without
+    it, the breakout is unconfirmed and often fails. Added: vol_spike_2x
+    + above 50-EMA (intermediate trend filter) + RSI < 70 (not overbought,
+    avoid late-stage entries).
+    """
     fires = (
         s.get("cup_handle_detected", False)
         and s.get("price_above_ema_200", True)
+        and s.get("vol_spike_2x", False)
+        and s.get("price_above_ema_50", True)
+        and s.get("rsi_14", 50) < 70
     )
     return _strat(fires, "long", "chart_pattern",
-        ["cup_handle_detected", "price_above_ema_200"],
+        ["cup_handle_detected", "price_above_ema_200",
+         "vol_spike_2x", "price_above_ema_50", "rsi_14<70"],
         ["Cup-and-handle pattern detected (O'Neil 1988)",
-         "CANSLIM canonical breakout setup",
-         "Above 200 EMA (regime gate)"])
+         "CANSLIM breakout + 2x volume confirmation (canonical)",
+         "Above 200 EMA + 50 EMA (dual trend gate)",
+         "RSI not overbought (avoid late-stage entries)"])
 
 
 def strat_flag_bull_long(s):
@@ -2287,17 +2315,32 @@ def strat_pairs_mean_reversion_short(s):
 # ---------------------------------------------------------------------------
 def strat_news_sentiment_long(s):
     """Batch 253: positive-sentiment cluster long. Lopez-Lira-Tang 2023 +
-    Loughran-McDonald 2011. 7-day mean > +0.3 + >=3 articles + 200-EMA."""
+    Loughran-McDonald 2011.
+
+    Batch 278 (Tier 2 gate tightening 2026-05-20 owner-approved option B):
+    Stage B v2 showed 7 trades / 14.3% WR / -6.87% mean / -48 pp. Root
+    cause: threshold mean>0.3 + 3 articles was too loose - it fired on
+    sentiment plateaus (already-priced-in news) rather than onset. Replication
+    of Lopez-Lira-Tang found Sharpe ~0.8-1.2 when filters were stricter.
+    Tightened: mean threshold 0.3 -> 0.5 (stronger consensus), article count
+    3 -> 5 (more coverage), added bullish-momentum confirm (MACD bullish OR
+    RSI > 55) to filter for active-momentum names.
+    """
     fires = (
-        s.get("news_sentiment_mean", 0.0) > 0.3
-        and s.get("news_article_count", 0) >= 3
+        s.get("news_sentiment_mean", 0.0) > 0.5
+        and s.get("news_article_count", 0) >= 5
         and s.get("price_above_ema_200", True)
+        and (
+            s.get("macd_12_26_9_bullish", False)
+            or s.get("rsi_14", 50) > 55
+        )
     )
     sent = s.get("news_sentiment_mean", 0.0)
     return _strat(fires, "long", "news_sentiment",
-        ["news_sentiment_mean>0.3", "news_article_count>=3", "price_above_ema_200"],
-        [f"7-day mean sentiment +{sent:.2f} (positive cluster)",
-         f"{s.get('news_article_count', 0)} articles in window",
+        ["news_sentiment_mean>0.5", "news_article_count>=5",
+         "price_above_ema_200", "macd_bullish_or_rsi>55"],
+        [f"7-day mean sentiment +{sent:.2f} (strong positive cluster, >+0.5)",
+         f"{s.get('news_article_count', 0)} articles in window (>=5)",
          "Above 200 EMA (regime gate)"])
 
 
