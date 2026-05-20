@@ -503,12 +503,28 @@ def process_day_exits(
     still_open = []
 
     # Batch 226: VIX-spike kill switch
+    # Batch 261 fix (Pass 53 Day 9+ 2026-05-20 post-1A-alpha forensic):
+    # Original threshold (+5 VIX in 5d) was too tight - fired on routine
+    # vol spikes (VIX 15->20, 20->25) which are normal in any 4y window.
+    # Phase 1A-alpha verdict: 364 of 1181 trades (30.8%) force-closed by
+    # this switch at day's open (worst-of-day prices typical during spikes),
+    # destroying aggregate -70.11% return.
+    # Forensic: switch is REDUNDANT with DEC-516 exit_regime_flip which
+    # handles regime-flip exits properly. Tightening here to require:
+    #   (1) absolute VIX > 35 (genuine crisis level; COVID/2008/dot-com), AND
+    #   (2) +50% VIX in 5 days (true catastrophic move, not normal correction)
+    # Both conditions must hold. This makes the switch a true CATASTROPHIC
+    # circuit breaker rather than a routine drawdown response.
+    VIX_SPIKE_KILL_ABS_THRESHOLD = 35.0
+    VIX_SPIKE_KILL_PCT_THRESHOLD = 0.50
     vix_spike_active = False
     if vix_history is not None and vix_value is not None and len(vix_history) >= 6:
         try:
             vix_5d_ago = float(vix_history[-6])
             vix_today  = float(vix_value)
-            if vix_today - vix_5d_ago > 5.0:
+            absolute_crisis = vix_today > VIX_SPIKE_KILL_ABS_THRESHOLD
+            pct_spike = vix_5d_ago > 0 and (vix_today - vix_5d_ago) / vix_5d_ago > VIX_SPIKE_KILL_PCT_THRESHOLD
+            if absolute_crisis and pct_spike:
                 vix_spike_active = True
         except (TypeError, ValueError, IndexError):
             vix_spike_active = False
