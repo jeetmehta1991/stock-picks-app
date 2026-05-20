@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stage 3 Paper Trading Dashboard</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 20px; background: #f5f5f7; color: #1d1d1f; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .subtitle { color: #86868b; font-size: 13px; margin-bottom: 20px; }
+  .status-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat { background: white; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat-label { font-size: 11px; text-transform: uppercase; color: #86868b; letter-spacing: 0.5px; }
+  .stat-value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+  .positive { color: #1ab64f; }
+  .negative { color: #e74c3c; }
+  .panel { background: white; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .panel h2 { margin: 0 0 12px; font-size: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #e8e8ed; }
+  th { font-weight: 600; color: #86868b; font-size: 11px; text-transform: uppercase; }
+  tr:last-child td { border-bottom: 0; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #e8e8ed; }
+  .tab { padding: 8px 14px; cursor: pointer; border: 0; background: transparent; font-size: 13px; color: #86868b; }
+  .tab.active { color: #1d1d1f; border-bottom: 2px solid #007aff; font-weight: 500; }
+  .empty { color: #86868b; padding: 20px; text-align: center; }
+  .last-update { font-size: 11px; color: #86868b; }
+</style>
+</head>
+<body>
+
+<h1>Stage 3 Paper Trading Dashboard</h1>
+<div class="subtitle">Live paper portfolio + daily picks + journal | <span id="last-update" class="last-update"></span></div>
+
+<div class="status-bar">
+  <div class="stat">
+    <div class="stat-label">Portfolio Value</div>
+    <div class="stat-value" id="portfolio-value">-</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Daily PnL</div>
+    <div class="stat-value" id="daily-pnl">-</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Total Return</div>
+    <div class="stat-value" id="total-return">-</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Drawdown</div>
+    <div class="stat-value" id="drawdown">-</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Open Positions</div>
+    <div class="stat-value" id="open-positions">-</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Closed Trades</div>
+    <div class="stat-value" id="closed-trades">-</div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="tabs">
+    <button class="tab active" data-tab="open">Open Positions</button>
+    <button class="tab" data-tab="closed">Closed Trades</button>
+    <button class="tab" data-tab="picks">Today's Picks</button>
+    <button class="tab" data-tab="journal">Journal</button>
+  </div>
+  <div id="tab-content"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
