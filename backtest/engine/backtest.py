@@ -817,12 +817,24 @@ class BacktestEngine:
         # ROI in trending regimes; removed by this ticker-set membership check.
         open_tickers = {t.ticker for t in self.open_trades}
         # Deduplication: track tickers already opened today (one position per ticker per day)
-        opened_today: set[str] = set()
+        # Batch 279: opened_today set removed - dedup eliminated per Option 1.
+        # See per-strategy-loop notes ~line 1043 for full rationale.
 
         for cand in candidates[:self.max_cands]:
             ticker = cand["ticker"]
             atr    = cand.get("atr", 0.0) or cand["last_close"] * 0.01
             close  = cand["last_close"]
+
+            # Batch 279 (2026-05-20 owner-approved Option 1): dedup removed.
+            # Multiple strategies firing on the same ticker the same day each
+            # open their own position with size_pct / N split (where N is
+            # the candidate's strategy_count). Prior behavior gave the slot
+            # to whichever strategy came first in ALL_STRATEGIES dict
+            # insertion order - an arbitrary artifact of registration order
+            # rather than empirical edge. See SMOKE_STAGE_B_v3_DIAGNOSIS.
+            # The BUG-61 block STILL applies to cross-day concurrent
+            # positions (don't stack same-ticker exposure across days).
+            _n_strategies_for_split = max(1, len(cand.get("strategies", [])))
 
             # BUG-61: ticker-level concurrent-position block (owner-approved Option A)
             # Skip the entire strategy loop if any prior open position exists on this ticker
@@ -1044,20 +1056,23 @@ class BacktestEngine:
                 if (ticker, strat_entry["strategy"]) in open_combos:
                     continue
 
-                # Deduplication  -  one position per ticker per day (highest strategy count wins)
-                # Candidates are sorted by strategy_count desc, so first to fire wins
-                # BUG-12 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
-                # dedup ordering by strategy_count (not arbitrary long-before-short) means
-                # shorts CAN win when they have higher signal confluence. Original bug was
-                # "shorts never fire when long strategy fires first"; this fix removed
-                # the directional bias.
-                if ticker in opened_today:
-                    self.skipped_trades.append({
-                        "ticker": ticker, "date": as_of,
-                        "strategy": strat_entry["strategy"],
-                        "reason": "dedup_one_position_per_ticker_per_day",
-                    })
-                    continue
+                # Batch 279 (2026-05-20 owner-approved Option 1): REMOVED the
+                # prior dedup skip-reason block. Previously, the first strategy
+                # to iterate ALL_STRATEGIES.items() opened the position and all
+                # later strategies on the same ticker were skipped - position-
+                # in-dict determined the winner, an arbitrary design with no
+                # relationship to edge. Now all firing strategies on the same
+                # ticker the same day open their own positions; size is split
+                # via _n_strategies_for_split below so aggregate ticker exposure
+                # stays bounded.
+                #
+                # BUG-12 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference
+                # (history note retained): the prior dedup ordering by
+                # strategy_count desc was a partial fix for the directional
+                # bias bug (long strategies always won over shorts). Batch 279
+                # supersedes that fix entirely - shorts and longs both fire
+                # independently on the same ticker; strategy_count is no
+                # longer used for dedup arbitration.
 
                 # Regime flag  -  no hard block on any direction
                 # Crisis regime is flagged on the trade for analysis, not blocked
@@ -1222,6 +1237,12 @@ class BacktestEngine:
                 # hasattr guard tolerates test paths bypassing __init__.
                 if hasattr(self, "portfolio"):
                     size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
+                    # Batch 279 (2026-05-20 owner-approved Option 1): when
+                    # N strategies fire on the same ticker the same day, divide
+                    # base tier size by N so aggregate ticker exposure stays
+                    # bounded. Replaces the prior dict-position dedup rule.
+                    if _n_strategies_for_split > 1:
+                        size_pct = size_pct / _n_strategies_for_split
                     # DEC-091 RESOLVED-IMPLEMENTED Batch 70 2026-05-12 owner-
                     # mandated wiring: scale size_pct by tiered drawdown-band
                     # multiplier {1.0 / 0.75 / 0.5 / 0.0} at 0/10/20/30% DD.
@@ -1504,8 +1525,9 @@ class BacktestEngine:
                 )
                 self.open_trades.append(trade)
                 open_combos.add((ticker, strat_entry["strategy"]))
-                opened_today.add(ticker)
-                open_tickers.add(ticker)  # BUG-61: lock ticker for rest of day
+                # Batch 279: opened_today removed (dedup eliminated per Option 1).
+                # open_tickers still updated for BUG-61 cross-day concurrent block.
+                open_tickers.add(ticker)  # BUG-61: lock ticker for cross-day
 
                 # BUG-95 sub-batch 2 + 4: mirror entry into Portfolio state.
                 # Sub-batch 4 has already gated this with can_open above; reaching
@@ -1514,6 +1536,11 @@ class BacktestEngine:
                 # was skipped by hasattr branch.
                 if hasattr(self, "portfolio"):
                     size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
+                    # Batch 279: same size-split as the can_open call site upstream.
+                    # Without this mirror, can_open would approve SPLIT size but
+                    # add_position would record FULL-SIZE - inconsistency bug.
+                    if _n_strategies_for_split > 1:
+                        size_pct = size_pct / _n_strategies_for_split
                     # DEC-091 wiring (mirror of the can_open call site upstream):
                     # apply DD-band multiplier so add_position uses the same
                     # scaled size that can_open approved. Without this, the

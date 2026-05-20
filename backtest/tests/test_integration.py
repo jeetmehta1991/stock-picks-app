@@ -1962,45 +1962,48 @@ def test_bug_103_assign_confidence_tier_upgrades_on_strong_smart_money():
     assert tier_baseline_3 == "MEDIUM_HIGH"
 
 
-def test_bug_102_engine_dedup_same_day_one_position_per_ticker():
-    """BUG-102 Batch 95: "3.5x same-day duplicate inflation: 9,921 unique
-    decisions logged as 35k+" - same-day duplicate firings of the same
-    ticker by multiple strategies inflated the trade log. RESOLVED via
-    the `opened_today` set tracked in `_process_day` candidate loop:
-      - opened_today = set() initialized at the start of each day
-        (backtest.py:710)
-      - guard `if ticker in opened_today: continue` skip with reason
-        "dedup_one_position_per_ticker_per_day" (backtest.py:853-859)
-      - opened_today.add(ticker) at successful entry (backtest.py:1138)
-    Combined with the outer BUG-61 ticker-uniqueness gate (Batch 17,
-    blocks ticker that has ANY prior open across days), this creates a
-    two-layer defense: BUG-61 = cross-day uniqueness; BUG-102 = within-
-    day uniqueness even when multiple strategies fire simultaneously.
+def test_batch279_dedup_removed_size_split_replaces_it():
+    """Batch 279 (2026-05-20 owner-approved Option 1): the prior BUG-102
+    `opened_today` / `dedup_one_position_per_ticker_per_day` rule has been
+    REMOVED. Position-in-ALL_STRATEGIES-dict was determining which strategy
+    won the per-ticker slot (an arbitrary registration-order artifact).
+
+    Replacement: when N strategies fire on the same ticker the same day,
+    each opens its own position with size_pct = base_tier_size / N. This
+    keeps aggregate ticker exposure bounded while letting all strategies
+    contribute evidence independently (CLAUDE.md "all strategies fire
+    independently").
+
+    Cross-day exposure is still bounded by BUG-61's open_tickers gate
+    (no new entries on a ticker that has any prior open position).
+
+    Supersedes test_bug_102_engine_dedup_same_day_one_position_per_ticker.
     """
     from pathlib import Path
     src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
-    assert "opened_today: set[str] = set()" in src
-    assert "if ticker in opened_today:" in src
-    assert "dedup_one_position_per_ticker_per_day" in src
-    assert "opened_today.add(ticker)" in src
-
-
-def test_bug_102_opened_today_set_semantics_per_day():
-    """BUG-102 behavior: opened_today is a fresh set each trading day
-    (built inside _process_day, not persisted across days). Cross-day
-    ticker re-entry is gated separately by BUG-61's open_tickers
-    membership.
-    """
-    from pathlib import Path
-    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
-    # opened_today must be initialized INSIDE _process_day, not at class
-    # level (which would leak across days)
-    init_idx = src.find("opened_today: set[str] = set()")
-    process_day_idx = src.find("def _process_day")
-    assert process_day_idx > 0 and init_idx > 0
-    assert init_idx > process_day_idx, (
-        "opened_today must be initialized inside _process_day so it "
-        "resets per trading day"
+    # Negative wiring: the active code paths must be removed.
+    assert "opened_today: set[str] = set()" not in src, (
+        "Batch 279: opened_today set initialization must be removed"
+    )
+    assert "opened_today.add(ticker)" not in src, (
+        "Batch 279: opened_today.add() call must be removed"
+    )
+    # The literal skip-reason string may appear in a history comment, but it
+    # must NOT appear as a `"reason": "..."` value being appended to
+    # skipped_trades (the active dedup-skip code path).
+    assert '"reason": "dedup_one_position_per_ticker_per_day"' not in src, (
+        "Batch 279: dedup skipped_trades append must be removed"
+    )
+    # Positive wiring: size-split logic present.
+    assert "_n_strategies_for_split" in src, (
+        "Batch 279: size-split divisor variable must be present"
+    )
+    # BUG-61 cross-day open_tickers gate must remain intact.
+    assert "open_tickers.add(ticker)" in src, (
+        "Batch 279: BUG-61 open_tickers gate must remain"
+    )
+    assert "ticker_already_open_concurrent_block_bug61" in src, (
+        "Batch 279: BUG-61 skip reason must remain (cross-day)"
     )
 
 
