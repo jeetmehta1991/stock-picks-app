@@ -9368,6 +9368,44 @@ def test_batch273_smc_base_signals_fire_with_default_params():
     )
 
 
+def test_batch275_meta_ohlcv_no_meta_materials_corruption():
+    """Batch 275 (2026-05-20 owner-approved option C): META OHLCV cache
+    must NOT contain Meta Materials Inc prices (the company that held
+    the META ticker before Meta Platforms acquired it on 2022-06-09).
+    Pre-rename closes were $11-17 range vs post-rename $90-790 range -
+    using stitched data caused a -1219% loss in Stage B smoke.
+
+    The fix: META.parquet now starts at 2022-06-09 (Meta Platforms only).
+    """
+    from pathlib import Path
+    import pandas as pd
+    repo = Path(__file__).resolve().parents[2]
+    for rel in [
+        "data_prefetch/polygon/ohlcv_daily/META.parquet",
+        "backtest/data/cache/polygon/ohlcv_daily/META.parquet",
+        "backtest/data/cache/ohlcv/META.parquet",
+    ]:
+        path = repo / rel
+        if not path.exists():
+            continue   # CI / fresh clone tolerance
+        df = pd.read_parquet(path)
+        df["dt"] = pd.to_datetime(df["date"])
+        # No row before 2022-06-09 should exist (Meta Materials era).
+        pre = df[df["dt"] < pd.Timestamp("2022-06-09")]
+        assert pre.empty, (
+            f"{rel}: contains {len(pre)} rows before 2022-06-09 "
+            f"(Meta Materials corruption). Re-run scripts/fix_meta_ticker_corruption.py."
+        )
+        # Sanity: post-rename close should be in Meta Platforms range
+        # (lows ~$88 in late-2022 trough; highs >$700 in 2024).
+        if not df.empty:
+            min_close = df["close"].min()
+            assert min_close > 50.0, (
+                f"{rel}: minimum close ${min_close:.2f} too low for Meta "
+                "Platforms; possible recurrence of Meta Materials contamination."
+            )
+
+
 def test_batch274_dedup_priority_reverted():
     """Batch 274 (2026-05-20 owner-approved): Batch 272's category-priority
     dedup sort REVERTED after Stage B smoke (20 tkrs x 2y) showed
