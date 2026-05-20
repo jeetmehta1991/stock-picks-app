@@ -1419,6 +1419,27 @@ EXIT_STRATEGIES = {
 # COMPOSITE SCORE + COMPARISON
 # -----------------------------------------------------------------------------
 
+# Batch 266 cube methodology hardening (2026-05-20):
+# exit_reasons that indicate the exit method did NOT actually trigger.
+# When earnings_blackout etc. defaults to "no_earnings_known" the trade rides
+# to end-of-data and inflates total_roi via bull-market exposure, not via the
+# exit method's intended logic. These are filtered from `actual_fire_rate`.
+NON_FIRE_EXIT_REASONS = {
+    "no_data",
+    "end_of_data",
+    "max_days",
+    "no_earnings_known",
+    "no_upcoming_earnings",
+    "earnings_tolerant_skip",
+}
+
+# Recommended-flag guardrails per COMPREHENSIVE_REVIEW_2026_05_20.md:
+# (1) avg_hold_days > 250 = long-hold artifact; exit isn't doing the work.
+# (2) actual_fire_rate < 0.5 = exit triggers in less than half of trades.
+CUBE_MAX_AVG_HOLD_DAYS = 250
+CUBE_MIN_FIRE_RATE = 0.5
+
+
 def composite_score(win_rate: float, profit_factor: float,
                     max_drawdown: float) -> float:
     """
@@ -1447,9 +1468,10 @@ def run_exit_comparison(
     trade_detail_rows = []
 
     for exit_name, exit_fn in EXIT_STRATEGIES.items():
-        pnl_list  = []
-        win_list  = []
-        hold_list = []
+        pnl_list    = []
+        win_list    = []
+        hold_list   = []
+        reason_list = []   # Batch 266 cube hardening: track exit_reason per trade
 
         for t in trades_data:
             try:
@@ -1460,6 +1482,7 @@ def run_exit_comparison(
                 pnl_list.append(r["pnl_pct"])
                 win_list.append(r["win"])
                 hold_list.append(r["hold_days"])
+                reason_list.append(r.get("exit_reason", ""))
 
                 # Per-trade detail row + Pass 53 Day-9-evening Tier 1-4 context
                 # (DEC-594 same-commit; ~25 columns added per owner directive)
@@ -1475,6 +1498,7 @@ def run_exit_comparison(
                     "hold_days":    r["hold_days"],
                     "exit_price":   round(r.get("exit_price", t["entry_price"]), 4),
                     "exit_date":    str(r.get("exit_date", "")),
+                    "exit_reason":  r.get("exit_reason", ""),
                 }
                 # Propagate entry_context (Tiers 1-4)  -  see exit_context.py
                 ctx = t.get("entry_context")
@@ -1502,6 +1526,14 @@ def run_exit_comparison(
 
         cscore = composite_score(wr, pf, mdd)
 
+        # Batch 266 cube hardening: fire-rate = fraction of trades where the
+        # exit method's intended trigger actually fired (vs defaulted to a
+        # non-fire reason like end_of_data / no_earnings_known). Low fire-rate
+        # means total_roi is bull-market exposure, not exit-method edge.
+        fired = sum(1 for rsn in reason_list if rsn not in NON_FIRE_EXIT_REASONS)
+        fire_rate = round(fired / len(reason_list), 4) if reason_list else 0.0
+        avg_hold = round(sum(hold_list) / len(hold_list), 1)
+
         results.append({
             "strategy":         strategy_name,
             "exit_method":      exit_name,
@@ -1511,7 +1543,8 @@ def run_exit_comparison(
             "avg_pnl_pct":      avg_pnl,
             "total_roi_pct":    tot_roi,
             "max_drawdown_pct": mdd,
-            "avg_hold_days":    round(sum(hold_list) / len(hold_list), 1),
+            "avg_hold_days":    avg_hold,
+            "actual_fire_rate": fire_rate,
             "composite_score":  cscore,
         })
 
@@ -1522,7 +1555,19 @@ def run_exit_comparison(
         df["composite_score"] = 0.0
     df = df.sort_values("composite_score", ascending=False)
     if not df.empty:
-        df["recommended"] = df.index == df["composite_score"].idxmax()
+        # Batch 266 cube hardening guardrails: a row is `recommended` only if
+        # (a) it has the top composite_score AND (b) avg_hold_days <= 250 AND
+        # (c) actual_fire_rate >= 0.5. Falls back to next-best row that
+        # satisfies the guardrails. If none qualify, no row is recommended
+        # (caller should treat the (strategy x regime) bucket as unresolved).
+        valid_mask = (
+            (df["avg_hold_days"] <= CUBE_MAX_AVG_HOLD_DAYS)
+            & (df["actual_fire_rate"] >= CUBE_MIN_FIRE_RATE)
+        )
+        df["recommended"] = False
+        if valid_mask.any():
+            top_valid_idx = df[valid_mask]["composite_score"].idxmax()
+            df.loc[top_valid_idx, "recommended"] = True
 
     trade_detail_df = pd.DataFrame(trade_detail_rows)
     return df, trade_detail_df
