@@ -5620,7 +5620,26 @@ Engine iterates eligible tickers; runs strategies
 
 ## §13.1 Phase 1B-α verdict gate
 
-The Phase 1B-α run (Sprint 9) produces the verdict cube + 3-arm A/B comparison. Stage 2 → 3 transition requires ALL of the following gates to clear:
+**ARCHITECTURE CLARIFICATION (Pass 53 Day 9+ 2026-05-19 owner directive, codified in [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md)):**
+
+Phase 1B-α does NOT run agents over the full universe. Workflow is two-step:
+
+1. **Phase 1A-β** = exhaustive search at 1937 tkrs × ~180 strategies × ~17 exits × 4 regimes (~12,240 cells). Output: `winners.parquet` with per-(strategy × exit × regime) priority tier (P1 / P2 / P3).
+2. **Phase 1B-α** = agents applied ONLY to Priority-1 winning combos. Tests whether agents OPTIMIZE ROI of already-validated baselines. A/B compares winner-with-agent vs winner-without-agent.
+
+**Winner priority tiers (from Phase 1A-β `winners.parquet`):**
+
+| Priority | Criteria | Phase 1B-α treatment |
+|---|---|---|
+| **P1 — must test** | All 11 overall criteria + DEC-426 5-Gate validity (n≥30, p<0.05 Bonferroni, PSR≥0.95, t-stat≥3.4, R:R≥2.0) | 11-agent pipeline + A/B vs rules-only baseline |
+| **P2 — optional** | Per-regime PASS in ≥1 regime (Sharpe≥0.7, WR≥55%, PF>1.3, ≥30 trades/regime) but not all 11 overall | Test only if budget allows under $50-150 cap |
+| **P3 — skip** | Less than per-regime PASS or fails 5-Gate | Excluded from 1B-α; documented as no-edge |
+
+**Cost (revised):** ~$50-150 actual ($300 ceiling pre-approved per owner 2026-05-19), because P1 set is typically 20-40 combos vs the full universe firehose.
+
+---
+
+The Phase 1B-α run (Sprint 9) produces the verdict cube + 3-arm A/B comparison ON P1 WINNERS ONLY. Stage 2 → 3 transition requires ALL of the following gates to clear:
 
 **Numerical gates (per DEC-269 + DEC-353):**
 

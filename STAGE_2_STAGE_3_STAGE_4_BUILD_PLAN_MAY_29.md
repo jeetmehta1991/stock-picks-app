@@ -10,28 +10,44 @@
 
 ### Stage 2 — Backtest validation
 
-| Phase | Purpose | Universe | Timeframe | Strategies | Cost (USD) | Compute time | Inputs | Outputs | Gate to advance |
+| Phase | Purpose | Universe | Timeframe | Strategies × Exits × Regimes | Cost (USD) | Compute | Inputs | Outputs | Gate to advance |
 |---|---|---|---|---|---|---|---|---|---|
-| **1A-α** *(in-flight)* | T1a sanity + cube methodology | 642 (T1a + ETFs) | 2022-05-05 → 2026-05-05 (4y) | 86 (Layer 1 + dead-evidence-pruned) | $0 | ~24h | Polygon OHLCV cache + 86 strategies + smart_money composite | Per-(strategy × regime) verdict matrix; rules-only Sharpe; PBO; DSR per strategy; Dashboards 2+3 | Sharpe ≥ 0.7 OOS + PBO < 0.6 + ≥1 strategy passes 9 criteria |
-| **1A-β** *(THE BIG ONE)* | **Exhaustive search — find winners** | **1937 (Master Dedup all 5 tiers)** | **2022-05-05 → 2026-05-05 (4y)** | **~180 (Layer 1 + T1.1-T1.5 + Phase 1C+ full roster)** | **$0** | **~5-7 days at 5-batch parallel** | All Phase 1A-α infrastructure + T1.1-T1.5 wirings + Phase 1C+ strategies + T5b pairs precompute + T2 engine quality fixes | Per-(strategy × exit-method × regime) winners list; full-universe trade log; refreshed cube + dashboards | Pipeline integrity (no crashes) + ≥10 strategies pass 9 criteria → Phase 1B-α |
-| **1B-α** | Agents on winners (does agent overlay improve ROI?) | **Winners only** — tickers where winning strategy×exit combos fire | Same 4y | Only winning (strategy × exit × regime) combos from 1A-β | **~$50-150** (Haiku; $300 ceiling pre-approved) | ~37-40h compute over 2-3 nights | 1A-β winners list + 11-agent LangGraph pipeline + DEC-422 cube populator + A/B framework | A/B verdict per winner (agent-adds / agent-hurts / neutral); 5-Gate verdict; loss attribution; per-trade explainability; Dashboard 3 populated | DEC-131 gate: agent_sharpe − rules_sharpe ≥ 0.2 net Sharpe → Stage 3 |
-| 1C/1D | Extended categories + extended-window stress (optional, parallel) | Same as 1A-β | Extended (2020-01 → 2026-05 incl. COVID) | Subset of winners or full | $0-200 | TBD | 1A-β winners + extended OHLCV | Stress-test robustness verdict | Owner-defined |
+| **1A-α** *(in-flight)* | T1a sanity + cube methodology | 642 (T1a + ETFs) | 2022-05-05 → 2026-05-05 (4y) | 86 strats × ~17 exits × 4 regimes = ~5,848 cells | $0 | ~24h | Polygon OHLCV cache + 86 strategies + smart_money composite + 17 exit methods (DEC-067 canonical + Batch 226/227 extensions) | Per-(strategy × exit × regime) verdict matrix; rules-only Sharpe; PBO; DSR per strategy; Dashboards 2+3 | Sharpe ≥ 0.7 OOS + PBO < 0.6 + ≥1 combo passes 11 criteria |
+| **1A-β** *(THE BIG ONE)* | **Exhaustive search — find winning combos** | **1937 (Master Dedup all 5 tiers)** | **2022-05-05 → 2026-05-05 (4y)** | **~180 strats × ~17 exits × 4 regimes = ~12,240 cells** | **$0** | **~3-4 days at 6-batch parallel + lever C + lever D** | All 1A-α infrastructure + T1.1-T1.5 wirings + Phase 1C+ strategies + T5b pairs precompute + T2 engine quality fixes + speedup levers A/C/D | **`winners.parquet`** with per-(strategy × exit × regime) priority-tiered list (P1/P2/P3 per criteria below); full-universe trade log with `combo_id` column; refreshed cube + dashboards | Pipeline integrity (no crashes) + ≥10 Priority-1 combos identified → Phase 1B-α |
+| **1B-α** | Agents on Priority-1 winners (does agent overlay improve ROI?) | **Winners only** — tickers where Priority-1 combos fire | Same 4y | Only Priority-1 combos from 1A-β (typically 20-40 combos) | **~$50-150** (Haiku; $300 ceiling pre-approved) | ~37-40h compute over 2-3 nights | `winners.parquet` + 11-agent LangGraph pipeline + DEC-422 cube populator + A/B orchestrator (DEC-216) + AgentGateConfig (DEC-459) | A/B verdict per Priority-1 combo (agent-adds / agent-hurts / neutral); 5-Gate verdict; loss attribution (DEC-120); per-trade explainability (DEC-119); Dashboard 3 populated | DEC-131 gate: agent_sharpe − rules_sharpe ≥ 0.2 net Sharpe on ≥3 combos → Stage 3 |
+| 1C | Strategy categories expansion (already absorbed into 1A-β roster) | Same as 1A-β | Same 4y | Implemented as part of 1A-β ~180 roster | $0 | Same as 1A-β | Phase 1C+ strategies merged into ALL_STRATEGIES pre-1A-β launch | Identified in 1A-β winners output | Owner-defined |
+| 1D | Extended-window stress test (incl COVID 2020) | Same as 1A-β | 2020-01 → 2026-05 (~6y) | Same ~180 + 17 exits | $0 | ~5-6 days at 6-batch parallel | All 1A-β infrastructure + extended OHLCV cache (already in `data_prefetch/`) | Per-combo robustness verdict across crisis regime | Optional; owner-defined |
 
-### Stage 3 — Paper trading (post-1B-α)
+### Winners criteria (canonical for `winners.parquet` priority tiers)
+
+| Priority | Criteria | Phase 1B-α treatment |
+|---|---|---|
+| **P1 — MUST test with agents** | Passes ALL 11 overall criteria (CLAUDE.md) **AND** passes DEC-426 5-Gate (n≥30, p<0.05 Bonferroni-corrected, PSR≥0.95, t-stat≥3.4, R:R≥2.0) | Run 11-agent pipeline; A/B vs rules-only baseline |
+| **P2 — could test if budget allows** | Per-regime PASS in ≥1 regime (Sharpe≥0.7, WR≥55%, PF>1.3, ≥30 trades/regime) but not all 11 overall | Test only if Priority-1 spend leaves headroom under $50-150 cap |
+| **P3 — skip** | Less than per-regime PASS or fails 5-Gate | Excluded from Phase 1B-α; documented as no-edge baseline |
+
+**The 11 criteria reference** (per [CLAUDE.md](CLAUDE.md) passing-criteria table): Win rate (1), Profit factor (2), Expected value (3), Win/Loss ratio (4), Max DD (5), Total ROI (6), Smart money lift (7), Macro correlation (8), Min trades (9), Sharpe (10), Per-regime verdict (11).
+
+### Stage 3 — Paper trading (BUILT BY MAY 29; activates post-1B-α verdict)
 
 | Module | Purpose | Universe | Frequency | Cost | Inputs | Outputs |
 |---|---|---|---|---|---|---|
-| Daily picks generator | Top 10 candidates each market day from winning strategies | Subset where winners fire | Daily 8 AM ET | $0 | Phase 1B-α verdicts + day's market data | Email with 10 candidates + risk context |
-| Paper portfolio | Track simulated positions + PnL | 10-25 concurrent positions | Daily | $0 | Daily picks + close prices | Position log + PnL report |
-| Stage 3 dashboard | Live paper-trading dashboard | Same | Real-time | $0 | Paper portfolio | Web UI for performance review |
+| Daily picks generator (`scripts/run_paper_morning.py`) | Top 10 candidates each market day from Priority-1 combos | Subset where combos fire | Daily 8 AM ET | $0 | `winners.parquet` (P1 combos) + day's market data + smart_money composite | Email with 10 candidates + per-pick rationale |
+| Paper portfolio engine (`backtest/paper_trading/portfolio.py`) | Track simulated positions + PnL + exit triggers via 17 exit methods | 10-25 concurrent positions | Daily | $0 | Daily picks + EOD close prices | Position log + PnL parquet + journal entry |
+| **Stage 3 dashboard** (`/dashboard_stage_3/`) | Live paper-trading performance dashboard | All paper positions | Real-time on refresh | $0 | Paper portfolio + journal | Web UI: performance, per-combo attribution, drawdown |
+| **Public picks website** (`/picks/`) | Daily candidates publicly visible (read-only) | Same | Daily refresh | $0 | site_picks JSON | HTML on GitHub Pages |
+| **Email digest** (cron) | Daily picks + EOD PnL summary | Same | Daily | $0 | Picks + portfolio | Email to jeetmehta1991@gmail.com |
+| **Performance journal** (`/dashboard_stage_3/journal/`) | Day-by-day journal entries auto-generated | Same | Daily | $0 | Paper portfolio state diff | Markdown journal page (per-day) |
 
-### Stage 4 — Live trading (post-Stage-3 validation)
+### Stage 4 — Live trading (BUILT BY MAY 29; activates post-Stage-3 validation)
 
 | Module | Purpose | Universe | Frequency | Cost | Inputs | Outputs |
 |---|---|---|---|---|---|---|
-| Live picks + approval | Same as Stage 3 but with owner-email approval gate | Same | Daily | $0 (Anthropic API for any Claude calls) | Daily picks + market data | Owner-approval-pending email |
-| Live execution | IB API order placement on owner-approved trades | Same | Daily | IB tiered commission | Approved picks | Filled trades log |
-| Live monitoring | Real-time PnL + risk + circuit-breaker enforcement | Same | Real-time | $5-15/mo AWS Lightsail | Position state + market data | Real-time dashboard + alerts |
+| Live picks + approval (`scripts/run_live_morning.py`) | Same as Stage 3 but with owner-email approval gate | Same | Daily | $0 (Anthropic API only for Claude calls) | Daily picks + market data | Owner-approval-pending email |
+| Live execution (`backtest/live_trading/ib_executor.py`) | IB API order placement on owner-approved trades; bracket orders (entry + stop + target per strategy) | Same | Daily | IB tiered commission | Approved picks + IB Gateway session | Filled trades log |
+| Live risk overlay (`backtest/live_trading/risk_overlay.py`) | DEC-515 Level 6 portfolio DD breaker + circuit breakers + 5%/4%/3%/1.5%/0.75% tier sizing | Same | Real-time | $0 | Position state + market data + regime | Halt signals; trade-size adjustments |
+| Live monitoring (AWS Lightsail container) | Real-time PnL + risk + alerting + auto-restart | Same | Real-time | **$5-15/mo AWS Lightsail (BUILT BUT NOT ACTIVATED)** | Position state + market data | Real-time dashboard + email alerts on circuit-breaker fires |
+| **Deploy + DR** (`scripts/deploy_live.sh` + `terraform/`) | One-shot AWS deploy + disaster recovery procedures | n/a | One-time setup | $5-15/mo when activated | AWS account credentials + IB account credentials | Live cluster |
 
 ---
 
@@ -58,21 +74,22 @@ Phase 1A-α (in-flight) ──→ Phase 1A-β (full exhaustive)
 
 ---
 
-## 3. 10-day build plan (May 19 PM → May 29)
+## 3. 10-day build plan (May 19 PM → May 29) — REVISED PARALLEL EXECUTION
 
-| Day | Date | Work | Output |
+**Insight:** Source-file edits are PARALLEL-SAFE while 1A-α procs run (Python imports modules at startup; on-disk edits don't affect in-memory bytecode). Only ANOTHER backtest job competes for CPU. So Phase 1C+ implementations + Phase 1B Sprint 7 + Stage 3/4 skeletons can ALL begin TODAY in parallel with 1A-α.
+
+| Day | Date | Work (parallel-safe; no engine-running conflict) | Output |
 |---|---|---|---|
-| 0 | May 19 PM | T0 script + T5b script + T1 drafts + INV reclassifications + TRIAGE_PREP | ✅ Already committed |
-| 1 | May 20 Wed | Phase 1A-α close-out (automated) + T1.1-T1.5 wirings (16 strategies) + T2 24-DEC engine quality fixes (overnight autonomous) + T5b precompute background | 102 strategies registered; engine quality up |
-| 2 | May 21 Thu | Phase 1C+ strategy implementations Wave 1: DEC-355-362 chart patterns + DEC-067 9 exit methods + DEC-368 Calendar + DEC-370 Index Rebalance | +30 strategies → 132 |
-| 3 | May 22 Fri | Phase 1C+ Wave 2: DEC-345 ICT/SMC + DEC-350 multi-TF + DEC-352 13F price-level + DEC-371 + DEC-174/175 | +30-50 strategies → ~180 |
-| 4 | May 23 Sat | **LAUNCH Phase 1A-β** (1937 × ~180 × 4y) — 5-batch parallel. Parallel: Phase 1B Sprint 7 infra begins (11-agent LangGraph wiring) | 1A-β running |
-| 5 | May 24 Sun | 1A-β computes. Claude: AgentGateConfig + A/B orchestrator (DEC-216) + TradingAgents toolkit matrix | 1B agent pipeline ready |
-| 6 | May 25 Mon | 1A-β computes. Claude: DEC-422 cube populator + DEC-426 5-Gate verdict + DEC-120 loss attribution + DEC-119 explainability + Dashboard 3 expansion | 1B-α cube ready |
-| 7 | May 26 Tue | 1A-β likely completes. Run T0 close-out → winners list. Build `scripts/extract_phase_1a_beta_winners.py` | Phase 1A-β verdict; winners list |
-| 8 | May 27 Wed | Phase 1B-α smoke (5 winners × 30 days, ~$3) + demo (20 winners × 1 quarter, ~$10). Stage 3 paper trading skeleton built | Smoke + demo verified |
-| 9 | May 28 Thu | Phase 1B-α full launch (winners-only, ~$50-150). Stage 4 IB integration + AWS Lightsail Docker config | 1B-α running |
-| 10 | May 29 Fri | Final polish + POST_MAY_29_OPERATION_GUIDE.md + final commit | Plan complete; downgrade |
+| 0 | May 19 PM | T0/T5b/T1 drafts + INV reclass + TRIAGE_PREP committed earlier this session | ✅ Already committed |
+| **0.5** | **May 19 evening** | **Phase 1C+ Wave 1 begins NOW: chart_patterns.py (DEC-355-362); Phase 1B Sprint 7 begins: cube_populator.py (DEC-422); Stage 3 skeleton: paper_trading/ module** | First commits in flight |
+| 1 | May 20 Wed | 1A-α close-out (automated via scripts/run_t0_close_out.py) + T1.1-T1.5 wirings applied + T2 24-DEC engine quality queue + T5b precompute background. **Parallel: Phase 1C+ Wave 2 + Phase 1B agent pipeline + Stage 3 dashboard** | 102 strategies; Stage 3 dashboard MVP |
+| 2 | May 21 Thu | Phase 1C+ Wave 3 (multi-TF, 13F, classification, persistence). Phase 1B AgentGateConfig + A/B orchestrator. Stage 4 IB skeleton begins. | ~150 strategies; agents wired |
+| 3 | May 22 Fri | Phase 1C+ Wave 4 (ICT/SMC additions). Phase 1B Sprint 7 complete. Stage 3 website + email digest. Stage 4 risk overlay. | ~180 strategies; Stage 3 complete |
+| 4 | May 23 Sat | **LAUNCH Phase 1A-β** (1937 × ~180 × ~17 exits × 4y) with 6-batch parallel + lever C + lever D. Stage 4 AWS Lightsail Docker. | 1A-β running |
+| 5-7 | May 24-26 | 1A-β computes (~3-4 days). Claude: Stage 3 journal + dashboard polish + Stage 4 monitoring. Build `extract_phase_1a_beta_winners.py`. | Stage 3+4 complete; 1A-β verdict pending |
+| 8 | May 27 Tue | 1A-β verdict + winners.parquet extracted. Phase 1B-α smoke ($3) + demo ($10). | Winners list; 1B framework verified |
+| 9 | May 28 Wed | Phase 1B-α full launch (Priority-1 winners only, ~$50-150). | 1B-α running |
+| 10 | May 29 Thu | Final polish + POST_MAY_29_OPERATION_GUIDE.md + final commit. 1B-α run continues into post-downgrade compute (Claude-credit-free). | Plan complete; downgrade |
 
 ---
 
@@ -143,9 +160,19 @@ python scripts/run_live_end_of_day.py          # reconciliation
 
 ---
 
+## 6.5 Phase 1A-β compute speedup levers (owner-approved 2026-05-19)
+
+| Lever | Speedup | Status | Detail |
+|---|---|---|---|
+| **A. Increase batches 5→6** | ~20% | **APPROVED** (10-batch INFEASIBLE on 15.4 GB RAM; 6 is max safe with ~0.6 GB margin) | Will require 32 GB RAM upgrade for >6 batches |
+| **B. Pre-filter dead strategies via smoke** | ~15-25% | **REJECTED** (owner: test all strategies, don't pre-filter) | n/a |
+| **C. Vectorize signal-once-per-ticker-day** | ~10-15% | **APPROVED** | Audit existing `compute_all_signals` flow; ensure no per-strategy recompute |
+| **D. Polars over Pandas for parquet reads** | ~5-10% | **APPROVED** | Add Polars to requirements; replace heavy Pandas read_parquet in OHLCV loader |
+| **Combined A+C+D** | **~30-40%** | **5-7d → ~3-4d** | Net Phase 1A-β compute estimate |
+
 ## 7. Risks (top 5)
 
-1. **Phase 1A-β at 180 strategies × 1937 tkrs may take 7-10 days, not 5-7.** Could push 1B-α run post-May-29.
+1. **Phase 1A-β at 180 strategies × 1937 tkrs may take 3-4 days even with levers; if levers under-deliver, 5-6 days.** Could push 1B-α run post-May-29.
    - **Mitigation:** Compute is Claude-credit-free, so post-May-29 launch is fine. Worst case: owner reviews 1A-β verdict in ~$5 Claude session post-downgrade.
 
 2. **Phase 1C+ implementations may surface bugs in module-level signal code.**

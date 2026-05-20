@@ -136,6 +136,19 @@ Sub-decisions that, on owner approval and engineering implementation, would add 
 | **With long/short variants counted** | | **~150-200+ variants** |
 | **With multi-TF variants per DEC-350 (daily + weekly)** | | **~200-300+ variants** |
 
+## Pass 53 Day 9+ 2026-05-19 — Phase 1A-β scope clarification
+
+Per owner directive 2026-05-19 (codified in [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md)):
+
+**Phase 1A-β tests ALL strategies × ALL exits × ALL regimes across the FULL 1937-tkr Master Dedup universe.** No pre-filtering. Roster scope = ~180 strategies (Layer 1 baseline 60 + T1.1-T1.5 batch 229-233 modules 16 + Phase 1C+ implementations ~100). Exit method roster = ~17 (DEC-067 canonical 17 methods + Batch 226/227 extensions). Total cells evaluated = ~180 × 17 × 4 regimes = ~12,240 (strategy × exit × regime) cells.
+
+**Output:** `winners.parquet` with per-(strategy × exit × regime) priority tier:
+- **P1 (must test with agents in Phase 1B-α):** passes all 11 overall criteria + DEC-426 5-Gate validity
+- **P2 (optional):** per-regime PASS in ≥1 regime
+- **P3 (skip):** below per-regime PASS
+
+Phase 1B-α agents apply ONLY to P1 winners to test whether agent overlay optimizes ROI of already-validated baselines. This is the canonical workflow — NOT applying agents to full universe.
+
 ---
 
 ## Counting convention notes
