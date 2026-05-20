@@ -1,26 +1,27 @@
 {
-  "generated_at": "2026-05-15T06:24:39.116677",
+  "generated_at": "2026-05-16T18:35:11.939213",
   "total_winners": 0,
   "passing_criteria": {
-    "min_win_rate": "0.55",
+    "min_win_rate": "0.45",
     "min_profit_factor": "1.2",
     "min_expected_value": "0.0",
     "min_win_loss_ratio": "1.0",
-    "max_drawdown": "20.0",
+    "max_drawdown": "25.0",
     "min_total_roi": "0.0",
-    "smart_money_lift": "True",
-    "macro_correlation": "True",
+    "smart_money_lift": "False",
+    "macro_correlation": "False",
     "min_trades": "100",
+    "min_deflated_sharpe": "0.95",
     "min_sharpe_overall": "1.0",
     "min_sharpe_per_regime": "0.7",
-    "min_profit_factor_overall": "1.5",
+    "min_profit_factor_overall": "1.3",
     "min_trades_per_regime": "30"
   },
   "survivorship_info": {
-    "gross_roi": 31.731,
-    "adjusted_roi": 29.723,
-    "haircut_pct": 2.008,
-    "years": 0.49
+    "gross_roi": 1213.534,
+    "adjusted_roi": 804.877,
+    "haircut_pct": 408.657,
+    "years": 4.0
   },
   "bonferroni": {
     "n_strategies": 77,

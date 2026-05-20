@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T13:49:19.511504+00:00",
+  "generated_at": "2026-05-20T04:52:37.716746+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
@@ -77,13 +77,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-015": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 1433-1437 executed in backtest/results/metrics.py"
     },
     "DEC-018": {
       "kind": "DEC",
@@ -94,14 +94,14 @@
     "DEC-019": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1247-1257 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-021": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-027": {
       "kind": "DEC",
@@ -155,7 +155,7 @@
       "kind": "DEC",
       "tier": "DEFERRED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-035": {
       "kind": "DEC",
@@ -281,7 +281,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 140-225 executed in backtest/run_phase1a.py"
+      "evidence": "function body 140-244 executed in backtest/run_phase1a.py"
     },
     "DEC-058": {
       "kind": "DEC",
@@ -316,14 +316,14 @@
     "DEC-067": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/backtest.py never executed"
     },
     "DEC-070": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-071": {
       "kind": "DEC",
@@ -353,13 +353,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2136-2157 executed in backtest/results/metrics.py"
+      "evidence": "function body 2153-2174 executed in backtest/results/metrics.py"
     },
     "DEC-076": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-078": {
       "kind": "DEC",
@@ -371,7 +371,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 1295-1310 executed in backtest/results/metrics.py"
     },
     "DEC-078B": {
       "kind": "DEC",
@@ -437,7 +437,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 1433-1437 executed in backtest/results/metrics.py"
     },
     "DEC-090": {
       "kind": "DEC",
@@ -449,7 +449,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-092": {
       "kind": "DEC",
@@ -497,7 +497,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 628-652 executed in backtest/results/metrics.py"
+      "evidence": "function body 645-669 executed in backtest/results/metrics.py"
     },
     "DEC-102": {
       "kind": "DEC",
@@ -521,19 +521,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
     },
     "DEC-110": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 520-558 executed in backtest/results/metrics.py"
+      "evidence": "function body 520-575 executed in backtest/results/metrics.py"
     },
     "DEC-111": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2162-2430 executed in backtest/results/metrics.py"
+      "evidence": "function body 2179-2476 executed in backtest/results/metrics.py"
     },
     "DEC-112": {
       "kind": "DEC",
@@ -575,13 +575,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1434-1444 executed in backtest/results/metrics.py"
+      "evidence": "function body 1451-1461 executed in backtest/results/metrics.py"
     },
     "DEC-120": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1434-1444 executed in backtest/results/metrics.py"
+      "evidence": "function body 1451-1461 executed in backtest/results/metrics.py"
     },
     "DEC-121": {
       "kind": "DEC",
@@ -593,13 +593,13 @@
       "kind": "DEC",
       "tier": "DECIDED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-123": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1461-1467 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-124": {
       "kind": "DEC",
@@ -629,7 +629,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-129": {
       "kind": "DEC",
@@ -647,7 +647,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1522-1538 executed in backtest/results/metrics.py"
+      "evidence": "function body 1539-1555 executed in backtest/results/metrics.py"
     },
     "DEC-132": {
       "kind": "DEC",
@@ -665,13 +665,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1552-1561 executed in backtest/results/metrics.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-135": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-136": {
       "kind": "DEC",
@@ -695,13 +695,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1580-1589 executed in backtest/results/metrics.py"
+      "evidence": "function body 1597-1606 executed in backtest/results/metrics.py"
     },
     "DEC-142": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1605-1615 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-143": {
       "kind": "DEC",
@@ -712,14 +712,14 @@
     "DEC-144": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 994-1002 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-145": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1635-1652 executed in backtest/results/metrics.py"
+      "evidence": "function body 1652-1669 executed in backtest/results/metrics.py"
     },
     "DEC-146": {
       "kind": "DEC",
@@ -737,25 +737,25 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1024-1028 executed in backtest/results/metrics.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-149": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
     },
     "DEC-150": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-151": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-152": {
       "kind": "DEC",
@@ -773,7 +773,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
+      "evidence": "function body 1786-1822 executed in backtest/results/metrics.py"
     },
     "DEC-156": {
       "kind": "DEC",
@@ -886,8 +886,8 @@
     "DEC-175": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1024-1028 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-176": {
       "kind": "DEC",
@@ -911,7 +911,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 306-408 executed in backtest/engine/backtest.py"
+      "evidence": "function body 312-414 executed in backtest/engine/backtest.py"
     },
     "DEC-180": {
       "kind": "DEC",
@@ -1037,7 +1037,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1434-1444 executed in backtest/results/metrics.py"
+      "evidence": "function body 1451-1461 executed in backtest/results/metrics.py"
     },
     "DEC-202": {
       "kind": "DEC",
@@ -1066,8 +1066,8 @@
     "DEC-206": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1667-1680 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-207": {
       "kind": "DEC",
@@ -1079,31 +1079,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
+      "evidence": "function body 1838-1879 executed in backtest/results/metrics.py"
     },
     "DEC-209": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 705-740 executed in backtest/results/metrics.py"
+      "evidence": "function body 722-757 executed in backtest/results/metrics.py"
     },
     "DEC-210": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1884-1897 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-211": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1916-1931 executed in backtest/results/metrics.py"
+      "evidence": "function body 1933-1948 executed in backtest/results/metrics.py"
     },
     "DEC-212": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1698-1718 executed in backtest/results/metrics.py"
+      "evidence": "function body 1715-1735 executed in backtest/results/metrics.py"
     },
     "DEC-213": {
       "kind": "DEC",
@@ -1199,7 +1199,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1947-1976 executed in backtest/results/metrics.py"
+      "evidence": "function body 1964-1993 executed in backtest/results/metrics.py"
     },
     "DEC-233": {
       "kind": "DEC",
@@ -1217,7 +1217,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 480-491 executed in backtest/engine/backtest.py"
+      "evidence": "function body 486-497 executed in backtest/engine/backtest.py"
     },
     "DEC-236": {
       "kind": "DEC",
@@ -1300,8 +1300,8 @@
     "DEC-249": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 2063-2074 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-250": {
       "kind": "DEC",
@@ -1337,13 +1337,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1552-1561 executed in backtest/results/metrics.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-256": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-257": {
       "kind": "DEC",
@@ -1355,7 +1355,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1635-1652 executed in backtest/results/metrics.py"
+      "evidence": "function body 1652-1669 executed in backtest/results/metrics.py"
     },
     "DEC-259": {
       "kind": "DEC",
@@ -1403,7 +1403,7 @@
       "kind": "DEC",
       "tier": "DEFERRED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-268": {
       "kind": "DEC",
@@ -1475,7 +1475,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2108-2118 executed in backtest/results/metrics.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-280": {
       "kind": "DEC",
@@ -1504,8 +1504,8 @@
     "DEC-284": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 675-681 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-285": {
       "kind": "DEC",
@@ -1523,7 +1523,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2004-2037 executed in backtest/results/metrics.py"
+      "evidence": "function body 2021-2054 executed in backtest/results/metrics.py"
     },
     "DEC-289": {
       "kind": "DEC",
@@ -1667,7 +1667,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-315": {
       "kind": "DEC",
@@ -1679,13 +1679,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-317": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
     },
     "DEC-318": {
       "kind": "DEC",
@@ -1709,13 +1709,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 395-452 executed in backtest/data/universe.py"
+      "evidence": "function body 434-491 executed in backtest/data/universe.py"
     },
     "DEC-323": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 548-563 executed in backtest/data/universe.py"
+      "evidence": "function body 587-602 executed in backtest/data/universe.py"
     },
     "DEC-324": {
       "kind": "DEC",
@@ -1745,7 +1745,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 777-780 executed in backtest/results/metrics.py"
+      "evidence": "function body 928-947 executed in backtest/results/metrics.py"
     },
     "DEC-331": {
       "kind": "DEC",
@@ -1768,8 +1768,8 @@
     "DEC-334": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1349-1361 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-335": {
       "kind": "DEC",
@@ -1829,7 +1829,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-349": {
       "kind": "DEC",
@@ -1864,20 +1864,20 @@
     "DEC-355": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/signals/screener.py never executed"
     },
     "DEC-356": {
       "kind": "DEC",
       "tier": "DECIDED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-357": {
       "kind": "DEC",
       "tier": "DECIDED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-358": {
       "kind": "DEC",
@@ -1931,7 +1931,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1247-1257 executed in backtest/results/metrics.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-367": {
       "kind": "DEC",
@@ -2063,7 +2063,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
     },
     "DEC-389": {
       "kind": "DEC",
@@ -2087,7 +2087,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 395-452 executed in backtest/data/universe.py"
+      "evidence": "function body 434-491 executed in backtest/data/universe.py"
     },
     "DEC-393": {
       "kind": "DEC",
@@ -2129,7 +2129,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 1194-1212 executed in backtest/results/metrics.py"
+      "evidence": "function body 1211-1229 executed in backtest/results/metrics.py"
     },
     "DEC-401": {
       "kind": "DEC",
@@ -2153,7 +2153,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 576-583 executed in backtest/results/metrics.py"
+      "evidence": "function body 2179-2476 executed in backtest/results/metrics.py"
     },
     "DEC-405": {
       "kind": "DEC",
@@ -2194,14 +2194,14 @@
     "DEC-411": {
       "kind": "DEC",
       "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/signals/screener.py never executed"
     },
     "DEC-413": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 520-558 executed in backtest/results/metrics.py"
+      "evidence": "function body 520-575 executed in backtest/results/metrics.py"
     },
     "DEC-414": {
       "kind": "DEC",
@@ -2242,8 +2242,8 @@
     "DEC-420": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1884-1897 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-421": {
       "kind": "DEC",
@@ -2261,7 +2261,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-425": {
       "kind": "DEC",
@@ -2309,7 +2309,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 630-649 executed in backtest/signals/technical.py"
+      "evidence": "function body 711-730 executed in backtest/signals/technical.py"
     },
     "DEC-433": {
       "kind": "DEC",
@@ -2465,7 +2465,7 @@
       "kind": "DEC",
       "tier": "DEFERRED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-460": {
       "kind": "DEC",
@@ -2483,7 +2483,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-463": {
       "kind": "DEC",
@@ -2501,13 +2501,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-466": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "DEC-467": {
       "kind": "DEC",
@@ -2651,19 +2651,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-492": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-493": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "DEC-496": {
       "kind": "DEC",
@@ -2699,7 +2699,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 678-756 executed in backtest/data/universe.py"
+      "evidence": "function body 717-795 executed in backtest/data/universe.py"
     },
     "DEC-500": {
       "kind": "DEC",
@@ -2729,7 +2729,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-507": {
       "kind": "DEC",
@@ -2843,7 +2843,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-127 executed in backtest/engine/backtest.py"
+      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
     },
     "DEC-595": {
       "kind": "DEC",
@@ -2885,19 +2885,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 360-363 executed in backtest/data/universe.py"
+      "evidence": "function body 140-244 executed in backtest/run_phase1a.py"
     },
     "BUG-001": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-002": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-003": {
       "kind": "BUG",
@@ -2909,7 +2909,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-005": {
       "kind": "BUG",
@@ -2939,7 +2939,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 65-133 executed in backtest/signals/technical.py"
+      "evidence": "function body 65-146 executed in backtest/signals/technical.py"
     },
     "BUG-010": {
       "kind": "BUG",
@@ -2951,13 +2951,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 217-226 executed in backtest/signals/screener.py"
+      "evidence": "function body 308-326 executed in backtest/signals/screener.py"
     },
     "BUG-012": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-013": {
       "kind": "BUG",
@@ -2992,8 +2992,8 @@
     "BUG-018": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1395-1557 executed in backtest/engine/backtest.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/backtest.py never executed"
     },
     "BUG-019": {
       "kind": "BUG",
@@ -3047,13 +3047,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 191-215 executed in backtest/signals/technical.py"
+      "evidence": "function body 244-268 executed in backtest/signals/technical.py"
     },
     "BUG-029": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 306-408 executed in backtest/engine/backtest.py"
+      "evidence": "function body 312-414 executed in backtest/engine/backtest.py"
     },
     "BUG-030": {
       "kind": "BUG",
@@ -3083,7 +3083,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-036": {
       "kind": "BUG",
@@ -3167,13 +3167,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 658-660 executed in backtest/signals/technical.py"
+      "evidence": "function body 739-741 executed in backtest/signals/technical.py"
     },
     "BUG-055": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 486-541 executed in backtest/signals/technical.py"
+      "evidence": "function body 539-594 executed in backtest/signals/technical.py"
     },
     "BUG-058": {
       "kind": "BUG",
@@ -3190,14 +3190,14 @@
     "BUG-060": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1006-1020 executed in backtest/signals/screener.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/signals/screener.py never executed"
     },
     "BUG-061": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-063": {
       "kind": "BUG",
@@ -3263,19 +3263,19 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2162-2430 executed in backtest/results/metrics.py"
+      "evidence": "function body 1840-1870 executed in backtest/results/metrics.py"
     },
     "BUG-077": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1132-1204 executed in backtest/signals/screener.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/signals/screener.py never executed"
     },
     "BUG-078": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-617 executed in backtest/engine/exit_manager.py"
+      "evidence": "function body 502-686 executed in backtest/engine/exit_manager.py"
     },
     "BUG-079": {
       "kind": "BUG",
@@ -3287,7 +3287,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-617 executed in backtest/engine/exit_manager.py"
+      "evidence": "function body 502-686 executed in backtest/engine/exit_manager.py"
     },
     "BUG-081": {
       "kind": "BUG",
@@ -3377,7 +3377,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2512-2582 executed in backtest/results/metrics.py"
+      "evidence": "function body 2558-2628 executed in backtest/results/metrics.py"
     },
     "BUG-097": {
       "kind": "BUG",
@@ -3443,13 +3443,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-111": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 824-830 executed in backtest/signals/screener.py"
+      "evidence": "function body 1068-1074 executed in backtest/signals/screener.py"
     },
     "BUG-112": {
       "kind": "BUG",
@@ -3629,7 +3629,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 293-299 executed in backtest/engine/backtest.py"
+      "evidence": "function body 299-305 executed in backtest/engine/backtest.py"
     },
     "BUG-219": {
       "kind": "BUG",
@@ -3713,7 +3713,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-1155 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
     },
     "BUG-229": {
       "kind": "BUG",
@@ -3767,19 +3767,19 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 494-1273 executed in backtest/engine/backtest.py"
+      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
     },
     "BUG-238": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 189-263 executed in backtest/engine/backtest.py"
+      "evidence": "function body 195-269 executed in backtest/engine/backtest.py"
     },
     "BUG-239": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 293-299 executed in backtest/engine/backtest.py"
+      "evidence": "function body 299-305 executed in backtest/engine/backtest.py"
     },
     "BUG-240": {
       "kind": "BUG",
@@ -4090,8 +4090,8 @@
     "BUG-135": {
       "kind": "BUG",
       "tier": "DEFERRED",
-      "engine": "YES",
-      "evidence": "function body 1247-1257 executed in backtest/results/metrics.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/results/metrics.py never executed"
     },
     "BUG-136": {
       "kind": "BUG",

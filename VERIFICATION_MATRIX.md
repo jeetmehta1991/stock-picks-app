@@ -21,43 +21,76 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 - FUNC-DEAD: 1
 
 **By coverage-driven engine status:**
-- Engine YES (executed): **283**
+- Engine YES (executed): **267**
 - Engine LAZY-WIRED (all tagged files wired via lazy import chains): **0** (import chain exists; condition gating the call not met in this small backtest)
 - Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **0** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
-- Engine FUNC-DEAD (function exists but never executed): **1**
+- Engine FUNC-DEAD (function exists but never executed): **19**
 - Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
-- Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **38** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
-- Engine N/A (no code expected): **409**
+- Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **37** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
+- Engine N/A (no code expected): **408**
 
-### Classification anomalies (tier vs engine mismatch): **3**
+### Classification anomalies (tier vs engine mismatch): **18**
 
 | ID | Tier | Engine | Note |
 |---|---|---|---|
+| `DEC-019` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-067` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-123` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-142` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-144` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-175` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-206` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-210` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-249` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-284` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-334` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-355` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-420` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `BUG-018` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `BUG-060` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `BUG-077` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
 | `BUG-186` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
 | `BUG-241` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
-| `BUG-135` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
 
 ### Pyramid coverage gaps (count of engine-consumed items missing per tier)
 
 - `unit`: **0** items lack a reference in this tier's test files
-- `smoke`: **269** items lack a reference in this tier's test files
+- `smoke`: **254** items lack a reference in this tier's test files
 - `integration`: **0** items lack a reference in this tier's test files
-- `system`: **277** items lack a reference in this tier's test files
-- `functional`: **278** items lack a reference in this tier's test files
-- `regression`: **279** items lack a reference in this tier's test files
-- `data_integrity`: **279** items lack a reference in this tier's test files
-- `performance`: **282** items lack a reference in this tier's test files
-- `acceptance`: **277** items lack a reference in this tier's test files
-- `property`: **282** items lack a reference in this tier's test files
-- `snapshot`: **280** items lack a reference in this tier's test files
-- `contract`: **272** items lack a reference in this tier's test files
-- `compatibility`: **282** items lack a reference in this tier's test files
+- `system`: **261** items lack a reference in this tier's test files
+- `functional`: **263** items lack a reference in this tier's test files
+- `regression`: **263** items lack a reference in this tier's test files
+- `data_integrity`: **263** items lack a reference in this tier's test files
+- `performance`: **266** items lack a reference in this tier's test files
+- `acceptance`: **261** items lack a reference in this tier's test files
+- `property`: **266** items lack a reference in this tier's test files
+- `snapshot`: **264** items lack a reference in this tier's test files
+- `contract`: **256** items lack a reference in this tier's test files
+- `compatibility`: **266** items lack a reference in this tier's test files
 
 ### Engine-consumption gaps detail
 
 | ID | engine | evidence | unit | integration |
 |---|---|---|---|---|
+| `DEC-019` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-067` | FUNC-DEAD | function in backtest/engine/backtest.py never executed | YES | YES |
+| `DEC-123` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-142` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-144` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-175` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-206` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-210` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-249` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-284` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-334` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-355` | FUNC-DEAD | function in backtest/signals/screener.py never executed | YES | YES |
+| `DEC-411` | FUNC-DEAD | function in backtest/signals/screener.py never executed | no | no |
+| `DEC-420` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `BUG-018` | FUNC-DEAD | function in backtest/engine/backtest.py never executed | YES | YES |
 | `BUG-027` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
+| `BUG-060` | FUNC-DEAD | function in backtest/signals/screener.py never executed | YES | YES |
+| `BUG-077` | FUNC-DEAD | function in backtest/signals/screener.py never executed | YES | YES |
+| `BUG-135` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 
 | ID | engine | unit | smoke | integration | system | functional | regression | data_integrity | performance | acceptance | property | snapshot | contract | compatibility |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -76,7 +109,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-013` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-015` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-018` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-019` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-019` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-021` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-027` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-028` | N/A | no | no | no | YES | no | no | no | no | no | no | no | no | no |
@@ -113,7 +146,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-060` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-061` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-062` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-067` | YES | YES | no | YES | no | YES | no | no | no | no | no | no | no | no |
+| `DEC-067` | FUNC-DEAD | YES | no | YES | no | YES | no | no | no | no | no | no | no | no |
 | `DEC-070` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-071` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-072` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -160,7 +193,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-120` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-121` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-122` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-123` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-123` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-124` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-125` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-126` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -177,9 +210,9 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-138` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-139` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-141` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-142` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-142` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-143` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-144` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-144` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-145` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-146` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-147` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -208,7 +241,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-172` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-173` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-174` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-175` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-175` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-176` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-177` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-178` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -238,11 +271,11 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-203` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-204` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-205` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-206` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-206` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-207` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-208` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-209` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-210` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-210` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-211` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-212` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-213` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -277,7 +310,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-246` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-247` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-248` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-249` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-249` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-250` | YES | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-251` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-252` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -311,7 +344,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-281` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-282` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-283` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-284` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-284` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-285` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-286` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-287` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -355,7 +388,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-331` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-332` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-333` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-334` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-334` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-335` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-338` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-339` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -371,7 +404,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-352` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-353` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-354` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-355` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-355` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-356` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-357` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-358` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -426,7 +459,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-408` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-409` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-410` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-411` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `DEC-411` | FUNC-DEAD | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-413` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-414` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-415` | YES | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
@@ -434,7 +467,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-417` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-418` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-419` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-420` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-420` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-421` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-422` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-423` | YES | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
@@ -559,7 +592,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `BUG-015` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-016` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-017` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-018` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-018` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-019` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-020` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-021` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -592,7 +625,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `BUG-055` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-058` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-059` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-060` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-060` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-061` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-063` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-064` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -605,7 +638,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `BUG-073` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-074` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-075` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-077` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-077` | FUNC-DEAD | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-078` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-079` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-080` | YES | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
@@ -742,7 +775,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `BUG-132` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-133` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-134` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-135` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-135` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-136` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-137` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-138` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |

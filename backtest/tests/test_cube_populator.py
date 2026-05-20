@@ -30,9 +30,26 @@ def test_populate_cube_empty_returns_empty():
 
 
 def test_populate_cube_missing_columns_raises():
-    bad_df = pd.DataFrame({"strategy": ["rsi"], "pnl_pct": [0.5]})
+    # Required cols are strategy + pnl_pct; exit_method/exit_reason normalized
+    # to 'unknown' if absent. Truly missing required col raises.
+    bad_df = pd.DataFrame({"exit_method": ["atr"], "regime": ["bull"]})  # missing strategy + pnl_pct
     with pytest.raises(ValueError):
         populate_cube(bad_df)
+
+
+def test_populate_cube_accepts_exit_reason_alias():
+    # Real trade_log uses exit_reason (engine) not exit_method.
+    # cube_populator should accept either.
+    df = pd.DataFrame({
+        "strategy":    ["rsi"] * 30,
+        "exit_reason": ["trailing_stop"] * 30,  # alias
+        "regime":      ["bull"] * 30,
+        "pnl_pct":     [1.0] * 30,
+        "ticker":      ["AAPL"] * 30,
+    })
+    cube = populate_cube(df)
+    assert not cube.empty
+    assert cube["exit_method"].iloc[0] == "trailing_stop"
 
 
 def test_compute_cell_metrics_basic():

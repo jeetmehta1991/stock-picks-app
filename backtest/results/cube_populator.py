@@ -59,7 +59,7 @@ _FIVE_GATE = {
     "rr_min":         2.0,
 }
 
-_REQUIRED_COLS = {"strategy", "exit_method", "pnl_pct"}
+_REQUIRED_COLS = {"strategy", "pnl_pct"}  # exit column normalized below
 
 
 def _normalize_regime_column(df: pd.DataFrame) -> pd.DataFrame:
@@ -72,6 +72,21 @@ def _normalize_regime_column(df: pd.DataFrame) -> pd.DataFrame:
         return df
     df = df.copy()
     df["regime"] = "neutral"  # safe default
+    return df
+
+
+def _normalize_exit_column(df: pd.DataFrame) -> pd.DataFrame:
+    """Accept 'exit_method' OR 'exit_reason' (engine emits the latter).
+    The two are semantically the same: the exit-strategy name that fired.
+    """
+    if "exit_method" in df.columns:
+        return df
+    if "exit_reason" in df.columns:
+        df = df.copy()
+        df["exit_method"] = df["exit_reason"]
+        return df
+    df = df.copy()
+    df["exit_method"] = "unknown"
     return df
 
 
@@ -217,6 +232,7 @@ def populate_cube(trade_log: pd.DataFrame) -> pd.DataFrame:
     if missing:
         raise ValueError(f"populate_cube: missing required columns {missing}")
     df = _normalize_regime_column(trade_log)
+    df = _normalize_exit_column(df)
     rows = []
     grouped = df.groupby(["strategy", "exit_method", "regime"], sort=False)
     for (strat, exit_m, regime), sub in grouped:
