@@ -2044,6 +2044,138 @@ def strat_triangle_ascending_long(s):
 
 
 # ---------------------------------------------------------------------------
+# Calendar effects (DEC-368 / Batch 231) - 4 strategies, Batch 254 registration
+# Day-level caching via lru_cache so universe-wide signals computed once per as_of
+# ---------------------------------------------------------------------------
+from functools import lru_cache
+
+
+@lru_cache(maxsize=4)
+def _cached_calendar_signals(as_of_iso: str) -> dict:
+    from datetime import date as _d
+    from backtest.signals.calendar_effects import compute_calendar_signals
+    return compute_calendar_signals(_d.fromisoformat(as_of_iso))
+
+
+@lru_cache(maxsize=4)
+def _cached_cross_asset_signals(as_of_iso: str) -> dict:
+    from datetime import date as _d
+    from backtest.signals.cross_asset import compute_cross_asset_signals
+    return compute_cross_asset_signals(_d.fromisoformat(as_of_iso))
+
+
+def strat_totm_long(s):
+    """Batch 254: Ariel 1987 TOTM (last-4 + first-3 trading days)."""
+    fires = s.get("is_totm_window", False) and s.get("price_above_ema_200", True)
+    return _strat(fires, "long", "calendar",
+        ["is_totm_window", "price_above_ema_200"],
+        ["TOTM window (Ariel 1987: last-4 + first-3 trading days)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_pre_holiday_long(s):
+    """Batch 254: Lakonishok-Smidt 1988 + Ariel 1990 pre-holiday drift."""
+    fires = (
+        s.get("is_pre_holiday", False)
+        and s.get("dow", 0) != 0  # not Monday
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "calendar",
+        ["is_pre_holiday", "dow!=0", "price_above_ema_200"],
+        ["Pre-holiday session (Lakonishok-Smidt 1988)",
+         "Not Monday (avoid Cross 1973 weakness)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_january_effect_small_cap_long(s):
+    """Batch 254: Rozeff-Kinney 1976 January Effect (small/micro-cap subset)."""
+    fires = (
+        s.get("is_january", False)
+        and s.get("cap_band", "") in ("micro", "small")
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "calendar",
+        ["is_january", "cap_band in (micro,small)", "price_above_ema_200"],
+        ["January Effect (Rozeff-Kinney 1976; small-cap subset)",
+         "Easterday-Sen-Stephan 2009: persists in micro/small-cap",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_halloween_seasonal_long(s):
+    """Batch 254: Bouman-Jacobsen 2002 Halloween Indicator."""
+    fires = s.get("is_halloween_period", False) and s.get("price_above_ema_200", True)
+    return _strat(fires, "long", "calendar",
+        ["is_halloween_period", "price_above_ema_200"],
+        ["Halloween period Nov-Apr (Bouman-Jacobsen 2002)",
+         "Above 200 EMA (regime gate)"])
+
+
+# ---------------------------------------------------------------------------
+# Cross-asset signals (DEC-369 / Batch 232) - 5 strategies, Batch 254 reg
+# ---------------------------------------------------------------------------
+def strat_risk_off_bond_equity_short(s):
+    """Batch 254: short equity when TLT/SPY rising (risk-off bond flight).
+    Asness 2003 Fed Model / Connolly-Stivers-Sun 2005."""
+    fires = s.get("risk_off_regime_bond_signal", False)
+    return _strat(fires, "short", "cross_asset",
+        ["risk_off_regime_bond_signal"],
+        ["TLT/SPY ratio rising (bond flight = risk-off)",
+         "Asness 2003 / Connolly-Stivers-Sun 2005"])
+
+
+def strat_vix_backwardation_long(s):
+    """Batch 254: long quality when VIX > VIX3M (stress regime).
+    Cheng 2019 JFE: short-vol unwinds; convexity for longs."""
+    fires = (
+        s.get("vix_term_backwardation", False)
+        and s.get("xs_quality_decile", 0) >= 8
+    )
+    return _strat(fires, "long", "cross_asset",
+        ["vix_term_backwardation", "xs_quality_decile>=8"],
+        ["VIX > VIX3M backwardation (stress regime)",
+         "Top-quintile quality (defensive sleeve)"])
+
+
+def strat_sector_rotation_defensive_long(s):
+    """Batch 254: long defensive sectors when defensive_leadership active.
+    Conover-Jensen-Johnson-Mercer 2008 JoF."""
+    fires = (
+        s.get("defensive_leadership", False)
+        and s.get("sector", "") in ("Utilities", "Consumer Staples", "Health Care")
+    )
+    return _strat(fires, "long", "cross_asset",
+        ["defensive_leadership", "sector in defensive"],
+        ["Defensive sectors leading XLU/XLP/XLV vs cyclicals",
+         f"Ticker in defensive sector {s.get('sector', '')}"])
+
+
+def strat_gold_silver_risk_off_long(s):
+    """Batch 254: gold-silver ratio rising = risk-off; long defensive
+    overlay. Hammoudeh-Yuan 2008 Resources Policy."""
+    fires = (
+        s.get("risk_off_regime_gold_signal", False)
+        and s.get("sector", "") in ("Utilities", "Consumer Staples")
+    )
+    return _strat(fires, "long", "cross_asset",
+        ["risk_off_regime_gold_signal", "sector in defensive"],
+        ["Gold/Silver ratio rising (risk-off confirmation)",
+         f"Defensive sector {s.get('sector', '')}"])
+
+
+def strat_dxy_headwind_multinational_short(s):
+    """Batch 254: short SPY-multinational names when DXY strengthening.
+    Fratzscher 2009 JoB."""
+    fires = (
+        s.get("usd_strengthening", False)
+        and s.get("foreign_rev_pct", 0.0) > 40.0
+    )
+    return _strat(fires, "short", "cross_asset",
+        ["usd_strengthening", "foreign_rev_pct>40"],
+        ["DXY strengthening 20d > 2% (multinational headwind)",
+         f"Foreign rev {s.get('foreign_rev_pct', 0):.0f}% (translation risk)"])
+
+
+# ---------------------------------------------------------------------------
 # Pairs trading (DEC-369 / Batch 229) - 2 strategies, Batch 253 registration
 # ---------------------------------------------------------------------------
 def strat_pairs_mean_reversion_long(s):
@@ -2160,6 +2292,17 @@ ALL_STRATEGIES = {
     # News sentiment (2 - Batch 253 2026-05-20 / DEC-411)
     "news_sentiment_long":              strat_news_sentiment_long,
     "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
+    # Calendar effects (4 - Batch 254 2026-05-20 / DEC-368)
+    "totm_long":                        strat_totm_long,
+    "pre_holiday_long":                 strat_pre_holiday_long,
+    "january_effect_small_cap_long":    strat_january_effect_small_cap_long,
+    "halloween_seasonal_long":          strat_halloween_seasonal_long,
+    # Cross-asset (5 - Batch 254 2026-05-20 / DEC-369)
+    "risk_off_bond_equity_short":       strat_risk_off_bond_equity_short,
+    "vix_backwardation_long":           strat_vix_backwardation_long,
+    "sector_rotation_defensive_long":   strat_sector_rotation_defensive_long,
+    "gold_silver_risk_off_long":        strat_gold_silver_risk_off_long,
+    "dxy_headwind_multinational_short": strat_dxy_headwind_multinational_short,
     # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
     "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
     "orb_stocks_in_play_short":     strat_orb_stocks_in_play_short,
@@ -2572,6 +2715,21 @@ def screen_instrument(
         news_out = compute_news_sentiment_signals(ticker, as_of, lookback_days=7)
         if news_out:
             signals.update(news_out)
+    except Exception:
+        pass
+    # Batch 254: calendar effects (DEC-368). Universe-wide; lru_cache once
+    # per as_of date.
+    try:
+        cal_out = _cached_calendar_signals(str(as_of))
+        if cal_out:
+            signals.update(cal_out)
+    except Exception:
+        pass
+    # Batch 254: cross-asset signals (DEC-369). Universe-wide; lru_cache.
+    try:
+        xa_out = _cached_cross_asset_signals(str(as_of))
+        if xa_out:
+            signals.update(xa_out)
     except Exception:
         pass
     # Batch 220: merge cross-sectional factor ranks from the universe-

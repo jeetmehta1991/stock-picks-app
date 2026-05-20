@@ -87,6 +87,19 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # tracks risk-on; bad-news cluster overwhelms in crisis.
     "news_sentiment_long":              {"bull", "neutral"},
     "news_sentiment_shift_long":        {"bull", "neutral"},
+    # Calendar effects (Batch 254 / DEC-368): all-regime except crisis -
+    # calendar anomalies don't survive stress regimes per literature.
+    "totm_long":                        {"bull", "neutral", "bear"},
+    "pre_holiday_long":                 {"bull", "neutral", "bear"},
+    "january_effect_small_cap_long":    {"bull", "neutral", "bear"},
+    "halloween_seasonal_long":          {"bull", "neutral", "bear"},
+    # Cross-asset (Batch 254 / DEC-369): stress-regime activations preferred
+    # for risk-off signals; DXY headwind works in all regimes.
+    "risk_off_bond_equity_short":       {"bear", "crisis"},
+    "vix_backwardation_long":           {"bear", "crisis"},
+    "sector_rotation_defensive_long":   {"bear", "crisis"},
+    "gold_silver_risk_off_long":        {"bear", "crisis"},
+    "dxy_headwind_multinational_short": {"bull", "neutral", "bear", "crisis"},
     # Mean-reversion: avoid bull (Mag-7 fade trap)
     "bollinger_lower":          {"neutral", "bear"},
     "bollinger_tight":          {"bull", "neutral"},
