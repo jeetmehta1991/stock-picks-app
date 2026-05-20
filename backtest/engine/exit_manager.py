@@ -283,6 +283,24 @@ def update_trailing_stop(
         pct = TRAILING_STOP["trail_pct"]
     ratchet_from = TRAILING_STOP.get("ratchet_from", "close")
 
+    # Batch 262: breakeven-at-1R logic. Once trade hits +1R (= |entry -
+    # initial_stop| favourable from entry), ratchet stop to BREAKEVEN
+    # (entry price). Locks in $0-worst-case while preserving trailing
+    # upside. Reduces 12.58pp avg give-back observed in 1A-alpha post-
+    # mortem. Disabled when initial_stop unavailable or 1R not yet hit.
+    breakeven_enabled = TRAILING_STOP.get("breakeven_move_at_1r", False)
+    if breakeven_enabled and trade.initial_stop and trade.entry_price:
+        ep = trade.entry_price
+        init_stop = trade.initial_stop
+        one_r = abs(ep - init_stop)
+        if one_r > 0:
+            if trade.direction == "long":
+                if today_close >= ep + one_r:
+                    trade.trailing_stop = max(trade.trailing_stop, ep)
+            else:  # short
+                if today_close <= ep - one_r:
+                    trade.trailing_stop = min(trade.trailing_stop, ep) if trade.trailing_stop > 0 else ep
+
     if trade.direction == "long":
         # Pick the favourable reference price per config toggle
         if ratchet_from == "intraday_extreme" and today_high is not None:
@@ -503,28 +521,20 @@ def process_day_exits(
     still_open = []
 
     # Batch 226: VIX-spike kill switch
-    # Batch 261 fix (Pass 53 Day 9+ 2026-05-20 post-1A-alpha forensic):
-    # Original threshold (+5 VIX in 5d) was too tight - fired on routine
-    # vol spikes (VIX 15->20, 20->25) which are normal in any 4y window.
-    # Phase 1A-alpha verdict: 364 of 1181 trades (30.8%) force-closed by
-    # this switch at day's open (worst-of-day prices typical during spikes),
-    # destroying aggregate -70.11% return.
-    # Forensic: switch is REDUNDANT with DEC-516 exit_regime_flip which
-    # handles regime-flip exits properly. Tightening here to require:
-    #   (1) absolute VIX > 35 (genuine crisis level; COVID/2008/dot-com), AND
-    #   (2) +50% VIX in 5 days (true catastrophic move, not normal correction)
-    # Both conditions must hold. This makes the switch a true CATASTROPHIC
-    # circuit breaker rather than a routine drawdown response.
-    VIX_SPIKE_KILL_ABS_THRESHOLD = 35.0
-    VIX_SPIKE_KILL_PCT_THRESHOLD = 0.50
+    # Batch 262 (Pass 53 Day 9+ 2026-05-20 post-1A-alpha re-forensic):
+    # REVERTED Batch 261's tightening. Phase 1A-alpha post-mortem on trade
+    # log showed vix_kill exits had +1.27% mean PnL / 40.7% WR - it was a
+    # PROFIT-PROTECT mechanism, NOT the alpha killer (the true killer was
+    # smc_inverse_fvg at -1659pp contribution per per-strategy analysis).
+    # Restoring original threshold: +5 VIX points in 5d trigger. This
+    # catches normal-correction onset early and exits longs profitably
+    # before trailing_stop's larger 10pct give-back kicks in.
     vix_spike_active = False
     if vix_history is not None and vix_value is not None and len(vix_history) >= 6:
         try:
             vix_5d_ago = float(vix_history[-6])
             vix_today  = float(vix_value)
-            absolute_crisis = vix_today > VIX_SPIKE_KILL_ABS_THRESHOLD
-            pct_spike = vix_5d_ago > 0 and (vix_today - vix_5d_ago) / vix_5d_ago > VIX_SPIKE_KILL_PCT_THRESHOLD
-            if absolute_crisis and pct_spike:
+            if vix_today - vix_5d_ago > 5.0:
                 vix_spike_active = True
         except (TypeError, ValueError, IndexError):
             vix_spike_active = False

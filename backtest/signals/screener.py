@@ -1561,14 +1561,35 @@ def strat_smc_inverse_fvg(s):
     below) -> the zone flips role and acts as resistance (short).
     Symmetric for bearish FVG invalidated upward (long).
     ICT 'IFVG' concept: a failed institutional imbalance becomes the new
-    opposing reference."""
-    fl = s.get("smc_inverse_fvg_bullish", False)
-    fs = s.get("smc_inverse_fvg_bearish", False)
+    opposing reference.
+
+    Batch 262 fix (Pass 53 Day 9+ 2026-05-20 post-1A-alpha forensic):
+    Original signal fired 478 trades (40% of all flow) with 24.7% WR /
+    -3.47% mean PnL = -1659pp total contribution = ~95% of aggregate loss.
+    Root cause: no regime gate, no volume confirmation, no momentum filter.
+    Fired on every IFVG flag indiscriminately.
+
+    Added confluence gates:
+    - 200-EMA regime alignment (long above, short below)
+    - vol_spike OR price_acceleration confirms institutional follow-through
+      (IFVG breakdown without volume = false signal per ICT canon)
+    """
+    fl_base = s.get("smc_inverse_fvg_bullish", False)
+    fs_base = s.get("smc_inverse_fvg_bearish", False)
+    above_200 = s.get("price_above_ema_200", True)
+    below_200 = not above_200
+    # Volume confirmation: vol_spike_2x (2x ADV) OR force_index_breakout
+    # signals institutional follow-through on the role-flip
+    vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_breakout", False)
+    fl = fl_base and above_200 and vol_confirms
+    fs = fs_base and below_200 and vol_confirms
     return _strat3(fl, fs, "smc",
-        ["smc_inverse_fvg_bullish"],
-        ["smc_inverse_fvg_bearish"],
-        ["Inverse FVG (bearish FVG broken upward) - role flips to support"],
-        ["Inverse FVG (bullish FVG broken downward) - role flips to resistance"])
+        ["smc_inverse_fvg_bullish", "price_above_ema_200", "vol_confirms"],
+        ["smc_inverse_fvg_bearish", "price_below_ema_200", "vol_confirms"],
+        ["Inverse FVG bullish + 200-EMA gate + volume confirms",
+         "ICT IFVG role-flip with institutional follow-through"],
+        ["Inverse FVG bearish + 200-EMA gate + volume confirms",
+         "ICT IFVG role-flip with institutional follow-through"])
 
 
 def strat_smc_breaker_block_short(s):

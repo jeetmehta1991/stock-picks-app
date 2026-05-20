@@ -8402,17 +8402,35 @@ def test_batch216_smc_fvg_retest_long_requires_zone_and_regime():
 
 
 def test_batch216_smc_inverse_fvg_handles_both_directions():
-    """Batch 216: smc_inverse_fvg fires long on inverse_fvg_bullish
-    (bearish FVG broken upward) and short on inverse_fvg_bearish."""
+    """Batch 216 + 262 fix: smc_inverse_fvg fires long on inverse_fvg_bullish
+    (bearish FVG broken upward) + 200-EMA gate + volume confirms. Symmetric
+    short on inverse_fvg_bearish + below 200-EMA + volume confirms.
+    Batch 262 added gates: 200-EMA regime + (vol_spike_2x OR force_index_breakout)
+    per post-1A-alpha forensic (strategy was the dominant -1659pp contributor)."""
     from backtest.signals.screener import strat_smc_inverse_fvg
-    s = {"smc_inverse_fvg_bullish": True, "smc_inverse_fvg_bearish": False}
+    # Long: bullish IFVG + above 200 EMA + vol confirms -> fires
+    s = {
+        "smc_inverse_fvg_bullish": True, "smc_inverse_fvg_bearish": False,
+        "price_above_ema_200": True, "vol_spike_2x": True,
+    }
     r = strat_smc_inverse_fvg(s)
     assert r["fires"] is True and r["direction"] == "long"
-    s = {"smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": True}
+    # Short: bearish IFVG + below 200 EMA + vol confirms -> fires
+    s = {
+        "smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": True,
+        "price_above_ema_200": False, "force_index_breakout": True,
+    }
     r = strat_smc_inverse_fvg(s)
     assert r["fires"] is True and r["direction"] == "short"
+    # No IFVG signal -> no fire
     s = {"smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": False}
     assert strat_smc_inverse_fvg(s)["fires"] is False
+    # Batch 262 regression check: IFVG flag alone is NOT enough anymore
+    # (this was the bug that caused 478 trades / -1659pp contribution).
+    s = {"smc_inverse_fvg_bullish": True, "smc_inverse_fvg_bearish": False}
+    assert strat_smc_inverse_fvg(s)["fires"] is False, (
+        "Batch 262: IFVG should NOT fire without 200-EMA + volume gates"
+    )
 
 
 def test_batch216_smc_discount_long_requires_zone_and_structure():
