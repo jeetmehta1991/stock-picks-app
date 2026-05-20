@@ -7246,6 +7246,130 @@ def test_batch230_compute_news_sentiment_signals_no_data():
     assert out == {}
 
 
+def test_batch267_news_sentiment_alias_keys_emitted(tmp_path, monkeypatch):
+    """Batch 267 Path B: compute_news_sentiment_signals must emit
+    news_article_count + news_sentiment_mean as aliases of
+    news_count_7d + news_sentiment_score so strat_news_sentiment_long
+    (which reads the alias names) can fire."""
+    from datetime import date
+    import pandas as pd
+    import backtest.signals.news_sentiment as ns
+
+    fake = pd.DataFrame({
+        "ticker": ["TST"] * 5,
+        "published_utc": pd.to_datetime([
+            "2024-04-01", "2024-04-02", "2024-04-03",
+            "2024-04-04", "2024-04-05",
+        ]),
+        "title": ["beats strong growth", "exceeded outperform raises",
+                  "robust gains surge", "weak miss decline",
+                  "neutral coverage"],
+        "description": [""] * 5,
+        "sentiment": [None, None, None, None, None],
+    })
+    path = tmp_path / "TST.parquet"
+    fake.to_parquet(path)
+    monkeypatch.setattr(ns, "_NEWS_DIR", tmp_path)
+
+    out = ns.compute_news_sentiment_signals("TST", date(2024, 4, 6), lookback_days=7)
+    # Alias keys must be present and match canonical keys.
+    assert out["news_article_count"] == out["news_count_7d"] == 5
+    assert out["news_sentiment_mean"] == out["news_sentiment_score"]
+    # Mean must be > 0 given the bullish-skewed fixture.
+    assert out["news_sentiment_mean"] > 0.0
+
+
+def test_batch267_news_sentiment_shift_positive_delta(tmp_path, monkeypatch):
+    """Batch 267 Path B: news_sentiment_shift = current 7d mean - prior 7d
+    mean. Strongly bullish current + bearish prior => positive shift."""
+    from datetime import date
+    import pandas as pd
+    import backtest.signals.news_sentiment as ns
+
+    fake = pd.DataFrame({
+        "ticker": ["TST"] * 6,
+        "published_utc": pd.to_datetime([
+            "2024-03-25", "2024-03-26", "2024-03-27",   # prior window (bearish)
+            "2024-04-02", "2024-04-03", "2024-04-04",   # current window (bullish)
+        ]),
+        "title": [
+            "weak miss decline", "loss bankruptcy", "downgrade plunge",
+            "beats strong growth", "exceeded outperform", "surge rally",
+        ],
+        "description": [""] * 6,
+        "sentiment": [None] * 6,
+    })
+    path = tmp_path / "TST.parquet"
+    fake.to_parquet(path)
+    monkeypatch.setattr(ns, "_NEWS_DIR", tmp_path)
+
+    out = ns.compute_news_sentiment_signals("TST", date(2024, 4, 5), lookback_days=7)
+    assert "news_sentiment_shift" in out
+    assert out["news_sentiment_shift"] > 0.5, (
+        f"Expected strongly positive shift (bullish current vs bearish prior), "
+        f"got {out['news_sentiment_shift']}"
+    )
+    assert out["news_prior_article_count"] == 3
+
+
+def test_batch267_news_sentiment_shift_zero_when_prior_empty(tmp_path, monkeypatch):
+    """Batch 267 Path B: shift defaults to 0.0 when prior window has
+    no articles (insufficient data to compute meaningful delta)."""
+    from datetime import date
+    import pandas as pd
+    import backtest.signals.news_sentiment as ns
+
+    fake = pd.DataFrame({
+        "ticker": ["TST"] * 3,
+        "published_utc": pd.to_datetime([
+            "2024-04-02", "2024-04-03", "2024-04-04",   # current only
+        ]),
+        "title": ["beats strong", "exceeded raises", "surge gains"],
+        "description": [""] * 3,
+        "sentiment": [None] * 3,
+    })
+    path = tmp_path / "TST.parquet"
+    fake.to_parquet(path)
+    monkeypatch.setattr(ns, "_NEWS_DIR", tmp_path)
+
+    out = ns.compute_news_sentiment_signals("TST", date(2024, 4, 5), lookback_days=7)
+    assert out["news_sentiment_shift"] == 0.0
+    assert out["news_prior_article_count"] == 0
+    # Current window still has content
+    assert out["news_article_count"] == 3
+    assert out["news_sentiment_mean"] > 0.0
+
+
+def test_batch267_news_sentiment_strat_fires_on_aliased_keys():
+    """Batch 267 Path B end-to-end: strat_news_sentiment_long must fire
+    when fed signals with the aliased keys + threshold met. This is the
+    integration check that was missing - previously the strategy
+    silently returned None on every tick."""
+    from backtest.signals.screener import strat_news_sentiment_long
+    signals = {
+        "news_sentiment_mean":   0.5,    # >0.3
+        "news_article_count":    5,      # >=3
+        "price_above_ema_200":   True,
+    }
+    res = strat_news_sentiment_long(signals)
+    assert res is not None, "Strategy must fire when entry gates met"
+    assert res.get("direction") == "long"
+
+
+def test_batch267_news_sentiment_shift_strat_fires():
+    """Batch 267 Path B: strat_news_sentiment_shift_long must fire when
+    shift>0.4 + article_count>=2 + 200-EMA gates met."""
+    from backtest.signals.screener import strat_news_sentiment_shift_long
+    signals = {
+        "news_sentiment_shift": 0.6,    # >0.4
+        "news_article_count":   3,      # >=2
+        "price_above_ema_200":  True,
+    }
+    res = strat_news_sentiment_shift_long(signals)
+    assert res is not None, "Shift strategy must fire when entry gates met"
+    assert res.get("direction") == "long"
+
+
 def test_batch229_engle_granger_returns_expected_keys():
     """Batch 229 (deferred-items pairs trading 2026-05-18 owner-approved):
     engle_granger_cointegration returns dict with cointegrated, hedge_ratio,

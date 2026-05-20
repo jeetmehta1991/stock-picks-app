@@ -100,6 +100,36 @@ def _polygon_sentiment_to_score(s: str) -> Optional[float]:
     return None
 
 
+def _score_article(row) -> tuple:
+    """Score one article row. Returns (score, used_polygon).
+    Polygon sentiment preferred; rule-based fallback on title+description."""
+    p_score = _polygon_sentiment_to_score(row.get("sentiment"))
+    if p_score is not None:
+        return p_score, True
+    title = row.get("title", "") or ""
+    desc  = row.get("description", "") or ""
+    return _rule_based_sentiment(f"{title}. {desc}"), False
+
+
+def _score_window(sub: pd.DataFrame) -> tuple:
+    """Score every article in a window. Returns (mean, n, n_pos, n_neg,
+    used_polygon_any). Empty window returns (0.0, 0, 0, 0, False)."""
+    scores = []
+    uses_polygon = False
+    for _, row in sub.iterrows():
+        s, used_p = _score_article(row)
+        scores.append(s)
+        if used_p:
+            uses_polygon = True
+    n = len(scores)
+    if n == 0:
+        return 0.0, 0, 0, 0, False
+    avg = sum(scores) / n
+    n_pos = sum(1 for s in scores if s > 0)
+    n_neg = sum(1 for s in scores if s < 0)
+    return avg, n, n_pos, n_neg, uses_polygon
+
+
 def compute_news_sentiment_signals(
     ticker: str,
     as_of: date,
@@ -114,15 +144,32 @@ def compute_news_sentiment_signals(
       - Fallback rule-based scorer on title + description text
 
     Returns dict with optional keys:
-      - news_count_7d:           int (count of articles in window)
-      - news_sentiment_score:    float in [-1, 1] (mean across articles)
-      - news_bullish_pct:        float in [0, 1] (fraction positive)
-      - news_bearish_pct:        float in [0, 1] (fraction negative)
-      - news_uses_polygon_score: bool (True if any article had Polygon
-                                  sentiment populated)
+      - news_count_7d / news_article_count:  int (article count in current
+                                               window; aliased so
+                                               strat_news_sentiment_long
+                                               and strat_news_sentiment_shift_long
+                                               can read either name).
+      - news_sentiment_score / news_sentiment_mean: float in [-1, 1] (mean
+                                               across articles; aliased for
+                                               back-compat + strategy consumers).
+      - news_bullish_pct / news_bearish_pct: float in [0, 1]
+      - news_sentiment_shift:    float in [-2, 2] (current-window mean minus
+                                  prior-window mean of same size; positive =
+                                  sentiment improving vs prior period;
+                                  0.0 when prior window is empty).
+      - news_prior_article_count: int (count in prior window; helps
+                                   interpret shift confidence).
+      - news_uses_polygon_score: bool (True if any current-window article
+                                  had Polygon sentiment populated).
 
-    Returns empty dict on data miss / no recent articles (consumer's
-    .get() fallback to default 0).
+    Batch 267 (2026-05-20 owner-approved Path B): emits aliased keys
+    (news_article_count / news_sentiment_mean) so the news sentiment
+    strategies can read them, and computes news_sentiment_shift (delta vs
+    prior `lookback_days` window) so strat_news_sentiment_shift_long can
+    fire. Prior keys (news_count_7d / news_sentiment_score) preserved for
+    back-compat with existing trade_log artifacts.
+
+    Returns empty dict on data miss (consumer's .get() fallback to 0).
     """
     safe_ticker = ticker.replace(".", "-")
     path = _NEWS_DIR / f"{safe_ticker}.parquet"
@@ -140,38 +187,38 @@ def compute_news_sentiment_signals(
         df["published_date"] = df["published_dt"].dt.date
     except Exception:
         return {}
-    cutoff = as_of - timedelta(days=lookback_days)
-    sub = df[(df["published_date"] >= cutoff) & (df["published_date"] <= as_of)]
-    if sub.empty:
-        return {"news_count_7d": 0, "news_sentiment_score": 0.0,
+
+    # Current window: [as_of - lookback_days, as_of]
+    cur_start = as_of - timedelta(days=lookback_days)
+    cur = df[(df["published_date"] >= cur_start) & (df["published_date"] <= as_of)]
+    # Prior window: [as_of - 2*lookback_days, as_of - lookback_days)
+    prior_start = as_of - timedelta(days=2 * lookback_days)
+    prior_end   = as_of - timedelta(days=lookback_days)
+    prior = df[(df["published_date"] >= prior_start) & (df["published_date"] < prior_end)]
+
+    cur_avg, cur_n, n_pos, n_neg, uses_polygon = _score_window(cur)
+    prior_avg, prior_n, _p_pos, _p_neg, _p_polygon = _score_window(prior)
+
+    if cur_n == 0:
+        return {"news_count_7d": 0, "news_article_count": 0,
+                "news_sentiment_score": 0.0, "news_sentiment_mean": 0.0,
                 "news_bullish_pct": 0.0, "news_bearish_pct": 0.0,
+                "news_sentiment_shift": 0.0,
+                "news_prior_article_count": int(prior_n),
                 "news_uses_polygon_score": False}
-    scores = []
-    uses_polygon = False
-    for _, row in sub.iterrows():
-        # Prefer Polygon-supplied sentiment when present
-        p_score = _polygon_sentiment_to_score(row.get("sentiment"))
-        if p_score is not None:
-            scores.append(p_score)
-            uses_polygon = True
-            continue
-        # Fall back to rule-based on title + description
-        title = row.get("title", "") or ""
-        desc  = row.get("description", "") or ""
-        text  = f"{title}. {desc}"
-        scores.append(_rule_based_sentiment(text))
-    n = len(scores)
-    if n == 0:
-        return {"news_count_7d": 0, "news_sentiment_score": 0.0,
-                "news_bullish_pct": 0.0, "news_bearish_pct": 0.0,
-                "news_uses_polygon_score": False}
-    avg = sum(scores) / n
-    n_pos = sum(1 for s in scores if s > 0)
-    n_neg = sum(1 for s in scores if s < 0)
+
+    # Shift only meaningful when prior window has articles to compare against.
+    shift = (cur_avg - prior_avg) if prior_n > 0 else 0.0
+
+    avg_r = round(float(cur_avg), 4)
     return {
-        "news_count_7d":           int(n),
-        "news_sentiment_score":    round(float(avg), 4),
-        "news_bullish_pct":        round(n_pos / n, 4),
-        "news_bearish_pct":        round(n_neg / n, 4),
-        "news_uses_polygon_score": bool(uses_polygon),
+        "news_count_7d":             int(cur_n),
+        "news_article_count":        int(cur_n),
+        "news_sentiment_score":      avg_r,
+        "news_sentiment_mean":       avg_r,
+        "news_bullish_pct":          round(n_pos / cur_n, 4),
+        "news_bearish_pct":          round(n_neg / cur_n, 4),
+        "news_sentiment_shift":      round(float(shift), 4),
+        "news_prior_article_count":  int(prior_n),
+        "news_uses_polygon_score":   bool(uses_polygon),
     }
