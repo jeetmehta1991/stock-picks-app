@@ -56,6 +56,17 @@ jobs:
           pip install xgboost --quiet
           pip install scikit-learn --quiet
           pip install "numba>=0.58.1" --quiet
+          # Batch 250 CI fix (Pass 53 Day 9+ 2026-05-20): vendored
+          # smartmoneyconcepts library needs editable install so its
+          # internal absolute import `from smartmoneyconcepts.smc import smc`
+          # (inside vendored/smartmoneyconcepts/smartmoneyconcepts/__init__.py)
+          # resolves. Without this, smc_ict.py catches ImportError and sets
+          # _SMC_AVAILABLE=False -> compute_smc_signals returns {} -> test_batch216
+          # asserts smc_fvg_retest_long_zone in {} which fails.
+          # Suppress library's startup print (unicode star) by setting SMC_CREDIT=0
+          # before any import attempt.
+          export SMC_CREDIT=0
+          pip install -e vendored/smartmoneyconcepts/ --quiet
 
       - name: Tier 1 — Unit tests
         run: |
