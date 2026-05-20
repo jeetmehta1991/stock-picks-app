@@ -1,9 +1,30 @@
 # IMPLEMENTATION_PLAN.md — Post-Batch-225 pending + backlog implementation
 
 **Authored:** 2026-05-18 (Pass 53 Day 9+ Batch 234)
+**Updated:** 2026-05-19 (Batch 240) — superseded by [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md) for architecture + cost + universe + timeframe canonical table. This doc remains canonical for T0-T7 track implementation detail.
+
 **Trigger:** Batch 225 5-batch parallel rerun lands (5 procs in flight, ~1.3-1.4 GB RAM each, ~3-4 hrs remaining).
 **Owner state:** sleeping. Autonomous execution mandate for T0 + T5b + T1 + T2.
 **Owner gates to clear tomorrow morning (2026-05-19):** T3 PROPOSED triage + T4 OPEN-INV triage + T5a FinBERT decision (default: defer per owner concur).
+
+---
+
+## ARCHITECTURE CLARIFICATION (Pass 53 Day 9+ 2026-05-19 owner directive)
+
+The original "Phase 1B-α = full-universe agent overlay run" framing is **WRONG**. Corrected architecture:
+
+1. **Phase 1A-α** = T1a sanity check (in-flight, ~24h compute)
+2. **Phase 1A-β** = exhaustive search across ALL strategies × ALL tickers × FULL timeframe → produces **winning (strategy × exit × regime) combos**
+3. **Phase 1B-α** = agents applied ONLY to winning combos from 1A-β → tests whether agents optimize ROI of already-validated baselines
+4. **A/B framework** (DEC-131/207-216) operates on winners-only subset, NOT arbitrary universe pilot
+
+**Implications:**
+- Phase 1A-β scope is non-negotiable: full 1937 tkrs × ~180 strategies × 4y
+- Phase 1B-α actual cost likely **~$50-150** (winners-only), not $300 (full universe)
+- $300 budget pre-approved as ceiling per owner 2026-05-19
+- Phase 1B-α prereq is the 1A-β winners list
+
+**Canonical:** [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md) summary table.
 
 ---
 

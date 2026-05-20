@@ -187,15 +187,19 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 **Detail:** ENGINEERING_REGISTER.md → Sprint 6.5-7.
 
-### 3.8 Phase 1A-β — Production-Scale Validation Run (Sprint 7 Day 1)
+### 3.8 Phase 1A-β — Exhaustive Search: Find Winners (Sprint 7 Day 1+)
 
-**Scope:** Pre-cube validation run on full universe (~1015 tickers per DEC-483) without agents. Verifies pipeline integrity at scale BEFORE Phase 1B-α $300 cube run. Catches: cache corruption, PIT regression, multi-process race conditions, memory ceiling issues, walk-forward fold contamination. Inherits Phase 1B-α infrastructure but runs in dry-run mode (no agent API spend).
+**Scope (Pass 53 Day 9+ 2026-05-19 architecture clarification per owner Q):** Exhaustive backtest across ALL strategies × ALL tickers × FULL timeframe. Universe = 1937 (Master Dedup 5-tier per DEC-504). Strategies = ~180 (Layer 1 baseline 60 + T1.1-T1.5 16 + Phase 1C+ ~80-100). Timeframe = 2022-05-05 → 2026-05-05 (4y).
 
-**Why this phase exists:** Phase 1A-α validates rules-only cube methodology on prior cache scope; Phase 1A-β validates that same methodology survives full universe scale. Catching infrastructure failures here costs ~6-8 hours wall time; catching them mid-Phase-1B-α costs $300 + 37-40h re-run.
+**Primary output:** Per-(strategy × exit-method × regime) winner identification. The 9-criteria gate (per PROJECT_PLAN §3.5) determines which combinations show edge at scale. This winner list directly feeds Phase 1B-α agent overlay scope.
 
-**Effort:** ~3-5 engineering days + ~6-8h compute wall time.
+**Why exhaustive (not pre-filtered):** Pre-filtering would require knowing which strategies work at full universe — that's the question Phase 1A-β answers. Sub-sampling (e.g., T1a only) would miss strategies whose edge is concentrated in T2/T3 small-caps. Owner directive 2026-05-19: test all, then narrow.
 
-**Detail:** ENGINEERING_REGISTER.md → Sprint 7 Day 1.
+**Secondary outputs:** Pipeline integrity verification (cache corruption, PIT regression, multi-process race conditions, memory ceiling, walk-forward fold contamination); refreshed cube + dashboards.
+
+**Effort:** ~3-5 engineering days + ~5-7 days compute wall time at 5-batch parallel (1937 × 180 × 4y is heavier than original 1015 × 60 × 4y baseline).
+
+**Detail:** ENGINEERING_REGISTER.md → Sprint 7 Day 1. [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md) canonical post-Phase-1A-α build plan.
 
 ### 3.9 Phase 1B — Statistical Methodology + A/B (Sprint 7)
 
@@ -207,15 +211,21 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 **Detail:** ENGINEERING_REGISTER.md → Sprint 7.
 
-### 3.10 Phase 1B-α — Combined Dimensional Cube + Dashboards (Sprint 7-8)
+### 3.10 Phase 1B-α — Agents on Winners + Combined Cube (Sprint 7-8)
 
-**Scope:** DEC-422 Phase 1B-α dimensional cube infrastructure (DEC-425/427/428/429/431) + Dashboard 3 spec (DEC-201 — agent overlay analysis) + parallel backtest execution (DEC-184) + per-trade explainability (DEC-119) + loss attribution (DEC-120) + 17+ categorical breakdown variables (DEC-100/144) + TradingAgents 5-tier→size (DEC-062). Combines Phase 1A baseline + Phase 1B agent-overlay arms (full-with-veto, no-Risk) into single 3-arm cube.
+**Scope (Pass 53 Day 9+ 2026-05-19 architecture clarification per owner Q):** DEC-422 Phase 1B-α dimensional cube infrastructure (DEC-425/427/428/429/431) + Dashboard 3 spec (DEC-201 — agent overlay analysis) + parallel backtest execution (DEC-184) + per-trade explainability (DEC-119) + loss attribution (DEC-120) + 17+ categorical breakdown variables (DEC-100/144) + TradingAgents 5-tier→size (DEC-062).
+
+**WINNERS-ONLY APPLICATION (canonical per owner directive 2026-05-19):** Phase 1B-α does NOT run agents over the full universe. It applies the 11-agent pipeline ONLY to winning (strategy × exit-method × regime) combinations identified by Phase 1A-β verdict. This determines whether agents OPTIMIZE ROI of already-validated baseline strategies. A/B comparison framework (DEC-131/207-216/242) operates on the same winners subset.
+
+**Why winners-only:** Running agents over full universe ($300 estimate) would waste resources testing agents on strategies that haven't proven baseline edge. Instead, baseline edge is established in Phase 1A-β (exhaustive search); Phase 1B-α tests the orthogonal question "do agents add value to already-winning combos."
+
+**Budget:** $300 ceiling pre-approved (per owner 2026-05-19). Actual cost typically ~$50-150 because winning combinations are a subset of the full screening firehose (~20-40% of strategy roster passes 9-criteria gate at scale).
 
 **Note:** Cube infrastructure (populator + 5-Gate verdict logic) was built in Phase 1A-α; Phase 1B-α reuses and extends with agent arms.
 
 **Effort:** ~28-38 engineering days.
 
-**Detail:** ENGINEERING_REGISTER.md → Sprint 7-8.
+**Detail:** ENGINEERING_REGISTER.md → Sprint 7-8. [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md) canonical post-Phase-1A-α build plan.
 
 ### 3.11 Phase 1C+ — Strategy Categories Expansion (Sprint 8)
 

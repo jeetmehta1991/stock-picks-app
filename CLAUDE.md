@@ -1,7 +1,7 @@
 # Stock Picks & Automated Trading System
 **Stage:** 2 — Strategy Validation | **Phase:** 0A → 1A (launch day 2026-05-15; Pass 53 Day 9+ Batch 178)
 **Repo:** jeetmehta1991/stock-picks-app
-**Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons) | `VERIFICATION_MATRIX.md` (engine-consumption ground truth, coverage-driven - replaces the `wired=yes` grep heuristic that produced ~150 false-positive RESOLVED-IMPLEMENTED claims; regenerate via `scripts/build_verification_matrix.py` after a canonical backtest under `coverage run`)
+**Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons) | `VERIFICATION_MATRIX.md` (engine-consumption ground truth, coverage-driven - replaces the `wired=yes` grep heuristic that produced ~150 false-positive RESOLVED-IMPLEMENTED claims; regenerate via `scripts/build_verification_matrix.py` after a canonical backtest under `coverage run`) | **`STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md`** (Pass 53 Day 9+ 2026-05-19 canonical post-Phase-1A-alpha build plan: summary table + 10-day plan + winners-only Phase 1B-alpha architecture)
 
 **Live dashboards (GitHub Pages):** `https://jeetmehta1991.github.io/stock-picks-app/`
 - `/dashboard_sprint0a/` — API endpoint coverage (109 CACHED / 28 ACCESSIBLE_NOT_CACHED / 40 TIER_BLOCKED)
