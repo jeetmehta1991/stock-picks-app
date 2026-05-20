@@ -44,6 +44,18 @@ jobs:
           pip install scipy --quiet
           # DEC-235 NYSE calendar (optional; falls back to Mon-Fri if missing)
           pip install pandas-market-calendars --quiet || true
+          # Batch 249 CI fix (Pass 53 Day 9+ 2026-05-20): root cause of 30+
+          # consecutive Test Pyramid #313-#343 failures. Two tests in
+          # test_unit.py require dependencies not previously installed in CI:
+          #   - test_batch228_xgboost_meta_labeler_preferred: xgboost + sklearn
+          #     (Joubert-Snyman 2024 meta-labeler per DEC-045 fork-first)
+          #   - test_batch216_compute_smc_signals_emits_new_keys: numba
+          #     (smartmoneyconcepts library dep per vendored/smartmoneyconcepts
+          #      setup.py install_requires; library import silently fails
+          #      without numba -> compute_smc_signals returns {})
+          pip install xgboost --quiet
+          pip install scikit-learn --quiet
+          pip install "numba>=0.58.1" --quiet
 
       - name: Tier 1 — Unit tests
         run: |
