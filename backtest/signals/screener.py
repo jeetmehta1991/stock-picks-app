@@ -2345,38 +2345,6 @@ def strat_pre_rebalance_long(s):
 
 
 ALL_STRATEGIES = {
-    # Chart patterns (5 - Batch 252 2026-05-20 Phase 1C+ Wave 1 / DEC-355-362)
-    "head_and_shoulders_bottom_long":   strat_head_and_shoulders_bottom_long,
-    "double_bottom_long":               strat_double_bottom_long,
-    "cup_and_handle_long":              strat_cup_and_handle_long,
-    "flag_bull_long":                   strat_flag_bull_long,
-    "triangle_ascending_long":          strat_triangle_ascending_long,
-    # Index rebalance (4 - Batch 252 2026-05-20 Phase 1C+ Wave 1 / DEC-370)
-    "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
-    "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
-    "post_deletion_drift_short":        strat_post_deletion_drift_short,
-    "pre_rebalance_long":               strat_pre_rebalance_long,
-    # Pairs trading (2 - Batch 253 2026-05-20 / DEC-369)
-    "pairs_mean_reversion_long":        strat_pairs_mean_reversion_long,
-    "pairs_mean_reversion_short":       strat_pairs_mean_reversion_short,
-    # News sentiment (2 - Batch 253 2026-05-20 / DEC-411)
-    "news_sentiment_long":              strat_news_sentiment_long,
-    "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
-    # Calendar effects (4 - Batch 254 2026-05-20 / DEC-368)
-    "totm_long":                        strat_totm_long,
-    "pre_holiday_long":                 strat_pre_holiday_long,
-    "january_effect_small_cap_long":    strat_january_effect_small_cap_long,
-    "halloween_seasonal_long":          strat_halloween_seasonal_long,
-    # Cross-asset (5 - Batch 254 2026-05-20 / DEC-369)
-    "risk_off_bond_equity_short":       strat_risk_off_bond_equity_short,
-    "vix_backwardation_long":           strat_vix_backwardation_long,
-    "sector_rotation_defensive_long":   strat_sector_rotation_defensive_long,
-    "gold_silver_risk_off_long":        strat_gold_silver_risk_off_long,
-    "dxy_headwind_multinational_short": strat_dxy_headwind_multinational_short,
-    # Volume profile / VPVR (3 - Batch 255 2026-05-20 / Batch 233 module)
-    "poc_magnet_long":                  strat_poc_magnet_long,
-    "value_area_breakout_long":         strat_value_area_breakout_long,
-    "naked_poc_retest_long":            strat_naked_poc_retest_long,
     # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
     "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
     "orb_stocks_in_play_short":     strat_orb_stocks_in_play_short,
@@ -2521,6 +2489,50 @@ ALL_STRATEGIES = {
     "52wh_break_retest":            strat_52wh_break_retest,
     "break_retest_volume":          strat_break_retest_volume,
     "break_retest_confluence":      strat_break_retest_confluence,
+    # -----------------------------------------------------------------------
+    # Batch 277 (2026-05-20 owner-approved option C): New strategies from
+    # Batches 252-255 moved to BACK of dict. Stage B v2 forensic showed
+    # these newly-registered strategies were winning dedup over established
+    # profitable strategies (rsi_oversold, williams_r_oversold, etc.) due
+    # to their dict-insertion-order position at the FRONT (Batches 252-255
+    # were appended at top during registration). Moving them here lets the
+    # established roster win dedup until these new strategies prove edge
+    # at larger scale (Stage C / D1 full T1a). No logic change - pure
+    # ordering. Strategies remain registered + can still fire when no
+    # earlier strategy claims the same ticker-day.
+    # -----------------------------------------------------------------------
+    # Chart patterns (5 - Batch 252 2026-05-20 Phase 1C+ Wave 1 / DEC-355-362)
+    "head_and_shoulders_bottom_long":   strat_head_and_shoulders_bottom_long,
+    "double_bottom_long":               strat_double_bottom_long,
+    "cup_and_handle_long":              strat_cup_and_handle_long,
+    "flag_bull_long":                   strat_flag_bull_long,
+    "triangle_ascending_long":          strat_triangle_ascending_long,
+    # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
+    "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
+    "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
+    "post_deletion_drift_short":        strat_post_deletion_drift_short,
+    "pre_rebalance_long":               strat_pre_rebalance_long,
+    # Pairs trading (2 - Batch 253 2026-05-20 / DEC-369)
+    "pairs_mean_reversion_long":        strat_pairs_mean_reversion_long,
+    "pairs_mean_reversion_short":       strat_pairs_mean_reversion_short,
+    # News sentiment (2 - Batch 253 2026-05-20 / DEC-411)
+    "news_sentiment_long":              strat_news_sentiment_long,
+    "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
+    # Calendar effects (4 - Batch 254 2026-05-20 / DEC-368)
+    "totm_long":                        strat_totm_long,
+    "pre_holiday_long":                 strat_pre_holiday_long,
+    "january_effect_small_cap_long":    strat_january_effect_small_cap_long,
+    "halloween_seasonal_long":          strat_halloween_seasonal_long,
+    # Cross-asset (5 - Batch 254 2026-05-20 / DEC-369)
+    "risk_off_bond_equity_short":       strat_risk_off_bond_equity_short,
+    "vix_backwardation_long":           strat_vix_backwardation_long,
+    "sector_rotation_defensive_long":   strat_sector_rotation_defensive_long,
+    "gold_silver_risk_off_long":        strat_gold_silver_risk_off_long,
+    "dxy_headwind_multinational_short": strat_dxy_headwind_multinational_short,
+    # Volume profile / VPVR (3 - Batch 255 2026-05-20 / Batch 233 module)
+    "poc_magnet_long":                  strat_poc_magnet_long,
+    "value_area_breakout_long":         strat_value_area_breakout_long,
+    "naked_poc_retest_long":            strat_naked_poc_retest_long,
 }
 
 STRATEGY_CATEGORIES = {
