@@ -100,6 +100,12 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "sector_rotation_defensive_long":   {"bear", "crisis"},
     "gold_silver_risk_off_long":        {"bear", "crisis"},
     "dxy_headwind_multinational_short": {"bull", "neutral", "bear", "crisis"},
+    # Volume profile (Batch 255 / Batch 233 module): POC magnetism + Value
+    # Area work in trending + range markets; break down in crisis (panic
+    # selling overrides structure).
+    "poc_magnet_long":                  {"bull", "neutral"},
+    "value_area_breakout_long":         {"bull", "neutral"},
+    "naked_poc_retest_long":            {"bull", "neutral"},
     # Mean-reversion: avoid bull (Mag-7 fade trap)
     "bollinger_lower":          {"neutral", "bear"},
     "bollinger_tight":          {"bull", "neutral"},

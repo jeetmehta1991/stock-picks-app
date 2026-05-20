@@ -2044,6 +2044,55 @@ def strat_triangle_ascending_long(s):
 
 
 # ---------------------------------------------------------------------------
+# Volume profile / VPVR (DEC-370 P2 / Batch 233) - 3 strategies, Batch 255 reg
+# ---------------------------------------------------------------------------
+def strat_poc_magnet_long(s):
+    """Batch 255: POC magnet long. Steidlmayer 1985 Market Profile.
+    Entry: close within 2% of POC + bullish bias + 200-EMA."""
+    fires = (
+        s.get("vp_close_near_poc_pct", 1.0) < 0.02
+        and s.get("vp_close_above_poc", False)
+        and s.get("price_above_ema_200", True)
+    )
+    dist = s.get("vp_close_near_poc_pct", 0.0)
+    return _strat(fires, "long", "volume_profile",
+        ["vp_close_near_poc_pct<0.02", "vp_close_above_poc", "price_above_ema_200"],
+        [f"Within {dist*100:.1f}% of 60d POC (volume magnetism)",
+         "Bullish bias (close above POC)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_value_area_breakout_long(s):
+    """Batch 255: Value Area breakout long with volume confirmation.
+    Dalton-Jones-Dalton 1990 Market Profile."""
+    fires = (
+        s.get("vp_above_value_area", False)
+        and s.get("vol_spike_2x", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "volume_profile",
+        ["vp_above_value_area", "vol_spike_2x", "price_above_ema_200"],
+        ["Close above Value Area High (institutional acceptance)",
+         "Volume 2x ADV(20) (breakout confirmation)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_naked_poc_retest_long(s):
+    """Batch 255: Naked POC retest long. Within 1% of an untested
+    period POC + bullish bias. Levels act as magnetic attractors."""
+    fires = (
+        s.get("naked_poc_count", 0) > 0
+        and s.get("naked_poc_nearest_distance_pct", 1.0) < 0.01
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "volume_profile",
+        ["naked_poc_nearest_distance_pct<0.01", "price_above_ema_200"],
+        ["Within 1% of naked POC (untested institutional level)",
+         f"{s.get('naked_poc_count', 0)} naked POCs identified (6-period)",
+         "Above 200 EMA (regime gate)"])
+
+
+# ---------------------------------------------------------------------------
 # Calendar effects (DEC-368 / Batch 231) - 4 strategies, Batch 254 registration
 # Day-level caching via lru_cache so universe-wide signals computed once per as_of
 # ---------------------------------------------------------------------------
@@ -2303,6 +2352,10 @@ ALL_STRATEGIES = {
     "sector_rotation_defensive_long":   strat_sector_rotation_defensive_long,
     "gold_silver_risk_off_long":        strat_gold_silver_risk_off_long,
     "dxy_headwind_multinational_short": strat_dxy_headwind_multinational_short,
+    # Volume profile / VPVR (3 - Batch 255 2026-05-20 / Batch 233 module)
+    "poc_magnet_long":                  strat_poc_magnet_long,
+    "value_area_breakout_long":         strat_value_area_breakout_long,
+    "naked_poc_retest_long":            strat_naked_poc_retest_long,
     # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
     "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
     "orb_stocks_in_play_short":     strat_orb_stocks_in_play_short,
@@ -2730,6 +2783,22 @@ def screen_instrument(
         xa_out = _cached_cross_asset_signals(str(as_of))
         if xa_out:
             signals.update(xa_out)
+    except Exception:
+        pass
+    # Batch 255: volume profile signals (60-day VPVR + naked POCs).
+    try:
+        from backtest.signals.volume_profile import compute_volume_profile, compute_period_pocs
+        vp_out = compute_volume_profile(df, lookback_days=60)
+        if vp_out:
+            signals.update(vp_out)
+        period_pocs = compute_period_pocs(df, period_lookback=252, n_periods=6)
+        if period_pocs:
+            close = float(df["close"].iloc[-1])
+            signals["naked_poc_count"] = len(period_pocs)
+            if close > 0:
+                signals["naked_poc_nearest_distance_pct"] = min(
+                    abs(close - p) / close for p in period_pocs
+                )
     except Exception:
         pass
     # Batch 220: merge cross-sectional factor ranks from the universe-
