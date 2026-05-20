@@ -510,55 +510,28 @@ def process_day_exits(
     Process all open trades for a single day.
     Returns (closed_trades, remaining_open_trades).
 
-    Batch 226 (2026-05-18 owner-approved): VIX-spike portfolio-level
-    exit. When VIX rises >5 points in trailing 5 trading days, force-
-    close all LONG positions at today's open (regime-change protection).
-    Source: Cederburg-Johnson-Maio 2024 *Finance Research Letters*
-    VIX-managed portfolios. Skips short positions (VIX spike benefits
-    shorts). vix_history=None disables the check (backward-compatible).
+    Batch 268 (2026-05-20 owner-approved): REMOVED vix_spike_kill_switch
+    (originally Batch 226). Counterfactual bootstrap on 91 trades that
+    exited via vix_kill in the 20tkr x 2y smoke showed vix_kill cost
+    -6.98% per trade vs trailing_15pct (95% CI [-11.35%, -3.00%],
+    p=0.0005). The "profit-protect" interpretation was wrong - vix_kill
+    cuts winners short during transient VIX spikes that resolve
+    favorably. Trailing_15pct + breakeven-at-1R (Batch 262) handles
+    volatility-driven exits without truncating recoveries.
+
+    vix_history parameter retained for backward compatibility with
+    callers; no longer consumed in this function. May be re-introduced
+    in a regime-gated form (e.g., only fire when regime in {bear,
+    crisis} AND VIX absolute > 35) if portfolio-level drawdowns emerge
+    at Phase 1A-alpha/beta scale.
     """
     closed   = []
     still_open = []
-
-    # Batch 226: VIX-spike kill switch
-    # Batch 262 (Pass 53 Day 9+ 2026-05-20 post-1A-alpha re-forensic):
-    # REVERTED Batch 261's tightening. Phase 1A-alpha post-mortem on trade
-    # log showed vix_kill exits had +1.27% mean PnL / 40.7% WR - it was a
-    # PROFIT-PROTECT mechanism, NOT the alpha killer (the true killer was
-    # smc_inverse_fvg at -1659pp contribution per per-strategy analysis).
-    # Restoring original threshold: +5 VIX points in 5d trigger. This
-    # catches normal-correction onset early and exits longs profitably
-    # before trailing_stop's larger 10pct give-back kicks in.
-    vix_spike_active = False
-    if vix_history is not None and vix_value is not None and len(vix_history) >= 6:
-        try:
-            vix_5d_ago = float(vix_history[-6])
-            vix_today  = float(vix_value)
-            if vix_today - vix_5d_ago > 5.0:
-                vix_spike_active = True
-        except (TypeError, ValueError, IndexError):
-            vix_spike_active = False
 
     for trade in open_trades:
         bar = ticker_bars.get(trade.ticker)
         if not bar:
             still_open.append(trade)
-            continue
-
-        # Batch 226: VIX-spike kill switch - force close longs at open
-        if vix_spike_active and trade.direction == "long":
-            try:
-                from backtest.engine.improvements import apply_exit_slippage
-                exit_price, _ = apply_exit_slippage(
-                    bar["open"], trade.direction, trade.ticker,
-                )
-            except Exception:
-                exit_price = bar["open"]
-            closed.append(close_trade(
-                trade, exit_price, today_date,
-                "vix_spike_kill_switch_batch226",
-                0.0, 0.0,
-            ))
             continue
 
         today_open  = bar["open"]

@@ -7777,14 +7777,28 @@ def test_batch226_mae_conditional_helper():
     assert per_strategy_mae_75th_pct_of_winners(df, "missing") == 1.0
 
 
-def test_batch226_vix_spike_kill_switch_wired_in_exit_manager():
-    """Batch 226: process_day_exits has the VIX-spike kill switch wired."""
+def test_batch268_vix_spike_kill_switch_removed():
+    """Batch 268 (2026-05-20 owner-approved): vix_spike_kill_switch REMOVED
+    from process_day_exits after counterfactual bootstrap showed it cost
+    -6.98% per trade vs trailing_15pct (95% CI [-11.35%, -3.00%], p=0.0005)
+    on 91 matched trades from the 20tkr x 2y smoke. The "profit-protect"
+    reading was wrong - vix_kill cuts winners short during transient VIX
+    spikes that resolve favorably.
+
+    Supersedes prior Batch 226 wiring test."""
     import inspect
     from backtest.engine import exit_manager as em
     src = inspect.getsource(em.process_day_exits)
-    assert "vix_history" in src
-    assert "vix_spike_active" in src
-    assert "vix_spike_kill_switch_batch226" in src
+    # The exit reason string must NOT appear in the function body.
+    assert "vix_spike_kill_switch_batch226" not in src, (
+        "Batch 268: vix_spike_kill_switch must be removed; the exit reason "
+        "string should not appear in process_day_exits"
+    )
+    # The activation variable must not be set/used.
+    assert "vix_spike_active" not in src, (
+        "Batch 268: vix_spike_active flag must be removed"
+    )
+    # vix_history parameter retained for back-compat with callers; not asserted.
 
 
 def test_batch226_ci_exit_count_assertion_updated():
