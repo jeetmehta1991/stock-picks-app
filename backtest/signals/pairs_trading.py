@@ -226,3 +226,86 @@ def find_cointegrated_pairs(
             })
     pairs.sort(key=lambda p: p["adf_pvalue"])
     return pairs[:max_pairs]
+
+
+def compute_pair_signals_for_ticker(
+    ticker: str,
+    as_of,
+    ticker_close,
+    pairs_dir=None,
+) -> dict:
+    """Look up cointegrated pairs for `ticker` at `as_of` from T5b precompute
+    parquet. For each pair, fetch counterparty close history and compute
+    current z-score. Returns dict with max |z| pair signal.
+
+    Output keys:
+      pair_max_abs_zscore (float), pair_zscore_signed (float, sign +=
+      ticker overpriced vs peer), pair_counterparty (str peer ticker),
+      pair_half_life (float days), pair_count_active (int).
+
+    Graceful no-op when T5b precompute parquet missing (returns {}).
+    """
+    from datetime import date as _date
+    from pathlib import Path
+    if pairs_dir is None:
+        pairs_dir = Path(__file__).parent.parent.parent / "data_prefetch" / "derived" / "cointegrated_pairs_t1a"
+    if not Path(pairs_dir).exists():
+        return {}
+    snapshots = sorted([p for p in Path(pairs_dir).glob("*.parquet") if p.stem != "_index"])
+    latest = None
+    for s in snapshots:
+        try:
+            snap_date = _date.fromisoformat(s.stem)
+            if snap_date <= as_of:
+                latest = s
+        except ValueError:
+            continue
+    if latest is None:
+        return {}
+    try:
+        pairs_df = pd.read_parquet(latest)
+    except Exception:
+        return {}
+    mine = pairs_df[(pairs_df["ticker_a"] == ticker) | (pairs_df["ticker_b"] == ticker)]
+    if mine.empty:
+        return {"pair_count_active": 0}
+    best_z = 0.0
+    best_z_signed = 0.0
+    best_peer = ""
+    best_hl = 0.0
+    ohlcv_dir = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "ohlcv_daily"
+    for _, row in mine.iterrows():
+        is_a = row["ticker_a"] == ticker
+        peer = row["ticker_b"] if is_a else row["ticker_a"]
+        peer_safe = str(peer).replace(".", "-")
+        peer_path = ohlcv_dir / f"{peer_safe}.parquet"
+        if not peer_path.exists():
+            continue
+        try:
+            peer_df = pd.read_parquet(peer_path)
+            if "date" in peer_df.columns:
+                peer_df["date_dt"] = pd.to_datetime(peer_df["date"], errors="coerce").dt.date
+                peer_df = peer_df[peer_df["date_dt"] <= as_of].sort_values("date_dt")
+                peer_close = pd.Series(peer_df["close"].values[-90:], index=peer_df["date_dt"].values[-90:])
+            else:
+                continue
+            if is_a:
+                z = pair_zscore(ticker_close, peer_close, row["hedge_ratio"], row["intercept"])
+            else:
+                z = pair_zscore(peer_close, ticker_close, row["hedge_ratio"], row["intercept"])
+            if z is None:
+                continue
+            if abs(z) > abs(best_z):
+                best_z = z
+                best_z_signed = z if is_a else -z
+                best_peer = peer
+                best_hl = float(row["half_life"])
+        except Exception:
+            continue
+    return {
+        "pair_max_abs_zscore": round(abs(best_z), 4),
+        "pair_zscore_signed":  round(best_z_signed, 4),
+        "pair_counterparty":   best_peer,
+        "pair_half_life":      best_hl,
+        "pair_count_active":   len(mine),
+    }

@@ -79,6 +79,14 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "post_inclusion_reversal_short":    {"bull", "neutral", "bear", "crisis"},
     "post_deletion_drift_short":        {"bear", "crisis", "neutral"},
     "pre_rebalance_long":               {"bull", "neutral", "bear", "crisis"},
+    # Pairs trading (Batch 253 / DEC-369): mean-reversion fails in trending
+    # markets; allow bull/neutral only per Krauss 2024.
+    "pairs_mean_reversion_long":        {"bull", "neutral"},
+    "pairs_mean_reversion_short":       {"bull", "neutral"},
+    # News sentiment (Batch 253 / DEC-411): bull/neutral - sentiment momentum
+    # tracks risk-on; bad-news cluster overwhelms in crisis.
+    "news_sentiment_long":              {"bull", "neutral"},
+    "news_sentiment_shift_long":        {"bull", "neutral"},
     # Mean-reversion: avoid bull (Mag-7 fade trap)
     "bollinger_lower":          {"neutral", "bear"},
     "bollinger_tight":          {"bull", "neutral"},

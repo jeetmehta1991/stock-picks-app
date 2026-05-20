@@ -2044,6 +2044,78 @@ def strat_triangle_ascending_long(s):
 
 
 # ---------------------------------------------------------------------------
+# Pairs trading (DEC-369 / Batch 229) - 2 strategies, Batch 253 registration
+# ---------------------------------------------------------------------------
+def strat_pairs_mean_reversion_long(s):
+    """Batch 253: cointegrated-pair mean-reversion long. Krauss 2024 +
+    Gatev-Goetzmann-Rouwenhorst 2006. Entry: z<-2 (ticker underpriced
+    vs peer) + half-life >= 5 (post-HFT survival)."""
+    fires = (
+        s.get("pair_count_active", 0) > 0
+        and s.get("pair_zscore_signed", 0.0) < -2.0
+        and s.get("pair_half_life", 0.0) >= 5
+    )
+    z = s.get("pair_zscore_signed", 0.0)
+    peer = s.get("pair_counterparty", "")
+    return _strat(fires, "long", "pairs",
+        ["pair_zscore_signed<-2", "pair_half_life>=5", "pair_count_active>0"],
+        [f"Pair z={z:.2f} vs {peer} (underpriced)",
+         f"Half-life {s.get('pair_half_life', 0):.1f}d",
+         "Cointegrated relationship validated at T5b precompute"])
+
+
+def strat_pairs_mean_reversion_short(s):
+    """Batch 253: cointegrated-pair mean-reversion short. Symmetric pair."""
+    fires = (
+        s.get("pair_count_active", 0) > 0
+        and s.get("pair_zscore_signed", 0.0) > 2.0
+        and s.get("pair_half_life", 0.0) >= 5
+    )
+    z = s.get("pair_zscore_signed", 0.0)
+    peer = s.get("pair_counterparty", "")
+    return _strat(fires, "short", "pairs",
+        ["pair_zscore_signed>2", "pair_half_life>=5", "pair_count_active>0"],
+        [f"Pair z={z:.2f} vs {peer} (overpriced)",
+         f"Half-life {s.get('pair_half_life', 0):.1f}d",
+         "Cointegrated relationship validated at T5b precompute"])
+
+
+# ---------------------------------------------------------------------------
+# News sentiment (DEC-370/411 / Batch 230) - 2 strategies, Batch 253 reg
+# ---------------------------------------------------------------------------
+def strat_news_sentiment_long(s):
+    """Batch 253: positive-sentiment cluster long. Lopez-Lira-Tang 2023 +
+    Loughran-McDonald 2011. 7-day mean > +0.3 + >=3 articles + 200-EMA."""
+    fires = (
+        s.get("news_sentiment_mean", 0.0) > 0.3
+        and s.get("news_article_count", 0) >= 3
+        and s.get("price_above_ema_200", True)
+    )
+    sent = s.get("news_sentiment_mean", 0.0)
+    return _strat(fires, "long", "news_sentiment",
+        ["news_sentiment_mean>0.3", "news_article_count>=3", "price_above_ema_200"],
+        [f"7-day mean sentiment +{sent:.2f} (positive cluster)",
+         f"{s.get('news_article_count', 0)} articles in window",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_news_sentiment_shift_long(s):
+    """Batch 253: sentiment-shift long (delta detector). +0.4 shift vs
+    prior 7d + 200-EMA. Captures news-driven momentum onset."""
+    fires = (
+        s.get("news_sentiment_shift", 0.0) > 0.4
+        and s.get("news_article_count", 0) >= 2
+        and s.get("price_above_ema_200", True)
+    )
+    shift = s.get("news_sentiment_shift", 0.0)
+    return _strat(fires, "long", "news_sentiment",
+        ["news_sentiment_shift>0.4", "news_article_count>=2", "price_above_ema_200"],
+        [f"Sentiment shift +{shift:.2f} (positive delta vs prior 7d)",
+         "Coverage threshold met",
+         "Above 200 EMA (regime gate)"])
+
+
+# ---------------------------------------------------------------------------
 # Index rebalance (DEC-370 / Batch 251) - 4 strategies, imported from module
 # ---------------------------------------------------------------------------
 from backtest.signals.index_rebalance import (
@@ -2082,6 +2154,12 @@ ALL_STRATEGIES = {
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
     "post_deletion_drift_short":        strat_post_deletion_drift_short,
     "pre_rebalance_long":               strat_pre_rebalance_long,
+    # Pairs trading (2 - Batch 253 2026-05-20 / DEC-369)
+    "pairs_mean_reversion_long":        strat_pairs_mean_reversion_long,
+    "pairs_mean_reversion_short":       strat_pairs_mean_reversion_short,
+    # News sentiment (2 - Batch 253 2026-05-20 / DEC-411)
+    "news_sentiment_long":              strat_news_sentiment_long,
+    "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
     # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
     "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
     "orb_stocks_in_play_short":     strat_orb_stocks_in_play_short,
@@ -2475,6 +2553,25 @@ def screen_instrument(
         ir_out = compute_index_rebalance_signals(ticker, as_of)
         if ir_out:
             signals.update(ir_out)
+    except Exception:
+        pass
+    # Batch 253: pairs trading signals (DEC-369). Reads T5b precompute
+    # parquet. Graceful no-op when precompute missing (fires 0 trades).
+    try:
+        from backtest.signals.pairs_trading import compute_pair_signals_for_ticker
+        ticker_close = pd.Series(df["close"].values[-90:], index=df.index[-90:])
+        pair_out = compute_pair_signals_for_ticker(ticker, as_of, ticker_close)
+        if pair_out:
+            signals.update(pair_out)
+    except Exception:
+        pass
+    # Batch 253: news sentiment signals (DEC-411). 7-day window from
+    # Polygon news cache (1.05M articles).
+    try:
+        from backtest.signals.news_sentiment import compute_news_sentiment_signals
+        news_out = compute_news_sentiment_signals(ticker, as_of, lookback_days=7)
+        if news_out:
+            signals.update(news_out)
     except Exception:
         pass
     # Batch 220: merge cross-sectional factor ranks from the universe-
