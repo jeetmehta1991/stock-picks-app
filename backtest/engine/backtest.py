@@ -964,7 +964,48 @@ class BacktestEngine:
                     _corr_mult = 1.0
                     _corr_max = 0.0
 
-            for strat_entry in cand.get("strategies", []):
+            # Batch 272 (Tier 2.2 of T1A_COMPREHENSIVE_REVIEW_2026_05_20):
+            # Sort per-ticker strategies by conviction BEFORE the dedup loop.
+            # T1a forensic showed break_retest_confluence (1,608 candidates,
+            # 0 realized), r1_break_retest (1,089 / 0), and similar
+            # multi-condition strategies losing dedup to single-indicator
+            # strategies that happened to come first in ALL_STRATEGIES dict
+            # insertion order. Sort by:
+            #   (1) Category priority - confluence/event_driven/factor/smc
+            #       categories first (multi-condition by design).
+            #   (2) Signals-used count desc - more conditions = higher
+            #       conviction. Tie-breaker for same-category candidates.
+            # When one position per ticker per day, the highest-conviction
+            # entry should win.
+            _CAT_PRIORITY = {
+                "confluence":      0,
+                "event_driven":    1,
+                "factor":          2,
+                "smc":             3,
+                "chart_pattern":   4,
+                "multi_timeframe": 5,
+                "pairs":           6,
+                "news_sentiment":  7,
+                "cross_asset":     8,
+                "vwap":            9,
+                "volume_profile": 10,
+                "pivot":          11,
+                "orb":            12,
+                "momentum":       13,
+                "trend":          14,
+                "breakout":       15,
+                "mean_reversion": 16,
+                "calendar":       17,
+                "candle":         18,
+            }
+            _strats_sorted = sorted(
+                cand.get("strategies", []),
+                key=lambda e: (
+                    _CAT_PRIORITY.get(e.get("category", ""), 99),
+                    -len(e.get("signals_used", [])),
+                ),
+            )
+            for strat_entry in _strats_sorted:
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]
 

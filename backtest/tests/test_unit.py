@@ -9300,6 +9300,79 @@ def test_batch203_regime_selector_enforces_affinity():
     assert should_strategy_fire_in_regime("hull_rsi_short", "bull") is False
 
 
+def test_batch272_dedup_strategy_priority_confluence_wins():
+    """Batch 272 (Tier 2.2 of T1A_COMPREHENSIVE_REVIEW): per-ticker dedup
+    must sort strategies by conviction. Confluence-tagged strategies (which
+    require multi-indicator alignment) should win when competing with
+    single-indicator strategies for the one-position-per-ticker-per-day
+    slot. T1a forensic: break_retest_confluence had 1,608 candidates
+    blocked at dedup with 0 realized."""
+    # The sort key applied in engine/backtest.py around line 967.
+    _CAT_PRIORITY = {
+        "confluence":      0,
+        "event_driven":    1,
+        "factor":          2,
+        "smc":             3,
+        "chart_pattern":   4,
+        "multi_timeframe": 5,
+        "pairs":           6,
+        "news_sentiment":  7,
+        "cross_asset":     8,
+        "vwap":            9,
+        "volume_profile": 10,
+        "pivot":          11,
+        "orb":            12,
+        "momentum":       13,
+        "trend":          14,
+        "breakout":       15,
+        "mean_reversion": 16,
+        "calendar":       17,
+        "candle":         18,
+    }
+    def _sort_key(e):
+        return (
+            _CAT_PRIORITY.get(e.get("category", ""), 99),
+            -len(e.get("signals_used", [])),
+        )
+    strategies = [
+        {"strategy": "rsi_oversold", "category": "mean_reversion",
+         "signals_used": ["rsi_14_oversold", "above_200_ema"]},
+        {"strategy": "break_retest_confluence", "category": "confluence",
+         "signals_used": ["resistance_break_retest", "macd_bullish",
+                          "above_ema_20", "above_ema_50"]},
+        {"strategy": "macd_crossover", "category": "momentum",
+         "signals_used": ["macd_bullish_cross"]},
+    ]
+    sorted_strats = sorted(strategies, key=_sort_key)
+    assert sorted_strats[0]["strategy"] == "break_retest_confluence", (
+        "Confluence must win dedup over single-indicator strategies"
+    )
+    # macd_crossover (priority 13, momentum) outranks rsi_oversold
+    # (priority 16, mean_reversion) on category priority alone.
+    assert sorted_strats[1]["strategy"] == "macd_crossover"
+    assert sorted_strats[2]["strategy"] == "rsi_oversold"
+
+
+def test_batch272_dedup_signals_used_count_tie_breaker():
+    """Batch 272: within same category bucket, more signals_used wins."""
+    _CAT_PRIORITY = {"mean_reversion": 16}
+    def _sort_key(e):
+        return (_CAT_PRIORITY.get(e.get("category", ""), 99),
+                -len(e.get("signals_used", [])))
+    strategies = [
+        {"strategy": "rsi_simple", "category": "mean_reversion",
+         "signals_used": ["rsi_oversold"]},
+        {"strategy": "rsi_quad_filter", "category": "mean_reversion",
+         "signals_used": ["rsi_oversold", "above_200_ema", "volume_2x", "macd_align"]},
+        {"strategy": "rsi_dual", "category": "mean_reversion",
+         "signals_used": ["rsi_oversold", "above_200_ema"]},
+    ]
+    sorted_strats = sorted(strategies, key=_sort_key)
+    assert sorted_strats[0]["strategy"] == "rsi_quad_filter"
+    assert sorted_strats[1]["strategy"] == "rsi_dual"
+    assert sorted_strats[2]["strategy"] == "rsi_simple"
+
+
 def test_batch271_short_regime_affinity_expanded_to_neutral():
     """Batch 271 (Tier 2 expansion of T1A_COMPREHENSIVE_REVIEW): short
     strategies that were previously gated to bear/crisis only now allow
