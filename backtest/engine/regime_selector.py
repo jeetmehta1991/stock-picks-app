@@ -146,13 +146,17 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # Bernard-Thomas effect is documented robust across regimes.
     "pead_long":                    {"bull", "neutral", "bear", "crisis"},
     "pead_short":                   {"bull", "neutral", "bear", "crisis"},
-    # SMC / ICT family (Batch 210): structural / liquidity signals are
-    # regime-agnostic per Quantum Algo 2026 backtest; strategies self-
-    # gate via 200-EMA inside the long/short branches.
-    "smc_bos_continuation":         {"bull", "neutral", "bear", "crisis"},
-    "smc_choch_reversal":           {"bull", "neutral", "bear", "crisis"},
-    "smc_order_block_bounce":       {"bull", "neutral", "bear", "crisis"},
-    "smc_liquidity_sweep_reversal": {"bull", "neutral", "bear", "crisis"},
+    # SMC / ICT family (Batch 210 + Batch 263 Class C tightening 2026-05-20):
+    # Phase 1A-alpha showed SMC structural signals firing in WRONG regimes
+    # cause significant losses (bear/crisis 20-22pct WR vs bull/neutral 33pct).
+    # Tightened: structural strategies now bull/neutral only (matching
+    # explicit-long/short pairs already restricted). The "regime-agnostic"
+    # original framing was wishful per Quantum Algo 2026 but unsupported
+    # by Phase 1A-alpha data.
+    "smc_bos_continuation":         {"bull", "neutral"},
+    "smc_choch_reversal":           {"bull", "neutral"},
+    "smc_order_block_bounce":       {"bull", "neutral"},
+    "smc_liquidity_sweep_reversal": {"bull", "neutral"},
     # Cross-sectional factor (Batch 220): momentum top decile allow
     # bull/neutral; bottom decile short in bear/crisis; BAB long in
     # bull/neutral; momentum+low-IVOL combined allow all (filter is
@@ -164,11 +168,14 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # Event-driven + quality (Batch 222): insider clusters work across
     # all regimes (Cohen-Malloy-Pomorski 2012); quality factor long-
     # only in bull/neutral; PEAD+insider confirmation similarly long-bias.
-    "insider_cluster_long":                {"bull", "neutral", "bear", "crisis"},
-    "insider_cluster_with_director_long":  {"bull", "neutral", "bear", "crisis"},
+    # Batch 263 Class C tightening: long-bias strategies should NOT fire
+    # in crisis. Even strong smart-money signals (insider clusters) fail
+    # in crisis regime (Phase 1A-alpha: 36 crisis trades at 22pct WR).
+    "insider_cluster_long":                {"bull", "neutral", "bear"},
+    "insider_cluster_with_director_long":  {"bull", "neutral", "bear"},
     "xs_quality_top_quintile_long":        {"bull", "neutral"},
     "xs_momentum_quality_combined":        {"bull", "neutral"},
-    "pead_with_insider_confirmation_long": {"bull", "neutral", "bear", "crisis"},
+    "pead_with_insider_confirmation_long": {"bull", "neutral", "bear"},  # Batch 263: drop crisis
     # Pre-FOMC + 8-K event-driven (Batch 224): allow long-bias regimes.
     # Lucca-Moench drift is documented robust through 2015; conditional
     # on bullish backdrop per Cieslak-Pang 2024.
@@ -191,7 +198,7 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # explicit-long to bull/neutral and explicit-short to bear/crisis.
     "smc_fvg_retest_long":          {"bull", "neutral"},
     "smc_fvg_retest_short":         {"bear", "crisis"},
-    "smc_inverse_fvg":              {"bull", "neutral", "bear", "crisis"},
+    "smc_inverse_fvg":              {"bull", "neutral", "bear"},  # Batch 263: drop crisis
     "smc_breaker_block_long":       {"bull", "neutral"},
     "smc_breaker_block_short":      {"bear", "crisis"},
     "smc_mitigation_block_long":    {"bull", "neutral"},

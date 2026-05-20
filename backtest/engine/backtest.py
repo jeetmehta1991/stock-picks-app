@@ -1568,21 +1568,30 @@ class BacktestEngine:
         return {"open": float(future.iloc[0]["open"]), "date": future.index[0].date()}
 
     def _assign_confidence_tier(self, strategy_count, sm, macro, sent) -> str:
-        """Stage 1  -  rule-based preliminary tier before agents run."""
+        """Stage 1  -  rule-based preliminary tier before agents run.
+
+        Batch 263 (Class B confluence, owner-approved 2026-05-20):
+        Tightened tier thresholds to better differentiate quality.
+        Post-1A-alpha forensic showed 1165 of 1181 trades got HIGH tier
+        because strategy_count >= 3 was too easy. HIGH now requires >=4
+        strategies + VERY_HIGH requires >=3 + smart money confluence.
+        """
         sm_sig = sm.get("composite_signal", "none")
         # AVOID  -  strong negative smart money regardless of technical signals
         if sm_sig == "congressional_sell+insider_cluster_sell":
             return "AVOID"
-        if sm_sig == "congressional+insider_cluster" and strategy_count >= 3:
+        if sm_sig == "congressional+insider_cluster" and strategy_count >= 4:
             return "EXCEPTIONAL"
-        if sm_sig == "congressional_or_insider" and strategy_count >= 2:
+        if sm_sig == "congressional_or_insider" and strategy_count >= 3:
             return "VERY_HIGH"
-        if strategy_count >= 3:
+        if strategy_count >= 4:                                    # Batch 263: was >= 3
             return "HIGH"
-        if strategy_count >= 2:
+        if strategy_count >= 3:                                    # Batch 263: was >= 2
             return "MEDIUM_HIGH"
-        if sm.get("score", 0) >= 2 and strategy_count >= 1:
+        if strategy_count >= 2:                                    # Batch 263: was sm + count>=1
             return "MEDIUM"
+        if sm.get("score", 0) >= 2 and strategy_count >= 1:
+            return "LOW"  # Batch 263: was else; now MEDIUM-LOW floor on smart-money-confluence-only
         return "LOW"
 
     def _adjust_tier_by_agent(self, preliminary_tier: str, agent_score: int) -> str:

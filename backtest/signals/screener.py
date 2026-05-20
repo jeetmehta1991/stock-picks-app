@@ -2868,6 +2868,28 @@ def screen_instrument(
     # edge in 2015-2024 literature). Shrinks the multi-testing denominator
     # for Bonferroni/DSR gates without deleting strategy function bodies.
     from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
+    # Batch 263 (Class A confirmation entry, owner-approved 2026-05-20):
+    # Mean-reversion strategies INTENTIONALLY enter against the day's candle
+    # (oversold dip-buy = enter when price down). All other strategies should
+    # require directional confirmation on signal day. Per Edwards-Magee 1948
+    # + Bulkowski 2005: signals fired on weak candles tend to fail.
+    # Post-1A-alpha forensic showed 479 trades (41pct) never developed past
+    # entry - this gate filters those that fire on indecisive/contrary days.
+    MEAN_REVERSION_CATEGORIES = {
+        "mean_reversion", "oversold_bounce", "counter_trend",
+    }
+    MEAN_REVERSION_STRATEGIES = {
+        # Explicit list of strategies that intentionally counter day direction
+        "bollinger_lower", "rsi_oversold", "mfi_oversold", "stoch_oversold",
+        "stochrsi_oversold", "williams_r_oversold", "ultimate_oscillator",
+        "stochrsi_overbought_short",  # short counterpart
+        "pivot_s1_bounce", "pivot_s2_bounce", "pivot_s3_capitulation",
+        "prev_day_low_bounce", "camarilla_s3_bounce",
+        "pairs_mean_reversion_long", "pairs_mean_reversion_short",
+        "post_inclusion_reversal_short",  # fade-the-pop is counter-day
+    }
+    close_above_open = signals.get("close_above_open", True)  # default-permissive
+    close_below_open = signals.get("close_below_open", False)
     for name, fn in ALL_STRATEGIES.items():
         if name in _DEPRECATED:
             continue
@@ -2876,13 +2898,24 @@ def screen_instrument(
             if not result["fires"]:
                 continue
             direction = result["direction"]
+            category = result.get("category", "")
+            # Batch 263 Class A: directional confirmation gate
+            is_mean_reversion = (
+                name in MEAN_REVERSION_STRATEGIES
+                or category in MEAN_REVERSION_CATEGORIES
+            )
+            if not is_mean_reversion:
+                if direction == "long" and not close_above_open:
+                    continue  # long signal on a red candle -> skip
+                if direction == "short" and not close_below_open:
+                    continue  # short signal on a green candle -> skip
             # Regime context  -  no hard direction blocks (buy-the-dip philosophy)
             # Crisis regime: long trades flagged, position size reduced in engine
             # Bull regime: short trades allowed but at reduced size
             entry = {
                 "strategy":        name,
                 "direction":       direction,
-                "category":        result["category"],
+                "category":        category,
                 "signals_used":    result["signals_used"],
                 "context_bullets": result["context_bullets"],
             }
