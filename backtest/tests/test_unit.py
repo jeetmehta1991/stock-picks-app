@@ -9278,7 +9278,9 @@ def test_batch203_regime_selector_default_allows_uncharacterized():
 
 
 def test_batch203_regime_selector_enforces_affinity():
-    """Batch 203: strategies WITH affinity entries only fire in permitted regimes."""
+    """Batch 203: strategies WITH affinity entries only fire in permitted regimes.
+    Updated Batch 271: shorts now allow neutral too (expansion per T1a forensic).
+    """
     from backtest.engine.regime_selector import should_strategy_fire_in_regime
     # bollinger_lower: allow neutral+bear, block bull+crisis (Mag-7 fade trap)
     assert should_strategy_fire_in_regime("bollinger_lower", "neutral") is True
@@ -9291,9 +9293,49 @@ def test_batch203_regime_selector_enforces_affinity():
     # cmf_flip: allow all regimes (regime-agnostic)
     for r in ("bull", "neutral", "bear", "crisis"):
         assert should_strategy_fire_in_regime("cmf_flip", r) is True
-    # Short-side: bear/crisis only
+    # Short-side (post-Batch-271): allow bear + crisis + neutral, block bull only
     assert should_strategy_fire_in_regime("hull_rsi_short", "bear") is True
+    assert should_strategy_fire_in_regime("hull_rsi_short", "crisis") is True
+    assert should_strategy_fire_in_regime("hull_rsi_short", "neutral") is True
     assert should_strategy_fire_in_regime("hull_rsi_short", "bull") is False
+
+
+def test_batch271_short_regime_affinity_expanded_to_neutral():
+    """Batch 271 (Tier 2 expansion of T1A_COMPREHENSIVE_REVIEW): short
+    strategies that were previously gated to bear/crisis only now allow
+    neutral too. T1a forensic: regime_affinity_block_neutral_batch203
+    blocked 942/1212 hull_rsi_short candidates + 833/1083
+    cpr_narrow_momentum_short candidates (neutral was ~70% of 4y window).
+
+    Cross-asset shorts (risk_off_bond_equity_short) NOT expanded - their
+    signals are regime-defined."""
+    from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    # Technical shorts: now allow neutral
+    expanded = [
+        "hull_rsi_short", "rsi_overbought_short", "bollinger_upper_short",
+        "stochrsi_overbought_short", "ichimoku_cloud_breakdown",
+        "supertrend_macd_short", "donchian_breakdown_short",
+        "camarilla_rsi_obv_short", "cpr_narrow_momentum_short",
+        "52w_low_breakdown", "prev_day_low_breakdown",
+        "po3_bearish", "po3_htf_aligned_short", "htf_aligned_breakout_short",
+        "weekly_bias_pullback_short", "smc_fvg_retest_short",
+        "smc_breaker_block_short", "smc_mitigation_block_short",
+        "smc_premium_short", "smc_ote_short", "orb_stocks_in_play_short",
+    ]
+    for strat in expanded:
+        assert should_strategy_fire_in_regime(strat, "neutral") is True, (
+            f"{strat}: expected neutral=True post-Batch-271 expansion"
+        )
+        assert should_strategy_fire_in_regime(strat, "bear") is True, (
+            f"{strat}: bear should still be allowed"
+        )
+        assert should_strategy_fire_in_regime(strat, "bull") is False, (
+            f"{strat}: bull should remain blocked"
+        )
+
+    # Cross-asset shorts NOT expanded (signals are regime-defined)
+    assert should_strategy_fire_in_regime("risk_off_bond_equity_short", "neutral") is False
+    assert should_strategy_fire_in_regime("risk_off_bond_equity_short", "bear") is True
 
 
 def test_batch203_regime_selector_custom_affinity_override():

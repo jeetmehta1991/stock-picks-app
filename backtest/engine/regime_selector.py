@@ -185,52 +185,67 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # PO3 + multi-TF (Batch 217): self-gate via 200-EMA + weekly/monthly
     # biases; symmetric pairs get explicit regime restrictions.
     "po3_bullish":                  {"bull", "neutral"},
-    "po3_bearish":                  {"bear", "crisis"},
+    "po3_bearish":                  {"bear", "crisis", "neutral"},  # Batch 271 expand
     "po3_htf_aligned_long":         {"bull", "neutral"},
-    "po3_htf_aligned_short":        {"bear", "crisis"},
+    "po3_htf_aligned_short":        {"bear", "crisis", "neutral"},  # Batch 271 expand
     "htf_aligned_breakout_long":    {"bull", "neutral"},
-    "htf_aligned_breakout_short":   {"bear", "crisis"},
+    "htf_aligned_breakout_short":   {"bear", "crisis", "neutral"},  # Batch 271 expand
     "weekly_bias_pullback_long":    {"bull", "neutral"},
-    "weekly_bias_pullback_short":   {"bear", "crisis"},
+    "weekly_bias_pullback_short":   {"bear", "crisis", "neutral"},  # Batch 271 expand
     "monthly_bias_momentum_long":   {"bull", "neutral"},
-    # SMC expansion (Batch 216): all variants self-gate via 200-EMA;
-    # allow all regimes for symmetric long/short pairs; restrict
-    # explicit-long to bull/neutral and explicit-short to bear/crisis.
+    # SMC expansion (Batch 216 + Batch 271 short-affinity expansion):
+    # all variants self-gate via 200-EMA; allow all regimes for symmetric
+    # long/short pairs; restrict explicit-long to bull/neutral and
+    # explicit-short to bear/crisis + neutral (Batch 271 - neutral added
+    # since SMC structural-short signals self-gate via 200-EMA and price
+    # action, and the prior bear/crisis-only restriction prevented all
+    # firing during the neutral-dominant 4y backtest window).
     "smc_fvg_retest_long":          {"bull", "neutral"},
-    "smc_fvg_retest_short":         {"bear", "crisis"},
+    "smc_fvg_retest_short":         {"bear", "crisis", "neutral"},
     "smc_inverse_fvg":              {"bull", "neutral", "bear"},  # Batch 263: drop crisis
     "smc_breaker_block_long":       {"bull", "neutral"},
-    "smc_breaker_block_short":      {"bear", "crisis"},
+    "smc_breaker_block_short":      {"bear", "crisis", "neutral"},
     "smc_mitigation_block_long":    {"bull", "neutral"},
-    "smc_mitigation_block_short":   {"bear", "crisis"},
+    "smc_mitigation_block_short":   {"bear", "crisis", "neutral"},
     "smc_discount_long":            {"bull", "neutral"},
-    "smc_premium_short":            {"bear", "crisis"},
+    "smc_premium_short":            {"bear", "crisis", "neutral"},
     "smc_ote_long":                 {"bull", "neutral"},
-    "smc_ote_short":                {"bear", "crisis"},
+    "smc_ote_short":                {"bear", "crisis", "neutral"},
     "smc_equal_highs_sweep_short":  {"neutral", "bear", "crisis"},
     "smc_equal_lows_sweep_long":    {"bull", "neutral", "bear"},
     "smc_bos_retest_entry":         {"bull", "neutral", "bear", "crisis"},
-    # ORB stocks-in-play (Batch 211): allow long in bull/neutral
-    # (Zarattini criterion + 200-EMA gate); short in bear/crisis.
+    # ORB stocks-in-play (Batch 211 + Batch 271 expansion): allow long in
+    # bull/neutral (Zarattini criterion + 200-EMA gate); short in bear /
+    # crisis / neutral (Batch 271 added neutral per T1a forensic).
     "orb_stocks_in_play_long":      {"bull", "neutral"},
-    "orb_stocks_in_play_short":     {"bear", "crisis"},
-    # Short-side: bear/crisis only
-    "bollinger_upper_short":    {"bear", "crisis"},
-    "rsi_overbought_short":     {"bear", "crisis"},
-    "stochrsi_overbought_short":{"bear", "crisis"},
-    "macd_crossover_short":     {"bear", "crisis"},
-    "ichimoku_cloud_breakdown": {"bear", "crisis"},
-    "hull_rsi_short":           {"bear", "crisis"},
-    "parabolic_sar_flip_short": {"bear", "crisis"},
-    "supertrend_macd_short":    {"bear", "crisis"},
-    "donchian_breakdown_short": {"bear", "crisis"},
-    "evening_star_short":       {"bear", "crisis"},
-    "shooting_star_short":      {"bear", "crisis"},
-    "camarilla_rsi_obv_short":  {"bear", "crisis"},
-    "cpr_narrow_momentum_short":{"bear", "crisis"},
-    "52w_low_breakdown":        {"bear", "crisis"},
-    "death_cross_50_200_volume":{"bear", "crisis"},
-    "prev_day_low_breakdown":   {"bear", "crisis"},
+    "orb_stocks_in_play_short":     {"bear", "crisis", "neutral"},
+    # Short-side: bear/crisis + neutral
+    # Batch 271 (Tier 2 expansion of T1A_COMPREHENSIVE_REVIEW 2026-05-20):
+    # T1a forensic showed `regime_affinity_block_neutral_batch203` blocking
+    # 942/1212 hull_rsi_short candidates + 833/1083 cpr_narrow_momentum_short
+    # candidates - the neutral regime was ~70% of the 4y window and these
+    # shorts could not fire at all. The signals themselves self-gate via
+    # technical conditions (e.g., RSI>70 for rsi_overbought_short); the
+    # regime affinity should not double-gate them out of the dominant
+    # regime. Cross-asset signals (risk_off_bond_equity_short) NOT expanded
+    # because their signals are regime-defined (TLT/SPY ratio rising =
+    # risk-off regime).
+    "bollinger_upper_short":    {"bear", "crisis", "neutral"},
+    "rsi_overbought_short":     {"bear", "crisis", "neutral"},
+    "stochrsi_overbought_short":{"bear", "crisis", "neutral"},
+    "macd_crossover_short":     {"bear", "crisis", "neutral"},
+    "ichimoku_cloud_breakdown": {"bear", "crisis", "neutral"},
+    "hull_rsi_short":           {"bear", "crisis", "neutral"},
+    "parabolic_sar_flip_short": {"bear", "crisis", "neutral"},
+    "supertrend_macd_short":    {"bear", "crisis", "neutral"},
+    "donchian_breakdown_short": {"bear", "crisis", "neutral"},
+    "evening_star_short":       {"bear", "crisis", "neutral"},
+    "shooting_star_short":      {"bear", "crisis", "neutral"},
+    "camarilla_rsi_obv_short":  {"bear", "crisis", "neutral"},
+    "cpr_narrow_momentum_short":{"bear", "crisis", "neutral"},
+    "52w_low_breakdown":        {"bear", "crisis", "neutral"},
+    "death_cross_50_200_volume":{"bear", "crisis", "neutral"},
+    "prev_day_low_breakdown":   {"bear", "crisis", "neutral"},
 }
 
 
