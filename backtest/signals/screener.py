@@ -1975,7 +1975,113 @@ def strat_avwap_20high_rejection_short(s):
          "Below 200 EMA (bear regime confirmation)"])
 
 
+# ---------------------------------------------------------------------------
+# Batch 252 (Phase 1C+ Wave 1 strategy registrations 2026-05-20)
+# Chart patterns (DEC-355-362 / Batch 242) - 5 strategies
+# ---------------------------------------------------------------------------
+def strat_head_and_shoulders_bottom_long(s):
+    """Batch 252: inverse H&S long entry (Edwards-Magee + Bulkowski 2005)."""
+    fires = (
+        s.get("head_shoulders_bottom_detected", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["head_shoulders_bottom_detected", "price_above_ema_200"],
+        ["Inverse head-and-shoulders pattern detected",
+         "Edwards-Magee 1948 / Bulkowski 2005 canonical reversal",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_double_bottom_long(s):
+    """Batch 252: double-bottom long entry."""
+    fires = (
+        s.get("double_bottom_detected", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["double_bottom_detected", "price_above_ema_200"],
+        ["Double-bottom pattern detected (2 lows at same level + trough)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_cup_and_handle_long(s):
+    """Batch 252: O'Neil CANSLIM cup-and-handle long."""
+    fires = (
+        s.get("cup_handle_detected", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["cup_handle_detected", "price_above_ema_200"],
+        ["Cup-and-handle pattern detected (O'Neil 1988)",
+         "CANSLIM canonical breakout setup",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_flag_bull_long(s):
+    """Batch 252: bull flag breakout long (Edwards-Magee + Bulkowski)."""
+    fires = (
+        s.get("flag_bull_detected", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["flag_bull_detected", "price_above_ema_200"],
+        ["Bull flag pattern (+10% pole + tight consolidation)",
+         "High-tight-flag post-consolidation breakout",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_triangle_ascending_long(s):
+    """Batch 252: ascending triangle long (flat top + rising lows)."""
+    fires = (
+        s.get("triangle_ascending_detected", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["triangle_ascending_detected", "price_above_ema_200"],
+        ["Ascending triangle (flat resistance + rising support)",
+         "Bulkowski 2005: breakout direction follows trend ~70%",
+         "Above 200 EMA (regime gate)"])
+
+
+# ---------------------------------------------------------------------------
+# Index rebalance (DEC-370 / Batch 251) - 4 strategies, imported from module
+# ---------------------------------------------------------------------------
+from backtest.signals.index_rebalance import (
+    strat_post_inclusion_drift_long as _strat_post_inclusion_drift_long,
+    strat_post_inclusion_reversal_short as _strat_post_inclusion_reversal_short,
+    strat_post_deletion_drift_short as _strat_post_deletion_drift_short,
+    strat_pre_rebalance_long as _strat_pre_rebalance_long,
+)
+
+
+def strat_post_inclusion_drift_long(s):
+    return _strat_post_inclusion_drift_long(s)
+
+
+def strat_post_inclusion_reversal_short(s):
+    return _strat_post_inclusion_reversal_short(s)
+
+
+def strat_post_deletion_drift_short(s):
+    return _strat_post_deletion_drift_short(s)
+
+
+def strat_pre_rebalance_long(s):
+    return _strat_pre_rebalance_long(s)
+
+
 ALL_STRATEGIES = {
+    # Chart patterns (5 - Batch 252 2026-05-20 Phase 1C+ Wave 1 / DEC-355-362)
+    "head_and_shoulders_bottom_long":   strat_head_and_shoulders_bottom_long,
+    "double_bottom_long":               strat_double_bottom_long,
+    "cup_and_handle_long":              strat_cup_and_handle_long,
+    "flag_bull_long":                   strat_flag_bull_long,
+    "triangle_ascending_long":          strat_triangle_ascending_long,
+    # Index rebalance (4 - Batch 252 2026-05-20 Phase 1C+ Wave 1 / DEC-370)
+    "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
+    "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
+    "post_deletion_drift_short":        strat_post_deletion_drift_short,
+    "pre_rebalance_long":               strat_pre_rebalance_long,
     # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
     "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
     "orb_stocks_in_play_short":     strat_orb_stocks_in_play_short,
@@ -2351,6 +2457,24 @@ def screen_instrument(
         smc_out = compute_smc_signals(df)
         if smc_out:
             signals.update(smc_out)
+    except Exception:
+        pass
+    # Batch 252: chart pattern signals (DEC-355-362). Graceful no-op when
+    # history insufficient (most patterns need 60-150 bars).
+    try:
+        from backtest.signals.chart_patterns import compute_all_chart_patterns
+        chart_out = compute_all_chart_patterns(df)
+        if chart_out:
+            signals.update(chart_out)
+    except Exception:
+        pass
+    # Batch 252: index rebalance signals (DEC-370). Graceful no-op when
+    # data_prefetch/derived/index_rebalance_events.parquet missing.
+    try:
+        from backtest.signals.index_rebalance import compute_index_rebalance_signals
+        ir_out = compute_index_rebalance_signals(ticker, as_of)
+        if ir_out:
+            signals.update(ir_out)
     except Exception:
         pass
     # Batch 220: merge cross-sectional factor ranks from the universe-

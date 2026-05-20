@@ -65,6 +65,20 @@ import pandas as pd
 # in Phase 1A-beta (25 active). All inactive strategies retain default
 # allow-all behavior so they can demonstrate edge before being gated.
 STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
+    # Batch 252 (Phase 1C+ Wave 1 registrations 2026-05-20):
+    # Chart patterns (DEC-355-362): allow bull/neutral; bear typically
+    # invalidates Edwards-Magee setups
+    "head_and_shoulders_bottom_long":   {"bull", "neutral"},
+    "double_bottom_long":               {"bull", "neutral", "bear"},  # reversal works in bear too
+    "cup_and_handle_long":              {"bull", "neutral"},
+    "flag_bull_long":                   {"bull", "neutral"},
+    "triangle_ascending_long":          {"bull", "neutral"},
+    # Index rebalance (DEC-370): event-driven; allow all regimes since
+    # effect is index-flow-driven not market-momentum-driven.
+    "post_inclusion_drift_long":        {"bull", "neutral", "bear", "crisis"},
+    "post_inclusion_reversal_short":    {"bull", "neutral", "bear", "crisis"},
+    "post_deletion_drift_short":        {"bear", "crisis", "neutral"},
+    "pre_rebalance_long":               {"bull", "neutral", "bear", "crisis"},
     # Mean-reversion: avoid bull (Mag-7 fade trap)
     "bollinger_lower":          {"neutral", "bear"},
     "bollinger_tight":          {"bull", "neutral"},
