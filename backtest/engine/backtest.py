@@ -964,48 +964,18 @@ class BacktestEngine:
                     _corr_mult = 1.0
                     _corr_max = 0.0
 
-            # Batch 272 (Tier 2.2 of T1A_COMPREHENSIVE_REVIEW_2026_05_20):
-            # Sort per-ticker strategies by conviction BEFORE the dedup loop.
-            # T1a forensic showed break_retest_confluence (1,608 candidates,
-            # 0 realized), r1_break_retest (1,089 / 0), and similar
-            # multi-condition strategies losing dedup to single-indicator
-            # strategies that happened to come first in ALL_STRATEGIES dict
-            # insertion order. Sort by:
-            #   (1) Category priority - confluence/event_driven/factor/smc
-            #       categories first (multi-condition by design).
-            #   (2) Signals-used count desc - more conditions = higher
-            #       conviction. Tie-breaker for same-category candidates.
-            # When one position per ticker per day, the highest-conviction
-            # entry should win.
-            _CAT_PRIORITY = {
-                "confluence":      0,
-                "event_driven":    1,
-                "factor":          2,
-                "smc":             3,
-                "chart_pattern":   4,
-                "multi_timeframe": 5,
-                "pairs":           6,
-                "news_sentiment":  7,
-                "cross_asset":     8,
-                "vwap":            9,
-                "volume_profile": 10,
-                "pivot":          11,
-                "orb":            12,
-                "momentum":       13,
-                "trend":          14,
-                "breakout":       15,
-                "mean_reversion": 16,
-                "calendar":       17,
-                "candle":         18,
-            }
-            _strats_sorted = sorted(
-                cand.get("strategies", []),
-                key=lambda e: (
-                    _CAT_PRIORITY.get(e.get("category", ""), 99),
-                    -len(e.get("signals_used", [])),
-                ),
-            )
-            for strat_entry in _strats_sorted:
+            # Batch 274 (2026-05-20 owner-approved): REVERTED Batch 272.
+            # Stage B smoke (20 tkrs x 2y) showed Batch 272's category-priority
+            # dedup sort had unintended consequence - cpr_narrow_momentum
+            # (confluence category, 4 signals) won dedup over every competing
+            # strategy and fired 102x at -14.4% mean PnL vs 1x in T1a baseline.
+            # break_retest_confluence similarly went from 0 -> 14 firings at
+            # 0% WR. Empirical edge does NOT correlate with confluence
+            # tagging; categorical priority forced losers to fire instead of
+            # winners. Pre-Batch-272 dict-insertion-order dedup was at least
+            # empirically neutral. Revisit with empirical edge data (post-
+            # full-T1a-rerun realized PnL per strategy) in a future batch.
+            for strat_entry in cand.get("strategies", []):
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]
 

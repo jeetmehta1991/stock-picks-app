@@ -9368,77 +9368,25 @@ def test_batch273_smc_base_signals_fire_with_default_params():
     )
 
 
-def test_batch272_dedup_strategy_priority_confluence_wins():
-    """Batch 272 (Tier 2.2 of T1A_COMPREHENSIVE_REVIEW): per-ticker dedup
-    must sort strategies by conviction. Confluence-tagged strategies (which
-    require multi-indicator alignment) should win when competing with
-    single-indicator strategies for the one-position-per-ticker-per-day
-    slot. T1a forensic: break_retest_confluence had 1,608 candidates
-    blocked at dedup with 0 realized."""
-    # The sort key applied in engine/backtest.py around line 967.
-    _CAT_PRIORITY = {
-        "confluence":      0,
-        "event_driven":    1,
-        "factor":          2,
-        "smc":             3,
-        "chart_pattern":   4,
-        "multi_timeframe": 5,
-        "pairs":           6,
-        "news_sentiment":  7,
-        "cross_asset":     8,
-        "vwap":            9,
-        "volume_profile": 10,
-        "pivot":          11,
-        "orb":            12,
-        "momentum":       13,
-        "trend":          14,
-        "breakout":       15,
-        "mean_reversion": 16,
-        "calendar":       17,
-        "candle":         18,
-    }
-    def _sort_key(e):
-        return (
-            _CAT_PRIORITY.get(e.get("category", ""), 99),
-            -len(e.get("signals_used", [])),
-        )
-    strategies = [
-        {"strategy": "rsi_oversold", "category": "mean_reversion",
-         "signals_used": ["rsi_14_oversold", "above_200_ema"]},
-        {"strategy": "break_retest_confluence", "category": "confluence",
-         "signals_used": ["resistance_break_retest", "macd_bullish",
-                          "above_ema_20", "above_ema_50"]},
-        {"strategy": "macd_crossover", "category": "momentum",
-         "signals_used": ["macd_bullish_cross"]},
-    ]
-    sorted_strats = sorted(strategies, key=_sort_key)
-    assert sorted_strats[0]["strategy"] == "break_retest_confluence", (
-        "Confluence must win dedup over single-indicator strategies"
+def test_batch274_dedup_priority_reverted():
+    """Batch 274 (2026-05-20 owner-approved): Batch 272's category-priority
+    dedup sort REVERTED after Stage B smoke (20 tkrs x 2y) showed
+    cpr_narrow_momentum (confluence category) won every dedup matchup
+    and fired 102x at -14.4% mean PnL (vs 1x in T1a baseline);
+    break_retest_confluence similarly went 0 -> 14 firings at 0% WR.
+    Empirical edge does NOT correlate with confluence tagging.
+
+    Verifies the rollback by asserting the priority dict + sorted-strats
+    code are absent from engine/backtest.py."""
+    import inspect
+    from backtest.engine import backtest as bt_mod
+    mod_src = inspect.getsource(bt_mod)
+    assert "_CAT_PRIORITY" not in mod_src, (
+        "Batch 274 revert incomplete: _CAT_PRIORITY dict still present"
     )
-    # macd_crossover (priority 13, momentum) outranks rsi_oversold
-    # (priority 16, mean_reversion) on category priority alone.
-    assert sorted_strats[1]["strategy"] == "macd_crossover"
-    assert sorted_strats[2]["strategy"] == "rsi_oversold"
-
-
-def test_batch272_dedup_signals_used_count_tie_breaker():
-    """Batch 272: within same category bucket, more signals_used wins."""
-    _CAT_PRIORITY = {"mean_reversion": 16}
-    def _sort_key(e):
-        return (_CAT_PRIORITY.get(e.get("category", ""), 99),
-                -len(e.get("signals_used", [])))
-    strategies = [
-        {"strategy": "rsi_simple", "category": "mean_reversion",
-         "signals_used": ["rsi_oversold"]},
-        {"strategy": "rsi_quad_filter", "category": "mean_reversion",
-         "signals_used": ["rsi_oversold", "above_200_ema", "volume_2x", "macd_align"]},
-        {"strategy": "rsi_dual", "category": "mean_reversion",
-         "signals_used": ["rsi_oversold", "above_200_ema"]},
-    ]
-    sorted_strats = sorted(strategies, key=_sort_key)
-    assert sorted_strats[0]["strategy"] == "rsi_quad_filter"
-    assert sorted_strats[1]["strategy"] == "rsi_dual"
-    assert sorted_strats[2]["strategy"] == "rsi_simple"
+    assert "_strats_sorted" not in mod_src, (
+        "Batch 274 revert incomplete: _strats_sorted still present"
+    )
 
 
 def test_batch271_short_regime_affinity_expanded_to_neutral():
