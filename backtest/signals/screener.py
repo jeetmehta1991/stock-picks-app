@@ -2529,6 +2529,54 @@ STRATEGY_CATEGORIES = {
 }
 
 
+def validate_strategy_roster() -> dict:
+    """Batch 270 (Tier 2.3 of T1A_COMPREHENSIVE_REVIEW_2026_05_20 §7):
+    Roster sanity gate at startup. Verifies every entry in ALL_STRATEGIES is
+    a callable function that returns a dict on empty-signals input. Catches
+    the failure mode that hid in plain sight during the 2026-05-19 T1a run:
+    Batches 252-255 registered 25 new strategies in the dict 16 hours AFTER
+    the backtest launched, but the running process kept the stale roster
+    (148 keys without the new ones) and silently produced zero candidates
+    for all 25.
+
+    Returns a summary dict for logging. Raises RuntimeError if any strategy
+    is unloadable - fail fast at startup rather than silently producing
+    zero candidates across a 17h run.
+    """
+    from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
+    summary = {
+        "total_registered":   len(ALL_STRATEGIES),
+        "deprecated_count":   sum(1 for k in ALL_STRATEGIES if k in _DEPRECATED),
+        "active_count":       sum(1 for k in ALL_STRATEGIES if k not in _DEPRECATED),
+        "callable_ok":        0,
+        "callable_failed":    [],
+        "load_errors":        [],
+    }
+    for name, fn in ALL_STRATEGIES.items():
+        if not callable(fn):
+            summary["callable_failed"].append((name, "not_callable"))
+            continue
+        try:
+            result = fn({})
+            if not isinstance(result, dict):
+                summary["callable_failed"].append((name, f"returned_{type(result).__name__}"))
+                continue
+            if "fires" not in result:
+                summary["callable_failed"].append((name, "missing_fires_key"))
+                continue
+            summary["callable_ok"] += 1
+        except Exception as exc:
+            summary["load_errors"].append((name, str(exc)[:80]))
+    if summary["callable_failed"] or summary["load_errors"]:
+        raise RuntimeError(
+            f"Strategy roster validation failed at startup. "
+            f"callable_failed={summary['callable_failed']} "
+            f"load_errors={summary['load_errors']}. "
+            f"Fix or remove the strategies before launching a backtest."
+        )
+    return summary
+
+
 # -----------------------------------------------------------------------------
 # ENTRY ZONE VALIDATOR
 # -----------------------------------------------------------------------------

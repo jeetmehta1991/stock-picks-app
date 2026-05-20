@@ -7370,6 +7370,57 @@ def test_batch267_news_sentiment_shift_strat_fires():
     assert res.get("direction") == "long"
 
 
+def test_batch270_roster_sanity_passes_in_current_state():
+    """Batch 270 (Tier 2.3 of T1A_COMPREHENSIVE_REVIEW): startup roster
+    sanity gate. All 148 ALL_STRATEGIES entries must be callable + return
+    a dict with 'fires' key when called with empty signals. Fail-fast at
+    startup prevents the 2026-05-19 stale-roster bug (Batches 252-255
+    registered 16h after T1a launch -> 25 silent zero-fire strategies
+    across the entire 17h run).
+    """
+    from backtest.signals.screener import validate_strategy_roster, ALL_STRATEGIES
+    summary = validate_strategy_roster()
+    assert summary["total_registered"] == len(ALL_STRATEGIES)
+    assert summary["callable_ok"] == summary["total_registered"]
+    assert summary["callable_failed"] == []
+    assert summary["load_errors"] == []
+    # Guard against accidental mass-deprecation.
+    assert summary["active_count"] >= 100, (
+        f"Active strategy count dropped to {summary['active_count']}"
+    )
+
+
+def test_batch270_roster_sanity_raises_on_broken_strategy():
+    """Batch 270: validator must FAIL FAST if a strategy raises on call."""
+    import pytest
+    from backtest.signals import screener
+    broken_fn = lambda s: 1 / 0
+    orig = screener.ALL_STRATEGIES.copy()
+    screener.ALL_STRATEGIES["TEST_BROKEN_STRATEGY"] = broken_fn
+    try:
+        with pytest.raises(RuntimeError, match="Strategy roster validation failed"):
+            screener.validate_strategy_roster()
+    finally:
+        screener.ALL_STRATEGIES.clear()
+        screener.ALL_STRATEGIES.update(orig)
+
+
+def test_batch270_roster_sanity_raises_on_missing_fires_key():
+    """Batch 270: a strategy returning a dict without 'fires' breaks the
+    screening protocol silently mid-run. Validator catches at startup."""
+    import pytest
+    from backtest.signals import screener
+    broken_fn = lambda s: {"direction": "long"}  # missing 'fires'
+    orig = screener.ALL_STRATEGIES.copy()
+    screener.ALL_STRATEGIES["TEST_NO_FIRES_KEY"] = broken_fn
+    try:
+        with pytest.raises(RuntimeError, match="missing_fires_key|roster validation"):
+            screener.validate_strategy_roster()
+    finally:
+        screener.ALL_STRATEGIES.clear()
+        screener.ALL_STRATEGIES.update(orig)
+
+
 def test_batch229_engle_granger_returns_expected_keys():
     """Batch 229 (deferred-items pairs trading 2026-05-18 owner-approved):
     engle_granger_cointegration returns dict with cointegrated, hedge_ratio,

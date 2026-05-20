@@ -164,6 +164,22 @@ def main():
     print(f"{len(ALL_STRATEGIES)} strategy classes (Layer 1 baseline; full layered roster ~108-133 per CANONICAL_FACTS.md F-002) | Trailing stop exits | Circuit breakers | Long + Short")
     print("="*70)
 
+    # Batch 270 (Tier 2.3 of T1A_COMPREHENSIVE_REVIEW_2026_05_20):
+    # Roster sanity gate. Verifies all 148 ALL_STRATEGIES entries are callable
+    # + return valid dicts. Raises before launching the 17h backtest if any
+    # strategy fails to load. Prevents recurrence of the 2026-05-19 T1a
+    # stale-roster bug (Batches 252-255 registered 16h after launch -> 25
+    # silent zero-fire strategies across the entire run).
+    from backtest.signals.screener import validate_strategy_roster as _validate_roster
+    try:
+        _roster_summary = _validate_roster()
+        print(f"Roster sanity: {_roster_summary['callable_ok']}/{_roster_summary['total_registered']} "
+              f"callable OK | {_roster_summary['active_count']} active | "
+              f"{_roster_summary['deprecated_count']} deprecated (DEC-218 filter)")
+    except RuntimeError as exc:
+        print(f"CRITICAL: Roster sanity gate failed: {exc}")
+        sys.exit(1)
+
     validate_env()
     if not validate_lookahead():
         print("CRITICAL: Look-ahead bias check failed. Aborting.")
