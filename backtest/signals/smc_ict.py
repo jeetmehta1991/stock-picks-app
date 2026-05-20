@@ -43,12 +43,37 @@ with contextlib.redirect_stdout(io.StringIO()):
         _SMC_AVAILABLE = False
 
 
+def _most_recent_event_within(series: pd.Series, current_idx: int,
+                                recency_bars: int) -> Optional[int]:
+    """Return the value of the most-recent non-zero event in `series` if
+    it occurred within `recency_bars` of `current_idx`, else None.
+
+    Batch 273 (Tier 2.1 SMC family wiring audit 2026-05-20): SMC library
+    has intrinsic detection lag from swing-confirmation requirement.
+    Using tail(N) for "recently active" base signals (BOS/CHOCH/OB/
+    liquidity) misses events because detection happens 20-80 bars after
+    the event itself. This helper finds the last non-zero event by index
+    and checks recency relative to current_idx instead of relative to
+    the tail. Per empirical sweep on AAPL (1255 bars, swing_length=20):
+    a 90-bar recency window catches the most-recent BOS in ~30% of days
+    (vs ~0% with a 5-bar tail).
+    """
+    nonzero = series[series.fillna(0) != 0]
+    if nonzero.empty:
+        return None
+    last_event_idx = nonzero.index[-1]
+    if current_idx - last_event_idx > recency_bars:
+        return None
+    return nonzero.iloc[-1]
+
+
 def compute_smc_signals(
     ohlc: pd.DataFrame,
-    swing_length: int = 50,
+    swing_length: int = 20,
     fvg_lookback: int = 5,
     liquidity_range_pct: float = 0.01,
     dealing_range_lookback: int = 50,
+    event_recency_bars: int = 90,
 ) -> dict:
     """Compute SMC / ICT signals for a single-ticker OHLCV DataFrame.
 
@@ -153,9 +178,13 @@ def compute_smc_signals(
         try:
             ob_df = _smc.ob(ohlc, swings)
             if "OB" in ob_df.columns:
-                recent_ob = ob_df["OB"].tail(fvg_lookback)
-                out["smc_ob_bullish_active"] = bool((recent_ob == 1).any())
-                out["smc_ob_bearish_active"] = bool((recent_ob == -1).any())
+                # Batch 273: use event_recency_bars instead of fvg_lookback
+                # (OB detection lags by ~swing_length bars, so 5-bar tail
+                # never catches an OB; 90-bar recency catches ~30% per audit)
+                ob_recent_val = _most_recent_event_within(
+                    ob_df["OB"], current_idx, event_recency_bars)
+                out["smc_ob_bullish_active"] = bool(ob_recent_val == 1)
+                out["smc_ob_bearish_active"] = bool(ob_recent_val == -1)
                 if "Top" in ob_df.columns and "Bottom" in ob_df.columns:
                     breaker_bull = False
                     breaker_bear = False
@@ -202,13 +231,18 @@ def compute_smc_signals(
         try:
             bos_df = _smc.bos_choch(ohlc, swings)
             if "BOS" in bos_df.columns:
-                recent_bos = bos_df["BOS"].tail(fvg_lookback)
-                out["smc_bos_bullish"] = bool((recent_bos == 1).any())
-                out["smc_bos_bearish"] = bool((recent_bos == -1).any())
+                # Batch 273: BOS detection requires swing confirmation
+                # which lags by 20-80 bars. Tail(5) misses 100% of events;
+                # event_recency_bars (default 90) catches ~30% per audit.
+                bos_val = _most_recent_event_within(
+                    bos_df["BOS"], current_idx, event_recency_bars)
+                out["smc_bos_bullish"] = bool(bos_val == 1)
+                out["smc_bos_bearish"] = bool(bos_val == -1)
             if "CHOCH" in bos_df.columns:
-                recent_choch = bos_df["CHOCH"].tail(fvg_lookback)
-                out["smc_choch_bullish"] = bool((recent_choch == 1).any())
-                out["smc_choch_bearish"] = bool((recent_choch == -1).any())
+                choch_val = _most_recent_event_within(
+                    bos_df["CHOCH"], current_idx, event_recency_bars)
+                out["smc_choch_bullish"] = bool(choch_val == 1)
+                out["smc_choch_bearish"] = bool(choch_val == -1)
             # Batch 216: BOS retest - price within 0.5pct of a recently-
             # broken BOS Level. Scan last 50 BOS strikes.
             if "BOS" in bos_df.columns and "Level" in bos_df.columns:
@@ -239,9 +273,11 @@ def compute_smc_signals(
         try:
             liq_df = _smc.liquidity(ohlc, swings, range_percent=liquidity_range_pct)
             if "Liquidity" in liq_df.columns:
-                recent_liq = liq_df["Liquidity"].tail(fvg_lookback)
-                out["smc_liquidity_swept_up"] = bool((recent_liq == 1).any())
-                out["smc_liquidity_swept_dn"] = bool((recent_liq == -1).any())
+                # Batch 273: same liquidity-detection-lag fix as BOS/OB.
+                liq_val = _most_recent_event_within(
+                    liq_df["Liquidity"], current_idx, event_recency_bars)
+                out["smc_liquidity_swept_up"] = bool(liq_val == 1)
+                out["smc_liquidity_swept_dn"] = bool(liq_val == -1)
                 # Batch 216: equal-highs / equal-lows sweep - liquidity
                 # primitive with Swept flag set TRUE in recent bars.
                 if "Swept" in liq_df.columns:
