@@ -59,13 +59,55 @@ _OHLCV_DIR = (
     Path(__file__).parent.parent.parent
     / "data_prefetch" / "polygon" / "ohlcv_daily"
 )
+_FRED_DIR = (
+    Path(__file__).parent.parent.parent
+    / "data_prefetch" / "fred" / "observations"
+)
+# Batch 264 fix: VIX + VIX3M live in FRED observations (VIXCLS / VXVCLS),
+# not polygon. Cross-asset signals were silently no-op because lookup
+# went to polygon/ohlcv_daily/VIX.parquet which doesn't exist.
+# Per CHECKLIST #77 canonical-source: FRED is the cached VIX provider.
+_FRED_TICKER_MAP = {
+    "VIX":   "VIXCLS",
+    "VIX3M": "VXVCLS",
+    # VIX9D: not in FRED (CBOE-only per INV-010); graceful no-op
+}
 
 
 def _load_close_series(ticker: str, as_of: date,
                         lookback_days: int = 252) -> Optional[pd.Series]:
-    """Load close-series for ticker up to as_of with `lookback_days` history."""
+    """Load close-series for ticker up to as_of with `lookback_days` history.
+
+    Source priority:
+      1. data_prefetch/polygon/ohlcv_daily/{ticker}.parquet (equity ETFs)
+      2. data_prefetch/fred/observations/{fred_id}.parquet (VIX family)
+    """
     safe_ticker = ticker.replace(".", "-")
     path = _OHLCV_DIR / f"{safe_ticker}.parquet"
+    if not path.exists() and ticker in _FRED_TICKER_MAP:
+        fred_path = _FRED_DIR / f"{_FRED_TICKER_MAP[ticker]}.parquet"
+        if fred_path.exists():
+            try:
+                df = pd.read_parquet(fred_path)
+                if df.empty:
+                    return None
+                date_col = "date" if "date" in df.columns else "observation_date"
+                val_col = "value" if "value" in df.columns else "close"
+                if date_col not in df.columns or val_col not in df.columns:
+                    return None
+                df["date_dt"] = pd.to_datetime(df[date_col], errors="coerce").dt.date
+                df = df.dropna(subset=["date_dt"])
+                df = df[df["date_dt"] <= as_of].sort_values("date_dt")
+                df = df[pd.to_numeric(df[val_col], errors="coerce").notna()]
+                if df.empty:
+                    return None
+                series = pd.Series(
+                    pd.to_numeric(df[val_col]).values,
+                    index=df["date_dt"].values,
+                )
+                return series.tail(lookback_days + 30)
+            except Exception:
+                return None
     if not path.exists():
         return None
     try:
