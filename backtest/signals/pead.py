@@ -37,8 +37,27 @@ import pandas as pd
 _FINANCIALS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "financials"
 
 
-def _safe_eps(row: dict) -> Optional[float]:
-    """Extract diluted EPS from a Polygon financials row's financials_json."""
+def _safe_eps(row) -> Optional[float]:
+    """Extract diluted EPS from a Polygon financials row's financials_json.
+
+    Batch 295 (2026-05-21 owner-approved signal audit): accepts both dict
+    AND string inputs. The Polygon prefetch stores `financials_json` as
+    a Python-repr STRING (single-quoted), not native dict; load_quarterly_eps
+    calls _safe_eps with the raw string. Prior code did
+    `if not isinstance(row, dict): return None` -> silently returned None for
+    every call -> PEAD signals were always empty (within_pead_window,
+    pead_positive_surprise, etc., all missing). This made strat_pead_long
+    and strat_pead_with_insider_confirmation_long unable to fire.
+
+    The fix: parse the string via ast.literal_eval (json.loads fails on
+    single quotes) before extracting EPS.
+    """
+    import ast
+    if isinstance(row, str):
+        try:
+            row = ast.literal_eval(row)
+        except (ValueError, SyntaxError):
+            return None
     if not isinstance(row, dict):
         return None
     fin = row.get("income_statement", {}) if isinstance(row.get("income_statement"), dict) else {}

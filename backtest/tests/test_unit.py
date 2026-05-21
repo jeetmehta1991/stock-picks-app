@@ -9615,6 +9615,50 @@ def test_batch293_calendar_long_strategies_tightened_to_bull_neutral():
         )
 
 
+def test_batch295_pead_safe_eps_parses_string_input():
+    """Batch 295 (2026-05-21 signal audit): _safe_eps must accept the
+    Python-repr STRING that Polygon prefetch stores in `financials_json`,
+    not just dict. Prior code returned None for every call -> PEAD signals
+    always empty -> strat_pead_long/pead_with_insider never fired."""
+    from backtest.signals.pead import _safe_eps
+    # Python-repr (single-quoted) - what's actually in the cache
+    repr_str = (
+        "{'income_statement': {'diluted_earnings_per_share': "
+        "{'value': 8.26, 'unit': 'USD / shares'}, "
+        "'basic_earnings_per_share': {'value': 8.29}}}"
+    )
+    assert _safe_eps(repr_str) == 8.26
+    # Plain dict still works
+    plain_dict = {"income_statement": {"diluted_earnings_per_share": {"value": 5.0}}}
+    assert _safe_eps(plain_dict) == 5.0
+    # Falls back to basic EPS when diluted absent
+    only_basic = {"income_statement": {"basic_earnings_per_share": {"value": 3.5}}}
+    assert _safe_eps(only_basic) == 3.5
+    # Garbage returns None
+    assert _safe_eps("not valid python") is None
+    assert _safe_eps(None) is None
+
+
+def test_batch295_pead_load_quarterly_eps_returns_rows():
+    """Batch 295: load_quarterly_eps must return non-empty for tickers
+    with valid Polygon financials cache. Regression catch for the silent
+    PEAD failure where 51 valid AAPL quarterly rows were dropped because
+    _safe_eps couldn't parse the string-encoded JSON."""
+    from pathlib import Path
+    from backtest.signals.pead import load_quarterly_eps
+    # AAPL has Polygon financials in cache; should yield >= 30 quarterly rows
+    if not Path("data_prefetch/polygon/financials/AAPL.parquet").exists():
+        import pytest
+        pytest.skip("AAPL financials not present (CI/fresh clone tolerance)")
+    df = load_quarterly_eps("AAPL")
+    assert len(df) >= 30, (
+        f"Batch 295: PEAD must load >=30 quarterly EPS rows for AAPL "
+        f"(got {len(df)}); silent integration regressed"
+    )
+    assert "eps" in df.columns
+    assert df["eps"].notna().all()
+
+
 def test_batch294_institutional_signal_per_ticker_fallback():
     """Batch 294 (2026-05-21 owner-approved F1): institutional_signal must
     use per-ticker historical fallback when bulk feed has no data for the
