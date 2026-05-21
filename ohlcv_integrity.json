@@ -1,0 +1,1108 @@
+{
+  "scan_date": "2026-05-21",
+  "scanned_parquets": 1929,
+  "tickers_with_issues": 280,
+  "issue_counts": {
+    "coverage_short": 232,
+    "date_gaps": 32,
+    "insufficient_bars": 3,
+    "suspicious_intraday": 26
+  },
+  "thresholds": {
+    "min_bars": 60,
+    "max_date_gap_days": 14,
+    "max_zero_vol_streak": 5,
+    "suspicious_split_ratio": 3.0
+  },
+  "by_ticker": {
+    "ABMD": {
+      "coverage_short": "data ends 2022-12-21, backtest ends 2026-04-30"
+    },
+    "ACCD": {
+      "coverage_short": "data ends 2025-04-07, backtest ends 2026-04-30"
+    },
+    "ADS": {
+      "coverage_short": "data ends 2022-04-01, backtest ends 2026-04-30"
+    },
+    "AERI": {
+      "coverage_short": "data ends 2022-11-18, backtest ends 2026-04-30"
+    },
+    "AGFY": {
+      "coverage_short": "data ends 2025-08-29, backtest ends 2026-04-30"
+    },
+    "AIMC": {
+      "coverage_short": "data ends 2023-03-24, backtest ends 2026-04-30"
+    },
+    "AJRD": {
+      "coverage_short": "data ends 2023-07-27, backtest ends 2026-04-30"
+    },
+    "AKRO": {
+      "coverage_short": "data ends 2025-12-08, backtest ends 2026-04-30"
+    },
+    "AKUS": {
+      "coverage_short": "data ends 2022-11-30, backtest ends 2026-04-30"
+    },
+    "ALPN": {
+      "coverage_short": "data ends 2024-05-17, backtest ends 2026-04-30"
+    },
+    "ALTS": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 805
+      }
+    },
+    "ALXN": {
+      "insufficient_bars": 49,
+      "coverage_short": "data ends 2021-07-20, backtest ends 2026-04-30"
+    },
+    "AMAM": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2022-12-09"
+        ]
+      },
+      "coverage_short": "data ends 2024-03-06, backtest ends 2026-04-30"
+    },
+    "ANSS": {
+      "coverage_short": "data ends 2025-07-16, backtest ends 2026-04-30"
+    },
+    "APEN": {
+      "coverage_short": "data ends 2023-04-03, backtest ends 2026-04-30"
+    },
+    "APLT": {
+      "coverage_short": "data ends 2026-02-02, backtest ends 2026-04-30"
+    },
+    "APTS": {
+      "coverage_short": "data ends 2022-06-23, backtest ends 2026-04-30"
+    },
+    "ARCH": {
+      "coverage_short": "data ends 2025-01-13, backtest ends 2026-04-30"
+    },
+    "ARIS": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 128
+      }
+    },
+    "ARMN": {
+      "coverage_short": "data ends 2026-02-18, backtest ends 2026-04-30"
+    },
+    "ARNC": {
+      "coverage_short": "data ends 2023-08-17, backtest ends 2026-04-30"
+    },
+    "ASPC": {
+      "date_gaps": {
+        "count": 2,
+        "max_gap_days": 884
+      }
+    },
+    "ASTI": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 32
+      }
+    },
+    "ATGE": {
+      "coverage_short": "data ends 2026-02-23, backtest ends 2026-04-30"
+    },
+    "ATLX": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 19
+      }
+    },
+    "ATVI": {
+      "coverage_short": "data ends 2023-10-12, backtest ends 2026-04-30"
+    },
+    "AURC": {
+      "coverage_short": "data ends 2023-08-23, backtest ends 2026-04-30"
+    },
+    "AVDL": {
+      "coverage_short": "data ends 2026-02-11, backtest ends 2026-04-30"
+    },
+    "AVEO": {
+      "coverage_short": "data ends 2023-01-19, backtest ends 2026-04-30"
+    },
+    "AZEK": {
+      "coverage_short": "data ends 2025-06-30, backtest ends 2026-04-30"
+    },
+    "AZPN": {
+      "coverage_short": "data ends 2025-03-11, backtest ends 2026-04-30"
+    },
+    "BLU": {
+      "coverage_short": "data ends 2023-06-28, backtest ends 2026-04-30"
+    },
+    "BOWL": {
+      "coverage_short": "data ends 2024-12-11, backtest ends 2026-04-30"
+    },
+    "BPMC": {
+      "coverage_short": "data ends 2025-07-17, backtest ends 2026-04-30"
+    },
+    "BPT": {
+      "coverage_short": "data ends 2025-06-30, backtest ends 2026-04-30"
+    },
+    "BQ": {
+      "suspicious_intraday": {
+        "count": 2,
+        "sample_dates": [
+          "2025-09-29",
+          "2025-10-31"
+        ]
+      }
+    },
+    "BRG": {
+      "coverage_short": "data ends 2022-10-05, backtest ends 2026-04-30"
+    },
+    "BRY": {
+      "coverage_short": "data ends 2025-12-17, backtest ends 2026-04-30"
+    },
+    "BVH": {
+      "coverage_short": "data ends 2024-01-16, backtest ends 2026-04-30"
+    },
+    "CADL": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-04-04"
+        ]
+      }
+    },
+    "CAI": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 1304
+      }
+    },
+    "CBAY": {
+      "coverage_short": "data ends 2024-03-21, backtest ends 2026-04-30"
+    },
+    "CCRD": {
+      "coverage_short": "data ends 2025-10-30, backtest ends 2026-04-30"
+    },
+    "CCXI": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 1209
+      }
+    },
+    "CD": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 696
+      }
+    },
+    "CDR": {
+      "coverage_short": "data ends 2022-08-22, backtest ends 2026-04-30"
+    },
+    "CDTX": {
+      "coverage_short": "data ends 2026-01-06, backtest ends 2026-04-30"
+    },
+    "CDXC": {
+      "coverage_short": "data ends 2025-03-18, backtest ends 2026-04-30"
+    },
+    "CEIX": {
+      "coverage_short": "data ends 2025-01-14, backtest ends 2026-04-30"
+    },
+    "CEP": {
+      "coverage_short": "data ends 2025-12-08, backtest ends 2026-04-30"
+    },
+    "CERE": {
+      "coverage_short": "data ends 2024-07-31, backtest ends 2026-04-30"
+    },
+    "CERN": {
+      "coverage_short": "data ends 2022-06-07, backtest ends 2026-04-30"
+    },
+    "CHK": {
+      "coverage_short": "data ends 2024-10-01, backtest ends 2026-04-30"
+    },
+    "CHX": {
+      "coverage_short": "data ends 2025-07-15, backtest ends 2026-04-30"
+    },
+    "CIR": {
+      "coverage_short": "data ends 2023-10-17, backtest ends 2026-04-30"
+    },
+    "CLR": {
+      "coverage_short": "data ends 2022-11-22, backtest ends 2026-04-30"
+    },
+    "CMA": {
+      "coverage_short": "data ends 2026-01-30, backtest ends 2026-04-30"
+    },
+    "CMPO": {
+      "coverage_short": "data ends 2026-01-22, backtest ends 2026-04-30"
+    },
+    "CNCE": {
+      "coverage_short": "data ends 2023-03-03, backtest ends 2026-04-30"
+    },
+    "COHR": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 70
+      }
+    },
+    "COMM": {
+      "coverage_short": "data ends 2026-01-13, backtest ends 2026-04-30"
+    },
+    "COR": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 611
+      }
+    },
+    "CORZ": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 390
+      }
+    },
+    "CPG": {
+      "coverage_short": "data ends 2024-05-14, backtest ends 2026-04-30"
+    },
+    "CTIC": {
+      "coverage_short": "data ends 2023-06-23, backtest ends 2026-04-30"
+    },
+    "CTLT": {
+      "coverage_short": "data ends 2024-12-17, backtest ends 2026-04-30"
+    },
+    "CTXS": {
+      "coverage_short": "data ends 2022-09-29, backtest ends 2026-04-30"
+    },
+    "CUTR": {
+      "coverage_short": "data ends 2025-03-12, backtest ends 2026-04-30"
+    },
+    "CYBE": {
+      "coverage_short": "data ends 2022-11-03, backtest ends 2026-04-30"
+    },
+    "DAY": {
+      "coverage_short": "data ends 2026-02-03, backtest ends 2026-04-30"
+    },
+    "DCPH": {
+      "coverage_short": "data ends 2024-06-10, backtest ends 2026-04-30"
+    },
+    "DESP": {
+      "coverage_short": "data ends 2025-05-14, backtest ends 2026-04-30"
+    },
+    "DFS": {
+      "coverage_short": "data ends 2025-05-16, backtest ends 2026-04-30"
+    },
+    "DICE": {
+      "coverage_short": "data ends 2023-08-08, backtest ends 2026-04-30"
+    },
+    "DISCA": {
+      "coverage_short": "data ends 2022-04-08, backtest ends 2026-04-30"
+    },
+    "DISCK": {
+      "coverage_short": "data ends 2022-04-08, backtest ends 2026-04-30"
+    },
+    "DISH": {
+      "coverage_short": "data ends 2023-12-29, backtest ends 2026-04-30"
+    },
+    "DO": {
+      "coverage_short": "data ends 2024-09-03, backtest ends 2026-04-30"
+    },
+    "DOGZ": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2026-01-26"
+        ]
+      }
+    },
+    "DRCT": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-12-23"
+        ]
+      }
+    },
+    "DRE": {
+      "coverage_short": "data ends 2022-09-30, backtest ends 2026-04-30"
+    },
+    "DRUG": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-10-15"
+        ]
+      }
+    },
+    "DWAC": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2021-10-21"
+        ]
+      },
+      "coverage_short": "data ends 2024-03-25, backtest ends 2026-04-30"
+    },
+    "ELEV": {
+      "coverage_short": "data ends 2025-07-22, backtest ends 2026-04-30"
+    },
+    "EMX": {
+      "coverage_short": "data ends 2025-11-12, backtest ends 2026-04-30"
+    },
+    "ENLC": {
+      "coverage_short": "data ends 2025-01-30, backtest ends 2026-04-30"
+    },
+    "ERF": {
+      "coverage_short": "data ends 2024-05-30, backtest ends 2026-04-30"
+    },
+    "ESTE": {
+      "coverage_short": "data ends 2023-10-31, backtest ends 2026-04-30"
+    },
+    "ETNB": {
+      "coverage_short": "data ends 2025-10-29, backtest ends 2026-04-30"
+    },
+    "ETRN": {
+      "coverage_short": "data ends 2024-07-19, backtest ends 2026-04-30"
+    },
+    "EURN": {
+      "coverage_short": "data ends 2024-07-12, backtest ends 2026-04-30"
+    },
+    "EVA": {
+      "coverage_short": "data ends 2024-10-03, backtest ends 2026-04-30"
+    },
+    "EVOP": {
+      "coverage_short": "data ends 2023-03-23, backtest ends 2026-04-30"
+    },
+    "EVRI": {
+      "coverage_short": "data ends 2025-06-30, backtest ends 2026-04-30"
+    },
+    "EXAS": {
+      "coverage_short": "data ends 2026-03-20, backtest ends 2026-04-30"
+    },
+    "EZGO": {
+      "suspicious_intraday": {
+        "count": 2,
+        "sample_dates": [
+          "2023-09-06",
+          "2026-05-06"
+        ]
+      }
+    },
+    "FARO": {
+      "coverage_short": "data ends 2025-07-18, backtest ends 2026-04-30"
+    },
+    "FBHS": {
+      "coverage_short": "data ends 2022-12-14, backtest ends 2026-04-30"
+    },
+    "FGEN": {
+      "coverage_short": "data ends 2026-01-07, backtest ends 2026-04-30"
+    },
+    "FI": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 614
+      },
+      "coverage_short": "data ends 2025-11-10, backtest ends 2026-04-30"
+    },
+    "FIG": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 69
+      }
+    },
+    "FISV": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 889
+      }
+    },
+    "FLIR": {
+      "insufficient_bars": 3,
+      "coverage_short": "data ends 2021-05-13, backtest ends 2026-04-30"
+    },
+    "FLY": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 1466
+      }
+    },
+    "FORD": {
+      "coverage_short": "data ends 2025-11-14, backtest ends 2026-04-30"
+    },
+    "FORG": {
+      "coverage_short": "data ends 2023-08-22, backtest ends 2026-04-30"
+    },
+    "FRBN": {
+      "date_gaps": {
+        "count": 2,
+        "max_gap_days": 19
+      },
+      "coverage_short": "data ends 2023-10-31, backtest ends 2026-04-30"
+    },
+    "FRC": {
+      "coverage_short": "data ends 2023-04-28, backtest ends 2026-04-30"
+    },
+    "FRGE": {
+      "coverage_short": "data ends 2026-02-27, backtest ends 2026-04-30"
+    },
+    "FSTX": {
+      "coverage_short": "data ends 2023-03-08, backtest ends 2026-04-30"
+    },
+    "FUSN": {
+      "coverage_short": "data ends 2024-06-03, backtest ends 2026-04-30"
+    },
+    "GATO": {
+      "coverage_short": "data ends 2025-01-15, backtest ends 2026-04-30"
+    },
+    "GBT": {
+      "coverage_short": "data ends 2022-10-04, backtest ends 2026-04-30"
+    },
+    "GLOP": {
+      "coverage_short": "data ends 2023-07-12, backtest ends 2026-04-30"
+    },
+    "GLYC": {
+      "coverage_short": "data ends 2025-06-13, backtest ends 2026-04-30"
+    },
+    "GPS": {
+      "coverage_short": "data ends 2024-08-21, backtest ends 2026-04-30"
+    },
+    "GTHX": {
+      "coverage_short": "data ends 2024-09-17, backtest ends 2026-04-30"
+    },
+    "HA": {
+      "coverage_short": "data ends 2024-09-17, backtest ends 2026-04-30"
+    },
+    "HARP": {
+      "coverage_short": "data ends 2024-03-08, backtest ends 2026-04-30"
+    },
+    "HBI": {
+      "coverage_short": "data ends 2025-11-28, backtest ends 2026-04-30"
+    },
+    "HCCI": {
+      "coverage_short": "data ends 2023-10-16, backtest ends 2026-04-30"
+    },
+    "HEES": {
+      "coverage_short": "data ends 2025-05-30, backtest ends 2026-04-30"
+    },
+    "HES": {
+      "coverage_short": "data ends 2025-07-17, backtest ends 2026-04-30"
+    },
+    "HFC": {
+      "coverage_short": "data ends 2022-03-14, backtest ends 2026-04-30"
+    },
+    "HIBB": {
+      "coverage_short": "data ends 2024-07-24, backtest ends 2026-04-30"
+    },
+    "HOLO": {
+      "suspicious_intraday": {
+        "count": 4,
+        "sample_dates": [
+          "2022-09-19",
+          "2023-09-13",
+          "2024-02-07"
+        ]
+      }
+    },
+    "HOUS": {
+      "coverage_short": "data ends 2026-01-08, backtest ends 2026-04-30"
+    },
+    "HUSA": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2022-03-07"
+        ]
+      },
+      "coverage_short": "data ends 2025-12-05, backtest ends 2026-04-30"
+    },
+    "HZNP": {
+      "coverage_short": "data ends 2023-10-05, backtest ends 2026-04-30"
+    },
+    "IAS": {
+      "coverage_short": "data ends 2025-12-22, backtest ends 2026-04-30"
+    },
+    "IGMS": {
+      "coverage_short": "data ends 2025-08-13, backtest ends 2026-04-30"
+    },
+    "IGT": {
+      "coverage_short": "data ends 2025-07-01, backtest ends 2026-04-30"
+    },
+    "IMGN": {
+      "coverage_short": "data ends 2024-02-09, backtest ends 2026-04-30"
+    },
+    "IMGO": {
+      "coverage_short": "data ends 2023-01-10, backtest ends 2026-04-30"
+    },
+    "INFA": {
+      "coverage_short": "data ends 2025-11-17, backtest ends 2026-04-30"
+    },
+    "INFO": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 958
+      }
+    },
+    "INKT": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2025-07-11"
+        ]
+      }
+    },
+    "IPG": {
+      "coverage_short": "data ends 2025-11-26, backtest ends 2026-04-30"
+    },
+    "ISEE": {
+      "coverage_short": "data ends 2023-07-10, backtest ends 2026-04-30"
+    },
+    "ITCI": {
+      "coverage_short": "data ends 2025-04-01, backtest ends 2026-04-30"
+    },
+    "JNPR": {
+      "coverage_short": "data ends 2025-07-01, backtest ends 2026-04-30"
+    },
+    "JWN": {
+      "coverage_short": "data ends 2025-05-20, backtest ends 2026-04-30"
+    },
+    "K": {
+      "coverage_short": "data ends 2025-12-10, backtest ends 2026-04-30"
+    },
+    "KDNY": {
+      "coverage_short": "data ends 2023-08-10, backtest ends 2026-04-30"
+    },
+    "KRTX": {
+      "coverage_short": "data ends 2024-03-15, backtest ends 2026-04-30"
+    },
+    "KSU": {
+      "coverage_short": "data ends 2021-12-13, backtest ends 2026-04-30"
+    },
+    "LANC": {
+      "coverage_short": "data ends 2025-06-30, backtest ends 2026-04-30"
+    },
+    "LB": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 1061
+      }
+    },
+    "LBPH": {
+      "coverage_short": "data ends 2024-11-29, backtest ends 2026-04-30"
+    },
+    "LGVN": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2021-11-22"
+        ]
+      }
+    },
+    "LTHM": {
+      "coverage_short": "data ends 2024-01-03, backtest ends 2026-04-30"
+    },
+    "LUNR": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2023-02-23"
+        ]
+      }
+    },
+    "MAXR": {
+      "coverage_short": "data ends 2023-05-02, backtest ends 2026-04-30"
+    },
+    "MGI": {
+      "coverage_short": "data ends 2023-05-31, backtest ends 2026-04-30"
+    },
+    "MIME": {
+      "coverage_short": "data ends 2022-05-18, backtest ends 2026-04-30"
+    },
+    "ML": {
+      "coverage_short": "data ends 2025-04-16, backtest ends 2026-04-30"
+    },
+    "MNMD": {
+      "coverage_short": "data ends 2026-01-14, backtest ends 2026-04-30"
+    },
+    "MNPR": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-10-24"
+        ]
+      }
+    },
+    "MNRL": {
+      "coverage_short": "data ends 2022-12-28, backtest ends 2026-04-30"
+    },
+    "MNTN": {
+      "date_gaps": {
+        "count": 2,
+        "max_gap_days": 93
+      }
+    },
+    "MODN": {
+      "coverage_short": "data ends 2024-06-26, backtest ends 2026-04-30"
+    },
+    "MORF": {
+      "coverage_short": "data ends 2024-08-15, backtest ends 2026-04-30"
+    },
+    "MRNS": {
+      "coverage_short": "data ends 2025-02-10, backtest ends 2026-04-30"
+    },
+    "MRO": {
+      "coverage_short": "data ends 2024-11-21, backtest ends 2026-04-30"
+    },
+    "MRUS": {
+      "coverage_short": "data ends 2025-12-29, backtest ends 2026-04-30"
+    },
+    "MTOR": {
+      "coverage_short": "data ends 2022-08-02, backtest ends 2026-04-30"
+    },
+    "MTTR": {
+      "coverage_short": "data ends 2025-02-27, backtest ends 2026-04-30"
+    },
+    "MXIM": {
+      "coverage_short": "data ends 2021-08-25, backtest ends 2026-04-30"
+    },
+    "MYOV": {
+      "coverage_short": "data ends 2023-03-09, backtest ends 2026-04-30"
+    },
+    "NATI": {
+      "coverage_short": "data ends 2023-10-10, backtest ends 2026-04-30"
+    },
+    "NETI": {
+      "coverage_short": "data ends 2023-12-28, backtest ends 2026-04-30"
+    },
+    "NEWR": {
+      "coverage_short": "data ends 2023-11-07, backtest ends 2026-04-30"
+    },
+    "NEX": {
+      "coverage_short": "data ends 2023-08-31, backtest ends 2026-04-30"
+    },
+    "NGD": {
+      "coverage_short": "data ends 2026-03-19, backtest ends 2026-04-30"
+    },
+    "NGMS": {
+      "coverage_short": "data ends 2024-04-23, backtest ends 2026-04-30"
+    },
+    "NINE": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 60
+      }
+    },
+    "NISN": {
+      "coverage_short": "data ends 2026-02-11, backtest ends 2026-04-30"
+    },
+    "NLSN": {
+      "coverage_short": "data ends 2022-10-11, backtest ends 2026-04-30"
+    },
+    "NPTN": {
+      "coverage_short": "data ends 2022-08-02, backtest ends 2026-04-30"
+    },
+    "NR": {
+      "coverage_short": "data ends 2024-12-18, backtest ends 2026-04-30"
+    },
+    "NUKK": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 19
+      },
+      "suspicious_intraday": {
+        "count": 4,
+        "sample_dates": [
+          "2023-06-30",
+          "2023-12-14",
+          "2023-12-19"
+        ]
+      },
+      "coverage_short": "data ends 2026-02-06, backtest ends 2026-04-30"
+    },
+    "NUTX": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2022-04-04"
+        ]
+      }
+    },
+    "NVEI": {
+      "coverage_short": "data ends 2024-11-15, backtest ends 2026-04-30"
+    },
+    "NVFY": {
+      "coverage_short": "data ends 2025-11-07, backtest ends 2026-04-30"
+    },
+    "NVNI": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-12-19"
+        ]
+      }
+    },
+    "NWLI": {
+      "coverage_short": "data ends 2024-07-08, backtest ends 2026-04-30"
+    },
+    "OLO": {
+      "coverage_short": "data ends 2025-09-11, backtest ends 2026-04-30"
+    },
+    "ONEM": {
+      "coverage_short": "data ends 2023-02-21, backtest ends 2026-04-30"
+    },
+    "OPOF": {
+      "coverage_short": "data ends 2025-08-29, backtest ends 2026-04-30"
+    },
+    "OSG": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 499
+      }
+    },
+    "OSH": {
+      "coverage_short": "data ends 2023-05-01, backtest ends 2026-04-30"
+    },
+    "P": {
+      "insufficient_bars": 16
+    },
+    "PBCT": {
+      "coverage_short": "data ends 2022-04-01, backtest ends 2026-04-30"
+    },
+    "PBFX": {
+      "coverage_short": "data ends 2022-11-30, backtest ends 2026-04-30"
+    },
+    "PDCE": {
+      "coverage_short": "data ends 2023-08-04, backtest ends 2026-04-30"
+    },
+    "PETQ": {
+      "coverage_short": "data ends 2024-10-24, backtest ends 2026-04-30"
+    },
+    "PGTI": {
+      "coverage_short": "data ends 2024-03-27, backtest ends 2026-04-30"
+    },
+    "PHUN": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-01-16"
+        ]
+      }
+    },
+    "PNT": {
+      "coverage_short": "data ends 2023-12-26, backtest ends 2026-04-30"
+    },
+    "PRTG": {
+      "coverage_short": "data ends 2025-09-03, backtest ends 2026-04-30"
+    },
+    "PRVB": {
+      "coverage_short": "data ends 2023-04-26, backtest ends 2026-04-30"
+    },
+    "PSTX": {
+      "coverage_short": "data ends 2025-01-07, backtest ends 2026-04-30"
+    },
+    "PXD": {
+      "coverage_short": "data ends 2024-05-02, backtest ends 2026-04-30"
+    },
+    "RAPT": {
+      "coverage_short": "data ends 2026-03-02, backtest ends 2026-04-30"
+    },
+    "RDFN": {
+      "coverage_short": "data ends 2025-06-30, backtest ends 2026-04-30"
+    },
+    "RETA": {
+      "coverage_short": "data ends 2023-09-25, backtest ends 2026-04-30"
+    },
+    "REVG": {
+      "coverage_short": "data ends 2026-01-30, backtest ends 2026-04-30"
+    },
+    "RFP": {
+      "coverage_short": "data ends 2023-02-28, backtest ends 2026-04-30"
+    },
+    "RGC": {
+      "suspicious_intraday": {
+        "count": 3,
+        "sample_dates": [
+          "2021-08-20",
+          "2024-07-23",
+          "2025-03-13"
+        ]
+      }
+    },
+    "RGLS": {
+      "coverage_short": "data ends 2025-06-24, backtest ends 2026-04-30"
+    },
+    "ROCC": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 82
+      },
+      "coverage_short": "data ends 2023-06-16, backtest ends 2026-04-30"
+    },
+    "ROVR": {
+      "coverage_short": "data ends 2024-02-26, backtest ends 2026-04-30"
+    },
+    "RVNC": {
+      "coverage_short": "data ends 2025-02-05, backtest ends 2026-04-30"
+    },
+    "RXDX": {
+      "coverage_short": "data ends 2023-06-15, backtest ends 2026-04-30"
+    },
+    "RYI": {
+      "coverage_short": "data ends 2026-02-23, backtest ends 2026-04-30"
+    },
+    "SAIL": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 913
+      }
+    },
+    "SAVA": {
+      "coverage_short": "data ends 2026-03-10, backtest ends 2026-04-30"
+    },
+    "SBNY": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 18
+      },
+      "suspicious_intraday": {
+        "count": 25,
+        "sample_dates": [
+          "2023-03-28",
+          "2023-07-31",
+          "2023-11-07"
+        ]
+      }
+    },
+    "SBOW": {
+      "coverage_short": "data ends 2024-07-29, backtest ends 2026-04-30"
+    },
+    "SEZL": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 28
+      },
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2023-08-17"
+        ]
+      }
+    },
+    "SGEN": {
+      "coverage_short": "data ends 2023-12-13, backtest ends 2026-04-30"
+    },
+    "SGFY": {
+      "coverage_short": "data ends 2023-03-28, backtest ends 2026-04-30"
+    },
+    "SGH": {
+      "coverage_short": "data ends 2024-10-14, backtest ends 2026-04-30"
+    },
+    "SILK": {
+      "coverage_short": "data ends 2024-09-16, backtest ends 2026-04-30"
+    },
+    "SIVB": {
+      "coverage_short": "data ends 2023-03-09, backtest ends 2026-04-30"
+    },
+    "SJI": {
+      "coverage_short": "data ends 2023-01-31, backtest ends 2026-04-30"
+    },
+    "SLCA": {
+      "coverage_short": "data ends 2024-07-31, backtest ends 2026-04-30"
+    },
+    "SMMT": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-05-30"
+        ]
+      }
+    },
+    "SNCR": {
+      "coverage_short": "data ends 2026-02-12, backtest ends 2026-04-30"
+    },
+    "SOLS": {
+      "date_gaps": {
+        "count": 11,
+        "max_gap_days": 204
+      }
+    },
+    "SOVO": {
+      "coverage_short": "data ends 2024-03-11, backtest ends 2026-04-30"
+    },
+    "SPLK": {
+      "coverage_short": "data ends 2024-03-15, backtest ends 2026-04-30"
+    },
+    "SPR": {
+      "coverage_short": "data ends 2025-12-05, backtest ends 2026-04-30"
+    },
+    "SPRB": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 30
+      },
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2025-10-06"
+        ]
+      }
+    },
+    "SPTN": {
+      "coverage_short": "data ends 2025-09-19, backtest ends 2026-04-30"
+    },
+    "SRRA": {
+      "coverage_short": "data ends 2022-06-30, backtest ends 2026-04-30"
+    },
+    "SSNT": {
+      "coverage_short": "data ends 2024-06-05, backtest ends 2026-04-30"
+    },
+    "SWAV": {
+      "coverage_short": "data ends 2024-05-30, backtest ends 2026-04-30"
+    },
+    "SWCH": {
+      "coverage_short": "data ends 2022-12-05, backtest ends 2026-04-30"
+    },
+    "SWIR": {
+      "coverage_short": "data ends 2023-01-12, backtest ends 2026-04-30"
+    },
+    "SWN": {
+      "coverage_short": "data ends 2024-09-30, backtest ends 2026-04-30"
+    },
+    "TA": {
+      "coverage_short": "data ends 2023-05-12, backtest ends 2026-04-30"
+    },
+    "TAST": {
+      "coverage_short": "data ends 2024-05-15, backtest ends 2026-04-30"
+    },
+    "TCDA": {
+      "coverage_short": "data ends 2023-01-23, backtest ends 2026-04-30"
+    },
+    "TEN": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 593
+      }
+    },
+    "TGH": {
+      "coverage_short": "data ends 2024-03-13, backtest ends 2026-04-30"
+    },
+    "TGI": {
+      "coverage_short": "data ends 2025-07-24, backtest ends 2026-04-30"
+    },
+    "THRN": {
+      "coverage_short": "data ends 2023-10-13, backtest ends 2026-04-30"
+    },
+    "THS": {
+      "coverage_short": "data ends 2026-02-10, backtest ends 2026-04-30"
+    },
+    "TMST": {
+      "coverage_short": "data ends 2024-02-26, backtest ends 2026-04-30"
+    },
+    "TNP": {
+      "coverage_short": "data ends 2024-06-28, backtest ends 2026-04-30"
+    },
+    "TNXP": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2024-12-17"
+        ]
+      }
+    },
+    "TPST": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2023-10-11"
+        ]
+      }
+    },
+    "TRQ": {
+      "coverage_short": "data ends 2022-12-15, backtest ends 2026-04-30"
+    },
+    "TWTR": {
+      "coverage_short": "data ends 2022-10-27, backtest ends 2026-04-30"
+    },
+    "USAK": {
+      "coverage_short": "data ends 2022-09-14, backtest ends 2026-04-30"
+    },
+    "USAP": {
+      "coverage_short": "data ends 2025-01-22, backtest ends 2026-04-30"
+    },
+    "USM": {
+      "coverage_short": "data ends 2025-08-11, backtest ends 2026-04-30"
+    },
+    "USX": {
+      "coverage_short": "data ends 2023-06-30, backtest ends 2026-04-30"
+    },
+    "VECT": {
+      "coverage_short": "data ends 2023-07-07, backtest ends 2026-04-30"
+    },
+    "VG": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 919
+      }
+    },
+    "VIGL": {
+      "coverage_short": "data ends 2025-08-04, backtest ends 2026-04-30"
+    },
+    "VIVO": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 1141
+      }
+    },
+    "VRTV": {
+      "coverage_short": "data ends 2023-11-29, backtest ends 2026-04-30"
+    },
+    "VTNR": {
+      "coverage_short": "data ends 2024-10-07, backtest ends 2026-04-30"
+    },
+    "VTYX": {
+      "coverage_short": "data ends 2026-03-03, backtest ends 2026-04-30"
+    },
+    "VVNT": {
+      "coverage_short": "data ends 2023-03-09, backtest ends 2026-04-30"
+    },
+    "VVPR": {
+      "coverage_short": "data ends 2026-03-13, backtest ends 2026-04-30"
+    },
+    "VZIO": {
+      "coverage_short": "data ends 2024-12-02, backtest ends 2026-04-30"
+    },
+    "WBA": {
+      "coverage_short": "data ends 2025-08-27, backtest ends 2026-04-30"
+    },
+    "WIRE": {
+      "coverage_short": "data ends 2024-07-01, backtest ends 2026-04-30"
+    },
+    "WLL": {
+      "coverage_short": "data ends 2022-06-30, backtest ends 2026-04-30"
+    },
+    "WW": {
+      "date_gaps": {
+        "count": 1,
+        "max_gap_days": 53
+      }
+    },
+    "WWE": {
+      "coverage_short": "data ends 2023-09-11, backtest ends 2026-04-30"
+    },
+    "XEC": {
+      "coverage_short": "data ends 2021-09-30, backtest ends 2026-04-30"
+    },
+    "XENT": {
+      "coverage_short": "data ends 2022-05-12, backtest ends 2026-04-30"
+    },
+    "XLNX": {
+      "coverage_short": "data ends 2022-02-11, backtest ends 2026-04-30"
+    },
+    "YMAB": {
+      "coverage_short": "data ends 2025-09-15, backtest ends 2026-04-30"
+    },
+    "ZIMV": {
+      "coverage_short": "data ends 2025-10-17, backtest ends 2026-04-30"
+    },
+    "ZURA": {
+      "suspicious_intraday": {
+        "count": 1,
+        "sample_dates": [
+          "2023-03-22"
+        ]
+      }
+    }
+  }
+}

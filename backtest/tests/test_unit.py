@@ -9615,6 +9615,36 @@ def test_batch293_calendar_long_strategies_tightened_to_bull_neutral():
         )
 
 
+def test_batch296_fire_rate_report_flags_silent_regression(tmp_path):
+    """Batch 296: signal_fire_rates.json must flag any source firing below
+    50% of expected_min. Catches the silent-regression class (META, news
+    Path B, 13F, PEAD)."""
+    import json
+    import pandas as pd
+    from backtest.results.writer import _write_signal_fire_rate_report
+
+    # Fixture: 100 trades, all institutional_signal=none -> 0% fire rate.
+    # Expected_min is 15% post-Batch-294; 50% of that is 7.5%; should flag.
+    df = pd.DataFrame({
+        "smart_money_score":    [2] * 80 + [0] * 20,
+        "congressional_signal": ["buy"] * 70 + ["none"] * 30,
+        "insider_signal":       ["none"] * 100,    # 0% fire - below 5%/2 threshold
+        "institutional_signal": ["none"] * 100,    # SILENT REGRESSION
+        "macro_score":          [1] * 90 + [0] * 10,
+        "sentiment_score":      [2] * 60 + [0] * 40,
+    })
+    _write_signal_fire_rate_report(df, tmp_path)
+    report = json.loads((tmp_path / "signal_fire_rates.json").read_text())
+    assert report["total_trades"] == 100
+    # institutional_signal should be flagged
+    assert "institutional_signal" in report["signals"]
+    assert report["signals"]["institutional_signal"]["fire_rate"] == 0.0
+    assert report["signals"]["institutional_signal"]["alert"] is not None
+    assert any("institutional_signal" in f for f in report["flags"])
+    # smart_money_score should NOT be flagged (80% > 20%/2=10%)
+    assert report["signals"]["smart_money_score"]["alert"] is None
+
+
 def test_batch295_pead_safe_eps_parses_string_input():
     """Batch 295 (2026-05-21 signal audit): _safe_eps must accept the
     Python-repr STRING that Polygon prefetch stores in `financials_json`,

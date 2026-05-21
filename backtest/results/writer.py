@@ -1180,11 +1180,91 @@ def write_all_outputs(
             output_dir / "sizing_log.csv", index=False,
         )
 
+    # -- Batch 296 (2026-05-21 owner-approved): fire-rate sanity report --
+    # Per signal-audit P0 recommendation (SIGNAL_AUDIT_2026_05_21.md sec-4):
+    # write per-signal-source fire rate, flag any below 50% of expected.
+    # Catches silent integration regressions (the class of bug that produced
+    # META corruption, news Path B, 13F historical, PEAD financials_json,
+    # foreign_rev_pct missing producer).
+    try:
+        _write_signal_fire_rate_report(df_trades, output_dir)
+    except Exception as exc:
+        logger.warning("Batch 296 fire-rate report failed: %s", exc)
+
     # -- HTML report --
     _write_html(df_trades, metrics, exit_compare, walk_forward,
                 survivorship_info, bonferroni, output_dir)
 
     logger.info("All outputs written to %s", output_dir)
+
+
+# Batch 296 expected-fire-rate bounds. Each entry is the minimum fraction
+# of trades that should have a non-default value for the signal. If actual
+# fire rate is < 0.5 x bound, the run flags a silent regression. Calibrated
+# from observed rates on T1a baseline + Stage C smokes; revisit after
+# Phase 1A-beta with empirical values across full universe.
+SIGNAL_FIRE_RATE_BOUNDS = {
+    # (signal_column, default_value_meaning_no_signal, expected_min_fire_rate)
+    "smart_money_score":       {"default": 0,      "min_fire_rate": 0.20},
+    "congressional_signal":    {"default": "none", "min_fire_rate": 0.20},
+    "insider_signal":          {"default": "none", "min_fire_rate": 0.05},
+    "institutional_signal":    {"default": "none", "min_fire_rate": 0.15},  # post-Batch-294
+    "macro_score":             {"default": 0,      "min_fire_rate": 0.30},
+    "sentiment_score":         {"default": 0,      "min_fire_rate": 0.30},
+}
+
+
+def _write_signal_fire_rate_report(df_trades, output_dir):
+    """Write signal_fire_rates.json + flag silent regressions.
+
+    Per SIGNAL_AUDIT_2026_05_21.md P0 safeguard: this report catches the
+    class of bug where a signal source silently produces zeros/Nones
+    without error (META, news Path B, 13F historical, PEAD, etc.).
+    """
+    import json
+    if df_trades is None or df_trades.empty:
+        return
+    n = len(df_trades)
+    report = {"total_trades": n, "signals": {}, "flags": []}
+    for col, cfg in SIGNAL_FIRE_RATE_BOUNDS.items():
+        if col not in df_trades.columns:
+            report["flags"].append(
+                f"{col}: MISSING column (cannot compute fire rate)")
+            continue
+        default = cfg["default"]
+        min_rate = cfg["min_fire_rate"]
+        # Fire = value != default
+        if isinstance(default, (int, float)):
+            fired = (df_trades[col] != default).sum()
+        else:
+            fired = (df_trades[col].astype(str) != str(default)).sum()
+        rate = fired / n if n > 0 else 0.0
+        threshold = min_rate * 0.5  # alert when < 50% of expected
+        flag = ""
+        if rate < threshold:
+            flag = (f"SILENT REGRESSION SUSPECT: fire_rate={rate:.1%} "
+                    f"< 50%% of expected_min {min_rate:.1%}")
+            report["flags"].append(f"{col}: {flag}")
+        report["signals"][col] = {
+            "fired_count": int(fired),
+            "fire_rate": round(rate, 4),
+            "expected_min_rate": min_rate,
+            "alert": flag if flag else None,
+        }
+    with open(output_dir / "signal_fire_rates.json", "w") as f:
+        json.dump(report, f, indent=2)
+    if report["flags"]:
+        logger.warning(
+            "Batch 296 fire-rate report: %d alerts -> see signal_fire_rates.json",
+            len(report["flags"]),
+        )
+        for flag in report["flags"]:
+            logger.warning("  %s", flag)
+    else:
+        logger.info(
+            "Batch 296 fire-rate report: all %d signal sources fire >=50%% of expected",
+            len(SIGNAL_FIRE_RATE_BOUNDS),
+        )
 
 
 def _write_html(df, metrics, exit_compare, walk_forward,
