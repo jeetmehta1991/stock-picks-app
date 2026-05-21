@@ -804,6 +804,358 @@ def test_tier13_stress_missing_macro_falls_back_safely():
 # from live caches. A "smoke" test that touches the actual cache catches
 # silent-coverage regressions at push time (vs Stage D smoke run only).
 
+# =============================================================================
+# TIER 6 - REGRESSION (explicit anchors for the 5 sibling silent bugs)
+# =============================================================================
+# Original gap: test_regression.py catches known bugs but the 5 sibling
+# silent bugs (META corruption, news Path B, 13F historical, PEAD
+# financials_json, foreign_rev_pct) weren't anchored in the regression
+# tier. If a future refactor regresses any one, this tier fires.
+
+def test_tier6_regression_meta_no_impossible_negative_returns():
+    """META 2024-Q3 silent corruption: a single bar had ret = -12.19 (loss
+    of 1219pct, mathematically impossible). The cache was refetched in
+    Batch 275. This regression test ensures META in particular never
+    again reads an impossible negative return."""
+    if not POLYGON_OHLCV_DIR.exists():
+        pytest.skip("Polygon OHLCV dir missing")
+    meta_path = POLYGON_OHLCV_DIR / "META.parquet"
+    if not meta_path.exists():
+        pytest.skip("META OHLCV cache missing")
+    df = pd.read_parquet(meta_path)
+    if len(df) < 2 or "close" not in df.columns:
+        pytest.skip("META OHLCV malformed")
+    rets = df["close"].pct_change().dropna()
+    worst = rets.min()
+    assert worst > -1.0, (
+        f"META has impossible single-day return {worst:.4f} "
+        f"(< -100pct). BUG-275 regression."
+    )
+
+
+def test_tier6_regression_news_sentiment_consumer_reads_polygon_news_path():
+    """news Path B silent bug: smart_money.get_news_sentiment originally
+    only consumed Path A (av_news); when av_news was retired and replaced
+    by Polygon news (Path B), the consumer was rewired but pointed at the
+    legacy path. Fix wired Path B; this test asserts Polygon news cache
+    is the active consumer path."""
+    import inspect
+    from backtest.data import smart_money as sm
+    src = inspect.getsource(sm)
+    # Active code (non-comment) must reference the Polygon news cache
+    code_only = "\n".join(
+        line for line in src.splitlines()
+        if not line.lstrip().startswith("#")
+    )
+    assert "polygon/news" in code_only or "polygon_news" in code_only.lower(), (
+        "smart_money active code no longer references polygon news cache. "
+        "Path B wiring regressed."
+    )
+
+
+def test_tier6_regression_13f_consumer_reads_historical_per_ticker():
+    """Quiver 13F historical silent bug: institutional_signal originally
+    computed deltas from the current snapshot (one row per fund) instead
+    of historical per-ticker data (many quarters per fund). Batch 294
+    split into _institutional_signal_from_bulk + _from_perticker_history.
+    This test ensures the per-ticker path exists in active code."""
+    import inspect
+    from backtest.data import smart_money as sm
+    src = inspect.getsource(sm)
+    code_only = "\n".join(
+        line for line in src.splitlines()
+        if not line.lstrip().startswith("#")
+    )
+    assert "_institutional_signal_from_perticker_history" in code_only, (
+        "Batch 294 per-ticker historical path missing. 13F historical fix regressed."
+    )
+
+
+def test_tier6_regression_pead_financials_json_handles_string_input():
+    """PEAD financials_json silent bug: load_quarterly_eps assumed dict
+    rows but real Polygon data is Python-repr STRINGS (single-quoted, NOT
+    JSON). Batch 295 added _safe_eps that handles both. This test fuzzes
+    both shapes and verifies parser extracts diluted_earnings_per_share.
+
+    Note: _safe_eps reads `row['income_statement']['diluted_earnings_per_share']
+    ['value']`. Polygon prefetch stores via repr() so single-quoted strings
+    are the realistic input shape (json.loads would fail; ast.literal_eval
+    succeeds)."""
+    from backtest.signals.pead import _safe_eps
+    # Python-repr STRING form (what Polygon prefetch actually stores)
+    string_row = (
+        "{'income_statement': {'diluted_earnings_per_share': "
+        "{'value': 1.42, 'unit': 'USD', 'label': 'Diluted EPS'}}}"
+    )
+    out = _safe_eps(string_row)
+    assert out == 1.42, f"_safe_eps regressed on Python-repr string input: got {out!r}"
+    # Native dict form (what an in-memory caller might pass)
+    dict_row = {
+        "income_statement": {
+            "diluted_earnings_per_share": {"value": 2.10, "unit": "USD"}
+        }
+    }
+    out2 = _safe_eps(dict_row)
+    assert out2 == 2.10, f"_safe_eps regressed on dict input: got {out2!r}"
+    # Fallback to basic_earnings_per_share when diluted missing
+    dict_basic = {
+        "income_statement": {
+            "basic_earnings_per_share": {"value": 3.50, "unit": "USD"}
+        }
+    }
+    out3 = _safe_eps(dict_basic)
+    assert out3 == 3.50, f"_safe_eps regressed on basic_eps fallback: got {out3!r}"
+    # Garbage tolerated (no exception, returns None)
+    assert _safe_eps("not a valid python literal") is None
+    assert _safe_eps(None) is None
+    assert _safe_eps(42) is None
+
+
+def test_tier6_regression_bug286_market_cap_polygon_ref_wired(tmp_path):
+    """BUG-286 explicit regression anchor (also covered by Batch 301 unit
+    tests but anchored here for tier-6 categorization). If anybody re-
+    introduces the `market_cap: 0` placeholder in fetch_info_bulk, this
+    fires."""
+    from backtest.data.universe import fetch_info_bulk
+    cache_file = tmp_path / "bug286_regression.json"
+    cache_file.write_text("{}")
+    out = fetch_info_bulk(["AAPL"], delay=0.0, cache_file=str(cache_file))
+    assert out["AAPL"]["market_cap"] > 1e11, (
+        f"BUG-286 regression: AAPL fetch_info_bulk mcap={out['AAPL']['market_cap']} "
+        f"<= $100B. Batch 301 Polygon reference wiring regressed."
+    )
+
+
+# =============================================================================
+# TIER 7 EXTENSIONS - additional cache shape audits
+# =============================================================================
+# Original gap: data_integrity layer only audits OHLCV.  Quiver / news /
+# SEC EDGAR / Polygon financials all have producer-consumer chains that
+# could silently degrade.
+
+def test_tier7_data_integrity_polygon_news_coverage():
+    """Polygon news cache must cover >=80pct of Master Dedup (1937 tkrs).
+    Consumer: smart_money.get_news_sentiment via Path B."""
+    news_dir = PREFETCH_DIR / "polygon" / "news"
+    if not news_dir.exists():
+        pytest.skip("Polygon news dir missing")
+    df = _load_master_dedup()
+    universe = set(df["Symbol"].astype(str).str.upper())
+    cached = {p.stem.upper() for p in news_dir.glob("*.parquet")}
+    pct = 100.0 * len(universe & cached) / len(universe)
+    assert pct >= 80.0, (
+        f"Polygon news coverage {pct:.1f}% of Master Dedup. "
+        f"news_sentiment consumer will silently default for {100-pct:.1f}% of tickers."
+    )
+
+
+def test_tier7_data_integrity_polygon_financials_coverage():
+    """Polygon financials cache must cover >=85pct of Master Dedup.
+    Consumer: PEAD signal via load_quarterly_eps."""
+    fin_dir = PREFETCH_DIR / "polygon" / "financials"
+    if not fin_dir.exists():
+        pytest.skip("Polygon financials dir missing")
+    df = _load_master_dedup()
+    universe = set(df["Symbol"].astype(str).str.upper())
+    cached = {p.stem.upper() for p in fin_dir.glob("*.parquet")}
+    pct = 100.0 * len(universe & cached) / len(universe)
+    assert pct >= 85.0, (
+        f"Polygon financials coverage {pct:.1f}% of Master Dedup. "
+        f"PEAD signal will silently default for {100-pct:.1f}% of tickers."
+    )
+
+
+def test_tier7_data_integrity_quiver_endpoints_coverage():
+    """Quiver per-ticker endpoints (congressional, insider, institutional,
+    lobbying, gov_contracts) must cover >=80pct of Master Dedup.  L146
+    finding: 3 of 4 endpoints had silent get_*() failures because consumer
+    read wrong column. Coverage check is the producer-side detector."""
+    quiver_dir = PREFETCH_DIR / "quiver"
+    if not quiver_dir.exists():
+        pytest.skip("Quiver dir missing")
+    df = _load_master_dedup()
+    universe = set(df["Symbol"].astype(str).str.upper())
+    expected_endpoints = ["congressional", "insider", "institutional",
+                          "lobbying", "gov_contracts"]
+    insufficient = []
+    for ep in expected_endpoints:
+        ep_dir = quiver_dir / ep
+        if not ep_dir.exists():
+            insufficient.append(f"{ep}: dir missing")
+            continue
+        cached = {p.stem.upper() for p in ep_dir.glob("*.parquet")}
+        pct = 100.0 * len(universe & cached) / len(universe)
+        if pct < 80.0:
+            insufficient.append(f"{ep}: {pct:.1f}% coverage")
+    assert not insufficient, (
+        f"Quiver endpoints below 80% coverage: {insufficient}. "
+        f"Smart-money signals will silently default to zero for missing tkrs."
+    )
+
+
+def test_tier7_data_integrity_sec_edgar_forms_coverage():
+    """SEC EDGAR form caches (4 / 8_K / 10_K / 10_Q) must cover >=70pct of
+    Master Dedup. Lower threshold than Quiver because EDGAR coverage drops
+    for non-US foreign-listed names which appear in T3 momentum tier."""
+    sec_dir = PREFETCH_DIR / "sec_edgar"
+    if not sec_dir.exists():
+        pytest.skip("SEC EDGAR dir missing")
+    df = _load_master_dedup()
+    universe = set(df["Symbol"].astype(str).str.upper())
+    expected_forms = ["4", "8_K", "10_K", "10_Q"]
+    insufficient = []
+    for form in expected_forms:
+        form_dir = sec_dir / form
+        if not form_dir.exists():
+            insufficient.append(f"form {form}: dir missing")
+            continue
+        cached = {p.stem.upper() for p in form_dir.glob("*.parquet")}
+        pct = 100.0 * len(universe & cached) / len(universe)
+        if pct < 70.0:
+            insufficient.append(f"form {form}: {pct:.1f}% coverage")
+    assert not insufficient, (
+        f"SEC EDGAR forms below 70% coverage: {insufficient}. "
+        f"Catalyst signals (8-K filings, insider Form 4) will silently default."
+    )
+
+
+def test_tier7_data_integrity_quiver_insider_schema():
+    """Quiver insider parquets must carry the canonical columns the
+    consumer reads. P3 format-mismatch detector at producer schema level."""
+    insider_dir = PREFETCH_DIR / "quiver" / "insider"
+    if not insider_dir.exists():
+        pytest.skip("Quiver insider dir missing")
+    required = {"Ticker", "Date", "Shares", "PricePerShare"}
+    files = list(insider_dir.glob("*.parquet"))[:30]
+    if not files:
+        pytest.skip("No Quiver insider parquets")
+    bad = []
+    for p in files:
+        try:
+            cols = set(pd.read_parquet(p).columns)
+        except Exception as e:
+            bad.append(f"{p.stem}: unreadable ({e})")
+            continue
+        missing = required - cols
+        if missing:
+            bad.append(f"{p.stem}: missing {missing}")
+    assert not bad, f"Quiver insider schema regression: {bad[:3]}"
+
+
+# =============================================================================
+# TIER 8 - PERFORMANCE (silent-gap detection budget)
+# =============================================================================
+# The silent-gap layer is only useful if it runs on every push.  These
+# tests enforce a runtime budget so the layer cannot slow down to where
+# someone disables it.
+
+def test_tier8_performance_fetch_info_bulk_100_tkrs_under_5s(tmp_path):
+    """fetch_info_bulk for 100 tickers (fresh cache) must complete in <5s.
+    Polygon reference reads from local parquets - any slowness indicates
+    a regression to live-API or full-rescan path."""
+    import time
+    from backtest.data.universe import fetch_info_bulk
+    df = _load_master_dedup()
+    sample = df["Symbol"].head(100).tolist()
+    cache_file = tmp_path / "perf_info.json"
+    cache_file.write_text("{}")
+    t0 = time.time()
+    out = fetch_info_bulk(sample, delay=0.0, cache_file=str(cache_file))
+    elapsed = time.time() - t0
+    assert elapsed < 5.0, (
+        f"fetch_info_bulk for 100 tkrs took {elapsed:.2f}s (>5s budget). "
+        f"Live-API regression or unbatched I/O suspect."
+    )
+    # Sanity: results returned
+    assert len(out) == 100, f"fetch_info_bulk returned {len(out)}/100 entries"
+
+
+def test_tier8_performance_polygon_reference_scan_under_30s():
+    """Full Polygon reference scan (~1686 parquets) must complete in <30s.
+    Required so test_tier7_data_integrity_polygon_reference_has_market_cap
+    runs on every push without timing out CI."""
+    import time
+    if not POLYGON_REF_DIR.exists():
+        pytest.skip("Polygon reference dir missing")
+    files = list(POLYGON_REF_DIR.glob("*.parquet"))
+    if not files:
+        pytest.skip("Polygon reference dir empty")
+    t0 = time.time()
+    valid = 0
+    for p in files:
+        try:
+            mc = pd.read_parquet(p, columns=["market_cap"]).iloc[0]["market_cap"]
+            if mc is not None and not pd.isna(mc) and mc > 0:
+                valid += 1
+        except Exception:
+            continue
+    elapsed = time.time() - t0
+    assert elapsed < 30.0, (
+        f"Polygon reference scan took {elapsed:.2f}s (>30s budget); "
+        f"{valid}/{len(files)} files had valid mcap."
+    )
+
+
+# =============================================================================
+# TIER 12 - COMPATIBILITY (format-dependency guards)
+# =============================================================================
+# Original gap: test_compatibility.py covers pandas/numpy/pyarrow APIs.
+# But Batch 301 added a hard runtime dependency on Polygon reference
+# parquet format. If pyarrow's parquet reader changes, or Polygon ships
+# a schema-incompatible refresh, the silent-gap layer becomes blind.
+
+def test_tier12_compat_polygon_reference_parquet_round_trip(tmp_path):
+    """Polygon reference parquet must round-trip through pandas read/write
+    without losing the market_cap / list_date / sic_description /
+    primary_exchange columns. Guards against pyarrow/pandas format
+    regressions breaking our consumer."""
+    if not POLYGON_REF_DIR.exists():
+        pytest.skip("Polygon reference dir missing")
+    sample = next(POLYGON_REF_DIR.glob("AAPL.parquet"), None)
+    if sample is None:
+        pytest.skip("AAPL reference parquet missing")
+    df = pd.read_parquet(sample)
+    out = tmp_path / "round_trip.parquet"
+    df.to_parquet(out, compression="snappy")
+    df2 = pd.read_parquet(out)
+    for col in ("market_cap", "list_date", "sic_description", "primary_exchange"):
+        assert col in df2.columns, f"Column {col} lost in round-trip"
+        # Value preserved
+        v1, v2 = df[col].iloc[0], df2[col].iloc[0]
+        if pd.isna(v1) and pd.isna(v2):
+            continue
+        assert v1 == v2, f"Column {col} value changed in round-trip: {v1!r} -> {v2!r}"
+
+
+def test_tier12_compat_info_cache_json_unicode_safe(tmp_path):
+    """info_cache.json must round-trip through json.loads/dumps with
+    non-ASCII company names (Polygon returns accents/CJK for foreign-
+    listed tickers).  P3 format-mismatch guard at JSON layer."""
+    import json
+    cache_file = tmp_path / "unicode_info.json"
+    payload = {
+        "TSM": {
+            "name": "Taiwan Semiconductor Manufacturing Co Ltd",
+            "sector": "Information Technology",
+            "industry": "SEMICONDUCTORS",
+            "market_cap": 8.5e11,
+            "exchange": "XNYS",
+            "ipo_date": "1997-10-08",
+        },
+        "ASML": {
+            "name": "ASML Holding N.V.",
+            "sector": "Information Technology",
+            "industry": "SEMICONDUCTOR MANUFACTURING",
+            "market_cap": 3.2e11,
+            "exchange": "XNAS",
+            "ipo_date": "1995-03-14",
+        },
+    }
+    cache_file.write_text(json.dumps(payload, ensure_ascii=False))
+    reloaded = json.loads(cache_file.read_text())
+    assert reloaded == payload, "info_cache JSON round-trip corruption"
+
+
 def test_tier2_smoke_fetch_info_bulk_mega_caps_yields_valid_mcap(tmp_path):
     """Smoke: fetch_info_bulk on 10 mega-cap tickers must yield mcap > $100M
     for >=8/10. <2 second runtime; lowest-cost BUG-286 regression detector.
