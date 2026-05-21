@@ -9596,6 +9596,36 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch287a_per_strategy_initial_pct_override():
+    """Batch 287.A: STRATEGY_EXIT_OVERRIDE entries may carry 'initial_pct'
+    to tighten/widen the initial stop per strategy. Mean-reversion needs
+    tighter (3-5%); trend needs wider (12-15%)."""
+    from backtest.config import STRATEGY_EXIT_OVERRIDE
+    # bollinger_lower should have initial_pct=0.03 per Batch 287.A
+    assert STRATEGY_EXIT_OVERRIDE["bollinger_lower"].get("initial_pct") == 0.03
+    # stochrsi_oversold should have initial_pct=0.04
+    assert STRATEGY_EXIT_OVERRIDE["stochrsi_oversold"].get("initial_pct") == 0.04
+    # bollinger_tight should have initial_pct=0.05
+    assert STRATEGY_EXIT_OVERRIDE["bollinger_tight"].get("initial_pct") == 0.05
+
+
+def test_batch287c_crisis_flag_no_inner_reassignment():
+    """Batch 287.C: redundant `crisis_flag = regime == 'crisis'` inside the
+    candidate loop was removed; canonical assignment at function scope
+    (line ~601) is the only one. Source-grep verifies the cleanup."""
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    # Count crisis_flag = regime == "crisis" assignments. Should be 1
+    # (the canonical one at function scope). The inner one in the dedup
+    # loop was redundant.
+    import re
+    matches = re.findall(r'crisis_flag\s*=\s*regime\s*==\s*"crisis"', src)
+    assert len(matches) == 1, (
+        f"Batch 287.C: should have exactly 1 canonical crisis_flag "
+        f"assignment, found {len(matches)}"
+    )
+
+
 def test_batch285_regime_flip_exits_on_regime_change():
     """Batch 285: regime_flip exits when today_regime != trade.regime_at_entry."""
     from datetime import date

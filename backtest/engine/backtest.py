@@ -834,7 +834,37 @@ class BacktestEngine:
             # rather than empirical edge. See SMOKE_STAGE_B_v3_DIAGNOSIS.
             # The BUG-61 block STILL applies to cross-day concurrent
             # positions (don't stack same-ticker exposure across days).
-            _n_strategies_for_split = max(1, len(cand.get("strategies", [])))
+            #
+            # Batch 287.B (2026-05-20 owner-approved per Audit Part 3 sec-10):
+            # Two-pass split count. Original Batch 279 used pre-gate count
+            # which over-counts strategies (some get filtered by regime
+            # affinity / blocklist / crisis-exclusion downstream), causing
+            # under-sized positions. Now pre-scan to count survivors of the
+            # deterministic gates (regime affinity, blocklist, crisis-long-
+            # exclusion, avoid-direction). Conservative: validate_entry_zone
+            # and portfolio gates still happen later; those may filter more
+            # but are too expensive to pre-check. Net effect: recovers ~30%
+            # of tier capacity on multi-strategy days.
+            from backtest.config import (
+                STRATEGY_REGIME_BLOCKLIST as _SRB,
+                CRISIS_LONG_EXCLUSIONS as _CLE,
+            )
+            from backtest.engine.regime_selector import should_strategy_fire_in_regime as _ssfir
+            _crisis_now = regime == "crisis"
+            _survivors = 0
+            for _se in cand.get("strategies", []):
+                _sname = _se.get("strategy", "")
+                _sdir = _se.get("direction", "")
+                if _sdir == "avoid":
+                    continue
+                if regime in _SRB.get(_sname, []):
+                    continue
+                if not _ssfir(_sname, regime):
+                    continue
+                if _sdir == "long" and _crisis_now and ticker in _CLE:
+                    continue
+                _survivors += 1
+            _n_strategies_for_split = max(1, _survivors)
 
             # BUG-61: ticker-level concurrent-position block (owner-approved Option A)
             # Skip the entire strategy loop if any prior open position exists on this ticker
@@ -1074,9 +1104,10 @@ class BacktestEngine:
                 # independently on the same ticker; strategy_count is no
                 # longer used for dedup arbitration.
 
-                # Regime flag  -  no hard block on any direction
-                # Crisis regime is flagged on the trade for analysis, not blocked
-                crisis_flag = regime == "crisis"
+                # Batch 287.C (2026-05-20): removed duplicate `crisis_flag =
+                # regime == "crisis"` here. The canonical assignment at
+                # function scope (line 601) is the only one needed; this
+                # inner re-assignment was redundant (same value, no effect).
 
                 # Entry zone gap filter
                 next_bar = self._get_next_open(ticker, as_of)
@@ -1187,10 +1218,19 @@ class BacktestEngine:
                         continue
 
                 # Trailing stop
+                # Batch 287.A (2026-05-20 owner-approved per Audit Part 3 sec-2):
+                # Per-strategy initial_pct override. Mean-reversion strategies
+                # need tighter stops (e.g., 3-5%); trend strategies need wider
+                # (e.g., 12-15%) to avoid whipsaw. Falls back to TRAILING_STOP
+                # default (0.10) when no override.
+                from backtest.config import STRATEGY_EXIT_OVERRIDE as _SEO_INIT
+                _strat_init_override = _SEO_INIT.get(strat_entry["strategy"], {})
+                _init_pct = _strat_init_override.get(
+                    "initial_pct", TRAILING_STOP["initial_pct"])
                 if direction == "long":
-                    init_stop = entry_price * (1 - TRAILING_STOP["initial_pct"])
+                    init_stop = entry_price * (1 - _init_pct)
                 else:
-                    init_stop = entry_price * (1 + TRAILING_STOP["initial_pct"])
+                    init_stop = entry_price * (1 + _init_pct)
 
                 # Stage 2  -  agent quality assessment adjusts tier +/-1 level
                 context_para = ""

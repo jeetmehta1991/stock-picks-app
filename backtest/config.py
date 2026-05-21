@@ -208,7 +208,8 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     # mean PnL improvement vs trailing_15pct default).
 
     # stochrsi_oversold: cube-best time_stop_10d (n=5, WR=80%, +4.69% mean).
-    "stochrsi_oversold":           {"time_stop_days": 10},
+    # Batch 287.A: tighter 4% initial_stop for mean-reversion thesis.
+    "stochrsi_oversold":           {"time_stop_days": 10, "initial_pct": 0.04},
 
     # xs_momentum_top_decile: cube-best class_time_stop (n=9, WR=78%, +8.11%).
     "xs_momentum_top_decile":      {"exit_method": "class_time_stop"},
@@ -218,7 +219,10 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
 
     # bollinger_lower: cube-best fixed_4r_2r (n=14, WR=21%, +0.27% mean);
     # trailing_15pct was the WORST exit (-7.55% mean) for this strategy.
-    "bollinger_lower":             {"exit_method": "fixed_4r_2r"},
+    # Batch 287.A: tighter 3% initial_stop matches mean-reversion thesis
+    # (oversold bounce). 10% blanket stop made R too wide -> +4R target
+    # = +40% which rarely hits -> time-stop exits dominate.
+    "bollinger_lower":             {"exit_method": "fixed_4r_2r", "initial_pct": 0.03},
 
     # monthly_bias_momentum_long: cube #1 was earnings_blackout (237d hold,
     # long-hold artifact); operational choice is #2 breakeven_plus_trail
@@ -237,7 +241,7 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     # Batch 285 activations (regime / EMA / pivot context now plumbed):
     "po3_bearish":                 {"exit_method": "ma_exit_ema9"},
     "cpr_narrow_bullish":          {"exit_method": "regime_flip"},
-    "bollinger_tight":             {"exit_method": "next_pivot_target"},
+    "bollinger_tight":             {"exit_method": "next_pivot_target", "initial_pct": 0.05},
 }
 
 # BUG-258 fix 2026-05-13: ATR fallback when insufficient history (<14 bars).
