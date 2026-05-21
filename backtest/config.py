@@ -182,6 +182,41 @@ TRAILING_STOP = {
     "ratchet_from":      "close",
 }
 
+# Batch 282 (2026-05-20 owner-approved per DESIGN_AUDIT_2026_05_20 Tier 1 #2):
+# Per-strategy exit override. The default TRAILING_STOP applies to every trade
+# unless a strategy is listed here with an explicit exit configuration. Stage C
+# cube analysis (50 tkrs x 3y, post-Batch-266 hardened) showed each strategy
+# has a different best-exit; the system was previously leaving ~+845 pp on
+# the table by using a single trailing_15pct for all.
+#
+# Each entry can override:
+#   - trail_pct           (float): % trail; default = TRAILING_STOP["trail_pct"] (0.15)
+#   - time_stop_days      (int or None): max bars held; default = None (no time stop)
+#   - breakeven_at_R      (float or None): R-multiple to ratchet stop to entry;
+#                          default = 1.0 if breakeven_move_at_1r else None
+#
+# Strategies not listed fall through to TRAILING_STOP defaults.
+#
+# Stage C cube-best findings translated to supportable per-day params
+# (complex exits like next_pivot_target, hybrid_50pct_target, regime_flip,
+# fixed_4r_2r, ma_exit_ema9 are not yet implemented as per-day logic - those
+# strategies stay on default for now; will be added in future batch when the
+# exit logic is implemented or when empirical evidence justifies prioritizing).
+STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
+    # Time-based cube-best (n>=5, cube-mean >0):
+    "stochrsi_oversold":           {"time_stop_days": 10, "trail_pct": 0.15},
+    "xs_momentum_top_decile":      {"time_stop_days": 30, "trail_pct": 0.15},
+    "po3_bullish":                 {"time_stop_days": 30, "trail_pct": 0.15},
+    # Tighter trail per cube (avwap_50_reclaim cube-best was hybrid_50pct_target
+    # at 124d avg hold; tighter 0.10 trail approximates the lock-50-at-3xATR
+    # behavior without implementing the full hybrid logic):
+    "avwap_50_reclaim":            {"trail_pct": 0.10},
+    # bollinger_lower cube-best fixed_4r_2r (16d hold, +0.27% mean); tighter
+    # 0.05 trail is a reasonable approximation of 2R stop discipline:
+    "bollinger_lower":             {"trail_pct": 0.05, "time_stop_days": 20},
+    # Add more per cube as evidence accumulates from Stage C / D1 / 1A-beta.
+}
+
 # BUG-258 fix 2026-05-13: ATR fallback when insufficient history (<14 bars).
 # 2% of entry price per Wilder recommendation for stocks with <14 bars available.
 # Named constant prevents silent magic-number use across exit_strategies.py.

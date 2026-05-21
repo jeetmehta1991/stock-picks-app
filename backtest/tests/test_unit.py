@@ -9486,6 +9486,74 @@ def test_batch273_smc_base_signals_fire_with_default_params():
     )
 
 
+def test_batch282_per_strategy_exit_override_present():
+    """Batch 282: STRATEGY_EXIT_OVERRIDE config dict present + populated
+    with at least the Stage C cube-best findings. Each entry should be a
+    dict with at least one of {trail_pct, time_stop_days, breakeven_at_R}."""
+    from backtest.config import STRATEGY_EXIT_OVERRIDE
+    assert isinstance(STRATEGY_EXIT_OVERRIDE, dict)
+    assert len(STRATEGY_EXIT_OVERRIDE) >= 5, (
+        "Stage C cube identified at least 5 strategies needing override"
+    )
+    valid_keys = {"trail_pct", "time_stop_days", "breakeven_at_R"}
+    for strat, override in STRATEGY_EXIT_OVERRIDE.items():
+        assert isinstance(override, dict), f"{strat}: override must be dict"
+        assert any(k in override for k in valid_keys), (
+            f"{strat}: override must have at least one of {valid_keys}"
+        )
+
+
+def test_batch282_strategy_trail_pct_override_takes_effect():
+    """Batch 282: when a strategy has per-strategy trail_pct, that overrides
+    the default TRAILING_STOP['trail_pct'] in update_trailing_stop."""
+    from datetime import date
+    from backtest.engine.exit_manager import update_trailing_stop, OpenTrade
+
+    # bollinger_lower has override trail_pct=0.05 per Stage C cube
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bollinger_lower", category="mean_reversion",
+        sector="Industrials", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=100.0, regime_at_entry="neutral",
+    )
+    # Push price up to 200 - trailing stop should land at 200 * (1 - 0.05) = 190
+    # (per the override; NOT 200 * 0.85 = 170 which is the default).
+    updated = update_trailing_stop(trade, today_close=200.0, vix_value=15.0)
+    expected_stop_with_override = 200.0 * (1 - 0.05)  # 190.0
+    expected_stop_with_default = 200.0 * (1 - 0.15)    # 170.0
+    assert updated.trailing_stop == expected_stop_with_override, (
+        f"bollinger_lower trail_pct override (0.05) did not take effect; "
+        f"stop={updated.trailing_stop} expected {expected_stop_with_override}, "
+        f"got default behavior would have been {expected_stop_with_default}"
+    )
+
+
+def test_batch282_strategy_without_override_uses_default():
+    """Batch 282: a strategy NOT in STRATEGY_EXIT_OVERRIDE uses the default
+    TRAILING_STOP['trail_pct'] (currently 0.15 per Batch 281)."""
+    from datetime import date
+    from backtest.engine.exit_manager import update_trailing_stop, OpenTrade
+    from backtest.config import TRAILING_STOP, STRATEGY_EXIT_OVERRIDE
+
+    # Pick a strategy that's clearly not in the override
+    unmapped_strategy = "some_strategy_not_in_override"
+    assert unmapped_strategy not in STRATEGY_EXIT_OVERRIDE, (
+        "Test invariant: chose a strategy that's not in the override dict"
+    )
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy=unmapped_strategy, category="momentum",
+        sector="Industrials", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=100.0, regime_at_entry="neutral",
+    )
+    updated = update_trailing_stop(trade, today_close=200.0, vix_value=15.0)
+    expected_stop = 200.0 * (1 - TRAILING_STOP["trail_pct"])
+    assert updated.trailing_stop == expected_stop, (
+        f"unmapped strategy must use default trail_pct; "
+        f"got {updated.trailing_stop}, expected {expected_stop}"
+    )
+
+
 def test_batch281_trailing_stop_config_actually_deployed():
     """Batch 281 (2026-05-20): the Batch 262 trail_pct + breakeven_move_at_1r
     changes were CLAIMED in commit messages but never actually landed in

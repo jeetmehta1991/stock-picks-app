@@ -1417,10 +1417,17 @@ def test_bug_232_intraday_extreme_uses_today_high_for_longs():
     from datetime import date
     from backtest.engine.exit_manager import OpenTrade, update_trailing_stop
     # Build a long trade with prior highest_close 101, current trail at 91 (10% below 101)
+    # Batch 281 updated default trail_pct 0.10 -> 0.15. Fixture must use a
+    # starting trailing_stop that's lower than highest_close * (1 - trail_pct)
+    # so an advance is detectable. With highest=101 + trail=0.15, the
+    # threshold is 85.85; we use trailing_stop=85.0 so any advance is visible.
+    from backtest.config import TRAILING_STOP as _TS
+    _trail_pct = _TS["trail_pct"]
+    _initial_trail = 85.0  # below the post-step expected stop for both modes
     base_trade = lambda: OpenTrade(
         ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
         direction="long", strategy="bug232_smoke", category="momentum",
-        sector="Tech", initial_stop=90.0, trailing_stop=91.0,
+        sector="Tech", initial_stop=80.0, trailing_stop=_initial_trail,
         highest_close=101.0, regime_at_entry="neutral",
     )
     # Close-mode (default): today_close=100 < highest 101 -> stop unchanged
@@ -1431,7 +1438,10 @@ def test_bug_232_intraday_extreme_uses_today_high_for_longs():
         from backtest.engine import exit_manager as _em
         _em.update_trailing_stop(t, today_close=100.0, vix_value=None,
                                   today_high=102.0, today_low=99.0)
-        assert t.trailing_stop == 91.0  # no advance
+        assert t.trailing_stop == _initial_trail, (
+            f"close-mode: today_close < highest -> stop should not advance "
+            f"(got {t.trailing_stop}, expected {_initial_trail})"
+        )
         assert t.highest_close == 101.0
     # Intraday-extreme mode: today_high=102 > highest 101 -> stop advances
     with mock.patch.dict("backtest.config.TRAILING_STOP",
@@ -1440,8 +1450,12 @@ def test_bug_232_intraday_extreme_uses_today_high_for_longs():
         from backtest.engine import exit_manager as _em
         _em.update_trailing_stop(t, today_close=100.0, vix_value=None,
                                   today_high=102.0, today_low=99.0)
-        # New stop = 102 * (1 - 0.10) = 91.8; max(91.0, 91.8) = 91.8
-        assert t.trailing_stop > 91.0
+        # New stop = 102 * (1 - trail_pct); max(85.0, new) should be new.
+        expected_advance = 102.0 * (1 - _trail_pct)
+        assert t.trailing_stop == expected_advance, (
+            f"intraday_extreme: stop should advance to {expected_advance} "
+            f"(got {t.trailing_stop}; trail_pct={_trail_pct})"
+        )
         assert t.highest_close == 102.0
 
 

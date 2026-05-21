@@ -277,10 +277,16 @@ def update_trailing_stop(
     # mode exposure reductions.
     _l5_enabled = cb.get("level_5_tighten_in_crisis", True)
     in_crisis = bool(vix_value and vix_value >= cb["level_5_vix_crisis"])
+    # Batch 282 (2026-05-20 owner-approved): per-strategy trail_pct override.
+    # Falls back to TRAILING_STOP["trail_pct"] when strategy not in override
+    # dict. Crisis-tighten still takes precedence over per-strategy override.
+    from backtest.config import STRATEGY_EXIT_OVERRIDE as _SEO
+    _strat_override = _SEO.get(trade.strategy, {}) if hasattr(trade, "strategy") else {}
+    _strat_trail_pct = _strat_override.get("trail_pct", TRAILING_STOP["trail_pct"])
     if _l5_enabled and in_crisis:
         pct = cb["level_5_tightened_pct"]
     else:
-        pct = TRAILING_STOP["trail_pct"]
+        pct = _strat_trail_pct
     ratchet_from = TRAILING_STOP.get("ratchet_from", "close")
 
     # Batch 262: breakeven-at-1R logic. Once trade hits +1R (= |entry -
@@ -645,6 +651,30 @@ def process_day_exits(
         # intraday_extreme when TRAILING_STOP["ratchet_from"] = "intraday_extreme".
         # Default config remains "close" - this is forward-compat plumbing.
         trade = update_trailing_stop(trade, today_close, vix_value, today_high=today_high, today_low=today_low)
+
+        # Batch 282 (2026-05-20 owner-approved): per-strategy hard time_stop.
+        # When STRATEGY_EXIT_OVERRIDE[strategy].time_stop_days is set, force-
+        # close the trade at that many bars regardless of MFE. Distinct from
+        # the existing Batch 213 MFE-conditional time-stop below (which only
+        # fires on under-developing trades).
+        try:
+            from backtest.config import STRATEGY_EXIT_OVERRIDE as _SEO
+            _strat_override = _SEO.get(trade.strategy, {})
+            _hard_time_stop = _strat_override.get("time_stop_days")
+            if _hard_time_stop is not None:
+                hold_days = (today_date - trade.entry_date).days
+                if hold_days >= _hard_time_stop:
+                    from backtest.engine.improvements import apply_exit_slippage
+                    ts_exit_price, _ = apply_exit_slippage(
+                        today_close, trade.direction, trade.ticker)
+                    closed.append(close_trade(
+                        trade, ts_exit_price, today_date,
+                        f"strategy_time_stop_{_hard_time_stop}d_batch282",
+                        0.0, 0.0,
+                    ))
+                    continue
+        except Exception:
+            pass
 
         # -- Step 4: Time-stop discipline (Batch 213 2026-05-17 owner-approved
         # research review) - Lars Kestner "Quantitative Trading Strategies"
