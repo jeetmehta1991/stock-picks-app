@@ -70,7 +70,19 @@ class BacktestEngine:
         walk_forward:           bool  = True,
         disable_news:           bool  = False,
     ):
-        self.universe             = universe or UNIVERSE
+        _user_universe = universe or UNIVERSE
+        # Batch 290 (2026-05-20): SPY is system-required for regime
+        # classification. Auto-include in universe when not user-supplied so
+        # engine has SPY OHLCV regardless of trading universe. Without this,
+        # custom --tickers runs had self.spy_df=None -> spy_ema=None ->
+        # spy_above_200ema=None -> classify_regime always "neutral" (the
+        # Batch 288 SPY-only bear gate became inert silently). Discovered
+        # during Stage C v2 smoke - 100% neutral classifications through
+        # the 2022 bear despite Batches 288/289 fixes.
+        if "SPY" not in _user_universe:
+            self.universe = list(_user_universe) + ["SPY"]
+        else:
+            self.universe = list(_user_universe)
         self.start                = start
         self.end                  = end
         self.phase                = phase

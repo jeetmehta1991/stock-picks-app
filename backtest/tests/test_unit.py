@@ -9596,6 +9596,23 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch290_spy_auto_included_when_user_universe_lacks_it():
+    """Batch 290: SPY must be auto-included in self.universe when user
+    passes --tickers without it. Regression catch for the silent regime-
+    classification failure (no SPY -> self.spy_df=None -> spy_ema=None ->
+    spy_above_200ema=None -> classify_regime always 'neutral')."""
+    # Verify via source inspection (constructor is heavy with data loads;
+    # source-grep is the cheap-and-correct test).
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "if \"SPY\" not in _user_universe:" in src, (
+        "Batch 290: SPY auto-include logic missing from __init__"
+    )
+    assert "self.universe = list(_user_universe) + [\"SPY\"]" in src, (
+        "Batch 290: SPY auto-add line missing"
+    )
+
+
 def test_batch288_regime_classifier_spy_only_bear_gate():
     """Batch 288 (owner option A.2): SPY below 200-EMA alone classifies
     "bear" regardless of VIX level. Catches 2022-style grinding bear
