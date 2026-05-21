@@ -9486,6 +9486,116 @@ def test_batch273_smc_base_signals_fire_with_default_params():
     )
 
 
+def test_batch284_check_per_strategy_exit_hit_fixed_4r_2r_target():
+    """Batch 284: fixed_4r_2r target hit triggers exit at +4R from entry."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    # bollinger_lower has fixed_4r_2r in STRATEGY_EXIT_OVERRIDE per Batch 284.
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bollinger_lower", category="mean_reversion",
+        sector="Tech", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=100.0, regime_at_entry="neutral",
+    )
+    # R = 5. +4R target = 120. today_high 121 reaches target -> exit at 120
+    exit_price, exit_reason = _check_per_strategy_exit_hit(
+        trade, today_high=121.0, today_low=110.0, today_close=119.0,
+        today_date=date(2024, 1, 10),
+    )
+    assert exit_price == 120.0, f"target should fire at 120, got {exit_price}"
+    assert "fixed_4r_2r_target_hit" in exit_reason
+
+
+def test_batch284_check_per_strategy_exit_hit_fixed_4r_2r_stop():
+    """Batch 284: fixed_4r_2r stop hit triggers exit at -2R from entry."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bollinger_lower", category="mean_reversion",
+        sector="Tech", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=100.0, regime_at_entry="neutral",
+    )
+    # R = 5. -2R stop = 90. today_low 89 reaches stop -> exit at 90
+    exit_price, exit_reason = _check_per_strategy_exit_hit(
+        trade, today_high=98.0, today_low=89.0, today_close=92.0,
+        today_date=date(2024, 1, 10),
+    )
+    assert exit_price == 90.0, f"stop should fire at 90, got {exit_price}"
+    assert "fixed_4r_2r_stop_hit" in exit_reason
+
+
+def test_batch284_check_per_strategy_exit_hit_class_time_stop():
+    """Batch 284: class_time_stop fires at category-specific window.
+    po3_bullish (category=momentum) -> window=30 days."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="po3_bullish", category="momentum",
+        sector="Tech", initial_stop=90.0, trailing_stop=90.0,
+        highest_close=105.0, regime_at_entry="bull",
+    )
+    # Day 30+: should fire
+    exit_price, exit_reason = _check_per_strategy_exit_hit(
+        trade, today_high=108.0, today_low=104.0, today_close=107.0,
+        today_date=date(2024, 1, 31),  # 30 days later
+    )
+    assert exit_price == 107.0
+    assert "class_time_stop" in exit_reason
+    assert "momentum" in exit_reason
+
+    # Day 28: should NOT fire (hold_days < window)
+    exit_price2, _ = _check_per_strategy_exit_hit(
+        trade, today_high=108.0, today_low=104.0, today_close=107.0,
+        today_date=date(2024, 1, 29),
+    )
+    assert exit_price2 is None
+
+
+def test_batch284_check_per_strategy_exit_hit_no_override_returns_none():
+    """Batch 284: strategy without exit_method override returns (None, None).
+    Falls through to default trailing stop in caller."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="not_in_override_dict",
+        category="momentum", sector="Tech", initial_stop=95.0,
+        trailing_stop=95.0, highest_close=105.0, regime_at_entry="bull",
+    )
+    exit_price, exit_reason = _check_per_strategy_exit_hit(
+        trade, today_high=150.0, today_low=50.0, today_close=140.0,
+        today_date=date(2024, 6, 1),
+    )
+    assert exit_price is None
+    assert exit_reason is None
+
+
+def test_batch284_check_per_strategy_exit_hit_r_multiple():
+    """Batch 284: r_multiple_2r fires at +2R from entry."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    from backtest.config import STRATEGY_EXIT_OVERRIDE
+    STRATEGY_EXIT_OVERRIDE["test_rmult"] = {"exit_method": "r_multiple_2r"}
+    try:
+        trade = OpenTrade(
+            ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+            direction="long", strategy="test_rmult", category="momentum",
+            sector="Tech", initial_stop=95.0, trailing_stop=95.0,
+            highest_close=100.0, regime_at_entry="bull",
+        )
+        # R=5, +2R target = 110
+        exit_price, exit_reason = _check_per_strategy_exit_hit(
+            trade, today_high=111.0, today_low=100.0, today_close=110.5,
+            today_date=date(2024, 1, 10),
+        )
+        assert exit_price == 110.0
+        assert "r_multiple_2r" in exit_reason
+    finally:
+        STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
+
+
 def test_batch282_per_strategy_exit_override_present():
     """Batch 282: STRATEGY_EXIT_OVERRIDE config dict present + populated
     with at least the Stage C cube-best findings. Each entry should be a
@@ -9495,7 +9605,8 @@ def test_batch282_per_strategy_exit_override_present():
     assert len(STRATEGY_EXIT_OVERRIDE) >= 5, (
         "Stage C cube identified at least 5 strategies needing override"
     )
-    valid_keys = {"trail_pct", "time_stop_days", "breakeven_at_R"}
+    # Batch 284 added exit_method key; both keysets are valid.
+    valid_keys = {"trail_pct", "time_stop_days", "breakeven_at_R", "exit_method"}
     for strat, override in STRATEGY_EXIT_OVERRIDE.items():
         assert isinstance(override, dict), f"{strat}: override must be dict"
         assert any(k in override for k in valid_keys), (
@@ -9508,24 +9619,29 @@ def test_batch282_strategy_trail_pct_override_takes_effect():
     the default TRAILING_STOP['trail_pct'] in update_trailing_stop."""
     from datetime import date
     from backtest.engine.exit_manager import update_trailing_stop, OpenTrade
+    from backtest.config import STRATEGY_EXIT_OVERRIDE
 
-    # bollinger_lower has override trail_pct=0.05 per Stage C cube
-    trade = OpenTrade(
-        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
-        direction="long", strategy="bollinger_lower", category="mean_reversion",
-        sector="Industrials", initial_stop=95.0, trailing_stop=95.0,
-        highest_close=100.0, regime_at_entry="neutral",
-    )
-    # Push price up to 200 - trailing stop should land at 200 * (1 - 0.05) = 190
-    # (per the override; NOT 200 * 0.85 = 170 which is the default).
-    updated = update_trailing_stop(trade, today_close=200.0, vix_value=15.0)
-    expected_stop_with_override = 200.0 * (1 - 0.05)  # 190.0
-    expected_stop_with_default = 200.0 * (1 - 0.15)    # 170.0
-    assert updated.trailing_stop == expected_stop_with_override, (
-        f"bollinger_lower trail_pct override (0.05) did not take effect; "
-        f"stop={updated.trailing_stop} expected {expected_stop_with_override}, "
-        f"got default behavior would have been {expected_stop_with_default}"
-    )
+    # Inject a test entry with trail_pct=0.05 (Batch 284 reclaimed bollinger_lower
+    # to use exit_method=fixed_4r_2r instead of trail_pct override).
+    STRATEGY_EXIT_OVERRIDE["test_trail_pct_05"] = {"trail_pct": 0.05}
+    try:
+        trade = OpenTrade(
+            ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+            direction="long", strategy="test_trail_pct_05",
+            category="mean_reversion",
+            sector="Industrials", initial_stop=95.0, trailing_stop=95.0,
+            highest_close=100.0, regime_at_entry="neutral",
+        )
+        # Push price up to 200 - stop should land at 200 * (1 - 0.05) = 190
+        # (per the override; NOT 200 * 0.85 = 170 which is the default).
+        updated = update_trailing_stop(trade, today_close=200.0, vix_value=15.0)
+        expected_stop_with_override = 200.0 * (1 - 0.05)
+        assert updated.trailing_stop == expected_stop_with_override, (
+            f"trail_pct override (0.05) did not take effect; "
+            f"stop={updated.trailing_stop} expected {expected_stop_with_override}"
+        )
+    finally:
+        STRATEGY_EXIT_OVERRIDE.pop("test_trail_pct_05", None)
 
 
 def test_batch282_strategy_without_override_uses_default():

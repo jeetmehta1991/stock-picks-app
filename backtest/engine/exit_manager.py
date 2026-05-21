@@ -176,6 +176,115 @@ def _pnl(entry, exit_p, direction, hold_days=0):
     return (entry - exit_p) / entry * 100
 
 
+def _check_per_strategy_exit_hit(
+    trade: "OpenTrade",
+    today_high: float,
+    today_low: float,
+    today_close: float,
+    today_date: date,
+) -> tuple:
+    """Batch 284 (2026-05-20 owner-approved): per-strategy exit method
+    dispatch. Returns (exit_price, exit_reason) if the strategy's
+    configured exit_method triggered today, else (None, None).
+
+    Supported exit methods (per-day evaluable):
+      - 'fixed_4r_2r':    hard target +4R / hard stop -2R from entry
+      - 'r_multiple_2r':  hard target +2R from entry
+      - 'r_multiple_3r':  hard target +3R from entry
+      - 'class_time_stop': category-specific time exit (Kestner 2003)
+      - 'breakeven_plus_trail': move stop to entry at +1xATR, then trail 10%
+                                (handled via existing breakeven_move_at_1r
+                                in update_trailing_stop; this branch is a
+                                no-op tagged for completeness)
+      - 'ma_exit_ema9':    deferred to Batch 285 (requires close history)
+
+    R = |entry_price - initial_stop|. ATR-as-R approximation when initial_stop
+    is missing or zero: R = entry_price * 0.02.
+    """
+    from backtest.config import STRATEGY_EXIT_OVERRIDE as _SEO
+    override = _SEO.get(trade.strategy, {})
+    method = override.get("exit_method")
+    if not method:
+        return (None, None)
+    ep = trade.entry_price
+    if ep <= 0:
+        return (None, None)
+    # R-multiple base
+    if trade.initial_stop and trade.initial_stop > 0:
+        r_value = abs(ep - trade.initial_stop)
+    else:
+        r_value = ep * 0.02   # fallback per ATR_FALLBACK_PCT semantics
+    if r_value <= 0:
+        return (None, None)
+
+    direction = trade.direction
+
+    # ---------------- fixed_4r_2r ----------------
+    if method == "fixed_4r_2r":
+        target_r = 4.0
+        stop_r = 2.0
+        if direction == "long":
+            target_price = ep + target_r * r_value
+            stop_price = ep - stop_r * r_value
+            if today_high >= target_price:
+                return (target_price, "fixed_4r_2r_target_hit_batch284")
+            if today_low <= stop_price:
+                return (stop_price, "fixed_4r_2r_stop_hit_batch284")
+        else:  # short
+            target_price = ep - target_r * r_value
+            stop_price = ep + stop_r * r_value
+            if today_low <= target_price:
+                return (target_price, "fixed_4r_2r_target_hit_batch284")
+            if today_high >= stop_price:
+                return (stop_price, "fixed_4r_2r_stop_hit_batch284")
+        return (None, None)
+
+    # ---------------- r_multiple_2r / 3r ----------------
+    if method in ("r_multiple_2r", "r_multiple_3r"):
+        n_r = 2.0 if method == "r_multiple_2r" else 3.0
+        if direction == "long":
+            target_price = ep + n_r * r_value
+            if today_high >= target_price:
+                return (target_price, f"{method}_target_hit_batch284")
+        else:
+            target_price = ep - n_r * r_value
+            if today_low <= target_price:
+                return (target_price, f"{method}_target_hit_batch284")
+        return (None, None)
+
+    # ---------------- class_time_stop ----------------
+    # Time-based per-category exit. Hard close at category-specific window.
+    # Distinct from Batch 213's MFE-conditional time stop (which only fires
+    # on under-developing trades). This one always closes at the window.
+    if method == "class_time_stop":
+        cat = (trade.category or "").lower()
+        window = {
+            "mean_reversion": 10,
+            "momentum":       30,
+            "trend":          50,
+        }.get(cat, 20)
+        hold_days = (today_date - trade.entry_date).days
+        if hold_days >= window:
+            return (today_close, f"class_time_stop_{cat}_{window}d_batch284")
+        return (None, None)
+
+    # ---------------- breakeven_plus_trail ----------------
+    # Already implemented via TRAILING_STOP["breakeven_move_at_1r"] flag
+    # (always-on per Batch 281). Per-strategy override of this method is
+    # a no-op since the global default already applies. Future: per-strategy
+    # breakeven_at_R override could differentiate (e.g., 0.5R vs 1.0R).
+    if method == "breakeven_plus_trail":
+        return (None, None)
+
+    # ---------------- ma_exit_ema9 ----------------
+    # Deferred to Batch 285 - requires close history not available here.
+    if method == "ma_exit_ema9":
+        return (None, None)
+
+    # Unknown method - fall through to default
+    return (None, None)
+
+
 def check_circuit_breakers_all(
     trade: OpenTrade,
     today_open: float,
@@ -612,6 +721,39 @@ def process_day_exits(
                 "level": tighten_cb["level"], "reason": tighten_cb["reason"],
                 "action": "tighten_stop", "new_stop": trade.trailing_stop,
             })
+
+        # -- Step 1.5: Per-strategy exit_method check (Batch 284) --
+        # When STRATEGY_EXIT_OVERRIDE[strategy].exit_method is set, run the
+        # method-specific check BEFORE the default trailing stop. If it
+        # triggers, close the trade with the method's exit_reason. If it
+        # doesn't trigger, fall through to the default trailing stop logic
+        # as backstop. Per-strategy exit replaces dominance order; default
+        # trailing stop is now the backstop, not the primary.
+        try:
+            _per_strat_exit_price, _per_strat_exit_reason = (
+                _check_per_strategy_exit_hit(
+                    trade, today_high, today_low, today_close, today_date,
+                )
+            )
+            if _per_strat_exit_price is not None:
+                from backtest.engine.improvements import apply_exit_slippage
+                ps_exit_price, _ = apply_exit_slippage(
+                    _per_strat_exit_price, trade.direction, trade.ticker)
+                closed.append(close_trade(
+                    trade, ps_exit_price, today_date,
+                    _per_strat_exit_reason, 0.0, 0.0,
+                ))
+                # Conversion check (mirror of trailing_stop conversion below)
+                if regime == "bull" and trade.direction == "short":
+                    long_signal = active_signals.get(trade.ticker)
+                    if long_signal and long_signal.get("long_count", 0) > 0:
+                        closed[-1].conversion_pair_id = (
+                            f"convert_{trade.ticker}_{today_date}"
+                        )
+                continue
+        except Exception as exc:
+            logger.debug("per-strategy exit check failed for %s: %s",
+                          trade.strategy, exc)
 
         # -- Step 2: Check if trailing stop was hit using YESTERDAY's stop --
         # BUG-78 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 14 2026-05-10:

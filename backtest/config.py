@@ -194,27 +194,49 @@ TRAILING_STOP = {
 #   - time_stop_days      (int or None): max bars held; default = None (no time stop)
 #   - breakeven_at_R      (float or None): R-multiple to ratchet stop to entry;
 #                          default = 1.0 if breakeven_move_at_1r else None
+#   - exit_method         (str or None): per-strategy exit method dispatched
+#                          to _check_per_strategy_exit_hit. Supported in
+#                          Batch 284: fixed_4r_2r, r_multiple_2r, r_multiple_3r,
+#                          class_time_stop, breakeven_plus_trail.
+#                          Batch 285 adds: ma_exit_ema9, regime_flip,
+#                          next_pivot_target, hybrid_50pct_target.
 #
 # Strategies not listed fall through to TRAILING_STOP defaults.
-#
-# Stage C cube-best findings translated to supportable per-day params
-# (complex exits like next_pivot_target, hybrid_50pct_target, regime_flip,
-# fixed_4r_2r, ma_exit_ema9 are not yet implemented as per-day logic - those
-# strategies stay on default for now; will be added in future batch when the
-# exit logic is implemented or when empirical evidence justifies prioritizing).
 STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
-    # Time-based cube-best (n>=5, cube-mean >0):
-    "stochrsi_oversold":           {"time_stop_days": 10, "trail_pct": 0.15},
-    "xs_momentum_top_decile":      {"time_stop_days": 30, "trail_pct": 0.15},
-    "po3_bullish":                 {"time_stop_days": 30, "trail_pct": 0.15},
-    # Tighter trail per cube (avwap_50_reclaim cube-best was hybrid_50pct_target
-    # at 124d avg hold; tighter 0.10 trail approximates the lock-50-at-3xATR
-    # behavior without implementing the full hybrid logic):
+    # Batch 284 (2026-05-20 owner-approved per DESIGN_AUDIT_PART_2 sec-4):
+    # Expanded entries from Stage C cube-best findings (n>=5 evidence,
+    # mean PnL improvement vs trailing_15pct default).
+
+    # stochrsi_oversold: cube-best time_stop_10d (n=5, WR=80%, +4.69% mean).
+    "stochrsi_oversold":           {"time_stop_days": 10},
+
+    # xs_momentum_top_decile: cube-best class_time_stop (n=9, WR=78%, +8.11%).
+    "xs_momentum_top_decile":      {"exit_method": "class_time_stop"},
+
+    # po3_bullish: cube-best class_time_stop (n=20, WR=65%, +1.73%).
+    "po3_bullish":                 {"exit_method": "class_time_stop"},
+
+    # bollinger_lower: cube-best fixed_4r_2r (n=14, WR=21%, +0.27% mean);
+    # trailing_15pct was the WORST exit (-7.55% mean) for this strategy.
+    "bollinger_lower":             {"exit_method": "fixed_4r_2r"},
+
+    # monthly_bias_momentum_long: cube #1 was earnings_blackout (237d hold,
+    # long-hold artifact); operational choice is #2 breakeven_plus_trail
+    # (n=17, WR=41%, +4.57% mean, 50d hold). Already always-on via
+    # TRAILING_STOP["breakeven_move_at_1r"]; tagging here for clarity.
+    "monthly_bias_momentum_long":  {"exit_method": "breakeven_plus_trail"},
+
+    # smc_choch_reversal: cube-best breakeven_plus_trail (n=7, +1.89% mean).
+    "smc_choch_reversal":          {"exit_method": "breakeven_plus_trail"},
+
+    # avwap_50_reclaim: cube-best hybrid_50pct_target (n=16, WR=94%, +6.76%);
+    # tighter 0.10 trail kept as proxy until Batch 285 implements hybrid.
     "avwap_50_reclaim":            {"trail_pct": 0.10},
-    # bollinger_lower cube-best fixed_4r_2r (16d hold, +0.27% mean); tighter
-    # 0.05 trail is a reasonable approximation of 2R stop discipline:
-    "bollinger_lower":             {"trail_pct": 0.05, "time_stop_days": 20},
-    # Add more per cube as evidence accumulates from Stage C / D1 / 1A-beta.
+
+    # Batch 285 deferred (need additional context not yet plumbed):
+    # "po3_bearish":               {"exit_method": "ma_exit_ema9"},
+    # "cpr_narrow_bullish":        {"exit_method": "regime_flip"},
+    # "bollinger_tight":           {"exit_method": "next_pivot_target"},
 }
 
 # BUG-258 fix 2026-05-13: ATR fallback when insufficient history (<14 bars).
