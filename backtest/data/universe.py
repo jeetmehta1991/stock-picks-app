@@ -705,6 +705,44 @@ def build_phase1b_universe(
     return apply_liquidity_filter(all_tickers, ohlcv_dict, info_dict, as_of)
 
 
+def _polygon_reference_lookup(ticker: str) -> dict:
+    """Batch 301: read market_cap / list_date / sic_description / exchange
+    from data_prefetch/polygon/reference/{TICKER}.parquet (canonical source
+    per Sprint 0A Polygon reference prefetch).
+
+    Returns empty dict if parquet missing or unreadable. Caller defaults the
+    rest of the info_cache entry. Replaces the `market_cap: 0` placeholder
+    that DEC-497 D4 left behind (2026-05-06) and which BUG-238 fail-closed
+    (2026-05-12) silently weaponized into a 96.5% universe rejection.
+    """
+    from pathlib import Path as _P
+    ref_path = (_P(__file__).resolve().parent.parent.parent
+                / "data_prefetch" / "polygon" / "reference" / f"{ticker}.parquet")
+    if not ref_path.exists():
+        return {}
+    try:
+        rdf = pd.read_parquet(ref_path)
+    except Exception:
+        return {}
+    if rdf.empty:
+        return {}
+    row = rdf.iloc[0]
+    out = {}
+    mc = row.get("market_cap")
+    if mc is not None and not pd.isna(mc):
+        out["market_cap"] = float(mc)
+    ld = row.get("list_date")
+    if ld is not None and not (isinstance(ld, float) and pd.isna(ld)):
+        out["ipo_date"] = str(ld)
+    sic = row.get("sic_description")
+    if sic is not None and not (isinstance(sic, float) and pd.isna(sic)):
+        out["industry"] = str(sic)
+    exch = row.get("primary_exchange")
+    if exch is not None and not (isinstance(exch, float) and pd.isna(exch)):
+        out["exchange"] = str(exch)
+    return out
+
+
 def fetch_info_bulk(
     tickers: list[str],
     delay: float = 0.2,
@@ -713,6 +751,12 @@ def fetch_info_bulk(
     """
     Fetch company info (sector, market cap, IPO date) for all tickers.
     Uses a simple JSON cache to avoid re-fetching on every run.
+
+    Batch 301 (BUG-NEW 2026-05-21): wired to Polygon reference parquets at
+    data_prefetch/polygon/reference/{TICKER}.parquet for market_cap /
+    ipo_date / industry / exchange. Entries with market_cap<=0 are treated
+    as stale and re-fetched (self-heals the 1871 zero-mcap entries left
+    over by the DEC-497 D4 + BUG-238 silent-gap interaction).
     """
     import json
     from pathlib import Path
@@ -728,16 +772,25 @@ def fetch_info_bulk(
         except Exception:
             cached = {}
 
-    to_fetch = [t for t in tickers if t not in cached]
+    # Batch 301: refetch stale (market_cap<=0) entries in addition to missing
+    # tickers. The DEC-497 D4 transition left 1871 entries with mcap=0; this
+    # filter heals them on the next fetch_info_bulk() call.
+    def _needs_fetch(t: str) -> bool:
+        if t not in cached:
+            return True
+        v = cached.get(t) or {}
+        mc = v.get("market_cap", 0) or 0
+        return mc <= 0
+    to_fetch = [t for t in tickers if _needs_fetch(t)]
     if to_fetch:
-        logger.info("Fetching info for %d new tickers...", len(to_fetch))
+        logger.info("Fetching info for %d tickers (incl. mcap=0 refetch)...", len(to_fetch))
 
     # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
-    # yfinance.Ticker.info removed from runtime. Sector resolution now via
+    # yfinance.Ticker.info removed from runtime. Sector resolution via
     # canonical CSV at "Backtesting universe/Master Universe_Deduplicated_All
-    # Tiers_May 2026.csv" (Pass 53 Master Dedup with 18-classifier sectors per
-    # DEC-499). For tickers not in Master Dedup, default to "Unknown".
-    # FUTURE: data_prefetch/polygon/reference/{TICKER}.parquet for richer info.
+    # Tiers_May 2026.csv" (Pass 53 Master Dedup, 18-classifier sectors per
+    # DEC-499). Batch 301 (2026-05-21) wires market_cap / list_date /
+    # sic_description / primary_exchange from Polygon reference parquets.
     try:
         from backtest.data.universe import UNIVERSE_DIR  # type: ignore
     except ImportError:
@@ -761,15 +814,22 @@ def fetch_info_bulk(
 
     for i, ticker in enumerate(to_fetch):
         m = master_lookup.get(ticker.upper(), {})
+        # Batch 301: hydrate from Polygon reference; falls back to defaults
+        # when the parquet is absent (delisted names beyond Polygon retention).
+        ref = _polygon_reference_lookup(ticker)
         cached[ticker] = {
             "name":       m.get("name", ticker) or ticker,
             "sector":     m.get("sector", "Unknown"),
-            "industry":   "Unknown",
-            "market_cap": 0,  # FUTURE: Polygon reference prefetch
-            "exchange":   "",
-            "ipo_date":   None,
+            "industry":   ref.get("industry", "Unknown"),
+            "market_cap": ref.get("market_cap", 0),
+            "exchange":   ref.get("exchange", ""),
+            "ipo_date":   ref.get("ipo_date", None),
         }
-        time.sleep(delay)
+        # Local parquet read is fast; the historical 0.2s delay was a
+        # yfinance rate-limit guard. Keep delay opt-in only for very large
+        # refetch sweeps (Phase 1A-beta full 1937 = ~6 min at 0.2s; skip).
+        if delay > 0 and i % 100 == 99:
+            time.sleep(delay)
 
     # Save updated cache
     try:

@@ -21,7 +21,7 @@
 
 | Metric | Count |
 |---|---|
-| Total canonical bugs in AUDIT.md (### BUG-NN sections) | 147 |
+| Total canonical bugs in AUDIT.md (### BUG-NN sections) | 148 |
 | Bugs linked to decisions (AUDIT_INDEX.md cross-reference) | 148 (100%) |
 | Bugs unlinked needing separate ENG entry | 0 |
 | Bugs explicitly tagged CRITICAL OPEN in registers | 2 (BUG-095, BUG-111) |
@@ -187,6 +187,7 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-282 | LOW  -  `site_generator.build_entry_zone` ignores `category` parameter | DEC-458 | DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_entry_zone category param ignored; minor site-gen output formatting; Phase 1B-alpha cleanup) |
 | BUG-283 | LOW  -  `build_position_sizing` returns 0% silently for unknown tier | DEC-458 | DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_position_sizing returns 0pct silently for unknown tier; defensive contract; Phase 1B-alpha output hardening) |
 | BUG-284 | MEDIUM  -  `prefetch_quiver` DATE_FIELDS["gov_contracts"]="Date" but cache schema  | DEC-451, DEC-458 | SUPERSEDED-BY-BUG-271 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (prefetch_quiver gov_contracts schema mismatch resolved by BUG-271 get_gov_contracts() Date column lookup fix; cache schema aligned) |
+| BUG-286 | CRITICAL  -  `fetch_info_bulk()` hardcodes `market_cap: 0` since DEC-497 D4 -> BUG-238 fail-closed silently rejects 96.5% of Phase 1A-beta universe | DEC-497, BUG-238, Batch 301 | RESOLVED-IMPLEMENTED Pass 53 Batch 301 2026-05-21 (Stage D smoke run surfaced 9/151 instruments passing liquidity vs ~120 expected; root cause: DEC-497 D4 yfinance HARD CUT 2026-05-06 left `market_cap: 0` placeholder with FUTURE comment; BUG-238 fail-closed 2026-05-12 then weaponized into silent reject. Fix: wire data_prefetch/polygon/reference/{TICKER}.parquet into fetch_info_bulk -> populates market_cap/ipo_date/industry/exchange. Self-heals stale info_cache.json via market_cap<=0 refetch filter. Recovery: 1598/1937 tickers gain valid mcap (82.5pct) vs 68/1937 (3.5pct). Tested via 5 unit tests in test_unit.py::test_batch301_*) |
 
 
 ## CRITICAL OPEN bugs (priority)

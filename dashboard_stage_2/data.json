@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-20T04:52:38.575176+00:00",
+  "generated_at": "2026-05-21T16:45:44.225891+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -7611,13 +7611,13 @@
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 3,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7639,10 +7639,10 @@
       "coverage_engine": "N/A",
       "coverage_evidence": "no source tag",
       "promotion_path": {
-        "tier": "DECIDED",
-        "label": "DECIDED",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "RESOLVED-IMPLEMENTED planning/scope/methodology decision (no code artifact expected)"
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -28907,13 +28907,13 @@
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 3,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -28935,10 +28935,10 @@
       "coverage_engine": "N/A",
       "coverage_evidence": "no source tag",
       "promotion_path": {
-        "tier": "DECIDED",
-        "label": "DECIDED",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "RESOLVED-IMPLEMENTED planning/scope/methodology decision (no code artifact expected)"
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -64673,13 +64673,13 @@
       "severity": "UNKNOWN",
       "summary": "Tried to fetch VVIX (vol of VIX) from FRED \u2014 series ID `VVIXCLS` returns 400 Bad Request. CBOE provides VVIX directly but doesn't release it to FRED.\n-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -64699,10 +64699,10 @@
       "coverage_engine": "UNTESTED",
       "coverage_evidence": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Investigation open; needs diagnosis + fix"
+        "tier": "CODE_ONLY",
+        "label": "NEEDS-TEST",
+        "color": "#f59e0b",
+        "reason": "Code touches; needs test"
       }
     },
     {
@@ -69257,191 +69257,191 @@
   ],
   "recent_commits": [
     {
-      "sha": "27dcb3aa",
-      "subject": "Batch 259 (H.partial): prefetch_cnn_fg.py - INV-021 orphan resolution.",
+      "sha": "69795984",
+      "subject": "Batch 300: Stage D 150-tkr stratified sampler.",
       "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
+      "rel_time": "75 minutes ago"
     },
     {
-      "sha": "f2c0f53e",
-      "subject": "Batch 258 (D): POST_MAY_29_OPERATION_GUIDE.md owner playbook.",
+      "sha": "88f8a44f",
+      "subject": "Batch 299: GitHub Actions workflow for Phase 1A-beta autonomous run.",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "88 minutes ago"
     },
     {
-      "sha": "6df4487e",
-      "subject": "Batch 257 (C): Stage 3 web dashboard frontend (HTML + JS + data builder).",
-      "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
-    },
-    {
-      "sha": "ea3f2e23",
-      "subject": "Batch 256 (B): Phase 1B-alpha launcher scripts (smoke/demo/full).",
-      "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
-    },
-    {
-      "sha": "1af9a1c0",
-      "subject": "Batch 255 (A.5): Register volume_profile strategies (3 strats) - A COMPLETE.",
-      "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
-    },
-    {
-      "sha": "786c23b6",
-      "subject": "Batch 254 (A.4): Register calendar_effects + cross_asset strategies (9 strats).",
-      "author": "jeetmehta1991",
-      "rel_time": "60 minutes ago"
-    },
-    {
-      "sha": "c6aae08e",
-      "subject": "Batch 253 (A.3): Register pairs_trading + news_sentiment strategies (4 strats).",
-      "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
-    },
-    {
-      "sha": "7c175e27",
-      "subject": "Batch 252 (A.1+A.2): Register chart_patterns + index_rebalance strategies in screener.py.",
-      "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
-    },
-    {
-      "sha": "2eb24eb9",
-      "subject": "Batch 251: Phase 1C+ Wave 1 FINISH - DEC-370 index_rebalance.py module.",
-      "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
-    },
-    {
-      "sha": "64ffee7e",
-      "subject": "Batch 250 (CI fix follow-up): pip install -e vendored/smartmoneyconcepts/ for absolute-import resolution.",
+      "sha": "da448169",
+      "subject": "Batches 296-298: Pre-Phase-1A-beta validation tooling.",
       "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     },
     {
-      "sha": "02a50b06",
-      "subject": "Batch 249 (CI fix): install xgboost + scikit-learn + numba in Test Pyramid workflow.",
+      "sha": "7c603f76",
+      "subject": "Batch 296 (doc): SIGNAL_AUDIT_2026_05_21.md - comprehensive signal module audit.",
       "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     },
     {
-      "sha": "ac9683c6",
-      "subject": "Batch 248: Stage 3 + Stage 4 orchestrator scripts - owner-operable CLI.",
+      "sha": "4f882776",
+      "subject": "Batch 295: Signal audit - PEAD financials_json string parsing fix.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "2 hours ago"
     },
     {
-      "sha": "30ae57a6",
-      "subject": "Batch 247: Stage 4 live trading skeleton (built by May 29; not activated until owner deploys).",
+      "sha": "092ab728",
+      "subject": "Batch 294: Fix 13F integration - per-ticker historical fallback.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "2 hours ago"
     },
     {
-      "sha": "e526c86c",
-      "subject": "Batch 246: Stage 3 paper trading skeleton (built by May 29; activates post-1B-alpha).",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "b61e71d9",
-      "subject": "Batch 245: Phase 1B Sprint 7 - AgentGateConfig (DEC-459) + A/B orchestrator (DEC-216).",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "36f3bfd3",
-      "subject": "Batch 244: extract_phase_1a_beta_winners.py CLI - cube_populator -> winners.parquet (ASCII-clean)",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "984e6a3f",
-      "subject": "Batch 243: Phase 1B Sprint 7 - cube_populator.py (DEC-422 + DEC-426 5-Gate).",
+      "sha": "65c8ada9",
+      "subject": "Batch 293: Tighten calendar-effect long strategies - remove bear from affinity.",
       "author": "jeetmehta1991",
       "rel_time": "4 hours ago"
     },
     {
-      "sha": "57e00420",
-      "subject": "Batch 242: Phase 1C+ Wave 1 - chart_patterns.py module (DEC-355-362).",
+      "sha": "74ae1424",
+      "subject": "Batch 292: Bear composite indicator - yield curve + AAII + sector breadth.",
       "author": "jeetmehta1991",
       "rel_time": "4 hours ago"
     },
     {
-      "sha": "3cf0c79f",
-      "subject": "Batch 241: Comprehensive doc updates - winners criteria + exit methods + Stage 3/4 in-parallel + speedup levers.",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "a808932e",
-      "subject": "Batch 240: Post-Phase-1A-alpha master build plan + project plan doc updates.",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "4ea2983a",
-      "subject": "Batch 239: IMPLEMENTATION_DRAFTS_T1.md pre-authored for T1.1-T1.5 module wirings.",
+      "sha": "3dbaf7da",
+      "subject": "Batch 291: Direction-aware regime default - option B per Stage C v2 forensic.",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     },
     {
-      "sha": "bd45f941",
-      "subject": "Batch 238: INV-050/051/052 staleness reclassification - all three already fixed historically.",
+      "sha": "743faa5a",
+      "subject": "Batch 290: Auto-include SPY in universe - regime classification fix.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
-      "sha": "0afbd460",
-      "subject": "Batch 237 (INV-014 fix-now): trade_log.parquet survives uniformly-empty struct cols.",
+      "sha": "aa22e834",
+      "subject": "Batch 289: Batch 288 hysteresis follow-up - apply SPY-only bear gate to hysteresis variant.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
-      "sha": "cf4331fe",
-      "subject": "Batch 236: T1a-wait parallel-safe deliverables (3 files, no engine touch).",
+      "sha": "6ed4b8a5",
+      "subject": "Batch 288: Regime classifier calibration - SPY-only bear gate (option A.2).",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
-      "sha": "a18c71b8",
-      "subject": "Batch 235: Abort Batch 225 (Phase 1A-beta, 1937 tkrs) + relaunch as Phase 1A-alpha (T1a + ETFs, 642 tkrs).",
+      "sha": "98654c31",
+      "subject": "Batch 287: 3 Tier 2 fixes from Audit Part 3 (initial_pct + capacity + cosmetic).",
+      "author": "jeetmehta1991",
+      "rel_time": "15 hours ago"
+    },
+    {
+      "sha": "8964033b",
+      "subject": "Batch 286: Audit Part 3 + EMA-9 plumbing fix.",
+      "author": "jeetmehta1991",
+      "rel_time": "16 hours ago"
+    },
+    {
+      "sha": "d283b1ce",
+      "subject": "Batch 285: 4 complex exit methods - regime_flip, ma_exit_ema9, next_pivot_target, hybrid_50pct_target.",
+      "author": "jeetmehta1991",
+      "rel_time": "16 hours ago"
+    },
+    {
+      "sha": "706f8c92",
+      "subject": "Batch 284: Per-strategy exit dispatch - 5 trivial exit methods + override expansion.",
+      "author": "jeetmehta1991",
+      "rel_time": "16 hours ago"
+    },
+    {
+      "sha": "16a196f2",
+      "subject": "Batch 283 (doc): DESIGN_AUDIT_PART_2 - per-(strategy x exit) evaluation framework.",
+      "author": "jeetmehta1991",
+      "rel_time": "16 hours ago"
+    },
+    {
+      "sha": "672a02c5",
+      "subject": "Batch 282: Per-strategy exit override - per DESIGN_AUDIT Tier 1 #2.",
+      "author": "jeetmehta1991",
+      "rel_time": "16 hours ago"
+    },
+    {
+      "sha": "d4763ef9",
+      "subject": "Batch 281: Actually deploy Batch 262 config (trail_pct 0.15 + breakeven_move_at_1r).",
+      "author": "jeetmehta1991",
+      "rel_time": "16 hours ago"
+    },
+    {
+      "sha": "42329dd8",
+      "subject": "Batch 280 (doc): DESIGN_AUDIT_2026_05_20.md - 5 critical findings + (strategy x exit) cube analysis.",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
     },
     {
-      "sha": "9b261b3f",
-      "subject": "Batch 234: INV comprehensive review (7 reclassified) + IMPLEMENTATION_PLAN.md for post-Batch-225 work.",
+      "sha": "e5423517",
+      "subject": "Batch 279: REMOVE dedup_one_position_per_ticker_per_day + add size-split (Option 1).",
+      "author": "jeetmehta1991",
+      "rel_time": "17 hours ago"
+    },
+    {
+      "sha": "6b5f37f1",
+      "subject": "Batch 278 (option B): Tighten entry gates on 3 worst Tier 2 offenders.",
+      "author": "jeetmehta1991",
+      "rel_time": "20 hours ago"
+    },
+    {
+      "sha": "499c5cf5",
+      "subject": "Batch 277 (option C): Reorder ALL_STRATEGIES - Batches 252-255 moved to back.",
+      "author": "jeetmehta1991",
+      "rel_time": "20 hours ago"
+    },
+    {
+      "sha": "28d22133",
+      "subject": "Batch 276: OHLCV ticker-reassignment audit - META was unique case.",
+      "author": "jeetmehta1991",
+      "rel_time": "22 hours ago"
+    },
+    {
+      "sha": "4c385198",
+      "subject": "Batch 275: Fix META OHLCV ticker corruption (Meta Materials vs Meta Platforms).",
+      "author": "jeetmehta1991",
+      "rel_time": "22 hours ago"
+    },
+    {
+      "sha": "81236611",
+      "subject": "Batch 274: REVERT Batch 272 dedup priority - unintended regression.",
+      "author": "jeetmehta1991",
+      "rel_time": "22 hours ago"
+    },
+    {
+      "sha": "0ea70c35",
+      "subject": "Batch 273 (Tier 2.1): SMC family wiring audit + fix - 12 of 16 zero-fire signals unblocked.",
       "author": "jeetmehta1991",
       "rel_time": "25 hours ago"
     },
     {
-      "sha": "22d7d8fa",
-      "subject": "Batch 231/232/233 (Track A deferred-items - calendar/cross-asset/VPVR modules, parallel-safe during Batch 225 rerun). +10 unit tests green.",
+      "sha": "42ee7735",
+      "subject": "Batch 272 (Tier 2.2): Dedup priority tweak - confluence-tagged strategies win.",
       "author": "jeetmehta1991",
-      "rel_time": "26 hours ago"
+      "rel_time": "25 hours ago"
     },
     {
-      "sha": "b1c8ae6c",
-      "subject": "Batch 229 + 230 (deferred-items implementation, parallel-safe during Batch 225 rerun): pairs trading + news sentiment modules. +8 unit tests green.",
+      "sha": "16645ae8",
+      "subject": "Batch 271 (Tier 2 short-affinity expansion): allow short strategies in neutral regime.",
       "author": "jeetmehta1991",
-      "rel_time": "27 hours ago"
+      "rel_time": "25 hours ago"
     },
     {
-      "sha": "da30cb1d",
-      "subject": "Batch 228 (housekeeping D+H+I): XGBoost meta-labeler + PBO empirical check + 21d freshness. Pyramid 2015/2015 green.",
+      "sha": "50d0d9cc",
+      "subject": "Batch 270 (Tier 2.3): Roster sanity gate at startup - fail fast on bad strategies.",
       "author": "jeetmehta1991",
-      "rel_time": "34 hours ago"
-    },
-    {
-      "sha": "76d7dde4",
-      "subject": "Batch 227b: multi-tier partial-fill exit (1R/2R/trail). Pyramid 2005/2005 green.",
-      "author": "jeetmehta1991",
-      "rel_time": "2 days ago"
+      "rel_time": "25 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2509,
-    "modified": 62,
+    "count": 2448,
+    "modified": 11,
     "added": 0,
-    "untracked": 2086,
+    "untracked": 2076,
     "deleted": 361,
     "files": [
       {
@@ -69454,19 +69454,11 @@
       },
       {
         "status": "M",
-        "path": "VERIFICATION_MATRIX.md"
+        "path": "backtest/data/universe.py"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
+        "path": "backtest/tests/test_unit.py"
       },
       {
         "status": "M",
@@ -70243,6 +70235,14 @@
       {
         "status": "D",
         "path": "output_phase_1a_beta_batch_3/insider_correlation.csv"
+      },
+      {
+        "status": "D",
+        "path": "output_phase_1a_beta_batch_3/portfolio_metrics.json"
+      },
+      {
+        "status": "D",
+        "path": "output_phase_1a_beta_batch_3/portfolio_summary.json"
       }
     ]
   },
@@ -70424,7 +70424,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1822,
+    "total": 1889,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -70442,7 +70442,8 @@
       "test_cnn_fg_smoke": 5,
       "test_compatibility": 8,
       "test_contract": 10,
-      "test_cube_populator": 12,
+      "test_cube_methodology_hardening": 7,
+      "test_cube_populator": 13,
       "test_data_integrity": 7,
       "test_data_integrity_v8h_additions": 9,
       "test_dec491_492_493_sprint2": 13,
@@ -70462,13 +70463,14 @@
       "test_engine_bad_data_stress": 10,
       "test_exit_conditional_analyzer": 9,
       "test_exit_context": 18,
+      "test_exit_distribution_sanity": 6,
       "test_extract_phase_1a_beta_winners": 4,
       "test_fred_alfred_demo": 4,
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
       "test_index_rebalance": 13,
-      "test_integration": 150,
+      "test_integration": 149,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -70513,7 +70515,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 628,
+      "test_unit": 682,
       "test_walk_forward_4fold": 6
     }
   },

@@ -10737,3 +10737,105 @@ def test_batch187_walk_forward_decoupled_from_no_git():
     assert "walk_forward_enabled" in src or "not args.no_walk_forward" in src, (
         "Batch 187: walk_forward must derive from no_walk_forward flag"
     )
+
+
+# -----------------------------------------------------------------------------
+# BATCH 301 - POLYGON REFERENCE WIRING FOR info_cache.market_cap
+# -----------------------------------------------------------------------------
+# Bug: DEC-497 D4 (2026-05-06) hard-cut yfinance for .info; replacement at
+# backtest/data/universe.py:fetch_info_bulk hardcoded `market_cap: 0` with a
+# # FUTURE: Polygon reference prefetch comment. BUG-238 fail-closed
+# (2026-05-12) then turned market_cap=0 into silent reject. Combined:
+# Stage D 150-tkr smoke surfaced 9/151 instruments passing liquidity (8/150
+# Stage D sample) vs expected ~120/150. Phase 1A-beta at 1937 tkrs would
+# have effectively backtested only ~68. Surfaced 2026-05-21.
+
+def test_batch301_polygon_reference_lookup_aapl():
+    """Polygon reference parquet for AAPL returns valid market_cap."""
+    from backtest.data.universe import _polygon_reference_lookup
+    info = _polygon_reference_lookup("AAPL")
+    assert "market_cap" in info, "AAPL ref parquet must yield market_cap"
+    assert info["market_cap"] > 1e11, \
+        f"AAPL market_cap should be > $100B, got {info.get('market_cap')}"
+    assert info.get("exchange"), "AAPL should have non-empty exchange"
+    print(f"[OK] Batch 301 _polygon_reference_lookup(AAPL) -> mcap=${info['market_cap']:,.0f}")
+
+
+def test_batch301_polygon_reference_missing():
+    """Missing ticker parquet returns empty dict, not exception."""
+    from backtest.data.universe import _polygon_reference_lookup
+    info = _polygon_reference_lookup("THISTICKERSHOULDNEVEREXIST_ZZZZ")
+    assert info == {}, f"Missing parquet should return {{}}, got {info}"
+    print("[OK] Batch 301 _polygon_reference_lookup missing -> {} (no exception)")
+
+
+def test_batch301_fetch_info_bulk_self_heals_zero_mcap(tmp_path):
+    """Pre-existing info_cache entries with market_cap<=0 are re-fetched
+    instead of being skipped. Verifies the silent-gap repair path."""
+    import json
+    from backtest.data.universe import fetch_info_bulk
+    # Seed cache with stale zero-mcap AAPL entry (simulates DEC-497 D4 leftover)
+    cache_file = tmp_path / "stale_info.json"
+    cache_file.write_text(json.dumps({
+        "AAPL": {
+            "name": "Apple Inc.",
+            "sector": "Information Technology",
+            "industry": "Unknown",
+            "market_cap": 0,   # the bug pattern
+            "exchange": "",
+            "ipo_date": None,
+        }
+    }))
+    out = fetch_info_bulk(["AAPL"], delay=0.0, cache_file=str(cache_file))
+    assert out["AAPL"]["market_cap"] > 1e11, \
+        f"AAPL mcap should be refreshed from Polygon ref, got {out['AAPL']['market_cap']}"
+    # Persisted to disk
+    reloaded = json.loads(cache_file.read_text())
+    assert reloaded["AAPL"]["market_cap"] > 1e11, \
+        "Refreshed mcap must be written back to cache file"
+    print(f"[OK] Batch 301 fetch_info_bulk self-heals mcap=0 -> ${out['AAPL']['market_cap']:,.0f}")
+
+
+def test_batch301_fetch_info_bulk_skips_valid_entries(tmp_path):
+    """Pre-existing entries with valid market_cap are NOT re-fetched.
+    Prevents accidental refresh of the 68 legacy yfinance entries."""
+    import json
+    from backtest.data.universe import fetch_info_bulk
+    cache_file = tmp_path / "valid_info.json"
+    sentinel = 12345.0   # arbitrary value not present in any Polygon ref parquet
+    cache_file.write_text(json.dumps({
+        "AAPL": {
+            "name": "Apple Inc.",
+            "sector": "Information Technology",
+            "industry": "Test Industry",
+            "market_cap": sentinel,
+            "exchange": "TEST",
+            "ipo_date": "1980-12-12",
+        }
+    }))
+    out = fetch_info_bulk(["AAPL"], delay=0.0, cache_file=str(cache_file))
+    assert out["AAPL"]["market_cap"] == sentinel, \
+        f"Valid mcap should be preserved (no refetch), got {out['AAPL']['market_cap']}"
+    print(f"[OK] Batch 301 fetch_info_bulk preserves valid mcap={sentinel}")
+
+
+def test_batch301_fetch_info_bulk_universe_recovery(tmp_path):
+    """End-to-end: fetching the Stage D 150-tkr sample yields >=100 tickers
+    with market_cap >= 100M (the LIQUIDITY['min_market_cap_m'] threshold).
+    Pre-Batch-301 baseline was 8/150."""
+    from pathlib import Path
+    from backtest.data.universe import fetch_info_bulk
+
+    sample_path = Path(__file__).parent.parent.parent / "scripts" / "stage_d_tickers.txt"
+    if not sample_path.exists():
+        import pytest
+        pytest.skip("Stage D ticker list not present")
+    tickers = sample_path.read_text().strip().split("\n")
+    cache_file = tmp_path / "stage_d_test_info.json"
+    out = fetch_info_bulk(tickers, delay=0.0, cache_file=str(cache_file))
+    have_mcap = sum(1 for t in tickers if (out.get(t, {}).get("market_cap", 0) or 0) >= 100_000_000)
+    assert have_mcap >= 100, (
+        f"Batch 301: expected >=100/150 Stage D tickers with mcap>=100M, got {have_mcap}. "
+        f"Pre-fix baseline was 8/150. Regression suspect."
+    )
+    print(f"[OK] Batch 301 Stage D universe recovery: {have_mcap}/150 mcap>=100M (was 8/150)")
