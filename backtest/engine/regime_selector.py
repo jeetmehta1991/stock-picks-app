@@ -69,7 +69,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # Chart patterns (DEC-355-362): allow bull/neutral; bear typically
     # invalidates Edwards-Magee setups
     "head_and_shoulders_bottom_long":   {"bull", "neutral"},
-    "double_bottom_long":               {"bull", "neutral", "bear"},  # reversal works in bear too
+    # double_bottom_long: theoretical bottom-reversal works in bear, but
+    # Stage C v3 empirical: 7 trades / 0% WR / -50 pp. Batch 293 tightening
+    # removes bear; revisit if D1 evidence shows pattern works at scale.
+    "double_bottom_long":               {"bull", "neutral"},
     "cup_and_handle_long":              {"bull", "neutral"},
     "flag_bull_long":                   {"bull", "neutral"},
     "triangle_ascending_long":          {"bull", "neutral"},
@@ -89,10 +92,18 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "news_sentiment_shift_long":        {"bull", "neutral"},
     # Calendar effects (Batch 254 / DEC-368): all-regime except crisis -
     # calendar anomalies don't survive stress regimes per literature.
-    "totm_long":                        {"bull", "neutral", "bear"},
-    "pre_holiday_long":                 {"bull", "neutral", "bear"},
-    "january_effect_small_cap_long":    {"bull", "neutral", "bear"},
-    "halloween_seasonal_long":          {"bull", "neutral", "bear"},
+    # Batch 293 (2026-05-21 owner-approved option 2): calendar effects
+    # tightened to bull/neutral only. Theory: calendar premia (TOTM,
+    # halloween, January Effect, pre-holiday drift) historically documented
+    # in normal markets but Stage C v3 empirical 2022 evidence shows they
+    # fail badly in bear regimes (totm_long: 17 trades, 12% WR, -77 pp;
+    # halloween_seasonal: 3 trades, 0% WR, -23 pp). Calendar premia
+    # arguably presume risk-on backdrop; bear sentiment overrides seasonal
+    # patterns. Revisit if D1 shows the patterns survive bear at scale.
+    "totm_long":                        {"bull", "neutral"},
+    "pre_holiday_long":                 {"bull", "neutral"},
+    "january_effect_small_cap_long":    {"bull", "neutral"},
+    "halloween_seasonal_long":          {"bull", "neutral"},
     # Cross-asset (Batch 254 / DEC-369): stress-regime activations preferred
     # for risk-off signals; DXY headwind works in all regimes.
     "risk_off_bond_equity_short":       {"bear", "crisis"},

@@ -9596,6 +9596,25 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch293_calendar_long_strategies_tightened_to_bull_neutral():
+    """Batch 293 (2026-05-21 owner-approved option 2 per Stage C v3 forensic):
+    Calendar effect long strategies tightened from {bull, neutral, bear}
+    to {bull, neutral} after Stage C v3 evidence (totm_long 17 trades / 12%
+    WR / -77 pp in 2022 bear; halloween_seasonal 3 trades / 0% WR / -23 pp).
+    """
+    from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
+    tightened = [
+        "totm_long", "pre_holiday_long", "january_effect_small_cap_long",
+        "halloween_seasonal_long", "double_bottom_long",
+    ]
+    for strat in tightened:
+        affinity = STRATEGY_REGIME_AFFINITY.get(strat)
+        assert affinity is not None, f"{strat}: missing affinity entry"
+        assert affinity == {"bull", "neutral"}, (
+            f"Batch 293: {strat} should be {{bull, neutral}}, got {affinity}"
+        )
+
+
 def test_batch292_compute_bear_composite_score_yc_inverted():
     """Batch 292: yield curve inversion (T10Y2Y < 0) contributes 1 to score."""
     import pandas as pd
