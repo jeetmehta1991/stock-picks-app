@@ -182,24 +182,31 @@ def _check_per_strategy_exit_hit(
     today_low: float,
     today_close: float,
     today_date: date,
+    today_regime: Optional[str] = None,
+    today_ema_9: Optional[float] = None,
 ) -> tuple:
-    """Batch 284 (2026-05-20 owner-approved): per-strategy exit method
-    dispatch. Returns (exit_price, exit_reason) if the strategy's
-    configured exit_method triggered today, else (None, None).
+    """Batch 284 (5 trivial exits) + Batch 285 (4 complex exits):
+    per-strategy exit method dispatch. Returns (exit_price, exit_reason)
+    if the strategy's configured exit_method triggered today, else (None, None).
 
-    Supported exit methods (per-day evaluable):
+    Supported exit methods:
+      Batch 284 (per-day evaluable, no extra context):
       - 'fixed_4r_2r':    hard target +4R / hard stop -2R from entry
       - 'r_multiple_2r':  hard target +2R from entry
       - 'r_multiple_3r':  hard target +3R from entry
       - 'class_time_stop': category-specific time exit (Kestner 2003)
-      - 'breakeven_plus_trail': move stop to entry at +1xATR, then trail 10%
-                                (handled via existing breakeven_move_at_1r
-                                in update_trailing_stop; this branch is a
-                                no-op tagged for completeness)
-      - 'ma_exit_ema9':    deferred to Batch 285 (requires close history)
+      - 'breakeven_plus_trail': no-op (already always-on via Batch 281)
 
-    R = |entry_price - initial_stop|. ATR-as-R approximation when initial_stop
-    is missing or zero: R = entry_price * 0.02.
+      Batch 285 (need additional context):
+      - 'regime_flip':    exit when today_regime != trade.regime_at_entry
+      - 'ma_exit_ema9':   exit when close crosses EMA-9 against direction
+      - 'next_pivot_target': exit at first entry-time pivot beyond entry
+      - 'hybrid_50pct_target': exit at entry +3xATR target (approximates
+                              the 50%-partial semantics via full exit at
+                              the target level since OpenTrade does not
+                              track partial fills)
+
+    R = |entry_price - initial_stop|. Fallback R = entry_price * 0.02.
     """
     from backtest.config import STRATEGY_EXIT_OVERRIDE as _SEO
     override = _SEO.get(trade.strategy, {})
@@ -276,9 +283,82 @@ def _check_per_strategy_exit_hit(
     if method == "breakeven_plus_trail":
         return (None, None)
 
-    # ---------------- ma_exit_ema9 ----------------
-    # Deferred to Batch 285 - requires close history not available here.
+    # ---------------- regime_flip (Batch 285) ----------------
+    # Exit when today's regime differs from regime at entry. Captures the
+    # cube finding that cpr_narrow_bullish exits at regime transitions
+    # (n=31, WR=65%, +3.56% mean). Direction-agnostic.
+    if method == "regime_flip":
+        if today_regime and trade.regime_at_entry and today_regime != trade.regime_at_entry:
+            return (today_close, f"regime_flip_{trade.regime_at_entry}_to_{today_regime}_batch285")
+        return (None, None)
+
+    # ---------------- ma_exit_ema9 (Batch 285) ----------------
+    # Exit when close crosses EMA-9 against the position direction.
+    # Long: exit if close < EMA-9. Short: exit if close > EMA-9.
+    # Requires caller to pass today_ema_9 via ticker_bars["ema_9"]; falls
+    # through to None (default trailing stop backstop) when unavailable.
     if method == "ma_exit_ema9":
+        if today_ema_9 is None or today_ema_9 <= 0:
+            return (None, None)
+        if direction == "long" and today_close < today_ema_9:
+            return (today_close, f"ma_exit_ema9_below_batch285")
+        if direction == "short" and today_close > today_ema_9:
+            return (today_close, f"ma_exit_ema9_above_batch285")
+        return (None, None)
+
+    # ---------------- next_pivot_target (Batch 285) ----------------
+    # Exit at the first entry-time pivot level beyond entry in trade
+    # direction. For longs: smallest pivot_r1/r2 > entry_price. For
+    # shorts: largest pivot_s1/s2 < entry_price. Read from
+    # trade.signals_at_entry (pivot values are PIT at entry).
+    if method == "next_pivot_target":
+        sigs = trade.signals_at_entry or {}
+        if direction == "long":
+            candidates = []
+            for k in ("pivot_r1", "pivot_r2", "pivot_r3"):
+                v = sigs.get(k)
+                if v is not None and float(v) > ep:
+                    candidates.append(float(v))
+            if not candidates:
+                return (None, None)
+            target = min(candidates)
+            if today_high >= target:
+                return (target, f"next_pivot_target_hit_batch285")
+        else:  # short
+            candidates = []
+            for k in ("pivot_s1", "pivot_s2", "pivot_s3"):
+                v = sigs.get(k)
+                if v is not None and float(v) < ep:
+                    candidates.append(float(v))
+            if not candidates:
+                return (None, None)
+            target = max(candidates)
+            if today_low <= target:
+                return (target, f"next_pivot_target_hit_batch285")
+        return (None, None)
+
+    # ---------------- hybrid_50pct_target (Batch 285) ----------------
+    # Per cube definition: take 50% off at +3xATR, trail remainder at 10%.
+    # OpenTrade does not track partial fills, so this is approximated as a
+    # FULL exit at the +3xATR target. This is a conservative approximation
+    # since the real strategy would still hold 50% with trailing - but the
+    # cube's average outcome is positive and dominantly driven by the +3xATR
+    # leg per the avwap_50_reclaim 94% WR observation.
+    if method == "hybrid_50pct_target":
+        # ATR proxy: prefer signals_at_entry["atr"], fallback to R-value.
+        sigs = trade.signals_at_entry or {}
+        atr = sigs.get("atr") or sigs.get("atr_14") or r_value
+        atr = float(atr) if atr else r_value
+        if atr <= 0:
+            return (None, None)
+        if direction == "long":
+            target = ep + 3.0 * atr
+            if today_high >= target:
+                return (target, "hybrid_50pct_target_3xatr_batch285")
+        else:
+            target = ep - 3.0 * atr
+            if today_low <= target:
+                return (target, "hybrid_50pct_target_3xatr_batch285")
         return (None, None)
 
     # Unknown method - fall through to default
@@ -722,17 +802,22 @@ def process_day_exits(
                 "action": "tighten_stop", "new_stop": trade.trailing_stop,
             })
 
-        # -- Step 1.5: Per-strategy exit_method check (Batch 284) --
+        # -- Step 1.5: Per-strategy exit_method check (Batch 284 + 285) --
         # When STRATEGY_EXIT_OVERRIDE[strategy].exit_method is set, run the
         # method-specific check BEFORE the default trailing stop. If it
         # triggers, close the trade with the method's exit_reason. If it
         # doesn't trigger, fall through to the default trailing stop logic
         # as backstop. Per-strategy exit replaces dominance order; default
         # trailing stop is now the backstop, not the primary.
+        # Batch 285: regime + ema_9 plumbed through for regime_flip /
+        # ma_exit_ema9 dispatch (graceful no-op when caller doesn't supply).
         try:
+            _today_ema_9 = bar.get("ema_9") if isinstance(bar, dict) else None
             _per_strat_exit_price, _per_strat_exit_reason = (
                 _check_per_strategy_exit_hit(
                     trade, today_high, today_low, today_close, today_date,
+                    today_regime=regime,
+                    today_ema_9=_today_ema_9,
                 )
             )
             if _per_strat_exit_price is not None:

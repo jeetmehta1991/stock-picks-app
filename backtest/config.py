@@ -229,14 +229,15 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     # smc_choch_reversal: cube-best breakeven_plus_trail (n=7, +1.89% mean).
     "smc_choch_reversal":          {"exit_method": "breakeven_plus_trail"},
 
-    # avwap_50_reclaim: cube-best hybrid_50pct_target (n=16, WR=94%, +6.76%);
-    # tighter 0.10 trail kept as proxy until Batch 285 implements hybrid.
-    "avwap_50_reclaim":            {"trail_pct": 0.10},
+    # avwap_50_reclaim: cube-best hybrid_50pct_target (n=16, WR=94%, +6.76%).
+    # Batch 285: hybrid_50pct_target now implemented (approximates 50%-partial
+    # as full exit at +3xATR target, since OpenTrade doesn't track partial fills).
+    "avwap_50_reclaim":            {"exit_method": "hybrid_50pct_target"},
 
-    # Batch 285 deferred (need additional context not yet plumbed):
-    # "po3_bearish":               {"exit_method": "ma_exit_ema9"},
-    # "cpr_narrow_bullish":        {"exit_method": "regime_flip"},
-    # "bollinger_tight":           {"exit_method": "next_pivot_target"},
+    # Batch 285 activations (regime / EMA / pivot context now plumbed):
+    "po3_bearish":                 {"exit_method": "ma_exit_ema9"},
+    "cpr_narrow_bullish":          {"exit_method": "regime_flip"},
+    "bollinger_tight":             {"exit_method": "next_pivot_target"},
 }
 
 # BUG-258 fix 2026-05-13: ATR fallback when insufficient history (<14 bars).

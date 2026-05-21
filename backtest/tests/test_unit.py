@@ -9596,6 +9596,127 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch285_regime_flip_exits_on_regime_change():
+    """Batch 285: regime_flip exits when today_regime != trade.regime_at_entry."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    # cpr_narrow_bullish has regime_flip per Batch 285
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="cpr_narrow_bullish", category="pivot",
+        sector="Tech", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=105.0, regime_at_entry="bull",
+    )
+    # Same regime -> no exit
+    ep, er = _check_per_strategy_exit_hit(
+        trade, today_high=108.0, today_low=104.0, today_close=107.0,
+        today_date=date(2024, 1, 15), today_regime="bull",
+    )
+    assert ep is None
+    # Regime flip -> exit at today_close
+    ep, er = _check_per_strategy_exit_hit(
+        trade, today_high=108.0, today_low=104.0, today_close=107.0,
+        today_date=date(2024, 1, 15), today_regime="bear",
+    )
+    assert ep == 107.0
+    assert "regime_flip" in er
+    assert "bull_to_bear" in er
+
+
+def test_batch285_ma_exit_ema9_long_exits_below():
+    """Batch 285: ma_exit_ema9 exits long when close < EMA-9."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    # po3_bearish has ma_exit_ema9 per Batch 285 (but it's a short; we'll
+    # use a custom test entry to verify long behavior).
+    from backtest.config import STRATEGY_EXIT_OVERRIDE
+    STRATEGY_EXIT_OVERRIDE["test_ma9_long"] = {"exit_method": "ma_exit_ema9"}
+    try:
+        trade = OpenTrade(
+            ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+            direction="long", strategy="test_ma9_long", category="trend",
+            sector="Tech", initial_stop=95.0, trailing_stop=95.0,
+            highest_close=110.0, regime_at_entry="bull",
+        )
+        # close above EMA-9 -> no exit
+        ep, _ = _check_per_strategy_exit_hit(
+            trade, today_high=109.0, today_low=106.0, today_close=108.0,
+            today_date=date(2024, 1, 10), today_ema_9=107.0,
+        )
+        assert ep is None
+        # close below EMA-9 -> exit
+        ep, er = _check_per_strategy_exit_hit(
+            trade, today_high=108.0, today_low=104.0, today_close=105.0,
+            today_date=date(2024, 1, 10), today_ema_9=107.0,
+        )
+        assert ep == 105.0
+        assert "ma_exit_ema9_below" in er
+        # no ema_9 supplied -> no exit (graceful)
+        ep, _ = _check_per_strategy_exit_hit(
+            trade, today_high=108.0, today_low=104.0, today_close=105.0,
+            today_date=date(2024, 1, 10), today_ema_9=None,
+        )
+        assert ep is None
+    finally:
+        STRATEGY_EXIT_OVERRIDE.pop("test_ma9_long", None)
+
+
+def test_batch285_next_pivot_target_long():
+    """Batch 285: next_pivot_target exits long at first entry-time pivot > entry."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    # bollinger_tight has next_pivot_target per Batch 285
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bollinger_tight", category="mean_reversion",
+        sector="Tech", initial_stop=95.0, trailing_stop=95.0,
+        highest_close=100.0, regime_at_entry="neutral",
+        signals_at_entry={"pivot_r1": 105.0, "pivot_r2": 110.0, "pivot_r3": 115.0,
+                           "pivot_s1": 95.0, "pivot_s2": 90.0},
+    )
+    # today_high 104 < r1 105 -> no exit
+    ep, _ = _check_per_strategy_exit_hit(
+        trade, today_high=104.0, today_low=98.0, today_close=103.0,
+        today_date=date(2024, 1, 5),
+    )
+    assert ep is None
+    # today_high 106 reaches r1 -> exit at 105
+    ep, er = _check_per_strategy_exit_hit(
+        trade, today_high=106.0, today_low=101.0, today_close=104.5,
+        today_date=date(2024, 1, 6),
+    )
+    assert ep == 105.0
+    assert "next_pivot_target_hit" in er
+
+
+def test_batch285_hybrid_50pct_target_long():
+    """Batch 285: hybrid_50pct_target exits at +3xATR (approximates partial-fill)."""
+    from datetime import date
+    from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
+    # avwap_50_reclaim has hybrid_50pct_target per Batch 285
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="avwap_50_reclaim", category="vwap",
+        sector="Tech", initial_stop=98.0, trailing_stop=98.0,
+        highest_close=100.0, regime_at_entry="bull",
+        signals_at_entry={"atr": 2.0, "atr_14": 2.0},
+    )
+    # ATR=2, +3xATR target = 106
+    # today_high 105 < target -> no exit
+    ep, _ = _check_per_strategy_exit_hit(
+        trade, today_high=105.0, today_low=99.0, today_close=104.0,
+        today_date=date(2024, 1, 10),
+    )
+    assert ep is None
+    # today_high 107 >= target -> exit at 106
+    ep, er = _check_per_strategy_exit_hit(
+        trade, today_high=107.0, today_low=104.0, today_close=106.5,
+        today_date=date(2024, 1, 11),
+    )
+    assert ep == 106.0
+    assert "hybrid_50pct_target_3xatr" in er
+
+
 def test_batch282_per_strategy_exit_override_present():
     """Batch 282: STRATEGY_EXIT_OVERRIDE config dict present + populated
     with at least the Stage C cube-best findings. Each entry should be a
