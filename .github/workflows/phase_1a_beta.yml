@@ -1,0 +1,179 @@
+name: Phase 1A-beta full run (parallel batches + merge + IS/OOS report)
+
+# Per CHECKLIST #77 canonical-source attribution: this workflow runs
+# Phase 1A-beta on the full Master Dedup universe via the run_phase1a.py
+# CLI with --phase 1a-beta. Owner-triggered via workflow_dispatch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_label:
+        description: "Label for this run (e.g., 'final_2026_05_21')"
+        required: true
+        default: "phase_1a_beta_run"
+      start_date:
+        description: "Backtest start (YYYY-MM-DD)"
+        required: true
+        default: "2022-05-01"
+      end_date:
+        description: "Backtest end (YYYY-MM-DD)"
+        required: true
+        default: "2026-04-30"
+
+jobs:
+  # Step 1: generate ticker splits as workflow artifact
+  prepare:
+    name: Prepare batch splits
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run_label: ${{ github.event.inputs.run_label }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install pandas
+        run: pip install pandas pyarrow
+      - name: Generate batch splits
+        run: python scripts/generate_phase_1a_beta_batches.py
+      - name: Upload splits artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: batch-splits
+          path: scripts/batch_splits_phase_1a_beta.json
+
+  # Step 2: 5 parallel batch jobs
+  batch:
+    name: Phase 1A-beta batch ${{ matrix.batch_id }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 350    # 5h 50m per batch (each batch ~388 tkrs x 4y; ~3-4h expected)
+    strategy:
+      fail-fast: false
+      matrix:
+        batch_id: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy filelock pyarrow psutil python-dateutil pytz scipy
+          pip install xgboost scikit-learn numba --quiet || true
+          pip install pandas-ta --quiet || pip install ta --quiet || true
+          pip install requests yfinance freezegun --quiet || true
+          # Vendored smartmoneyconcepts editable install (per Batch 250 CI fix)
+          pip install -e vendored/smartmoneyconcepts/ --quiet || true
+
+      - name: Download batch splits
+        uses: actions/download-artifact@v4
+        with:
+          name: batch-splits
+          path: scripts/
+
+      - name: Run Phase 1A-beta batch ${{ matrix.batch_id }}
+        env:
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+        run: |
+          TICKERS=$(python -c "import json; print(','.join(json.load(open('scripts/batch_splits_phase_1a_beta.json'))['batch_${{ matrix.batch_id }}']))")
+          echo "Batch ${{ matrix.batch_id }}: $(echo $TICKERS | tr ',' '\n' | wc -l) tickers"
+          python -m backtest.run_phase1a \
+            --phase 1a-beta \
+            --no-agents \
+            --no-git \
+            --tickers "$TICKERS" \
+            --start "${{ github.event.inputs.start_date }}" \
+            --end "${{ github.event.inputs.end_date }}" \
+            --output-dir output_phase_1a_beta_batch${{ matrix.batch_id }}
+
+      - name: Upload batch output
+        if: always()    # upload even on failure for forensic analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-1a-beta-batch-${{ matrix.batch_id }}-output
+          path: output_phase_1a_beta_batch${{ matrix.batch_id }}/
+          retention-days: 30
+
+  # Step 3: merge all 5 batches into one final output
+  merge:
+    name: Merge batches + generate IS/OOS report
+    needs: batch
+    if: always() && needs.batch.result != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy pyarrow scipy
+
+      - name: Download all batch outputs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: phase-1a-beta-batch-*-output
+          path: ./
+
+      - name: List downloaded artifacts
+        run: ls -la
+
+      - name: Run merge
+        run: |
+          # Find batch dirs (downloaded artifacts have prefix)
+          BATCH_DIRS=$(ls -d phase-1a-beta-batch-*-output 2>/dev/null || true)
+          if [ -z "$BATCH_DIRS" ]; then
+            echo "ERROR: no batch artifacts found"
+            exit 1
+          fi
+          # Rename to expected naming
+          for d in $BATCH_DIRS; do
+            num=$(echo "$d" | sed 's/.*batch-\([0-9]\).*/\1/')
+            mv "$d" "output_phase_1a_beta_batch${num}"
+          done
+          python scripts/merge_batch_outputs.py \
+            --input-dirs output_phase_1a_beta_batch1 output_phase_1a_beta_batch2 \
+                          output_phase_1a_beta_batch3 output_phase_1a_beta_batch4 \
+                          output_phase_1a_beta_batch5 \
+            --output-dir output_phase_1a_beta_merged
+
+      - name: Run IS/OOS report (Batch 297)
+        run: |
+          python scripts/phase_1a_beta_is_oos_report.py \
+            --output-dir output_phase_1a_beta_merged || true
+
+      - name: Upload merged output + reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-1a-beta-merged-${{ needs.prepare.outputs.run_label }}
+          path: output_phase_1a_beta_merged/
+          retention-days: 90
+
+      - name: Summary
+        run: |
+          echo "## Phase 1A-beta run complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f output_phase_1a_beta_merged/trade_log.csv ]; then
+            n=$(wc -l < output_phase_1a_beta_merged/trade_log.csv)
+            echo "**Merged trade_log rows**: $n" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f output_phase_1a_beta_merged/IS_OOS_REPORT.md ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat output_phase_1a_beta_merged/IS_OOS_REPORT.md >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f output_phase_1a_beta_merged/signal_fire_rates.json ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Signal fire rates" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat output_phase_1a_beta_merged/signal_fire_rates.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
