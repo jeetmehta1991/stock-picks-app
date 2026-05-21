@@ -529,8 +529,12 @@ def classify_regime_with_hysteresis(
             return "crisis"
         # else fall through to lower thresholds
     if prev_regime == "bear":
-        # Stay in bear until VIX drops well below 30
+        # Stay in bear until VIX drops well below 30 OR SPY recovers above 200-EMA.
+        # Batch 288 expansion: SPY-below-200-EMA alone keeps us in bear regardless
+        # of VIX level (mirrors the classify_regime entry gate).
         if vix_value >= 30 - hysteresis_buffer and spy_above_200ema is False:
+            return "bear"
+        if spy_above_200ema is False:
             return "bear"
     if prev_regime == "bull":
         # Stay in bull until VIX rises well above 20
@@ -541,6 +545,13 @@ def classify_regime_with_hysteresis(
     if vix_value >= 40:
         return "crisis"
     if vix_value >= 30 and spy_above_200ema is False:
+        return "bear"
+    # Batch 288 (2026-05-20 owner-approved option A.2): SPY-below-200-EMA
+    # alone triggers bear regardless of VIX. Mirror of classify_regime fix
+    # for the hysteresis path (called when prev_regime is set by engine
+    # day-2 onwards). Without this mirror, the engine used the OLD gate
+    # after day 1 and kept classifying 2022 stealth bears as neutral.
+    if spy_above_200ema is False:
         return "bear"
     if vix_value < 20 and spy_above_200ema is True:
         return "bull"

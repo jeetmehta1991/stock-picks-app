@@ -9617,6 +9617,28 @@ def test_batch288_regime_classifier_spy_only_bear_gate():
     assert classify_regime(None, False) == "unknown"
 
 
+def test_batch288_hysteresis_classifier_also_uses_spy_only_bear():
+    """Batch 288 fix follow-up: the hysteresis variant
+    classify_regime_with_hysteresis must apply the same SPY-only bear gate
+    as classify_regime. Without this, the engine uses the old gate after
+    day 1 (when prev_regime is set), causing 2022 stealth bears to keep
+    classifying as neutral.
+
+    Regression catch: discovered when Stage C v2 logs showed 100%
+    regime=neutral throughout 2022 despite the Batch 288 unit test
+    expecting bear classification."""
+    from backtest.engine.regime_filter import classify_regime_with_hysteresis
+    # 2022 stealth bear at VIX=25, SPY below 200-EMA, prev=neutral -> bear
+    assert classify_regime_with_hysteresis(25.0, False, "neutral") == "bear"
+    # VIX=15 + SPY below -> bear (was neutral pre-fix)
+    assert classify_regime_with_hysteresis(15.0, False, "neutral") == "bear"
+    # Stay-in-bear branch: prev_regime=bear, VIX=20 (below 30-buffer=25), SPY
+    # still below 200-EMA -> stay bear via Batch 288 expansion
+    assert classify_regime_with_hysteresis(20.0, False, "bear") == "bear"
+    # Bull case unchanged
+    assert classify_regime_with_hysteresis(15.0, True, "bull") == "bull"
+
+
 def test_batch287a_per_strategy_initial_pct_override():
     """Batch 287.A: STRATEGY_EXIT_OVERRIDE entries may carry 'initial_pct'
     to tighten/widen the initial stop per strategy. Mean-reversion needs
