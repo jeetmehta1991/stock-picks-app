@@ -1440,3 +1440,39 @@ Worse pattern: one row claimed `ACCESSIBLE` status (Polygon `/v2/aggs/grouped/lo
 **Rule.** Cache-state truth lives in the filesystem (parquet count + non-empty count), NOT in the inventory markdown. Inventory rows tagged "NEW" or "NO" must be verified against `data_prefetch/<path>` row-count before scheduling new fetch work. Dashboard builder should auto-detect cached state from filesystem to prevent inventory drift (current architecture: dashboard reads inventory `Currently cached?` column, which can be stale).
 
 **Cross-references.** Batches 172-175; `dashboard_sprint0a/data.json` final state CACHED 109 / ACCESSIBLE_NOT_CACHED 28; INV-041 path-restricted commit (sister architectural lesson on truth-source discipline).
+
+
+## L155 — The 13-tier pyramid catches CODE bugs, not DATA-shape bugs (Pass 53 Batch 302 2026-05-21)
+
+**Pattern.** Six silent bugs accumulated over 6+ months while the 13-tier pyramid stayed 100% green at every push:
+
+  1. META 2024-Q3 -1219% single-day return (data corruption)
+  2. news_sentiment Path B unused while Path A consumed (path-disambiguation)
+  3. Quiver 13F deltas computed from current snapshot instead of historical (path-disambiguation)
+  4. PEAD financials_json string-vs-dict parsing (format mismatch)
+  5. foreign_rev_pct consumed by strategies with no producer in pipeline (missing producer)
+  6. BUG-286: fetch_info_bulk hardcoded `market_cap: 0` since DEC-497 D4 (placeholder default), BUG-238 fail-closed silently rejected 96.5% of Phase 1A-beta universe (1869/1937 tickers).
+
+**Root cause.** The pyramid certifies "code runs," not "system delivers contracted result at scale." Walking BUG-286 through all 13 tiers:
+
+  - Unit (682 tests): asserted `fetch_info_bulk()` returns dict with `market_cap` KEY -> passed (the VALUE was 0 but the key existed)
+  - Smoke: imports + script runs -> passed (smoke doesn't run liquidity gate)
+  - Integration: tested Path A produces output, Path B produces output -> passed (didn't assert which path the engine actually consumed)
+  - System: 10-tkr e2e smoke -> passed (all 10 were mega-caps whose mcap survived the yfinance->Polygon migration)
+  - Functional: API endpoint demos return shape -> passed (didn't measure coverage ratio)
+  - Regression: caught known bugs -> N/A for unknown bugs
+  - Data integrity: validated OHLCV schema + freshness -> didn't audit info_cache.json or Polygon reference parquets
+  - Performance: timing budgets -> fewer tickers ran faster
+  - Acceptance: config thresholds existed -> didn't measure actual universe pass rate
+  - Contract: Polygon news/divs/Quiver/SEC/AAII parquet schemas -> info_cache.json not under contract
+  - Property: win-rate / profit-factor bounds -> no universe-coverage invariant
+  - Compatibility: lib versions -> N/A
+  - Stress: empty / NaN / corrupted inputs -> didn't cover "default-zero silently degrades"
+
+The bug went undetected from DEC-497 D4 (2026-05-06) through BUG-238 fail-closed (2026-05-12) through 2 weeks of audits, 5 Stage C smoke runs, and 2200+ pyramid passes. Surfaced only by Stage D's 150-tkr stratified smoke run on 2026-05-21, which logged `Liquid universe: 9/151 instruments after one-time filter` - 8 of 150 sample tickers + SPY. A coverage ratio that obvious would have failed any acceptance test that measured it.
+
+**Closure (Batch 302).** Added `test_silent_gap_pyramid.py` with 25 tests across 9 of 13 tiers explicitly targeting the 5 generalized silent-gap patterns (P1 wrong values / P2 path-disambiguation / P3 format mismatch / P4 missing producer / P5 default placeholder). Tests read from LIVE caches (data_prefetch/, data/cache/, Backtesting universe/) rather than mocks - per L148 the data-integrity layer must observe what production reads, not what fixtures can replay. Coverage-ratio tests at Tier 4 (system) and Tier 9 (acceptance) would have fired immediately on the first DEC-497 D4 + BUG-238 collision.
+
+**Rule.** Whenever a "data layer migration" DEC lands (yfinance->Polygon, av_news->polygon_news, av_financials->finnhub, etc.), the same push MUST add: (i) a Tier 7 data-integrity test asserting the new source has populated values for >=80% of expected universe, (ii) a Tier 11 property test asserting producer-vs-consumer value equality on a random sample, (iii) a Tier 13 stress test asserting fresh-fetch from clean state yields non-default values. Migration-without-coverage-test is automatically a silent-gap candidate. See CHECKLIST #79 (Batch 302 codification).
+
+**Cross-references.** BUG-286 fix (Batch 301), test_silent_gap_pyramid.py (Batch 302), L146 (data-DEC vs toolkit-DEC vs wiring), L147 (15-category test plan for external library forks), DEC-503 (full-pyramid mandate). The 5 sibling bugs all match the same producer-vs-consumer disjunction pattern.

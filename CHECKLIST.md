@@ -1195,3 +1195,23 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Apply when:** rebuilding the Stage 2 dashboard. The `compute_promotion_path()` function in `scripts/build_dashboard_stage_2.py` is the canonical implementation. Tooltip on each cell shows the per-item reason (e.g. "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED").
 
     **Joint:** CHECKLIST #81 (BUG/INV inherit DEC promotion process), DEC-594 (same-commit rule that this column tracks), DEC-503/DEC-597 (pyramid layers feed the artifact-grep signal).
+
+83. **HARD RULE - Data-layer migration DECs MUST land with companion silent-gap coverage tests in the same push** (Batch 302 owner-directed comprehensive pyramid review 2026-05-21; codified after L155).
+
+    A "data-layer migration" is any DEC that switches the producer for a value the engine consumes - examples: DEC-497 D4 yfinance->Polygon for `.info`, DEC-440 av_news->polygon_news, DEC-456 SEC EDGAR structured, future Polygon->Quiver switches.  Six silent bugs over 6+ months (META corruption, news Path B, 13F historical, PEAD financials_json, foreign_rev_pct, BUG-286 market_cap) all match a single pattern: the producer changed, the consumer-side default value was retained as a placeholder, and downstream fail-closed gates (BUG-238-class) silently rejected.  The 13-tier pyramid was 100% green throughout.
+
+    Migration commit MUST include, in the same push:
+      a. **Tier 7 data integrity test** - assert the new source has populated values for >=80% of expected universe (catches P5 default-placeholder pattern + P4 missing-producer at cache-population layer).
+      b. **Tier 11 property test** - assert producer-side value equals consumer-side value for a random sample (catches P2 path-disambiguation - consumer reading wrong source).
+      c. **Tier 13 stress test** - fresh-fetch from clean state must yield non-default values for known oracle tickers (catches P5 placeholder-default at runtime).
+      d. **Tier 9 acceptance test** - phase-entry universe coverage gate measuring the actual liquid-pass-rate at scale (catches degraded delivery at the system level even when individual code paths pass).
+
+    Without these, any migration is automatically a silent-gap candidate per L155.  Pre-flight blockers if migration DEC lands without companion tests:
+      - 🔴 Tier 7 absent: HALT.  Add the cache-population audit before merging.
+      - 🔴 Tier 11 absent: HALT.  Add the producer-consumer invariant.
+      - 🔴 Tier 13 absent: HALT.  Add the stress test on clean state.
+      - 🔴 Tier 9 absent: HALT before phase entry.
+
+    **Why:** the pyramid certifies "code runs"; it does NOT certify "system delivers contracted result at scale" unless explicitly told to measure shape/coverage.  Migration is the canonical moment when shape changes silently.  See L155 for the full pattern walkthrough across BUG-286 + 5 sibling bugs.
+
+    **Apply when:** any DEC tagged `data-source-migration` in AUDIT_INDEX, OR any DEC that replaces `yfinance.*` / `pd.read_html` / `requests.get` calls with a different producer, OR any DEC that touches the producer side of a field consumed by `_build_liquid_universe` / `is_liquid` / regime classifier / strategy entry gates.  Companion test file: `backtest/tests/test_silent_gap_pyramid.py` (Batch 302 canonical implementation - 25 tests across 9 of 13 tiers).
