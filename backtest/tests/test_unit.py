@@ -1945,12 +1945,24 @@ def test_bug_078_no_lookahead_synthetic_scenario():
         f"got {len(closed)} closed trades"
     )
     assert len(still_open) == 1, "Trade must remain open"
-    # AFTER check, trailing_stop should have been updated from today's close
-    # (highest_close 100 -> 110, stop 90 -> max(90, 110*0.9)=99)
+    # AFTER check, trailing_stop should have been updated from today's close.
+    # Batch 281 deployed both trail_pct=0.15 + breakeven_move_at_1r=True.
+    # For this fixture (entry 100, initial_stop 90, one_r=10):
+    #   today_close 110 >= 100 + 10  -> breakeven ratchet activates -> stop=$100
+    #   Normal 15% trail: 110 * 0.85 = $93.5
+    #   Final stop = max(100, 93.5) = $100 (breakeven wins).
+    # Compute expected based on whichever logic produces the tighter stop.
+    from backtest.config import TRAILING_STOP
+    normal_trail = 110.0 * (1 - TRAILING_STOP["trail_pct"])
+    breakeven_active = TRAILING_STOP.get("breakeven_move_at_1r", False)
+    breakeven_stop = 100.0 if breakeven_active else 90.0
+    expected_stop = max(90.0, normal_trail, breakeven_stop)
     updated_trade = still_open[0]
     assert updated_trade.highest_close == 110.0, "highest_close must update post-check"
-    assert updated_trade.trailing_stop == 99.0, (
-        f"trailing_stop must update to 99.0 after check (got {updated_trade.trailing_stop})"
+    assert updated_trade.trailing_stop == expected_stop, (
+        f"trailing_stop must update to {expected_stop} (got "
+        f"{updated_trade.trailing_stop}); trail_pct={TRAILING_STOP['trail_pct']}, "
+        f"breakeven={breakeven_active}"
     )
 
 
@@ -9471,6 +9483,25 @@ def test_batch273_smc_base_signals_fire_with_default_params():
     out = compute_smc_signals(df)
     assert "smc_bos_bullish" in out or "smc_bos_bearish" in out, (
         "BOS signal keys must appear in output even when False"
+    )
+
+
+def test_batch281_trailing_stop_config_actually_deployed():
+    """Batch 281 (2026-05-20): the Batch 262 trail_pct + breakeven_move_at_1r
+    changes were CLAIMED in commit messages but never actually landed in
+    config.py - all smokes A/B/C ran on the prior 10% trail with no
+    breakeven. Batch 281 finally deploys them. This test asserts the
+    config values stay where they should - catches the regression mode
+    where a future batch reverts them silently.
+    """
+    from backtest.config import TRAILING_STOP
+    assert TRAILING_STOP["trail_pct"] == 0.15, (
+        f"Batch 281: trail_pct must be 0.15 (was found {TRAILING_STOP['trail_pct']}). "
+        "If lowered, justify per backtest evidence; do not silently revert."
+    )
+    assert TRAILING_STOP.get("breakeven_move_at_1r") is True, (
+        "Batch 281: breakeven_move_at_1r must be True - locks-in zero-loss "
+        "at +1R, reduces give-back observed in 1A-alpha post-mortem."
     )
 
 

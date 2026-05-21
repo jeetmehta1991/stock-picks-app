@@ -157,8 +157,16 @@ ENTRY_GAP_ATR_MULT = {
 # -----------------------------------------------------------------------------
 TRAILING_STOP = {
     "initial_pct":       0.10,   # 10% below entry price (long) / above (short)
-    "trail_pct":         0.10,   # trails at 10% below highest close (long)
+    # Batch 281 (2026-05-20 owner-approved): trail_pct 0.10 -> 0.15. The
+    # claim was originally made in Batch 262 commit message but the actual
+    # config dict was never modified - audit 2026-05-20 found smokes A/B/C
+    # had been running on the prior 10% setting. Now actually deployed.
+    "trail_pct":         0.15,   # trails at 15% below highest close (long)
     "reset_on":          "close", # trailing stop resets on closing price only
+    # Batch 281: breakeven_move_at_1r flag now actually present. The logic
+    # at exit_manager.py:291-302 was added in Batch 262 but gated on this
+    # key with default False -> never fired. Now defaults True.
+    "breakeven_move_at_1r": True,
     "primary_exit":      "atr_trail_1x",  # Phase 1A results: atr_trail_1x wins 20/29 strategies
     # Stop only moves in favour of trade  -  never reverses
     # BUG-232 RESOLVED-IMPLEMENTED Batch 113 2026-05-12 (owner-approved
