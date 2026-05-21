@@ -1585,12 +1585,25 @@ class BacktestEngine:
             for t in self.open_trades:
                 if t.ticker == ticker:
                     ep = t.entry_price; break
+            # Batch 286 (audit fix): compute today's EMA-9 from prev closes.
+            # Required by Batch 285 ma_exit_ema9 exit method. Falls back to None
+            # when insufficient history (<9 bars including today).
+            ema_9 = None
+            try:
+                closes_incl_today = pd.concat([
+                    prev["close"], pd.Series([float(row["close"])])
+                ]) if not prev.empty else pd.Series([float(row["close"])])
+                if len(closes_incl_today) >= 9:
+                    ema_9 = float(closes_incl_today.ewm(span=9, adjust=False).mean().iloc[-1])
+            except Exception:
+                ema_9 = None
             bars[ticker] = {
                 "open":           float(row["open"]),
                 "high":           float(row["high"]),
                 "low":            float(row["low"]),
                 "close":          float(row["close"]),
                 "prev_close":     prev_close,
+                "ema_9":          ema_9,   # Batch 286: for ma_exit_ema9 exit method
                 "max_adverse":    (float(row["low"])  - ep) / ep * 100 if ep > 0 else 0,
                 "max_favourable": (float(row["high"]) - ep) / ep * 100 if ep > 0 else 0,
             }
