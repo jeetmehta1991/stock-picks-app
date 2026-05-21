@@ -133,9 +133,11 @@ def test_g5_each_exit_method_callable(method_name, synthetic_ohlcv):
 # ===========================================================================
 @pytest.mark.parametrize("vix,spy_above,expected", [
     (15.0, True,  "bull"),
-    (15.0, False, "neutral"),  # Below 20 + SPY below: not bull, falls to neutral
+    # Batch 288 (option A.2): SPY-below-200-EMA alone classifies "bear"
+    # regardless of VIX level. Was "neutral" pre-Batch-288.
+    (15.0, False, "bear"),     # Batch 288 SPY-only bear gate
     (25.0, True,  "neutral"),
-    (25.0, False, "neutral"),
+    (25.0, False, "bear"),     # Batch 288 SPY-only bear gate
     (35.0, False, "bear"),
     (35.0, True,  "neutral"),  # 30+ but SPY above: not bear -> neutral
     (42.0, False, "crisis"),

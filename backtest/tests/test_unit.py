@@ -9596,6 +9596,27 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch288_regime_classifier_spy_only_bear_gate():
+    """Batch 288 (owner option A.2): SPY below 200-EMA alone classifies
+    "bear" regardless of VIX level. Catches 2022-style grinding bear
+    where SPY -23% but VIX peaked at 38 (never the 30+below-200 gate
+    simultaneously)."""
+    from backtest.engine.regime_filter import classify_regime
+    # 2022 stealth bear: SPY down, VIX moderate -> bear (was neutral pre-288)
+    assert classify_regime(25.0, False) == "bear", (
+        "Batch 288: VIX=25 + SPY below 200-EMA must be bear"
+    )
+    # Even with low VIX, SPY below 200-EMA = bear
+    assert classify_regime(15.0, False) == "bear"
+    # Bull case unchanged
+    assert classify_regime(15.0, True) == "bull"
+    # Crisis dominates
+    assert classify_regime(45.0, False) == "crisis"
+    assert classify_regime(45.0, True) == "crisis"
+    # VIX missing remains unknown (DEC-316)
+    assert classify_regime(None, False) == "unknown"
+
+
 def test_batch287a_per_strategy_initial_pct_override():
     """Batch 287.A: STRATEGY_EXIT_OVERRIDE entries may carry 'initial_pct'
     to tighten/widen the initial stop per strategy. Mean-reversion needs

@@ -48,13 +48,33 @@ def classify_regime(
 
     DEC-183 Batch 84: now wrapped in lru_cached (maxsize=256) so repeated
     calls (walk-forward folds, replay backtests) reuse cached results.
+
+    Batch 288 (2026-05-20 owner-approved option A.2 per Audit Part 1 sec-4):
+    SPY-below-200-EMA alone now triggers "bear" regardless of VIX. The prior
+    "VIX>=30 AND below-200EMA" gate was too strict for 2022-style stealth
+    bear (SPY -23% YTD with VIX 20-35 range that never hit 30 + below-200
+    simultaneously). Stage C diagnostic: 100% of 2022 trades classified
+    "neutral" despite the real bear, contributing -275pp aggregate loss.
+
+    New ladder (top-to-bottom):
+      VIX >= 40                        -> crisis
+      VIX >= 30 AND below-200EMA       -> bear (canonical)
+      below-200EMA (any VIX)           -> bear (Batch 288 SPY-only gate)
+      VIX < 20 AND above-200EMA        -> bull
+      else                             -> neutral
     """
     if vix_value is None:
         return "unknown"
 
     if vix_value >= 40:
         return "crisis"
+    # Batch 288 SPY-only bear gate ADDED below the canonical VIX>=30 gate
+    # so anything that already classifies bear via VIX+SPY still hits the
+    # canonical reason first. The Batch 288 branch only catches the
+    # 2022-style case (sub-200-EMA without VIX>=30).
     if vix_value >= 30 and spy_above_200ema is False:
+        return "bear"
+    if spy_above_200ema is False:
         return "bear"
     if vix_value < 20 and spy_above_200ema is True:
         return "bull"
