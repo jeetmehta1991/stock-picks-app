@@ -493,29 +493,10 @@ def get_institutional_positions(ticker: str, as_of: date):
     return df.iloc[0:0]  # no date column -> empty
 
 
-def institutional_signal(ticker: str, as_of: date) -> dict:
-    """13F institutional holdings signal from Quiver `live/sec13fchanges` bulk feed.
-
-    BUG-273 Pass 53 fix RESOLVED-IMPLEMENTED 2026-05-06 (Batch 13 schema alignment):
-    Migrated to `live/sec13fchanges` (NOT `sec13f`)  -  sec13fchanges provides
-    quarterly delta directly (Change_Share, Change_Pct), eliminating need to join
-    consecutive quarters. Path: `cache/quiver/sec13fchanges/global.parquet`.
-
-    Schema (per Quiver live/sec13fchanges):
-      Date / ReportPeriod (quarter end) / Ticker / Fund / Change ($ value change)
-      / Change_Share (share count delta) / Change_Pct (% delta) / Held (current
-      shares) / Held_Normalized / Close
-
-    PIT respect: 45-day reporting lag (per DEC-325). Signal at as_of date D
-    consumes only 13F filings where ReportPeriod + 45 days <= D.
-
-    Signal logic (using Change_Share + Change_Pct):
-      - new_position: Change_Pct == 1.0 (initiated; no prior holding)
-      - increased: Change_Share > 0 AND Change_Pct < 1.0 (added to existing)
-      - decreased: Change_Share < 0 (reduced or closed)
-
-    Returns dict per existing schema for backward compatibility.
-    """
+def _institutional_signal_from_bulk(ticker: str, as_of: date) -> dict:
+    """Bulk-feed signal source (recent ~12 months of precomputed deltas).
+    Returns {"signal": "none"} when bulk doesn't cover the date.
+    See institutional_signal() for full semantics."""
     bulk = _load_quiver_bulk("sec13fchanges")
     df = _filter_bulk_by_ticker(bulk, ticker)
     if df.empty:
@@ -530,17 +511,14 @@ def institutional_signal(ticker: str, as_of: date) -> dict:
             return {"signal": "none"}
         latest_q = df["report_period"].max()
         latest = df[df["report_period"] == latest_q].copy()
-        # Coerce numeric (defensive)
-        latest["Change_Share"] = pd.to_numeric(latest.get("Change_Share", 0),
-                                                  errors="coerce").fillna(0)
-        latest["Change_Pct"] = pd.to_numeric(latest.get("Change_Pct", 0),
-                                                errors="coerce").fillna(0)
-        # Tagging
+        latest["Change_Share"] = pd.to_numeric(
+            latest.get("Change_Share", 0), errors="coerce").fillna(0)
+        latest["Change_Pct"] = pd.to_numeric(
+            latest.get("Change_Pct", 0), errors="coerce").fillna(0)
         new_pos = int((latest["Change_Pct"] == 1.0).sum())
         increased = int(((latest["Change_Share"] > 0) &
                           (latest["Change_Pct"] < 1.0)).sum())
         decreased = int((latest["Change_Share"] < 0).sum())
-        # Signal classification (preserves existing semantics)
         signal = "none"
         if new_pos >= 3 or (new_pos >= 1 and increased >= 2):
             signal = "strong_buy"
@@ -549,10 +527,130 @@ def institutional_signal(ticker: str, as_of: date) -> dict:
         elif decreased > increased:
             signal = "negative"
         return {"signal": signal, "new_positions": new_pos,
-                "increased": increased, "decreased": decreased}
+                "increased": increased, "decreased": decreased,
+                "source": "bulk"}
     except Exception as exc:
-        logger.debug("institutional_signal(%s): %s", ticker, exc)
+        logger.debug("_institutional_signal_from_bulk(%s): %s", ticker, exc)
         return {"signal": "none"}
+
+
+def _institutional_signal_from_perticker_history(
+    ticker: str, as_of: date,
+) -> dict:
+    """Batch 294 (2026-05-21 owner-approved F1): compute institutional_signal
+    from per-ticker historical sec13f data when bulk doesn't cover as_of.
+    Bulk feed (live/sec13fchanges) only has ~12 months recent data; this
+    fallback uses data_prefetch/quiver/institutional/{TICKER}.parquet which
+    has 18+ years of history (2006-2025).
+
+    Computes the SAME deltas (new_position / increased / decreased) that the
+    bulk feed precomputes, by diffing per-fund holdings across consecutive
+    quarters. Same signal classification thresholds. PIT correctness via
+    ReportPeriod + 45 days (DEC-325 fallback rule).
+
+    Per-ticker schema: Date, ReportPeriod, Name, Ticker, Fund, Class, Value,
+                       Shares, SH/PRN, Put/Call, Direction
+    """
+    path = PREFETCH_DIR / "institutional" / f"{ticker}.parquet"
+    if not path.exists():
+        return {"signal": "none"}
+    try:
+        df = pd.read_parquet(path)
+        if df.empty or "ReportPeriod" not in df.columns:
+            return {"signal": "none"}
+        if "Fund" not in df.columns or "Shares" not in df.columns:
+            return {"signal": "none"}
+        df = df.copy()
+        df["report_period"] = pd.to_datetime(
+            df["ReportPeriod"], errors="coerce").dt.date
+        df = df.dropna(subset=["report_period"])
+        df["available_after"] = df["report_period"].apply(
+            lambda d: d + timedelta(days=45) if d else None)
+        df = df[df["available_after"] <= as_of]
+        if df.empty:
+            return {"signal": "none"}
+        quarters = sorted(df["report_period"].unique())
+        if len(quarters) < 1:
+            return {"signal": "none"}
+        latest_q = quarters[-1]
+        prior_q = quarters[-2] if len(quarters) >= 2 else None
+        latest = df[df["report_period"] == latest_q].copy()
+        latest["Shares"] = pd.to_numeric(
+            latest["Shares"], errors="coerce").fillna(0)
+        latest_by_fund = latest.groupby("Fund")["Shares"].sum()
+        if prior_q is None:
+            new_pos = int((latest_by_fund > 0).sum())
+            return {
+                "signal": "buy" if new_pos >= 10 else "none",
+                "new_positions": new_pos, "increased": 0, "decreased": 0,
+                "source": "perticker_no_prior",
+            }
+        prior = df[df["report_period"] == prior_q].copy()
+        prior["Shares"] = pd.to_numeric(
+            prior["Shares"], errors="coerce").fillna(0)
+        prior_by_fund = prior.groupby("Fund")["Shares"].sum()
+        all_funds = set(latest_by_fund.index) | set(prior_by_fund.index)
+        new_pos = increased = decreased = 0
+        for fund in all_funds:
+            cur = float(latest_by_fund.get(fund, 0.0))
+            prv = float(prior_by_fund.get(fund, 0.0))
+            if prv == 0 and cur > 0:
+                new_pos += 1
+            elif cur > prv > 0:
+                increased += 1
+            elif cur < prv:
+                decreased += 1
+        signal = "none"
+        if new_pos >= 3 or (new_pos >= 1 and increased >= 2):
+            signal = "strong_buy"
+        elif new_pos >= 1 or increased >= 2:
+            signal = "buy"
+        elif decreased > increased:
+            signal = "negative"
+        return {"signal": signal, "new_positions": new_pos,
+                "increased": increased, "decreased": decreased,
+                "source": "perticker_history"}
+    except Exception as exc:
+        logger.debug("_institutional_signal_from_perticker(%s): %s",
+                     ticker, exc)
+        return {"signal": "none"}
+
+
+def institutional_signal(ticker: str, as_of: date) -> dict:
+    """13F institutional holdings signal. Returns dict with `signal` in
+    {"none", "buy", "strong_buy", "negative"} + diagnostic counts.
+
+    Batch 294 (2026-05-21 owner-approved F1 per 13F integration investigation):
+    Two-source resolution closes the historical-depth gap. The bulk feed
+    (data_prefetch/quiver/sec13fchanges/global.parquet) is fast and precomputes
+    deltas but only has ~12 months of recent data. The per-ticker historical
+    cache (data_prefetch/quiver/institutional/{TICKER}.parquet) has 2006-2025
+    full history but needs delta computation. Try bulk first (fast path),
+    fall back to per-ticker when bulk has no data for the date.
+
+    Result dict includes "source" key for diagnostics: "bulk",
+    "perticker_history", "perticker_no_prior", or absent (none-from-bulk).
+
+    PIT respect: 45-day reporting lag (DEC-325) applies to both sources.
+
+    BUG-273 history: Pass 53 (2026-05-06) migrated from per-ticker to bulk
+    feed for performance. The bulk feed has only ~12 months of history,
+    silently dropping 17+ years of historical 13F coverage. 97% of T1a
+    trades returned "none" because their as_of dates were older than the
+    bulk feed window. Batch 294 restores historical depth via the
+    per-ticker fallback while keeping bulk as the fast path for recent
+    dates.
+
+    Signal classification thresholds (preserved across sources):
+      strong_buy: new_pos >= 3 OR (new_pos >= 1 AND increased >= 2)
+      buy:        new_pos >= 1 OR increased >= 2
+      negative:   decreased > increased
+      none:       otherwise
+    """
+    bulk_result = _institutional_signal_from_bulk(ticker, as_of)
+    if bulk_result.get("signal") != "none":
+        return bulk_result
+    return _institutional_signal_from_perticker_history(ticker, as_of)
 
 
 # -----------------------------------------------------------------------------
