@@ -253,18 +253,33 @@ def should_strategy_fire_in_regime(
     strategy: str,
     regime: str,
     affinity: Optional[dict] = None,
+    direction: Optional[str] = None,
 ) -> bool:
     """Return True if the strategy is permitted to fire in the current regime.
 
     Logic:
-      - If strategy is NOT in affinity map -> allow all (preserves
-        existing behavior for strategies the owner has not yet
-        characterized post Phase 1B-alpha tuning).
+      - If strategy is NOT in affinity map and direction is supplied ->
+        apply direction-aware default (Batch 291 owner-approved option B):
+          long-bias strategies default to {bull, neutral}
+          short-bias strategies default to {bear, crisis, neutral}
+        Avoid direction defaults to allow-all (treated as informational).
+      - If strategy is NOT in affinity map and direction NOT supplied ->
+        legacy allow-all behavior (preserves backward-compat for callers
+        that haven't been updated to pass direction).
       - If strategy IS in affinity map -> only fire if regime is in the
         allowed set.
       - 'unknown' regime always blocks (fail-closed per DEC-316).
       - Strategy with affinity == empty set blocks all regimes (effective
         disable).
+
+    Batch 291 (2026-05-21 owner-approved option B per Stage C v2 forensic):
+    Stage C v2 showed 25 long trades fired in correctly-classified BEAR
+    regime in 2022, contributing -133 pp. Root cause: many long strategies
+    (hull_rsi, cpr_narrow_momentum, supertrend_ichimoku_adx, macd_*) had
+    NO entry in STRATEGY_REGIME_AFFINITY -> defaulted to allow-all -> fired
+    in bear despite being long-bias. The direction-aware default flips
+    the safety bias to "long-bias defaults to {bull, neutral}, short-bias
+    defaults to {bear, crisis, neutral}" instead of allow-all.
 
     Composes with BUG-34 STRATEGY_REGIME_BLOCKLIST at the engine call
     site (engine/backtest.py); both must permit for the entry to fire.
@@ -273,7 +288,13 @@ def should_strategy_fire_in_regime(
         return False
     mapping = affinity if affinity is not None else STRATEGY_REGIME_AFFINITY
     if strategy not in mapping:
-        return True  # default allow-all for un-characterized strategies
+        # Batch 291: direction-aware default instead of legacy allow-all.
+        if direction == "long":
+            return regime in {"bull", "neutral"}
+        if direction == "short":
+            return regime in {"bear", "crisis", "neutral"}
+        # No direction passed -> preserve legacy allow-all behavior.
+        return True
     return regime in mapping[strategy]
 
 

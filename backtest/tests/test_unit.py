@@ -9596,6 +9596,61 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch291_direction_aware_regime_default_long():
+    """Batch 291 (2026-05-21 owner-approved option B per Stage C v2 forensic):
+    Long strategies NOT in STRATEGY_REGIME_AFFINITY default to {bull, neutral}
+    instead of allow-all. Closes the gap where 25 long trades fired in
+    bear in 2022 Stage C v2 (-133 pp)."""
+    from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    # Long unmapped: bull OK, neutral OK, bear/crisis blocked
+    assert should_strategy_fire_in_regime(
+        "_unmapped_strat", "bull", direction="long") is True
+    assert should_strategy_fire_in_regime(
+        "_unmapped_strat", "neutral", direction="long") is True
+    assert should_strategy_fire_in_regime(
+        "_unmapped_strat", "bear", direction="long") is False
+    assert should_strategy_fire_in_regime(
+        "_unmapped_strat", "crisis", direction="long") is False
+
+
+def test_batch291_direction_aware_regime_default_short():
+    """Batch 291: short strategies NOT in map default to {bear, crisis, neutral}.
+    Bull blocked; bear/crisis/neutral allowed (matches Batch 271 explicit
+    short-affinity expansion philosophy)."""
+    from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    assert should_strategy_fire_in_regime(
+        "_unmapped_short", "bull", direction="short") is False
+    assert should_strategy_fire_in_regime(
+        "_unmapped_short", "neutral", direction="short") is True
+    assert should_strategy_fire_in_regime(
+        "_unmapped_short", "bear", direction="short") is True
+    assert should_strategy_fire_in_regime(
+        "_unmapped_short", "crisis", direction="short") is True
+
+
+def test_batch291_backward_compat_no_direction_still_allow_all():
+    """Batch 291: when caller doesn't pass direction (legacy callers),
+    fall back to allow-all to preserve backward-compat."""
+    from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    # No direction supplied -> allow-all (matches pre-Batch-291 behavior)
+    for r in ("bull", "neutral", "bear", "crisis"):
+        assert should_strategy_fire_in_regime("_unmapped", r) is True
+
+
+def test_batch291_mapped_strategies_unchanged():
+    """Batch 291: strategies WITH affinity entries continue to use that
+    affinity (Batch 291 only changes the unmapped-fallback)."""
+    from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    # bollinger_lower has explicit {neutral, bear} affinity; direction
+    # parameter must NOT override this (bull stays blocked).
+    assert should_strategy_fire_in_regime(
+        "bollinger_lower", "bull", direction="long") is False
+    assert should_strategy_fire_in_regime(
+        "bollinger_lower", "neutral", direction="long") is True
+    assert should_strategy_fire_in_regime(
+        "bollinger_lower", "bear", direction="long") is True
+
+
 def test_batch290_spy_auto_included_when_user_universe_lacks_it():
     """Batch 290: SPY must be auto-included in self.universe when user
     passes --tickers without it. Regression catch for the silent regime-

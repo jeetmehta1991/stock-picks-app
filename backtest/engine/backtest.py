@@ -871,7 +871,9 @@ class BacktestEngine:
                     continue
                 if regime in _SRB.get(_sname, []):
                     continue
-                if not _ssfir(_sname, regime):
+                # Batch 291: pass direction so pre-scan uses the same
+                # direction-aware default that the inner loop uses.
+                if not _ssfir(_sname, regime, direction=_sdir):
                     continue
                 if _sdir == "long" and _crisis_now and ticker in _CLE:
                     continue
@@ -1073,8 +1075,15 @@ class BacktestEngine:
                 from backtest.engine.regime_selector import (
                     should_strategy_fire_in_regime,
                 )
+                # Batch 291 (2026-05-21 owner-approved option B): pass
+                # direction so the regime selector applies the new
+                # direction-aware default for un-mapped strategies (long
+                # defaults to {bull, neutral}, short to {bear, crisis, neutral})
+                # instead of allow-all. Closes Stage C v2 gap where 25 long
+                # trades fired in bear regime via affinity-not-in-map fallback.
                 if not should_strategy_fire_in_regime(
-                        strat_entry["strategy"], regime):
+                        strat_entry["strategy"], regime,
+                        direction=direction):
                     self.skipped_trades.append({
                         "ticker": ticker, "date": as_of,
                         "strategy": strat_entry["strategy"],
