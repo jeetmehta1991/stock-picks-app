@@ -9596,6 +9596,63 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch292_compute_bear_composite_score_yc_inverted():
+    """Batch 292: yield curve inversion (T10Y2Y < 0) contributes 1 to score."""
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.regime_filter import compute_bear_composite_score
+    yc = pd.DataFrame({
+        "date": ["2022-01-03", "2022-08-12"],
+        "value": [0.85, -0.30],   # Aug 2022: inverted
+    })
+    # Aug 12 2022: inverted -> score >= 1
+    out = compute_bear_composite_score(date(2022, 8, 12), yield_curve_df=yc)
+    assert out["yield_curve_inverted"] is True
+    assert out["score"] == 1
+    # Jan 3 2022: not inverted -> 0
+    out2 = compute_bear_composite_score(date(2022, 1, 3), yield_curve_df=yc)
+    assert out2["yield_curve_inverted"] is False
+    assert out2["score"] == 0
+
+
+def test_batch292_compute_bear_composite_score_aaii_extreme():
+    """Batch 292: AAII bearish >=40% contributes 1 to score."""
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.regime_filter import compute_bear_composite_score
+    aaii = pd.DataFrame({
+        "date":     ["2022-05-13", "2022-09-30"],
+        "bullish":  [0.16, 0.25],
+        "bearish":  [0.59, 0.35],
+    })
+    # May 2022 (peak fear week): 59% bearish -> fires
+    out = compute_bear_composite_score(date(2022, 5, 13), aaii_df=aaii)
+    assert out["aaii_bearish_extreme"] is True
+    assert out["score"] == 1
+    # Sep 2022: 35% bearish -> not fires (below 40)
+    out2 = compute_bear_composite_score(date(2022, 9, 30), aaii_df=aaii)
+    assert out2["aaii_bearish_extreme"] is False
+
+
+def test_batch292_classify_regime_with_composite_override():
+    """Batch 292: bear_composite_score>=2 forces 'bear' even when
+    SPY-above-200-EMA + low VIX (would normally classify bull/neutral)."""
+    from backtest.engine.regime_filter import classify_regime
+    # Low VIX + SPY above 200 = bull normally
+    assert classify_regime(15.0, True, bear_composite_score=0) == "bull"
+    assert classify_regime(15.0, True, bear_composite_score=1) == "bull"
+    # composite >= 2 overrides to bear
+    assert classify_regime(15.0, True, bear_composite_score=2) == "bear"
+    assert classify_regime(15.0, True, bear_composite_score=3) == "bear"
+
+
+def test_batch292_classify_regime_composite_does_not_override_crisis():
+    """Batch 292: VIX>=40 crisis takes precedence over bear composite."""
+    from backtest.engine.regime_filter import classify_regime
+    assert classify_regime(45.0, True, bear_composite_score=3) == "crisis"
+    assert classify_regime(45.0, False, bear_composite_score=3) == "crisis"
+
+
 def test_batch291_direction_aware_regime_default_long():
     """Batch 291 (2026-05-21 owner-approved option B per Stage C v2 forensic):
     Long strategies NOT in STRATEGY_REGIME_AFFINITY default to {bull, neutral}

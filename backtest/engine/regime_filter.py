@@ -30,10 +30,116 @@ logger = logging.getLogger(__name__)
 from backtest.engine.improvements import lru_cached as _lru_cached_dec183
 
 
+def compute_bear_composite_score(
+    as_of: date,
+    yield_curve_df: "Optional[pd.DataFrame]" = None,
+    aaii_df: "Optional[pd.DataFrame]" = None,
+    sector_ohlcv_dict: "Optional[dict]" = None,
+) -> dict:
+    """Batch 292 (2026-05-21 owner-approved option 3 per Stage C v3 forensic):
+    Compute a 3-indicator bear composite score to catch 2022-style stealth
+    bears that VIX-only or SPY-only classification miss.
+
+    Indicators (each contributes 1 point if firing):
+      1. Yield curve inversion: T10Y2Y < 0
+         Source: data_prefetch/fred/observations/T10Y2Y.parquet
+         Canonical recession signal (Estrella-Hardouvelis 1991).
+      2. AAII bearish sentiment >= 40%
+         Source: data_prefetch/aaii/weekly_sentiment.parquet
+         Survey-based extreme pessimism marker.
+      3. Sector breadth: >=5 of 8 sector ETFs below their 200-EMA
+         Source: XLK, XLF, XLE, XLV, XLI, XLU, XLP, XLY from polygon cache.
+         Broad-market deterioration signal.
+
+    Returns dict with:
+      score: int 0-3 (count of indicators firing)
+      yield_curve_inverted: bool
+      aaii_bearish_extreme: bool
+      sector_breadth_bear: bool
+      details: dict with raw values
+
+    Each indicator falls back gracefully to False when data unavailable
+    (e.g., early in backtest history). Score==0 in that case means
+    no override - regime falls back to classify_regime VIX/SPY ladder.
+    """
+    out = {
+        "score": 0,
+        "yield_curve_inverted": False,
+        "aaii_bearish_extreme": False,
+        "sector_breadth_bear": False,
+        "details": {},
+    }
+    # 1. Yield curve inversion
+    if yield_curve_df is not None and not yield_curve_df.empty:
+        try:
+            df = yield_curve_df.copy()
+            df["dt"] = pd.to_datetime(df["date"], errors="coerce").dt.date
+            df = df.dropna(subset=["dt"]).sort_values("dt")
+            df = df[df["dt"] <= as_of]
+            if not df.empty:
+                last_val = float(df["value"].iloc[-1])
+                out["yield_curve_inverted"] = last_val < 0
+                out["details"]["t10y2y"] = round(last_val, 2)
+        except Exception:
+            pass
+
+    # 2. AAII bearish extreme
+    if aaii_df is not None and not aaii_df.empty:
+        try:
+            df = aaii_df.copy()
+            df["dt"] = pd.to_datetime(df["date"], errors="coerce").dt.date
+            df = df.dropna(subset=["dt"]).sort_values("dt")
+            df = df[df["dt"] <= as_of]
+            if not df.empty:
+                last_bearish = float(df["bearish"].iloc[-1])
+                out["aaii_bearish_extreme"] = last_bearish >= 0.40
+                out["details"]["aaii_bearish"] = round(last_bearish, 3)
+        except Exception:
+            pass
+
+    # 3. Sector breadth
+    if sector_ohlcv_dict is not None:
+        try:
+            sectors = ("XLK", "XLF", "XLE", "XLV", "XLI", "XLU", "XLP", "XLY")
+            n_below = 0
+            n_eligible = 0
+            for sym in sectors:
+                sec_df = sector_ohlcv_dict.get(sym)
+                if sec_df is None or sec_df.empty:
+                    continue
+                # Filter to as_of and compute 200-EMA
+                if "date" in sec_df.columns:
+                    sec_df = sec_df.copy()
+                    sec_df["dt"] = pd.to_datetime(sec_df["date"], errors="coerce").dt.date
+                    sliced = sec_df[sec_df["dt"] <= as_of].sort_values("dt")
+                else:
+                    sliced = sec_df[sec_df.index.date <= as_of]
+                if len(sliced) < 200:
+                    continue
+                ema_200 = sliced["close"].ewm(span=200, adjust=False).mean().iloc[-1]
+                close = float(sliced["close"].iloc[-1])
+                n_eligible += 1
+                if close < float(ema_200):
+                    n_below += 1
+            if n_eligible >= 5:
+                out["sector_breadth_bear"] = n_below >= 5
+                out["details"]["sector_breadth"] = f"{n_below}/{n_eligible}_below_200ema"
+        except Exception:
+            pass
+
+    out["score"] = (
+        int(out["yield_curve_inverted"]) +
+        int(out["aaii_bearish_extreme"]) +
+        int(out["sector_breadth_bear"])
+    )
+    return out
+
+
 @_lru_cached_dec183(maxsize=256)
 def classify_regime(
     vix_value: Optional[float],
     spy_above_200ema: Optional[bool],
+    bear_composite_score: int = 0,
 ) -> str:
     """
     Classify market regime from VIX level and SPY vs 200 EMA.
@@ -68,13 +174,17 @@ def classify_regime(
 
     if vix_value >= 40:
         return "crisis"
-    # Batch 288 SPY-only bear gate ADDED below the canonical VIX>=30 gate
-    # so anything that already classifies bear via VIX+SPY still hits the
-    # canonical reason first. The Batch 288 branch only catches the
-    # 2022-style case (sub-200-EMA without VIX>=30).
+    # Batch 288 SPY-only bear gate.
     if vix_value >= 30 and spy_above_200ema is False:
         return "bear"
     if spy_above_200ema is False:
+        return "bear"
+    # Batch 292 (2026-05-21 owner-approved option 3): bear composite override.
+    # When >=2 of 3 bear indicators fire (yield curve inverted, AAII bearish
+    # >=40%, sector breadth >=5 of 8 below 200-EMA), force "bear" regime even
+    # if SPY is above 200-EMA. Catches mid-bear rallies (Aug 2022) when SPY
+    # temporarily crossed above 200-EMA but the broader bear thesis held.
+    if bear_composite_score >= 2:
         return "bear"
     if vix_value < 20 and spy_above_200ema is True:
         return "bull"
@@ -88,6 +198,7 @@ def get_regime_context(
     prev_regime: Optional[str] = None,
     vix_smoothed: Optional[float] = None,
     use_hysteresis: bool = False,
+    bear_composite_score: int = 0,
 ) -> dict:
     """
     Full regime context dict including position size multipliers.
@@ -98,6 +209,11 @@ def get_regime_context(
     flags enable VIX MA smoothing + hysteresis when caller tracks day-over-day
     state. Defaults preserve original behavior (raw VIX, no hysteresis) so
     legacy call sites remain unchanged.
+
+    Batch 292 (2026-05-21): optional bear_composite_score (0-3 from
+    compute_bear_composite_score). When >= 2, forces bear regime
+    classification (overrides SPY-above-200-EMA fallback to bull/neutral).
+    Caller computes the score from yield curve + AAII + sector breadth.
     """
     from backtest.config import REGIME_FILTER, POSITION_SIZE_MULT
 
@@ -106,9 +222,13 @@ def get_regime_context(
     # Use smoothed VIX if provided; else raw
     vix_for_classify = vix_smoothed if vix_smoothed is not None else vix_value
     if use_hysteresis:
-        regime = classify_regime_with_hysteresis(vix_for_classify, spy_above, prev_regime)
+        regime = classify_regime_with_hysteresis(
+            vix_for_classify, spy_above, prev_regime,
+            bear_composite_score=bear_composite_score)
     else:
-        regime = classify_regime(vix_for_classify, spy_above)
+        regime = classify_regime(
+            vix_for_classify, spy_above,
+            bear_composite_score=bear_composite_score)
     # DEC-316 fix (Pass 51): when regime is 'unknown', use unknown config (block).
     # Previously fell through to 'neutral' which silently allowed trading on
     # missing data. Now 'unknown' has long='none' / short='none' -> blocks entries.
@@ -496,6 +616,7 @@ def classify_regime_with_hysteresis(
     spy_above_200ema: Optional[bool],
     prev_regime: Optional[str] = None,
     hysteresis_buffer: float = 5.0,
+    bear_composite_score: int = 0,
 ) -> str:
     """Classify regime with hysteresis-buffer applied to VIX thresholds.
 
@@ -546,12 +667,11 @@ def classify_regime_with_hysteresis(
         return "crisis"
     if vix_value >= 30 and spy_above_200ema is False:
         return "bear"
-    # Batch 288 (2026-05-20 owner-approved option A.2): SPY-below-200-EMA
-    # alone triggers bear regardless of VIX. Mirror of classify_regime fix
-    # for the hysteresis path (called when prev_regime is set by engine
-    # day-2 onwards). Without this mirror, the engine used the OLD gate
-    # after day 1 and kept classifying 2022 stealth bears as neutral.
+    # Batch 288: SPY-below-200-EMA alone triggers bear.
     if spy_above_200ema is False:
+        return "bear"
+    # Batch 292: bear composite override (mirror of classify_regime).
+    if bear_composite_score >= 2:
         return "bear"
     if vix_value < 20 and spy_above_200ema is True:
         return "bull"

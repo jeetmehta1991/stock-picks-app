@@ -536,11 +536,48 @@ class BacktestEngine:
             vix_smoothed = get_vix_smoothed(self._vix_series, as_of, window=5)
         # Use hysteresis only when we have prev_regime + smoothed VIX
         use_hysteresis = (self._prev_regime is not None) and (vix_smoothed is not None)
+
+        # Batch 292 (2026-05-21): bear composite indicator. Loads cached
+        # yield curve, AAII sentiment, sector ETF OHLCV; computes 0-3 bear
+        # score; passes to classifier. When >=2 indicators fire, regime
+        # forced to "bear" regardless of SPY-above-200-EMA (catches
+        # mid-bear rallies like Aug 2022). Caches loaded once via
+        # self._bear_indicator_cache; recomputed lazily.
+        try:
+            if not hasattr(self, "_bear_indicator_cache"):
+                from pathlib import Path
+                _cache = {}
+                _yc_path = Path("data_prefetch/fred/observations/T10Y2Y.parquet")
+                if _yc_path.exists():
+                    _cache["yc"] = pd.read_parquet(_yc_path)
+                _aaii_path = Path("data_prefetch/aaii/weekly_sentiment.parquet")
+                if _aaii_path.exists():
+                    _cache["aaii"] = pd.read_parquet(_aaii_path)
+                # Sector ETF dict (already in self.ohlcv_dict)
+                _cache["sectors"] = {
+                    s: self.ohlcv_dict.get(s)
+                    for s in ("XLK", "XLF", "XLE", "XLV", "XLI", "XLU", "XLP", "XLY")
+                    if self.ohlcv_dict.get(s) is not None
+                }
+                self._bear_indicator_cache = _cache
+            from backtest.engine.regime_filter import compute_bear_composite_score
+            _bear = compute_bear_composite_score(
+                as_of,
+                yield_curve_df=self._bear_indicator_cache.get("yc"),
+                aaii_df=self._bear_indicator_cache.get("aaii"),
+                sector_ohlcv_dict=self._bear_indicator_cache.get("sectors"),
+            )
+            _bear_score = _bear.get("score", 0)
+        except Exception as _exc:
+            logger.debug("bear composite score failed: %s", _exc)
+            _bear_score = 0
+
         regime_ctx = get_regime_context(
             vix, spy_close, spy_ema,
             prev_regime=self._prev_regime,
             vix_smoothed=vix_smoothed,
             use_hysteresis=use_hysteresis,
+            bear_composite_score=_bear_score,
         )
         regime     = regime_ctx["regime"]
         # Persist for next iteration
