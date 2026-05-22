@@ -1476,3 +1476,24 @@ The bug went undetected from DEC-497 D4 (2026-05-06) through BUG-238 fail-closed
 **Rule.** Whenever a "data layer migration" DEC lands (yfinance->Polygon, av_news->polygon_news, av_financials->finnhub, etc.), the same push MUST add: (i) a Tier 7 data-integrity test asserting the new source has populated values for >=80% of expected universe, (ii) a Tier 11 property test asserting producer-vs-consumer value equality on a random sample, (iii) a Tier 13 stress test asserting fresh-fetch from clean state yields non-default values. Migration-without-coverage-test is automatically a silent-gap candidate. See CHECKLIST #79 (Batch 302 codification).
 
 **Cross-references.** BUG-286 fix (Batch 301), test_silent_gap_pyramid.py (Batch 302), L146 (data-DEC vs toolkit-DEC vs wiring), L147 (15-category test plan for external library forks), DEC-503 (full-pyramid mandate). The 5 sibling bugs all match the same producer-vs-consumer disjunction pattern.
+
+
+## L156 — Compute-budget estimates MUST be derived from measured pace, not inherited assumptions (Pass 53 Batch 305 2026-05-22)
+
+**Pattern.** Phase 1A-beta workflow Batch 181 (2026-05-15) set a 5h 50m per-batch timeout based on a then-current "~3-4h expected" estimate for 388 tkrs x 4y. The estimate was not re-validated against later runtime additions (Batches 285+292+294+295+301 added smartmoneyconcepts FVG/OB computation, bear composite reading yield curve + AAII + 8 sector ETFs daily, per-ticker historical 13F deltas, financials_json string parsing, Polygon reference parquet lookup). Owner-triggered run 2026-05-22 timed out every batch at 5h 50m. Stage D pacing data (~0.22 sec/ticker/sim-day, available from the prior week's run) would have projected ~25h per 388-tkr batch -- structurally infeasible on GitHub-hosted runners' 6-hour job cap.
+
+**Compounding factor.** I (assistant) had reviewed Stage D's full log + accepted the 5h 50m timeout in CHECKLIST review without re-extrapolating. The estimate had been stale for ~5 batches of signal additions. Owner caught the failure, costing a wasted GH Actions run.
+
+**Closure (Batch 305).** Re-architected workflow: 25 batches x ~78 tkrs each (matches Stage D scale). Per-batch math `78 * 1044 * 0.22 = ~17,900s = ~5h` documented in `scripts/generate_phase_1a_beta_batches.py` docstring. max-parallel: 20 added to control GH free-tier concurrency cap. Merge job sed regex fixed to capture multi-digit batch IDs.
+
+**Rule.** Before setting OR accepting any GH Actions / compute-budget timeout (especially `timeout-minutes` on long-running matrix jobs):
+  - **a.** Identify the most recent comparable run with measured pace (Stage A/B/C/D smokes; prior batch run; local laptop measurement).
+  - **b.** Compute per-unit pace = wall_time / (ticker_count * sim_days) or equivalent unit.
+  - **c.** Extrapolate target run = pace * target_ticker_count * target_sim_days.
+  - **d.** Add 20-30pct buffer for runner variance + cache cold-start.
+  - **e.** Verify result fits the runtime-environment cap (GitHub free runners = 6h hard limit on individual jobs).
+  - **f.** If estimate >= cap, redesign the workflow (more batches, smaller per-batch scope, or paid runners) BEFORE writing the timeout.
+
+If the prior estimate is older than the most recent signal/strategy roster expansion, MUST re-validate. Signal-side additions (especially smc, chart patterns, bear composite reading multiple macro caches) materially increase per-ticker-per-day compute. Never carry a timeout forward without re-checking.
+
+**Cross-references.** Batch 181 (5x388 design, 2026-05-15), Batch 304 (CI pyramid timeout fix - same class of error at smaller scale), Batch 305 (25x78 redesign 2026-05-22), Stage D pacing measurement (0.22 sec/ticker/sim-day, 117 tkrs x 4y = ~10h with pyramid contention / ~7.5h clean).

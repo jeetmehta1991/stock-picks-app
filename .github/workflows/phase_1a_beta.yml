@@ -49,11 +49,21 @@ jobs:
     name: Phase 1A-beta batch ${{ matrix.batch_id }}
     needs: prepare
     runs-on: ubuntu-latest
-    timeout-minutes: 350    # 5h 50m per batch (each batch ~388 tkrs x 4y; ~3-4h expected)
+    # Batch 305 (2026-05-22): each batch ~78 tkrs x 4y ~= 5h on GH-hosted
+    # ubuntu-latest (Stage D pace 0.22 sec/tkr/sim-day * 1044 days * 78
+    # tkrs = ~17,900s = 5h). 350-min cap leaves ~50min headroom before
+    # the GH-hosted 6-hour hard cap. Previous 5x388 design (Batch 181)
+    # projected at ~25h per batch and timed-out every run.
+    timeout-minutes: 350
     strategy:
       fail-fast: false
+      # GH free-tier private-repo concurrency cap is 20 parallel jobs.
+      # 25 batches with max-parallel:20 -> wave 1 of 20, wave 2 of 5,
+      # total wall clock ~10h (5h per wave + overhead).
+      max-parallel: 20
       matrix:
-        batch_id: [1, 2, 3, 4, 5]
+        batch_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                   16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
     steps:
       - uses: actions/checkout@v4
 
@@ -99,9 +109,12 @@ jobs:
         with:
           name: phase-1a-beta-batch-${{ matrix.batch_id }}-output
           path: output_phase_1a_beta_batch${{ matrix.batch_id }}/
-          retention-days: 30
+          # Batch 305: bumped 30 -> 90 days per owner directive 2026-05-22
+          # ("save existing run results"). Failed-run partial artifacts must
+          # survive long enough to forensically diagnose timeouts.
+          retention-days: 90
 
-  # Step 3: merge all 5 batches into one final output
+  # Step 3: merge all 25 batches into one final output
   merge:
     name: Merge batches + generate IS/OOS report
     needs: batch
@@ -135,15 +148,23 @@ jobs:
             echo "ERROR: no batch artifacts found"
             exit 1
           fi
-          # Rename to expected naming
+          # Batch 305: rename to expected naming. Regex captures multi-digit
+          # batch IDs (1-25); prior \([0-9]\) only matched single digits and
+          # silently misparsed batch_id >= 10.
           for d in $BATCH_DIRS; do
-            num=$(echo "$d" | sed 's/.*batch-\([0-9]\).*/\1/')
+            num=$(echo "$d" | sed 's/.*batch-\([0-9][0-9]*\)-output.*/\1/')
             mv "$d" "output_phase_1a_beta_batch${num}"
           done
+          echo "Merging batches: $(ls -d output_phase_1a_beta_batch*/ 2>/dev/null | wc -l) directories"
+          # Build the --input-dirs argument dynamically (handles missing
+          # batches gracefully - merge proceeds with whatever succeeded).
+          INPUT_DIRS=$(ls -d output_phase_1a_beta_batch*/ 2>/dev/null | tr -d '/' | tr '\n' ' ')
+          if [ -z "$INPUT_DIRS" ]; then
+            echo "ERROR: no batch output directories after rename"
+            exit 1
+          fi
           python scripts/merge_batch_outputs.py \
-            --input-dirs output_phase_1a_beta_batch1 output_phase_1a_beta_batch2 \
-                          output_phase_1a_beta_batch3 output_phase_1a_beta_batch4 \
-                          output_phase_1a_beta_batch5 \
+            --input-dirs $INPUT_DIRS \
             --output-dir output_phase_1a_beta_merged
 
       - name: Run IS/OOS report (Batch 297)
