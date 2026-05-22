@@ -16,7 +16,13 @@ jobs:
   pyramid:
     name: Run Pass 53 test pyramid (DEC-503)
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # Batch 304 (2026-05-22): bumped 25 -> 45 min. Pre-Batch-304 pyramid
+    # fit in 25 min but heavy deps (numba builds from source on cold cache,
+    # smartmoneyconcepts editable install, xgboost + scipy + statsmodels)
+    # eat ~8-10 min on a fresh runner; 11 sequential pytest tiers + the new
+    # silent-gap pyramid tier (Batches 302+303, 40 tests) need another ~25
+    # min. 45 min gives safe headroom without bloating the budget.
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -123,6 +129,16 @@ jobs:
           python -m pytest backtest/tests/test_cache_schema_b.py -q --tb=short
         continue-on-error: false
 
+      - name: Tier 11 — Silent-gap pyramid (Batches 302+303, all 13 tiers)
+        # Would have caught BUG-286 (market_cap silent-gap) pre-merge. 40
+        # tests, ~30s on local with cold cache; reads live caches at
+        # data_prefetch/polygon/{reference,ohlcv_daily,news,financials} +
+        # data_prefetch/quiver/* + data_prefetch/sec_edgar/* (all committed
+        # to repo so CI checkout has them).
+        run: |
+          python -m pytest backtest/tests/test_silent_gap_pyramid.py -q --tb=short
+        continue-on-error: false
+
       - name: Performance / load (G3) — informational; cache may be empty in CI
         run: |
           python -m pytest backtest/tests/test_performance_load.py -q --tb=short || echo "skipped (likely no cache in CI)"
@@ -139,6 +155,6 @@ jobs:
           echo "### Test Pyramid Result" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Time:** $(date +%Y-%m-%d' '%H:%M' UTC')" >> $GITHUB_STEP_SUMMARY
-          echo "**Mandatory tiers (11):** Unit + Integration + Data integrity + Bad-data (G2) + Acceptance (G5) + Phase Gates + Partial-spec + Wiring + Walk-forward + Exit context + Cache schema" >> $GITHUB_STEP_SUMMARY
+          echo "**Mandatory tiers (12):** Unit + Integration + Data integrity + Bad-data (G2) + Acceptance (G5) + Phase Gates + Partial-spec + Wiring + Walk-forward + Exit context + Cache schema + Silent-gap pyramid (Batches 302+303)" >> $GITHUB_STEP_SUMMARY
           echo "**Informational tiers (2):** Performance/load (G3) + E2E smoke (G1) — skip on cache-empty CI" >> $GITHUB_STEP_SUMMARY
           echo "**G4:** This workflow itself — automated pyramid execution on every push to main" >> $GITHUB_STEP_SUMMARY
