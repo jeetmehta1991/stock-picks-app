@@ -259,21 +259,32 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
 }
 
 
-# Batch 309 (2026-05-24 owner-approved Decision 2): Phase 1B-alpha disabled
-# strategy roster. Strategies in this set are SKIPPED at screener-level (no
-# entries fire). Identified via Phase 1A-beta per_cell_is_oos.csv: a strategy
-# is disabled iff NO (strategy x exit) cell with OOS n>=5 has positive
-# OOS sum_pp. These are strategies for which no exit assignment redeems
-# the entry signal at out-of-sample scale.
+# Batch 310 (2026-05-24 owner-directed REVERT of Batch 309 Decision 2 sub-item):
+# This set is REFERENCE-ONLY metadata. It is NO LONGER USED as a screener
+# gate - the import + skip filter in backtest/signals/screener.py was
+# removed in Batch 310 per owner directive "DO NOT DISABLE ANYTHING TILL
+# I ANALYZE AND COMMAND".
 #
-# Source: output_phase_1a_beta_merged_local/per_cell_is_oos.csv, Phase 1A-
-# beta full 1937-tkr run 2026-05-24, n=7191 trades, IS-2022-01..2024-06 /
-# OOS-2024-07..2026-04.
+# Why we keep the set in source: the per_cell_is_oos.csv analysis that
+# produced this list took compute + careful work. Discarding the data
+# means re-deriving it. Keeping it documents WHICH strategies underperformed
+# at universe-scale in Phase 1A-beta so the next decision pass (per-regime /
+# per-ticker / per-classifier stratification) starts from this baseline.
 #
-# Pattern: most disabled strategies are short-side (8 of 28 are explicit
-# *_short variants) reflecting the long-bias result of 2024-2026 bull
-# market. Re-evaluate in Phase 1B-alpha output before any roster expansion.
-PHASE_1B_ALPHA_DISABLED_STRATEGIES: set[str] = {
+# Owner framework (per directive): we are NOT looking for universal
+# strategies. We're looking for the best (strategy x exit x regime x
+# ticker x classifier) combinations. A strategy that lost money
+# universe-wide in 2024-2026 bull may still be the right play in 2022
+# bear or for a specific tier / sector / capitalization band. Roster
+# decisions move to STRATEGY_REGIME_AFFINITY (already exists) +
+# future per-classifier tagging.
+#
+# Source: output_phase_1a_beta_merged_local/per_cell_is_oos.csv,
+# Phase 1A-beta 7191 trades, IS-2022-01..2024-06 / OOS-2024-07..2026-04.
+# These strategies had NO (strategy x exit) cell with OOS n>=5 and OOS
+# sum_pp > 0 at universe-wide scale. Use as PRIORITY LIST for per-regime
+# analysis, NOT as automatic disable.
+PHASE_1A_BETA_UNDERPERFORMERS_REFERENCE: set[str] = {
     # Worst losers (Phase 1A-beta OOS sum < -100 pp)
     "xs_momentum_bottom_decile_short",   # -308 pp OOS
     "po3_bearish",                       # -229 pp OOS

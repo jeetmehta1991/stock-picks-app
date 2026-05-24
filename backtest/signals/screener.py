@@ -2971,14 +2971,13 @@ def screen_instrument(
     # edge in 2015-2024 literature). Shrinks the multi-testing denominator
     # for Bonferroni/DSR gates without deleting strategy function bodies.
     from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
-    # Batch 309 (2026-05-24 owner-approved Decision 2): Phase 1B-alpha
-    # disable list - strategies for which NO exit assignment was OOS-
-    # profitable in Phase 1A-beta n=7191 run. Same skip mechanism as
-    # DEPRECATED but with empirical (not academic) provenance.
-    try:
-        from backtest.config import PHASE_1B_ALPHA_DISABLED_STRATEGIES as _PHASE_1B_DISABLED
-    except ImportError:
-        _PHASE_1B_DISABLED = set()
+    # Batch 310 (2026-05-24): Phase 1B-alpha disable mechanism REVERTED per
+    # owner directive "DO NOT DISABLE ANYTHING TILL I ANALYZE AND COMMAND".
+    # The PHASE_1B_ALPHA_DISABLED_STRATEGIES constant in config.py is now
+    # reference-only (not used as a screener gate). Phase 1A-beta losers
+    # are to be analyzed per-regime / per-ticker / per-classifier before any
+    # universal disable. Roster decisions move to STRATEGY_REGIME_AFFINITY
+    # (regime-stratified) instead of a global skip list.
     # Batch 263 (Class A confirmation entry, owner-approved 2026-05-20):
     # Mean-reversion strategies INTENTIONALLY enter against the day's candle
     # (oversold dip-buy = enter when price down). All other strategies should
@@ -3004,8 +3003,10 @@ def screen_instrument(
     for name, fn in ALL_STRATEGIES.items():
         if name in _DEPRECATED:
             continue
-        if name in _PHASE_1B_DISABLED:
-            continue  # Batch 309: Phase 1A-beta loser, skip in Phase 1B-alpha
+        # Batch 310 (2026-05-24): PHASE_1B_ALPHA_DISABLED_STRATEGIES skip
+        # REVERTED per owner directive. All previously-disabled strategies
+        # are re-active. Roster pruning will move to STRATEGY_REGIME_AFFINITY
+        # after owner per-regime / per-ticker / per-classifier analysis.
         try:
             result = fn(signals)
             if not result["fires"]:
