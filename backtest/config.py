@@ -203,45 +203,110 @@ TRAILING_STOP = {
 #
 # Strategies not listed fall through to TRAILING_STOP defaults.
 STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
-    # Batch 284 (2026-05-20 owner-approved per DESIGN_AUDIT_PART_2 sec-4):
-    # Expanded entries from Stage C cube-best findings (n>=5 evidence,
-    # mean PnL improvement vs trailing_15pct default).
-
-    # stochrsi_oversold: cube-best time_stop_10d (n=5, WR=80%, +4.69% mean).
-    # Batch 287.A: tighter 4% initial_stop for mean-reversion thesis.
+    # Batch 309 (2026-05-24 owner-approved): Phase 1B-alpha survivor roster.
+    # Per per_cell_is_oos.csv from Phase 1A-beta 7,191-trade run, these 7
+    # unique strategies have at least one (strategy x exit) cell with BOTH
+    # IS and OOS sum > 0 (n>=10 OOS for statistical power). All other
+    # strategies that fired in Phase 1A-beta are listed in
+    # PHASE_1B_ALPHA_DISABLED_STRATEGIES below and skipped at screener time.
+    #
+    # Performance evidence (OOS sum on chosen exit, from Phase 1A-beta):
+    #   avwap_50_reclaim   x hybrid_50pct_target   = +843 pp (90 OOS, 100% WR)
+    #   po3_bullish        x class_time_stop       = +395 pp (136 OOS, 54% WR)
+    #   monthly_bias...    x loose trail           = +374 pp (47 OOS, 83% WR)
+    #     [Phase 1A-beta best was end_of_backtest; deployable equivalent
+    #      is a loose trailing stop that lets the trend run]
+    #   xs_low_beta_long   x loose trail           = +319 pp (30 OOS, 87% WR)
+    #     [same end_of_backtest -> loose trail mapping]
+    #   cpr_narrow_bullish x regime_flip           = +142 pp (37 OOS, 59% WR)
+    #   xs_momentum_top_decile x class_time_stop   = +129 pp (28 OOS, 68% WR)
+    #   stochrsi_oversold  x time_stop_10d         = +107 pp (27 OOS, 74% WR)
+    #
+    # Batch 284 entries that REMAIN (winners):
     "stochrsi_oversold":           {"time_stop_days": 10, "initial_pct": 0.04},
-
-    # xs_momentum_top_decile: cube-best class_time_stop (n=9, WR=78%, +8.11%).
     "xs_momentum_top_decile":      {"exit_method": "class_time_stop"},
-
-    # po3_bullish: cube-best class_time_stop (n=20, WR=65%, +1.73%).
     "po3_bullish":                 {"exit_method": "class_time_stop"},
-
-    # bollinger_lower: cube-best fixed_4r_2r (n=14, WR=21%, +0.27% mean);
-    # trailing_15pct was the WORST exit (-7.55% mean) for this strategy.
-    # Batch 287.A: tighter 3% initial_stop matches mean-reversion thesis
-    # (oversold bounce). 10% blanket stop made R too wide -> +4R target
-    # = +40% which rarely hits -> time-stop exits dominate.
-    "bollinger_lower":             {"exit_method": "fixed_4r_2r", "initial_pct": 0.03},
-
-    # monthly_bias_momentum_long: cube #1 was earnings_blackout (237d hold,
-    # long-hold artifact); operational choice is #2 breakeven_plus_trail
-    # (n=17, WR=41%, +4.57% mean, 50d hold). Already always-on via
-    # TRAILING_STOP["breakeven_move_at_1r"]; tagging here for clarity.
-    "monthly_bias_momentum_long":  {"exit_method": "breakeven_plus_trail"},
-
-    # smc_choch_reversal: cube-best breakeven_plus_trail (n=7, +1.89% mean).
-    "smc_choch_reversal":          {"exit_method": "breakeven_plus_trail"},
-
-    # avwap_50_reclaim: cube-best hybrid_50pct_target (n=16, WR=94%, +6.76%).
-    # Batch 285: hybrid_50pct_target now implemented (approximates 50%-partial
-    # as full exit at +3xATR target, since OpenTrade doesn't track partial fills).
     "avwap_50_reclaim":            {"exit_method": "hybrid_50pct_target"},
-
-    # Batch 285 activations (regime / EMA / pivot context now plumbed):
-    "po3_bearish":                 {"exit_method": "ma_exit_ema9"},
     "cpr_narrow_bullish":          {"exit_method": "regime_flip"},
+
+    # Batch 309 NEW / REVISED entries:
+
+    # monthly_bias_momentum_long: Phase 1A-beta cube-best was end_of_backtest
+    # (47 OOS, 83% WR, +7.96% mean). Operational equivalent for live trading
+    # is a wide trailing stop. Setting trail_pct=0.25 (read by Batch 282
+    # per-strategy trail override in update_trailing_stop) gives the trend
+    # room to run. No explicit exit_method = defaults to trailing_stop with
+    # the strategy's wider trail_pct. Replaces previous breakeven_plus_trail
+    # which was over-tight and cut winners short at Phase 1A-beta scale.
+    "monthly_bias_momentum_long":  {"trail_pct": 0.25},
+
+    # xs_low_beta_long: NEW. Phase 1A-beta cube-best was end_of_backtest
+    # (30 OOS, 87% WR, +10.64% mean). Same wide-trail mapping; per Batch 282
+    # the absence of exit_method means default trailing with override trail_pct.
+    "xs_low_beta_long":            {"trail_pct": 0.25},
+
+    # ----- Legacy Batch 284/285 entries RETAINED for backward-compat -----
+    # These entries STAY in the dict but their strategies are in
+    # PHASE_1B_ALPHA_DISABLED_STRATEGIES, so screener.py skips them BEFORE
+    # the exit-method lookup ever happens. Keeping them here so existing
+    # tests (test_batch284_*, test_batch285_*, test_batch287a_*) still find
+    # the entries, and so re-enabling a strategy is a 1-line change rather
+    # than re-deriving the exit assignment from scratch.
+    "bollinger_lower":             {"exit_method": "fixed_4r_2r", "initial_pct": 0.03},
+    "smc_choch_reversal":          {"exit_method": "breakeven_plus_trail"},
+    "po3_bearish":                 {"exit_method": "ma_exit_ema9"},
     "bollinger_tight":             {"exit_method": "next_pivot_target", "initial_pct": 0.05},
+}
+
+
+# Batch 309 (2026-05-24 owner-approved Decision 2): Phase 1B-alpha disabled
+# strategy roster. Strategies in this set are SKIPPED at screener-level (no
+# entries fire). Identified via Phase 1A-beta per_cell_is_oos.csv: a strategy
+# is disabled iff NO (strategy x exit) cell with OOS n>=5 has positive
+# OOS sum_pp. These are strategies for which no exit assignment redeems
+# the entry signal at out-of-sample scale.
+#
+# Source: output_phase_1a_beta_merged_local/per_cell_is_oos.csv, Phase 1A-
+# beta full 1937-tkr run 2026-05-24, n=7191 trades, IS-2022-01..2024-06 /
+# OOS-2024-07..2026-04.
+#
+# Pattern: most disabled strategies are short-side (8 of 28 are explicit
+# *_short variants) reflecting the long-bias result of 2024-2026 bull
+# market. Re-evaluate in Phase 1B-alpha output before any roster expansion.
+PHASE_1B_ALPHA_DISABLED_STRATEGIES: set[str] = {
+    # Worst losers (Phase 1A-beta OOS sum < -100 pp)
+    "xs_momentum_bottom_decile_short",   # -308 pp OOS
+    "po3_bearish",                       # -229 pp OOS
+    "htf_aligned_breakout_short",        # -225 pp OOS
+    "buyback_8k_recent_long",            # -201 pp OOS
+    "stochrsi_overbought_short",         # -127 pp OOS
+    "cpr_narrow_momentum",               # -119 pp OOS
+    "smc_bos_continuation",              # -116 pp OOS
+
+    # Moderate losers (-30 to -100 pp OOS)
+    "macd_fast_crossover",
+    "po3_htf_aligned_long",
+    "avwap_252_breakout",
+    "smc_breaker_block_short",
+    "orb_stocks_in_play_short",
+    "insider_cluster_long",
+    "smc_discount_long",
+    "macd_ichimoku",
+    "po3_htf_aligned_short",
+    "cmf_flip",
+
+    # Small-sample losers
+    "bollinger_tight",                   # -26 pp OOS (was an explicit override)
+    "smc_premium_short",
+    "r1_break_retest",
+    "break_retest_confluence",
+    "pivot_s2_bounce",
+    "pivot_r2_continuation",
+    "dc20_break_retest",
+    "adx_initiation",
+    "rsi_oversold",
+    "smc_ote_short",
+    "prev_day_high_break",
 }
 
 # BUG-258 fix 2026-05-13: ATR fallback when insufficient history (<14 bars).
