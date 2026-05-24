@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-21T16:45:44.225891+00:00",
+  "generated_at": "2026-05-21T20:11:14.603211+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -18199,7 +18199,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 65,
+        "n_doc_refs": 69,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -40629,7 +40629,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 65,
+        "n_doc_refs": 69,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -46880,6 +46880,48 @@
       }
     },
     {
+      "id": "BUG-286",
+      "title": "CRITICAL  -  `fetch_info_bulk()` hardcodes `market_cap: 0` since DEC-497 D4 -> BUG-238 fail-closed silently rejects 96.5% of Phase 1A-beta universe",
+      "linked_decisions": "DEC-497, BUG-238, Batch 301",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 301 2026-05-21 (Stage D smoke run surfaced 9/151 instruments passing liquidity vs ~120 expected; root cause: DEC-497 D4 yfinance HARD CUT 2026-05-06 left `market_cap: 0` placeholder with FUTURE comment; BUG-238 fail-closed 2026-05-12 then weaponized into silent reject. Fix: wire data_prefetch/polygon/reference/{TICKER}.parquet into fetch_info_bulk -> populates market_cap/ipo_date/industry/exchange. Self-heals stale info_cache.json via market_cap<=0 refetch filter. Recovery: 1598/1937 tickers gain valid mcap (82.5pct) vs 68/1937 (3.5pct). Tested via 5 unit tests in test_unit.py::test_batch301_*)",
+      "status_grep": {
+        "coded": true,
+        "wired": false,
+        "tested": true,
+        "pushed": true,
+        "n_doc_refs": 2,
+        "pyramid": {
+          "unit": false,
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
+        }
+      },
+      "short_id": "BUG-286",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 Batch 301 2026-05-21 (Stage D smoke run surfaced 9/151 instruments passing liquidity vs ~120 expected; root cause: DEC-497 D4 yfinance HARD CUT 2026-05-06 left `market_cap: 0` placeholder with FUTURE comment; BUG-238 fail-closed 2026-05-12 then weaponized into silent reject. Fix: wire data_prefetch/polygon/reference/{TICKER}.parquet into fetch_info_bulk -> populates market_cap/ipo_date/industry/exchange. Self-heals stale info_cache.json via market_cap<=0 refetch filter. Recovery: 1598/1937 tickers gain valid mcap (82.5pct) vs 68/1937 (3.5pct). Tested via 5 unit tests in test_unit.py::test_batch301_*)",
+      "dependencies": "BUG-238; DEC-497",
+      "description": "",
+      "status": "RESOLVED-IMPLEMENTED",
+      "resolution_text": "`fetch_info_bulk()` hardcodes `market_cap: 0` since DEC-497 D4 (2026-05-06 yfinance HARD CUT); BUG-238 fail-closed (2026-05-12) then silently rejects every ticker with mcap=0 from the liquid universe. Combined effect: Stage D smoke run 2026-05-21 surfaced 9/151 instruments passing liquidity (8/150 sample) vs expected ~120/150. Phase 1A-beta at 1937 tkrs would have effectively backtested only ~68 (~3.5pct universe). Batch 301 2026-05-21: RESOLVED-IMPLEMENTED \u2014 wired `data_prefetch/polygon/referen",
+      "coverage_engine": "UNTESTED",
+      "coverage_evidence": "",
+      "promotion_path": {
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
+      }
+    },
+    {
       "id": "BUG-214",
       "title": "(AUDIT_INDEX-only) BUG-214",
       "linked_decisions": "",
@@ -48067,7 +48109,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -58516,6 +58558,48 @@
       }
     },
     {
+      "id": "BUG-286",
+      "title": "CRITICAL  -  `fetch_info_bulk()` hardcodes `market_cap: 0` since DEC-497 D4 -> BUG-238 fail-closed silently rejects 96.5% of Phase 1A-beta universe",
+      "linked_decisions": "DEC-497, BUG-238, Batch 301",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 301 2026-05-21 (Stage D smoke run surfaced 9/151 instruments passing liquidity vs ~120 expected; root cause: DEC-497 D4 yfinance HARD CUT 2026-05-06 left `market_cap: 0` placeholder with FUTURE comment; BUG-238 fail-closed 2026-05-12 then weaponized into silent reject. Fix: wire data_prefetch/polygon/reference/{TICKER}.parquet into fetch_info_bulk -> populates market_cap/ipo_date/industry/exchange. Self-heals stale info_cache.json via market_cap<=0 refetch filter. Recovery: 1598/1937 tickers gain valid mcap (82.5pct) vs 68/1937 (3.5pct). Tested via 5 unit tests in test_unit.py::test_batch301_*)",
+      "status_grep": {
+        "coded": true,
+        "wired": false,
+        "tested": true,
+        "pushed": true,
+        "n_doc_refs": 2,
+        "pyramid": {
+          "unit": false,
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
+        }
+      },
+      "short_id": "BUG-286",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 Batch 301 2026-05-21 (Stage D smoke run surfaced 9/151 instruments passing liquidity vs ~120 expected; root cause: DEC-497 D4 yfinance HARD CUT 2026-05-06 left `market_cap: 0` placeholder with FUTURE comment; BUG-238 fail-closed 2026-05-12 then weaponized into silent reject. Fix: wire data_prefetch/polygon/reference/{TICKER}.parquet into fetch_info_bulk -> populates market_cap/ipo_date/industry/exchange. Self-heals stale info_cache.json via market_cap<=0 refetch filter. Recovery: 1598/1937 tickers gain valid mcap (82.5pct) vs 68/1937 (3.5pct). Tested via 5 unit tests in test_unit.py::test_batch301_*)",
+      "dependencies": "BUG-238; DEC-497",
+      "description": "",
+      "status": "RESOLVED-IMPLEMENTED",
+      "resolution_text": "`fetch_info_bulk()` hardcodes `market_cap: 0` since DEC-497 D4 (2026-05-06 yfinance HARD CUT); BUG-238 fail-closed (2026-05-12) then silently rejects every ticker with mcap=0 from the liquid universe. Combined effect: Stage D smoke run 2026-05-21 surfaced 9/151 instruments passing liquidity (8/150 sample) vs expected ~120/150. Phase 1A-beta at 1937 tkrs would have effectively backtested only ~68 (~3.5pct universe). Batch 301 2026-05-21: RESOLVED-IMPLEMENTED \u2014 wired `data_prefetch/polygon/referen",
+      "coverage_engine": "UNTESTED",
+      "coverage_evidence": "",
+      "promotion_path": {
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
+      }
+    },
+    {
       "id": "BUG-214",
       "title": "(AUDIT_INDEX-only) BUG-214",
       "linked_decisions": "",
@@ -59703,7 +59787,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -64312,7 +64396,7 @@
       }
     }
   ],
-  "bugs_total_count": 285,
+  "bugs_total_count": 286,
   "bugs_hidden_count": 40,
   "investigations": [
     {
@@ -69257,191 +69341,191 @@
   ],
   "recent_commits": [
     {
+      "sha": "b9b03740",
+      "subject": "Batch 303: extend silent-gap pyramid to all 13 tiers (40 tests, 29s).",
+      "author": "jeetmehta1991",
+      "rel_time": "42 minutes ago"
+    },
+    {
+      "sha": "d585ec01",
+      "subject": "Batch 302: silent-gap pyramid layer + diagnostic codification.",
+      "author": "jeetmehta1991",
+      "rel_time": "54 minutes ago"
+    },
+    {
+      "sha": "8072afda",
+      "subject": "Batch 301: Fix BUG-286 - market_cap silent-gap.",
+      "author": "jeetmehta1991",
+      "rel_time": "3 hours ago"
+    },
+    {
       "sha": "69795984",
       "subject": "Batch 300: Stage D 150-tkr stratified sampler.",
       "author": "jeetmehta1991",
-      "rel_time": "75 minutes ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "88f8a44f",
       "subject": "Batch 299: GitHub Actions workflow for Phase 1A-beta autonomous run.",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "da448169",
       "subject": "Batches 296-298: Pre-Phase-1A-beta validation tooling.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "7c603f76",
       "subject": "Batch 296 (doc): SIGNAL_AUDIT_2026_05_21.md - comprehensive signal module audit.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "4f882776",
       "subject": "Batch 295: Signal audit - PEAD financials_json string parsing fix.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "092ab728",
       "subject": "Batch 294: Fix 13F integration - per-ticker historical fallback.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "65c8ada9",
       "subject": "Batch 293: Tighten calendar-effect long strategies - remove bear from affinity.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "74ae1424",
       "subject": "Batch 292: Bear composite indicator - yield curve + AAII + sector breadth.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "3dbaf7da",
       "subject": "Batch 291: Direction-aware regime default - option B per Stage C v2 forensic.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "743faa5a",
       "subject": "Batch 290: Auto-include SPY in universe - regime classification fix.",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "aa22e834",
       "subject": "Batch 289: Batch 288 hysteresis follow-up - apply SPY-only bear gate to hysteresis variant.",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "6ed4b8a5",
       "subject": "Batch 288: Regime classifier calibration - SPY-only bear gate (option A.2).",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "98654c31",
       "subject": "Batch 287: 3 Tier 2 fixes from Audit Part 3 (initial_pct + capacity + cosmetic).",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "8964033b",
       "subject": "Batch 286: Audit Part 3 + EMA-9 plumbing fix.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "d283b1ce",
       "subject": "Batch 285: 4 complex exit methods - regime_flip, ma_exit_ema9, next_pivot_target, hybrid_50pct_target.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "706f8c92",
       "subject": "Batch 284: Per-strategy exit dispatch - 5 trivial exit methods + override expansion.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "16a196f2",
       "subject": "Batch 283 (doc): DESIGN_AUDIT_PART_2 - per-(strategy x exit) evaluation framework.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "672a02c5",
       "subject": "Batch 282: Per-strategy exit override - per DESIGN_AUDIT Tier 1 #2.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "d4763ef9",
       "subject": "Batch 281: Actually deploy Batch 262 config (trail_pct 0.15 + breakeven_move_at_1r).",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "42329dd8",
       "subject": "Batch 280 (doc): DESIGN_AUDIT_2026_05_20.md - 5 critical findings + (strategy x exit) cube analysis.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "e5423517",
       "subject": "Batch 279: REMOVE dedup_one_position_per_ticker_per_day + add size-split (Option 1).",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "6b5f37f1",
       "subject": "Batch 278 (option B): Tighten entry gates on 3 worst Tier 2 offenders.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "499c5cf5",
       "subject": "Batch 277 (option C): Reorder ALL_STRATEGIES - Batches 252-255 moved to back.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "28d22133",
       "subject": "Batch 276: OHLCV ticker-reassignment audit - META was unique case.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "25 hours ago"
     },
     {
       "sha": "4c385198",
       "subject": "Batch 275: Fix META OHLCV ticker corruption (Meta Materials vs Meta Platforms).",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "25 hours ago"
     },
     {
       "sha": "81236611",
       "subject": "Batch 274: REVERT Batch 272 dedup priority - unintended regression.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "25 hours ago"
     },
     {
       "sha": "0ea70c35",
       "subject": "Batch 273 (Tier 2.1): SMC family wiring audit + fix - 12 of 16 zero-fire signals unblocked.",
       "author": "jeetmehta1991",
-      "rel_time": "25 hours ago"
-    },
-    {
-      "sha": "42ee7735",
-      "subject": "Batch 272 (Tier 2.2): Dedup priority tweak - confluence-tagged strategies win.",
-      "author": "jeetmehta1991",
-      "rel_time": "25 hours ago"
-    },
-    {
-      "sha": "16645ae8",
-      "subject": "Batch 271 (Tier 2 short-affinity expansion): allow short strategies in neutral regime.",
-      "author": "jeetmehta1991",
-      "rel_time": "25 hours ago"
-    },
-    {
-      "sha": "50d0d9cc",
-      "subject": "Batch 270 (Tier 2.3): Roster sanity gate at startup - fail fast on bad strategies.",
-      "author": "jeetmehta1991",
-      "rel_time": "25 hours ago"
+      "rel_time": "29 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2448,
-    "modified": 11,
+    "count": 2450,
+    "modified": 12,
     "added": 0,
-    "untracked": 2076,
+    "untracked": 2077,
     "deleted": 361,
     "files": [
       {
@@ -69454,11 +69538,15 @@
       },
       {
         "status": "M",
-        "path": "backtest/data/universe.py"
+        "path": "dashboard_stage_2/data.js"
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_unit.py"
+        "path": "dashboard_stage_2/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",
@@ -70239,10 +70327,6 @@
       {
         "status": "D",
         "path": "output_phase_1a_beta_batch_3/portfolio_metrics.json"
-      },
-      {
-        "status": "D",
-        "path": "output_phase_1a_beta_batch_3/portfolio_summary.json"
       }
     ]
   },
@@ -70424,7 +70508,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1889,
+    "total": 1929,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -70504,6 +70588,7 @@
       "test_schema_canonical": 1,
       "test_sec_edgar_demo": 3,
       "test_sec_edgar_smoke": 7,
+      "test_silent_gap_pyramid": 40,
       "test_smartmoneyconcepts_empirical": 18,
       "test_smartmoneyconcepts_integration": 21,
       "test_smartmoneyconcepts_pit": 10,
@@ -71079,6 +71164,16 @@
       "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi"
     },
     {
+      "kind": "BUG",
+      "id": "BUG-238",
+      "title": "(AUDIT_INDEX-only) BUG-238",
+      "status": "OPEN",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "-"
+    },
+    {
       "kind": "DEC",
       "id": "DEC-067",
       "title": "Add 9 missing exit methods \u2014 Pass 52 owner-approved revised scope. 9 new methods: chandelier (DEC-353 compliant ATR mult \u2265 2.5), psar, super",
@@ -71117,16 +71212,6 @@
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
       "sprint": "-"
-    },
-    {
-      "kind": "DEC",
-      "id": "DEC-314",
-      "title": "GENUINELY WIRED \u2014 Circuit breakers levels 3/4/5 (market-wide halt): NYSE Rule 80B market-wide CB present at `backtest/engine/backtest.py:609",
-      "status": "RESOLVED-IMPLEMENTED",
-      "tier": 1,
-      "reason": "Dependency root (3 downstream items reference)",
-      "back_refs": 3,
-      "sprint": "Sprint 2 additions (Engine Bug"
     }
   ],
   "decision_status_counts": {
@@ -71140,7 +71225,7 @@
     "DEFERRED": 3
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 80,
+    "RESOLVED-IMPLEMENTED": 81,
     "RESOLVED-DECIDED": 151,
     "RESOLVED": 14
   },

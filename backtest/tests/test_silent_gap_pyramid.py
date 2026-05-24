@@ -784,6 +784,41 @@ def test_tier11_property_dedup_eliminated_batch279():
     )
 
 
+def test_tier6_regression_bug287_open_trade_not_orphaned_when_illiquid_batch308():
+    """BUG-287 regression: when a ticker drops out of the annual liquid set
+    mid-window but has an OPEN trade, the daily exit-check loop MUST still
+    include it in ohlcv_pit/ticker_bars.
+
+    Surfaced by Phase 1A-beta 2026-05-24: 6 stuck shorts (RIOT/HOUS/UWMC/
+    WW/CUBI/CURI) held 371-1239 days while underlyings rallied 2-5x.
+    Engine's `_process_day` built ohlcv_pit ONLY from `liquid_this_year`,
+    silently orphaning open trades on tickers that lost liquidity (price
+    dropped below $5 floor mid-window). Combined drag: -1,347 pp.
+
+    Batch 308 fix at backtest/engine/backtest.py:_process_day adds an
+    open-trade-ticker pass after the liquid-this-year pass so open trades
+    always get exit-checked even on tickers no longer in the annual
+    liquid set. This test asserts the fix marker is present in active
+    (non-comment) code."""
+    import inspect
+    from backtest.engine import backtest as engine_mod
+    src = inspect.getsource(engine_mod)
+    # The fix marker must be in active code (not just a comment removal)
+    code_only = "\n".join(
+        line for line in src.splitlines()
+        if not line.lstrip().startswith("#")
+    )
+    assert "for trade in self.open_trades:" in code_only, (
+        "BUG-287 fix marker missing - open-trade iteration in _process_day "
+        "removed. Phase 1A-beta stuck-short bug may have re-introduced."
+    )
+    # And the specific orphan-prevention pattern (adds to ohlcv_pit if missing)
+    assert "if trade.ticker in ohlcv_pit:" in code_only, (
+        "BUG-287 fix marker missing - open-trade orphan-prevention check "
+        "removed. Engine may silently skip exit checks on illiquid open trades."
+    )
+
+
 def test_tier13_stress_missing_macro_falls_back_safely():
     """Stress: if macro data layers return None/empty, regime classifier
     returns 'unknown' (fail-closed) - NOT silently 'neutral'. DEC-316."""

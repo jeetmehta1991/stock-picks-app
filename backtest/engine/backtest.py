@@ -520,6 +520,33 @@ class BacktestEngine:
             if len(sliced) >= 30:
                 ohlcv_pit[t] = sliced
 
+        # -- 1b. BUG-287 fix (Batch 308 2026-05-24): include OHLCV for any
+        # ticker with an OPEN trade, even if it dropped out of the annual
+        # liquid set. Previously, when a ticker fell below the liquidity
+        # floor (e.g., price < $5 mid-window), it was silently excluded
+        # from `ohlcv_pit` -> ticker_bars -> process_day_exits, so the
+        # exit-check loop never gave the trade a chance to close.
+        #
+        # Phase 1A-beta 2026-05-24 surfaced 6 stuck shorts on RIOT / HOUS /
+        # UWMC / WW / CUBI / CURI held 371-1239 days while underlyings
+        # rallied 2-5x against the position. Five of six were closed only
+        # when the year-rollover annual re-check re-added them to liquid
+        # set; CUBI/CURI never re-qualified and sat until end-of-backtest.
+        # Combined drag: -1,347 pp on Phase 1A-beta aggregate.
+        #
+        # Fix scope: exit-check only. New entries are still gated by
+        # liquid_this_year (we don't want to enter illiquid positions);
+        # existing entries get exit-checked regardless of current liquidity.
+        for trade in self.open_trades:
+            if trade.ticker in ohlcv_pit:
+                continue
+            df = self.ohlcv_dict.get(trade.ticker)
+            if df is None:
+                continue
+            sliced = df[df.index.date <= as_of]
+            if len(sliced) >= 1:
+                ohlcv_pit[trade.ticker] = sliced
+
         # -- 2. Regime classification  -  direction gating only, no sizing --
         # DEC-317 + DEC-388 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43
         # engine wiring 2026-05-11: hysteresis active. Pass smoothed VIX (5d
