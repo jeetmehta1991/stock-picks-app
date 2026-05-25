@@ -812,6 +812,64 @@ def strat_donchian_10_breakout(s):
         ["Price broke 10-day Donchian low","Volume above 20d avg confirms","MACD negative"])
 
 
+# BUG-111 retest variants (Batch 329 2026-05-25 owner-approved option b):
+# explicit _retest variants for the 6 price-pattern breakouts that didn't yet
+# have one. Reuse the shared resistance_break_retest / support_break_retest
+# primitive from technical.compute_break_retest_signals (DC20-anchored), which
+# is the same approach strat_r1_break_retest takes for R1-anchored breakouts.
+# Bulkowski Encyclopedia of Chart Patterns: post-break retest is the
+# canonical pullback that confirms the breakout; volume on the retest is
+# typically LOWER than the break (per Batch 320 Cat-3 B rationale).
+# pre_rebalance_long is event-based (not a price-pattern break) so excluded.
+
+
+def strat_donchian_10_breakout_retest(s):
+    """BUG-111 (Batch 329): retest variant of donchian_10_breakout.
+    Same direction gates as parent, but waits for the post-break pullback
+    (resistance_break_retest / support_break_retest) instead of firing on
+    the break itself. Bulkowski 2005: retest entry has lower fakeout risk."""
+    fl = (s.get("resistance_break_retest") and s.get("vol_above_avg")
+          and s.get("macd_12_26_9_bullish"))
+    fs = (s.get("support_break_retest") and s.get("vol_above_avg")
+          and not s.get("macd_12_26_9_bullish"))
+    return _strat3(fl, fs, "breakout",
+        ["resistance_break_retest","vol_above_avg","macd_bullish"],
+        ["support_break_retest","vol_above_avg","macd_bearish"],
+        ["Post-break retest of 10-day Donchian high","Volume above 20d avg",
+         "MACD positive"],
+        ["Post-break retest of 10-day Donchian low","Volume above 20d avg",
+         "MACD negative"])
+
+
+def strat_donchian_breakdown_retest_short(s):
+    """BUG-111 (Batch 329): retest variant of donchian_breakdown_short.
+    Short on the post-break retest of broken support."""
+    fires = (s.get("support_break_retest")
+             and s.get("vol_spike_15x")
+             and not s.get("macd_12_26_9_bullish"))
+    return _strat(fires, "short", "breakout",
+        ["support_break_retest","vol_spike_15x","macd_bearish"],
+        ["Post-break retest of broken Donchian support",
+         "Volume 1.5x confirms institutional supply",
+         "MACD bearish - trend agrees"])
+
+
+def strat_volume_spike_breakout_retest(s):
+    """BUG-111 (Batch 329): retest variant of volume_spike_breakout.
+    Retest entry with 2x volume + VWAP regime gate."""
+    fl = (s.get("resistance_break_retest") and s.get("vol_spike_2x")
+          and s.get("above_vwap"))
+    fs = (s.get("support_break_retest") and s.get("vol_spike_2x")
+          and not s.get("above_vwap"))
+    return _strat3(fl, fs, "breakout",
+        ["resistance_break_retest","vol_spike_2x","above_vwap"],
+        ["support_break_retest","vol_spike_2x","below_vwap"],
+        ["Post-break retest with 2x volume - institutional accumulation",
+         "Above VWAP - intraday buyer in control"],
+        ["Post-breakdown retest with 2x volume - institutional distribution",
+         "Below VWAP - intraday seller in control"])
+
+
 # -----------------------------------------------------------------------------
 # CATEGORY 6: CANDLE PATTERNS (6 strategies  -  2 shorts)
 # -----------------------------------------------------------------------------
@@ -2150,6 +2208,123 @@ def strat_triangle_ascending_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+def strat_cup_and_handle_retest_long(s):
+    """BUG-111 (Batch 329): retest variant of cup_and_handle_long.
+    Cup-and-handle pattern + post-break retest of the neckline (proxied
+    via resistance_break_retest from DC20). O'Neil 1988 + Bulkowski 2005:
+    the handle retest is the canonical low-risk entry for CANSLIM cup."""
+    fires = (
+        s.get("cup_handle_detected", False)
+        and s.get("resistance_break_retest", False)
+        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_50", True)
+        and s.get("rsi_14", 50) < 70
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["cup_handle_detected","resistance_break_retest",
+         "price_above_ema_200","price_above_ema_50","rsi_14<70"],
+        ["Cup-and-handle pattern detected (O'Neil 1988)",
+         "Post-break retest entry (lower fakeout risk than naked break)",
+         "Above 200 + 50 EMA (dual trend gate)",
+         "RSI not overbought"])
+
+
+def strat_flag_bull_retest_long(s):
+    """BUG-111 (Batch 329): retest variant of flag_bull_long.
+    Bull flag + post-break retest. Edwards-Magee + Bulkowski 2005:
+    flag retest entry has higher conditional win-rate than naked flag pop."""
+    fires = (
+        s.get("flag_bull_detected", False)
+        and s.get("resistance_break_retest", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["flag_bull_detected","resistance_break_retest","price_above_ema_200"],
+        ["Bull flag pattern + post-break retest",
+         "High-tight-flag with retest confirmation",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_triangle_ascending_retest_long(s):
+    """BUG-111 (Batch 329): retest variant of triangle_ascending_long.
+    Ascending triangle + post-break retest of the flat-top resistance.
+    Bulkowski 2005: triangle apex breakout retest is the canonical entry."""
+    fires = (
+        s.get("triangle_ascending_detected", False)
+        and s.get("resistance_break_retest", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "chart_pattern",
+        ["triangle_ascending_detected","resistance_break_retest","price_above_ema_200"],
+        ["Ascending triangle + post-break retest of flat resistance",
+         "Bulkowski 2005: retest entry filter ~70% win on confirmed breaks",
+         "Above 200 EMA (regime gate)"])
+
+
+# ---------------------------------------------------------------------------
+# Wave 3 13F-based strategies (Batch 330 2026-05-25 owner-approved Path C):
+# institutional flow as PRIMARY entry trigger (not just tier-adjust confirmation).
+# Producer at screen_instrument injects institutional_signal / strong_buy /
+# buy / negative / new_positions / increased into the per-ticker signals dict.
+# Cohen-Frazzini-Malloy 2008 RFS; Bushee-Goodman 2007 JAR; Yan-Zhang 2009 RFS
+# (short-horizon institutional persistence).
+# ---------------------------------------------------------------------------
+
+
+def strat_institutional_cluster_long(s):
+    """Wave 3 (Batch 330): institutional cluster-buy long.
+    13F shows new_positions >= 3 OR (new_pos >= 1 AND increased >= 2) in
+    the most recent quarter (Cohen-Frazzini-Malloy 2008 RFS: cluster-buys
+    forecast ~1-month alpha). Gated by 200-EMA regime to avoid catching
+    falling-knife positions."""
+    fires = (
+        s.get("institutional_strong_buy", False)
+        and s.get("price_above_ema_200", True)
+    )
+    new_pos = s.get("institutional_new_positions", 0)
+    incr = s.get("institutional_increased", 0)
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_strong_buy","price_above_ema_200"],
+        [f"13F cluster: {new_pos} new positions + {incr} increased",
+         "Cohen-Frazzini-Malloy 2008 - cluster-buys forecast 1-mo alpha",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_buy_momentum_long(s):
+    """Wave 3 (Batch 330): institutional buy + price momentum.
+    Looser 13F signal (any buy/strong_buy) combined with price momentum
+    confirmation (MACD bullish + above 50-EMA). Yan-Zhang 2009 RFS:
+    short-horizon institutional persistence + price trend agreement
+    filters out one-off institutional buys at tops."""
+    fires = (
+        s.get("institutional_buy", False)
+        and s.get("macd_12_26_9_bullish", False)
+        and s.get("price_above_ema_50", True)
+    )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_buy","macd_12_26_9_bullish","price_above_ema_50"],
+        ["13F new/increased institutional positions",
+         "MACD bullish - price momentum agrees with institutional flow",
+         "Above 50 EMA (intermediate trend gate)"])
+
+
+def strat_institutional_distribution_short(s):
+    """Wave 3 (Batch 330): institutional distribution short.
+    13F shows institutional_signal=='negative' (decreased > increased)
+    AND price below 50-EMA (trend agrees with distribution). Sias 2004
+    JFE: institutional herding extends to selling; combined with bearish
+    price trend = continuation short setup."""
+    fires = (
+        s.get("institutional_negative", False)
+        and not s.get("price_above_ema_50", True)
+    )
+    return _strat(fires, "short", "smart_money_13f",
+        ["institutional_negative","price_below_ema_50"],
+        ["13F institutional distribution (decreased > increased)",
+         "Sias 2004 JFE - institutional selling herds",
+         "Below 50 EMA - trend agrees"])
+
+
 # ---------------------------------------------------------------------------
 # Volume profile / VPVR (DEC-370 P2 / Batch 233) - 3 strategies, Batch 255 reg
 # ---------------------------------------------------------------------------
@@ -2610,6 +2785,23 @@ ALL_STRATEGIES = {
     "cup_and_handle_long":              strat_cup_and_handle_long,
     "flag_bull_long":                   strat_flag_bull_long,
     "triangle_ascending_long":          strat_triangle_ascending_long,
+    # BUG-111 retest variants (Batch 329 2026-05-25 owner-approved option b):
+    # 6 explicit _retest variants for breakouts that previously fired only
+    # on the initial break. Reuses resistance_break_retest / support_break_retest
+    # primitive from technical.compute_break_retest_signals.
+    "donchian_10_breakout_retest":      strat_donchian_10_breakout_retest,
+    "donchian_breakdown_retest_short":  strat_donchian_breakdown_retest_short,
+    "volume_spike_breakout_retest":     strat_volume_spike_breakout_retest,
+    "cup_and_handle_retest_long":       strat_cup_and_handle_retest_long,
+    "flag_bull_retest_long":            strat_flag_bull_retest_long,
+    "triangle_ascending_retest_long":   strat_triangle_ascending_retest_long,
+    # Wave 3 13F-based (Batch 330 2026-05-25 owner-approved Path C): 3 of ~10
+    # planned 13F-trigger strategies. Producer injection at screen_instrument
+    # adds institutional_signal / strong_buy / buy / negative / new_positions /
+    # increased to per-ticker signals dict.
+    "institutional_cluster_long":        strat_institutional_cluster_long,
+    "institutional_buy_momentum_long":   strat_institutional_buy_momentum_long,
+    "institutional_distribution_short":  strat_institutional_distribution_short,
     # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
     "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
@@ -2896,6 +3088,27 @@ def screen_instrument(
         insider = compute_insider_cluster_signals(ticker, as_of)
         if insider:
             signals.update(insider)
+    except Exception:
+        pass
+    # Batch 330 (2026-05-25 owner-approved Path C Wave 3): inject
+    # institutional 13F signal into the per-ticker signals dict so
+    # screener strategies can gate on it as the PRIMARY trigger.
+    # Previously, institutional_signal was computed post-screen in the
+    # engine (smart_money_score call at backtest.py:1309) and only used
+    # for tier adjustment - NOT for strategy firing.
+    # Cohen-Frazzini-Malloy 2008 RFS: institutional new-buys forecast
+    # 1-month alpha; Bushee-Goodman 2007 JAR: cluster-buys particularly.
+    try:
+        from backtest.data.smart_money import institutional_signal
+        inst = institutional_signal(ticker, as_of)
+        if inst and isinstance(inst, dict):
+            sig_kind = inst.get("signal", "none")
+            signals["institutional_signal"] = sig_kind
+            signals["institutional_strong_buy"] = sig_kind == "strong_buy"
+            signals["institutional_buy"] = sig_kind in ("buy", "strong_buy")
+            signals["institutional_negative"] = sig_kind == "negative"
+            signals["institutional_new_positions"] = int(inst.get("new_pos", 0) or 0)
+            signals["institutional_increased"] = int(inst.get("increased", 0) or 0)
     except Exception:
         pass
     # Batch 224: macro event signals (pre-FOMC proximity) + recent 8-K

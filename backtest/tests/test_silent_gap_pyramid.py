@@ -1575,6 +1575,192 @@ class _DummyPool:
 # =============================================================================
 
 
+def test_batch329_bug111_six_retest_variants_registered():
+    """BUG-111 (Batch 329): 6 new explicit _retest variants registered in
+    ALL_STRATEGIES for the price-pattern breakouts that didn't yet have one."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected_new = [
+        "donchian_10_breakout_retest",
+        "donchian_breakdown_retest_short",
+        "volume_spike_breakout_retest",
+        "cup_and_handle_retest_long",
+        "flag_bull_retest_long",
+        "triangle_ascending_retest_long",
+    ]
+    missing = [n for n in expected_new if n not in ALL_STRATEGIES]
+    assert not missing, (
+        f"BUG-111: missing _retest variant registrations: {missing}"
+    )
+    # Total roster grew from 148 -> 154 after Batch 329; Batch 330 added
+    # 3 more (Wave 3 13F-based) -> 157.
+    assert len(ALL_STRATEGIES) == 157, (
+        f"BUG-111 + Wave 3: ALL_STRATEGIES count must be 157 after "
+        f"Batch 329 + 330, got {len(ALL_STRATEGIES)}"
+    )
+
+
+def test_batch329_retest_variants_fire_on_retest_signal():
+    """BUG-111 (Batch 329): each retest variant fires when the
+    resistance_break_retest / support_break_retest primitive is True AND
+    parent gates are satisfied; does NOT fire on the naked break without
+    the retest pullback."""
+    from backtest.signals.screener import (
+        strat_donchian_10_breakout_retest,
+        strat_donchian_breakdown_retest_short,
+        strat_volume_spike_breakout_retest,
+        strat_cup_and_handle_retest_long,
+        strat_flag_bull_retest_long,
+        strat_triangle_ascending_retest_long,
+    )
+
+    # donchian_10_breakout_retest LONG
+    s = {"resistance_break_retest": True, "vol_above_avg": True,
+         "macd_12_26_9_bullish": True}
+    out = strat_donchian_10_breakout_retest(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    s2 = dict(s); s2["resistance_break_retest"] = False
+    assert strat_donchian_10_breakout_retest(s2)["fires"] is False
+
+    # donchian_breakdown_retest_short
+    s = {"support_break_retest": True, "vol_spike_15x": True,
+         "macd_12_26_9_bullish": False}
+    out = strat_donchian_breakdown_retest_short(s)
+    assert out["fires"] is True and out["direction"] == "short"
+
+    # volume_spike_breakout_retest LONG + SHORT
+    s = {"resistance_break_retest": True, "vol_spike_2x": True,
+         "above_vwap": True}
+    out = strat_volume_spike_breakout_retest(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    s = {"support_break_retest": True, "vol_spike_2x": True,
+         "above_vwap": False}
+    out = strat_volume_spike_breakout_retest(s)
+    assert out["fires"] is True and out["direction"] == "short"
+
+    # cup_and_handle_retest_long
+    s = {"cup_handle_detected": True, "resistance_break_retest": True,
+         "price_above_ema_200": True, "price_above_ema_50": True,
+         "rsi_14": 50}
+    assert strat_cup_and_handle_retest_long(s)["fires"] is True
+    s2 = dict(s); s2["resistance_break_retest"] = False
+    assert strat_cup_and_handle_retest_long(s2)["fires"] is False
+
+    # flag_bull_retest_long
+    s = {"flag_bull_detected": True, "resistance_break_retest": True,
+         "price_above_ema_200": True}
+    assert strat_flag_bull_retest_long(s)["fires"] is True
+
+    # triangle_ascending_retest_long
+    s = {"triangle_ascending_detected": True,
+         "resistance_break_retest": True, "price_above_ema_200": True}
+    assert strat_triangle_ascending_retest_long(s)["fires"] is True
+
+
+def test_batch330_wave3_13f_strategies_registered():
+    """Wave 3 (Batch 330): 3 13F-based strategies registered in ALL_STRATEGIES."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "institutional_cluster_long",
+        "institutional_buy_momentum_long",
+        "institutional_distribution_short",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Wave 3: missing 13F strategy registrations: {missing}"
+
+
+def test_batch330_institutional_cluster_long_fires_on_strong_buy():
+    """Wave 3 (Batch 330): institutional_cluster_long fires when 13F shows
+    strong_buy + above 200 EMA."""
+    from backtest.signals.screener import strat_institutional_cluster_long
+    s = {
+        "institutional_strong_buy": True,
+        "institutional_new_positions": 3,
+        "institutional_increased": 4,
+        "price_above_ema_200": True,
+    }
+    out = strat_institutional_cluster_long(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    # Without strong_buy: gated off
+    s2 = dict(s); s2["institutional_strong_buy"] = False
+    assert strat_institutional_cluster_long(s2)["fires"] is False
+
+
+def test_batch330_institutional_buy_momentum_long():
+    """Wave 3 (Batch 330): institutional_buy_momentum_long requires 13F buy
+    + MACD bullish + above 50-EMA."""
+    from backtest.signals.screener import strat_institutional_buy_momentum_long
+    s = {
+        "institutional_buy": True,
+        "macd_12_26_9_bullish": True,
+        "price_above_ema_50": True,
+    }
+    assert strat_institutional_buy_momentum_long(s)["fires"] is True
+    # Drop MACD: gated off
+    s2 = dict(s); s2["macd_12_26_9_bullish"] = False
+    assert strat_institutional_buy_momentum_long(s2)["fires"] is False
+
+
+def test_batch330_institutional_distribution_short():
+    """Wave 3 (Batch 330): institutional_distribution_short fires on
+    13F=='negative' AND below 50-EMA (trend agrees)."""
+    from backtest.signals.screener import strat_institutional_distribution_short
+    s = {
+        "institutional_negative": True,
+        "price_above_ema_50": False,
+    }
+    out = strat_institutional_distribution_short(s)
+    assert out["fires"] is True and out["direction"] == "short"
+    # Above 50 EMA: trend disagrees, gated off
+    s2 = dict(s); s2["price_above_ema_50"] = True
+    assert strat_institutional_distribution_short(s2)["fires"] is False
+
+
+def test_batch330_screener_injects_institutional_signal():
+    """Wave 3 (Batch 330): screen_instrument call must include the
+    institutional_signal producer block. Source-level pin."""
+    import inspect
+    from backtest.signals.screener import screen_instrument
+    src = inspect.getsource(screen_instrument)
+    assert "from backtest.data.smart_money import institutional_signal" in src, (
+        "Wave 3: screen_instrument must import institutional_signal"
+    )
+    assert "institutional_strong_buy" in src, (
+        "Wave 3: screen_instrument must inject institutional_strong_buy key"
+    )
+
+
+def test_batch328_bug095_portfolio_class_present_and_wired():
+    """BUG-095 resolution: Portfolio class exists at backtest/engine/portfolio.py
+    AND the engine instantiates it / consumes its helpers. Pins both the
+    module existence and the engine-side wiring so future refactors can't
+    silently delete the wiring."""
+    import inspect
+    from backtest.engine import portfolio as pf_module
+    from backtest.engine.backtest import BacktestEngine
+
+    # Module surface
+    assert hasattr(pf_module, "Portfolio"), (
+        "BUG-095: Portfolio class must exist in backtest.engine.portfolio"
+    )
+    assert hasattr(pf_module, "Position"), (
+        "BUG-095: Position dataclass must exist in backtest.engine.portfolio"
+    )
+    assert hasattr(pf_module, "vol_targeted_size"), (
+        "DEC-087 wiring: vol_targeted_size helper must exist"
+    )
+
+    # Engine wiring (BUG-095 RESOLVED requires the engine to actually use it,
+    # not just have the module available - per
+    # feedback_wired_means_engine_consumed.md memory rule).
+    eng_src = inspect.getsource(BacktestEngine)
+    assert "from backtest.engine.portfolio import Portfolio" in eng_src, (
+        "BUG-095 wiring: engine must import Portfolio (not just module-available)"
+    )
+    assert "vol_targeted_size" in eng_src, (
+        "DEC-087 wiring: engine must consume vol_targeted_size in sizing path"
+    )
+
+
 def test_batch327_bug218_yfinance_removed_from_fetch_info():
     """BUG-218 resolution: backtest/data/fetcher.py::fetch_info MUST NOT
     call yfinance at runtime. The function docstring references the

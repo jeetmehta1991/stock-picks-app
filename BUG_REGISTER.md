@@ -24,7 +24,7 @@
 | Total canonical bugs in AUDIT.md (### BUG-NN sections) | 152 |
 | Bugs linked to decisions (AUDIT_INDEX.md cross-reference) | 148 (100%) |
 | Bugs unlinked needing separate ENG entry | 0 |
-| Bugs explicitly tagged CRITICAL OPEN in registers | 2 (BUG-095, BUG-111) — Batch 327 2026-05-25 resolved BUG-218 + BUG-007 with evidence-from-code audit |
+| Bugs explicitly tagged CRITICAL OPEN in registers | 1 (BUG-111) — Batch 327 2026-05-25 resolved BUG-218 + BUG-007; Batch 328 2026-05-25 resolved BUG-095 with evidence-from-code audit |
 | Bugs explicitly tagged DEFERRED/WONTFIX in body | ~12 |
 | Resolved bugs (likely fixed in code per body narratives) | ~107 unclassified  -  need narrative confirmation per bug |
 
@@ -198,9 +198,9 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 
 Per project memory + Pass 52 audit findings:
 
-- **BUG-095** (no Portfolio class)  -  CRITICAL OPEN; blocks DEC-070/076/091; resolution via Sprint 3 (Phase 0.B Portfolio class implementation, ~8-11d). Owner-acknowledged Phase 1A-beta scope does NOT depend on a Portfolio class (rules+smart-money baseline uses self.open_trades list); Portfolio class becomes load-bearing when Phase 1B Portfolio Manager agent activates.
+- ~~**BUG-095** (no Portfolio class)~~ **[BATCH 328 RESOLVED-IMPLEMENTED 2026-05-25]**: Portfolio class fully exists at `backtest/engine/portfolio.py:112` since Pass 53 v8h+1 Phase 3 Batch 20 (2026-05-10). Module includes `Position` dataclass + `Portfolio` class with mark_to_market, can_open (max_open_positions / cash sufficiency / drawdown breach gates), per-sector exposure (DEC-076), per-tier size scaling (DEC-091), and `vol_targeted_size` (DEC-087). Engine instantiates at `backtest/engine/backtest.py:141` and consumes vol_targeted_size at lines 1470 + 1752. Tests at `test_integration.py` lines 170/189/226/604/667/2195. The BUG_REGISTER tracking was simply out of sync with AUDIT_INDEX (which has had BUG-95 as RESOLVED since Batch 20).
 - ~~**BUG-218** (yfinance fetch_info CURRENT not as_of)~~ **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]**: yfinance dependency REMOVED Pass 53 Batch 13 (DEC-497 D4 2026-05-06). `backtest/data/fetcher.py::fetch_info` now reads from `data_prefetch/polygon/reference/{TICKER}.parquet` (BUG-286 Batch 301 wiring). The original CURRENT-not-as_of concern was specific to yfinance .info; the yfinance call no longer exists. Polygon reference is a snapshot (not strictly PIT-historical) but that is a separate concern not covered by BUG-218 scope. Snapshot-as-PIT-approximation is acceptable for market_cap / sector / ipo_date at backtest horizons.
-- **BUG-111** (No break-and-retest variants of breakout strategies)  -  Severity escalated MEDIUM->HIGH->CRITICAL across Pass 52. Sprint 8 resolves via DEC-355-362 chart pattern strategies (retest cross-cutting primitive). **Open scope verified Pass 52 turn 123:** 25 existing breakout strategies in screener.py (Breakout 6 + Pivot Based 10 + Confluence 9 categories) may also need `_retest` suffixed variants. Owner direction needed at Sprint 8 implementation time: (a) shared retest entry-signal primitive any breakout strategy opts into, OR (b) explicit `_retest` variant per existing breakout strategy = ~25 new strategies. Effort: ~5-10d (a); ~25-30d (b).
+- **BUG-111** (No break-and-retest variants of breakout strategies)  -  Severity escalated MEDIUM->HIGH->CRITICAL across Pass 52. **[BATCH 329 2026-05-25 PARTIAL]** owner picked option (b). Empirical re-count: only 7 strategies needed `_retest` variants (not 25 — the original count was over-broad). 6 retest variants shipped Batch 329 (donchian_10_breakout_retest, donchian_breakdown_retest_short, volume_spike_breakout_retest, cup_and_handle_retest_long, flag_bull_retest_long, triangle_ascending_retest_long); 7th (`strat_pre_rebalance_long`) is event-based not price-pattern so excluded. Combined with 9 pre-existing `_retest` strategies, the BUG-111 scope is functionally complete. STILL OPEN flag retained pending owner sign-off on the empirical re-count.
 
 ## Deferred / WONTFIX bugs (Bucket 4)
 
@@ -243,8 +243,8 @@ No new bugs introduced. Existing bug-to-decision mappings remain valid. Phase 1A
 
 | Bug | Resolving DEC | Original sprint | Pass 53 update |
 |---|---|---|---|
-| BUG-095 | Portfolio class | Sprint 3 | UNCHANGED (Sprint 3 still pre-Phase-1B; Phase 1A-beta uses self.open_trades list, no Portfolio dependency) |
-| BUG-111 | Break-and-retest primitive | Sprint 8 | UNCHANGED (Phase 1C+ post-1B-a); needs owner pick (a) shared primitive vs (b) 25 explicit variants |
+| BUG-095 | Portfolio class | Sprint 3 | **[BATCH 328 RESOLVED-IMPLEMENTED 2026-05-25]** Portfolio class shipped Pass 53 v8h+1 Batch 20 (2026-05-10) at backtest/engine/portfolio.py; engine consumes at __init__ + vol_targeted_size sites. |
+| BUG-111 | Break-and-retest primitive | Sprint 8 | **[BATCH 329 2026-05-25 PARTIAL]** owner picked (b); 6 of 6 actual price-pattern breakouts now have `_retest` variants; combined with 9 pre-existing `_retest` strategies the scope is functionally complete. STILL OPEN pending owner sign-off on the empirical 6-vs-25 re-count. |
 | BUG-218 | yfinance .info CURRENT-not-as_of | Sprint 4 (DEC-443) | **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** yfinance removed via DEC-497 D4 Batch 13; Polygon reference parquet replaces it. |
 | BUG-007 | API key guard blocks no-agent Phase 1B run | DEC-458 | **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** `--no-agents` properly gated. `backtest/engine/backtest.py:1396` `if self.run_agents` guards every `_run_agent_context` call; `backtest/run_phase1a.py:40-47` env check prints `[FAIL]` warning but does NOT `sys.exit` when ANTHROPIC_API_KEY missing. Phase 1A `--no-agents` runs through cleanly without the key. |
 
@@ -257,7 +257,7 @@ No new bugs introduced. Existing bug-to-decision mappings remain valid. Phase 1A
 No new bugs introduced Pass 53 post-pre-flight. DEC-491/492/493 PROPOSED (Sprint 2 trade-capture fragility) are **improvements/refactors**, not bug fixes  -  surfacing existing fragility patterns that are working correctly today (CSV serialization works; just brittle for nested dicts). They're properly tracked in ENGINEERING_REGISTER Sprint 2 additions, not BUG_REGISTER.
 
 **Bug-to-decision mappings unchanged Pass 53 post-pre-flight:**
-- BUG-095 (Portfolio class)  -  Sprint 3 unchanged (Phase 1A-beta does not depend on Portfolio class)
+- ~~BUG-095 (Portfolio class)~~ **[BATCH 328 RESOLVED-IMPLEMENTED 2026-05-25]** already shipped Pass 53 v8h+1 Batch 20 (2026-05-10); BUG_REGISTER now matches AUDIT_INDEX
 - BUG-111 (break-and-retest primitive)  -  Sprint 8 unchanged; needs owner pick on (a) primitive vs (b) 25 variants
 - ~~BUG-218 (yfinance .info CURRENT-not-as_of)~~ **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** yfinance removed Pass 53 Batch 13
 - ~~BUG-007 (API key guard `--no-agents`)~~ **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** `--no-agents` properly gated
