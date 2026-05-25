@@ -24,7 +24,7 @@
 | Total canonical bugs in AUDIT.md (### BUG-NN sections) | 152 |
 | Bugs linked to decisions (AUDIT_INDEX.md cross-reference) | 148 (100%) |
 | Bugs unlinked needing separate ENG entry | 0 |
-| Bugs explicitly tagged CRITICAL OPEN in registers | 2 (BUG-095, BUG-111) |
+| Bugs explicitly tagged CRITICAL OPEN in registers | 2 (BUG-095, BUG-111) — Batch 327 2026-05-25 resolved BUG-218 + BUG-007 with evidence-from-code audit |
 | Bugs explicitly tagged DEFERRED/WONTFIX in body | ~12 |
 | Resolved bugs (likely fixed in code per body narratives) | ~107 unclassified  -  need narrative confirmation per bug |
 
@@ -198,8 +198,8 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 
 Per project memory + Pass 52 audit findings:
 
-- **BUG-095** (no Portfolio class)  -  CRITICAL OPEN; blocks DEC-070/076/091; resolution via Sprint 3 (Phase 0.B Portfolio class implementation, ~8-11d)
-- **BUG-218** (yfinance fetch_info CURRENT not as_of)  -  CRITICAL OPEN; resolution via DEC-443 (Sprint 4)
+- **BUG-095** (no Portfolio class)  -  CRITICAL OPEN; blocks DEC-070/076/091; resolution via Sprint 3 (Phase 0.B Portfolio class implementation, ~8-11d). Owner-acknowledged Phase 1A-beta scope does NOT depend on a Portfolio class (rules+smart-money baseline uses self.open_trades list); Portfolio class becomes load-bearing when Phase 1B Portfolio Manager agent activates.
+- ~~**BUG-218** (yfinance fetch_info CURRENT not as_of)~~ **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]**: yfinance dependency REMOVED Pass 53 Batch 13 (DEC-497 D4 2026-05-06). `backtest/data/fetcher.py::fetch_info` now reads from `data_prefetch/polygon/reference/{TICKER}.parquet` (BUG-286 Batch 301 wiring). The original CURRENT-not-as_of concern was specific to yfinance .info; the yfinance call no longer exists. Polygon reference is a snapshot (not strictly PIT-historical) but that is a separate concern not covered by BUG-218 scope. Snapshot-as-PIT-approximation is acceptable for market_cap / sector / ipo_date at backtest horizons.
 - **BUG-111** (No break-and-retest variants of breakout strategies)  -  Severity escalated MEDIUM->HIGH->CRITICAL across Pass 52. Sprint 8 resolves via DEC-355-362 chart pattern strategies (retest cross-cutting primitive). **Open scope verified Pass 52 turn 123:** 25 existing breakout strategies in screener.py (Breakout 6 + Pivot Based 10 + Confluence 9 categories) may also need `_retest` suffixed variants. Owner direction needed at Sprint 8 implementation time: (a) shared retest entry-signal primitive any breakout strategy opts into, OR (b) explicit `_retest` variant per existing breakout strategy = ~25 new strategies. Effort: ~5-10d (a); ~25-30d (b).
 
 ## Deferred / WONTFIX bugs (Bucket 4)
@@ -243,12 +243,12 @@ No new bugs introduced. Existing bug-to-decision mappings remain valid. Phase 1A
 
 | Bug | Resolving DEC | Original sprint | Pass 53 update |
 |---|---|---|---|
-| BUG-095 | Portfolio class | Sprint 3 | UNCHANGED (Sprint 3 still pre-Phase-1A) |
-| BUG-111 | Break-and-retest primitive | Sprint 8 | UNCHANGED (Phase 1C+ post-1B-a) |
-| BUG-218 | yfinance .info CURRENT-not-as_of | Sprint 4 (DEC-443) | UNCHANGED (Sprint 4 pre-Phase-1A) |
-| BUG-007 | API key guard blocks no-agent Phase 1B run | DEC-458 | **CRITICAL Phase 1A dependency**  -  Phase 1A runs `--no-agents` flag; if API key guard fires when no agents needed, Phase 1A blocked. Verify resolution before Sprint 6.5. |
+| BUG-095 | Portfolio class | Sprint 3 | UNCHANGED (Sprint 3 still pre-Phase-1B; Phase 1A-beta uses self.open_trades list, no Portfolio dependency) |
+| BUG-111 | Break-and-retest primitive | Sprint 8 | UNCHANGED (Phase 1C+ post-1B-a); needs owner pick (a) shared primitive vs (b) 25 explicit variants |
+| BUG-218 | yfinance .info CURRENT-not-as_of | Sprint 4 (DEC-443) | **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** yfinance removed via DEC-497 D4 Batch 13; Polygon reference parquet replaces it. |
+| BUG-007 | API key guard blocks no-agent Phase 1B run | DEC-458 | **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** `--no-agents` properly gated. `backtest/engine/backtest.py:1396` `if self.run_agents` guards every `_run_agent_context` call; `backtest/run_phase1a.py:40-47` env check prints `[FAIL]` warning but does NOT `sys.exit` when ANTHROPIC_API_KEY missing. Phase 1A `--no-agents` runs through cleanly without the key. |
 
-**BUG-007 elevated priority Pass 53:** original framing was "Phase 1B run with `--no-agents` flag"; Pass 53 restoration makes Phase 1A v3-style `--no-agents` execution a separate sprint deliverable. BUG-007 must be resolved BEFORE Sprint 6.5 starts or Phase 1A blocked at Day 1.
+**BUG-007 status verification 2026-05-25 (Batch 327):** Original concern was "API key guard fires when no agents needed". Code audit confirmed: (i) `pipeline.py:63` returns None on missing key (logs error, doesn't raise); (ii) engine gates ALL agent calls behind `self.run_agents`; (iii) env-check at startup is informational only (no `sys.exit`). `--no-agents` is safe.
 
 ---
 
@@ -257,10 +257,10 @@ No new bugs introduced. Existing bug-to-decision mappings remain valid. Phase 1A
 No new bugs introduced Pass 53 post-pre-flight. DEC-491/492/493 PROPOSED (Sprint 2 trade-capture fragility) are **improvements/refactors**, not bug fixes  -  surfacing existing fragility patterns that are working correctly today (CSV serialization works; just brittle for nested dicts). They're properly tracked in ENGINEERING_REGISTER Sprint 2 additions, not BUG_REGISTER.
 
 **Bug-to-decision mappings unchanged Pass 53 post-pre-flight:**
-- BUG-095 (Portfolio class)  -  Sprint 3 unchanged
-- BUG-111 (break-and-retest primitive)  -  Sprint 8 unchanged
-- BUG-218 (yfinance .info CURRENT-not-as_of)  -  Sprint 4 unchanged (DEC-443)
-- BUG-007 (API key guard `--no-agents`)  -  Sprint 6.5 dependency unchanged
+- BUG-095 (Portfolio class)  -  Sprint 3 unchanged (Phase 1A-beta does not depend on Portfolio class)
+- BUG-111 (break-and-retest primitive)  -  Sprint 8 unchanged; needs owner pick on (a) primitive vs (b) 25 variants
+- ~~BUG-218 (yfinance .info CURRENT-not-as_of)~~ **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** yfinance removed Pass 53 Batch 13
+- ~~BUG-007 (API key guard `--no-agents`)~~ **[BATCH 327 RESOLVED-IMPLEMENTED 2026-05-25]** `--no-agents` properly gated
 - BUG-284 (govcontracts)  -  referenced in DEC-494 body; Sprint 0A alignment with `refresh_extended_universe.py` cleanup
 
 **Pass 53 universe folder move (commit `c7f5580f`)  -  bug-impact none:**

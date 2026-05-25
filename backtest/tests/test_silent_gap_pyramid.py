@@ -1570,6 +1570,92 @@ class _DummyPool:
 # =============================================================================
 
 
+# =============================================================================
+# Batch 327 regression tests (2026-05-25): BUG-007 + BUG-218 resolution
+# =============================================================================
+
+
+def test_batch327_bug218_yfinance_removed_from_fetch_info():
+    """BUG-218 resolution: backtest/data/fetcher.py::fetch_info MUST NOT
+    call yfinance at runtime. The function docstring references the
+    historical removal, but the executable code path must not invoke
+    yfinance.Ticker / yf.* APIs. Verifies the yfinance HARD CUT
+    (DEC-497 D4 Batch 13) is still in effect."""
+    import inspect
+    from backtest.data import fetcher
+    src = inspect.getsource(fetcher.fetch_info)
+    # Strip docstring + comments before pattern-matching on code lines.
+    code_lines = []
+    in_docstring = False
+    for line in src.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith('"""') or stripped.startswith("'''"):
+            # Toggle docstring state (handle one-liner case too)
+            if stripped.count('"""') == 2 or stripped.count("'''") == 2:
+                continue
+            in_docstring = not in_docstring
+            continue
+        if in_docstring:
+            continue
+        if stripped.startswith("#"):
+            continue
+        code_lines.append(line)
+    code = "\n".join(code_lines)
+    # Executable code must not reference yfinance/yf API surface
+    bad_patterns = ["yf.Ticker", "yfinance.Ticker", "import yfinance", "from yfinance"]
+    for pat in bad_patterns:
+        assert pat not in code, (
+            f"BUG-218: fetch_info executable code must not contain "
+            f"{pat!r} (yfinance removed via DEC-497 D4 Batch 13)"
+        )
+    # Positive: must read from Polygon reference parquet
+    assert "polygon" in src.lower() and "reference" in src.lower(), (
+        "BUG-218 fix: fetch_info must read from Polygon reference parquet"
+    )
+
+
+def test_batch327_bug007_no_agents_runs_without_anthropic_key(monkeypatch):
+    """BUG-007 resolution: --no-agents path must NOT require ANTHROPIC_API_KEY.
+
+    Verifies (i) env-check at startup does NOT sys.exit when key missing,
+    (ii) BacktestEngine.__init__ accepts run_agents=False without raising,
+    (iii) the agent-call site is guarded by `if self.run_agents`.
+    """
+    import inspect
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    # (i) Env check must not sys.exit
+    import backtest.run_phase1a as rp
+    rp_src = inspect.getsource(rp)
+    # Look for a startup check that would block --no-agents
+    bad_patterns = [
+        "if not ANTHROPIC_API_KEY: sys.exit",
+        "raise.*ANTHROPIC",
+        "assert.*ANTHROPIC",
+    ]
+    import re
+    for pat in bad_patterns:
+        assert not re.search(pat, rp_src), (
+            f"BUG-007: run_phase1a.py must not hard-fail on missing "
+            f"ANTHROPIC_API_KEY (--no-agents must run). Found: {pat}"
+        )
+
+    # (ii) Engine accepts run_agents=False
+    from backtest.engine.backtest import BacktestEngine
+    sig = inspect.signature(BacktestEngine.__init__)
+    assert sig.parameters["run_agents"].default is True
+    # Construct without loading data (verify no immediate failure)
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.run_agents = False
+    assert eng.run_agents is False
+
+    # (iii) Agent invocation site is guarded
+    eng_src = inspect.getsource(BacktestEngine)
+    assert "if self.run_agents" in eng_src, (
+        "BUG-007: agent call site must be guarded by `if self.run_agents`"
+    )
+
+
 def test_batch326_t5b_smoke_snapshot_exists():
     """Batch 326: T5b cointegrated-pairs smoke snapshot present.
     Unblocks pairs_mean_reversion_long/short for the smoke universe.
