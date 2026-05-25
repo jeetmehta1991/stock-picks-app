@@ -88,6 +88,37 @@
 2. Identify which gate(s) fail most often
 3. Decide per-strategy: loosen (owner-approved), remove from active list, or accept as rare
 
+### Batch 319 (2026-05-25) — Cat-C gate audit (per-strategy boolean structure)
+
+Static read of each Cat-C strategy's gate. **Not a smoke run** — that requires Stage D
+re-run on actual data. This is a starting-hypothesis pass to inform owner-approved
+loosens.
+
+| Strategy | Direction | Gate structure (informal) | Hypothesis why 0 trades |
+|---|---|---|---|
+| `avwap_20high_rejection_short` | short | `above_avwap_20high` + rejection candle + 200-EMA-aware | Short on AVWAP-20-high rejection; bull markets rarely produce sustained rejection at this level |
+| `camarilla_rsi_obv` | long | `near_cam_r3` + `obv_bullish` + `cmf_positive` triple | Near Camarilla R3 is rare AND triple-confirmation makes it rarer |
+| `camarilla_rsi_obv_short` | short | symmetric short | Same triple-AND, less common in bull regime |
+| `cpr_narrow_momentum_short` | short | `cpr_narrow` + `below_cpr` + bearish MACD | Narrow CPR is rare; combine with directional move = very rare |
+| `donchian_10_breakout` | long | `dc10_breakout_up` + `vol_spike_15x` + `macd_bullish` | Triple-AND with vol_spike_1.5x; volume gate likely cuts firing window |
+| `donchian_breakdown_short` | short | `dc10_breakout_dn` + `vol_spike_15x` + bearish MACD | Symmetric short; less common in bull |
+| `ichimoku_cloud_breakdown` | short | `ichi_below_cloud` + `ichi_tk_cross_dn` + `adx_trending` | Cloud breakdown rare in bull regimes |
+| `keltner_lower` | long | `kc_touch_lower` + `hammer` OR `obv_bullish` | Mean-rev short; competes with bollinger_lower / williams_oversold (cannibalization) |
+| `prev_day_low_breakdown` | short | `below_prev_low` + `vol_spike_15x` + `not above_vwap` | Short condition; bull market rarity |
+| `rsi9_extreme` | long | `rsi_9_extreme_os` + `rsi_9_rising` + `price_above_ema_200` | Same-day extreme oversold AND rising is unusual sequence — typically rising = bounce already started |
+| `rsi_overbought_short` | short | `rsi_14 > 70` + `bearish_engulfing` + `not price_above_sma_50` | Short combo; rare in trending bull |
+| `rsi_volume_200ema` | long | `rsi_14 < 30` + `vol_spike_2x` + `price_above_ema_200` | RSI<30 AND above 200-EMA is uncommon (oversold but in uptrend) |
+| `supertrend_ichimoku_adx` | long | `supertrend_bullish` + `ichi_above_cloud` + `adx_strong` triple | Triple-trend-confirmation; very few tickers will satisfy all three concurrently |
+| `supertrend_macd_short` | short | symmetric to long; bearish ST + bearish MACD + ADX | Triple-AND short; bull regime rare |
+| `break_retest_volume` | long | `resistance_break_retest` + `obv_rising` + `vol_spike_2x` + 200-EMA | 4-AND sequential break-then-retest pattern |
+
+**Recommendation buckets for owner approval (Batches 320-322):**
+- **Bucket-1 (likely-loosen candidates):** `donchian_10_breakout`, `rsi_volume_200ema`, `break_retest_volume` — drop volume-spike requirement OR relax thresholds; their AND-cascade is the bottleneck, not the underlying logic. Owner-approve loosen → Stage-D re-run shows whether firing rate is reasonable.
+- **Bucket-2 (regime-specific):** all the SHORT strategies (`avwap_20high_rejection_short`, `donchian_breakdown_short`, `cpr_narrow_momentum_short`, `ichimoku_cloud_breakdown`, `prev_day_low_breakdown`, `rsi_overbought_short`, `supertrend_macd_short`) — these are STRUCTURALLY rare in the 2022-2026 bull-dominant window. Don't loosen; instead codify "expected fire rate ≤5/year" + revisit when bear-window data accumulates.
+- **Bucket-3 (compete-cannibalization):** `keltner_lower`, `rsi9_extreme`, `camarilla_rsi_obv*` — these may not be 0 trades because of the gate, but because the candidate ranking + per-day cap (now 30 post-Batch-314) cuts them off. Need Stage-D re-run to confirm before code changes.
+
+**Next step:** owner reviews Bucket-1/2/3 split + approves specific loosens before any code lands. Smoke-data confirmation requires the Stage-D Hetzner re-run that's queued for after Batches 316-318 land.
+
 ## Execution sequence proposal
 1. **Stage D Hetzner re-run** with current Batches 307+308+312+314+315a code — validates that the 11 already-fixed strategies fire as expected, narrows the "remaining 49" before forensic batches start
 2. **Cat-B subgroup batches** (data-missing) — Sprint 1 (pairs precompute) + Sprint 5 (index rebalance events) unblock 6 strategies cleanly; per-producer verification batches for the rest

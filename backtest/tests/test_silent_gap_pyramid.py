@@ -1530,6 +1530,67 @@ def test_batch315a_pairs_trading_compute_no_data_path():
 # validation. This test asserts the runtime filter no longer excludes them.
 
 
+def test_batch316b_insider_buying_per_ticker_index():
+    """Batch 316b: insider_buying builds per-ticker dict index at load time.
+    Verifies the cache structure exists + lookup is by ticker key."""
+    import backtest.signals.insider_buying as ib
+    from datetime import date
+    ib._INSIDERS_CACHE = None
+    ib._INSIDERS_BY_TICKER = None
+    # First call triggers cache build
+    ib.compute_insider_cluster_signals("AAPL", date(2024, 1, 15))
+    # When data file present, dict should have entries
+    if ib._INSIDERS_CACHE is not None and not ib._INSIDERS_CACHE.empty:
+        assert ib._INSIDERS_BY_TICKER is not None, (
+            "Batch 316b: _INSIDERS_BY_TICKER must be built alongside _INSIDERS_CACHE"
+        )
+        assert isinstance(ib._INSIDERS_BY_TICKER, dict)
+    # When data missing, dict is empty {}
+    elif ib._INSIDERS_CACHE is not None and ib._INSIDERS_CACHE.empty:
+        assert ib._INSIDERS_BY_TICKER == {}, (
+            "Batch 316b: when insiders parquet missing, per-ticker dict must be empty"
+        )
+
+
+def test_batch316b_insider_buying_unknown_ticker_returns_empty():
+    """Batch 316b: ticker not in pre-grouped dict returns {} (preserves
+    pre-refactor behavior for unknown tickers)."""
+    import backtest.signals.insider_buying as ib
+    from datetime import date
+    ib._INSIDERS_CACHE = None
+    ib._INSIDERS_BY_TICKER = None
+    out = ib.compute_insider_cluster_signals(
+        "ZZZ_NEVER_EXISTS_315b", date(2024, 1, 15)
+    )
+    assert out == {}, f"Unknown ticker must return empty dict, got {out!r}"
+
+
+def test_batch316b_insider_buying_pre_filter_applied():
+    """Batch 316b: per-ticker subset is pre-filtered to AcquiredDisposedCode=='A'
+    AND TransactionCode=='P' so consumers don't re-filter every call.
+    Constructed test asserts the cache reflects the pre-filter."""
+    import backtest.signals.insider_buying as ib
+    ib._INSIDERS_CACHE = None
+    ib._INSIDERS_BY_TICKER = None
+    ib._load_insiders_global()
+    if not ib._INSIDERS_BY_TICKER:
+        # Data file missing in this environment - skip the content check
+        return
+    # Pick any one ticker; verify the cached subset only has A + P
+    for tkr, sub in ib._INSIDERS_BY_TICKER.items():
+        if "AcquiredDisposedCode" in sub.columns:
+            assert (sub["AcquiredDisposedCode"] == "A").all(), (
+                f"Batch 316b: pre-filter AcquiredDisposedCode=='A' must hold "
+                f"in cached subset for {tkr}"
+            )
+        if "TransactionCode" in sub.columns:
+            assert (sub["TransactionCode"] == "P").all(), (
+                f"Batch 316b: pre-filter TransactionCode=='P' must hold "
+                f"in cached subset for {tkr}"
+            )
+        break  # one ticker is sufficient
+
+
 def test_batch316a_deprecated_strategies_emptied():
     """DEPRECATED_STRATEGIES must be empty per owner directive 2026-05-25.
     Stage D + Phase 1A-beta must iterate all 148 strategies (not 125)."""

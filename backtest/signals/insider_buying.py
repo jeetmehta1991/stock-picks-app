@@ -35,25 +35,61 @@ _INSIDERS_GLOBAL = (
 )
 _INSIDERS_CACHE: Optional[pd.DataFrame] = None
 
+# Batch 316b (2026-05-25): per-ticker pre-grouped index. Pre-Batch-316b the
+# compute_insider_cluster_signals call did 4 boolean filters across the full
+# insiders DataFrame (millions of rows) every invocation. Profile showed 31%
+# of screen_instrument wall-clock on synthetic data. Post-fix: group by
+# Ticker once at load time + pre-filter to AcquiredDisposedCode=='A' and
+# TransactionCode=='P' (constants across all calls). Per-call becomes
+# O(1) dict lookup + small per-ticker date-window filter.
+_INSIDERS_BY_TICKER: Optional[dict] = None
+
 
 def _load_insiders_global() -> Optional[pd.DataFrame]:
-    """Lazy-load the global insiders parquet once per process."""
-    global _INSIDERS_CACHE
+    """Lazy-load the global insiders parquet once per process.
+
+    Builds two caches on first call:
+      _INSIDERS_CACHE: legacy DataFrame view (kept for any downstream
+        consumers that import it).
+      _INSIDERS_BY_TICKER: dict[str -> DataFrame] of per-ticker rows already
+        filtered to qualifying purchases (AcquiredDisposedCode=='A' AND
+        TransactionCode=='P' when column present). This is the hot-path
+        lookup table for compute_insider_cluster_signals.
+    """
+    global _INSIDERS_CACHE, _INSIDERS_BY_TICKER
     if _INSIDERS_CACHE is not None:
         return _INSIDERS_CACHE
     if not _INSIDERS_GLOBAL.exists():
         _INSIDERS_CACHE = pd.DataFrame()
+        _INSIDERS_BY_TICKER = {}
         return _INSIDERS_CACHE
     try:
         df = pd.read_parquet(_INSIDERS_GLOBAL)
         if df.empty:
             _INSIDERS_CACHE = df
+            _INSIDERS_BY_TICKER = {}
             return _INSIDERS_CACHE
         # Normalize Date column to date
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.date
         _INSIDERS_CACHE = df
+
+        # Pre-filter to qualifying purchases (constant across all calls).
+        qual = df
+        if "AcquiredDisposedCode" in qual.columns:
+            qual = qual[qual["AcquiredDisposedCode"] == "A"]
+        if "TransactionCode" in qual.columns:
+            qual = qual[qual["TransactionCode"] == "P"]
+        # Pre-group by ticker. Each value is the subset for that ticker.
+        if "Ticker" in qual.columns and not qual.empty:
+            _INSIDERS_BY_TICKER = {
+                str(tkr): grp
+                for tkr, grp in qual.groupby("Ticker", sort=False)
+            }
+        else:
+            _INSIDERS_BY_TICKER = {}
     except Exception:
         _INSIDERS_CACHE = pd.DataFrame()
+        _INSIDERS_BY_TICKER = {}
     return _INSIDERS_CACHE
 
 
@@ -76,25 +112,28 @@ def compute_insider_cluster_signals(
 
     Returns empty dict on data miss / unknown ticker / no qualifying
     transactions.
+
+    Batch 316b (2026-05-25): hot-path is now O(1) ticker lookup + small
+    per-ticker date-window filter via _INSIDERS_BY_TICKER cache. Behavior
+    is preserved: same filters (AcquiredDisposedCode=='A' AND
+    TransactionCode=='P' when column present), same lookback window,
+    same return dict shape. Profile target: 31% of screen_instrument
+    per-call cost on data-present runs.
     """
-    df = _load_insiders_global()
-    if df is None or df.empty:
+    # Trigger cache build on first call.
+    _load_insiders_global()
+    if not _INSIDERS_BY_TICKER:
         return {}
     tkr_safe = ticker.replace(".", "-")
-    # Filter to ticker + lookback window + purchase transactions
-    cutoff = as_of - timedelta(days=lookback_days)
-    sub = df[
-        (df["Ticker"].isin([ticker, tkr_safe]))
-        & (df["Date"] >= cutoff)
-        & (df["Date"] <= as_of)
-        & (df.get("AcquiredDisposedCode") == "A")
-    ]
-    if sub.empty:
+    sub = _INSIDERS_BY_TICKER.get(ticker)
+    if sub is None and tkr_safe != ticker:
+        sub = _INSIDERS_BY_TICKER.get(tkr_safe)
+    if sub is None or sub.empty:
         return {}
-    # Open-market purchase: TransactionCode == 'P'. Excludes 'A' (award),
-    # 'M' (exercise), 'G' (gift). Drop missing transaction codes.
-    if "TransactionCode" in sub.columns:
-        sub = sub[sub["TransactionCode"] == "P"]
+    # Date-window filter (only the rows for this ticker remain, so this is
+    # over at most a few hundred rows vs the prior full-DF scan).
+    cutoff = as_of - timedelta(days=lookback_days)
+    sub = sub[(sub["Date"] >= cutoff) & (sub["Date"] <= as_of)]
     if sub.empty:
         return {}
     # Count unique insiders by Name (proxy for unique-person)

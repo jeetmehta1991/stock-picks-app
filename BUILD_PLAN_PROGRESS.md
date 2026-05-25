@@ -72,7 +72,7 @@
 | **Lever A: 5->6 batches** | **[DEVIATED]** | Plan: 6 batches. Reality: 5 batches initially (all timed out at 5h 50m on GH Actions); re-split to 25 batches (per Batch 305 fix); 16 of 25 timed out; final run on Hetzner CPX62 with 25 batches succeeded ~11h. Net: 6-batch RAM-constrained design infeasible on GH Actions; reality required smaller batches + bigger box. |
 | Lever B: pre-filter strategies | [DEFERRED-CORRECTLY] | Owner rejected May 19. N/A. |
 | **Lever C: vectorize signal-once-per-ticker-day** | **[INVESTIGATION-NEEDED]** | Approved May 19 (~10-15% speedup). Per-Batch-315a static audit `compute_all_signals(df)` already runs ONCE per ticker-day at [screener.py:2808](backtest/signals/screener.py#L2808) — the N-times-per-ticker claim in original plan does not match current screener flow. Real Lever-C win likely comes from CROSS-ticker vectorization (compute panel-level signals for all 1937 tkrs in one pandas op vs 1937 separate calls). Needs profiling to confirm hot path BEFORE refactor. Deferred to Batch 316 after profile. |
-| **Lever D: Polars over Pandas** | **[MISSING]** | Approved May 19 (~5-10% speedup). Polars not installed (`import polars` fails). Not implemented. Batch 317 scope. |
+| **Lever D: Polars over Pandas** | **[INVESTIGATED, DEFERRED]** | Polars 1.41 installed Batch 317 2026-05-25. Measured `polars.read_parquet` 2.2x faster than `pandas.read_parquet` on AAPL OHLCV (67KB, 3.4ms -> 1.6ms). Projected savings on full 1937-tkr session-init load: **3.6 seconds** out of 11h Phase 1A-beta run (<0.01%). The original "5-10% speedup" plan estimate was wrong — actual ROI is near-zero because (i) OHLCV loads are session-init only, (ii) hot path per profile is per-call compute (pandas math, not I/O), (iii) pandas<->polars boundary conversions would eat most of the gain. Deferred pending higher-impact migration target. |
 | **Skip-unused signal producers** | **[BATCH-315a IMPLEMENTED]** | Module-level cache for `index_rebalance._load_events` + `pairs_trading._load_pair_snapshots`. Replaces ~2M per-call `Path.exists()` filesystem probes with 1 probe per session. Behavior preserved. Static cross-key audit showed 0 fully-orphan producer modules (consumers exist in same-module strat defs; my initial "100% orphan" claim was wrong). Per-key orphan deletion (chart_patterns, multi_timeframe, cross_asset have 24/18/20 candidate orphan keys per regex audit) queued as Batch 315b after thorough per-key verification. |
 | AWS Lightsail Docker | [DONE] | `Dockerfile` present |
 | **Phase 1A-β actually launched** | **[DONE]** | 2026-05-24, 7191 trades, see `output_phase_1a_beta_merged_local/` |
@@ -122,7 +122,7 @@
 ### Important (impact downstream)
 
 5. **Speedup Lever C (vectorize signals)** — Day 4 deliverable. Profile-first per Batch 315a finding (existing `compute_all_signals` already runs once per ticker-day; real win is cross-ticker panel vectorization). Phase 1A-β took ~10.5h on Hetzner CPX62; target with C+D+pool+skip-unused: <2h.
-6. **Speedup Lever D (Polars)** — Day 4 deliverable. Not implemented. Batch 317 scope.
+6. **Speedup Lever D (Polars)** — Day 4 deliverable. Investigated Batch 317 2026-05-25, DEFERRED with measurement evidence (3.6s savings on 11h run = <0.01% ROI). See Lever D row above.
 7. **Sprint 7 cube_populator post-merge** — merged output lacks `exit_by_*.csv` slices; per-batch has them but aggregator doesn't.
 8. **T2 24-DEC engine quality queue** — Day 1 deliverable. Needs per-DEC audit to confirm landing.
 
