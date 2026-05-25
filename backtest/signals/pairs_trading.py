@@ -228,6 +228,47 @@ def find_cointegrated_pairs(
     return pairs[:max_pairs]
 
 
+# Batch 315a (2026-05-24): module-level cache for snapshot enumeration.
+# T5b precompute parquet directory is probed AND globbed once per
+# compute_pair_signals_for_ticker call. Phase 1A-beta calls this 1937 tkrs *
+# 1044 days = ~2M times. When precompute is missing (current state until
+# Sprint 1 lands T5b job), each call did Path.exists() + return {}; post-fix
+# it's a single dict lookup. When precompute IS present, the sorted-glob
+# result is cached and reused across the whole run (snapshots don't change
+# mid-backtest). Keyed by str(pairs_dir) so callers passing a custom path
+# don't share state.
+_PAIRS_SNAPSHOTS_CACHE: dict = {}
+
+
+def _load_pair_snapshots(pairs_dir):
+    """Module-level cached enumeration of cointegrated-pairs snapshots.
+
+    First call: probe filesystem + glob the directory. Returns sorted list
+    of (date, path) tuples or [] when the directory is missing. Subsequent
+    calls: return cached list. Snapshots are static during a backtest run.
+    """
+    from datetime import date as _date
+    from pathlib import Path
+    key = str(pairs_dir)
+    if key in _PAIRS_SNAPSHOTS_CACHE:
+        return _PAIRS_SNAPSHOTS_CACHE[key]
+    pdir = Path(pairs_dir)
+    if not pdir.exists():
+        _PAIRS_SNAPSHOTS_CACHE[key] = []
+        return _PAIRS_SNAPSHOTS_CACHE[key]
+    snapshots = []
+    for p in sorted(pdir.glob("*.parquet")):
+        if p.stem == "_index":
+            continue
+        try:
+            snap_date = _date.fromisoformat(p.stem)
+            snapshots.append((snap_date, p))
+        except ValueError:
+            continue
+    _PAIRS_SNAPSHOTS_CACHE[key] = snapshots
+    return snapshots
+
+
 def compute_pair_signals_for_ticker(
     ticker: str,
     as_of,
@@ -244,22 +285,21 @@ def compute_pair_signals_for_ticker(
       pair_half_life (float days), pair_count_active (int).
 
     Graceful no-op when T5b precompute parquet missing (returns {}).
+
+    Batch 315a (2026-05-24): snapshot enumeration cached at module level
+    via _load_pair_snapshots (see above). Identical behavior; ~2M
+    filesystem probes -> 1 probe per backtest session.
     """
-    from datetime import date as _date
     from pathlib import Path
     if pairs_dir is None:
         pairs_dir = Path(__file__).parent.parent.parent / "data_prefetch" / "derived" / "cointegrated_pairs_t1a"
-    if not Path(pairs_dir).exists():
+    cached_snapshots = _load_pair_snapshots(pairs_dir)
+    if not cached_snapshots:
         return {}
-    snapshots = sorted([p for p in Path(pairs_dir).glob("*.parquet") if p.stem != "_index"])
     latest = None
-    for s in snapshots:
-        try:
-            snap_date = _date.fromisoformat(s.stem)
-            if snap_date <= as_of:
-                latest = s
-        except ValueError:
-            continue
+    for snap_date, p in cached_snapshots:
+        if snap_date <= as_of:
+            latest = p
     if latest is None:
         return {}
     try:

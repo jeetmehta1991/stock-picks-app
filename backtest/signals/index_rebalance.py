@@ -46,24 +46,42 @@ _POST_DELETION_DRIFT_DAYS = 30
 _PRE_REBALANCE_WINDOW_DAYS = 10      # front-running by index funds
 _REVERSAL_WINDOW_START_DAYS = 60     # Beneish-Whaley 1996 reversal onset
 
+# Batch 315a (2026-05-24): module-level cached load. Phase 1A-beta calls
+# compute_index_rebalance_signals 1937 tkrs * 1044 days = ~2M times. Pre-fix:
+# each call did Path.exists() + open the parquet (when present). Post-fix:
+# load once at first call, reuse the cached DataFrame for the rest of the
+# session. Reduces ~2M filesystem probes to 1 + ~2M dict lookups.
+# Behavior preserved: when data missing, _CACHED_EVENTS remains empty -> all
+# callers see the same empty-dict return path as before.
+_CACHED_EVENTS: pd.DataFrame | None = None
+
 
 def _load_events() -> pd.DataFrame:
-    """Load index rebalance events parquet. Empty DataFrame if missing."""
+    """Load index rebalance events parquet (module-level cached).
+
+    First call: probe filesystem, parse + normalize the parquet if present.
+    Subsequent calls: return cached DataFrame.
+    Behavior is identical to the pre-Batch-315a per-call load.
+    """
+    global _CACHED_EVENTS
+    if _CACHED_EVENTS is not None:
+        return _CACHED_EVENTS
     if not _EVENTS_PATH.exists():
-        return pd.DataFrame(columns=[
+        _CACHED_EVENTS = pd.DataFrame(columns=[
             "ticker", "event_date", "event_type", "announce_date", "effective_date",
         ])
+        return _CACHED_EVENTS
     try:
         df = pd.read_parquet(_EVENTS_PATH)
-        if df.empty:
-            return df
-        # Normalize date columns
-        for col in ("event_date", "announce_date", "effective_date"):
-            if col in df.columns:
-                df[col] = pd.to_datetime(df[col], errors="coerce").dt.date
-        return df
+        if not df.empty:
+            for col in ("event_date", "announce_date", "effective_date"):
+                if col in df.columns:
+                    df[col] = pd.to_datetime(df[col], errors="coerce").dt.date
+        _CACHED_EVENTS = df
+        return _CACHED_EVENTS
     except Exception:
-        return pd.DataFrame()
+        _CACHED_EVENTS = pd.DataFrame()
+        return _CACHED_EVENTS
 
 
 def compute_index_rebalance_signals(ticker: str, as_of: date) -> dict:

@@ -1450,3 +1450,73 @@ def test_batch314_cat5_max_cands_default():
         f"Batch 314 Cat-5 A: BacktestEngine default max_candidates_per_day "
         f"must be 30, got {default}"
     )
+
+
+# =============================================================================
+# Batch 315a regression tests (2026-05-24)
+# =============================================================================
+# Module-level cache for data-missing producers: file-existence checks hoisted
+# from per-call to per-session. ~2M filesystem probes -> 1 probe per session.
+# Tier 1 (Unit) - cache semantics + behavior parity
+
+
+def test_batch315a_index_rebalance_cached_load():
+    """index_rebalance._load_events caches the result. Repeated calls return
+    the same object identity (proves single filesystem probe per session)."""
+    import backtest.signals.index_rebalance as ir
+    # Reset cache to ensure test is hermetic
+    ir._CACHED_EVENTS = None
+    a = ir._load_events()
+    b = ir._load_events()
+    c = ir._load_events()
+    assert a is b is c, (
+        "Batch 315a: _load_events must return same cached object across calls; "
+        "got identity drift -> filesystem probe is happening per-call."
+    )
+
+
+def test_batch315a_index_rebalance_compute_no_data_path():
+    """When events parquet missing, compute_index_rebalance_signals returns {}
+    AND the cached events DataFrame is empty (regression: ensure the cache
+    path preserves the original no-data behavior)."""
+    import backtest.signals.index_rebalance as ir
+    from datetime import date
+    ir._CACHED_EVENTS = None  # force first load
+    out = ir.compute_index_rebalance_signals("AAPL", date(2024, 1, 15))
+    assert out == {}, f"No-data path must return empty dict, got {out!r}"
+    # After call the cache must be populated (with an empty DF)
+    assert ir._CACHED_EVENTS is not None, "Cache must be set after first call"
+
+
+def test_batch315a_pairs_trading_snapshot_cache():
+    """pairs_trading._load_pair_snapshots caches per-directory and returns
+    the same list across repeated calls."""
+    import backtest.signals.pairs_trading as pt
+    from pathlib import Path
+    pt._PAIRS_SNAPSHOTS_CACHE.clear()
+    # Use a non-existent directory so we get the empty-cache path
+    missing = Path("/tmp/this/does/not/exist/pairs_test_315a")
+    a = pt._load_pair_snapshots(missing)
+    b = pt._load_pair_snapshots(missing)
+    assert a is b, (
+        "Batch 315a: _load_pair_snapshots must return same cached list across "
+        "calls for the same pairs_dir key."
+    )
+    assert a == [], "Missing directory must yield empty snapshot list"
+
+
+def test_batch315a_pairs_trading_compute_no_data_path():
+    """When pairs precompute missing, compute_pair_signals_for_ticker returns
+    {} and caches the empty enumeration."""
+    import backtest.signals.pairs_trading as pt
+    from datetime import date
+    import pandas as pd
+    pt._PAIRS_SNAPSHOTS_CACHE.clear()
+    # Default pairs_dir = data_prefetch/derived/cointegrated_pairs_t1a which
+    # is currently missing in this repo (T5b precompute pending Sprint 1).
+    out = pt.compute_pair_signals_for_ticker(
+        "AAPL", date(2024, 1, 15), pd.Series([100, 101, 102])
+    )
+    assert out == {}, f"No-precompute path must return empty dict, got {out!r}"
+    # Cache must contain the key for the default pairs_dir
+    assert pt._PAIRS_SNAPSHOTS_CACHE, "Cache must be populated after first call"
