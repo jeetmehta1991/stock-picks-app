@@ -1601,9 +1601,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   171 after Batch 335 (+4 more Wave-3 classification_change)
     #   175 after Batch 336 (+3 13F + 1 persistence)
     #   181 after Batch 337 (+3 classification_change + 3 persistence)
-    assert len(ALL_STRATEGIES) == 181, (
-        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 181 "
-        f"after Batches 329-337, got {len(ALL_STRATEGIES)}"
+    #   184 after Batch 338 (+3 persistence; Wave 3 COMPLETE 30/30)
+    assert len(ALL_STRATEGIES) == 184, (
+        f"BUG-111 + Wave 3 COMPLETE: ALL_STRATEGIES count must be 184 "
+        f"after Batches 329-338 (Wave 3 30/30), got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1662,6 +1663,55 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s = {"triangle_ascending_detected": True,
          "resistance_break_retest": True, "price_above_ema_200": True}
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
+
+
+def test_batch338_wave3_final_strategies_registered():
+    """Wave 3 Batch 338: 3 final persistence strategies registered.
+    Total Wave 3 roster now at 30/30 (10 13F + 10 classification + 10 persistence)."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "institutional_recent_init_momentum_long",
+        "institutional_recent_init_volume_long",
+        "institutional_increased_with_directors_long",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 338: missing strategy registrations: {missing}"
+
+
+def test_batch338_institutional_recent_init_momentum_long_fires():
+    from backtest.signals.screener import strat_institutional_recent_init_momentum_long
+    s = {
+        "institutional_new_positions": 3,
+        "macd_12_26_9_bullish": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_recent_init_momentum_long(s)["fires"] is True
+    s2 = dict(s); s2["institutional_new_positions"] = 1
+    assert strat_institutional_recent_init_momentum_long(s2)["fires"] is False
+
+
+def test_batch338_institutional_recent_init_volume_long_fires():
+    from backtest.signals.screener import strat_institutional_recent_init_volume_long
+    s = {
+        "institutional_new_positions": 2,
+        "vol_spike_2x": True,
+        "price_above_ema_50": True,
+    }
+    assert strat_institutional_recent_init_volume_long(s)["fires"] is True
+    s2 = dict(s); s2["vol_spike_2x"] = False
+    assert strat_institutional_recent_init_volume_long(s2)["fires"] is False
+
+
+def test_batch338_institutional_increased_with_directors_long_fires():
+    from backtest.signals.screener import strat_institutional_increased_with_directors_long
+    s = {
+        "institutional_increased": 6,
+        "insider_director_buyers_30d": 2,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_increased_with_directors_long(s)["fires"] is True
+    s2 = dict(s); s2["insider_director_buyers_30d"] = 0
+    assert strat_institutional_increased_with_directors_long(s2)["fires"] is False
 
 
 def test_batch337_wave3_strategies_registered():

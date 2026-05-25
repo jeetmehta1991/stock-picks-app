@@ -2639,6 +2639,72 @@ def strat_institutional_persistence_oversold_long(s):
          "Above 200 EMA (filter falling-knife)"])
 
 
+# Wave 3 Batch 338 (2026-05-25): final 3 persistence variants completing
+# the category at 10/10 (Wave 3 total 30/30). All use existing Batch 330
+# 13F producer + insider/momentum/volume keys. True multi-quarter
+# persistence precompute (333b) is deferred to a future Sprint as
+# infrastructure refinement; current proxies are sufficient for Stage D.
+
+
+def strat_institutional_recent_init_momentum_long(s):
+    """Wave 3 (Batch 338): early institutional initiation + price momentum.
+    new_positions >= 2 (smaller cluster than Batch 330) + MACD bullish +
+    EMA200 regime. Targets institutional initiations that the market has
+    NOT yet priced in - momentum agreement filters for sustained moves."""
+    fires = (
+        s.get("institutional_new_positions", 0) >= 2
+        and s.get("macd_12_26_9_bullish", False)
+        and s.get("price_above_ema_200", True)
+    )
+    n_new = s.get("institutional_new_positions", 0)
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_new_positions>=2","macd_12_26_9_bullish","price_above_ema_200"],
+        [f"{n_new} institutional funds initiated new positions this quarter",
+         "MACD bullish - price momentum agrees with smart-money flow",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_recent_init_volume_long(s):
+    """Wave 3 (Batch 338): early initiation + retail volume confirmation.
+    Same threshold as recent_init_momentum_long but trades volume gate for
+    intermediate-trend gate. Lo-Wang 2000: volume confirms institutional
+    sponsorship is broad-market not just smart-money private positioning."""
+    fires = (
+        s.get("institutional_new_positions", 0) >= 2
+        and s.get("vol_spike_2x", False)
+        and s.get("price_above_ema_50", True)
+    )
+    n_new = s.get("institutional_new_positions", 0)
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_new_positions>=2","vol_spike_2x","price_above_ema_50"],
+        [f"{n_new} institutional funds initiated new positions this quarter",
+         "Volume 2x ADV - retail tape participating",
+         "Above 50 EMA (intermediate trend gate)"])
+
+
+def strat_institutional_increased_with_directors_long(s):
+    """Wave 3 (Batch 338): persistence + director-level insider buying.
+    Combines institutional_increased>=5 (persistence proxy from Batch 333)
+    with director purchases (Batch 222 insider producer; Akbas-Jiang-Koch
+    2024 RFS director-premium). Triple validation: existing funds growing,
+    new funds entering (implicit via cluster signal), AND board-level
+    insider conviction."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("insider_director_buyers_30d", 0) >= 1
+        and s.get("price_above_ema_200", True)
+    )
+    n_incr = s.get("institutional_increased", 0)
+    n_dir = s.get("insider_director_buyers_30d", 0)
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","insider_director_buyers_30d>=1",
+         "price_above_ema_200"],
+        [f"{n_incr} institutional funds grew position (persistence)",
+         f"{n_dir} director(s) buying open-market in 30d",
+         "Triple smart-money validation",
+         "Above 200 EMA"])
+
+
 # ---------------------------------------------------------------------------
 # Wave 3 persistence strategies (Batch 333 2026-05-25):
 # institutional position persistence proxies using the Batch 330 producer's
@@ -3323,6 +3389,11 @@ ALL_STRATEGIES = {
     "institutional_persistence_breakout_long":    strat_institutional_persistence_breakout_long,
     "institutional_persistence_volume_long":      strat_institutional_persistence_volume_long,
     "institutional_persistence_oversold_long":    strat_institutional_persistence_oversold_long,
+    # Wave 3 Batch 338 (Path C final): completes persistence at 10/10
+    # (Wave 3 total 30/30).
+    "institutional_recent_init_momentum_long":    strat_institutional_recent_init_momentum_long,
+    "institutional_recent_init_volume_long":      strat_institutional_recent_init_volume_long,
+    "institutional_increased_with_directors_long": strat_institutional_increased_with_directors_long,
     # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
     "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
