@@ -81,7 +81,7 @@ backtest/
     smart_money.py       # congressional, insider, 13F
   signals/
     technical.py         # ~220 technical signal fields (Category 1); see CANONICAL_FACTS.md F-003 for ~270-280 total signals across 6 categories
-    screener.py          # 60 baseline strategy classes (Layer 1, 7 categories) — full layered roster ~108-133 classes per CANONICAL_FACTS.md F-002
+    screener.py          # 148 strategy classes (Batch 316a 2026-05-25 re-activated 23 Batch-218-deprecated for empirical validation); Layer 1 baseline 60 + later layers per CANONICAL_FACTS.md F-002
   engine/
     backtest.py          # main loop, incremental checkpoints every 100 days
     exit_manager.py      # trailing stop + 5 circuit breakers

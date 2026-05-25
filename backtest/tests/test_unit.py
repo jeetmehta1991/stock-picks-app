@@ -8445,46 +8445,34 @@ def test_batch219_hrp_wired_in_engine_sizing_stack():
 
 
 def test_batch218_deprecated_strategies_defined():
-    """Batch 218 (research-review deprecations 2026-05-18 owner-approved):
-    DEPRECATED_STRATEGIES set contains 22-23 strategies with no replicable
-    peer-reviewed edge per literature 2015-2024. Removes them from the
-    multi-testing denominator (M) for Bonferroni / DSR gates."""
+    """Batch 218 (2026-05-18) deprecation REVERSED by owner directive
+    2026-05-25 (Batch 316a): all 23 previously-deprecated strategies
+    re-activated for Stage D + Phase 1A-beta empirical validation. The
+    DEPRECATED_STRATEGIES SET still exists (as a re-pruning vector) but
+    must be empty post-Batch-316a."""
     from backtest.config import DEPRECATED_STRATEGIES
-    # Sanity: set is populated and contains the expected dead-evidence families
-    assert isinstance(DEPRECATED_STRATEGIES, set)
-    assert len(DEPRECATED_STRATEGIES) >= 22, (
-        f"Expected >=22 deprecated strategies, got {len(DEPRECATED_STRATEGIES)}"
+    assert isinstance(DEPRECATED_STRATEGIES, set), "Set type preserved"
+    assert len(DEPRECATED_STRATEGIES) == 0, (
+        f"Batch 316a owner directive 2026-05-25: DEPRECATED_STRATEGIES "
+        f"must be empty (all 23 re-activated for empirical testing); got "
+        f"{len(DEPRECATED_STRATEGIES)} entries: {sorted(DEPRECATED_STRATEGIES)}"
     )
-    # Spot-check the canonical dead families from the agent research report
-    must_deprecate = {
-        "golden_cross_50_200", "golden_cross_9_21", "golden_cross_20_50",
-        "death_cross_50_200_volume",
-        "awesome_oscillator", "ppo_crossover", "tema_dema",
-        "force_index_breakout", "mfi_oversold",
-        "parabolic_sar_flip", "parabolic_sar_flip_short",
-        "morning_star", "evening_star_short", "three_white_soldiers",
-        "doji_at_support", "bullish_engulfing_support", "shooting_star_short",
-        "williams_stoch_dual",
-        "macd_crossover", "macd_crossover_short",
-        "camarilla_r3_breakout", "camarilla_s3_bounce",
-    }
-    missing = must_deprecate - DEPRECATED_STRATEGIES
-    assert not missing, f"Batch 218: must-deprecate strategies missing: {missing}"
 
 
 def test_batch218_deprecated_strategies_NOT_in_screener_loop():
-    """Batch 218: screen_instrument must skip strategies in
-    DEPRECATED_STRATEGIES. Source-level pin verifying the filter is
-    wired at the loop site."""
+    """Batch 218 deprecation-filter wiring is still PRESENT in the screener
+    (a future re-deprecation must work without code changes), but the
+    DEPRECATED_STRATEGIES set is empty per Batch 316a so the filter is a
+    no-op at runtime. This test pins the import + skip-on-membership site
+    so the filter remains operational for future re-deprecation."""
     import inspect
     from backtest.signals import screener as scr
     src = inspect.getsource(scr)
-    # The skip line must be present immediately inside the for-loop
     assert "DEPRECATED_STRATEGIES" in src, (
-        "Batch 218: screen_instrument must import DEPRECATED_STRATEGIES"
+        "screen_instrument must import DEPRECATED_STRATEGIES (filter wiring)"
     )
     assert "if name in _DEPRECATED" in src or "if name in DEPRECATED_STRATEGIES" in src, (
-        "Batch 218: screen loop must skip deprecated strategies via membership test"
+        "screen loop must retain skip-on-membership filter (no-op while set is empty)"
     )
 
 

@@ -1520,3 +1520,48 @@ def test_batch315a_pairs_trading_compute_no_data_path():
     assert out == {}, f"No-precompute path must return empty dict, got {out!r}"
     # Cache must contain the key for the default pairs_dir
     assert pt._PAIRS_SNAPSHOTS_CACHE, "Cache must be populated after first call"
+
+
+# =============================================================================
+# Batch 316a regression test (2026-05-25)
+# =============================================================================
+# Owner directive 2026-05-25: REVERSED Batch 218 deprecation. All 23 prior-
+# deprecated strategies re-activated for Stage D + Phase 1A-beta empirical
+# validation. This test asserts the runtime filter no longer excludes them.
+
+
+def test_batch316a_deprecated_strategies_emptied():
+    """DEPRECATED_STRATEGIES must be empty per owner directive 2026-05-25.
+    Stage D + Phase 1A-beta must iterate all 148 strategies (not 125)."""
+    from backtest.config import DEPRECATED_STRATEGIES
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert len(DEPRECATED_STRATEGIES) == 0, (
+        f"Batch 316a owner directive: DEPRECATED_STRATEGIES must be empty, "
+        f"got {len(DEPRECATED_STRATEGIES)} entries: {sorted(DEPRECATED_STRATEGIES)}"
+    )
+    active_count = sum(1 for n in ALL_STRATEGIES if n not in DEPRECATED_STRATEGIES)
+    assert active_count == len(ALL_STRATEGIES), (
+        f"Post-un-deprecate active count must equal total ALL_STRATEGIES "
+        f"({len(ALL_STRATEGIES)}); got {active_count}"
+    )
+    # Verify the previously-deprecated names ARE in ALL_STRATEGIES so the
+    # screener loop will actually pick them up.
+    previously_deprecated = {
+        "golden_cross_50_200", "golden_cross_9_21", "golden_cross_20_50",
+        "golden_cross_volume", "death_cross_50_200_volume",
+        "awesome_oscillator", "ppo_crossover", "tema_dema",
+        "force_index_breakout", "mfi_oversold",
+        "parabolic_sar_flip", "parabolic_sar_flip_short",
+        "morning_star", "evening_star_short", "three_white_soldiers",
+        "doji_at_support", "bullish_engulfing_support", "shooting_star_short",
+        "williams_stoch_dual",
+        "macd_crossover", "macd_crossover_short",
+        "camarilla_r3_breakout", "camarilla_s3_bounce",
+    }
+    assert len(previously_deprecated) == 23, "Sanity: 23 previously-deprecated names"
+    still_registered = previously_deprecated & set(ALL_STRATEGIES.keys())
+    assert len(still_registered) == 23, (
+        f"All 23 previously-deprecated strategies must be registered in "
+        f"ALL_STRATEGIES so the screener loop iterates them. Missing: "
+        f"{sorted(previously_deprecated - still_registered)}"
+    )

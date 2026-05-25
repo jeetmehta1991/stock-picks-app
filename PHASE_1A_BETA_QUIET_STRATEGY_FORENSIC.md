@@ -5,7 +5,9 @@
 **Universe:** 1937 tkrs × 4y (T1a+T1c+T2+T3+ETFs).
 
 ## Counts
-- Active strategies in screener (post `DEPRECATED_STRATEGIES`): **125**
+- Active strategies in screener at Phase 1A-β run time (Batch 218 deprecation in force): **125**
+- Active strategies in screener AS OF 2026-05-25 (Batch 316a reversed Batch 218; DEPRECATED_STRATEGIES emptied for empirical validation): **148**
+- The next Stage D + Phase 1A-β re-run will iterate all 148 strategies; the additional 23 are largely literature-null (Zakamulin / Marshall-Cahan / Park-Irwin / Horton / Hudson-Atanasova) and are expected to fire trades but produce verdict=FAIL. Confirmation overturns the deprecation with empirical evidence; rejection re-validates the prior decision.
 - Fired ≥1 trade in Phase 1A-β: **66**
 - **Quiet (0 trades): 60** at time of run.
 

@@ -858,38 +858,43 @@ STRATEGIES_BYPASS_EVENT_SUPPRESSION: set[str] = {
 }
 
 
-DEPRECATED_STRATEGIES: set[str] = {
-    # Moving-average crossovers (Zakamulin 2014; Faber 2013)
-    "golden_cross_50_200",
-    "golden_cross_9_21",
-    "golden_cross_20_50",
-    "golden_cross_volume",
-    "death_cross_50_200_volume",
-    # Indicator-derivative singles (Marshall-Cahan 2008; Park-Irwin 2007)
-    "awesome_oscillator",
-    "ppo_crossover",
-    "tema_dema",
-    "force_index_breakout",
-    "mfi_oversold",
-    # Parabolic SAR (Park-Irwin 2007)
-    "parabolic_sar_flip",
-    "parabolic_sar_flip_short",
-    # Candlestick patterns (Marshall-Young-Cahan 2008; Horton 2009)
-    "morning_star",
-    "evening_star_short",
-    "three_white_soldiers",
-    "doji_at_support",
-    "bullish_engulfing_support",
-    "shooting_star_short",
-    # Williams %R dual-indicator combo (no peer-reviewed edge; null Phase 1A-beta)
-    "williams_stoch_dual",
-    # Plain MACD crossover variants (Hudson-Atanasova-Urquhart 2022)
-    "macd_crossover",
-    "macd_crossover_short",
-    # Camarilla R3/S3 plain (Marshall-Cahan 2008; heuristic)
-    "camarilla_r3_breakout",
-    "camarilla_s3_bounce",
-}
+# Batch 316a (2026-05-25) owner directive 2026-05-25: REVERSED Batch 218
+# deprecation. All 23 prior-deprecated strategies re-activated for Stage D
+# + Phase 1A-beta empirical validation. Rationale: let the backtest produce
+# per-strategy verdicts on actual data, rather than relying on a-priori
+# literature filtering. Strategies that produce no trades or losing
+# verdicts at Phase 1A-beta scale can be pruned with empirical evidence
+# (not just citations).
+#
+# Tradeoff acknowledged: Bonferroni / Deflated-Sharpe multi-testing
+# denominator grows 125 -> 148 (~17% tighter effective threshold for
+# borderline strategies). Owner accepts this for the validation pass.
+#
+# Literature citations preserved below for context but no longer gate
+# the runtime filter. If the empirical pass confirms the literature
+# (zero alpha / null verdicts), re-deprecation is a single-line change.
+#
+# Original Batch 218 (2026-05-18) deprecation rationale, retained for
+# historical context:
+#   - Moving-average crossovers (Zakamulin 2014 JAM; Faber 2013): ~0 alpha
+#     vs buy-hold since 1990. Names: golden_cross_50_200, golden_cross_9_21,
+#     golden_cross_20_50, golden_cross_volume, death_cross_50_200_volume.
+#   - Indicator-derivative singles (Marshall-Cahan 2008 PBFJ; Park-Irwin
+#     2007 JES): awesome_oscillator, ppo_crossover, tema_dema,
+#     force_index_breakout, mfi_oversold.
+#   - Parabolic SAR (Park-Irwin 2007; Lukac-Brorsen-Irwin 1988):
+#     parabolic_sar_flip, parabolic_sar_flip_short.
+#   - Candlestick patterns (Marshall-Young-Cahan 2008 PBFJ tested on
+#     Japanese equities; Horton 2009 JBF confirmed null on US): morning_star,
+#     evening_star_short, three_white_soldiers, doji_at_support,
+#     bullish_engulfing_support, shooting_star_short.
+#   - Williams %R dual-combo (Phase 1A-beta empirical 0% WR / 5 trades):
+#     williams_stoch_dual.
+#   - Plain MACD crossover (Hudson-Atanasova-Urquhart 2022 IRFA null):
+#     macd_crossover, macd_crossover_short.
+#   - Camarilla R3/S3 plain heuristic (Marshall-Cahan 2008): camarilla_r3_breakout,
+#     camarilla_s3_bounce.
+DEPRECATED_STRATEGIES: set[str] = set()
 
 # BUG-235 RESOLVED-IMPLEMENTED Batch 99 2026-05-12: AAII Investor Sentiment
 # Survey closes Wednesday close, AAII publishes results Thursday morning.
