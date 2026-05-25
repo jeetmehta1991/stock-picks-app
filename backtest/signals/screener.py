@@ -2325,6 +2325,85 @@ def strat_institutional_distribution_short(s):
          "Below 50 EMA - trend agrees"])
 
 
+# Wave 3 13F Batch 331 (2026-05-25): 4 additional 13F-driven strategies
+# leveraging the producer infrastructure shipped in Batch 330. Each combines
+# the institutional flow signal with a complementary entry trigger:
+
+
+def strat_institutional_oversold_long(s):
+    """Wave 3 (Batch 331): institutional buy + RSI oversold mean-rev.
+    Cohen-Malloy-Pomorski 2012 JF combined with Bondt-Thaler 1985 JF
+    overreaction: institutional accumulation during oversold pullback
+    is the classic Schwed 'cash on the sidelines' setup. Distinct from
+    Batch 330's momentum variant - this is the COUNTER-TREND entry."""
+    fires = (
+        s.get("institutional_buy", False)
+        and s.get("rsi_14", 50) < 35
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_buy","rsi_14<35","price_above_ema_200"],
+        ["13F new/increased institutional positions",
+         "RSI<35 oversold (counter-trend mean-rev entry)",
+         "Above 200 EMA (regime gate - filter out falling-knife)"])
+
+
+def strat_institutional_breakout_confirmation_long(s):
+    """Wave 3 (Batch 331): institutional sponsorship of post-break retest.
+    Combines Batch 330's smart-money producer with Bulkowski 2005 retest
+    primitive. Institutional accumulation during the retest is the
+    canonical 'smart money sponsored breakout' setup that distinguishes
+    sustained breakouts from fakeouts."""
+    fires = (
+        s.get("institutional_buy", False)
+        and s.get("resistance_break_retest", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_buy","resistance_break_retest","price_above_ema_200"],
+        ["13F institutional accumulation during pullback to broken level",
+         "Bulkowski 2005 retest entry with smart-money sponsorship",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_insider_combo_long(s):
+    """Wave 3 (Batch 331): dual smart-money confirmation (13F + insiders).
+    Cohen-Malloy-Pomorski 2012 JF (insiders) + Cohen-Frazzini-Malloy 2008
+    RFS (institutions) - when BOTH sources accumulate simultaneously, the
+    edge is multiplicative not additive (independent information channels).
+    Stronger conviction than either alone."""
+    fires = (
+        s.get("institutional_buy", False)
+        and s.get("insider_cluster_active", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "smart_money_combo",
+        ["institutional_buy","insider_cluster_active","price_above_ema_200"],
+        ["13F institutional new/increased positions",
+         "Insider cluster active (>=2 insiders buying open-market 30d)",
+         "Dual smart-money sources agree (multiplicative edge)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_volume_confirmation_long(s):
+    """Wave 3 (Batch 331): institutional buy + retail volume confirmation.
+    Per Sias 2004 JFE institutional herding + Lo-Wang 2000 RFS volume-as-
+    information: retail tape volume confirming institutional accumulation
+    suggests the price discovery is broadly recognized, not just
+    smart-money positioning. Reduces false-positive risk on stale 13F
+    filings (45-day reporting lag)."""
+    fires = (
+        s.get("institutional_buy", False)
+        and s.get("vol_spike_2x", False)
+        and s.get("price_above_ema_50", True)
+    )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_buy","vol_spike_2x","price_above_ema_50"],
+        ["13F institutional new/increased positions",
+         "Volume 2x ADV(20) - retail tape confirming",
+         "Above 50 EMA (intermediate trend agrees)"])
+
+
 # ---------------------------------------------------------------------------
 # Volume profile / VPVR (DEC-370 P2 / Batch 233) - 3 strategies, Batch 255 reg
 # ---------------------------------------------------------------------------
@@ -2802,6 +2881,13 @@ ALL_STRATEGIES = {
     "institutional_cluster_long":        strat_institutional_cluster_long,
     "institutional_buy_momentum_long":   strat_institutional_buy_momentum_long,
     "institutional_distribution_short":  strat_institutional_distribution_short,
+    # Wave 3 Batch 331 (2026-05-25): 4 more 13F-driven strategies combining
+    # the producer signal with complementary entry triggers (RSI oversold,
+    # break-retest, insider co-confirmation, volume spike).
+    "institutional_oversold_long":             strat_institutional_oversold_long,
+    "institutional_breakout_confirmation_long": strat_institutional_breakout_confirmation_long,
+    "institutional_insider_combo_long":        strat_institutional_insider_combo_long,
+    "institutional_volume_confirmation_long":  strat_institutional_volume_confirmation_long,
     # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
     "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,

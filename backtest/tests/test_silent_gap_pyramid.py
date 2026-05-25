@@ -1591,11 +1591,14 @@ def test_batch329_bug111_six_retest_variants_registered():
     assert not missing, (
         f"BUG-111: missing _retest variant registrations: {missing}"
     )
-    # Total roster grew from 148 -> 154 after Batch 329; Batch 330 added
-    # 3 more (Wave 3 13F-based) -> 157.
-    assert len(ALL_STRATEGIES) == 157, (
-        f"BUG-111 + Wave 3: ALL_STRATEGIES count must be 157 after "
-        f"Batch 329 + 330, got {len(ALL_STRATEGIES)}"
+    # Roster trajectory:
+    #   148 baseline (post-Batch-316a un-deprecation)
+    #   154 after Batch 329 (+6 retest variants)
+    #   157 after Batch 330 (+3 Wave-3 13F)
+    #   161 after Batch 331 (+4 more Wave-3 13F)
+    assert len(ALL_STRATEGIES) == 161, (
+        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 161 "
+        f"after Batch 329 + 330 + 331, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1654,6 +1657,75 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s = {"triangle_ascending_detected": True,
          "resistance_break_retest": True, "price_above_ema_200": True}
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
+
+
+def test_batch331_wave3_13f_additional_strategies_registered():
+    """Wave 3 Batch 331: 4 more 13F-driven strategies registered."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "institutional_oversold_long",
+        "institutional_breakout_confirmation_long",
+        "institutional_insider_combo_long",
+        "institutional_volume_confirmation_long",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 331: missing 13F strategy registrations: {missing}"
+
+
+def test_batch331_institutional_oversold_long_fires():
+    """Batch 331: institutional_oversold_long needs 13F buy + RSI<35 + EMA200."""
+    from backtest.signals.screener import strat_institutional_oversold_long
+    s = {"institutional_buy": True, "rsi_14": 28, "price_above_ema_200": True}
+    out = strat_institutional_oversold_long(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    # RSI not oversold -> gated
+    s2 = dict(s); s2["rsi_14"] = 50
+    assert strat_institutional_oversold_long(s2)["fires"] is False
+
+
+def test_batch331_institutional_breakout_confirmation_long_fires():
+    """Batch 331: institutional_breakout_confirmation_long needs 13F buy +
+    resistance_break_retest + EMA200."""
+    from backtest.signals.screener import strat_institutional_breakout_confirmation_long
+    s = {
+        "institutional_buy": True,
+        "resistance_break_retest": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_breakout_confirmation_long(s)["fires"] is True
+    # No retest -> gated
+    s2 = dict(s); s2["resistance_break_retest"] = False
+    assert strat_institutional_breakout_confirmation_long(s2)["fires"] is False
+
+
+def test_batch331_institutional_insider_combo_long_fires():
+    """Batch 331: institutional_insider_combo_long needs BOTH 13F buy AND
+    insider cluster active AND EMA200."""
+    from backtest.signals.screener import strat_institutional_insider_combo_long
+    s = {
+        "institutional_buy": True,
+        "insider_cluster_active": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_insider_combo_long(s)["fires"] is True
+    # Drop insider -> gated
+    s2 = dict(s); s2["insider_cluster_active"] = False
+    assert strat_institutional_insider_combo_long(s2)["fires"] is False
+
+
+def test_batch331_institutional_volume_confirmation_long_fires():
+    """Batch 331: institutional_volume_confirmation_long needs 13F buy +
+    vol_spike_2x + EMA50."""
+    from backtest.signals.screener import strat_institutional_volume_confirmation_long
+    s = {
+        "institutional_buy": True,
+        "vol_spike_2x": True,
+        "price_above_ema_50": True,
+    }
+    assert strat_institutional_volume_confirmation_long(s)["fires"] is True
+    # No vol spike -> gated
+    s2 = dict(s); s2["vol_spike_2x"] = False
+    assert strat_institutional_volume_confirmation_long(s2)["fires"] is False
 
 
 def test_batch330_wave3_13f_strategies_registered():
