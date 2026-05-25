@@ -277,6 +277,22 @@ def compute_quality_factor(
                 continue
             most_recent = recent.iloc[-1]
             fj = most_recent.get("financials_json")
+            # BUG-289 RESOLVED-IMPLEMENTED Batch 312-QUALITY 2026-05-24:
+            # financials_json is stored as a Python-repr STRING in the Polygon
+            # financials cache (not a native dict). Prior `isinstance(fj, dict)`
+            # check rejected every row, returning empty quality_map -> no
+            # xs_quality_decile / xs_quality_top_quintile signals -> three
+            # strategies fired ZERO trades (xs_quality_top_quintile_long,
+            # xs_momentum_quality_combined, vix_backwardation_long). Same
+            # silent-gap class as BUG-288 (PEAD fiscal_year) and Batch 295's
+            # _safe_eps fix. Parse the string via ast.literal_eval before
+            # the dict check.
+            import ast as _ast
+            if isinstance(fj, str):
+                try:
+                    fj = _ast.literal_eval(fj)
+                except (ValueError, SyntaxError):
+                    continue
             if not isinstance(fj, dict):
                 continue
             income = fj.get("income_statement", {}) if isinstance(fj.get("income_statement"), dict) else {}

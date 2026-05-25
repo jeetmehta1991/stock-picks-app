@@ -116,7 +116,7 @@
 1. **~30 Wave 3 strategies missing** (13F/classification_change/persistence) — Day 2 (May 21) deliverable. 0 of ~30 strategies implemented.
 2. **T5b cointegrated-pairs precompute missing** — Day 1 (May 20) deliverable. Direct cause of `pairs_mean_reversion_*` zero-trade silent failure.
 3. **`combo_id` column missing from trade_log** — Day 4/5-7 deliverable. Winners pipeline cannot run cleanly.
-4. **60 of 125 active strategies fired zero trades** (Phase 1A-β output). Silent-gap candidates needing forensic per-strategy investigation. **First 3 closed by Batch 312-PEAD 2026-05-24** (BUG-288 fix re-enables `pead_long`, `pead_short`, `pead_with_insider_confirmation_long`). 57 remaining.
+4. **60 of 125 active strategies fired zero trades** (Phase 1A-β output). Silent-gap candidates needing forensic per-strategy investigation. **6 closed by Batch 312 sub-batches 2026-05-24**: BUG-288 (PEAD trio: `pead_long`, `pead_short`, `pead_with_insider_confirmation_long`); BUG-289 (Quality trio: `xs_quality_top_quintile_long`, `xs_momentum_quality_combined`, `vix_backwardation_long`). **BUG-290 documented but not yet fixed** (cap_band producer missing — blocks `january_effect_small_cap_long`). 54 remaining, categorized: (a) ~9 tight-gate-by-design (news_sentiment, VP, calendar competition), (b) ~6 data-missing (UUP/DXY, pair-precompute, index_rebalance dates), (c) ~5 legitimately rare (52w extremes, narrow SMC), (d) ~34 case-by-case TBD. Full categorization documented in Phase 1A-β quiet-strategy forensic notes.
 
 ### Important (impact downstream)
 

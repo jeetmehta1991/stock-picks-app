@@ -784,6 +784,42 @@ def test_tier11_property_dedup_eliminated_batch279():
     )
 
 
+def test_tier6_regression_bug289_quality_factor_produces_decile_batch312():
+    """BUG-289 regression (Phase 1A-beta quiet-strategy forensic Pass 2, 2026-05-24):
+    compute_quality_factor() must produce per-ticker xs_quality_decile (and
+    related quintile flags) for tickers with Polygon financials data.
+
+    Phase 1A-beta 7191-trade run had xs_quality_top_quintile_long,
+    xs_momentum_quality_combined, vix_backwardation_long all fire ZERO trades.
+    Forensic showed compute_quality_factor returned empty dict because the
+    `isinstance(fj, dict)` check rejected every row - financials_json is
+    stored as a STRING in the Polygon cache (Python-repr / JSON), not a
+    native dict. Same silent-gap class as BUG-288 (PEAD fiscal_year), Batch
+    295's _safe_eps fix, BUG-286, BUG-287, and the 5 sibling bugs.
+
+    Verifies fix at backtest/signals/cross_sectional.py: parses the string
+    via ast.literal_eval before the dict check."""
+    from datetime import date
+    from backtest.signals.cross_sectional import compute_quality_factor
+    # Mega-cap universe with full Polygon financials coverage
+    universe = ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "JPM"]
+    result = compute_quality_factor(universe, date(2024, 6, 15))
+    assert len(result) >= 5, (
+        f"BUG-289 regression: compute_quality_factor returned {len(result)} "
+        f"tickers (expected >=5). financials_json string-parse fix may have "
+        f"regressed."
+    )
+    # Each result must have xs_quality_decile
+    for t, sigs in result.items():
+        assert "xs_quality_decile" in sigs, (
+            f"BUG-289: {t} missing xs_quality_decile in result"
+        )
+        assert 1 <= sigs["xs_quality_decile"] <= 10, (
+            f"BUG-289: {t} xs_quality_decile={sigs['xs_quality_decile']} "
+            f"outside [1, 10] range"
+        )
+
+
 def test_tier6_regression_bug288_pead_surprise_flags_produced_batch312():
     """BUG-288 regression (Phase 1A-beta quiet-strategy investigation, 2026-05-24):
     compute_pead_signals() must produce pead_positive_surprise / pead_negative_surprise
