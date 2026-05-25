@@ -30,27 +30,49 @@ from typing import Any, TypedDict
 
 
 class AugmentedAgentState(TypedDict, total=False):
-    """Type-hinted dict mirroring upstream AgentState + our extensions.
+    """Type-hinted dict mirroring upstream AgentState + our project extensions.
 
-    Upstream fields (inherited from TradingAgentsState):
-      - market_report:        str
-      - fundamentals_report:  str
-      - news_report:          str
-      - investment_plan:      str
-      - trader_decision:      str
-      - risk_debate_history:  list[dict]
-      - final_decision:       dict (Pydantic-equivalent)
+    Upstream field names verified against
+    `vendored/tradingagents/agents/utils/agent_states.py` (Batch 351 read).
+    See `PHASE_1B_STATE_SCHEMA_DIFF.md` for the canonical schema-diff doc.
 
-    Our additions per DEC-462-468 + audit Part E:
+    Upstream-identical fields (we MUST use these exact names so the
+    LangGraph nodes can read what we set + we can read what they wrote):
+      - company_of_interest:   str    upstream Propagator.create_initial_state input
+      - asset_type:            str    "stock" by default
+      - trade_date:            str    ISO date - upstream's run-date field
+      - sender:                str    last agent to set state
+      - market_report:         str    Market Analyst output
+      - sentiment_report:      str    Sentiment Analyst output (DEC-057 says Social
+                                      dropped but upstream still names the slot
+                                      "sentiment" - we leave it empty)
+      - news_report:           str    News Analyst output
+      - fundamentals_report:   str    Fundamentals Analyst output
+      - investment_debate_state:  InvestDebateState (TypedDict)  Bull/Bear/Research-Manager
+      - investment_plan:       str    output of Research Manager
+      - trader_investment_plan: str   output of Trader (NOTE: upstream name has
+                                      _investment_plan suffix, not _decision)
+      - risk_debate_state:     RiskDebateState (TypedDict)  Aggressive/Conserv/Neutral
+      - final_trade_decision:  str    Portfolio Manager output (str, not dict)
+      - past_context:          str    memory-log context injected at run start
+
+    Our project-specific extensions (per audit Part E + DEC-462-468):
     """
-    # Upstream (declared here as Optional for unit-test convenience)
+    # Upstream-identical (names match agent_states.py for graph compat)
+    company_of_interest: str
+    asset_type: str
+    trade_date: str
+    sender: str
     market_report: str
-    fundamentals_report: str
+    sentiment_report: str
     news_report: str
+    fundamentals_report: str
+    investment_debate_state: dict
     investment_plan: str
-    trader_decision: str
-    risk_debate_history: list
-    final_decision: dict
+    trader_investment_plan: str
+    risk_debate_state: dict
+    final_trade_decision: str
+    past_context: str
 
     # Our project-specific extensions
     ticker: str
@@ -103,6 +125,12 @@ def build_augmented_state(
     """
     sector_etf = sector_etf or "SPY"
     state: AugmentedAgentState = {
+        # Upstream-required init keys (must mirror Propagator.create_initial_state):
+        "company_of_interest": ticker,
+        "asset_type": "stock",
+        "trade_date": as_of.isoformat(),
+        "past_context": "",  # populated by reflection-log injector in subsequent batch
+        # Convenience aliases:
         "ticker": ticker,
         "as_of": as_of.isoformat(),
     }
