@@ -180,6 +180,98 @@ def main():
                 output_dir / filename, index=False)
             print(f"  [OK] {filename}: {len(df)} rows")
 
+    # -- 3b. Batch 345 (D9 fix) 2026-05-25: exit cube post-merge.
+    # Per-batch outputs include exit_by_<dim>.csv slices + exit_method_multi_dim_cube
+    # + exit_sweet_spots + exit_pairwise_dominance, all DERIVED from
+    # trade_exit_detail.csv. Concat of derived slices would produce N-times
+    # duplicate (exit_method, dim_value) buckets - wrong semantics. Right fix:
+    # concat the SOURCE trade_exit_detail across batches, then re-run the
+    # aggregation logic from writer.py against the combined source.
+    print("\nMerging exit cube outputs (D9 fix)...")
+    try:
+        ted = merge_csv(input_dirs, "trade_exit_detail.csv")
+        if not ted.empty:
+            ted_clean = ted.drop(columns=["_batch_source"], errors="ignore")
+            ted_clean.to_csv(output_dir / "trade_exit_detail.csv", index=False)
+            print(f"  [OK] trade_exit_detail.csv: {len(ted_clean)} rows merged")
+
+            # 1D marginal aggregates per CONTEXT_COLUMN_NAMES dim
+            try:
+                from backtest.engine.exit_context import CONTEXT_COLUMN_NAMES
+                n_dims_written = 0
+                for dim in CONTEXT_COLUMN_NAMES:
+                    if dim not in ted_clean.columns:
+                        continue
+                    try:
+                        agg = (ted_clean.groupby(
+                                    ["strategy", "exit_method", dim], dropna=False
+                                ).agg(
+                                    n=("pnl_pct", "size"),
+                                    win_rate=("win", "mean"),
+                                    avg_pnl_pct=("pnl_pct", "mean"),
+                                    total_pnl_pct=("pnl_pct", "sum"),
+                                ).reset_index())
+                        agg.to_csv(output_dir / f"exit_by_{dim}.csv", index=False)
+                        n_dims_written += 1
+                    except Exception as e_dim:
+                        print(f"  [WARN] exit_by_{dim} failed: {e_dim}")
+                print(f"  [OK] exit_by_<dim>.csv: {n_dims_written} dim slices re-aggregated")
+            except Exception as e_ctx:
+                print(f"  [WARN] CONTEXT_COLUMN_NAMES import failed: {e_ctx}")
+
+            # Multi-dim cube + sweet spots + pairwise dominance
+            try:
+                from backtest.results.exit_conditional_analyzer import (
+                    compute_multi_dim_cube,
+                    find_sweet_spots,
+                    compute_pairwise_dominance,
+                    DEFAULT_CONDITION_DIMS,
+                )
+                available_dims = [d for d in DEFAULT_CONDITION_DIMS
+                                  if d in ted_clean.columns]
+                cube = compute_multi_dim_cube(ted_clean, dims=available_dims)
+                if not cube.empty:
+                    cube.to_csv(output_dir / "exit_method_multi_dim_cube.csv", index=False)
+                    print(f"  [OK] exit_method_multi_dim_cube.csv: {len(cube)} cells x {len(available_dims)} dims")
+                    spots = find_sweet_spots(cube, dims=available_dims)
+                    if not spots.empty:
+                        spots.to_csv(output_dir / "exit_sweet_spots.csv", index=False)
+                        print(f"  [OK] exit_sweet_spots.csv: {len(spots)} rows")
+                    dom = compute_pairwise_dominance(cube, dims=available_dims)
+                    if not dom.empty:
+                        dom.to_csv(output_dir / "exit_pairwise_dominance.csv", index=False)
+                        print(f"  [OK] exit_pairwise_dominance.csv: {len(dom)} rows")
+            except Exception as e_cube:
+                print(f"  [WARN] exit cube re-aggregation failed: {e_cube}")
+
+            # exit_strategy_comparison (top-level per-exit-method summary)
+            try:
+                if {"exit_method", "pnl_pct", "win"}.issubset(ted_clean.columns):
+                    comp = (ted_clean.groupby("exit_method").agg(
+                        n=("pnl_pct", "size"),
+                        win_rate=("win", "mean"),
+                        avg_pnl_pct=("pnl_pct", "mean"),
+                        total_pnl_pct=("pnl_pct", "sum"),
+                        median_pnl_pct=("pnl_pct", "median"),
+                    ).reset_index().sort_values("total_pnl_pct", ascending=False))
+                    comp.to_csv(output_dir / "exit_strategy_comparison.csv", index=False)
+                    print(f"  [OK] exit_strategy_comparison.csv: {len(comp)} exit methods")
+                    # exit_strategy_best (per-strategy top exit by total_pnl)
+                    best = (ted_clean.groupby(["strategy", "exit_method"]).agg(
+                        total_pnl_pct=("pnl_pct", "sum"),
+                        n=("pnl_pct", "size"),
+                        win_rate=("win", "mean"),
+                    ).reset_index())
+                    best_per_strat = best.sort_values("total_pnl_pct", ascending=False).groupby("strategy").head(1)
+                    best_per_strat.to_csv(output_dir / "exit_strategy_best.csv", index=False)
+                    print(f"  [OK] exit_strategy_best.csv: {len(best_per_strat)} strategy x best-exit rows")
+            except Exception as e_comp:
+                print(f"  [WARN] exit_strategy_comparison failed: {e_comp}")
+        else:
+            print("  [SKIP] trade_exit_detail.csv missing in all batches; exit cube not merged")
+    except Exception as e_ted:
+        print(f"  [WARN] exit cube merge failed: {e_ted}")
+
     # -- 4. Re-compute portfolio summary --
     # Batch 201 (Issue-2 fix): the 5 batches ran as 5 INDEPENDENT portfolios
     # each at 100% capital allocation. Concat of trade logs preserves the

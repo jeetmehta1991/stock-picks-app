@@ -145,8 +145,8 @@
 
 5. **Speedup Lever C (vectorize signals)** — Day 4 deliverable. Profile-first per Batch 315a finding (existing `compute_all_signals` already runs once per ticker-day; real win is cross-ticker panel vectorization). Phase 1A-β took ~10.5h on Hetzner CPX62; target with C+D+pool+skip-unused: <2h.
 6. **Speedup Lever D (Polars)** — Day 4 deliverable. Investigated Batch 317 2026-05-25, DEFERRED with measurement evidence (3.6s savings on 11h run = <0.01% ROI). See Lever D row above.
-7. **Sprint 7 cube_populator post-merge** — merged output lacks `exit_by_*.csv` slices; per-batch has them but aggregator doesn't.
-8. **T2 24-DEC engine quality queue** — Day 1 deliverable. Needs per-DEC audit to confirm landing.
+7. ~~**Sprint 7 cube_populator post-merge**~~ **[BATCH 345 D9 SHIPPED 2026-05-25]** — `scripts/merge_batch_outputs.py` now concats `trade_exit_detail.csv` across batches + re-aggregates the full exit cube (1D `exit_by_<dim>.csv` for all CONTEXT_COLUMN_NAMES dims + `exit_method_multi_dim_cube.csv` + `exit_sweet_spots.csv` + `exit_pairwise_dominance.csv` + `exit_strategy_comparison.csv` + `exit_strategy_best.csv`). Right semantics (re-aggregate from per-trade detail vs N×duplicate concat of derived slices). Regression test pins the code path.
+8. **T2 24-DEC engine quality queue** — Day 1 deliverable. **[BATCH 345 D10 AUDIT COMPLETE 2026-05-25]** All 8 priority DECs (DEC-062, DEC-138, DEC-216, DEC-230, DEC-231, DEC-234, DEC-246, DEC-365) audited via AUDIT_INDEX cross-reference: **all 8 are PARTIAL-IMPL-HELPER-ONLY** (helpers exist; engine call-path doesn't consume per memory rule "wired = engine-consumed"). Remaining 16 DECs are category-coded in IMPLEMENTATION_PLAN.md without explicit numbers; full audit deferred to T2 autonomous-wiring queue (12-18h effort per per-DEC standing approval). The T2 queue itself runs as a separate autonomous workstream after Stage D / Phase 1A-β.
 
 ### Confirmed DONE (no further action)
 

@@ -1796,6 +1796,29 @@ def test_batch341_index_rebalance_strategies_match_ndx_events():
     )
 
 
+def test_batch345_merger_emits_exit_cube_files():
+    """Batch 345 (D9 fix): merge_batch_outputs.py re-aggregates exit cube
+    slices from concat'd trade_exit_detail. Pins the code path so a future
+    refactor that drops the exit cube re-aggregation surfaces immediately."""
+    import inspect
+    import scripts.merge_batch_outputs as mbo
+    src = inspect.getsource(mbo)
+    # Must read CONTEXT_COLUMN_NAMES + emit exit_by_<dim>
+    assert "CONTEXT_COLUMN_NAMES" in src, (
+        "Batch 345 (D9): merger must import CONTEXT_COLUMN_NAMES to iterate dims"
+    )
+    assert "exit_by_" in src and "to_csv" in src, (
+        "Batch 345: merger must write per-dim exit_by_*.csv slices"
+    )
+    # Must emit multi-dim cube + sweet spots + pairwise dominance
+    assert "compute_multi_dim_cube" in src
+    assert "find_sweet_spots" in src
+    assert "compute_pairwise_dominance" in src
+    # Must emit per-strategy best + comparison
+    assert "exit_strategy_comparison" in src
+    assert "exit_strategy_best" in src
+
+
 def test_batch344_multi_quarter_persistence_strategies_registered():
     """Batch 344 (333b consumer): 2 true multi-quarter persistence strategies
     registered. Read from offline precompute via
