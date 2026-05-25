@@ -69,6 +69,7 @@ class BacktestEngine:
         apply_slippage_model:   bool  = True,
         walk_forward:           bool  = True,
         disable_news:           bool  = False,
+        screen_pool_workers:    int   = 0,    # Batch 322: 0 = disabled (sequential)
     ):
         _user_universe = universe or UNIVERSE
         # Batch 290 (2026-05-20): SPY is system-required for regime
@@ -94,6 +95,13 @@ class BacktestEngine:
         self.apply_slippage_model = apply_slippage_model
         self.walk_forward         = walk_forward
         self.disable_news         = disable_news
+        # Batch 322 (2026-05-25): per-ticker process-pool wiring. 0 = sequential
+        # (default; preserves pre-Batch-322 behavior). >0 enables parallelization
+        # of screen_instrument calls via multiprocessing.Pool with spawn context.
+        # Pool is lazy-initialized at the first _process_day call (after
+        # ohlcv_dict is populated) and torn down at end of backtest.
+        self.screen_pool_workers  = max(0, int(screen_pool_workers or 0))
+        self._screen_pool         = None
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Data stores
@@ -425,6 +433,9 @@ class BacktestEngine:
                     len(self.open_trades), len(self.closed_trades),
                     len(self.skipped_trades), n_finalized)
 
+        # Batch 322 (2026-05-25): tear down screen pool if it was created.
+        self._teardown_screen_pool()
+
     def _finalize_open_trades(self) -> int:
         """Force-close remaining open trades at the last available close price.
 
@@ -493,6 +504,61 @@ class BacktestEngine:
                 n_finalized,
             )
         return n_finalized
+
+    def _init_screen_pool(self):
+        """Batch 322 (2026-05-25): lazy-init the per-ticker screen pool.
+
+        Uses multiprocessing.get_context('spawn') for cross-platform behavior
+        (Windows requires spawn; Linux defaults to fork but spawn is safer
+        for forks that import pandas / numpy after a process has already
+        loaded large state).
+
+        Workers receive ohlcv_dict + info_dict via the initializer (_pool_init
+        in backtest.signals.screener); from then on per-day work-tuples carry
+        only (ticker, as_of, regime, vix_value, vix_history, xs_features) -
+        keeping per-call IPC small. Behavior preserved vs sequential per
+        Batch 321 in-process parity test (DummyPool).
+
+        No-op when self.screen_pool_workers == 0 (sequential mode).
+        """
+        if self.screen_pool_workers <= 0 or self._screen_pool is not None:
+            return
+        import multiprocessing as mp
+        from backtest.signals.screener import _pool_init
+        ctx = mp.get_context("spawn")
+        # Cap workers at cpu_count so we don't oversubscribe (Hetzner CPX62
+        # advertises 16 shared vCPU; setting screen_pool_workers=16 makes
+        # sense there). Pool is small + long-lived for entire backtest run.
+        n = min(self.screen_pool_workers, mp.cpu_count() or 1)
+        logger.info("Batch 322: initializing screen pool with %d workers (spawn)", n)
+        try:
+            self._screen_pool = ctx.Pool(
+                processes=n,
+                initializer=_pool_init,
+                initargs=(self.ohlcv_dict, self.info_dict),
+            )
+        except Exception as exc:
+            # Fall back to sequential if pool init fails (large pickle, OOM,
+            # spawn issue). Logged loud so runs surface the regression.
+            logger.warning(
+                "Batch 322: screen pool init failed (%s) - falling back to "
+                "sequential screening", exc,
+            )
+            self._screen_pool = None
+            self.screen_pool_workers = 0
+
+    def _teardown_screen_pool(self):
+        """Batch 322 (2026-05-25): clean up screen pool at end of run.
+        Called from run() after the day-loop completes."""
+        if self._screen_pool is None:
+            return
+        try:
+            self._screen_pool.close()
+            self._screen_pool.join()
+        except Exception as exc:
+            logger.warning("Batch 322: screen pool teardown error: %s", exc)
+        finally:
+            self._screen_pool = None
 
     def _trading_days(self) -> list[date]:
         # DEC-235 RESOLVED-IMPLEMENTED Batch 82 2026-05-12 owner-mandated
@@ -749,10 +815,16 @@ class BacktestEngine:
             except Exception:
                 _vix_today_for_screen = None
                 _vix_history_for_screen = None
+        # Batch 322 (2026-05-25): lazy-init screen pool on first day when
+        # enabled. Workers receive the full ohlcv_dict via initializer at
+        # init time; per-day calls carry only the work-tuple per ticker.
+        if self.screen_pool_workers > 0 and self._screen_pool is None:
+            self._init_screen_pool()
         candidates     = screen_universe(
             ohlcv_pit, self.info_dict, as_of, regime,
             vix_value=_vix_today_for_screen,
             vix_history=_vix_history_for_screen,
+            pool=self._screen_pool,  # None when sequential mode
         )
         active_signals = {c["ticker"]: c for c in candidates}
         sent           = sentiment_snapshot(as_of)

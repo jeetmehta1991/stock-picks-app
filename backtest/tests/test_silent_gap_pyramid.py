@@ -1550,6 +1550,77 @@ class _DummyPool:
         return [fn(args) for args in iterable]
 
 
+# =============================================================================
+# Batch 322 regression tests (2026-05-25): engine pool wiring
+# =============================================================================
+# Tests target the wiring contract (constructor flag, lazy-init, teardown,
+# CLI arg) without actually spawning a multiprocessing pool inside pytest -
+# spawn-context tests are flaky in pytest under Windows. Real multiprocess
+# parity is owner-validated via a Stage D smoke run.
+
+
+def test_batch322_engine_default_screen_pool_workers_zero():
+    """Batch 322: BacktestEngine default screen_pool_workers is 0
+    (sequential mode preserves pre-Batch-322 behavior)."""
+    import inspect
+    from backtest.engine.backtest import BacktestEngine
+    sig = inspect.signature(BacktestEngine.__init__)
+    assert "screen_pool_workers" in sig.parameters, (
+        "Batch 322: BacktestEngine must accept screen_pool_workers kwarg"
+    )
+    assert sig.parameters["screen_pool_workers"].default == 0, (
+        "Batch 322: default must be 0 (sequential mode)"
+    )
+
+
+def test_batch322_engine_pool_methods_present():
+    """Batch 322: _init_screen_pool + _teardown_screen_pool methods exist."""
+    from backtest.engine.backtest import BacktestEngine
+    assert hasattr(BacktestEngine, "_init_screen_pool")
+    assert hasattr(BacktestEngine, "_teardown_screen_pool")
+
+
+def test_batch322_engine_sequential_when_workers_zero():
+    """Batch 322: when screen_pool_workers=0, _init_screen_pool is a no-op
+    and self._screen_pool stays None. Verifies sequential default path
+    isn't accidentally affected by the wiring."""
+    from backtest.engine.backtest import BacktestEngine
+    # Construct without loading data (avoid expensive setup)
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.screen_pool_workers = 0
+    eng._screen_pool = None
+    eng._init_screen_pool()
+    assert eng._screen_pool is None
+    eng._teardown_screen_pool()  # no-op when None
+    assert eng._screen_pool is None
+
+
+def test_batch322_cli_flag_present():
+    """Batch 322: run_phase1a.py --screen-pool-workers flag exists with
+    default 0 (sequential)."""
+    import inspect
+    import backtest.run_phase1a as rp
+    src = inspect.getsource(rp)
+    assert "--screen-pool-workers" in src, (
+        "Batch 322: --screen-pool-workers CLI flag must be added"
+    )
+    assert "screen_pool_workers=args.screen_pool_workers" in src, (
+        "Batch 322: CLI flag must flow to BacktestEngine constructor"
+    )
+
+
+def test_batch322_screen_universe_pool_arg_present():
+    """Batch 322: BacktestEngine._process_day must pass pool= to
+    screen_universe (so Batch 321 pool path is actually reachable)."""
+    import inspect
+    from backtest.engine.backtest import BacktestEngine
+    src = inspect.getsource(BacktestEngine._process_day)
+    assert "pool=self._screen_pool" in src, (
+        "Batch 322: _process_day must pass pool=self._screen_pool to "
+        "screen_universe so Batch 321 parallel path is actually exercised"
+    )
+
+
 def test_batch321_pool_init_sets_globals():
     """_pool_init sets _WORKER_OHLCV + _WORKER_INFO module-globals."""
     import backtest.signals.screener as scr

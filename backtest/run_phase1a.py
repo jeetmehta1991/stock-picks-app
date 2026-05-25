@@ -156,6 +156,14 @@ def main():
                    help="Max screener candidates accepted per day. "
                         "Batch 314 Cat-5 A loosen: 10 -> 30 (owner-approved 2026-05-24) "
                         "to admit Phase 1A-beta strategies starved by per-day cap.")
+    p.add_argument("--screen-pool-workers", type=int, default=0,
+                   help="Batch 322 (2026-05-25): number of process-pool workers "
+                        "for per-ticker screen_instrument parallelization. "
+                        "0 (default) = sequential (pre-Batch-322 behavior). "
+                        "On Hetzner CPX62 16 vCPU, --screen-pool-workers=16 "
+                        "is the recommended setting. Worker initializer "
+                        "loads full ohlcv_dict + info_dict so per-day IPC "
+                        "stays small.")
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
 
@@ -243,6 +251,7 @@ def main():
         run_agents=agents, output_dir=args.output_dir,
         disable_news=args.no_news,
         walk_forward=walk_forward_enabled,
+        screen_pool_workers=args.screen_pool_workers,  # Batch 322
     )
     if args.no_git:
         import os
