@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phase 1B Cube Dashboard (Placeholder)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         margin: 0; padding: 0; background: #f5f7fa; color: #333; }
+  header { background: #2c3e50; color: white; padding: 16px 24px; }
+  header h1 { margin: 0; font-size: 22px; font-weight: 600; }
+  main { padding: 40px 24px; max-width: 800px; margin: 0 auto; }
+  .placeholder { background: white; border: 2px dashed #bdc3c7; border-radius: 8px;
+                  padding: 32px; text-align: center; color: #7f8c8d; }
+  .placeholder h2 { margin: 0 0 12px 0; color: #34495e; font-size: 18px; }
+  .placeholder code { background: #ecf0f1; padding: 2px 6px; border-radius: 3px;
+                       font-size: 12px; }
+  .checklist { text-align: left; margin: 16px auto; max-width: 500px; }
+  .checklist li { margin: 6px 0; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Phase 1B Cube Dashboard (Placeholder)</h1>
+  </header>
+  <main>
+    <div class="placeholder">
+      <h2>Awaiting Phase 1B run</h2>
+      <p>We are still in Phase 1A. Phase 1B adds the 11-agent overlay (Bull / Bear /
+      Research Manager / Trader / 3× Risk Debaters / Portfolio Manager / Reflection per DEC-057)
+      on top of the surviving (strategy × exit) cells from Phase 1A-β.</p>
+      <p>The OUTPUT of Phase 1B is <strong>Phase 1B-α</strong> — the combined cube
+      (rules + agents). That data will populate this dashboard when the Phase 1B run completes.</p>
+
+      <div class="checklist">
+        <strong>Phase 1B-α inputs required before launch:</strong>
+        <ul>
+          <li>Phase 1A-β survivor roster (see <code>PHASE_1A_BETA_SURVIVOR_ROSTER.md</code>)</li>
+          <li>Owner per-regime / per-classifier analysis of underperformer roster (no
+              universal disable per directive 2026-05-24)</li>
+          <li>Agent prompts validated via smoke run (<code>scripts/run_phase_1b_alpha_smoke.py</code>, ~$3)</li>
+          <li>Agent A/B framework validated via demo run (<code>scripts/run_phase_1b_alpha_demo.py</code>, ~$10)</li>
+          <li>Full Phase 1B-α run (<code>scripts/run_phase_1b_alpha.py</code>, ~$50-150)</li>
+        </ul>
+        <strong>Then this dashboard auto-populates from:</strong>
+        <ul>
+          <li><code>output_phase_1b_alpha_*/trade_log.csv</code></li>
+          <li><code>output_phase_1b_alpha_*/per_cell_is_oos.csv</code></li>
+          <li><code>output_phase_1b_alpha_*/agent_performance.csv</code> (new dimension: agent_score)</li>
+        </ul>
+      </div>
+
+      <p style="margin-top:16px;font-size:13px;">
+        For current results, see the
+        <a href="../dashboard_phase_1a_beta/">Phase 1A-β dashboard</a>.
+      </p>
+    </div>
+  </main>
+</body>
+</html>
