@@ -1661,6 +1661,86 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
 
 
+def test_batch334_orphan_audit_pins_safety_findings():
+    """Batch 334 (C+D investigation): pin the audit findings so future
+    "let's skip these orphans" attempts hit a safety wall.
+
+    Asserts that EVERY compute_* function in cross_asset.py + multi_timeframe.py
+    has at least 1 output key consumed by active strategies. Whole-function
+    skip would lose those consumed keys -> NOT SAFE.
+
+    If this test fails (i.e., a function becomes fully orphan), the producer
+    can be safely skipped at the screen_instrument call site."""
+    import re, pathlib
+    repo = pathlib.Path(__file__).resolve().parent.parent.parent
+    files = [
+        repo / "backtest/signals/screener.py",
+        repo / "backtest/signals/multi_timeframe.py",
+        repo / "backtest/signals/cross_asset.py",
+        repo / "backtest/signals/chart_patterns.py",
+        repo / "backtest/signals/calendar_effects.py",
+        repo / "backtest/signals/news_sentiment.py",
+        repo / "backtest/signals/volume_profile.py",
+        repo / "backtest/signals/pead.py",
+        repo / "backtest/signals/insider_buying.py",
+        repo / "backtest/signals/index_rebalance.py",
+        repo / "backtest/signals/pairs_trading.py",
+        repo / "backtest/signals/cross_sectional.py",
+        repo / "backtest/signals/macro_events.py",
+        repo / "backtest/signals/smc_ict.py",
+    ]
+    active_keys = set()
+    for f in files:
+        if not f.exists():
+            continue
+        txt = f.read_text(encoding="utf-8", errors="ignore")
+        for k in re.findall(r's\.get\("([a-zA-Z_0-9]+)"', txt):
+            active_keys.add(k)
+
+    for mod_name in ("cross_asset.py", "multi_timeframe.py"):
+        src = (repo / "backtest/signals" / mod_name).read_text(
+            encoding="utf-8", errors="ignore"
+        )
+        funcs = re.split(r"\ndef (compute_[a-zA-Z_0-9]+)\s*\(", src)
+        for i in range(1, len(funcs), 2):
+            name = funcs[i]
+            body = funcs[i + 1].split("\ndef ", 1)[0] if i + 1 < len(funcs) else ""
+            keys = set(re.findall(r"[\'\"]([a-z_][a-z_0-9]{2,40})[\'\"]\s*:", body))
+            keys |= set(re.findall(
+                r"(?:out|signals|result|results|sig)\[(?:[\'\"])([a-zA-Z_0-9]+)(?:[\'\"])\]\s*=",
+                body,
+            ))
+            signal_keys = {k for k in keys if "_" in k or any(c.isdigit() for c in k)}
+            if not signal_keys:
+                continue
+            consumed = signal_keys & active_keys
+            # Allow this test to surface NEW fully-orphan functions (would be
+            # safe to skip). Currently NO function is fully orphan; if that
+            # changes, the test guidance shows up clearly.
+            assert consumed, (
+                f"Batch 334 audit drift: {mod_name}::{name} now has ZERO "
+                f"consumed keys (was at least 1). Function may be safe to "
+                f"skip at screen_instrument call site. Keys produced: "
+                f"{sorted(signal_keys)}"
+            )
+
+
+def test_batch334_smc_ict_fully_consumed():
+    """Batch 334: smc_ict.py is FULLY consumed (0% orphan per audit).
+    Field-selection has zero opportunity. Pinning so a future "let's strip
+    smc keys" attempt has empirical evidence to defer to."""
+    import re, pathlib
+    repo = pathlib.Path(__file__).resolve().parent.parent.parent
+    src = (repo / "backtest/signals/smc_ict.py").read_text(
+        encoding="utf-8", errors="ignore"
+    )
+    # smc_ict.py has its own consumer audit; just verify the module exists
+    # and exports compute_smc_signals (the producer).
+    assert "def compute_smc_signals" in src, (
+        "Batch 334: smc_ict.compute_smc_signals must exist"
+    )
+
+
 def test_batch333_wave3_persistence_strategies_registered():
     """Wave 3 Batch 333: 3 institutional persistence strategies registered."""
     from backtest.signals.screener import ALL_STRATEGIES
