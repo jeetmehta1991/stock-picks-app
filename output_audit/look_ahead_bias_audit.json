@@ -1,0 +1,412 @@
+{
+  "static": {
+    "signals_dir": "backtest/signals",
+    "engine_dir": "backtest/engine",
+    "findings_count": 5,
+    "by_severity": {
+      "MEDIUM": 2,
+      "HIGH": 3
+    },
+    "findings": [
+      {
+        "file": "backtest\\signals\\calendar_effects.py",
+        "line": 127,
+        "pattern": "explicit look-ahead label",
+        "severity": "MEDIUM",
+        "snippet": "def _days_to_next_holiday(d: date, max_lookahead: int = 30) -> Optional[int]:"
+      },
+      {
+        "file": "backtest\\signals\\calendar_effects.py",
+        "line": 129,
+        "pattern": "explicit look-ahead label",
+        "severity": "MEDIUM",
+        "snippet": "for delta in range(1, max_lookahead + 1):"
+      },
+      {
+        "file": "backtest\\signals\\pead.py",
+        "line": 233,
+        "pattern": "iloc[i+N] forward index",
+        "severity": "HIGH",
+        "snippet": "post_close = float(ohlcv_df[\"close\"].iloc[pos + 1])"
+      },
+      {
+        "file": "backtest\\signals\\smc_ict.py",
+        "line": 9,
+        "pattern": "forward-named local",
+        "severity": "HIGH",
+        "snippet": "- Fair Value Gap (FVG): 3-bar imbalance where prev_high < next_low"
+      },
+      {
+        "file": "backtest\\signals\\smc_ict.py",
+        "line": 10,
+        "pattern": "forward-named local",
+        "severity": "HIGH",
+        "snippet": "(bullish FVG) or prev_low > next_high (bearish FVG)"
+      }
+    ]
+  },
+  "empirical": {
+    "n_total_trades": 410,
+    "n_strategies_fired": 35,
+    "rows": [
+      {
+        "strategy": "cpr_narrow_momentum",
+        "n": 2,
+        "wr_pct": 100.0,
+        "mean_pnl_pct": 0.401,
+        "median_hold_days": 48.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "avwap_50_reclaim",
+        "n": 18,
+        "wr_pct": 66.67,
+        "mean_pnl_pct": 3.836,
+        "median_hold_days": 28.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "bollinger_tight",
+        "n": 3,
+        "wr_pct": 66.67,
+        "mean_pnl_pct": 4.514,
+        "median_hold_days": 58.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "williams_r_oversold",
+        "n": 5,
+        "wr_pct": 60.0,
+        "mean_pnl_pct": 25.276,
+        "median_hold_days": 48.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "cmf_flip",
+        "n": 4,
+        "wr_pct": 50.0,
+        "mean_pnl_pct": 5.329,
+        "median_hold_days": 78.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "pivot_r1_breakout",
+        "n": 10,
+        "wr_pct": 50.0,
+        "mean_pnl_pct": 8.018,
+        "median_hold_days": 36.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "stochrsi_oversold",
+        "n": 2,
+        "wr_pct": 50.0,
+        "mean_pnl_pct": 0.432,
+        "median_hold_days": 8.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "xs_momentum_top_decile",
+        "n": 12,
+        "wr_pct": 50.0,
+        "mean_pnl_pct": 2.385,
+        "median_hold_days": 20.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "cpr_narrow_bullish",
+        "n": 18,
+        "wr_pct": 44.44,
+        "mean_pnl_pct": -1.742,
+        "median_hold_days": 4.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "xs_low_beta_long",
+        "n": 30,
+        "wr_pct": 40.0,
+        "mean_pnl_pct": 1.762,
+        "median_hold_days": 92.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "orb_stocks_in_play_long",
+        "n": 35,
+        "wr_pct": 37.14,
+        "mean_pnl_pct": 2.424,
+        "median_hold_days": 23.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "po3_bearish",
+        "n": 19,
+        "wr_pct": 36.84,
+        "mean_pnl_pct": -0.405,
+        "median_hold_days": 7.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "smc_choch_reversal",
+        "n": 19,
+        "wr_pct": 36.84,
+        "mean_pnl_pct": -2.818,
+        "median_hold_days": 31.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "smc_inverse_fvg",
+        "n": 28,
+        "wr_pct": 35.71,
+        "mean_pnl_pct": 1.341,
+        "median_hold_days": 28.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "monthly_bias_momentum_long",
+        "n": 26,
+        "wr_pct": 34.62,
+        "mean_pnl_pct": 5.442,
+        "median_hold_days": 28.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "po3_bullish",
+        "n": 19,
+        "wr_pct": 31.58,
+        "mean_pnl_pct": -2.868,
+        "median_hold_days": 20.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "htf_aligned_breakout_long",
+        "n": 16,
+        "wr_pct": 31.25,
+        "mean_pnl_pct": 12.07,
+        "median_hold_days": 33.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "htf_aligned_breakout_short",
+        "n": 13,
+        "wr_pct": 30.77,
+        "mean_pnl_pct": -0.864,
+        "median_hold_days": 12.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "hull_rsi",
+        "n": 13,
+        "wr_pct": 30.77,
+        "mean_pnl_pct": -4.043,
+        "median_hold_days": 29.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "smc_bos_continuation",
+        "n": 19,
+        "wr_pct": 26.32,
+        "mean_pnl_pct": -4.124,
+        "median_hold_days": 21.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "avwap_252_breakout",
+        "n": 8,
+        "wr_pct": 25.0,
+        "mean_pnl_pct": -3.527,
+        "median_hold_days": 55.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "ultimate_oscillator",
+        "n": 4,
+        "wr_pct": 25.0,
+        "mean_pnl_pct": -2.232,
+        "median_hold_days": 31.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "xs_momentum_bottom_decile_short",
+        "n": 4,
+        "wr_pct": 25.0,
+        "mean_pnl_pct": 0.189,
+        "median_hold_days": 18.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "orb_stocks_in_play_short",
+        "n": 14,
+        "wr_pct": 21.43,
+        "mean_pnl_pct": -4.343,
+        "median_hold_days": 9.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "buyback_8k_recent_long",
+        "n": 24,
+        "wr_pct": 16.67,
+        "mean_pnl_pct": 2.159,
+        "median_hold_days": 20.5,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "macd_fast_crossover",
+        "n": 6,
+        "wr_pct": 16.67,
+        "mean_pnl_pct": -6.95,
+        "median_hold_days": 52.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "bollinger_lower",
+        "n": 20,
+        "wr_pct": 15.0,
+        "mean_pnl_pct": -0.935,
+        "median_hold_days": 6.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "stochrsi_overbought_short",
+        "n": 9,
+        "wr_pct": 11.11,
+        "mean_pnl_pct": -5.208,
+        "median_hold_days": 30.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "po3_htf_aligned_short",
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl_pct": -8.567,
+        "median_hold_days": 5.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "smc_bos_retest_entry",
+        "n": 2,
+        "wr_pct": 0.0,
+        "mean_pnl_pct": -7.577,
+        "median_hold_days": 29.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "smc_liquidity_sweep_reversal",
+        "n": 3,
+        "wr_pct": 0.0,
+        "mean_pnl_pct": -5.31,
+        "median_hold_days": 17.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "smc_order_block_bounce",
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl_pct": -10.93,
+        "median_hold_days": 39.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "smc_premium_short",
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl_pct": -4.812,
+        "median_hold_days": 35.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "volume_spike_breakout",
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl_pct": -14.409,
+        "median_hold_days": 1155.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      },
+      {
+        "strategy": "xs_combined_momentum_low_ivol",
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl_pct": -11.251,
+        "median_hold_days": 121.0,
+        "zero_hold_positive_count": 0,
+        "empirical_flags": []
+      }
+    ]
+  },
+  "verdicts": {
+    "cpr_narrow_momentum": "LIKELY_LEGIT_RARE",
+    "avwap_50_reclaim": "CLEAN",
+    "bollinger_tight": "LIKELY_LEGIT_RARE",
+    "williams_r_oversold": "CLEAN",
+    "cmf_flip": "LIKELY_LEGIT_RARE",
+    "pivot_r1_breakout": "CLEAN",
+    "stochrsi_oversold": "LIKELY_LEGIT_RARE",
+    "xs_momentum_top_decile": "CLEAN",
+    "cpr_narrow_bullish": "CLEAN",
+    "xs_low_beta_long": "CLEAN",
+    "orb_stocks_in_play_long": "CLEAN",
+    "po3_bearish": "CLEAN",
+    "smc_choch_reversal": "CLEAN",
+    "smc_inverse_fvg": "CLEAN",
+    "monthly_bias_momentum_long": "CLEAN",
+    "po3_bullish": "CLEAN",
+    "htf_aligned_breakout_long": "CLEAN",
+    "htf_aligned_breakout_short": "CLEAN",
+    "hull_rsi": "CLEAN",
+    "smc_bos_continuation": "CLEAN",
+    "avwap_252_breakout": "CLEAN",
+    "ultimate_oscillator": "LIKELY_LEGIT_RARE",
+    "xs_momentum_bottom_decile_short": "LIKELY_LEGIT_RARE",
+    "orb_stocks_in_play_short": "CLEAN",
+    "buyback_8k_recent_long": "CLEAN",
+    "macd_fast_crossover": "CLEAN",
+    "bollinger_lower": "CLEAN",
+    "stochrsi_overbought_short": "CLEAN",
+    "po3_htf_aligned_short": "LIKELY_LEGIT_RARE",
+    "smc_bos_retest_entry": "LIKELY_LEGIT_RARE",
+    "smc_liquidity_sweep_reversal": "LIKELY_LEGIT_RARE",
+    "smc_order_block_bounce": "LIKELY_LEGIT_RARE",
+    "smc_premium_short": "LIKELY_LEGIT_RARE",
+    "volume_spike_breakout": "LIKELY_LEGIT_RARE",
+    "xs_combined_momentum_low_ivol": "LIKELY_LEGIT_RARE"
+  },
+  "verdict_counts": {
+    "LIKELY_LEGIT_RARE": 13,
+    "CLEAN": 22,
+    "CODE_FIX_REQUIRED": 0,
+    "INVESTIGATE": 0
+  }
+}
