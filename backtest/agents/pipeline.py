@@ -54,11 +54,27 @@ def _call_claude(
     system: str = "",
     max_tokens: int = 800,
     temperature: float = 0.0,  # 0 = deterministic for backtest reproducibility
+    max_attempts: int = 5,
 ) -> Optional[str]:
     """
     Call Anthropic API and return the text response.
     Returns None on failure.
     temperature=0.0 for backtest (reproducible), 0.3 for live trading (some variation).
+
+    Batch 346 P1B-005 hardening (2026-05-25): exponential backoff with jitter +
+    classified retry-vs-fail-fast logic.
+
+    Retry classification:
+      - 429 / 529 (rate limit / overloaded): exponential backoff 30s/60s/120s
+        + jitter; retry up to max_attempts.
+      - 5xx (server error): exponential backoff 5s/10s/20s + jitter; retry.
+      - 408 (timeout): retry.
+      - 4xx other (400/401/403/404 etc.): FAIL-FAST. Permanent error; no
+        retry. Logger.error includes status code + response body excerpt.
+      - Network/timeout/connection error: exponential backoff + retry.
+      - Other Exception: log + retry once.
+
+    Returns None on all-attempts-exhausted OR fail-fast.
     """
     if not ANTHROPIC_KEY:
         logger.error("ANTHROPIC_API_KEY not set  -  agents unavailable")
@@ -78,7 +94,9 @@ def _call_claude(
     if system:
         payload["system"] = system
 
-    for attempt in range(3):
+    import random
+    transient_codes = {408, 429, 500, 502, 503, 504, 529}
+    for attempt in range(max_attempts):
         try:
             resp = requests.post(
                 ANTHROPIC_API_URL,
@@ -86,25 +104,59 @@ def _call_claude(
                 json=payload,
                 timeout=60,
             )
-            if resp.status_code == 529 or resp.status_code == 429:
-                wait = 30 * (attempt + 1)
-                logger.warning("API rate limit (attempt %d)  -  sleeping %ds", attempt + 1, wait)
+            if 200 <= resp.status_code < 300:
+                data = resp.json()
+                return data["content"][0]["text"]
+            if resp.status_code in transient_codes:
+                # Rate-limit class: longer backoff; server-error class: shorter.
+                base = 30 if resp.status_code in (429, 529) else 5
+                wait = base * (2 ** attempt) + random.uniform(0, 1.5)
+                logger.warning(
+                    "Claude API %d (transient, attempt %d/%d) - backoff %.1fs",
+                    resp.status_code, attempt + 1, max_attempts, wait,
+                )
                 time.sleep(wait)
                 continue
-            resp.raise_for_status()
-            data = resp.json()
-            return data["content"][0]["text"]
+            # 4xx non-transient (400/401/403/404 etc.): fail-fast.
+            body_excerpt = resp.text[:300] if resp.text else "(empty)"
+            logger.error(
+                "Claude API %d (permanent, fail-fast): %s",
+                resp.status_code, body_excerpt,
+            )
+            return None
+        except (requests.Timeout, requests.ConnectionError) as exc:
+            wait = 5 * (2 ** attempt) + random.uniform(0, 1.5)
+            logger.warning(
+                "Claude API network error (attempt %d/%d): %s - backoff %.1fs",
+                attempt + 1, max_attempts, exc, wait,
+            )
+            time.sleep(wait)
         except Exception as exc:
-            logger.error("Claude API call failed (attempt %d): %s", attempt + 1, exc)
-            if attempt < 2:
-                time.sleep(5)
+            logger.error(
+                "Claude API call failed (attempt %d/%d): %s",
+                attempt + 1, max_attempts, exc,
+            )
+            if attempt < max_attempts - 1:
+                time.sleep(5 + random.uniform(0, 1.5))
 
+    logger.error("Claude API call exhausted %d attempts; returning None", max_attempts)
     return None
 
 
-def _parse_json_response(text: Optional[str]) -> dict:
-    """Parse JSON from agent response, with cleanup for markdown fences."""
+def _parse_json_response(text: Optional[str], agent_label: str = "agent") -> dict:
+    """Parse JSON from agent response, with cleanup for markdown fences.
+
+    Batch 346 P1B-006 hardening (2026-05-25): explicit logger.warning on
+    parse failure with payload excerpt; never silently returns empty dict.
+    Caller can pass `agent_label` (e.g. "technical", "bull-bear") to make
+    the warning self-attributing in logs.
+
+    Returns:
+      Parsed dict on success, OR empty dict + WARN-logged on failure.
+      Caller treats empty dict as a degraded but non-fatal signal.
+    """
     if not text:
+        logger.warning("Agent %s: empty/None response from Claude API", agent_label)
         return {}
     clean = text.strip()
     if clean.startswith("```"):
@@ -112,15 +164,25 @@ def _parse_json_response(text: Optional[str]) -> dict:
         clean = "\n".join(lines[1:-1]) if len(lines) > 2 else clean
     try:
         return json.loads(clean)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
         # Try to extract JSON from mixed text
         import re
         match = re.search(r"\{.*\}", clean, re.DOTALL)
         if match:
             try:
                 return json.loads(match.group())
-            except Exception:
-                pass
+            except json.JSONDecodeError as inner_exc:
+                logger.warning(
+                    "Agent %s: regex-extracted JSON also failed parse: %s. "
+                    "Payload excerpt: %r",
+                    agent_label, inner_exc, clean[:200],
+                )
+                return {}
+        logger.warning(
+            "Agent %s: response not valid JSON and no {...} block found. "
+            "Top-level parse error: %s. Payload excerpt: %r",
+            agent_label, exc, clean[:200],
+        )
     return {}
 
 
@@ -637,6 +699,53 @@ def _save_agent_cache(cache_key: str, result: dict):
         cache_file.write_text(json.dumps(result, default=str))
     except Exception as exc:
         logger.warning("Agent cache write failed: %s", exc)
+
+
+# Batch 346 P1B-007 (2026-05-25): agent cache eviction.
+# Pre-batch: cache grew unbounded (~7,000+ files in
+# backtest/agents/cache/). Each agent cache file is ~5-10 KB so 7K files =
+# ~35-70 MB disk + slow ls on the directory. Adds LRU-by-mtime eviction
+# that owner can run periodically OR engine can call automatically on
+# cache miss when file count exceeds threshold.
+
+AGENT_CACHE_MAX_FILES = 10_000  # ~50-100 MB upper bound
+AGENT_CACHE_EVICTION_BATCH = 1000  # evict 10% at a time to amortize cost
+
+
+def evict_agent_cache_lru(
+    target_count: int = AGENT_CACHE_MAX_FILES,
+    batch_size: int = AGENT_CACHE_EVICTION_BATCH,
+) -> int:
+    """LRU eviction of agent cache. Returns count of files removed.
+
+    Eviction policy: when total file count >= target_count, delete the
+    `batch_size` oldest files (by mtime). Safe to call any time; no-op
+    when cache is below the target.
+
+    Run periodically (e.g. once per backtest session) OR wire into
+    _save_agent_cache to amortize.
+    """
+    if not AGENT_CACHE_DIR.exists():
+        return 0
+    files = list(AGENT_CACHE_DIR.glob("*.json"))
+    n = len(files)
+    if n < target_count:
+        return 0
+    # Sort by mtime ascending (oldest first)
+    files.sort(key=lambda p: p.stat().st_mtime)
+    to_evict = files[:batch_size]
+    removed = 0
+    for p in to_evict:
+        try:
+            p.unlink()
+            removed += 1
+        except Exception as exc:
+            logger.warning("Agent cache evict %s failed: %s", p.name, exc)
+    logger.info(
+        "Agent cache LRU evicted %d/%d files (target_count=%d)",
+        removed, n, target_count,
+    )
+    return removed
 
 
 # ---------------------------------------------------------------------------

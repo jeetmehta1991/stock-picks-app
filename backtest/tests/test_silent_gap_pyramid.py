@@ -1796,6 +1796,126 @@ def test_batch341_index_rebalance_strategies_match_ndx_events():
     )
 
 
+# =============================================================================
+# Batch 346 P1B hardening regression tests (2026-05-25)
+# =============================================================================
+# Three HIGH-priority bugs from PHASE_1B_AUDIT_2026_05_25.md:
+#  - P1B-005: _call_claude exponential backoff + fail-fast classification
+#  - P1B-006: _parse_json_response logger.warning on parse failure
+#  - P1B-007: agent cache LRU eviction helper
+
+
+def test_batch346_call_claude_exponential_backoff_present():
+    """P1B-005: _call_claude implements exponential backoff with jitter +
+    classified transient vs fail-fast retry logic."""
+    import inspect
+    from backtest.agents import pipeline
+    src = inspect.getsource(pipeline._call_claude)
+    # Classification of transient codes
+    assert "transient_codes" in src or "transient_codes = " in src
+    assert "429" in src and "529" in src
+    # Exponential backoff
+    assert "2 **" in src or "2**" in src or "pow(2" in src
+    # Jitter (random)
+    assert "random" in src
+    # Fail-fast on permanent 4xx
+    assert "fail-fast" in src.lower() or "permanent" in src.lower()
+    # max_attempts param (per audit: was hardcoded 3)
+    assert "max_attempts" in src
+
+
+def test_batch346_parse_json_response_warns_on_failure(caplog):
+    """P1B-006: _parse_json_response emits logger.warning on parse failure
+    (no silent empty-dict return)."""
+    import logging
+    from backtest.agents.pipeline import _parse_json_response
+    caplog.set_level(logging.WARNING)
+    out = _parse_json_response("this is not json at all", agent_label="test_agent")
+    assert out == {}
+    # The warning must mention the agent label + parse error context
+    warning_messages = [r.message for r in caplog.records if r.levelno >= logging.WARNING]
+    assert any("test_agent" in m for m in warning_messages), (
+        f"P1B-006: expected logger.warning mentioning 'test_agent'; got: {warning_messages}"
+    )
+
+
+def test_batch346_parse_json_response_succeeds_on_valid_input():
+    """P1B-006: valid JSON parsing still works after hardening."""
+    from backtest.agents.pipeline import _parse_json_response
+    out = _parse_json_response('{"foo": "bar"}')
+    assert out == {"foo": "bar"}
+    # Markdown-fenced JSON
+    out = _parse_json_response('```json\n{"foo": "bar"}\n```')
+    assert out == {"foo": "bar"}
+    # Mixed text with embedded JSON
+    out = _parse_json_response('Some text {"foo": "bar"} more text')
+    assert out == {"foo": "bar"}
+
+
+def test_batch346_parse_json_response_empty_input_warns(caplog):
+    """P1B-006: None/empty input still returns {} but with warning."""
+    import logging
+    from backtest.agents.pipeline import _parse_json_response
+    caplog.set_level(logging.WARNING)
+    assert _parse_json_response(None, "x") == {}
+    assert _parse_json_response("", "x") == {}
+    warning_msgs = [r.message for r in caplog.records if r.levelno >= logging.WARNING]
+    assert len(warning_msgs) >= 2, "Expected at least 2 warnings"
+
+
+def test_batch346_evict_agent_cache_lru_present():
+    """P1B-007: evict_agent_cache_lru helper exists + has expected signature."""
+    from backtest.agents.pipeline import evict_agent_cache_lru
+    import inspect
+    sig = inspect.signature(evict_agent_cache_lru)
+    assert "target_count" in sig.parameters
+    assert "batch_size" in sig.parameters
+    # Defaults defined
+    assert sig.parameters["target_count"].default >= 1000
+    assert sig.parameters["batch_size"].default >= 100
+
+
+def test_batch346_evict_agent_cache_lru_noop_when_under_threshold(tmp_path, monkeypatch):
+    """P1B-007: LRU eviction is no-op when cache is below threshold."""
+    from backtest.agents import pipeline
+    monkeypatch.setattr(pipeline, "AGENT_CACHE_DIR", tmp_path)
+    # Create 5 cache files
+    for i in range(5):
+        (tmp_path / f"key_{i}.json").write_text("{}")
+    removed = pipeline.evict_agent_cache_lru(target_count=100)
+    assert removed == 0
+    assert len(list(tmp_path.glob("*.json"))) == 5
+
+
+def test_batch346_evict_agent_cache_lru_removes_oldest(tmp_path, monkeypatch):
+    """P1B-007: eviction removes oldest files first when over threshold."""
+    import time
+    from backtest.agents import pipeline
+    monkeypatch.setattr(pipeline, "AGENT_CACHE_DIR", tmp_path)
+    # Create 15 files with deterministic mtimes (older first)
+    files = []
+    base_time = time.time() - 1000
+    for i in range(15):
+        p = tmp_path / f"key_{i}.json"
+        p.write_text("{}")
+        # Set mtime: i=0 is oldest, i=14 is newest
+        os_path_mtime = base_time + i
+        os = __import__("os")
+        os.utime(p, (os_path_mtime, os_path_mtime))
+        files.append(p)
+    # Evict 5 with target_count=10
+    removed = pipeline.evict_agent_cache_lru(target_count=10, batch_size=5)
+    assert removed == 5
+    remaining = sorted(tmp_path.glob("*.json"))
+    assert len(remaining) == 10
+    # Oldest 5 (key_0..key_4) should be gone
+    remaining_names = {p.name for p in remaining}
+    for i in range(5):
+        assert f"key_{i}.json" not in remaining_names
+    for i in range(5, 15):
+        assert f"key_{i}.json" in remaining_names
+
+
 def test_batch345_merger_emits_exit_cube_files():
     """Batch 345 (D9 fix): merge_batch_outputs.py re-aggregates exit cube
     slices from concat'd trade_exit_detail. Pins the code path so a future
