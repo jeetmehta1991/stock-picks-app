@@ -98,15 +98,15 @@
 | Commitment | Status | Evidence / Gap |
 |---|---|---|
 | Phase 1A-β verdict extracted | [PARTIAL] | This conversation produced the verdict (9 surviving cells, BUG-287 found, 60 quiet strategies identified). But `winners.parquet` not formally generated via `extract_phase_1a_beta_winners.py`. |
-| Phase 1B-α smoke runner | [DONE] | `scripts/run_phase_1b_alpha_smoke.py` |
-| Phase 1B-α demo runner | [DONE] | `scripts/run_phase_1b_alpha_demo.py` |
+| Phase 1B-α smoke runner | ⚠ **[STUB - per Batch 345 audit 2026-05-25]** | `scripts/run_phase_1b_alpha_smoke.py` exists but **does NOT execute agents** — validates pre-flight + budget + winners.parquet existence + writes manifest.json; explicitly notes `"Full agent execution requires Phase 1B Sprint 7 langgraph_pipeline.py"`. See PHASE_1B_AUDIT_2026_05_25.md. |
+| Phase 1B-α demo runner | ⚠ **[STUB]** | Same STUB pattern as smoke. |
 
 ### Day 9 (May 28): Phase 1B-α full launch
 
 | Commitment | Status | Evidence / Gap |
 |---|---|---|
-| Phase 1B-α full runner | [DONE] | `scripts/run_phase_1b_alpha.py` |
-| Actually launched | [PENDING] | Phase 1B-α has NOT run. Blocked on owner per-regime / per-classifier analysis of Phase 1A-β results (Batch 310 directive). |
+| Phase 1B-α full runner | ⚠ **[STUB - per Batch 345 audit 2026-05-25]** | `scripts/run_phase_1b_alpha.py` is a STUB. Line 110-114 explicit: "Full agent execution requires Phase 1B Sprint 7 langgraph_pipeline.py". See PHASE_1B_AUDIT_2026_05_25.md. |
+| Actually launched | [PENDING] | Phase 1B-α has NOT run. Blocked on owner per-regime / per-classifier analysis of Phase 1A-β results (Batch 310 directive) **AND** on building langgraph_pipeline.py + vendoring TradingAgents (Sprint 7 scope, 76-85 engineering days per PROJECT_PLAN.md §3.10). |
 
 ### Day 10 (May 29): POST_MAY_29_OPERATION_GUIDE.md
 
