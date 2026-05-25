@@ -57,10 +57,17 @@ def runtime_text(source: str) -> str:
 
 
 def check_unicode_in_runtime(paths: Iterable[Path]) -> list[str]:
-    """C1: any non-ASCII in runtime code (excluding docstrings)."""
+    """C1: any non-ASCII in runtime code (excluding docstrings).
+
+    Skips vendored/** because that source is upstream we don't control
+    (per DEC-045 fork-first architecture); upstream maintainers' use of
+    em-dashes/etc. in comments is out of scope for our project's rule.
+    """
     violations = []
     for p in paths:
         if p.suffix != ".py":
+            continue
+        if "vendored" in p.parts:
             continue
         if not p.exists():
             continue

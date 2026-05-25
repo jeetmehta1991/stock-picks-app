@@ -57,3 +57,61 @@ If upstream commits made AFTER our pinned hash become relevant, owner approval r
 
 **License compliance:**
 MIT licensed. Source attribution preserved in `vendored/smartmoneyconcepts/LICENSE`. Our project is fork-first per DEC-045; the fork is a TOOL we depend on, not a dependency we redistribute.
+
+### tradingagents
+
+| Field | Value |
+|---|---|
+| **Upstream URL** | https://github.com/TauricResearch/TradingAgents |
+| **Upstream version (pyproject)** | 0.2.5 |
+| **Pinned commit hash** | `61522e103e61601c553b4544abcd53fa7ebf9f1d` |
+| **Short hash** | `61522e1` |
+| **Commit date** | 2026-05-17 |
+| **Commit subject** | `fix(llm): skip Anthropic effort kwarg on non-supporting models (#831)` |
+| **Forked date** | 2026-05-25 (Pass 53 Sprint 7 Batch 349 kickoff) |
+| **License** | Apache 2.0 (see `vendored/tradingagents/LICENSE`) |
+| **Paper** | arXiv:2412.20138 (TauricResearch, UCLA/MIT, 2025) |
+| **Install** | `pip install -e vendored/tradingagents` (requires Python 3.10-3.13; **NOT compatible with Python 3.14 today** because langchain-core 0.3.81 pulls C-extension deps that have no 3.14 wheels) |
+| **Phase A status** | KICKOFF — source vendored; Tier 1 tests not yet written; langgraph_pipeline.py wrapper not yet built |
+| **Phase B status** | NOT STARTED |
+| **Phase C status** | NOT STARTED |
+
+**Package layout (`vendored/tradingagents/tradingagents/`):**
+- `agents/analysts/` — Market / Fundamentals / News / Social analyst nodes
+- `agents/researchers/` — Bull / Bear research nodes (debate)
+- `agents/managers/` — Research Manager + Portfolio Manager
+- `agents/risk_mgmt/` — Aggressive / Conservative / Neutral risk debaters
+- `agents/trader/` — Trader decision node
+- `agents/utils/` — Memory / agent state / agent utilities
+- `agents/schemas.py` — Pydantic schemas for AgentState
+- `graph/` — LangGraph wiring (analyst_execution, conditional_logic, propagation, reflection, signal_processing, trading_graph, checkpointer)
+- `dataflows/` — Built-in data adapters (alpha_vantage, reddit, stockstats, stocktwits, yfinance) — **NOTE: we override these with project-specific toolkits per DEC-507 wiring matrix; upstream dataflows are NOT used in our system**
+- `llm_clients/` — Anthropic / OpenAI / Google adapters
+- `default_config.py` — default agent prompts + model assignments
+
+**Why this fork (per AUDIT.md L12681):**
+"Already implements EXACTLY the architecture we built" (11-agent LangGraph: 3 analysts + Bull/Bear debate + Research Manager + Trader + 3 Risk Debaters + Portfolio Manager + Reflection). DEC-057 RESOLVED-DECIDED Pass 26 adopted upstream framework rather than maintaining our own. DEC-459 Option C Hybrid (Pass 53) integrates this framework as the 11-agent backbone, with our project-specific data toolkit injection via state augmentation per TRADINGAGENTS_DATA_AUDIT.md.
+
+**Phase A scope (next batches):**
+- Tier 1 unit tests: each graph node's pure function (input AgentState → output partial AgentState)
+- Tier 1 schema tests: AgentState fields, transitions
+- Tier 2 integration: `backtest/agents/langgraph_pipeline.py` wraps `TradingAgentsGraph` with our toolkit + data injection
+- Tier 3 statistical: end-to-end decision repeatability with fixed seed; cost projection vs DEC-459 ~$116 CAD/Phase-1B-α budget
+- Tier 4 dashboard: agent reasoning preview in Dashboard 3 (Stage 3 prep)
+
+**Build sequence (Phase A → B → C per DEC-508 + CHECKLIST #71):**
+1. Phase A — Vendor scaffold + Tier 1 unit tests + langgraph_pipeline.py wrapper compiles + smoke run on 1 ticker × 1 day with mocked LLM responses; owner approval → Phase B
+2. Phase B — Real Anthropic API calls on 1-3 tickers × 5-10 days; cost-tracker confirms <$3 smoke budget; signal-to-decision round-trip validated; owner approval → Phase C
+3. Phase C — Phase 1B-α full launch with winners.parquet × Phase 1A-β survivors; A/B vs rules-only baseline; DEC-505 walk-forward gate
+
+**Python compatibility caveat (CRITICAL):**
+TradingAgents v0.2.5 deps (`langchain-core>=0.3.81`, `langgraph>=0.4.8`) currently lack Python 3.14 wheels. Local development on 3.14 cannot `pip install -e vendored/tradingagents`. Phase 1B-α execution must run on Hetzner with Python 3.12 (or wait for upstream wheel publication). Local Phase A unit tests can mock LLM clients and exercise pure-Python graph wiring without requiring the full install.
+
+**Reproducibility:**
+```bash
+cd vendored/tradingagents
+git checkout 61522e103e61601c553b4544abcd53fa7ebf9f1d
+```
+
+**License compliance:**
+Apache 2.0. Source attribution + NOTICE preserved in `vendored/tradingagents/LICENSE`. Per Apache 2.0 §4, redistribution of the source requires this LICENSE + NOTICE preservation; our use is internal (not redistribution).
