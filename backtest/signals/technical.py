@@ -897,6 +897,10 @@ def compute_volume(df: pd.DataFrame) -> dict:
     today_v = _safe_float(v.iloc[-1])
     ratio = today_v / avg20 if avg20 > 0 else 1.0
     result["vol_ratio_20d"] = round(ratio,2)
+    # Batch 320 (2026-05-25): vol_above_avg added for owner-approved gate
+    # loosens on donchian_10_breakout + rsi_volume_200ema. Any above-average
+    # volume vs 20d mean - softer than the 1.5x / 2x spike gates.
+    result["vol_above_avg"] = ratio >= 1.0
     result["vol_spike_15x"] = ratio >= 1.5
     result["vol_spike_2x"]  = ratio >= 2.0
     result["vol_spike_3x"]  = ratio >= 3.0

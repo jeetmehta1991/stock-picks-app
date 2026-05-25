@@ -800,12 +800,16 @@ def strat_force_index_breakout(s):
 
 
 def strat_donchian_10_breakout(s):
-    fl = (s.get("dc10_breakout_up") and s.get("vol_spike_15x") and s.get("macd_12_26_9_bullish"))
-    fs = (s.get("dc10_breakout_dn") and s.get("vol_spike_15x") and not s.get("macd_12_26_9_bullish"))
+    """Batch 320 (2026-05-25): loosened vol gate from vol_spike_15x to
+    vol_above_avg (>=1.0x) per owner directive. The 1.5x bar at Phase
+    1A-beta scale gated out all 10-day breakouts on the trade log;
+    above-average volume on the breakout day is still required."""
+    fl = (s.get("dc10_breakout_up") and s.get("vol_above_avg") and s.get("macd_12_26_9_bullish"))
+    fs = (s.get("dc10_breakout_dn") and s.get("vol_above_avg") and not s.get("macd_12_26_9_bullish"))
     return _strat3(fl, fs, "breakout",
-        ["dc10_breakout_up","vol_spike_1.5x","macd_bullish"], ["dc10_breakout_dn","vol_spike_1.5x","macd_bearish"],
-        ["Price broke 10-day Donchian high","Volume 1.5x confirms","MACD positive"],
-        ["Price broke 10-day Donchian low","Volume 1.5x confirms","MACD negative"])
+        ["dc10_breakout_up","vol_above_avg","macd_bullish"], ["dc10_breakout_dn","vol_above_avg","macd_bearish"],
+        ["Price broke 10-day Donchian high","Volume above 20d avg confirms","MACD positive"],
+        ["Price broke 10-day Donchian low","Volume above 20d avg confirms","MACD negative"])
 
 
 # -----------------------------------------------------------------------------
@@ -879,12 +883,18 @@ def strat_evening_star_short(s):
 # -----------------------------------------------------------------------------
 
 def strat_rsi_volume_200ema(s):
-    fl = (s.get("rsi_14", 50) < 35 and s.get("vol_spike_2x") and s.get("price_above_ema_200"))
-    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_spike_2x") and not s.get("price_above_ema_200"))
+    """Batch 320 (2026-05-25): loosened vol gate from vol_spike_2x to
+    vol_above_avg (>=1.0x) per owner directive. The 2x bar combined with
+    RSI<35 AND above-200-EMA was nearly impossible to satisfy in trending
+    markets (RSI<30 + uptrend is itself rare); the volume gate compounded
+    that to zero. Above-average volume on the oversold day still confirms
+    the move, without the 2x sledgehammer."""
+    fl = (s.get("rsi_14", 50) < 35 and s.get("vol_above_avg") and s.get("price_above_ema_200"))
+    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and not s.get("price_above_ema_200"))
     return _strat3(fl, fs, "confluence",
-        ["rsi_14<35","vol_spike_2x","above_ema_200"], ["rsi_14>65","vol_spike_2x","below_ema_200"],
-        ["RSI oversold + volume spike + above 200 EMA  -  triple confluence bullish"],
-        ["RSI overbought + volume spike + below 200 EMA  -  triple confluence bearish"])
+        ["rsi_14<35","vol_above_avg","above_ema_200"], ["rsi_14>65","vol_above_avg","below_ema_200"],
+        ["RSI oversold + volume above 20d avg + above 200 EMA  -  triple confluence bullish"],
+        ["RSI overbought + volume above 20d avg + below 200 EMA  -  triple confluence bearish"])
 
 
 def strat_macd_ichimoku(s):
@@ -1135,14 +1145,21 @@ def strat_52wh_break_retest(s):
 
 
 def strat_break_retest_volume(s):
-    """BUG-111: Break-and-retest confirmed by volume expansion on the bounce bar."""
-    fl = (s.get("resistance_break_retest") and s.get("vol_spike_2x") and s.get("obv_rising"))
-    fs = (s.get("support_break_retest") and s.get("vol_spike_2x") and not s.get("obv_rising"))
+    """BUG-111: Break-and-retest confirmed by OBV trend on the bounce bar.
+
+    Batch 320 (2026-05-25): dropped vol_spike_2x gate per owner directive
+    and Bulkowski (Encyclopedia of Chart Patterns 2nd ed): volume is
+    typically elevated on the initial BREAK but lower on the retest.
+    Requiring 2x volume on the retest contradicts the canonical pattern
+    and was the firing-rate bottleneck. OBV-rising retained as the
+    institutional-flow confirmation."""
+    fl = (s.get("resistance_break_retest") and s.get("obv_rising"))
+    fs = (s.get("support_break_retest") and not s.get("obv_rising"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest", "vol_spike_2x", "obv_rising"],
-        ["support_break_retest", "vol_spike_2x", "obv_falling"],
-        "Break-and-retest + 2x volume: institutional accumulation on the bounce",
-        "Breakdown-and-retest + 2x volume: institutional distribution on the rejection")
+        ["resistance_break_retest", "obv_rising"],
+        ["support_break_retest", "obv_falling"],
+        "Break-and-retest + OBV rising: institutional accumulation on the bounce",
+        "Breakdown-and-retest + OBV falling: institutional distribution on the rejection")
 
 
 def strat_break_retest_confluence(s):
@@ -3118,6 +3135,75 @@ def screen_instrument(
     }
 
 
+# ---------------------------------------------------------------------------
+# Batch 321 (2026-05-25): process-pool infrastructure for per-ticker
+# screen_instrument parallelization. See BATCH_318_PROCESS_POOL_DESIGN.md.
+#
+# Workers hold their own copy of ohlcv_dict + info_dict in module-level
+# globals (set by _pool_init). This keeps the per-day work-tuple SMALL
+# (just (ticker, as_of, regime, vix_value, vix_history, xs_features)) so
+# IPC cost amortizes well over 1937 tkrs x 1044 days.
+#
+# Engine wiring (BacktestEngine.__init__ + _process_day pool init/dispatch)
+# lands in Batch 322 after this infrastructure validates in isolation.
+# Until 322 ships, the pool path is unused by the engine; sequential path
+# remains the only call site.
+# ---------------------------------------------------------------------------
+_WORKER_OHLCV: dict | None = None
+_WORKER_INFO: dict | None = None
+
+
+def _pool_init(ohlcv_dict: dict, info_dict: dict) -> None:
+    """Process-pool initializer. Each worker stores ohlcv_dict + info_dict
+    in module-level globals so per-call work-tuples stay small."""
+    global _WORKER_OHLCV, _WORKER_INFO
+    _WORKER_OHLCV = ohlcv_dict
+    _WORKER_INFO = info_dict
+    # Pre-warm module-level data caches inside the worker so the first
+    # screen_instrument call doesn't pay the parquet-read latency.
+    try:
+        from backtest.signals.insider_buying import _load_insiders_global
+        _load_insiders_global()
+    except Exception:
+        pass
+    try:
+        from backtest.signals.index_rebalance import _load_events
+        _load_events()
+    except Exception:
+        pass
+
+
+def _worker_screen_ticker(args):
+    """Pool worker entry. Reads ohlcv from worker-global; slices to as_of
+    locally; returns the screen_instrument result (or None on bad inputs)."""
+    ticker, as_of, regime, vix_value, vix_history, xs_features = args
+    if _WORKER_OHLCV is None or _WORKER_INFO is None:
+        return None
+    df = _WORKER_OHLCV.get(ticker)
+    if df is None:
+        return None
+    # Slice to as_of in worker (same logic as BacktestEngine._process_day
+    # uses to build ohlcv_pit). Avoids sending pre-sliced df over IPC.
+    try:
+        if hasattr(df.index, "date"):
+            df_pit = df[df.index.date <= as_of]
+        else:
+            df_pit = df[df.index <= as_of]
+    except Exception:
+        return None
+    if df_pit is None or df_pit.empty:
+        return None
+    info = _WORKER_INFO.get(ticker, {"ticker": ticker})
+    try:
+        return screen_instrument(
+            ticker, df_pit, info, as_of, regime,
+            vix_value=vix_value, vix_history=vix_history,
+            xs_features=xs_features,
+        )
+    except Exception:
+        return None
+
+
 def screen_universe(
     ohlcv_dict: dict,
     info_dict: dict,
@@ -3126,6 +3212,7 @@ def screen_universe(
     min_strategies: int = 1,
     vix_value: float = None,
     vix_history: list = None,
+    pool=None,
 ) -> list:
     """Screen all instruments. Returns candidates sorted by strategy count.
 
@@ -3140,24 +3227,46 @@ def screen_universe(
     screen_instrument kwarg. Factor strategies (xs_momentum_*,
     xs_low_beta_*, IVOL/MAX filters) read these injected ranks. Defaults
     to no-op when ohlcv_dict has insufficient history or compute fails.
+
+    Batch 321 (2026-05-25): optional `pool` kwarg (any executor with
+    `map(fn, iterable)` semantics). When provided, per-ticker
+    screen_instrument calls dispatch to pool workers. Workers must be
+    pre-initialized via _pool_init(ohlcv_dict, info_dict). The xs_features
+    pre-pass STAYS in main process (cheap, runs once per day). Result
+    sort happens in main process so candidate ordering is deterministic
+    regardless of worker return order.
     """
-    # Batch 220 cross-sectional pre-pass
+    # Batch 220 cross-sectional pre-pass (always main-process)
     xs_features = {}
     try:
         from backtest.signals.cross_sectional import compute_cross_sectional_features
         xs_features = compute_cross_sectional_features(ohlcv_dict, as_of)
     except Exception:
         xs_features = {}
+
     candidates = []
-    for ticker, df in ohlcv_dict.items():
-        info   = info_dict.get(ticker, {"ticker": ticker})
-        result = screen_instrument(
-            ticker, df, info, as_of, regime,
-            vix_value=vix_value, vix_history=vix_history,
-            xs_features=xs_features.get(ticker),
-        )
-        if result.get("liquidity_ok") and result.get("strategy_count", 0) >= min_strategies:
-            candidates.append(result)
+    if pool is not None:
+        # Batch 321 parallel path
+        work_items = [
+            (ticker, as_of, regime, vix_value, vix_history, xs_features.get(ticker))
+            for ticker in ohlcv_dict
+        ]
+        for result in pool.map(_worker_screen_ticker, work_items):
+            if (result is not None
+                and result.get("liquidity_ok")
+                and result.get("strategy_count", 0) >= min_strategies):
+                candidates.append(result)
+    else:
+        # Sequential path (pre-Batch-321 behavior; current call site)
+        for ticker, df in ohlcv_dict.items():
+            info   = info_dict.get(ticker, {"ticker": ticker})
+            result = screen_instrument(
+                ticker, df, info, as_of, regime,
+                vix_value=vix_value, vix_history=vix_history,
+                xs_features=xs_features.get(ticker),
+            )
+            if result.get("liquidity_ok") and result.get("strategy_count", 0) >= min_strategies:
+                candidates.append(result)
     # DEC-458: merge lead-lag cross-ticker candidates (sector rotation)
     lead_lag = screen_lead_lag_sector(ohlcv_dict, info_dict, as_of)
     existing_map = {c["ticker"]: c for c in candidates}

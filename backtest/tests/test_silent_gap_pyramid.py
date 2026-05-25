@@ -1530,6 +1530,181 @@ def test_batch315a_pairs_trading_compute_no_data_path():
 # validation. This test asserts the runtime filter no longer excludes them.
 
 
+# =============================================================================
+# Batch 321 regression tests (2026-05-25): process-pool infrastructure
+# =============================================================================
+# Workers + screen_universe pool path exist as INFRASTRUCTURE; engine wiring
+# lands in Batch 322. These tests validate the worker function in isolation
+# using an in-process dummy pool so we don't depend on multiprocessing
+# (which has spawn/import quirks under pytest).
+
+
+class _DummyPool:
+    """In-process executor that mimics pool.map. Used to validate the
+    screen_universe pool path without spawning workers in tests."""
+    def __init__(self, ohlcv_dict, info_dict):
+        from backtest.signals.screener import _pool_init
+        _pool_init(ohlcv_dict, info_dict)
+
+    def map(self, fn, iterable):
+        return [fn(args) for args in iterable]
+
+
+def test_batch321_pool_init_sets_globals():
+    """_pool_init sets _WORKER_OHLCV + _WORKER_INFO module-globals."""
+    import backtest.signals.screener as scr
+    scr._WORKER_OHLCV = None
+    scr._WORKER_INFO = None
+    scr._pool_init({"AAPL": "dummy"}, {"AAPL": {"market_cap": 1e12}})
+    assert scr._WORKER_OHLCV == {"AAPL": "dummy"}
+    assert scr._WORKER_INFO == {"AAPL": {"market_cap": 1e12}}
+
+
+def test_batch321_worker_screen_ticker_returns_none_on_missing():
+    """_worker_screen_ticker returns None when ticker not in worker ohlcv."""
+    import backtest.signals.screener as scr
+    from datetime import date
+    scr._pool_init({}, {})
+    out = scr._worker_screen_ticker(
+        ("MISSING", date(2024, 1, 15), "neutral", None, None, None)
+    )
+    assert out is None
+
+
+def test_batch321_screen_universe_pool_path_parity():
+    """screen_universe with a DummyPool produces the SAME result as the
+    sequential path when both receive equivalent input.
+
+    API contract:
+      - Sequential path: caller pre-slices ohlcv_dict to as_of (engine does
+        this via ohlcv_pit in BacktestEngine._process_day).
+      - Pool path: caller passes FULL ohlcv_dict; workers slice to as_of
+        internally (so IPC stays small).
+
+    To verify parity, this test mirrors the engine flow: pre-slice for the
+    sequential call; pass unsliced (= full) for the pool call. Both paths
+    must produce identical candidate output.
+    """
+    import numpy as np
+    import pandas as pd
+    from datetime import date as _d
+    from backtest.signals.screener import screen_universe
+
+    np.random.seed(7)
+    n = 80
+    dates = pd.date_range("2023-06-01", periods=n, freq="B")
+    def make_df(seed):
+        rng = np.random.default_rng(seed)
+        close = 100 * np.exp(np.cumsum(rng.normal(0, 0.01, n)))
+        return pd.DataFrame({
+            "open":   close, "high":  close * 1.005, "low":   close * 0.995,
+            "close":  close, "volume": rng.integers(1_000_000, 5_000_000, n),
+        }, index=dates)
+
+    ohlcv_dict = {t: make_df(i) for i, t in enumerate(["AAA", "BBB", "CCC"])}
+    info_dict = {t: {"ticker": t, "market_cap": 50_000_000_000} for t in ohlcv_dict}
+
+    as_of = _d(2023, 9, 15)
+    # Sequential path: caller pre-slices (mimics engine ohlcv_pit)
+    ohlcv_pit = {
+        t: df[df.index.date <= as_of] for t, df in ohlcv_dict.items()
+    }
+    seq = screen_universe(ohlcv_pit, info_dict, as_of)
+    # Pool path: full ohlcv passed; workers slice internally
+    pool = _DummyPool(ohlcv_dict, info_dict)
+    par = screen_universe(ohlcv_dict, info_dict, as_of, pool=pool)
+
+    assert len(seq) == len(par), (
+        f"Batch 321: sequential ({len(seq)}) vs pool ({len(par)}) "
+        f"candidate count mismatch"
+    )
+    seq_tkrs = sorted(c["ticker"] for c in seq)
+    par_tkrs = sorted(c["ticker"] for c in par)
+    assert seq_tkrs == par_tkrs, (
+        f"Batch 321: ticker SET must be identical. "
+        f"seq={seq_tkrs} vs par={par_tkrs}"
+    )
+    # Per-candidate strategy count + tech_signal_count must match
+    seq_by_t = {c["ticker"]: c for c in seq}
+    par_by_t = {c["ticker"]: c for c in par}
+    for t in seq_tkrs:
+        s, p = seq_by_t[t], par_by_t[t]
+        assert s["strategy_count"] == p["strategy_count"], (
+            f"Batch 321: {t} strategy_count mismatch "
+            f"seq={s['strategy_count']} par={p['strategy_count']}"
+        )
+        assert s["tech_signal_count"] == p["tech_signal_count"]
+
+
+def test_batch320_vol_above_avg_signal_present():
+    """Batch 320: vol_above_avg signal (>=1.0x 20d mean) added to
+    technical.compute_volume output for owner-approved gate loosens."""
+    import numpy as np
+    import pandas as pd
+    from backtest.signals.technical import compute_all_signals
+    n = 60
+    closes = np.linspace(100, 105, n)
+    df = pd.DataFrame({
+        "open":   closes, "high":  closes * 1.005, "low":   closes * 0.995,
+        "close":  closes, "volume": [1_000_000] * n,
+    }, index=pd.date_range("2024-01-01", periods=n, freq="B"))
+    sigs = compute_all_signals(df)
+    assert "vol_above_avg" in sigs, "Batch 320: vol_above_avg key must exist"
+    # Constant volume -> ratio == 1.0 -> vol_above_avg True (>=1.0)
+    assert sigs["vol_above_avg"] is True, "ratio=1.0 must satisfy vol_above_avg"
+
+
+def test_batch320_donchian_10_breakout_loosen():
+    """Batch 320: strat_donchian_10_breakout fires on vol_above_avg
+    (>=1.0x) instead of vol_spike_15x (>=1.5x)."""
+    from backtest.signals.screener import strat_donchian_10_breakout
+    sig_loose = {
+        "dc10_breakout_up": True,
+        "vol_above_avg": True,
+        "vol_spike_15x": False,  # below the OLD threshold
+        "macd_12_26_9_bullish": True,
+    }
+    out = strat_donchian_10_breakout(sig_loose)
+    assert out["fires"] is True
+    assert out["direction"] == "long"
+
+    # Below average vol -> still gated
+    sig_no_vol = dict(sig_loose); sig_no_vol["vol_above_avg"] = False
+    assert strat_donchian_10_breakout(sig_no_vol)["fires"] is False
+
+
+def test_batch320_rsi_volume_200ema_loosen():
+    """Batch 320: strat_rsi_volume_200ema fires on vol_above_avg instead
+    of vol_spike_2x."""
+    from backtest.signals.screener import strat_rsi_volume_200ema
+    sig_loose = {
+        "rsi_14": 30,  # < 35
+        "vol_above_avg": True,
+        "vol_spike_2x": False,  # below the OLD 2x threshold
+        "price_above_ema_200": True,
+    }
+    out = strat_rsi_volume_200ema(sig_loose)
+    assert out["fires"] is True
+    assert out["direction"] == "long"
+
+
+def test_batch320_break_retest_volume_drops_vol_spike():
+    """Batch 320: strat_break_retest_volume drops vol_spike_2x entirely
+    per Bulkowski (volume elevated on break, low on retest)."""
+    from backtest.signals.screener import strat_break_retest_volume
+    sig = {
+        "resistance_break_retest": True,
+        "obv_rising": True,
+        "vol_spike_2x": False,  # explicitly NOT present
+    }
+    out = strat_break_retest_volume(sig)
+    assert out["fires"] is True
+    assert out["direction"] == "long"
+    # OBV not rising -> still gated
+    sig2 = dict(sig); sig2["obv_rising"] = False
+    assert strat_break_retest_volume(sig2)["fires"] is False
+
+
 def test_batch316b_insider_buying_per_ticker_index():
     """Batch 316b: insider_buying builds per-ticker dict index at load time.
     Verifies the cache structure exists + lookup is by ticker key."""
