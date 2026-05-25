@@ -118,6 +118,22 @@
 
 ## Summary of all gaps
 
+### Path C "Execute B C12" status (owner directive 2026-05-25)
+
+| Item | Status | Notes |
+|---|---|---|
+| **C12** Cat-C Bucket-2 rare-by-design test pins | [BATCH 340 SHIPPED] | 3 regression tests pin 7 short strategies as expected-rare; no code change. |
+| **B#4** Russell + NDX index_rebalance events | [BATCH 341 PARTIAL SHIPPED] | NDX shipped (118 events from T1c CSV → 338 total in parquet); Russell deferred to Sprint 5 / DEC-380 FTSE feed. Strategies fire on NDX via generic 'add'/'drop' substring match — no screener.py code change needed. |
+| **B#5** Pre-FOMC schedule | [BATCH 342 SHIPPED] | `scripts/build_fomc_calendar.py` + `data_prefetch/fred/fomc_calendar.parquet` (57 meetings 2020-2026). Pre-FOMC producer now emits `pre_fomc_d1` / `pre_fomc_d0` / `pre_fomc_window` / `days_until_fomc` keys. Unblocks `pre_fomc_long_sleeve` + `pre_fomc_quality_momentum_long`. |
+| **B#6** UUP + DXY OHLCV cache | [DEFERRED] | UUP and DXY OHLCV missing from `data_prefetch/polygon/ohlcv_daily/`. Stage 2 HARD CUT NO-LIVE-API rule precludes runtime fetch. Sprint 1 data-prefetch deliverable. Affects `dxy_headwind_multinational_short` (Cat-B). |
+| **B#7** Multi-timeframe HTF weekly_bias | [NO TRUE GAP] | Audited 2026-05-25: producer emits 9 keys including `weekly_bias_bull/bear` + `weekly_above_ema_10/20` + `weekly_momentum_pos`. Strategies correctly wired; rare-fire is data/regime-driven not code bug. |
+| **B#8** SMC/ICT 4 strategies | [NO TRUE GAP] | Audited 2026-05-25: producer emits `smc_equal_highs_swept`, `smc_equal_lows_swept`, `smc_mitigation_block_long/short`. Strategy gates read matching keys. No name mismatch found. |
+| **B#9** News sentiment shift | [NO TRUE GAP] | Audited 2026-05-25: `compute_news_sentiment_signals` emits `news_sentiment_shift` key. Strategy `news_sentiment_shift_long` reads matching key. Wired correctly. |
+| **B#10** Quiver insider director-role | [NO TRUE GAP] | Audited 2026-05-25: `data_prefetch/quiver/insiders/global.parquet` has `isDirector` column populated for 458,292 of 1,000,000 rows (~46%). `insider_buying.compute_insider_cluster_signals` derives `insider_director_buyers_30d` correctly. |
+| **B#11** True multi-quarter persistence precompute | [DEFERRED] | Single-quarter proxies in Batches 333+336+337+338 are sufficient for Stage D validation. Multi-quarter precompute infrastructure refinement queued for future Sprint. |
+
+---
+
 ### Critical (block correctness)
 
 1. ~~**Wave 3 strategies missing**~~ **[WAVE 3 COMPLETE — Batch 338 2026-05-25 Path C]** All 30/30 Wave 3 strategies shipped across Batches 330-338: **10 13F-based** (Batches 330+331+336), **10 classification_change** (Batches 332+335+337 with producer at universe.get_classification_change_signals + symmetric from_tech flag), **10 persistence-proxy** (Batches 333+336+337+338 using Batch-330 producer's institutional counts + insider director/officer keys). True multi-quarter persistence precompute (333b infrastructure refinement) deferred to a future Sprint - current single-quarter proxies are sufficient for Stage D validation.

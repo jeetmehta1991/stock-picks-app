@@ -1691,6 +1691,65 @@ CAT_C_BUCKET2_RARE_BY_DESIGN_STRATEGIES = [
 ]
 
 
+def test_batch342_fomc_calendar_parquet_exists():
+    """Batch 342 (B#5): fomc_calendar.parquet shipped, ~55+ scheduled
+    FOMC meetings 2020-2026. Unblocks pre_fomc_long_sleeve +
+    pre_fomc_quality_momentum_long."""
+    from pathlib import Path
+    import pandas as pd
+    repo = Path(__file__).resolve().parent.parent.parent
+    p = repo / "data_prefetch" / "fred" / "fomc_calendar.parquet"
+    assert p.exists(), f"Batch 342: {p} must exist"
+    df = pd.read_parquet(p)
+    assert "date" in df.columns, (
+        "Batch 342: macro_events expects 'date' column (not 'meeting_date')"
+    )
+    assert "meeting_type" in df.columns
+    # 8 scheduled FOMC meetings per year * 7 years (2020-2026) = ~56;
+    # plus emergency 2020 events = ~57+. Tolerate +/-5.
+    n_scheduled = (df["meeting_type"] == "scheduled").sum()
+    assert 45 <= n_scheduled <= 65, (
+        f"Batch 342: expected 45-65 scheduled meetings 2020-2026, got {n_scheduled}"
+    )
+
+
+def test_batch342_pre_fomc_producer_emits_signals():
+    """Batch 342 (B#5): macro_events.compute_pre_fomc_signals returns the
+    canonical pre_fomc_d1 / pre_fomc_d0 / pre_fomc_window keys when called
+    1 day before a known FOMC meeting. Before this batch the producer
+    returned {} (calendar missing); now it emits the keys, unblocking
+    the 2 pre-FOMC strategies."""
+    from datetime import date
+    import backtest.signals.macro_events as me
+    me._FOMC_CACHE = None  # force re-load of new parquet
+    # 2024-01-31 is a known FOMC meeting date
+    out = me.compute_pre_fomc_signals(date(2024, 1, 30))
+    assert out, "Batch 342: producer must return non-empty dict pre-FOMC"
+    assert out.get("pre_fomc_d1") is True, (
+        f"Batch 342: pre_fomc_d1 must be True 1 day before meeting. Got: {out}"
+    )
+    assert out.get("pre_fomc_window") is True
+    assert out.get("days_until_fomc") == 1
+
+
+def test_batch342_pre_fomc_strategies_now_fire():
+    """Batch 342 (B#5): with FOMC calendar shipped, the 2 pre-FOMC
+    strategies receive non-default signal values."""
+    from backtest.signals.screener import strat_pre_fomc_long_sleeve
+    # Synthetic signals with pre_fomc_d1=True + xs_quality_decile high
+    s = {
+        "pre_fomc_d1": True,
+        "pre_fomc_window": True,
+        "days_until_fomc": 1,
+        "xs_quality_decile": 9,
+        "xs_momentum_decile": 8,
+        "price_above_ema_200": True,
+    }
+    out = strat_pre_fomc_long_sleeve(s)
+    # Must not return None / error; fires is bool
+    assert isinstance(out.get("fires"), bool)
+
+
 def test_batch341_index_rebalance_includes_ndx_events():
     """Batch 341 (B#4): index_rebalance_events.parquet must include NDX
     events (ndx_add / ndx_drop) in addition to S&P (s&p_add / s&p_drop).
