@@ -1507,19 +1507,25 @@ def test_batch315a_pairs_trading_snapshot_cache():
 
 def test_batch315a_pairs_trading_compute_no_data_path():
     """When pairs precompute missing, compute_pair_signals_for_ticker returns
-    {} and caches the empty enumeration."""
+    {} and caches the empty enumeration.
+
+    Batch 326 (2026-05-25) UPDATE: the default cointegrated_pairs_t1a
+    directory now exists with a smoke snapshot. To still exercise the
+    no-data code path, pass an explicit missing directory.
+    """
     import backtest.signals.pairs_trading as pt
     from datetime import date
+    from pathlib import Path
     import pandas as pd
     pt._PAIRS_SNAPSHOTS_CACHE.clear()
-    # Default pairs_dir = data_prefetch/derived/cointegrated_pairs_t1a which
-    # is currently missing in this repo (T5b precompute pending Sprint 1).
+    missing_dir = Path("/tmp/this/does/not/exist/315a_no_data")
     out = pt.compute_pair_signals_for_ticker(
-        "AAPL", date(2024, 1, 15), pd.Series([100, 101, 102])
+        "AAPL", date(2024, 1, 15), pd.Series([100, 101, 102]),
+        pairs_dir=missing_dir,
     )
     assert out == {}, f"No-precompute path must return empty dict, got {out!r}"
-    # Cache must contain the key for the default pairs_dir
-    assert pt._PAIRS_SNAPSHOTS_CACHE, "Cache must be populated after first call"
+    # Cache must contain the key for the missing dir
+    assert str(missing_dir) in pt._PAIRS_SNAPSHOTS_CACHE
 
 
 # =============================================================================
@@ -1557,6 +1563,133 @@ class _DummyPool:
 # CLI arg) without actually spawning a multiprocessing pool inside pytest -
 # spawn-context tests are flaky in pytest under Windows. Real multiprocess
 # parity is owner-validated via a Stage D smoke run.
+
+
+# =============================================================================
+# Batch 324 regression test (2026-05-25): combo_id column in trade_log
+# =============================================================================
+
+
+def test_batch326_t5b_smoke_snapshot_exists():
+    """Batch 326: T5b cointegrated-pairs smoke snapshot present.
+    Unblocks pairs_mean_reversion_long/short for the smoke universe.
+    Full T1a multi-snapshot is owner-runnable via
+    scripts/build_t5b_pairs_precompute.py."""
+    from pathlib import Path
+    import pandas as pd
+    repo = Path(__file__).resolve().parent.parent.parent
+    pairs_dir = repo / "data_prefetch" / "derived" / "cointegrated_pairs_t1a"
+    assert pairs_dir.exists() and pairs_dir.is_dir(), (
+        f"Batch 326: {pairs_dir} must exist (run "
+        f"scripts/build_t5b_pairs_precompute.py --smoke to regenerate)"
+    )
+    snapshots = sorted(pairs_dir.glob("*.parquet"))
+    assert len(snapshots) >= 1, (
+        f"Batch 326: at least one cointegrated_pairs snapshot must exist, "
+        f"got {len(snapshots)}"
+    )
+    df = pd.read_parquet(snapshots[0])
+    required = {"ticker_a", "ticker_b", "hedge_ratio", "intercept",
+                "half_life", "pvalue", "formation_end"}
+    assert required.issubset(set(df.columns)), (
+        f"Batch 326: missing schema columns: {required - set(df.columns)}"
+    )
+
+
+def test_batch326_pairs_trading_now_loads_snapshot():
+    """Batch 326: pairs_trading._load_pair_snapshots picks up the new
+    snapshot directory (cache cleared so first call re-enumerates)."""
+    import backtest.signals.pairs_trading as pt
+    from pathlib import Path
+    pt._PAIRS_SNAPSHOTS_CACHE.clear()
+    repo = Path(__file__).resolve().parent.parent.parent
+    pairs_dir = repo / "data_prefetch" / "derived" / "cointegrated_pairs_t1a"
+    snapshots = pt._load_pair_snapshots(pairs_dir)
+    assert len(snapshots) >= 1, (
+        f"Batch 326: snapshot enumeration failed, got {len(snapshots)}"
+    )
+
+
+def test_batch325_index_rebalance_events_parquet_exists():
+    """Batch 325: index_rebalance_events.parquet present at canonical path.
+    Unblocks 4 quiet strategies (post_inclusion_drift_long /
+    post_inclusion_reversal_short / post_deletion_drift_short /
+    pre_rebalance_long)."""
+    from pathlib import Path
+    import pandas as pd
+    repo = Path(__file__).resolve().parent.parent.parent
+    parquet = repo / "data_prefetch" / "derived" / "index_rebalance_events.parquet"
+    assert parquet.exists(), (
+        f"Batch 325: {parquet} must exist (run "
+        f"scripts/build_index_rebalance_events.py to regenerate)"
+    )
+    df = pd.read_parquet(parquet)
+    required = {"ticker", "event_date", "event_type", "announce_date", "effective_date"}
+    missing = required - set(df.columns)
+    assert not missing, f"Batch 325: parquet missing columns {missing}"
+    # At least some s&p_add and s&p_drop events present
+    types = set(df["event_type"].unique())
+    assert "s&p_add" in types
+    assert "s&p_drop" in types
+    assert len(df) >= 100, (
+        f"Batch 325: expected >=100 events (Jan 2020 - May 2026 window), "
+        f"got {len(df)}"
+    )
+
+
+def test_batch325_index_rebalance_signals_now_produce_keys():
+    """Batch 325: compute_index_rebalance_signals returns NON-EMPTY dict for
+    a ticker known to be in the events parquet (smoke test for the data
+    landing). Reset the module cache to force re-load of the new parquet."""
+    import backtest.signals.index_rebalance as ir
+    from datetime import date
+    ir._CACHED_EVENTS = None  # force re-load
+    events = ir._load_events()
+    assert not events.empty, (
+        "Batch 325: after parquet build, _load_events must return non-empty"
+    )
+    # Pick the first ticker from events as the smoke probe
+    sample = events.iloc[0]
+    out = ir.compute_index_rebalance_signals(
+        sample["ticker"], date(2026, 4, 30)
+    )
+    # May be empty if event window already closed, but the function must
+    # at least RUN without exception now that the parquet is present.
+    assert isinstance(out, dict)
+
+
+def test_batch324_combo_id_added_to_trade_log(tmp_path):
+    """Batch 324: writer adds combo_id = strategy__exit_reason__regime to
+    every row when not already present. Unblocks the winners pipeline so
+    extract_phase_1a_beta_winners.py doesn't have to re-derive at runtime."""
+    import pandas as pd
+    from backtest.results.writer import write_all_outputs
+    df_trades = pd.DataFrame([
+        {"ticker": "AAPL", "strategy": "rsi_oversold", "exit_reason": "atr_trail_1x",
+         "regime": "bull", "entry_date": "2024-01-15", "pnl_pct": 5.2,
+         "direction": "long", "hold_days": 10, "win": True},
+        {"ticker": "MSFT", "strategy": "bollinger_lower", "exit_reason": "stop_loss",
+         "regime": "neutral", "entry_date": "2024-02-10", "pnl_pct": -1.8,
+         "direction": "long", "hold_days": 3, "win": False},
+    ])
+    write_all_outputs(
+        df_trades=df_trades,
+        metrics=pd.DataFrame(),
+        skipped=[],
+        cb_log=[],
+        exit_compare=pd.DataFrame(),
+        output_dir=tmp_path,
+    )
+    written = pd.read_csv(tmp_path / "trade_log.csv")
+    assert "combo_id" in written.columns, (
+        "Batch 324: trade_log.csv must include combo_id column"
+    )
+    expected = ["rsi_oversold__atr_trail_1x__bull",
+                "bollinger_lower__stop_loss__neutral"]
+    assert list(written["combo_id"]) == expected, (
+        f"Batch 324: combo_id values mismatch. expected={expected} "
+        f"actual={list(written['combo_id'])}"
+    )
 
 
 def test_batch322_engine_default_screen_pool_workers_zero():

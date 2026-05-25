@@ -50,8 +50,8 @@
 
 | Group | Strategies | Blocker |
 |---|---|---|
-| Index rebalance (4) | `post_inclusion_drift_long`, `post_inclusion_reversal_short`, `post_deletion_drift_short`, `pre_rebalance_long` | `data_prefetch/derived/index_rebalance_events.parquet` missing (Sprint 5 deliverable, DEC-380) |
-| Pairs trading (2) | `pairs_mean_reversion_long`, `pairs_mean_reversion_short` | `data_prefetch/derived/cointegrated_pairs_t1a/*.parquet` missing (T5b precompute, Sprint 1) |
+| Index rebalance (4) | `post_inclusion_drift_long`, `post_inclusion_reversal_short`, `post_deletion_drift_short`, `pre_rebalance_long` | **[BATCH 325 UNBLOCKED 2026-05-25]** `data_prefetch/derived/index_rebalance_events.parquet` shipped (220 S&P 500 add/drop events 2020-2026 from T1a B++ CSV). Russell + NDX events deferred to Sprint 5 (DEC-380). |
+| Pairs trading (2) | `pairs_mean_reversion_long`, `pairs_mean_reversion_short` | **[BATCH 326 PARTIAL 2026-05-25]** smoke snapshot at `data_prefetch/derived/cointegrated_pairs_t1a/2024-01-01.parquet` (8 mega-caps, 7 cointegrated pairs). Full T1a multi-snapshot is owner-runnable via `scripts/build_t5b_pairs_precompute.py`. |
 | Pre-FOMC (2) | `pre_fomc_long_sleeve`, `pre_fomc_quality_momentum_long` | Pre-FOMC window producer present but FOMC schedule data may be incomplete in cache; need verification |
 | Cross-asset (3) | `gold_silver_risk_off_long`, `dxy_headwind_multinational_short`, `sector_rotation_defensive_long` | UUP/DXY/GLD/SLV/sector-ETF caches incomplete; `cross_asset_signals` returns partial dict |
 | Multi-timeframe HTF (2) | `weekly_bias_pullback_long`, `weekly_bias_pullback_short` | Weekly/monthly bias computation per-ticker; may produce `{}` when insufficient history |

@@ -36,7 +36,22 @@ def write_all_outputs(
     # signals_at_entry, agent_reasoning, context_bullets  -  DEC-492 coupling).
     # CSV preserved for human inspection / diffing; complex columns get
     # JSON-stringified, lossy on read but readable for owner inspection.
+    #
+    # Batch 324 (2026-05-25): owner directive to add combo_id column to
+    # trade_log so the winners pipeline doesn't have to re-derive it at
+    # extraction time. combo_id = "{strategy}__{exit_reason}__{regime}"
+    # (regime = entry-time regime; per per-regime verdict matrix).
     if not df_trades.empty:
+        if "combo_id" not in df_trades.columns:
+            # Defensive: derive from canonical 3-tuple if any of the source
+            # columns is missing fall back to "unknown".
+            def _build_combo_id(row):
+                strat = str(row.get("strategy", "unknown") or "unknown")
+                exit_r = str(row.get("exit_reason", "unknown") or "unknown")
+                reg = str(row.get("regime", "unknown") or "unknown")
+                return f"{strat}__{exit_r}__{reg}"
+            df_trades = df_trades.copy()
+            df_trades["combo_id"] = df_trades.apply(_build_combo_id, axis=1)
         try:
             # INV-014 fix: sanitize uniformly-empty nested struct columns
             # before parquet write. pyarrow rejects empty structs with no
