@@ -162,17 +162,29 @@ def compute_pead_signals(
         "within_pead_window":       days_since <= drift_window_days,
     }
     # YoY EPS growth: compare last_filing's quarter to same quarter 1 year ago
+    # BUG-288 RESOLVED-IMPLEMENTED Batch 312-PEAD 2026-05-24: fiscal_year is
+    # stored as STRING in the Polygon financials cache ('2024' not 2024), but
+    # `target_fy - 1` assumed int and threw TypeError. The outer try/except
+    # silently swallowed it, returning the partial dict (just days_since +
+    # within_pead_window). Phase 1A-beta 7191-trade run had pead_long /
+    # pead_short / pead_with_insider_confirmation_long fired ZERO times -
+    # not because the entries weren't valid, but because the SURPRISE flags
+    # (pead_positive_surprise / pead_negative_surprise) were never produced
+    # by this function. Same silent-gap pattern as BUG-286, BUG-287, the 5
+    # prior bugs. Fix: convert fiscal_year safely to int before arithmetic,
+    # then compare as strings to match the cache schema.
     target_period = most_recent["fiscal_period"]
-    target_fy = most_recent["fiscal_year"]
-    if pd.isna(target_fy):
+    target_fy_raw = most_recent["fiscal_year"]
+    if pd.isna(target_fy_raw):
         return out
     try:
-        prior_year_match = past[
-            (past["fiscal_period"] == target_period)
-            & (past["fiscal_year"] == target_fy - 1)
-        ]
+        target_fy = int(target_fy_raw)
     except (TypeError, ValueError):
         return out
+    prior_year_match = past[
+        (past["fiscal_period"] == target_period)
+        & (past["fiscal_year"].astype(str) == str(target_fy - 1))
+    ]
     if prior_year_match.empty:
         return out
     prior_eps = float(prior_year_match.iloc[-1]["eps"])
@@ -182,22 +194,46 @@ def compute_pead_signals(
     yoy_growth = (current_eps - prior_eps) / abs(prior_eps)
     out["earnings_eps_yoy_growth"] = round(yoy_growth, 4)
     # Announcement-day return: close[T+1] / close[T-1] - 1
+    # BUG-288 part 2 RESOLVED-IMPLEMENTED Batch 312-PEAD 2026-05-24: support
+    # both Schema-A (DatetimeIndex, no date col) AND Schema-B (RangeIndex +
+    # date col) OHLCV parquets per Pass 53 H6 cache schema change. Prior
+    # code's `hasattr(idx, "date")` check passed for DatetimeIndex but the
+    # RangeIndex `else` branch produced integers (0,1,2,...), not dates -
+    # comparison with last_filing always False, ann_ret never set, surprise
+    # flags never set. Same silent-gap pattern.
     if ohlcv_df is not None and not ohlcv_df.empty:
         try:
-            idx = ohlcv_df.index
-            if hasattr(idx, "date"):
-                dates_arr = pd.Series([d.date() if hasattr(d, "date") else d for d in idx])
+            # Build dates_arr from whichever schema this OHLCV uses
+            if isinstance(ohlcv_df.index, pd.DatetimeIndex):
+                # Schema-A: DatetimeIndex
+                dates_arr = pd.Series([d.date() if hasattr(d, "date") else d
+                                       for d in ohlcv_df.index])
+            elif "date" in ohlcv_df.columns:
+                # Schema-B: RangeIndex + 'date' column (post-Pass-53 H6)
+                col = ohlcv_df["date"]
+                # date column may be datetime64, string, or date object
+                if pd.api.types.is_datetime64_any_dtype(col):
+                    dates_arr = pd.Series([d.date() if hasattr(d, "date") else d
+                                           for d in col]).reset_index(drop=True)
+                else:
+                    dates_arr = pd.Series([
+                        d if hasattr(d, "year") else pd.Timestamp(d).date()
+                        for d in col
+                    ]).reset_index(drop=True)
             else:
-                dates_arr = pd.Series(idx)
-            target_pos = dates_arr[dates_arr == last_filing]
-            if not target_pos.empty:
-                pos = int(target_pos.index[0])
-                if pos >= 1 and pos + 1 < len(ohlcv_df):
-                    pre_close = float(ohlcv_df["close"].iloc[pos - 1])
-                    post_close = float(ohlcv_df["close"].iloc[pos + 1])
-                    if pre_close > 0:
-                        ann_ret = (post_close - pre_close) / pre_close
-                        out["earnings_announcement_return"] = round(ann_ret, 4)
+                # Schema we don't recognize - skip ann_ret
+                dates_arr = None
+
+            if dates_arr is not None:
+                target_pos = dates_arr[dates_arr == last_filing]
+                if not target_pos.empty:
+                    pos = int(target_pos.index[0])
+                    if pos >= 1 and pos + 1 < len(ohlcv_df):
+                        pre_close = float(ohlcv_df["close"].iloc[pos - 1])
+                        post_close = float(ohlcv_df["close"].iloc[pos + 1])
+                        if pre_close > 0:
+                            ann_ret = (post_close - pre_close) / pre_close
+                            out["earnings_announcement_return"] = round(ann_ret, 4)
         except Exception:
             pass
     # Combined surprise flags

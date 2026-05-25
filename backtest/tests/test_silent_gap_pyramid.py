@@ -784,6 +784,55 @@ def test_tier11_property_dedup_eliminated_batch279():
     )
 
 
+def test_tier6_regression_bug288_pead_surprise_flags_produced_batch312():
+    """BUG-288 regression (Phase 1A-beta quiet-strategy investigation, 2026-05-24):
+    compute_pead_signals() must produce pead_positive_surprise / pead_negative_surprise
+    flags (not just within_pead_window) for tickers with full quarterly EPS history.
+
+    Phase 1A-beta 7191-trade run had pead_long / pead_short / pead_with_insider_
+    confirmation_long fired ZERO times despite the engine consuming
+    compute_pead_signals output every day. Forensic showed the function early-
+    returned at YoY computation because fiscal_year was stored as STRING in the
+    Polygon financials cache ('2024' not 2024), so `target_fy - 1` (int arithmetic)
+    threw TypeError, caught by silent try/except, returned partial dict.
+
+    Compound bug: OHLCV parquets use Schema-B (RangeIndex + date column) per
+    Pass 53 H6, but ann_ret computation only handled Schema-A (DatetimeIndex).
+    Even after fiscal_year fix, ann_ret never computed -> surprise flags never set.
+
+    AAPL as oracle: 51 quarters of EPS data 2009-2026, mid-2024 should produce
+    surprise flag (positive or negative)."""
+    import pandas as pd
+    from datetime import date
+    from backtest.signals.pead import compute_pead_signals
+
+    df = pd.read_parquet(REPO_ROOT / "data_prefetch" / "polygon" / "ohlcv_daily" / "AAPL.parquet")
+    # 2024-06-15 = ~45d after AAPL's Q2 2024 filing; full quarter history exists
+    as_of = date(2024, 6, 15)
+    if "date" in df.columns and not isinstance(df.index, pd.DatetimeIndex):
+        dates = pd.to_datetime(df["date"]).dt.date if not pd.api.types.is_datetime64_any_dtype(df["date"]) else df["date"].dt.date
+        sliced = df[dates <= as_of]
+    else:
+        sliced = df[df.index.date <= as_of]
+
+    result = compute_pead_signals("AAPL", sliced, as_of)
+    assert "within_pead_window" in result, "PEAD signal generation broken at first stage"
+    assert "earnings_eps_yoy_growth" in result, (
+        "BUG-288 regression: fiscal_year string-arithmetic bug returned. "
+        "Got keys: " + str(sorted(result.keys()))
+    )
+    assert "earnings_announcement_return" in result, (
+        "BUG-288 part 2 regression: Schema-B OHLCV not handled in ann_ret "
+        "computation. Got keys: " + str(sorted(result.keys()))
+    )
+    # Either positive or negative surprise must be set when both yoy + ann_ret
+    # are present (they're derived from those)
+    assert ("pead_positive_surprise" in result) or ("pead_negative_surprise" in result), (
+        "BUG-288: surprise flags not set even though yoy + ann_ret present. "
+        "Got keys: " + str(sorted(result.keys()))
+    )
+
+
 def test_tier6_regression_bug287_open_trade_not_orphaned_when_illiquid_batch308():
     """BUG-287 regression: when a ticker drops out of the annual liquid set
     mid-window but has an OPEN trade, the daily exit-check loop MUST still

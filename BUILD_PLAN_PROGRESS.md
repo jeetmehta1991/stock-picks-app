@@ -116,7 +116,7 @@
 1. **~30 Wave 3 strategies missing** (13F/classification_change/persistence) — Day 2 (May 21) deliverable. 0 of ~30 strategies implemented.
 2. **T5b cointegrated-pairs precompute missing** — Day 1 (May 20) deliverable. Direct cause of `pairs_mean_reversion_*` zero-trade silent failure.
 3. **`combo_id` column missing from trade_log** — Day 4/5-7 deliverable. Winners pipeline cannot run cleanly.
-4. **60 of 125 active strategies fired zero trades** (Phase 1A-β output). Silent-gap candidates needing forensic per-strategy investigation.
+4. **60 of 125 active strategies fired zero trades** (Phase 1A-β output). Silent-gap candidates needing forensic per-strategy investigation. **First 3 closed by Batch 312-PEAD 2026-05-24** (BUG-288 fix re-enables `pead_long`, `pead_short`, `pead_with_insider_confirmation_long`). 57 remaining.
 
 ### Important (impact downstream)
 
