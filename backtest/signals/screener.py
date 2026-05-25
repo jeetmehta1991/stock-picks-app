@@ -2682,6 +2682,50 @@ def strat_institutional_recent_init_volume_long(s):
          "Above 50 EMA (intermediate trend gate)"])
 
 
+def strat_institutional_multi_quarter_persistence_long(s):
+    """Batch 344 (333b consumer) 2026-05-25: TRUE multi-quarter persistence
+    strategy reading the offline precompute via institutional_persistence_consumer.
+
+    Distinct from Batch 333 single-quarter proxies: requires institutional
+    holders that have HELD POSITION across >=4 consecutive quarters. This
+    is the canonical Yan-Zhang 2009 RFS "persistence" definition (not just
+    same-quarter cross-fund consensus).
+
+    Gate: persistent_holders_4q >= 10 (strong cross-fund persistence)
+          AND price_above_ema_200 (regime gate)."""
+    fires = (
+        s.get("institutional_persistence_strong", False)
+        and s.get("price_above_ema_200", True)
+    )
+    p4q = s.get("persistent_holders_4q", 0)
+    total = s.get("total_active_holders", 0)
+    return _strat(fires, "long", "institutional_persistence",
+        ["persistent_holders_4q>=10", "price_above_ema_200"],
+        [f"{p4q}/{total} funds held position 4+ consecutive quarters",
+         "Yan-Zhang 2009 RFS multi-quarter persistence (NOT single-quarter)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_committed_growth_long(s):
+    """Batch 344 (333b consumer) 2026-05-25: institutional funds GROWING
+    their position over 4+ quarters. Distinct from Batch 333's
+    institutional_increased proxy by requiring multi-quarter share growth
+    (>10% over 4 quarters from precompute), not just same-quarter
+    increased count.
+
+    Gate: committed_growth_holders >= 5 AND price_above_ema_200."""
+    fires = (
+        s.get("institutional_persistence_growing", False)
+        and s.get("price_above_ema_200", True)
+    )
+    n_grow = s.get("committed_growth_holders", 0)
+    return _strat(fires, "long", "institutional_persistence",
+        ["committed_growth_holders>=5", "price_above_ema_200"],
+        [f"{n_grow} funds grew position over 4+ quarters (>10% growth)",
+         "Frazzini-Lamont 2008 institutional consensus + share growth",
+         "Above 200 EMA (regime gate)"])
+
+
 def strat_institutional_increased_with_directors_long(s):
     """Wave 3 (Batch 338): persistence + director-level insider buying.
     Combines institutional_increased>=5 (persistence proxy from Batch 333)
@@ -3394,6 +3438,12 @@ ALL_STRATEGIES = {
     "institutional_recent_init_momentum_long":    strat_institutional_recent_init_momentum_long,
     "institutional_recent_init_volume_long":      strat_institutional_recent_init_volume_long,
     "institutional_increased_with_directors_long": strat_institutional_increased_with_directors_long,
+    # Batch 344 (333b multi-quarter persistence) 2026-05-25: 2 TRUE multi-
+    # quarter persistence strategies reading the new precompute via
+    # institutional_persistence_consumer. Distinct from Batch 333-338
+    # single-quarter proxies.
+    "institutional_multi_quarter_persistence_long": strat_institutional_multi_quarter_persistence_long,
+    "institutional_committed_growth_long":          strat_institutional_committed_growth_long,
     # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
     "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
@@ -3712,6 +3762,27 @@ def screen_instrument(
             signals["institutional_negative"] = sig_kind == "negative"
             signals["institutional_new_positions"] = int(inst.get("new_pos", 0) or 0)
             signals["institutional_increased"] = int(inst.get("increased", 0) or 0)
+    except Exception:
+        pass
+    # Batch 344 (333b consumer) 2026-05-25: inject TRUE multi-quarter
+    # persistence metrics from the offline precompute at
+    # data_prefetch/derived/institutional_persistence_t1a/{YYYY-01-01}.parquet.
+    # Producer is module-level cached; reads the most recent snapshot
+    # <= as_of. Keys emitted (all absent when precompute missing):
+    #   persistent_holders_4q       int (funds held >=4 consecutive quarters)
+    #   persistent_holders_8q       int (funds held >=8 consecutive quarters)
+    #   avg_position_age_quarters   float
+    #   committed_growth_holders    int
+    #   total_active_holders        int
+    # Yan-Zhang 2009 RFS: cross-fund consensus over multiple quarters
+    # forecasts alpha at the 1-3 month horizon.
+    try:
+        from backtest.signals.institutional_persistence_consumer import (
+            compute_persistence_signals,
+        )
+        pers = compute_persistence_signals(ticker, as_of)
+        if pers:
+            signals.update(pers)
     except Exception:
         pass
     # Batch 224: macro event signals (pre-FOMC proximity) + recent 8-K

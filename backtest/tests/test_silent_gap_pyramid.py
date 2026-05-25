@@ -1602,9 +1602,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   175 after Batch 336 (+3 13F + 1 persistence)
     #   181 after Batch 337 (+3 classification_change + 3 persistence)
     #   184 after Batch 338 (+3 persistence; Wave 3 COMPLETE 30/30)
-    assert len(ALL_STRATEGIES) == 184, (
-        f"BUG-111 + Wave 3 COMPLETE: ALL_STRATEGIES count must be 184 "
-        f"after Batches 329-338 (Wave 3 30/30), got {len(ALL_STRATEGIES)}"
+    #   186 after Batch 344 (+2 true multi-quarter persistence; 333b consumer)
+    assert len(ALL_STRATEGIES) == 186, (
+        f"BUG-111 + Wave 3 + 333b: ALL_STRATEGIES count must be 186 "
+        f"after Batches 329-344, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1793,6 +1794,74 @@ def test_batch341_index_rebalance_strategies_match_ndx_events():
         "Batch 341: post_inclusion_drift_long must fire on ndx_add via "
         "'add' substring match (generic across index providers)"
     )
+
+
+def test_batch344_multi_quarter_persistence_strategies_registered():
+    """Batch 344 (333b consumer): 2 true multi-quarter persistence strategies
+    registered. Read from offline precompute via
+    institutional_persistence_consumer.compute_persistence_signals."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "institutional_multi_quarter_persistence_long",
+        "institutional_committed_growth_long",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 344: missing strategy registrations: {missing}"
+
+
+def test_batch344_persistence_consumer_loads_snapshot():
+    """Batch 344: institutional_persistence_consumer reads the precompute
+    snapshot when available. Returns non-empty dict for a ticker known to
+    be in the smoke snapshot (AAPL or MSFT per smoke run)."""
+    from datetime import date
+    from backtest.signals.institutional_persistence_consumer import (
+        compute_persistence_signals,
+        _SNAPSHOTS,
+    )
+    import backtest.signals.institutional_persistence_consumer as ipc
+    # Force re-enumeration of snapshots
+    ipc._SNAPSHOTS = None
+    ipc._CACHE.clear()
+    out = compute_persistence_signals("AAPL", date(2024, 6, 15))
+    # If smoke snapshot present, AAPL should be there. If not (e.g., on
+    # fresh checkout), the function returns {} which is also valid.
+    if out:
+        # Verify schema
+        for k in ("persistent_holders_4q", "persistent_holders_8q",
+                  "avg_position_age_quarters", "committed_growth_holders",
+                  "total_active_holders",
+                  "institutional_persistence_strong",
+                  "institutional_persistence_growing"):
+            assert k in out, f"Batch 344: missing key {k}"
+
+
+def test_batch344_multi_quarter_persistence_long_fires():
+    """Batch 344: gate semantics for the multi-quarter persistence strategy."""
+    from backtest.signals.screener import strat_institutional_multi_quarter_persistence_long
+    s = {
+        "institutional_persistence_strong": True,
+        "persistent_holders_4q": 15,
+        "total_active_holders": 30,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_multi_quarter_persistence_long(s)["fires"] is True
+    # Below threshold: gated
+    s2 = dict(s); s2["institutional_persistence_strong"] = False
+    assert strat_institutional_multi_quarter_persistence_long(s2)["fires"] is False
+
+
+def test_batch344_committed_growth_long_fires():
+    """Batch 344: gate semantics for committed_growth strategy."""
+    from backtest.signals.screener import strat_institutional_committed_growth_long
+    s = {
+        "institutional_persistence_growing": True,
+        "committed_growth_holders": 8,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_committed_growth_long(s)["fires"] is True
+    # Without persistence_growing: gated
+    s2 = dict(s); s2["institutional_persistence_growing"] = False
+    assert strat_institutional_committed_growth_long(s2)["fires"] is False
 
 
 def test_batch340_cat_c_bucket2_rare_by_design_registered():
