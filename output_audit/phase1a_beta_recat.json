@@ -1,0 +1,1876 @@
+{
+  "source": "output_phase_1a_beta_merged_local\\trade_log.csv",
+  "n_total_trades": 7191,
+  "n_strategies_fired": 66,
+  "buckets": {
+    "Cat-A_Tight": {
+      "n_in_bucket": 14,
+      "rows": [
+        {
+          "strategy": "52w_high_breakout",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "52w_low_breakdown",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "52wh_break_retest",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "bb_squeeze_volume",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "squeeze_breakout",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "cup_and_handle_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "head_and_shoulders_bottom_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "double_bottom_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "triangle_ascending_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "flag_bull_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "inside_bar_breakout",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "pre_holiday_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "halloween_seasonal_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "totm_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        }
+      ],
+      "verdict_counts": {
+        "QUIET": 14
+      }
+    },
+    "Cat-B_Data-Missing": {
+      "n_in_bucket": 20,
+      "rows": [
+        {
+          "strategy": "post_inclusion_drift_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "post_inclusion_reversal_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "post_deletion_drift_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "pre_rebalance_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "pairs_mean_reversion_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "pairs_mean_reversion_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "pre_fomc_long_sleeve",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "pre_fomc_quality_momentum_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "gold_silver_risk_off_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "dxy_headwind_multinational_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "sector_rotation_defensive_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "weekly_bias_pullback_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "weekly_bias_pullback_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "smc_equal_highs_sweep_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "smc_equal_lows_sweep_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "smc_mitigation_block_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "smc_mitigation_block_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "news_sentiment_shift_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "insider_cluster_with_director_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "pivot_fib_confluence",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        }
+      ],
+      "verdict_counts": {
+        "QUIET": 20
+      }
+    },
+    "Cat-C_Investigate": {
+      "n_in_bucket": 16,
+      "rows": [
+        {
+          "strategy": "avwap_20high_rejection_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "camarilla_rsi_obv",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "camarilla_rsi_obv_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "cpr_narrow_momentum_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "donchian_10_breakout",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "donchian_breakdown_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "ichimoku_cloud_breakdown",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "keltner_lower",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "prev_day_low_breakdown",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "rsi9_extreme",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "rsi_overbought_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "rsi_volume_200ema",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "supertrend_ichimoku_adx",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "supertrend_macd_short",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "break_retest_volume",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        },
+        {
+          "strategy": "value_area_breakout_long",
+          "n_trades": 0,
+          "wr_pct": null,
+          "mean_pnl_pct": null,
+          "sum_pp": null,
+          "verdict": "QUIET"
+        }
+      ],
+      "verdict_counts": {
+        "QUIET": 16
+      }
+    }
+  },
+  "un_deprecated_23": {
+    "n_in_bucket": 23,
+    "rows": [
+      {
+        "strategy": "golden_cross_50_200",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "golden_cross_9_21",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "golden_cross_20_50",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "golden_cross_volume",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "death_cross_50_200_volume",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "awesome_oscillator",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "ppo_crossover",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "tema_dema",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "force_index_breakout",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "mfi_oversold",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "parabolic_sar_flip",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "parabolic_sar_flip_short",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "morning_star",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "evening_star_short",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "three_white_soldiers",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "doji_at_support",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "bullish_engulfing_support",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "shooting_star_short",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "williams_stoch_dual",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "macd_crossover",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "macd_crossover_short",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "camarilla_r3_breakout",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      },
+      {
+        "strategy": "camarilla_s3_bounce",
+        "n_trades": 0,
+        "wr_pct": null,
+        "mean_pnl_pct": null,
+        "sum_pp": null,
+        "verdict": "QUIET"
+      }
+    ],
+    "verdict_counts": {
+      "QUIET": 23
+    }
+  },
+  "passing_criteria_verdicts": {
+    "n_strategies": 66,
+    "verdict_counts": {
+      "PASS": 0,
+      "FAIL": 32,
+      "INSUFFICIENT_DATA": 34
+    },
+    "per_strategy": {
+      "adx_initiation": {
+        "n": 4,
+        "wr_pct": 25.0,
+        "mean_pnl": -5.829,
+        "sum_pp": -23.32,
+        "pf": 0.25,
+        "sharpe": -0.65,
+        "max_dd_pp": 20.62,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=4 < 30",
+          "wr=25.0 < 50",
+          "pf=0.25 < 1.3",
+          "sharpe=-0.65 < 0.7",
+          "dd=20.6 > 20.0"
+        ]
+      },
+      "avwap_252_breakout": {
+        "n": 107,
+        "wr_pct": 29.91,
+        "mean_pnl": -0.682,
+        "sum_pp": -72.94,
+        "pf": 0.85,
+        "sharpe": -0.06,
+        "max_dd_pp": 203.17,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=29.9 < 55",
+          "pf=0.85 < 1.5",
+          "sharpe=-0.06 < 1.0",
+          "dd=203.2 > 20.0"
+        ]
+      },
+      "avwap_50_reclaim": {
+        "n": 398,
+        "wr_pct": 45.23,
+        "mean_pnl": -1.889,
+        "sum_pp": -751.68,
+        "pf": 0.69,
+        "sharpe": -0.1,
+        "max_dd_pp": 772.41,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=45.2 < 55",
+          "pf=0.69 < 1.5",
+          "sharpe=-0.10 < 1.0",
+          "dd=772.4 > 20.0"
+        ]
+      },
+      "bollinger_lower": {
+        "n": 428,
+        "wr_pct": 12.85,
+        "mean_pnl": -1.339,
+        "sum_pp": -573.03,
+        "pf": 0.53,
+        "sharpe": -0.25,
+        "max_dd_pp": 583.17,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=12.9 < 55",
+          "pf=0.53 < 1.5",
+          "sharpe=-0.25 < 1.0",
+          "dd=583.2 > 20.0"
+        ]
+      },
+      "bollinger_tight": {
+        "n": 70,
+        "wr_pct": 15.71,
+        "mean_pnl": 3.508,
+        "sum_pp": 245.59,
+        "pf": 2.13,
+        "sharpe": 0.17,
+        "max_dd_pp": 68.5,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=15.7 < 50",
+          "sharpe=0.17 < 0.7",
+          "dd=68.5 > 20.0"
+        ]
+      },
+      "bollinger_upper_short": {
+        "n": 6,
+        "wr_pct": 33.33,
+        "mean_pnl": -0.079,
+        "sum_pp": -0.48,
+        "pf": 0.98,
+        "sharpe": -0.01,
+        "max_dd_pp": 12.77,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=6 < 30",
+          "wr=33.3 < 50",
+          "pf=0.98 < 1.3",
+          "sharpe=-0.01 < 0.7"
+        ]
+      },
+      "break_retest_confluence": {
+        "n": 2,
+        "wr_pct": 0.0,
+        "mean_pnl": -11.24,
+        "sum_pp": -22.48,
+        "pf": 0.0,
+        "sharpe": -9.46,
+        "max_dd_pp": 10.4,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=2 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=-9.46 < 0.7"
+        ]
+      },
+      "buyback_8k_recent_long": {
+        "n": 98,
+        "wr_pct": 20.41,
+        "mean_pnl": -2.871,
+        "sum_pp": -281.32,
+        "pf": 0.55,
+        "sharpe": -0.21,
+        "max_dd_pp": 385.36,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=20.4 < 50",
+          "pf=0.55 < 1.3",
+          "sharpe=-0.21 < 0.7",
+          "dd=385.4 > 20.0"
+        ]
+      },
+      "cmf_flip": {
+        "n": 125,
+        "wr_pct": 29.6,
+        "mean_pnl": 1.334,
+        "sum_pp": 166.71,
+        "pf": 1.26,
+        "sharpe": 0.07,
+        "max_dd_pp": 155.62,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=29.6 < 55",
+          "pf=1.26 < 1.5",
+          "sharpe=0.07 < 1.0",
+          "dd=155.6 > 20.0"
+        ]
+      },
+      "cpr_narrow_bullish": {
+        "n": 750,
+        "wr_pct": 32.13,
+        "mean_pnl": -2.108,
+        "sum_pp": -1580.96,
+        "pf": 0.6,
+        "sharpe": -0.16,
+        "max_dd_pp": 1648.84,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=32.1 < 55",
+          "pf=0.60 < 1.5",
+          "sharpe=-0.16 < 1.0",
+          "dd=1648.8 > 20.0"
+        ]
+      },
+      "cpr_narrow_momentum": {
+        "n": 177,
+        "wr_pct": 29.94,
+        "mean_pnl": -3.298,
+        "sum_pp": -583.71,
+        "pf": 0.48,
+        "sharpe": -0.2,
+        "max_dd_pp": 614.02,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=29.9 < 55",
+          "pf=0.48 < 1.5",
+          "sharpe=-0.20 < 1.0",
+          "dd=614.0 > 20.0"
+        ]
+      },
+      "dc20_break_retest": {
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl": -10.412,
+        "sum_pp": -10.41,
+        "pf": 0.0,
+        "sharpe": 0.0,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=1 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=0.00 < 0.7"
+        ]
+      },
+      "htf_aligned_breakout_long": {
+        "n": 141,
+        "wr_pct": 29.79,
+        "mean_pnl": -0.003,
+        "sum_pp": -0.38,
+        "pf": 1.0,
+        "sharpe": -0.0,
+        "max_dd_pp": 202.58,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=29.8 < 55",
+          "pf=1.00 < 1.5",
+          "sharpe=-0.00 < 1.0",
+          "dd=202.6 > 20.0"
+        ]
+      },
+      "htf_aligned_breakout_short": {
+        "n": 193,
+        "wr_pct": 19.17,
+        "mean_pnl": -5.064,
+        "sum_pp": -977.33,
+        "pf": 0.24,
+        "sharpe": -0.63,
+        "max_dd_pp": 974.23,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=19.2 < 55",
+          "pf=0.24 < 1.5",
+          "sharpe=-0.63 < 1.0",
+          "dd=974.2 > 20.0"
+        ]
+      },
+      "hull_rsi": {
+        "n": 420,
+        "wr_pct": 26.19,
+        "mean_pnl": -3.1,
+        "sum_pp": -1301.8,
+        "pf": 0.47,
+        "sharpe": -0.28,
+        "max_dd_pp": 1333.63,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=26.2 < 55",
+          "pf=0.47 < 1.5",
+          "sharpe=-0.28 < 1.0",
+          "dd=1333.6 > 20.0"
+        ]
+      },
+      "hull_rsi_short": {
+        "n": 5,
+        "wr_pct": 20.0,
+        "mean_pnl": -3.522,
+        "sum_pp": -17.61,
+        "pf": 0.2,
+        "sharpe": -0.56,
+        "max_dd_pp": 20.63,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=5 < 30",
+          "wr=20.0 < 50",
+          "pf=0.20 < 1.3",
+          "sharpe=-0.56 < 0.7",
+          "dd=20.6 > 20.0"
+        ]
+      },
+      "ichimoku_cloud_breakout": {
+        "n": 15,
+        "wr_pct": 33.33,
+        "mean_pnl": 2.647,
+        "sum_pp": 39.71,
+        "pf": 1.59,
+        "sharpe": 0.16,
+        "max_dd_pp": 40.86,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=15 < 30",
+          "wr=33.3 < 50",
+          "sharpe=0.16 < 0.7",
+          "dd=40.9 > 20.0"
+        ]
+      },
+      "ichimoku_tk_cross": {
+        "n": 10,
+        "wr_pct": 30.0,
+        "mean_pnl": -2.889,
+        "sum_pp": -28.89,
+        "pf": 0.51,
+        "sharpe": -0.31,
+        "max_dd_pp": 40.33,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=10 < 30",
+          "wr=30.0 < 50",
+          "pf=0.51 < 1.3",
+          "sharpe=-0.31 < 0.7",
+          "dd=40.3 > 20.0"
+        ]
+      },
+      "insider_cluster_long": {
+        "n": 19,
+        "wr_pct": 21.05,
+        "mean_pnl": -5.638,
+        "sum_pp": -107.12,
+        "pf": 0.12,
+        "sharpe": -0.89,
+        "max_dd_pp": 96.32,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=19 < 30",
+          "wr=21.1 < 50",
+          "pf=0.12 < 1.3",
+          "sharpe=-0.89 < 0.7",
+          "dd=96.3 > 20.0"
+        ]
+      },
+      "lead_lag_sector_rotation": {
+        "n": 21,
+        "wr_pct": 23.81,
+        "mean_pnl": 3.831,
+        "sum_pp": 80.45,
+        "pf": 1.72,
+        "sharpe": 0.12,
+        "max_dd_pp": 65.51,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=21 < 30",
+          "wr=23.8 < 50",
+          "sharpe=0.12 < 0.7",
+          "dd=65.5 > 20.0"
+        ]
+      },
+      "macd_fast_crossover": {
+        "n": 115,
+        "wr_pct": 33.91,
+        "mean_pnl": -1.992,
+        "sum_pp": -229.04,
+        "pf": 0.66,
+        "sharpe": -0.16,
+        "max_dd_pp": 279.77,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=33.9 < 55",
+          "pf=0.66 < 1.5",
+          "sharpe=-0.16 < 1.0",
+          "dd=279.8 > 20.0"
+        ]
+      },
+      "macd_ichimoku": {
+        "n": 15,
+        "wr_pct": 13.33,
+        "mean_pnl": -9.902,
+        "sum_pp": -148.53,
+        "pf": 0.14,
+        "sharpe": -0.55,
+        "max_dd_pp": 170.54,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=15 < 30",
+          "wr=13.3 < 50",
+          "pf=0.14 < 1.3",
+          "sharpe=-0.55 < 0.7",
+          "dd=170.5 > 20.0"
+        ]
+      },
+      "monthly_bias_momentum_long": {
+        "n": 501,
+        "wr_pct": 30.74,
+        "mean_pnl": -0.762,
+        "sum_pp": -381.63,
+        "pf": 0.87,
+        "sharpe": -0.05,
+        "max_dd_pp": 554.62,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=30.7 < 55",
+          "pf=0.87 < 1.5",
+          "sharpe=-0.05 < 1.0",
+          "dd=554.6 > 20.0"
+        ]
+      },
+      "orb_stocks_in_play_long": {
+        "n": 92,
+        "wr_pct": 29.35,
+        "mean_pnl": 4.234,
+        "sum_pp": 389.54,
+        "pf": 1.75,
+        "sharpe": 0.09,
+        "max_dd_pp": 94.73,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=29.3 < 50",
+          "sharpe=0.09 < 0.7",
+          "dd=94.7 > 20.0"
+        ]
+      },
+      "orb_stocks_in_play_short": {
+        "n": 114,
+        "wr_pct": 31.58,
+        "mean_pnl": -2.376,
+        "sum_pp": -270.83,
+        "pf": 0.56,
+        "sharpe": -0.24,
+        "max_dd_pp": 291.23,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=31.6 < 55",
+          "pf=0.56 < 1.5",
+          "sharpe=-0.24 < 1.0",
+          "dd=291.2 > 20.0"
+        ]
+      },
+      "pivot_r1_breakout": {
+        "n": 96,
+        "wr_pct": 27.08,
+        "mean_pnl": -2.658,
+        "sum_pp": -255.17,
+        "pf": 0.6,
+        "sharpe": -0.21,
+        "max_dd_pp": 256.78,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=27.1 < 50",
+          "pf=0.60 < 1.3",
+          "sharpe=-0.21 < 0.7",
+          "dd=256.8 > 20.0"
+        ]
+      },
+      "pivot_r2_continuation": {
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl": -10.523,
+        "sum_pp": -10.52,
+        "pf": 0.0,
+        "sharpe": 0.0,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=1 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=0.00 < 0.7"
+        ]
+      },
+      "pivot_s1_bounce": {
+        "n": 20,
+        "wr_pct": 45.0,
+        "mean_pnl": 6.093,
+        "sum_pp": 121.86,
+        "pf": 2.7,
+        "sharpe": 0.25,
+        "max_dd_pp": 30.84,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=20 < 30",
+          "wr=45.0 < 50",
+          "sharpe=0.25 < 0.7",
+          "dd=30.8 > 20.0"
+        ]
+      },
+      "pivot_s2_bounce": {
+        "n": 6,
+        "wr_pct": 50.0,
+        "mean_pnl": 3.441,
+        "sum_pp": 20.65,
+        "pf": 1.84,
+        "sharpe": 0.23,
+        "max_dd_pp": 20.81,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=6 < 30",
+          "sharpe=0.23 < 0.7",
+          "dd=20.8 > 20.0"
+        ]
+      },
+      "pivot_s3_capitulation": {
+        "n": 3,
+        "wr_pct": 33.33,
+        "mean_pnl": -4.303,
+        "sum_pp": -12.91,
+        "pf": 0.37,
+        "sharpe": -0.42,
+        "max_dd_pp": 10.28,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=3 < 30",
+          "wr=33.3 < 50",
+          "pf=0.37 < 1.3",
+          "sharpe=-0.42 < 0.7"
+        ]
+      },
+      "po3_bearish": {
+        "n": 403,
+        "wr_pct": 23.82,
+        "mean_pnl": -2.756,
+        "sum_pp": -1110.52,
+        "pf": 0.3,
+        "sharpe": -0.33,
+        "max_dd_pp": 1104.31,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=23.8 < 55",
+          "pf=0.30 < 1.5",
+          "sharpe=-0.33 < 1.0",
+          "dd=1104.3 > 20.0"
+        ]
+      },
+      "po3_bullish": {
+        "n": 416,
+        "wr_pct": 38.22,
+        "mean_pnl": -0.974,
+        "sum_pp": -405.31,
+        "pf": 0.75,
+        "sharpe": -0.11,
+        "max_dd_pp": 512.69,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=38.2 < 55",
+          "pf=0.75 < 1.5",
+          "sharpe=-0.11 < 1.0",
+          "dd=512.7 > 20.0"
+        ]
+      },
+      "po3_htf_aligned_long": {
+        "n": 44,
+        "wr_pct": 15.91,
+        "mean_pnl": -4.181,
+        "sum_pp": -183.96,
+        "pf": 0.49,
+        "sharpe": -0.23,
+        "max_dd_pp": 204.41,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=15.9 < 50",
+          "pf=0.49 < 1.3",
+          "sharpe=-0.23 < 0.7",
+          "dd=204.4 > 20.0"
+        ]
+      },
+      "po3_htf_aligned_short": {
+        "n": 18,
+        "wr_pct": 27.78,
+        "mean_pnl": -1.041,
+        "sum_pp": -18.74,
+        "pf": 0.81,
+        "sharpe": -0.07,
+        "max_dd_pp": 49.9,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=18 < 30",
+          "wr=27.8 < 50",
+          "pf=0.81 < 1.3",
+          "sharpe=-0.07 < 0.7",
+          "dd=49.9 > 20.0"
+        ]
+      },
+      "prev_day_high_break": {
+        "n": 5,
+        "wr_pct": 40.0,
+        "mean_pnl": -10.689,
+        "sum_pp": -53.44,
+        "pf": 0.31,
+        "sharpe": -0.35,
+        "max_dd_pp": 65.1,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=5 < 30",
+          "wr=40.0 < 50",
+          "pf=0.31 < 1.3",
+          "sharpe=-0.35 < 0.7",
+          "dd=65.1 > 20.0"
+        ]
+      },
+      "prev_day_low_bounce": {
+        "n": 11,
+        "wr_pct": 9.09,
+        "mean_pnl": -6.794,
+        "sum_pp": -74.73,
+        "pf": 0.02,
+        "sharpe": -1.27,
+        "max_dd_pp": 65.1,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=11 < 30",
+          "wr=9.1 < 50",
+          "pf=0.02 < 1.3",
+          "sharpe=-1.27 < 0.7",
+          "dd=65.1 > 20.0"
+        ]
+      },
+      "r1_break_retest": {
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl": -16.735,
+        "sum_pp": -16.74,
+        "pf": 0.0,
+        "sharpe": 0.0,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=1 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=0.00 < 0.7"
+        ]
+      },
+      "risk_off_bond_equity_short": {
+        "n": 3,
+        "wr_pct": 0.0,
+        "mean_pnl": -5.937,
+        "sum_pp": -17.81,
+        "pf": 0.0,
+        "sharpe": -1.16,
+        "max_dd_pp": 10.72,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=3 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=-1.16 < 0.7"
+        ]
+      },
+      "roc_burst": {
+        "n": 4,
+        "wr_pct": 0.0,
+        "mean_pnl": -11.278,
+        "sum_pp": -45.11,
+        "pf": 0.0,
+        "sharpe": -6.69,
+        "max_dd_pp": 34.72,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=4 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=-6.69 < 0.7",
+          "dd=34.7 > 20.0"
+        ]
+      },
+      "rsi21_slow": {
+        "n": 1,
+        "wr_pct": 100.0,
+        "mean_pnl": 16.848,
+        "sum_pp": 16.85,
+        "pf": "inf",
+        "sharpe": 0.0,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=1 < 30",
+          "sharpe=0.00 < 0.7"
+        ]
+      },
+      "rsi_oversold": {
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl": -10.308,
+        "sum_pp": -10.31,
+        "pf": 0.0,
+        "sharpe": 0.0,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=1 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=0.00 < 0.7"
+        ]
+      },
+      "smc_bos_continuation": {
+        "n": 66,
+        "wr_pct": 24.24,
+        "mean_pnl": -2.418,
+        "sum_pp": -159.56,
+        "pf": 0.59,
+        "sharpe": -0.21,
+        "max_dd_pp": 149.29,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=24.2 < 50",
+          "pf=0.59 < 1.3",
+          "sharpe=-0.21 < 0.7",
+          "dd=149.3 > 20.0"
+        ]
+      },
+      "smc_bos_retest_entry": {
+        "n": 14,
+        "wr_pct": 35.71,
+        "mean_pnl": 5.711,
+        "sum_pp": 79.95,
+        "pf": 2.75,
+        "sharpe": 0.33,
+        "max_dd_pp": 38.19,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=14 < 30",
+          "wr=35.7 < 50",
+          "sharpe=0.33 < 0.7",
+          "dd=38.2 > 20.0"
+        ]
+      },
+      "smc_breaker_block_long": {
+        "n": 3,
+        "wr_pct": 66.67,
+        "mean_pnl": -0.399,
+        "sum_pp": -1.2,
+        "pf": 0.87,
+        "sharpe": -0.05,
+        "max_dd_pp": 9.03,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=3 < 30",
+          "pf=0.87 < 1.3",
+          "sharpe=-0.05 < 0.7"
+        ]
+      },
+      "smc_breaker_block_short": {
+        "n": 24,
+        "wr_pct": 20.83,
+        "mean_pnl": -4.877,
+        "sum_pp": -117.06,
+        "pf": 0.28,
+        "sharpe": -0.56,
+        "max_dd_pp": 134.12,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=24 < 30",
+          "wr=20.8 < 50",
+          "pf=0.28 < 1.3",
+          "sharpe=-0.56 < 0.7",
+          "dd=134.1 > 20.0"
+        ]
+      },
+      "smc_choch_reversal": {
+        "n": 274,
+        "wr_pct": 27.74,
+        "mean_pnl": 0.027,
+        "sum_pp": 7.44,
+        "pf": 1.0,
+        "sharpe": 0.0,
+        "max_dd_pp": 243.29,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=27.7 < 55",
+          "pf=1.00 < 1.5",
+          "sharpe=0.00 < 1.0",
+          "dd=243.3 > 20.0"
+        ]
+      },
+      "smc_discount_long": {
+        "n": 4,
+        "wr_pct": 0.0,
+        "mean_pnl": -8.949,
+        "sum_pp": -35.8,
+        "pf": 0.0,
+        "sharpe": -2.05,
+        "max_dd_pp": 25.52,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=4 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=-2.05 < 0.7",
+          "dd=25.5 > 20.0"
+        ]
+      },
+      "smc_fvg_retest_long": {
+        "n": 2,
+        "wr_pct": 0.0,
+        "mean_pnl": -12.279,
+        "sum_pp": -24.56,
+        "pf": 0.0,
+        "sharpe": -5.33,
+        "max_dd_pp": 10.65,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=2 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=-5.33 < 0.7"
+        ]
+      },
+      "smc_fvg_retest_short": {
+        "n": 5,
+        "wr_pct": 0.0,
+        "mean_pnl": -8.282,
+        "sum_pp": -41.41,
+        "pf": 0.0,
+        "sharpe": -2.72,
+        "max_dd_pp": 35.85,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=5 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=-2.72 < 0.7",
+          "dd=35.9 > 20.0"
+        ]
+      },
+      "smc_inverse_fvg": {
+        "n": 275,
+        "wr_pct": 28.36,
+        "mean_pnl": -1.995,
+        "sum_pp": -548.71,
+        "pf": 0.66,
+        "sharpe": -0.14,
+        "max_dd_pp": 566.32,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=28.4 < 55",
+          "pf=0.66 < 1.5",
+          "sharpe=-0.14 < 1.0",
+          "dd=566.3 > 20.0"
+        ]
+      },
+      "smc_liquidity_sweep_reversal": {
+        "n": 52,
+        "wr_pct": 21.15,
+        "mean_pnl": -3.765,
+        "sum_pp": -195.77,
+        "pf": 0.42,
+        "sharpe": -0.35,
+        "max_dd_pp": 222.89,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=21.2 < 50",
+          "pf=0.42 < 1.3",
+          "sharpe=-0.35 < 0.7",
+          "dd=222.9 > 20.0"
+        ]
+      },
+      "smc_order_block_bounce": {
+        "n": 69,
+        "wr_pct": 36.23,
+        "mean_pnl": 0.33,
+        "sum_pp": 22.74,
+        "pf": 1.07,
+        "sharpe": 0.02,
+        "max_dd_pp": 84.84,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=36.2 < 50",
+          "pf=1.07 < 1.3",
+          "sharpe=0.02 < 0.7",
+          "dd=84.8 > 20.0"
+        ]
+      },
+      "smc_ote_long": {
+        "n": 2,
+        "wr_pct": 50.0,
+        "mean_pnl": -4.814,
+        "sum_pp": -9.63,
+        "pf": 0.08,
+        "sharpe": -0.6,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=2 < 30",
+          "pf=0.08 < 1.3",
+          "sharpe=-0.60 < 0.7"
+        ]
+      },
+      "smc_ote_short": {
+        "n": 7,
+        "wr_pct": 42.86,
+        "mean_pnl": -0.435,
+        "sum_pp": -3.04,
+        "pf": 0.81,
+        "sharpe": -0.09,
+        "max_dd_pp": 7.14,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=7 < 30",
+          "wr=42.9 < 50",
+          "pf=0.81 < 1.3",
+          "sharpe=-0.09 < 0.7"
+        ]
+      },
+      "smc_premium_short": {
+        "n": 13,
+        "wr_pct": 15.38,
+        "mean_pnl": -6.638,
+        "sum_pp": -86.3,
+        "pf": 0.08,
+        "sharpe": -1.19,
+        "max_dd_pp": 80.35,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=13 < 30",
+          "wr=15.4 < 50",
+          "pf=0.08 < 1.3",
+          "sharpe=-1.19 < 0.7",
+          "dd=80.4 > 20.0"
+        ]
+      },
+      "stoch_oversold": {
+        "n": 1,
+        "wr_pct": 100.0,
+        "mean_pnl": 0.915,
+        "sum_pp": 0.91,
+        "pf": "inf",
+        "sharpe": 0.0,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=1 < 30",
+          "sharpe=0.00 < 0.7"
+        ]
+      },
+      "stochrsi_overbought_short": {
+        "n": 288,
+        "wr_pct": 35.76,
+        "mean_pnl": -1.383,
+        "sum_pp": -398.28,
+        "pf": 0.74,
+        "sharpe": -0.12,
+        "max_dd_pp": 449.3,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=35.8 < 55",
+          "pf=0.74 < 1.5",
+          "sharpe=-0.12 < 1.0",
+          "dd=449.3 > 20.0"
+        ]
+      },
+      "stochrsi_oversold": {
+        "n": 65,
+        "wr_pct": 40.0,
+        "mean_pnl": 0.305,
+        "sum_pp": 19.81,
+        "pf": 1.15,
+        "sharpe": 0.05,
+        "max_dd_pp": 36.89,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=40.0 < 50",
+          "pf=1.15 < 1.3",
+          "sharpe=0.05 < 0.7",
+          "dd=36.9 > 20.0"
+        ]
+      },
+      "supertrend_macd": {
+        "n": 2,
+        "wr_pct": 50.0,
+        "mean_pnl": 12.42,
+        "sum_pp": 24.84,
+        "pf": 3.48,
+        "sharpe": 0.39,
+        "max_dd_pp": 10.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=2 < 30",
+          "sharpe=0.39 < 0.7"
+        ]
+      },
+      "ultimate_oscillator": {
+        "n": 157,
+        "wr_pct": 33.12,
+        "mean_pnl": -0.777,
+        "sum_pp": -122.05,
+        "pf": 0.85,
+        "sharpe": -0.06,
+        "max_dd_pp": 161.31,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=33.1 < 55",
+          "pf=0.85 < 1.5",
+          "sharpe=-0.06 < 1.0",
+          "dd=161.3 > 20.0"
+        ]
+      },
+      "volume_spike_breakout": {
+        "n": 1,
+        "wr_pct": 0.0,
+        "mean_pnl": -15.028,
+        "sum_pp": -15.03,
+        "pf": 0.0,
+        "sharpe": 0.0,
+        "max_dd_pp": 0.0,
+        "criteria_band": "per_regime",
+        "verdict": "INSUFFICIENT_DATA",
+        "failures": [
+          "n=1 < 30",
+          "wr=0.0 < 50",
+          "pf=0.00 < 1.3",
+          "sharpe=0.00 < 0.7"
+        ]
+      },
+      "williams_r_oversold": {
+        "n": 177,
+        "wr_pct": 39.55,
+        "mean_pnl": 2.227,
+        "sum_pp": 394.23,
+        "pf": 1.5,
+        "sharpe": 0.11,
+        "max_dd_pp": 118.7,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=39.5 < 55",
+          "sharpe=0.11 < 1.0",
+          "dd=118.7 > 20.0"
+        ]
+      },
+      "xs_combined_momentum_low_ivol": {
+        "n": 37,
+        "wr_pct": 21.62,
+        "mean_pnl": -4.349,
+        "sum_pp": -160.91,
+        "pf": 0.47,
+        "sharpe": -0.2,
+        "max_dd_pp": 164.35,
+        "criteria_band": "per_regime",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=21.6 < 50",
+          "pf=0.47 < 1.3",
+          "sharpe=-0.20 < 0.7",
+          "dd=164.4 > 20.0"
+        ]
+      },
+      "xs_low_beta_long": {
+        "n": 344,
+        "wr_pct": 34.88,
+        "mean_pnl": 1.09,
+        "sum_pp": 374.91,
+        "pf": 1.21,
+        "sharpe": 0.05,
+        "max_dd_pp": 192.64,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=34.9 < 55",
+          "pf=1.21 < 1.5",
+          "sharpe=0.05 < 1.0",
+          "dd=192.6 > 20.0"
+        ]
+      },
+      "xs_momentum_bottom_decile_short": {
+        "n": 324,
+        "wr_pct": 24.07,
+        "mean_pnl": -5.727,
+        "sum_pp": -1855.66,
+        "pf": 0.35,
+        "sharpe": -0.2,
+        "max_dd_pp": 1902.48,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=24.1 < 55",
+          "pf=0.35 < 1.5",
+          "sharpe=-0.20 < 1.0",
+          "dd=1902.5 > 20.0"
+        ]
+      },
+      "xs_momentum_top_decile": {
+        "n": 125,
+        "wr_pct": 46.4,
+        "mean_pnl": -0.317,
+        "sum_pp": -39.62,
+        "pf": 0.91,
+        "sharpe": -0.04,
+        "max_dd_pp": 99.9,
+        "criteria_band": "overall",
+        "verdict": "FAIL",
+        "failures": [
+          "wr=46.4 < 55",
+          "pf=0.91 < 1.5",
+          "sharpe=-0.04 < 1.0",
+          "dd=99.9 > 20.0"
+        ]
+      }
+    }
+  },
+  "regime_breakdown": {
+    "regimes": {
+      "bear": {
+        "n_trades": 2910,
+        "wr_pct": 25.12,
+        "mean_pnl": -2.706,
+        "sum_pp": -7874.97
+      },
+      "bull": {
+        "n_trades": 3810,
+        "wr_pct": 32.99,
+        "mean_pnl": -0.693,
+        "sum_pp": -2641.14
+      },
+      "neutral": {
+        "n_trades": 471,
+        "wr_pct": 33.97,
+        "mean_pnl": -1.849,
+        "sum_pp": -871.04
+      }
+    },
+    "worst_regime_drivers": {
+      "bear": [
+        {
+          "strategy": "xs_momentum_bottom_decile_short",
+          "n_trades": 324,
+          "sum_pp": -1855.66,
+          "mean_pnl": -5.727
+        },
+        {
+          "strategy": "hull_rsi",
+          "n_trades": 380,
+          "sum_pp": -1340.88,
+          "mean_pnl": -3.529
+        },
+        {
+          "strategy": "htf_aligned_breakout_short",
+          "n_trades": 188,
+          "sum_pp": -944.52,
+          "mean_pnl": -5.024
+        },
+        {
+          "strategy": "po3_bearish",
+          "n_trades": 350,
+          "sum_pp": -925.53,
+          "mean_pnl": -2.644
+        },
+        {
+          "strategy": "cpr_narrow_momentum",
+          "n_trades": 176,
+          "sum_pp": -572.35,
+          "mean_pnl": -3.252
+        }
+      ],
+      "bull": [
+        {
+          "strategy": "cpr_narrow_bullish",
+          "n_trades": 642,
+          "sum_pp": -1616.59,
+          "mean_pnl": -2.518
+        },
+        {
+          "strategy": "avwap_50_reclaim",
+          "n_trades": 382,
+          "sum_pp": -722.36,
+          "mean_pnl": -1.891
+        },
+        {
+          "strategy": "monthly_bias_momentum_long",
+          "n_trades": 470,
+          "sum_pp": -411.79,
+          "mean_pnl": -0.876
+        },
+        {
+          "strategy": "po3_bullish",
+          "n_trades": 383,
+          "sum_pp": -274.15,
+          "mean_pnl": -0.716
+        },
+        {
+          "strategy": "smc_inverse_fvg",
+          "n_trades": 97,
+          "sum_pp": -255.43,
+          "mean_pnl": -2.633
+        }
+      ],
+      "neutral": [
+        {
+          "strategy": "xs_low_beta_long",
+          "n_trades": 30,
+          "sum_pp": -186.59,
+          "mean_pnl": -6.22
+        },
+        {
+          "strategy": "po3_bearish",
+          "n_trades": 53,
+          "sum_pp": -184.99,
+          "mean_pnl": -3.49
+        },
+        {
+          "strategy": "smc_choch_reversal",
+          "n_trades": 34,
+          "sum_pp": -166.13,
+          "mean_pnl": -4.886
+        },
+        {
+          "strategy": "po3_bullish",
+          "n_trades": 33,
+          "sum_pp": -131.16,
+          "mean_pnl": -3.975
+        },
+        {
+          "strategy": "pivot_r1_breakout",
+          "n_trades": 21,
+          "sum_pp": -102.47,
+          "mean_pnl": -4.88
+        }
+      ]
+    }
+  }
+}
