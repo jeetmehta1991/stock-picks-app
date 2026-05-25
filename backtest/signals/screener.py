@@ -2385,6 +2385,139 @@ def strat_institutional_insider_combo_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+# ---------------------------------------------------------------------------
+# Wave 3 classification_change strategies (Batch 332 2026-05-25):
+# fire on recent GICS reclassification events. Chen-Chen 2010 (industry
+# classification + price discovery); Brogaard-Heath-Saadi 2019 (industry
+# classification + analyst forecasts). Producer at
+# universe.get_classification_change_signals reads sector_history.csv
+# (DEC-323) and detects moves within a 90-day lookback.
+# ---------------------------------------------------------------------------
+
+
+def strat_classification_change_recent_long(s):
+    """Wave 3 (Batch 332): generic recent GICS reclassification + bullish
+    regime. Brogaard-Heath-Saadi 2019: reclassifications co-incide with
+    analyst re-rating windows; entering on the new-classification side
+    captures the analyst-cycle re-evaluation alpha. Gated by 200-EMA
+    to filter out cases where reclassification follows business
+    deterioration."""
+    fires = (
+        s.get("classification_changed_recent", False)
+        and s.get("price_above_ema_200", True)
+    )
+    days = s.get("days_since_classification_change", 0)
+    new_sec = s.get("new_sector", "?")
+    prior_sec = s.get("prior_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","price_above_ema_200"],
+        [f"Reclassified {prior_sec} -> {new_sec} ({days}d ago)",
+         "Brogaard-Heath-Saadi 2019: analyst re-rating window",
+         "Above 200 EMA (filter out deterioration cases)"])
+
+
+def strat_classification_change_to_tech_long(s):
+    """Wave 3 (Batch 332): reclassification INTO growth sectors (IT,
+    Communication Services, Health Care). Chen-Chen 2010: moves into
+    high-multiple sectors trigger sustained re-rating. Examples in our
+    sector_history.csv: META/GOOGL 2018 IT->Comms (Comms is growth);
+    V/MA 2023 IT->Financials (NOT growth — gated off correctly)."""
+    fires = (
+        s.get("classification_change_to_tech", False)
+        and s.get("price_above_ema_200", True)
+    )
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_change_to_tech","price_above_ema_200"],
+        [f"Reclassified INTO growth sector ({new_sec})",
+         "Chen-Chen 2010: re-rating into high-multiple sector",
+         "Above 200 EMA"])
+
+
+def strat_classification_change_to_defensive_short(s):
+    """Wave 3 (Batch 332): reclassification INTO defensive sectors
+    (Materials, Utilities, Real Estate, Consumer Staples) + bearish
+    trend. Defensive re-classification + price weakness = continuation
+    short setup. Less common than growth re-classification but cleaner
+    signal when both conditions align."""
+    fires = (
+        s.get("classification_change_to_defensive", False)
+        and not s.get("price_above_ema_200", True)
+    )
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "short", "classification_change",
+        ["classification_change_to_defensive","price_below_ema_200"],
+        [f"Reclassified INTO defensive sector ({new_sec})",
+         "Re-rating into low-multiple sector",
+         "Below 200 EMA - trend agrees with defensive re-rating"])
+
+
+# ---------------------------------------------------------------------------
+# Wave 3 persistence strategies (Batch 333 2026-05-25):
+# institutional position persistence proxies using the Batch 330 producer's
+# institutional_increased + institutional_new_positions counts. Yan-Zhang
+# 2009 RFS: short-horizon institutional persistence forecasts alpha.
+# Note: TRUE multi-quarter persistence requires precompute over 4+ quarters
+# of holdings history; that's queued as Batch 333b. This batch ships
+# single-quarter persistence proxies that are useful as-is.
+# ---------------------------------------------------------------------------
+
+
+def strat_institutional_persistent_holders_long(s):
+    """Wave 3 (Batch 333): high count of institutional position increases
+    (current quarter) + bullish regime. Proxy for persistence:
+    institutional_increased >= 5 means at least 5 funds grew their position
+    same quarter = strong consensus. Yan-Zhang 2009 RFS."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("price_above_ema_200", True)
+    )
+    n_incr = s.get("institutional_increased", 0)
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","price_above_ema_200"],
+        [f"{n_incr} institutional funds grew position this quarter",
+         "Yan-Zhang 2009 RFS - cross-fund consensus = persistence proxy",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_strong_conviction_long(s):
+    """Wave 3 (Batch 333): fresh capital (new positions) + existing-holder
+    growth (increased) simultaneously. Distinct conviction signature -
+    both new entrants AND existing holders agree. Frazzini-Lamont 2008
+    notes new-money + position-growth = institutional consensus."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("institutional_new_positions", 0) >= 2
+        and s.get("price_above_ema_200", True)
+    )
+    n_new = s.get("institutional_new_positions", 0)
+    n_incr = s.get("institutional_increased", 0)
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","institutional_new_positions>=2",
+         "price_above_ema_200"],
+        [f"{n_new} new + {n_incr} grew institutional positions",
+         "Fresh capital agrees with existing-holder conviction",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_capitulation_short(s):
+    """Wave 3 (Batch 333): institutional distribution + volume spike
+    (capitulation signature). Sias 2004 + Lo-Wang 2000: institutional
+    selling under elevated retail volume = price discovery on the way
+    down. Distinct from Batch 330's institutional_distribution_short
+    by adding the volume-confirmation gate."""
+    fires = (
+        s.get("institutional_negative", False)
+        and s.get("vol_spike_2x", False)
+        and not s.get("price_above_ema_50", True)
+    )
+    return _strat(fires, "short", "institutional_persistence",
+        ["institutional_negative","vol_spike_2x","price_below_ema_50"],
+        ["13F institutional distribution (decreased > increased)",
+         "Volume 2x ADV - retail tape participating in distribution",
+         "Below 50 EMA - capitulation signature"])
+
+
 def strat_institutional_volume_confirmation_long(s):
     """Wave 3 (Batch 331): institutional buy + retail volume confirmation.
     Per Sias 2004 JFE institutional herding + Lo-Wang 2000 RFS volume-as-
@@ -2888,6 +3021,18 @@ ALL_STRATEGIES = {
     "institutional_breakout_confirmation_long": strat_institutional_breakout_confirmation_long,
     "institutional_insider_combo_long":        strat_institutional_insider_combo_long,
     "institutional_volume_confirmation_long":  strat_institutional_volume_confirmation_long,
+    # Wave 3 classification_change (Batch 332 2026-05-25 Path C): 3 strategies
+    # firing on recent GICS reclassification events via sector_history.csv.
+    "classification_change_recent_long":         strat_classification_change_recent_long,
+    "classification_change_to_tech_long":        strat_classification_change_to_tech_long,
+    "classification_change_to_defensive_short":  strat_classification_change_to_defensive_short,
+    # Wave 3 persistence (Batch 333 2026-05-25 Path C): 3 strategies using
+    # the Batch 330 producer's institutional_increased / institutional_new_positions
+    # counts. Single-quarter persistence proxies; true multi-quarter
+    # precompute queued as Batch 333b.
+    "institutional_persistent_holders_long":  strat_institutional_persistent_holders_long,
+    "institutional_strong_conviction_long":   strat_institutional_strong_conviction_long,
+    "institutional_capitulation_short":       strat_institutional_capitulation_short,
     # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
     "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
@@ -3174,6 +3319,17 @@ def screen_instrument(
         insider = compute_insider_cluster_signals(ticker, as_of)
         if insider:
             signals.update(insider)
+    except Exception:
+        pass
+    # Batch 332 (2026-05-25 owner-approved Path C Wave 3 classification_change):
+    # inject recent-classification-change signals into per-ticker signals
+    # dict. Reads sector_history.csv via universe.get_classification_change_signals.
+    # No-op when ticker has no qualifying change row in 90-day lookback.
+    try:
+        from backtest.data.universe import get_classification_change_signals
+        cc_out = get_classification_change_signals(ticker, as_of)
+        if cc_out:
+            signals.update(cc_out)
     except Exception:
         pass
     # Batch 330 (2026-05-25 owner-approved Path C Wave 3): inject

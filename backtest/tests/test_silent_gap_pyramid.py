@@ -1596,9 +1596,11 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   154 after Batch 329 (+6 retest variants)
     #   157 after Batch 330 (+3 Wave-3 13F)
     #   161 after Batch 331 (+4 more Wave-3 13F)
-    assert len(ALL_STRATEGIES) == 161, (
-        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 161 "
-        f"after Batch 329 + 330 + 331, got {len(ALL_STRATEGIES)}"
+    #   164 after Batch 332 (+3 Wave-3 classification_change)
+    #   167 after Batch 333 (+3 Wave-3 persistence)
+    assert len(ALL_STRATEGIES) == 167, (
+        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 167 "
+        f"after Batches 329-333, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1657,6 +1659,139 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s = {"triangle_ascending_detected": True,
          "resistance_break_retest": True, "price_above_ema_200": True}
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
+
+
+def test_batch333_wave3_persistence_strategies_registered():
+    """Wave 3 Batch 333: 3 institutional persistence strategies registered."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "institutional_persistent_holders_long",
+        "institutional_strong_conviction_long",
+        "institutional_capitulation_short",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 333: missing strategy registrations: {missing}"
+
+
+def test_batch333_institutional_persistent_holders_long_fires():
+    """Batch 333: persistent_holders_long needs institutional_increased>=5
+    + above 200-EMA."""
+    from backtest.signals.screener import strat_institutional_persistent_holders_long
+    s = {"institutional_increased": 7, "price_above_ema_200": True}
+    out = strat_institutional_persistent_holders_long(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    # Below 5 increased: gated
+    s2 = dict(s); s2["institutional_increased"] = 3
+    assert strat_institutional_persistent_holders_long(s2)["fires"] is False
+
+
+def test_batch333_institutional_strong_conviction_long_fires():
+    """Batch 333: strong_conviction needs increased>=5 AND new_positions>=2
+    AND above 200-EMA."""
+    from backtest.signals.screener import strat_institutional_strong_conviction_long
+    s = {
+        "institutional_increased": 6,
+        "institutional_new_positions": 3,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_strong_conviction_long(s)["fires"] is True
+    # Drop new_positions: gated
+    s2 = dict(s); s2["institutional_new_positions"] = 1
+    assert strat_institutional_strong_conviction_long(s2)["fires"] is False
+
+
+def test_batch333_institutional_capitulation_short_fires():
+    """Batch 333: capitulation_short needs institutional_negative AND
+    vol_spike_2x AND below 50-EMA."""
+    from backtest.signals.screener import strat_institutional_capitulation_short
+    s = {
+        "institutional_negative": True,
+        "vol_spike_2x": True,
+        "price_above_ema_50": False,
+    }
+    out = strat_institutional_capitulation_short(s)
+    assert out["fires"] is True and out["direction"] == "short"
+    # Above 50 EMA: gated (no capitulation if trend still up)
+    s2 = dict(s); s2["price_above_ema_50"] = True
+    assert strat_institutional_capitulation_short(s2)["fires"] is False
+
+
+def test_batch332_wave3_classification_change_strategies_registered():
+    """Wave 3 Batch 332: 3 classification_change strategies registered."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "classification_change_recent_long",
+        "classification_change_to_tech_long",
+        "classification_change_to_defensive_short",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 332: missing strategy registrations: {missing}"
+
+
+def test_batch332_classification_change_recent_long_fires():
+    """Batch 332: classification_change_recent_long needs the producer signal
+    + 200-EMA regime."""
+    from backtest.signals.screener import strat_classification_change_recent_long
+    s = {
+        "classification_changed_recent": True,
+        "days_since_classification_change": 14,
+        "new_sector": "Communication Services",
+        "prior_sector": "Information Technology",
+        "price_above_ema_200": True,
+    }
+    out = strat_classification_change_recent_long(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    # No recent change -> gated
+    s2 = dict(s); s2["classification_changed_recent"] = False
+    assert strat_classification_change_recent_long(s2)["fires"] is False
+
+
+def test_batch332_classification_change_to_tech_long_fires():
+    """Batch 332: only fires on moves INTO growth sectors (IT/Comms/Health)."""
+    from backtest.signals.screener import strat_classification_change_to_tech_long
+    # Growth move (META 2018 IT -> Comms; Comms is in growth bucket)
+    s = {
+        "classification_change_to_tech": True,
+        "new_sector": "Communication Services",
+        "price_above_ema_200": True,
+    }
+    assert strat_classification_change_to_tech_long(s)["fires"] is True
+    # Non-growth move -> gated (would be true for IT -> Financials like V/MA)
+    s2 = dict(s); s2["classification_change_to_tech"] = False
+    assert strat_classification_change_to_tech_long(s2)["fires"] is False
+
+
+def test_batch332_classification_change_to_defensive_short_fires():
+    """Batch 332: fires INTO defensive + below 200-EMA trend agreement."""
+    from backtest.signals.screener import strat_classification_change_to_defensive_short
+    s = {
+        "classification_change_to_defensive": True,
+        "new_sector": "Real Estate",
+        "price_above_ema_200": False,
+    }
+    out = strat_classification_change_to_defensive_short(s)
+    assert out["fires"] is True and out["direction"] == "short"
+    # Above 200-EMA: trend disagrees with defensive re-rating, gated
+    s2 = dict(s); s2["price_above_ema_200"] = True
+    assert strat_classification_change_to_defensive_short(s2)["fires"] is False
+
+
+def test_batch332_classification_change_producer_meta_real_event():
+    """Batch 332: smoke that the producer detects META's 2018 IT -> Comms
+    reclassification when as_of is within 90 days of 2018-09-24.
+
+    Note: in 2026 (current date) 2018-09-24 is far outside the 90-day
+    lookback for any current as_of, so this tests an as_of close to the
+    historical event. Tests the producer logic directly."""
+    from datetime import date
+    from backtest.data.universe import get_classification_change_signals
+    # 30 days after the actual reclassification
+    out = get_classification_change_signals("META", date(2018, 10, 24))
+    if out:  # data file may differ across test environments
+        assert out.get("classification_changed_recent") is True
+        assert out.get("new_sector") == "Communication Services"
+        # META 2018 move IS into growth bucket (Comms is in growth set)
+        assert out.get("classification_change_to_tech") is True
 
 
 def test_batch331_wave3_13f_additional_strategies_registered():

@@ -602,6 +602,79 @@ def get_sector_pit(ticker: str, as_of: date, fallback: Optional[str] = None) -> 
     return str(sorted_active.iloc[-1]["Sector"])
 
 
+def get_classification_change_signals(
+    ticker: str,
+    as_of: date,
+    lookback_days: int = 90,
+) -> dict:
+    """Wave 3 (Batch 332): detect recent GICS classification changes for ticker.
+
+    Reads sector_history.csv (DEC-323) — same source as get_sector_pit, but
+    INSTEAD of returning the active sector, returns metadata about whether
+    the ticker has experienced a sector reclassification within the
+    `lookback_days` window leading up to `as_of`.
+
+    Returns dict with keys (all keys absent when no qualifying change):
+      classification_changed_recent:   bool
+      days_since_classification_change: int (None if no change)
+      new_sector:                       str (sector ticker moved INTO)
+      prior_sector:                     str (sector ticker moved OUT OF)
+      classification_change_to_tech:    bool (moved INTO IT / Comms / Health)
+      classification_change_to_defensive: bool (moved INTO Materials /
+                                          Utilities / Real Estate / Cons Staples)
+
+    Literature: Chen-Chen 2010 (industry classification + price discovery),
+    Brogaard-Heath-Saadi 2019 (industry classification + analyst forecasts).
+
+    No-op (returns empty dict) when sector_history.csv missing OR ticker
+    has no qualifying change row in the lookback window.
+    """
+    df = _load_sector_history()
+    if df.empty:
+        return {}
+    rows = df[df["Symbol"] == ticker]
+    if rows.empty:
+        return {}
+    as_of_ts = pd.Timestamp(as_of)
+    cutoff = as_of_ts - pd.Timedelta(days=lookback_days)
+    # Find rows where the ticker MOVED INTO a new sector recently:
+    # added_date is in (cutoff, as_of] AND added_date is not NaT.
+    moved_in = rows[
+        rows["added_date"].notna()
+        & (rows["added_date"] > cutoff)
+        & (rows["added_date"] <= as_of_ts)
+    ]
+    if moved_in.empty:
+        return {}
+    # Most-recent move wins
+    latest = moved_in.sort_values("added_date").iloc[-1]
+    new_sec = str(latest["Sector"])
+    change_ts = pd.Timestamp(latest["added_date"])
+    days_since = int((as_of_ts - change_ts).days)
+    # Prior sector: the row where this ticker was REMOVED on the same date
+    # (the OUT-OF side of the reclassification).
+    prior_rows = rows[
+        rows["removed_date"].notna()
+        & (rows["removed_date"] == change_ts)
+    ]
+    prior_sec = (
+        str(prior_rows.iloc[0]["Sector"])
+        if not prior_rows.empty
+        else "Unknown"
+    )
+    # Sector buckets per GICS taxonomy
+    growth_sectors = {"Information Technology", "Communication Services", "Health Care"}
+    defensive_sectors = {"Materials", "Utilities", "Real Estate", "Consumer Staples"}
+    return {
+        "classification_changed_recent":      True,
+        "days_since_classification_change":   days_since,
+        "new_sector":                         new_sec,
+        "prior_sector":                       prior_sec,
+        "classification_change_to_tech":      new_sec in growth_sectors,
+        "classification_change_to_defensive": new_sec in defensive_sectors,
+    }
+
+
 def get_correlation_matrix(
     ohlcv_dict: dict[str, pd.DataFrame],
     as_of: date,
