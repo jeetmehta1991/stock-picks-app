@@ -1600,9 +1600,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   167 after Batch 333 (+3 Wave-3 persistence)
     #   171 after Batch 335 (+4 more Wave-3 classification_change)
     #   175 after Batch 336 (+3 13F + 1 persistence)
-    assert len(ALL_STRATEGIES) == 175, (
-        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 175 "
-        f"after Batches 329-336, got {len(ALL_STRATEGIES)}"
+    #   181 after Batch 337 (+3 classification_change + 3 persistence)
+    assert len(ALL_STRATEGIES) == 181, (
+        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 181 "
+        f"after Batches 329-337, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1661,6 +1662,95 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s = {"triangle_ascending_detected": True,
          "resistance_break_retest": True, "price_above_ema_200": True}
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
+
+
+def test_batch337_wave3_strategies_registered():
+    """Wave 3 Batch 337: 6 strategies registered (3 classification + 3 persistence)."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "classification_change_with_institutional_long",
+        "classification_change_with_insider_long",
+        "classification_change_oversold_long",
+        "institutional_persistence_breakout_long",
+        "institutional_persistence_volume_long",
+        "institutional_persistence_oversold_long",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 337: missing strategy registrations: {missing}"
+
+
+def test_batch337_classification_change_with_institutional_long_fires():
+    from backtest.signals.screener import strat_classification_change_with_institutional_long
+    s = {
+        "classification_changed_recent": True,
+        "new_sector": "Communication Services",
+        "institutional_buy": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_classification_change_with_institutional_long(s)["fires"] is True
+    s2 = dict(s); s2["institutional_buy"] = False
+    assert strat_classification_change_with_institutional_long(s2)["fires"] is False
+
+
+def test_batch337_classification_change_with_insider_long_fires():
+    from backtest.signals.screener import strat_classification_change_with_insider_long
+    s = {
+        "classification_changed_recent": True,
+        "new_sector": "Health Care",
+        "insider_cluster_active": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_classification_change_with_insider_long(s)["fires"] is True
+    s2 = dict(s); s2["insider_cluster_active"] = False
+    assert strat_classification_change_with_insider_long(s2)["fires"] is False
+
+
+def test_batch337_classification_change_oversold_long_fires():
+    from backtest.signals.screener import strat_classification_change_oversold_long
+    s = {
+        "classification_changed_recent": True,
+        "rsi_14": 28,
+        "price_above_ema_200": True,
+    }
+    assert strat_classification_change_oversold_long(s)["fires"] is True
+    s2 = dict(s); s2["rsi_14"] = 50
+    assert strat_classification_change_oversold_long(s2)["fires"] is False
+
+
+def test_batch337_institutional_persistence_breakout_long_fires():
+    from backtest.signals.screener import strat_institutional_persistence_breakout_long
+    s = {
+        "institutional_increased": 6,
+        "resistance_break_retest": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_persistence_breakout_long(s)["fires"] is True
+    s2 = dict(s); s2["resistance_break_retest"] = False
+    assert strat_institutional_persistence_breakout_long(s2)["fires"] is False
+
+
+def test_batch337_institutional_persistence_volume_long_fires():
+    from backtest.signals.screener import strat_institutional_persistence_volume_long
+    s = {
+        "institutional_increased": 7,
+        "vol_spike_2x": True,
+        "price_above_ema_50": True,
+    }
+    assert strat_institutional_persistence_volume_long(s)["fires"] is True
+    s2 = dict(s); s2["vol_spike_2x"] = False
+    assert strat_institutional_persistence_volume_long(s2)["fires"] is False
+
+
+def test_batch337_institutional_persistence_oversold_long_fires():
+    from backtest.signals.screener import strat_institutional_persistence_oversold_long
+    s = {
+        "institutional_increased": 8,
+        "rsi_14": 30,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_persistence_oversold_long(s)["fires"] is True
+    s2 = dict(s); s2["rsi_14"] = 60
+    assert strat_institutional_persistence_oversold_long(s2)["fires"] is False
 
 
 def test_batch336_wave3_strategies_registered():

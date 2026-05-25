@@ -2531,6 +2531,114 @@ def strat_classification_change_breakout_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+# Wave 3 Batch 337 (2026-05-25): 3 more classification_change (completing
+# the category) + 3 more persistence variants. All combinations of existing
+# signal vocabulary - no new producers.
+
+
+def strat_classification_change_with_institutional_long(s):
+    """Wave 3 (Batch 337): smart-money validates re-rating. Reclassification
+    co-incident with institutional accumulation = highest-conviction
+    re-rating signal. Brogaard-Heath-Saadi 2019 (re-rating) +
+    Cohen-Frazzini-Malloy 2008 (institutional cluster)."""
+    fires = (
+        s.get("classification_changed_recent", False)
+        and s.get("institutional_buy", False)
+        and s.get("price_above_ema_200", True)
+    )
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","institutional_buy","price_above_ema_200"],
+        [f"Reclassified to {new_sec} + institutional accumulation",
+         "Dual signal: analyst re-rating + smart-money conviction",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_classification_change_with_insider_long(s):
+    """Wave 3 (Batch 337): insider validates re-rating. Insider cluster
+    co-incident with reclassification = board-level + analyst agreement.
+    Cohen-Malloy-Pomorski 2012 (insider) + reclassification literature."""
+    fires = (
+        s.get("classification_changed_recent", False)
+        and s.get("insider_cluster_active", False)
+        and s.get("price_above_ema_200", True)
+    )
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","insider_cluster_active","price_above_ema_200"],
+        [f"Reclassified to {new_sec} + insider cluster buying",
+         "Board-level + analyst re-rating agreement",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_classification_change_oversold_long(s):
+    """Wave 3 (Batch 337): reclassification at oversold = early-entry
+    mean-reversion. Re-rating that hasn't yet been priced in by the market
+    creates the cleanest entry window. RSI<35 + above 200-EMA filters out
+    falling-knife reclassifications (e.g., distressed companies re-classed
+    to lower-multiple sectors)."""
+    fires = (
+        s.get("classification_changed_recent", False)
+        and s.get("rsi_14", 50) < 35
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","rsi_14<35","price_above_ema_200"],
+        ["Reclassification at oversold RSI<35",
+         "Early-entry mean-rev before re-rating prices in",
+         "Above 200 EMA (filter falling-knife)"])
+
+
+def strat_institutional_persistence_breakout_long(s):
+    """Wave 3 (Batch 337): institutional persistence + post-break retest.
+    5+ funds growing position + technical breakout retest = institutional-
+    sponsored breakout (Sias 2004 herding + Bulkowski retest)."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("resistance_break_retest", False)
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","resistance_break_retest","price_above_ema_200"],
+        ["5+ institutional funds grew position this quarter",
+         "Post-break retest entry with institutional sponsorship",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_persistence_volume_long(s):
+    """Wave 3 (Batch 337): institutional persistence + volume spike. 5+
+    funds growing + retail tape participating = broad-market price
+    discovery on the institutional position."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("vol_spike_2x", False)
+        and s.get("price_above_ema_50", True)
+    )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","vol_spike_2x","price_above_ema_50"],
+        ["5+ institutional funds grew position",
+         "Volume 2x ADV - retail tape participating",
+         "Above 50 EMA (intermediate trend)"])
+
+
+def strat_institutional_persistence_oversold_long(s):
+    """Wave 3 (Batch 337): institutional persistence + oversold mean-rev.
+    Combines persistent institutional accumulation with RSI<40 counter-
+    trend entry. Distinct from Batch 331 institutional_oversold_long by
+    requiring multi-fund persistence (increased>=5), not just any
+    institutional_buy."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("rsi_14", 50) < 40
+        and s.get("price_above_ema_200", True)
+    )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","rsi_14<40","price_above_ema_200"],
+        ["5+ institutional funds grew position (persistence)",
+         "RSI<40 oversold (counter-trend mean-rev)",
+         "Above 200 EMA (filter falling-knife)"])
+
+
 # ---------------------------------------------------------------------------
 # Wave 3 persistence strategies (Batch 333 2026-05-25):
 # institutional position persistence proxies using the Batch 330 producer's
@@ -3192,6 +3300,11 @@ ALL_STRATEGIES = {
     "classification_change_momentum_long":   strat_classification_change_momentum_long,
     "classification_change_from_tech_short": strat_classification_change_from_tech_short,
     "classification_change_breakout_long":   strat_classification_change_breakout_long,
+    # Wave 3 Batch 337 (2026-05-25 Path C): 3 more classification_change
+    # (completing category at 10/10) + 3 more persistence variants.
+    "classification_change_with_institutional_long": strat_classification_change_with_institutional_long,
+    "classification_change_with_insider_long":       strat_classification_change_with_insider_long,
+    "classification_change_oversold_long":           strat_classification_change_oversold_long,
     # Wave 3 persistence (Batch 333 2026-05-25 Path C): 3 strategies using
     # the Batch 330 producer's institutional_increased / institutional_new_positions
     # counts. Single-quarter persistence proxies; true multi-quarter
@@ -3206,6 +3319,10 @@ ALL_STRATEGIES = {
     "institutional_with_directors_long":          strat_institutional_with_directors_long,
     "institutional_with_officers_long":           strat_institutional_with_officers_long,
     "institutional_persistence_momentum_long":    strat_institutional_persistence_momentum_long,
+    # Wave 3 Batch 337 (Path C) persistence trio.
+    "institutional_persistence_breakout_long":    strat_institutional_persistence_breakout_long,
+    "institutional_persistence_volume_long":      strat_institutional_persistence_volume_long,
+    "institutional_persistence_oversold_long":    strat_institutional_persistence_oversold_long,
     # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
     "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,
