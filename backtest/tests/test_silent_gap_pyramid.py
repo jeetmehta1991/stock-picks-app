@@ -1691,6 +1691,51 @@ CAT_C_BUCKET2_RARE_BY_DESIGN_STRATEGIES = [
 ]
 
 
+def test_batch341_index_rebalance_includes_ndx_events():
+    """Batch 341 (B#4): index_rebalance_events.parquet must include NDX
+    events (ndx_add / ndx_drop) in addition to S&P (s&p_add / s&p_drop).
+    Source: T1c B++ CSV. Russell deferred to Sprint 5 / DEC-380."""
+    from pathlib import Path
+    import pandas as pd
+    repo = Path(__file__).resolve().parent.parent.parent
+    p = repo / "data_prefetch" / "derived" / "index_rebalance_events.parquet"
+    assert p.exists(), f"Batch 341: {p} must exist"
+    df = pd.read_parquet(p)
+    types = set(df["event_type"].unique())
+    assert "ndx_add" in types, (
+        f"Batch 341: parquet must contain ndx_add events; types found: {types}"
+    )
+    assert "ndx_drop" in types, (
+        f"Batch 341: parquet must contain ndx_drop events; types found: {types}"
+    )
+    # Sanity: at least 30 NDX events expected (118 in current build)
+    n_ndx = (df["event_type"].isin(["ndx_add", "ndx_drop"])).sum()
+    assert n_ndx >= 30, (
+        f"Batch 341: expected >=30 NDX events, got {n_ndx}"
+    )
+
+
+def test_batch341_index_rebalance_strategies_match_ndx_events():
+    """Batch 341 (B#4): existing post_inclusion_drift_long / _reversal_short /
+    post_deletion_drift_short / pre_rebalance_long strategies use generic
+    'add' / 'drop' substring matching on last_event_type, so they fire on
+    NDX events as well. No strategy code change needed - the parquet
+    extension auto-extends coverage."""
+    from backtest.signals.screener import strat_post_inclusion_drift_long
+    # Simulate the producer output for an ndx_add event
+    s = {
+        "within_post_inclusion_window": True,
+        "last_event_type": "ndx_add",  # NDX event type, not s&p_add
+        "days_since_inclusion": 10,
+        "price_above_ema_200": True,
+    }
+    out = strat_post_inclusion_drift_long(s)
+    assert out["fires"] is True, (
+        "Batch 341: post_inclusion_drift_long must fire on ndx_add via "
+        "'add' substring match (generic across index providers)"
+    )
+
+
 def test_batch340_cat_c_bucket2_rare_by_design_registered():
     """Batch 340 (C12): 7 Cat-C Bucket-2 short strategies are registered.
     These are expected rare-by-design in bull-regime windows; not bugs."""
