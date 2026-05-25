@@ -67,6 +67,47 @@ def _strat(fires, direction, category, signals_used, context_bullets):
     }
 
 
+# -----------------------------------------------------------------------------
+# BUG-290 fix (Batch 314 2026-05-24): cap_band signal producer.
+# -----------------------------------------------------------------------------
+# Owner-approved bands per directive 2026-05-24:
+#   micro: < $300M
+#   small: $300M - $2B
+#   mid:   $2B - $10B
+#   large: $10B - $200B
+#   mega:  >= $200B
+#
+# Consumers in the signals dict (screen-time / entry-time):
+#   - strat_january_effect_long checks `cap_band in ("micro", "small")`
+#
+# Note: exit_context._derive_cap_band (used in trade_exit_detail) historically
+# emitted suffixed labels ("mega_ge_200B" / "large_10_200B" / "mid_2_10B" /
+# "small_lt_2B" / "unknown") and lacked a "micro" tier. Aligning that helper
+# with the same 5-band taxonomy is a separate analyzer-side fix (queued); the
+# screen-time producer here is authoritative for entry-time gates.
+def cap_band_from_market_cap(market_cap) -> str:
+    """Map raw market cap (USD) to canonical 5-band label.
+
+    Inputs:
+      market_cap - numeric (USD); falsey or non-numeric -> "unknown"
+    """
+    try:
+        cap_b = float(market_cap or 0) / 1e9
+    except (TypeError, ValueError):
+        return "unknown"
+    if cap_b <= 0:
+        return "unknown"
+    if cap_b >= 200:
+        return "mega"
+    if cap_b >= 10:
+        return "large"
+    if cap_b >= 2:
+        return "mid"
+    if cap_b >= 0.3:
+        return "small"
+    return "micro"
+
+
 def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_short,
             bullets_long, bullets_short):
     """Three-state strategy  -  evaluates long, short, or avoid independently.
@@ -2097,15 +2138,16 @@ def strat_triangle_ascending_long(s):
 # ---------------------------------------------------------------------------
 def strat_poc_magnet_long(s):
     """Batch 255: POC magnet long. Steidlmayer 1985 Market Profile.
-    Entry: close within 2% of POC + bullish bias + 200-EMA."""
+    Entry: close within 4% of POC + bullish bias + 200-EMA.
+    Batch 314 Cat-3 A loosen: 2% -> 4% (owner-approved 2026-05-24)."""
     fires = (
-        s.get("vp_close_near_poc_pct", 1.0) < 0.02
+        s.get("vp_close_near_poc_pct", 1.0) < 0.04
         and s.get("vp_close_above_poc", False)
         and s.get("price_above_ema_200", True)
     )
     dist = s.get("vp_close_near_poc_pct", 0.0)
     return _strat(fires, "long", "volume_profile",
-        ["vp_close_near_poc_pct<0.02", "vp_close_above_poc", "price_above_ema_200"],
+        ["vp_close_near_poc_pct<0.04", "vp_close_above_poc", "price_above_ema_200"],
         [f"Within {dist*100:.1f}% of 60d POC (volume magnetism)",
          "Bullish bias (close above POC)",
          "Above 200 EMA (regime gate)"])
@@ -2127,16 +2169,17 @@ def strat_value_area_breakout_long(s):
 
 
 def strat_naked_poc_retest_long(s):
-    """Batch 255: Naked POC retest long. Within 1% of an untested
-    period POC + bullish bias. Levels act as magnetic attractors."""
+    """Batch 255: Naked POC retest long. Within 2% of an untested
+    period POC + bullish bias. Levels act as magnetic attractors.
+    Batch 314 Cat-3 B loosen: 1% -> 2% (owner-approved 2026-05-24)."""
     fires = (
         s.get("naked_poc_count", 0) > 0
-        and s.get("naked_poc_nearest_distance_pct", 1.0) < 0.01
+        and s.get("naked_poc_nearest_distance_pct", 1.0) < 0.02
         and s.get("price_above_ema_200", True)
     )
     return _strat(fires, "long", "volume_profile",
-        ["naked_poc_nearest_distance_pct<0.01", "price_above_ema_200"],
-        ["Within 1% of naked POC (untested institutional level)",
+        ["naked_poc_nearest_distance_pct<0.02", "price_above_ema_200"],
+        ["Within 2% of naked POC (untested institutional level)",
          f"{s.get('naked_poc_count', 0)} naked POCs identified (6-period)",
          "Above 200 EMA (regime gate)"])
 
@@ -2317,30 +2360,30 @@ def strat_news_sentiment_long(s):
     """Batch 253: positive-sentiment cluster long. Lopez-Lira-Tang 2023 +
     Loughran-McDonald 2011.
 
-    Batch 278 (Tier 2 gate tightening 2026-05-20 owner-approved option B):
-    Stage B v2 showed 7 trades / 14.3% WR / -6.87% mean / -48 pp. Root
-    cause: threshold mean>0.3 + 3 articles was too loose - it fired on
-    sentiment plateaus (already-priced-in news) rather than onset. Replication
-    of Lopez-Lira-Tang found Sharpe ~0.8-1.2 when filters were stricter.
-    Tightened: mean threshold 0.3 -> 0.5 (stronger consensus), article count
-    3 -> 5 (more coverage), added bullish-momentum confirm (MACD bullish OR
-    RSI > 55) to filter for active-momentum names.
+    Batch 278 tightening (2026-05-20): mean 0.3->0.5, count 3->5, added
+    bullish-momentum confirm (MACD bullish OR RSI > 55). Reduced firing
+    rate to ZERO across the 7191-trade Phase 1A-beta run.
+
+    Batch 314 loosening (2026-05-24 owner-approved Cat-2 B+C): the
+    Batch 278 tightening was too aggressive at Phase 1A-beta scale.
+    Removed the momentum AND clause (false-positive filter that also
+    blocked valid news-driven entries when underlying was rangebound)
+    and lowered article count threshold 5 -> 3 (Lopez-Lira-Tang's
+    original empirical threshold). Mean > 0.5 threshold retained
+    (stronger consensus is still core to thesis). To be validated in
+    Stage D Hetzner re-run before any Phase 1A-beta deployment.
     """
     fires = (
         s.get("news_sentiment_mean", 0.0) > 0.5
-        and s.get("news_article_count", 0) >= 5
+        and s.get("news_article_count", 0) >= 3
         and s.get("price_above_ema_200", True)
-        and (
-            s.get("macd_12_26_9_bullish", False)
-            or s.get("rsi_14", 50) > 55
-        )
     )
     sent = s.get("news_sentiment_mean", 0.0)
     return _strat(fires, "long", "news_sentiment",
-        ["news_sentiment_mean>0.5", "news_article_count>=5",
-         "price_above_ema_200", "macd_bullish_or_rsi>55"],
+        ["news_sentiment_mean>0.5", "news_article_count>=3",
+         "price_above_ema_200"],
         [f"7-day mean sentiment +{sent:.2f} (strong positive cluster, >+0.5)",
-         f"{s.get('news_article_count', 0)} articles in window (>=5)",
+         f"{s.get('news_article_count', 0)} articles in window (>=3)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -2807,6 +2850,12 @@ def screen_instrument(
     if not signals:
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": True,
                 "fail_reason": "no_signals", "strategies": []}
+    # BUG-290 fix (Batch 314 2026-05-24): cap_band producer. Owner-mandated
+    # taxonomy: micro <$300M / small $300M-$2B / mid $2B-$10B / large
+    # $10B-$200B / mega >=$200B. Previously strat_january_effect_long was a
+    # silent-gap consumer (always falsey because no producer). info dict
+    # already carries Polygon-reference market_cap (DEC-440).
+    signals["cap_band"] = cap_band_from_market_cap(info.get("market_cap"))
     # Batch 204: layer macro overlays (VIX percentile + band) so strategies
     # can read regime-aware fields inline. No-op when vix_value/history None.
     if vix_value is not None and vix_history is not None:

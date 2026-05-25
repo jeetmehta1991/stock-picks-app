@@ -1302,3 +1302,151 @@ def test_tier2_smoke_fetch_info_bulk_mega_caps_yields_valid_mcap(tmp_path):
         f"BUG-286 pattern regression suspect. "
         f"Sample: {[(t, out.get(t, {}).get('market_cap')) for t in universe[:3]]}"
     )
+
+
+# =============================================================================
+# Batch 314 regression tests (2026-05-24)
+# =============================================================================
+# Tier 1 (Unit) - cap_band producer + 3 gate loosens
+# Tier 4 (System / Functional) - screen_instrument injects cap_band signal
+
+
+def test_bug290_cap_band_producer_micro():
+    """BUG-290 fix: market_cap < $300M maps to 'micro'."""
+    from backtest.signals.screener import cap_band_from_market_cap
+    assert cap_band_from_market_cap(50_000_000) == "micro"
+    assert cap_band_from_market_cap(299_999_999) == "micro"
+
+
+def test_bug290_cap_band_producer_small():
+    """BUG-290 fix: $300M <= market_cap < $2B maps to 'small'."""
+    from backtest.signals.screener import cap_band_from_market_cap
+    assert cap_band_from_market_cap(300_000_000) == "small"
+    assert cap_band_from_market_cap(1_999_999_999) == "small"
+
+
+def test_bug290_cap_band_producer_mid_large_mega():
+    """BUG-290 fix: mid / large / mega thresholds."""
+    from backtest.signals.screener import cap_band_from_market_cap
+    assert cap_band_from_market_cap(2_000_000_000) == "mid"
+    assert cap_band_from_market_cap(9_999_999_999) == "mid"
+    assert cap_band_from_market_cap(10_000_000_000) == "large"
+    assert cap_band_from_market_cap(199_999_999_999) == "large"
+    assert cap_band_from_market_cap(200_000_000_000) == "mega"
+    assert cap_band_from_market_cap(3_000_000_000_000) == "mega"
+
+
+def test_bug290_cap_band_producer_unknown():
+    """BUG-290 fix: zero / negative / None / non-numeric -> 'unknown'."""
+    from backtest.signals.screener import cap_band_from_market_cap
+    assert cap_band_from_market_cap(0) == "unknown"
+    assert cap_band_from_market_cap(-1) == "unknown"
+    assert cap_band_from_market_cap(None) == "unknown"
+    assert cap_band_from_market_cap("not-a-number") == "unknown"
+
+
+def test_bug290_cap_band_injected_into_signals_dict():
+    """BUG-290 system test: screen_instrument writes cap_band into signals dict.
+
+    Pre-Batch-314: strat_january_effect_long was a silent-gap consumer because
+    no producer wrote cap_band. This regression test asserts the producer is
+    wired into screen_instrument so January Effect can fire on small/micro caps.
+    """
+    import numpy as np
+    import pandas as pd
+    from datetime import date as _d
+    from backtest.signals.screener import screen_instrument
+
+    # 80 days of trending OHLCV - enough for compute_all_signals to populate
+    dates = pd.date_range("2024-10-01", periods=80, freq="B")
+    closes = np.linspace(10.0, 14.0, 80)
+    df = pd.DataFrame({
+        "open":   closes,
+        "high":   closes * 1.01,
+        "low":    closes * 0.99,
+        "close":  closes,
+        "volume": [1_000_000] * 80,
+    }, index=dates)
+
+    info_small = {"ticker": "TEST", "market_cap": 1_000_000_000}  # $1B -> small
+    out = screen_instrument("TEST", df, info_small, _d(2024, 12, 31))
+    assert "signals" in out
+    assert out["signals"].get("cap_band") == "small", (
+        f"cap_band must be 'small' for $1B mcap, got "
+        f"{out['signals'].get('cap_band')!r}"
+    )
+
+    info_mega = {"ticker": "TEST", "market_cap": 3_000_000_000_000}  # $3T
+    out2 = screen_instrument("TEST", df, info_mega, _d(2024, 12, 31))
+    assert out2["signals"].get("cap_band") == "mega"
+
+    info_missing = {"ticker": "TEST"}  # no market_cap key
+    out3 = screen_instrument("TEST", df, info_missing, _d(2024, 12, 31))
+    assert out3["signals"].get("cap_band") == "unknown"
+
+
+def test_batch314_cat2_news_sentiment_loosen():
+    """Cat-2 B+C: strat_news_sentiment_long fires without momentum AND clause,
+    and with article count >= 3 (was 5)."""
+    from backtest.signals.screener import strat_news_sentiment_long
+
+    # 3 articles + positive sentiment + above 200 EMA, NO momentum confirmation
+    sig = {
+        "news_sentiment_mean": 0.7,
+        "news_article_count": 3,
+        "price_above_ema_200": True,
+        # Neither macd_12_26_9_bullish nor rsi_14 high -> pre-Batch-314 would fail
+        "macd_12_26_9_bullish": False,
+        "rsi_14": 50,
+    }
+    out = strat_news_sentiment_long(sig)
+    assert out["fires"] is True, (
+        "Batch 314 Cat-2 B+C: news_sentiment_long must fire on 3 articles "
+        "+ positive sentiment + above 200 EMA, no momentum AND required"
+    )
+
+    # Boundary: 2 articles should NOT fire (threshold is >=3)
+    sig2 = dict(sig); sig2["news_article_count"] = 2
+    assert strat_news_sentiment_long(sig2)["fires"] is False
+
+
+def test_batch314_cat3a_poc_magnet_loosen():
+    """Cat-3 A: strat_poc_magnet_long threshold widens 2% -> 4%."""
+    from backtest.signals.screener import strat_poc_magnet_long
+    # 3% from POC (was excluded pre-Batch-314, included post)
+    sig = {
+        "vp_close_near_poc_pct": 0.03,
+        "vp_close_above_poc": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_poc_magnet_long(sig)["fires"] is True
+    # 5% from POC still excluded (boundary check)
+    sig2 = dict(sig); sig2["vp_close_near_poc_pct"] = 0.05
+    assert strat_poc_magnet_long(sig2)["fires"] is False
+
+
+def test_batch314_cat3b_naked_poc_retest_loosen():
+    """Cat-3 B: strat_naked_poc_retest_long threshold widens 1% -> 2%."""
+    from backtest.signals.screener import strat_naked_poc_retest_long
+    # 1.5% from naked POC (was excluded pre-Batch-314, included post)
+    sig = {
+        "naked_poc_count": 2,
+        "naked_poc_nearest_distance_pct": 0.015,
+        "price_above_ema_200": True,
+    }
+    assert strat_naked_poc_retest_long(sig)["fires"] is True
+    # 2.5% still excluded (boundary)
+    sig2 = dict(sig); sig2["naked_poc_nearest_distance_pct"] = 0.025
+    assert strat_naked_poc_retest_long(sig2)["fires"] is False
+
+
+def test_batch314_cat5_max_cands_default():
+    """Cat-5 A: BacktestEngine default max_candidates_per_day is 30 (was 10)."""
+    import inspect
+    from backtest.engine.backtest import BacktestEngine
+    sig = inspect.signature(BacktestEngine.__init__)
+    default = sig.parameters["max_candidates_per_day"].default
+    assert default == 30, (
+        f"Batch 314 Cat-5 A: BacktestEngine default max_candidates_per_day "
+        f"must be 30, got {default}"
+    )

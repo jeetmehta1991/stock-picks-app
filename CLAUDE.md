@@ -155,7 +155,7 @@ Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys (`min_*
 | Regime hard blocks | Removed — crisis flagged but longs allowed (buy-the-dip) |
 | One trade per ticker | Removed — all strategies fire independently |
 | Crisis regime longs | Allowed at 50% size — flagged as `regime=crisis_CRISIS_FLAG` |
-| Max candidates/day | 10 |
+| Max candidates/day | 30 (Batch 314 Cat-5 A 2026-05-24; was 10) |
 | Position sizing | Tiered: 5/4/3/1.5/0.75% by confidence tier |
 | Agent tier upgrade | score ≥75 upgrades one tier |
 | Agent tier downgrade | score ≤40 downgrades one tier |

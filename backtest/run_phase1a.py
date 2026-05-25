@@ -152,7 +152,10 @@ def main():
     p.add_argument("--phase",      type=str, default="1a", choices=["1a","1a-beta","1b","1c","1d"])
     p.add_argument("--start",      type=str)
     p.add_argument("--end",        type=str)
-    p.add_argument("--max-cands",  type=int, default=10)
+    p.add_argument("--max-cands",  type=int, default=30,
+                   help="Max screener candidates accepted per day. "
+                        "Batch 314 Cat-5 A loosen: 10 -> 30 (owner-approved 2026-05-24) "
+                        "to admit Phase 1A-beta strategies starved by per-day cap.")
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
 

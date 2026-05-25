@@ -61,7 +61,7 @@ class BacktestEngine:
         start:                  date  = BACKTEST_START,
         end:                    date  = BACKTEST_END,
         phase:                  str   = "phase_1a",
-        max_candidates_per_day: int   = 10,
+        max_candidates_per_day: int   = 30,  # Batch 314 Cat-5 A: 10 -> 30 (owner 2026-05-24)
         run_agents:             bool  = True,
         output_dir:             str   = OUTPUT_DIR,
         use_cache:              bool  = True,

@@ -7370,42 +7370,39 @@ def test_batch267_news_sentiment_strat_fires_on_aliased_keys():
 
 
 def test_batch278_news_sentiment_blocks_loose_signals():
-    """Batch 278 (Tier 2 gate tightening): the stricter mean>0.5 + count>=5
-    + momentum confirm gates must BLOCK signals that would have fired
-    under the old loose thresholds (mean>0.3, count>=3, no momentum gate).
+    """Batch 278 + Batch 314 Cat-2 B+C: the mean>0.5 + count>=3 + 200-EMA
+    gates must still BLOCK signals that violate the surviving Batch 278
+    thresholds. Momentum confirmation was REMOVED in Batch 314 (owner-approved
+    2026-05-24) because per-regime backtest showed it suppressed news edge.
+    Article-count threshold relaxed 5 -> 3 in Batch 314 for the same reason.
     """
     from backtest.signals.screener import strat_news_sentiment_long
-    # Old-loose-but-now-blocked: mean=0.4 (>0.3 old, <0.5 new)
+    # Sentiment too weak: mean=0.4 (<0.5 Batch-278 threshold still in force)
     signals = {
         "news_sentiment_mean":      0.4,
         "news_article_count":       5,
         "price_above_ema_200":      True,
-        "macd_12_26_9_bullish":     True,
-        "rsi_14":                   60,
     }
     res = strat_news_sentiment_long(signals)
-    assert not res["fires"], "mean=0.4 must NOT fire under new threshold >0.5"
+    assert not res["fires"], "mean=0.4 must NOT fire under threshold >0.5"
 
-    # Article count too low: 4 (>=3 old, <5 new)
+    # Article count too low: 2 (<3 Batch-314 threshold)
     signals2 = {
         "news_sentiment_mean":      0.6,
-        "news_article_count":       4,
+        "news_article_count":       2,
         "price_above_ema_200":      True,
-        "macd_12_26_9_bullish":     True,
     }
     res2 = strat_news_sentiment_long(signals2)
-    assert not res2["fires"], "count=4 must NOT fire under new >=5 gate"
+    assert not res2["fires"], "count=2 must NOT fire under Batch 314 >=3 gate"
 
-    # No momentum confirm: MACD bearish + RSI=50
+    # Below 200-EMA: regime gate still required
     signals3 = {
         "news_sentiment_mean":      0.6,
         "news_article_count":       6,
-        "price_above_ema_200":      True,
-        "macd_12_26_9_bullish":     False,
-        "rsi_14":                   50,
+        "price_above_ema_200":      False,
     }
     res3 = strat_news_sentiment_long(signals3)
-    assert not res3["fires"], "Missing momentum confirm must NOT fire"
+    assert not res3["fires"], "Below 200-EMA must NOT fire (regime gate)"
 
 
 def test_batch278_cup_and_handle_blocks_unconfirmed_breakouts():
