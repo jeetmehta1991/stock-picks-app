@@ -2597,6 +2597,86 @@ def strat_institutional_capitulation_short(s):
          "Below 50 EMA - capitulation signature"])
 
 
+# Wave 3 Batch 336 (2026-05-25): 3 more 13F + 1 more persistence strategies
+# completing the 13F category at 10 strategies. All combine the Batch 330
+# producer's institutional signals with existing insider / momentum keys
+# already in the per-ticker signals dict.
+
+
+def strat_institutional_high_conviction_long(s):
+    """Wave 3 (Batch 336): pure new-positions signal with looser regime.
+    institutional_new_positions >= 3 alone is the canonical Cohen-Frazzini-
+    Malloy 2008 RFS cluster signal. Distinct from Batch 330's cluster_long
+    by using a LOOSER regime gate (50-EMA vs 200-EMA), capturing early
+    institutional initiations before they fully appear in trend metrics."""
+    fires = (
+        s.get("institutional_new_positions", 0) >= 3
+        and s.get("price_above_ema_50", True)
+    )
+    n_new = s.get("institutional_new_positions", 0)
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_new_positions>=3","price_above_ema_50"],
+        [f"{n_new} institutional funds initiated new positions this quarter",
+         "Cohen-Frazzini-Malloy 2008 RFS - pure cluster signal",
+         "Above 50 EMA (looser regime to catch early initiation)"])
+
+
+def strat_institutional_with_directors_long(s):
+    """Wave 3 (Batch 336): institutional + director-level insider buying.
+    Director purchases are higher-information signal than officer/10pct-
+    owner trades (Akbas-Jiang-Koch 2024 RFS). When combined with
+    institutional accumulation, dual board-level + fund-manager
+    confirmation = strongest smart-money agreement signature."""
+    fires = (
+        s.get("institutional_buy", False)
+        and s.get("insider_director_buyers_30d", 0) >= 1
+        and s.get("price_above_ema_200", True)
+    )
+    n_dir = s.get("insider_director_buyers_30d", 0)
+    return _strat(fires, "long", "smart_money_combo",
+        ["institutional_buy","insider_director_buyers_30d>=1","price_above_ema_200"],
+        ["13F institutional new/increased positions",
+         f"{n_dir} director(s) buying open-market in 30d",
+         "Akbas-Jiang-Koch 2024 RFS - director-level signal premium",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_institutional_with_officers_long(s):
+    """Wave 3 (Batch 336): institutional + officer-level insider buying.
+    Officers are CEO/CFO/COO buying their own company's stock - direct
+    competence and conviction signal. Lower information value than
+    directors but still meaningfully higher than 10pct-owner trades."""
+    fires = (
+        s.get("institutional_buy", False)
+        and s.get("insider_officer_buyers_30d", 0) >= 1
+        and s.get("price_above_ema_200", True)
+    )
+    n_off = s.get("insider_officer_buyers_30d", 0)
+    return _strat(fires, "long", "smart_money_combo",
+        ["institutional_buy","insider_officer_buyers_30d>=1","price_above_ema_200"],
+        ["13F institutional new/increased positions",
+         f"{n_off} officer(s) buying open-market in 30d",
+         "Direct competence + conviction signal",
+         "Above 200 EMA"])
+
+
+def strat_institutional_persistence_momentum_long(s):
+    """Wave 3 (Batch 336): high institutional increased + MACD momentum +
+    50-EMA trend. Single-quarter persistence proxy (per Batch 333) combined
+    with price-trend confirmation. Distinct from Batch 333's persistent_holders
+    by requiring MACD bullish (momentum confluence, not just regime gate)."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("macd_12_26_9_bullish", False)
+        and s.get("price_above_ema_50", True)
+    )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","macd_12_26_9_bullish","price_above_ema_50"],
+        ["5+ institutional funds grew position this quarter",
+         "MACD bullish - momentum confirms institutional conviction",
+         "Above 50 EMA (intermediate trend)"])
+
+
 def strat_institutional_volume_confirmation_long(s):
     """Wave 3 (Batch 331): institutional buy + retail volume confirmation.
     Per Sias 2004 JFE institutional herding + Lo-Wang 2000 RFS volume-as-
@@ -3119,6 +3199,13 @@ ALL_STRATEGIES = {
     "institutional_persistent_holders_long":  strat_institutional_persistent_holders_long,
     "institutional_strong_conviction_long":   strat_institutional_strong_conviction_long,
     "institutional_capitulation_short":       strat_institutional_capitulation_short,
+    # Wave 3 Batch 336 (2026-05-25 Path C): 3 more 13F + 1 more persistence,
+    # completing 13F at 10/10. Combines Batch 330 producer with director /
+    # officer insider keys (Batch 222 insider_buying producer).
+    "institutional_high_conviction_long":         strat_institutional_high_conviction_long,
+    "institutional_with_directors_long":          strat_institutional_with_directors_long,
+    "institutional_with_officers_long":           strat_institutional_with_officers_long,
+    "institutional_persistence_momentum_long":    strat_institutional_persistence_momentum_long,
     # Index rebalance (4 - Batch 252 2026-05-20 / DEC-370)
     "post_inclusion_drift_long":        strat_post_inclusion_drift_long,
     "post_inclusion_reversal_short":    strat_post_inclusion_reversal_short,

@@ -1599,9 +1599,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   164 after Batch 332 (+3 Wave-3 classification_change)
     #   167 after Batch 333 (+3 Wave-3 persistence)
     #   171 after Batch 335 (+4 more Wave-3 classification_change)
-    assert len(ALL_STRATEGIES) == 171, (
-        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 171 "
-        f"after Batches 329-335, got {len(ALL_STRATEGIES)}"
+    #   175 after Batch 336 (+3 13F + 1 persistence)
+    assert len(ALL_STRATEGIES) == 175, (
+        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 175 "
+        f"after Batches 329-336, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1660,6 +1661,75 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s = {"triangle_ascending_detected": True,
          "resistance_break_retest": True, "price_above_ema_200": True}
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
+
+
+def test_batch336_wave3_strategies_registered():
+    """Wave 3 Batch 336: 4 strategies registered (3 13F + 1 persistence)."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "institutional_high_conviction_long",
+        "institutional_with_directors_long",
+        "institutional_with_officers_long",
+        "institutional_persistence_momentum_long",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 336: missing strategy registrations: {missing}"
+
+
+def test_batch336_institutional_high_conviction_long_fires():
+    """Batch 336: high_conviction_long fires on new_positions>=3 + above 50-EMA."""
+    from backtest.signals.screener import strat_institutional_high_conviction_long
+    s = {"institutional_new_positions": 5, "price_above_ema_50": True}
+    out = strat_institutional_high_conviction_long(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    # Below 3 new positions: gated
+    s2 = dict(s); s2["institutional_new_positions"] = 2
+    assert strat_institutional_high_conviction_long(s2)["fires"] is False
+
+
+def test_batch336_institutional_with_directors_long_fires():
+    """Batch 336: with_directors_long requires institutional_buy + director
+    insider count >= 1 + above 200-EMA."""
+    from backtest.signals.screener import strat_institutional_with_directors_long
+    s = {
+        "institutional_buy": True,
+        "insider_director_buyers_30d": 2,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_with_directors_long(s)["fires"] is True
+    # No director: gated
+    s2 = dict(s); s2["insider_director_buyers_30d"] = 0
+    assert strat_institutional_with_directors_long(s2)["fires"] is False
+
+
+def test_batch336_institutional_with_officers_long_fires():
+    """Batch 336: with_officers_long requires institutional_buy + officer
+    count >= 1 + above 200-EMA."""
+    from backtest.signals.screener import strat_institutional_with_officers_long
+    s = {
+        "institutional_buy": True,
+        "insider_officer_buyers_30d": 1,
+        "price_above_ema_200": True,
+    }
+    assert strat_institutional_with_officers_long(s)["fires"] is True
+    # No officer: gated
+    s2 = dict(s); s2["insider_officer_buyers_30d"] = 0
+    assert strat_institutional_with_officers_long(s2)["fires"] is False
+
+
+def test_batch336_institutional_persistence_momentum_long_fires():
+    """Batch 336: persistence_momentum_long requires increased>=5 + MACD
+    bullish + above 50-EMA."""
+    from backtest.signals.screener import strat_institutional_persistence_momentum_long
+    s = {
+        "institutional_increased": 6,
+        "macd_12_26_9_bullish": True,
+        "price_above_ema_50": True,
+    }
+    assert strat_institutional_persistence_momentum_long(s)["fires"] is True
+    # MACD bearish: gated
+    s2 = dict(s); s2["macd_12_26_9_bullish"] = False
+    assert strat_institutional_persistence_momentum_long(s2)["fires"] is False
 
 
 def test_batch335_wave3_classification_change_additional_registered():
