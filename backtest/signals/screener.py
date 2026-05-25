@@ -2452,6 +2452,85 @@ def strat_classification_change_to_defensive_short(s):
          "Below 200 EMA - trend agrees with defensive re-rating"])
 
 
+# Wave 3 classification_change Batch 335 (2026-05-25): 4 more strategies
+# combining recent-reclassification signal with complementary entry triggers
+# (volume confirmation, momentum agreement, from-tech inverse, break-retest
+# sponsorship). Producer signals from
+# universe.get_classification_change_signals (DEC-323 sector_history.csv).
+
+
+def strat_classification_change_volume_long(s):
+    """Wave 3 (Batch 335): recent reclassification + volume spike confirming
+    market notice. Brogaard-Heath-Saadi 2019 + Lo-Wang 2000: volume
+    confirms broad-market price discovery on the reclassification event."""
+    fires = (
+        s.get("classification_changed_recent", False)
+        and s.get("vol_spike_2x", False)
+        and s.get("price_above_ema_200", True)
+    )
+    days = s.get("days_since_classification_change", 0)
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","vol_spike_2x","price_above_ema_200"],
+        [f"Reclassified to {new_sec} ({days}d ago) + volume confirming",
+         "Lo-Wang 2000 volume-as-information",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_classification_change_momentum_long(s):
+    """Wave 3 (Batch 335): reclassification + MACD bullish (price momentum
+    agrees with analyst re-rating). Chen-Chen 2010 + standard momentum
+    confirmation. Distinct from Batch 332 generic version by requiring
+    momentum confluence."""
+    fires = (
+        s.get("classification_changed_recent", False)
+        and s.get("macd_12_26_9_bullish", False)
+        and s.get("price_above_ema_50", True)
+    )
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","macd_12_26_9_bullish","price_above_ema_50"],
+        ["Reclassification + MACD bullish momentum",
+         "Chen-Chen 2010 re-rating + price-trend agreement",
+         "Above 50 EMA (intermediate trend confirms)"])
+
+
+def strat_classification_change_from_tech_short(s):
+    """Wave 3 (Batch 335): inverse-rating short. Ticker moved OUT of growth
+    sector (IT/Comms/Health). Symmetric to to_tech long: re-rating INTO
+    a lower-multiple sector + bearish trend = continuation short. Example:
+    V/MA 2023 IT -> Financials (would fire if price trended below 200-EMA
+    in the 90d post-reclassification window)."""
+    fires = (
+        s.get("classification_change_from_tech", False)
+        and not s.get("price_above_ema_200", True)
+    )
+    prior_sec = s.get("prior_sector", "?")
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "short", "classification_change",
+        ["classification_change_from_tech","price_below_ema_200"],
+        [f"Reclassified OUT of growth ({prior_sec} -> {new_sec})",
+         "Inverse re-rating signal (Chen-Chen 2010 mirror)",
+         "Below 200 EMA - trend agrees with downward re-rating"])
+
+
+def strat_classification_change_breakout_long(s):
+    """Wave 3 (Batch 335): recent reclassification + post-break retest.
+    The institutional-sponsorship signature of a reclassification-driven
+    breakout. Sustained re-rating + technical confirmation."""
+    fires = (
+        s.get("classification_changed_recent", False)
+        and s.get("resistance_break_retest", False)
+        and s.get("price_above_ema_200", True)
+    )
+    days = s.get("days_since_classification_change", 0)
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","resistance_break_retest","price_above_ema_200"],
+        [f"Reclassified to {new_sec} ({days}d ago) + post-break retest",
+         "Re-rating-driven breakout with retest confirmation",
+         "Above 200 EMA (regime gate)"])
+
+
 # ---------------------------------------------------------------------------
 # Wave 3 persistence strategies (Batch 333 2026-05-25):
 # institutional position persistence proxies using the Batch 330 producer's
@@ -3026,6 +3105,13 @@ ALL_STRATEGIES = {
     "classification_change_recent_long":         strat_classification_change_recent_long,
     "classification_change_to_tech_long":        strat_classification_change_to_tech_long,
     "classification_change_to_defensive_short":  strat_classification_change_to_defensive_short,
+    # Wave 3 classification_change Batch 335 (2026-05-25 Path C): 4 more
+    # combining the producer signal with vol / momentum / from-tech inverse /
+    # break-retest sponsorship.
+    "classification_change_volume_long":     strat_classification_change_volume_long,
+    "classification_change_momentum_long":   strat_classification_change_momentum_long,
+    "classification_change_from_tech_short": strat_classification_change_from_tech_short,
+    "classification_change_breakout_long":   strat_classification_change_breakout_long,
     # Wave 3 persistence (Batch 333 2026-05-25 Path C): 3 strategies using
     # the Batch 330 producer's institutional_increased / institutional_new_positions
     # counts. Single-quarter persistence proxies; true multi-quarter

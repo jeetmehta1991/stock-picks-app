@@ -672,6 +672,10 @@ def get_classification_change_signals(
         "prior_sector":                       prior_sec,
         "classification_change_to_tech":      new_sec in growth_sectors,
         "classification_change_to_defensive": new_sec in defensive_sectors,
+        # Batch 335 (2026-05-25): symmetric from_tech flag for short strategies
+        # firing on ticker moving OUT of a growth sector (e.g., V/MA 2023
+        # IT -> Financials). Inverse-rating signal per Chen-Chen 2010.
+        "classification_change_from_tech":    prior_sec in growth_sectors,
     }
 
 

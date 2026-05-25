@@ -1598,9 +1598,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   161 after Batch 331 (+4 more Wave-3 13F)
     #   164 after Batch 332 (+3 Wave-3 classification_change)
     #   167 after Batch 333 (+3 Wave-3 persistence)
-    assert len(ALL_STRATEGIES) == 167, (
-        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 167 "
-        f"after Batches 329-333, got {len(ALL_STRATEGIES)}"
+    #   171 after Batch 335 (+4 more Wave-3 classification_change)
+    assert len(ALL_STRATEGIES) == 171, (
+        f"BUG-111 + Wave 3 (cumulative): ALL_STRATEGIES count must be 171 "
+        f"after Batches 329-335, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1659,6 +1660,101 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s = {"triangle_ascending_detected": True,
          "resistance_break_retest": True, "price_above_ema_200": True}
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
+
+
+def test_batch335_wave3_classification_change_additional_registered():
+    """Wave 3 Batch 335: 4 more classification_change strategies registered."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    expected = [
+        "classification_change_volume_long",
+        "classification_change_momentum_long",
+        "classification_change_from_tech_short",
+        "classification_change_breakout_long",
+    ]
+    missing = [n for n in expected if n not in ALL_STRATEGIES]
+    assert not missing, f"Batch 335: missing strategy registrations: {missing}"
+
+
+def test_batch335_classification_change_volume_long_fires():
+    """Batch 335: volume_long needs classification_changed_recent + vol_spike_2x
+    + above 200-EMA."""
+    from backtest.signals.screener import strat_classification_change_volume_long
+    s = {
+        "classification_changed_recent": True,
+        "days_since_classification_change": 14,
+        "new_sector": "Communication Services",
+        "vol_spike_2x": True,
+        "price_above_ema_200": True,
+    }
+    out = strat_classification_change_volume_long(s)
+    assert out["fires"] is True and out["direction"] == "long"
+    # No volume spike: gated
+    s2 = dict(s); s2["vol_spike_2x"] = False
+    assert strat_classification_change_volume_long(s2)["fires"] is False
+
+
+def test_batch335_classification_change_momentum_long_fires():
+    """Batch 335: momentum_long needs reclassification + MACD bullish + EMA50."""
+    from backtest.signals.screener import strat_classification_change_momentum_long
+    s = {
+        "classification_changed_recent": True,
+        "macd_12_26_9_bullish": True,
+        "price_above_ema_50": True,
+    }
+    assert strat_classification_change_momentum_long(s)["fires"] is True
+    # MACD bearish: gated
+    s2 = dict(s); s2["macd_12_26_9_bullish"] = False
+    assert strat_classification_change_momentum_long(s2)["fires"] is False
+
+
+def test_batch335_classification_change_from_tech_short_fires():
+    """Batch 335: from_tech_short fires when ticker moved OUT of growth +
+    below 200-EMA."""
+    from backtest.signals.screener import strat_classification_change_from_tech_short
+    s = {
+        "classification_change_from_tech": True,
+        "prior_sector": "Information Technology",
+        "new_sector": "Financials",
+        "price_above_ema_200": False,
+    }
+    out = strat_classification_change_from_tech_short(s)
+    assert out["fires"] is True and out["direction"] == "short"
+    # Above 200 EMA: trend disagrees with downward re-rating
+    s2 = dict(s); s2["price_above_ema_200"] = True
+    assert strat_classification_change_from_tech_short(s2)["fires"] is False
+
+
+def test_batch335_classification_change_breakout_long_fires():
+    """Batch 335: breakout_long requires reclassification + resistance_break_retest
+    + above 200-EMA."""
+    from backtest.signals.screener import strat_classification_change_breakout_long
+    s = {
+        "classification_changed_recent": True,
+        "days_since_classification_change": 20,
+        "new_sector": "Communication Services",
+        "resistance_break_retest": True,
+        "price_above_ema_200": True,
+    }
+    assert strat_classification_change_breakout_long(s)["fires"] is True
+    # No retest: gated
+    s2 = dict(s); s2["resistance_break_retest"] = False
+    assert strat_classification_change_breakout_long(s2)["fires"] is False
+
+
+def test_batch335_from_tech_flag_in_producer():
+    """Batch 335: producer outputs classification_change_from_tech for V/MA
+    2023 IT -> Financials reclassification."""
+    from datetime import date
+    from backtest.data.universe import get_classification_change_signals
+    # 30 days after V's 2023-03-17 reclassification
+    out = get_classification_change_signals("V", date(2023, 4, 17))
+    if out:  # data file may differ across environments
+        assert out.get("classification_changed_recent") is True
+        assert out.get("prior_sector") == "Information Technology"
+        assert out.get("new_sector") == "Financials"
+        assert out.get("classification_change_from_tech") is True
+        # Financials is NOT in growth bucket
+        assert out.get("classification_change_to_tech") is False
 
 
 def test_batch334_orphan_audit_pins_safety_findings():
