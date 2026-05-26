@@ -77,6 +77,9 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--input-dirs", nargs="+", required=True)
     p.add_argument("--output-dir", required=True)
+    p.add_argument("--yes", action="store_true",
+                   help="Non-interactive: auto-accept partial-batch warnings. "
+                        "Required for unattended Hetzner runs. (Stream A4)")
     args = p.parse_args()
 
     input_dirs = args.input_dirs
@@ -114,10 +117,13 @@ def main():
         sys.exit(1)
     if empty_dirs:
         print(f"[WARN]  WARNING: {len(empty_dirs)} batches have no trade_log.csv: {empty_dirs}")
-        response = input("Continue merge with partial batches? (yes/no): ").strip().lower()
-        if response != "yes":
-            print("Merge aborted.")
-            sys.exit(1)
+        if args.yes:
+            print("--yes: auto-accepting partial-batch merge")
+        else:
+            response = input("Continue merge with partial batches? (yes/no): ").strip().lower()
+            if response != "yes":
+                print("Merge aborted.")
+                sys.exit(1)
 
     # -- 1. Merge trade log --
     print("Merging trade_log.csv...")
