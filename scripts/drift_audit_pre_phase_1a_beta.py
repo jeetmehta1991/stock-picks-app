@@ -126,6 +126,15 @@ FALSE_POSITIVE_LINES = {
         47,            # "60 baseline (long-direction) + 12 dedicated shorts = 72"
                        # is the Layer 1 sub-count narrative; total is in L43 (stale)
     },
+    "TRADING_RULES_AND_INFORMATION.md": {
+        2530,          # "18.7 Agent Value-Add Gate" - section number ".7" + "Agent"
+                       # regex hit, not an agent-count claim
+    },
+    "DETAILED_PROJECT_PLAN.md": {
+        51,            # "- 2.6 Agent overlay architecture" - section number
+        649,           # "## 2.6 Agent overlay architecture" - section number
+        653,           # "12 agent roles (11 active + Reflection)" - 11+1=12 is correct
+    },
 }
 # These docs describe past drifts / RESOLVED bugs in their natural prose.
 # Their drift mentions are CONTEXT, not active claims.

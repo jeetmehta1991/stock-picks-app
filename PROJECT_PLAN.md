@@ -229,7 +229,7 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 ### 3.11 Phase 1C+ — Strategy Categories Expansion (Sprint 8)
 
-**Scope:** Strategy roster additions: chart pattern strategies (DEC-355-362) + DEC-067 9 exit methods + DEC-075 AEP + DEC-368 Calendar/Seasonal + DEC-370 Index Rebalance + DEC-371 within-category gaps + DEC-352 13F price-level + DEC-174 strategy classification + DEC-175 signal persistence + DEC-076-079 (deferred sub-decisions per Pass 52 #56 scope filter) + multi-TF (DEC-350) + ICT/SMC (DEC-345).
+**Scope:** Strategy roster additions: chart pattern strategies (DEC-355-362) + DEC-067 9 exit methods (planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53) + DEC-075 AEP + DEC-368 Calendar/Seasonal + DEC-370 Index Rebalance + DEC-371 within-category gaps + DEC-352 13F price-level + DEC-174 strategy classification + DEC-175 signal persistence + DEC-076-079 (deferred sub-decisions per Pass 52 #56 scope filter) + multi-TF (DEC-350) + ICT/SMC (DEC-345).
 
 **Effort:** ~37-55 engineering days (parallel-able; not critical path).
 
@@ -385,7 +385,7 @@ Detail: ENGINEERING_REGISTER.md Sprint 5 + STRATEGY_REGISTER.md.
 
 | Layer | Description | Count |
 |---|---|---|
-| Layer 1 | Baseline roster (60 strategy classes per archived PROJECT_PLAN section 6) | 60 |
+| Layer 1 | Baseline roster (60 strategy classes per archived PROJECT_PLAN section 6 = baseline; live `len(ALL_STRATEGIES)`=186 includes later layers Pass 53) | 60 |
 | Layer 2 | Phase 0.D additions (ICT/SMC + Earnings Momentum + Calendar) | TBD |
 | Layer 3 | Pass 52 RESOLVED-DECIDED additions (chart patterns DEC-355-362 + categories DEC-367-371) | 13 |
 | Layer 4 | PENDING strategy-additive sub-decisions (DEC-141/142/143/145/176 per STRATEGY_REGISTER.md Layer 4) | ~5-6 |

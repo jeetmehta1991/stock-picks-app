@@ -33,7 +33,7 @@
 | Module | Purpose | Universe | Frequency | Cost | Inputs | Outputs |
 |---|---|---|---|---|---|---|
 | Daily picks generator (`scripts/run_paper_morning.py`) | Top 10 candidates each market day from Priority-1 combos | Subset where combos fire | Daily 8 AM ET | $0 | `winners.parquet` (P1 combos) + day's market data + smart_money composite | Email with 10 candidates + per-pick rationale |
-| Paper portfolio engine (`backtest/paper_trading/portfolio.py`) | Track simulated positions + PnL + exit triggers via 17 exit methods | 10-25 concurrent positions | Daily | $0 | Daily picks + EOD close prices | Position log + PnL parquet + journal entry |
+| Paper portfolio engine (`backtest/paper_trading/portfolio.py`) | Track simulated positions + PnL + exit triggers via 17 exit methods (planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53) | 10-25 concurrent positions | Daily | $0 | Daily picks + EOD close prices | Position log + PnL parquet + journal entry |
 | **Stage 3 dashboard** (`/dashboard_stage_3/`) | Live paper-trading performance dashboard | All paper positions | Real-time on refresh | $0 | Paper portfolio + journal | Web UI: performance, per-combo attribution, drawdown |
 | **Public picks website** (`/picks/`) | Daily candidates publicly visible (read-only) | Same | Daily refresh | $0 | site_picks JSON | HTML on GitHub Pages |
 | **Email digest** (cron) | Daily picks + EOD PnL summary | Same | Daily | $0 | Picks + portfolio | Email to jeetmehta1991@gmail.com |

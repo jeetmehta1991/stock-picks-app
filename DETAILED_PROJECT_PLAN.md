@@ -446,7 +446,7 @@ Market cap band, vol band, hold period band, momentum band, liquidity band, entr
 
 **Expected populated cells:** ~25-35% (~22K-30K populated) — Layer 1.I short-side strategies + Layer 6 universe-level signals expand expected populated coverage relative to long-only baseline; many cells still empty because trades don't occur in all combinations (e.g., crisis-regime + low-vol-band drilldown is structurally rare).
 
-**Why 5 primary + 12 drilldown:** Original cube design (TRADING_RULES §21.1) had 17+ dimensions. Adversarial Pass 4 (GAP 130) and Pass 53 R7-01 audit showed: with 199 strategies × 8 dims × 30 trades min × 4 OOS folds (DEC-505), faceted-cube math exceeds universe ticker-days. DEC-569 reduction to 5 primary cube dims (with 12 dims demoted to drilldown trade-level metadata) brings cube populating math back to feasibility while preserving dimensional analysis via drilldown query.
+**Why 5 primary + 12 drilldown:** Original cube design (TRADING_RULES §21.1) had 17+ dimensions. Adversarial Pass 4 (GAP 130) and Pass 53 R7-01 audit showed: with 199 strategies (planned target; live 186 Pass 53) × 8 dims × 30 trades min × 4 OOS folds (DEC-505), faceted-cube math exceeds universe ticker-days. DEC-569 reduction to 5 primary cube dims (with 12 dims demoted to drilldown trade-level metadata) brings cube populating math back to feasibility while preserving dimensional analysis via drilldown query.
 
 **Sample-size requirement reconciliation:** 87,560 cells × 30 trades minimum × 4 OOS folds = ~10.5M trades. Universe provides ~700K ticker-days × 5y Polygon Stocks Starter window per DEC-505 = ~3.5M ticker-days. Cube populating ratio ≈ 33%; ~22K-30K populated cells is feasible. Cells failing 30-trade minimum mark INSUFFICIENT_SAMPLE per F-009 Gate 1.
 
@@ -556,7 +556,7 @@ Per DEC-045 (fork-existing strategy across Phase 0) and DEC-259/345/352:
 - DEC-176 — Meta-strategies (boolean AND/OR) — multiplier on existing, not additive class
 - Layer 4 subtotal: ~5-6 classes (DEC-176 not counted)
 
-**Total strategy roster:** ~108-118 strategy classes when Layer 1+2+3+4 fully implemented. Aligns with STRATEGY_REGISTER.md "Total Roster Summary" (line 133).
+**Total strategy roster:** ~108-118 strategy classes (planned target; live `len(ALL_STRATEGIES)`=186 Pass 53 after Batch 316a un-deprecation) when Layer 1+2+3+4 fully implemented. Aligns with STRATEGY_REGISTER.md "Total Roster Summary" (line 133).
 
 Note: prior versions of this section listed exit methods (DEC-432/433) and the AEP breaker (DEC-435) in Layer 4, inflating the count by ~9-10. Exit methods are reusable components consumed by strategies, not strategies themselves; they live in §2.4.5 (canonical source: TRADING_RULES.md §8). The AEP breaker is a portfolio-level guard; it lives with circuit breakers (TRADING_RULES.md §9), not the strategy roster. Counts corrected per LEARNINGS L144 / CHECKLIST #65.
 
@@ -568,10 +568,10 @@ Note: prior versions of this section listed exit methods (DEC-432/433) and the A
 
 Exit methods are reusable components that determine WHEN to leave a position. They are orthogonal to strategies (entry signal generators); any strategy can be paired with any exit method. The strategy declares which exit method it uses; the engine resolves and applies the method.
 
-**Canonical source:** `TRADING_RULES_AND_INFORMATION.md` §8 — full enumeration of the 17 exit methods, parameter spec per method, and R:R floor (≥2.0 per Gate 5 in §3.5).
+**Canonical source:** `TRADING_RULES_AND_INFORMATION.md` §8 — full enumeration of the 17 exit methods (planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53), parameter spec per method, and R:R floor (≥2.0 per Gate 5 in §3.5).
 
 **Decision lineage:**
-- DEC-067 — 17 exit methods canonical list (RESOLVED-DECIDED, Pass 39)
+- DEC-067 — 17 exit methods canonical list (RESOLVED-DECIDED, Pass 39) — planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53
 - DEC-432 (Phase A) — first batch of additive variants
 - DEC-433 (Phase B) — second batch (6 net new after 1 was dropped from initial 9)
 - DEC-075 — exit method classification (signal-based vs time-based)
@@ -650,7 +650,7 @@ For every ticker on every trading day in the backtest, ~220 fields are computed 
 
 Stage 2 uses the TradingAgents framework v0.2.4 (open-source, UCLA Tauric Research, Apache 2.0) integrated via Pattern 2 (Pass 29 recommended): use their LangGraph orchestration with our custom toolkits replacing specific defaults.
 
-**12 agent roles per `propagate(ticker, as_of_date)` call (11 active + Reflection):**
+**12 agent roles per `propagate(ticker, as_of_date)` call (11 active + Reflection; live agent_count=11 per DEC-057):**
 
 ```
 Phase 1 — ANALYSTS (parallel, 3 active per DEC-057)
@@ -2437,11 +2437,11 @@ Concrete deliverables — the 16 critical engine bugs (per ADVERSARIAL_AUDIT GAP
 
 11. **Stop-loss intraday gap handling (DEC-312)** — backtest stop-loss assumed close-to-close; couldn't model gap-down through stop; specify worst-fill model per DEC-280.
 
-12. **`volume_climax` exit method missing (DEC-327)** — DEC-067 lists 17 exit methods; volume_climax variant had no implementation.
+12. **`volume_climax` exit method missing (DEC-327)** — DEC-067 lists 17 exit methods (planned target; live 25 Pass 53); volume_climax variant had no implementation.
 
 13. **`fixed_3r_2r` → `fixed_target` migration (DEC-338)** — old exit name `fixed_3r_2r` deprecated; rename to `fixed_target` matching DEC-067 vocabulary.
 
-14. **`rsi_extreme` exit method missing (DEC-340)** — DEC-067 lists 17 exit methods; rsi_extreme variant had no implementation.
+14. **`rsi_extreme` exit method missing (DEC-340)** — DEC-067 lists 17 exit methods (planned target; live 25 Pass 53); rsi_extreme variant had no implementation.
 
 15. **Circuit Breaker Level 5 single-name DD missing (DEC-515 part 1; Pass 53 R7-10 fix — was missing from prior §5.1 14-bug list)** — TRADING_RULES §9 specifies 6-level breakers post Pass 53 (was 4). Level 5 = single-name DD halt: positions with ≥X% intraday/multi-day DD trigger automatic close at next bar regardless of strategy exit logic. Implementation: `backtest/engine/circuit_breakers/level_5.py` + orchestrator priority update.
 
@@ -2632,7 +2632,7 @@ Sprint 2 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 
 | DEC | Title | Status |
 |---|---|---|
-| 067 | 17 exit methods canonical list | RESOLVED-DECIDED |
+| 067 | 17 exit methods canonical list (planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53) | RESOLVED-DECIDED |
 | 075 | Exit method classification (signal-based vs time-based) | RESOLVED-DECIDED |
 | 110 | Fractional Kelly deferred-test-arm | RESOLVED-DECIDED (test arm) |
 | 218 | 0.5% numerical tolerance | RESOLVED-DECIDED |
@@ -3619,7 +3619,7 @@ Owner reviews; rules-only Sharpe ≥ 0.7 OOS gate decision → proceed to Phase 
 - Mitigation: this is a legitimate empirical outcome; owner gate decision protects $300 budget
 
 **Risk R-3: Cube populator memory at full universe scale**
-- 1015 tickers × 199 strategies (Pass 53 R7-02 fix) × ~100 trades each = potential memory pressure (recompute Sprint 9 dry-run capacity test)
+- 1015 tickers × 199 strategies (planned target; live 186 Pass 53 after Batch 316a) × ~100 trades each = potential memory pressure (recompute Sprint 9 dry-run capacity test)
 - Mitigation: streaming aggregation; incremental writes
 
 ## §7.6.7 Cost
@@ -4757,7 +4757,7 @@ Each pattern uses primitives from Phase 0.D (smartmoneyconcepts library) where a
 12. Earnings Season Pre/Post Behavior Extensions (DEC-370)
 13. Sector Rotation Strategies (DEC-371)
 
-**9 Exit Method Variants (DEC-432/433, ~6-8d — partially in Sprint 2 Phase 0.C; remaining here):**
+**9 Exit Method Variants (DEC-432/433, ~6-8d — partially in Sprint 2 Phase 0.C; remaining here) — planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53:**
 - Chandelier exit
 - PSAR (Parabolic SAR) exit
 - Supertrend exit
@@ -4780,13 +4780,13 @@ Each pattern uses primitives from Phase 0.D (smartmoneyconcepts library) where a
 
 ## §10.2 Why — how this advances Stage 2 toward verdict
 
-The verdict cube is only as good as the strategy roster that populates it. With only Layer 1 baseline (60 strategies), the cube has fewer cells populated, fewer chances to find PASS configurations, and less generalizability claim.
+The verdict cube is only as good as the strategy roster that populates it. With only Layer 1 baseline (60 strategies = baseline; live `len(ALL_STRATEGIES)`=186 Pass 53 includes later layers), the cube has fewer cells populated, fewer chances to find PASS configurations, and less generalizability claim.
 
 Specifically:
 - **Chart patterns** are foundational to technical analysis; their absence from roster means cube can't test classical TA edge claims
 - **Calendar effects** are well-documented anomalies (Sell-in-May, January Effect); not testing them leaves money-table un-checked
 - **Index rebalance** is a specific institutional flow inefficiency; testing it shows whether owner can capture institutional inefficiency
-- **9 exit method variants** give strategies more flexibility; without them, all strategies funnel through ~6 exits, reducing exit-strategy edge discovery
+- **9 exit method variants** give strategies more flexibility (planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53); without them, all strategies funnel through ~6 exits, reducing exit-strategy edge discovery
 - **AEP breaker** is an active risk management tool; tests whether dynamic risk control improves Sharpe
 - **BUG-111 retest variants** test whether retest setup adds edge over plain breakout — critical empirical question
 
@@ -4932,7 +4932,7 @@ Each new strategy follows existing strategy interface:
 
 | DEC | Title | Status |
 |---|---|---|
-| 067 | 17 exit methods canonical | RESOLVED-DECIDED |
+| 067 | 17 exit methods canonical (planned target; live 25 Pass 53) | RESOLVED-DECIDED |
 | 075 | Exit method classification | RESOLVED-DECIDED |
 | 355 | Head and Shoulders strategy | RESOLVED-DECIDED |
 | 356 | Inverse H&S strategy | RESOLVED-DECIDED |
@@ -4992,7 +4992,7 @@ Each new strategy follows existing strategy interface:
 
 - DEC-355-362 Pass ~44 — 8 chart patterns enumerated
 - DEC-367-371 Pass ~46 — 5 strategy categories
-- DEC-432/433 Pass ~48 — 9 exit method variants
+- DEC-432/433 Pass ~48 — 9 exit method variants (planned target; live 25 Pass 53)
 - DEC-435 Pass ~48 — AEP breaker
 - BUG-111 OPEN since Pass ~30 — break-and-retest deferred multiple times; Sprint 8 Day 1 forces decision
 

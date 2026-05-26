@@ -336,9 +336,9 @@
 - [ ] 3 strategies from Layer 3B (DEC-368/370/371) operational
 - [ ] Multi-timeframe non-ICT extension (DEC-350)
 - [ ] 13F price-level mapping (DEC-352)
-- [ ] 9 new exit methods (DEC-067 phases A+B = DEC-432/433)
+- [ ] 9 new exit methods (DEC-067 phases A+B = DEC-432/433) — planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53
 - [ ] AEP breaker (DEC-435)
-- [ ] Total strategy roster ~109-119 strategies operational
+- [ ] Total strategy roster ~109-119 strategies operational (historical planned target; live `len(ALL_STRATEGIES)`=186 Pass 53)
 
 **Dashboards (Pass 53):** REUSE — DEC-199/200/201 with new strategy roster populating cube; no new dashboard at this phase. See DETAILED_PROJECT_PLAN.md Part 2.5.
 
@@ -668,7 +668,7 @@ A strategy is **VALID** if and only if it passes ALL 5 gates per dimensional cub
 
 **Bonferroni correction factor (DEC-582 RESOLUTION):** Number of strategies tested **only** (per F-002 = 199 RESOLVED-DECIDED + IMPLEMENTED). **NOT strategies × cube cells.** Cube-cell-level multi-testing handled separately via FDR (Benjamini-Hochberg) at the per-strategy level — see DEC-470 PROPOSED for hierarchical correction.
 
-**Resolution of double-counting concern (Pass 53 adversarial review):** Gate 4 (t-stat ≥ 3.4) and Gate 2 (Bonferroni p < 0.05) appeared to double-count multi-testing correction. They do NOT — Gate 2 corrects for cross-strategy multi-testing (199 strategies); Gate 4 corrects for cross-cell-within-strategy multi-testing (~17 cube dims). Each gate addresses a different correction layer; both required for valid inference.
+**Resolution of double-counting concern (Pass 53 adversarial review):** Gate 4 (t-stat ≥ 3.4) and Gate 2 (Bonferroni p < 0.05) appeared to double-count multi-testing correction. They do NOT — Gate 2 corrects for cross-strategy multi-testing (planned target 199 strategies; live `len(ALL_STRATEGIES)`=186 Pass 53); Gate 4 corrects for cross-cell-within-strategy multi-testing (planned target ~17 cube dims; live exit_methods=25 per F-004). Each gate addresses a different correction layer; both required for valid inference.
 
 **Why not 199 × cube_cells:** With ~10¹⁴ cells per §21, naive Bonferroni → α/10¹⁴ → t-stat ~7 → no real strategy passes. Hierarchical correction (DEC-470) controls family-wise error within strategy, then Bonferroni across strategies — statistically defensible AND tractable.
 
@@ -1210,7 +1210,7 @@ Phase B (DEC-433) — 6 new exit methods (1 dropped from initial 9):
 
 **Earnings calendar source:** Polygon Stocks Starter earnings dates (per DEC-256; subject to DEC-512 PIT-fundamentals filing-date audit).
 
-**Affected strategies:** All Layer 1-6 strategies EXCEPT explicitly earnings-tolerant: ~190 of 199 strategy classes affected.
+**Affected strategies:** All Layer 1-6 strategies EXCEPT explicitly earnings-tolerant: ~190 of 199 strategy classes affected (planned target; live 186 Pass 53).
 
 **Override:** Layer 2B Earnings Momentum strategies (4 classes — `pre_earnings_iv_crush_front_run`, `guidance_raise_momentum`, `surprise_magnitude_pead`, `earnings_cluster_sector_drift`) are EARNINGS-NATIVE; blackout does not apply.
 
@@ -1237,7 +1237,7 @@ Phase B (DEC-433) — 6 new exit methods (1 dropped from initial 9):
 
 ### 8.10 Signal-Reversal Exit Precise Definition (DEC-520 — Pass 53 owner-approved 2026-05-06 Q2 P1)
 
-**Trigger:** DEC-067 method 9 lists "Signal-reversal exit" but doesn't define which signal reverses. With 199 strategies, this needs precise per-strategy meaning.
+**Trigger:** DEC-067 method 9 lists "Signal-reversal exit" but doesn't define which signal reverses. With 199 strategies (planned target; live 186 Pass 53), this needs precise per-strategy meaning.
 
 **Rule:** Exit when the entry-condition logic is no longer true (NOT when an opposite-direction signal fires).
 
@@ -2936,9 +2936,9 @@ When tuned, ENGINEERING_REGISTER and AUDIT.md narrative entries cross-reference 
 **Rationale (per Pass 53 owner Q2 = A approval):**
 
 7 review-takes have been completed across Pass 53:
-1. Strategy roster (Layer 1.I + Layer 6 expansion to 199 strategies)
+1. Strategy roster (Layer 1.I + Layer 6 expansion to 199 strategies — planned target; live 186 Pass 53)
 2. Signal universe (Category 7 universe-level signals; ~270-280 → ~315-325 fields)
-3. Exit-risk methodology (DEC-517-538 + 17 exit methods)
+3. Exit-risk methodology (DEC-517-538 + 17 exit methods — planned target; live 25 Pass 53)
 4. Regime methodology (DEC-539-565 4-regime collapse + training/labeling protocol)
 5. Adversarial TRADING_RULES (DEC-566-580 cross-section + 7-gate Phase 1B-α verdict promotion)
 6. Adversarial Q4 endogeneity (DEC-581 5-component endogeneity-loop protection)
@@ -3004,7 +3004,7 @@ Owner-approved date provides:
 
 Per CANONICAL_FACTS F-001 + DETAILED_PROJECT_PLAN.md §3.6-3.10 + DEC-505 4-fold walk-forward:
 
-1. Sprint 1A-α — Rules-only baseline cube (no agents) — `--no-agents` flag, 4 OOS folds, full universe, all 199 strategies
+1. Sprint 1A-α — Rules-only baseline cube (no agents) — `--no-agents` flag, 4 OOS folds, full universe, all 199 strategies (planned target; live 186 Pass 53)
 2. Owner gate at 1A-α — rules-only Sharpe ≥ 0.7 OOS before $300 1B-α budget commits
 3. Sprint 1A-β — Full-scale dry-run on 1937-unique-ticker universe with `--no-agents --dry-run`
 4. Owner gate at 1A-β — pipeline integrity verified before Phase 1B-α agent overlay

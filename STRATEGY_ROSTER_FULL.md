@@ -40,7 +40,7 @@ Strategies that are NOT logically symmetric remain single-direction by design �
 
 ---
 
-## Layer 1 — Baseline roster (✅ IMPLEMENTED; 72 strategies in code at Layer 1 scope)
+## Layer 1 — Baseline roster (✅ IMPLEMENTED; 72 strategies in code at Layer 1 scope; live `len(ALL_STRATEGIES)`=186 includes later layers)
 
 **Code SSOT:** `backtest/signals/screener.py::ALL_STRATEGIES` dict. **PROJECT_PLAN.md §7.4** mirrors at category level.
 
@@ -619,8 +619,8 @@ External AI's 6.41 volume-profile-POC bounce **DEFERRED** — requires intraday 
 | Layer 5 (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | regime-eligibility flag schema (overlay; no new strategies) | **+0 strategies; 172 tagged** |
 | Layer 6 (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | 7 sub-categories from external-AI strategy review | **+27** (172-198) |
 | **Sub-total of RESOLVED-DECIDED + IMPLEMENTED (NAMED) post Q1 — planned target** | | **199 strategy classes** |
-| With Layer 4 PENDING (when promoted) | | **203 strategy classes** |
-| With Layer 2D estimate (5-15 mid: 10) | | **~213 strategy classes** |
+| With Layer 4 PENDING (when promoted) — planned target | | **203 strategy classes** (planned target; live 186 Pass 53) |
+| With Layer 2D estimate (5-15 mid: 10) — planned target | | **~213 strategy classes** (planned target; live 186 Pass 53) |
 | **LIVE 2026-05-25 Batch 360** (`len(ALL_STRATEGIES)`) | code SSOT | **186 strategy classes** |
 
 The live count (186) is below the planned target (199) because Layer 2D form-derived ICT, parts of Layer 4 PENDING, and a small set of named-but-unwired Layer 3 entries are not yet implemented. Gap = 199 − 186 = 13 classes pending implementation.
@@ -642,12 +642,12 @@ These are PROCESS decisions that gate strategies from Phase 1A-α → Phase 1B-�
 
 ### DEC-509 — Strategy correlation cluster (Q2; methodology gate before Phase 1B-α)
 
-**Trigger:** External AI 2026-05-06 review identified that ~40-60 of our ~199 strategies are highly correlated (3 RSI variants, 3 golden-cross variants, 3 Bollinger variants, etc.). Effective independent bets are ~15-20 wearing different costumes. Owner approved Q2 2026-05-06.
+**Trigger:** External AI 2026-05-06 review identified that ~40-60 of our ~199 strategies (planned target; live 186 Pass 53) are highly correlated (3 RSI variants, 3 golden-cross variants, 3 Bollinger variants, etc.). Effective independent bets are ~15-20 wearing different costumes. Owner approved Q2 2026-05-06.
 
 **Rule:** Pre-Phase-1B-α gate — run pairwise return correlation on a 1-year in-sample period; cluster at ρ > 0.7; if cluster has >3 members, retain the highest-Sharpe representative + flag the rest as "redundant variants" with `correlation_cluster_id` field. Redundant variants run in backtest for completeness but are excluded from final selection (Phase 1B-α verdict).
 
 **Output artifacts:**
-- `correlation_matrix_<as_of>.parquet` — pairwise return correlations across all 199 strategies on 1y in-sample
+- `correlation_matrix_<as_of>.parquet` — pairwise return correlations across all 199 strategies (planned target; live 186 Pass 53) on 1y in-sample
 - `correlation_clusters_<as_of>.json` — cluster IDs + member lists + Sharpe rankings
 - `strategy_correlation_dashboard.html` — visual cluster map for owner review
 
@@ -657,7 +657,7 @@ These are PROCESS decisions that gate strategies from Phase 1A-α → Phase 1B-�
 
 ### DEC-510 — Deflated Sharpe Ratio as F-009 6th gate (Q3; methodology extension to DEC-426)
 
-**Trigger:** External AI 2026-05-06 review identified that with ~199 strategies × parameter variants × 4 OOS folds (DEC-505), Bonferroni correction (DEC-080) under-corrects for the multiple-testing problem because it doesn't account for skew/kurtosis of return distributions. Owner approved Q3 2026-05-06.
+**Trigger:** External AI 2026-05-06 review identified that with ~199 strategies (planned target; live 186 Pass 53) × parameter variants × 4 OOS folds (DEC-505), Bonferroni correction (DEC-080) under-corrects for the multiple-testing problem because it doesn't account for skew/kurtosis of return distributions. Owner approved Q3 2026-05-06.
 
 **Rule:** Add Deflated Sharpe Ratio (DSR; Bailey-Lopez de Prado 2014) as 6th gate in Phase 1B-α 5-gate verdict (DEC-426). Gate threshold: **DSR ≥ 0.95 confidence** that observed Sharpe is statistically distinguishable from zero, given the number of trials, skew, and kurtosis.
 

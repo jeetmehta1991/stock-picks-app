@@ -19,7 +19,7 @@
 
 ---
 
-## Layer 1 — Baseline Roster (60 strategy classes per PROJECT_PLAN section 6)
+## Layer 1 — Baseline Roster (60 strategy classes per PROJECT_PLAN section 6 = baseline; live `len(ALL_STRATEGIES)`=186 Pass 53 includes later layers)
 
 | Category | Count | Examples |
 |---|---|---|
@@ -223,7 +223,7 @@ All 4 gaps resolved. Implementation tracked per Sprint 7 (Phase 0.D) and Sprint 
 
 **Implication:** Strategy roster does NOT change between Phase 1A and Phase 1B. Same **186 strategy classes** fire in both (live `len(ALL_STRATEGIES)` 2026-05-25 Batch 360; was "~109-119" pre-Batch-316a). The DIFFERENCE between phases is whether agent overlay sits on top of rules+smart-money output, NOT which strategies fire.
 
-**Smart money clarification:** Smart money signals (DEC-124 cross-source confluence; DEC-332 weights; DEC-450 Quiver paid endpoints) are part of RULES-BASED screening, NOT agent overlay. They feed strategy entry signals + tier preliminary assignment in BOTH Phase 1A and Phase 1B. This is preserved from PROJECT_PLAN_ARCHIVE Phase 1A v3 architecture: "We ran all 60 strategies on a small universe of 67 instruments to make sure the pipeline works correctly" — strategies fired without agents in 1A v3, same pattern preserved Pass 53.
+**Smart money clarification:** Smart money signals (DEC-124 cross-source confluence; DEC-332 weights; DEC-450 Quiver paid endpoints) are part of RULES-BASED screening, NOT agent overlay. They feed strategy entry signals + tier preliminary assignment in BOTH Phase 1A and Phase 1B. This is preserved from PROJECT_PLAN_ARCHIVE Phase 1A v3 architecture: "We ran all 60 strategies on a small universe of 67 instruments to make sure the pipeline works correctly" (historical quote; was 60 Layer-1 baseline, live 186 Pass 53) — strategies fired without agents in 1A v3, same pattern preserved Pass 53.
 
 
 ---

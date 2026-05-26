@@ -27,7 +27,7 @@
 | cube_populator.py (DEC-422) | [DONE] | `backtest/results/cube_populator.py` (275 lines, 6 functions) |
 | paper_trading/ skeleton | [DONE] | `dashboard_stage_3/` covers paper trading; module renamed in `backtest/live_trading/` for stage 4 |
 
-### Day 1 (May 20): 102 strategies + T1.1-T1.5 wirings + T2 24-DEC queue + T5b precompute + Stage 3 dashboard MVP
+### Day 1 (May 20): 102 strategies (historical snapshot; live `len(ALL_STRATEGIES)`=186 Pass 53) + T1.1-T1.5 wirings + T2 24-DEC queue + T5b precompute + Stage 3 dashboard MVP
 
 (Historical Day-1 snapshot from May 20. Live `len(ALL_STRATEGIES)` 2026-05-25 Batch 360: **186**, DEPRECATED set empty per Batch 316a un-deprecation.)
 

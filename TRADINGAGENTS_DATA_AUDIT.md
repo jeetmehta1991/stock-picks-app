@@ -1022,7 +1022,7 @@ Toolkits consuming universe context (DEC-465 OurTraderToolkit `existing position
 - **Portfolio Manager** — final synthesis includes event timing in score
 - (+1) **Reflection** — post-decision, stores rationale around event-driven trades for continuous learning
 
-Note: prior listing of "6 agents (Risk, Fundamental, Sentiment, Technical, Bull/Bear, Decision)" reflected pre-Pattern-2 conceptual roles; the correct enumeration is 11 active LLM nodes (per L94 / Pass 26) plus Reflection.
+Note: prior listing of "6 agents (Risk, Fundamental, Sentiment, Technical, Bull/Bear, Decision)" reflected pre-Pattern-2 conceptual roles -> live 11 active LLM nodes Pass 53 (per L94 / Pass 26) plus Reflection.
 
 **DEC-501 — Polygon Options NOT upgraded; agent inputs that DON'T arrive (deferred Stage 3/Phase 1C):**
 - IV rank / IV percentile (Technical + Risk Agent forward-looking risk)
