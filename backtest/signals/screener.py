@@ -232,16 +232,26 @@ def strat_cpr_narrow_bullish(s):
     """Central Pivot Range narrow breakout. Batch 205: stacked with
     Anchored VWAP gate per Brian Shannon. Narrow CPR + above CPR + above
     AVWAP is the canonical institutional-grade directional day signal.
+
+    Batch 358 (2026-05-25 owner-approved cell-audit Bucket B): added
+    200-EMA regime gate per direction. Cell audit
+    (cpr_narrow_bullish x atr_trail_1x) lost -1670pp at WR 17.7% in
+    bull regime - the strategy fired LONG into anti-regime cells because
+    no regime gate. Long now requires above_200_ema; short requires
+    below_200_ema (canonical regime alignment).
     """
     avwap_long_ok = s.get("above_avwap_50low", True)
     avwap_short_ok = not s.get("above_avwap_50low", False)
+    above_200 = s.get("price_above_ema_200", False)
     fl = (
         s.get("cpr_narrow") and s.get("above_cpr")
         and s.get("rsi_14", 50) > 50 and avwap_long_ok
+        and above_200
     )
     fs = (
         s.get("cpr_narrow") and s.get("below_cpr")
         and s.get("rsi_14", 50) < 50 and avwap_short_ok
+        and (not above_200)
     )
     return _strat3(fl, fs, "pivot",
         ["cpr_narrow", "above_cpr", "rsi_14>50", "above_avwap_50low"],
@@ -317,23 +327,35 @@ def strat_hull_rsi(s):
     rate in half per multiple SSRN replications (cited in research
     report B.4). The 26 trades in Phase 1A-beta yielded Sharpe -0.26 and
     win rate 30.8% - classic whipsaw failure mode without trend filter.
+
+    Batch 358 (2026-05-25 owner-approved cell-audit Bucket B): added
+    bear-regime block on long leg via price_above_ema_200. Cell audit
+    showed (hull_rsi x atr_trail_1x) lost -1371pp at WR 25% in bear
+    regime - long-only mean-reversion catching falling knives. Symmetric
+    short leg gets the inverse gate (not price_above_ema_200) so it
+    only fires below 200-EMA. See PHASE_1A_BETA_STAGE_D_LOSER_CELL_AUDIT.md.
     """
     adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
+    above_200 = s.get("price_above_ema_200", False)
     fl = (
         s.get("hull_bullish") and s.get("price_above_hull")
         and s.get("rsi_9", 50) > 50 and adx_trend_ok
+        and above_200
     )
     fs = (
         (not s.get("hull_bullish")) and (not s.get("price_above_hull"))
         and s.get("rsi_9", 50) < 50 and adx_trend_ok
+        and (not above_200)
     )
     return _strat3(fl, fs, "momentum",
-        ["hull_bullish", "price_above_hull", "rsi_9>50", "adx>20"],
-        ["hull_bearish", "price_below_hull", "rsi_9<50", "adx>20"],
+        ["hull_bullish", "price_above_hull", "rsi_9>50", "adx>20", "price_above_ema_200"],
+        ["hull_bearish", "price_below_hull", "rsi_9<50", "adx>20", "price_below_ema_200"],
         ["Hull MA rising - fast trend bullish", "Price above Hull",
-         "RSI-9 above midpoint", "ADX>20 confirms trend"],
+         "RSI-9 above midpoint", "ADX>20 confirms trend",
+         "Above 200-EMA (bull regime gate, Batch 358)"],
         ["Hull MA falling - fast trend bearish", "Price below Hull",
-         "RSI-9 below midpoint", "ADX>20 confirms trend"])
+         "RSI-9 below midpoint", "ADX>20 confirms trend",
+         "Below 200-EMA (bear regime gate, Batch 358)"])
 
 
 def strat_williams_r_oversold(s):
@@ -992,12 +1014,21 @@ def strat_golden_cross_volume(s):
 
 
 def strat_cpr_narrow_momentum(s):
-    fl = (s.get("cpr_narrow") and s.get("above_cpr") and s.get("rsi_14", 50) > 50 and s.get("macd_12_26_9_bullish"))
-    fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50 and not s.get("macd_12_26_9_bullish"))
+    """Batch 358 (2026-05-25 owner-approved cell-audit Bucket B): added
+    200-EMA regime gate per direction. Cell audit
+    (cpr_narrow_momentum x atr_trail_1x) lost -355pp at WR 30.6% with
+    no regime gate. Long now requires above_200_ema; short requires
+    below_200_ema."""
+    above_200 = s.get("price_above_ema_200", False)
+    fl = (s.get("cpr_narrow") and s.get("above_cpr") and s.get("rsi_14", 50) > 50
+          and s.get("macd_12_26_9_bullish") and above_200)
+    fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50
+          and not s.get("macd_12_26_9_bullish") and (not above_200))
     return _strat3(fl, fs, "confluence",
-        ["cpr_narrow","above_cpr","rsi_14>50","macd_bullish"], ["cpr_narrow","below_cpr","rsi_14<50","macd_bearish"],
-        ["Narrow CPR + above CPR + RSI>50 + MACD bullish  -  four signals confirming bullish day"],
-        ["Narrow CPR + below CPR + RSI<50 + MACD bearish  -  four signals confirming bearish day"])
+        ["cpr_narrow","above_cpr","rsi_14>50","macd_bullish","price_above_ema_200"],
+        ["cpr_narrow","below_cpr","rsi_14<50","macd_bearish","price_below_ema_200"],
+        ["Narrow CPR + above CPR + RSI>50 + MACD bullish + above 200-EMA - five-signal bullish day"],
+        ["Narrow CPR + below CPR + RSI<50 + MACD bearish + below 200-EMA - five-signal bearish day"])
 
 
 def strat_camarilla_rsi_obv(s):
@@ -1486,18 +1517,27 @@ def strat_xs_momentum_bottom_decile_short(s):
 
 def strat_xs_low_beta_long(s):
     """Batch 220: Betting-against-beta (Frazzini-Pedersen 2014 JFE;
-    Blitz-van Vliet 2024 JPM update). Long bottom-2-decile beta names
-    + bullish or neutral regime gate. Low-beta names systematically
-    outperform on a risk-adjusted basis."""
+    Blitz-van Vliet 2024 JPM update). Long bottom-2-decile beta names.
+    Low-beta names systematically outperform on a risk-adjusted basis.
+
+    Batch 358 (2026-05-25 owner-approved cell-audit Bucket C Option A):
+    REMOVED the price_above_ema_200 bull-regime gate. The published BAB
+    Sharpe is across the full sample (not bull-only). Cell audit data
+    showed (xs_low_beta_long x atr_trail_1x in neutral regime) lost
+    -6.22% mean PnL on n=30 - the strategy was firing in neutral regime
+    when the EMA gate let through (low-beta absolute returns lag in
+    strong-bull regimes per BAB literature; bear / neutral is where
+    absolute alpha is captured). Removing the gate aligns the
+    implementation with the published full-sample edge. See
+    PHASE_1A_BETA_STAGE_D_LOSER_CELL_AUDIT.md Bucket C."""
     fires = (
         s.get("xs_low_beta_decile", False)
-        and s.get("price_above_ema_200", True)
         and s.get("xs_avoid_high_ivol", True)
     )
     return _strat(fires, "long", "factor",
-        ["xs_low_beta_decile", "price_above_ema_200", "xs_avoid_high_ivol"],
+        ["xs_low_beta_decile", "xs_avoid_high_ivol"],
         ["Bottom-2-decile beta vs SPY (BAB tilt)",
-         "Above 200 EMA", "Not high-IVOL"])
+         "Not high-IVOL"])
 
 
 def strat_xs_combined_momentum_low_ivol(s):

@@ -9117,15 +9117,20 @@ def test_batch207_ichimoku_cloud_breakout_requires_weekly_kumo():
 def test_batch207_hull_rsi_requires_adx_gt_20():
     """Batch 207: strat_hull_rsi must require ADX(14)>20 trend
     confirmation. Hull alone whipsaws in chop; ADX>20 gate cuts
-    false-signal rate in half (cited SSRN replications)."""
+    false-signal rate in half (cited SSRN replications).
+
+    Batch 358 update: hull_rsi long also requires price_above_ema_200
+    (bear-block per cell-audit Bucket B). Fixture extended with the
+    200-EMA gate so the test still validates the Batch 207 ADX path."""
     from backtest.signals.screener import strat_hull_rsi
-    # Hull bullish, price above hull, RSI>50 - but ADX=15 (chop)
+    # Hull bullish, price above hull, RSI>50, above 200-EMA - but ADX=15 (chop)
     s = {
         "hull_bullish": True,
         "price_above_hull": True,
         "rsi_9": 60.0,
         "adx": 15.0,           # below 20
         "adx_trending": False,
+        "price_above_ema_200": True,  # Batch 358 gate satisfied
     }
     r = strat_hull_rsi(s)
     assert not r["fires"] or r["direction"] != "long", (
@@ -9306,11 +9311,15 @@ def test_batch205_pivot_r2_requires_2x_volume():
 
 
 def test_batch205_cpr_narrow_bullish_avwap_gate():
-    """Batch 205: cpr_narrow_bullish requires above_avwap_50low for long."""
+    """Batch 205: cpr_narrow_bullish requires above_avwap_50low for long.
+
+    Batch 358 update: long also requires price_above_ema_200 (bear-block
+    per cell-audit Bucket B). Fixture extended."""
     from backtest.signals.screener import strat_cpr_narrow_bullish
     s = {
         "cpr_narrow": True, "above_cpr": True, "below_cpr": False,
         "rsi_14": 55, "above_avwap_50low": False,
+        "price_above_ema_200": True,  # Batch 358 gate satisfied
     }
     r = strat_cpr_narrow_bullish(s)
     assert not r["fires"] or r["direction"] != "long"
