@@ -9655,23 +9655,45 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
-def test_batch293_calendar_long_strategies_tightened_to_bull_neutral():
-    """Batch 293 (2026-05-21 owner-approved option 2 per Stage C v3 forensic):
-    Calendar effect long strategies tightened from {bull, neutral, bear}
-    to {bull, neutral} after Stage C v3 evidence (totm_long 17 trades / 12%
-    WR / -77 pp in 2022 bear; halloween_seasonal 3 trades / 0% WR / -23 pp).
+def test_batch370_fix2_calendar_long_strategies_bear_restored():
+    """Batch 370 Fix 2 (owner-approved 2026-05-26): reverse Batch 293 narrowing.
+    Calendar effect long strategies (totm/pre_holiday/january_effect/halloween)
+    extended from {bull, neutral} back to {bull, neutral, bear}.
+
+    Methodologically symmetric with Batch 316a un-deprecation: the Stage C v3
+    samples that drove Batch 293 (3-17 trades) were too small to justify
+    a-priori pruning. Per memory directive "empirical validation over
+    literature pruning", Phase-1A-beta at 1937-ticker scale will produce the
+    statistically-powered verdict. If bear-regime calendar effects truly fail,
+    the FAIL verdict will codify the pruning empirically.
+
+    Crisis NOT added per original Batch 293 reasoning (full panic overrides
+    seasonal). double_bottom_long stays {bull, neutral} per separate Batch 252
+    chart-pattern justification (Edwards-Magee bear invalidation).
+
+    Empirical driver: Phase-1A-beta skipped_trades showed 2,173 totm_long +
+    1,964 halloween + 339 pre_holiday + 0 january skips were
+    regime_affinity_block_bear (56-67% of each strategy's skips).
     """
     from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
-    tightened = [
+    restored = [
         "totm_long", "pre_holiday_long", "january_effect_small_cap_long",
-        "halloween_seasonal_long", "double_bottom_long",
+        "halloween_seasonal_long",
     ]
-    for strat in tightened:
+    for strat in restored:
         affinity = STRATEGY_REGIME_AFFINITY.get(strat)
         assert affinity is not None, f"{strat}: missing affinity entry"
-        assert affinity == {"bull", "neutral"}, (
-            f"Batch 293: {strat} should be {{bull, neutral}}, got {affinity}"
+        assert affinity == {"bull", "neutral", "bear"}, (
+            f"Batch 370 Fix 2: {strat} should be {{bull, neutral, bear}}, got {affinity}"
         )
+    # Crisis remains excluded; double_bottom_long unchanged (separate justif)
+    for strat in restored:
+        assert "crisis" not in STRATEGY_REGIME_AFFINITY[strat], (
+            f"Batch 370 Fix 2: crisis should remain excluded for {strat}"
+        )
+    assert STRATEGY_REGIME_AFFINITY["double_bottom_long"] == {"bull", "neutral"}, (
+        "Batch 370 Fix 2 should NOT touch double_bottom_long (Batch 252 scope)"
+    )
 
 
 def test_batch296_fire_rate_report_flags_silent_regression(tmp_path):

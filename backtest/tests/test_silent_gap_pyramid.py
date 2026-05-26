@@ -700,11 +700,21 @@ def test_tier5_functional_strategy_exit_override_keys_dispatch_valid_method():
     )
 
 
-def test_tier5_functional_calendar_long_strategies_lack_bear_affinity_batch293():
-    """Batch 293: calendar-effect long strategies (totm_long, halloween_seasonal,
-    etc.) MUST NOT include 'bear' or 'crisis' in their affinity. Pre-fix these
-    were defaulted to allow-all, causing them to fire in 2022 bear regime and
-    drag aggregate -234pp. Stage C v4 confirmed Batch 293 zeroed their fires."""
+def test_tier5_functional_calendar_long_strategies_exclude_crisis_batch370_fix2():
+    """Batch 370 Fix 2 (2026-05-26): bear-regime narrowing from Batch 293
+    REVERSED for calendar-effect long strategies (totm_long, halloween,
+    pre_holiday, january_effect). New affinity is {bull, neutral, bear} -
+    crisis remains excluded.
+
+    Rationale: Batch 293's Stage C v3 evidence (3-17 trades) was too small
+    for a-priori bear-regime pruning. Phase-1A-beta showed 56-67% of these
+    strategies' skips were regime_affinity_block_bear. Per memory directive
+    "empirical validation over literature pruning", restore bear so the
+    statistically-powered 1937-tkr re-run produces the verdict.
+
+    Crisis stays excluded - full panic overrides seasonal effects
+    (original Batch 254 logic).
+    """
     from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
     long_calendar = [
         "totm_long", "pre_holiday_long", "january_effect_small_cap_long",
@@ -715,9 +725,11 @@ def test_tier5_functional_calendar_long_strategies_lack_bear_affinity_batch293()
         affinity = STRATEGY_REGIME_AFFINITY.get(s)
         if affinity is None:
             bad.append(f"{s}: no affinity entry (defaults allow-all - BAD)")
-        elif "bear" in affinity or "crisis" in affinity:
-            bad.append(f"{s}: still includes bear/crisis ({affinity})")
-    assert not bad, f"Batch 293 regression: {bad}"
+        elif "crisis" in affinity:
+            bad.append(f"{s}: includes crisis ({affinity}) - panic should block seasonal")
+        elif affinity != {"bull", "neutral", "bear"}:
+            bad.append(f"{s}: expected {{bull, neutral, bear}}, got {affinity}")
+    assert not bad, f"Batch 370 Fix 2 regression: {bad}"
 
 
 def test_tier7_data_integrity_bear_composite_inputs_present():
