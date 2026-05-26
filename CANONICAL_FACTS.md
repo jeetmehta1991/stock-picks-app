@@ -705,12 +705,12 @@ The phrase "5-tier" is used in **3 distinct contexts** — always qualify in wri
     │ F-009 Passing criteria (9 + per-regime)    │
     │ + F-010 PM 5-tier rating                   │
     │ + F-008 5-tier confidence                  │
-    │ + F-004 17 exit methods                    │
+    │ + F-004 25 exit methods (LIVE 2026-05-25)  │
     └────────────────┬───────────────────────────┘
                      │
                      ▼
     ┌────────────────────────────────────────────┐
-    │ F-007 All tests pass (~102 + grow)         │
+    │ F-007 All tests pass (2,536 live 2026-05-25)│
     │ + F-013 11 phases across 5 stages          │
     └────────────────────────────────────────────┘
 ```

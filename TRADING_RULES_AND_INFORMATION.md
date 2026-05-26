@@ -1108,7 +1108,9 @@ Per TRADINGAGENTS_DATA_AUDIT.md Part D + Part E (Pass 52 turn 130 — DEC-462 th
 
 ## 8. Exit Methods (per DEC-067)
 
-### 8.1 17 Exit Methods
+### 8.1 25 Exit Methods (live `len(EXIT_STRATEGIES)` 2026-05-25; 17 was the pre-Batches-282-285 planned-target enumeration)
+
+**Live 25 methods (2026-05-25 Batch 360):** atr_trail_1x, atr_trail_2x, atr_trail_mae_conditional, atr_trail_vix_conditional, break_even_at_1r, breakeven_plus_trail, chandelier_3x, class_time_stop, earnings_blackout, fixed_4r_2r, hybrid_50pct_target, ma_exit_ema9, mfe_lockin_trail, multi_tier_partial, next_pivot_target, r_multiple_2r, r_multiple_3r, regime_flip, reverse_signal, smc_mitigation_zone, time_stop_10d, time_stop_20d, trailing_10pct, trailing_15pct, trailing_5pct. Canonical SSOT: `backtest/engine/exit_strategies.py::EXIT_STRATEGIES`. Pinned by `test_unit.py::test_batch357_doc_count_drift_exit_methods`.
 
 **9 Baseline (pre-Pass-52):**
 1. Fixed % stop-loss

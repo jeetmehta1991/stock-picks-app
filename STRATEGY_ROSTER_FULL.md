@@ -40,11 +40,13 @@ Strategies that are NOT logically symmetric remain single-direction by design �
 
 ---
 
-## Layer 1 — Baseline roster (✅ IMPLEMENTED; 72 strategies in code)
+## Layer 1 — Baseline roster (✅ IMPLEMENTED; 72 strategies in code at Layer 1 scope)
 
-**Code SSOT:** `backtest/signals/screener.py:812` `ALL_STRATEGIES` dict. **PROJECT_PLAN.md §7.4** mirrors at category level.
+**Code SSOT:** `backtest/signals/screener.py::ALL_STRATEGIES` dict. **PROJECT_PLAN.md §7.4** mirrors at category level.
 
-**Counts:** 60 baseline (long-direction) + 12 dedicated shorts = **72 implemented**. Per LIMITATIONS_CAVEATS_ASSUMPTIONS.md CAV documenting code-vs-plan delta: code has 72 strategy classes. The 12 short variants extend the 60-baseline scope; not drift.
+**Layer 1 counts:** 60 baseline (long-direction) + 12 dedicated shorts = **72 implemented** at the Layer 1 baseline scope. Per LIMITATIONS_CAVEATS_ASSUMPTIONS.md CAV documenting code-vs-plan delta: code has 72 Layer 1 strategy classes. The 12 short variants extend the 60-baseline scope; not drift.
+
+**Live total roster 2026-05-25 Batch 360:** `len(ALL_STRATEGIES) = 186` (Layer 1 + Layer 2 + Layer 3 + Wave 3 + Batch 316a un-deprecated). `DEPRECATED_STRATEGIES` set is empty.
 
 ### Layer 1.A — Pivot (10 strategies)
 
@@ -616,9 +618,12 @@ External AI's 6.41 volume-profile-POC bounce **DEFERRED** — requires intraday 
 | Layer 4 (🔴 PENDING-DEC) | DEC-141/142/143/145/176 | **4 strategies + 1 multiplier** (per-DEC promotion required) |
 | Layer 5 (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | regime-eligibility flag schema (overlay; no new strategies) | **+0 strategies; 172 tagged** |
 | Layer 6 (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | 7 sub-categories from external-AI strategy review | **+27** (172-198) |
-| **Sub-total of RESOLVED-DECIDED + IMPLEMENTED (NAMED) post Q1** | | **199 strategy classes** |
+| **Sub-total of RESOLVED-DECIDED + IMPLEMENTED (NAMED) post Q1 — planned target** | | **199 strategy classes** |
 | With Layer 4 PENDING (when promoted) | | **203 strategy classes** |
 | With Layer 2D estimate (5-15 mid: 10) | | **~213 strategy classes** |
+| **LIVE 2026-05-25 Batch 360** (`len(ALL_STRATEGIES)`) | code SSOT | **186 strategy classes** |
+
+The live count (186) is below the planned target (199) because Layer 2D form-derived ICT, parts of Layer 4 PENDING, and a small set of named-but-unwired Layer 3 entries are not yet implemented. Gap = 199 − 186 = 13 classes pending implementation.
 
 **Closure of STRATEGY_REGISTER.md "Open enumeration gaps" (per Pass 53 Option 2):**
 

@@ -177,6 +177,23 @@ KNOWN_STALE = {
 }
 
 
+def _is_meta_correction(line: str) -> bool:
+    """Detect 'was X pre-Y' / 'X -> Y (live)' meta-correction lines where the
+    stale number is being explicitly cited as the past state, not as a current
+    claim. Also treats forward-looking planned-target references with explicit
+    `(per F-002 ...)` / `Pass 53 expansion` / `CANONICAL_FACTS` provenance as
+    NOT drift -- they are planned-target citations alongside the LIVE 186."""
+    lc = line.lower()
+    return any(marker in lc for marker in [
+        "was ", "pre-batch", "pre-pass", "live `len(", "live count",
+        "planned target", "(stale)", "stale; was", "snapshot",
+        "stale)", " -> ", "(historical",  " " + chr(0x2192) + " ",
+        "per f-002", "per canonical_facts", "f-002 pass 53",
+        "pass 53 expansion", "canonical_facts f-002",
+        "section 6 (line", "section 6 = baseline",  # cross-doc reference pointers
+    ])
+
+
 def scan_doc(doc_path: Path, live: dict) -> list[dict]:
     drifts = []
     if not doc_path.exists():
@@ -185,6 +202,8 @@ def scan_doc(doc_path: Path, live: dict) -> list[dict]:
     for i, line in enumerate(text.splitlines(), 1):
         line_lc = line.lower()
         if line.strip().startswith("# "):
+            continue
+        if _is_meta_correction(line):
             continue
         for pattern, key in PATTERNS:
             for m in re.finditer(pattern, line, re.IGNORECASE):

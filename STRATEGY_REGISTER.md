@@ -1,5 +1,7 @@
 # Strategy Register — Single Source-of-Truth
 
+**2026-05-25 Batch 360 LIVE COUNT:** `len(ALL_STRATEGIES) = 186` (all active; `DEPRECATED_STRATEGIES` set is empty per Batch 316a un-deprecation). The "60" figure below refers to the Layer 1 baseline only; the live total spans Layer 1 + Layer 2 + Layer 3 + Wave 3 additions + Batch 316a un-deprecated literature-null strategies.
+
 **2026-05-15 Batch 178 status:** No strategy roster changes this session. Phase 1A backtest pipeline operates on Layer 1 baseline (60 strategies) per CANONICAL_FACTS.md F-002. Live per-strategy ranking on https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/#strategies tab.
 
 **Generated:** Pass 52 turn 53
@@ -213,13 +215,13 @@ All 4 gaps resolved. Implementation tracked per Sprint 7 (Phase 0.D) and Sprint 
 
 | Phase | Strategy roster | Agent overlay | Smart money signals |
 |---|---|---|---|
-| Phase 1A (rules-only baseline, Sprint 6.5) | Full Layer 1+2+3+4 (~109-119 classes) | NO | YES — DEC-124 confluence + DEC-332 weights |
+| Phase 1A (rules-only baseline, Sprint 6.5) | Full Layer 1+2+3+4 (live 2026-05-25 Batch 360: **186 classes**; was "~109-119" pre-Batch-316a) | NO | YES — DEC-124 confluence + DEC-332 weights |
 | Phase 1A-α (rules-only cube, Sprint 6.5-7) | Same as 1A — analyzes 1A trade outcomes | NO | (signals already in 1A trades) |
 | Phase 1A-β (full-scale dry-run, Sprint 7 D1) | Same as 1A — production scale | NO | (signals already in 1A trades) |
 | Phase 1B (agent overlay, Sprint 7) | Same as 1A — agent layer added on top | YES — TradingAgents 12-agent pipeline | (signals enriched via OurFundamentalsToolkit) |
 | Phase 1B-α (combined cube, Sprint 7-8) | Aggregates 1A + 1B trade outcomes across 3 A/B arms | (varies per arm) | (varies per arm) |
 
-**Implication:** Strategy roster does NOT change between Phase 1A and Phase 1B. Same ~109-119 strategy classes fire in both. The DIFFERENCE between phases is whether agent overlay sits on top of rules+smart-money output, NOT which strategies fire.
+**Implication:** Strategy roster does NOT change between Phase 1A and Phase 1B. Same **186 strategy classes** fire in both (live `len(ALL_STRATEGIES)` 2026-05-25 Batch 360; was "~109-119" pre-Batch-316a). The DIFFERENCE between phases is whether agent overlay sits on top of rules+smart-money output, NOT which strategies fire.
 
 **Smart money clarification:** Smart money signals (DEC-124 cross-source confluence; DEC-332 weights; DEC-450 Quiver paid endpoints) are part of RULES-BASED screening, NOT agent overlay. They feed strategy entry signals + tier preliminary assignment in BOTH Phase 1A and Phase 1B. This is preserved from PROJECT_PLAN_ARCHIVE Phase 1A v3 architecture: "We ran all 60 strategies on a small universe of 67 instruments to make sure the pipeline works correctly" — strategies fired without agents in 1A v3, same pattern preserved Pass 53.
 

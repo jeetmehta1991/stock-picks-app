@@ -135,7 +135,7 @@ Phase 5: REFLECTION (post-decision)
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │ STAGE 2 RULES SCREENING (rules-based)                                    │
-│ • 109-119 strategies fire on Tier 1/2/3 universe                         │
+│ • 186 active strategies fire on Tier 1/2/3 universe (live 2026-05-25)    │
 │ • Liquidity/event/regime filters apply                                   │
 │ • DEC-426 5-Gate validity filter                                         │
 │ • Output: ranked candidate list                                          │
@@ -227,7 +227,7 @@ Phase 5: REFLECTION (post-decision)
 | Liquidity / ADV | NOT in default | DEC-366 liquidity filter | **GAP — toolkit injection** |
 | Break-and-retest signal (BUG-111) | NOT in default | Sprint 8 deliverable | **GAP — toolkit injection** |
 
-**Verdict:** Default toolkit is **structurally insufficient**. Without OurTechnicalToolkit, Market Analyst sees vanilla TA only — none of our 109-119 strategy roster's actual signals. Stage 2 A/B testing of "agents add edge over rules" would be measuring agents-with-degraded-input vs rules-with-full-input — invalid comparison.
+**Verdict:** Default toolkit is **structurally insufficient**. Without OurTechnicalToolkit, Market Analyst sees vanilla TA only — none of our **186-strategy roster's** actual signals (live `len(ALL_STRATEGIES)` 2026-05-25; the 109-119 figure was pre-Batch-316a). Stage 2 A/B testing of "agents add edge over rules" would be measuring agents-with-degraded-input vs rules-with-full-input — invalid comparison.
 
 ## 6. Fundamentals Analyst
 

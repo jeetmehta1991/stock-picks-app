@@ -7,7 +7,7 @@
 ## Counts
 - Active strategies in screener at Phase 1A-β run time (Batch 218 deprecation in force): **125**
 - Active strategies in screener AS OF 2026-05-25 (Batch 316a reversed Batch 218; DEPRECATED_STRATEGIES emptied for empirical validation): **148**
-- The next Stage D + Phase 1A-β re-run will iterate all 148 strategies; the additional 23 are largely literature-null (Zakamulin / Marshall-Cahan / Park-Irwin / Horton / Hudson-Atanasova) and are expected to fire trades but produce verdict=FAIL. Confirmation overturns the deprecation with empirical evidence; rejection re-validates the prior decision.
+- The next Stage D + Phase 1A-β re-run will iterate all **186** strategies (live `len(ALL_STRATEGIES)` 2026-05-25 Batch 360; "148" was the pre-Batch-316a snapshot — Batch 316a un-deprecated 23 + active grew via subsequent Batches; DEPRECATED set is empty). The 23 un-deprecated are largely literature-null (Zakamulin / Marshall-Cahan / Park-Irwin / Horton / Hudson-Atanasova) and are expected to fire trades but produce verdict=FAIL. Confirmation overturns the deprecation with empirical evidence; rejection re-validates the prior decision.
 - Fired ≥1 trade in Phase 1A-β: **66**
 - **Quiet (0 trades): 60** at time of run.
 

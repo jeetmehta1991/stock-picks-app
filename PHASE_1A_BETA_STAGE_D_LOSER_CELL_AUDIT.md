@@ -21,13 +21,7 @@ which exit method drives the loss. A strategy may have one cell where a
 profit-target exit captures alpha and a different cell where the trailing-
 stop exit gives the alpha back.
 
-Dimension: 148 active strategies × ~17 observed exit_reasons = ~2,516
-possible cells (in this run). Owner mention of "187×25" cells refers to
-the forward-looking comprehensive exit-cube run — Phase 1A-β data is
-single-config per strategy (each strategy uses its `STRATEGY_EXIT_OVERRIDE`
-default or `atr_trail_1x` fallback). The cartesian 187×25 = 4,675-cell
-verdict requires a future exit-cube replay; this doc covers the **observed
-cells** from Phase 1A-β only.
+Dimension: **186 active strategies** (live `len(ALL_STRATEGIES)` 2026-05-25 Batch 360 — DEPRECATED set empty; "148" was pre-Batch-316a snapshot) × **25 exit methods** (live `len(EXIT_STRATEGIES)`) = **4,650 possible cells** in the cube. Phase 1A-β data is single-config per strategy at engine-dispatch time (each strategy uses its `STRATEGY_EXIT_OVERRIDE` default or `atr_trail_1x` fallback) BUT `save_all_outputs` already runs the cube replay via `run_exit_comparison` per Batch 359 discovery — the 4,650-cell verdict comes naturally from the existing engine. This doc covers the **observed cells** from the rebuilt cube (`output_audit/trade_exit_detail_phase_1a_beta_rebuilt.csv`) — 1,225 fired cells out of 4,650 possible because 137 strategies didn't fire any entries in the prior run (gate/data issues; Batch 358 fixes + Wave 3 + un-deprecation will increase this on re-run).
 
 ### Cell counts (167 fired)
 
