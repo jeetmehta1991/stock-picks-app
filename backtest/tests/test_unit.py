@@ -9671,6 +9671,163 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch374_dec230_structured_logger_emits_json_lines(tmp_path):
+    """Batch 374 DEC-230: structured-JSON logger writes one JSON object per
+    line with DEC-230 canonical context fields (ts/level/logger/msg + opt
+    extras). Helper opt-in; legacy logging.getLogger callers untouched."""
+    import json
+    import logging
+    from backtest.util.structured_logger import (
+        get_json_logger,
+        reset_json_loggers,
+        DEC_230_CONTEXT_FIELDS,
+    )
+
+    reset_json_loggers()
+    log = get_json_logger("test.dec230", log_dir=tmp_path, level=logging.INFO)
+    log.info("trade_fired", extra={
+        "ticker": "AAPL", "strategy": "rsi_oversold", "regime": "bull",
+    })
+    log.warning("gate_block", extra={"ticker": "MSFT", "exit_method": "trail"})
+    # Force flush
+    for h in log.handlers:
+        h.flush()
+
+    # Find the structured log file
+    log_files = list(tmp_path.glob("structured_*.jsonl"))
+    assert len(log_files) == 1, f"Expected 1 structured log file; got {len(log_files)}"
+    lines = log_files[0].read_text(encoding="utf-8").strip().split("\n")
+    assert len(lines) == 2, f"Expected 2 log lines; got {len(lines)}"
+
+    # Each line is a valid JSON object with canonical fields
+    for line in lines:
+        obj = json.loads(line)
+        assert "ts" in obj and obj["ts"].endswith("Z"), f"ts missing/wrong: {obj}"
+        assert obj["level"] in ("INFO", "WARNING")
+        assert "logger" in obj and obj["logger"].startswith("structured.")
+        assert "msg" in obj
+
+    # Field promotion from extra=
+    first = json.loads(lines[0])
+    assert first["ticker"] == "AAPL"
+    assert first["strategy"] == "rsi_oversold"
+    assert first["regime"] == "bull"
+    second = json.loads(lines[1])
+    assert second["exit_method"] == "trail"
+
+    # Canonical context-field set sanity (per DEC-230 spec)
+    assert "ticker" in DEC_230_CONTEXT_FIELDS
+    assert "strategy" in DEC_230_CONTEXT_FIELDS
+    assert "regime" in DEC_230_CONTEXT_FIELDS
+    reset_json_loggers()
+
+
+def test_batch374_dec234_ticker_lifecycle_producer_emits_canonical_schema():
+    """Batch 374 DEC-234 + DEC-380: ticker_lifecycle_events.parquet matches
+    canonical TICKER_LIFECYCLE_FIELDS schema and event_type values are in
+    TICKER_LIFECYCLE_EVENT_TYPES enum."""
+    import pandas as pd
+    from pathlib import Path
+    from backtest.config import (TICKER_LIFECYCLE_FIELDS,
+                                  TICKER_LIFECYCLE_EVENT_TYPES)
+    repo = Path(__file__).resolve().parents[2]
+    out_path = repo / "data_prefetch" / "derived" / "ticker_lifecycle_events.parquet"
+    if not out_path.exists():
+        import pytest
+        pytest.skip("ticker_lifecycle_events.parquet not yet built - run scripts/build_ticker_lifecycle_events.py")
+
+    df = pd.read_parquet(out_path)
+    assert len(df) > 0, "DEC-234 producer wrote empty parquet"
+    # Schema match - every canonical field is a column
+    for field in TICKER_LIFECYCLE_FIELDS:
+        assert field in df.columns, (
+            f"DEC-234 schema drift: column {field!r} missing from output"
+        )
+    # event_type values are in canonical enum
+    bad = df[~df["event_type"].isin(TICKER_LIFECYCLE_EVENT_TYPES)]
+    assert bad.empty, (
+        f"DEC-234 schema drift: {len(bad)} events with non-canonical event_type. "
+        f"Bad values: {sorted(bad['event_type'].unique())}"
+    )
+
+
+def test_batch374_dec231_regime_filter_bare_excepts_log_warnings(caplog):
+    """Batch 374 DEC-231: previously silent `except Exception: pass` in
+    regime_filter.compute_bear_composite_score now logs WARNING with
+    context (yield_curve / aaii / sector_breadth parse failures)."""
+    import pandas as pd
+    import logging
+    from datetime import date
+    from backtest.engine.regime_filter import compute_bear_composite_score
+
+    # Pass a malformed yield_curve_df to trigger the except path
+    bad_yc = pd.DataFrame({"date": ["not-a-date"], "value": ["not-a-number"]})
+    caplog.set_level(logging.WARNING, logger="backtest.engine.regime_filter")
+    result = compute_bear_composite_score(
+        as_of=date(2024, 6, 15),
+        yield_curve_df=bad_yc,
+        aaii_df=None,
+        sector_ohlcv_dict=None,
+    )
+    # Function should still return a result (not crash)
+    assert "score" in result
+    # And the warning should appear (post-DEC-231; pre-fix this was silent)
+    warnings = [r for r in caplog.records
+                if r.levelname == "WARNING"
+                and "bear_composite" in r.message]
+    assert len(warnings) >= 1, (
+        f"DEC-231: regime_filter must log WARNING when parse fails; got "
+        f"{[r.message for r in caplog.records]}"
+    )
+
+
+def test_batch374_dec246_quant_correctness_formula_pin():
+    """Batch 374 DEC-246 closure: pin the canonical quant-finance formulas
+    against accidental drift. See QUANT_CORRECTNESS_AUDIT_DEC_246.md for
+    the full audit (cube-Sharpe approx flagged; max_drawdown verified;
+    Sortino verified)."""
+    import numpy as np
+    import pandas as pd
+    from backtest.results.bootstrap_ci import sharpe_ratio
+    from backtest.results.metrics import _max_drawdown
+
+    # Sharpe: constant-return series should be 0 (std=0 protected by 1e-12 floor)
+    assert sharpe_ratio([0.01] * 252) == 0.0, (
+        "DEC-246: constant returns must yield Sharpe=0 (1e-12 std floor)"
+    )
+
+    # Sharpe: known answer - returns with mean=1, std=2, n>=2
+    # mean/std * sqrt(252) = 0.5 * sqrt(252) ~= 7.937
+    rets = [3.0, -1.0, 3.0, -1.0, 3.0, -1.0]  # mean=1, std~=2
+    s = sharpe_ratio(rets)
+    expected = (1.0 / np.std(rets, ddof=1)) * np.sqrt(252)
+    assert abs(s - expected) < 1e-6, (
+        f"DEC-246: Sharpe formula drift - expected {expected:.6f}, got {s:.6f}"
+    )
+
+    # Sharpe: empty / single-element guard
+    assert sharpe_ratio([]) == 0.0
+    assert sharpe_ratio([0.05]) == 0.0
+
+    # Max drawdown: BUG-15 cumprod (was cumsum). [+10, -5, -10] series:
+    # equity = [1.10, 1.045, 0.9405], peak = [1.10, 1.10, 1.10]
+    # drawdown_pct = [0, -5.0, -14.50]; min = -14.50
+    dd = _max_drawdown(pd.Series([10.0, -5.0, -10.0]))
+    assert abs(dd - (-14.50)) < 0.05, (
+        f"DEC-246: max_drawdown BUG-15 regression - expected ~-14.50, got {dd}"
+    )
+
+    # Empty input must not crash
+    assert _max_drawdown(pd.Series([])) == 0.0
+
+    # Negative-only series: equity falls monotonically, dd ~= total loss
+    dd2 = _max_drawdown(pd.Series([-5.0, -5.0, -5.0]))
+    # equity = [0.95, 0.9025, 0.857375], peak = 0.95 starting, then 0.95...
+    # Actually peak = cummax([0.95, 0.9025, 0.857375]) = [0.95, 0.95, 0.95]
+    # drawdown = [0, -5.0, -9.7368]; min = -9.7368
+    assert dd2 < 0, "DEC-246: negative-only series must produce negative drawdown"
+
+
 def test_batch373_e1_doc_count_pin_against_code():
     """Batch 373 E-1 (owner-directed 2026-05-26 per memory feedback line 14
     'doc count claims must be test-pinned'): pin every numeric count cited

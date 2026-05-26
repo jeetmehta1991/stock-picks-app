@@ -80,8 +80,14 @@ def compute_bear_composite_score(
                 last_val = float(df["value"].iloc[-1])
                 out["yield_curve_inverted"] = last_val < 0
                 out["details"]["t10y2y"] = round(last_val, 2)
-        except Exception:
-            pass
+        except Exception as exc:
+            # Batch 374 DEC-231: log silently-swallowed failures with context
+            # so a bear-composite input regression surfaces in run.log instead
+            # of zero-scoring stealth-bear undetected.
+            logger.warning(
+                "bear_composite: yield_curve parse failed as_of=%s exc=%s",
+                as_of, exc,
+            )
 
     # 2. AAII bearish extreme
     if aaii_df is not None and not aaii_df.empty:
@@ -94,8 +100,11 @@ def compute_bear_composite_score(
                 last_bearish = float(df["bearish"].iloc[-1])
                 out["aaii_bearish_extreme"] = last_bearish >= 0.40
                 out["details"]["aaii_bearish"] = round(last_bearish, 3)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning(
+                "bear_composite: aaii parse failed as_of=%s exc=%s",
+                as_of, exc,
+            )
 
     # 3. Sector breadth
     if sector_ohlcv_dict is not None:
@@ -124,8 +133,11 @@ def compute_bear_composite_score(
             if n_eligible >= 5:
                 out["sector_breadth_bear"] = n_below >= 5
                 out["details"]["sector_breadth"] = f"{n_below}/{n_eligible}_below_200ema"
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning(
+                "bear_composite: sector_breadth parse failed as_of=%s exc=%s",
+                as_of, exc,
+            )
 
     out["score"] = (
         int(out["yield_curve_inverted"]) +
@@ -300,7 +312,12 @@ def get_vix_smoothed(vix_series: pd.Series, as_of: date, window: int = 5) -> Opt
         if pd.isna(sma):
             return None
         return sma
-    except Exception:
+    except Exception as exc:
+        # Batch 374 DEC-231: log silently-swallowed failures
+        logger.warning(
+            "vix_sma_smoothed: window=%s as_of=%s parse failed exc=%s",
+            window, as_of, exc,
+        )
         return None
 
 

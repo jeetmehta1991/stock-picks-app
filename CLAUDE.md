@@ -89,6 +89,8 @@ backtest/
     regime_filter.py     # classify_regime: bull/neutral/bear/crisis
     improvements.py      # walk-forward, transaction costs, slippage, survivorship
   agents/pipeline.py     # 11-active-agent pipeline per DEC-057 (3 analysts + Bull/Bear/RM + Trader + 3 Risk Debaters + Portfolio Manager + Reflection post-decision); Haiku Phase 1B (~$116 CAD), Sonnet Phase 1C+. Note: prior CLAUDE.md docstring of "6 agents" was a simplification of the conceptual roles before TradingAgents Pattern 2 integration; actual node count is 11+ per L94/Pass 26 lesson.
+  util/
+    structured_logger.py # Batch 374 DEC-230: JSON-lines logger helper (opt-in; emits to logs/structured_<DATE>.jsonl with DEC-230 canonical context fields ticker/strategy/regime/...).
   results/
     metrics.py           # 9 passing criteria + per-regime verdict matrix
     writer.py            # trade_log, backtest_results, strategy_regime_matrix.json
@@ -96,6 +98,11 @@ backtest/
 scripts/
   generate_batch_splits.py     # prints 5-batch commands + 1-ticker test commands
   merge_batch_outputs.py       # merge 5 outputs, re-compute metrics, validate
+  build_ticker_lifecycle_events.py  # Batch 374 DEC-234+380: Polygon corp-actions -> ticker_lifecycle_events.parquet
+  build_t1a_correlation_matrix.py   # Batch 374 B-3: T1a pair-wise OHLCV log-return correlation precompute
+  build_t5b_pairs_precompute.py     # Batch 326: cointegrated-pairs precompute (5 annual snapshots in cache)
+  profile_process_day_lever_c.py    # Batch 371: cProfile harness for Speedup Lever C investigation
+  run_live_end_of_day.py            # Batch 373 C-1: Stage 4 LIVE EOD reconciliation (IB fills + slippage)
   prepopulate_cache_index.py   # pre-fill index.json before parallel runs
   refresh_sp500_universe.py    # quarterly S&P 500 refresh (laptop only, slickcharts.com)
   refresh_extended_universe.py # monthly Tier 2 refresh (laptop only)
