@@ -6634,16 +6634,38 @@ def test_batch181_run_phase1a_accepts_1a_beta():
     assert "get_master_universe" in src, "Batch 181: 1a-beta branch must call get_master_universe"
 
 
-def test_batch185_max_open_positions_25():
-    """Batch 185 owner directive 2026-05-16: max_open_positions raised 10 -> 25.
-    Driver: INV-053 - portfolio_gate_max_open_positions_10 was 27% of all
-    skips in Phase 1A baseline; needs more headroom at 1937-ticker scope.
-    Regression guard: future changes must be explicit."""
+def test_batch370_max_open_positions_59_with_regime_caps_preserved():
+    """Batch 370 Fix 1 owner-approved 2026-05-26: max_open_positions raised
+    25 -> 59 to unlock bull-regime effective cap (25 -> 40 = Batch 203 spec).
+    Empirical Phase-1A-beta evidence: 12,180 skips were
+    `max_open_positions_25_reached`. Regime caps (bull 40 / neutral 25 /
+    bear 15 / crisis 10 / unknown 5) preserved per Batch 203 risk control
+    on the 2022 -117pp bear loss-year.
+
+    Effective cap = min(base, regime_cap):
+      bull    -> min(59, 40) = 40  (UNLOCKED from prior 25)
+      neutral -> min(59, 25) = 25  (unchanged)
+      bear    -> min(59, 15) = 15  (unchanged; Batch 203 risk control)
+      crisis  -> min(59, 10) = 10  (unchanged)
+      unknown -> min(59, 5)  = 5   (unchanged)
+    """
     from backtest.config import LIVE_TRADING_RULES
-    assert LIVE_TRADING_RULES["max_open_positions"] == 25, (
-        f"Batch 185: max_open_positions must be 25 (owner directive 2026-05-16); "
+    assert LIVE_TRADING_RULES["max_open_positions"] == 59, (
+        f"Batch 370 Fix 1: max_open_positions must be 59 (owner directive 2026-05-26); "
         f"got {LIVE_TRADING_RULES['max_open_positions']}"
     )
+    # Regime caps unchanged (Batch 203 risk control)
+    from backtest.engine.regime_selector import regime_position_count_cap
+    assert regime_position_count_cap("bull")    == 40, "Batch 203 bull cap must stay 40"
+    assert regime_position_count_cap("neutral") == 25, "Batch 203 neutral cap must stay 25"
+    assert regime_position_count_cap("bear")    == 15, "Batch 203 bear cap must stay 15"
+    assert regime_position_count_cap("crisis")  == 10, "Batch 203 crisis cap must stay 10"
+    # Effective cap calculation per engine/backtest.py:1634
+    base = LIVE_TRADING_RULES["max_open_positions"]
+    assert min(base, regime_position_count_cap("bull"))    == 40
+    assert min(base, regime_position_count_cap("neutral")) == 25
+    assert min(base, regime_position_count_cap("bear"))    == 15
+    assert min(base, regime_position_count_cap("crisis"))  == 10
 
 
 def test_batch186_passing_criteria_relaxations():

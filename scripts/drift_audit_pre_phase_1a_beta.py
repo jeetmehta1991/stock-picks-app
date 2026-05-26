@@ -109,7 +109,7 @@ HISTORICAL_NARRATIVE_DOCS = {
 # OR the meta-narrative about a prior drift (i.e., the doc is the drift fix).
 FALSE_POSITIVE_LINES = {
     "CANONICAL_FACTS.md": {
-        15, 16,        # Meta-narrative: "drove the 11-vs-6 agent drift"
+        15, 16,        # Meta-narrative on the historical agent-count drift; canonical is 11 active agents per DEC-057
         45,            # F-001 Definition paragraph header
         77,            # F-001 Acceptable phrasing variants list
         137,           # F-002 Acceptable phrasing variants list
@@ -117,7 +117,7 @@ FALSE_POSITIVE_LINES = {
         262,           # F-004 Acceptable phrasing variants list (includes 25 LIVE)
     },
     "CHECKLIST.md": {
-        140,           # "Past mistakes from missing this: 6-vs-12 agents..." meta
+        140,           # Historical-drift narrative line (pre-DEC-057 stale phrasings); canonical is 11 active agents per DEC-057
     },
     "CLAUDE.md": {
         91, 143,       # Correctly states 11-active-agent pipeline (regex false hit)

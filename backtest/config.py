@@ -565,7 +565,16 @@ LIVE_TRADING_RULES = {
     # the 10-cap would dominate even harder. 25-cap relaxes the bottleneck while
     # keeping concentration risk bounded (25 positions * max-tier 5% = 125% gross
     # exposure ceiling; tiered avg sizing keeps realistic exposure ~50-75%).
-    "max_open_positions":       25,     # total simultaneous positions
+    #
+    # Batch 370 Fix 1 (owner-approved 2026-05-26): raised 25 -> 59 to unlock the
+    # bull-regime effective cap. Empirical Phase-1A-beta evidence: 12,180 skips
+    # were `max_open_positions_25_reached` on bull/neutral days. The min(base,
+    # regime_cap) formula in engine/backtest.py means base=59 only changes the
+    # BULL regime effective cap (25 -> 40 = Batch 203's regime spec). Neutral
+    # stays 25 (regime cap = 25); bear stays 15 (Batch 203 risk control on
+    # 2022 -117pp loss-year); crisis stays 10. Worst-case bull exposure with 40
+    # positions x max-tier 5% sizing = 200% gross; tier-mix avg sizing ~100-120%.
+    "max_open_positions":       59,     # total simultaneous positions (base; regime cap binds tighter)
     "drawdown_25pct_threshold": 0.10,   # portfolio drawdown > 10% -> reduce sizes 25%
     "drawdown_50pct_threshold": 0.20,   # portfolio drawdown > 20% -> reduce sizes 50%
     "drawdown_suspend_threshold": 0.30, # portfolio drawdown > 30% -> suspend new entries
