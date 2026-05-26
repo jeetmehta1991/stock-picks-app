@@ -1491,9 +1491,12 @@ AB_TEST_MIN_ARMS = 4
 # Pre-commit minimum sample size per arm before declaring winner.
 AB_TEST_MIN_PAIRED_TRADES_PER_ARM = 300
 
-# DEC-216 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# DEC-216 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11
+# (constants); module wired Batch 245 + verified Batch 373 2026-05-26.
 # A/B test orchestrator module path + deterministic-seed config.
-AB_ORCHESTRATOR_MODULE_PATH = "backtest/ab_orchestrator.py"
+# Batch 373 path correction: module lives at backtest/results/ab_orchestrator.py
+# per Batch 245 (was incorrectly "backtest/ab_orchestrator.py" pre-Batch-373).
+AB_ORCHESTRATOR_MODULE_PATH = "backtest/results/ab_orchestrator.py"
 AB_ORCHESTRATOR_DETERMINISTIC_SEEDS = True  # per-arm seeds for reproducibility
 
 # DEC-251 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.

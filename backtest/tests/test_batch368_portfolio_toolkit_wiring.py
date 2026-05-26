@@ -92,12 +92,56 @@ def test_b2_trader_existing_position_unowned_ticker():
 
 
 def test_b2_trader_cooldown_remains_scaffold():
-    """Per-ticker cooldown is deferred (Portfolio doesn't expose stop history)."""
+    """Per-ticker cooldown returns scaffold when circuit_breaker_log not
+    passed (mock-smoke / LLM dry-run path preserved per Batch 373)."""
     p = _make_test_portfolio()
-    tk = OurTraderToolkit(portfolio=p)
+    tk = OurTraderToolkit(portfolio=p)  # no circuit_breaker_log
     result = tk.get_per_ticker_cooldown("AAPL", date(2024, 6, 15))
     assert result["scaffold"] is True
     assert "deferred_reason" in result
+
+
+def test_b1_batch373_trader_cooldown_real_circuit_breaker_log():
+    """Batch 373 Sprint 7 Phase B prep: get_per_ticker_cooldown reads the
+    engine's circuit_breaker_log when passed at toolkit init."""
+    cb_log = [
+        {"date": date(2024, 6, 10), "ticker": "AAPL",
+         "level": "L3", "reason": "regime_change"},
+        {"date": date(2024, 6, 14), "ticker": "MSFT",
+         "level": "L3", "reason": "vol_spike"},
+        {"date": date(2024, 5, 20), "ticker": "AAPL",
+         "level": "L2", "reason": "drawdown"},
+    ]
+    p = _make_test_portfolio()
+    tk = OurTraderToolkit(portfolio=p, circuit_breaker_log=cb_log)
+
+    # AAPL stopped 2024-06-10; as_of 2024-06-12 => 2 days since => in cooldown 3 days remaining
+    r = tk.get_per_ticker_cooldown("AAPL", date(2024, 6, 12))
+    assert r["scaffold"] is False
+    assert r["in_cooldown"] is True
+    assert r["days_remaining"] == 3
+    assert r["last_stop_date"] == "2024-06-10"
+
+    # AAPL as_of 2024-06-16 => 6 days since => out of cooldown
+    r2 = tk.get_per_ticker_cooldown("AAPL", date(2024, 6, 16))
+    assert r2["scaffold"] is False
+    assert r2["in_cooldown"] is False
+    assert r2["days_remaining"] == 0
+
+    # Ticker with no stop history
+    r3 = tk.get_per_ticker_cooldown("GOOGL", date(2024, 6, 12))
+    assert r3["scaffold"] is False
+    assert r3["in_cooldown"] is False
+    assert r3["last_stop_date"] is None
+
+    # Most-recent-only: AAPL has 2 stops; uses 2024-06-10 not 2024-05-20
+    r4 = tk.get_per_ticker_cooldown("AAPL", date(2024, 6, 11))
+    assert r4["last_stop_date"] == "2024-06-10"
+    assert r4["days_remaining"] == 4
+
+    # Future stop ignored (as_of < event date)
+    r5 = tk.get_per_ticker_cooldown("AAPL", date(2024, 6, 5))
+    assert r5["last_stop_date"] == "2024-05-20"  # only the past one
 
 
 # ---------------------------------------------------------------------

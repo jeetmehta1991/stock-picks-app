@@ -25,10 +25,24 @@ _REPO = Path(__file__).resolve().parents[3]
 class OurTraderToolkit:
     """Trader toolkit. Wires backtest.engine.portfolio.Portfolio for live
     portfolio queries; falls back to safe sentinels when portfolio is None
-    (e.g., LLM-mocked smoke tests without an active backtest)."""
+    (e.g., LLM-mocked smoke tests without an active backtest).
 
-    def __init__(self, portfolio: Any = None) -> None:
+    Batch 373 (2026-05-26) Sprint 7 Phase B prep: accept an optional
+    `circuit_breaker_log` list (the engine's `self.circuit_breaker_log`
+    on BacktestEngine; see backtest/engine/backtest.py:126) so that
+    get_per_ticker_cooldown can resolve real stop-out history from the
+    Stage 2 engine without requiring Portfolio API changes. Sprint 7
+    Phase B wiring (when langgraph_pipeline calls this toolkit) must
+    pass the engine's circuit_breaker_log alongside the portfolio.
+    """
+
+    def __init__(self, portfolio: Any = None,
+                 circuit_breaker_log: Any = None) -> None:
         self.portfolio = portfolio
+        # Optional list[dict] with shape:
+        #   [{"date": date, "ticker": str, "level": str, "reason": str, ...}]
+        # Pass-by-reference is fine - we only read.
+        self.circuit_breaker_log = circuit_breaker_log
 
     def get_position_sizing_rules(self, tier: str) -> dict[str, Any]:
         """Return sizing rule for a confidence tier per DEC-021.
@@ -115,22 +129,54 @@ class OurTraderToolkit:
     def get_per_ticker_cooldown(self, ticker: str, as_of: date) -> dict[str, Any]:
         """Check if ticker is in 5-day post-stop cooldown per DEC-018.
 
-        Stream B2: Portfolio class doesn't yet track per-ticker stop
-        history natively. The engine's circuit_breaker_log holds the
-        stop-out events but isn't exposed via Portfolio. This method
-        remains a sentinel pending engine-side wiring of cooldown
-        history into Portfolio (lower priority; can be deferred to
-        Phase 1B-alpha real-LLM runs).
+        Batch 373 (Sprint 7 Phase B prep 2026-05-26): real wiring against
+        the engine's `circuit_breaker_log` when passed at toolkit init.
+        Falls back to scaffold sentinel when log is None (mock-smoke /
+        LLM dry-run scenarios). DEC-018 specifies 5-trading-day cooldown
+        post-stop; we use a calendar-day proxy (5 days) per the existing
+        engine convention - calendar/trading-day exactness can be
+        tightened when Phase 1B-alpha lands.
         """
+        if self.circuit_breaker_log is None:
+            return {
+                "ticker": ticker,
+                "as_of": as_of.isoformat(),
+                "in_cooldown": False,
+                "days_remaining": 0,
+                "scaffold": True,
+                "deferred_reason": (
+                    "circuit_breaker_log not passed at toolkit init; mock-smoke "
+                    "callers (LLM dry-run) hit this path."
+                ),
+            }
+        # Real path - filter the log for ticker-matching stop events
+        from datetime import timedelta
+        DEC_018_COOLDOWN_DAYS = 5
+        most_recent_stop = None
+        for entry in self.circuit_breaker_log:
+            if entry.get("ticker") != ticker:
+                continue
+            ed = entry.get("date")
+            if ed is None or ed > as_of:
+                continue
+            if most_recent_stop is None or ed > most_recent_stop:
+                most_recent_stop = ed
+        if most_recent_stop is None:
+            return {
+                "ticker":          ticker,
+                "as_of":           as_of.isoformat(),
+                "in_cooldown":     False,
+                "days_remaining":  0,
+                "last_stop_date":  None,
+                "scaffold":        False,
+            }
+        days_since = (as_of - most_recent_stop).days
+        days_remaining = max(0, DEC_018_COOLDOWN_DAYS - days_since)
         return {
-            "ticker": ticker,
-            "as_of": as_of.isoformat(),
-            "in_cooldown": False,
-            "days_remaining": 0,
-            "scaffold": True,
-            "deferred_reason": (
-                "Per-ticker stop history not yet exposed via Portfolio API; "
-                "engine circuit_breaker_log holds the data. Defer to Sprint 7 "
-                "follow-on."
-            ),
+            "ticker":         ticker,
+            "as_of":          as_of.isoformat(),
+            "in_cooldown":    days_remaining > 0,
+            "days_remaining": int(days_remaining),
+            "last_stop_date": most_recent_stop.isoformat(),
+            "scaffold":       False,
         }
