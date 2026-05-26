@@ -86,11 +86,20 @@ def _compute_arm_metrics(trades: pd.DataFrame, arm_name: str, cfg: AgentGateConf
     n = len(pnls)
     mu = float(pnls.mean())
     std = float(pnls.std(ddof=1)) if n > 1 else 0.0
-    sharpe = (mu / std) * np.sqrt(252) if std > 0 else 0.0
+    # Batch 375 DEC-246 sec1 fix: trade-frequency annualization. See
+    # QUANT_CORRECTNESS_AUDIT_DEC_246.md sec1 - per-trade returns annualize
+    # by trades-per-year derived from avg hold-days, not sqrt(252).
+    if "hold_days" in trades.columns:
+        avg_hold = float(trades["hold_days"].astype(float).mean())
+        n_trades_per_year = 252.0 / max(avg_hold, 1.0)
+        annualization_factor = np.sqrt(n_trades_per_year)
+    else:
+        annualization_factor = np.sqrt(252)  # legacy fallback
+    sharpe = (mu / std) * annualization_factor if std > 0 else 0.0
     # Sortino - downside deviation only
     downside = pnls[pnls < 0]
     dstd = float(downside.std(ddof=1)) if len(downside) > 1 else 0.0
-    sortino = (mu / dstd) * np.sqrt(252) if dstd > 0 else 0.0
+    sortino = (mu / dstd) * annualization_factor if dstd > 0 else 0.0
     # Max DD
     cum = pnls.cumsum()
     peak = np.maximum.accumulate(cum)

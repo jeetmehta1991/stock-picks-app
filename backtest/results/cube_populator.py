@@ -50,13 +50,20 @@ _THRESH_OVERALL = {
     "sharpe":        1.00,
 }
 
-# DEC-426 5-Gate validity
+# DEC-426 5-Gate validity - Batch 375 (2026-05-26): wire to canonical
+# DEC_422_FIVE_GATE_VALIDITY in config.py instead of hardcoding here.
+# Memory rule "wired = engine-consumed not grep-found" - prior to this
+# batch the config dict existed but cube_populator hardcoded the same
+# values, so any future threshold change required two edits + risked
+# drift. This wire-up promotes DEC-426 PARTIAL-IMPL-HELPER-ONLY -> truly
+# RESOLVED-IMPLEMENTED.
+from backtest.config import DEC_422_FIVE_GATE_VALIDITY as _DEC_426_CONFIG
 _FIVE_GATE = {
-    "n_min":          30,
-    "bonferroni_max": 0.05,
-    "psr_min":        0.95,
-    "t_stat_min":     3.4,
-    "rr_min":         2.0,
+    "n_min":          _DEC_426_CONFIG["min_trades_per_cell"],
+    "bonferroni_max": _DEC_426_CONFIG["max_p_value"],
+    "psr_min":        _DEC_426_CONFIG["min_psr"],
+    "t_stat_min":     _DEC_426_CONFIG["min_t_stat"],
+    "rr_min":         _DEC_426_CONFIG["min_rr"],
 }
 
 _REQUIRED_COLS = {"strategy", "pnl_pct"}  # exit column normalized below
@@ -128,10 +135,26 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
     peak = np.maximum.accumulate(cum)
     dd_arr = peak - cum
     max_dd_pct = float(dd_arr.max()) / 100.0 if len(dd_arr) > 0 else 0.0
-    # Sharpe (annualized; assumes daily-ish trade cadence; rough approx)
+    # Sharpe (annualized): Batch 375 DEC-246 sec1 fix - use trade-frequency
+    # annualization (Calmar-pattern) instead of static sqrt(252). Per-trade
+    # return series should annualize by trades-per-year derived from
+    # avg hold-days, NOT by sqrt(252) which assumes daily cadence and
+    # over-annualizes when trades fire less frequently.
+    # Formula: n_trades_per_year = 252 / max(avg_hold, 1)
+    #          sharpe = mean/std * sqrt(n_trades_per_year)
+    # Fallback: when trades doesn't expose hold_days, use sqrt(252) approximation
+    # for backward compat (legacy callers).
     std = float(pnls.std(ddof=1)) if n > 1 else 0.0
-    sharpe = (expected_value / std) * np.sqrt(252) if std > 0 else 0.0
-    # T-stat (one-sample)
+    if "hold_days" in trades.columns:
+        avg_hold = float(trades["hold_days"].astype(float).mean())
+        n_trades_per_year = 252.0 / max(avg_hold, 1.0)
+        annualization_factor = np.sqrt(n_trades_per_year)
+    else:
+        # Backward-compat for callers passing pnl-only frames; DEC-246
+        # documented this as rank-correct-but-absolute-biased
+        annualization_factor = np.sqrt(252)
+    sharpe = (expected_value / std) * annualization_factor if std > 0 else 0.0
+    # T-stat (one-sample) - annualization-invariant
     t_stat = (expected_value * np.sqrt(n)) / std if std > 0 else 0.0
     # PSR placeholder (DEC-247 via deflated_sharpe.py wires the real one;
     # this approximation is monotonic in sharpe + n for ranking)

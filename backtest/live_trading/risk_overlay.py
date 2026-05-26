@@ -128,13 +128,23 @@ def check_pre_trade(
     )
 
 
-def update_halt_state(risk_state: LiveRiskState) -> bool:
+def update_halt_state(risk_state: LiveRiskState,
+                      notify: bool = True,
+                      send_email_fn=None) -> bool:
     """Re-evaluate halt state based on current portfolio metrics.
 
     Activates halt if DD >= trigger, deactivates if DD < recovery threshold.
     Returns True if halt currently active.
+
+    Batch 375 CB-fire email hook (per STAGE_4_MONITORING_AUDIT C-3 highest-
+    value missing piece): when a CB transitions OFF->ON or ON->OFF, dispatch
+    an email alert via email_digest.send_email so the owner gets notified
+    in real time without watching the dashboard. notify=False suppresses
+    the hook (unit tests / dry-run). send_email_fn defaults to the live
+    SMTP sender; pass a callable for testing.
     """
     dd = risk_state.current_dd_pct
+    prev_halt = risk_state.halt_active
     if not risk_state.halt_active and dd >= DEC_515_LEVEL_6_DD_TRIGGER_PCT:
         risk_state.halt_active = True
         risk_state.halt_reason = f"dec_515_level_6_dd_{dd:.1f}pct"
@@ -143,6 +153,38 @@ def update_halt_state(risk_state: LiveRiskState) -> bool:
         risk_state.halt_active = False
         risk_state.halt_reason = ""
         risk_state.halt_timestamp = None
+
+    # CB-transition email hook
+    if notify and prev_halt != risk_state.halt_active:
+        try:
+            if send_email_fn is None:
+                from backtest.paper_trading.email_digest import send_email
+                send_email_fn = send_email
+            transition = "ACTIVATED" if risk_state.halt_active else "DEACTIVATED"
+            subject = (
+                f"[stock-picks] LIVE CB {transition}: DEC-515 Level 6 "
+                f"DD={dd:.2f}%"
+            )
+            body = (
+                f"Stage 4 LIVE circuit breaker {transition}.\n\n"
+                f"  Portfolio value:  ${risk_state.portfolio_value:,.2f}\n"
+                f"  Portfolio peak:   ${risk_state.portfolio_peak:,.2f}\n"
+                f"  Current DD:       {dd:.2f}%\n"
+                f"  Trigger:          DEC-515 Level 6\n"
+                f"     Activates @ >= {DEC_515_LEVEL_6_DD_TRIGGER_PCT}% DD\n"
+                f"     Deactivates @ < {DEC_515_LEVEL_6_DD_RECOVERY_PCT}% DD\n"
+                f"  Timestamp:        {risk_state.halt_timestamp or 'n/a'}\n\n"
+                f"Open positions:   {risk_state.open_positions_count}\n"
+                f"Halt status:      "
+                f"{'NEW ENTRIES BLOCKED' if risk_state.halt_active else 'NEW ENTRIES RE-ENABLED'}\n"
+            )
+            send_email_fn(subject, body, dry_run=False)
+        except Exception as exc:
+            # Per DEC-231: log the failure with context rather than silent
+            # swallow. Use module-level print since logger may not be wired
+            # in all live-runtime entry points.
+            print(f"[WARN] CB-fire email hook failed: {exc}")
+
     return risk_state.halt_active
 
 

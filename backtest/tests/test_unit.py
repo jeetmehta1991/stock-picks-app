@@ -9671,6 +9671,191 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch375_dec426_5_gate_wired_to_config_not_hardcoded():
+    """Batch 375 DEC-426 closure: cube_populator now reads 5-Gate thresholds
+    from canonical DEC_422_FIVE_GATE_VALIDITY in config.py instead of
+    hardcoding _FIVE_GATE constants. Memory rule 'wired = engine-consumed
+    not grep-found' satisfied.
+
+    Failure mode: if owner re-tunes the 5-Gate thresholds (per Phase 1B
+    DSR refinement or DEC-247 PSR rework), only config.py needs to change.
+    Hardcoded copy in cube_populator would have caused silent drift."""
+    from backtest.config import DEC_422_FIVE_GATE_VALIDITY
+    from backtest.results.cube_populator import _FIVE_GATE
+
+    # Wired: cube_populator._FIVE_GATE values must equal config canonical
+    assert _FIVE_GATE["n_min"]          == DEC_422_FIVE_GATE_VALIDITY["min_trades_per_cell"]
+    assert _FIVE_GATE["bonferroni_max"] == DEC_422_FIVE_GATE_VALIDITY["max_p_value"]
+    assert _FIVE_GATE["psr_min"]        == DEC_422_FIVE_GATE_VALIDITY["min_psr"]
+    assert _FIVE_GATE["t_stat_min"]     == DEC_422_FIVE_GATE_VALIDITY["min_t_stat"]
+    assert _FIVE_GATE["rr_min"]         == DEC_422_FIVE_GATE_VALIDITY["min_rr"]
+
+    # Verify the canonical values match DEC-426 spec
+    assert DEC_422_FIVE_GATE_VALIDITY["min_trades_per_cell"] == 30
+    assert DEC_422_FIVE_GATE_VALIDITY["max_p_value"]         == 0.05
+    assert DEC_422_FIVE_GATE_VALIDITY["min_psr"]             == 0.95
+    assert DEC_422_FIVE_GATE_VALIDITY["min_t_stat"]          == 3.4
+    assert DEC_422_FIVE_GATE_VALIDITY["min_rr"]              == 2.0
+
+
+def test_batch375_dec134_fx_exposure_already_engine_consumed():
+    """Batch 375 DEC-134 audit closure: compute_fx_exposure_pct exists at
+    metrics.py:1558 AND consumed by results/writer.py for output writing.
+    Already fully engine-wired; this test pins the wiring."""
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    writer_text = (repo / "backtest" / "results" / "writer.py").read_text(encoding="utf-8")
+    assert "compute_fx_exposure_pct" in writer_text, (
+        "DEC-134 regression: writer.py must consume compute_fx_exposure_pct"
+    )
+    # Verify the helper actually computes correctly
+    from backtest.results.metrics import compute_fx_exposure_pct
+    r = compute_fx_exposure_pct(usd_portfolio_value_cad=70000.0,
+                                 total_portfolio_value_cad=100000.0)
+    assert r["fx_exposure_pct"] == 70.0, (
+        f"DEC-134: fx_exposure_pct compute drift - expected 70.0, got {r}"
+    )
+
+
+def test_batch375_dec433_exit_method_rename_map_documented():
+    """Batch 375 DEC-433 closure: the 6 DEC-067 Phase B exit methods spec'd
+    by DEC-433 are present in EXIT_STRATEGIES under their final names
+    (renames during implementation). This test pins the rename map so a
+    future search for the spec names lands on the correct EXIT_STRATEGIES
+    entries.
+
+    DEC-433 spec name              ->  EXIT_STRATEGIES live name
+      time_stop                    ->  time_stop_10d, time_stop_20d, class_time_stop (3 variants per DEC-433 owner refinement)
+      profit_target_2r             ->  r_multiple_2r
+      profit_target_3r             ->  r_multiple_3r
+      scale_out_partial_50pct      ->  hybrid_50pct_target
+      swing_high_low_break         ->  next_pivot_target (canonical equivalent per DEC-067)
+      ema_trail_20                 ->  ma_exit_ema9 (renamed to EMA-9 per DEC-067 sec8.5 finalization)
+    """
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    # All 6 DEC-433 logical exits are present under their live names
+    rename_map = {
+        "time_stop":               ["time_stop_10d", "time_stop_20d", "class_time_stop"],
+        "profit_target_2r":        ["r_multiple_2r"],
+        "profit_target_3r":        ["r_multiple_3r"],
+        "scale_out_partial_50pct": ["hybrid_50pct_target"],
+        "swing_high_low_break":    ["next_pivot_target"],
+        "ema_trail_20":            ["ma_exit_ema9"],
+    }
+    for spec_name, live_names in rename_map.items():
+        for ln in live_names:
+            assert ln in EXIT_STRATEGIES, (
+                f"DEC-433 rename: '{spec_name}' should be present as "
+                f"'{ln}' in EXIT_STRATEGIES; missing"
+            )
+    # And the total count is still 25 (Batch 372 active count anchor)
+    assert len(EXIT_STRATEGIES) == 25
+
+
+def test_batch375_dec246_cube_sharpe_trade_frequency_annualization():
+    """Batch 375 DEC-246 sec1 closure: cube_populator + ab_orchestrator
+    Sharpe now uses trade-frequency annualization (Calmar pattern) when
+    hold_days column present. Fallback to sqrt(252) preserves backward
+    compatibility for pnl-only legacy frames.
+
+    Verifies:
+      - With hold_days column: annualization_factor = sqrt(252/avg_hold)
+      - Without hold_days:     legacy sqrt(252) preserved
+      - Same trade set with avg_hold=10 yields Sharpe ~5x lower than
+        legacy sqrt(252) (since sqrt(25.2) ~ 5.02 vs sqrt(252) ~ 15.87)
+    """
+    import pandas as pd
+    import numpy as np
+    from backtest.results.cube_populator import compute_cell_metrics
+
+    # Trade set with hold_days = 10 -> trades-per-year ~ 25.2
+    n = 100
+    rng = np.random.default_rng(42)
+    pnls = rng.normal(loc=1.0, scale=2.0, size=n)
+    df_with_hold = pd.DataFrame({
+        "pnl_pct":   pnls,
+        "hold_days": [10.0] * n,
+    })
+    m_with = compute_cell_metrics(df_with_hold)
+    s_with = m_with["sharpe"]
+
+    # Same returns, no hold_days column - legacy fallback sqrt(252)
+    df_no_hold = pd.DataFrame({"pnl_pct": pnls})
+    m_no = compute_cell_metrics(df_no_hold)
+    s_no = m_no["sharpe"]
+
+    # Ratio of legacy/new should equal sqrt(252)/sqrt(25.2) = sqrt(10) ~ 3.162
+    ratio = s_no / s_with if s_with != 0 else 0
+    expected_ratio = float(np.sqrt(10.0))
+    assert abs(ratio - expected_ratio) < 0.05, (
+        f"DEC-246 sec1: Sharpe annualization ratio drift - "
+        f"expected ~{expected_ratio:.3f} (sqrt(252)/sqrt(25.2)), got {ratio:.3f}. "
+        f"legacy={s_no:.4f} trade-freq={s_with:.4f}"
+    )
+
+    # With avg_hold = 1 day: matches sqrt(252) (degenerate case)
+    df_daily = pd.DataFrame({
+        "pnl_pct":   pnls,
+        "hold_days": [1.0] * n,
+    })
+    m_daily = compute_cell_metrics(df_daily)
+    assert abs(m_daily["sharpe"] - s_no) < 0.01, (
+        f"avg_hold=1d should match legacy sqrt(252); got "
+        f"{m_daily['sharpe']:.4f} vs {s_no:.4f}"
+    )
+
+
+def test_batch375_cb_fire_email_hook_fires_on_transition():
+    """Batch 375 (Stage 4 monitoring C-3 highest-value piece): when DEC-515
+    Level 6 circuit breaker transitions OFF->ON or ON->OFF, an email is
+    dispatched via the injectable send_email_fn. Idempotent: no email when
+    state unchanged."""
+    from backtest.live_trading.risk_overlay import (
+        LiveRiskState, update_halt_state,
+        DEC_515_LEVEL_6_DD_TRIGGER_PCT,
+        DEC_515_LEVEL_6_DD_RECOVERY_PCT,
+    )
+
+    sent_emails: list[tuple] = []
+    def fake_send(subject, body, dry_run=False):
+        sent_emails.append((subject, body, dry_run))
+        return True
+
+    # Start with portfolio in normal state - no transition, no email
+    state = LiveRiskState(portfolio_value=100_000, portfolio_peak=100_000)
+    update_halt_state(state, send_email_fn=fake_send)
+    assert sent_emails == [], "No transition - no email expected"
+
+    # Trigger DD breach
+    state.portfolio_value = 84_000  # 16% DD vs peak 100k
+    halt_active = update_halt_state(state, send_email_fn=fake_send)
+    assert halt_active is True
+    assert len(sent_emails) == 1, "Expected 1 email on activation"
+    subject, body, dry_run = sent_emails[0]
+    assert "ACTIVATED" in subject
+    assert "DEC-515 Level 6" in subject
+    assert f"{DEC_515_LEVEL_6_DD_TRIGGER_PCT}" in body
+    assert dry_run is False  # live email, not dry-run
+
+    # Re-evaluate with same state - no NEW transition, no email
+    update_halt_state(state, send_email_fn=fake_send)
+    assert len(sent_emails) == 1, "Same state - no new email"
+
+    # Recovery: portfolio bounces to 96k (4% DD < 5% recovery threshold)
+    state.portfolio_value = 96_000
+    halt_active = update_halt_state(state, send_email_fn=fake_send)
+    assert halt_active is False
+    assert len(sent_emails) == 2, "Expected 1 more email on deactivation"
+    subject2, _, _ = sent_emails[1]
+    assert "DEACTIVATED" in subject2
+
+    # notify=False suppresses email even on transition
+    state2 = LiveRiskState(portfolio_value=80_000, portfolio_peak=100_000)
+    sent_emails.clear()
+    update_halt_state(state2, notify=False, send_email_fn=fake_send)
+    assert sent_emails == [], "notify=False must suppress email"
+
+
 def test_batch374_dec230_structured_logger_emits_json_lines(tmp_path):
     """Batch 374 DEC-230: structured-JSON logger writes one JSON object per
     line with DEC-230 canonical context fields (ts/level/logger/msg + opt
