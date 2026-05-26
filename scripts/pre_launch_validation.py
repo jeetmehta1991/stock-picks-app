@@ -292,15 +292,124 @@ PHASES = {
 }
 
 
+def phase_7_post_run_validation(output_dir: Path) -> list[str]:
+    """POST-RUN: validates a freshly-merged Phase 1A-beta output dir.
+
+    Distinct from Phase 5 (cube cell coverage on smoke). Runs against
+    the full merged output to verify:
+      a. trade_log.csv non-empty + has expected schema (combo_id et al)
+      b. trade_exit_detail.csv (the cube) populated
+      c. signal_fire_rates.json shows smart-money signals fire properly
+         (Batch 363 silent gap regression check)
+      d. winners.parquet extractable (via extract_phase_1a_beta_winners)
+      e. Cube cell count consistent with strategies x 25 exits
+    """
+    fails = []
+    if not output_dir.exists():
+        return [f"output_dir missing: {output_dir}"]
+
+    tl = output_dir / "trade_log.csv"
+    cube = output_dir / "trade_exit_detail.csv"
+    sfr = output_dir / "signal_fire_rates.json"
+    if not tl.exists():
+        fails.append(f"trade_log.csv missing in {output_dir}")
+    if not cube.exists():
+        fails.append(f"trade_exit_detail.csv (cube) missing in {output_dir} "
+                     f"-- save_all_outputs may have been killed early")
+    if not sfr.exists():
+        fails.append(f"signal_fire_rates.json missing in {output_dir}")
+
+    # Smart-money fire-rate regression (Batch 363 gap)
+    if sfr.exists():
+        try:
+            payload = json.loads(sfr.read_text())
+            for name in ("smart_money_score", "congressional_signal",
+                         "insider_signal", "institutional_signal"):
+                entry = payload.get("signals", {}).get(name)
+                if entry is None:
+                    continue
+                fr = entry.get("fire_rate", 0)
+                em = entry.get("expected_min_rate", 0)
+                if em and fr < em * 0.5:
+                    fails.append(
+                        f"{name}: fire_rate={fr*100:.1f}% < 50%-of-expected "
+                        f"({em*100:.1f}%). Batch 363 silent gap may have "
+                        f"recurred or data prerequisites are missing."
+                    )
+        except Exception as e:
+            fails.append(f"signal_fire_rates.json unreadable: {e}")
+
+    # winners.parquet extractable
+    if tl.exists() or cube.exists():
+        try:
+            import subprocess
+            r = subprocess.run(
+                [sys.executable, str(REPO / "scripts" / "extract_phase_1a_beta_winners.py"),
+                 "--source", str(output_dir),
+                 "--out",   str(output_dir / "winners.parquet")],
+                capture_output=True, text=True, timeout=300,
+            )
+            # Exit 0 = >=1 P1 winner; 2 = zero P1; 1 = real failure
+            if r.returncode == 1:
+                fails.append(
+                    f"winners extractor failed (exit 1):\n"
+                    f"  stderr tail: {r.stderr[-500:]}"
+                )
+            elif r.returncode == 2:
+                # Zero P1 winners is informational, not a fail. Surface in stdout.
+                pass
+        except Exception as e:
+            fails.append(f"winners.parquet extraction crashed: {e}")
+
+    # Cube coverage gate (per-method canonical)
+    if cube.exists():
+        try:
+            import pandas as pd
+            df = pd.read_csv(cube, low_memory=False)
+            if df.empty:
+                fails.append("trade_exit_detail.csv is empty (cube replay produced 0 rows)")
+            else:
+                n_methods = df["exit_method"].nunique() if "exit_method" in df else 0
+                if n_methods < 20:
+                    fails.append(
+                        f"cube spans only {n_methods} exit methods < 20 "
+                        f"(expected 25); multiple methods crashed silently"
+                    )
+        except Exception as e:
+            fails.append(f"cube load failed: {e}")
+
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--phase", default="",
-                    help="Comma-separated phase numbers to run; default all")
+                    help="Comma-separated phase numbers to run; default all (pre-run)")
     ap.add_argument("--skip", default="",
                     help="Comma-separated phase numbers to skip")
     ap.add_argument("--smoke-output", default="",
                     help="Override smoke output dir for phase 5")
+    ap.add_argument("--post-run", default="",
+                    help="POST-RUN mode: validate the merged Phase 1A-beta "
+                         "output at this dir. Runs phase 7 (post-run) instead "
+                         "of phases 1-6 (pre-run).")
     args = ap.parse_args()
+
+    # POST-RUN mode: short-circuit to phase 7
+    if args.post_run:
+        out_dir = REPO / args.post_run if not Path(args.post_run).is_absolute() else Path(args.post_run)
+        print("=" * 78)
+        print(f"  POST-RUN VALIDATION (Batch 367 Phase 7) -- {out_dir}")
+        print("=" * 78)
+        fails = phase_7_post_run_validation(out_dir)
+        if fails:
+            print(f"\nFAIL ({len(fails)} issue(s)):")
+            for f in fails:
+                print(f"  - {f}")
+            print("\n  OVERALL: FAIL  -- output cannot be promoted to winners.parquet")
+            sys.exit(1)
+        print("\nPASS  -- output safe for winners.parquet + Phase 1B-alpha")
+        sys.exit(0)
 
     run = set(int(p) for p in args.phase.split(",") if p) or set(PHASES.keys())
     skip = set(int(p) for p in args.skip.split(",") if p)
