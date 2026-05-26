@@ -1141,7 +1141,13 @@ def test_tier7_data_integrity_sec_edgar_forms_coverage():
 
 def test_tier7_data_integrity_quiver_insider_schema():
     """Quiver insider parquets must carry the canonical columns the
-    consumer reads. P3 format-mismatch detector at producer schema level."""
+    consumer reads. P3 format-mismatch detector at producer schema level.
+
+    Empty (0-row) parquets are LEGITIMATE for tickers without insider
+    data (e.g., ETFs like HYG with no corporate insiders; delisted
+    names like VAR with no recent filings). The schema check applies
+    only to non-empty files.
+    """
     insider_dir = PREFETCH_DIR / "quiver" / "insider"
     if not insider_dir.exists():
         pytest.skip("Quiver insider dir missing")
@@ -1150,12 +1156,18 @@ def test_tier7_data_integrity_quiver_insider_schema():
     if not files:
         pytest.skip("No Quiver insider parquets")
     bad = []
+    n_empty = 0
     for p in files:
         try:
-            cols = set(pd.read_parquet(p).columns)
+            df = pd.read_parquet(p)
         except Exception as e:
             bad.append(f"{p.stem}: unreadable ({e})")
             continue
+        if df.empty:
+            # Legitimate "no insider data for this ticker" case
+            n_empty += 1
+            continue
+        cols = set(df.columns)
         missing = required - cols
         if missing:
             bad.append(f"{p.stem}: missing {missing}")
