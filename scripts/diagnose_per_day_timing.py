@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 PAT = re.compile(
-    r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})[^\[]*"
+    r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*?"
     r"screen_universe \[(\d{4}-\d{2}-\d{2})\] regime=(\w+): "
     r"(\d+)/(\d+) passed"
 )
