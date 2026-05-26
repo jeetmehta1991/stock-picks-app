@@ -338,7 +338,7 @@
 - [ ] 13F price-level mapping (DEC-352)
 - [ ] 9 new exit methods (DEC-067 phases A+B = DEC-432/433) — planned target; live `len(EXIT_STRATEGIES)`=25 Pass 53
 - [ ] AEP breaker (DEC-435)
-- [ ] Total strategy roster ~109-119 strategies operational (historical planned target; live `len(ALL_STRATEGIES)`=186 Pass 53)
+- [ ] Total strategy roster ~109-119 strategies operational (historical planned target; live `len(ALL_STRATEGIES)`=186 registered / 185 active Pass 53 Batch 372)
 
 **Dashboards (Pass 53):** REUSE — DEC-199/200/201 with new strategy roster populating cube; no new dashboard at this phase. See DETAILED_PROJECT_PLAN.md Part 2.5.
 

@@ -13,10 +13,10 @@
 | Phase | Purpose | Universe | Timeframe | Strategies × Exits × Regimes | Cost (USD) | Compute | Inputs | Outputs | Gate to advance |
 |---|---|---|---|---|---|---|---|---|---|
 | **1A-α** *(in-flight)* | T1a sanity + cube methodology | 642 (T1a + ETFs) | 2022-05-05 → 2026-05-05 (4y) | 86 strats × ~25 exits × 4 regimes ≈ ~8,600 cells | $0 | ~24h | Polygon OHLCV cache + 86 strategies + smart_money composite + 25 exit methods (live `len(EXIT_STRATEGIES)` 2026-05-25; DEC-067 canonical + Batch 226/227 + Batches 282-285 extensions) | Per-(strategy × exit × regime) verdict matrix; rules-only Sharpe; PBO; DSR per strategy; Dashboards 2+3 | Sharpe ≥ 0.7 OOS + PBO < 0.6 + ≥1 combo passes 11 criteria |
-| **1A-β** *(THE BIG ONE)* | **Exhaustive search — find winning combos** | **1937 (Master Dedup all 5 tiers)** | **2022-05-05 → 2026-05-05 (4y)** | **186 strats × 25 exits × 4 regimes = 4,650 cube cells × 4 regimes = 18,600 per-regime cells** (live `len(ALL_STRATEGIES) = 186`, `len(EXIT_STRATEGIES) = 25` 2026-05-25 Batch 360; was "~180 × ~17 = ~12,240" pre-Batch-316a). | **$0** | **~10.7h pool-off / ~2-3h pool-on (Batch 322 4-8× speedup, parity smoke pending)** | All 1A-α infrastructure + Batch 358 gate fixes + Wave 3 30/30 + T1.1-T1.5 wirings + Phase 1C+ strategies + T5b pairs precompute + T2 engine quality fixes + speedup levers A/C/D | **`winners.parquet`** with per-(strategy × exit × regime) priority-tiered list (P1/P2/P3 per criteria below); full-universe trade log with `combo_id` column + cube `trade_exit_detail.csv`; refreshed cube + dashboards | Pipeline integrity (no crashes) + ≥10 Priority-1 combos identified → Phase 1B-α |
+| **1A-β** *(THE BIG ONE)* | **Exhaustive search — find winning combos** | **1937 (Master Dedup all 5 tiers)** | **2022-05-05 → 2026-05-05 (4y)** | **185 active strats × 25 exits × 4 regimes = 4,625 cube cells × 4 regimes = 18,500 per-regime cells** (186 registered `len(ALL_STRATEGIES) = 186` minus 1 disabled per Batch 372 STRATEGIES_DISABLED_MISSING_PRODUCER; `len(EXIT_STRATEGIES) = 25` 2026-05-26 Batch 372; was "~180 × ~17 = ~12,240" pre-Batch-316a, "186 × 25 = 4,650" pre-Batch-372). | **$0** | **~10.7h pool-off / ~2-3h pool-on (Batch 322 4-8× speedup, parity smoke pending)** | All 1A-α infrastructure + Batch 358 gate fixes + Wave 3 30/30 + T1.1-T1.5 wirings + Phase 1C+ strategies + T5b pairs precompute + T2 engine quality fixes + speedup levers A/C/D | **`winners.parquet`** with per-(strategy × exit × regime) priority-tiered list (P1/P2/P3 per criteria below); full-universe trade log with `combo_id` column + cube `trade_exit_detail.csv`; refreshed cube + dashboards | Pipeline integrity (no crashes) + ≥10 Priority-1 combos identified → Phase 1B-α |
 | **1B-α** | Agents on Priority-1 winners (does agent overlay improve ROI?) | **Winners only** — tickers where Priority-1 combos fire | Same 4y | Only Priority-1 combos from 1A-β (typically 20-40 combos) | **~$50-150** (Haiku; $300 ceiling pre-approved) | ~37-40h compute over 2-3 nights | `winners.parquet` + 11-agent LangGraph pipeline + DEC-422 cube populator + A/B orchestrator (DEC-216) + AgentGateConfig (DEC-459) | A/B verdict per Priority-1 combo (agent-adds / agent-hurts / neutral); 5-Gate verdict; loss attribution (DEC-120); per-trade explainability (DEC-119); Dashboard 3 populated | DEC-131 gate: agent_sharpe − rules_sharpe ≥ 0.2 net Sharpe on ≥3 combos → Stage 3 |
-| 1C | Strategy categories expansion (already absorbed into 1A-β roster) | Same as 1A-β | Same 4y | Implemented as part of 1A-β 186-roster | $0 | Same as 1A-β | Phase 1C+ strategies merged into ALL_STRATEGIES pre-1A-β launch | Identified in 1A-β winners output | Owner-defined |
-| 1D | Extended-window stress test (incl COVID 2020) | Same as 1A-β | 2020-01 → 2026-05 (~6y) | Same 186 × 25 exits | $0 | ~5-6 days at 6-batch parallel | All 1A-β infrastructure + extended OHLCV cache (already in `data_prefetch/`) | Per-combo robustness verdict across crisis regime | Optional; owner-defined |
+| 1C | Strategy categories expansion (already absorbed into 1A-β roster) | Same as 1A-β | Same 4y | Implemented as part of 1A-β 185-active-roster (186 registered minus 1 Batch-372 disabled) | $0 | Same as 1A-β | Phase 1C+ strategies merged into ALL_STRATEGIES pre-1A-β launch | Identified in 1A-β winners output | Owner-defined |
+| 1D | Extended-window stress test (incl COVID 2020) | Same as 1A-β | 2020-01 → 2026-05 (~6y) | Same 185 active × 25 exits | $0 | ~5-6 days at 6-batch parallel | All 1A-β infrastructure + extended OHLCV cache (already in `data_prefetch/`) | Per-combo robustness verdict across crisis regime | Optional; owner-defined |
 
 ### Winners criteria (canonical for `winners.parquet` priority tiers)
 
@@ -167,7 +167,7 @@ python scripts/run_live_end_of_day.py          # reconciliation
 Per owner directive 2026-05-25: "Phase 1A beta will compulsorily analyse each strategy and exit combination. For each entry, every exit will be simulated!!!! No exceptions."
 
 ### Cube dimensions
-- **186 strategies** (`len(ALL_STRATEGIES)` 2026-05-25; DEPRECATED_STRATEGIES empty per Batch 316a) **× 25 exit methods** (`len(EXIT_STRATEGIES)` 2026-05-25) = **4,650 potentially-fired cells**.
+- **185 active strategies** (186 registered `len(ALL_STRATEGIES)` 2026-05-26; minus 1 disabled in STRATEGIES_DISABLED_MISSING_PRODUCER per Batch 372 — `dxy_headwind_multinational_short` foreign_rev_pct producer absent) **× 25 exit methods** (`len(EXIT_STRATEGIES)` 2026-05-26) = **4,625 potentially-fired cells** (was 4,650 pre-Batch-372).
 - Each cell = independent backtest verdict for `(strategy, exit_method)` pair.
 - Prior runs (2026-05-24 output_phase_1a_beta_merged_local) used single-config mode → 167 cells fired naturally via runtime dispatch. Cube mode fires every (admissible-entry × every-exit) deterministically.
 
@@ -190,12 +190,12 @@ Per owner directive 2026-05-25: "Phase 1A beta will compulsorily analyse each st
 
 ### Storage estimate
 - Trade log: 7,191 → ~180,000 rows (25× factor). ~50MB CSV → ~1.2GB CSV. Parquet compression: ~80MB.
-- Per-cell aggregates: 4,650 rows × ~40 metrics = ~190K cells in cube_populator output.
+- Per-cell aggregates: 4,625 rows × ~40 metrics = ~185K cells in cube_populator output (was 4,650 / ~190K pre-Batch-372).
 
 ### Phase 1A-β cube success criteria (cell-level)
 - Every cell with n ≥ 30 trades gets a verdict (PASS / FAIL / INSUFFICIENT_DATA) against CLAUDE.md passing criteria.
 - PASS cells go to winners.parquet → Phase 1B-α agent overlay testing.
-- Per-regime cell verdicts: each cell × 7 historical regimes = 4,650 × 7 = 32,550 per-regime evaluations.
+- Per-regime cell verdicts: each cell × 7 historical regimes = 4,625 × 7 = 32,375 per-regime evaluations (was 32,550 pre-Batch-372).
 
 ### Memory + doc references
 - `project_phase_1a_beta_is_exit_cube.md` (memory) — canonical scope assertion.

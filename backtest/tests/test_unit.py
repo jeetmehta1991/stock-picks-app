@@ -9655,6 +9655,65 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch372_dxy_headwind_disabled_missing_producer():
+    """Batch 372 (owner-approved 2026-05-26): dxy_headwind_multinational_short
+    is disabled until a foreign_rev_pct producer lands.
+
+    Why: strategy gate requires `foreign_rev_pct > 40`. Verified 2026-05-26
+    that no available data source has geographic revenue segments:
+      - Polygon Stocks Starter financials_json
+      - SEC EDGAR companyfacts API (AAPL CIK 0000320193 verified)
+      - Existing SEC XBRL prefetch
+      - Finnhub financials_reported
+    Real-data implementation requires raw 10-K XBRL segment-axis parser
+    (1-2 day Sprint-1 build) or paid Polygon Plus tier.
+
+    Mechanism: STRATEGIES_DISABLED_MISSING_PRODUCER is SEMANTICALLY
+    DISTINCT from DEPRECATED_STRATEGIES (which Batch 316a reversed for
+    empirical-over-literature validation). This set is gated by Sprint-1
+    data deliverables, not by literature null findings. Re-enable with
+    a single-line removal once the producer ships.
+
+    Counts after Batch 372:
+      ALL_STRATEGIES (registered):           186
+      DEPRECATED_STRATEGIES (literature):    0   (Batch 316a empty)
+      STRATEGIES_DISABLED_MISSING_PRODUCER:  1   (this strategy)
+      Active for Phase 1A-beta re-run:       185
+    """
+    from backtest.config import (
+        STRATEGIES_DISABLED_MISSING_PRODUCER,
+        DEPRECATED_STRATEGIES,
+    )
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    assert STRATEGIES_DISABLED_MISSING_PRODUCER == {
+        "dxy_headwind_multinational_short"
+    }, (
+        f"Batch 372: STRATEGIES_DISABLED_MISSING_PRODUCER must contain only "
+        f"'dxy_headwind_multinational_short'; got "
+        f"{STRATEGIES_DISABLED_MISSING_PRODUCER}"
+    )
+    # Strategy stays in ALL_STRATEGIES (function body preserved for future
+    # re-enable). Active count drops by 1.
+    assert "dxy_headwind_multinational_short" in ALL_STRATEGIES, (
+        "Batch 372: strategy must remain in ALL_STRATEGIES (filter happens "
+        "at screener loop, not registry deletion)"
+    )
+    # Semantically distinct from literature-pruning set
+    assert not (DEPRECATED_STRATEGIES & STRATEGIES_DISABLED_MISSING_PRODUCER), (
+        "Batch 372: missing-producer disablement must NOT overlap "
+        "literature-null deprecation"
+    )
+    # Active count for Phase 1A-beta = total - blocked
+    blocked = DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
+    active = sum(1 for k in ALL_STRATEGIES if k not in blocked)
+    assert active == len(ALL_STRATEGIES) - 1, (
+        f"Batch 372: active count must equal total - 1 "
+        f"(deprecated=0 + missing_producer=1); got total={len(ALL_STRATEGIES)} "
+        f"active={active}"
+    )
+
+
 def test_batch370_fix2_calendar_long_strategies_bear_restored():
     """Batch 370 Fix 2 (owner-approved 2026-05-26): reverse Batch 293 narrowing.
     Calendar effect long strategies (totm/pre_holiday/january_effect/halloween)

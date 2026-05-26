@@ -172,7 +172,7 @@ backtest/data/universe.py — ticker metadata via Ticker.info
 
 | Function | Currently consumed by | DEC-422 cube dims | Open BUGs |
 |---|---|---|---|
-| OHLCV daily history | ALL 60 strategies Layer-1 baseline (live `len(ALL_STRATEGIES)`=186 Pass 53) | ALL 17 cube dims (planned target; live exit_methods=25 per F-004) | BUG-19, BUG-46, BUG-62, BUG-109, BUG-265 |
+| OHLCV daily history | ALL 60 strategies Layer-1 baseline (live `len(ALL_STRATEGIES)`=186 registered / 185 active Batch 372; 1 disabled missing-producer) | ALL 17 cube dims (planned target; live exit_methods=25 per F-004) | BUG-19, BUG-46, BUG-62, BUG-109, BUG-265 |
 | `.info` snapshot | universe.py (sector, mkt_cap) | sector dim, cap_band dim | BUG-218 (CRITICAL), BUG-179, BUG-46 |
 | `.earnings_dates` | days_to_next_earnings() | days_to_earnings dim | BUG-280, BUG-013 |
 | VIX / DXY | macro.py | VIX cube dim | None directly |

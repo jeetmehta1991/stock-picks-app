@@ -12,8 +12,11 @@
 |---|---|---|
 | `strategy_total` | 186 | code/trade-log |
 | `deprecated_count` | 0 | code/trade-log |
-| `strategy_active` | 186 | code/trade-log |
+| `missing_producer_count` | 1 | code/trade-log |
+| `missing_producer_list` | ['dxy_headwind_multinational_short'] | code/trade-log |
+| `strategy_active` | 185 | code/trade-log |
 | `exit_method_total` | 25 | code/trade-log |
+| `cube_cells_active` | 4625 | code/trade-log |
 | `strategy_exit_override_count` | 11 | code/trade-log |
 | `agent_count_dec_057` | 11 | code/trade-log |
 | `regime_count` | 4 | code/trade-log |
@@ -30,7 +33,7 @@
 | `cube_strategies_fired` | 49 | code/trade-log |
 | `cube_exit_methods` | 25 | code/trade-log |
 | `cube_cells` | 1225 | code/trade-log |
-| `tests_collected` | 2586 | code/trade-log |
+| `tests_collected` | 2587 | code/trade-log |
 
 ## 2. Drift summary by document
 

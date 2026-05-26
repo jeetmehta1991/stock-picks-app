@@ -34,18 +34,26 @@ sys.path.insert(0, str(REPO))
 
 def live_values() -> dict:
     from backtest.signals.screener import ALL_STRATEGIES
-    from backtest.config import DEPRECATED_STRATEGIES, STRATEGY_EXIT_OVERRIDE
+    from backtest.config import (
+        DEPRECATED_STRATEGIES,
+        STRATEGIES_DISABLED_MISSING_PRODUCER,
+        STRATEGY_EXIT_OVERRIDE,
+    )
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
     import pandas as pd
 
     tl_path = REPO / "output_phase_1a_beta_merged_local" / "trade_log.csv"
     cube_path = REPO / "output_audit" / "trade_exit_detail_phase_1a_beta_rebuilt.csv"
 
+    blocked = DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     out = {
-        "strategy_total":      len(ALL_STRATEGIES),
-        "deprecated_count":    len(DEPRECATED_STRATEGIES),
-        "strategy_active":     len(ALL_STRATEGIES) - len(DEPRECATED_STRATEGIES),
-        "exit_method_total":   len(EXIT_STRATEGIES),
+        "strategy_total":         len(ALL_STRATEGIES),
+        "deprecated_count":       len(DEPRECATED_STRATEGIES),
+        "missing_producer_count": len(STRATEGIES_DISABLED_MISSING_PRODUCER),
+        "missing_producer_list":  sorted(STRATEGIES_DISABLED_MISSING_PRODUCER),
+        "strategy_active":        len(ALL_STRATEGIES) - len(blocked),
+        "exit_method_total":      len(EXIT_STRATEGIES),
+        "cube_cells_active":      (len(ALL_STRATEGIES) - len(blocked)) * len(EXIT_STRATEGIES),
         "strategy_exit_override_count": len(STRATEGY_EXIT_OVERRIDE),
         "agent_count_dec_057": 11,  # DEC-057: 3 analysts + Bull/Bear/RM + Trader + 3 Risk + PM + Reflection
         "regime_count":        4,    # bull/bear/neutral/crisis

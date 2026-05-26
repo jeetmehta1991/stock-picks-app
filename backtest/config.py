@@ -905,6 +905,38 @@ STRATEGIES_BYPASS_EVENT_SUPPRESSION: set[str] = {
 #     camarilla_s3_bounce.
 DEPRECATED_STRATEGIES: set[str] = set()
 
+
+# Batch 372 (2026-05-26) owner directive: STRATEGIES_DISABLED_MISSING_PRODUCER
+# is SEMANTICALLY DISTINCT from DEPRECATED_STRATEGIES. The deprecated set
+# was reversed in Batch 316a to validate empirically; this set tracks
+# strategies that CANNOT fire because a required upstream data producer
+# does not exist in the prefetch pipeline. Re-enable when the producer
+# lands. NOT a literature-pruning judgement.
+#
+# Each entry must record: (a) the missing producer signal key,
+# (b) what data source would supply it, (c) why it's not implementable
+# "now" (Sprint dependency).
+#
+# Current entries (Batch 372):
+#   dxy_headwind_multinational_short - missing foreign_rev_pct producer
+#     Strategy gate: usd_strengthening AND foreign_rev_pct > 40.
+#     usd_strengthening fires correctly (UUP-proxy DXY in cache).
+#     foreign_rev_pct (% of revenue from foreign operations) requires
+#     10-K geographic segment table parsing. Verified 2026-05-26:
+#       Polygon Stocks Starter financials_json: no segments
+#       SEC EDGAR companyfacts API: consolidated revenues only
+#       Existing SEC XBRL prefetch: no axis dimensions
+#       Finnhub financials_reported: bs/ic/cf only
+#     Real-data implementation requires raw 10-K XBRL segment-axis
+#     parser (1-2 day Sprint-1 build) or paid Polygon Plus tier.
+#     Owner directive 2026-05-26: disable via this set until the
+#     producer lands; clean Stage 2 boundary preferred over hand-
+#     curated CSV.
+STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
+    "dxy_headwind_multinational_short",
+}
+
+
 # BUG-235 RESOLVED-IMPLEMENTED Batch 99 2026-05-12: AAII Investor Sentiment
 # Survey closes Wednesday close, AAII publishes results Thursday morning.
 # A Wed-dated survey is NOT tradeable on Wed itself -- it's tradeable from

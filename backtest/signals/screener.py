@@ -3533,13 +3533,16 @@ def validate_strategy_roster() -> dict:
     zero candidates across a 17h run.
     """
     from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
+    from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER as _MISSING_PRODUCER
+    _BLOCKED = _DEPRECATED | _MISSING_PRODUCER
     summary = {
-        "total_registered":   len(ALL_STRATEGIES),
-        "deprecated_count":   sum(1 for k in ALL_STRATEGIES if k in _DEPRECATED),
-        "active_count":       sum(1 for k in ALL_STRATEGIES if k not in _DEPRECATED),
-        "callable_ok":        0,
-        "callable_failed":    [],
-        "load_errors":        [],
+        "total_registered":         len(ALL_STRATEGIES),
+        "deprecated_count":         sum(1 for k in ALL_STRATEGIES if k in _DEPRECATED),
+        "missing_producer_count":   sum(1 for k in ALL_STRATEGIES if k in _MISSING_PRODUCER),
+        "active_count":             sum(1 for k in ALL_STRATEGIES if k not in _BLOCKED),
+        "callable_ok":              0,
+        "callable_failed":          [],
+        "load_errors":              [],
     }
     for name, fn in ALL_STRATEGIES.items():
         if not callable(fn):
@@ -3964,6 +3967,12 @@ def screen_instrument(
     # edge in 2015-2024 literature). Shrinks the multi-testing denominator
     # for Bonferroni/DSR gates without deleting strategy function bodies.
     from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
+    # Batch 372 (2026-05-26 owner-directed): also skip strategies whose
+    # upstream data producer does not yet exist. Semantically distinct
+    # from DEPRECATED_STRATEGIES (literature-null); these are blocked on
+    # Sprint-1 data deliverables. See config.py docstring on
+    # STRATEGIES_DISABLED_MISSING_PRODUCER for re-enablement criteria.
+    from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER as _MISSING_PRODUCER
     # Batch 310 (2026-05-24): Phase 1B-alpha disable mechanism REVERTED per
     # owner directive "DO NOT DISABLE ANYTHING TILL I ANALYZE AND COMMAND".
     # The PHASE_1B_ALPHA_DISABLED_STRATEGIES constant in config.py is now
@@ -3995,6 +4004,11 @@ def screen_instrument(
     close_below_open = signals.get("close_below_open", False)
     for name, fn in ALL_STRATEGIES.items():
         if name in _DEPRECATED:
+            continue
+        if name in _MISSING_PRODUCER:
+            # Batch 372: gated by Sprint-1 data deliverable, not literature.
+            # Re-enable in same line by removing from
+            # STRATEGIES_DISABLED_MISSING_PRODUCER once producer lands.
             continue
         # Batch 310 (2026-05-24): PHASE_1B_ALPHA_DISABLED_STRATEGIES skip
         # REVERTED per owner directive. All previously-disabled strategies

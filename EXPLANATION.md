@@ -50,7 +50,7 @@ A backtest does NOT guarantee future results. But if a strategy fails the backte
 
 ## What are strategies? (we have ~119)
 
-(Pass 53 update: ~119 strategy classes was the historical snapshot; live `len(ALL_STRATEGIES)`=186 Pass 53 Batch 316a (DEPRECATED_STRATEGIES emptied per owner directive 2026-05-25 — empirical-validation-over-literature-pruning). 2 strategies still skipped at runtime per DEC-490 due to missing-data: `buyback_announcements` needs SEC EDGAR fundamentals Sprint 4; `guidance_driven_momentum` needs earnings transcripts dropped per DEC-485.)
+(Pass 53 update: ~119 strategy classes was the historical snapshot; live `len(ALL_STRATEGIES)`=186 registered Pass 53 Batch 316a (DEPRECATED_STRATEGIES emptied per owner directive 2026-05-25 — empirical-validation-over-literature-pruning). 1 strategy disabled via STRATEGIES_DISABLED_MISSING_PRODUCER per Batch 372 2026-05-26 (`dxy_headwind_multinational_short` — foreign_rev_pct producer absent; semantically distinct from literature null). 185 active for Phase 1A-β cube. 2 additional strategies still skipped at runtime per DEC-490 due to missing-data: `buyback_announcements` needs SEC EDGAR fundamentals Sprint 4; `guidance_driven_momentum` needs earnings transcripts dropped per DEC-485.)
 
 A strategy is a specific set of rules that says "enter a trade when conditions X, Y, and Z are all true at the same time."
 

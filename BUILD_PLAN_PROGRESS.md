@@ -27,14 +27,14 @@
 | cube_populator.py (DEC-422) | [DONE] | `backtest/results/cube_populator.py` (275 lines, 6 functions) |
 | paper_trading/ skeleton | [DONE] | `dashboard_stage_3/` covers paper trading; module renamed in `backtest/live_trading/` for stage 4 |
 
-### Day 1 (May 20): 102 strategies (historical snapshot; live `len(ALL_STRATEGIES)`=186 Pass 53) + T1.1-T1.5 wirings + T2 24-DEC queue + T5b precompute + Stage 3 dashboard MVP
+### Day 1 (May 20): 102 strategies (historical snapshot; live `len(ALL_STRATEGIES)`=186 registered / 185 active Batch 372) + T1.1-T1.5 wirings + T2 24-DEC queue + T5b precompute + Stage 3 dashboard MVP
 
-(Historical Day-1 snapshot from May 20. Live `len(ALL_STRATEGIES)` 2026-05-25 Batch 360: **186**, DEPRECATED set empty per Batch 316a un-deprecation.)
+(Historical Day-1 snapshot from May 20. Live counts 2026-05-26 Batch 372: `len(ALL_STRATEGIES) = 186` registered / `DEPRECATED_STRATEGIES = 0` empty per Batch 316a / `STRATEGIES_DISABLED_MISSING_PRODUCER = 1` per Batch 372 (`dxy_headwind_multinational_short` foreign_rev_pct producer absent) / **185 active**.)
 
 | Commitment | Status | Evidence / Gap |
 |---|---|---|
 | 1A-α close-out | [DONE] | `scripts/run_t0_close_out.py` |
-| 102 strategies registered (May-20 target) | [DONE] | `ALL_STRATEGIES` was 148 on May 25 Batch 316a snapshot; **live count 2026-05-25 Batch 360: 186, all active** (DEPRECATED empty). |
+| 102 strategies registered (May-20 target) | [DONE] | `ALL_STRATEGIES` was 148 on May 25 Batch 316a snapshot; **live count 2026-05-26 Batch 372: 186 registered / 1 disabled (STRATEGIES_DISABLED_MISSING_PRODUCER per Batch 372) / 185 active** (DEPRECATED still empty). |
 | **T1.1 pairs_trading wiring (Batch 240)** | **[PARTIAL]** | Strategies `pairs_mean_reversion_long/short` REGISTERED in ALL_STRATEGIES but fired 0 trades in Phase 1A-β. T5b precompute output MISSING. Drafted at `IMPLEMENTATION_DRAFTS_T1.md` T1.1 section but no `Batch 240` markers in screener.py. |
 | **T1.2 news_sentiment wiring (Batch 241)** | **[PARTIAL]** | news_sentiment_score column IS in trade_log (engine consumes it). But strategies `news_sentiment_long`, `news_sentiment_shift_long` fired 0 trades. Drafted at T1.2 but production-wired with different naming OR strategy-side gate too restrictive. |
 | **T1.3 calendar_effects wiring (Batch 242)** | **[PARTIAL]** | `is_totm_window`, `is_january`, `is_pre_holiday` etc. ARE in signals (visible in trade_log signals_at_entry). But `totm_long`, `pre_holiday_long`, `halloween_seasonal_long`, `january_effect_small_cap_long` fired 0 trades. Batch 293 tightened regime affinity — may have over-restricted. |

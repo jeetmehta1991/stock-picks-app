@@ -556,7 +556,7 @@ Per DEC-045 (fork-existing strategy across Phase 0) and DEC-259/345/352:
 - DEC-176 — Meta-strategies (boolean AND/OR) — multiplier on existing, not additive class
 - Layer 4 subtotal: ~5-6 classes (DEC-176 not counted)
 
-**Total strategy roster:** ~108-118 strategy classes (planned target; live `len(ALL_STRATEGIES)`=186 Pass 53 after Batch 316a un-deprecation) when Layer 1+2+3+4 fully implemented. Aligns with STRATEGY_REGISTER.md "Total Roster Summary" (line 133).
+**Total strategy roster:** ~108-118 strategy classes (planned target; live `len(ALL_STRATEGIES)`=186 registered / 185 active Pass 53 Batch 372 after Batch 316a un-deprecation and Batch 372 disabling `dxy_headwind_multinational_short` via STRATEGIES_DISABLED_MISSING_PRODUCER) when Layer 1+2+3+4 fully implemented. Aligns with STRATEGY_REGISTER.md "Total Roster Summary" (line 133).
 
 Note: prior versions of this section listed exit methods (DEC-432/433) and the AEP breaker (DEC-435) in Layer 4, inflating the count by ~9-10. Exit methods are reusable components consumed by strategies, not strategies themselves; they live in §2.4.5 (canonical source: TRADING_RULES.md §8). The AEP breaker is a portfolio-level guard; it lives with circuit breakers (TRADING_RULES.md §9), not the strategy roster. Counts corrected per LEARNINGS L144 / CHECKLIST #65.
 
@@ -4780,7 +4780,7 @@ Each pattern uses primitives from Phase 0.D (smartmoneyconcepts library) where a
 
 ## §10.2 Why — how this advances Stage 2 toward verdict
 
-The verdict cube is only as good as the strategy roster that populates it. With only Layer 1 baseline (60 strategies = baseline; live `len(ALL_STRATEGIES)`=186 Pass 53 includes later layers), the cube has fewer cells populated, fewer chances to find PASS configurations, and less generalizability claim.
+The verdict cube is only as good as the strategy roster that populates it. With only Layer 1 baseline (60 strategies = baseline; live `len(ALL_STRATEGIES)`=186 registered / 185 active Pass 53 Batch 372 includes later layers), the cube has fewer cells populated, fewer chances to find PASS configurations, and less generalizability claim.
 
 Specifically:
 - **Chart patterns** are foundational to technical analysis; their absence from roster means cube can't test classical TA edge claims
