@@ -39,8 +39,32 @@ from backtest.results.cube_populator import (
 )
 
 
-def load_trade_log(source_dir: Path) -> pd.DataFrame:
-    """Load trade_log from source_dir; prefer parquet, fall back to CSV."""
+def load_trade_log(source_dir: Path, prefer_cube: bool = True) -> pd.DataFrame:
+    """Load trade data from source_dir.
+
+    Batch 368 cube-preference fix: prefer trade_exit_detail.csv (the cube
+    replay output) over trade_log.csv when available. The cube has the
+    canonical `exit_method` column with proper grouping; trade_log.csv
+    uses `exit_reason` which splits 2-leg exits (fixed_4r_2r target_hit
+    vs stop_hit) into separate cells -- a sampling artifact that causes
+    cube_populator to over-rank target_hit-only cells as P1 winners.
+
+    Falls back to trade_log when cube missing.
+    Returns DataFrame; caller responsible for empty-check.
+    """
+    if prefer_cube:
+        cube_path = source_dir / "trade_exit_detail.csv"
+        if cube_path.exists():
+            try:
+                df = pd.read_csv(cube_path, low_memory=False)
+                if not df.empty:
+                    print(f"[INFO] loading from cube (trade_exit_detail.csv); "
+                          f"prevents 2-leg-target-hit artifact",
+                          file=sys.stderr)
+                    return df
+            except Exception as exc:
+                print(f"[WARN] cube read failed ({exc}); falling back to trade_log",
+                      file=sys.stderr)
     parquet_path = source_dir / "trade_log.parquet"
     csv_path = source_dir / "trade_log.csv"
     if parquet_path.exists():
@@ -49,8 +73,13 @@ def load_trade_log(source_dir: Path) -> pd.DataFrame:
         except Exception as exc:
             print(f"[WARN] parquet read failed ({exc}); falling back to CSV", file=sys.stderr)
     if csv_path.exists():
+        print(f"[WARN] using trade_log.csv (not cube); 2-leg exits may "
+              f"cherry-pick winner cells. Use cube source for canonical "
+              f"winners.parquet.", file=sys.stderr)
         return pd.read_csv(csv_path)
-    raise FileNotFoundError(f"No trade_log.parquet or trade_log.csv in {source_dir}")
+    raise FileNotFoundError(
+        f"No trade_exit_detail.csv / trade_log.parquet / trade_log.csv in {source_dir}"
+    )
 
 
 def main() -> int:
