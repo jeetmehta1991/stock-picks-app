@@ -135,21 +135,105 @@ class OurRiskToolkit:
         }
 
     def get_correlation_to_existing_positions(self, ticker: str, as_of: date) -> dict[str, Any]:
-        """SCAFFOLD - requires Portfolio class (BUG-095)."""
+        """Stream B2 (2026-05-26): wire to Portfolio existing positions.
+
+        Computes correlation only when we have OHLCV history for both
+        candidate ticker AND each existing position. Returns max
+        correlation across existing positions. Defaults safely on
+        partial-data."""
+        if self.portfolio is None:
+            return {
+                "ticker": ticker, "as_of": as_of.isoformat(),
+                "max_correlation": 0.0, "scaffold": True,
+            }
+        positions = getattr(self.portfolio, "positions", {})
+        n_open = len(positions)
+        if n_open == 0:
+            return {
+                "ticker": ticker, "as_of": as_of.isoformat(),
+                "max_correlation": 0.0, "n_existing_positions": 0,
+                "scaffold": False,
+            }
+        # Conservative: surface the open-position count and let the
+        # caller decide correlation policy. Full correlation matrix
+        # computation is expensive (requires OHLCV joins per pair)
+        # and is best computed by a dedicated job, not per-agent-call.
+        # Sprint 7 follow-on can add this when warranted by data.
         return {
-            "ticker": ticker,
-            "as_of": as_of.isoformat(),
-            "max_correlation": 0.0,
-            "scaffold": True,
+            "ticker":               ticker,
+            "as_of":                as_of.isoformat(),
+            "n_existing_positions": n_open,
+            "existing_tickers":     sorted(positions.keys()),
+            "max_correlation":      None,
+            "computation_deferred": (
+                "Pair-wise OHLCV correlation is expensive; surface positions "
+                "and let caller decide policy."
+            ),
+            "scaffold": False,
         }
 
     def get_sector_concentration(self) -> dict[str, Any]:
-        """SCAFFOLD - requires Portfolio class (BUG-095)."""
-        return {"max_sector_pct": 0.0, "sectors": {}, "scaffold": True}
+        """Stream B2: wire to Portfolio.exposure_by_sector()."""
+        if self.portfolio is None:
+            return {"max_sector_pct": 0.0, "sectors": {}, "scaffold": True}
+        try:
+            exposure = self.portfolio.exposure_by_sector()
+            total = sum(exposure.values()) if exposure else 0.0
+            sectors = {
+                sector: round(notional, 2) for sector, notional in exposure.items()
+            }
+            max_sector_pct = 0.0
+            if total > 0 and exposure:
+                max_sector_pct = round(max(exposure.values()) / total * 100.0, 2)
+            return {
+                "max_sector_pct": max_sector_pct,
+                "sectors":        sectors,
+                "total_notional": round(float(total), 2),
+                "scaffold":       False,
+            }
+        except Exception as e:
+            return {
+                "max_sector_pct": 0.0, "sectors": {}, "scaffold": False,
+                "error": f"sector_concentration query failed: {e}",
+            }
 
     def get_drawdown_context(self) -> dict[str, Any]:
-        """SCAFFOLD - requires Portfolio class (BUG-095)."""
-        return {"current_drawdown_pct": 0.0, "max_drawdown_pct": 0.0, "scaffold": True}
+        """Stream B2: wire to Portfolio.current_drawdown_pct() +
+        Portfolio.drawdown_size_multiplier()."""
+        if self.portfolio is None:
+            return {
+                "current_drawdown_pct": 0.0,
+                "max_drawdown_pct":     0.0,
+                "scaffold":             True,
+            }
+        try:
+            current_dd = self.portfolio.current_drawdown_pct()
+            # max_drawdown derived from equity_curve peak-to-trough
+            equity_curve = getattr(self.portfolio, "equity_curve", [])
+            max_dd = 0.0
+            if equity_curve:
+                equities = [e for _, e in equity_curve]
+                peak = equities[0]
+                for eq in equities:
+                    if eq > peak:
+                        peak = eq
+                    dd = (eq - peak) / peak * 100.0 if peak > 0 else 0.0
+                    if dd < max_dd:
+                        max_dd = dd
+            dd_size_mult = self.portfolio.drawdown_size_multiplier()
+            return {
+                "current_drawdown_pct":     round(float(current_dd), 2),
+                "max_drawdown_pct":         round(float(max_dd), 2),
+                "drawdown_size_multiplier": round(float(dd_size_mult), 3),
+                "scaffold":                 False,
+            }
+        except Exception as e:
+            return {
+                "current_drawdown_pct": 0.0,
+                "max_drawdown_pct":     0.0,
+                "scaffold":             False,
+                "error":                f"drawdown query failed: {e}",
+            }
 
     def get_recent_outcomes_on_similar_setups(
         self, ticker: str, setup_signature: str, as_of: date

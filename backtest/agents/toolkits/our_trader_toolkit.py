@@ -1,18 +1,20 @@
-"""OurTraderToolkit - Trader agent data bridge. SCAFFOLD ONLY.
+"""OurTraderToolkit - Trader agent data bridge.
 
 Source (per CHECKLIST #77): TRADINGAGENTS_DATA_AUDIT.md Section 23.
 
-HARD DEPENDENCY on BUG-095 Portfolio class. This is a SCAFFOLD module
-returning placeholder data; real wiring happens after Portfolio class
-ships (Sprint 3 deliverable).
+Pre-Stream-B2: SCAFFOLD pending BUG-095 Portfolio class.
+Post-Stream-B2 (Batch 368 2026-05-26): wired to `backtest.engine.portfolio.Portfolio`
+(which shipped as Batch 328 / Pass 53 v8h+1 Batch 20). Stream B2 audit
+2026-05-26 confirmed Portfolio class is already implemented; this commit
+removes the scaffold sentinel paths and wires real queries.
 
-Sprint 7 Phase A scope (Batch 350): scaffold class with stub methods that
-return well-formed empty/sentinel dicts. Pyramid tests pin the interface
-so future implementation cannot regress the contract.
+Sprint 7 Phase A complete (Batches 349-368): toolkit + state augmentation
++ Portfolio wiring. Phase B (real LLM calls on Hetzner Python 3.12)
+remains future work.
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -21,14 +23,11 @@ _REPO = Path(__file__).resolve().parents[3]
 
 
 class OurTraderToolkit:
-    """Trader toolkit. SCAFFOLD - real implementation depends on Portfolio class.
-
-    All methods return well-formed dicts with the documented schema; values
-    are empty / sentinel until Portfolio class ships.
-    """
+    """Trader toolkit. Wires backtest.engine.portfolio.Portfolio for live
+    portfolio queries; falls back to safe sentinels when portfolio is None
+    (e.g., LLM-mocked smoke tests without an active backtest)."""
 
     def __init__(self, portfolio: Any = None) -> None:
-        # `portfolio` will be a Portfolio instance once BUG-095 ships.
         self.portfolio = portfolio
 
     def get_position_sizing_rules(self, tier: str) -> dict[str, Any]:
@@ -54,7 +53,12 @@ class OurTraderToolkit:
         }
 
     def get_portfolio_state(self) -> dict[str, Any]:
-        """Return current portfolio summary. SCAFFOLD - empty until BUG-095 lands."""
+        """Return current portfolio summary backed by Portfolio class.
+
+        Stream B2 (2026-05-26): real implementation reading
+        backtest.engine.portfolio.Portfolio. Falls back to safe sentinels
+        when portfolio is None (mocked smoke tests, etc.).
+        """
         if self.portfolio is None:
             return {
                 "n_positions": 0,
@@ -62,27 +66,71 @@ class OurTraderToolkit:
                 "max_drawdown_pct": 0.0,
                 "scaffold": True,
             }
-        # Future-state: real Portfolio class methods land here.
-        return {
-            "n_positions": getattr(self.portfolio, "n_positions", 0),
-            "cash_available_pct": getattr(self.portfolio, "cash_pct", 0.0),
-            "max_drawdown_pct": getattr(self.portfolio, "max_drawdown_pct", 0.0),
-            "scaffold": False,
-        }
+        # Real Portfolio API per backtest/engine/portfolio.py
+        try:
+            n_open = self.portfolio.num_open
+            total_eq = self.portfolio.total_equity()
+            starting = getattr(self.portfolio, "starting_capital", 100_000.0)
+            cash = getattr(self.portfolio, "cash", 0.0)
+            cash_pct = (cash / total_eq * 100.0) if total_eq > 0 else 0.0
+            dd_pct = self.portfolio.current_drawdown_pct()
+            return {
+                "n_positions":        int(n_open),
+                "total_equity":       round(float(total_eq), 2),
+                "cash":               round(float(cash), 2),
+                "cash_available_pct": round(float(cash_pct), 2),
+                "max_drawdown_pct":   round(float(dd_pct), 2),
+                "starting_capital":   round(float(starting), 2),
+                "scaffold":           False,
+            }
+        except Exception as e:
+            return {
+                "n_positions": 0,
+                "cash_available_pct": 100.0,
+                "max_drawdown_pct": 0.0,
+                "scaffold": False,
+                "error": f"portfolio query failed: {e}",
+            }
 
     def get_existing_position(self, ticker: str) -> dict[str, Any]:
-        """Return current position in ticker. SCAFFOLD."""
+        """Return current position in ticker (Stream B2 real wiring)."""
         if self.portfolio is None:
             return {"ticker": ticker, "open": False, "scaffold": True}
-        # Future: portfolio.get_position(ticker)
-        return {"ticker": ticker, "open": False, "scaffold": False}
+        positions = getattr(self.portfolio, "positions", {})
+        if ticker not in positions:
+            return {"ticker": ticker, "open": False, "scaffold": False}
+        pos = positions[ticker]
+        return {
+            "ticker":         ticker,
+            "open":           True,
+            "direction":      getattr(pos, "direction", "unknown"),
+            "entry_date":     str(getattr(pos, "entry_date", "")),
+            "entry_price":    float(getattr(pos, "entry_price", 0.0)),
+            "shares":         float(getattr(pos, "shares", 0.0)),
+            "sector":         getattr(pos, "sector", "unknown"),
+            "last_mark":      float(getattr(pos, "last_mark", 0.0)),
+            "scaffold":       False,
+        }
 
     def get_per_ticker_cooldown(self, ticker: str, as_of: date) -> dict[str, Any]:
-        """Check if ticker is in 5-day post-stop cooldown per DEC-018. SCAFFOLD."""
+        """Check if ticker is in 5-day post-stop cooldown per DEC-018.
+
+        Stream B2: Portfolio class doesn't yet track per-ticker stop
+        history natively. The engine's circuit_breaker_log holds the
+        stop-out events but isn't exposed via Portfolio. This method
+        remains a sentinel pending engine-side wiring of cooldown
+        history into Portfolio (lower priority; can be deferred to
+        Phase 1B-alpha real-LLM runs).
+        """
         return {
             "ticker": ticker,
             "as_of": as_of.isoformat(),
             "in_cooldown": False,
             "days_remaining": 0,
             "scaffold": True,
+            "deferred_reason": (
+                "Per-ticker stop history not yet exposed via Portfolio API; "
+                "engine circuit_breaker_log holds the data. Defer to Sprint 7 "
+                "follow-on."
+            ),
         }
