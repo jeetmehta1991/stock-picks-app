@@ -11,6 +11,8 @@
 **Latest pyramid (2026-05-15):** 1882 passed / 14 skipped / 5 xfailed / 0 failed.
 **Phase 1A launch status:** 0 strict blockers. Day-8 ritual items 1-5 ✅; items 6-7 (tag + owner sign-off) pending owner.
 
+**Phase 1A-β next-run status (owner directive 2026-05-26):** **PAUSED.** Single-batch finished 2026-05-26 22:51 EDT with 361 trades (vs prior 7,191 — 95% drop) due to (a) cap-saturation @25 → Batch 370 Fix 1 raised to 59 for next run; (b) 49 strategies stuck at PRODUCER_LAYER_ZERO_CANDIDATES (never produce a candidate; per-strategy audits required); (c) Batch 203/293 regime affinity narrowing. See `PHASE_1A_BETA_PER_STRAT_EXIT_FORENSIC.md` for per-(strategy × exit) breakdown. Next 1A-β run held until each strategy + exit method optimization completes.
+
 ---
 
 ## Critical Rules

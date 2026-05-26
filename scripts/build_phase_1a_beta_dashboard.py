@@ -46,6 +46,40 @@ IS_END = pd.Timestamp("2024-06-30")
 OOS_START = pd.Timestamp("2024-07-01")
 
 
+def _generate_is_oos_csvs(trade_log: pd.DataFrame, out_dir: Path) -> None:
+    """Batch 376: generate per_cell_is_oos.csv + per_strategy_is_oos.csv
+    from trade_log when those files are missing (single-batch outputs
+    don't always emit them). Idempotent - skips if files already exist."""
+    pcio = out_dir / "per_cell_is_oos.csv"
+    psio = out_dir / "per_strategy_is_oos.csv"
+    if pcio.exists() and psio.exists():
+        return
+    tl = trade_log.copy()
+    tl["entry_dt"] = pd.to_datetime(tl["entry_date"], errors="coerce")
+    tl["is_in_sample"] = tl["entry_dt"] <= IS_END
+    # per_cell = strategy x exit_reason x regime
+    if "exit_reason" in tl.columns:
+        groups = ["strategy", "exit_reason", "regime"]
+    else:
+        groups = ["strategy", "regime"]
+    if not pcio.exists():
+        cell = tl.groupby(groups + ["is_in_sample"]).agg(
+            n_trades=("pnl_pct", "size"),
+            wins=("win", lambda s: int(s.astype(bool).sum())),
+            sum_pnl_pct=("pnl_pct", "sum"),
+            mean_pnl_pct=("pnl_pct", "mean"),
+        ).reset_index()
+        cell.to_csv(pcio, index=False)
+    if not psio.exists():
+        strat = tl.groupby(["strategy", "is_in_sample"]).agg(
+            n_trades=("pnl_pct", "size"),
+            wins=("win", lambda s: int(s.astype(bool).sum())),
+            sum_pnl_pct=("pnl_pct", "sum"),
+            mean_pnl_pct=("pnl_pct", "mean"),
+        ).reset_index()
+        strat.to_csv(psio, index=False)
+
+
 def _agg(df: pd.DataFrame, group_cols: list) -> list:
     """Group + aggregate; return list of records for JSON."""
     if df.empty or not all(c in df.columns for c in group_cols):
@@ -78,16 +112,30 @@ def _split_is_oos(tl: pd.DataFrame) -> tuple:
 
 
 def main():
-    if not IN_DIR.exists():
-        print(f"ERROR: {IN_DIR} missing - re-run Phase 1A-beta or download merged output")
-        sys.exit(1)
-    OUT_DIR.mkdir(exist_ok=True)
+    # Batch 376: --input-dir flag for re-targeting against fresher runs
+    # (single-batch outputs land in output_phase_1a_beta_single_local/
+    # by default; multi-batch merged outputs in output_phase_1a_beta_merged_local/).
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input-dir", default=str(IN_DIR),
+                        help="Phase 1A-beta output directory")
+    parser.add_argument("--output-dir", default=str(OUT_DIR),
+                        help="Dashboard output directory")
+    args = parser.parse_args()
+    in_dir = Path(args.input_dir)
+    out_dir = Path(args.output_dir)
 
-    trade_log = pd.read_csv(IN_DIR / "trade_log.csv", low_memory=False)
-    per_cell = pd.read_csv(IN_DIR / "per_cell_is_oos.csv")
-    per_strategy = pd.read_csv(IN_DIR / "per_strategy_is_oos.csv")
-    backtest_results = pd.read_csv(IN_DIR / "backtest_results.csv", low_memory=False)
-    walk_forward = pd.read_csv(IN_DIR / "walk_forward_validation.csv", low_memory=False)
+    if not in_dir.exists():
+        print(f"ERROR: {in_dir} missing - re-run Phase 1A-beta or download merged output")
+        sys.exit(1)
+    out_dir.mkdir(exist_ok=True)
+
+    trade_log = pd.read_csv(in_dir / "trade_log.csv", low_memory=False)
+    # Batch 376: generate per_cell + per_strategy IS_OOS if missing
+    _generate_is_oos_csvs(trade_log, in_dir)
+    per_cell = pd.read_csv(in_dir / "per_cell_is_oos.csv")
+    per_strategy = pd.read_csv(in_dir / "per_strategy_is_oos.csv")
+    backtest_results = pd.read_csv(in_dir / "backtest_results.csv", low_memory=False)
+    walk_forward = pd.read_csv(in_dir / "walk_forward_validation.csv", low_memory=False)
 
     is_df, oos_df = _split_is_oos(trade_log)
 
@@ -216,11 +264,12 @@ def main():
         "oos_window":      "2024-07..2026-04",
     }
 
-    data_path = OUT_DIR / "data.json"
+    data_path = out_dir / "data.json"
+    data_path.parent.mkdir(parents=True, exist_ok=True)
     with open(data_path, "w", encoding="utf-8") as f:
         json.dump(out, f, default=str, indent=1)
 
-    print(f"Wrote {data_path.relative_to(REPO)} ({data_path.stat().st_size // 1024} KB)")
+    print(f"Wrote {data_path} ({data_path.stat().st_size // 1024} KB)")
     print(f"Slices: {len(slices)} 1D/2D/3D cubes + IS/OOS splits")
     print(f"Survivors: {len(survivors)} (strategy x exit) cells IS+OOS-positive n>=10")
     print(f"Underperformers: {len(underperformers)} strategies OOS-negative n>=5")

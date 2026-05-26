@@ -1,0 +1,4 @@
+Phase 1A-beta single-batch run completed 2026-05-26 22:51 EDT
+  361 trades / 31 strategies fired / 155 quiet
+  source: output_phase_1a_beta_single_local/ (pre-Batch-369 code)
+  status: NEXT 1A-beta RUN PAUSED per owner directive 2026-05-26
