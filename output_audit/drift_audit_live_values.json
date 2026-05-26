@@ -1,0 +1,27 @@
+{
+  "strategy_total": 186,
+  "deprecated_count": 0,
+  "strategy_active": 186,
+  "exit_method_total": 25,
+  "strategy_exit_override_count": 11,
+  "agent_count_dec_057": 11,
+  "regime_count": 4,
+  "phase_1a_beta_actual_wall_hours": 10.5,
+  "phase_1a_beta_pool_speedup_target": "4-8x",
+  "trade_log_trades": 7191,
+  "trade_log_strategies_fired": 66,
+  "trade_log_exit_reasons": 17,
+  "trade_log_tickers": 1380,
+  "trade_log_regimes_fired": {
+    "bull": 3810,
+    "bear": 2910,
+    "neutral": 471
+  },
+  "trade_log_sum_pp": -11387.15,
+  "trade_log_wr_pct": 29.87,
+  "cube_rows": 178875,
+  "cube_strategies_fired": 49,
+  "cube_exit_methods": 25,
+  "cube_cells": 1225,
+  "tests_collected": 2536
+}
