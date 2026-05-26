@@ -249,6 +249,33 @@ def regime_breakdown(df: pd.DataFrame) -> dict:
     return out
 
 
+# Map exit_reason (as written to trade_log) to canonical exit_method per
+# backtest/engine/exit_strategies.py. Multiple exit_reasons collapse into
+# one canonical method (e.g. fixed_4r_2r_target_hit + fixed_4r_2r_stop_hit
+# both belong to method `fixed_4r_2r`); without this collapsing, the
+# (strategy, exit_reason) cell analysis cherry-picks the winning leg of a
+# 2-leg fixed exit and falsely declares 100% WR for the target_hit cell.
+EXIT_REASON_TO_METHOD = {
+    "trailing_stop":                          "atr_trail_1x",
+    "ma_exit_ema9_above_batch285":            "ma_exit_ema9",
+    "end_of_backtest":                        "end_of_backtest",
+    "class_time_stop_po3_20d_batch284":       "time_stop_class_po3",
+    "class_time_stop_factor_20d_batch284":    "time_stop_class_factor",
+    "hybrid_50pct_target_3xatr_batch285":     "hybrid_50pct_3xatr",
+    "circuit_breaker_1":                      "circuit_breaker",
+    "regime_flip_bull_to_bear_batch285":      "regime_flip",
+    "regime_flip_neutral_to_bull_batch285":   "regime_flip",
+    "regime_flip_bull_to_neutral_batch285":   "regime_flip",
+    "regime_flip_neutral_to_bear_batch285":   "regime_flip",
+    "time_stop_20d_mfe<0.5pct_batch213":      "time_stop_mfe",
+    "time_stop_10d_mfe<0.5pct_batch213":      "time_stop_mfe",
+    "time_stop_30d_mfe<0.5pct_batch213":      "time_stop_mfe",
+    "fixed_4r_2r_stop_hit_batch284":          "fixed_4r_2r",
+    "fixed_4r_2r_target_hit_batch284":        "fixed_4r_2r",
+    "strategy_time_stop_10d_batch282":        "strategy_time_stop_10d",
+}
+
+
 def verdict_for(n_trades: int) -> str:
     if n_trades == 0:
         return "QUIET"
@@ -362,6 +389,139 @@ def main():
     for regime, stats in summary["regime_breakdown"].get("regimes", {}).items():
         print(f"  {regime}: n={stats['n_trades']} sum_pp={stats['sum_pp']} wr={stats['wr_pct']}%")
 
+    # Batch 356 owner correction 2026-05-25: per-(strategy, exit) CELL
+    # level analysis. Aggregating to strategy level hides which exit method
+    # drives the loss; see feedback_strategy_x_exit_cell_analysis.md memory.
+    # Two granularities reported:
+    #   1. (strategy, exit_method) - PRIMARY canonical-method cells. Fixed
+    #      target+stop legs collapsed via EXIT_REASON_TO_METHOD.
+    #   2. (strategy, exit_reason) - SECONDARY raw-trade-log granularity.
+    #      Useful for debugging but cherry-picks target_hit vs stop_hit on
+    #      2-leg exits so 100%-WR cells are sampling artifacts not verdicts.
+    df["exit_method"] = df["exit_reason"].map(EXIT_REASON_TO_METHOD).fillna(df["exit_reason"])
+
+    def _build_cells(group_cols: list[str], label: str) -> dict:
+        rows = []
+        for keys, sub in df.groupby(group_cols):
+            if not isinstance(keys, tuple):
+                keys = (keys,)
+            n = len(sub)
+            wr = (sub["win"].astype(bool).sum() / n) * 100 if "win" in sub.columns else 0.0
+            mean_pnl = float(sub["pnl_pct"].mean()) if "pnl_pct" in sub.columns else 0.0
+            sum_pp = float(sub["pnl_pct"].sum()) if "pnl_pct" in sub.columns else 0.0
+            wins = sub[sub["win"].astype(bool)] if "win" in sub.columns else sub.head(0)
+            losses = sub[~sub["win"].astype(bool)] if "win" in sub.columns else sub.head(0)
+            gw = float(wins["pnl_pct"].sum()) if not wins.empty else 0.0
+            gl = float(abs(losses["pnl_pct"].sum())) if not losses.empty else 0.0
+            pf = (gw / gl) if gl > 0 else (float("inf") if gw > 0 else 0.0)
+            std = float(sub["pnl_pct"].std()) if n >= 2 else 0.0
+            sharpe = (mean_pnl / std) if std > 0 else 0.0
+            criteria = PASS_OVERALL if n >= 100 else PASS_PER_REGIME
+            fails = []
+            if n < criteria["min_trades"]:
+                fails.append(f"n<{criteria['min_trades']}")
+            if wr < criteria["min_wr_pct"]:
+                fails.append(f"wr<{criteria['min_wr_pct']}")
+            if pf < criteria["min_pf"]:
+                fails.append(f"pf<{criteria['min_pf']}")
+            if sharpe < criteria["min_sharpe"]:
+                fails.append(f"sharpe<{criteria['min_sharpe']}")
+            if n < 30:
+                verdict = "INSUFFICIENT_DATA"
+            elif not fails:
+                verdict = "PASS"
+            else:
+                verdict = "FAIL"
+            row = {
+                "strategy":      keys[0],
+                group_cols[1]:   keys[1],
+                "n":             n,
+                "wr_pct":        round(wr, 2),
+                "mean_pnl":      round(mean_pnl, 3),
+                "sum_pp":        round(sum_pp, 2),
+                "pf":            round(pf, 2) if pf != float("inf") else "inf",
+                "sharpe":        round(sharpe, 2),
+                "criteria_band": "overall" if n >= 100 else "per_regime",
+                "verdict":       verdict,
+                "failures":      fails,
+            }
+            rows.append(row)
+        rows.sort(key=lambda r: r["sum_pp"])
+        counts: dict[str, int] = {}
+        for r in rows:
+            counts[r["verdict"]] = counts.get(r["verdict"], 0) + 1
+        return {"n_cells": len(rows), "verdict_counts": counts, "cells": rows, "label": label}
+
+    summary["per_method_cells"] = _build_cells(
+        ["strategy", "exit_method"],
+        "(strategy x canonical exit_method) - PRIMARY",
+    )
+    summary["per_reason_cells"] = _build_cells(
+        ["strategy", "exit_reason"],
+        "(strategy x raw exit_reason) - SECONDARY (debug-only; 2-leg exits split)",
+    )
+
+    print(f"\n[Per-method cells]   {summary['per_method_cells']['n_cells']} fired; "
+          f"verdict counts: {summary['per_method_cells']['verdict_counts']}")
+    print(f"[Per-reason cells]   {summary['per_reason_cells']['n_cells']} fired; "
+          f"verdict counts: {summary['per_reason_cells']['verdict_counts']}")
+
+    # Legacy cell_rows below retained for backward-compat with previous test
+    # assertions; will be removed once tests update.
+    cell_rows = []
+    for (strategy, exit_reason), sub in df.groupby(["strategy", "exit_reason"]):
+        n = len(sub)
+        wr = (sub["win"].astype(bool).sum() / n) * 100 if "win" in sub.columns else 0.0
+        mean_pnl = float(sub["pnl_pct"].mean()) if "pnl_pct" in sub.columns else 0.0
+        sum_pp = float(sub["pnl_pct"].sum()) if "pnl_pct" in sub.columns else 0.0
+        wins = sub[sub["win"].astype(bool)] if "win" in sub.columns else sub.head(0)
+        losses = sub[~sub["win"].astype(bool)] if "win" in sub.columns else sub.head(0)
+        gw = float(wins["pnl_pct"].sum()) if not wins.empty else 0.0
+        gl = float(abs(losses["pnl_pct"].sum())) if not losses.empty else 0.0
+        pf = (gw / gl) if gl > 0 else (float("inf") if gw > 0 else 0.0)
+        std = float(sub["pnl_pct"].std()) if n >= 2 else 0.0
+        sharpe = (mean_pnl / std) if std > 0 else 0.0
+        # Cell verdict band: overall thresholds if n>=100 else per-regime
+        criteria = PASS_OVERALL if n >= 100 else PASS_PER_REGIME
+        fails = []
+        if n < criteria["min_trades"]:
+            fails.append(f"n<{criteria['min_trades']}")
+        if wr < criteria["min_wr_pct"]:
+            fails.append(f"wr<{criteria['min_wr_pct']}")
+        if pf < criteria["min_pf"]:
+            fails.append(f"pf<{criteria['min_pf']}")
+        if sharpe < criteria["min_sharpe"]:
+            fails.append(f"sharpe<{criteria['min_sharpe']}")
+        if n < 30:
+            verdict = "INSUFFICIENT_DATA"
+        elif not fails:
+            verdict = "PASS"
+        else:
+            verdict = "FAIL"
+        cell_rows.append({
+            "strategy":      strategy,
+            "exit_reason":   exit_reason,
+            "n":             n,
+            "wr_pct":        round(wr, 2),
+            "mean_pnl":      round(mean_pnl, 3),
+            "sum_pp":        round(sum_pp, 2),
+            "pf":            round(pf, 2) if pf != float("inf") else "inf",
+            "sharpe":        round(sharpe, 2),
+            "criteria_band": "overall" if n >= 100 else "per_regime",
+            "verdict":       verdict,
+            "failures":      fails,
+        })
+    cell_rows.sort(key=lambda r: r["sum_pp"])  # most negative first
+    cell_verdict_counts: dict[str, int] = {}
+    for r in cell_rows:
+        cell_verdict_counts[r["verdict"]] = cell_verdict_counts.get(r["verdict"], 0) + 1
+    summary["per_cell_verdicts"] = {
+        "n_fired_cells":     len(cell_rows),
+        "verdict_counts":    cell_verdict_counts,
+        "cells":             cell_rows,
+    }
+    print(f"  Fired cells: {len(cell_rows)}; verdict counts: {cell_verdict_counts}")
+
     json_path = out_dir / "phase1a_beta_recat.json"
     json_path.write_text(json.dumps(summary, indent=2, default=str), encoding="utf-8")
     print(f"\n[OK] JSON: {json_path}")
@@ -433,6 +593,51 @@ def main():
         md.append(f"| `{strat}` | {v['n']} | {v.get('wr_pct', '-')} | {v.get('pf', '-')} | "
                   f"{v.get('sharpe', '-')} | {v.get('max_dd_pp', '-')} | "
                   f"{v.get('criteria_band', '-')} | {v['verdict']} | {fails} |")
+    md.append("")
+
+    # PRIMARY: (strategy x exit_method) canonical cell verdicts
+    pm = summary["per_method_cells"]
+    md.append("## Per-(strategy x exit_method) cell verdicts -- PRIMARY (Batch 356)")
+    md.append("")
+    md.append("Cell-level pass/fail at the CANONICAL exit_method granularity. "
+              "Multiple `exit_reason` rows (e.g. fixed_4r_2r_target_hit + "
+              "fixed_4r_2r_stop_hit) are collapsed into one method (fixed_4r_2r) "
+              "via EXIT_REASON_TO_METHOD mapping so 2-leg exits do not split "
+              "into cherry-picked target/stop sub-cells.")
+    md.append("")
+    md.append(f"**Fired cells**: {pm['n_cells']}")
+    md.append(f"**Verdict counts**: {pm['verdict_counts']}")
+    md.append("")
+    md.append("| Strategy | Exit method | n | WR% | PF | Sharpe | Mean PnL% | Sum pp | Band | Verdict | Failures |")
+    md.append("|---|---|---:|---:|---:|---:|---:|---:|---|---|---|")
+    for r in pm["cells"]:
+        fails = ";".join(r["failures"]) or "-"
+        md.append(f"| `{r['strategy']}` | `{r['exit_method']}` | {r['n']} | "
+                  f"{r['wr_pct']} | {r['pf']} | {r['sharpe']} | "
+                  f"{r['mean_pnl']} | {r['sum_pp']} | {r['criteria_band']} | "
+                  f"{r['verdict']} | {fails} |")
+    md.append("")
+
+    # SECONDARY: (strategy x exit_reason) raw cells - debug-only
+    pr = summary["per_reason_cells"]
+    md.append("## Per-(strategy x exit_reason) cell verdicts -- SECONDARY (debug-only)")
+    md.append("")
+    md.append("Raw exit_reason granularity (target_hit + stop_hit split). "
+              "**Apparent 100%-WR cells on 2-leg exits are sampling artifacts**: "
+              "selecting only target_hit rows trivially yields 100% WR. The "
+              "PRIMARY table above collapses these legs and is the correct verdict.")
+    md.append("")
+    md.append(f"**Fired cells**: {pr['n_cells']}")
+    md.append(f"**Verdict counts**: {pr['verdict_counts']}")
+    md.append("")
+    md.append("| Strategy | Exit reason | n | WR% | PF | Sharpe | Mean PnL% | Sum pp | Verdict | Note |")
+    md.append("|---|---|---:|---:|---:|---:|---:|---:|---|---|")
+    for r in pr["cells"]:
+        fails = ";".join(r["failures"]) or "-"
+        note = "(2-leg target/stop split)" if "target_hit" in r["exit_reason"] or "stop_hit" in r["exit_reason"] else "-"
+        md.append(f"| `{r['strategy']}` | `{r['exit_reason']}` | {r['n']} | "
+                  f"{r['wr_pct']} | {r['pf']} | {r['sharpe']} | "
+                  f"{r['mean_pnl']} | {r['sum_pp']} | {r['verdict']} | {note} |")
     md.append("")
 
     # Regime Breakdown (Batch 354)
