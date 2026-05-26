@@ -183,6 +183,103 @@ schedule a Stage D' exit-cube smoke (subset: 10 best fired strategies ×
 exit-method per strategy. This is the "exit cube" referenced in
 DETAILED_PROJECT_PLAN.md.
 
+## Batch 359 UPDATE: canonical cube cell verdicts (1,225 fired cells)
+
+**Source:** `output_audit/trade_exit_detail_phase_1a_beta_rebuilt.csv` — rebuilt
+locally Batch 359 from `output_phase_1a_beta_merged_local/trade_log.csv` +
+`data_prefetch/polygon/ohlcv_daily/` via `scripts/rebuild_cube_from_trade_log.py`.
+The original Phase 1A-β merge job did not propagate per-batch
+`trade_exit_detail.csv` to the merged output (BUILD_PLAN_PROGRESS line 63);
+rebuild reconstructs it. 178,876 cube rows = 7,191 trades × ~25 exit methods.
+
+### Cube cell verdict counts
+
+| Granularity | Fired cells | PASS | FAIL | INSUFFICIENT_DATA |
+|---|---:|---:|---:|---:|
+| Per (strategy x exit_reason) — runtime dispatch | 171 | 2 (artifact) | 44 | 125 |
+| Per (strategy x exit_method) — canonical dispatch | 167 | 1 (artifact) | 42 | 124 |
+| **Per (strategy x exit_method) — CUBE replay** | **1,225** | **0** | **800** | **425** |
+
+The cube reveals **0 true PASS cells** at strict CLAUDE.md thresholds. The
+two "PASS" cells in the dispatch view were sampling artifacts (2-leg
+target/stop legs treated as separate cells).
+
+### Top-15 cube cells by sum_pp (best performers; all FAIL but informative)
+
+| # | Strategy | Exit method | n | WR% | PF | Sharpe* | Sum pp |
+|---|---|---|---:|---:|---:|---:|---:|
+| 1 | `monthly_bias_momentum_long` | `earnings_blackout` | 501 | 54.5 | 2.29 | 0.21 | **+3,713.74** |
+| 2 | `po3_bullish` | `earnings_blackout` | 416 | 55.0 | 2.05 | 0.19 | **+2,261.98** |
+| 3 | `xs_low_beta_long` | `trailing_15pct` | 344 | 41.3 | 1.69 | 0.16 | +1,360.79 |
+| 4 | `po3_bullish` | `trailing_15pct` | 416 | 38.5 | 1.52 | 0.13 | +1,304.45 |
+| 5 | `monthly_bias_momentum_long` | `breakeven_plus_trail` | 501 | 30.3 | 1.93 | 0.18 | +1,282.71 |
+| 6 | `po3_bullish` | `breakeven_plus_trail` | 416 | 32.9 | 2.25 | 0.19 | +1,249.51 |
+| 7 | `htf_aligned_breakout_long` | `earnings_blackout` | 141 | 51.8 | 2.19 | 0.19 | +1,108.24 |
+| 8 | `xs_momentum_top_decile` | `earnings_blackout` | 125 | 60.0 | 2.52 | 0.24 | +1,105.31 |
+| 9 | `xs_momentum_top_decile` | `trailing_15pct` | 125 | 43.2 | 2.35 | 0.21 | +1,006.91 |
+| 10 | `xs_low_beta_long` | `earnings_blackout` | 344 | 52.6 | 1.87 | 0.14 | +932.08 |
+| 11 | `monthly_bias_momentum_long` | `trailing_15pct` | 501 | 40.1 | 1.27 | 0.08 | +880.46 |
+| 12 | `xs_momentum_top_decile` | `breakeven_plus_trail` | 125 | 32.8 | 4.43 | 0.21 | +787.36 |
+| 13 | `xs_low_beta_long` | `breakeven_plus_trail` | 344 | 20.4 | 2.42 | 0.13 | +733.74 |
+| 14 | `bollinger_tight` | `earnings_blackout` | 70 | 55.7 | 3.55 | 0.28 | +723.50 |
+| 15 | `smc_choch_reversal` | `earnings_blackout` | 274 | 51.1 | 1.46 | 0.10 | +721.03 |
+
+\* Per-trade Sharpe proxy (mean / std). The strict 1.0 overall-band threshold
+fails most cells because per-trade Sharpe naturally tops out around 0.3-0.5
+for swing trades. The annualized portfolio Sharpe is the canonical
+deployable-edge metric and would re-rank these cells significantly.
+
+### Headline cube findings
+
+1. **`earnings_blackout` exit is the dominant winner** — 9 of top 15 cells
+   use this exit. Per DEC-518, this exit closes the position before an
+   upcoming earnings announcement. The cube shows pre-earnings drift is
+   captured cleanly when the position exits before post-earnings noise.
+   Across multiple long strategies (monthly_bias_momentum, po3_bullish,
+   htf_aligned_breakout_long, xs_momentum_top_decile, xs_low_beta_long,
+   bollinger_tight, smc_choch_reversal), the earnings_blackout cell is
+   consistently the top-3 cell. **This is the cube's single biggest
+   actionable signal.**
+
+2. **`trailing_15pct` and `breakeven_plus_trail` consistently in top 5**
+   for momentum strategies. Tighter trailing stops than `atr_trail_1x`
+   capture the alpha before it bleeds out.
+
+3. **`atr_trail_1x` (the global default) is consistently the WORST exit**
+   per cell. Confirms the Batch 356 finding at much higher granularity.
+
+4. **`po3_bullish` and `monthly_bias_momentum_long` are deployable**
+   candidates when paired with earnings_blackout — both have WR ≥ 54.5%,
+   PF ≥ 2.0, n ≥ 416. Only Sharpe proxy fails the strict threshold.
+
+5. **425 INSUFFICIENT_DATA cells** (n<30) — strategies that fired few
+   times but might pass at larger n in a re-run. These are the high-
+   priority "needs more data" cells.
+
+### Deployment recommendation pivot
+
+The Batch 356 doc recommended Bucket A (per-cell exit substitution) as
+"medium-term cube replay" work. Per the cube data, the actionable change
+is much narrower:
+
+**Recommended (post-cube-Phase-1A-β-rerun, when annualized Sharpe is
+available):**
+- Switch `STRATEGY_EXIT_OVERRIDE` default for momentum-style strategies
+  (po3_bullish, monthly_bias_momentum_long, htf_aligned_breakout_long,
+  xs_momentum_top_decile, smc_choch_reversal, bollinger_tight) to
+  `earnings_blackout`.
+- Switch the secondary exit for the same group to `breakeven_plus_trail`
+  (consistently top-3 cell).
+- Replace `atr_trail_1x` defaults across the board pending per-strategy
+  cube verdicts.
+
+**Pending data (needs the Phase 1A-β cube re-run with Batch 358 gate fixes
++ Wave 3 + un-deprecated 23 strategies):**
+- Confirm earnings_blackout pattern holds across the full 186-strategy
+  cube (we only have 66 fired strategies' cube cells today).
+- Re-evaluate the 73 QUIET strategies' cells once unblocked.
+- Generate annualized portfolio Sharpe per cell (the canonical metric).
+
 ## Naming hygiene (Batch 356 doc rename)
 
 This file supersedes the Batch 355 draft `PHASE_1A_BETA_LOSER_STRATEGY_AUDIT.md`

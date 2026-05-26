@@ -306,10 +306,80 @@ def summarize_strategy(df: pd.DataFrame, strategy: str) -> dict[str, Any]:
     return row
 
 
+def cube_cell_verdicts(cube_path: Path) -> dict:
+    """Compute per-(strategy, exit_method) verdicts from the rebuilt cube.
+
+    Batch 359 owner directive 2026-05-25: cube replay is the canonical
+    Phase 1A-beta scope. This function reads the rebuilt cube produced
+    by scripts/rebuild_cube_from_trade_log.py and applies the same
+    passing-criteria gate per cell.
+
+    Each cube row is a single (entry, exit_method) outcome; cells aggregate
+    rows by (strategy, exit_method). Compare to per_reason_cells in main()
+    which groups by (strategy, exit_reason) on the single-config trade_log
+    -- the cube version is the ground truth for Phase 1A-beta scope.
+    """
+    if not cube_path.exists():
+        return {"error": f"cube file missing: {cube_path}",
+                "n_cells": 0, "cells": []}
+    cube = pd.read_csv(cube_path, low_memory=False)
+    cells = []
+    for (strategy, exit_method), sub in cube.groupby(["strategy", "exit_method"]):
+        n = len(sub)
+        wr = (sub["win"].astype(bool).sum() / n) * 100 if "win" in sub.columns else 0.0
+        mean_pnl = float(sub["pnl_pct"].mean()) if "pnl_pct" in sub.columns else 0.0
+        sum_pp = float(sub["pnl_pct"].sum()) if "pnl_pct" in sub.columns else 0.0
+        wins = sub[sub["win"].astype(bool)] if "win" in sub.columns else sub.head(0)
+        losses = sub[~sub["win"].astype(bool)] if "win" in sub.columns else sub.head(0)
+        gw = float(wins["pnl_pct"].sum()) if not wins.empty else 0.0
+        gl = float(abs(losses["pnl_pct"].sum())) if not losses.empty else 0.0
+        pf = (gw / gl) if gl > 0 else (float("inf") if gw > 0 else 0.0)
+        std = float(sub["pnl_pct"].std()) if n >= 2 else 0.0
+        sharpe = (mean_pnl / std) if std > 0 else 0.0
+        criteria = PASS_OVERALL if n >= 100 else PASS_PER_REGIME
+        fails = []
+        if n < criteria["min_trades"]:
+            fails.append(f"n<{criteria['min_trades']}")
+        if wr < criteria["min_wr_pct"]:
+            fails.append(f"wr<{criteria['min_wr_pct']}")
+        if pf < criteria["min_pf"]:
+            fails.append(f"pf<{criteria['min_pf']}")
+        if sharpe < criteria["min_sharpe"]:
+            fails.append(f"sharpe<{criteria['min_sharpe']}")
+        if n < 30:
+            verdict = "INSUFFICIENT_DATA"
+        elif not fails:
+            verdict = "PASS"
+        else:
+            verdict = "FAIL"
+        cells.append({
+            "strategy":      strategy,
+            "exit_method":   exit_method,
+            "n":             n,
+            "wr_pct":        round(wr, 2),
+            "mean_pnl":      round(mean_pnl, 3),
+            "sum_pp":        round(sum_pp, 2),
+            "pf":            round(pf, 2) if pf != float("inf") else "inf",
+            "sharpe":        round(sharpe, 2),
+            "criteria_band": "overall" if n >= 100 else "per_regime",
+            "verdict":       verdict,
+            "failures":      fails,
+        })
+    cells.sort(key=lambda r: r["sum_pp"])
+    counts: dict[str, int] = {}
+    for r in cells:
+        counts[r["verdict"]] = counts.get(r["verdict"], 0) + 1
+    return {"source": str(cube_path), "n_cells": len(cells),
+            "verdict_counts": counts, "cells": cells}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--trade-log",
         default="output_phase_1a_beta_merged_local/trade_log.csv")
+    ap.add_argument("--cube",
+        default="output_audit/trade_exit_detail_phase_1a_beta_rebuilt.csv",
+        help="Rebuilt cube CSV from scripts/rebuild_cube_from_trade_log.py")
     ap.add_argument("--output-dir", default="output_audit")
     args = ap.parse_args()
 
@@ -465,6 +535,15 @@ def main():
           f"verdict counts: {summary['per_method_cells']['verdict_counts']}")
     print(f"[Per-reason cells]   {summary['per_reason_cells']['n_cells']} fired; "
           f"verdict counts: {summary['per_reason_cells']['verdict_counts']}")
+
+    # Batch 359 - canonical cube cell verdicts from rebuilt cube
+    cube_path = Path(args.cube)
+    summary["cube_cells"] = cube_cell_verdicts(cube_path)
+    if "error" in summary["cube_cells"]:
+        print(f"\n[Cube cells]         SKIPPED: {summary['cube_cells']['error']}")
+    else:
+        print(f"\n[Cube cells]         {summary['cube_cells']['n_cells']} fired (canonical); "
+              f"verdict counts: {summary['cube_cells']['verdict_counts']}")
 
     # Legacy cell_rows below retained for backward-compat with previous test
     # assertions; will be removed once tests update.
