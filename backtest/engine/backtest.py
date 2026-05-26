@@ -1301,12 +1301,23 @@ class BacktestEngine:
                 else:
                     entry_price, slippage_pct = next_open, 0.0
 
-                # Smart money
+                # Smart money. Batch 363 silent-gap fix (owner-approved 2026-05-25):
+                # smart_money_score reads from data_prefetch/quiver/ ONLY (NO live
+                # API per DEC-497 HARD CUT; enforced at smart_money._get_quiver_data
+                # line 132). The legacy QUIVER_API_KEY gate caused all 2026-05-24
+                # Phase 1A-beta trades to record smart_money_score=0,
+                # congressional/insider/institutional_signal="none" -- invalidating
+                # DEC-124 confluence cells + "smart money lift >=3pp" passing
+                # criterion. Removed the env-var gate so the cache-only function
+                # is always called. Sentinel default retained for hard cache-miss.
                 sm = {"composite_signal": "none", "score": 0,
                       "congressional_signal": "none", "insider_signal": "none",
                       "institutional_signal": "none"}
-                if os.environ.get("QUIVER_API_KEY"):
+                try:
                     sm = smart_money_score(ticker, as_of)
+                except Exception as e:
+                    logger.warning("smart_money_score failed for %s @ %s: %s",
+                                   ticker, as_of, e)
 
                 # Stage 1  -  rule-based preliminary tier
                 preliminary_tier = self._assign_confidence_tier(
