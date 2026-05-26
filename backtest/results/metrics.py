@@ -2345,6 +2345,47 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     if len(fav_macro) >= 20 and len(unfav_macro) >= 20:
         macro_corr = round(float(fav_macro["win"].mean()) - float(unfav_macro["win"].mean()), 4)
 
+    # Batch 365 Item 3 (owner-approved 2026-05-25): per-criterion empirical
+    # evaluability gate. Track WHICH criteria couldn't be computed from the
+    # trade-log sample (e.g. smart-money lift needs both score>=2 AND score<2
+    # samples; if a silent gap drives all trades to score=0 then sm_lift is
+    # None and the criterion is unevaluable). Surfaces criterion_evaluable
+    # dict so downstream winners.parquet extraction can refuse to write when
+    # critical criteria can't be empirically computed (was Batch 363 silent
+    # gap's invisible failure mode: passing-criterion #7 auto-passed via the
+    # `(sm_lift is None) or ...` short-circuit, masking that the criterion
+    # was uncomputable on the entire 2026-05-24 trade_log).
+    n_has_sm = len(has_sm)
+    n_no_sm  = len(no_sm)
+    n_fav_macro = len(fav_macro)
+    n_unfav_macro = len(unfav_macro)
+    criterion_evaluable = {
+        "smart_money_lift": {
+            "evaluable":         n_has_sm >= 30 and n_no_sm >= 30,
+            "n_with_signal":     int(n_has_sm),
+            "n_without_signal":  int(n_no_sm),
+            "min_required_each": 30,
+            "blocked_reason":    (
+                f"smart_money_score>=2 sample n={n_has_sm}<30"
+                if n_has_sm < 30 else
+                f"smart_money_score<2 sample n={n_no_sm}<30"
+                if n_no_sm < 30 else None
+            ),
+        },
+        "macro_correlation": {
+            "evaluable":         n_fav_macro >= 20 and n_unfav_macro >= 20,
+            "n_favorable":       int(n_fav_macro),
+            "n_unfavorable":     int(n_unfav_macro),
+            "min_required_each": 20,
+            "blocked_reason":    (
+                f"macro_score>=2 sample n={n_fav_macro}<20"
+                if n_fav_macro < 20 else
+                f"macro_score<0 sample n={n_unfav_macro}<20"
+                if n_unfav_macro < 20 else None
+            ),
+        },
+    }
+
 
     # Direction split
     long_df  = g[g["direction"] == "long"]
@@ -2465,6 +2506,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "worst_trade_pct":       round(float(pnl.min()), 4),
         "smart_money_lift":      sm_lift,
         "macro_correlation":     macro_corr,
+        # Batch 365 Item 3: per-criterion evaluability dict (see comment near
+        # smart-money-lift computation above)
+        "criterion_evaluable":   criterion_evaluable,
         "regimes_profitable":    regimes_profitable,
         "regime_verdicts":       regime_verdicts,
         "best_regimes":          best_regimes,
