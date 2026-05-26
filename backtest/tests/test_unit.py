@@ -8459,6 +8459,49 @@ def test_batch218_deprecated_strategies_defined():
     )
 
 
+def test_batch357_doc_count_drift_strategies():
+    """Batch 357 (2026-05-25 owner-directed doc-count drift guard per
+    feedback_doc_count_drift_must_be_test_pinned memory): CLAUDE.md +
+    CANONICAL_FACTS.md F-002 numeric claims must match the live
+    `len(ALL_STRATEGIES)`. Drift between Batches 209-356 went unnoticed
+    (148 claimed vs 186 actual); this test fails on future drift before
+    the doc gets out of sync again."""
+    from pathlib import Path
+    from backtest.signals.screener import ALL_STRATEGIES
+    live_count = len(ALL_STRATEGIES)
+    repo = Path(__file__).parent.parent.parent
+    claude_md = (repo / "CLAUDE.md").read_text(encoding="utf-8")
+    canonical_facts = (repo / "CANONICAL_FACTS.md").read_text(encoding="utf-8")
+    # Both docs must mention the live count somewhere in their body
+    assert str(live_count) in claude_md, (
+        f"CLAUDE.md does not mention live strategy count {live_count}. "
+        f"Update CLAUDE.md to cite `len(ALL_STRATEGIES) = {live_count}`."
+    )
+    assert str(live_count) in canonical_facts, (
+        f"CANONICAL_FACTS.md F-002 does not mention live strategy count "
+        f"{live_count}. Update CANONICAL_FACTS.md."
+    )
+
+
+def test_batch357_doc_count_drift_exit_methods():
+    """Batch 357 doc-count drift guard for EXIT_STRATEGIES. Drift between
+    Batches 282-356 went unnoticed (12 claimed vs 25 actual)."""
+    from pathlib import Path
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    live_count = len(EXIT_STRATEGIES)
+    repo = Path(__file__).parent.parent.parent
+    claude_md = (repo / "CLAUDE.md").read_text(encoding="utf-8")
+    canonical_facts = (repo / "CANONICAL_FACTS.md").read_text(encoding="utf-8")
+    assert str(live_count) in claude_md, (
+        f"CLAUDE.md does not mention live exit-method count {live_count}. "
+        f"Update CLAUDE.md repo-structure entry for `exit_strategies.py`."
+    )
+    assert str(live_count) in canonical_facts, (
+        f"CANONICAL_FACTS.md F-004 does not mention live exit-method count "
+        f"{live_count}. Update CANONICAL_FACTS.md F-004."
+    )
+
+
 def test_batch218_deprecated_strategies_NOT_in_screener_loop():
     """Batch 218 deprecation-filter wiring is still PRESENT in the screener
     (a future re-deprecation must work without code changes), but the

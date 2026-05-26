@@ -80,9 +80,11 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 
 ---
 
-### F-002 — Strategy roster (planned)
+### F-002 — Strategy roster (planned + LIVE)
 
-**Value (planned):** **199 RESOLVED-DECIDED strategy classes across 6 layers post owner "Approve all" + Layer 1.I symmetry + Q1+Q2+Q3 (Layer 5 flag schema + Layer 6 27 new) 2026-05-06 (was 134 pre-symmetry; 108-118 pre-Pass-53-Option-2). Goes to 203 when Layer 4 PENDING-DEC promoted; ~213 with Layer 2D form-derived ICT estimate. ~200-400+ multi-TF variants projected. Total unique testable strategies projected: 200+ confirmed (could exceed 400 with full multi-TF expansion).**
+**Live value (`len(ALL_STRATEGIES)` 2026-05-25 Batch 357):** **186 IMPLEMENTED strategy classes** registered in `backtest/signals/screener.py::ALL_STRATEGIES`. `DEPRECATED_STRATEGIES` set is empty (Batch 316a un-deprecation 2026-05-25 reversed Batch 218). **All 186 are active and will be tested in Phase 1A-β cube mode** (186 × 25 = 4,650 cells per `project_phase_1a_beta_is_exit_cube` memory).
+
+**Value (planned target):** **199 RESOLVED-DECIDED strategy classes across 6 layers post owner "Approve all" + Layer 1.I symmetry + Q1+Q2+Q3 (Layer 5 flag schema + Layer 6 27 new) 2026-05-06 (was 134 pre-symmetry; 108-118 pre-Pass-53-Option-2). Goes to 203 when Layer 4 PENDING-DEC promoted; ~213 with Layer 2D form-derived ICT estimate. ~200-400+ multi-TF variants projected. Total unique testable strategies projected: 200+ confirmed (could exceed 400 with full multi-TF expansion).** Gap: 199 (target) - 186 (live) = 13 classes pending implementation across Layers 2D + 4 + 6 remainder.
 
 **Project philosophy (owner directive 2026-05-06):** *"Buy the dip and sell the rip."* The roster evaluates long AND short strategies wherever the entry logic is logically symmetric. Direction asymmetry in Layer 1.A-H was a documentation artifact (PROJECT_PLAN section 6 baseline was long-biased; Layer 1.H added 12 shorts incrementally without coherent symmetry). Layer 1.I (38 new shorts approved 2026-05-06) closes the symmetry gap, bringing Layer 1 long/short ratio to ~1.2:1. Empirical results from Phase 1A-α / Phase 1B-α validation determine which strategies have edge in which direction; the roster's job is to make BOTH directions evaluable. Strategies that are NOT logically symmetric (breadth-thrust, dividend-initiation drift, defensive-tilt overlays) remain single-direction by design.
 
@@ -209,11 +211,17 @@ A category can have prefetch ✅ but consumer 🔴 (data sitting on disk, no cod
 
 ### F-004 — Exit methods
 
-**Value (planned):** **20 exit methods + 8 cross-cutting exit DECs (Pass 53 owner-approved 2026-05-06)** = 9 baseline (pre-Pass-52) + 8 new (DEC-067 phases A+B = DEC-432/433) + 3 R-multiple/break-even (DEC-517) = 20 method classes; PLUS 8 cross-cutting decisions (DEC-516 regime-flip exit + DEC-518 earnings-blackout + DEC-519 strategy-to-exit-mapping + DEC-520 signal-reversal precise definition + DEC-521 per-class time stops + DEC-514 backtest fill methodology + DEC-515 Level-6 DD-from-peak breaker + DEC-522-527 P2 backlog).
+**Live value (`len(EXIT_STRATEGIES)` 2026-05-25 Batch 357):** **25 exit methods** registered in `backtest/engine/exit_strategies.py::EXIT_STRATEGIES`. All 25 are testable; Phase 1A-β cube mode simulates every method per entry (186 × 25 = 4,650 cells). Single-config-per-strategy via `STRATEGY_EXIT_OVERRIDE` is the future deployment mode for live trading, not the backtest mode.
+
+**Value (planned target):** **20 exit methods + 8 cross-cutting exit DECs (Pass 53 owner-approved 2026-05-06)** = 9 baseline (pre-Pass-52) + 8 new (DEC-067 phases A+B = DEC-432/433) + 3 R-multiple/break-even (DEC-517) = 20 method classes; PLUS 8 cross-cutting decisions (DEC-516 regime-flip exit + DEC-518 earnings-blackout + DEC-519 strategy-to-exit-mapping + DEC-520 signal-reversal precise definition + DEC-521 per-class time stops + DEC-514 backtest fill methodology + DEC-515 Level-6 DD-from-peak breaker + DEC-522-527 P2 backlog).
 
 **Definition:** An "exit method" is a deterministic rule for closing a trade. Strategies are tested against multiple exit methods to find the optimal pairing.
 
-**The 17 exit methods:**
+**The 25 live exit methods (live 2026-05-25):**
+
+`atr_trail_1x`, `atr_trail_2x`, `atr_trail_mae_conditional`, `atr_trail_vix_conditional`, `break_even_at_1r`, `breakeven_plus_trail`, `chandelier_3x`, `class_time_stop`, `earnings_blackout`, `fixed_4r_2r`, `hybrid_50pct_target`, `ma_exit_ema9`, `mfe_lockin_trail`, `multi_tier_partial`, `next_pivot_target`, `r_multiple_2r`, `r_multiple_3r`, `regime_flip`, `reverse_signal`, `smc_mitigation_zone`, `time_stop_10d`, `time_stop_20d`, `trailing_10pct`, `trailing_15pct`, `trailing_5pct`.
+
+**The legacy 17-method roster (pre-Batches 282-285; retained for historical context):**
 
 | # | Method | Source DEC | Notes |
 |---|---|---|---|
@@ -251,9 +259,9 @@ A category can have prefetch ✅ but consumer 🔴 (data sitting on disk, no cod
 - `CLAUDE.md` Approved Rules table (mentions atr_trail_1x as default)
 - `STRATEGY_REGISTER.md` (no specific exit-count claim; OK)
 
-**Acceptable phrasing variants:** "17 exit methods" • "9 baseline + 8 Pass-52 additions = 17". *Not acceptable:* "12 exit methods" (stale; refers to pre-Pass-52 count).
+**Acceptable phrasing variants:** **"25 exit methods" (LIVE, code-derived 2026-05-25)** • "17 exit methods" (legacy planned target). *Not acceptable:* "12 exit methods" or "9 exit methods" (both stale; refer to pre-Batch-282-285 counts).
 
-**Code-current state:** Baseline 9 implemented in `backtest/engine/exit_strategies.py`; DEC-432/433 8 new methods PENDING implementation in Sprint 6/7.
+**Code-current state (2026-05-25 Batch 357):** **All 25 methods implemented and registered in `backtest/engine/exit_strategies.py::EXIT_STRATEGIES`.** Test coverage via `backtest/tests/test_exit_strategies.py`. Phase 1A-β cube mode (per `project_phase_1a_beta_is_exit_cube` memory) tests every method against every entry.
 
 ---
 

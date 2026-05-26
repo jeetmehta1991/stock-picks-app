@@ -160,6 +160,54 @@ python scripts/run_live_end_of_day.py          # reconciliation
 
 ---
 
+## 6.4 Phase 1A-β CUBE-MODE SCOPE (owner directive 2026-05-25 Batch 357)
+
+**Canonical Phase 1A-β scope is the full strategy × exit cube, not single-config-per-strategy.**
+
+Per owner directive 2026-05-25: "Phase 1A beta will compulsorily analyse each strategy and exit combination. For each entry, every exit will be simulated!!!! No exceptions."
+
+### Cube dimensions
+- **186 strategies** (`len(ALL_STRATEGIES)` 2026-05-25; DEPRECATED_STRATEGIES empty per Batch 316a) **× 25 exit methods** (`len(EXIT_STRATEGIES)` 2026-05-25) = **4,650 potentially-fired cells**.
+- Each cell = independent backtest verdict for `(strategy, exit_method)` pair.
+- Prior runs (2026-05-24 output_phase_1a_beta_merged_local) used single-config mode → 167 cells fired naturally via runtime dispatch. Cube mode fires every (admissible-entry × every-exit) deterministically.
+
+### Engine change required (Step 2 of owner's 4-step plan)
+- `BacktestEngine._process_day` enters a candidate trade once per `(ticker, day, strategy)` admission.
+- New: for each admitted entry, fan out across all 25 exit methods. Each fan-out arm is an independent simulation that:
+  - Starts at the same entry_price + entry_date
+  - Computes exit_date + exit_price using its assigned exit_method's rule
+  - Records a separate trade_log row with `exit_method` column set
+- Trade log schema gains `exit_method` column distinct from `exit_reason` (exit_reason still records WHICH circuit-breaker/regime-flip/etc. fired within the method).
+- `cube_populator.py` re-aggregates the cube post-merge.
+
+### Compute estimate
+- Naive: 25× single-config compute. Single-config Phase 1A-β was ~10.5h on Hetzner CPX62 → cube mode projects ~250h naive = ~10.4d.
+- Optimizations available:
+  - **Pool fan-out at the exit-method axis** (independent simulations parallelizable; reuse Batch 322 multiprocessing pool)
+  - **Short-circuit on dominated exits** (if exit X is strictly worse than exit Y on first N trades of a strategy, skip X — optional, defer)
+  - **Stratified subsample first** (run cube on Stage D 150 tkrs × 4y first to validate; full 1937 tkrs as final pass)
+- Realistic target: 24-48h on Hetzner CPX62 with pool fan-out + Stage D smoke.
+
+### Storage estimate
+- Trade log: 7,191 → ~180,000 rows (25× factor). ~50MB CSV → ~1.2GB CSV. Parquet compression: ~80MB.
+- Per-cell aggregates: 4,650 rows × ~40 metrics = ~190K cells in cube_populator output.
+
+### Phase 1A-β cube success criteria (cell-level)
+- Every cell with n ≥ 30 trades gets a verdict (PASS / FAIL / INSUFFICIENT_DATA) against CLAUDE.md passing criteria.
+- PASS cells go to winners.parquet → Phase 1B-α agent overlay testing.
+- Per-regime cell verdicts: each cell × 7 historical regimes = 4,650 × 7 = 32,550 per-regime evaluations.
+
+### Memory + doc references
+- `project_phase_1a_beta_is_exit_cube.md` (memory) — canonical scope assertion.
+- `PHASE_1A_BETA_STAGE_D_LOSER_CELL_AUDIT.md` (Batch 356) — observed cells under single-config mode; cube mode supersedes Bucket E.
+- `output_audit/phase1a_beta_recat.md` — per-cell recat output (single-config; will be reproduced under cube mode).
+
+### Deployment vs backtest distinction (preserved)
+- `STRATEGY_EXIT_OVERRIDE` config in `backtest/config.py` remains for **live trading / paper trading** mode (Stage 3+): each deployed strategy picks ONE exit per cube verdict.
+- Phase 1A-β **backtest** mode is cube; Stage 3+ **deployment** mode is single-config-per-strategy chosen from cube winners.
+
+---
+
 ## 6.5 Phase 1A-β compute speedup levers (owner-approved 2026-05-19)
 
 | Lever | Speedup | Status | Detail |
