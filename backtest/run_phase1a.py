@@ -167,10 +167,17 @@ def main():
     p.add_argument("--no-portfolio-cap", action="store_true",
                    help="Batch 377 (owner 2026-05-26): bypass Batch 203 "
                         "regime cap + LIVE_TRADING_RULES max_open_positions "
-                        "for Phase 1A--beta cube evaluation. Drawdown halt + "
+                        "for Phase 1A-beta cube evaluation. Drawdown halt + "
                         "ticker-uniqueness + cash-sufficiency still apply. "
                         "AUTO-ENABLED for phase=1a-beta; pass explicitly for "
-                        "other phases. Phase 1B--alpha re-engages the cap.")
+                        "other phases. Phase 1B-alpha re-engages the cap.")
+    p.add_argument("--no-dd-halt", action="store_true",
+                   help="Batch 383 (owner 2026-05-26): bypass DEC-515 Level 6 "
+                        "DD halt + Portfolio.can_open drawdown_suspend gate "
+                        "for Phase 1A-beta cube evaluation. Capital-protection "
+                        "gate does not apply to per-(strategy x exit x regime) "
+                        "cell-verdict computation. AUTO-ENABLED for "
+                        "phase=1a-beta. Phase 1B-alpha re-engages the halt.")
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
 
@@ -179,6 +186,11 @@ def main():
         print("[Batch 377] Phase 1a-beta detected -> auto-enabling --no-portfolio-cap "
               "(cube evaluation mode). Pass --no-portfolio-cap=False to override.")
         args.no_portfolio_cap = True
+    # Batch 383: same auto-enable for --no-dd-halt
+    if args.phase == "1a-beta" and not args.no_dd_halt:
+        print("[Batch 383] Phase 1a-beta detected -> auto-enabling --no-dd-halt "
+              "(cube evaluation mode, capital-protection gates re-engage in 1B-alpha).")
+        args.no_dd_halt = True
 
     phase_key = f"phase_{args.phase}"
 
@@ -266,6 +278,7 @@ def main():
         walk_forward=walk_forward_enabled,
         screen_pool_workers=args.screen_pool_workers,  # Batch 322
         no_portfolio_cap=args.no_portfolio_cap,        # Batch 377
+        no_dd_halt=args.no_dd_halt,                    # Batch 383
     )
     if args.no_git:
         import os

@@ -9671,6 +9671,33 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch383_no_dd_halt_bypasses_dec_515_level_6():
+    """Batch 383 (owner directive 2026-05-26 option A): no_dd_halt=True
+    bypasses the DEC-515 Level 6 portfolio DD halt + raises Portfolio.
+    can_open drawdown_suspend_pct to 999%. Phase 1A-beta cube evaluation
+    needs this; Phase 1B-alpha re-engages the halt.
+    """
+    from backtest.engine.backtest import BacktestEngine
+    e = BacktestEngine.__new__(BacktestEngine)
+    e.no_dd_halt = True
+    assert e.no_dd_halt is True
+    e2 = BacktestEngine.__new__(BacktestEngine)
+    e2.no_dd_halt = False
+    assert e2.no_dd_halt is False
+
+
+def test_batch383_phase_1a_beta_auto_enables_no_dd_halt_in_cli():
+    """Batch 383: run_phase1a.py auto-enables --no-dd-halt when
+    --phase=1a-beta (parallel to Batch 377 --no-portfolio-cap)."""
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    src = (repo / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    assert "no_dd_halt" in src and 'args.phase == "1a-beta"' in src, (
+        "Batch 383 regression: phase=1a-beta must auto-enable --no-dd-halt"
+    )
+    assert "[Batch 383]" in src, "Batch 383 banner missing"
+
+
 def test_batch377_no_portfolio_cap_bypasses_engine_gate():
     """Batch 377 (owner directive 2026-05-26): when no_portfolio_cap=True,
     BacktestEngine sets _effective_cap=99999 so neither Batch 203 regime
