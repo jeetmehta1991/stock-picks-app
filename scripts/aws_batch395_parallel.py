@@ -99,21 +99,65 @@ def main() -> int:
     ap.add_argument("--poll-seconds", type=int, default=300)
     ap.add_argument("--max-hours", type=float, default=10.0,
                     help="overall runner timeout (default 10h)")
+    ap.add_argument("--forensic", action="store_true", default=True,
+                    help="Batch 409: run per-batch forensic check after each "
+                         "_COMPLETE; ABORT downstream on major errors")
+    ap.add_argument("--no-forensic", dest="forensic", action="store_false",
+                    help="disable per-batch forensic check (not recommended)")
+    ap.add_argument("--baseline-batch", type=int, default=1,
+                    help="baseline batch index for forensic regression check")
     args = ap.parse_args()
 
     pending = [int(b.strip()) for b in args.batches.split(",")]
     print(f"[INIT] parallel runner: pending={pending}")
+    print(f"[INIT] forensic={args.forensic} baseline_batch={args.baseline_batch}")
     deadline = time.time() + args.max_hours * 3600
+    completed_with_forensic: set[int] = set()
+    forensic_aborted: bool = False
 
-    while pending and time.time() < deadline:
-        # Drop completed
+    while pending and time.time() < deadline and not forensic_aborted:
+        # Drop completed; run forensic if newly complete
         still = []
         for b in pending:
             if s3_check_complete(args.bucket, b):
                 print(f"[DONE] batch_{b} _COMPLETE in S3")
+                # Batch 409: run forensic check on this newly-completed batch
+                if args.forensic and b not in completed_with_forensic:
+                    completed_with_forensic.add(b)
+                    print(f"[FORENSIC] running per-batch check on batch_{b}...")
+                    fc = [
+                        sys.executable,
+                        str(REPO / "scripts" / "aws_batch395_forensic_per_batch.py"),
+                        "--bucket", args.bucket,
+                        "--batch", str(b),
+                        "--baseline-batch", str(args.baseline_batch),
+                    ]
+                    fr = subprocess.run(fc, capture_output=False)
+                    if fr.returncode == 2:
+                        print(f"[FORENSIC ABORT] batch_{b} failed forensic checks")
+                        print(f"[ABORT] per owner directive: terminating subsequent")
+                        print(f"        batches; bug fix + relaunch ALL required.")
+                        # Terminate any running batch395 instances
+                        for inst in running_instances(args.region):
+                            print(f"  terminating {inst['id']}")
+                            subprocess.run(
+                                ["aws", "ec2", "terminate-instances",
+                                 "--region", args.region,
+                                 "--instance-ids", inst["id"],
+                                 "--no-cli-pager"],
+                                capture_output=True, timeout=30,
+                            )
+                        forensic_aborted = True
+                        break
+                    elif fr.returncode == 1:
+                        print(f"[FORENSIC WARN] batch_{b} has warnings; continuing")
+                    else:
+                        print(f"[FORENSIC PASS] batch_{b} healthy")
             else:
                 still.append(b)
         pending = still
+        if forensic_aborted:
+            break
         if not pending:
             break
 
