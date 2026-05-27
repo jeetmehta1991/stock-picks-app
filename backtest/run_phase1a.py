@@ -194,6 +194,17 @@ def main():
                         "Phase 1A-beta cube. Cube measures strategy robustness "
                         "through events. AUTO-ENABLED for phase=1a-beta. Phase "
                         "1B-alpha re-engages event suppression.")
+    p.add_argument("--warn-run-hours", type=float, default=None,
+                   help="Batch 394 (owner 2026-05-27): wall-time WARN "
+                        "threshold in hours. Engine logs a single WARN "
+                        "line when run exceeds this. AUTO-SET to 4.0 for "
+                        "--phase=1a-beta. None=disabled.")
+    p.add_argument("--max-run-hours", type=float, default=None,
+                   help="Batch 394 (owner 2026-05-27): wall-time HARD-KILL "
+                        "threshold in hours. Engine flushes a final "
+                        "checkpoint and sys.exit(1). External monitor "
+                        "watchdog backs this up at +5min. AUTO-SET to "
+                        "6.0 for --phase=1a-beta. None=disabled.")
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
 
@@ -226,6 +237,17 @@ def main():
               "(cube evaluation needs more candidate throughput; cost is $0 without "
               "agents). Pass --max-cands explicitly to override.")
         args.max_cands = 200
+    # Batch 394 (owner 2026-05-27): auto-set 4h warn / 6h hard-kill for 1a-beta.
+    # Defense-in-depth pairs with the external monitor watchdog (+5min backup).
+    if args.phase == "1a-beta" and args.warn_run_hours is None:
+        print("[Batch 394] Phase 1a-beta detected -> auto-set --warn-run-hours=4.0 "
+              "(WARN emitted once at 4h wall-time; pass explicit value to override).")
+        args.warn_run_hours = 4.0
+    if args.phase == "1a-beta" and args.max_run_hours is None:
+        print("[Batch 394] Phase 1a-beta detected -> auto-set --max-run-hours=6.0 "
+              "(engine flushes checkpoint and sys.exit(1) at 6h; monitor watchdog "
+              "backs up at +5min if engine hangs).")
+        args.max_run_hours = 6.0
 
     phase_key = f"phase_{args.phase}"
 
@@ -316,6 +338,8 @@ def main():
         no_dd_halt=args.no_dd_halt,                    # Batch 383
         no_regime_affinity=args.no_regime_affinity,    # Batch 384 Gate 2
         no_event_suppression=args.no_event_suppression, # Batch 384 Gate 3
+        warn_run_hours=args.warn_run_hours,             # Batch 394 WARN at 4h
+        max_run_hours=args.max_run_hours,               # Batch 394 KILL at 6h
     )
     if args.no_git:
         import os

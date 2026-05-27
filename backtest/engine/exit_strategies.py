@@ -1571,3 +1571,53 @@ def run_exit_comparison(
 
     trade_detail_df = pd.DataFrame(trade_detail_rows)
     return df, trade_detail_df
+
+
+# ---------------------------------------------------------------------------
+# Batch 394 (2026-05-27): cube-replay pool worker.
+#
+# save_all_outputs iterates over ~185 strategies and calls
+# run_exit_comparison per strategy.  Each strategy is independent, so the
+# loop is embarrassingly parallel.  This worker reuses the Batch 322
+# screen-pool's `_WORKER_OHLCV` module-global so the per-task IPC payload
+# stays small (no df_full sent per trade -- worker looks up by ticker).
+#
+# Pool lifecycle: the engine defers `_teardown_screen_pool` until AFTER
+# `save_all_outputs` returns (Batch 394), so the same long-lived spawn
+# pool services both screen + cube replay.
+# ---------------------------------------------------------------------------
+def _pool_cube_replay_worker(strategy_name, trades_data_lite):
+    """Worker called by multiprocessing.Pool.starmap.
+
+    Args:
+        strategy_name: str -- strategy id
+        trades_data_lite: list of dicts WITHOUT `df` key; worker pulls
+            OHLCV from screener._WORKER_OHLCV (initialized via _pool_init
+            with the engine's ohlcv_dict).
+
+    Returns:
+        (exit_compare_df, trade_detail_df) -- same shape as
+        run_exit_comparison's output.
+    """
+    from backtest.signals import screener  # for _WORKER_OHLCV
+    ohlcv = getattr(screener, "_WORKER_OHLCV", None)
+    if ohlcv is None:
+        # Worker not initialized (initializer never ran); return empty
+        # to surface the issue at the merge step rather than crashing.
+        logger.warning(
+            "Batch 394 cube worker: _WORKER_OHLCV is None for %s; "
+            "returning empty (pool initializer never fired)", strategy_name,
+        )
+        return pd.DataFrame(), pd.DataFrame()
+
+    trades_data_full = []
+    for t in trades_data_lite:
+        ticker = t.get("ticker")
+        df_full = ohlcv.get(ticker)
+        if df_full is None:
+            continue
+        trades_data_full.append({**t, "df": df_full})
+
+    if not trades_data_full:
+        return pd.DataFrame(), pd.DataFrame()
+    return run_exit_comparison(strategy_name, trades_data_full)

@@ -19,6 +19,8 @@ Backtest-mode operating rules (approved April 2026):
 
 import logging
 import os
+import sys
+import time
 from dataclasses import asdict
 from datetime import date, timedelta
 from pathlib import Path
@@ -74,6 +76,8 @@ class BacktestEngine:
         no_dd_halt:             bool  = False, # Batch 383 owner 2026-05-26: bypass DEC-515 Level 6 + Portfolio drawdown_suspend halt for Phase 1A-beta cube. Capital-protection gate not applicable to cell-verdict computation. Re-engaged in Phase 1B-alpha.
         no_regime_affinity:     bool  = False, # Batch 384 owner 2026-05-26 Gate 2 opt: bypass Batch 203/293 STRATEGY_REGIME_AFFINITY filter for Phase 1A-beta cube. Cube measures per-regime cell verdicts empirically; let data say which regime works per strategy. Re-engaged Phase 1B-alpha.
         no_event_suppression:   bool  = False, # Batch 384 owner 2026-05-26 Gate 3 opt: bypass DEC-348 event suppression (FOMC/CPI/NFP/earnings) for Phase 1A-beta cube. Cube needs event-day data to measure strategy robustness through events. Re-engaged Phase 1B-alpha.
+        warn_run_hours:         Optional[float] = None, # Batch 394 owner 2026-05-27: WARN once when run exceeds this wall-time. None = disabled.
+        max_run_hours:          Optional[float] = None, # Batch 394 owner 2026-05-27: hard sys.exit(1) at this wall-time after flushing checkpoint. None = disabled.
     ):
         self.no_portfolio_cap = bool(no_portfolio_cap)
         self.no_dd_halt = bool(no_dd_halt)
@@ -136,6 +140,22 @@ class BacktestEngine:
         # ohlcv_dict is populated) and torn down at end of backtest.
         self.screen_pool_workers  = max(0, int(screen_pool_workers or 0))
         self._screen_pool         = None
+        # Batch 394 (2026-05-27) owner-mandated wall-time guard.
+        #   warn_run_hours: log WARN once when exceeded (default None=off)
+        #   max_run_hours:  hard sys.exit(1) when exceeded; flushes a final
+        #                   checkpoint first so partial cube is salvageable.
+        # Engine-side primary kill; external monitor is the watchdog backup.
+        self.warn_run_hours = (float(warn_run_hours)
+                               if warn_run_hours is not None else None)
+        self.max_run_hours  = (float(max_run_hours)
+                               if max_run_hours is not None else None)
+        self._run_start_time      = None  # set at start of run()
+        self._warn_fired          = False
+        # Batch 394: year-boundary detector; set in day loop.
+        self._last_seen_year      = None
+        # Batch 394: 100-day milestone telemetry baseline for per-100d
+        # delta logging.
+        self._last_milestone_trades = 0
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Data stores
@@ -393,11 +413,92 @@ class BacktestEngine:
             len(self.liquid_universe),
         )
 
+        # Batch 394 (2026-05-27): wall-time tracking.  Recorded once at
+        # run() start; checked every 20 days alongside progress log.
+        self._run_start_time = time.time()
+        if self.warn_run_hours is not None or self.max_run_hours is not None:
+            logger.info(
+                "Batch 394 wall-time guard: warn_run_hours=%s "
+                "max_run_hours=%s (engine-side primary kill; monitor is "
+                "watchdog backup)", self.warn_run_hours, self.max_run_hours,
+            )
+
         for i, as_of in enumerate(trading_days):
+            # Batch 394: year-boundary milestone telemetry.  Detect when
+            # calendar year flips between consecutive trading days.
+            cur_year = as_of.year if hasattr(as_of, "year") else None
+            if cur_year is not None and self._last_seen_year is not None \
+                    and cur_year != self._last_seen_year:
+                self._emit_milestone_telemetry(
+                    "YEAR", year_closed=self._last_seen_year,
+                )
+            if cur_year is not None:
+                self._last_seen_year = cur_year
+
+            # Batch 394: 100-day milestone telemetry.  Same cadence as
+            # the checkpoint so monitor can correlate the two.
+            if i > 0 and i % 100 == 0:
+                self._emit_milestone_telemetry(
+                    "100D", day_idx=i, total_days=len(trading_days),
+                    as_of=as_of,
+                )
+
             if i % 20 == 0:
-                logger.info("Progress: %d/%d [%s] open=%d closed=%d",
-                            i, len(trading_days), as_of,
-                            len(self.open_trades), len(self.closed_trades))
+                # Batch 394: emit elapsed_hours in the progress line so the
+                # external monitor (W1/W12) can grep wall-time without
+                # needing to compute from start-of-log.
+                elapsed_s = (time.time() - self._run_start_time
+                             if self._run_start_time else 0.0)
+                elapsed_h = elapsed_s / 3600.0
+                logger.info(
+                    "Progress: %d/%d [%s] open=%d closed=%d elapsed_hours=%.2f",
+                    i, len(trading_days), as_of,
+                    len(self.open_trades), len(self.closed_trades),
+                    elapsed_h,
+                )
+                # WARN once at warn_run_hours threshold.
+                if (self.warn_run_hours is not None
+                        and elapsed_h >= self.warn_run_hours
+                        and not self._warn_fired):
+                    logger.warning(
+                        "Batch 394 WALL-TIME WARN: elapsed_hours=%.2f >= "
+                        "warn_run_hours=%s; run will hard-exit at "
+                        "max_run_hours=%s if still running",
+                        elapsed_h, self.warn_run_hours, self.max_run_hours,
+                    )
+                    self._warn_fired = True
+                # HARD-KILL at max_run_hours threshold.  Flush a final
+                # checkpoint first so partial cube is salvageable.
+                if (self.max_run_hours is not None
+                        and elapsed_h >= self.max_run_hours):
+                    logger.error(
+                        "Batch 394 WALL-TIME KILL: elapsed_hours=%.2f >= "
+                        "max_run_hours=%s; flushing final checkpoint and "
+                        "exiting with code 1",
+                        elapsed_h, self.max_run_hours,
+                    )
+                    try:
+                        if self.closed_trades:
+                            import pandas as _pd
+                            _pd.DataFrame(
+                                [vars(t) for t in self.closed_trades]
+                            ).to_csv(
+                                self.output_dir / "trade_log_checkpoint.csv",
+                                index=False,
+                            )
+                            logger.error(
+                                "Batch 394 final-checkpoint flushed: %d "
+                                "closed trades to trade_log_checkpoint.csv",
+                                len(self.closed_trades),
+                            )
+                    except Exception as _exc:
+                        logger.error(
+                            "Batch 394 final-checkpoint flush failed: %s",
+                            _exc,
+                        )
+                    # sys.exit(1) -- caller treats as fatal; monitor
+                    # watchdog backs this up at +5min if engine hangs.
+                    sys.exit(1)
             # DEC-179 Batch 83: periodic memory check every 50 days; warn
             # on cap breach. Does not abort -- caller may opt to terminate
             # by inspecting return-value note in finalize log.
@@ -413,8 +514,13 @@ class BacktestEngine:
                         "DEC-179 memory at day %d: %s MB / cap %s MB",
                         i, _mem["current_mb"], _mem["cap_mb"],
                     )
-            # Incremental checkpoint every 25 days  -  trade log survives crashes
-            if i > 0 and i % 25 == 0 and self.closed_trades:
+            # Incremental checkpoint every 100 days - trade log survives crashes.
+            # Batch 394 (2026-05-27) owner directive 2026-05-27: restore the
+            # documented 100-day cadence.  The earlier `% 25` was a code drift
+            # from 100-day cadence cited across LEARNINGS.md / CHECKLIST
+            # references.  100-day balances salvage frequency against CSV
+            # write cost on uncapped Phase 1A-beta runs (20K-50K trades).
+            if i > 0 and i % 100 == 0 and self.closed_trades:
                 try:
                     import pandas as _pd
                     checkpoint_path = self.output_dir / "trade_log_checkpoint.csv"
@@ -467,8 +573,10 @@ class BacktestEngine:
                     len(self.open_trades), len(self.closed_trades),
                     len(self.skipped_trades), n_finalized)
 
-        # Batch 322 (2026-05-25): tear down screen pool if it was created.
-        self._teardown_screen_pool()
+        # Batch 394 (2026-05-27): defer pool teardown to save_all_outputs so
+        # the same spawn pool services both screen + cube replay.  Calling
+        # teardown here would force save_all_outputs back to sequential
+        # cube replay.  save_all_outputs invokes teardown at its end.
 
     def _finalize_open_trades(self) -> int:
         """Force-close remaining open trades at the last available close price.
@@ -538,6 +646,62 @@ class BacktestEngine:
                 n_finalized,
             )
         return n_finalized
+
+    def _emit_milestone_telemetry(self, kind: str, **context):
+        """Batch 394 (2026-05-27): emit structured milestone telemetry.
+
+        Two kinds:
+          - MILESTONE-YEAR: at calendar-year flip, summarize prior year
+            (trades, top strategies, direction balance, zero-fire strategies,
+            regime distribution).
+          - MILESTONE-100D: every 100 backtest days, summarize cumulative
+            health (delta-trades, top strategies, direction balance,
+            zero-fire strategies).
+
+        Monitor parses these via regex on `[MILESTONE-` prefix.  Keep the
+        format stable: changing breaks the monitor.
+        """
+        try:
+            n_total = len(self.closed_trades)
+            if n_total == 0:
+                # Emit a "no fires yet" marker so monitor distinguishes
+                # engine-stuck from engine-running-but-silent.
+                logger.info(
+                    "[MILESTONE-%s] %s cumulative_trades=0 (no fires yet)",
+                    kind, " ".join(f"{k}={v}" for k, v in context.items()),
+                )
+                return
+
+            # Direction balance
+            n_long = sum(1 for t in self.closed_trades
+                         if getattr(t, "direction", "") == "long")
+            long_pct = round(100.0 * n_long / n_total, 1)
+
+            # Per-strategy trade counts; top 5 + zero-fire count
+            from collections import Counter
+            strat_counts = Counter(
+                getattr(t, "strategy", "?") for t in self.closed_trades
+            )
+            top5 = [f"{s}:{c}" for s, c in strat_counts.most_common(5)]
+            registered = len(ALL_STRATEGIES) if "ALL_STRATEGIES" in globals() else 0
+            zero_strats = max(0, registered - len(strat_counts))
+
+            # Delta since last milestone for 100D variant
+            delta = n_total - self._last_milestone_trades
+            self._last_milestone_trades = n_total
+
+            ctx_str = " ".join(f"{k}={v}" for k, v in context.items())
+            logger.info(
+                "[MILESTONE-%s] %s cumulative_trades=%d delta_trades=%d "
+                "long_pct=%.1f%% top_strats=[%s] zero_strats=%d",
+                kind, ctx_str, n_total, delta, long_pct,
+                ",".join(top5), zero_strats,
+            )
+        except Exception as exc:  # noqa: BLE001
+            # Never let telemetry crash the engine; log + continue.
+            logger.warning(
+                "Batch 394 telemetry emit failed (%s): %s", kind, exc,
+            )
 
     def _init_screen_pool(self):
         """Batch 322 (2026-05-25): lazy-init the per-ticker screen pool.
@@ -2074,13 +2238,21 @@ class BacktestEngine:
         # Pass 53 Day-9-evening 2026-05-07 owner directive: all 4 tiers of
         # exit-analysis context propagated per DEC-594 same-commit. ~25 columns
         # added to trade_exit_detail.csv via entry_context dict per trade.
+        #
+        # Batch 394 (2026-05-27): parallelize per-strategy cube replay
+        # across the existing Batch 322 screen pool when alive.  Each
+        # strategy is independent; the loop is embarrassingly parallel.
+        # Per-task IPC stays small: trades_data_lite drops `df` and the
+        # worker reconstructs from screener._WORKER_OHLCV.  When pool is
+        # not alive (screen_pool_workers==0), falls through to sequential.
         from backtest.engine.exit_context import build_entry_context
+        from backtest.engine.exit_strategies import _pool_cube_replay_worker
 
-        exit_frames = []
-        trade_detail_frames = []
+        # Build per-strategy task list (without df_full in payload).
+        strategy_tasks = []
         for strategy in df_trades["strategy"].unique():
             strat_df    = df_trades[df_trades["strategy"] == strategy]
-            trades_data = []
+            trades_data_lite = []
             for _, row in strat_df.iterrows():
                 ticker  = row["ticker"]
                 df_full = self.ohlcv_dict.get(ticker)
@@ -2094,7 +2266,6 @@ class BacktestEngine:
                 atr = (sig.get("atr", row["entry_price"] * 0.02)
                        if isinstance(sig, dict) else row["entry_price"] * 0.02)
 
-                # Build per-trade context dict (Tiers 1-4) for trade_exit_detail
                 entry_context = build_entry_context(
                     row=row,
                     ticker=ticker,
@@ -2105,22 +2276,60 @@ class BacktestEngine:
                     atr=atr,
                 )
 
-                trades_data.append({
+                trades_data_lite.append({
                     "ticker":         ticker,
-                    "df":             df_full,
+                    # NOTE: no "df" -- worker reconstructs from _WORKER_OHLCV
                     "entry_date":     entry_date,
                     "entry_price":    row["entry_price"],
                     "direction":      row["direction"],
                     "atr":            atr,
                     "signals":        sig if isinstance(sig, dict) else {},
-                    "entry_context":  entry_context,  # dict with Tier 1-4 fields
+                    "entry_context":  entry_context,
                 })
-            if trades_data:
-                ec, td = run_exit_comparison(strategy, trades_data)
-                if not ec.empty:
-                    exit_frames.append(ec)
-                if not td.empty:
-                    trade_detail_frames.append(td)
+            if trades_data_lite:
+                strategy_tasks.append((strategy, trades_data_lite))
+
+        exit_frames = []
+        trade_detail_frames = []
+        if (self._screen_pool is not None and self.screen_pool_workers > 0
+                and strategy_tasks):
+            logger.info(
+                "Batch 394: parallel cube replay across %d strategies on "
+                "%d pool workers", len(strategy_tasks),
+                self.screen_pool_workers,
+            )
+            try:
+                results = self._screen_pool.starmap(
+                    _pool_cube_replay_worker, strategy_tasks,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Batch 394: pool cube replay failed (%s); falling back "
+                    "to sequential", exc,
+                )
+                results = [_pool_cube_replay_worker(s, td)
+                           for s, td in strategy_tasks]
+        else:
+            # Sequential fallback -- workers can't run; reconstruct df
+            # inline since _WORKER_OHLCV is not set in main process.
+            results = []
+            for strategy_name, trades_data_lite in strategy_tasks:
+                trades_data_full = []
+                for t in trades_data_lite:
+                    df_full = self.ohlcv_dict.get(t["ticker"])
+                    if df_full is None:
+                        continue
+                    trades_data_full.append({**t, "df": df_full})
+                if trades_data_full:
+                    results.append(
+                        run_exit_comparison(strategy_name, trades_data_full)
+                    )
+
+        for ec, td in results:
+            if not ec.empty:
+                exit_frames.append(ec)
+            if not td.empty:
+                trade_detail_frames.append(td)
 
         exit_compare = (pd.concat(exit_frames, ignore_index=True)
                         if exit_frames else pd.DataFrame())
@@ -2148,3 +2357,7 @@ class BacktestEngine:
             # equity_curve.parquet + portfolio_metrics.json
             portfolio=getattr(self, "portfolio", None),
         )
+
+        # Batch 394 (2026-05-27): tear down screen pool now that both
+        # screen + cube replay have completed.  Single teardown point.
+        self._teardown_screen_pool()

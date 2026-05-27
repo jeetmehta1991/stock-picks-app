@@ -489,26 +489,79 @@ def phase_10_strategy_wiring_audit_gate() -> list[str]:
 
 
 def phase_11_intermediate_monitor_armed() -> list[str]:
-    """Batch 393: verify the intermediate-progress health monitor script
-    exists + is executable. Catches the class of bug from the latest run
-    where 361 trades (95% drop from baseline 7191) was discovered only
-    at run-completion, wasting 10h compute.
+    """Batch 393 (orig) + Batch 394 (expansion): verify the intermediate-
+    progress health monitor + engine wall-time guards + 14 checks are
+    armed.  Catches the class of bug from the 361-trade run where the
+    pathology was discovered only at run-completion, wasting 10h compute.
 
-    Memory: feedback_monitor_intermediate_counts.md
+    Batch 394 expansion:
+      - Verify Python monitor scripts/monitor_phase_1a_beta_health.py
+        contains all 14 check function names (W1-W14)
+      - Verify engine has max_run_hours / warn_run_hours kwargs
+      - Verify engine emits [MILESTONE-100D] / [MILESTONE-YEAR] /
+        elapsed_hours= telemetry tokens
+      - Backwards: keep checking shell script for backwards-compat
+        (used by Stage D runners that haven't switched yet)
+
+    Memory: feedback_monitor_intermediate_counts.md +
+            feedback_strategy_x_exit_cell_analysis.md
     """
     fails = []
-    monitor = REPO / "scripts" / "monitor_phase_1a_beta_health.sh"
-    if not monitor.exists():
+
+    # Batch 394: primary monitor is now Python; shell stays as backup.
+    py_monitor = REPO / "scripts" / "monitor_phase_1a_beta_health.py"
+    if not py_monitor.exists():
         fails.append(
-            f"Phase 11: monitor script missing - {monitor.relative_to(REPO)}"
+            f"Phase 11 (Batch 394): Python monitor missing - "
+            f"{py_monitor.relative_to(REPO)}"
         )
-        return fails
-    # Verify it has the abort-ratio threshold + baseline reference + KILL signal
-    src = monitor.read_text(encoding="utf-8")
-    if "BASELINE_TPD" not in src:
-        fails.append("Phase 11: monitor missing baseline_trades_per_day reference")
-    if "ABORT_RATIO" not in src or "KILL-RECOMMENDED" not in src:
-        fails.append("Phase 11: monitor missing abort-ratio + KILL-RECOMMENDED signal")
+    else:
+        py_src = py_monitor.read_text(encoding="utf-8")
+        # 14 check function names W1-W14 must all be present.
+        required_check_fns = [f"check_w{n}_" for n in range(1, 15)]
+        for fn in required_check_fns:
+            if fn not in py_src:
+                fails.append(
+                    f"Phase 11 (Batch 394): Python monitor missing "
+                    f"check function `{fn}*` (14-check coverage gap)"
+                )
+        # Critical thresholds must be parameterized in CLI.
+        for tok in ("max-run-hours", "warn-run-hours", "baseline-tpd",
+                    "abort-ratio", "warn-ratio", "auto-kill"):
+            if tok not in py_src:
+                fails.append(
+                    f"Phase 11 (Batch 394): Python monitor missing CLI "
+                    f"arg --{tok}"
+                )
+
+    # Backwards-compat shell monitor (kept until Stage D runners switch).
+    sh_monitor = REPO / "scripts" / "monitor_phase_1a_beta_health.sh"
+    if sh_monitor.exists():
+        sh_src = sh_monitor.read_text(encoding="utf-8")
+        if "BASELINE_TPD" not in sh_src:
+            fails.append(
+                "Phase 11: shell monitor missing baseline_trades_per_day"
+            )
+        if ("ABORT_RATIO" not in sh_src
+                or "KILL-RECOMMENDED" not in sh_src):
+            fails.append(
+                "Phase 11: shell monitor missing abort-ratio + "
+                "KILL-RECOMMENDED signal"
+            )
+
+    # Batch 394: engine wall-time kwargs must be wired.
+    engine = REPO / "backtest" / "engine" / "backtest.py"
+    if engine.exists():
+        eng_src = engine.read_text(encoding="utf-8")
+        for tok in ("max_run_hours", "warn_run_hours",
+                    "WALL-TIME WARN", "WALL-TIME KILL",
+                    "[MILESTONE-", "elapsed_hours="):
+            if tok not in eng_src:
+                fails.append(
+                    f"Phase 11 (Batch 394): engine missing wall-time "
+                    f"guard token `{tok}`"
+                )
+
     return fails
 
 
