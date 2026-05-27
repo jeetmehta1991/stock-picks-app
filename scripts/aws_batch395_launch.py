@@ -229,6 +229,11 @@ def main() -> int:
                     help="max spot bid price (default $0.30/hr)")
     ap.add_argument("--batches", type=int, default=5,
                     help="number of batches/instances to launch (default 5)")
+    ap.add_argument("--batch-start", type=int, default=1,
+                    help="first batch index to launch (default 1). Use "
+                         "--batch-start 2 --batches 4 to launch indices "
+                         "2,3,4,5 only (e.g. when reusing an already-"
+                         "completed batch_1 output).")
     ap.add_argument("--dry-run", action="store_true",
                     help="print what would be launched; do not actually launch")
     args = ap.parse_args()
@@ -250,7 +255,8 @@ def main() -> int:
     print()
 
     launched = []
-    for batch_index in range(1, args.batches + 1):
+    batch_start = max(1, int(args.batch_start))
+    for batch_index in range(batch_start, batch_start + args.batches):
         user_data = build_user_data(
             batch_index, args.bucket, args.commit, args.phase,
             args.start, args.end, args.workers, args.repo_url,
