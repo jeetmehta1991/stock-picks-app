@@ -136,7 +136,7 @@ def update_halt_state(risk_state: LiveRiskState,
     Activates halt if DD >= trigger, deactivates if DD < recovery threshold.
     Returns True if halt currently active.
 
-    Batch 375 CB-fire email hook (per STAGE_4_MONITORING_AUDIT C-3 highest-
+    Batch 375 CB-fire email hook (Stage 4 monitoring C-3 highest-
     value missing piece): when a CB transitions OFF->ON or ON->OFF, dispatch
     an email alert via email_digest.send_email so the owner gets notified
     in real time without watching the dashboard. notify=False suppresses
