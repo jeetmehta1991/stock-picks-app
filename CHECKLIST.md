@@ -1233,3 +1233,79 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application (retroactive):** Batch 407 rollback of Batch 406 (DATA_LOAD_START "bug" that was actually correct engine behavior per data availability).
 
     **Joint:** CHECKLIST #77 (canonical-source attribution — for OHLCV the canonical source is `data_prefetch/polygon/ohlcv_daily/`), CHECKLIST #79 (data-layer migration tests — checks coverage at scale; #84 is the same principle applied to bug investigation), L155 (silent-gap pattern — cousin: too-little data silently absorbed; #84 fights too-eagerly diagnosing too-little-data as engine bug), L157 (this directive's codified lesson).
+
+85. **HARD RULE - Visible pre-flight verification block PRECEDES each recommendation, not at end of response** (Pass 52 owner directive reaffirmed Batch 407 2026-05-27).
+
+    The Pass 52 standing rule per CLAUDE.md says: "Every recommendation in every response must be preceded by a visible pre-flight verification block applying the full CHECKLIST.md ... Pre-flight executes BEFORE the recommendation is stated, not after." Multiple session violations: I (assistant) wrote "CHECKLIST compliance" summaries at END of responses instead of before each recommendation. CHECKLIST #45 (end-of-response compliance enumeration) is a SEPARATE rule; it does NOT replace #85.
+
+    **Format (mandatory before each recommendation):**
+    ```
+    Pre-flight per CHECKLIST + memory:
+    - [check] #N <item> - <brief evidence>
+    - [warn]  #M <item> - <flagged concern>
+    - [halt]  #K <item> - <halt condition>
+    - N/A     #J <item> - <reason not applicable>
+    ```
+    Items not applicable still get an N/A line (silent skipping is non-compliant; per #45). If any item flags HALT, revise recommendation before stating.
+
+    **Apply when:** any recommendation, scope claim, framework design, threshold proposal, code change, batch closure, status flip. Does NOT apply to: factual answers, verification reports of code state, simple status updates with no recommendation.
+
+    **Past violations:** end-of-response compliance summaries in Batches 393-406 (current session) and earlier sessions. Owner has explicitly called this out as a repeat failure.
+
+    **Joint:** #45 (end-of-response compliance - SEPARATE from this), Pass 52 standing rule in CLAUDE.md, `feedback_audit_recommendations_against_existing_directives.md` (overlap on contradiction detection).
+
+86. **HARD RULE - Owner-facing communication uses Latin alphabet for option labels and headers; no Greek** (Batch 407 codification after 3rd memory violation 2026-05-27).
+
+    Memory `feedback_no_greek_alphabets.md` (owner directive): use A/B/C or 1/2/3 for option labels, never alpha/beta/gamma/delta/epsilon. Despite the memory, I violated this 3 separate times in this session. Owner: "Third violation."
+
+    **Apply when:** writing option lists, decision tables, multi-path framing, anything the owner reads and references back to me. Phase labels in code (Phase A/B/C per DEC-508) and academic citations are explicitly exempt - they are not option labels.
+
+    **Why CHECKLIST-codified now:** memory was insufficient; this rule needs the hard gate of pre-flight referencing. If pre-flight #86 is checked before sending any option list, the violation cannot ship.
+
+    **Joint:** `feedback_no_greek_alphabets.md`, #85 (visible pre-flight catches this if checked).
+
+87. **HARD RULE - Platform / infrastructure recommendations MUST enumerate account-level gates BEFORE recommending** (Batch 407 codification after AWS new-account compounding-gates lesson L158).
+
+    Pattern (today's AWS path): I recommended AWS over Hetzner without first enumerating: (a) EC2 RunInstances account verification status, (b) ssm:GetParameter IAM permission for AMI lookup, (c) iam:CreateRole/CreateInstanceProfile IAM permissions, (d) on-demand vCPU quota, (e) spot vCPU quota, (f) spot instance capacity. Each became a runtime blocker requiring owner action. Total wall-time cost: ~4 hours of waiting + 1 hour of code fixes that could have been avoided by upfront gate enumeration.
+
+    **Before recommending any platform / cloud / infrastructure shift, the pre-flight MUST list:**
+      a. Account verification status (new accounts have manual-review gates)
+      b. All IAM permissions needed for the called services (EC2, IAM, S3, SSM, Billing, etc.)
+      c. Service quotas relevant to the workload (vCPU on-demand AND spot separately for AWS; equivalents for other clouds)
+      d. Instance/capacity availability for selected family (live `describe-spot-price-history` or equivalent)
+      e. Network / region constraints (data locality, transfer costs)
+      f. Account-billing-tier features (e.g., Polygon Stocks Starter 5y window; AWS Free Tier credit eligibility list)
+
+    Where these cannot be verified live, the recommendation must explicitly call out the unverified assumption AND propose verification commands the owner can run.
+
+    **Apply when:** recommending any platform shift (Hetzner -> AWS, on-demand -> spot, single-machine -> multi-machine, region change). Does NOT apply when continuing on the same platform / family the workload already runs.
+
+    **Joint:** L158 (this directive's codified lesson), #84 (data-availability before claiming engine bug - cousin: verify environment constraints before recommending shift).
+
+88. **HARD RULE - Multi-step owner walkthroughs must be self-consistent across all steps + against all subsequent expectations** (Batch 407 codification after Phase-A credential-exposure walkthrough self-contradiction L160).
+
+    Pattern (Phase A AWS setup walkthrough): Step "What to send me" said "paste these in chat" with a template including Access Key + Secret. When owner did exactly that, I panicked and said "rotate everything - credentials in chat is a security risk." Self-contradicting: I asked owner to do X then reacted to X as a problem. Cost: owner had to rotate credentials + we lost ~15 min.
+
+    **Before issuing a multi-step walkthrough or procedure, audit:**
+      a. Each step's expected execution against ALL subsequent expectations in the same response or the implied next responses
+      b. Whether any step asks the owner to take an action that has a known cost/risk (security, financial, data loss) - if yes, the step itself must include the mitigation, not a later step
+      c. Whether the channel/medium specified for the action is appropriate (e.g., credentials -> password manager / AWS SSM Parameter Store / encrypted channel, NOT chat)
+      d. Whether any constants/IDs/URLs cited in the walkthrough are likely to be stale (e.g., AMI IDs rotate; check live)
+
+    **Apply when:** writing any setup walkthrough, Phase definition, onboarding procedure, or any owner-action instruction sequence longer than 3 steps. Does NOT apply to: single ad-hoc commands; status reports; verification queries.
+
+    **Joint:** L160 (this directive's codified lesson), `feedback_audit_recommendations_against_existing_directives.md` (this is the same family - don't contradict your own prior step), `feedback_no_write_only_md_files.md` (related: avoid producing walkthroughs that need follow-on corrections).
+
+89. **HARD RULE - Cost recommendations cite live pricing, not memory/historical estimates** (Batch 407 codification after spot-pricing stale-estimate lesson).
+
+    Pattern (today's AWS spot recommendation): I estimated c7a.8xlarge spot at "$0.30/hr" (memory/historical) when current live price was $0.62-0.69/hr (~2x my estimate). Owner caught it. The mis-estimate framed Path-C as "$7.50 total" when reality was "$13-14 total." Decision basis was distorted by a factor of ~2.
+
+    **Before stating any cost figure ($/hr, $/run, $/month, $/iteration) in a recommendation:**
+      a. For AWS: run `aws ec2 describe-spot-price-history` (spot) or look up the AWS pricing page (on-demand). State the source in the recommendation.
+      b. For Hetzner / DigitalOcean / Vultr / other clouds: same - live page lookup or last-7-day quoted price.
+      c. For Anthropic / OpenAI / LLM costs: model rate card current as of response time.
+      d. Memory-based estimates are NOT acceptable for cost-driving decisions. They are acceptable only for sanity-check ranges with explicit "memory-estimate; verify before commit" caveat.
+
+    **Apply when:** any cost statement that informs an owner decision. Does NOT apply to: cost-after-the-fact reporting (e.g., "actual spend was $5.63").
+
+    **Joint:** L158 (cousin: live API verification for quotas), #87 (platform-gate enumeration also requires live checks).

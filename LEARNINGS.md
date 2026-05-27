@@ -1528,3 +1528,83 @@ Direct verification: sample 29 tickers from `data_prefetch/polygon/ohlcv_daily/`
 If the cache shows data for the disputed window but the engine still produces zero trades, only THEN escalate to an engine-bug investigation. Skipping the data-availability check because the symptom "looks like a bug" is the L157 anti-pattern.
 
 **Cross-references.** Batch 406 (the mis-diagnosed "fix"; reverted Batch 407), Batch 407 (this lesson's codification + CHECKLIST #84), `backtest/config.py:21-24` (the header that already documented the 5-year window I "discovered"), L155 (silent-gap pattern — sibling: too-little data silently absorbed; L157 fights too-eagerly diagnosing too-little-data as engine bug), CHECKLIST #84 (data-availability gate before engine-bug investigation).
+
+
+
+## L158 - AWS new-account gates compound and must be enumerated upfront before recommending the platform (Pass 53 Batch 407 2026-05-27)
+
+**Pattern.** I (assistant) recommended pivoting from Hetzner CPX62 (owner-owned, working, known) to AWS Spot c7a.8xlarge for the Phase 1A-beta cube run. Reasoning at recommendation time: AWS has $100 Free Tier credit, spot pricing is cheap (my memory said ~$0.30/hr), and 5-batch parallel = 3-4h vs sequential 12h. What I failed to enumerate before the recommendation:
+
+  | # | Gate | When discovered | Owner action required | Wall-time impact |
+  |---|---|---|---|---|
+  | 1 | AWS CLI not installed | first launch attempt | `winget install Amazon.AWSCLI` + reopen shell | 15 min |
+  | 2 | Phase A walkthrough missed `IAMFullAccess` for instance-profile creation | second launch attempt | Console: IAM -> Users -> attach policy | 5 min |
+  | 3 | Phase A walkthrough missed `AmazonSSMReadOnlyAccess` for AMI lookup | second launch attempt | Console: IAM -> Users -> attach policy | 5 min |
+  | 4 | AWS new-account EC2 RunInstances pending verification (4-hour AWS-side gate) | second launch attempt | wait for AWS email | ~hours |
+  | 5 | Hardcoded AMI `ami-0c80e2b6ccb9ad6d1` is stale | third launch attempt | SSM lookup after permission granted | 2 min |
+  | 6 | bootstrap.sh hardcoded `python3.11`; Ubuntu 24.04 Noble ships python3.12 | first c7a.8xlarge instance burned 71 min on broken bootstrap | Batch 401 code fix | 71 min wasted EC2 ($2) + 15 min fix |
+  | 7 | New-account spot quota = 32 vCPU (1 x c7a.8xlarge max concurrent) | spot launch attempt | Service Quotas request raise (24-48h wait) | open-ended |
+  | 8 | New-account on-demand quota = 32 vCPU (also 1 x c7a.8xlarge max concurrent) | parallel on-demand attempt | Service Quotas request raise | open-ended |
+  | 9 | Spot capacity for c7a.8xlarge is unreliable - first spot instance was reclaimed within 15 min ("instance-terminated-no-capacity") | spot launch retry | manual re-launch | 30 min wasted |
+  | 10 | Spot price for c7a.8xlarge is $0.62-0.69/hr (my "$0.30" memory was for c7a.4xlarge) | post-recommendation pricing check | re-state cost math | 15 min revised decision |
+
+  Total cost: ~5 hours of compounded owner-blocking gates + ~$5 of wasted EC2 + multiple revised cost estimates. The Hetzner alternative (already owned, no gates, no quotas, no verification) would have been simpler at the cost of slower wall-time. The owner correctly identified later that "we should have used Hetzner."
+
+**Closure (Batch 407).** Codified CHECKLIST #87 ("Platform/infrastructure recommendations MUST enumerate account-level gates BEFORE recommending") + #89 ("Cost recommendations cite live pricing, not memory/historical estimates"). The pre-flight format change (CHECKLIST #85) means the gate enumeration is visible in the response, not hidden in my reasoning.
+
+**Rule.** Before recommending any platform shift (Hetzner -> AWS, on-demand -> spot, single-machine -> multi-machine, region change):
+  - **a.** Enumerate every account-level gate the new platform imposes (verification, IAM permissions per service called, vCPU quotas on-demand AND spot separately, instance capacity, billing-tier feature limits).
+  - **b.** Where a gate value cannot be confirmed in the same response (e.g., requires owner-side Service Quotas API call), the recommendation must explicitly call out the unverified assumption AND propose the verification command.
+  - **c.** Compare against the status quo platform's already-validated capabilities. If the new platform has N more gates than status quo, the recommendation must justify why the gates' total wall-time cost (estimated) is less than the wall-time benefit being claimed.
+  - **d.** Live-API verify pricing (`describe-spot-price-history`, on-demand pricing page) before stating $/hr. Memory-based pricing is a memory-estimate caveat only.
+
+If the platform-gate enumeration shows >3 unverified-by-this-response gates, the recommendation is incomplete and must request owner-side verifications BEFORE commitment.
+
+**Cross-references.** Batch 395 (initial AWS orchestration, this lesson's first application), Batch 401 (python3.11->3.12 bootstrap fix), Batch 405 (wall-time override for the same context), Batch 407 (this lesson's codification + CHECKLIST #87 + #89), L156 (cousin: compute budget from measured pace, this is the platform-cost cousin).
+
+
+## L159 - Wall-time extrapolation discipline: empirically-validated cross-hardware ratios only (Pass 53 Batch 407 2026-05-27)
+
+**Pattern.** During the Phase 1A-beta planning phase, I made multiple sequential wall-time predictions that the owner correctly pushed back on:
+
+  | # | Initial estimate | Source | Reality | Error |
+  |---|---|---|---|---|
+  | 1 | "10h on Hetzner CPX62 cap-off full 1937 universe" | inherited from prior 10.5h baseline (which was caps-ON, fewer trades) | likely 15-30h cap-off | undershoot 1.5-3x |
+  | 2 | "30h on Hetzner CPX62 (corrected)" | extrapolated from Windows + cProfile measurement | unknown; owner correctly questioned because trade volume changes | overshoot from non-comparable baseline |
+  | 3 | "10h on c7a.4xlarge sequential 5-batch" | linear scaling from Windows-cProfile single-thread | actual: 3h 17m for one batch on c7a.8xlarge | overshoot ~3x for batch_1; full unknown |
+  | 4 | "1.4h baseline + caps-off scaling" | Hetzner-derived but contained extrapolation assumptions | actual: closer to 3h 17m on c7a.8xlarge | partial overshoot |
+  | 5 | "6h for 4-batch parallel on 2-slot quota" | bottom-up from per-batch time | reasonable; not yet validated | TBD |
+
+  The pattern: I extrapolated across hardware (Windows -> Linux), profiling (cProfile -> no profile), and configuration (caps-on -> caps-off) without measuring cross-condition ratios. Each extrapolation introduced a factor; compounded factors produced wildly different estimates.
+
+**Closure (Batch 407).** This lesson extends L156 (compute budgets from measured pace) to non-CI contexts. The discipline: wall-time estimates require a single empirically-validated comparison point with explicit scaling factors stated, not a chain of memory-based extrapolations.
+
+**Rule.** Before stating any wall-time estimate (X hours / Y minutes per batch / Z days for full run):
+  - **a.** State the empirical comparison run from which the estimate is derived (date, hardware, configuration, measured wall-time).
+  - **b.** State each scaling factor between comparison-run and prediction-target separately: ticker-count ratio, vCPU ratio (with effective-parallelism qualifier), config-flag impact (caps on/off, regime affinity on/off, etc.), trade-volume scaling factor (impacts cube replay + exit_manager), pool-worker ratio.
+  - **c.** Cross-hardware ratios (Windows -> Linux, cProfile -> no-profile) require a measured calibration run if available, OR an explicit factor with caveat ("estimate based on documented ~2x Linux speedup over Windows for pandas-heavy workloads; not measured for this specific code path").
+  - **d.** When the prediction-target has multiple unmeasured factors, present the estimate as a range (low x best-case / high x worst-case) rather than a single number.
+  - **e.** Past wall-time predictions that proved wrong must be retracted explicitly in the next status update; do not silently revise.
+
+**Cross-references.** L156 (CI compute-budget estimates; this is the operational cousin), Batch 322 (screen pool wiring; pool-worker ratio measurement), Batch 394 (cube-pool wiring; cube replay parallelism), L158 (this lesson's sibling on platform-cost estimates).
+
+
+## L160 - Self-contradicting owner walkthroughs (Pass 53 Batch 407 2026-05-27)
+
+**Pattern.** Phase A AWS setup walkthrough I wrote on 2026-05-27 contained a "What to send me when Phase A is done" template explicitly asking the owner to "paste these and only these" in chat - with a field for `AWS_SECRET_ACCESS_KEY` among the fields. When the owner did exactly that, I immediately responded with "STOP - Credential exposure issue ... Treat this key as compromised ... rotate immediately." The owner correctly called out the self-contradiction: "You asked me to send this which i did over chat and you then asked me to revoke everything. Why dont you stick to 1 thing?"
+
+The walkthrough Step N told owner to do X. Response after Step N's execution treated X as a problem. That's a self-contradicting instruction.
+
+The root cause: I wrote Steps 1-9 of Phase A as a template without auditing the security-sensitivity of each "send me" item. The security note "Never paste the Secret Access Key into any git-tracked file" appeared at the BOTTOM of the walkthrough but the template at the top explicitly invited the owner to do so via chat. The two contradicted each other in the same response.
+
+**Closure (Batch 407).** Codified CHECKLIST #88 ("Multi-step owner walkthroughs must be self-consistent across all steps + against all subsequent expectations") which adds a mandatory audit step: each walkthrough step's expected execution must not be a problem for any subsequent step or implicit subsequent response.
+
+**Rule.** Before issuing any multi-step walkthrough or procedure (setup guide, Phase definition, onboarding sequence, owner-action instruction list with >3 steps):
+  - **a.** Audit each step's expected outcome against ALL subsequent expectations in the same response and the implied next responses.
+  - **b.** If a step asks the owner to take an action with known cost/risk (security, financial, data-loss): the mitigation must be IN THAT STEP, not in a later step or footnote.
+  - **c.** For credentials/secrets specifically: never instruct owner to send via chat or any text channel that has retention. Specify the secure channel upfront (password manager share, AWS SSM Parameter Store, encrypted file transfer).
+  - **d.** Constants and IDs in walkthroughs (AMI IDs, instance types, IP addresses, version numbers) require live verification before stating, OR explicit "expected to be rotated; verify via X" annotation.
+
+If a walkthrough contains a step that would require an immediate follow-on correction in the next response, the walkthrough is non-compliant. Rewrite the walkthrough before issuing.
+
+**Cross-references.** Batch 395 (Phase A AWS setup walkthrough this lesson critiques), Batch 407 (codification + CHECKLIST #88), `feedback_audit_recommendations_against_existing_directives.md` (same family: don't contradict your own prior step), CHECKLIST #84 (verify before claiming - cousin: same self-consistency principle applied to bug diagnosis), CHECKLIST #88 (this lesson's codification).
