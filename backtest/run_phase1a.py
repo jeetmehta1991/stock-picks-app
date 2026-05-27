@@ -155,7 +155,11 @@ def main():
     p.add_argument("--max-cands",  type=int, default=30,
                    help="Max screener candidates accepted per day. "
                         "Batch 314 Cat-5 A loosen: 10 -> 30 (owner-approved 2026-05-24) "
-                        "to admit Phase 1A-beta strategies starved by per-day cap.")
+                        "to admit Phase 1A-beta strategies starved by per-day cap. "
+                        "Batch 386 (owner 2026-05-26): AUTO-OVERRIDDEN to 200 when "
+                        "--phase=1a-beta (cube cost is $0 without agents; the 30 "
+                        "default was sized for live-agent cost control which does "
+                        "not apply to cube evaluation). Phase 1B-alpha returns to 30.")
     p.add_argument("--screen-pool-workers", type=int, default=0,
                    help="Batch 322 (2026-05-25): number of process-pool workers "
                         "for per-ticker screen_instrument parallelization. "
@@ -212,6 +216,16 @@ def main():
         print("[Batch 384] Phase 1a-beta detected -> auto-enabling --no-event-suppression "
               "(Gate 3 opt; cube measures strategy robustness through events).")
         args.no_event_suppression = True
+    # Batch 386 (owner 2026-05-26 option B): raise --max-cands default 30 -> 200
+    # for phase=1a-beta cube evaluation. With --no-agents the original
+    # cost-control rationale for 30 cap does not apply. 200 admits ~6.7x
+    # more candidates/day, supporting empirical cube fires for the now-29+
+    # strategies competing for slots.
+    if args.phase == "1a-beta" and args.max_cands == 30:
+        print("[Batch 386] Phase 1a-beta detected -> raising --max-cands 30 -> 200 "
+              "(cube evaluation needs more candidate throughput; cost is $0 without "
+              "agents). Pass --max-cands explicitly to override.")
+        args.max_cands = 200
 
     phase_key = f"phase_{args.phase}"
 

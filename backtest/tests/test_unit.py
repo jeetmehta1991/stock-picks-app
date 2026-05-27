@@ -9671,6 +9671,20 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch386_max_cands_auto_raised_200_for_phase_1a_beta():
+    """Batch 386 (owner-approved 2026-05-26 option B): when phase=1a-beta,
+    --max-cands default 30 is auto-raised to 200. With --no-agents the
+    agent-cost-control rationale for the 30 cap does not apply; cube
+    evaluation needs more per-day candidate throughput."""
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    src = (repo / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    assert "args.max_cands = 200" in src, (
+        "Batch 386 regression: phase=1a-beta must auto-raise max-cands to 200"
+    )
+    assert "[Batch 386]" in src, "Batch 386 banner missing"
+
+
 def test_batch385_buyback_8k_recent_long_days_loosened_3_to_5():
     """Batch 385 Gate 4 opt (owner-approved 2026-05-26 per Batch 380):
     days_since_8k threshold loosened 3 -> 5 days based on Lopez-Lira-Tang
