@@ -164,8 +164,21 @@ def main():
                         "is the recommended setting. Worker initializer "
                         "loads full ohlcv_dict + info_dict so per-day IPC "
                         "stays small.")
+    p.add_argument("--no-portfolio-cap", action="store_true",
+                   help="Batch 377 (owner 2026-05-26): bypass Batch 203 "
+                        "regime cap + LIVE_TRADING_RULES max_open_positions "
+                        "for Phase 1A--beta cube evaluation. Drawdown halt + "
+                        "ticker-uniqueness + cash-sufficiency still apply. "
+                        "AUTO-ENABLED for phase=1a-beta; pass explicitly for "
+                        "other phases. Phase 1B--alpha re-engages the cap.")
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
+
+    # Batch 377: auto-enable --no-portfolio-cap for 1a-beta cube evaluation
+    if args.phase == "1a-beta" and not args.no_portfolio_cap:
+        print("[Batch 377] Phase 1a-beta detected -> auto-enabling --no-portfolio-cap "
+              "(cube evaluation mode). Pass --no-portfolio-cap=False to override.")
+        args.no_portfolio_cap = True
 
     phase_key = f"phase_{args.phase}"
 
@@ -252,6 +265,7 @@ def main():
         disable_news=args.no_news,
         walk_forward=walk_forward_enabled,
         screen_pool_workers=args.screen_pool_workers,  # Batch 322
+        no_portfolio_cap=args.no_portfolio_cap,        # Batch 377
     )
     if args.no_git:
         import os

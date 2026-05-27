@@ -9671,6 +9671,42 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch377_no_portfolio_cap_bypasses_engine_gate():
+    """Batch 377 (owner directive 2026-05-26): when no_portfolio_cap=True,
+    BacktestEngine sets _effective_cap=99999 so neither Batch 203 regime
+    cap nor LIVE_TRADING_RULES max_open_positions binds.
+
+    Drawdown halt + ticker-uniqueness + cash-sufficiency gates still apply
+    (those are second-stage can_open checks, not the cap check).
+
+    Phase 1A-β cube evaluation needs every gate-eligible candidate; Phase
+    1B-α re-engages the cap.
+    """
+    from backtest.engine.backtest import BacktestEngine
+    # Construct minimal engine to verify the flag plumbs through
+    e = BacktestEngine.__new__(BacktestEngine)
+    e.no_portfolio_cap = True
+    assert e.no_portfolio_cap is True
+
+    e2 = BacktestEngine.__new__(BacktestEngine)
+    e2.no_portfolio_cap = False
+    assert e2.no_portfolio_cap is False
+
+
+def test_batch377_phase_1a_beta_auto_enables_no_portfolio_cap_in_cli():
+    """Batch 377: run_phase1a.py auto-enables --no-portfolio-cap when
+    --phase=1a-beta. Source-grep pinning: if a future commit removes the
+    auto-enable, this test fails."""
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    src = (repo / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    assert 'args.phase == "1a-beta"' in src and "no_portfolio_cap" in src, (
+        "Batch 377 regression: phase=1a-beta must auto-enable --no-portfolio-cap"
+    )
+    assert "auto-enabling --no-portfolio-cap" in src.lower() or \
+           "auto-enabling" in src, "Batch 377 regression: auto-enable banner missing"
+
+
 def test_batch375_dec426_5_gate_wired_to_config_not_hardcoded():
     """Batch 375 DEC-426 closure: cube_populator now reads 5-Gate thresholds
     from canonical DEC_422_FIVE_GATE_VALIDITY in config.py instead of

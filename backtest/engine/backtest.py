@@ -70,7 +70,15 @@ class BacktestEngine:
         walk_forward:           bool  = True,
         disable_news:           bool  = False,
         screen_pool_workers:    int   = 0,    # Batch 322: 0 = disabled (sequential)
+        no_portfolio_cap:       bool  = False, # Batch 377 owner 2026-05-26: bypass portfolio cap for Phase 1A--beta cube evaluation. Re-engaged in Phase 1B--alpha.
     ):
+        self.no_portfolio_cap = bool(no_portfolio_cap)
+        if self.no_portfolio_cap:
+            logger.info(
+                "Batch 377: portfolio cap BYPASSED (no_portfolio_cap=True). "
+                "Cube evaluation mode - all gate-eligible candidates are "
+                "admitted regardless of position count. Re-engage in Phase 1B--alpha."
+            )
         _user_universe = universe or UNIVERSE
         # Batch 290 (2026-05-20): SPY is system-required for regime
         # classification. Auto-include in universe when not user-supplied so
@@ -1621,20 +1629,35 @@ class BacktestEngine:
                             "multiplier": round(float(per_pos_mult), 4),
                         })
                     if size_pct > 0:
-                        # Batch 203 (regime-conditional cap per AMH research):
-                        # cap = min(LIVE_TRADING_RULES base, regime cap).
-                        # bull:40 / neutral:25 / bear:15 / crisis:10 / unknown:5.
-                        # Bear/crisis tightening protects capital in adverse
-                        # regimes; static cap-25 was too loose for crisis (per
-                        # Phase 1A-beta 2022 -117pp loss year).
-                        from backtest.engine.regime_selector import (
-                            regime_position_count_cap,
-                        )
-                        _regime_cap = regime_position_count_cap(regime)
-                        _effective_cap = min(
-                            LIVE_TRADING_RULES["max_open_positions"],
-                            _regime_cap,
-                        )
+                        # Batch 377 (owner directive 2026-05-26): when
+                        # no_portfolio_cap=True (Phase 1A--beta cube evaluation),
+                        # bypass BOTH Batch 203 regime cap AND
+                        # LIVE_TRADING_RULES["max_open_positions"]. Cube
+                        # exhaustive evaluation needs every gate-eligible
+                        # candidate to enter; Phase 1A--beta prior runs lost 56
+                        # strategies to cap saturation. Phase 1B--alpha re-engages
+                        # the cap.
+                        if self.no_portfolio_cap:
+                            # Still apply drawdown halt (capital-protection
+                            # gate is separate from cap saturation gate);
+                            # still apply ticker-uniqueness + cash-sufficiency
+                            # gates per can_open() second-stage checks.
+                            _effective_cap = 99999
+                        else:
+                            # Batch 203 (regime-conditional cap per AMH research):
+                            # cap = min(LIVE_TRADING_RULES base, regime cap).
+                            # bull:40 / neutral:25 / bear:15 / crisis:10 / unknown:5.
+                            # Bear/crisis tightening protects capital in adverse
+                            # regimes; static cap-25 was too loose for crisis (per
+                            # Phase 1A-beta 2022 -117pp loss year).
+                            from backtest.engine.regime_selector import (
+                                regime_position_count_cap,
+                            )
+                            _regime_cap = regime_position_count_cap(regime)
+                            _effective_cap = min(
+                                LIVE_TRADING_RULES["max_open_positions"],
+                                _regime_cap,
+                            )
                         ok, reason = self.portfolio.can_open(
                             ticker=ticker, size_pct=size_pct,
                             max_positions=_effective_cap,
