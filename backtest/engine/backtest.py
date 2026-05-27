@@ -72,9 +72,13 @@ class BacktestEngine:
         screen_pool_workers:    int   = 0,    # Batch 322: 0 = disabled (sequential)
         no_portfolio_cap:       bool  = False, # Batch 377 owner 2026-05-26: bypass portfolio cap for Phase 1A-beta cube evaluation. Re-engaged in Phase 1B-alpha.
         no_dd_halt:             bool  = False, # Batch 383 owner 2026-05-26: bypass DEC-515 Level 6 + Portfolio drawdown_suspend halt for Phase 1A-beta cube. Capital-protection gate not applicable to cell-verdict computation. Re-engaged in Phase 1B-alpha.
+        no_regime_affinity:     bool  = False, # Batch 384 owner 2026-05-26 Gate 2 opt: bypass Batch 203/293 STRATEGY_REGIME_AFFINITY filter for Phase 1A-beta cube. Cube measures per-regime cell verdicts empirically; let data say which regime works per strategy. Re-engaged Phase 1B-alpha.
+        no_event_suppression:   bool  = False, # Batch 384 owner 2026-05-26 Gate 3 opt: bypass DEC-348 event suppression (FOMC/CPI/NFP/earnings) for Phase 1A-beta cube. Cube needs event-day data to measure strategy robustness through events. Re-engaged Phase 1B-alpha.
     ):
         self.no_portfolio_cap = bool(no_portfolio_cap)
         self.no_dd_halt = bool(no_dd_halt)
+        self.no_regime_affinity = bool(no_regime_affinity)
+        self.no_event_suppression = bool(no_event_suppression)
         if self.no_portfolio_cap:
             logger.info(
                 "Batch 377: portfolio cap BYPASSED (no_portfolio_cap=True). "
@@ -87,6 +91,19 @@ class BacktestEngine:
                 "halt + Portfolio.can_open drawdown_suspend gate skipped. "
                 "Phase 1A-beta cube evaluation only - capital-protection gates "
                 "re-engage in Phase 1B-alpha."
+            )
+        if self.no_regime_affinity:
+            logger.info(
+                "Batch 384 Gate 2 opt: REGIME AFFINITY BYPASSED (no_regime_affinity=True). "
+                "Batch 203/293 STRATEGY_REGIME_AFFINITY filter skipped. Every strategy "
+                "evaluated in every regime for empirical cube verdicts. Phase 1B-alpha "
+                "re-engages regime affinity per cube outcomes."
+            )
+        if self.no_event_suppression:
+            logger.info(
+                "Batch 384 Gate 3 opt: EVENT SUPPRESSION BYPASSED (no_event_suppression=True). "
+                "DEC-348 FOMC/CPI/NFP/earnings blackout windows skipped. Cube measures "
+                "strategy robustness THROUGH events. Phase 1B-alpha re-engages."
             )
         _user_universe = universe or UNIVERSE
         # Batch 290 (2026-05-20): SPY is system-required for regime
@@ -1237,15 +1254,19 @@ class BacktestEngine:
                 # defaults to {bull, neutral}, short to {bear, crisis, neutral})
                 # instead of allow-all. Closes Stage C v2 gap where 25 long
                 # trades fired in bear regime via affinity-not-in-map fallback.
-                if not should_strategy_fire_in_regime(
-                        strat_entry["strategy"], regime,
-                        direction=direction):
-                    self.skipped_trades.append({
-                        "ticker": ticker, "date": as_of,
-                        "strategy": strat_entry["strategy"],
-                        "reason": f"regime_affinity_block_{regime}_batch203",
-                    })
-                    continue
+                # Batch 384: when no_regime_affinity=True (Phase 1A-beta cube),
+                # skip the affinity filter. Cube collects per-regime data
+                # empirically.
+                if not self.no_regime_affinity:
+                    if not should_strategy_fire_in_regime(
+                            strat_entry["strategy"], regime,
+                            direction=direction):
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "reason": f"regime_affinity_block_{regime}_batch203",
+                        })
+                        continue
 
                 # Crisis long exclusions  -  block long entries on specific tickers
                 # that are data-confirmed wrong-directional in crisis regime
@@ -1392,7 +1413,10 @@ class BacktestEngine:
                 # Lucca-Moench 2015 pre-FOMC drift). Bypass the suppression
                 # gate for these strategies; non-tagged strategies still
                 # respect Batch 191 windows.
-                if _event_suppressed:
+                # Batch 384: when no_event_suppression=True (Phase 1A-beta cube),
+                # skip the entire DEC-348 event-suppression gate. Cube
+                # measures strategy robustness through events.
+                if _event_suppressed and not self.no_event_suppression:
                     from backtest.config import STRATEGIES_BYPASS_EVENT_SUPPRESSION
                     if strat_entry["strategy"] in STRATEGIES_BYPASS_EVENT_SUPPRESSION:
                         # Strategy explicitly trades events; do not suppress

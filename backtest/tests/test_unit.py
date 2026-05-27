@@ -9671,6 +9671,59 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch385_buyback_8k_recent_long_days_loosened_3_to_5():
+    """Batch 385 Gate 4 opt (owner-approved 2026-05-26 per Batch 380):
+    days_since_8k threshold loosened 3 -> 5 days based on Lopez-Lira-Tang
+    2023 5-day post-8K reaction window. Empirical Phase 1A-beta evidence:
+    all 86 fires had days_since_8k right at the 3-day boundary."""
+    from backtest.signals.screener import strat_buyback_8k_recent_long
+    # Day 4 should now fire (was blocked pre-Batch-385)
+    sig_day4 = {
+        "recent_8k_filed":     True,
+        "days_since_8k":       4,
+        "price_above_ema_200": True,
+        "vol_spike_15x":       True,
+    }
+    result = strat_buyback_8k_recent_long(sig_day4)
+    assert result["fires"] is True, "Day 4 should fire post-Batch-385 (was 3, now 5)"
+    # Day 5 still fires
+    sig_day5 = {**sig_day4, "days_since_8k": 5}
+    assert strat_buyback_8k_recent_long(sig_day5)["fires"] is True
+    # Day 6 still blocked (boundary still applies)
+    sig_day6 = {**sig_day4, "days_since_8k": 6}
+    assert strat_buyback_8k_recent_long(sig_day6)["fires"] is False
+
+
+def test_batch384_no_regime_affinity_and_no_event_suppression_bypass_gates():
+    """Batch 384 Gate 2 + Gate 3 optimization (owner 2026-05-26):
+    --no-regime-affinity + --no-event-suppression flags bypass Batch
+    203/293 regime affinity filter and DEC-348 event suppression
+    (FOMC/CPI/NFP/earnings) for Phase 1A-beta cube evaluation.
+    """
+    from backtest.engine.backtest import BacktestEngine
+    e = BacktestEngine.__new__(BacktestEngine)
+    e.no_regime_affinity = True
+    e.no_event_suppression = True
+    assert e.no_regime_affinity is True
+    assert e.no_event_suppression is True
+    e2 = BacktestEngine.__new__(BacktestEngine)
+    e2.no_regime_affinity = False
+    e2.no_event_suppression = False
+    assert e2.no_regime_affinity is False
+    assert e2.no_event_suppression is False
+
+
+def test_batch384_phase_1a_beta_auto_enables_gate2_gate3_in_cli():
+    """Batch 384: run_phase1a.py auto-enables --no-regime-affinity AND
+    --no-event-suppression when --phase=1a-beta (parallel to 377/383)."""
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    src = (repo / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    assert "no_regime_affinity" in src and 'args.phase == "1a-beta"' in src
+    assert "no_event_suppression" in src
+    assert "[Batch 384]" in src, "Batch 384 banner missing"
+
+
 def test_batch383_no_dd_halt_bypasses_dec_515_level_6():
     """Batch 383 (owner directive 2026-05-26 option A): no_dd_halt=True
     bypasses the DEC-515 Level 6 portfolio DD halt + raises Portfolio.

@@ -178,6 +178,18 @@ def main():
                         "gate does not apply to per-(strategy x exit x regime) "
                         "cell-verdict computation. AUTO-ENABLED for "
                         "phase=1a-beta. Phase 1B-alpha re-engages the halt.")
+    p.add_argument("--no-regime-affinity", action="store_true",
+                   help="Batch 384 Gate 2 opt (owner 2026-05-26): bypass Batch "
+                        "203/293 STRATEGY_REGIME_AFFINITY filter for Phase 1A-beta "
+                        "cube. Every strategy evaluated in every regime to "
+                        "produce empirical per-regime cube verdicts. AUTO-ENABLED "
+                        "for phase=1a-beta. Phase 1B-alpha re-engages affinity.")
+    p.add_argument("--no-event-suppression", action="store_true",
+                   help="Batch 384 Gate 3 opt (owner 2026-05-26): bypass DEC-348 "
+                        "event suppression (FOMC/CPI/NFP/earnings blackouts) for "
+                        "Phase 1A-beta cube. Cube measures strategy robustness "
+                        "through events. AUTO-ENABLED for phase=1a-beta. Phase "
+                        "1B-alpha re-engages event suppression.")
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
 
@@ -191,6 +203,15 @@ def main():
         print("[Batch 383] Phase 1a-beta detected -> auto-enabling --no-dd-halt "
               "(cube evaluation mode, capital-protection gates re-engage in 1B-alpha).")
         args.no_dd_halt = True
+    # Batch 384: Gate 2 + 3 auto-enable for phase=1a-beta
+    if args.phase == "1a-beta" and not args.no_regime_affinity:
+        print("[Batch 384] Phase 1a-beta detected -> auto-enabling --no-regime-affinity "
+              "(Gate 2 opt; every strategy x regime gets empirical cube cells).")
+        args.no_regime_affinity = True
+    if args.phase == "1a-beta" and not args.no_event_suppression:
+        print("[Batch 384] Phase 1a-beta detected -> auto-enabling --no-event-suppression "
+              "(Gate 3 opt; cube measures strategy robustness through events).")
+        args.no_event_suppression = True
 
     phase_key = f"phase_{args.phase}"
 
@@ -279,6 +300,8 @@ def main():
         screen_pool_workers=args.screen_pool_workers,  # Batch 322
         no_portfolio_cap=args.no_portfolio_cap,        # Batch 377
         no_dd_halt=args.no_dd_halt,                    # Batch 383
+        no_regime_affinity=args.no_regime_affinity,    # Batch 384 Gate 2
+        no_event_suppression=args.no_event_suppression, # Batch 384 Gate 3
     )
     if args.no_git:
         import os

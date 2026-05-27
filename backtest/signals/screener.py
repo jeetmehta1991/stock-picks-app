@@ -1374,16 +1374,22 @@ def strat_buyback_8k_recent_long(s):
     this strategy fires on RECENT 8-K + bullish context as a generic
     event-driven long.
     """
+    # Batch 385 Gate 4 opt (owner-approved 2026-05-26 per Batch 380 BINDING
+    # clause analysis): days_since_8k loosened 3 -> 5. Empirical: 86/86 fires
+    # in Phase 1A-beta single-batch had days_since_8k right at boundary
+    # (min=3.0). Lopez-Lira-Tang 2023 documents 5-day post-8K reaction
+    # window. Loosening admits more candidates inside the empirical
+    # event-reaction envelope while preserving "recent 8-K" semantics.
     fires = (
         s.get("recent_8k_filed", False)
-        and s.get("days_since_8k", -1) <= 3
+        and s.get("days_since_8k", -1) <= 5
         and s.get("price_above_ema_200", True)
         and s.get("vol_spike_15x", False)
     )
     return _strat(fires, "long", "event_driven",
-        ["recent_8k_filed", "days_since_8k<=3", "price_above_ema_200",
+        ["recent_8k_filed", "days_since_8k<=5", "price_above_ema_200",
          "vol_spike_1.5x"],
-        ["Recent 8-K filed (last 3 days) - corporate event proxy",
+        ["Recent 8-K filed (last 5 days; Lopez-Lira-Tang 2023 window) - corporate event proxy",
          "Above 200 EMA - bullish backdrop",
          "Volume 1.5x ADV(20) - market reacting to event"])
 
