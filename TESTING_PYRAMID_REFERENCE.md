@@ -271,6 +271,51 @@ Per memory rule [`feedback_pyramid_full_13_tiers_mandatory.md`](C:/Users/jeetm/.
 
 ---
 
+## Pre-Launch Validation Suite (Phase 1A-β composite gate)
+
+**Status:** Canonical composite gate for any Phase 1A-β full launch. Batch 367 (initial 6 phases) + Batch 393 (expansion to 11 phases) per owner directive 2026-05-25 + 2026-05-26.
+**Source-of-truth:** [scripts/pre_launch_validation.py](scripts/pre_launch_validation.py).
+**Invocation:** `python scripts/pre_launch_validation.py` (single CLI). Wall-time ~6-12 min.
+
+The pre-launch suite is **NOT a replacement for the 13-tier pyramid**. It is a composite gate that selects high-leverage assertions from multiple tiers and bundles them under one CLI specifically for Phase 1A-β launch readiness. The 13-tier pyramid still runs on every commit; the pre-launch suite runs once before a multi-day full-universe run.
+
+### The 11 phases
+
+| Phase | Name | Tier home | Catches |
+|---|---|---|---|
+| 1 | Data Prerequisites Audit | T7 Data Integrity | Missing prefetch dirs/files before the multi-day run starts |
+| 2 | Generalized Fire-Rate Gate | T7 Data Integrity | BUG-296-family smart-money silent gaps (Quiver endpoint 404s) |
+| 3 | Config Independence Smoke | T2 Smoke / T11 E2E | Env-var-dependency drift (QUIVER_API_KEY-class gate that broke Batch 363) |
+| 4 | Silent-Gap Regression Suite | T6 Regression | One assertion per known BUG-NNN fix; protects against re-regression |
+| 5 | Cube Cell Coverage Gate | T11 E2E | `save_all_outputs` cube failures that leave `trade_exit_detail` empty |
+| 6 | Doc/Code Alignment Gate | T12 Dashboard regen | Count drift in CLAUDE.md / CANONICAL_FACTS.md / VERIFICATION_MATRIX.md |
+| 7 | Post-Run Validation | T9 Acceptance / T11 E2E | (POST-RUN ONLY) trade_log/cube/winners/signal-fire-rates emitted correctly |
+| 8 | Cube Gate Enablement Check (393) | T10 Contract | Verifies all 5 Phase-1A-β cube auto-enables (Batches 377/383/384/386) fire in current code — catches the bug class where a flag is added but never auto-set |
+| 9 | Generalized Producer Emit (393) | T7 Data Integrity | Sweeps every required boolean producer across ~400 ticker-bar samples; catches always-False bugs (squeeze_fire_up / smc_equal_swept class) BEFORE strategies depend on them |
+| 10 | Strategy Wiring Audit Gate (393) | T7 Data Integrity | Gates on `scripts/strategy_wiring_audit.py`; HARD-FAIL on producer-consumer mismatch / default-trap / synthesize inconsistency / type incompatibility |
+| 11 | Intermediate Monitor Armed (393) | T9 Acceptance | Verifies the intermediate trade-count monitor is in place with abort thresholds — so a 361-trade-style collapse aborts early rather than at end of run |
+
+Phase 7 is excluded from pre-launch sweep (it runs against a freshly-merged output dir after the run completes). The pre-launch CLI runs phases 1-6 + 8-11 = **10 phases**.
+
+### Mistakes this suite is designed to catch (lineage)
+
+The expansion in Batch 393 is direct lineage from the 361-trade Phase 1A-β collapse on 2026-05-25:
+- **Phase 8 (Cube Gate Enablement)** — root cause: cube flags 377/383/384 existed in code but were missing the `--phase=1a-beta` auto-enable, so the cube run inherited Phase-1A defaults that gated 99.96% of candidates. Phase 8 grep-checks the auto-enable banners + kwargs every time.
+- **Phase 9 (Generalized Producer Emit)** — root cause: `squeeze_fire_up`/`squeeze_fire_dn` had a formula bug (`delta = close - mid20 + ema20` instead of `close - mid20`) making both ALWAYS-False; `smc_equal_highs/lows_swept` did `tail(20)` before filtering to liquidity rows, so the filter saw zero match. Phase 9 sweeps each required producer across ~400 random (ticker, bar) samples — any always-False emit rate is HARD-FAIL.
+- **Phase 10 (Wiring Audit Gate)** — root cause: 185 strategies / 1,243 producer keys; manual review can't keep up with refactor velocity. Phase 10 gates on `strategy_wiring_audit.py` which uses a 3-layer producer-key index (static regex + runtime introspection + hardcoded supplement) + 4-attempt consumer synthesis to detect mismatches.
+- **Phase 11 (Intermediate Monitor)** — root cause: the 361-trade collapse was only visible after the 4-hour Hetzner run completed. Phase 11 verifies an intermediate monitor is armed with abort thresholds (trade-count-per-day floor, fire-rate floor) so collapse triggers early-abort.
+
+### Joint with the 13-tier pyramid
+
+Pre-launch suite ≠ replacement for the 13-tier pyramid. Both run on every Phase 1A-β-touching push:
+1. **Per-commit:** full 13-tier pyramid per CHECKLIST #69.
+2. **Pre-launch (additionally):** 10-phase pre-launch suite gates the full multi-day run.
+3. **Post-run:** Phase 7 + walk-forward (T13) gate the merged output.
+
+If any pre-launch phase FAILs, the Phase 1A-β launch is BLOCKED — owner must triage before launch.
+
+---
+
 ## Joint with other rules
 
 - **CHECKLIST #67 (per-turn doc sync):** dashboard regen (T12) feeds doc-sync sweep.
@@ -294,3 +339,4 @@ Per memory rule [`feedback_pyramid_full_13_tiers_mandatory.md`](C:/Users/jeetm/.
 | Tier 7 (Data integrity / silent-gap) | 125+ |
 | Latest pyramid run | Batch 345 — 988 passed |
 | Last partial-pyramid drift incident | Batches 49-68 (corrected; memory rule live) |
+| Pre-launch composite gate | 10 phases live (Batch 393); see [Pre-Launch Validation Suite](#pre-launch-validation-suite-phase-1a-β-composite-gate) section |

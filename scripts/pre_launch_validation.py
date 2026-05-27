@@ -1,19 +1,19 @@
-"""Batch 367: Pre-Launch Validation Suite for Phase 1A-beta.
+"""Batch 367 (orig) + Batch 393 (expansion): Pre-Launch Validation Suite for Phase 1A-beta.
 
 Source (per CHECKLIST #77 canonical-source attribution): owner directive
-2026-05-25 Option A. Addresses owner concern after Batches 363/365/366
-revealed multiple silent gaps: "Am concerned that there would be more
-such silent gaps and we are not having enough testing to cover these
-before we scale to full phase 1A beta."
+2026-05-25 Option A (Batch 367) + owner directive 2026-05-26 (Batch 393):
+"Expand the 6 phase validation suite to ensure the mistakes of latest run
+are caught and addressed early on. Update the testing pyramid with new
+latest multi phase validation suite."
 
-Six independent phases. Each FAILS hard on detection. Run before any
-Phase 1A-beta full launch. Wall time ~5-10 min (Phase 3 smoke is the
-heaviest at ~5min on Hetzner / ~3min local).
+Ten independent pre-launch phases (1-6 + 8-11) + 1 post-run phase (7).
+Each FAILS hard on detection. Run before any Phase 1A-beta full launch.
+Wall time ~6-12 min (Phase 3 smoke ~5min, Phase 9 producer sweep ~40s).
 
-PHASES:
+PHASES (pre-launch):
   1. Data Prerequisites Audit      catches missing prefetch dirs / files
   2. Generalized Fire-Rate Gate    catches BUG-296-family silent gaps
-                                   across ALL signals (not just smart money)
+                                   across smart money signals
   3. Config Independence Smoke     catches env-var-dependency drift (e.g.
                                    QUIVER_API_KEY gate that broke Batch 363)
   4. Silent-Gap Regression Suite   one assertion per known BUG-NNN fix
@@ -21,6 +21,26 @@ PHASES:
                                    that leave trade_exit_detail empty
   6. Doc/Code Alignment Gate       catches count drift in CLAUDE.md /
                                    CANONICAL_FACTS.md (Batch 357 hardened)
+  8. Cube Gate Enablement Check    (Batch 393) verifies all 5 cube
+                                   auto-enables (377/383/384/386) fire in
+                                   current code -- catches the class of bug
+                                   where a flag is added but never auto-set
+  9. Generalized Producer Emit     (Batch 393) sweeps every required boolean
+                                   producer across ~400 ticker-bar samples;
+                                   catches always-False bugs (squeeze_fire_up
+                                   class) BEFORE strategies depend on them
+ 10. Strategy Wiring Audit Gate    (Batch 393) gates on strategy_wiring_audit
+                                   results; HARD-FAIL on producer-consumer
+                                   mismatch / default-trap / synthesize
+                                   inconsistency / type incompatibility
+ 11. Intermediate Monitor Armed    (Batch 393) verifies the intermediate
+                                   trade-count monitor is in place with
+                                   abort thresholds so a 361-trade-style
+                                   collapse aborts early rather than at end
+
+POST-RUN:
+  7. Post-Run Validation           validates fresh merged output dir
+                                   (trade_log/cube/winners/signals)
 
 Usage:
   python scripts/pre_launch_validation.py                       # all phases
@@ -282,13 +302,228 @@ def phase_6_doc_alignment() -> list[str]:
 # ----------------------------------------------------------------------
 # Runner
 # ----------------------------------------------------------------------
+def phase_8_cube_gate_enablement() -> list[str]:
+    """Batch 393: verify ALL 5 Phase-1A-beta cube auto-enables fire in current
+    code. Catches the Batch-369-era class of bug where Phase 1A-beta launched
+    with stale code that lacked cube-flag auto-enable.
+
+    Auto-enables required (when --phase=1a-beta):
+      Batch 377: --no-portfolio-cap        (Batch 203 cap @25 bypassed)
+      Batch 383: --no-dd-halt              (DEC-515 Level 6 halt bypassed)
+      Batch 384: --no-regime-affinity      (Batch 203/293 affinity bypassed)
+      Batch 384: --no-event-suppression    (DEC-348 windows bypassed)
+      Batch 386: --max-cands 30 -> 200     (screener throughput raised)
+    """
+    fails = []
+    src = (REPO / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    checks = [
+        ("377", "[Batch 377]", "args.no_portfolio_cap = True"),
+        ("383", "[Batch 383]", "args.no_dd_halt = True"),
+        ("384a", "[Batch 384]", "args.no_regime_affinity = True"),
+        ("384b", "[Batch 384]", "args.no_event_suppression = True"),
+        ("386", "[Batch 386]", "args.max_cands = 200"),
+    ]
+    for tag, banner, set_line in checks:
+        if banner not in src:
+            fails.append(f"Batch {tag}: banner '{banner}' missing from run_phase1a.py")
+        if set_line not in src:
+            fails.append(f"Batch {tag}: auto-enable '{set_line}' missing")
+    # Also: BacktestEngine __init__ must accept all 4 keyword args
+    eng_src = (REPO / "backtest" / "engine" / "backtest.py").read_text(encoding="utf-8")
+    for kwarg in ("no_portfolio_cap", "no_dd_halt",
+                   "no_regime_affinity", "no_event_suppression"):
+        if f"{kwarg}:" not in eng_src and f"{kwarg}=" not in eng_src:
+            fails.append(f"BacktestEngine.__init__ missing kwarg: {kwarg}")
+    return fails
+
+
+def phase_9_generalized_producer_emit_check() -> list[str]:
+    """Batch 393: extend Phase 2 (smart-money only) to ALL producer modules.
+    Catches the squeeze_fire_up / smc_equal_swept class of bug where a
+    producer key is emitted but the value is ALWAYS FALSE due to a logic
+    formula error.
+
+    For each known producer module, invoke compute_* on a sample of OHLCV
+    and verify booleans are not always-False.
+    """
+    fails = []
+    import pandas as pd
+    tickers = ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA",
+                "JPM", "XOM", "JNJ"]
+    # Batch 393 fix: original 4-bar sampling produced 40 total last-bar
+    # samples. With a 5% true emit rate, P(0 truthy in 40) ~= 13% - too
+    # high a false-positive rate. Sweep end_idx in 25-bar steps across each
+    # ticker history (~40 windows/ticker x 10 tickers = ~400 samples).
+    # For 5% true rate, P(0 truthy in 400) ~= 3.5e-5 - safe.
+    samples = []
+    for t in tickers:
+        p = REPO / "data_prefetch" / "polygon" / "ohlcv_daily" / f"{t}.parquet"
+        if not p.exists():
+            continue
+        df = pd.read_parquet(p)
+        df.index = pd.DatetimeIndex(pd.to_datetime(df["date"], errors="coerce"))
+        # Need at least 252 bars of warmup before any usable signal.
+        n = len(df)
+        if n < 300:
+            continue
+        for end_idx in range(252, n, 25):
+            samples.append(df.iloc[max(0, end_idx - 252):end_idx])
+    if not samples:
+        return ["Phase 9: no OHLCV samples to verify producers"]
+
+    from backtest.signals.technical import compute_all_signals, compute_squeeze
+    from backtest.signals.smc_ict import compute_smc_signals
+
+    # Collect emit-rates per boolean key
+    key_emit = {}  # key -> {present, truthy}
+    for s in samples:
+        try:
+            all_sig = compute_all_signals(s)
+        except Exception:
+            continue
+        for k, v in all_sig.items():
+            if isinstance(v, bool):
+                d = key_emit.setdefault(k, {"present": 0, "truthy": 0})
+                d["present"] += 1
+                if v:
+                    d["truthy"] += 1
+        # Also compute_squeeze + smc explicitly to catch dynamic keys
+        try:
+            sq = compute_squeeze(s)
+            for k, v in sq.items():
+                if isinstance(v, bool):
+                    d = key_emit.setdefault(k, {"present": 0, "truthy": 0})
+                    d["present"] += 1
+                    if v:
+                        d["truthy"] += 1
+        except Exception:
+            pass
+        try:
+            sm = compute_smc_signals(s)
+            for k, v in sm.items():
+                if isinstance(v, bool):
+                    d = key_emit.setdefault(k, {"present": 0, "truthy": 0})
+                    d["present"] += 1
+                    if v:
+                        d["truthy"] += 1
+        except Exception:
+            pass
+
+    # Known boolean keys that SHOULD emit truthy at SOME positive rate.
+    # Catches squeeze_fire_up / smc_equal_swept-style always-False bugs:
+    # those bugs produce emit rates of exactly 0 or near-0.  A uniform
+    # 0.5% threshold across ~400 samples means a bug-free producer firing
+    # at >=1% true rate will pass with high probability, while an
+    # always-False producer (0/N) will reliably fail.  Threshold is
+    # bug-detection floor, not an empirical rate prediction.
+    REQUIRED_TRUTHY = {
+        "squeeze_fire_up":          0.005,
+        "squeeze_fire_dn":          0.005,
+        "smc_equal_highs_swept":    0.005,
+        "smc_equal_lows_swept":     0.005,
+        "smc_bos_bullish":          0.005,
+        "smc_bos_bearish":          0.005,
+        "smc_fvg_bullish_active":   0.005,
+        "smc_fvg_bearish_active":   0.005,
+        "rsi_14_oversold":          0.005,
+        "rsi_14_overbought":        0.005,
+        "vol_spike_2x":             0.005,
+        "vol_spike_15x":            0.005,
+    }
+    for k, min_rate in REQUIRED_TRUTHY.items():
+        d = key_emit.get(k)
+        if d is None or d["present"] == 0:
+            fails.append(f"Phase 9: required key `{k}` never emitted on sample")
+            continue
+        rate = d["truthy"] / d["present"]
+        if rate < min_rate:
+            fails.append(
+                f"Phase 9: `{k}` emit rate {rate*100:.2f}% < required "
+                f"{min_rate*100:.2f}% (producer logic bug suspected; "
+                f"emit-truthy count={d['truthy']}/{d['present']})"
+            )
+    return fails
+
+
+def phase_10_strategy_wiring_audit_gate() -> list[str]:
+    """Batch 393: gate on `scripts/strategy_wiring_audit.py` results.
+    Catches silent wiring drift (producer-consumer key mismatch, default-trap
+    on missing producer, type incompatibility) that crept in since the last
+    Batch-392 audit.
+    """
+    fails = []
+    audit_json = REPO / "output_audit" / "strategy_wiring_audit.json"
+    if not audit_json.exists():
+        # Try to regenerate
+        try:
+            r = subprocess.run(
+                [sys.executable, str(REPO / "scripts" / "strategy_wiring_audit.py")],
+                capture_output=True, text=True, timeout=300,
+            )
+            if r.returncode != 0:
+                return [f"Phase 10: strategy_wiring_audit.py failed exit={r.returncode}; "
+                         f"stderr: {r.stderr[-300:]}"]
+        except Exception as e:
+            return [f"Phase 10: could not run strategy_wiring_audit.py: {e}"]
+    if not audit_json.exists():
+        return ["Phase 10: strategy_wiring_audit.json not produced"]
+    audit = json.loads(audit_json.read_text())
+    by_class = audit.get("summary", {}).get("findings_by_class", {})
+    # HARD FAIL classes: real bugs
+    for cls in ("PRODUCER_CONSUMER_MISMATCH", "DEFAULT_TRAP",
+                "SYNTHESIZE_INCONSISTENT", "TYPE_INCOMPATIBLE"):
+        n = by_class.get(cls, 0)
+        if n > 0:
+            fails.append(
+                f"Phase 10: strategy wiring audit found {n} `{cls}` findings - "
+                f"see output_audit/strategy_wiring_audit.md for details"
+            )
+    # SOFT WARN: SYNTHESIZE_NEVER_FIRES (synth limitation, not bug)
+    n_never = by_class.get("SYNTHESIZE_NEVER_FIRES", 0)
+    if n_never > 40:
+        fails.append(
+            f"Phase 10: SYNTHESIZE_NEVER_FIRES count {n_never} > 40 - "
+            f"synthesizer coverage may have regressed; investigate"
+        )
+    return fails
+
+
+def phase_11_intermediate_monitor_armed() -> list[str]:
+    """Batch 393: verify the intermediate-progress health monitor script
+    exists + is executable. Catches the class of bug from the latest run
+    where 361 trades (95% drop from baseline 7191) was discovered only
+    at run-completion, wasting 10h compute.
+
+    Memory: feedback_monitor_intermediate_counts.md
+    """
+    fails = []
+    monitor = REPO / "scripts" / "monitor_phase_1a_beta_health.sh"
+    if not monitor.exists():
+        fails.append(
+            f"Phase 11: monitor script missing - {monitor.relative_to(REPO)}"
+        )
+        return fails
+    # Verify it has the abort-ratio threshold + baseline reference + KILL signal
+    src = monitor.read_text(encoding="utf-8")
+    if "BASELINE_TPD" not in src:
+        fails.append("Phase 11: monitor missing baseline_trades_per_day reference")
+    if "ABORT_RATIO" not in src or "KILL-RECOMMENDED" not in src:
+        fails.append("Phase 11: monitor missing abort-ratio + KILL-RECOMMENDED signal")
+    return fails
+
+
 PHASES = {
-    1: ("Data Prerequisites Audit",      phase_1_data_prerequisites),
-    2: ("Generalized Fire-Rate Gate",    phase_2_fire_rate_gate),
-    3: ("Config Independence",           phase_3_config_independence),
-    4: ("Silent-Gap Regression Suite",   phase_4_silent_gap_regression),
-    5: ("Cube Cell Coverage Gate",       phase_5_cube_cell_coverage),
-    6: ("Doc/Code Alignment Gate",       phase_6_doc_alignment),
+    1: ("Data Prerequisites Audit",       phase_1_data_prerequisites),
+    2: ("Generalized Fire-Rate Gate",     phase_2_fire_rate_gate),
+    3: ("Config Independence",            phase_3_config_independence),
+    4: ("Silent-Gap Regression Suite",    phase_4_silent_gap_regression),
+    5: ("Cube Cell Coverage Gate",        phase_5_cube_cell_coverage),
+    6: ("Doc/Code Alignment Gate",        phase_6_doc_alignment),
+    # Batch 393 expansion: catch the latest-run mistakes early on
+    8: ("Cube Gate Enablement Check",     phase_8_cube_gate_enablement),
+    9: ("Generalized Producer Emit",      phase_9_generalized_producer_emit_check),
+    10:("Strategy Wiring Audit Gate",     phase_10_strategy_wiring_audit_gate),
+    11:("Intermediate Monitor Armed",     phase_11_intermediate_monitor_armed),
 }
 
 
@@ -417,16 +652,17 @@ def main():
     smoke_out = Path(args.smoke_output) if args.smoke_output else None
 
     print("=" * 78)
-    print("  PRE-LAUNCH VALIDATION SUITE (Batch 367)")
+    print("  PRE-LAUNCH VALIDATION SUITE (Batch 393)")
     print("=" * 78)
 
     overall_pass = True
-    for phase_num in sorted(PHASES.keys()):
+    total = len(PHASES)
+    for idx, phase_num in enumerate(sorted(PHASES.keys()), start=1):
         name, fn = PHASES[phase_num]
         if phase_num not in run:
-            print(f"\n[{phase_num}/6] {name}: SKIPPED")
+            print(f"\n[{idx}/{total}] Phase {phase_num} {name}: SKIPPED")
             continue
-        print(f"\n[{phase_num}/6] {name}...")
+        print(f"\n[{idx}/{total}] Phase {phase_num} {name}...")
         if phase_num == 3:
             fails = fn(skip=False)
         elif phase_num == 5:
