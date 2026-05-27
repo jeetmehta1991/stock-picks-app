@@ -482,7 +482,132 @@ def optimize_strategy(strategy: str, trade_log: pd.DataFrame,
     }
 
 
-def write_summary_md(per_strategy_results: dict, out_path: Path) -> None:
+def producer_zero_reaudit(trade_log: pd.DataFrame,
+                           skipped: pd.DataFrame,
+                           screener_source: str) -> dict:
+    """Batch 389 post-cube re-audit: re-classify quiet strategies into
+    PRODUCER_LAYER_ZERO vs COMPOUND_RESTRICTIVE vs SKIPPED_AT_ENGINE.
+
+    Stage D pilot showed 9 of 49 prior "PRODUCER_LAYER_ZERO" classifications
+    were FALSE POSITIVES - strategies that DID produce candidates but
+    were filtered downstream. With Batches 377/383/384/386 removing all
+    downstream gates, this re-audit produces the TRUE producer-zero set.
+
+    Classification (3 buckets):
+      PRODUCER_LAYER_ZERO_LIKELY  - quiet AND none of its gate keys ever
+                                    emit values in fired-trade signals
+      COMPOUND_RESTRICTIVE        - quiet AND individual clauses emit but
+                                    the AND-compound never satisfies
+      SKIPPED_AT_ENGINE           - quiet AND appears in skipped_trades
+                                    (false-positive PRODUCER_LAYER_ZERO; gate
+                                    removal SHOULD fix; if still quiet
+                                    post-cube, there's a different gate)
+    """
+    from backtest.signals.screener import ALL_STRATEGIES
+    from backtest.config import (DEPRECATED_STRATEGIES,
+                                   STRATEGIES_DISABLED_MISSING_PRODUCER)
+    all_active = set(ALL_STRATEGIES.keys()) - DEPRECATED_STRATEGIES - STRATEGIES_DISABLED_MISSING_PRODUCER
+    fired_set = set(trade_log["strategy"].unique())
+    quiet = sorted(all_active - fired_set)
+    skipped_set = set(skipped["strategy"].unique()) if not skipped.empty else set()
+
+    # Build empirical signal corpus from fired trades to check key emit rates
+    sig_dicts = []
+    for s in trade_log["signals_at_entry"]:
+        try:
+            sig_dicts.append(json.loads(s) if isinstance(s, str) else {})
+        except Exception:
+            continue
+
+    def _key_present_anywhere(key: str) -> bool:
+        return any(key in d for d in sig_dicts)
+
+    def _key_emits_truthy(key: str) -> bool:
+        n_present = 0
+        n_truthy = 0
+        for d in sig_dicts:
+            if key in d:
+                n_present += 1
+                v = d[key]
+                if isinstance(v, bool):
+                    if v:
+                        n_truthy += 1
+                elif isinstance(v, (int, float)):
+                    if v != 0:
+                        n_truthy += 1
+                elif isinstance(v, str):
+                    if v and v not in ("unknown", "None"):
+                        n_truthy += 1
+        return n_truthy > 0 if n_present > 0 else False
+
+    buckets = {
+        "PRODUCER_LAYER_ZERO_LIKELY": [],
+        "COMPOUND_RESTRICTIVE":       [],
+        "SKIPPED_AT_ENGINE":          [],
+    }
+    per_strategy = {}
+    for strat in quiet:
+        m = re.search(rf'def strat_{re.escape(strat)}\(s\):(.+?)(?=\ndef strat_|\nALL_STRATEGIES|\Z)',
+                      screener_source, re.DOTALL)
+        if not m:
+            per_strategy[strat] = {"bucket": "FUNCTION_NOT_FOUND", "gate_keys": []}
+            continue
+        body = m.group(1)
+        gate_keys = sorted(set(re.findall(r's\.get\(["\']([a-z_][a-z_0-9]*)', body)))
+        n_present = sum(1 for k in gate_keys if _key_present_anywhere(k))
+        n_truthy = sum(1 for k in gate_keys if _key_emits_truthy(k))
+
+        if strat in skipped_set:
+            bucket = "SKIPPED_AT_ENGINE"
+        elif n_truthy == 0 and len(gate_keys) > 0:
+            bucket = "PRODUCER_LAYER_ZERO_LIKELY"
+        else:
+            bucket = "COMPOUND_RESTRICTIVE"
+        buckets[bucket].append(strat)
+        per_strategy[strat] = {
+            "bucket":         bucket,
+            "n_gate_keys":    len(gate_keys),
+            "n_keys_present": n_present,
+            "n_keys_truthy":  n_truthy,
+            "gate_keys":      gate_keys[:10],
+            "dominant_skip_reason": (
+                skipped[skipped["strategy"] == strat]["reason"].mode().iloc[0]
+                if strat in skipped_set and not skipped[skipped["strategy"] == strat].empty
+                else None
+            ),
+        }
+
+    # Family clustering of PRODUCER_LAYER_ZERO_LIKELY by shared missing key
+    family_clusters = defaultdict(list)
+    for strat in buckets["PRODUCER_LAYER_ZERO_LIKELY"]:
+        keys = per_strategy[strat]["gate_keys"]
+        # First non-truthy key = likely the binding-missing producer
+        for k in keys:
+            if not _key_emits_truthy(k):
+                family_clusters[k].append(strat)
+                break
+
+    # Identify priority families (n>=3 affected)
+    priority_families = {k: v for k, v in family_clusters.items() if len(v) >= 3}
+
+    return {
+        "summary": {
+            "active_count":                   len(all_active),
+            "fired_count":                    len(fired_set & all_active),
+            "quiet_count":                    len(quiet),
+            "PRODUCER_LAYER_ZERO_LIKELY":     len(buckets["PRODUCER_LAYER_ZERO_LIKELY"]),
+            "COMPOUND_RESTRICTIVE":           len(buckets["COMPOUND_RESTRICTIVE"]),
+            "SKIPPED_AT_ENGINE":              len(buckets["SKIPPED_AT_ENGINE"]),
+        },
+        "buckets":             {k: sorted(v) for k, v in buckets.items()},
+        "per_strategy":        per_strategy,
+        "family_clusters":     {k: sorted(v) for k, v in family_clusters.items()},
+        "priority_families":   {k: sorted(v) for k, v in priority_families.items()},
+    }
+
+
+def write_summary_md(per_strategy_results: dict, out_path: Path,
+                      producer_audit: dict | None = None) -> None:
     """Living summary doc; owner reviews here."""
     lines = []
     lines.append("# Per-strategy optimization candidates (living)")
@@ -523,6 +648,30 @@ def write_summary_md(per_strategy_results: dict, out_path: Path) -> None:
     for r in rows:
         lines.append(f"| {r['strategy']} | {r['n']} | {r['sharpe']} | {r['wr']}% | {r['pf']} | {r['verdict']} | {r['props']} |")
     lines.append("")
+    # Batch 389: producer-zero re-audit section
+    if producer_audit:
+        s = producer_audit.get("summary", {})
+        lines.append("## Producer-zero re-audit (Batch 389)")
+        lines.append("")
+        lines.append(f"Active strategies: {s.get('active_count')}; fired: {s.get('fired_count')}; quiet: {s.get('quiet_count')}.")
+        lines.append("")
+        lines.append("Quiet-strategy classification:")
+        lines.append("")
+        lines.append("| Bucket | Count | Meaning |")
+        lines.append("|---|---:|---|")
+        lines.append(f"| PRODUCER_LAYER_ZERO_LIKELY | {s.get('PRODUCER_LAYER_ZERO_LIKELY', 0)} | Gate keys never emit truthy values; producer-side gap |")
+        lines.append(f"| COMPOUND_RESTRICTIVE       | {s.get('COMPOUND_RESTRICTIVE', 0)} | Individual clauses emit but AND-compound never satisfies |")
+        lines.append(f"| SKIPPED_AT_ENGINE          | {s.get('SKIPPED_AT_ENGINE', 0)} | Produces candidates; engine gate filters them (likely a remaining gate) |")
+        lines.append("")
+        priority = producer_audit.get("priority_families", {})
+        if priority:
+            lines.append("**Priority producer-fix families** (n>=3 strategies sharing same missing key):")
+            lines.append("")
+            lines.append("| Missing producer key | Strategies affected | Action |")
+            lines.append("|---|---:|---|")
+            for key, strats in sorted(priority.items(), key=lambda kv: -len(kv[1])):
+                lines.append(f"| `{key}` | {len(strats)} | Audit producer module; emit key OR loosen consumer compound |")
+            lines.append("")
     lines.append("## Approval pattern")
     lines.append("")
     lines.append("Owner reviews per-strategy JSON + this summary. For each candidate change, owner directs me to apply via a separate batch. NEVER apply changes directly from this output - all changes require explicit per-change owner approval per `project_no_apriori_strategy_pruning.md`.")
@@ -572,10 +721,31 @@ def main() -> int:
             print(f"[FAIL] exc={exc}")
             results[strat] = {"strategy": strat, "status": "error", "error": str(exc)}
 
+    # Batch 389: post-cube producer-zero re-audit
+    skipped_path = in_dir / "skipped_trades.csv"
+    skipped_df = pd.read_csv(skipped_path, low_memory=False) if skipped_path.exists() else pd.DataFrame()
+    print(f"\n[INFO] Producer-zero re-audit against {len(skipped_df)} skipped rows...")
+    producer_audit = producer_zero_reaudit(trade_log, skipped_df, screener_source)
+    producer_audit_path = out_dir / "producer_zero_post_cube_audit.json"
+    producer_audit_path.write_text(json.dumps(producer_audit, indent=2, default=str),
+                                    encoding="utf-8")
+    s = producer_audit["summary"]
+    print(f"[OK] Producer-zero re-audit: active={s['active_count']}, "
+          f"fired={s['fired_count']}, quiet={s['quiet_count']}")
+    print(f"     PRODUCER_LAYER_ZERO_LIKELY: {s['PRODUCER_LAYER_ZERO_LIKELY']}")
+    print(f"     COMPOUND_RESTRICTIVE:       {s['COMPOUND_RESTRICTIVE']}")
+    print(f"     SKIPPED_AT_ENGINE:          {s['SKIPPED_AT_ENGINE']}")
+    if producer_audit.get("priority_families"):
+        print(f"     Priority families (n>=3):")
+        for k, strats in sorted(producer_audit["priority_families"].items(),
+                                 key=lambda kv: -len(kv[1])):
+            print(f"       {k} -> {len(strats)} strategies")
+
     summary_path = out_dir / "optimization_summary.md"
-    write_summary_md(results, summary_path)
+    write_summary_md(results, summary_path, producer_audit=producer_audit)
     print(f"\n[OK] {len(results)} strategies analyzed")
     print(f"[OK] Per-strategy JSONs: {out_dir}/<strategy>.json")
+    print(f"[OK] Producer audit:     {producer_audit_path.relative_to(REPO)}")
     print(f"[OK] Living summary:     {summary_path.relative_to(REPO)}")
     return 0
 

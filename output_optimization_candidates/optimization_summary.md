@@ -40,6 +40,18 @@
 | insider_cluster_long | 3 | -14.8061 | 0.0% | 0.0 | INSUFFICIENT_SAMPLE | b_co: clauses ['insider_cluster_active', 'insider_unique_buyers_30d', 'price_above_ema |
 | avwap_50_reclaim | 7 | -27.2108 | 0.0% | 0.0 | INSUFFICIENT_SAMPLE | b_co: consider OR-fallback for `macd_12_26_9_bullish` (fires only 0.0% on fired trades | d_ex: best exit `breakeven_plus_trail` has Sharpe 1.2217 (n=7); 5-gate INSUFFICIENT_SA |
 
+## Producer-zero re-audit (Batch 389)
+
+Active strategies: 185; fired: 31; quiet: 154.
+
+Quiet-strategy classification:
+
+| Bucket | Count | Meaning |
+|---|---:|---|
+| PRODUCER_LAYER_ZERO_LIKELY | 7 | Gate keys never emit truthy values; producer-side gap |
+| COMPOUND_RESTRICTIVE       | 42 | Individual clauses emit but AND-compound never satisfies |
+| SKIPPED_AT_ENGINE          | 105 | Produces candidates; engine gate filters them (likely a remaining gate) |
+
 ## Approval pattern
 
 Owner reviews per-strategy JSON + this summary. For each candidate change, owner directs me to apply via a separate batch. NEVER apply changes directly from this output - all changes require explicit per-change owner approval per `project_no_apriori_strategy_pruning.md`.
