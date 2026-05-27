@@ -241,12 +241,13 @@ Already-approved entries from [AUDIT_INDEX.md](AUDIT_INDEX.md) awaiting implemen
 | TBD | T1a 5/5 complete | PENDING |
 | TBD | T0 close-out + Dashboards 2+3 refresh | PENDING |
 | TBD | T5b precompute (background; may overlap T1) | PENDING |
-| TBD | T1.1 pairs_trading wired | PENDING |
-| TBD | T1.2 news_sentiment wired | PENDING |
-| TBD | T1.3 calendar_effects wired | PENDING |
-| TBD | T1.4 cross_asset wired | PENDING |
-| TBD | T1.5 volume_profile wired | PENDING |
-| TBD | T2 wiring batches (DEC-062, 138, 216, 230, 231, 234, 246, 365, ...) | PENDING |
+| 2026-05-27 (Batch 396 audit) | T1.1 pairs_trading wired + engine-consumed | SHIPPED -- `pair_zscore_signed` consumed at [screener.py:3155-3174](backtest/signals/screener.py#L3155-L3174) by `strat_pairs_mean_reversion_long`/`_short` |
+| 2026-05-27 (Batch 396 audit) | T1.2 news_sentiment wired + engine-consumed | SHIPPED -- `news_sentiment_shift` consumed at [screener.py:3217-3227](backtest/signals/screener.py#L3217-L3227); strategy registered at line 3503 |
+| 2026-05-27 (Batch 396 audit) | T1.3 calendar_effects wired + engine-consumed | SHIPPED -- `compute_calendar_signals` imported + called at [screener.py:3024-3025](backtest/signals/screener.py#L3024-L3025) (day-level cache) |
+| 2026-05-27 (Batch 396 audit) | T1.4 cross_asset wired + engine-consumed | SHIPPED -- `compute_cross_asset_signals` called at [screener.py:3031-3032](backtest/signals/screener.py#L3031-L3032); `risk_off_regime_bond_signal` consumed at line 3087 |
+| 2026-05-27 (Batch 396 audit) | T1.5 volume_profile wired + engine-consumed | SHIPPED -- `compute_volume_profile` called at [screener.py:3916-3917](backtest/signals/screener.py#L3916-L3917); `vp_close_near_poc_pct` consumed at lines 2971-2977 |
+| 2026-05-26 (Batch 374) | T2 priority DECs partial: DEC-230 + DEC-231 + DEC-234 + DEC-246 | SHIPPED -- engine-consumed via `backtest/util/structured_logger.py` import in `regime_filter.py`; `quant_audit.py` Sharpe consumed by `cube_populator.py:138` + `ab_orchestrator.py:89` + `seven_gate_verdict.py:10` |
+| Batches 398-401 (queued autonomous) | T2 remaining: DEC-062 + DEC-138 + DEC-216 + DEC-365 engine wiring | IN-FLIGHT (per-DEC autonomous wiring with full 13-tier pyramid each) |
 
 ### Scope change 2026-05-19 (Batch 235)
 

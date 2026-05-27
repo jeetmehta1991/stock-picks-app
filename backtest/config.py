@@ -688,6 +688,38 @@ AGENT_TIER_TO_SIZE_MODIFIER = {
     5: 1.50,
 }
 
+
+def apply_agent_tier_size_modifier(tier: int, base_size_pct: float) -> float:
+    """Batch 398 (2026-05-27): DEC-062 engine activation.
+
+    Apply the TradingAgents 5-tier output modifier to a base position-size %.
+    Phase 1B canary (DEC-508 Phase B) flow:
+        agent_output_tier (1-5) -> modifier (0.5x..1.5x) -> adjusted_size_pct
+
+    Args:
+        tier: TradingAgents output tier 1..5; out-of-range returns base unchanged
+              with a logged warning (no-op default rather than silent zero).
+        base_size_pct: CONFIDENCE_TIERS base sizing % from current engine path.
+
+    Returns:
+        Adjusted size % (base * modifier), clamped non-negative.
+
+    Note: DEC-062 modifier is INDEPENDENT of the engine's existing
+    `_adjust_tier_by_agent` +/-1 shift (Approved Rules score>=75/<=40).
+    The shift adjusts the CONFIDENCE_TIERS slot; this modifier scales the
+    base % within whatever slot the trade lands in.  Both can coexist
+    when Phase B canary activates.
+    """
+    if tier not in AGENT_TIER_TO_SIZE_MODIFIER:
+        # Out-of-range tier: log + return base unchanged (fail-open).
+        import logging
+        logging.getLogger(__name__).warning(
+            "DEC-062: tier=%s out of range [1..5]; returning base size unchanged",
+            tier,
+        )
+        return max(0.0, float(base_size_pct))
+    return max(0.0, float(base_size_pct) * AGENT_TIER_TO_SIZE_MODIFIER[tier])
+
 # DEC-102 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
 # (owner-approved Path C 20-DEC bundle). Market-level / correlation-factor
 # strategy slots per Pass 52 spec - absorbed by DEC-369 (3-5 cross-asset

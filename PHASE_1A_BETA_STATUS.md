@@ -17,7 +17,11 @@
 | Engine gate removal | ✅ shipped | Batch 384 (regime affinity + event suppression) |
 | Screener candidate throughput | ✅ shipped | Batch 386 (max-cands 30 → 200) |
 | Surgical threshold tuning | ✅ shipped | Batch 385 (buyback_8k 3→5 days) |
-| Intermediate-progress monitor | ✅ shipped | `scripts/monitor_phase_1a_beta_health.sh` |
+| Intermediate-progress monitor | ✅ shipped (3 layers) | shell `scripts/monitor_phase_1a_beta_health.sh` (Batch 377 single-instance baseline) + Python `scripts/monitor_phase_1a_beta_health.py` (Batch 394 14-check expansion W1-W14 with engine-side wall-time kill + watchdog backup) + multi-instance wrapper `scripts/aws_batch395_monitor.py` (Batch 395, polls S3 heartbeats across 5 instances) |
+| Engine wall-time guard | ✅ shipped | Batch 394: `--warn-run-hours 4.0` auto-WARN + `--max-run-hours 6.0` hard-kill `sys.exit(1)` with final checkpoint flush. Auto-set for `--phase=1a-beta`. |
+| Cube-replay pool parallelism | ✅ shipped + activated | Batch 394: `_pool_cube_replay_worker` wraps `save_all_outputs` strategy-loop with `pool.starmap`; defers `_teardown_screen_pool` so same spawn pool services screen + cube. |
+| Year + 100-day milestone telemetry | ✅ shipped + activated | Batch 394: engine emits `[MILESTONE-YEAR]` + `[MILESTONE-100D]` log lines with direction-balance, top-strategies, zero-fire counts. Monitor regex-parses both. |
+| AWS 5-batch orchestration | ✅ shipped | Batch 395: 7 scripts (bootstrap.sh, upload_data.py, splits.py, launch.py, monitor.py, merge.py, teardown.py) for parallel cube run across 5 × c7a.4xlarge on AWS. |
 | Process-failure feedback memory | ✅ saved | `feedback_monitor_intermediate_counts.md` + `feedback_audit_recommendations_against_existing_directives.md` + `feedback_no_write_only_md_files.md` |
 | Smoke validation (50-tkr × 3mo) | ✅ green | output_batch_386_smoke (0 cap / 0 DD / 0 regime / 0 event skips) |
 

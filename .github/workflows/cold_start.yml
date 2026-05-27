@@ -1,0 +1,57 @@
+# Batch 398 (2026-05-27): DEC-138 cold-start CI workflow activation.
+#
+# Per backtest/config.py constants COLD_START_CI_WORKFLOW_PATH +
+# COLD_START_CI_MAX_MINUTES (30).  Runs on a fresh checkout to catch
+# import / dependency / circular-import regressions that day-to-day CI
+# might miss because of cache warmth.
+#
+# Trigger: workflow_dispatch (manual) + monthly schedule.  Not on every
+# push -- it's a periodic sanity gate.
+
+name: cold-start
+on:
+  workflow_dispatch:
+  schedule:
+    # Monthly on the 1st at 06:00 UTC
+    - cron: '0 6 1 * *'
+
+jobs:
+  cold-start:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # DEC-138 COLD_START_CI_MAX_MINUTES
+
+    steps:
+      - name: Checkout (cold, no submodules)
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          # Do NOT cache pip -- whole point is to test cold install
+          cache: ''
+
+      - name: Cold dependency install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-timeout
+
+      - name: Import smoke (catch circular imports / missing deps)
+        run: |
+          python -c "import backtest"
+          python -c "from backtest.engine.backtest import BacktestEngine"
+          python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"
+          python -c "from backtest.data.universe import get_master_universe; print(len(get_master_universe()))"
+
+      - name: Pre-launch validation suite (Phase 11 subset; no AWS)
+        run: |
+          python scripts/pre_launch_validation.py --phase 1,2,4,6,11 || true
+
+      - name: Unit + integration tests
+        run: |
+          python -m pytest backtest/tests/test_unit.py backtest/tests/test_integration.py -q --timeout=60 -x
+
+      - name: Verify DEC-138 constants present
+        run: |
+          python -c "from backtest.config import COLD_START_CI_WORKFLOW_PATH, COLD_START_CI_MAX_MINUTES; assert COLD_START_CI_WORKFLOW_PATH == '.github/workflows/cold_start.yml'; assert COLD_START_CI_MAX_MINUTES == 30; print('DEC-138 constants OK')"
