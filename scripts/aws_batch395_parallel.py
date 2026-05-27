@@ -48,11 +48,12 @@ def running_instances(region: str) -> list[dict]:
     for line in r.stdout.strip().splitlines():
         parts = line.split()
         if len(parts) >= 3:
-            iid, lifecycle, idx = parts[0], parts[1], parts[2]
+            # AWS --output text sorts keys alphabetically: Id, Idx, Lifecycle
+            iid, idx, lifecycle = parts[0], parts[1], parts[2]
             out.append({
                 "id": iid,
                 "lifecycle": lifecycle if lifecycle != "None" else "on-demand",
-                "batch_index": int(idx) if idx != "None" else None,
+                "batch_index": int(idx) if idx not in ("None", "") else None,
             })
     return out
 
