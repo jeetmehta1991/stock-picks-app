@@ -1,0 +1,2663 @@
+{
+  "summary": {
+    "active_strategies": 185,
+    "n_producer_keys": 1243,
+    "n_strategies_clean": 159,
+    "n_strategies_buggy": 26,
+    "findings_by_class": {
+      "SYNTHESIZE_NEVER_FIRES": 25,
+      "SYNTHESIZE_ALWAYS_FIRES": 1
+    }
+  },
+  "findings_by_strategy": {
+    "52w_high_breakout": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "52w_low_breakdown": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "52wh_break_retest": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "adx_initiation": {
+      "n_clauses": 2,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "avwap_20high_rejection_short": {
+      "n_clauses": 6,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "pct_from_avwap_20high": true,
+            "above_avwap_20high": true,
+            "vol_spike_15x": true,
+            "price_above_ema_200": true,
+            "shooting_star": true,
+            "bearish_engulfing": true
+          },
+          "best_short": {
+            "pct_from_avwap_20high": false,
+            "above_avwap_20high": false,
+            "vol_spike_15x": false,
+            "price_above_ema_200": false,
+            "shooting_star": false,
+            "bearish_engulfing": true
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "avwap_252_breakout": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "avwap_50_reclaim": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": true,
+      "findings": [],
+      "n_findings": 0
+    },
+    "awesome_oscillator": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "bb_squeeze_volume": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "bollinger_lower": {
+      "n_clauses": 8,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "bollinger_tight": {
+      "n_clauses": 9,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "bollinger_upper_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "break_retest_confluence": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "break_retest_volume": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "bullish_engulfing_support": {
+      "n_clauses": 8,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "buyback_8k_recent_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "camarilla_r3_breakout": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "camarilla_rsi_obv": {
+      "n_clauses": 6,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 66.0,
+            "near_cam_s3": true,
+            "obv_bullish": true,
+            "cmf_positive": true,
+            "near_cam_r3": true,
+            "price_above_ema_200": true
+          },
+          "best_short": {
+            "rsi_14": 66.0,
+            "near_cam_s3": false,
+            "obv_bullish": false,
+            "cmf_positive": false,
+            "near_cam_r3": false,
+            "price_above_ema_200": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "camarilla_rsi_obv_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 66.0,
+            "near_cam_r3": true,
+            "obv_bullish": true,
+            "cmf_positive": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true
+          },
+          "best_short": {
+            "rsi_14": 66.0,
+            "near_cam_r3": false,
+            "obv_bullish": false,
+            "cmf_positive": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "camarilla_s3_bounce": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 66.0,
+            "near_cam_s3": true,
+            "obv_bullish": true,
+            "near_cam_r3": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true
+          },
+          "best_short": {
+            "rsi_14": 66.0,
+            "near_cam_s3": false,
+            "obv_bullish": false,
+            "near_cam_r3": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "classification_change_breakout_long": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "classification_change_from_tech_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "classification_change_from_tech": true,
+            "price_above_ema_200": true,
+            "prior_sector": true,
+            "new_sector": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true
+          },
+          "best_short": {
+            "classification_change_from_tech": false,
+            "price_above_ema_200": false,
+            "prior_sector": false,
+            "new_sector": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "classification_change_momentum_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "classification_change_oversold_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "classification_change_recent_long": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "classification_change_to_defensive_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "classification_change_to_defensive": true,
+            "price_above_ema_200": true,
+            "new_sector": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "classification_change_to_defensive": false,
+            "price_above_ema_200": false,
+            "new_sector": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "classification_change_to_tech_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "classification_change_volume_long": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "classification_change_with_insider_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "classification_change_with_institutional_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "cmf_flip": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "cpr_narrow_bullish": {
+      "n_clauses": 8,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 49.0,
+            "above_avwap_50low": true,
+            "price_above_ema_200": true,
+            "cpr_narrow": true,
+            "above_cpr": true,
+            "below_cpr": true
+          },
+          "best_short": {
+            "rsi_14": 49.0,
+            "above_avwap_50low": false,
+            "price_above_ema_200": false,
+            "cpr_narrow": false,
+            "above_cpr": false,
+            "below_cpr": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "cpr_narrow_momentum": {
+      "n_clauses": 7,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 49.0,
+            "price_above_ema_200": true,
+            "cpr_narrow": true,
+            "above_cpr": true,
+            "macd_12_26_9_bullish": true,
+            "below_cpr": true
+          },
+          "best_short": {
+            "rsi_14": 49.0,
+            "price_above_ema_200": false,
+            "cpr_narrow": false,
+            "above_cpr": false,
+            "macd_12_26_9_bullish": false,
+            "below_cpr": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "cpr_narrow_momentum_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 49.0,
+            "cpr_narrow": true,
+            "below_cpr": true,
+            "macd_12_26_9_bullish": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true
+          },
+          "best_short": {
+            "rsi_14": 49.0,
+            "cpr_narrow": false,
+            "below_cpr": false,
+            "macd_12_26_9_bullish": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "cup_and_handle_long": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "cup_and_handle_retest_long": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "dc20_break_retest": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "death_cross_50_200_volume": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "doji_at_support": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "donchian_10_breakout": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "donchian_10_breakout_retest": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "donchian_breakdown_retest_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "support_break_retest": true,
+            "vol_spike_15x": true,
+            "macd_12_26_9_bullish": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true
+          },
+          "best_short": {
+            "support_break_retest": false,
+            "vol_spike_15x": false,
+            "macd_12_26_9_bullish": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "donchian_breakdown_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "dc10_breakout_dn": true,
+            "vol_spike_15x": true,
+            "macd_12_26_9_bullish": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true
+          },
+          "best_short": {
+            "dc10_breakout_dn": false,
+            "vol_spike_15x": false,
+            "macd_12_26_9_bullish": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "double_bottom_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "evening_star_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 56.0,
+            "evening_star": true,
+            "price_above_sma_50": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "rsi_14": 56.0,
+            "evening_star": false,
+            "price_above_sma_50": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "flag_bull_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "flag_bull_retest_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "force_index_breakout": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "gold_silver_risk_off_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "golden_cross_20_50": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "golden_cross_50_200": {
+      "n_clauses": 2,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "golden_cross_9_21": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "golden_cross_volume": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "halloween_seasonal_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "head_and_shoulders_bottom_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "htf_aligned_breakout_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "htf_aligned_breakout_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "hull_rsi": {
+      "n_clauses": 7,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "hull_rsi_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": true,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_ALWAYS_FIRES",
+          "issue": "strategy fires with all-False signals AND is not dual-direction; no real gating"
+        }
+      ],
+      "n_findings": 1
+    },
+    "ichimoku_cloud_breakdown": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "ichimoku_cloud_breakout": {
+      "n_clauses": 7,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "ichimoku_tk_cross": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "inside_bar_breakout": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "insider_cluster_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "insider_cluster_with_director_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_breakout_confirmation_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_buy_momentum_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_capitulation_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "institutional_negative": true,
+            "vol_spike_2x": true,
+            "price_above_ema_50": true,
+            "price_above_ema_200": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "institutional_negative": false,
+            "vol_spike_2x": false,
+            "price_above_ema_50": false,
+            "price_above_ema_200": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "institutional_cluster_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_committed_growth_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_distribution_short": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "institutional_negative": true,
+            "price_above_ema_50": true,
+            "price_above_ema_200": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "institutional_negative": false,
+            "price_above_ema_50": false,
+            "price_above_ema_200": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "institutional_high_conviction_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_increased_with_directors_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_insider_combo_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_multi_quarter_persistence_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_oversold_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_persistence_breakout_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_persistence_momentum_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_persistence_oversold_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_persistence_volume_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_persistent_holders_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_recent_init_momentum_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_recent_init_volume_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_strong_conviction_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_volume_confirmation_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_with_directors_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "institutional_with_officers_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "january_effect_small_cap_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "keltner_lower": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "macd_crossover": {
+      "n_clauses": 2,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "macd_crossover_short": {
+      "n_clauses": 1,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "macd_fast_crossover": {
+      "n_clauses": 2,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "macd_ichimoku": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "mfi_oversold": {
+      "n_clauses": 7,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "monthly_bias_momentum_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "morning_star": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 56.0,
+            "morning_star": true,
+            "ema_50_200_bullish": true,
+            "evening_star": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true
+          },
+          "best_short": {
+            "rsi_14": 56.0,
+            "morning_star": false,
+            "ema_50_200_bullish": false,
+            "evening_star": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "naked_poc_retest_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "news_sentiment_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "news_sentiment_shift_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "orb_stocks_in_play_long": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "orb_stocks_in_play_short": {
+      "n_clauses": 5,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "gap_dn_2pct": true,
+            "close_below_open": true,
+            "vol_spike_2x": true,
+            "price_above_ema_200": true,
+            "gap_dn_pct": true,
+            "price_above_ema_50": true
+          },
+          "best_short": {
+            "gap_dn_2pct": false,
+            "close_below_open": false,
+            "vol_spike_2x": false,
+            "price_above_ema_200": false,
+            "gap_dn_pct": false,
+            "price_above_ema_50": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "pairs_mean_reversion_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pairs_mean_reversion_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "parabolic_sar_flip": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "parabolic_sar_flip_short": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pead_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pead_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pead_with_insider_confirmation_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pivot_fib_confluence": {
+      "n_clauses": 8,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pivot_r1_breakout": {
+      "n_clauses": 8,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pivot_r2_continuation": {
+      "n_clauses": 10,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pivot_s1_bounce": {
+      "n_clauses": 7,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pivot_s2_bounce": {
+      "n_clauses": 7,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pivot_s3_capitulation": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "po3_bearish": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "po3_bullish": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "po3_htf_aligned_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "po3_htf_aligned_short": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "poc_magnet_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "post_deletion_drift_short": {
+      "n_clauses": 0,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "post_inclusion_drift_long": {
+      "n_clauses": 0,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "post_inclusion_reversal_short": {
+      "n_clauses": 0,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "ppo_crossover": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pre_fomc_long_sleeve": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pre_fomc_quality_momentum_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pre_holiday_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "pre_rebalance_long": {
+      "n_clauses": 0,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "prev_day_high_break": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "prev_day_low_bounce": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "prev_day_low_breakdown": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "below_prev_low": true,
+            "vol_spike_15x": true,
+            "above_vwap": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true
+          },
+          "best_short": {
+            "below_prev_low": false,
+            "vol_spike_15x": false,
+            "above_vwap": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "r1_break_retest": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "risk_off_bond_equity_short": {
+      "n_clauses": 1,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "roc_burst": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "rsi21_slow": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "rsi9_extreme": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "rsi_overbought_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "rsi_oversold": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "rsi_volume_200ema": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "rsi_14": 66.0,
+            "vol_above_avg": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "rsi_14": 66.0,
+            "vol_above_avg": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "sector_rotation_defensive_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "shooting_star_short": {
+      "n_clauses": 5,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_bos_continuation": {
+      "n_clauses": 7,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "vol_spike_2x": true,
+            "force_index_breakout": true,
+            "rsi_14": true,
+            "smc_bos_bullish": true,
+            "price_above_ema_200": true,
+            "smc_bos_bearish": true
+          },
+          "best_short": {
+            "vol_spike_2x": false,
+            "force_index_breakout": false,
+            "rsi_14": false,
+            "smc_bos_bullish": false,
+            "price_above_ema_200": false,
+            "smc_bos_bearish": true
+          },
+          "is_dual_direction": true
+        }
+      ],
+      "n_findings": 1
+    },
+    "smc_bos_retest_entry": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_breaker_block_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_breaker_block_short": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_choch_reversal": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_discount_long": {
+      "n_clauses": 5,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_equal_highs_sweep_short": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_equal_lows_sweep_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_fvg_retest_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_fvg_retest_short": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_inverse_fvg": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_liquidity_sweep_reversal": {
+      "n_clauses": 6,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_mitigation_block_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_mitigation_block_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_order_block_bounce": {
+      "n_clauses": 6,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_ote_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_ote_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "smc_premium_short": {
+      "n_clauses": 5,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "smc_in_premium_zone": true,
+            "smc_bos_bearish": true,
+            "smc_choch_bearish": true,
+            "price_above_ema_200": true,
+            "smc_dealing_range_pct": true,
+            "price_above_ema_50": true
+          },
+          "best_short": {
+            "smc_in_premium_zone": false,
+            "smc_bos_bearish": true,
+            "smc_choch_bearish": true,
+            "price_above_ema_200": false,
+            "smc_dealing_range_pct": false,
+            "price_above_ema_50": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "squeeze_breakout": {
+      "n_clauses": 1,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "stoch_oversold": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "stochrsi_overbought_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "stochrsi_oversold": {
+      "n_clauses": 8,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "supertrend_ichimoku_adx": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "supertrend_macd": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "supertrend_macd_short": {
+      "n_clauses": 3,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "tema_dema": {
+      "n_clauses": 3,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "three_white_soldiers": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "totm_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "triangle_ascending_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "triangle_ascending_retest_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "ultimate_oscillator": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "value_area_breakout_long": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "vix_backwardation_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "volume_spike_breakout": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "volume_spike_breakout_retest": {
+      "n_clauses": 4,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "weekly_bias_pullback_long": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "weekly_bias_pullback_short": {
+      "n_clauses": 4,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "williams_r_oversold": {
+      "n_clauses": 5,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": true,
+      "findings": [],
+      "n_findings": 0
+    },
+    "williams_stoch_dual": {
+      "n_clauses": 10,
+      "direction": null,
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "xs_combined_momentum_low_ivol": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "xs_low_beta_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "xs_momentum_bottom_decile_short": {
+      "n_clauses": 2,
+      "direction": "short",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [
+        {
+          "class": "SYNTHESIZE_NEVER_FIRES",
+          "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+          "best_long": {
+            "xs_momentum_bottom_decile": true,
+            "price_above_ema_200": true,
+            "price_above_ema_50": true,
+            "price_above_sma_50": true,
+            "close_above_open": true
+          },
+          "best_short": {
+            "xs_momentum_bottom_decile": false,
+            "price_above_ema_200": false,
+            "price_above_ema_50": false,
+            "price_above_sma_50": false,
+            "close_above_open": false
+          },
+          "is_dual_direction": false
+        }
+      ],
+      "n_findings": 1
+    },
+    "xs_momentum_quality_combined": {
+      "n_clauses": 3,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "xs_momentum_top_decile": {
+      "n_clauses": 4,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    },
+    "xs_quality_top_quintile_long": {
+      "n_clauses": 2,
+      "direction": "long",
+      "fires_best": null,
+      "fires_worst": false,
+      "findings": [],
+      "n_findings": 0
+    }
+  },
+  "findings_by_class": {
+    "SYNTHESIZE_NEVER_FIRES": [
+      {
+        "strategy": "avwap_20high_rejection_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "pct_from_avwap_20high": true,
+          "above_avwap_20high": true,
+          "vol_spike_15x": true,
+          "price_above_ema_200": true,
+          "shooting_star": true,
+          "bearish_engulfing": true
+        },
+        "best_short": {
+          "pct_from_avwap_20high": false,
+          "above_avwap_20high": false,
+          "vol_spike_15x": false,
+          "price_above_ema_200": false,
+          "shooting_star": false,
+          "bearish_engulfing": true
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "camarilla_rsi_obv",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 66.0,
+          "near_cam_s3": true,
+          "obv_bullish": true,
+          "cmf_positive": true,
+          "near_cam_r3": true,
+          "price_above_ema_200": true
+        },
+        "best_short": {
+          "rsi_14": 66.0,
+          "near_cam_s3": false,
+          "obv_bullish": false,
+          "cmf_positive": false,
+          "near_cam_r3": false,
+          "price_above_ema_200": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "camarilla_rsi_obv_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 66.0,
+          "near_cam_r3": true,
+          "obv_bullish": true,
+          "cmf_positive": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true
+        },
+        "best_short": {
+          "rsi_14": 66.0,
+          "near_cam_r3": false,
+          "obv_bullish": false,
+          "cmf_positive": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "camarilla_s3_bounce",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 66.0,
+          "near_cam_s3": true,
+          "obv_bullish": true,
+          "near_cam_r3": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true
+        },
+        "best_short": {
+          "rsi_14": 66.0,
+          "near_cam_s3": false,
+          "obv_bullish": false,
+          "near_cam_r3": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "classification_change_from_tech_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "classification_change_from_tech": true,
+          "price_above_ema_200": true,
+          "prior_sector": true,
+          "new_sector": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true
+        },
+        "best_short": {
+          "classification_change_from_tech": false,
+          "price_above_ema_200": false,
+          "prior_sector": false,
+          "new_sector": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "classification_change_to_defensive_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "classification_change_to_defensive": true,
+          "price_above_ema_200": true,
+          "new_sector": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "classification_change_to_defensive": false,
+          "price_above_ema_200": false,
+          "new_sector": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "cpr_narrow_bullish",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 49.0,
+          "above_avwap_50low": true,
+          "price_above_ema_200": true,
+          "cpr_narrow": true,
+          "above_cpr": true,
+          "below_cpr": true
+        },
+        "best_short": {
+          "rsi_14": 49.0,
+          "above_avwap_50low": false,
+          "price_above_ema_200": false,
+          "cpr_narrow": false,
+          "above_cpr": false,
+          "below_cpr": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "cpr_narrow_momentum",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 49.0,
+          "price_above_ema_200": true,
+          "cpr_narrow": true,
+          "above_cpr": true,
+          "macd_12_26_9_bullish": true,
+          "below_cpr": true
+        },
+        "best_short": {
+          "rsi_14": 49.0,
+          "price_above_ema_200": false,
+          "cpr_narrow": false,
+          "above_cpr": false,
+          "macd_12_26_9_bullish": false,
+          "below_cpr": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "cpr_narrow_momentum_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 49.0,
+          "cpr_narrow": true,
+          "below_cpr": true,
+          "macd_12_26_9_bullish": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true
+        },
+        "best_short": {
+          "rsi_14": 49.0,
+          "cpr_narrow": false,
+          "below_cpr": false,
+          "macd_12_26_9_bullish": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "donchian_breakdown_retest_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "support_break_retest": true,
+          "vol_spike_15x": true,
+          "macd_12_26_9_bullish": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true
+        },
+        "best_short": {
+          "support_break_retest": false,
+          "vol_spike_15x": false,
+          "macd_12_26_9_bullish": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "donchian_breakdown_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "dc10_breakout_dn": true,
+          "vol_spike_15x": true,
+          "macd_12_26_9_bullish": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true
+        },
+        "best_short": {
+          "dc10_breakout_dn": false,
+          "vol_spike_15x": false,
+          "macd_12_26_9_bullish": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "evening_star_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 56.0,
+          "evening_star": true,
+          "price_above_sma_50": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "rsi_14": 56.0,
+          "evening_star": false,
+          "price_above_sma_50": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "institutional_capitulation_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "institutional_negative": true,
+          "vol_spike_2x": true,
+          "price_above_ema_50": true,
+          "price_above_ema_200": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "institutional_negative": false,
+          "vol_spike_2x": false,
+          "price_above_ema_50": false,
+          "price_above_ema_200": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "institutional_distribution_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "institutional_negative": true,
+          "price_above_ema_50": true,
+          "price_above_ema_200": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "institutional_negative": false,
+          "price_above_ema_50": false,
+          "price_above_ema_200": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "morning_star",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 56.0,
+          "morning_star": true,
+          "ema_50_200_bullish": true,
+          "evening_star": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true
+        },
+        "best_short": {
+          "rsi_14": 56.0,
+          "morning_star": false,
+          "ema_50_200_bullish": false,
+          "evening_star": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "orb_stocks_in_play_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "gap_dn_2pct": true,
+          "close_below_open": true,
+          "vol_spike_2x": true,
+          "price_above_ema_200": true,
+          "gap_dn_pct": true,
+          "price_above_ema_50": true
+        },
+        "best_short": {
+          "gap_dn_2pct": false,
+          "close_below_open": false,
+          "vol_spike_2x": false,
+          "price_above_ema_200": false,
+          "gap_dn_pct": false,
+          "price_above_ema_50": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "post_deletion_drift_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "post_inclusion_drift_long",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "post_inclusion_reversal_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "pre_rebalance_long",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "prev_day_low_breakdown",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "below_prev_low": true,
+          "vol_spike_15x": true,
+          "above_vwap": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true
+        },
+        "best_short": {
+          "below_prev_low": false,
+          "vol_spike_15x": false,
+          "above_vwap": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "rsi_volume_200ema",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "rsi_14": 66.0,
+          "vol_above_avg": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "rsi_14": 66.0,
+          "vol_above_avg": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "smc_bos_continuation",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "vol_spike_2x": true,
+          "force_index_breakout": true,
+          "rsi_14": true,
+          "smc_bos_bullish": true,
+          "price_above_ema_200": true,
+          "smc_bos_bearish": true
+        },
+        "best_short": {
+          "vol_spike_2x": false,
+          "force_index_breakout": false,
+          "rsi_14": false,
+          "smc_bos_bullish": false,
+          "price_above_ema_200": false,
+          "smc_bos_bearish": true
+        },
+        "is_dual_direction": true
+      },
+      {
+        "strategy": "smc_premium_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "smc_in_premium_zone": true,
+          "smc_bos_bearish": true,
+          "smc_choch_bearish": true,
+          "price_above_ema_200": true,
+          "smc_dealing_range_pct": true,
+          "price_above_ema_50": true
+        },
+        "best_short": {
+          "smc_in_premium_zone": false,
+          "smc_bos_bearish": true,
+          "smc_choch_bearish": true,
+          "price_above_ema_200": false,
+          "smc_dealing_range_pct": false,
+          "price_above_ema_50": false
+        },
+        "is_dual_direction": false
+      },
+      {
+        "strategy": "xs_momentum_bottom_decile_short",
+        "class": "SYNTHESIZE_NEVER_FIRES",
+        "issue": "strategy did NOT fire even with best-case synthetic inputs (tried both long and short directions); possible logic bug or complex compound requirement my synth doesn't handle",
+        "best_long": {
+          "xs_momentum_bottom_decile": true,
+          "price_above_ema_200": true,
+          "price_above_ema_50": true,
+          "price_above_sma_50": true,
+          "close_above_open": true
+        },
+        "best_short": {
+          "xs_momentum_bottom_decile": false,
+          "price_above_ema_200": false,
+          "price_above_ema_50": false,
+          "price_above_sma_50": false,
+          "close_above_open": false
+        },
+        "is_dual_direction": false
+      }
+    ],
+    "SYNTHESIZE_ALWAYS_FIRES": [
+      {
+        "strategy": "hull_rsi_short",
+        "class": "SYNTHESIZE_ALWAYS_FIRES",
+        "issue": "strategy fires with all-False signals AND is not dual-direction; no real gating"
+      }
+    ]
+  },
+  "engine_flow": {
+    "status": "ok",
+    "producer_modules": {
+      "calendar_effects": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "chart_patterns": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "cross_asset": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "cross_sectional": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "dec513_extended_signals": {
+        "imported": false,
+        "called_in_screen_instrument": true
+      },
+      "index_rebalance": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "insider_buying": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "institutional_persistence_consumer": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "macro_events": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "multi_timeframe": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "news_sentiment": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "pairs_trading": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "pead": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "smc_ict": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "technical": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "volume_profile": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "cache": {
+        "imported": false,
+        "called_in_screen_instrument": true
+      },
+      "fetcher": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "macro": {
+        "imported": false,
+        "called_in_screen_instrument": true
+      },
+      "sentiment": {
+        "imported": false,
+        "called_in_screen_instrument": true
+      },
+      "smart_money": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      },
+      "universe": {
+        "imported": true,
+        "called_in_screen_instrument": true
+      }
+    }
+  }
+}
