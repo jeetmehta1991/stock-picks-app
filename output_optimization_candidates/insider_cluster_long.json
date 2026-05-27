@@ -1,0 +1,112 @@
+{
+  "strategy": "insider_cluster_long",
+  "n_trades": 3,
+  "aggregate": {
+    "n": 3,
+    "win_rate": 0.0,
+    "mean_pp": -9.1058,
+    "std_pp": 2.2015,
+    "sum_pp": -27.3173,
+    "profit_factor": 0.0,
+    "sharpe": -14.8061,
+    "t_stat": -7.1642,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "insider_cluster_active",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "insider_unique_buyers_30d",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "insider_cluster_active",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "insider_unique_buyers_30d",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "proposals": [
+      "clauses ['insider_cluster_active', 'insider_unique_buyers_30d', 'price_above_ema_200'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bull": {
+        "n": 3,
+        "win_rate": 0.0,
+        "mean_pp": -9.1058,
+        "std_pp": 2.2015,
+        "sum_pp": -27.3173,
+        "profit_factor": 0.0,
+        "sharpe": -14.8061,
+        "t_stat": -7.1642,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -14.8061,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

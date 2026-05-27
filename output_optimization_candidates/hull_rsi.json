@@ -1,0 +1,186 @@
+{
+  "strategy": "hull_rsi",
+  "n_trades": 2,
+  "aggregate": {
+    "n": 2,
+    "win_rate": 0.0,
+    "mean_pp": -1.5516,
+    "std_pp": 1.1527,
+    "sum_pp": -3.1031,
+    "profit_factor": 0.0,
+    "sharpe": -1.6685,
+    "t_stat": -1.9035,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": [
+      {
+        "clause": "adx > 20.0",
+        "empirical": {
+          "min": 39.91,
+          "p25": 41.4225,
+          "median": 42.935,
+          "p75": 44.4475,
+          "max": 45.96,
+          "n": 2
+        },
+        "verdict": "LOOSE",
+        "proposal": "tighten adx > 20.0 -> ~41.422 (LOOSE; p25 fire=41.422)"
+      },
+      {
+        "clause": "rsi_9 > 50.0",
+        "empirical": {
+          "min": 15.84,
+          "p25": 16.915,
+          "median": 17.99,
+          "p75": 19.065,
+          "max": 20.14,
+          "n": 2
+        },
+        "verdict": "normal",
+        "proposal": null
+      },
+      {
+        "clause": "rsi_9 < 50.0",
+        "empirical": {
+          "min": 15.84,
+          "p25": 16.915,
+          "median": 17.99,
+          "p75": 19.065,
+          "max": 20.14,
+          "n": 2
+        },
+        "verdict": "LOOSE",
+        "proposal": "tighten rsi_9 < 50.0 -> ~19.065 (LOOSE; p75 fire=19.065)"
+      }
+    ]
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "adx",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "adx_trending",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "hull_bullish",
+        "fires_at": 0.0,
+        "n_present": 2
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 0.0,
+        "n_present": 2
+      },
+      {
+        "clause": "price_above_hull",
+        "fires_at": 0.0,
+        "n_present": 2
+      },
+      {
+        "clause": "rsi_9",
+        "fires_at": 100.0,
+        "n_present": 2
+      }
+    ],
+    "restrictive": [
+      {
+        "clause": "hull_bullish",
+        "fires_at": 0.0,
+        "n_present": 2
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 0.0,
+        "n_present": 2
+      },
+      {
+        "clause": "price_above_hull",
+        "fires_at": 0.0,
+        "n_present": 2
+      }
+    ],
+    "always_on": [
+      {
+        "clause": "adx",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "adx_trending",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "rsi_9",
+        "fires_at": 100.0,
+        "n_present": 2
+      }
+    ],
+    "proposals": [
+      "consider OR-fallback for `hull_bullish` (fires only 0.0% on fired trades)",
+      "consider OR-fallback for `price_above_ema_200` (fires only 0.0% on fired trades)",
+      "consider OR-fallback for `price_above_hull` (fires only 0.0% on fired trades)",
+      "clauses ['adx', 'adx_trending', 'rsi_9'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 2,
+        "win_rate": 0.0,
+        "mean_pp": -1.5516,
+        "std_pp": 1.1527,
+        "sum_pp": -3.1031,
+        "profit_factor": 0.0,
+        "sharpe": -1.6685,
+        "t_stat": -1.9035,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -1.6685,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

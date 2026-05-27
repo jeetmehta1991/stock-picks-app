@@ -1,0 +1,137 @@
+{
+  "strategy": "avwap_252_breakout",
+  "n_trades": 4,
+  "aggregate": {
+    "n": 4,
+    "win_rate": 0.0,
+    "mean_pp": -7.5791,
+    "std_pp": 3.5502,
+    "sum_pp": -30.3163,
+    "profit_factor": 0.0,
+    "sharpe": -9.7829,
+    "t_stat": -4.2696,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "above_avwap_252low",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "pct_from_avwap_252low",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 4
+      },
+      {
+        "clause": "vol_spike_15x",
+        "fires_at": 100.0,
+        "n_present": 4
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "above_avwap_252low",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "pct_from_avwap_252low",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 4
+      },
+      {
+        "clause": "vol_spike_15x",
+        "fires_at": 100.0,
+        "n_present": 4
+      }
+    ],
+    "proposals": [
+      "clauses ['above_avwap_252low', 'pct_from_avwap_252low', 'rsi_14', 'vol_spike_15x'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 2,
+        "win_rate": 0.0,
+        "mean_pp": -4.7208,
+        "std_pp": 2.2658,
+        "sum_pp": -9.4416,
+        "profit_factor": 0.0,
+        "sharpe": -8.2686,
+        "t_stat": -2.9465,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 2,
+        "win_rate": 0.0,
+        "mean_pp": -10.4373,
+        "std_pp": 0.0006,
+        "sum_pp": -20.8747,
+        "profit_factor": 0.0,
+        "sharpe": -95462.8944,
+        "t_stat": -24054.3884,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -9.7829,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

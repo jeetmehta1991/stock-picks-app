@@ -1,0 +1,149 @@
+{
+  "strategy": "pairs_mean_reversion_long",
+  "n_trades": 3,
+  "aggregate": {
+    "n": 3,
+    "win_rate": 0.3333,
+    "mean_pp": -2.43,
+    "std_pp": 9.1243,
+    "sum_pp": -7.2899,
+    "profit_factor": 0.479,
+    "sharpe": -0.4025,
+    "t_stat": -0.4613,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": [
+      {
+        "clause": "pair_count_active > 0.0",
+        "empirical": {
+          "min": 4.0,
+          "p25": 4.5,
+          "median": 5.0,
+          "p75": 7.5,
+          "max": 10.0,
+          "n": 3
+        },
+        "verdict": "LOOSE",
+        "proposal": "tighten pair_count_active > 0.0 -> ~4.5 (LOOSE; p25 fire=4.500)"
+      },
+      {
+        "clause": "pair_half_life >= 5.0",
+        "empirical": {
+          "min": 8.93,
+          "p25": 9.775,
+          "median": 10.62,
+          "p75": 12.295,
+          "max": 13.97,
+          "n": 3
+        },
+        "verdict": "LOOSE",
+        "proposal": "tighten pair_half_life >= 5.0 -> ~9.775 (LOOSE; p25 fire=9.775)"
+      }
+    ]
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "pair_count_active",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "pair_counterparty",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "pair_half_life",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "pair_zscore_signed",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "pair_count_active",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "pair_counterparty",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "pair_half_life",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "pair_zscore_signed",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "proposals": [
+      "clauses ['pair_count_active', 'pair_counterparty', 'pair_half_life', 'pair_zscore_signed'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bull": {
+        "n": 3,
+        "win_rate": 0.3333,
+        "mean_pp": -2.43,
+        "std_pp": 9.1243,
+        "sum_pp": -7.2899,
+        "profit_factor": 0.479,
+        "sharpe": -0.4025,
+        "t_stat": -0.4613,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -0.4025,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}
