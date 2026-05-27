@@ -211,16 +211,32 @@ class BacktestEngine:
     # ----------------------------------------------------------------------
 
     def load_data(self):
-        logger.info("Loading OHLCV for %d instruments (%s -> %s) | cache=%s",
-                    len(self.universe), DATA_LOAD_START, self.end, self.use_cache)
+        # Batch 406 (2026-05-27) BUG FIX: DATA_LOAD_START was hardcoded
+        # to 2021-05-05 (Pass 53 leftover when scope was 4-year). When
+        # caller passed `--start 2020-01-02` (Phase 1A-beta 6.3y scope),
+        # engine still loaded OHLCV from 2021-05-05; day-loop iterated
+        # 2020-01-02 -> 2026-04-30 but had no OHLCV before 2021-05-05;
+        # screen_universe returned 0/0 for entire 2020-2021 period.
+        # Fix: derive actual load start from self.start with 400-day
+        # warmup buffer (covers 252-day momentum + buffer).  Falls back
+        # to the legacy DATA_LOAD_START constant when that is earlier
+        # (to preserve cache hits when caller's start is later than 2021).
+        from datetime import timedelta
+        warmup_start = self.start - timedelta(days=400)
+        actual_start = min(DATA_LOAD_START, warmup_start)
+        logger.info("Loading OHLCV for %d instruments (%s -> %s) | cache=%s "
+                    "[Batch 406: actual_start = min(DATA_LOAD_START=%s, "
+                    "self.start - 400d = %s)]",
+                    len(self.universe), actual_start, self.end, self.use_cache,
+                    DATA_LOAD_START, warmup_start)
 
         if self.use_cache:
             self.ohlcv_dict = cached_ohlcv_bulk(
-                self.universe, start=DATA_LOAD_START, end=self.end)
+                self.universe, start=actual_start, end=self.end)
         else:
             from backtest.data.fetcher import fetch_ohlcv_bulk
             self.ohlcv_dict = fetch_ohlcv_bulk(
-                self.universe, start=DATA_LOAD_START, end=self.end, delay_sec=0.3)
+                self.universe, start=actual_start, end=self.end, delay_sec=0.3)
 
         logger.info("Loaded %d/%d tickers", len(self.ohlcv_dict), len(self.universe))
 
