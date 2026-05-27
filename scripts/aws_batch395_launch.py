@@ -177,7 +177,9 @@ def ensure_instance_profile(region: str, role_name: str = "batch395-instance-rol
 
 def build_user_data(batch_index: int, bucket: str, commit: str,
                     phase: str, start: str, end: str,
-                    workers: int, repo_url: str) -> str:
+                    workers: int, repo_url: str,
+                    max_run_hours: float | None = None,
+                    warn_run_hours: float | None = None) -> str:
     """Construct the user-data shell script.  Prepends env-var exports
     to the bootstrap content, then base64-encodes for AWS user-data."""
     bootstrap_path = REPO / "scripts" / "aws_batch395_bootstrap.sh"
@@ -193,6 +195,10 @@ def build_user_data(batch_index: int, bucket: str, commit: str,
         f"export BATCH395_WORKERS={workers}\n"
         f"export BATCH395_REPO_URL={repo_url}\n"
     )
+    if max_run_hours is not None:
+        header += f"export BATCH395_MAX_HOURS={max_run_hours}\n"
+    if warn_run_hours is not None:
+        header += f"export BATCH395_WARN_HOURS={warn_run_hours}\n"
     # Strip the shebang from the bootstrap content (header already has one)
     if bootstrap.startswith("#!"):
         bootstrap = bootstrap.split("\n", 1)[1]
@@ -227,6 +233,13 @@ def main() -> int:
                     help="use spot pricing (~40%% cheaper, possible reclaim)")
     ap.add_argument("--spot-max-price", default="0.30",
                     help="max spot bid price (default $0.30/hr)")
+    ap.add_argument("--max-run-hours", type=float, default=None,
+                    help="override engine --max-run-hours (default: auto-set "
+                         "by run_phase1a to 6.0 for --phase=1a-beta). Passed "
+                         "to user-data via BATCH395_MAX_HOURS env var.")
+    ap.add_argument("--warn-run-hours", type=float, default=None,
+                    help="override engine --warn-run-hours (default: auto-set "
+                         "by run_phase1a to 4.0 for --phase=1a-beta).")
     ap.add_argument("--batches", type=int, default=5,
                     help="number of batches/instances to launch (default 5)")
     ap.add_argument("--batch-start", type=int, default=1,
@@ -260,6 +273,8 @@ def main() -> int:
         user_data = build_user_data(
             batch_index, args.bucket, args.commit, args.phase,
             args.start, args.end, args.workers, args.repo_url,
+            max_run_hours=args.max_run_hours,
+            warn_run_hours=args.warn_run_hours,
         )
 
         cmd = [

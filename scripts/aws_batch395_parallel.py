@@ -70,6 +70,10 @@ def launch_one(args, batch_index: int, use_spot: bool) -> bool:
         "--batch-start", str(batch_index),
         "--batches", "1",
     ]
+    if args.max_run_hours is not None:
+        cmd.extend(["--max-run-hours", str(args.max_run_hours)])
+    if args.warn_run_hours is not None:
+        cmd.extend(["--warn-run-hours", str(args.warn_run_hours)])
     if use_spot:
         cmd.extend(["--spot", "--spot-max-price", args.spot_max_price])
     print(f"[LAUNCH] batch_{batch_index} {'spot' if use_spot else 'on-demand'}")
@@ -88,9 +92,13 @@ def main() -> int:
     ap.add_argument("--batches", default="4,5",
                     help="comma-separated batch indices to launch")
     ap.add_argument("--spot-max-price", default="0.90")
+    ap.add_argument("--max-run-hours", type=float, default=None,
+                    help="forwarded to launch.py --max-run-hours (engine kill)")
+    ap.add_argument("--warn-run-hours", type=float, default=None,
+                    help="forwarded to launch.py --warn-run-hours (engine warn)")
     ap.add_argument("--poll-seconds", type=int, default=300)
     ap.add_argument("--max-hours", type=float, default=10.0,
-                    help="overall timeout (default 10h)")
+                    help="overall runner timeout (default 10h)")
     args = ap.parse_args()
 
     pending = [int(b.strip()) for b in args.batches.split(",")]

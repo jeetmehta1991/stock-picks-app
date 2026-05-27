@@ -27,6 +27,12 @@ echo "[$(date)] Batch 395 bootstrap START -- index=${BATCH395_INDEX:?} bucket=${
 : "${BATCH395_WORKERS:=12}"
 : "${BATCH395_COMMIT:=main}"
 : "${BATCH395_REPO_URL:=https://github.com/jeetmehta1991/stock-picks-app.git}"
+# Batch 405 (2026-05-27 owner directive): wall-time guard override.
+# Default 6h KILL is auto-set by run_phase1a for --phase=1a-beta.
+# Pass BATCH395_MAX_HOURS to override (engine's --max-run-hours).
+# Empty/unset means defaults apply.
+: "${BATCH395_MAX_HOURS:=}"
+: "${BATCH395_WARN_HOURS:=}"
 
 # Phase 1: system prereqs
 echo "[$(date)] Installing system packages..."
@@ -98,6 +104,16 @@ echo "[$(date)] Batch $BATCH395_INDEX -> $TICKER_COUNT tickers"
 OUTPUT_DIR="output_batch395_${BATCH395_INDEX}"
 mkdir -p "$OUTPUT_DIR"
 echo "[$(date)] Launching engine in tmux session phase1a_single..."
+# Batch 405: optionally override wall-time guards (default 6h kill).
+WALL_TIME_ARGS=""
+if [ -n "$BATCH395_MAX_HOURS" ]; then
+    WALL_TIME_ARGS="--max-run-hours $BATCH395_MAX_HOURS"
+fi
+if [ -n "$BATCH395_WARN_HOURS" ]; then
+    WALL_TIME_ARGS="$WALL_TIME_ARGS --warn-run-hours $BATCH395_WARN_HOURS"
+fi
+echo "[$(date)] wall-time override: ${WALL_TIME_ARGS:-(default 4h warn / 6h kill)}"
+
 tmux new-session -d -s phase1a_single bash -lc "
     cd /opt/stock-picks-app
     source .venv/bin/activate
@@ -108,6 +124,7 @@ tmux new-session -d -s phase1a_single bash -lc "
         --start $BATCH395_START --end $BATCH395_END \\
         --screen-pool-workers $BATCH395_WORKERS \\
         --output-dir $OUTPUT_DIR \\
+        $WALL_TIME_ARGS \\
         2>&1 | tee /var/log/batch395-engine.log
     echo \"[ENGINE-DONE \$?] \$(date)\" >> /var/log/batch395-engine.log
 "
