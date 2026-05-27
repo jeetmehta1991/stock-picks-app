@@ -1,0 +1,138 @@
+{
+  "avwap_50_reclaim": {
+    "best_exit": "breakeven_plus_trail",
+    "n": 7,
+    "wr": 71.42857142857143,
+    "pf": 3.97,
+    "mean_pp": 4.377,
+    "sharpe_proxy": 1.28
+  },
+  "buyback_8k_recent_long": {
+    "best_exit": "earnings_blackout",
+    "n": 86,
+    "wr": 58.139534883720934,
+    "pf": 5.84,
+    "mean_pp": 36.96,
+    "sharpe_proxy": 2.98
+  },
+  "camarilla_r3_breakout": {
+    "best_exit": "hybrid_50pct_target",
+    "n": 6,
+    "wr": 100.0,
+    "pf": 99.0,
+    "mean_pp": 22.855,
+    "sharpe_proxy": 3.64
+  },
+  "force_index_breakout": {
+    "best_exit": "ma_exit_ema9",
+    "n": 8,
+    "wr": 37.5,
+    "pf": 1.15,
+    "mean_pp": 0.311,
+    "sharpe_proxy": 0.12
+  },
+  "htf_aligned_breakout_long": {
+    "best_exit": "earnings_blackout",
+    "n": 24,
+    "wr": 50.0,
+    "pf": 6.52,
+    "mean_pp": 85.912,
+    "sharpe_proxy": 1.7
+  },
+  "htf_aligned_breakout_short": {
+    "best_exit": "time_stop_10d",
+    "n": 5,
+    "wr": 20.0,
+    "pf": 4.52,
+    "mean_pp": 8.335,
+    "sharpe_proxy": 0.74
+  },
+  "monthly_bias_momentum_long": {
+    "best_exit": "hybrid_50pct_target",
+    "n": 5,
+    "wr": 100.0,
+    "pf": 99.0,
+    "mean_pp": 6.932,
+    "sharpe_proxy": 3.27
+  },
+  "orb_stocks_in_play_long": {
+    "best_exit": "earnings_blackout",
+    "n": 66,
+    "wr": 71.21212121212122,
+    "pf": 7.45,
+    "mean_pp": 61.084,
+    "sharpe_proxy": 3.16
+  },
+  "orb_stocks_in_play_short": {
+    "best_exit": "r_multiple_2r",
+    "n": 21,
+    "wr": 38.095238095238095,
+    "pf": 1.28,
+    "mean_pp": 1.388,
+    "sharpe_proxy": 0.48
+  },
+  "pead_long": {
+    "best_exit": "multi_tier_partial",
+    "n": 6,
+    "wr": 66.66666666666666,
+    "pf": 4.63,
+    "mean_pp": 1.364,
+    "sharpe_proxy": 1.41
+  },
+  "po3_bearish": {
+    "best_exit": "next_pivot_target",
+    "n": 5,
+    "wr": 60.0,
+    "pf": 1.38,
+    "mean_pp": 1.313,
+    "sharpe_proxy": 0.27
+  },
+  "po3_bullish": {
+    "best_exit": "earnings_blackout",
+    "n": 19,
+    "wr": 63.1578947368421,
+    "pf": 3.4,
+    "mean_pp": 17.937,
+    "sharpe_proxy": 1.46
+  },
+  "pre_fomc_long_sleeve": {
+    "best_exit": "earnings_blackout",
+    "n": 6,
+    "wr": 83.33333333333334,
+    "pf": 23.73,
+    "mean_pp": 8.245,
+    "sharpe_proxy": 1.76
+  },
+  "vix_backwardation_long": {
+    "best_exit": "hybrid_50pct_target",
+    "n": 9,
+    "wr": 33.33333333333333,
+    "pf": 0.74,
+    "mean_pp": -1.719,
+    "sharpe_proxy": -0.41
+  },
+  "xs_low_beta_long": {
+    "best_exit": "earnings_blackout",
+    "n": 28,
+    "wr": 75.0,
+    "pf": 3.39,
+    "mean_pp": 13.317,
+    "sharpe_proxy": 2.37
+  },
+  "xs_momentum_top_decile": {
+    "best_exit": "earnings_blackout",
+    "n": 8,
+    "wr": 50.0,
+    "pf": 2.17,
+    "mean_pp": 27.116,
+    "sharpe_proxy": 0.83
+  },
+  "xs_quality_top_quintile_long": {
+    "best_exit": "trailing_15pct",
+    "n": 22,
+    "wr": 45.45454545454545,
+    "pf": 2.96,
+    "mean_pp": 10.07,
+    "sharpe_proxy": 1.11
+  }
+}
