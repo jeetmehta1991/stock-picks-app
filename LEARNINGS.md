@@ -1497,3 +1497,34 @@ The bug went undetected from DEC-497 D4 (2026-05-06) through BUG-238 fail-closed
 If the prior estimate is older than the most recent signal/strategy roster expansion, MUST re-validate. Signal-side additions (especially smc, chart patterns, bear composite reading multiple macro caches) materially increase per-ticker-per-day compute. Never carry a timeout forward without re-checking.
 
 **Cross-references.** Batch 181 (5x388 design, 2026-05-15), Batch 304 (CI pyramid timeout fix - same class of error at smaller scale), Batch 305 (25x78 redesign 2026-05-22), Stage D pacing measurement (0.22 sec/ticker/sim-day, 117 tkrs x 4y = ~10h with pyramid contention / ~7.5h clean).
+
+
+## L157 — Verify data availability before claiming an engine "bug" (Pass 53 Batch 407 2026-05-27)
+
+**Pattern.** I (assistant) was running the live AWS Phase 1A-beta cube run on 2026-05-27. After batch_1 completed, forensic analysis of `trade_log.csv` showed zero trades in 2020-01-02 -> 2021-05-04 despite `--start 2020-01-02` being passed to the engine. SSH inspection of the running batch_2 instance confirmed `screen_universe ... 0/0 passed` for every day in that window. Engine code traced to `DATA_LOAD_START = date(2021, 5, 5)` in `backtest/config.py:30`. I labeled this a "critical bug" — engine ignoring `--start` for OHLCV load — and shipped Batch 406 with:
+  - engine code change (derive `actual_start = min(DATA_LOAD_START, self.start - 400d)`)
+  - 9 unit tests pinning the formula
+  - PHASE_1A_BETA_STATUS.md "KNOWN CAVEATS" section
+  - commit `b3da049d3` pushed to main
+
+Owner caught the error: **"I believe we have OHLCV data coverage for just 5 years so why 6.3 years now?"**
+
+Direct verification: sample 29 tickers from `data_prefetch/polygon/ohlcv_daily/`. All show first bar **2021-05-11**. The constant `DATA_LOAD_START = 2021-05-05` is documented at `backtest/config.py:21` as aligned to Polygon Stocks Starter 5y rolling cache (owner declined Developer/Advanced upgrade). The engine wasn't ignoring `--start`; the data simply doesn't exist before 2021-05-11. The Batch 406 "fix" was operating on a phantom problem; the formula it added is benign (no behavior change for our case) but the framing as a "bug fix" was wrong.
+
+**Compounding factors:**
+  - **No data-availability check pre-investigation.** The first response should have been `python -c "import pandas; print(pandas.read_parquet('data_prefetch/polygon/ohlcv_daily/AAPL.parquet').iloc[[0,-1]])"` — 30 seconds, decisive. Instead I went straight to SSH-tracing engine code + writing fixes.
+  - **Didn't read config.py header comments.** Lines 21-24 of `backtest/config.py` literally state "Aligned to Polygon Stocks Starter 5y rolling cache (locked 2021-05-05 -> 2026-05-05). Owner declined Polygon Developer/Advanced upgrade. ... Old window 2020-01-01 -> 2026-03-31 had a 16-month gap (2020-01 -> 2021-05) with..." — exactly describing what I "discovered" as a new bug.
+  - **Cascaded the wrong diagnosis.** Forensic findings -> code fix -> tests -> doc updates -> commit + push -> CLAUDE.md / status doc edits. Each step compounded the wasted effort.
+  - **Missed the CHECKLIST.md visible pre-flight block** (Pass 52 standing rule). Pre-flight summaries at end of responses were not equivalent to the per-recommendation visible reference owner has explicitly required since Pass 52.
+
+**Closure (Batch 407).** `git revert b3da049d3` removed the engine change, test file, and PHASE_1A_BETA_STATUS.md caveat. CHECKLIST #84 codifies the new mandatory check: verify data availability (cache file inspection + config.py header read) before claiming engine bugs. This L157 entry retroactively documents the lesson. Current AWS run continues unaffected (was pinned to PRE-fix commit `9deb91b95`; valid 5-year scope per data constraints; cube output represents the maximum scope physically possible).
+
+**Rule.** Whenever a symptom looks like "missing data / zero trades / empty universe for time window W":
+  - **a.** First run a 30-second data-availability check on the relevant cache directory (sample 5-10 files, print date range).
+  - **b.** Read the header comments of any config file that defines the data-window constants. Owner-written comments are the canonical source for "why is this value what it is."
+  - **c.** State the data-availability finding explicitly in the pre-flight block BEFORE proposing any code change.
+  - **d.** If data does not exist for window W, the engine is not bugged for behaving accordingly; the question is whether the user-facing scope claim should be corrected (docs/launcher defaults), not whether the engine should request data that does not exist.
+
+If the cache shows data for the disputed window but the engine still produces zero trades, only THEN escalate to an engine-bug investigation. Skipping the data-availability check because the symptom "looks like a bug" is the L157 anti-pattern.
+
+**Cross-references.** Batch 406 (the mis-diagnosed "fix"; reverted Batch 407), Batch 407 (this lesson's codification + CHECKLIST #84), `backtest/config.py:21-24` (the header that already documented the 5-year window I "discovered"), L155 (silent-gap pattern — sibling: too-little data silently absorbed; L157 fights too-eagerly diagnosing too-little-data as engine bug), CHECKLIST #84 (data-availability gate before engine-bug investigation).

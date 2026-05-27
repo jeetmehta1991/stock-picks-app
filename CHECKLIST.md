@@ -1215,3 +1215,21 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Why:** the pyramid certifies "code runs"; it does NOT certify "system delivers contracted result at scale" unless explicitly told to measure shape/coverage.  Migration is the canonical moment when shape changes silently.  See L155 for the full pattern walkthrough across BUG-286 + 5 sibling bugs.
 
     **Apply when:** any DEC tagged `data-source-migration` in AUDIT_INDEX, OR any DEC that replaces `yfinance.*` / `pd.read_html` / `requests.get` calls with a different producer, OR any DEC that touches the producer side of a field consumed by `_build_liquid_universe` / `is_liquid` / regime classifier / strategy entry gates.  Companion test file: `backtest/tests/test_silent_gap_pyramid.py` (Batch 302 canonical implementation - 25 tests across 9 of 13 tiers).
+
+84. **HARD RULE — Verify DATA AVAILABILITY before claiming an engine "bug"** (Pass 53 owner directive 2026-05-27; codified after Batch 406 mis-diagnosis L157).
+
+    Pattern: I (assistant) saw `screen_universe ... 0/0 passed` in the engine log for 2020-2021 dates, traced through code to `DATA_LOAD_START = date(2021, 5, 5)`, and shipped Batch 406 as a "bug fix" without first checking whether OHLCV data actually existed for the pre-2021 window. Reality: Polygon Stocks Starter is a 5-year rolling cache; data does NOT exist before 2021-05-11. Engine was behaving correctly. The "fix" was harmless but the framing was wrong; sunk hour-plus of forensic + code + doc effort on a non-bug.
+
+    **Before claiming any engine path is "broken," pre-flight MUST include:**
+      a. **Check the cache/source files directly.** For OHLCV-related issues: run `python -c "import pandas as pd; print(pd.read_parquet('data_prefetch/polygon/ohlcv_daily/AAPL.parquet').iloc[[0,-1]])"` (or equivalent for the data class). For signal data: read 1 sample file's date range + row count.
+      b. **Cross-reference with `backtest/config.py` header comments.** That file documents data source + window constraints (e.g. "Polygon Stocks Starter 5y rolling cache, locked 2021-05-05 -> 2026-05-05"). Read the header before declaring config constants stale.
+      c. **Verify the symptom is incompatible with available data.** `0/0 passed` in screen_universe is ambiguous: could be data-missing (engine correct) OR universe-filter-bug (engine wrong). The disambiguation is whether the OHLCV cache has rows for the relevant dates.
+      d. **State the data-availability check result in the pre-flight block** before proposing any code change.
+
+    **Apply when:** any user-visible engine output appears to indicate "missing trades" / "zero candidates" / "empty universe" / "0/0 passed" for some time window, OR any time a user asks "why is X not working for [historical period]."
+
+    **Why:** the cost of a wrong bug diagnosis is high — wasted forensic time + spurious code change + wrong-framing doc updates that need rollback. The data-availability check is 30 seconds. Skipping it because the symptom "looks like a bug" violates the cheaper-first principle.
+
+    **First application (retroactive):** Batch 407 rollback of Batch 406 (DATA_LOAD_START "bug" that was actually correct engine behavior per data availability).
+
+    **Joint:** CHECKLIST #77 (canonical-source attribution — for OHLCV the canonical source is `data_prefetch/polygon/ohlcv_daily/`), CHECKLIST #79 (data-layer migration tests — checks coverage at scale; #84 is the same principle applied to bug investigation), L155 (silent-gap pattern — cousin: too-little data silently absorbed; #84 fights too-eagerly diagnosing too-little-data as engine bug), L157 (this directive's codified lesson).

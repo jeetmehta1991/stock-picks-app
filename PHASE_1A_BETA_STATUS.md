@@ -6,17 +6,6 @@
 
 ---
 
-## KNOWN CAVEATS — 2026-05-27 AWS RUN
-
-**DATA_LOAD_START 1.4-year coverage gap** (Batch 406 RESOLVED in code; current AWS run pinned to PRE-fix commit `9deb91b95`):
-- Engine `--start 2020-01-02` parameter controls day-loop iteration but did NOT control OHLCV load until Batch 406
-- Hardcoded `DATA_LOAD_START = date(2021, 5, 5)` in `backtest/config.py:30` (Pass 53 stale constant from 4y-window era)
-- Engine processed days 2020-01-02 -> 2021-05-04 with EMPTY universe (universe loader returned 0 tickers; `screen_universe ... 0/0 passed`)
-- **Effective coverage of current AWS run: 2021-05-05 -> 2026-04-30 (~5 years), NOT 6.3 years as configured**
-- batch_1 forensic confirmed: 0 T1a trades in 2020-2021 despite 126 PIT-active T1a tickers
-- Batch 406 fix (commit pending) derives `actual_start = min(DATA_LOAD_START, self.start - 400d)`; future iterations get full 6.3y scope
-- **Missing data caveat for this iteration's deliverable**: COVID crash (Feb-Mar 2020) + post-COVID recovery rally (Apr 2020 - Apr 2021) NOT covered by this cube. Crisis-regime cells may be under-powered.
-
 ## Run-readiness status
 
 **Phase 1A-beta full re-run on Hetzner: PAUSED till further notice** (owner directive 2026-05-26).
