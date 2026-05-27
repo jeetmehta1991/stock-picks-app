@@ -9671,6 +9671,66 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch391_exit_method_analyzer_3_layer_output():
+    """Batch 391 (owner 2026-05-26): exit-method optimization framework
+    at (strategy x exit) cell level. analyze_exit_methods produces 3
+    layers: aggregate exit-method ranking, per-(strategy x exit) cells,
+    and parameter-variant winners within exit-family (time_stop_10d vs
+    time_stop_20d, etc.)."""
+    import sys
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(repo / "scripts"))
+    import importlib
+    mod = importlib.import_module("optimize_strategies_from_cube")
+
+    import pandas as pd
+    # Synthetic cube data: 2 strategies x 4 exits x ~10 trades each
+    rows = []
+    import numpy as np
+    rng = np.random.default_rng(42)
+    for strat in ("strat_A", "strat_B"):
+        for em in ("time_stop_10d", "time_stop_20d", "r_multiple_2r", "r_multiple_3r"):
+            for _ in range(10):
+                rows.append({
+                    "strategy":     strat,
+                    "exit_method":  em,
+                    "pnl_pct":      float(rng.normal(loc=1.0, scale=2.0)),
+                    "hold_days":    10.0,
+                    "win":          bool(rng.random() > 0.5),
+                })
+    cube = pd.DataFrame(rows)
+    result = mod.analyze_exit_methods(cube, m_total_candidates=10)
+
+    assert result["status"] == "ok"
+    # Layer 1: 4 exit methods analyzed
+    assert len(result["layer_1_per_exit_method_aggregate"]) == 4
+    for em in ("time_stop_10d", "time_stop_20d", "r_multiple_2r", "r_multiple_3r"):
+        assert em in result["layer_1_per_exit_method_aggregate"]
+        d = result["layer_1_per_exit_method_aggregate"][em]
+        assert "sharpe" in d
+        assert "n_strategies_paired" in d
+        assert d["n_strategies_paired"] == 2
+
+    # Layer 2: per-(strategy x exit) cells (2 x 4 = 8 cells, all n=10)
+    assert len(result["layer_2_per_strategy_exit_cell"]) == 8
+    for r in result["layer_2_per_strategy_exit_cell"]:
+        assert r["n"] == 10
+        assert "sharpe" in r
+        assert "verdict" in r
+
+    # Layer 3: parameter-variant winners
+    l3 = result["layer_3_parameter_variant_winners"]
+    assert "strat_A" in l3 and "strat_B" in l3
+    for strat in ("strat_A", "strat_B"):
+        # time_stop family has 2 variants in synthetic data
+        assert "time_stop" in l3[strat]
+        assert l3[strat]["time_stop"]["winner"] in ("time_stop_10d", "time_stop_20d")
+        # r_multiple family has 2 variants
+        assert "r_multiple" in l3[strat]
+        assert l3[strat]["r_multiple"]["winner"] in ("r_multiple_2r", "r_multiple_3r")
+
+
 def test_batch390_squeeze_fire_up_dn_fixed_emits_truthy():
     """Batch 390 producer fix (owner 2026-05-26): squeeze_fire_up/_dn
     formula was `delta = close - mid20 + ema20` producing values around

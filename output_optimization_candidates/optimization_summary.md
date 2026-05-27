@@ -52,6 +52,137 @@ Quiet-strategy classification:
 | COMPOUND_RESTRICTIVE       | 42 | Individual clauses emit but AND-compound never satisfies |
 | SKIPPED_AT_ENGINE          | 105 | Produces candidates; engine gate filters them (likely a remaining gate) |
 
+## Exit-method optimization (Batch 391)
+
+### Layer 1 - exit methods ranked by aggregate Sharpe (across all paired strategies)
+
+| Exit method | n_strategies | n_cells | Sharpe | WR | PF | 5-gate |
+|---|---:|---:|---:|---:|---:|---|
+| `breakeven_plus_trail` | 17 | 331 | 0.3881 | 30.2% | 1.9785 | FAIL |
+| `ma_exit_ema9` | 17 | 331 | 0.1479 | 32.9% | 1.1424 | FAIL |
+| `next_pivot_target` | 17 | 331 | 0.1343 | 59.5% | 1.1064 | FAIL |
+| `regime_flip` | 17 | 331 | 0.0984 | 51.4% | 1.1144 | FAIL |
+| `time_stop_20d` | 17 | 331 | 0.0984 | 51.4% | 1.1144 | FAIL |
+| `earnings_blackout` | 17 | 331 | 0.0958 | 55.6% | 1.9361 | FAIL |
+| `trailing_15pct` | 17 | 331 | 0.0825 | 36.2% | 1.2139 | FAIL |
+| `time_stop_10d` | 17 | 331 | 0.0784 | 44.4% | 1.0808 | FAIL |
+| `class_time_stop` | 17 | 331 | 0.004 | 51.7% | 1.0046 | FAIL |
+| `trailing_10pct` | 17 | 331 | -0.0654 | 33.8% | 0.9096 | FAIL |
+| `hybrid_50pct_target` | 17 | 331 | -0.0887 | 59.2% | 0.7865 | FAIL |
+| `r_multiple_3r` | 17 | 331 | -0.1015 | 26.0% | 0.9272 | FAIL |
+| `r_multiple_2r` | 17 | 331 | -0.1134 | 34.4% | 0.9305 | FAIL |
+| `chandelier_3x` | 17 | 331 | -0.1503 | 32.6% | 0.8535 | FAIL |
+| `fixed_4r_2r` | 17 | 331 | -0.192 | 31.7% | 0.8291 | FAIL |
+
+### Layer 2 - top 10 (strategy x exit) cells by Sharpe (of 100 cells with n>=5; 0 PASS 5-Gate)
+
+| Strategy | Exit | n | Sharpe | WR | PF | 5-gate |
+|---|---|---:|---:|---:|---:|---|
+| pead_long | `next_pivot_target` | 6 | 3.4545 | 100.0% | 99.0 | INSUFFICIENT_SAMPLE |
+| monthly_bias_momentum_long | `hybrid_50pct_target` | 5 | 2.4428 | 100.0% | 99.0 | INSUFFICIENT_SAMPLE |
+| pead_long | `multi_tier_partial` | 6 | 2.19 | 66.7% | 4.6258 | INSUFFICIENT_SAMPLE |
+| pead_long | `mfe_lockin_trail` | 6 | 2.143 | 50.0% | 3.241 | INSUFFICIENT_SAMPLE |
+| pre_fomc_long_sleeve | `time_stop_10d` | 6 | 2.0885 | 66.7% | 3.1857 | INSUFFICIENT_SAMPLE |
+| camarilla_r3_breakout | `class_time_stop` | 6 | 2.0471 | 66.7% | 15.6968 | INSUFFICIENT_SAMPLE |
+| pead_long | `atr_trail_1x` | 6 | 1.8884 | 50.0% | 3.8285 | INSUFFICIENT_SAMPLE |
+| pead_long | `atr_trail_mae_conditional` | 6 | 1.8884 | 50.0% | 3.8285 | INSUFFICIENT_SAMPLE |
+| pead_long | `reverse_signal` | 6 | 1.8884 | 50.0% | 3.8285 | INSUFFICIENT_SAMPLE |
+| pead_long | `smc_mitigation_zone` | 6 | 1.8884 | 50.0% | 3.8285 | INSUFFICIENT_SAMPLE |
+
+### Layer 3 - parameter-variant winners within exit-family (per strategy)
+
+**avwap_50_reclaim**:
+- `time_stop` family winner: `class_time_stop` (Sharpe 1.0359)
+- `r_multiple` family winner: `r_multiple_2r` (Sharpe -9.424)
+- `trailing` family winner: `trailing_15pct` (Sharpe -3.0984)
+- `atr_trail` family winner: `atr_trail_2x` (Sharpe -1.4205)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -1.1115)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe 1.2217)
+- `partial` family winner: `hybrid_50pct_target` (Sharpe 0.068)
+
+**buyback_8k_recent_long**:
+- `time_stop` family winner: `time_stop_20d` (Sharpe 0.5366)
+- `r_multiple` family winner: `r_multiple_2r` (Sharpe 0.3836)
+- `trailing` family winner: `trailing_15pct` (Sharpe 0.2913)
+- `atr_trail` family winner: `atr_trail_2x` (Sharpe 0.0565)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -0.0069)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe 0.5183)
+- `partial` family winner: `hybrid_50pct_target` (Sharpe 0.3834)
+
+**camarilla_r3_breakout**:
+- `time_stop` family winner: `class_time_stop` (Sharpe 2.0471)
+- `r_multiple` family winner: `r_multiple_3r` (Sharpe -1.1555)
+- `trailing` family winner: `trailing_15pct` (Sharpe -1.1698)
+- `atr_trail` family winner: `atr_trail_2x` (Sharpe -2.5583)
+- `chandelier` family winner: `chandelier_3x` (Sharpe 0.2563)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe -0.7436)
+- `partial` family winner: `hybrid_50pct_target` (Sharpe 1.663)
+
+**force_index_breakout**:
+- `time_stop` family winner: `time_stop_10d` (Sharpe -0.9862)
+- `r_multiple` family winner: `r_multiple_3r` (Sharpe -0.2005)
+- `trailing` family winner: `trailing_5pct` (Sharpe -0.2821)
+- `atr_trail` family winner: `atr_trail_mae_conditional` (Sharpe 0.1772)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -1.2723)
+- `breakeven` family winner: `break_even_at_1r` (Sharpe -0.5144)
+- `partial` family winner: `multi_tier_partial` (Sharpe -0.4447)
+
+**htf_aligned_breakout_long**:
+- `time_stop` family winner: `time_stop_10d` (Sharpe 0.5905)
+- `r_multiple` family winner: `r_multiple_3r` (Sharpe 0.3521)
+- `trailing` family winner: `trailing_10pct` (Sharpe 0.3479)
+- `atr_trail` family winner: `atr_trail_2x` (Sharpe -1.0526)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -0.8419)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe 0.5216)
+- `partial` family winner: `hybrid_50pct_target` (Sharpe 0.6363)
+
+**htf_aligned_breakout_short**:
+- `time_stop` family winner: `time_stop_10d` (Sharpe 1.3607)
+- `r_multiple` family winner: `r_multiple_2r` (Sharpe -16.2007)
+- `trailing` family winner: `trailing_10pct` (Sharpe -1.1682)
+- `atr_trail` family winner: `atr_trail_2x` (Sharpe -2.8116)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -2.9346)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe 0.641)
+- `partial` family winner: `multi_tier_partial` (Sharpe -0.2783)
+
+**monthly_bias_momentum_long**:
+- `time_stop` family winner: `time_stop_20d` (Sharpe 1.7318)
+- `r_multiple` family winner: `r_multiple_2r` (Sharpe -13.2898)
+- `trailing` family winner: `trailing_15pct` (Sharpe 0.3297)
+- `atr_trail` family winner: `atr_trail_2x` (Sharpe -1.4171)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -2.0413)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe -2.4736)
+- `partial` family winner: `hybrid_50pct_target` (Sharpe 2.4428)
+
+**orb_stocks_in_play_long**:
+- `time_stop` family winner: `time_stop_20d` (Sharpe 0.5968)
+- `r_multiple` family winner: `r_multiple_2r` (Sharpe 1.3194)
+- `trailing` family winner: `trailing_15pct` (Sharpe 0.3233)
+- `atr_trail` family winner: `atr_trail_2x` (Sharpe 0.2429)
+- `chandelier` family winner: `chandelier_3x` (Sharpe 0.5482)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe 0.8984)
+- `partial` family winner: `hybrid_50pct_target` (Sharpe 0.8343)
+
+**orb_stocks_in_play_short**:
+- `time_stop` family winner: `class_time_stop` (Sharpe 0.1683)
+- `r_multiple` family winner: `r_multiple_2r` (Sharpe 0.6432)
+- `trailing` family winner: `trailing_10pct` (Sharpe -1.2819)
+- `atr_trail` family winner: `atr_trail_vix_conditional` (Sharpe -0.3809)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -0.7243)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe -0.3909)
+- `partial` family winner: `multi_tier_partial` (Sharpe 0.1061)
+
+**pead_long**:
+- `time_stop` family winner: `time_stop_10d` (Sharpe -0.0459)
+- `r_multiple` family winner: `r_multiple_2r` (Sharpe -0.8824)
+- `trailing` family winner: `trailing_10pct` (Sharpe -0.9299)
+- `atr_trail` family winner: `atr_trail_mae_conditional` (Sharpe 1.8884)
+- `chandelier` family winner: `chandelier_3x` (Sharpe -0.9373)
+- `breakeven` family winner: `breakeven_plus_trail` (Sharpe -0.3002)
+- `partial` family winner: `multi_tier_partial` (Sharpe 2.19)
+
+- top-5 aggregate exit methods (n_strats>=5): ['breakeven_plus_trail', 'ma_exit_ema9', 'next_pivot_target', 'regime_flip', 'time_stop_20d']
+
 ## Approval pattern
 
 Owner reviews per-strategy JSON + this summary. For each candidate change, owner directs me to apply via a separate batch. NEVER apply changes directly from this output - all changes require explicit per-change owner approval per `project_no_apriori_strategy_pruning.md`.

@@ -606,8 +606,128 @@ def producer_zero_reaudit(trade_log: pd.DataFrame,
     }
 
 
+def analyze_exit_methods(cube: pd.DataFrame, m_total_candidates: int) -> dict:
+    """Batch 391: per-(strategy x exit) cell analysis + cross-strategy
+    exit-method ranking. Owner directive 2026-05-26: similar to strategy
+    optimization, we need to optimize exits too, especially at a
+    strategyxexit combination level.
+
+    Three layers of analysis:
+
+    Layer 1 - per-exit-method aggregate (across all paired strategies):
+      for each exit_method in EXIT_STRATEGIES, compute aggregate Sharpe /
+      PF / WR / total n across all strategies that used it; rank
+      exit methods by aggregate performance
+
+    Layer 2 - per-(strategy x exit_method) cell verdict:
+      for each cell with n >= 5, compute Sharpe + DEC-426 5-Gate;
+      flag cells where the exit is the cell-winner vs cell-loser
+
+    Layer 3 - parameter-variant ranking (within an exit family):
+      time_stop_10d vs time_stop_20d (vs class_time_stop)
+      r_multiple_2r vs r_multiple_3r
+      trailing_5pct vs trailing_10pct vs trailing_15pct
+      For each strategy with cells in multiple variants of a family,
+      identify the variant winner.
+    """
+    if cube is None or cube.empty:
+        return {"status": "no_cube_data"}
+
+    # Layer 1: per-exit-method aggregate
+    layer_1 = {}
+    for em in sorted(cube["exit_method"].unique()):
+        cell = cube[cube["exit_method"] == em]
+        hd = cell["hold_days"] if "hold_days" in cell.columns else None
+        st = _cell_stats(cell["pnl_pct"], hd)
+        v = _dec426_verdict(st, m_total_candidates=m_total_candidates)
+        n_strats_paired = int(cell["strategy"].nunique())
+        layer_1[em] = {
+            **st, **v,
+            "n_strategies_paired": n_strats_paired,
+        }
+
+    # Layer 2: per-(strategy x exit) cell
+    layer_2 = []
+    for (strat, em), cell in cube.groupby(["strategy", "exit_method"]):
+        if len(cell) < 5:
+            continue
+        hd = cell["hold_days"] if "hold_days" in cell.columns else None
+        st = _cell_stats(cell["pnl_pct"], hd)
+        v = _dec426_verdict(st, m_total_candidates=m_total_candidates)
+        layer_2.append({
+            "strategy":    strat,
+            "exit_method": em,
+            **st, **v,
+        })
+    layer_2.sort(key=lambda r: -r.get("sharpe", -999))
+
+    # Layer 3: parameter-variant winners within exit-family
+    # Family-grouping heuristics:
+    FAMILIES = {
+        "time_stop":  ["time_stop_10d", "time_stop_20d", "class_time_stop"],
+        "r_multiple": ["r_multiple_2r", "r_multiple_3r"],
+        "trailing":   ["trailing_5pct", "trailing_10pct", "trailing_15pct"],
+        "atr_trail":  ["atr_trail_1x", "atr_trail_2x", "atr_trail_mae_conditional",
+                       "atr_trail_vix_conditional"],
+        "chandelier": ["chandelier_3x"],
+        "breakeven":  ["break_even_at_1r", "breakeven_plus_trail"],
+        "partial":    ["multi_tier_partial", "hybrid_50pct_target"],
+    }
+    layer_3 = {}
+    for strat in sorted(cube["strategy"].unique()):
+        per_family_winner = {}
+        for fam_name, variants in FAMILIES.items():
+            sub = cube[(cube["strategy"] == strat) & (cube["exit_method"].isin(variants))]
+            if len(sub) < 5:
+                continue
+            cells = []
+            for em in sub["exit_method"].unique():
+                em_cell = sub[sub["exit_method"] == em]
+                if len(em_cell) < 5:
+                    continue
+                hd = em_cell["hold_days"] if "hold_days" in em_cell.columns else None
+                st = _cell_stats(em_cell["pnl_pct"], hd)
+                cells.append({"exit_method": em, **st})
+            if not cells:
+                continue
+            cells.sort(key=lambda r: -r.get("sharpe", -999))
+            per_family_winner[fam_name] = {
+                "winner":     cells[0]["exit_method"],
+                "winner_sharpe": cells[0]["sharpe"],
+                "ranked":     cells,
+            }
+        if per_family_winner:
+            layer_3[strat] = per_family_winner
+
+    # Top-line proposals
+    proposals = []
+    # Top 5 layer-1 exit methods by aggregate Sharpe (n_strats >= 5)
+    ranked_em = sorted(layer_1.items(),
+                       key=lambda kv: -kv[1].get("sharpe", -999))
+    top_em = [em for em, d in ranked_em if d["n_strategies_paired"] >= 5][:5]
+    if top_em:
+        proposals.append(
+            f"top-5 aggregate exit methods (n_strats>=5): {top_em}")
+    # Layer-2: cells with verdict=PASS = high-confidence STRATEGY_EXIT_OVERRIDE candidates
+    pass_cells = [r for r in layer_2 if r.get("verdict") == "PASS"]
+    if pass_cells:
+        proposals.append(
+            f"{len(pass_cells)} (strategy x exit) cells PASS DEC-426 5-Gate; "
+            f"top: {pass_cells[0]['strategy']} + {pass_cells[0]['exit_method']} "
+            f"(Sharpe {pass_cells[0]['sharpe']})")
+
+    return {
+        "status":        "ok",
+        "layer_1_per_exit_method_aggregate":  layer_1,
+        "layer_2_per_strategy_exit_cell":     layer_2[:100],
+        "layer_3_parameter_variant_winners":  layer_3,
+        "proposals":     proposals,
+    }
+
+
 def write_summary_md(per_strategy_results: dict, out_path: Path,
-                      producer_audit: dict | None = None) -> None:
+                      producer_audit: dict | None = None,
+                      exit_analysis: dict | None = None) -> None:
     """Living summary doc; owner reviews here."""
     lines = []
     lines.append("# Per-strategy optimization candidates (living)")
@@ -672,6 +792,51 @@ def write_summary_md(per_strategy_results: dict, out_path: Path,
             for key, strats in sorted(priority.items(), key=lambda kv: -len(kv[1])):
                 lines.append(f"| `{key}` | {len(strats)} | Audit producer module; emit key OR loosen consumer compound |")
             lines.append("")
+    # Batch 391: exit-method optimization section
+    if exit_analysis and exit_analysis.get("status") == "ok":
+        lines.append("## Exit-method optimization (Batch 391)")
+        lines.append("")
+        l1 = exit_analysis.get("layer_1_per_exit_method_aggregate", {})
+        if l1:
+            lines.append("### Layer 1 - exit methods ranked by aggregate Sharpe (across all paired strategies)")
+            lines.append("")
+            lines.append("| Exit method | n_strategies | n_cells | Sharpe | WR | PF | 5-gate |")
+            lines.append("|---|---:|---:|---:|---:|---:|---|")
+            ranked = sorted(l1.items(), key=lambda kv: -kv[1].get("sharpe", -999))
+            for em, d in ranked[:15]:
+                lines.append(
+                    f"| `{em}` | {d.get('n_strategies_paired', 0)} | {d.get('n', 0)} | "
+                    f"{d.get('sharpe', 0)} | {round(d.get('win_rate', 0)*100, 1)}% | "
+                    f"{d.get('profit_factor', 0)} | "
+                    f"{'PASS' if d.get('five_gate_pass') else d.get('verdict', 'n/a')} |"
+                )
+            lines.append("")
+        l2 = exit_analysis.get("layer_2_per_strategy_exit_cell", [])
+        if l2:
+            pass_cells = [r for r in l2 if r.get("verdict") == "PASS"]
+            lines.append(f"### Layer 2 - top 10 (strategy x exit) cells by Sharpe (of {len(l2)} cells with n>=5; {len(pass_cells)} PASS 5-Gate)")
+            lines.append("")
+            lines.append("| Strategy | Exit | n | Sharpe | WR | PF | 5-gate |")
+            lines.append("|---|---|---:|---:|---:|---:|---|")
+            for r in l2[:10]:
+                lines.append(
+                    f"| {r['strategy']} | `{r['exit_method']}` | {r['n']} | {r['sharpe']} | "
+                    f"{round(r.get('win_rate', 0)*100, 1)}% | {r.get('profit_factor', 0)} | "
+                    f"{'PASS' if r.get('five_gate_pass') else r.get('verdict', 'n/a')} |"
+                )
+            lines.append("")
+        l3 = exit_analysis.get("layer_3_parameter_variant_winners", {})
+        if l3:
+            lines.append("### Layer 3 - parameter-variant winners within exit-family (per strategy)")
+            lines.append("")
+            for strat in sorted(l3.keys())[:10]:
+                lines.append(f"**{strat}**:")
+                for fam_name, info in l3[strat].items():
+                    lines.append(f"- `{fam_name}` family winner: `{info['winner']}` (Sharpe {info['winner_sharpe']})")
+                lines.append("")
+        for p in exit_analysis.get("proposals", []):
+            lines.append(f"- {p}")
+        lines.append("")
     lines.append("## Approval pattern")
     lines.append("")
     lines.append("Owner reviews per-strategy JSON + this summary. For each candidate change, owner directs me to apply via a separate batch. NEVER apply changes directly from this output - all changes require explicit per-change owner approval per `project_no_apriori_strategy_pruning.md`.")
@@ -741,8 +906,25 @@ def main() -> int:
                                  key=lambda kv: -len(kv[1])):
             print(f"       {k} -> {len(strats)} strategies")
 
+    # Batch 391: exit-method optimization at (strategy x exit) cell level
+    print(f"\n[INFO] Exit-method analysis (Layer 1-2-3)...")
+    exit_analysis = analyze_exit_methods(cube, M)
+    if exit_analysis.get("status") == "ok":
+        exit_path = out_dir / "exit_method_analysis.json"
+        exit_path.write_text(json.dumps(exit_analysis, indent=2, default=str),
+                              encoding="utf-8")
+        n_l1 = len(exit_analysis.get("layer_1_per_exit_method_aggregate", {}))
+        n_l2 = len(exit_analysis.get("layer_2_per_strategy_exit_cell", []))
+        n_l3 = len(exit_analysis.get("layer_3_parameter_variant_winners", {}))
+        print(f"[OK] Exit analysis: {n_l1} exits / {n_l2} (strat x exit) cells / "
+              f"{n_l3} strategies w/ family-variant winners")
+        print(f"[OK] Exit analysis JSON: {exit_path.relative_to(REPO)}")
+    else:
+        print(f"[WARN] Exit analysis skipped: {exit_analysis.get('status')}")
+
     summary_path = out_dir / "optimization_summary.md"
-    write_summary_md(results, summary_path, producer_audit=producer_audit)
+    write_summary_md(results, summary_path, producer_audit=producer_audit,
+                     exit_analysis=exit_analysis if exit_analysis.get("status") == "ok" else None)
     print(f"\n[OK] {len(results)} strategies analyzed")
     print(f"[OK] Per-strategy JSONs: {out_dir}/<strategy>.json")
     print(f"[OK] Producer audit:     {producer_audit_path.relative_to(REPO)}")
