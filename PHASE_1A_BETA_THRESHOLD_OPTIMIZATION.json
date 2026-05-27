@@ -1,0 +1,323 @@
+{
+  "avwap_252_breakout": {
+    "n_trades": 4,
+    "win_rate": 0.0,
+    "sum_pnl": -30.32,
+    "thresholds_to_optimize": []
+  },
+  "avwap_50_reclaim": {
+    "n_trades": 7,
+    "win_rate": 0.0,
+    "sum_pnl": -66.07,
+    "thresholds_to_optimize": []
+  },
+  "buyback_8k_recent_long": {
+    "n_trades": 86,
+    "win_rate": 27.9,
+    "sum_pnl": 78.1,
+    "thresholds_to_optimize": [
+      {
+        "clause": "days_since_8k <= 3.0",
+        "fire_max": 3.0,
+        "fire_median": 1.0,
+        "threshold": 3.0,
+        "p75_margin": 1.0,
+        "max_margin": 0.0,
+        "verdict": "BINDING (max near threshold)"
+      }
+    ]
+  },
+  "camarilla_r3_breakout": {
+    "n_trades": 6,
+    "win_rate": 16.7,
+    "sum_pnl": 4.09,
+    "thresholds_to_optimize": []
+  },
+  "cmf_flip": {
+    "n_trades": 1,
+    "win_rate": 0.0,
+    "sum_pnl": -5.44,
+    "thresholds_to_optimize": [
+      {
+        "clause": "rsi_14 < 50.0",
+        "fire_max": 35.21,
+        "fire_median": 35.21,
+        "threshold": 50.0,
+        "p75_margin": 14.79,
+        "max_margin": 14.79,
+        "verdict": "normal"
+      },
+      {
+        "clause": "rsi_14 > 50.0",
+        "fire_min": 35.21,
+        "fire_median": 35.21,
+        "threshold": 50.0,
+        "p25_margin": -14.79,
+        "min_margin": -14.79,
+        "verdict": "normal"
+      }
+    ]
+  },
+  "cpr_narrow_bullish": {
+    "n_trades": 1,
+    "win_rate": 0.0,
+    "sum_pnl": -13.36,
+    "thresholds_to_optimize": [
+      {
+        "clause": "rsi_14 > 50.0",
+        "fire_min": 67.59,
+        "fire_median": 67.59,
+        "threshold": 50.0,
+        "p25_margin": 17.59,
+        "min_margin": 17.59,
+        "verdict": "normal"
+      },
+      {
+        "clause": "rsi_14 < 50.0",
+        "fire_max": 67.59,
+        "fire_median": 67.59,
+        "threshold": 50.0,
+        "p75_margin": -17.59,
+        "max_margin": -17.59,
+        "verdict": "normal"
+      }
+    ]
+  },
+  "force_index_breakout": {
+    "n_trades": 8,
+    "win_rate": 25.0,
+    "sum_pnl": -53.88,
+    "thresholds_to_optimize": []
+  },
+  "htf_aligned_breakout_long": {
+    "n_trades": 24,
+    "win_rate": 37.5,
+    "sum_pnl": 274.89,
+    "thresholds_to_optimize": []
+  },
+  "htf_aligned_breakout_short": {
+    "n_trades": 5,
+    "win_rate": 60.0,
+    "sum_pnl": 42.15,
+    "thresholds_to_optimize": []
+  },
+  "hull_rsi": {
+    "n_trades": 2,
+    "win_rate": 0.0,
+    "sum_pnl": -3.1,
+    "thresholds_to_optimize": [
+      {
+        "clause": "adx > 20.0",
+        "fire_min": 39.91,
+        "fire_median": 42.935,
+        "threshold": 20.0,
+        "p25_margin": 21.4225,
+        "min_margin": 19.91,
+        "verdict": "LOOSE (min far exceeds threshold)"
+      },
+      {
+        "clause": "rsi_9 > 50.0",
+        "fire_min": 15.84,
+        "fire_median": 17.99,
+        "threshold": 50.0,
+        "p25_margin": -33.085,
+        "min_margin": -34.16,
+        "verdict": "normal"
+      },
+      {
+        "clause": "rsi_9 < 50.0",
+        "fire_max": 20.14,
+        "fire_median": 17.99,
+        "threshold": 50.0,
+        "p75_margin": 30.935,
+        "max_margin": 29.86,
+        "verdict": "LOOSE (max far below threshold)"
+      }
+    ]
+  },
+  "insider_cluster_long": {
+    "n_trades": 3,
+    "win_rate": 0.0,
+    "sum_pnl": -27.32,
+    "thresholds_to_optimize": []
+  },
+  "macd_fast_crossover": {
+    "n_trades": 1,
+    "win_rate": 100.0,
+    "sum_pnl": 3.66,
+    "thresholds_to_optimize": []
+  },
+  "monthly_bias_momentum_long": {
+    "n_trades": 5,
+    "win_rate": 20.0,
+    "sum_pnl": 39.5,
+    "thresholds_to_optimize": []
+  },
+  "orb_stocks_in_play_long": {
+    "n_trades": 66,
+    "win_rate": 36.4,
+    "sum_pnl": 205.84,
+    "thresholds_to_optimize": []
+  },
+  "orb_stocks_in_play_short": {
+    "n_trades": 21,
+    "win_rate": 42.9,
+    "sum_pnl": -18.21,
+    "thresholds_to_optimize": []
+  },
+  "pairs_mean_reversion_long": {
+    "n_trades": 3,
+    "win_rate": 33.3,
+    "sum_pnl": -7.29,
+    "thresholds_to_optimize": [
+      {
+        "clause": "pair_count_active > 0.0",
+        "fire_min": 4.0,
+        "fire_median": 5.0,
+        "threshold": 0.0,
+        "p25_margin": 4.5,
+        "min_margin": 4.0,
+        "verdict": "LOOSE (min far exceeds threshold)"
+      },
+      {
+        "clause": "pair_half_life >= 5.0",
+        "fire_min": 8.93,
+        "fire_median": 10.62,
+        "threshold": 5.0,
+        "p25_margin": 4.775,
+        "min_margin": 3.93,
+        "verdict": "LOOSE (min far exceeds threshold)"
+      }
+    ]
+  },
+  "pead_long": {
+    "n_trades": 6,
+    "win_rate": 16.7,
+    "sum_pnl": -123.8,
+    "thresholds_to_optimize": []
+  },
+  "pead_short": {
+    "n_trades": 3,
+    "win_rate": 33.3,
+    "sum_pnl": -14.82,
+    "thresholds_to_optimize": []
+  },
+  "pivot_s3_capitulation": {
+    "n_trades": 1,
+    "win_rate": 0.0,
+    "sum_pnl": -0.16,
+    "thresholds_to_optimize": [
+      {
+        "clause": "rsi_14 < 30.0",
+        "fire_max": 22.48,
+        "fire_median": 22.48,
+        "threshold": 30.0,
+        "p75_margin": 7.52,
+        "max_margin": 7.52,
+        "verdict": "normal"
+      }
+    ]
+  },
+  "po3_bearish": {
+    "n_trades": 5,
+    "win_rate": 40.0,
+    "sum_pnl": -16.48,
+    "thresholds_to_optimize": []
+  },
+  "po3_bullish": {
+    "n_trades": 19,
+    "win_rate": 47.4,
+    "sum_pnl": -1.83,
+    "thresholds_to_optimize": []
+  },
+  "pre_fomc_long_sleeve": {
+    "n_trades": 6,
+    "win_rate": 50.0,
+    "sum_pnl": -0.09,
+    "thresholds_to_optimize": []
+  },
+  "pre_rebalance_long": {
+    "n_trades": 1,
+    "win_rate": 0.0,
+    "sum_pnl": -0.2,
+    "thresholds_to_optimize": []
+  },
+  "stochrsi_overbought_short": {
+    "n_trades": 2,
+    "win_rate": 0.0,
+    "sum_pnl": -3.06,
+    "thresholds_to_optimize": [
+      {
+        "clause": "rsi_14 > 45.0",
+        "fire_min": 65.12,
+        "fire_median": 65.785,
+        "threshold": 45.0,
+        "p25_margin": 20.4525,
+        "min_margin": 20.12,
+        "verdict": "normal"
+      }
+    ]
+  },
+  "vix_backwardation_long": {
+    "n_trades": 9,
+    "win_rate": 33.3,
+    "sum_pnl": -14.96,
+    "thresholds_to_optimize": [
+      {
+        "clause": "xs_quality_decile >= 8.0",
+        "fire_min": 8.0,
+        "fire_median": 10.0,
+        "threshold": 8.0,
+        "p25_margin": 1.0,
+        "min_margin": 0.0,
+        "verdict": "BINDING (min near threshold)"
+      }
+    ]
+  },
+  "volume_spike_breakout": {
+    "n_trades": 4,
+    "win_rate": 25.0,
+    "sum_pnl": 1.28,
+    "thresholds_to_optimize": []
+  },
+  "xs_combined_momentum_low_ivol": {
+    "n_trades": 2,
+    "win_rate": 50.0,
+    "sum_pnl": -1.08,
+    "thresholds_to_optimize": [
+      {
+        "clause": "xs_ivol_decile <= 3.0",
+        "fire_max": 3.0,
+        "fire_median": 2.0,
+        "threshold": 3.0,
+        "p75_margin": 0.5,
+        "max_margin": 0.0,
+        "verdict": "BINDING (max near threshold)"
+      }
+    ]
+  },
+  "xs_low_beta_long": {
+    "n_trades": 28,
+    "win_rate": 17.9,
+    "sum_pnl": -91.83,
+    "thresholds_to_optimize": []
+  },
+  "xs_momentum_bottom_decile_short": {
+    "n_trades": 2,
+    "win_rate": 100.0,
+    "sum_pnl": 8.38,
+    "thresholds_to_optimize": []
+  },
+  "xs_momentum_top_decile": {
+    "n_trades": 8,
+    "win_rate": 37.5,
+    "sum_pnl": -15.22,
+    "thresholds_to_optimize": []
+  },
+  "xs_quality_top_quintile_long": {
+    "n_trades": 22,
+    "win_rate": 22.7,
+    "sum_pnl": 112.38,
+    "thresholds_to_optimize": []
+  }
+}

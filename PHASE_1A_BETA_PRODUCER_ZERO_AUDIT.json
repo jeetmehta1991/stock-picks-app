@@ -1,0 +1,1484 @@
+{
+  "producer_zero_count": 49,
+  "audit": [
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "n_clauses": 6,
+      "binding_clauses": [
+        [
+          "above_avwap_20high",
+          113,
+          43.36283185840708,
+          31.301939058171747
+        ],
+        [
+          "pct_from_avwap_20high",
+          113,
+          100.0,
+          31.301939058171747
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "vol_spike_15x",
+          361,
+          80.60941828254848,
+          100.0
+        ],
+        [
+          "bearish_engulfing",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "shooting_star",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "squeeze_fire_dn",
+          361,
+          0.0,
+          100.0
+        ],
+        [
+          "squeeze_fire_up",
+          361,
+          0.0,
+          100.0
+        ],
+        [
+          "vol_spike_2x",
+          361,
+          63.1578947368421,
+          100.0
+        ],
+        [
+          "above_vwap",
+          361,
+          74.51523545706371,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "camarilla_rsi_obv",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "cmf_positive",
+          361,
+          75.06925207756233,
+          100.0
+        ],
+        [
+          "obv_bullish",
+          361,
+          81.99445983379502,
+          100.0
+        ],
+        [
+          "near_cam_r3",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "near_cam_s3",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "camarilla_rsi_obv_short",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "cmf_positive",
+          361,
+          75.06925207756233,
+          100.0
+        ],
+        [
+          "obv_bullish",
+          361,
+          81.99445983379502,
+          100.0
+        ],
+        [
+          "near_cam_r3",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_breakout_long",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "classification_changed_recent",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "days_since_classification_change",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "resistance_break_retest",
+          361,
+          73.9612188365651,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_from_tech_short",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "classification_change_from_tech",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "prior_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_momentum_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "classification_changed_recent",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "macd_12_26_9_bullish",
+          361,
+          83.37950138504155,
+          100.0
+        ],
+        [
+          "price_above_ema_50",
+          361,
+          83.37950138504155,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_oversold_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "classification_changed_recent",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "classification_changed_recent",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "days_since_classification_change",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "prior_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_to_defensive_short",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "classification_change_to_defensive",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_to_tech_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "classification_change_to_tech",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_volume_long",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "classification_changed_recent",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "days_since_classification_change",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "vol_spike_2x",
+          361,
+          63.1578947368421,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_with_insider_long",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "classification_changed_recent",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "insider_cluster_active",
+          17,
+          23.52941176470588,
+          4.7091412742382275
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "classification_change_with_institutional_long",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "classification_changed_recent",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "new_sector",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "institutional_buy",
+          361,
+          97.78393351800554,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "evening_star_short",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "price_above_sma_50",
+          361,
+          82.82548476454294,
+          100.0
+        ],
+        [
+          "evening_star",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "risk_off_regime_gold_signal",
+          361,
+          48.199445983379505,
+          100.0
+        ],
+        [
+          "sector",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "institutional_high_conviction_long",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "price_above_ema_50",
+          361,
+          83.37950138504155,
+          100.0
+        ],
+        [
+          "institutional_new_positions",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "macd_12_26_9_bullish",
+          361,
+          83.37950138504155,
+          100.0
+        ],
+        [
+          "institutional_new_positions",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "vol_spike_2x",
+          361,
+          63.1578947368421,
+          100.0
+        ],
+        [
+          "price_above_ema_50",
+          361,
+          83.37950138504155,
+          100.0
+        ],
+        [
+          "institutional_new_positions",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "institutional_increased",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "institutional_new_positions",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "rsi21_slow",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "price_above_sma_50",
+          361,
+          82.82548476454294,
+          100.0
+        ],
+        [
+          "rsi_21",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "rsi9_extreme",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "rsi_9_extreme_os",
+          361,
+          7.479224376731302,
+          100.0
+        ],
+        [
+          "rsi_9_rising",
+          361,
+          81.99445983379502,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "rsi_14_rising",
+          361,
+          81.99445983379502,
+          100.0
+        ],
+        [
+          "price_above_sma_50",
+          361,
+          82.82548476454294,
+          100.0
+        ],
+        [
+          "bearish_engulfing",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "defensive_leadership",
+          361,
+          58.72576177285319,
+          100.0
+        ],
+        [
+          "sector",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "shooting_star_short",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "bb_20_20_touch_upper",
+          361,
+          61.772853185595565,
+          100.0
+        ],
+        [
+          "near_r1",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "near_r2",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "shooting_star",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "n_clauses": 6,
+      "binding_clauses": [
+        [
+          "force_index_breakout",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_bos_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_bos_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "vol_spike_2x",
+          361,
+          63.1578947368421,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "smc_bos_retest_long",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_bos_retest_short",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "smc_breaker_block_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "smc_breaker_block_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "smc_choch_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_choch_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_fvg_bearish_active",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_fvg_bullish_active",
+          0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_discount_long",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "smc_bos_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_choch_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_dealing_range_pct",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_in_discount_zone",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "smc_equal_highs_swept",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_fvg_bearish_active",
+          0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "smc_equal_lows_swept",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_fvg_bullish_active",
+          0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "smc_fvg_retest_long_zone",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "smc_fvg_retest_short_zone",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "force_index_breakout",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_inverse_fvg_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_inverse_fvg_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "vol_spike_2x",
+          361,
+          63.1578947368421,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "n_clauses": 6,
+      "binding_clauses": [
+        [
+          "smc_bos_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_bos_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_choch_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_choch_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_liquidity_swept_dn",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_liquidity_swept_up",
+          0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "smc_mitigation_block_long",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "smc_mitigation_block_short",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "smc_ob_bearish_active",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_ob_bullish_active",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_ote_long",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "smc_bos_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_choch_bullish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_ote_long_zone",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_retracement_pct",
+          0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_ote_short",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "smc_bos_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_choch_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_ote_short_zone",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_retracement_pct",
+          0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "strategy": "smc_premium_short",
+      "n_clauses": 5,
+      "binding_clauses": [
+        [
+          "smc_bos_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_choch_bearish",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_dealing_range_pct",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "smc_in_premium_zone",
+          0,
+          0.0,
+          0.0
+        ],
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ]
+      ]
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "n_clauses": 1,
+      "binding_clauses": [
+        [
+          "squeeze_fire_up",
+          361,
+          0.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "n_clauses": 2,
+      "binding_clauses": [
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "triangle_ascending_detected",
+          361,
+          0.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "n_clauses": 3,
+      "binding_clauses": [
+        [
+          "price_above_ema_200",
+          359,
+          83.84401114206128,
+          99.44598337950139
+        ],
+        [
+          "triangle_ascending_detected",
+          361,
+          0.0,
+          100.0
+        ],
+        [
+          "resistance_break_retest",
+          361,
+          73.9612188365651,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "weekly_bias_bull",
+          361,
+          83.37950138504155,
+          100.0
+        ],
+        [
+          "bullish_engulfing",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "hammer",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "n_clauses": 4,
+      "binding_clauses": [
+        [
+          "weekly_bias_bear",
+          361,
+          16.62049861495845,
+          100.0
+        ],
+        [
+          "bearish_engulfing",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "rsi_14",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "shooting_star",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "n_clauses": 10,
+      "binding_clauses": [
+        [
+          "stoch_oversold",
+          361,
+          11.911357340720222,
+          100.0
+        ],
+        [
+          "williams_r_oversold",
+          361,
+          15.789473684210526,
+          100.0
+        ],
+        [
+          "stoch_overbought",
+          361,
+          51.52354570637119,
+          100.0
+        ],
+        [
+          "near_cam_r3",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "near_cam_s3",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "near_r1",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "near_r2",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "near_s1",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "near_s2",
+          361,
+          100.0,
+          100.0
+        ],
+        [
+          "williams_r",
+          361,
+          100.0,
+          100.0
+        ]
+      ]
+    }
+  ],
+  "clusters": {
+    "above_avwap_20high (cov=31.3%)": [
+      "avwap_20high_rejection_short"
+    ],
+    "squeeze_fire_dn (cov=100.0%)": [
+      "bb_squeeze_volume"
+    ],
+    "cmf_positive (cov=100.0%)": [
+      "camarilla_rsi_obv",
+      "camarilla_rsi_obv_short"
+    ],
+    "classification_changed_recent (cov=0.0%)": [
+      "classification_change_breakout_long",
+      "classification_change_momentum_long",
+      "classification_change_oversold_long",
+      "classification_change_recent_long",
+      "classification_change_volume_long",
+      "classification_change_with_insider_long",
+      "classification_change_with_institutional_long"
+    ],
+    "classification_change_from_tech (cov=0.0%)": [
+      "classification_change_from_tech_short"
+    ],
+    "classification_change_to_defensive (cov=0.0%)": [
+      "classification_change_to_defensive_short"
+    ],
+    "classification_change_to_tech (cov=0.0%)": [
+      "classification_change_to_tech_long"
+    ],
+    "price_above_sma_50 (cov=100.0%)": [
+      "evening_star_short",
+      "rsi21_slow"
+    ],
+    "risk_off_regime_gold_signal (cov=100.0%)": [
+      "gold_silver_risk_off_long"
+    ],
+    "price_above_ema_50 (cov=100.0%)": [
+      "institutional_high_conviction_long"
+    ],
+    "price_above_ema_200 (cov=99.4%)": [
+      "institutional_recent_init_momentum_long",
+      "institutional_strong_conviction_long",
+      "rsi9_extreme",
+      "triangle_ascending_long",
+      "triangle_ascending_retest_long"
+    ],
+    "vol_spike_2x (cov=100.0%)": [
+      "institutional_recent_init_volume_long"
+    ],
+    "rsi_14_rising (cov=100.0%)": [
+      "rsi_overbought_short"
+    ],
+    "defensive_leadership (cov=100.0%)": [
+      "sector_rotation_defensive_long"
+    ],
+    "bb_20_20_touch_upper (cov=100.0%)": [
+      "shooting_star_short"
+    ],
+    "force_index_breakout (cov=0.0%)": [
+      "smc_bos_continuation",
+      "smc_inverse_fvg"
+    ],
+    "smc_bos_retest_long (cov=0.0%)": [
+      "smc_bos_retest_entry"
+    ],
+    "smc_breaker_block_bullish (cov=0.0%)": [
+      "smc_breaker_block_long"
+    ],
+    "smc_breaker_block_bearish (cov=0.0%)": [
+      "smc_breaker_block_short"
+    ],
+    "smc_choch_bearish (cov=0.0%)": [
+      "smc_choch_reversal"
+    ],
+    "smc_bos_bullish (cov=0.0%)": [
+      "smc_discount_long",
+      "smc_ote_long"
+    ],
+    "smc_equal_highs_swept (cov=0.0%)": [
+      "smc_equal_highs_sweep_short"
+    ],
+    "smc_equal_lows_swept (cov=0.0%)": [
+      "smc_equal_lows_sweep_long"
+    ],
+    "smc_fvg_retest_long_zone (cov=0.0%)": [
+      "smc_fvg_retest_long"
+    ],
+    "smc_fvg_retest_short_zone (cov=0.0%)": [
+      "smc_fvg_retest_short"
+    ],
+    "smc_bos_bearish (cov=0.0%)": [
+      "smc_liquidity_sweep_reversal",
+      "smc_ote_short",
+      "smc_premium_short"
+    ],
+    "smc_mitigation_block_long (cov=0.0%)": [
+      "smc_mitigation_block_long"
+    ],
+    "smc_mitigation_block_short (cov=0.0%)": [
+      "smc_mitigation_block_short"
+    ],
+    "smc_ob_bearish_active (cov=0.0%)": [
+      "smc_order_block_bounce"
+    ],
+    "squeeze_fire_up (cov=100.0%)": [
+      "squeeze_breakout"
+    ],
+    "weekly_bias_bull (cov=100.0%)": [
+      "weekly_bias_pullback_long"
+    ],
+    "weekly_bias_bear (cov=100.0%)": [
+      "weekly_bias_pullback_short"
+    ],
+    "stoch_oversold (cov=100.0%)": [
+      "williams_stoch_dual"
+    ]
+  }
+}
