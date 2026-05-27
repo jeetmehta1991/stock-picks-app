@@ -32,7 +32,7 @@ echo "[$(date)] Batch 395 bootstrap START -- index=${BATCH395_INDEX:?} bucket=${
 echo "[$(date)] Installing system packages..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y python3.11 python3.11-venv python3-pip git unzip tmux \
+apt-get install -y python3.12 python3.12-venv python3-pip git unzip tmux \
     build-essential libatlas-base-dev
 
 # AWS CLI v2 (Ubuntu ships v1; v2 has better S3 sync perf)
@@ -53,7 +53,7 @@ echo "[$(date)] On commit: $(git rev-parse HEAD)"
 
 # Phase 3: python venv + deps
 echo "[$(date)] Installing python deps..."
-python3.11 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
