@@ -860,8 +860,18 @@ def compute_squeeze(df: pd.DataFrame) -> dict:
     in_squeeze = bb_l > kc_l and bb_u < kc_u
     if len(df) < 20:
         return {"squeeze_in": in_squeeze}
-    ema20 = df["close"].ewm(span=20, adjust=False).mean()
-    delta = df["close"] - (df["high"].rolling(20).max() + df["low"].rolling(20).min())/2 + ema20
+    # Batch 390 (owner directive 2026-05-26): producer fix for squeeze_fire_up
+    # / squeeze_fire_dn. Prior formula `delta = close - mid20 + ema20`
+    # produced absolute-price-level values (~$150 for AAPL) so `pmom <= 0`
+    # was essentially impossible -> squeeze_fire_up never True (0/1542 sampled
+    # ticker-days across 10 tickers x 4y empirical). Classic Lazy Bear squeeze
+    # momentum is the LSMA of (close - midpoint20) - we use a simpler
+    # close - midpoint20 momentum which gives signed values around zero
+    # (37.8% <= 0 on AAPL 500-row sample). Transitions across zero become
+    # measurable + squeeze_fire_up fires meaningfully.
+    hh = df["high"].rolling(20).max()
+    ll = df["low"].rolling(20).min()
+    delta = df["close"] - (hh + ll) / 2  # relative-to-midpoint momentum
     mom   = _safe_float(delta.iloc[-1])
     pmom  = _safe_float(delta.iloc[-2])
     return {

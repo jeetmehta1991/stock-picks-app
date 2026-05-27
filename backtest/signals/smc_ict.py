@@ -282,17 +282,34 @@ def compute_smc_signals(
                 # primitive with Swept flag set TRUE in recent bars.
                 if "Swept" in liq_df.columns:
                     tail = liq_df.tail(fvg_lookback)
+                    # Batch 390 (owner directive 2026-05-26): producer fix.
+                    # PRIOR BUG: tail(50) sliced last 50 rows of OHLCV-aligned
+                    # liquidity df, but liquidity events are SPARSE (1 in
+                    # 500 rows on AAPL example; events at swing highs/lows
+                    # only). tail(50) almost always missed them entirely
+                    # -> smc_equal_highs_swept / lows_swept never True
+                    # (0/1542 ticker-days x 10 tickers x 4y empirical).
+                    # FIX: filter to liquidity-event rows FIRST, take last
+                    # 20 ACTUAL EVENTS, then check Swept (bar-index float;
+                    # non-null = swept). Also require the sweep happened
+                    # within the last 50 bars to keep "recent" semantics.
                     eq_highs_swept = False
                     eq_lows_swept = False
-                    for idx_pos in range(len(tail)):
-                        row = tail.iloc[idx_pos]
-                        liq_val = row.get("Liquidity")
-                        swept_val = row.get("Swept")
-                        if pd.isna(liq_val) or liq_val == 0:
-                            continue
-                        # Swept may be bool or numeric truthy
-                        is_swept = bool(swept_val) if not pd.isna(swept_val) else False
-                        if is_swept:
+                    liq_events = liq_df[
+                        liq_df["Liquidity"].notna() & (liq_df["Liquidity"] != 0)
+                    ]
+                    if not liq_events.empty:
+                        recent_events = liq_events.tail(20)
+                        for idx_pos in range(len(recent_events)):
+                            row = recent_events.iloc[idx_pos]
+                            liq_val = row.get("Liquidity")
+                            swept_val = row.get("Swept")
+                            if pd.isna(swept_val):
+                                continue  # not yet swept
+                            # Swept is a bar index float; "recent" = within
+                            # last 50 bars of current
+                            if (current_idx - float(swept_val)) > 50:
+                                continue
                             if liq_val == 1:
                                 eq_highs_swept = True
                             elif liq_val == -1:

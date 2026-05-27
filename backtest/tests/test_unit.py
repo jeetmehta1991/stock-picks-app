@@ -9671,6 +9671,70 @@ def test_batch284_check_per_strategy_exit_hit_r_multiple():
         STRATEGY_EXIT_OVERRIDE.pop("test_rmult", None)
 
 
+def test_batch390_squeeze_fire_up_dn_fixed_emits_truthy():
+    """Batch 390 producer fix (owner 2026-05-26): squeeze_fire_up/_dn
+    formula was `delta = close - mid20 + ema20` producing values around
+    price level (~$150 AAPL) so `pmom <= 0` was impossible. Fix removed
+    the `+ ema20` term, giving signed values around 0.
+
+    Pre-fix empirical: 0/1542 ticker-days across 10 tickers x 4y.
+    Post-fix verification: this test confirms the formula now emits
+    truthy values on a synthetic price series that crosses the midpoint.
+    """
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.technical import compute_squeeze
+    # Synthetic series with a clear mid-line crossing (50 bars, sine-like)
+    n = 50
+    dates = pd.date_range("2024-01-01", periods=n, freq="B")
+    prices = 100 + 5 * np.sin(np.linspace(0, 4 * np.pi, n))
+    df = pd.DataFrame({
+        "open":   prices,
+        "high":   prices + 0.5,
+        "low":    prices - 0.5,
+        "close":  prices,
+        "volume": [1_000_000] * n,
+    }, index=dates)
+    # Walk-forward to find at least one squeeze_fire_up
+    found_up = False
+    found_dn = False
+    for end_idx in range(25, n + 1):
+        sub = df.iloc[:end_idx]
+        sq = compute_squeeze(sub)
+        if sq.get("squeeze_fire_up", False):
+            found_up = True
+        if sq.get("squeeze_fire_dn", False):
+            found_dn = True
+    # On a sinusoidal series we expect BOTH fire-up and fire-dn over a
+    # full cycle. Pre-fix this would be False / False everywhere.
+    assert found_up, "Batch 390 regression: squeeze_fire_up never True post-fix"
+    assert found_dn, "Batch 390 regression: squeeze_fire_dn never True post-fix"
+
+
+def test_batch390_smc_equal_highs_lows_swept_fixed_filter():
+    """Batch 390 producer fix (owner 2026-05-26): smc_equal_highs/lows_swept
+    was using tail(50) on OHLCV-aligned liquidity df where liquidity events
+    are SPARSE (1 in 500 rows on AAPL). tail(50) almost always missed the
+    events. Fix filters to liquidity-event rows first, then takes last 20
+    ACTUAL EVENTS and checks recency.
+
+    Pre-fix empirical: 0/1542 ticker-days across 10 tickers x 4y.
+    Post-fix verification: pin the source-grep that the fix is present
+    (full empirical re-test requires real OHLCV data; cannot synthesize
+    in unit test - integration coverage by Stage D pilot post-Batch-390).
+    """
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    src = (repo / "backtest" / "signals" / "smc_ict.py").read_text(encoding="utf-8")
+    # Pre-fix: tail(50) on liq_df; post-fix: filter to events then tail(20)
+    assert "liq_df[" in src and "liq_df[\"Liquidity\"].notna()" in src, (
+        "Batch 390 regression: smc_equal sweep fix must filter to liquidity events first"
+    )
+    assert "(current_idx - float(swept_val)) > 50" in src, (
+        "Batch 390 regression: recency window must be applied to Swept bar-index"
+    )
+
+
 def test_batch386_max_cands_auto_raised_200_for_phase_1a_beta():
     """Batch 386 (owner-approved 2026-05-26 option B): when phase=1a-beta,
     --max-cands default 30 is auto-raised to 200. With --no-agents the
