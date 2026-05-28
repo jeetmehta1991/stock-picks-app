@@ -133,6 +133,13 @@ def main() -> int:
     ap.add_argument("--batches", default="4,5",
                     help="comma-separated batch indices to launch")
     ap.add_argument("--spot-max-price", default="0.90")
+    ap.add_argument("--spot-slots", type=int, default=1,
+                    help="Batch 424: max parallel spot instances "
+                         "(default 1; raise after spot vCPU quota increase). "
+                         "3 = full 96 vCPU quota with c7a.8xlarge.")
+    ap.add_argument("--od-slots", type=int, default=1,
+                    help="Batch 424: max parallel on-demand instances "
+                         "(default 1; 0 = pure-spot topology).")
     ap.add_argument("--max-run-hours", type=float, default=None,
                     help="forwarded to launch.py --max-run-hours (engine kill)")
     ap.add_argument("--warn-run-hours", type=float, default=None,
@@ -205,8 +212,10 @@ def main() -> int:
         # Find what's running
         instances = running_instances(args.region)
         running_idx = {i["batch_index"] for i in instances if i["batch_index"]}
-        ondemand_busy = any(i["lifecycle"] != "spot" for i in instances)
-        spot_busy = any(i["lifecycle"] == "spot" for i in instances)
+        ondemand_count = sum(1 for i in instances if i["lifecycle"] != "spot")
+        spot_count = sum(1 for i in instances if i["lifecycle"] == "spot")
+        ondemand_busy = ondemand_count >= args.od_slots
+        spot_busy = spot_count >= args.spot_slots
 
         # Batch 411: per-poll heartbeat check + one-line digest.
         # Stale heartbeat > KILL threshold => terminate instance so its slot
@@ -251,21 +260,21 @@ def main() -> int:
         print(f"[STATE] running={instances} ondemand_busy={ondemand_busy} "
               f"spot_busy={spot_busy} pending={pending}")
 
-        # Launch one batch per free slot
+        # Launch one batch per free slot (Batch 424: per-slot counters)
         for batch in list(pending):
             if batch in running_idx:
                 continue  # already running
-            if not ondemand_busy:
+            if ondemand_count < args.od_slots:
                 if launch_one(args, batch, use_spot=False):
-                    ondemand_busy = True
+                    ondemand_count += 1
                     time.sleep(15)  # let AWS register
                     continue
-            if not spot_busy:
+            if spot_count < args.spot_slots:
                 if launch_one(args, batch, use_spot=True):
-                    spot_busy = True
+                    spot_count += 1
                     time.sleep(15)
                     continue
-            # Both slots busy
+            # All slots busy
             break
 
         time.sleep(args.poll_seconds)
