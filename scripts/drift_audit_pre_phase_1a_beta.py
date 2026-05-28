@@ -403,7 +403,12 @@ def main():
             output.append(f"- `{doc_name}`: {n} drifts")
     output.append("")
 
-    out_path = REPO / "PHASE_1A_BETA_PRE_RUN_ALIGNMENT_AUDIT.md"
+    # Batch 420 (2026-05-28 owner-approved): regen target moved to archive
+    # alongside the source doc. Phase 1A-beta pre-run alignment audit is a
+    # point-in-time snapshot (per archive policy + L143 + feedback_all_docs_sweep).
+    out_path = REPO / "archive" / "2026-05-28-pre-1a-alpha-gate" / "docs" \
+        / "PHASE_1A_BETA_PRE_RUN_ALIGNMENT_AUDIT.md"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(output), encoding="utf-8")
     print(f"[OK] {out_path} ({total_active + total_hist} drifts; {total_active} active)")
 

@@ -115,11 +115,19 @@ def test_gate_canonical_schemas_have_caches() -> None:
 
 # -- Gate 8: Sprint 0A leftover items resolved ------------------------
 def test_gate_sprint_0a_phase_1a_blockers() -> None:
-    """PHASE_1A_PRELAUNCH_TODO.md must report 0 OPEN blockers in section A."""
+    """PHASE_1A_PRELAUNCH_TODO.md must report 0 OPEN blockers in section A.
+
+    Batch 420 (2026-05-28): doc moved to archive/ (pre-launch ritual closed;
+    Phase 1A has launched). Test still consults the snapshot; falls back to
+    skip when archive copy is missing too.
+    """
     import re
-    todo = REPO_ROOT / "PHASE_1A_PRELAUNCH_TODO.md"
+    todo = REPO_ROOT / "archive" / "2026-05-28-pre-1a-alpha-gate" / "docs" \
+        / "PHASE_1A_PRELAUNCH_TODO.md"
     if not todo.exists():
-        pytest.skip("PHASE_1A_PRELAUNCH_TODO.md missing")
+        todo = REPO_ROOT / "PHASE_1A_PRELAUNCH_TODO.md"
+    if not todo.exists():
+        pytest.skip("PHASE_1A_PRELAUNCH_TODO.md missing (archive + root)")
     text = todo.read_text(encoding="utf-8", errors="ignore")
     # Pre-launch gate: the strict-blockers section must be tabulated and
     # not contain any actively blocking row. INV-046 logged 2026-05-08

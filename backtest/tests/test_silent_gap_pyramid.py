@@ -2103,9 +2103,15 @@ def test_batch340_cat_c_bucket2_forensic_doc_reference():
     bucket-2 categorization."""
     from pathlib import Path
     repo = Path(__file__).resolve().parent.parent.parent
-    doc = repo / "PHASE_1A_BETA_QUIET_STRATEGY_FORENSIC.md"
+    # Batch 420 (2026-05-28): doc moved to archive/ but test still consults
+    # the snapshot. Fallback to repo-root path for environments where the
+    # archive isn't checked out.
+    doc = repo / "archive" / "2026-05-28-pre-1a-alpha-gate" / "docs" \
+        / "PHASE_1A_BETA_QUIET_STRATEGY_FORENSIC.md"
     if not doc.exists():
-        # File optional in some envs
+        doc = repo / "PHASE_1A_BETA_QUIET_STRATEGY_FORENSIC.md"
+    if not doc.exists():
+        # File optional in some envs (post-archival, off-snapshot branches)
         return
     txt = doc.read_text(encoding="utf-8", errors="ignore")
     # Bucket-2 section should mention "regime-specific" or "Bucket-2"
