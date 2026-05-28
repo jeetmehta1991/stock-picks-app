@@ -1502,9 +1502,27 @@ def run_exit_comparison(
 
         for t in trades_data:
             try:
+                # Batch 415 (2026-05-28 owner-approved): enrich the signals
+                # dict with ticker + strategy_name + category so exits that
+                # depend on these keys work in cube replay. Without this,
+                # exit_earnings_blackout returned no_earnings_known for 100%
+                # of trades (ticker="" -> fetch_earnings_dates("") -> []),
+                # and exit_class_time_stop defaulted to "momentum" regardless
+                # of the strategy's real category. Other exits (atr_trail_*,
+                # next_pivot_target, ma_exit_ema9, etc.) ignore unknown keys.
+                base_sig = t.get("signals", {})
+                if not isinstance(base_sig, dict):
+                    base_sig = {}
+                enriched_sig = {
+                    **base_sig,
+                    "ticker":        t.get("ticker", ""),
+                    "strategy_name": strategy_name,
+                    "category":      t.get("category",
+                                          base_sig.get("category", "momentum")),
+                }
                 r = exit_fn(
                     t["df"], t["entry_date"], t["entry_price"],
-                    t["direction"], t["atr"], t.get("signals", {}),
+                    t["direction"], t["atr"], enriched_sig,
                 )
                 pnl_list.append(r["pnl_pct"])
                 win_list.append(r["win"])

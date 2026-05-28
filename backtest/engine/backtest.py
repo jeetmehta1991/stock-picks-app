@@ -2285,6 +2285,13 @@ class BacktestEngine:
                     "atr":            atr,
                     "signals":        sig if isinstance(sig, dict) else {},
                     "entry_context":  entry_context,
+                    # Batch 415 (2026-05-28): propagate category so cube replay
+                    # can populate signals["category"] downstream for
+                    # class_time_stop / earnings_blackout etc. Without this,
+                    # those exits silently failed (class_time_stop defaulted
+                    # to "momentum"; earnings_blackout got ticker="" and
+                    # returned no_earnings_known 100% of the time).
+                    "category":       row.get("category", "momentum"),
                 })
             if trades_data_lite:
                 strategy_tasks.append((strategy, trades_data_lite))
