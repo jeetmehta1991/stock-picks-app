@@ -32,28 +32,67 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 
-def _build_engine_args():
-    """Construct argparse Namespace equivalent for run_phase1a CLI."""
+def _build_engine_args(scenario: str = "1a"):
+    """Construct argparse Namespace equivalent for run_phase1a CLI.
+
+    Batch 394 (2026-05-27): added `1a-beta` scenario for Option A audit.
+    Larger universe + longer window + caps-off to identify whether the
+    real bottleneck is screen / exit_manager / cube / checkpoint when
+    Phase 1A-beta gates are bypassed.
+    """
     import argparse
-    ns = argparse.Namespace(
-        dry_run=False,
-        no_agents=True,
-        no_git=True,
-        no_walk_forward=True,
+    if scenario == "1a-beta":
+        # 1A-beta hot-path identification: 50 tkrs x 6mo, caps off, max
+        # cands 200. Wall-time target ~10-15min on Windows. Exercises
+        # the unconstrained candidate flow that the production cube run
+        # will see.
+        return argparse.Namespace(
+            dry_run=False, no_agents=True, no_git=True, no_walk_forward=True,
+            no_news=False,
+            tickers=("AAPL,MSFT,NVDA,GOOGL,AMZN,META,TSLA,JPM,UNH,XOM,"
+                     "JNJ,WMT,PG,V,MA,HD,BAC,KO,PFE,AVGO,"
+                     "ABBV,CRM,ADBE,COST,CSCO,TMO,ABT,ACN,DHR,LLY,"
+                     "MRK,NKE,ORCL,PEP,QCOM,T,TXN,UNP,UPS,VZ,"
+                     "WFC,DIS,BMY,CAT,CMCSA,GE,IBM,INTC,MCD,NFLX"),
+            phase="1a-beta",
+            start="2024-01-02",
+            end="2024-06-28",  # ~6 months
+            max_cands=30,  # let 1a-beta auto-raise to 200 (Batch 386)
+            screen_pool_workers=0,  # sequential to see TRUE hot-path
+            output_dir="output_profile_lever_c_1a_beta",
+            no_portfolio_cap=False,    # let 1a-beta auto-enable
+            no_dd_halt=False,          # let 1a-beta auto-enable
+            no_regime_affinity=False,  # let 1a-beta auto-enable
+            no_event_suppression=False, # let 1a-beta auto-enable
+            warn_run_hours=None,        # let 1a-beta auto-set
+            max_run_hours=None,         # let 1a-beta auto-set
+            vectorized_cube_exits=False, # Batch 412
+        )
+    # Default: original Batch 371 scenario (small + fast)
+    return argparse.Namespace(
+        dry_run=False, no_agents=True, no_git=True, no_walk_forward=True,
         no_news=False,
         tickers="AAPL,MSFT,NVDA,GOOGL,AMZN,META,TSLA,JPM,UNH,XOM,JNJ,WMT,PG,V,MA,HD,BAC,KO,PFE,AVGO",
         phase="1a",
         start="2024-01-02",
-        end="2024-02-15",  # ~30 trading days
+        end="2024-02-15",
         max_cands=30,
-        screen_pool_workers=0,  # sequential for profiling clarity
+        screen_pool_workers=0,
         output_dir="output_profile_lever_c",
+        no_portfolio_cap=False,
+        no_dd_halt=False,
+        no_regime_affinity=False,
+        no_event_suppression=False,
+        warn_run_hours=None,
+        max_run_hours=None,
+        vectorized_cube_exits=False,
     )
-    return ns
 
 
 def main():
-    args = _build_engine_args()
+    scenario = "1a-beta" if "--1a-beta" in sys.argv else "1a"
+    args = _build_engine_args(scenario)
+    print(f"[profile] scenario: {scenario}")
     out_dir = REPO / args.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)
     prof_path = out_dir / "process_day.prof"

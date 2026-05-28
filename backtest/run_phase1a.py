@@ -213,7 +213,7 @@ def main():
                         "Default OFF for byte-identical fallback to the scalar "
                         "iterrows() loop. Tier 1 ships in 412 (9 methods: "
                         "time_stop_10d/20d, class_time_stop, trailing_5/10/15pct, "
-                        "fixed_4r_2r, r_multiple_2r/3r) with ~10-12% engine "
+                        "fixed_4r_2r, r_multiple_2r/3r) with ~10-12pct engine "
                         "speedup. Tier 2 follows in Batch 413.")
     args = p.parse_args()
 

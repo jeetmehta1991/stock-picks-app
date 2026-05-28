@@ -27,6 +27,7 @@ Bernard-Thomas variant which only requires reported EPS:
 
 from __future__ import annotations
 
+import functools
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
@@ -70,6 +71,7 @@ def _safe_eps(row) -> Optional[float]:
     return None
 
 
+@functools.lru_cache(maxsize=None)
 def load_quarterly_eps(ticker: str) -> pd.DataFrame:
     """Load quarterly EPS history from prefetched Polygon financials.
 
@@ -78,6 +80,21 @@ def load_quarterly_eps(ticker: str) -> pd.DataFrame:
 
     Skips TTM rows (only Q1/Q2/Q3/Q4 quarterly) and rows with NaN
     filing_date so YoY comparison is well-defined per quarter.
+
+    Batch 421 (2026-05-28 owner-approved profile-first prewarm Step 1):
+    `@functools.lru_cache(maxsize=None)` per-ticker. Profile of 20-tkr x
+    32-day backtest showed this function at 67s / 693 calls (12pct of
+    total engine cost) - data is purely a function of ticker + on-disk
+    parquet content, so caching is safe.
+
+    Callers (only `compute_pead_signals` at present) use the result via
+    slice `eps_df[eps_df["filing_date"] <= as_of]` which returns a NEW
+    DataFrame; no in-place mutation of the cached object. Verified by
+    grep of `eps_df[` / `eps_df.` in pead.py 2026-05-28.
+
+    Cache invalidation: lru_cache is process-local; restart engine to
+    reload parquet on data refresh. The prefetched financials are PIT-
+    correct historical filings, so cache-staleness is not a runtime concern.
     """
     safe_ticker = ticker.replace(".", "-")
     fin_path = _FINANCIALS_DIR / f"{safe_ticker}.parquet"
