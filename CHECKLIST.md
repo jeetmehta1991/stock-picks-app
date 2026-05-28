@@ -1350,3 +1350,15 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Fix shipped this batch (Batch 411):** action-taking monitor folded into `aws_batch395_parallel.py` per-poll loop: heartbeat-stale > 30 min → auto-terminate + auto-re-add to pending → next poll relaunches; per-poll `[DIGEST hh:mmZ] b1=DONE b3=PENDING b4=s/120m@2025-06-13(hb15s) b5=o/40m@2023-01-25(hb45s)` one-line summary I read at every status request.
 
     **Joint:** L162 (this directive's codified lesson), #90 (status updates re-verify current state - cousin: status updates re-read monitor output), `feedback_monitor_intermediate_counts.md` (intermediate-count monitoring is the specific case; this is the general rule), `feedback_no_write_only_md_files.md` (related antipattern: artifacts created without consumers).
+
+92. **HARD RULE - No new .md files without explicit owner approval** (owner directive 2026-05-28).
+
+    Pattern: even with `feedback_no_write_only_md_files.md` standing rule + my own 3-check (specific consumer / beyond commit message / cross-batch value), I still produced .md files at a rate that creates clutter. Owner-strengthened gate: no new .md file may be created unless owner has explicitly approved its creation in the same conversation. The 3-check is no longer sufficient; explicit owner approval is now required.
+
+    **Apply when:** writing any new `.md` file with the `Write` tool (or via creating a file outside an Edit operation). Includes: reference docs, framework specs, optimization candidates, audit reports, post-mortems, analysis summaries, walkthroughs, runbooks. Does NOT apply to: editing existing `.md` files (Edit is unaffected); auto-generated `.md` files produced by scripts (e.g., `optimization_summary.md` from `optimize_strategies_from_cube.py` is script output, not a hand-authored file); files in `archive/**` (already excluded from per-turn doc-sync per L143 + `feedback_all_docs_sweep.md`).
+
+    **How to apply:** before calling `Write` on any path ending in `.md`, surface the intent in conversation and ask owner explicitly: "Should I create `<filename>.md` with `<one-sentence purpose>`?" Wait for explicit yes. If the answer is no or implicit, fold the content into an existing `.md` file or into the commit message instead. Edit-an-existing-doc is preferred over Write-a-new-doc by default.
+
+    **Past pattern:** session 2026-05-26 owner correction in `feedback_no_write_only_md_files.md` ("7 of 10 artifacts I created this session had ZERO external references"). 3-check was specified but not strong enough. Owner is now codifying the explicit-approval gate as the stronger fix.
+
+    **Joint:** `feedback_no_write_only_md_files.md` (the 3-check stays as the secondary filter; #92 is the primary gate), #6 (modifying CLAUDE.md needs owner approval - same family rule for that critical doc), #67/#67.b (per-turn doc-sync still applies to existing docs).
