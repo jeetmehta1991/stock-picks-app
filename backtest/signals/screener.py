@@ -52,6 +52,47 @@ from backtest.signals.technical import compute_all_signals, count_bullish_signal
 logger = logging.getLogger(__name__)
 
 
+# Batch 416 (2026-05-28 owner-approved): rate-limited diagnostic logging for
+# silent producer-call failures. The pre-Batch-416 try/except blocks
+# swallowed exceptions without trace, which masked the SMC-keys-absent bug
+# in the AWS cube run (0 of 29,159 trades had smc_* keys despite the
+# function returning 28 keys when called in isolation). Replaces silent
+# `except Exception: pass` with `_log_silent_producer_failure(...)` so the
+# first instance of each failure mode surfaces in logs. Rate-limited to
+# 1 per (mode, exception_type) per process to avoid log spam at universe
+# scale (1900+ tickers x daily calls).
+_SILENT_PRODUCER_SEEN_FAILURES: set = set()
+_SILENT_PRODUCER_SEEN_EMPTIES: set = set()
+
+
+def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None:
+    """One-shot log per (producer, exception-type) per process. Surfaces
+    exceptions that the old `except Exception: pass` blocks swallowed."""
+    key = (producer_name, type(exc).__name__)
+    if key in _SILENT_PRODUCER_SEEN_FAILURES:
+        return
+    _SILENT_PRODUCER_SEEN_FAILURES.add(key)
+    logger.warning(
+        "Batch 416 silent-producer failure (first occurrence; subsequent "
+        "suppressed): producer=%s exception=%s: %s",
+        producer_name, type(exc).__name__, exc,
+    )
+
+
+def _log_silent_producer_empty(producer_name: str) -> None:
+    """One-shot log per producer-name per process when the call returns
+    empty / falsy output but did not raise. Catches the SMC pattern: the
+    function returns {} silently when guard conditions fail."""
+    if producer_name in _SILENT_PRODUCER_SEEN_EMPTIES:
+        return
+    _SILENT_PRODUCER_SEEN_EMPTIES.add(producer_name)
+    logger.warning(
+        "Batch 416 silent-producer empty-return (first occurrence; "
+        "subsequent suppressed): producer=%s returned empty/falsy",
+        producer_name,
+    )
+
+
 # -----------------------------------------------------------------------------
 # STRATEGY HELPER
 # -----------------------------------------------------------------------------
@@ -3790,8 +3831,11 @@ def screen_instrument(
         cc_out = get_classification_change_signals(ticker, as_of)
         if cc_out:
             signals.update(cc_out)
-    except Exception:
-        pass
+    except Exception as _e:
+        # Batch 416 (2026-05-28): rate-limited logging replaces silent pass.
+        # Without this, a producer failure on AWS / Hetzner was undetectable
+        # post-run (29,159 trades, 0 classification_* keys, 0 visible errors).
+        _log_silent_producer_failure("classification_change", _e)
     # Batch 330 (2026-05-25 owner-approved Path C Wave 3): inject
     # institutional 13F signal into the per-ticker signals dict so
     # screener strategies can gate on it as the PRIMARY trigger.
@@ -3811,8 +3855,8 @@ def screen_instrument(
             signals["institutional_negative"] = sig_kind == "negative"
             signals["institutional_new_positions"] = int(inst.get("new_pos", 0) or 0)
             signals["institutional_increased"] = int(inst.get("increased", 0) or 0)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("institutional_signal", _e)
     # Batch 344 (333b consumer) 2026-05-25: inject TRUE multi-quarter
     # persistence metrics from the offline precompute at
     # data_prefetch/derived/institutional_persistence_t1a/{YYYY-01-01}.parquet.
@@ -3857,8 +3901,16 @@ def screen_instrument(
         smc_out = compute_smc_signals(df)
         if smc_out:
             signals.update(smc_out)
-    except Exception:
-        pass
+        else:
+            # Batch 416 (2026-05-28): empty-output diagnostic. The AWS cube
+            # run found 0 smc_* keys in 29,159 trades despite the function
+            # returning 28 keys when called directly in local Python. Log
+            # the first empty-return per process so the AWS rerun's logs
+            # reveal whether the library import failed, vendored path was
+            # missing, or some other silent gap.
+            _log_silent_producer_empty("smc_ict.compute_smc_signals")
+    except Exception as _e:
+        _log_silent_producer_failure("smc_ict", _e)
     # Batch 252: chart pattern signals (DEC-355-362). Graceful no-op when
     # history insufficient (most patterns need 60-150 bars).
     try:
