@@ -322,14 +322,277 @@ def test_registry_keys_are_subset_of_exit_strategies():
     assert not missing, f"Vectorized keys not in EXIT_STRATEGIES: {missing}"
 
 
-def test_tier_1_method_count():
-    """Tier 1 ships 9 methods this batch."""
-    expected = {
+# ---------------------------------------------------------------------------
+# Tier 2 (Batch 413): atr_trail_1x/2x + atr_trail_mae_conditional,
+# break_even_at_1r, breakeven_plus_trail, chandelier_3x, mfe_lockin_trail,
+# hybrid_50pct_target.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("method", ["atr_trail_1x", "atr_trail_2x"])
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_atr_trail_byte_equal_trending(method, direction):
+    df = _trending_df(n=60, base=100.0, daily_pct=0.005)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both(method, df, entry_date, 100.0, direction, 2.0)
+    _assert_equal(s, v, ctx=f"{method}-{direction}-trending")
+
+
+@pytest.mark.parametrize("method", ["atr_trail_1x", "atr_trail_2x"])
+def test_atr_trail_zero_atr_falls_back_to_trailing_pct(method):
+    """When atr == 0, scalar delegates to exit_trailing_pct(0.10)."""
+    df = _trending_df(n=40, base=100.0, daily_pct=0.005)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both(method, df, entry_date, 100.0, "long", 0.0)
+    _assert_equal(s, v, ctx=f"{method}-zero-atr")
+
+
+def test_atr_trail_immediate_gap_down():
+    closes = np.array([85.0] + [80.0] * 30)
+    opens  = closes.copy()
+    highs  = closes + 0.5
+    lows   = closes - 0.5
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("atr_trail_1x", df, entry_date, 100.0, "long", 2.0)
+    _assert_equal(s, v, ctx="atr_trail_1x-gap-down")
+
+
+def test_atr_trail_no_trigger_flat():
+    df = _flat_df(n=30, base=100.0)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("atr_trail_1x", df, entry_date, 100.0, "long", 5.0)
+    _assert_equal(s, v, ctx="atr_trail_1x-flat-no-trigger")
+
+
+def test_atr_trail_mae_conditional_uses_signal():
+    df = _trending_df(n=50, base=100.0, daily_pct=0.004)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    for mult in [0.5, 1.0, 1.5, 2.0, 2.5]:
+        signals = {"mae_atr_mult": mult}
+        s, v = _both("atr_trail_mae_conditional", df, entry_date, 100.0,
+                     "long", 1.5, signals=signals)
+        _assert_equal(s, v, ctx=f"atr_trail_mae_conditional-mult={mult}")
+
+
+def test_atr_trail_mae_conditional_clamps_out_of_range():
+    df = _trending_df(n=40, base=100.0, daily_pct=0.005)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    for raw_mult in [0.1, 5.0, "bad"]:
+        signals = {"mae_atr_mult": raw_mult}
+        s, v = _both("atr_trail_mae_conditional", df, entry_date, 100.0,
+                     "long", 2.0, signals=signals)
+        _assert_equal(s, v, ctx=f"atr_trail_mae_conditional-clamp={raw_mult}")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_break_even_at_1r_no_be_hit(direction):
+    """When price never reaches +1R, only initial 1R stop can fire."""
+    if direction == "long":
+        closes = np.array([100 - i * 0.5 for i in range(20)])
+    else:
+        closes = np.array([100 + i * 0.5 for i in range(20)])
+    opens  = closes.copy()
+    highs  = closes + 0.3
+    lows   = closes - 0.3
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("break_even_at_1r", df, entry_date, 100.0, direction, 1.5)
+    _assert_equal(s, v, ctx=f"break_even_at_1r-{direction}-no-be")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_break_even_at_1r_be_triggers_then_trail_exit(direction):
+    """Price reaches +1R then drifts back to BE -> be_trail_stop."""
+    if direction == "long":
+        rising = [100 + i * 0.5 for i in range(1, 12)]   # crosses 1R early
+        retrace = [105.0, 100.0, 95.0]
+    else:
+        rising = [100 - i * 0.5 for i in range(1, 12)]
+        retrace = [95.0, 100.0, 105.0]
+    closes = np.array(rising + retrace)
+    opens  = closes.copy()
+    highs  = closes + 0.5
+    lows   = closes - 0.5
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("break_even_at_1r", df, entry_date, 100.0, direction, 1.5)
+    _assert_equal(s, v, ctx=f"break_even_at_1r-{direction}-be-then-trail")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_breakeven_plus_trail_basic(direction):
+    df = _trending_df(n=50, base=100.0,
+                      daily_pct=0.006 if direction == "long" else -0.006)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("breakeven_plus_trail", df, entry_date, 100.0, direction,
+                 2.0)
+    _assert_equal(s, v, ctx=f"breakeven_plus_trail-{direction}")
+
+
+def test_breakeven_plus_trail_no_be_initial_stop_hit():
+    """Sharp drop (>2*ATR) without crossing BE trigger -> initial stop hit."""
+    closes = np.array([100.0, 96.0, 92.0, 90.0])
+    opens  = closes.copy()
+    highs  = closes + 0.3
+    lows   = closes - 0.3
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("breakeven_plus_trail", df, entry_date, 100.0, "long", 2.0)
+    _assert_equal(s, v, ctx="breakeven_plus_trail-initial-stop")
+
+
+def test_breakeven_plus_trail_zero_atr_fallback():
+    df = _trending_df(n=30, base=100.0, daily_pct=0.005)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("breakeven_plus_trail", df, entry_date, 100.0, "long", 0.0)
+    _assert_equal(s, v, ctx="breakeven_plus_trail-zero-atr")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_chandelier_3x_basic(direction):
+    df = _trending_df(n=60, base=100.0,
+                      daily_pct=0.004 if direction == "long" else -0.004)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("chandelier_3x", df, entry_date, 100.0, direction, 1.5)
+    _assert_equal(s, v, ctx=f"chandelier_3x-{direction}")
+
+
+def test_chandelier_3x_zero_atr_fallback():
+    df = _trending_df(n=40, base=100.0, daily_pct=0.005)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("chandelier_3x", df, entry_date, 100.0, "long", 0.0)
+    _assert_equal(s, v, ctx="chandelier_3x-zero-atr")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_mfe_lockin_trail_pre_threshold(direction):
+    """Modest trend that never crosses 2*ATR MFE -> pre-threshold trail."""
+    if direction == "long":
+        closes = np.array([100 + i * 0.3 for i in range(20)])
+    else:
+        closes = np.array([100 - i * 0.3 for i in range(20)])
+    opens  = closes.copy()
+    highs  = closes + 0.3
+    lows   = closes - 0.3
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("mfe_lockin_trail", df, entry_date, 100.0, direction, 2.0)
+    _assert_equal(s, v, ctx=f"mfe_lockin_trail-{direction}-pre")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_mfe_lockin_trail_post_threshold(direction):
+    """Strong trend crosses 2*ATR MFE then retraces -> lockin trail fires."""
+    if direction == "long":
+        rising = [100 + i * 1.5 for i in range(1, 12)]
+        retrace = [115.0, 110.0, 108.0]
+    else:
+        rising = [100 - i * 1.5 for i in range(1, 12)]
+        retrace = [85.0, 90.0, 92.0]
+    closes = np.array(rising + retrace)
+    opens  = closes.copy()
+    highs  = closes + 0.5
+    lows   = closes - 0.5
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("mfe_lockin_trail", df, entry_date, 100.0, direction, 2.0)
+    _assert_equal(s, v, ctx=f"mfe_lockin_trail-{direction}-lockin")
+
+
+def test_mfe_lockin_trail_zero_atr_fallback():
+    df = _trending_df(n=30, base=100.0, daily_pct=0.005)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("mfe_lockin_trail", df, entry_date, 100.0, "long", 0.0)
+    _assert_equal(s, v, ctx="mfe_lockin_trail-zero-atr")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_hybrid_50pct_pre_target_stop_hit(direction):
+    """Sharp drop below entry*0.90 (long) before reaching target -> stop_loss."""
+    if direction == "long":
+        closes = np.array([100.0, 95.0, 90.0, 88.0, 86.0])
+    else:
+        closes = np.array([100.0, 105.0, 110.0, 112.0, 114.0])
+    opens  = closes.copy()
+    highs  = closes + 0.3
+    lows   = closes - 0.3
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("hybrid_50pct_target", df, entry_date, 100.0, direction, 1.0)
+    _assert_equal(s, v, ctx=f"hybrid_50pct-{direction}-pre-stop")
+
+
+@pytest.mark.parametrize("direction", ["long", "short"])
+def test_hybrid_50pct_target_hit_then_trail_exit(direction):
+    """Reach target (+3*ATR), half taken, then retrace -> trail fires."""
+    if direction == "long":
+        # entry 100, atr 2 -> target = 106
+        rising = [101.0, 103.0, 105.0, 107.0]   # bar 4 crosses target
+        retrace = [105.0, 100.5, 99.0]
+    else:
+        rising = [99.0, 97.0, 95.0, 93.0]      # short: target = 94
+        retrace = [95.0, 99.5, 101.0]
+    closes = np.array(rising + retrace)
+    opens  = closes.copy()
+    highs  = closes + 0.5
+    lows   = closes - 0.5
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("hybrid_50pct_target", df, entry_date, 100.0, direction, 2.0)
+    _assert_equal(s, v, ctx=f"hybrid_50pct-{direction}-target-trail")
+
+
+def test_hybrid_50pct_no_target_no_stop_end_of_data():
+    """Flat - never hits target or stop -> end_of_data."""
+    closes = np.array([100.5] * 20)
+    opens  = closes.copy()
+    highs  = closes + 0.1
+    lows   = closes - 0.1
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("hybrid_50pct_target", df, entry_date, 100.0, "long", 2.0)
+    _assert_equal(s, v, ctx="hybrid_50pct-end-of-data")
+
+
+def test_hybrid_50pct_zero_atr_fallback_atr():
+    """When atr=0, scalar uses ATR_FALLBACK_PCT * entry = 2."""
+    closes = np.array([102.0, 104.0, 106.0, 108.0])
+    opens  = closes.copy()
+    highs  = closes + 0.5
+    lows   = closes - 0.5
+    df = _df(opens, highs, lows, closes)
+    df, entry_date = _add_entry_bar(df, 100.0)
+    s, v = _both("hybrid_50pct_target", df, entry_date, 100.0, "long", 0.0)
+    _assert_equal(s, v, ctx="hybrid_50pct-zero-atr")
+
+
+def test_tier_1_methods_present():
+    """Tier 1 (Batch 412) ships 9 specific methods."""
+    tier_1 = {
         "time_stop_10d", "time_stop_20d", "class_time_stop",
         "trailing_5pct", "trailing_10pct", "trailing_15pct",
         "fixed_4r_2r", "r_multiple_2r", "r_multiple_3r",
     }
-    assert set(EXIT_STRATEGIES_VECTORIZED.keys()) == expected, (
-        f"Tier 1 roster drift: "
-        f"have {set(EXIT_STRATEGIES_VECTORIZED.keys())}, "
-        f"expected {expected}")
+    have = set(EXIT_STRATEGIES_VECTORIZED.keys())
+    missing = tier_1 - have
+    assert not missing, f"Tier 1 missing methods: {missing}"
+
+
+def test_tier_2_methods_present():
+    """Tier 2 (Batch 413) adds 8 methods on top of Tier 1."""
+    tier_2 = {
+        "atr_trail_1x", "atr_trail_2x", "atr_trail_mae_conditional",
+        "break_even_at_1r", "breakeven_plus_trail",
+        "chandelier_3x", "mfe_lockin_trail", "hybrid_50pct_target",
+    }
+    have = set(EXIT_STRATEGIES_VECTORIZED.keys())
+    missing = tier_2 - have
+    assert not missing, f"Tier 2 missing methods: {missing}"
+
+
+def test_total_vectorized_count_matches_tiers():
+    """Tier 1 (9) + Tier 2 (8) = 17 vectorized methods after Batch 413."""
+    assert len(EXIT_STRATEGIES_VECTORIZED) == 17, (
+        f"Vectorized roster count drift: have "
+        f"{len(EXIT_STRATEGIES_VECTORIZED)}, expected 17 (9 Tier 1 + 8 "
+        f"Tier 2). Tier 3 ship will raise this to 25.")
