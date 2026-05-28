@@ -239,6 +239,81 @@ function renderRaw() {
   $("#raw-pre").textContent = JSON.stringify(summary, null, 2);
 }
 
+// ---- Batch 419 renderers: cube-optimizer tabs (per locked workflow Stage 3) ----
+function renderOptimizer() {
+  const md = D.optimizer_summary_md || "";
+  const psc = D.per_strategy_candidates || {};
+  const ema = D.exit_method_analysis || {};
+  const pza = D.producer_zero_audit || {};
+  const optDir = D.optimizer_dir || "(none)";
+  const summary = pza.summary || {};
+  const passCells = ((ema.proposals || []).find(p => p.includes("PASS DEC-426")) || "(no PASS proposals)").slice(0, 200);
+  const top5Em = ema.proposals && ema.proposals[0] || "(no L1 ranking)";
+  const html = [
+    kpi(Object.keys(psc).length, "Strategies analyzed"),
+    kpi(summary.fired_count ?? "—", "Fired"),
+    kpi(summary.quiet_count ?? "—", "Quiet"),
+    kpi(summary.COMPOUND_RESTRICTIVE ?? "—", "Compound restrictive"),
+  ].join("");
+  $("#optimizer-kpis").innerHTML = html;
+  $("#optimizer-md-pre").textContent = md ? md.slice(0, 50000) : `(no optimization_summary.md found at ${optDir})`;
+}
+
+function renderCandidates() {
+  const psc = D.per_strategy_candidates || {};
+  const picker = $("#candidate-picker");
+  const detail = $("#candidate-detail");
+  const names = Object.keys(psc).sort();
+  if (!names.length) {
+    detail.textContent = "(no per-strategy JSONs found)";
+    return;
+  }
+  picker.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join("");
+  function show(name) {
+    detail.textContent = JSON.stringify(psc[name] || {}, null, 2);
+  }
+  picker.addEventListener("change", () => show(picker.value));
+  show(names[0]);
+}
+
+function renderQuiet() {
+  const pza = D.producer_zero_audit || {};
+  const buckets = pza.buckets || {};
+  const sum = pza.summary || {};
+  $("#quiet-kpis").innerHTML = [
+    kpi(sum.PRODUCER_LAYER_ZERO_LIKELY ?? "—", "PLZ_LIKELY"),
+    kpi(sum.COMPOUND_RESTRICTIVE ?? "—", "Compound restrictive"),
+    kpi(sum.SKIPPED_AT_ENGINE ?? "—", "Skipped at engine"),
+    kpi(sum.quiet_count ?? "—", "Total quiet"),
+  ].join("");
+  $("#quiet-plz").innerHTML = (buckets.PRODUCER_LAYER_ZERO_LIKELY || [])
+    .map(s => `<li>${s}</li>`).join("") || "<li><em>(empty)</em></li>";
+  $("#quiet-cr").innerHTML = (buckets.COMPOUND_RESTRICTIVE || [])
+    .map(s => `<li>${s}</li>`).join("") || "<li><em>(empty)</em></li>";
+  $("#quiet-skip").innerHTML = (buckets.SKIPPED_AT_ENGINE || [])
+    .map(s => `<li>${s}</li>`).join("") || "<li><em>(empty)</em></li>";
+}
+
+function renderCubeCells() {
+  const ema = D.exit_method_analysis || {};
+  const l2 = (ema.layer_2_per_strategy_exit_cell || []).map(r => ({
+    strategy:        r.strategy,
+    exit_method:     r.exit_method,
+    n:               r.n,
+    sharpe:          fmtNum(r.sharpe, 3),
+    win_rate:        fmtNum(r.win_rate, 3),
+    profit_factor:   fmtNum(r.profit_factor, 2),
+    t_stat:          fmtNum(r.t_stat, 2),
+    bonferroni_p:    fmtNum(r.bonferroni_p, 4),
+    verdict:         r.verdict || "—",
+    five_gate_pass:  r.five_gate_pass ? "✓" : "✗",
+  }));
+  buildTable("#cube-cells-table", l2, {
+    pageLength: 25,
+    order: [[3, "desc"]],  // sort by Sharpe DESC
+  });
+}
+
 // ---- Render all ----
 try { renderOverview(); } catch (e) { console.error("overview:", e); }
 try { renderStrategies(); } catch (e) { console.error("strategies:", e); }
@@ -252,4 +327,9 @@ try { renderSkipped(); } catch (e) { console.error("skipped:", e); }
 try { renderCircuit(); } catch (e) { console.error("circuit:", e); }
 try { renderExits(); } catch (e) { console.error("exits:", e); }
 try { renderTrades(); } catch (e) { console.error("trades:", e); }
+// Batch 419 tabs
+try { renderOptimizer(); } catch (e) { console.error("optimizer:", e); }
+try { renderCandidates(); } catch (e) { console.error("candidates:", e); }
+try { renderQuiet(); } catch (e) { console.error("quiet:", e); }
+try { renderCubeCells(); } catch (e) { console.error("cubecells:", e); }
 try { renderRaw(); } catch (e) { console.error("raw:", e); }

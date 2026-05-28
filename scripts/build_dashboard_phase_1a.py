@@ -32,8 +32,14 @@ import argparse
 _parser = argparse.ArgumentParser()
 _parser.add_argument("--source", default="output_v2",
                      help="Source output directory (e.g. output_smoke_v4_cross_regime)")
+_parser.add_argument("--optimizer-dir", default="output_optimization_candidates_2026_05_28",
+                     help="Batch 419: cube-optimizer output dir (per-strategy "
+                          "JSONs + exit_method_analysis + producer_zero audit + "
+                          "optimization_summary.md). Empty / non-existent = "
+                          "Batch 419 tabs rendered as 'no data'.")
 _args, _ = _parser.parse_known_args()
 OUT_DIR = REPO / _args.source
+OPT_DIR = REPO / _args.optimizer_dir
 DASH = REPO / "dashboard_phase_1a"
 DASH.mkdir(parents=True, exist_ok=True)
 
@@ -60,6 +66,60 @@ def load_json(name: str) -> dict | list:
         return json.loads(p.read_text(encoding="utf-8"))
     except Exception:
         return {}
+
+
+def load_optimizer_dir() -> dict:
+    """Batch 419: aggregate cube-optimizer outputs into 4 payload sections
+    consumed by the 4 new dashboard tabs (Optimizer Summary / Candidates /
+    Quiet Strategies / Cell Verdict Cube).
+
+    Returns empty sections when OPT_DIR is missing - tabs render as "no
+    data" gracefully. Per locked workflow Stage 3 expectations doc.
+    """
+    out = {
+        "optimizer_summary_md": "",
+        "per_strategy_candidates": {},
+        "exit_method_analysis": {},
+        "producer_zero_audit": {},
+        "optimizer_dir": str(OPT_DIR.relative_to(REPO)) if OPT_DIR.exists()
+                        else None,
+    }
+    if not OPT_DIR.exists():
+        return out
+    # optimization_summary.md (top of file only; script-generated)
+    md = OPT_DIR / "optimization_summary.md"
+    if md.exists():
+        try:
+            out["optimizer_summary_md"] = md.read_text(encoding="utf-8")
+        except Exception:
+            pass
+    # exit_method_analysis.json (Lens B L1+L2+L3)
+    ema = OPT_DIR / "exit_method_analysis.json"
+    if ema.exists():
+        try:
+            out["exit_method_analysis"] = json.loads(
+                ema.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    # producer_zero_post_cube_audit.json (3-bucket quiet classification)
+    pza = OPT_DIR / "producer_zero_post_cube_audit.json"
+    if pza.exists():
+        try:
+            out["producer_zero_audit"] = json.loads(
+                pza.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    # Per-strategy JSONs (~85-100 files; one per fired strategy)
+    skip = {"exit_method_analysis.json", "producer_zero_post_cube_audit.json"}
+    for f in OPT_DIR.glob("*.json"):
+        if f.name in skip:
+            continue
+        try:
+            out["per_strategy_candidates"][f.stem] = json.loads(
+                f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+    return out
 
 
 def load_parquet(name: str, head: int | None = None) -> list[dict]:
@@ -140,9 +200,18 @@ def build() -> dict:
             continue
         other_breakdowns[csv.stem.replace("exit_by_", "")] = load_csv(csv.name)
 
+    # ---- Batch 419: cube-optimizer outputs (Tabs 10-13) ----
+    opt = load_optimizer_dir()
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_dir": str(OUT_DIR.relative_to(REPO)),
+        # Batch 419: optimizer payload sections (4 new tabs)
+        "optimizer_dir":            opt["optimizer_dir"],
+        "optimizer_summary_md":     opt["optimizer_summary_md"],
+        "per_strategy_candidates":  opt["per_strategy_candidates"],
+        "exit_method_analysis":     opt["exit_method_analysis"],
+        "producer_zero_audit":      opt["producer_zero_audit"],
         # Tab 1
         "backtest_results": backtest_results,
         "winning_strategies": winning,
