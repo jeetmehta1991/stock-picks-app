@@ -224,26 +224,9 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     #
     # Batch 284 entries that REMAIN (winners):
     "stochrsi_oversold":           {"time_stop_days": 10, "initial_pct": 0.04},
-    "xs_momentum_top_decile":      {"exit_method": "class_time_stop"},
     "po3_bullish":                 {"exit_method": "class_time_stop"},
     "avwap_50_reclaim":            {"exit_method": "hybrid_50pct_target"},
     "cpr_narrow_bullish":          {"exit_method": "regime_flip"},
-
-    # Batch 309 NEW / REVISED entries:
-
-    # monthly_bias_momentum_long: Phase 1A-beta cube-best was end_of_backtest
-    # (47 OOS, 83% WR, +7.96% mean). Operational equivalent for live trading
-    # is a wide trailing stop. Setting trail_pct=0.25 (read by Batch 282
-    # per-strategy trail override in update_trailing_stop) gives the trend
-    # room to run. No explicit exit_method = defaults to trailing_stop with
-    # the strategy's wider trail_pct. Replaces previous breakeven_plus_trail
-    # which was over-tight and cut winners short at Phase 1A-beta scale.
-    "monthly_bias_momentum_long":  {"trail_pct": 0.25},
-
-    # xs_low_beta_long: NEW. Phase 1A-beta cube-best was end_of_backtest
-    # (30 OOS, 87% WR, +10.64% mean). Same wide-trail mapping; per Batch 282
-    # the absence of exit_method means default trailing with override trail_pct.
-    "xs_low_beta_long":            {"trail_pct": 0.25},
 
     # ----- Legacy Batch 284/285 entries RETAINED for backward-compat -----
     # These entries STAY in the dict but their strategies are in
@@ -255,7 +238,51 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     "bollinger_lower":             {"exit_method": "fixed_4r_2r", "initial_pct": 0.03},
     "smc_choch_reversal":          {"exit_method": "breakeven_plus_trail"},
     "po3_bearish":                 {"exit_method": "ma_exit_ema9"},
-    "bollinger_tight":             {"exit_method": "next_pivot_target", "initial_pct": 0.05},
+
+    # ----- Batch 414 (2026-05-28 owner-approved) -----
+    # Source: post-AWS Phase 1A-beta cube run output_batch395_final +
+    # scripts/optimize_strategies_from_cube.py output (Lens A Dim D best-
+    # exit-pairing). All 9 strategies below have a (strategy x
+    # breakeven_plus_trail) cell that passes 4 of 5 DEC-426 gates (n>=30,
+    # p<0.05 Bonferroni, t>=3.4, R:R>=2.0) AND fire_rate >= 0.95 (Batch 266
+    # cube hardening guardrail - the exit method actually triggers
+    # breakeven_trail_stop on 95%+ of trades, NOT bull-market end_of_data
+    # fall-through). PSR<0.95 means each is statistically suggestive but
+    # not high-confidence; walk-forward (DEC-505) is the next-Stage gate.
+    #
+    # Replaces Batch 309 entries for the 4 strategies below where new
+    # cube evidence supersedes prior recommendations.
+    #
+    # Cube evidence (Sharpe / n / PF / fire_rate):
+    #   bollinger_tight              0.642 / 364  / 2.09 / 0.975
+    #   xs_momentum_top_decile       0.558 / 415  / 2.20 / 0.961
+    #   cmf_flip                     0.545 / 639  / 2.34 / 0.973
+    #   monthly_bias_momentum_long   0.542 / 1286 / 2.11 / 0.963
+    #   xs_quality_top_quintile_long 0.525 / 603  / 2.03 / 0.967
+    #   pead_long                    0.521 / 528  / 2.44 / 0.994
+    #   pairs_mean_reversion_long    0.411 / 1144 / 2.70 / 0.969
+    #   adx_initiation               0.379 / 942  / 3.30 / 0.973
+    #   xs_low_beta_long             0.307 / 1021 / 2.11 / 0.949
+    #
+    # Note: 12 strategies that "won" with earnings_blackout in the same cube
+    # (htf_aligned_breakout_long, pre_fomc_long_sleeve, buyback_8k_recent_long,
+    # orb_stocks_in_play_long, po3_htf_aligned_long, institutional_cluster_long,
+    # supertrend_macd, three_white_soldiers, macd_fast_crossover,
+    # camarilla_r3_breakout, squeeze_breakout, tema_dema) had fire_rate=0.000
+    # because the cube's signals_at_entry dict lacks ticker/strategy_name keys
+    # so fetch_earnings_dates("") returns []. Those cells are curve-fit on
+    # no_earnings_known end-of-data fall-through, not real edge. Batch 415
+    # follow-up: fix run_exit_comparison to inject ticker+strategy_name into
+    # signals dict, re-run cube, re-evaluate.
+    "bollinger_tight":             {"exit_method": "breakeven_plus_trail"},  # was next_pivot_target (Batch 285)
+    "xs_momentum_top_decile":      {"exit_method": "breakeven_plus_trail"},  # was class_time_stop (Batch 284)
+    "monthly_bias_momentum_long":  {"exit_method": "breakeven_plus_trail"},  # was trail_pct=0.25 (Batch 309)
+    "xs_low_beta_long":            {"exit_method": "breakeven_plus_trail"},  # was trail_pct=0.25 (Batch 309)
+    "cmf_flip":                    {"exit_method": "breakeven_plus_trail"},  # NEW
+    "xs_quality_top_quintile_long": {"exit_method": "breakeven_plus_trail"},  # NEW
+    "pead_long":                   {"exit_method": "breakeven_plus_trail"},  # NEW
+    "pairs_mean_reversion_long":   {"exit_method": "breakeven_plus_trail"},  # NEW
+    "adx_initiation":              {"exit_method": "breakeven_plus_trail"},  # NEW
 }
 
 

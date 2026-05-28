@@ -10764,14 +10764,22 @@ def test_batch288_hysteresis_classifier_also_uses_spy_only_bear():
 def test_batch287a_per_strategy_initial_pct_override():
     """Batch 287.A: STRATEGY_EXIT_OVERRIDE entries may carry 'initial_pct'
     to tighten/widen the initial stop per strategy. Mean-reversion needs
-    tighter (3-5%); trend needs wider (12-15%)."""
+    tighter (3-5%); trend needs wider (12-15%).
+
+    Batch 414 (2026-05-28) supersedes the bollinger_tight pin: cube-empirical
+    re-pairing moved bollinger_tight from next_pivot_target (pct-based
+    initial stop) to breakeven_plus_trail (ATR-based pre-BE stop; initial_pct
+    no longer applies). Pin retained for the two strategies still using
+    pct-based stops."""
     from backtest.config import STRATEGY_EXIT_OVERRIDE
-    # bollinger_lower should have initial_pct=0.03 per Batch 287.A
+    # bollinger_lower still uses fixed_4r_2r with initial_pct=0.03
     assert STRATEGY_EXIT_OVERRIDE["bollinger_lower"].get("initial_pct") == 0.03
-    # stochrsi_oversold should have initial_pct=0.04
+    # stochrsi_oversold still uses pct-based trailing with initial_pct=0.04
     assert STRATEGY_EXIT_OVERRIDE["stochrsi_oversold"].get("initial_pct") == 0.04
-    # bollinger_tight should have initial_pct=0.05
-    assert STRATEGY_EXIT_OVERRIDE["bollinger_tight"].get("initial_pct") == 0.05
+    # Batch 414: bollinger_tight migrated to breakeven_plus_trail (ATR-based);
+    # initial_pct no longer applicable.
+    assert STRATEGY_EXIT_OVERRIDE["bollinger_tight"].get(
+        "exit_method") == "breakeven_plus_trail"
 
 
 def test_batch287c_crisis_flag_no_inner_reassignment():
@@ -10857,31 +10865,46 @@ def test_batch285_ma_exit_ema9_long_exits_below():
 
 
 def test_batch285_next_pivot_target_long():
-    """Batch 285: next_pivot_target exits long at first entry-time pivot > entry."""
+    """Batch 285: next_pivot_target exits long at first entry-time pivot > entry.
+
+    Batch 414 (2026-05-28): bollinger_tight migrated to breakeven_plus_trail
+    so the test now installs a synthetic strategy + STRATEGY_EXIT_OVERRIDE
+    entry to exercise the next_pivot_target code path without coupling to a
+    production strategy. Tests the EXIT METHOD itself, not the strategy
+    pairing."""
     from datetime import date
+    from backtest.config import STRATEGY_EXIT_OVERRIDE
     from backtest.engine.exit_manager import _check_per_strategy_exit_hit, OpenTrade
-    # bollinger_tight has next_pivot_target per Batch 285
-    trade = OpenTrade(
-        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
-        direction="long", strategy="bollinger_tight", category="mean_reversion",
-        sector="Tech", initial_stop=95.0, trailing_stop=95.0,
-        highest_close=100.0, regime_at_entry="neutral",
-        signals_at_entry={"pivot_r1": 105.0, "pivot_r2": 110.0, "pivot_r3": 115.0,
-                           "pivot_s1": 95.0, "pivot_s2": 90.0},
-    )
-    # today_high 104 < r1 105 -> no exit
-    ep, _ = _check_per_strategy_exit_hit(
-        trade, today_high=104.0, today_low=98.0, today_close=103.0,
-        today_date=date(2024, 1, 5),
-    )
-    assert ep is None
-    # today_high 106 reaches r1 -> exit at 105
-    ep, er = _check_per_strategy_exit_hit(
-        trade, today_high=106.0, today_low=101.0, today_close=104.5,
-        today_date=date(2024, 1, 6),
-    )
-    assert ep == 105.0
-    assert "next_pivot_target_hit" in er
+    # Install synthetic strategy mapping under finally-guarded teardown
+    STRATEGY_EXIT_OVERRIDE["test_next_pivot_long"] = {
+        "exit_method": "next_pivot_target",
+    }
+    try:
+        trade = OpenTrade(
+            ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+            direction="long", strategy="test_next_pivot_long",
+            category="mean_reversion",
+            sector="Tech", initial_stop=95.0, trailing_stop=95.0,
+            highest_close=100.0, regime_at_entry="neutral",
+            signals_at_entry={"pivot_r1": 105.0, "pivot_r2": 110.0,
+                               "pivot_r3": 115.0,
+                               "pivot_s1": 95.0, "pivot_s2": 90.0},
+        )
+        # today_high 104 < r1 105 -> no exit
+        ep, _ = _check_per_strategy_exit_hit(
+            trade, today_high=104.0, today_low=98.0, today_close=103.0,
+            today_date=date(2024, 1, 5),
+        )
+        assert ep is None
+        # today_high 106 reaches r1 -> exit at 105
+        ep, er = _check_per_strategy_exit_hit(
+            trade, today_high=106.0, today_low=101.0, today_close=104.5,
+            today_date=date(2024, 1, 6),
+        )
+        assert ep == 105.0
+        assert "next_pivot_target_hit" in er
+    finally:
+        STRATEGY_EXIT_OVERRIDE.pop("test_next_pivot_long", None)
 
 
 def test_batch285_hybrid_50pct_target_long():
