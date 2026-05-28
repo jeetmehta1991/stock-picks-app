@@ -39,13 +39,13 @@ No a-priori pruning (`project_no_apriori_strategy_pruning.md`): a strategy may b
 - `forensic/batch_N.json` (per-batch verdict from `aws_batch395_forensic_per_batch.py`)
 
 **Merge (`scripts/aws_batch395_merge.py --bucket <name> --upload-final`):**
-- Produces `output_phase_1a_beta_aws_merged/trade_log.csv` + `trade_exit_detail.csv` + `skipped_trades.csv`.
+- Produces `output_batch395_final/trade_log.csv` + `trade_exit_detail.csv` + `skipped_trades.csv`.
 - If cube file missing post-merge, inline call to `rebuild_cube_from_trade_log.py` regenerates it (Batch 359 path closes the legacy gap where `merge_batch_outputs.py` dropped trade_exit_detail).
 
 **Dashboard view/expectations:**
 - All 13 existing tabs (Overview / 1. Strategies / 2. Regime / 3. MAE/MFE / 4. Equity / 5. Walk-fwd / 6. Smart-$ / 7. Sector / 8. Skipped / 9. CircuitBreakers / Exits / Trades / Raw JSON) are STALE during run; do not regenerate until merge completes.
 - **NEW Overview widget "Run Status"** consumes per-batch `_COMPLETE` sentinels + forensic JSON: shows `5/5 _COMPLETE`, per-batch wall-time, forensic verdict per batch (PASS/WARN/ABORT). Visible during run; settles when merge lands.
-- **Refresh trigger (post-merge):** `python scripts/build_dashboard_phase_1a.py --source output_phase_1a_beta_aws_merged`.
+- **Refresh trigger (post-merge):** `python scripts/build_dashboard_phase_1a.py --source output_batch395_final`.
 
 ---
 
@@ -54,7 +54,7 @@ No a-priori pruning (`project_no_apriori_strategy_pruning.md`): a strategy may b
 **Command:**
 ```bash
 python scripts/optimize_strategies_from_cube.py \
-    --input-dir output_phase_1a_beta_aws_merged \
+    --input-dir output_batch395_final \
     --output-dir output_optimization_candidates_<YYYY_MM_DD>
 ```
 
