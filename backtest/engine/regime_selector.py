@@ -265,6 +265,52 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "52w_low_breakdown":        {"bear", "crisis", "neutral"},
     "death_cross_50_200_volume":{"bear", "crisis", "neutral"},
     "prev_day_low_breakdown":   {"bear", "crisis", "neutral"},
+
+    # ----- Batch 417 (2026-05-28 owner-approved) -----
+    # Cube-derived per-regime affinity for 14 strategies that had NO prior
+    # entry in this map. Per-regime Sharpe + n>=30 computed from
+    # output_batch395_final/trade_exit_detail.csv x trade_log.csv merge;
+    # regimes INCLUDED iff sharpe > 0 AND n >= 30.
+    #
+    # Source: scripts/optimize_strategies_from_cube.py Dim C output +
+    # ad-hoc per-(strategy x regime) verdict computed from the AWS cube
+    # 2026-05-28. Owner approved "14 NEW only" scope (no overrides of
+    # existing 113 curated entries from Batches 203/293/370).
+    #
+    # The 15 OVERRIDE candidates (where cube disagrees with existing
+    # entry) were intentionally NOT applied this batch - those need
+    # per-strategy review since they reverse owner curation. See commit
+    # message for the override list + cube-vs-existing diff.
+    #
+    # Per-strategy cube Sharpe (per regime; only INCLUDED regimes shown):
+    #   awesome_oscillator                bear=+0.05
+    #   break_retest_confluence           bull=+0.11
+    #   break_retest_volume               bear=+0.07  neutral=+0.42
+    #   cpr_narrow_momentum               bull=+0.06  neutral=+0.42
+    #   hull_rsi                          bull=+0.08  neutral=+0.27
+    #   institutional_buy_momentum_long   bull=+0.12
+    #   institutional_cluster_long        bear=+0.16
+    #   macd_fast_crossover               bull=+0.12
+    #   morning_star                      bear=+0.13
+    #   parabolic_sar_flip                bear=+0.16
+    #   ppo_crossover                     bear=+0.05
+    #   tema_dema                         bear=+0.18
+    #   three_white_soldiers              bear=+0.06  bull=+0.08
+    #   williams_stoch_dual               bear=+0.06
+    "awesome_oscillator":              {"bear"},
+    "break_retest_confluence":         {"bull"},
+    "break_retest_volume":             {"bear", "neutral"},
+    "cpr_narrow_momentum":             {"bull", "neutral"},
+    "hull_rsi":                        {"bull", "neutral"},
+    "institutional_buy_momentum_long": {"bull"},
+    "institutional_cluster_long":      {"bear"},
+    "macd_fast_crossover":             {"bull"},
+    "morning_star":                    {"bear"},
+    "parabolic_sar_flip":              {"bear"},
+    "ppo_crossover":                   {"bear"},
+    "tema_dema":                       {"bear"},
+    "three_white_soldiers":            {"bear", "bull"},
+    "williams_stoch_dual":             {"bear"},
 }
 
 
