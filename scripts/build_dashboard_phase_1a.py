@@ -260,7 +260,14 @@ def main() -> int:
     # Plain JSON (audit / consumers)
     (DASH / "data.json").write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
     # Browser-loadable JS module
-    js = "const PHASE_1A_DATA = " + json.dumps(payload, default=str) + ";"
+    # Batch 422 (2026-05-28): fix latent dashboard-blank bug. In a regular
+    # <script> context (non-module), top-level `const` creates a lexical
+    # global but does NOT attach to window. app.js's
+    # `const D = window.PHASE_1A_DATA || {}` therefore always saw {} ->
+    # all tabs rendered blank. Owner reported "all tabs blank, headers
+    # visible" post-Batch-419. Switch to explicit `window.PHASE_1A_DATA = `
+    # so the assignment attaches to the global object.
+    js = "window.PHASE_1A_DATA = " + json.dumps(payload, default=str) + ";"
     (DASH / "data.js").write_text(js, encoding="utf-8")
     (DASH / "last_run.txt").write_text(payload["generated_at"] + "\n", encoding="utf-8")
 

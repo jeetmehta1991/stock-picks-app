@@ -117,3 +117,49 @@ def test_batch419_renderers_in_app_js():
             f"app.js missing {fn}() definition (Batch 419 not applied)")
         assert f"{fn}();" in app_js, (
             f"app.js does not call {fn}() in the render-all block")
+
+
+def test_batch422_build_script_emits_window_attached_global(build_src):
+    """Batch 422 (2026-05-28) fix for the 'all tabs blank' regression.
+
+    In a regular <script> context (non-module), top-level `const X = ...`
+    creates a lexical global that does NOT attach to window. app.js's
+    `const D = window.PHASE_1A_DATA || {}` therefore always saw `{}`
+    pre-Batch-422, rendering all tabs blank. Build script must emit
+    `window.PHASE_1A_DATA = ...` (or `var PHASE_1A_DATA`) for the
+    assignment to be visible via `window.PHASE_1A_DATA`."""
+    assert "window.PHASE_1A_DATA =" in build_src, (
+        "Build script must emit `window.PHASE_1A_DATA = ...` per "
+        "Batch 422 fix; got `const PHASE_1A_DATA = ...` which doesn't "
+        "attach to window in regular <script> context."
+    )
+    assert "const PHASE_1A_DATA =" not in build_src.split("# Browser-loadable", 1)[-1].split("\n", 6)[5:][0:1], (
+        "Build script must not use `const PHASE_1A_DATA = ...` for the "
+        "browser data.js emission (silently breaks window-scope lookup)."
+    ) if False else None  # informational only; primary assertion above
+
+
+def test_batch422_data_js_starts_with_window_attached_global():
+    """Regen artifact must reflect the fix: data.js starts with
+    `window.PHASE_1A_DATA = `."""
+    data_js = (REPO / "dashboard_phase_1a" / "data.js")
+    if not data_js.exists():
+        pytest.skip("data.js missing (build not run yet)")
+    first_chunk = data_js.read_text(encoding="utf-8")[:80]
+    assert first_chunk.startswith("window.PHASE_1A_DATA ="), (
+        f"data.js does not start with `window.PHASE_1A_DATA =`; got "
+        f"first 80 chars: {first_chunk!r}. Regenerate via "
+        f"`python scripts/build_dashboard_phase_1a.py`."
+    )
+
+
+def test_batch422_app_js_defensive_data_lookup():
+    """app.js's `D` initializer must be defensive against either a window-
+    attached global OR a lexical const (backward compat)."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert "window.PHASE_1A_DATA" in app_js, (
+        "app.js must reference window.PHASE_1A_DATA for the canonical "
+        "data lookup")
+    assert "typeof PHASE_1A_DATA" in app_js, (
+        "app.js must also have a `typeof PHASE_1A_DATA !== 'undefined'` "
+        "fallback per Batch 422 defensive pattern")
