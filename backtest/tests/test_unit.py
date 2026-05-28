@@ -9487,9 +9487,13 @@ def test_batch203_regime_selector_enforces_affinity():
     # pivot_r1_breakout: allow bull+neutral, block bear+crisis
     assert should_strategy_fire_in_regime("pivot_r1_breakout", "bull") is True
     assert should_strategy_fire_in_regime("pivot_r1_breakout", "bear") is False
-    # cmf_flip: allow all regimes (regime-agnostic)
-    for r in ("bull", "neutral", "bear", "crisis"):
-        assert should_strategy_fire_in_regime("cmf_flip", r) is True
+    # cmf_flip: Batch 418 cube-empirical override 2026-05-28 - was allow-all
+    # ("regime-agnostic"), now {bear, neutral} only (bull Sharpe negative;
+    # 0 crisis trades in cube). Pin updated per cube data.
+    assert should_strategy_fire_in_regime("cmf_flip", "bear") is True
+    assert should_strategy_fire_in_regime("cmf_flip", "neutral") is True
+    assert should_strategy_fire_in_regime("cmf_flip", "bull") is False
+    assert should_strategy_fire_in_regime("cmf_flip", "crisis") is False
     # Short-side (post-Batch-271): allow bear + crisis + neutral, block bull only
     assert should_strategy_fire_in_regime("hull_rsi_short", "bear") is True
     assert should_strategy_fire_in_regime("hull_rsi_short", "crisis") is True

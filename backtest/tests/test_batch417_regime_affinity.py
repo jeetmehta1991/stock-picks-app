@@ -63,21 +63,56 @@ def test_batch417_strategy_regime_affinity_count_floor():
         f"entries, expected >= 127 (113 pre-Batch-417 + 14 Batch 417 new)")
 
 
-def test_batch417_did_not_silently_override_existing_curated_entries():
-    """Owner approved '14 NEW only' scope. The 15 OVERRIDE candidates (where
-    cube disagreed with curated entries) MUST NOT have been touched in
-    Batch 417. Pin them at their pre-Batch-417 values."""
-    # Spot-check a few of the overrides that were intentionally NOT applied
-    # (cube would have set these to different values).
-    assert STRATEGY_REGIME_AFFINITY.get("adx_initiation") == {"bull", "neutral"}, (
-        "Batch 417 must not override adx_initiation (cube said {bear}; "
-        "owner deferred override to per-strategy review)")
-    assert STRATEGY_REGIME_AFFINITY.get("bollinger_tight") == {"bull", "neutral"}, (
-        "Batch 417 must not override bollinger_tight (cube said {bull}; "
-        "owner deferred override)")
-    assert STRATEGY_REGIME_AFFINITY.get("pairs_mean_reversion_long") == {"bull", "neutral"}, (
-        "Batch 417 must not override pairs_mean_reversion_long (cube said "
-        "{bear}; owner deferred override)")
-    assert STRATEGY_REGIME_AFFINITY.get("xs_momentum_top_decile") == {"bull", "neutral"}, (
-        "Batch 417 must not override xs_momentum_top_decile (cube said "
-        "{bull}; owner deferred override)")
+# Batch 418 (2026-05-28 owner-approved "proceed"): 15 OVERRIDES of existing
+# curated entries where cube empirical disagrees. Supersedes the prior
+# test_batch417 "override-not-applied" guards; those entries are now the
+# cube-derived values pinned below.
+BATCH_418_OVERRIDES = {
+    "adx_initiation":               {"bear"},
+    "avwap_252_breakout":           {"bear", "neutral"},
+    "bollinger_tight":              {"bull"},
+    "cmf_flip":                     {"bear", "neutral"},
+    "pairs_mean_reversion_long":    {"bear"},
+    "pead_long":                    {"bear", "bull"},
+    "po3_bullish":                  {"bull"},
+    "po3_htf_aligned_long":         {"bull"},
+    "pre_fomc_long_sleeve":         {"bear", "neutral"},
+    "prev_day_high_break":          {"bear"},
+    "supertrend_macd":              {"bull"},
+    "ultimate_oscillator":          {"bull"},
+    "xs_low_beta_long":             {"bear", "bull"},
+    "xs_momentum_top_decile":       {"bull"},
+    "xs_quality_top_quintile_long": {"bear"},
+}
+
+
+@pytest.mark.parametrize("strategy,expected_regimes",
+                          sorted(BATCH_418_OVERRIDES.items()))
+def test_batch418_strategy_regime_affinity_override(strategy, expected_regimes):
+    """Each Batch 418 OVERRIDE must be present + match cube-derived set.
+    These supersede prior Batch 203/293/370 curation per
+    project_no_apriori_strategy_pruning (cube empirical supersedes literature).
+    """
+    assert strategy in STRATEGY_REGIME_AFFINITY, (
+        f"{strategy} missing from STRATEGY_REGIME_AFFINITY - Batch 418 "
+        f"override not applied or silently reverted")
+    actual = STRATEGY_REGIME_AFFINITY[strategy]
+    assert actual == expected_regimes, (
+        f"{strategy}: STRATEGY_REGIME_AFFINITY = {actual!r}, expected "
+        f"{expected_regimes!r} (Batch 418 cube-empirical override)")
+
+
+def test_batch418_total_cube_derived_entries():
+    """Total entries with explicit cube-derivation = 14 (Batch 417 NEW) + 15
+    (Batch 418 OVERRIDES) = 29 distinct strategies whose affinity is now
+    cube-empirical rather than literature-derived. Count-floor still applies."""
+    cube_derived_count = len(BATCH_417_NEW_ENTRIES) + len(BATCH_418_OVERRIDES)
+    assert cube_derived_count == 29, (
+        f"Expected 14 + 15 = 29 cube-derived entries; got "
+        f"{cube_derived_count}")
+    # No collision between the two sets (Batch 417 NEW were not-prior-entries;
+    # Batch 418 OVERRIDES were prior-entries being changed):
+    overlap = set(BATCH_417_NEW_ENTRIES) & set(BATCH_418_OVERRIDES)
+    assert not overlap, (
+        f"Batch 417 NEW and Batch 418 OVERRIDE sets must be disjoint; "
+        f"overlap = {overlap}")

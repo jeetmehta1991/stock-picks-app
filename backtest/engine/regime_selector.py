@@ -84,7 +84,7 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "pre_rebalance_long":               {"bull", "neutral", "bear", "crisis"},
     # Pairs trading (Batch 253 / DEC-369): mean-reversion fails in trending
     # markets; allow bull/neutral only per Krauss 2024.
-    "pairs_mean_reversion_long":        {"bull", "neutral"},
+    "pairs_mean_reversion_long":        {"bear"},  # Batch 418 cube override (was {bull, neutral}; bear=+0.28 Sharpe PASS, others negative)
     "pairs_mean_reversion_short":       {"bull", "neutral"},
     # News sentiment (Batch 253 / DEC-411): bull/neutral - sentiment momentum
     # tracks risk-on; bad-news cluster overwhelms in crisis.
@@ -127,10 +127,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "naked_poc_retest_long":            {"bull", "neutral"},
     # Mean-reversion: avoid bull (Mag-7 fade trap)
     "bollinger_lower":          {"neutral", "bear"},
-    "bollinger_tight":          {"bull", "neutral"},
+    "bollinger_tight":          {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe -0.264)
     "stochrsi_oversold":        {"bull", "neutral"},
     "williams_r_oversold":      {"bull", "neutral"},
-    "ultimate_oscillator":      {"bull", "neutral"},
+    "ultimate_oscillator":      {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
     "rsi_oversold":             {"bull", "neutral"},
     "mfi_oversold":             {"bull", "neutral"},
     "stoch_oversold":           {"bull", "neutral"},
@@ -139,10 +139,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "pivot_r2_continuation":    {"bull", "neutral"},
     "cpr_narrow_bullish":       {"bull", "neutral"},
     "ichimoku_cloud_breakout":  {"bull", "neutral"},
-    "supertrend_macd":          {"bull", "neutral"},
+    "supertrend_macd":          {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
     "macd_crossover":           {"bull", "neutral"},
-    "adx_initiation":           {"bull", "neutral"},
-    "prev_day_high_break":      {"bull", "neutral"},
+    "adx_initiation":           {"bear"},  # Batch 418 cube override (was {bull, neutral}; bear=+0.30 Sharpe, bull/neutral negative)
+    "prev_day_high_break":      {"bear"},  # Batch 418 cube override (was {bull, neutral}; bear=positive Sharpe, bull negative)
     "52w_high_breakout":        {"bull", "neutral"},
     "donchian_10_breakout":     {"bull", "neutral"},
     # Counter-trend bounces: allow neutral/bear (oversold bounces)
@@ -152,18 +152,18 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "camarilla_s3_bounce":      {"neutral", "bear", "crisis"},
     "pivot_s1_bounce":          {"neutral", "bear"},
     # Volume-flow: allow all (signal is regime-agnostic)
-    "cmf_flip":                 {"bull", "neutral", "bear", "crisis"},
+    "cmf_flip":                 {"bear", "neutral"},  # Batch 418 cube override (was {bull, neutral, bear, crisis}; bull negative + 0 crisis trades)
     "force_index_breakout":     {"bull", "neutral", "bear", "crisis"},
     "volume_spike_breakout":    {"bull", "neutral", "bear", "crisis"},
     # AVWAP family (Batch 208): allow all regimes; signal self-gates via
     # above_avwap_* + 200-EMA logic inside the strategy itself.
-    "avwap_252_breakout":           {"bull", "neutral", "bear", "crisis"},
+    "avwap_252_breakout":           {"bear", "neutral"},  # Batch 418 cube override (was all-4-regimes; bull negative + 0 crisis trades)
     "avwap_50_reclaim":             {"bull", "neutral"},
     "avwap_20high_rejection_short": {"neutral", "bear", "crisis"},
     # PEAD family (Batch 209): event-driven; allow all regimes (signal
     # self-gates via within_pead_window + pead_*_surprise inside strategy).
     # Bernard-Thomas effect is documented robust across regimes.
-    "pead_long":                    {"bull", "neutral", "bear", "crisis"},
+    "pead_long":                    {"bear", "bull"},  # Batch 418 cube override (was all-4-regimes; neutral Sharpe lower + 0 crisis trades)
     "pead_short":                   {"bull", "neutral", "bear", "crisis"},
     # SMC / ICT family (Batch 210 + Batch 263 Class C tightening 2026-05-20):
     # Phase 1A-alpha showed SMC structural signals firing in WRONG regimes
@@ -180,9 +180,9 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # bull/neutral; bottom decile short in bear/crisis; BAB long in
     # bull/neutral; momentum+low-IVOL combined allow all (filter is
     # self-gating).
-    "xs_momentum_top_decile":           {"bull", "neutral"},
+    "xs_momentum_top_decile":           {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe lower)
     "xs_momentum_bottom_decile_short":  {"bear", "crisis"},
-    "xs_low_beta_long":                 {"bull", "neutral"},
+    "xs_low_beta_long":                 {"bear", "bull"},  # Batch 418 cube override (was {bull, neutral}; cube bear=+0.14 + bull=+0.15)
     "xs_combined_momentum_low_ivol":    {"bull", "neutral", "bear"},
     # Event-driven + quality (Batch 222): insider clusters work across
     # all regimes (Cohen-Malloy-Pomorski 2012); quality factor long-
@@ -192,20 +192,20 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # in crisis regime (Phase 1A-alpha: 36 crisis trades at 22pct WR).
     "insider_cluster_long":                {"bull", "neutral", "bear"},
     "insider_cluster_with_director_long":  {"bull", "neutral", "bear"},
-    "xs_quality_top_quintile_long":        {"bull", "neutral"},
+    "xs_quality_top_quintile_long":        {"bear"},  # Batch 418 cube override (was {bull, neutral}; bear=+0.31 Sharpe, bull lower)
     "xs_momentum_quality_combined":        {"bull", "neutral"},
     "pead_with_insider_confirmation_long": {"bull", "neutral", "bear"},  # Batch 263: drop crisis
     # Pre-FOMC + 8-K event-driven (Batch 224): allow long-bias regimes.
     # Lucca-Moench drift is documented robust through 2015; conditional
     # on bullish backdrop per Cieslak-Pang 2024.
-    "pre_fomc_long_sleeve":                {"bull", "neutral"},
+    "pre_fomc_long_sleeve":                {"bear", "neutral"},  # Batch 418 cube override (was {bull, neutral}; bull Sharpe negative)
     "pre_fomc_quality_momentum_long":      {"bull", "neutral"},
     "buyback_8k_recent_long":              {"bull", "neutral"},
     # PO3 + multi-TF (Batch 217): self-gate via 200-EMA + weekly/monthly
     # biases; symmetric pairs get explicit regime restrictions.
-    "po3_bullish":                  {"bull", "neutral"},
+    "po3_bullish":                  {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
     "po3_bearish":                  {"bear", "crisis", "neutral"},  # Batch 271 expand
-    "po3_htf_aligned_long":         {"bull", "neutral"},
+    "po3_htf_aligned_long":         {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
     "po3_htf_aligned_short":        {"bear", "crisis", "neutral"},  # Batch 271 expand
     "htf_aligned_breakout_long":    {"bull", "neutral"},
     "htf_aligned_breakout_short":   {"bear", "crisis", "neutral"},  # Batch 271 expand
