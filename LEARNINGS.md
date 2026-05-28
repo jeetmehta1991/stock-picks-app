@@ -1608,3 +1608,38 @@ The root cause: I wrote Steps 1-9 of Phase A as a template without auditing the 
 If a walkthrough contains a step that would require an immediate follow-on correction in the next response, the walkthrough is non-compliant. Rewrite the walkthrough before issuing.
 
 **Cross-references.** Batch 395 (Phase A AWS setup walkthrough this lesson critiques), Batch 407 (codification + CHECKLIST #88), `feedback_audit_recommendations_against_existing_directives.md` (same family: don't contradict your own prior step), CHECKLIST #84 (verify before claiming - cousin: same self-consistency principle applied to bug diagnosis), CHECKLIST #88 (this lesson's codification).
+
+
+
+## L161 - Status updates must re-verify current state, never cache it (Pass 53 Batch 410 2026-05-27)
+
+**Pattern.** During the 2026-05-27 AWS Phase 1A-beta run, I (assistant) provided multiple "status update" responses across ~1.5 hours that reported batch_3 as "RUNNING" when the underlying EC2 spot instance i-0bf5a13fdc166b405 had been reclaimed by AWS at approximately 00:00-00:30 UTC with status code `instance-terminated-no-capacity`.
+
+Specifically:
+  - ~22:19 UTC: batch_3 launched as spot instance
+  - ~00:00 UTC: last heartbeat to S3 (engine at 85 min elapsed)
+  - 00:00-00:30 UTC (estimated): AWS spot reclaimed the instance
+  - 00:30+ UTC: owner-prompted status updates I issued; each one re-stated "batch_3 RUNNING" from cached/launch-time memory without re-querying
+  - 01:44 UTC: owner asked again; THIS time I happened to run a fresh `aws ec2 describe-instances` and finally noticed batch_3 was gone
+  - 01:50 UTC: owner: "Why wasnt update on batch 3 provided much earlier?"
+
+The 1.5-hour gap was entirely on me. The L4 14-check monitor I had armed earlier (`bv76426sn`) had a W2 "log staleness" check that would have flagged batch_3's heartbeat going stale, but I never read the monitor's output into any status update.
+
+**Compounding factors:**
+  - L4 monitor was running but output never consumed
+  - Parallel runner `--batches 4,5` was tracking only those two; batch_3 was launched outside its scope so no auto-relaunch
+  - My status-report flow assumed state was stable across reports; the underlying assumption was wrong because spot instances can be reclaimed at any time
+  - I didn't apply CHECKLIST #84's principle (verify before claiming) to the analogous case of verifying progress claims
+
+**Closure (Batch 410).** Codified CHECKLIST #90 (status updates must re-verify current state via API/files at report time). The rule mandates per-resource verification on every status update: EC2 describe-instances, S3 head-object for sentinels, heartbeat staleness check, background task output tail read, L4 monitor output read. Cost: 1-2 seconds. Cost of skipping: hours of stale reporting.
+
+**Rule.** Whenever issuing a status update / progress report / "update on X" response that references long-running resources:
+  - **a.** For each referenced EC2 instance: run `describe-instances` for current State.Name. If spot: also `describe-spot-instance-requests` for Status.Code. Include result in report.
+  - **b.** For each tracked S3 sentinel (e.g., `_COMPLETE`): run `s3api head-object` at report time. Cannot rely on the absence of a prior fetch as "still pending."
+  - **c.** For each S3 heartbeat: pull file, compare `ts=` to current time, flag > 15 min stale.
+  - **d.** For each background task: read tail of output file or invoke status check; do not assume "still running" from earlier check.
+  - **e.** If an L4 (or analogous) monitor is armed, read its latest output and include any WARN/KILL signals.
+
+Caching status from earlier in the session is NOT acceptable for resources that can change asynchronously. The re-verification cost is bounded (seconds); the stale-reporting cost is unbounded (hours, in this case).
+
+**Cross-references.** Batch 395 (AWS orchestration this lesson applies to), Batch 409 (per-batch forensic framework — should be paired with the L161 status-verification habit), Batch 410 (this lesson's codification + CHECKLIST #90), L157 (verify data availability before claiming bug — cousin: verify current state before claiming progress), L158 (AWS new-account compounding gates — included spot capacity reliability as one of the 10 gates; this lesson is the operational counterpart).

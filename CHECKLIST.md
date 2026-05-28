@@ -1309,3 +1309,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Apply when:** any cost statement that informs an owner decision. Does NOT apply to: cost-after-the-fact reporting (e.g., "actual spend was $5.63").
 
     **Joint:** L158 (cousin: live API verification for quotas), #87 (platform-gate enumeration also requires live checks).
+
+90. **HARD RULE - Status updates involving long-running resources MUST re-verify current state via API/files at report time, not from memory** (Batch 410 codification after batch_3 spot-reclaim went unreported for 1.5h 2026-05-27).
+
+    Pattern (this session): batch_3 was spot-reclaimed by AWS at ~00:00-00:30 UTC. I (assistant) continued to report it as "RUNNING" in multiple subsequent status updates over ~1.5 hours because I trusted the prior snapshot instead of re-querying. Owner caught this: "Why wasnt update on batch 3 provided much earlier?"
+
+    Root cause: status updates used cached state from the launch event rather than current state from AWS. The L4 14-check monitor I had armed earlier WOULD have detected the heartbeat staleness (W2 check) but its output was never read into the status report.
+
+    **Before issuing any status update that references long-running resources (EC2 instances, AWS spot requests, background tasks, multi-stage jobs, in-flight batches, monitors), the report MUST include current state verification for each referenced resource:**
+      a. EC2 instances: `aws ec2 describe-instances --instance-ids <id>` for State.Name + StateReason.Message + (for spot) `describe-spot-instance-requests` for Status.Code
+      b. S3 sentinels: `aws s3 ls s3://bucket/path/_COMPLETE` for each tracked batch
+      c. S3 heartbeats: pull each tracked batch's heartbeat file + check `ts=` timestamp vs current time (> 15 min stale = surface in report)
+      d. Background tasks: read tail of each task's output file at report time (or invoke task-status check)
+      e. L4 monitor output (if armed): read its latest poll output and include any WARN/KILL signals in the status report
+
+    Caching prior state from earlier in the same session is NOT acceptable for resources that can change asynchronously (instances can be reclaimed; sentinels can land; heartbeats can go stale). The cost of re-querying is 1-2 seconds; the cost of stale reporting is the entire delta between actual change and detection (1.5 hours in this case).
+
+    **Apply when:** any status update / progress report / "update on X" response covering >1 tracked resource OR any resource with async-change risk (spot instances, billable jobs, jobs with hard timeouts).
+
+    **Past violation:** session 2026-05-27 batch_3 reported as RUNNING for 1.5h after spot reclaim; owner caught it.
+
+    **Joint:** L161 (this directive's codified lesson), #84 (verify before claiming bug - cousin: verify before claiming progress), `feedback_monitor_intermediate_counts.md` (intermediate counts catch async changes), `feedback_audit_recommendations_against_existing_directives.md` (don't trust prior state without re-check).
