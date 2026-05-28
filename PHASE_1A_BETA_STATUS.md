@@ -2,6 +2,8 @@
 
 **Single living doc.** Updated incrementally per batch. Supersedes the separate `PHASE_1A_BETA_OPTIMIZATION_FRAMEWORK.md` + `PHASE_1A_BETA_STAGE_D_PILOT_BATCH_381.md` + `STAGE_4_MONITORING_AUDIT.md` per owner directive 2026-05-26 (consolidate vs delete).
 
+**Cross-ref:** [`PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md`](PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md) is the canonical reference for the cube → optimization → review → implementation → 1A-α-gate pipeline (locked 2026-05-28).
+
 **Source attribution (per CHECKLIST #77):** owner directives across Batches 376-386 (cube optimization sequence) + Batch 372 framework decisions. Code SSOT: `backtest/engine/backtest.py` + `backtest/run_phase1a.py` + `scripts/monitor_phase_1a_beta_health.sh`. Data SSOT: companion JSON files in repo root.
 
 ---
