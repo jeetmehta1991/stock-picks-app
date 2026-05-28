@@ -206,6 +206,15 @@ def main():
                         "watchdog backs this up at +5min. AUTO-SET to "
                         "6.0 for --phase=1a-beta. None=disabled.")
     p.add_argument("--output-dir", type=str, default="output_v2")
+    p.add_argument("--vectorized-cube-exits", action="store_true",
+                   help="Batch 412 (owner 2026-05-28 owner-approved): activate "
+                        "the numpy-vectorized cube-exit fast path "
+                        "(exit_strategies_vectorized.EXIT_STRATEGIES_VECTORIZED). "
+                        "Default OFF for byte-identical fallback to the scalar "
+                        "iterrows() loop. Tier 1 ships in 412 (9 methods: "
+                        "time_stop_10d/20d, class_time_stop, trailing_5/10/15pct, "
+                        "fixed_4r_2r, r_multiple_2r/3r) with ~10-12% engine "
+                        "speedup. Tier 2 follows in Batch 413.")
     args = p.parse_args()
 
     # Batch 377: auto-enable --no-portfolio-cap for 1a-beta cube evaluation
@@ -248,6 +257,16 @@ def main():
               "(engine flushes checkpoint and sys.exit(1) at 6h; monitor watchdog "
               "backs up at +5min if engine hangs).")
         args.max_run_hours = 6.0
+
+    # Batch 412: opt-in vectorized cube-exit fast path. Default OFF preserves
+    # byte-identical scalar fallback - flip via --vectorized-cube-exits when
+    # ready (after current run completes per owner directive 2026-05-28).
+    if args.vectorized_cube_exits:
+        from backtest.engine import exit_strategies as _exit_mod
+        _exit_mod.USE_VECTORIZED_EXITS = True
+        print("[Batch 412] --vectorized-cube-exits ON -> Tier 1 cube exits "
+              "dispatched to exit_strategies_vectorized (9 methods; ~10-12% "
+              "engine speedup; byte-identical to scalar).")
 
     phase_key = f"phase_{args.phase}"
 

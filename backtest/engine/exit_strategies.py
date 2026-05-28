@@ -35,6 +35,14 @@ from backtest.config import ATR_FALLBACK_PCT
 
 logger = logging.getLogger(__name__)
 
+# Batch 412 (2026-05-28 owner-approved): vectorized cube-exit fast path flag.
+# Default OFF - flip to True via run_phase1a.py --vectorized-cube-exits or by
+# setting `exit_strategies.USE_VECTORIZED_EXITS = True` programmatically.
+# When True, cube replay dispatches Tier 1 exit methods to their numpy
+# vectorized versions in exit_strategies_vectorized.py (byte-identical
+# results, ~10-12% engine speedup on Tier 1 alone).
+USE_VECTORIZED_EXITS: bool = False
+
 
 def _pnl(entry: float, exit_p: float, direction: str) -> float:
     """Gross % PnL by design.
@@ -1467,7 +1475,26 @@ def run_exit_comparison(
     results = []
     trade_detail_rows = []
 
+    # Batch 412: dispatch table. When USE_VECTORIZED_EXITS is True, replace
+    # scalar exit functions with their byte-identical numpy-vectorized
+    # versions for Tier 1 methods. Methods absent from the vectorized
+    # registry fall through to the scalar version.
+    if USE_VECTORIZED_EXITS:
+        try:
+            from backtest.engine.exit_strategies_vectorized import (
+                EXIT_STRATEGIES_VECTORIZED,
+            )
+        except ImportError:
+            EXIT_STRATEGIES_VECTORIZED = {}
+    else:
+        EXIT_STRATEGIES_VECTORIZED = {}
+
     for exit_name, exit_fn in EXIT_STRATEGIES.items():
+        # Batch 412 fast path - same key in vectorized registry overrides
+        # the scalar lambda. Falls through to scalar for un-vectorized methods.
+        if exit_name in EXIT_STRATEGIES_VECTORIZED:
+            exit_fn = EXIT_STRATEGIES_VECTORIZED[exit_name]
+
         pnl_list    = []
         win_list    = []
         hold_list   = []

@@ -8062,8 +8062,12 @@ def test_batch224_pre_fomc_quality_momentum_long():
 
 
 def test_batch224_buyback_8k_recent_long():
-    """Batch 224: 8-K filed last 3 days + 200-EMA + 1.5x volume.
-    Generic event-driven proxy for buyback / M&A / guidance change."""
+    """Batch 224: 8-K filed last 5 days + 200-EMA + 1.5x volume.
+    Generic event-driven proxy for buyback / M&A / guidance change.
+    Batch 385 (2026-05-26 surgical threshold change): days_since_8k loosened
+    3 -> 5 per PHASE_1A_BETA_STATUS.md "What still applies in cube eval" +
+    empirical 86/86 fires-at-boundary observation. Test threshold updated
+    here in Batch 412 (test-drift cleanup bundled with vectorized exit ship)."""
     from backtest.signals.screener import strat_buyback_8k_recent_long
     s = {
         "recent_8k_filed": True,
@@ -8072,8 +8076,8 @@ def test_batch224_buyback_8k_recent_long():
         "vol_spike_15x": True,
     }
     assert strat_buyback_8k_recent_long(s)["fires"] is True
-    # >3 days since 8-K -> no fire
-    s["days_since_8k"] = 5
+    # >5 days since 8-K -> no fire (post-Batch-385 threshold)
+    s["days_since_8k"] = 7
     assert strat_buyback_8k_recent_long(s)["fires"] is False
 
 
