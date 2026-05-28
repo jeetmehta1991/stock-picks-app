@@ -1,0 +1,11 @@
+strategy,point_sharpe,ci_low,ci_high,n_trades,method
+cpr_narrow_bullish,0.0,,,1,insufficient_sample
+institutional_buy_momentum_long,0.0,,,1,insufficient_sample
+macd_crossover,2.0898889256955133,,,4,insufficient_sample
+monthly_bias_momentum_long,6.272100506849935,,,2,insufficient_sample
+pairs_mean_reversion_long,0.0,,,1,insufficient_sample
+po3_bullish,0.0,,,1,insufficient_sample
+ultimate_oscillator,0.0,,,1,insufficient_sample
+williams_r_oversold,0.0,,,1,insufficient_sample
+xs_low_beta_long,0.5005311833306195,,,2,insufficient_sample
+xs_quality_top_quintile_long,18.82760133480624,,,2,insufficient_sample

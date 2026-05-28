@@ -1,0 +1,10 @@
+date,event,z_score,today_dispersion
+2024-01-31,dispersion_cb_triggered_dec128,3.4768,0.023677
+2024-02-02,dispersion_cb_triggered_dec128,4.5728,0.033913
+2024-02-22,dispersion_cb_triggered_dec128,7.0625,0.065078
+2024-04-19,dispersion_cb_triggered_dec128,5.8729,0.038144
+2024-04-26,dispersion_cb_triggered_dec128,3.5243,0.040957
+2024-05-23,dispersion_cb_triggered_dec128,3.7198,0.048257
+2024-07-30,dispersion_cb_triggered_dec128,3.7964,0.030982
+2024-07-31,dispersion_cb_triggered_dec128,6.686,0.054688
+2024-12-10,dispersion_cb_triggered_dec128,3.3097,0.030917

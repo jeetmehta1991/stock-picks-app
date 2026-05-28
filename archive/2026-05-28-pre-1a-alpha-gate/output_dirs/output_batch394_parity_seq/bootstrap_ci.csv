@@ -1,0 +1,11 @@
+strategy,point_sharpe,ci_low,ci_high,n_trades,method
+bollinger_tight,0.0,,,1,insufficient_sample
+monthly_bias_momentum_long,0.0,,,1,insufficient_sample
+pairs_mean_reversion_long,-1.0244719834243736,,,2,insufficient_sample
+pairs_mean_reversion_short,0.0,,,1,insufficient_sample
+pre_fomc_long_sleeve,0.0,,,1,insufficient_sample
+prev_day_low_bounce,0.0,,,1,insufficient_sample
+smc_choch_reversal,0.0,,,1,insufficient_sample
+williams_r_oversold,0.0,,,1,insufficient_sample
+williams_stoch_dual,-17.113260526612812,,,2,insufficient_sample
+xs_low_beta_long,0.0,,,1,insufficient_sample

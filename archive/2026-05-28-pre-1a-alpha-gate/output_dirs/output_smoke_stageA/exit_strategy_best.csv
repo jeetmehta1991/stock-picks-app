@@ -1,0 +1,2 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+cpr_narrow_momentum,next_pivot_target,6,1.0,999.0,4.032,24.1918,0.0,20.2,1.0,100.0,True

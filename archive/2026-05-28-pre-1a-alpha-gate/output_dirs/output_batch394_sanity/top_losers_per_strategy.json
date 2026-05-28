@@ -1,0 +1,14 @@
+{
+  "macd_fast_crossover": [
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -10.506253968253967,
+      "entry_date": "2024-01-02",
+      "exit_date": "2024-01-24",
+      "regime": "bull"
+    }
+  ],
+  "monthly_bias_momentum_long": [],
+  "po3_bullish": [],
+  "williams_r_oversold": []
+}

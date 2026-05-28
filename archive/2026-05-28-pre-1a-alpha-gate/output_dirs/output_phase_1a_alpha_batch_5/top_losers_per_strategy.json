@@ -1,0 +1,916 @@
+{
+  "avwap_252_breakout": [
+    {
+      "ticker": "TRMB",
+      "pnl_pct": -9.847849206349204,
+      "entry_date": "2023-02-10",
+      "exit_date": "2023-03-08",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TECH",
+      "pnl_pct": -9.531985714285712,
+      "entry_date": "2023-01-13",
+      "exit_date": "2023-02-21",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XLP",
+      "pnl_pct": -1.7197111111111112,
+      "entry_date": "2022-09-05",
+      "exit_date": "2022-10-28",
+      "regime": "neutral"
+    }
+  ],
+  "avwap_50_reclaim": [
+    {
+      "ticker": "SYK",
+      "pnl_pct": -3.1102555555555553,
+      "entry_date": "2024-07-19",
+      "exit_date": "2024-08-02",
+      "regime": "bull"
+    }
+  ],
+  "bollinger_lower": [
+    {
+      "ticker": "USO",
+      "pnl_pct": -4.2343142857142855,
+      "entry_date": "2022-07-05",
+      "exit_date": "2022-07-14",
+      "regime": "bear"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -0.694604761904762,
+      "entry_date": "2022-05-05",
+      "exit_date": "2022-05-11",
+      "regime": "bear"
+    }
+  ],
+  "bollinger_tight": [
+    {
+      "ticker": "V",
+      "pnl_pct": -4.512433333333333,
+      "entry_date": "2025-06-13",
+      "exit_date": "2025-08-01",
+      "regime": "bull"
+    },
+    {
+      "ticker": "VLTO",
+      "pnl_pct": -0.5816825396825397,
+      "entry_date": "2024-06-28",
+      "exit_date": "2024-07-08",
+      "regime": "bull"
+    }
+  ],
+  "buyback_8k_recent_long": [
+    {
+      "ticker": "WDC",
+      "pnl_pct": -9.961420634920634,
+      "entry_date": "2022-06-08",
+      "exit_date": "2022-06-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "ZBH",
+      "pnl_pct": -9.499919047619047,
+      "entry_date": "2023-06-16",
+      "exit_date": "2023-08-01",
+      "regime": "bull"
+    },
+    {
+      "ticker": "WTW",
+      "pnl_pct": -8.628447619047618,
+      "entry_date": "2025-12-19",
+      "exit_date": "2026-02-09",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SYK",
+      "pnl_pct": -7.11762380952381,
+      "entry_date": "2023-06-16",
+      "exit_date": "2023-08-02",
+      "regime": "bull"
+    },
+    {
+      "ticker": "WAB",
+      "pnl_pct": -6.851771428571429,
+      "entry_date": "2022-07-27",
+      "exit_date": "2022-09-01",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "STZ",
+      "pnl_pct": -5.658561904761905,
+      "entry_date": "2022-11-11",
+      "exit_date": "2022-12-15",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "WAB",
+      "pnl_pct": -3.9076190476190478,
+      "entry_date": "2024-12-06",
+      "exit_date": "2024-12-18",
+      "regime": "bull"
+    },
+    {
+      "ticker": "XOM",
+      "pnl_pct": -3.0608666666666666,
+      "entry_date": "2024-04-26",
+      "exit_date": "2024-08-02",
+      "regime": "bull"
+    },
+    {
+      "ticker": "ULTA",
+      "pnl_pct": -2.2869190476190475,
+      "entry_date": "2024-12-06",
+      "exit_date": "2024-12-18",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TFC",
+      "pnl_pct": -0.8306142857142859,
+      "entry_date": "2025-12-19",
+      "exit_date": "2026-02-23",
+      "regime": "bull"
+    }
+  ],
+  "cmf_flip": [
+    {
+      "ticker": "VRSK",
+      "pnl_pct": -10.884619047619047,
+      "entry_date": "2025-10-17",
+      "exit_date": "2025-10-29",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TAP",
+      "pnl_pct": -8.302503174603174,
+      "entry_date": "2022-09-01",
+      "exit_date": "2022-09-23",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "WBD",
+      "pnl_pct": -8.090399999999999,
+      "entry_date": "2024-02-23",
+      "exit_date": "2024-04-05",
+      "regime": "bull"
+    },
+    {
+      "ticker": "STX",
+      "pnl_pct": -8.057147619047619,
+      "entry_date": "2022-09-01",
+      "exit_date": "2022-09-16",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "SWKS",
+      "pnl_pct": -5.303604761904762,
+      "entry_date": "2022-05-05",
+      "exit_date": "2022-05-11",
+      "regime": "bear"
+    },
+    {
+      "ticker": "VICI",
+      "pnl_pct": -4.922952380952381,
+      "entry_date": "2025-10-17",
+      "exit_date": "2025-11-18",
+      "regime": "bull"
+    },
+    {
+      "ticker": "UBER",
+      "pnl_pct": -4.275219047619048,
+      "entry_date": "2025-12-19",
+      "exit_date": "2026-02-03",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TWTR",
+      "pnl_pct": -4.0941825396825395,
+      "entry_date": "2022-05-13",
+      "exit_date": "2022-05-23",
+      "regime": "bear"
+    },
+    {
+      "ticker": "UNP",
+      "pnl_pct": -3.733104761904762,
+      "entry_date": "2022-05-05",
+      "exit_date": "2022-05-11",
+      "regime": "bear"
+    },
+    {
+      "ticker": "VTRS",
+      "pnl_pct": -0.7898952380952381,
+      "entry_date": "2022-07-14",
+      "exit_date": "2022-08-24",
+      "regime": "bear"
+    }
+  ],
+  "cpr_narrow_bullish": [
+    {
+      "ticker": "SWK",
+      "pnl_pct": -13.775604761904763,
+      "entry_date": "2022-07-22",
+      "exit_date": "2022-07-28",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "STX",
+      "pnl_pct": -9.466368253968254,
+      "entry_date": "2022-07-20",
+      "exit_date": "2022-07-22",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "VFC",
+      "pnl_pct": -8.852312698412698,
+      "entry_date": "2023-01-13",
+      "exit_date": "2023-02-07",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSCO",
+      "pnl_pct": -3.962020634920635,
+      "entry_date": "2022-06-08",
+      "exit_date": "2022-06-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XLRE",
+      "pnl_pct": -3.8498238095238095,
+      "entry_date": "2022-11-11",
+      "exit_date": "2023-03-01",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "STE",
+      "pnl_pct": -1.6641333333333332,
+      "entry_date": "2023-02-10",
+      "exit_date": "2023-04-11",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SWKS",
+      "pnl_pct": -0.713252380952381,
+      "entry_date": "2025-08-15",
+      "exit_date": "2025-10-07",
+      "regime": "bull"
+    }
+  ],
+  "cpr_narrow_momentum": [],
+  "htf_aligned_breakout_long": [
+    {
+      "ticker": "TROW",
+      "pnl_pct": -10.664757142857141,
+      "entry_date": "2022-11-11",
+      "exit_date": "2022-12-14",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TECH",
+      "pnl_pct": -10.3235873015873,
+      "entry_date": "2023-04-14",
+      "exit_date": "2023-04-27",
+      "regime": "bull"
+    },
+    {
+      "ticker": "V",
+      "pnl_pct": -8.80365238095238,
+      "entry_date": "2025-12-19",
+      "exit_date": "2026-01-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "USO",
+      "pnl_pct": -7.577450793650794,
+      "entry_date": "2025-06-13",
+      "exit_date": "2025-06-24",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TER",
+      "pnl_pct": -5.98275238095238,
+      "entry_date": "2023-06-16",
+      "exit_date": "2023-08-08",
+      "regime": "bull"
+    },
+    {
+      "ticker": "UHS",
+      "pnl_pct": -5.201290476190477,
+      "entry_date": "2023-06-16",
+      "exit_date": "2023-07-26",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TEL",
+      "pnl_pct": -4.768890476190476,
+      "entry_date": "2023-06-16",
+      "exit_date": "2023-08-16",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TXT",
+      "pnl_pct": -4.249990476190476,
+      "entry_date": "2025-12-19",
+      "exit_date": "2026-01-28",
+      "regime": "bull"
+    },
+    {
+      "ticker": "WAB",
+      "pnl_pct": -0.44366666666666643,
+      "entry_date": "2022-11-11",
+      "exit_date": "2023-03-10",
+      "regime": "neutral"
+    }
+  ],
+  "htf_aligned_breakout_short": [
+    {
+      "ticker": "TXN",
+      "pnl_pct": -9.781680952380954,
+      "entry_date": "2025-04-11",
+      "exit_date": "2025-04-24",
+      "regime": "bear"
+    },
+    {
+      "ticker": "TGT",
+      "pnl_pct": -1.9466238095238098,
+      "entry_date": "2022-05-17",
+      "exit_date": "2022-05-27",
+      "regime": "bear"
+    }
+  ],
+  "hull_rsi": [
+    {
+      "ticker": "T",
+      "pnl_pct": -10.387611111111111,
+      "entry_date": "2025-04-11",
+      "exit_date": "2025-06-30",
+      "regime": "bear"
+    },
+    {
+      "ticker": "WEC",
+      "pnl_pct": -1.6100333333333332,
+      "entry_date": "2022-06-27",
+      "exit_date": "2022-09-26",
+      "regime": "bear"
+    },
+    {
+      "ticker": "T",
+      "pnl_pct": -1.1384857142857143,
+      "entry_date": "2022-05-17",
+      "exit_date": "2022-06-13",
+      "regime": "bear"
+    }
+  ],
+  "inside_bar_breakout": [
+    {
+      "ticker": "VLO",
+      "pnl_pct": -3.2691507936507938,
+      "entry_date": "2022-06-24",
+      "exit_date": "2022-07-05",
+      "regime": "bear"
+    },
+    {
+      "ticker": "YUM",
+      "pnl_pct": -2.2733999999999996,
+      "entry_date": "2025-04-11",
+      "exit_date": "2025-05-23",
+      "regime": "bear"
+    }
+  ],
+  "insider_cluster_long": [],
+  "macd_fast_crossover": [],
+  "monthly_bias_momentum_long": [
+    {
+      "ticker": "XOM",
+      "pnl_pct": -11.737412698412697,
+      "entry_date": "2022-08-29",
+      "exit_date": "2022-09-23",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "VTRS",
+      "pnl_pct": -10.283604761904762,
+      "entry_date": "2024-02-23",
+      "exit_date": "2024-02-29",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TER",
+      "pnl_pct": -10.279936507936506,
+      "entry_date": "2026-04-24",
+      "exit_date": "2026-04-28",
+      "regime": "bull"
+    },
+    {
+      "ticker": "USB",
+      "pnl_pct": -9.653985714285712,
+      "entry_date": "2023-12-22",
+      "exit_date": "2024-01-18",
+      "regime": "bull"
+    },
+    {
+      "ticker": "ZION",
+      "pnl_pct": -9.344149206349204,
+      "entry_date": "2023-12-22",
+      "exit_date": "2024-01-17",
+      "regime": "bull"
+    },
+    {
+      "ticker": "ULTA",
+      "pnl_pct": -8.911566666666666,
+      "entry_date": "2024-02-23",
+      "exit_date": "2024-03-15",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SYK",
+      "pnl_pct": -7.271685714285715,
+      "entry_date": "2023-04-14",
+      "exit_date": "2023-05-23",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TEL",
+      "pnl_pct": -6.96833015873016,
+      "entry_date": "2023-12-22",
+      "exit_date": "2024-01-11",
+      "regime": "bull"
+    },
+    {
+      "ticker": "VLO",
+      "pnl_pct": -6.962904761904762,
+      "entry_date": "2022-06-07",
+      "exit_date": "2022-06-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSCO",
+      "pnl_pct": -6.836152380952381,
+      "entry_date": "2023-04-14",
+      "exit_date": "2023-05-16",
+      "regime": "bull"
+    }
+  ],
+  "orb_stocks_in_play_long": [
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -0.0845825396825397,
+      "entry_date": "2024-07-02",
+      "exit_date": "2024-07-12",
+      "regime": "bull"
+    }
+  ],
+  "orb_stocks_in_play_short": [
+    {
+      "ticker": "TTWO",
+      "pnl_pct": -12.088519047619046,
+      "entry_date": "2022-05-09",
+      "exit_date": "2022-05-17",
+      "regime": "bear"
+    },
+    {
+      "ticker": "SYF",
+      "pnl_pct": -5.428836507936508,
+      "entry_date": "2022-06-16",
+      "exit_date": "2022-07-12",
+      "regime": "bear"
+    },
+    {
+      "ticker": "WMT",
+      "pnl_pct": -3.143644444444445,
+      "entry_date": "2022-05-17",
+      "exit_date": "2022-07-15",
+      "regime": "bear"
+    }
+  ],
+  "pivot_r1_breakout": [],
+  "po3_bearish": [
+    {
+      "ticker": "VRSN",
+      "pnl_pct": -9.958112698412696,
+      "entry_date": "2022-05-13",
+      "exit_date": "2022-06-02",
+      "regime": "bear"
+    },
+    {
+      "ticker": "VMC",
+      "pnl_pct": -9.315474603174602,
+      "entry_date": "2022-06-28",
+      "exit_date": "2022-07-21",
+      "regime": "bear"
+    },
+    {
+      "ticker": "ZTS",
+      "pnl_pct": -3.859022222222222,
+      "entry_date": "2022-05-05",
+      "exit_date": "2022-06-08",
+      "regime": "bear"
+    }
+  ],
+  "po3_bullish": [
+    {
+      "ticker": "SWK",
+      "pnl_pct": -10.311682539682538,
+      "entry_date": "2026-02-20",
+      "exit_date": "2026-03-02",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TSCO",
+      "pnl_pct": -8.484504761904763,
+      "entry_date": "2022-07-20",
+      "exit_date": "2022-09-01",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XLF",
+      "pnl_pct": -8.470733333333333,
+      "entry_date": "2023-08-18",
+      "exit_date": "2023-10-27",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SYF",
+      "pnl_pct": -7.890676190476191,
+      "entry_date": "2025-12-19",
+      "exit_date": "2026-01-12",
+      "regime": "bull"
+    },
+    {
+      "ticker": "XLB",
+      "pnl_pct": -7.890000000000001,
+      "entry_date": "2023-08-18",
+      "exit_date": "2023-10-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "STLD",
+      "pnl_pct": -7.83953015873016,
+      "entry_date": "2023-12-22",
+      "exit_date": "2024-01-11",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SPG",
+      "pnl_pct": -6.6078222222222225,
+      "entry_date": "2023-02-10",
+      "exit_date": "2023-03-10",
+      "regime": "bull"
+    },
+    {
+      "ticker": "URI",
+      "pnl_pct": -3.750261904761905,
+      "entry_date": "2023-08-18",
+      "exit_date": "2023-09-21",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TPR",
+      "pnl_pct": -0.8514873015873017,
+      "entry_date": "2026-02-20",
+      "exit_date": "2026-03-05",
+      "regime": "bull"
+    },
+    {
+      "ticker": "UNP",
+      "pnl_pct": -0.8150873015873017,
+      "entry_date": "2026-02-20",
+      "exit_date": "2026-03-05",
+      "regime": "bull"
+    }
+  ],
+  "po3_htf_aligned_long": [
+    {
+      "ticker": "TROW",
+      "pnl_pct": -7.572455555555556,
+      "entry_date": "2023-02-10",
+      "exit_date": "2023-02-24",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TFC",
+      "pnl_pct": -5.5164285714285715,
+      "entry_date": "2023-01-13",
+      "exit_date": "2023-03-02",
+      "regime": "neutral"
+    }
+  ],
+  "prev_day_low_bounce": [
+    {
+      "ticker": "VTRS",
+      "pnl_pct": -8.398003174603174,
+      "entry_date": "2022-08-29",
+      "exit_date": "2022-09-20",
+      "regime": "neutral"
+    }
+  ],
+  "roc_burst": [
+    {
+      "ticker": "TGT",
+      "pnl_pct": -5.639204761904762,
+      "entry_date": "2022-06-07",
+      "exit_date": "2022-06-13",
+      "regime": "neutral"
+    }
+  ],
+  "smc_inverse_fvg": [
+    {
+      "ticker": "UNH",
+      "pnl_pct": -19.458104761904764,
+      "entry_date": "2025-04-11",
+      "exit_date": "2025-04-17",
+      "regime": "bear"
+    },
+    {
+      "ticker": "WMB",
+      "pnl_pct": -10.322650793650794,
+      "entry_date": "2022-06-02",
+      "exit_date": "2022-06-13",
+      "regime": "bear"
+    },
+    {
+      "ticker": "YUM",
+      "pnl_pct": -9.717909523809523,
+      "entry_date": "2022-07-20",
+      "exit_date": "2022-09-23",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TER",
+      "pnl_pct": -9.332680952380953,
+      "entry_date": "2022-11-11",
+      "exit_date": "2022-12-19",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TRMB",
+      "pnl_pct": -9.303553968253969,
+      "entry_date": "2022-05-05",
+      "exit_date": "2022-05-27",
+      "regime": "bear"
+    },
+    {
+      "ticker": "TEL",
+      "pnl_pct": -9.071033333333332,
+      "entry_date": "2023-10-20",
+      "exit_date": "2023-11-03",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "WST",
+      "pnl_pct": -8.912590476190475,
+      "entry_date": "2023-04-14",
+      "exit_date": "2023-05-24",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SPGI",
+      "pnl_pct": -8.803180952380954,
+      "entry_date": "2023-10-20",
+      "exit_date": "2023-11-02",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XLU",
+      "pnl_pct": -8.724685714285714,
+      "entry_date": "2023-06-16",
+      "exit_date": "2023-09-05",
+      "regime": "bull"
+    },
+    {
+      "ticker": "VFC",
+      "pnl_pct": -8.647250793650795,
+      "entry_date": "2022-08-26",
+      "exit_date": "2022-09-12",
+      "regime": "neutral"
+    }
+  ],
+  "stochrsi_oversold": [
+    {
+      "ticker": "WDC",
+      "pnl_pct": -8.314450793650794,
+      "entry_date": "2024-07-19",
+      "exit_date": "2024-07-30",
+      "regime": "bull"
+    }
+  ],
+  "supertrend_macd": [
+    {
+      "ticker": "T",
+      "pnl_pct": -10.49392222222222,
+      "entry_date": "2022-08-26",
+      "exit_date": "2022-09-23",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "UDR",
+      "pnl_pct": -10.013388888888889,
+      "entry_date": "2023-10-20",
+      "exit_date": "2023-10-27",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "VNO",
+      "pnl_pct": -8.968687301587302,
+      "entry_date": "2023-04-14",
+      "exit_date": "2023-04-27",
+      "regime": "bull"
+    }
+  ],
+  "ultimate_oscillator": [
+    {
+      "ticker": "TJX",
+      "pnl_pct": -1.3560333333333334,
+      "entry_date": "2025-06-13",
+      "exit_date": "2025-08-01",
+      "regime": "bull"
+    }
+  ],
+  "williams_r_oversold": [
+    {
+      "ticker": "TEL",
+      "pnl_pct": -3.177250793650794,
+      "entry_date": "2026-04-24",
+      "exit_date": "2026-05-05",
+      "regime": "bull"
+    }
+  ],
+  "xs_combined_momentum_low_ivol": [
+    {
+      "ticker": "WRB",
+      "pnl_pct": -4.819161904761905,
+      "entry_date": "2022-07-12",
+      "exit_date": "2022-09-26",
+      "regime": "bear"
+    },
+    {
+      "ticker": "WELL",
+      "pnl_pct": -3.118668253968254,
+      "entry_date": "2022-05-09",
+      "exit_date": "2022-05-11",
+      "regime": "bear"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -1.999952380952381,
+      "entry_date": "2022-05-12",
+      "exit_date": "2022-06-13",
+      "regime": "bear"
+    }
+  ],
+  "xs_low_beta_long": [
+    {
+      "ticker": "T",
+      "pnl_pct": -10.283704761904762,
+      "entry_date": "2023-04-14",
+      "exit_date": "2023-04-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "VZ",
+      "pnl_pct": -10.278866666666666,
+      "entry_date": "2025-08-15",
+      "exit_date": "2025-10-10",
+      "regime": "bull"
+    },
+    {
+      "ticker": "T",
+      "pnl_pct": -9.419647619047618,
+      "entry_date": "2025-08-15",
+      "exit_date": "2025-10-06",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TAP",
+      "pnl_pct": -7.883450793650794,
+      "entry_date": "2022-07-22",
+      "exit_date": "2022-08-02",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "ZBH",
+      "pnl_pct": -6.585095238095239,
+      "entry_date": "2025-08-15",
+      "exit_date": "2025-09-25",
+      "regime": "bull"
+    },
+    {
+      "ticker": "WEC",
+      "pnl_pct": -6.281730158730159,
+      "entry_date": "2025-10-17",
+      "exit_date": "2025-11-06",
+      "regime": "bull"
+    },
+    {
+      "ticker": "WMT",
+      "pnl_pct": -5.9527222222222225,
+      "entry_date": "2023-02-10",
+      "exit_date": "2023-03-10",
+      "regime": "bull"
+    },
+    {
+      "ticker": "WM",
+      "pnl_pct": -5.930828571428571,
+      "entry_date": "2024-02-23",
+      "exit_date": "2024-07-25",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TAP",
+      "pnl_pct": -5.373204761904762,
+      "entry_date": "2022-06-07",
+      "exit_date": "2022-06-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "YUM",
+      "pnl_pct": -4.046487301587302,
+      "entry_date": "2026-02-20",
+      "exit_date": "2026-03-05",
+      "regime": "bull"
+    }
+  ],
+  "xs_momentum_bottom_decile_short": [
+    {
+      "ticker": "WYNN",
+      "pnl_pct": -10.291868253968254,
+      "entry_date": "2022-05-12",
+      "exit_date": "2022-05-13",
+      "regime": "bear"
+    },
+    {
+      "ticker": "TGT",
+      "pnl_pct": -7.961455555555555,
+      "entry_date": "2025-04-11",
+      "exit_date": "2025-05-12",
+      "regime": "bear"
+    }
+  ],
+  "xs_momentum_top_decile": [
+    {
+      "ticker": "WST",
+      "pnl_pct": -9.940704761904762,
+      "entry_date": "2023-10-20",
+      "exit_date": "2023-10-26",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XLK",
+      "pnl_pct": -8.769755555555555,
+      "entry_date": "2024-07-19",
+      "exit_date": "2024-08-02",
+      "regime": "bull"
+    },
+    {
+      "ticker": "WRB",
+      "pnl_pct": -7.038104761904762,
+      "entry_date": "2022-06-07",
+      "exit_date": "2022-06-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XOM",
+      "pnl_pct": -6.142104761904762,
+      "entry_date": "2022-06-07",
+      "exit_date": "2022-06-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XOM",
+      "pnl_pct": -5.993430158730159,
+      "entry_date": "2023-02-10",
+      "exit_date": "2023-03-02",
+      "regime": "bull"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -4.926722222222223,
+      "entry_date": "2022-08-29",
+      "exit_date": "2022-09-26",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "WRB",
+      "pnl_pct": -3.3698333333333337,
+      "entry_date": "2022-11-11",
+      "exit_date": "2023-01-20",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TRGP",
+      "pnl_pct": -2.312222222222222,
+      "entry_date": "2023-02-10",
+      "exit_date": "2023-03-10",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TXT",
+      "pnl_pct": -2.2672873015873014,
+      "entry_date": "2026-02-20",
+      "exit_date": "2026-03-05",
+      "regime": "bull"
+    }
+  ]
+}

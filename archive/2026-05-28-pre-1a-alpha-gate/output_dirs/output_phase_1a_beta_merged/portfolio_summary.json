@@ -1,0 +1,15 @@
+{
+  "reference_capital_cad": 100000.0,
+  "total_pnl_dollar": 36094.38,
+  "portfolio_return_pct": 36.09,
+  "max_portfolio_heat_pct": 83.4,
+  "avg_position_size_pct": 0.6,
+  "spy_buy_hold_return_pct": 75.15,
+  "spy_buy_hold_window": "2022-05-05..2026-05-05",
+  "vs_spy_excess_return_pct": -39.06,
+  "note": "Portfolio return applies tier-based position sizing to all trades",
+  "max_portfolio_heat_pct_concat": 417.0,
+  "avg_position_size_pct_concat": 3.0,
+  "n_batches_merged": 5,
+  "heat_semantics_note": "max_portfolio_heat_pct rescaled by 1/5 from concat value to approximate unified-portfolio heat (each batch ran at 100% capital allocation; merged represents 1 portfolio holding the union of trades sized against combined capital). Use max_portfolio_heat_pct_concat for raw concat aggregate."
+}

@@ -1,0 +1,67 @@
+{
+  "bollinger_tight": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -5.458539682539683,
+      "entry_date": "2023-10-03",
+      "exit_date": "2023-10-26",
+      "regime": "bear"
+    }
+  ],
+  "monthly_bias_momentum_long": [],
+  "pairs_mean_reversion_long": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -11.944120634920633,
+      "entry_date": "2023-09-01",
+      "exit_date": "2023-09-18",
+      "regime": "bull"
+    }
+  ],
+  "pairs_mean_reversion_short": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -5.643377777777777,
+      "entry_date": "2023-09-01",
+      "exit_date": "2023-12-20",
+      "regime": "bull"
+    }
+  ],
+  "pre_fomc_long_sleeve": [],
+  "prev_day_low_bounce": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -10.270539682539681,
+      "entry_date": "2023-09-05",
+      "exit_date": "2023-09-28",
+      "regime": "bull"
+    }
+  ],
+  "smc_choch_reversal": [],
+  "williams_r_oversold": [],
+  "williams_stoch_dual": [
+    {
+      "ticker": "SPY",
+      "pnl_pct": -6.614711111111111,
+      "entry_date": "2023-09-01",
+      "exit_date": "2023-12-14",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -1.3744444444444444,
+      "entry_date": "2023-09-01",
+      "exit_date": "2023-11-14",
+      "regime": "bull"
+    }
+  ],
+  "xs_low_beta_long": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -12.394704761904762,
+      "entry_date": "2023-11-20",
+      "exit_date": "2024-03-05",
+      "regime": "bull"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+po3_bullish,bull,5,0.4,0.1173,0.5867
+williams_r_oversold,bull,6,0.5,9.5888,57.5328
+xs_low_beta_long,bull,3,0.3333,0.2919,0.8757
+xs_quality_top_quintile_long,bull,3,0.3333,-2.1772,-6.5316

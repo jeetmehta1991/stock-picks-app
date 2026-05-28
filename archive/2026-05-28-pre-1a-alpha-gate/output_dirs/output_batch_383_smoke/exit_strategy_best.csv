@@ -1,0 +1,5 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+macd_crossover,atr_trail_2x,5,0.4,1.9316,2.1176,10.5879,-3.9105,17.2,1.0,68.08,True
+po3_bullish,next_pivot_target,6,1.0,999.0,0.9641,5.7847,0.0,7.0,1.0,100.0,True
+xs_low_beta_long,multi_tier_partial,7,0.8571,2.7584,0.435,3.045,-1.7317,2.0,1.0,91.69,True
+xs_quality_top_quintile_long,class_time_stop,5,1.0,999.0,5.9468,29.734,0.0,32.6,1.0,100.0,True

@@ -1,0 +1,6 @@
+strategy,sharpe_adj,win_rate_adj,profit_factor_adj,haircut_pct_applied
+williams_r_oversold,0.0,0.9,inf,0.2
+smc_choch_reversal,0.0,0.9,inf,0.2
+pairs_mean_reversion_long,0.0,0.4,1.6228799999999999,0.4
+williams_stoch_dual,0.0,0.0,0.0,0.2
+monthly_bias_momentum_long,0.0,0.0,0.0,0.4

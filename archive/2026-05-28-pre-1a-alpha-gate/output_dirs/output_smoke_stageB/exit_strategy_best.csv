@@ -1,0 +1,8 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+cpr_narrow_momentum,next_pivot_target,102,0.6176,0.6143,-1.1316,-115.4229,-127.0752,11.5,1.0,24.7,True
+news_sentiment_long,r_multiple_3r,5,0.4,2.357,2.3946,11.9731,-4.0528,17.6,1.0,69.92,True
+smc_bos_continuation,hybrid_50pct_target,7,0.7143,1.8592,6.1708,43.1956,-40.275,171.1,0.8571,54.35,True
+double_bottom_long,ma_exit_ema9,6,0.1667,2.3184,1.7628,10.5771,-8.0225,10.3,1.0,54.63,True
+cpr_narrow_bullish,chandelier_3x,9,0.2222,0.8385,-0.2386,-2.1474,-7.6416,22.9,1.0,27.43,True
+break_retest_confluence,next_pivot_target,14,0.7143,1.1274,0.2527,3.5372,-19.4163,23.1,1.0,33.27,True
+xs_momentum_top_decile,time_stop_10d,7,0.7143,5.0019,2.7629,19.3406,-3.4142,14.6,1.0,83.45,True

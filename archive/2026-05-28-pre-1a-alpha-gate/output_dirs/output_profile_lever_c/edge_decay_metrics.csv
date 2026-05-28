@@ -1,0 +1,11 @@
+strategy,sharpe_adj,win_rate_adj,profit_factor_adj,haircut_pct_applied
+lead_lag_sector_rotation,0.0,0.9,inf,0.2
+macd_fast_crossover,0.0,0.8,inf,0.4
+williams_r_oversold,0.0,0.45,5.20759,0.2
+monthly_bias_momentum_long,0.0,0.4,0.8212,0.4
+force_index_breakout,0.0,0.4,0.4766,0.4
+po3_bullish,0.0,0.36000000000000004,1.09774,0.2
+xs_low_beta_long,0.0,0.29997,1.18576,0.2
+xs_quality_top_quintile_long,0.0,0.29997,0.4103,0.2
+macd_crossover,0.0,0.0,0.0,0.4
+golden_cross_9_21,0.0,0.0,0.0,0.2

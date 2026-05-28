@@ -1,0 +1,240 @@
+{
+  "avwap_252_breakout": [
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -0.484184126984127,
+      "entry_date": "2024-08-05",
+      "exit_date": "2024-08-06",
+      "regime": "neutral"
+    }
+  ],
+  "bollinger_tight": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -9.208388888888889,
+      "entry_date": "2024-07-26",
+      "exit_date": "2024-08-02",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -0.587584126984127,
+      "entry_date": "2024-08-07",
+      "exit_date": "2024-08-08",
+      "regime": "neutral"
+    }
+  ],
+  "break_retest_confluence": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -8.92751111111111,
+      "entry_date": "2024-03-11",
+      "exit_date": "2024-05-03",
+      "regime": "neutral"
+    }
+  ],
+  "buyback_8k_recent_long": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -0.6642523809523809,
+      "entry_date": "2024-08-02",
+      "exit_date": "2024-08-05",
+      "regime": "neutral"
+    }
+  ],
+  "cpr_narrow_bullish": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -7.068933333333333,
+      "entry_date": "2024-08-01",
+      "exit_date": "2024-08-15",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -5.07653015873016,
+      "entry_date": "2024-09-03",
+      "exit_date": "2024-09-19",
+      "regime": "neutral"
+    }
+  ],
+  "cup_and_handle_long": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -6.18728253968254,
+      "entry_date": "2024-09-23",
+      "exit_date": "2024-10-03",
+      "regime": "neutral"
+    }
+  ],
+  "double_bottom_long": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -8.5826873015873,
+      "entry_date": "2024-12-03",
+      "exit_date": "2024-12-16",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -5.2099,
+      "entry_date": "2024-05-02",
+      "exit_date": "2024-07-25",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -2.637236507936508,
+      "entry_date": "2024-07-29",
+      "exit_date": "2024-08-02",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -2.0404507936507934,
+      "entry_date": "2024-12-20",
+      "exit_date": "2024-12-31",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -0.43668412698412695,
+      "entry_date": "2024-08-05",
+      "exit_date": "2024-08-06",
+      "regime": "neutral"
+    }
+  ],
+  "halloween_seasonal_long": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -8.615249206349205,
+      "entry_date": "2024-02-07",
+      "exit_date": "2024-03-04",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -2.8231507936507936,
+      "entry_date": "2024-12-20",
+      "exit_date": "2024-12-31",
+      "regime": "neutral"
+    }
+  ],
+  "head_and_shoulders_bottom_long": [],
+  "hull_rsi": [
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -8.932133333333333,
+      "entry_date": "2024-08-06",
+      "exit_date": "2024-09-17",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -8.81391746031746,
+      "entry_date": "2024-08-27",
+      "exit_date": "2024-09-13",
+      "regime": "neutral"
+    }
+  ],
+  "macd_fast_crossover": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -9.092266666666665,
+      "entry_date": "2024-09-03",
+      "exit_date": "2024-12-02",
+      "regime": "neutral"
+    }
+  ],
+  "monthly_bias_momentum_long": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.286647619047617,
+      "entry_date": "2024-08-19",
+      "exit_date": "2024-09-03",
+      "regime": "neutral"
+    }
+  ],
+  "naked_poc_retest_long": [],
+  "prev_day_low_bounce": [],
+  "stochrsi_oversold": [
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -0.472284126984127,
+      "entry_date": "2024-08-01",
+      "exit_date": "2024-08-02",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -0.46028412698412696,
+      "entry_date": "2024-08-07",
+      "exit_date": "2024-08-08",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -0.447484126984127,
+      "entry_date": "2024-08-06",
+      "exit_date": "2024-08-07",
+      "regime": "neutral"
+    }
+  ],
+  "totm_long": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -3.0953841269841273,
+      "entry_date": "2024-12-30",
+      "exit_date": "2024-12-31",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -1.103652380952381,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-02-02",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -0.620284126984127,
+      "entry_date": "2024-08-05",
+      "exit_date": "2024-08-06",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -0.5669365079365078,
+      "entry_date": "2024-10-03",
+      "exit_date": "2024-10-07",
+      "regime": "neutral"
+    }
+  ],
+  "ultimate_oscillator": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -0.548084126984127,
+      "entry_date": "2024-08-06",
+      "exit_date": "2024-08-07",
+      "regime": "neutral"
+    }
+  ],
+  "williams_r_oversold": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -7.4994000000000005,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-03-04",
+      "regime": "neutral"
+    }
+  ],
+  "xs_momentum_top_decile": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.08184603174603,
+      "entry_date": "2024-07-09",
+      "exit_date": "2024-07-17",
+      "regime": "neutral"
+    }
+  ]
+}

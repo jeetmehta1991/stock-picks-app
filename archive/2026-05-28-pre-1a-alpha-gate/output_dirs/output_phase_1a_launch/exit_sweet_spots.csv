@@ -1,0 +1,4 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
+breakeven_plus_trail,bull,Financials,unknown,mid_atr_1_2.5pct,long_ge_11d,72.6006,trailing_15pct,28.453100000000006,44.147499999999994,16,18,1.0
+breakeven_plus_trail,bull,Consumer Discretionary,unknown,mid_atr_1_2.5pct,long_ge_11d,22.8538,class_time_stop,15.197699999999998,7.656100000000002,13,18,1.0
+hybrid_50pct_target,bull,Health Care,unknown,mid_atr_1_2.5pct,long_ge_11d,22.8152,class_time_stop,22.108700000000002,0.7064999999999984,13,18,1.0

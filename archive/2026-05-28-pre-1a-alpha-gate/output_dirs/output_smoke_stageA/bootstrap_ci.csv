@@ -1,0 +1,9 @@
+strategy,point_sharpe,ci_low,ci_high,n_trades,method
+break_retest_confluence,-53.16973622647012,,,2,insufficient_sample
+cpr_narrow_bullish,0.0,,,1,insufficient_sample
+cpr_narrow_momentum,7.220519765363957,,,6,insufficient_sample
+hull_rsi,0.0,,,1,insufficient_sample
+prev_day_low_bounce,0.0,,,1,insufficient_sample
+smc_bos_continuation,-189.36158292104915,,,2,insufficient_sample
+smc_order_block_bounce,0.0,,,1,insufficient_sample
+stochrsi_overbought_short,-13.79773331263045,,,3,insufficient_sample

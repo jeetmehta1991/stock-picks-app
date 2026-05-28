@@ -1,0 +1,12 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+break_retest_confluence,neutral,14,0.0,-6.2807,-87.9302
+cpr_narrow_bullish,neutral,9,0.2222,-4.4671,-40.204
+cpr_narrow_momentum,neutral,102,0.2843,-14.4162,-1470.452
+cup_and_handle_long,neutral,3,0.0,-4.6888,-14.0664
+double_bottom_long,neutral,6,0.3333,-2.1804,-13.0822
+hull_rsi,neutral,3,0.6667,4.013,12.0391
+macd_fast_crossover,neutral,4,0.0,-7.1221,-28.4885
+news_sentiment_long,neutral,5,0.2,-6.3945,-31.9727
+smc_bos_continuation,neutral,7,0.2857,6.3133,44.1933
+smc_choch_reversal,neutral,3,0.6667,4.6383,13.915
+xs_momentum_top_decile,neutral,7,0.4286,-1.7975,-12.5828

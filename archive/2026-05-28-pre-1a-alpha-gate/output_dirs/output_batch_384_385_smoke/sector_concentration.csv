@@ -1,0 +1,40 @@
+entry_date,sector,trades,total_trades,sector_pct
+2024-01-01,Broad Market,1,29,3.4482758620689653
+2024-01-01,Consumer Discretionary,8,29,27.586206896551722
+2024-01-01,Energy,1,29,3.4482758620689653
+2024-01-01,Financials,1,29,3.4482758620689653
+2024-01-01,Health Care,6,29,20.689655172413794
+2024-01-01,Industrials,3,29,10.344827586206897
+2024-01-01,Information Technology,3,29,10.344827586206897
+2024-01-01,Materials,1,29,3.4482758620689653
+2024-01-01,Real Estate,1,29,3.4482758620689653
+2024-01-01,Utilities,4,29,13.793103448275861
+2024-01-02,Consumer Staples,1,2,50.0
+2024-01-02,Information Technology,1,2,50.0
+2024-01-04,Unknown,1,1,100.0
+2024-01-15,Industrials,1,1,100.0
+2024-01-29,Health Care,1,1,100.0
+2024-02-05,Consumer Discretionary,1,1,100.0
+2024-02-08,Consumer Discretionary,1,2,50.0
+2024-02-08,Health Care,1,2,50.0
+2024-02-09,Information Technology,1,1,100.0
+2024-02-19,Health Care,1,2,50.0
+2024-02-19,Information Technology,1,2,50.0
+2024-02-20,Industrials,1,1,100.0
+2024-02-22,Consumer Discretionary,1,2,50.0
+2024-02-22,Information Technology,1,2,50.0
+2024-02-26,Health Care,1,1,100.0
+2024-03-04,Consumer Discretionary,1,1,100.0
+2024-03-05,Information Technology,1,1,100.0
+2024-03-07,Consumer Discretionary,1,1,100.0
+2024-03-08,Industrials,1,1,100.0
+2024-03-12,Utilities,1,1,100.0
+2024-03-13,Consumer Discretionary,1,1,100.0
+2024-03-15,Information Technology,1,1,100.0
+2024-03-18,Consumer Discretionary,1,2,50.0
+2024-03-18,Consumer Staples,1,2,50.0
+2024-03-25,Health Care,1,2,50.0
+2024-03-25,Materials,1,2,50.0
+2024-03-26,Energy,1,3,33.33333333333333
+2024-03-26,Industrials,1,3,33.33333333333333
+2024-03-26,Information Technology,1,3,33.33333333333333

@@ -1,0 +1,268 @@
+{
+  "avwap_50_reclaim": [],
+  "bollinger_tight": [
+    {
+      "ticker": "DT",
+      "pnl_pct": -2.78918253968254,
+      "entry_date": "2024-02-19",
+      "exit_date": "2024-02-29",
+      "regime": "bull"
+    }
+  ],
+  "cpr_narrow_bullish": [],
+  "force_index_breakout": [
+    {
+      "ticker": "ACMR",
+      "pnl_pct": -10.968736507936509,
+      "entry_date": "2024-02-20",
+      "exit_date": "2024-02-22",
+      "regime": "bull"
+    }
+  ],
+  "htf_aligned_breakout_long": [
+    {
+      "ticker": "ACMR",
+      "pnl_pct": -10.376068253968256,
+      "entry_date": "2024-01-15",
+      "exit_date": "2024-01-17",
+      "regime": "bull"
+    },
+    {
+      "ticker": "CLS",
+      "pnl_pct": -0.48634920634920636,
+      "entry_date": "2024-02-22",
+      "exit_date": "2024-03-19",
+      "regime": "bull"
+    }
+  ],
+  "hull_rsi": [
+    {
+      "ticker": "CCI",
+      "pnl_pct": -11.212476190476188,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-03-20",
+      "regime": "bull"
+    }
+  ],
+  "hull_rsi_short": [
+    {
+      "ticker": "ARLO",
+      "pnl_pct": -5.922722222222223,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-02-28",
+      "regime": "bull"
+    }
+  ],
+  "ichimoku_cloud_breakout": [
+    {
+      "ticker": "CERE",
+      "pnl_pct": -1.0385190476190478,
+      "entry_date": "2024-01-04",
+      "exit_date": "2024-04-01",
+      "regime": "bull"
+    }
+  ],
+  "insider_cluster_long": [],
+  "lead_lag_sector_rotation": [],
+  "macd_crossover": [
+    {
+      "ticker": "SPY",
+      "pnl_pct": -11.290222222222221,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-03-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "APLD",
+      "pnl_pct": -10.916036507936507,
+      "entry_date": "2024-02-09",
+      "exit_date": "2024-02-13",
+      "regime": "bull"
+    },
+    {
+      "ticker": "ANF",
+      "pnl_pct": -10.415777777777777,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-01-08",
+      "regime": "bull"
+    }
+  ],
+  "macd_fast_crossover": [
+    {
+      "ticker": "CAT",
+      "pnl_pct": -15.07821111111111,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-02-05",
+      "regime": "bull"
+    },
+    {
+      "ticker": "APLD",
+      "pnl_pct": -10.316477777777777,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-01-08",
+      "regime": "bull"
+    },
+    {
+      "ticker": "CE",
+      "pnl_pct": -8.627622222222222,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-03-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "EAT",
+      "pnl_pct": -0.6777190476190476,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-01-31",
+      "regime": "bull"
+    }
+  ],
+  "monthly_bias_momentum_long": [
+    {
+      "ticker": "BLFS",
+      "pnl_pct": -11.344230158730157,
+      "entry_date": "2024-02-08",
+      "exit_date": "2024-02-28",
+      "regime": "bull"
+    }
+  ],
+  "morning_star": [],
+  "pairs_mean_reversion_long": [],
+  "pead_short": [
+    {
+      "ticker": "BLFS",
+      "pnl_pct": -10.316177777777778,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-01-08",
+      "regime": "bull"
+    }
+  ],
+  "po3_bullish": [],
+  "risk_off_bond_equity_short": [
+    {
+      "ticker": "CLS",
+      "pnl_pct": -12.1139,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-01-22",
+      "regime": "bull"
+    },
+    {
+      "ticker": "BURL",
+      "pnl_pct": -11.17688888888889,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-03-05",
+      "regime": "bull"
+    }
+  ],
+  "roc_burst": [
+    {
+      "ticker": "APLD",
+      "pnl_pct": -10.296439914288953,
+      "entry_date": "2024-03-15",
+      "exit_date": "2024-03-19",
+      "regime": "bull"
+    }
+  ],
+  "smc_choch_reversal": [],
+  "stochrsi_overbought_short": [
+    {
+      "ticker": "EAT",
+      "pnl_pct": -10.685619047619046,
+      "entry_date": "2024-02-05",
+      "exit_date": "2024-03-06",
+      "regime": "bull"
+    },
+    {
+      "ticker": "CAT",
+      "pnl_pct": -8.595761904761904,
+      "entry_date": "2024-03-08",
+      "exit_date": "2024-04-01",
+      "regime": "bull"
+    },
+    {
+      "ticker": "ACMR",
+      "pnl_pct": -0.4277190476190476,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-01-09",
+      "regime": "bull"
+    }
+  ],
+  "stochrsi_oversold": [
+    {
+      "ticker": "ALC",
+      "pnl_pct": -0.9312888888888888,
+      "entry_date": "2024-03-25",
+      "exit_date": "2024-04-01",
+      "regime": "bull"
+    }
+  ],
+  "tema_dema": [
+    {
+      "ticker": "ACMR",
+      "pnl_pct": -2.0906095238095235,
+      "entry_date": "2024-03-26",
+      "exit_date": "2024-04-01",
+      "regime": "bull"
+    }
+  ],
+  "ultimate_oscillator": [
+    {
+      "ticker": "AMGN",
+      "pnl_pct": -1.0703,
+      "entry_date": "2024-02-19",
+      "exit_date": "2024-04-01",
+      "regime": "bull"
+    }
+  ],
+  "williams_r_oversold": [
+    {
+      "ticker": "DT",
+      "pnl_pct": -3.9141000000000004,
+      "entry_date": "2024-01-02",
+      "exit_date": "2024-02-13",
+      "regime": "bull"
+    }
+  ],
+  "xs_low_beta_long": [
+    {
+      "ticker": "CAG",
+      "pnl_pct": -10.883904761904763,
+      "entry_date": "2024-01-02",
+      "exit_date": "2024-02-14",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AMGN",
+      "pnl_pct": -0.791904761904762,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-02-13",
+      "regime": "bull"
+    },
+    {
+      "ticker": "DTE",
+      "pnl_pct": -0.5919333333333332,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-04-01",
+      "regime": "bull"
+    }
+  ],
+  "xs_momentum_bottom_decile_short": [
+    {
+      "ticker": "BE",
+      "pnl_pct": -0.35698095238095234,
+      "entry_date": "2024-03-12",
+      "exit_date": "2024-03-25",
+      "regime": "bull"
+    }
+  ],
+  "xs_momentum_top_decile": [
+    {
+      "ticker": "DAKT",
+      "pnl_pct": -11.344166666666665,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-01-22",
+      "regime": "bull"
+    }
+  ],
+  "xs_quality_top_quintile_long": []
+}

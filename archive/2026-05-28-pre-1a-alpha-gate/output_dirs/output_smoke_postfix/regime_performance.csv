@@ -1,0 +1,9 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+cpr_narrow_bullish,neutral,3,0.3333,1.6518,4.9555
+cup_and_handle_long,neutral,3,0.6667,8.5481,25.6443
+double_bottom_long,neutral,8,0.375,-1.3902,-11.1217
+halloween_seasonal_long,neutral,4,0.5,15.4007,61.6028
+hull_rsi,neutral,3,0.3333,-5.1896,-15.5689
+stochrsi_oversold,neutral,3,0.0,-0.46,-1.3801
+totm_long,neutral,4,0.0,-1.3466,-5.3863
+williams_r_oversold,neutral,4,0.75,4.4036,17.6142

@@ -1,0 +1,639 @@
+{
+  "avwap_252_breakout": [],
+  "avwap_50_reclaim": [
+    {
+      "ticker": "V",
+      "pnl_pct": -11.06887142857143,
+      "entry_date": "2022-03-07",
+      "exit_date": "2022-03-16",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -10.303873015873014,
+      "entry_date": "2022-11-21",
+      "exit_date": "2022-11-25",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -6.51007619047619,
+      "entry_date": "2023-04-24",
+      "exit_date": "2023-05-05",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "JNJ",
+      "pnl_pct": -5.841911111111111,
+      "entry_date": "2023-02-21",
+      "exit_date": "2023-04-06",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "PFE",
+      "pnl_pct": -0.8631761904761904,
+      "entry_date": "2023-12-11",
+      "exit_date": "2023-12-22",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "PG",
+      "pnl_pct": -0.07052222222222226,
+      "entry_date": "2022-09-19",
+      "exit_date": "2022-11-01",
+      "regime": "neutral"
+    }
+  ],
+  "bollinger_lower": [
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -9.118593650793649,
+      "entry_date": "2022-01-05",
+      "exit_date": "2022-01-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -8.59369365079365,
+      "entry_date": "2022-01-05",
+      "exit_date": "2022-01-24",
+      "regime": "neutral"
+    }
+  ],
+  "bollinger_tight": [
+    {
+      "ticker": "PFE",
+      "pnl_pct": -9.559985714285713,
+      "entry_date": "2022-01-18",
+      "exit_date": "2022-02-14",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -8.726555555555555,
+      "entry_date": "2022-01-05",
+      "exit_date": "2022-01-19",
+      "regime": "neutral"
+    }
+  ],
+  "cmf_flip": [
+    {
+      "ticker": "COST",
+      "pnl_pct": -10.529142857142856,
+      "entry_date": "2022-09-19",
+      "exit_date": "2022-10-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "PFE",
+      "pnl_pct": -4.01058253968254,
+      "entry_date": "2023-06-26",
+      "exit_date": "2023-07-06",
+      "regime": "neutral"
+    }
+  ],
+  "cpr_narrow_bullish": [
+    {
+      "ticker": "BAC",
+      "pnl_pct": -10.285788888888888,
+      "entry_date": "2022-09-19",
+      "exit_date": "2022-09-26",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -5.900109523809524,
+      "entry_date": "2022-11-21",
+      "exit_date": "2023-01-04",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -5.673074603174604,
+      "entry_date": "2023-02-21",
+      "exit_date": "2023-03-16",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -1.8156206349206347,
+      "entry_date": "2023-01-23",
+      "exit_date": "2023-02-09",
+      "regime": "neutral"
+    }
+  ],
+  "cpr_narrow_momentum": [],
+  "cup_and_handle_long": [
+    {
+      "ticker": "KO",
+      "pnl_pct": -11.245319047619049,
+      "entry_date": "2022-11-21",
+      "exit_date": "2023-09-15",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "BAC",
+      "pnl_pct": -9.909347619047617,
+      "entry_date": "2022-11-21",
+      "exit_date": "2022-12-06",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XOM",
+      "pnl_pct": -9.82938253968254,
+      "entry_date": "2023-04-24",
+      "exit_date": "2023-05-04",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "COST",
+      "pnl_pct": -6.883430158730159,
+      "entry_date": "2023-02-21",
+      "exit_date": "2023-03-13",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -6.344114285714285,
+      "entry_date": "2022-09-19",
+      "exit_date": "2023-01-05",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "PG",
+      "pnl_pct": -6.0891761904761905,
+      "entry_date": "2022-11-21",
+      "exit_date": "2023-02-08",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "WMT",
+      "pnl_pct": -3.34335238095238,
+      "entry_date": "2023-04-24",
+      "exit_date": "2023-12-01",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "KO",
+      "pnl_pct": -3.1417666666666664,
+      "entry_date": "2022-01-04",
+      "exit_date": "2022-06-14",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "JNJ",
+      "pnl_pct": -1.7732904761904762,
+      "entry_date": "2022-03-03",
+      "exit_date": "2022-06-14",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -1.2500857142857145,
+      "entry_date": "2023-10-09",
+      "exit_date": "2023-12-29",
+      "regime": "neutral"
+    }
+  ],
+  "double_bottom_long": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -12.884576190476189,
+      "entry_date": "2022-01-31",
+      "exit_date": "2022-02-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.281920634920633,
+      "entry_date": "2022-03-02",
+      "exit_date": "2022-03-07",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -9.72353968253968,
+      "entry_date": "2022-01-31",
+      "exit_date": "2022-02-23",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "PG",
+      "pnl_pct": -9.618885714285714,
+      "entry_date": "2023-04-24",
+      "exit_date": "2023-12-29",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "BAC",
+      "pnl_pct": -9.340630158730157,
+      "entry_date": "2022-01-04",
+      "exit_date": "2022-01-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -7.2099142857142855,
+      "entry_date": "2023-10-09",
+      "exit_date": "2023-10-18",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "HD",
+      "pnl_pct": -3.968042857142857,
+      "entry_date": "2023-06-26",
+      "exit_date": "2023-09-27",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "HD",
+      "pnl_pct": -3.4585587301587304,
+      "entry_date": "2023-01-23",
+      "exit_date": "2023-02-21",
+      "regime": "neutral"
+    }
+  ],
+  "flag_bull_long": [],
+  "halloween_seasonal_long": [
+    {
+      "ticker": "BAC",
+      "pnl_pct": -13.123984126984126,
+      "entry_date": "2022-02-08",
+      "exit_date": "2022-02-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -8.732555555555555,
+      "entry_date": "2022-01-10",
+      "exit_date": "2022-01-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "XOM",
+      "pnl_pct": -7.867503174603175,
+      "entry_date": "2023-02-21",
+      "exit_date": "2023-03-15",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "JPM",
+      "pnl_pct": -0.5224761904761903,
+      "entry_date": "2023-04-24",
+      "exit_date": "2023-10-04",
+      "regime": "neutral"
+    }
+  ],
+  "head_and_shoulders_bottom_long": [
+    {
+      "ticker": "MA",
+      "pnl_pct": -10.430730158730157,
+      "entry_date": "2022-01-04",
+      "exit_date": "2022-01-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MA",
+      "pnl_pct": -10.03384603174603,
+      "entry_date": "2022-02-24",
+      "exit_date": "2022-03-04",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "JNJ",
+      "pnl_pct": -9.981042857142857,
+      "entry_date": "2022-01-04",
+      "exit_date": "2022-02-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "WMT",
+      "pnl_pct": -6.949228571428572,
+      "entry_date": "2022-01-05",
+      "exit_date": "2022-05-17",
+      "regime": "neutral"
+    }
+  ],
+  "hull_rsi": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -11.889219047619047,
+      "entry_date": "2023-06-26",
+      "exit_date": "2023-07-26",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -10.506253968253967,
+      "entry_date": "2023-06-26",
+      "exit_date": "2023-07-18",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -9.4295126984127,
+      "entry_date": "2022-02-28",
+      "exit_date": "2022-03-08",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -7.273574603174603,
+      "entry_date": "2023-02-21",
+      "exit_date": "2023-03-16",
+      "regime": "neutral"
+    }
+  ],
+  "macd_fast_crossover": [
+    {
+      "ticker": "META",
+      "pnl_pct": -11.897450793650794,
+      "entry_date": "2023-06-26",
+      "exit_date": "2023-07-13",
+      "regime": "neutral"
+    }
+  ],
+  "monthly_bias_momentum_long": [],
+  "news_sentiment_long": [
+    {
+      "ticker": "PG",
+      "pnl_pct": -10.6722,
+      "entry_date": "2022-01-04",
+      "exit_date": "2022-03-08",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "HD",
+      "pnl_pct": -10.311682539682538,
+      "entry_date": "2022-01-04",
+      "exit_date": "2022-01-14",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "HD",
+      "pnl_pct": -10.30374603174603,
+      "entry_date": "2022-02-14",
+      "exit_date": "2022-02-22",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -9.023747619047619,
+      "entry_date": "2022-05-16",
+      "exit_date": "2022-06-16",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -6.003714285714286,
+      "entry_date": "2022-01-10",
+      "exit_date": "2022-01-19",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "COST",
+      "pnl_pct": -2.3076666666666665,
+      "entry_date": "2023-04-24",
+      "exit_date": "2023-05-15",
+      "regime": "neutral"
+    }
+  ],
+  "po3_bearish": [
+    {
+      "ticker": "JPM",
+      "pnl_pct": -10.46227619047619,
+      "entry_date": "2022-03-11",
+      "exit_date": "2022-03-22",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.291768253968254,
+      "entry_date": "2022-02-23",
+      "exit_date": "2022-02-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -4.89507619047619,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-07-29",
+      "regime": "neutral"
+    }
+  ],
+  "po3_bullish": [],
+  "po3_htf_aligned_long": [
+    {
+      "ticker": "HD",
+      "pnl_pct": -4.822566666666667,
+      "entry_date": "2023-04-24",
+      "exit_date": "2023-05-15",
+      "regime": "neutral"
+    }
+  ],
+  "po3_htf_aligned_short": [
+    {
+      "ticker": "COST",
+      "pnl_pct": -10.365380952380953,
+      "entry_date": "2022-01-27",
+      "exit_date": "2022-02-09",
+      "regime": "neutral"
+    }
+  ],
+  "poc_magnet_long": [
+    {
+      "ticker": "JNJ",
+      "pnl_pct": -10.855333333333332,
+      "entry_date": "2023-08-09",
+      "exit_date": "2023-09-27",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -10.011803174603175,
+      "entry_date": "2022-09-19",
+      "exit_date": "2022-09-23",
+      "regime": "neutral"
+    }
+  ],
+  "r1_break_retest": [
+    {
+      "ticker": "XOM",
+      "pnl_pct": -5.146476190476191,
+      "entry_date": "2023-08-09",
+      "exit_date": "2023-10-06",
+      "regime": "neutral"
+    }
+  ],
+  "rsi_oversold": [
+    {
+      "ticker": "COST",
+      "pnl_pct": -9.929887301587302,
+      "entry_date": "2022-01-05",
+      "exit_date": "2022-01-18",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -5.124533333333333,
+      "entry_date": "2022-01-06",
+      "exit_date": "2022-02-24",
+      "regime": "neutral"
+    }
+  ],
+  "smc_bos_continuation": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -17.32867619047619,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-07-29",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.300304761904762,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-07-21",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -10.291968253968253,
+      "entry_date": "2022-02-23",
+      "exit_date": "2022-02-24",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "JPM",
+      "pnl_pct": -10.122298412698413,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-08-16",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -9.146184126984126,
+      "entry_date": "2023-10-09",
+      "exit_date": "2023-10-25",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "KO",
+      "pnl_pct": -8.868911111111112,
+      "entry_date": "2023-10-09",
+      "exit_date": "2023-11-22",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -8.149423809523809,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-07-28",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "JNJ",
+      "pnl_pct": -7.9967999999999995,
+      "entry_date": "2022-09-19",
+      "exit_date": "2022-11-18",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "PFE",
+      "pnl_pct": -3.031988888888889,
+      "entry_date": "2022-09-19",
+      "exit_date": "2022-10-26",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -2.320230158730159,
+      "entry_date": "2022-05-16",
+      "exit_date": "2022-06-01",
+      "regime": "neutral"
+    }
+  ],
+  "smc_choch_reversal": [
+    {
+      "ticker": "JPM",
+      "pnl_pct": -10.35942857142857,
+      "entry_date": "2022-01-27",
+      "exit_date": "2022-02-08",
+      "regime": "neutral"
+    }
+  ],
+  "smc_liquidity_sweep_reversal": [
+    {
+      "ticker": "BAC",
+      "pnl_pct": -5.3993095238095234,
+      "entry_date": "2022-05-16",
+      "exit_date": "2022-05-31",
+      "regime": "neutral"
+    }
+  ],
+  "smc_order_block_bounce": [
+    {
+      "ticker": "HD",
+      "pnl_pct": -10.575698412698411,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-08-16",
+      "regime": "neutral"
+    }
+  ],
+  "stochrsi_oversold": [],
+  "totm_long": [
+    {
+      "ticker": "XOM",
+      "pnl_pct": -2.7963555555555555,
+      "entry_date": "2022-03-01",
+      "exit_date": "2022-03-15",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "UNH",
+      "pnl_pct": -0.023504761904761917,
+      "entry_date": "2022-03-02",
+      "exit_date": "2022-05-05",
+      "regime": "neutral"
+    }
+  ],
+  "ultimate_oscillator": [
+    {
+      "ticker": "BAC",
+      "pnl_pct": -10.398984126984125,
+      "entry_date": "2023-02-21",
+      "exit_date": "2023-03-09",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -10.30374603174603,
+      "entry_date": "2023-08-09",
+      "exit_date": "2023-08-17",
+      "regime": "neutral"
+    }
+  ],
+  "williams_r_oversold": [
+    {
+      "ticker": "PFE",
+      "pnl_pct": -8.642585714285714,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-08-26",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "KO",
+      "pnl_pct": -6.679119047619047,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-09-23",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "JNJ",
+      "pnl_pct": -5.666495238095238,
+      "entry_date": "2022-07-18",
+      "exit_date": "2022-08-17",
+      "regime": "neutral"
+    }
+  ]
+}

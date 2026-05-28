@@ -1,0 +1,7 @@
+date,event,z_score,today_dispersion,ticker,level,reason,exit_price
+2024-01-25,dispersion_cb_triggered_dec128,7.0784,0.043666,,,,
+2024-02-22,dispersion_cb_triggered_dec128,4.2755,0.050436,,,,
+2024-04-19,dispersion_cb_triggered_dec128,5.722,0.036235,,,,
+2024-04-24,,,,TSLA,1.0,overnight_gap_up_12.6pct,162.84
+2024-04-24,dispersion_cb_triggered_dec128,4.3743,0.042862,,,,
+2024-04-29,dispersion_cb_triggered_dec128,3.7536,0.051102,,,,

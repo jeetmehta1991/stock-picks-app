@@ -1,0 +1,13 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+avwap_252_breakout,neutral,5,0.2,-13.8744,-69.3721
+buyback_8k_recent_long,neutral,17,0.3529,-0.4732,-8.0449
+cpr_narrow_bullish,neutral,7,0.2857,-3.4044,-23.8307
+htf_aligned_breakout_long,neutral,7,0.2857,-1.2267,-8.5871
+insider_cluster_long,neutral,3,0.0,-7.7255,-23.1764
+monthly_bias_momentum_long,neutral,20,0.15,-4.3721,-87.4413
+po3_bullish,neutral,24,0.2917,-3.718,-89.2328
+smc_inverse_fvg,crisis_CRISIS_FLAG,6,0.1667,-3.0096,-18.0577
+smc_inverse_fvg,neutral,78,0.2564,-4.0831,-318.4834
+stochrsi_oversold,neutral,6,0.0,-7.236,-43.416
+williams_r_oversold,neutral,6,0.1667,-1.4471,-8.6827
+xs_momentum_top_decile,neutral,16,0.4375,9.5742,153.1866

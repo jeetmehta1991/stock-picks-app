@@ -1,0 +1,2 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
+next_pivot_target,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,28.282399999999996,atr_trail_2x,-0.4186000000000014,28.700999999999997,12,25,1.0

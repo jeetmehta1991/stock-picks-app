@@ -1,0 +1,82 @@
+{
+  "cpr_narrow_bullish": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "institutional_buy_momentum_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "macd_crossover": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "monthly_bias_momentum_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "pairs_mean_reversion_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "po3_bullish": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "ultimate_oscillator": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "williams_r_oversold": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "xs_low_beta_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "xs_quality_top_quintile_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  }
+}

@@ -1,0 +1,19 @@
+strategy,regime,sector,verdict,gates_passed,n_trades,gate_1_sample_size_value,gate_1_sample_size_passed
+force_index_breakout,bull,Consumer Staples,INSUFFICIENT_SAMPLE,0,1,1,False
+force_index_breakout,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+golden_cross_9_21,bull,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+lead_lag_sector_rotation,bull,Financials,INSUFFICIENT_SAMPLE,0,2,2,False
+macd_crossover,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Energy,INSUFFICIENT_SAMPLE,0,1,1,False
+monthly_bias_momentum_long,bull,Broad Market,INSUFFICIENT_SAMPLE,0,1,1,False
+monthly_bias_momentum_long,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bullish,bull,Broad Market,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bullish,bull,Financials,INSUFFICIENT_SAMPLE,0,4,4,False
+williams_r_oversold,bull,Communication Services,INSUFFICIENT_SAMPLE,0,2,2,False
+williams_r_oversold,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,2,2,False
+williams_r_oversold,bull,Information Technology,INSUFFICIENT_SAMPLE,0,2,2,False
+xs_low_beta_long,bull,Consumer Staples,INSUFFICIENT_SAMPLE,0,2,2,False
+xs_low_beta_long,bull,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+xs_quality_top_quintile_long,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+xs_quality_top_quintile_long,bull,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+xs_quality_top_quintile_long,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False

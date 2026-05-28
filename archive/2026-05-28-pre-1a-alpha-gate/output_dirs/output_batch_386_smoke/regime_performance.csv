@@ -1,0 +1,9 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+macd_crossover,bull,3,0.0,-10.874,-32.622
+macd_fast_crossover,bull,7,0.2857,-5.9164,-41.4145
+po3_bullish,bull,3,1.0,2.459,7.3769
+risk_off_bond_equity_short,bull,5,0.2,-5.8533,-29.2666
+stochrsi_overbought_short,bull,3,0.0,-6.5697,-19.7091
+xs_low_beta_long,bull,6,0.6667,5.1428,30.857
+xs_momentum_bottom_decile_short,bull,3,0.6667,11.4442,34.3325
+xs_quality_top_quintile_long,bull,4,1.0,10.8123,43.249

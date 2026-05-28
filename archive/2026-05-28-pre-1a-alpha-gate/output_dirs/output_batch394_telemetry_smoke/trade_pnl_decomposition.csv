@@ -1,0 +1,8 @@
+signal_contribution,timing_contribution,exit_contribution,sizing_contribution,agent_contribution,actual_total_check,ticker,entry_date
+-1160.92,0.0,0.0,0.0,0.0,-1160.92,NVDA,2023-09-01
+-8.0,0.0,0.0,0.0,0.0,-8.0,AAPL,2023-09-01
+-490.36,0.0,0.0,0.0,0.0,-490.36,SPY,2023-09-01
+2346.29,0.0,0.0,0.0,0.0,2346.29,MSFT,2023-09-04
+7310.32,0.0,0.0,0.0,0.0,7310.32,NVDA,2023-10-19
+-402.32,0.0,0.0,0.0,0.0,-402.32,AAPL,2023-11-20
+586.68,0.0,0.0,0.0,0.0,586.68,SPY,2023-12-19

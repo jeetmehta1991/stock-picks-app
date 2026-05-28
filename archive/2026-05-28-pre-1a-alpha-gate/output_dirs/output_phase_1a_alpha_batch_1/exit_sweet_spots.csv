@@ -1,0 +1,5 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
+earnings_blackout,neutral,Health Care,unknown,high_25_40,long_ge_11d,363.59159999999997,breakeven_plus_trail,9.579699999999999,354.01189999999997,14,25,1.0
+earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,412.9061,hybrid_50pct_target,95.56139999999999,317.3447,11,25,1.0
+earnings_blackout,neutral,Financials,unknown,high_25_40,long_ge_11d,67.9878,breakeven_plus_trail,42.5773,25.410499999999992,13,25,1.0
+hybrid_50pct_target,neutral,Consumer Discretionary,unknown,high_25_40,long_ge_11d,62.199299999999994,time_stop_10d,26.7187,35.480599999999995,11,25,1.0

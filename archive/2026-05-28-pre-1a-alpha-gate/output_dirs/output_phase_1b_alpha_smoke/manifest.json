@@ -1,0 +1,26 @@
+{
+  "smoke_run": true,
+  "winners_count": 3,
+  "n_days": 30,
+  "budget_cap_usd": 3.0,
+  "estimated_cost_usd": 0.11,
+  "agent_mode": "full_with_veto",
+  "active_agents": [
+    "aggressive_debater",
+    "bear_researcher",
+    "bull_researcher",
+    "conservative_debater",
+    "fundamental_analyst",
+    "market_analyst",
+    "neutral_debater",
+    "news_analyst",
+    "portfolio_manager",
+    "reflection",
+    "research_manager",
+    "trader"
+  ],
+  "dry_run": false,
+  "propagate_strategy": "mock",
+  "api_key_set": false,
+  "stream_b1_wired": true
+}

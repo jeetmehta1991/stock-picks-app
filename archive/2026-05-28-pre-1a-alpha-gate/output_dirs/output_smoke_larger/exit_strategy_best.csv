@@ -1,0 +1,16 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+avwap_50_reclaim,time_stop_20d,20,0.55,0.184,-7.9387,-158.7737,-96.3651,26.4,1.0,22.0,True
+cup_and_handle_long,next_pivot_target,21,0.8571,4.431,1.3339,28.0121,-2.9407,8.7,1.0,89.87,True
+totm_long,class_time_stop,27,0.6667,4.4822,5.855,158.085,-15.0376,33.2,1.0,64.11,True
+cpr_narrow_bullish,next_pivot_target,25,0.72,1.4028,0.6516,16.2896,-22.8138,9.9,1.0,40.88,True
+ultimate_oscillator,next_pivot_target,14,0.8571,6.2178,1.3882,19.4344,-3.7246,12.9,0.8571,88.7,True
+williams_r_oversold,time_stop_10d,18,0.8889,32.9283,4.8026,86.4459,-2.4627,14.1,1.0,91.86,True
+halloween_seasonal_long,next_pivot_target,23,0.7826,2.1088,1.4946,34.3752,-10.2574,8.4,1.0,75.92,True
+double_bottom_long,time_stop_10d,21,0.5238,0.9566,-0.0547,-1.149,-11.8909,13.6,1.0,33.12,True
+macd_fast_crossover,atr_trail_vix_conditional,6,0.5,1.079,0.0905,0.5432,-6.8787,10.5,1.0,42.05,True
+stochrsi_oversold,hybrid_50pct_target,12,1.0,999.0,7.5997,91.1967,0.0,146.8,0.5833,100.0,True
+hull_rsi,ma_exit_ema9,5,0.4,1.6626,0.8129,4.0644,-6.1343,11.0,0.8,56.68,True
+cpr_narrow_momentum,ma_exit_ema9,5,0.0,0.0,-1.8631,-9.3153,-8.8317,5.6,1.0,16.75,True
+head_and_shoulders_bottom_long,time_stop_10d,9,0.6667,4.3359,1.6607,14.9459,-3.2988,14.1,1.0,81.72,True
+monthly_bias_momentum_long,r_multiple_3r,12,0.3333,1.2316,0.7349,8.8188,-11.3187,17.1,1.0,33.3,True
+poc_magnet_long,atr_trail_2x,5,1.0,999.0,2.8237,14.1184,0.0,30.2,1.0,100.0,True

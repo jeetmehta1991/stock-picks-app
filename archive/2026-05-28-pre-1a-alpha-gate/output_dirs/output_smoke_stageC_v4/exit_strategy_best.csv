@@ -1,0 +1,9 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+bollinger_lower,ma_exit_ema9,19,0.4211,0.9552,-0.0321,-0.6101,-8.3408,1.0,1.0,34.33,True
+po3_bullish,class_time_stop,13,0.5385,1.879,2.1201,27.5608,-12.2218,36.0,1.0,59.58,True
+cpr_narrow_bullish,ma_exit_ema9,19,0.4211,1.9851,0.9465,17.9828,-6.6229,8.9,0.8947,66.46,True
+bollinger_tight,time_stop_10d,11,0.6364,2.1548,1.6303,17.9333,-15.4599,14.3,1.0,62.27,True
+smc_choch_reversal,next_pivot_target,7,0.8571,0.4629,-0.6808,-4.7658,0.0,10.3,0.7143,64.28,True
+avwap_50_reclaim,trailing_10pct,5,0.8,3.9542,4.2041,21.0206,0.0,73.6,0.8,92.0,True
+stochrsi_overbought_short,hybrid_50pct_target,6,1.0,999.0,5.0953,30.572,0.0,120.2,1.0,100.0,True
+monthly_bias_momentum_long,time_stop_20d,6,0.8333,7.1616,6.3055,37.8327,-6.1401,25.5,1.0,84.12,True

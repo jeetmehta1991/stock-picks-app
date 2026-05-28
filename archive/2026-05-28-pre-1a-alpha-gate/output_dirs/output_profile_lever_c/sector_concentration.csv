@@ -1,0 +1,15 @@
+entry_date,sector,trades,total_trades,sector_pct
+2024-01-02,Broad Market,1,19,5.263157894736842
+2024-01-02,Communication Services,1,19,5.263157894736842
+2024-01-02,Consumer Discretionary,2,19,10.526315789473683
+2024-01-02,Consumer Staples,3,19,15.789473684210526
+2024-01-02,Energy,1,19,5.263157894736842
+2024-01-02,Financials,4,19,21.052631578947366
+2024-01-02,Health Care,3,19,15.789473684210526
+2024-01-02,Information Technology,4,19,21.052631578947366
+2024-01-03,Communication Services,1,2,50.0
+2024-01-03,Consumer Discretionary,1,2,50.0
+2024-01-29,Broad Market,1,3,33.33333333333333
+2024-01-29,Financials,2,3,66.66666666666666
+2024-02-07,Communication Services,1,1,100.0
+2024-02-09,Information Technology,1,1,100.0

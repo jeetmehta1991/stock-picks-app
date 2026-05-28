@@ -1,0 +1,97 @@
+strategy,regime,sector,verdict,gates_passed,n_trades,gate_1_sample_size_value,gate_1_sample_size_passed
+avwap_252_breakout,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+avwap_252_breakout,neutral,Financials,INSUFFICIENT_SAMPLE,0,3,3,False
+avwap_252_breakout,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+avwap_50_reclaim,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+avwap_50_reclaim,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,3,3,False
+avwap_50_reclaim,neutral,Financials,INSUFFICIENT_SAMPLE,0,3,3,False
+avwap_50_reclaim,neutral,Health Care,INSUFFICIENT_SAMPLE,0,3,3,False
+avwap_50_reclaim,neutral,Industrials,INSUFFICIENT_SAMPLE,0,1,1,False
+avwap_50_reclaim,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,4,4,False
+avwap_50_reclaim,neutral,Real Estate,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_lower,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,2,2,False
+bollinger_lower,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,3,3,False
+bollinger_lower,neutral,Consumer Staples,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_lower,neutral,Health Care,INSUFFICIENT_SAMPLE,0,3,3,False
+bollinger_lower,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,3,3,False
+bollinger_lower,neutral,Real Estate,INSUFFICIENT_SAMPLE,0,2,2,False
+bollinger_tight,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,neutral,Consumer Staples,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,neutral,Industrials,INSUFFICIENT_SAMPLE,0,2,2,False
+bollinger_tight,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,5,5,False
+bollinger_tight,neutral,Real Estate,INSUFFICIENT_SAMPLE,0,1,1,False
+buyback_8k_recent_long,neutral,Energy,INSUFFICIENT_SAMPLE,0,1,1,False
+buyback_8k_recent_long,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+cmf_flip,neutral,Financials,INSUFFICIENT_SAMPLE,0,1,1,False
+cmf_flip,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,2,2,False
+cpr_narrow_bullish,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,6,6,False
+cpr_narrow_bullish,neutral,Consumer Staples,INSUFFICIENT_SAMPLE,0,3,3,False
+cpr_narrow_bullish,neutral,Energy,INSUFFICIENT_SAMPLE,0,2,2,False
+cpr_narrow_bullish,neutral,Financials,INSUFFICIENT_SAMPLE,0,4,4,False
+cpr_narrow_bullish,neutral,Health Care,INSUFFICIENT_SAMPLE,0,4,4,False
+cpr_narrow_bullish,neutral,Industrials,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,9,9,False
+htf_aligned_breakout_long,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+htf_aligned_breakout_long,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+htf_aligned_breakout_short,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+htf_aligned_breakout_short,neutral,Industrials,INSUFFICIENT_SAMPLE,0,1,1,False
+htf_aligned_breakout_short,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+hull_rsi,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+hull_rsi,neutral,Energy,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+monthly_bias_momentum_long,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+monthly_bias_momentum_long,neutral,Consumer Staples,INSUFFICIENT_SAMPLE,0,1,1,False
+monthly_bias_momentum_long,neutral,Energy,INSUFFICIENT_SAMPLE,0,3,3,False
+monthly_bias_momentum_long,neutral,Financials,INSUFFICIENT_SAMPLE,0,2,2,False
+monthly_bias_momentum_long,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+monthly_bias_momentum_long,neutral,Industrials,INSUFFICIENT_SAMPLE,0,3,3,False
+monthly_bias_momentum_long,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,6,6,False
+orb_stocks_in_play_short,neutral,Financials,INSUFFICIENT_SAMPLE,0,1,1,False
+pivot_r1_breakout,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+pivot_r1_breakout,neutral,Health Care,INSUFFICIENT_SAMPLE,0,2,2,False
+po3_bearish,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,2,2,False
+po3_bearish,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,3,3,False
+po3_bearish,neutral,Financials,INSUFFICIENT_SAMPLE,0,2,2,False
+po3_bearish,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bearish,neutral,Industrials,INSUFFICIENT_SAMPLE,0,3,3,False
+po3_bearish,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bearish,neutral,Real Estate,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bullish,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,2,2,False
+po3_bullish,neutral,Consumer Staples,INSUFFICIENT_SAMPLE,0,2,2,False
+po3_bullish,neutral,Energy,INSUFFICIENT_SAMPLE,0,2,2,False
+po3_bullish,neutral,Financials,INSUFFICIENT_SAMPLE,0,6,6,False
+po3_bullish,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bullish,neutral,Industrials,INSUFFICIENT_SAMPLE,0,3,3,False
+po3_bullish,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,3,3,False
+po3_bullish,neutral,Real Estate,INSUFFICIENT_SAMPLE,0,1,1,False
+prev_day_low_bounce,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+rsi_oversold,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+rsi_oversold,neutral,Real Estate,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_bos_continuation,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_bos_continuation,neutral,Industrials,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_bos_retest_entry,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_bos_retest_entry,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_choch_reversal,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_choch_reversal,neutral,Health Care,INSUFFICIENT_SAMPLE,0,2,2,False
+smc_choch_reversal,neutral,Industrials,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_choch_reversal,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,2,2,False
+smc_choch_reversal,neutral,Real Estate,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_inverse_fvg,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_inverse_fvg,neutral,Energy,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_liquidity_sweep_reversal,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_liquidity_sweep_reversal,neutral,Financials,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_liquidity_sweep_reversal,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_order_block_bounce,neutral,Industrials,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_ote_long,neutral,Financials,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_oversold,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_oversold,neutral,Consumer Staples,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_oversold,neutral,Health Care,INSUFFICIENT_SAMPLE,0,3,3,False
+ultimate_oscillator,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+ultimate_oscillator,neutral,Financials,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_r_oversold,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_r_oversold,neutral,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+xs_momentum_top_decile,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+xs_momentum_top_decile,neutral,Energy,INSUFFICIENT_SAMPLE,0,2,2,False
+xs_momentum_top_decile,neutral,Health Care,INSUFFICIENT_SAMPLE,0,3,3,False
+xs_momentum_top_decile,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,3,3,False

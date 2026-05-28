@@ -1,0 +1,17 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+avwap_50_reclaim,bull,4,1.0,5.1204,20.4816
+bollinger_lower,bear,4,0.0,-1.8324,-7.3295
+bollinger_lower,neutral,15,0.0667,-2.306,-34.5907
+bollinger_tight,neutral,10,0.1,-4.8615,-48.6151
+cmf_flip,bear,3,0.3333,1.2048,3.6144
+cpr_narrow_bullish,bull,10,0.4,0.0974,0.9738
+cpr_narrow_bullish,neutral,9,0.2222,-3.2743,-29.4683
+htf_aligned_breakout_short,bear,3,0.0,-6.3559,-19.0678
+monthly_bias_momentum_long,bull,6,0.6667,8.3264,49.9582
+po3_bullish,bull,5,0.2,-2.7279,-13.6395
+po3_bullish,neutral,8,0.25,-3.3752,-27.002
+smc_choch_reversal,bull,4,0.5,-4.7883,-19.1533
+smc_choch_reversal,neutral,3,0.3333,-1.2129,-3.6388
+stochrsi_overbought_short,bear,6,0.1667,-3.8337,-23.0023
+stochrsi_oversold,neutral,4,0.5,-0.0357,-0.1426
+xs_momentum_bottom_decile_short,bear,4,0.5,-0.7568,-3.027

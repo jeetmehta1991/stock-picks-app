@@ -1,0 +1,276 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,n,win_rate,avg_pnl_pct,total_pnl_pct,sharpe_proxy
+atr_trail_1x,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-0.24255714285714283,-1.6978999999999997,-0.1727408369680456
+atr_trail_1x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.5384615384615384,1.161423076923077,15.0985,1.0056419990278922
+atr_trail_1x,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-2.9704375,-23.7635,-2.567626980891416
+atr_trail_1x,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-1.7019625,-13.6157,-2.9362131004335392
+atr_trail_1x,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,0.34722142857142846,4.861099999999999,0.6910074277737444
+atr_trail_1x,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,-0.14467142857142853,-1.0126999999999997,-0.1783758981137875
+atr_trail_1x,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.55975,-9.3585,-1.3080201029922949
+atr_trail_1x,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.0,-1.9042666666666668,-17.1384,-6.64093524826707
+atr_trail_1x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.6827142857142857,-4.779,-1.008437989146834
+atr_trail_1x,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.1111111111111111,-2.2158444444444445,-19.9426,-4.177547742218553
+atr_trail_1x,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.06666666666666667,-1.7405,-26.107499999999998,-2.759151013509471
+atr_trail_2x,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-169.05522857142856,-1183.3865999999998,-0.9682613081320522
+atr_trail_2x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.6153846153846154,2.694546153846154,35.0291,1.3221347575488998
+atr_trail_2x,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.0,-7.11785,-56.9428,-3.813031394023663
+atr_trail_2x,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-3.426025,-27.4082,-2.891469056796591
+atr_trail_2x,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.42857142857142855,0.37124285714285704,5.197399999999998,0.379826879960351
+atr_trail_2x,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,0.10874285714285747,0.7612000000000023,0.057282043048183816
+atr_trail_2x,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.5,-1.1504666666666667,-6.9028,-0.6063206944834462
+atr_trail_2x,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.2222222222222222,-2.8363333333333336,-25.527,-2.9546864024735395
+atr_trail_2x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,0.8819857142857145,6.1739000000000015,0.5103809255403422
+atr_trail_2x,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.2222222222222222,-1.8852666666666669,-16.9674,-0.7645007023276895
+atr_trail_2x,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.4666666666666667,2.5751733333333333,38.6276,1.1218968808333971
+atr_trail_mae_conditional,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-0.24255714285714283,-1.6978999999999997,-0.1727408369680456
+atr_trail_mae_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.5384615384615384,1.161423076923077,15.0985,1.0056419990278922
+atr_trail_mae_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-2.9704375,-23.7635,-2.567626980891416
+atr_trail_mae_conditional,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-1.7019625,-13.6157,-2.9362131004335392
+atr_trail_mae_conditional,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,0.34722142857142846,4.861099999999999,0.6910074277737444
+atr_trail_mae_conditional,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,-0.14467142857142853,-1.0126999999999997,-0.1783758981137875
+atr_trail_mae_conditional,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.55975,-9.3585,-1.3080201029922949
+atr_trail_mae_conditional,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.0,-1.9042666666666668,-17.1384,-6.64093524826707
+atr_trail_mae_conditional,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.6827142857142857,-4.779,-1.008437989146834
+atr_trail_mae_conditional,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.1111111111111111,-2.2158444444444445,-19.9426,-4.177547742218553
+atr_trail_mae_conditional,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.06666666666666667,-1.7405,-26.107499999999998,-2.759151013509471
+atr_trail_vix_conditional,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-1.5101142857142855,-10.570799999999998,-2.511813571764061
+atr_trail_vix_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.46153846153846156,0.7428153846153847,9.656600000000001,0.8613633193709866
+atr_trail_vix_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-3.4975250000000004,-27.980200000000004,-2.7042356391200073
+atr_trail_vix_conditional,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-2.4382875,-19.5063,-2.895950690004528
+atr_trail_vix_conditional,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.42857142857142855,0.33396428571428566,4.6754999999999995,0.5186924768075146
+atr_trail_vix_conditional,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,-0.15215714285714285,-1.0651,-0.20252990765808
+atr_trail_vix_conditional,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.3333333333333333,-1.4801833333333334,-8.8811,-0.8832313003091223
+atr_trail_vix_conditional,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.0,-1.6980111111111111,-15.2821,-4.956980178689901
+atr_trail_vix_conditional,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,0.02004285714285709,0.14029999999999965,0.022184682260641006
+atr_trail_vix_conditional,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.1111111111111111,-0.7831555555555557,-7.048400000000002,-0.3008099024474065
+atr_trail_vix_conditional,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.13333333333333333,-0.6067733333333333,-9.1016,-0.5658700007357158
+break_even_at_1r,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,5.0004285714285714,35.003,0.7298490788154659
+break_even_at_1r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.15384615384615385,1.2448153846153847,16.1826,0.7180926909829802
+break_even_at_1r,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.0,-4.4462,-35.5696,-3.8617683051979625
+break_even_at_1r,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.0,-1.85115,-14.8092,-3.8001607387055065
+break_even_at_1r,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.0,-0.752357142857143,-10.533000000000001,-2.724049323372753
+break_even_at_1r,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,0.18818571428571426,1.3173,0.09851492959648954
+break_even_at_1r,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.3880833333333333,-8.3285,-1.440110875213759
+break_even_at_1r,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.0,-1.9699666666666669,-17.7297,-5.259392337724097
+break_even_at_1r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.10239999999999998,-0.7167999999999999,-0.09117702837273561
+break_even_at_1r,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.1111111111111111,0.5577333333333334,5.0196000000000005,0.17506865460559778
+break_even_at_1r,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.06666666666666667,-1.0671,-16.0065,-1.1114102398876298
+breakeven_plus_trail,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,7.1961714285714296,50.373200000000004,1.06481859539949
+breakeven_plus_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.3076923076923077,2.049923076923077,26.649,1.0540617424818002
+breakeven_plus_trail,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-2.3099499999999997,-18.479599999999998,-0.4438980531336672
+breakeven_plus_trail,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.0,-4.000275,-32.0022,-4.3539308876012415
+breakeven_plus_trail,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.0,-1.631342857142857,-22.8388,-3.025944163001996
+breakeven_plus_trail,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,3.4206,23.9442,0.934659472206603
+breakeven_plus_trail,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.9483666666666668,-11.6902,-1.2455560907003944
+breakeven_plus_trail,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.2222222222222222,-2.197622222222222,-19.778599999999997,-1.5515775682053459
+breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.01784285714285711,-0.12489999999999979,-0.014688105219371037
+breakeven_plus_trail,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.4444444444444444,1.6907444444444448,15.216700000000003,0.47649630683238225
+breakeven_plus_trail,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.3333333333333333,5.61728,84.2592,1.0142152116623206
+chandelier_3x,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-167.18051428571428,-1170.2636,-0.9558235065266937
+chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.46153846153846156,1.8883692307692308,24.5488,0.9331485345840129
+chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.0,-6.02275,-48.182,-2.8591137751383155
+chandelier_3x,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-1.2949125000000001,-10.359300000000001,-1.1012135025140841
+chandelier_3x,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.42857142857142855,-0.08302142857142851,-1.1622999999999992,-0.08539407318294417
+chandelier_3x,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,0.6797571428571426,4.758299999999998,0.2790487197048459
+chandelier_3x,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-2.2864166666666668,-13.7185,-1.3644829255754818
+chandelier_3x,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.1111111111111111,-2.455866666666667,-22.102800000000002,-2.0844507811251356
+chandelier_3x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,0.6071857142857142,4.250299999999999,0.38869886074929183
+chandelier_3x,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.5555555555555556,3.222122222222222,28.9991,0.935648212214753
+chandelier_3x,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.3333333333333333,5.08154,76.2231,0.8653155513504412
+class_time_stop,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-138.1387,-966.9708999999999,-1.0033135506912436
+class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.38461538461538464,-3.598523076923077,-46.7808,-0.8790049111075559
+class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-14.847700000000001,-118.78160000000001,-1.1914086242364355
+class_time_stop,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.125,-5.5731625000000005,-44.585300000000004,-2.1945621367827908
+class_time_stop,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.42857142857142855,-1.647235714285714,-23.061299999999996,-0.9126807331883359
+class_time_stop,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.8571428571428571,4.632457142857143,32.4272,1.3749591214241357
+class_time_stop,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.6666666666666666,0.31261666666666676,1.8757000000000006,0.1389318230683071
+class_time_stop,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.5555555555555556,-2.1520111111111113,-19.368100000000002,-0.8737638653970787
+class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,0.8641285714285714,6.0489,0.33225048137523633
+class_time_stop,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.7777777777777778,6.102777777777778,54.925,1.2261951232192263
+class_time_stop,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.5333333333333333,2.0490733333333333,30.7361,0.8565925304438018
+earnings_blackout,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,-304.8571714285714,-2134.0002,-0.9137421867607075
+earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.38461538461538464,-10.435,-135.655,-1.2526803119797034
+earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-30.449399999999997,-243.59519999999998,-1.8469961160254633
+earnings_blackout,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.125,-20.227575,-161.8206,-3.1652404852360383
+earnings_blackout,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5714285714285714,2.350957142857143,32.9134,0.4979018003239427
+earnings_blackout,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,8.385957142857142,58.701699999999995,1.0244465009496495
+earnings_blackout,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-12.339183333333333,-74.0351,-1.0846498261687507
+earnings_blackout,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.3333333333333333,-8.643044444444445,-77.7874,-1.1386120882422475
+earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,8.662128571428573,60.63490000000001,1.0408480020492987
+earnings_blackout,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.2222222222222222,-16.29295555555555,-146.63659999999996,-0.35086202481844664
+earnings_blackout,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.6666666666666666,-2.4188133333333326,-36.28219999999999,-0.1805223941670388
+fixed_4r_2r,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,1.9668571428571426,13.767999999999999,0.4865152944757453
+fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.3076923076923077,-1.3472846153846152,-17.514699999999998,-0.5122980322270654
+fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-1.1427375,-9.1419,-0.19770835198847864
+fixed_4r_2r,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.125,-3.805225,-30.4418,-2.453420835027399
+fixed_4r_2r,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.2857142857142857,-1.038342857142857,-14.5368,-0.7961515088829892
+fixed_4r_2r,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,1.859614285714286,13.017300000000002,0.4988035004222782
+fixed_4r_2r,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-3.6287333333333334,-21.7724,-1.2759911799862576
+fixed_4r_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.2222222222222222,-2.015988888888889,-18.1439,-1.002895170124149
+fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,0.49269999999999997,3.4488999999999996,0.17464830476695545
+fixed_4r_2r,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.2222222222222222,-1.7554777777777781,-15.799300000000002,-0.4951754561655273
+fixed_4r_2r,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.4666666666666667,4.195173333333333,62.9276,1.4105462191397677
+hybrid_50pct_target,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,-96.86542857142858,-678.0580000000001,-1.134539697443412
+hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.6923076923076923,-7.490284615384616,-97.37370000000001,-0.9488943552243282
+hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-23.2446,-185.9568,-1.3553778748692373
+hybrid_50pct_target,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.625,-11.512925000000001,-92.10340000000001,-1.4606479952693054
+hybrid_50pct_target,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.6428571428571429,-4.154535714285714,-58.1635,-1.1905849114227018
+hybrid_50pct_target,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,2.6310000000000002,18.417,0.7636419408431205
+hybrid_50pct_target,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.8333333333333334,4.265216666666666,25.591299999999997,1.4240216503384524
+hybrid_50pct_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.6666666666666666,-1.8861888888888894,-16.975700000000003,-0.39623412470340036
+hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,0.07700000000000021,0.5390000000000015,0.026701033660304855
+hybrid_50pct_target,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.8888888888888888,2.8306222222222224,25.4756,0.49439915642650367
+hybrid_50pct_target,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.6,2.9896600000000007,44.84490000000001,0.7077105760599952
+ma_exit_ema9,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-175.31455714285715,-1227.2019,-1.0110514347452226
+ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.6153846153846154,2.4662307692307692,32.061,1.5500471265273843
+ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-3.4373500000000003,-27.498800000000003,-2.8355374598130396
+ma_exit_ema9,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-1.2286375,-9.8291,-1.2225361525261524
+ma_exit_ema9,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,0.9020285714285715,12.628400000000001,0.8128853089847501
+ma_exit_ema9,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,2.0202142857142853,14.141499999999997,0.7191298984779727
+ma_exit_ema9,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.5,-0.49570000000000003,-2.9742,-0.23941699078743897
+ma_exit_ema9,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.0,-1.4978444444444443,-13.480599999999999,-5.7546541791468755
+ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,-0.257,-1.799,-0.2198002352514577
+ma_exit_ema9,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.2222222222222222,0.14501111111111126,1.3051000000000013,0.057265892954969866
+ma_exit_ema9,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.26666666666666666,0.5534999999999999,8.302499999999998,0.42083238423735414
+mfe_lockin_trail,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-0.24255714285714283,-1.6978999999999997,-0.1727408369680456
+mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.5384615384615384,1.3247461538461538,17.2217,1.181659030708022
+mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-2.9704375,-23.7635,-2.567626980891416
+mfe_lockin_trail,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-1.7019625,-13.6157,-2.9362131004335392
+mfe_lockin_trail,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,0.13080714285714287,1.8313000000000001,0.32539227332111065
+mfe_lockin_trail,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,-0.14467142857142853,-1.0126999999999997,-0.1783758981137875
+mfe_lockin_trail,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.433366666666667,-8.600200000000001,-1.093057956053588
+mfe_lockin_trail,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.1111111111111111,-1.6643444444444444,-14.979099999999999,-3.7449191043339813
+mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.6660428571428572,-4.6623,-0.9623399778902925
+mfe_lockin_trail,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.1111111111111111,-2.2158444444444445,-19.9426,-4.177547742218553
+mfe_lockin_trail,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.06666666666666667,-1.7405,-26.107499999999998,-2.759151013509471
+multi_tier_partial,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,-0.06311428571428568,-0.44179999999999975,-0.04794900289546865
+multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.6153846153846154,0.9149076923076922,11.893799999999999,1.1680342456848005
+multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-2.7649624999999998,-22.119699999999998,-2.140000213194952
+multi_tier_partial,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.375,-1.199875,-9.599,-1.5313073014363583
+multi_tier_partial,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5714285714285714,0.5225071428571428,7.315099999999999,1.0838313636877313
+multi_tier_partial,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,0.22005714285714287,1.5404,0.25157346665814684
+multi_tier_partial,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.5,-0.6688333333333333,-4.013,-0.510520451826635
+multi_tier_partial,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.2222222222222222,-1.517711111111111,-13.6594,-2.8897486535102415
+multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.6929857142857143,-4.8509,-1.0378202011367064
+multi_tier_partial,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.1111111111111111,-2.0662777777777777,-18.5965,-3.122244018169179
+multi_tier_partial,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.2,-1.3534933333333332,-20.3024,-2.3552298512902645
+next_pivot_target,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,-0.6901714285714285,-4.8312,-0.317748902137876
+next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,1.0,3.088392307692308,40.149100000000004,2.476731664590339
+next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.375,-1.4575500000000003,-11.660400000000003,-0.31012761722797966
+next_pivot_target,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-5.3741875,-42.9935,-2.6061262862882804
+next_pivot_target,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.7857142857142857,0.1309285714285715,1.833000000000001,0.12494534919654196
+next_pivot_target,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,2.1544428571428567,15.081099999999998,0.737823874861813
+next_pivot_target,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.8333333333333334,-0.1875666666666668,-1.1254000000000008,-0.08854654368969096
+next_pivot_target,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.3333333333333333,-3.3735222222222223,-30.3617,-1.8866167206441606
+next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,0.4032714285714287,2.822900000000001,0.23096522561091473
+next_pivot_target,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.6666666666666666,-1.5771,-14.1939,-1.2173436872671624
+next_pivot_target,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.7333333333333333,2.3269466666666667,34.9042,1.3040955300461758
+r_multiple_2r,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-0.21688571428571438,-1.5182000000000007,-0.11307403448369012
+r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.5384615384615384,2.817730769230769,36.6305,1.7272105052743933
+r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.0,-5.379125,-43.033,-5.350328695491364
+r_multiple_2r,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-0.9487125000000001,-7.589700000000001,-0.7993798502576872
+r_multiple_2r,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.42857142857142855,0.3551714285714285,4.9723999999999995,0.4591562672759491
+r_multiple_2r,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-0.4444000000000001,-3.1108000000000007,-0.2609183326092156
+r_multiple_2r,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.3333333333333333,-0.16685000000000003,-1.0011,-0.08270031018462022
+r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.1111111111111111,-1.8468777777777778,-16.6219,-2.867169845487821
+r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,1.166542857142857,8.165799999999999,0.8231124964926851
+r_multiple_2r,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.2222222222222222,0.3226777777777778,2.9041,0.14660191285916652
+r_multiple_2r,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.26666666666666666,0.1652866666666667,2.4793000000000003,0.10990611635317905
+r_multiple_3r,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,0.7925428571428572,5.5478000000000005,0.30655488755193544
+r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.46153846153846156,3.485346153846154,45.3095,1.6195688417679723
+r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.0,-5.379125,-43.033,-5.350328695491364
+r_multiple_3r,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.125,-1.7287625,-13.8301,-1.7319692462056515
+r_multiple_3r,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.42857142857142855,1.1004714285714285,15.4066,1.0769361045330037
+r_multiple_3r,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,0.4113142857142854,2.8791999999999978,0.18086297997323952
+r_multiple_3r,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.4798833333333332,-8.879299999999999,-0.7839557076919067
+r_multiple_3r,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.0,-2.3829555555555557,-21.4466,-15.474657142174191
+r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,2.2547,15.782900000000001,1.1560103347636563
+r_multiple_3r,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.2222222222222222,1.7069777777777777,15.3628,0.5469636918105119
+r_multiple_3r,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.2,0.5038666666666666,7.557999999999999,0.24823945101731643
+regime_flip,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-146.32031428571426,-1024.2422,-1.0132866425096925
+regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.46153846153846156,0.38393846153846134,4.991199999999997,0.13495206548860766
+regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-13.393999999999998,-107.15199999999999,-1.4552696640877671
+regime_flip,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-4.9084125,-39.2673,-1.8577296996089356
+regime_flip,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,-0.22697857142857156,-3.177700000000002,-0.1404815438701526
+regime_flip,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,5.0342,35.2394,1.2667367033149743
+regime_flip,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.5,0.2522,1.5131999999999999,0.15415941846410633
+regime_flip,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.3333333333333333,-3.2054333333333336,-28.8489,-1.3917395721152066
+regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.8571428571428571,2.4743142857142857,17.3202,1.3282169433133901
+regime_flip,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.6666666666666666,4.432477777777778,39.8923,1.1711539825946635
+regime_flip,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.6666666666666666,2.9150666666666667,43.726,1.0614748591644927
+reverse_signal,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-0.24255714285714283,-1.6978999999999997,-0.1727408369680456
+reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.5384615384615384,1.161423076923077,15.0985,1.0056419990278922
+reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-2.9704375,-23.7635,-2.567626980891416
+reverse_signal,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-1.7019625,-13.6157,-2.9362131004335392
+reverse_signal,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,0.34722142857142846,4.861099999999999,0.6910074277737444
+reverse_signal,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,-0.14467142857142853,-1.0126999999999997,-0.1783758981137875
+reverse_signal,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.55975,-9.3585,-1.3080201029922949
+reverse_signal,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.0,-1.9042666666666668,-17.1384,-6.64093524826707
+reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.6827142857142857,-4.779,-1.008437989146834
+reverse_signal,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.1111111111111111,-2.2158444444444445,-19.9426,-4.177547742218553
+reverse_signal,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.06666666666666667,-1.7405,-26.107499999999998,-2.759151013509471
+smc_mitigation_zone,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,0.36665714285714296,2.5666000000000007,0.2681772665474705
+smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.46153846153846156,-0.10238461538461538,-1.331,-0.1855420200374641
+smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-2.073525,-16.5882,-2.552645594732865
+smc_mitigation_zone,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-1.6612875,-13.2903,-2.896613719608205
+smc_mitigation_zone,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.42857142857142855,0.10998571428571426,1.5397999999999996,0.22376596370803342
+smc_mitigation_zone,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,0.3159714285714286,2.2118,0.3598813825236461
+smc_mitigation_zone,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-1.3763333333333332,-8.258,-1.1849249326053586
+smc_mitigation_zone,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.1111111111111111,-1.2998,-11.6982,-3.4511026310754156
+smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.0,-0.8101285714285714,-5.6709,-2.6147273345975783
+smc_mitigation_zone,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.0,-1.8958555555555554,-17.0627,-4.837920312586516
+smc_mitigation_zone,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.13333333333333333,-1.4225733333333332,-21.3386,-3.861563019353502
+time_stop_10d,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,3.693,25.851,1.787810738590443
+time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.8461538461538461,5.390007692307692,70.0701,2.7492997584156615
+time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-9.421,-75.368,-2.8615666925768535
+time_stop_10d,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-2.8485125,-22.7881,-1.5383895119430921
+time_stop_10d,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,-0.43107857142857137,-6.035099999999999,-0.33588751828004415
+time_stop_10d,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,2.586128571428571,18.102899999999998,1.2017085735495838
+time_stop_10d,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.6666666666666666,-0.40604999999999974,-2.4362999999999984,-0.14541027070202528
+time_stop_10d,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.3333333333333333,-1.9889111111111113,-17.9002,-1.4649739088873777
+time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.5714285714285714,-0.8368285714285716,-5.857800000000001,-0.6188852902967322
+time_stop_10d,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.6666666666666666,1.8599222222222223,16.7393,1.0729899177228637
+time_stop_10d,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.4,0.5524266666666667,8.2864,0.3125637574795269
+time_stop_20d,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-146.32031428571426,-1024.2422,-1.0132866425096925
+time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.46153846153846156,0.38393846153846134,4.991199999999997,0.13495206548860766
+time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.25,-13.393999999999998,-107.15199999999999,-1.4552696640877671
+time_stop_20d,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.25,-4.9084125,-39.2673,-1.8577296996089356
+time_stop_20d,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.5,-0.22697857142857156,-3.177700000000002,-0.1404815438701526
+time_stop_20d,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.7142857142857143,5.0342,35.2394,1.2667367033149743
+time_stop_20d,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.5,0.2522,1.5131999999999999,0.15415941846410633
+time_stop_20d,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.3333333333333333,-3.2054333333333336,-28.8489,-1.3917395721152066
+time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.8571428571428571,2.4743142857142857,17.3202,1.3282169433133901
+time_stop_20d,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.6666666666666666,4.432477777777778,39.8923,1.1711539825946635
+time_stop_20d,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.6666666666666666,2.9150666666666667,43.726,1.0614748591644927
+trailing_10pct,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-168.75141428571428,-1181.2599,-0.9661146793668314
+trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.5384615384615384,1.3444615384615386,17.478,0.6518370478875108
+trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.0,-7.3808125,-59.0465,-6.582071226705913
+trailing_10pct,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.0,-6.8467125,-54.7737,-4.783584115445295
+trailing_10pct,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.21428571428571427,-3.8033571428571427,-53.247,-2.903600623034169
+trailing_10pct,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-2.4906714285714284,-17.4347,-0.9158150593185587
+trailing_10pct,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.16666666666666666,-4.624366666666666,-27.746199999999998,-2.354504263572645
+trailing_10pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.4444444444444444,-2.3862555555555556,-21.476300000000002,-0.7794669191718728
+trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-2.6923142857142857,-18.8462,-1.05750633148957
+trailing_10pct,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.6666666666666666,1.9865999999999997,17.879399999999997,0.5813721234602571
+trailing_10pct,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.4,4.548846666666666,68.2327,0.7580831703052816
+trailing_15pct,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-156.40632857142856,-1094.8443,-0.8801328938112173
+trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.23076923076923078,-2.9677000000000002,-38.5801,-1.1812104347012549
+trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-7.8386499999999995,-62.709199999999996,-1.5232537077409785
+trailing_15pct,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.0,-9.356825,-74.8546,-6.046438000767046
+trailing_15pct,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.2857142857142857,-4.6200214285714285,-64.6803,-1.8825832044738986
+trailing_15pct,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,2.4259571428571434,16.981700000000004,0.4067965280361931
+trailing_15pct,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.5,4.5632166666666665,27.379299999999997,0.6615333313289292
+trailing_15pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.4444444444444444,0.953655555555555,8.582899999999995,0.18963452926141897
+trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-1.5690571428571427,-10.9834,-0.25601267145011947
+trailing_15pct,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.4444444444444444,0.8773000000000004,7.895700000000003,0.273674290682857
+trailing_15pct,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.4666666666666667,4.821633333333334,72.3245,0.8191366648393313
+trailing_5pct,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,7,0.2857142857142857,-166.81262857142855,-1167.6883999999998,-0.9532715182025546
+trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,13,0.6153846153846154,2.8952846153846155,37.6387,2.1044155817052217
+trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,8,0.125,-2.5679499999999997,-20.543599999999998,-2.322812223058745
+trailing_5pct,neutral,Consumer Staples,unknown,high_25_40,long_ge_11d,8,0.375,-1.99005,-15.9204,-1.4565956303079022
+trailing_5pct,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,14,0.2857142857142857,-1.079392857142857,-15.1115,-1.1664424762110424
+trailing_5pct,neutral,Energy,unknown,mid_15_25,long_ge_11d,7,0.14285714285714285,-0.19664285714285729,-1.376500000000001,-0.07734700398088006
+trailing_5pct,neutral,Financials,unknown,high_25_40,long_ge_11d,6,0.5,-0.27335,-1.6401,-0.17301651099232554
+trailing_5pct,neutral,Financials,unknown,mid_15_25,long_ge_11d,9,0.3333333333333333,-1.9068999999999998,-17.1621,-1.2761156829596378
+trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,7,0.42857142857142855,-0.8619857142857142,-6.0339,-0.7335867779597512
+trailing_5pct,neutral,Information Technology,unknown,high_25_40,long_ge_11d,9,0.2222222222222222,-2.5855,-23.2695,-2.1144961839759224
+trailing_5pct,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,15,0.13333333333333333,-2.70856,-40.6284,-3.272246140052271

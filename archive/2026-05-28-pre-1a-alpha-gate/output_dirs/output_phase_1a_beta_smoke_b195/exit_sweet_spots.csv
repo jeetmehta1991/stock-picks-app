@@ -1,0 +1,6 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
+earnings_blackout,neutral,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,909.0642,breakeven_plus_trail,73.3171,835.7471,11,18,1.0
+earnings_blackout,neutral,Energy,unknown,high_atr_2.5_5pct,long_ge_11d,521.3872,fixed_4r_2r,26.538800000000002,494.8484,12,18,1.0
+earnings_blackout,neutral,Financials,unknown,high_atr_2.5_5pct,long_ge_11d,476.7165,hybrid_50pct_target,81.1867,395.5298,22,18,1.0
+earnings_blackout,neutral,Financials,unknown,mid_atr_1_2.5pct,long_ge_11d,231.8417,time_stop_10d,17.9008,213.9409,12,18,1.0
+earnings_blackout,neutral,Industrials,unknown,mid_atr_1_2.5pct,long_ge_11d,245.4118,trailing_15pct,44.53770000000001,200.8741,12,18,1.0

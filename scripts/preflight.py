@@ -113,11 +113,21 @@ def check_em_dash_in_scripts(paths: Iterable[Path]) -> list[str]:
 
 
 def check_canonical_source_declared(paths: Iterable[Path]) -> list[str]:
-    """C3: new dashboard/inventory/audit docs must declare source-of-truth."""
+    """C3: new dashboard/inventory/audit docs must declare source-of-truth.
+
+    Excludes archive/** paths per owner directive 2026-05-28 (archived
+    auto-generated reports are point-in-time snapshots; canonical-source
+    declarations don't apply). Mirrors the archive/** exclusion already
+    in feedback_all_docs_sweep + L143 per-turn doc-sync rule.
+    """
     violations = []
     target_patterns = ["dashboard_", "_AUDIT", "_INVENTORY", "_REPORT"]
     for p in paths:
         if p.suffix not in (".md", ".py", ".html"):
+            continue
+        # Skip archived snapshots (owner directive 2026-05-28)
+        parts = p.parts
+        if "archive" in parts:
             continue
         name = p.name.lower()
         if not any(pat.lower() in name for pat in target_patterns):

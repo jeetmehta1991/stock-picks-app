@@ -1,0 +1,126 @@
+strategy,exit_method,sector,n,win_rate,avg_pnl_pct,total_pnl_pct
+po3_bullish,atr_trail_1x,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,atr_trail_1x,Financials,4,0.25,-0.28245,-1.1298
+po3_bullish,atr_trail_2x,Broad Market,1,1.0,2.6828,2.6828
+po3_bullish,atr_trail_2x,Financials,4,0.25,-0.8841749999999999,-3.5366999999999997
+po3_bullish,atr_trail_mae_conditional,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,atr_trail_mae_conditional,Financials,4,0.25,-0.28245,-1.1298
+po3_bullish,atr_trail_vix_conditional,Broad Market,1,0.0,-0.6197,-0.6197
+po3_bullish,atr_trail_vix_conditional,Financials,4,0.25,-0.213725,-0.8549
+po3_bullish,break_even_at_1r,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,break_even_at_1r,Financials,4,0.0,-0.361225,-1.4449
+po3_bullish,breakeven_plus_trail,Broad Market,1,1.0,6.6309,6.6309
+po3_bullish,breakeven_plus_trail,Financials,4,0.25,0.399475,1.5979
+po3_bullish,chandelier_3x,Broad Market,1,1.0,4.4276,4.4276
+po3_bullish,chandelier_3x,Financials,4,0.25,-1.85285,-7.4114
+po3_bullish,class_time_stop,Broad Market,1,1.0,5.8004,5.8004
+po3_bullish,class_time_stop,Financials,4,0.75,1.1883,4.7532
+po3_bullish,earnings_blackout,Broad Market,1,1.0,6.6309,6.6309
+po3_bullish,earnings_blackout,Financials,4,1.0,2.493775,9.9751
+po3_bullish,fixed_4r_2r,Broad Market,1,1.0,3.6147,3.6147
+po3_bullish,fixed_4r_2r,Financials,4,0.25,-2.05845,-8.2338
+po3_bullish,hybrid_50pct_target,Broad Market,1,1.0,4.5548,4.5548
+po3_bullish,hybrid_50pct_target,Financials,4,1.0,1.823225,7.2929
+po3_bullish,ma_exit_ema9,Broad Market,1,0.0,-0.4253,-0.4253
+po3_bullish,ma_exit_ema9,Financials,4,0.25,-0.475925,-1.9037
+po3_bullish,mfe_lockin_trail,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,mfe_lockin_trail,Financials,4,0.25,-0.28245,-1.1298
+po3_bullish,multi_tier_partial,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,multi_tier_partial,Financials,4,0.75,0.1512,0.6048
+po3_bullish,next_pivot_target,Broad Market,1,1.0,1.3455,1.3455
+po3_bullish,next_pivot_target,Financials,4,0.5,-1.7131500000000002,-6.852600000000001
+po3_bullish,r_multiple_2r,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,r_multiple_2r,Financials,4,0.25,-0.5400999999999999,-2.1603999999999997
+po3_bullish,r_multiple_3r,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,r_multiple_3r,Financials,4,0.25,-0.19279999999999997,-0.7711999999999999
+po3_bullish,regime_flip,Broad Market,1,1.0,2.5676,2.5676
+po3_bullish,regime_flip,Financials,4,1.0,1.6485,6.594
+po3_bullish,reverse_signal,Broad Market,1,0.0,-0.8262,-0.8262
+po3_bullish,reverse_signal,Financials,4,0.25,-0.28245,-1.1298
+po3_bullish,smc_mitigation_zone,Broad Market,1,0.0,-0.4253,-0.4253
+po3_bullish,smc_mitigation_zone,Financials,4,0.25,-0.28245,-1.1298
+po3_bullish,time_stop_10d,Broad Market,1,1.0,0.3182,0.3182
+po3_bullish,time_stop_10d,Financials,4,0.25,-1.9684,-7.8736
+po3_bullish,time_stop_20d,Broad Market,1,1.0,2.5676,2.5676
+po3_bullish,time_stop_20d,Financials,4,1.0,1.6485,6.594
+po3_bullish,trailing_10pct,Broad Market,1,1.0,6.6309,6.6309
+po3_bullish,trailing_10pct,Financials,4,1.0,2.493775,9.9751
+po3_bullish,trailing_15pct,Broad Market,1,1.0,6.6309,6.6309
+po3_bullish,trailing_15pct,Financials,4,1.0,2.493775,9.9751
+po3_bullish,trailing_5pct,Broad Market,1,1.0,6.6309,6.6309
+po3_bullish,trailing_5pct,Financials,4,0.5,0.39312499999999995,1.5724999999999998
+williams_r_oversold,atr_trail_1x,Communication Services,2,0.5,1.77245,3.5449
+williams_r_oversold,atr_trail_1x,Consumer Discretionary,2,0.0,-2.82085,-5.6417
+williams_r_oversold,atr_trail_1x,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,atr_trail_2x,Communication Services,2,1.0,4.25535,8.5107
+williams_r_oversold,atr_trail_2x,Consumer Discretionary,2,0.5,-2.0892000000000004,-4.178400000000001
+williams_r_oversold,atr_trail_2x,Information Technology,2,1.0,6.5710999999999995,13.142199999999999
+williams_r_oversold,atr_trail_mae_conditional,Communication Services,2,0.5,1.77245,3.5449
+williams_r_oversold,atr_trail_mae_conditional,Consumer Discretionary,2,0.0,-2.82085,-5.6417
+williams_r_oversold,atr_trail_mae_conditional,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,atr_trail_vix_conditional,Communication Services,2,0.5,0.025349999999999984,0.05069999999999997
+williams_r_oversold,atr_trail_vix_conditional,Consumer Discretionary,2,0.0,-2.3941,-4.7882
+williams_r_oversold,atr_trail_vix_conditional,Information Technology,2,0.0,-1.5763,-3.1526
+williams_r_oversold,break_even_at_1r,Communication Services,2,1.0,20.451749999999997,40.903499999999994
+williams_r_oversold,break_even_at_1r,Consumer Discretionary,2,0.0,-3.1748000000000003,-6.349600000000001
+williams_r_oversold,break_even_at_1r,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,breakeven_plus_trail,Communication Services,2,1.0,22.129099999999998,44.258199999999995
+williams_r_oversold,breakeven_plus_trail,Consumer Discretionary,2,0.5,3.12745,6.2549
+williams_r_oversold,breakeven_plus_trail,Information Technology,2,0.5,8.9747,17.9494
+williams_r_oversold,chandelier_3x,Communication Services,2,1.0,22.438299999999998,44.876599999999996
+williams_r_oversold,chandelier_3x,Consumer Discretionary,2,0.0,-1.3640999999999999,-2.7281999999999997
+williams_r_oversold,chandelier_3x,Information Technology,2,0.0,-0.18785000000000002,-0.37570000000000003
+williams_r_oversold,class_time_stop,Communication Services,2,1.0,21.10215,42.2043
+williams_r_oversold,class_time_stop,Consumer Discretionary,2,0.5,-3.3824000000000005,-6.764800000000001
+williams_r_oversold,class_time_stop,Information Technology,2,1.0,9.9296,19.8592
+williams_r_oversold,earnings_blackout,Communication Services,2,1.0,22.129099999999998,44.258199999999995
+williams_r_oversold,earnings_blackout,Consumer Discretionary,2,0.5,-1.3550499999999994,-2.710099999999999
+williams_r_oversold,earnings_blackout,Information Technology,2,0.5,8.799,17.598
+williams_r_oversold,fixed_4r_2r,Communication Services,2,1.0,8.4438,16.8876
+williams_r_oversold,fixed_4r_2r,Consumer Discretionary,2,0.5,-0.21430000000000016,-0.4286000000000003
+williams_r_oversold,fixed_4r_2r,Information Technology,2,0.5,4.82265,9.6453
+williams_r_oversold,hybrid_50pct_target,Communication Services,2,1.0,13.3782,26.7564
+williams_r_oversold,hybrid_50pct_target,Consumer Discretionary,2,0.5,-0.13124999999999964,-0.2624999999999993
+williams_r_oversold,hybrid_50pct_target,Information Technology,2,1.0,7.5846,15.1692
+williams_r_oversold,ma_exit_ema9,Communication Services,2,0.5,-0.046499999999999986,-0.09299999999999997
+williams_r_oversold,ma_exit_ema9,Consumer Discretionary,2,0.0,-0.67555,-1.3511
+williams_r_oversold,ma_exit_ema9,Information Technology,2,0.0,-0.7214,-1.4428
+williams_r_oversold,mfe_lockin_trail,Communication Services,2,0.5,1.77245,3.5449
+williams_r_oversold,mfe_lockin_trail,Consumer Discretionary,2,0.0,-2.82085,-5.6417
+williams_r_oversold,mfe_lockin_trail,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,multi_tier_partial,Communication Services,2,0.5,1.38695,2.7739
+williams_r_oversold,multi_tier_partial,Consumer Discretionary,2,0.0,-2.82085,-5.6417
+williams_r_oversold,multi_tier_partial,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,next_pivot_target,Communication Services,2,1.0,2.2741499999999997,4.548299999999999
+williams_r_oversold,next_pivot_target,Consumer Discretionary,2,0.5,-3.7399499999999994,-7.479899999999999
+williams_r_oversold,next_pivot_target,Information Technology,2,1.0,4.89865,9.7973
+williams_r_oversold,r_multiple_2r,Communication Services,2,1.0,4.20305,8.4061
+williams_r_oversold,r_multiple_2r,Consumer Discretionary,2,0.0,-3.1748000000000003,-6.349600000000001
+williams_r_oversold,r_multiple_2r,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,r_multiple_3r,Communication Services,2,1.0,6.304600000000001,12.609200000000001
+williams_r_oversold,r_multiple_3r,Consumer Discretionary,2,0.0,-3.1748000000000003,-6.349600000000001
+williams_r_oversold,r_multiple_3r,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,regime_flip,Communication Services,2,1.0,8.2148,16.4296
+williams_r_oversold,regime_flip,Consumer Discretionary,2,0.5,-8.65925,-17.3185
+williams_r_oversold,regime_flip,Information Technology,2,0.5,4.9796,9.9592
+williams_r_oversold,reverse_signal,Communication Services,2,0.5,1.77245,3.5449
+williams_r_oversold,reverse_signal,Consumer Discretionary,2,0.0,-2.82085,-5.6417
+williams_r_oversold,reverse_signal,Information Technology,2,0.0,-2.06485,-4.1297
+williams_r_oversold,smc_mitigation_zone,Communication Services,2,1.0,0.87385,1.7477
+williams_r_oversold,smc_mitigation_zone,Consumer Discretionary,2,0.0,-0.67555,-1.3511
+williams_r_oversold,smc_mitigation_zone,Information Technology,2,0.0,-0.7214,-1.4428
+williams_r_oversold,time_stop_10d,Communication Services,2,1.0,6.0085,12.017
+williams_r_oversold,time_stop_10d,Consumer Discretionary,2,0.5,-5.0253,-10.0506
+williams_r_oversold,time_stop_10d,Information Technology,2,0.5,0.9551499999999999,1.9102999999999999
+williams_r_oversold,time_stop_20d,Communication Services,2,1.0,8.2148,16.4296
+williams_r_oversold,time_stop_20d,Consumer Discretionary,2,0.5,-8.65925,-17.3185
+williams_r_oversold,time_stop_20d,Information Technology,2,0.5,4.9796,9.9592
+williams_r_oversold,trailing_10pct,Communication Services,2,1.0,20.451749999999997,40.903499999999994
+williams_r_oversold,trailing_10pct,Consumer Discretionary,2,0.5,1.7010000000000005,3.402000000000001
+williams_r_oversold,trailing_10pct,Information Technology,2,0.5,8.799,17.598
+williams_r_oversold,trailing_15pct,Communication Services,2,1.0,22.129099999999998,44.258199999999995
+williams_r_oversold,trailing_15pct,Consumer Discretionary,2,0.5,-3.597549999999999,-7.195099999999998
+williams_r_oversold,trailing_15pct,Information Technology,2,0.5,8.799,17.598
+williams_r_oversold,trailing_5pct,Communication Services,2,1.0,22.438299999999998,44.876599999999996
+williams_r_oversold,trailing_5pct,Consumer Discretionary,2,0.5,4.4811499999999995,8.962299999999999
+williams_r_oversold,trailing_5pct,Information Technology,2,1.0,5.6968,11.3936

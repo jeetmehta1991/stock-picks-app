@@ -1,0 +1,164 @@
+entry_date,sector,trades,total_trades,sector_pct
+2022-05-05,Consumer Discretionary,1,9,11.11111111111111
+2022-05-05,Energy,1,9,11.11111111111111
+2022-05-05,Industrials,1,9,11.11111111111111
+2022-05-05,Information Technology,2,9,22.22222222222222
+2022-05-05,Real Estate,3,9,33.33333333333333
+2022-05-05,Technology,1,9,11.11111111111111
+2022-05-09,Communication Services,1,7,14.285714285714285
+2022-05-09,Financials,2,7,28.57142857142857
+2022-05-09,Industrials,1,7,14.285714285714285
+2022-05-09,Materials,3,7,42.857142857142854
+2022-05-10,Consumer Discretionary,1,3,33.33333333333333
+2022-05-10,Consumer Staples,1,3,33.33333333333333
+2022-05-10,Information Technology,1,3,33.33333333333333
+2022-05-12,Communication Services,1,4,25.0
+2022-05-12,Financials,1,4,25.0
+2022-05-12,Information Technology,1,4,25.0
+2022-05-12,Materials,1,4,25.0
+2022-05-13,Consumer Staples,1,7,14.285714285714285
+2022-05-13,Energy,2,7,28.57142857142857
+2022-05-13,Financials,1,7,14.285714285714285
+2022-05-13,Industrials,1,7,14.285714285714285
+2022-05-13,Materials,2,7,28.57142857142857
+2022-05-16,Information Technology,2,3,66.66666666666666
+2022-05-16,Materials,1,3,33.33333333333333
+2022-05-17,Energy,2,4,50.0
+2022-05-17,Health Care,1,4,25.0
+2022-05-17,Utilities,1,4,25.0
+2022-05-18,Industrials,1,1,100.0
+2022-05-19,Industrials,1,2,50.0
+2022-05-19,Information Technology,1,2,50.0
+2022-05-23,Consumer Discretionary,1,1,100.0
+2022-05-24,Consumer Discretionary,1,1,100.0
+2022-05-26,Consumer Staples,1,4,25.0
+2022-05-26,Fixed Income,1,4,25.0
+2022-05-26,Utilities,2,4,50.0
+2022-05-27,Health Care,1,1,100.0
+2022-05-31,Industrials,1,1,100.0
+2022-06-01,Consumer Discretionary,1,1,100.0
+2022-06-06,Financials,1,1,100.0
+2022-06-08,Consumer Staples,1,1,100.0
+2022-06-09,Materials,1,1,100.0
+2022-06-13,Consumer Discretionary,1,5,20.0
+2022-06-13,Fixed Income,1,5,20.0
+2022-06-13,Health Care,1,5,20.0
+2022-06-13,Industrials,1,5,20.0
+2022-06-13,Materials,1,5,20.0
+2022-06-16,Consumer Discretionary,1,8,12.5
+2022-06-16,Energy,2,8,25.0
+2022-06-16,Financials,1,8,12.5
+2022-06-16,Industrials,2,8,25.0
+2022-06-16,Information Technology,1,8,12.5
+2022-06-16,Utilities,1,8,12.5
+2022-06-17,Financials,1,8,12.5
+2022-06-17,Health Care,1,8,12.5
+2022-06-17,Industrials,1,8,12.5
+2022-06-17,Information Technology,1,8,12.5
+2022-06-17,Utilities,4,8,50.0
+2022-06-21,Communication Services,1,1,100.0
+2022-06-24,Consumer Discretionary,1,4,25.0
+2022-06-24,Energy,2,4,50.0
+2022-06-24,Health Care,1,4,25.0
+2022-08-26,Financials,2,9,22.22222222222222
+2022-08-26,Health Care,2,9,22.22222222222222
+2022-08-26,Industrials,1,9,11.11111111111111
+2022-08-26,Information Technology,1,9,11.11111111111111
+2022-08-26,Materials,1,9,11.11111111111111
+2022-08-26,Real Estate,1,9,11.11111111111111
+2022-08-26,Technology,1,9,11.11111111111111
+2022-10-28,Consumer Discretionary,1,8,12.5
+2022-10-28,Consumer Staples,2,8,25.0
+2022-10-28,Financials,2,8,25.0
+2022-10-28,Health Care,2,8,25.0
+2022-10-28,Real Estate,1,8,12.5
+2022-12-30,Consumer Discretionary,1,8,12.5
+2022-12-30,Financials,1,8,12.5
+2022-12-30,Fixed Income,1,8,12.5
+2022-12-30,Industrials,1,8,12.5
+2022-12-30,Information Technology,2,8,25.0
+2022-12-30,Materials,1,8,12.5
+2022-12-30,Utilities,1,8,12.5
+2023-03-03,Energy,1,9,11.11111111111111
+2023-03-03,Financials,1,9,11.11111111111111
+2023-03-03,Fixed Income,1,9,11.11111111111111
+2023-03-03,Industrials,2,9,22.22222222222222
+2023-03-03,Information Technology,1,9,11.11111111111111
+2023-03-03,Materials,2,9,22.22222222222222
+2023-03-03,Utilities,1,9,11.11111111111111
+2023-09-08,Consumer Discretionary,1,9,11.11111111111111
+2023-09-08,Energy,1,9,11.11111111111111
+2023-09-08,Financials,1,9,11.11111111111111
+2023-09-08,Health Care,1,9,11.11111111111111
+2023-09-08,Industrials,2,9,22.22222222222222
+2023-09-08,Information Technology,1,9,11.11111111111111
+2023-09-08,Real Estate,2,9,22.22222222222222
+2023-11-10,Consumer Discretionary,3,7,42.857142857142854
+2023-11-10,Industrials,1,7,14.285714285714285
+2023-11-10,Information Technology,3,7,42.857142857142854
+2023-12-13,Financials,1,1,100.0
+2024-02-12,Consumer Discretionary,2,10,20.0
+2024-02-12,Health Care,2,10,20.0
+2024-02-12,Industrials,2,10,20.0
+2024-02-12,Information Technology,1,10,10.0
+2024-02-12,Real Estate,2,10,20.0
+2024-02-12,Utilities,1,10,10.0
+2024-04-12,Communication Services,1,8,12.5
+2024-04-12,Consumer Discretionary,2,8,25.0
+2024-04-12,Consumer Staples,1,8,12.5
+2024-04-12,Energy,1,8,12.5
+2024-04-12,Financials,1,8,12.5
+2024-04-12,Health Care,1,8,12.5
+2024-04-12,Materials,1,8,12.5
+2024-06-03,Consumer Discretionary,1,9,11.11111111111111
+2024-06-03,Energy,3,9,33.33333333333333
+2024-06-03,Fixed Income,1,9,11.11111111111111
+2024-06-03,Industrials,2,9,22.22222222222222
+2024-06-03,Information Technology,2,9,22.22222222222222
+2024-08-02,Health Care,1,5,20.0
+2024-08-02,Information Technology,1,5,20.0
+2024-08-02,Real Estate,1,5,20.0
+2024-08-02,Utilities,2,5,40.0
+2025-02-07,Information Technology,1,1,100.0
+2025-04-11,Energy,1,9,11.11111111111111
+2025-04-11,Fixed Income,1,9,11.11111111111111
+2025-04-11,Health Care,1,9,11.11111111111111
+2025-04-11,Industrials,3,9,33.33333333333333
+2025-04-11,Information Technology,1,9,11.11111111111111
+2025-04-11,Materials,1,9,11.11111111111111
+2025-04-11,Utilities,1,9,11.11111111111111
+2025-06-13,Communication Services,1,9,11.11111111111111
+2025-06-13,Consumer Discretionary,1,9,11.11111111111111
+2025-06-13,Energy,1,9,11.11111111111111
+2025-06-13,Industrials,2,9,22.22222222222222
+2025-06-13,Information Technology,3,9,33.33333333333333
+2025-06-13,Utilities,1,9,11.11111111111111
+2025-08-15,Consumer Discretionary,1,8,12.5
+2025-08-15,Consumer Staples,3,8,37.5
+2025-08-15,Energy,2,8,25.0
+2025-08-15,Health Care,2,8,25.0
+2025-10-17,Consumer Discretionary,1,8,12.5
+2025-10-17,Energy,1,8,12.5
+2025-10-17,Financials,2,8,25.0
+2025-10-17,Fixed Income,1,8,12.5
+2025-10-17,Materials,1,8,12.5
+2025-10-17,Real Estate,2,8,25.0
+2025-12-19,Consumer Discretionary,3,9,33.33333333333333
+2025-12-19,Health Care,1,9,11.11111111111111
+2025-12-19,Industrials,1,9,11.11111111111111
+2025-12-19,Materials,1,9,11.11111111111111
+2025-12-19,Real Estate,1,9,11.11111111111111
+2025-12-19,Utilities,2,9,22.22222222222222
+2026-02-20,Consumer Discretionary,3,10,30.0
+2026-02-20,Consumer Staples,1,10,10.0
+2026-02-20,Industrials,1,10,10.0
+2026-02-20,Information Technology,2,10,20.0
+2026-02-20,Real Estate,2,10,20.0
+2026-02-20,Utilities,1,10,10.0
+2026-04-24,Consumer Staples,1,10,10.0
+2026-04-24,Energy,1,10,10.0
+2026-04-24,Financials,1,10,10.0
+2026-04-24,Health Care,1,10,10.0
+2026-04-24,Industrials,2,10,20.0
+2026-04-24,Information Technology,3,10,30.0
+2026-04-24,Technology,1,10,10.0

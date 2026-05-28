@@ -1,0 +1,7 @@
+{
+  "long_ticker": "AAPL",
+  "hedge_ticker": "XLK",
+  "hedge_direction": "short",
+  "hedge_dollar": 10000.0,
+  "note": "plan_only_execution_deferred"
+}

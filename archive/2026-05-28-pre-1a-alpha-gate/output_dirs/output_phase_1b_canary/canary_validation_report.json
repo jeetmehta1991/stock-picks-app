@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-05-27T08:27:05.332573+00:00",
+  "signals_file": "output_phase_1b_canary\\canary_signals.parquet",
+  "n_signals": 30,
+  "checks": [
+    {
+      "name": "G1 sample size",
+      "pass": true,
+      "message": "N=30 in [20, 50]"
+    },
+    {
+      "name": "G2 tier distribution",
+      "pass": true,
+      "message": "max tier share=50% <= 70%; distribution={3: 0.5, 4: 0.2, 2: 0.13333333333333333, 5: 0.1, 1: 0.06666666666666667}"
+    },
+    {
+      "name": "G3 PIT compliance",
+      "pass": true,
+      "message": "30/30 PIT compliant"
+    },
+    {
+      "name": "G4 score-tier coherence",
+      "pass": true,
+      "message": "tier=1 mean=16.5 (n=2), tier=5 mean=92.7 (n=3)"
+    },
+    {
+      "name": "G5 context quality",
+      "pass": true,
+      "message": "skipped (all dry-run mock contexts)"
+    }
+  ],
+  "overall_pass": true
+}

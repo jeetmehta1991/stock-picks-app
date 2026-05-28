@@ -1,0 +1,10 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,composite_score,recommended
+cmf_flip,earnings_blackout,11,0.5455,14.8354,120.6889,1327.5775,-43.1888,902.0,51.82,True
+smc_inverse_fvg,hybrid_50pct_target,84,0.7143,0.4521,-7.1065,-596.9467,-743.9506,197.1,28.57,True
+xs_momentum_top_decile,earnings_blackout,14,0.7857,11.6756,42.3715,593.2016,-31.5961,878.2,61.43,True
+monthly_bias_momentum_long,earnings_blackout,23,0.8261,14.7431,34.4303,791.8975,-32.0871,800.9,63.04,True
+xs_low_beta_long,earnings_blackout,20,0.5,2.5748,10.4336,208.6712,-42.5162,590.1,50.0,True
+buyback_8k_recent_long,time_stop_10d,26,0.7692,1.8344,1.0245,26.6363,-11.0965,14.9,69.16,True
+cpr_narrow_bullish,next_pivot_target,10,1.0,999.0,2.3441,23.4411,0.0,8.0,100.0,True
+po3_bullish,earnings_blackout,16,0.6875,26.756,93.3068,1492.9093,-39.5037,689.2,57.5,True
+htf_aligned_breakout_long,trailing_5pct,11,0.5455,1.8795,1.4622,16.0839,-9.1402,39.5,64.49,True

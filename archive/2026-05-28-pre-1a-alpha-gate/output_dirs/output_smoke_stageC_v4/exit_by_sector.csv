@@ -1,0 +1,1251 @@
+strategy,exit_method,sector,n,win_rate,avg_pnl_pct,total_pnl_pct
+avwap_50_reclaim,atr_trail_1x,Broad Market,1,0.0,-0.602,-0.602
+avwap_50_reclaim,atr_trail_1x,Communication Services,1,0.0,-0.8026,-0.8026
+avwap_50_reclaim,atr_trail_1x,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,atr_trail_1x,Health Care,2,0.5,-0.22914999999999996,-0.45829999999999993
+avwap_50_reclaim,atr_trail_2x,Broad Market,1,0.0,-1.841,-1.841
+avwap_50_reclaim,atr_trail_2x,Communication Services,1,0.0,-2.2308,-2.2308
+avwap_50_reclaim,atr_trail_2x,Consumer Discretionary,1,1.0,3.3691,3.3691
+avwap_50_reclaim,atr_trail_2x,Health Care,2,0.5,1.51995,3.0399
+avwap_50_reclaim,atr_trail_mae_conditional,Broad Market,1,0.0,-0.602,-0.602
+avwap_50_reclaim,atr_trail_mae_conditional,Communication Services,1,0.0,-0.8026,-0.8026
+avwap_50_reclaim,atr_trail_mae_conditional,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,atr_trail_mae_conditional,Health Care,2,0.5,-0.22914999999999996,-0.45829999999999993
+avwap_50_reclaim,atr_trail_vix_conditional,Broad Market,1,0.0,-0.602,-0.602
+avwap_50_reclaim,atr_trail_vix_conditional,Communication Services,1,0.0,-1.4384,-1.4384
+avwap_50_reclaim,atr_trail_vix_conditional,Consumer Discretionary,1,0.0,-1.4996,-1.4996
+avwap_50_reclaim,atr_trail_vix_conditional,Health Care,2,0.0,-0.63815,-1.2763
+avwap_50_reclaim,break_even_at_1r,Broad Market,1,0.0,-1.2333,-1.2333
+avwap_50_reclaim,break_even_at_1r,Communication Services,1,0.0,-1.854,-1.854
+avwap_50_reclaim,break_even_at_1r,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,break_even_at_1r,Health Care,2,0.5,-0.5132000000000001,-1.0264000000000002
+avwap_50_reclaim,breakeven_plus_trail,Broad Market,1,0.0,-2.4665,-2.4665
+avwap_50_reclaim,breakeven_plus_trail,Communication Services,1,0.0,0.0,0.0
+avwap_50_reclaim,breakeven_plus_trail,Consumer Discretionary,1,1.0,7.057,7.057
+avwap_50_reclaim,breakeven_plus_trail,Health Care,2,0.5,-1.5448000000000002,-3.0896000000000003
+avwap_50_reclaim,chandelier_3x,Broad Market,1,0.0,-1.0142,-1.0142
+avwap_50_reclaim,chandelier_3x,Communication Services,1,0.0,-2.4983,-2.4983
+avwap_50_reclaim,chandelier_3x,Consumer Discretionary,1,1.0,2.8766,2.8766
+avwap_50_reclaim,chandelier_3x,Health Care,2,0.5,1.0628499999999999,2.1256999999999997
+avwap_50_reclaim,class_time_stop,Broad Market,1,1.0,4.8469,4.8469
+avwap_50_reclaim,class_time_stop,Communication Services,1,0.0,-1.945,-1.945
+avwap_50_reclaim,class_time_stop,Consumer Discretionary,1,1.0,10.5928,10.5928
+avwap_50_reclaim,class_time_stop,Health Care,2,1.0,5.49695,10.9939
+avwap_50_reclaim,earnings_blackout,Broad Market,1,1.0,9.7054,9.7054
+avwap_50_reclaim,earnings_blackout,Communication Services,1,0.0,-29.3989,-29.3989
+avwap_50_reclaim,earnings_blackout,Consumer Discretionary,1,0.0,-2.5887,-2.5887
+avwap_50_reclaim,earnings_blackout,Health Care,2,0.5,-2.2196000000000002,-4.4392000000000005
+avwap_50_reclaim,fixed_4r_2r,Broad Market,1,0.0,-2.4665,-2.4665
+avwap_50_reclaim,fixed_4r_2r,Communication Services,1,0.0,-3.708,-3.708
+avwap_50_reclaim,fixed_4r_2r,Consumer Discretionary,1,1.0,8.3628,8.3628
+avwap_50_reclaim,fixed_4r_2r,Health Care,2,0.5,2.1834499999999997,4.366899999999999
+avwap_50_reclaim,hybrid_50pct_target,Broad Market,1,1.0,6.7026,6.7026
+avwap_50_reclaim,hybrid_50pct_target,Communication Services,1,0.0,-10.0,-10.0
+avwap_50_reclaim,hybrid_50pct_target,Consumer Discretionary,1,1.0,6.0515,6.0515
+avwap_50_reclaim,hybrid_50pct_target,Health Care,2,1.0,6.22145,12.4429
+avwap_50_reclaim,ma_exit_ema9,Broad Market,1,0.0,-0.7041,-0.7041
+avwap_50_reclaim,ma_exit_ema9,Communication Services,1,0.0,-0.6716,-0.6716
+avwap_50_reclaim,ma_exit_ema9,Consumer Discretionary,1,1.0,3.8367,3.8367
+avwap_50_reclaim,ma_exit_ema9,Health Care,2,0.5,2.3128,4.6256
+avwap_50_reclaim,mfe_lockin_trail,Broad Market,1,0.0,-0.602,-0.602
+avwap_50_reclaim,mfe_lockin_trail,Communication Services,1,0.0,-0.8026,-0.8026
+avwap_50_reclaim,mfe_lockin_trail,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,mfe_lockin_trail,Health Care,2,0.5,-0.22914999999999996,-0.45829999999999993
+avwap_50_reclaim,multi_tier_partial,Broad Market,1,0.0,-0.602,-0.602
+avwap_50_reclaim,multi_tier_partial,Communication Services,1,0.0,-0.8026,-0.8026
+avwap_50_reclaim,multi_tier_partial,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,multi_tier_partial,Health Care,2,0.5,0.00275000000000003,0.00550000000000006
+avwap_50_reclaim,next_pivot_target,Broad Market,1,1.0,0.48,0.48
+avwap_50_reclaim,next_pivot_target,Communication Services,1,1.0,0.0963,0.0963
+avwap_50_reclaim,next_pivot_target,Consumer Discretionary,1,1.0,8.3628,8.3628
+avwap_50_reclaim,next_pivot_target,Health Care,2,0.5,-1.9609,-3.9218
+avwap_50_reclaim,r_multiple_2r,Broad Market,1,0.0,-1.2333,-1.2333
+avwap_50_reclaim,r_multiple_2r,Communication Services,1,0.0,-1.854,-1.854
+avwap_50_reclaim,r_multiple_2r,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,r_multiple_2r,Health Care,2,0.5,1.0917,2.1834
+avwap_50_reclaim,r_multiple_3r,Broad Market,1,0.0,-1.2333,-1.2333
+avwap_50_reclaim,r_multiple_3r,Communication Services,1,0.0,-1.854,-1.854
+avwap_50_reclaim,r_multiple_3r,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,r_multiple_3r,Health Care,2,0.5,2.1534,4.3068
+avwap_50_reclaim,regime_flip,Broad Market,1,1.0,1.5994,1.5994
+avwap_50_reclaim,regime_flip,Communication Services,1,0.0,-0.3157,-0.3157
+avwap_50_reclaim,regime_flip,Consumer Discretionary,1,1.0,9.0054,9.0054
+avwap_50_reclaim,regime_flip,Health Care,2,1.0,6.26435,12.5287
+avwap_50_reclaim,reverse_signal,Broad Market,1,0.0,-0.602,-0.602
+avwap_50_reclaim,reverse_signal,Communication Services,1,0.0,-0.8026,-0.8026
+avwap_50_reclaim,reverse_signal,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,reverse_signal,Health Care,2,0.5,-0.22914999999999996,-0.45829999999999993
+avwap_50_reclaim,smc_mitigation_zone,Broad Market,1,1.0,0.6369,0.6369
+avwap_50_reclaim,smc_mitigation_zone,Communication Services,1,0.0,-0.6716,-0.6716
+avwap_50_reclaim,smc_mitigation_zone,Consumer Discretionary,1,0.0,-1.9995,-1.9995
+avwap_50_reclaim,smc_mitigation_zone,Health Care,2,1.0,0.4139,0.8278
+avwap_50_reclaim,time_stop_10d,Broad Market,1,0.0,-4.0785,-4.0785
+avwap_50_reclaim,time_stop_10d,Communication Services,1,0.0,-1.5143,-1.5143
+avwap_50_reclaim,time_stop_10d,Consumer Discretionary,1,1.0,5.8588,5.8588
+avwap_50_reclaim,time_stop_10d,Health Care,2,0.5,-0.14705000000000001,-0.29410000000000003
+avwap_50_reclaim,time_stop_20d,Broad Market,1,1.0,1.5994,1.5994
+avwap_50_reclaim,time_stop_20d,Communication Services,1,0.0,-0.3157,-0.3157
+avwap_50_reclaim,time_stop_20d,Consumer Discretionary,1,1.0,9.0054,9.0054
+avwap_50_reclaim,time_stop_20d,Health Care,2,1.0,6.26435,12.5287
+avwap_50_reclaim,trailing_10pct,Broad Market,1,1.0,9.7054,9.7054
+avwap_50_reclaim,trailing_10pct,Communication Services,1,0.0,-7.1155,-7.1155
+avwap_50_reclaim,trailing_10pct,Consumer Discretionary,1,1.0,6.1045,6.1045
+avwap_50_reclaim,trailing_10pct,Health Care,2,1.0,6.1631,12.3262
+avwap_50_reclaim,trailing_15pct,Broad Market,1,1.0,9.7054,9.7054
+avwap_50_reclaim,trailing_15pct,Communication Services,1,0.0,-12.2758,-12.2758
+avwap_50_reclaim,trailing_15pct,Consumer Discretionary,1,1.0,2.8323,2.8323
+avwap_50_reclaim,trailing_15pct,Health Care,2,0.5,1.8978000000000002,3.7956000000000003
+avwap_50_reclaim,trailing_5pct,Broad Market,1,0.0,-4.3949,-4.3949
+avwap_50_reclaim,trailing_5pct,Communication Services,1,0.0,-1.9553,-1.9553
+avwap_50_reclaim,trailing_5pct,Consumer Discretionary,1,1.0,3.1361,3.1361
+avwap_50_reclaim,trailing_5pct,Health Care,2,0.5,1.0422,2.0844
+bollinger_lower,atr_trail_1x,Communication Services,1,0.0,-1.5361,-1.5361
+bollinger_lower,atr_trail_1x,Consumer Discretionary,4,0.25,-0.5543749999999998,-2.2174999999999994
+bollinger_lower,atr_trail_1x,Energy,2,0.5,0.34455000000000013,0.6891000000000003
+bollinger_lower,atr_trail_1x,Financials,1,0.0,-0.448,-0.448
+bollinger_lower,atr_trail_1x,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,atr_trail_1x,Industrials,1,0.0,-0.2631,-0.2631
+bollinger_lower,atr_trail_1x,Information Technology,5,0.2,1.9212999999999998,9.606499999999999
+bollinger_lower,atr_trail_1x,Real Estate,1,0.0,-2.3868,-2.3868
+bollinger_lower,atr_trail_2x,Communication Services,1,0.0,-1.5488,-1.5488
+bollinger_lower,atr_trail_2x,Consumer Discretionary,4,0.0,-3.565025,-14.2601
+bollinger_lower,atr_trail_2x,Energy,2,1.0,3.6356,7.2712
+bollinger_lower,atr_trail_2x,Financials,1,1.0,0.0402,0.0402
+bollinger_lower,atr_trail_2x,Health Care,4,0.0,-4.6436,-18.5744
+bollinger_lower,atr_trail_2x,Industrials,1,0.0,-2.913,-2.913
+bollinger_lower,atr_trail_2x,Information Technology,5,0.2,-1.6149799999999999,-8.0749
+bollinger_lower,atr_trail_2x,Real Estate,1,0.0,-4.4666,-4.4666
+bollinger_lower,atr_trail_mae_conditional,Communication Services,1,0.0,-1.5361,-1.5361
+bollinger_lower,atr_trail_mae_conditional,Consumer Discretionary,4,0.25,-0.5543749999999998,-2.2174999999999994
+bollinger_lower,atr_trail_mae_conditional,Energy,2,0.5,0.34455000000000013,0.6891000000000003
+bollinger_lower,atr_trail_mae_conditional,Financials,1,0.0,-0.448,-0.448
+bollinger_lower,atr_trail_mae_conditional,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,atr_trail_mae_conditional,Industrials,1,0.0,-0.2631,-0.2631
+bollinger_lower,atr_trail_mae_conditional,Information Technology,5,0.2,1.9212999999999998,9.606499999999999
+bollinger_lower,atr_trail_mae_conditional,Real Estate,1,0.0,-2.3868,-2.3868
+bollinger_lower,atr_trail_vix_conditional,Communication Services,1,0.0,-2.4005,-2.4005
+bollinger_lower,atr_trail_vix_conditional,Consumer Discretionary,4,0.25,-1.67265,-6.6906
+bollinger_lower,atr_trail_vix_conditional,Energy,2,0.5,0.7946000000000001,1.5892000000000002
+bollinger_lower,atr_trail_vix_conditional,Financials,1,0.0,-2.2291,-2.2291
+bollinger_lower,atr_trail_vix_conditional,Health Care,4,0.0,-3.213025,-12.8521
+bollinger_lower,atr_trail_vix_conditional,Industrials,1,0.0,-1.5881,-1.5881
+bollinger_lower,atr_trail_vix_conditional,Information Technology,5,0.2,0.1404600000000002,0.702300000000001
+bollinger_lower,atr_trail_vix_conditional,Real Estate,1,0.0,-3.1235,-3.1235
+bollinger_lower,break_even_at_1r,Communication Services,1,0.0,-2.1803,-2.1803
+bollinger_lower,break_even_at_1r,Consumer Discretionary,4,0.25,-1.3134,-5.2536
+bollinger_lower,break_even_at_1r,Energy,2,0.0,-1.98835,-3.9767
+bollinger_lower,break_even_at_1r,Financials,1,0.0,-0.448,-0.448
+bollinger_lower,break_even_at_1r,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,break_even_at_1r,Industrials,1,0.0,-2.9015,-2.9015
+bollinger_lower,break_even_at_1r,Information Technology,5,0.2,0.7865400000000001,3.9327000000000005
+bollinger_lower,break_even_at_1r,Real Estate,1,0.0,-2.6063,-2.6063
+bollinger_lower,breakeven_plus_trail,Communication Services,1,0.0,0.0,0.0
+bollinger_lower,breakeven_plus_trail,Consumer Discretionary,4,0.25,-2.1704,-8.6816
+bollinger_lower,breakeven_plus_trail,Energy,2,0.5,9.54575,19.0915
+bollinger_lower,breakeven_plus_trail,Financials,1,0.0,0.0,0.0
+bollinger_lower,breakeven_plus_trail,Health Care,4,0.0,-3.8110999999999997,-15.244399999999999
+bollinger_lower,breakeven_plus_trail,Industrials,1,0.0,-5.8029,-5.8029
+bollinger_lower,breakeven_plus_trail,Information Technology,5,0.2,0.18138000000000004,0.9069000000000003
+bollinger_lower,breakeven_plus_trail,Real Estate,1,0.0,-5.2126,-5.2126
+bollinger_lower,chandelier_3x,Communication Services,1,0.0,-0.1362,-0.1362
+bollinger_lower,chandelier_3x,Consumer Discretionary,4,0.0,-0.131325,-0.5253
+bollinger_lower,chandelier_3x,Energy,2,0.0,-1.1733,-2.3466
+bollinger_lower,chandelier_3x,Financials,1,0.0,-0.448,-0.448
+bollinger_lower,chandelier_3x,Health Care,4,0.0,-0.130575,-0.5223
+bollinger_lower,chandelier_3x,Industrials,1,0.0,-0.0867,-0.0867
+bollinger_lower,chandelier_3x,Information Technology,5,0.0,-0.17306,-0.8653
+bollinger_lower,chandelier_3x,Real Estate,1,0.0,-0.1048,-0.1048
+bollinger_lower,class_time_stop,Communication Services,1,1.0,1.0458,1.0458
+bollinger_lower,class_time_stop,Consumer Discretionary,4,0.25,-4.528925,-18.1157
+bollinger_lower,class_time_stop,Energy,2,1.0,19.702849999999998,39.405699999999996
+bollinger_lower,class_time_stop,Financials,1,1.0,11.6109,11.6109
+bollinger_lower,class_time_stop,Health Care,4,0.5,0.09160000000000013,0.3664000000000005
+bollinger_lower,class_time_stop,Industrials,1,0.0,-5.1013,-5.1013
+bollinger_lower,class_time_stop,Information Technology,5,0.2,-5.13002,-25.6501
+bollinger_lower,class_time_stop,Real Estate,1,0.0,-8.2052,-8.2052
+bollinger_lower,earnings_blackout,Communication Services,1,1.0,1.8258,1.8258
+bollinger_lower,earnings_blackout,Consumer Discretionary,4,0.25,-2.536025,-10.1441
+bollinger_lower,earnings_blackout,Energy,2,1.0,29.524250000000002,59.048500000000004
+bollinger_lower,earnings_blackout,Financials,1,0.0,-13.4877,-13.4877
+bollinger_lower,earnings_blackout,Health Care,4,0.25,-5.0329,-20.1316
+bollinger_lower,earnings_blackout,Industrials,1,1.0,9.2033,9.2033
+bollinger_lower,earnings_blackout,Information Technology,5,1.0,40.29846,201.4923
+bollinger_lower,earnings_blackout,Real Estate,1,0.0,-18.2852,-18.2852
+bollinger_lower,fixed_4r_2r,Communication Services,1,0.0,-4.3607,-4.3607
+bollinger_lower,fixed_4r_2r,Consumer Discretionary,4,0.25,5.064875,20.2595
+bollinger_lower,fixed_4r_2r,Energy,2,1.0,18.84845,37.6969
+bollinger_lower,fixed_4r_2r,Financials,1,1.0,14.348,14.348
+bollinger_lower,fixed_4r_2r,Health Care,4,0.0,-4.910475,-19.6419
+bollinger_lower,fixed_4r_2r,Industrials,1,0.0,-5.8029,-5.8029
+bollinger_lower,fixed_4r_2r,Information Technology,5,0.2,-0.06469999999999984,-0.32349999999999923
+bollinger_lower,fixed_4r_2r,Real Estate,1,0.0,-5.2126,-5.2126
+bollinger_lower,hybrid_50pct_target,Communication Services,1,1.0,3.2705,3.2705
+bollinger_lower,hybrid_50pct_target,Consumer Discretionary,4,0.5,1.5069000000000004,6.027600000000001
+bollinger_lower,hybrid_50pct_target,Energy,2,1.0,11.891100000000002,23.782200000000003
+bollinger_lower,hybrid_50pct_target,Financials,1,1.0,7.5519,7.5519
+bollinger_lower,hybrid_50pct_target,Health Care,4,0.75,1.376525,5.5061
+bollinger_lower,hybrid_50pct_target,Industrials,1,0.0,-10.0,-10.0
+bollinger_lower,hybrid_50pct_target,Information Technology,5,0.2,-4.03114,-20.1557
+bollinger_lower,hybrid_50pct_target,Real Estate,1,0.0,-10.0,-10.0
+bollinger_lower,ma_exit_ema9,Communication Services,1,1.0,0.4098,0.4098
+bollinger_lower,ma_exit_ema9,Consumer Discretionary,4,0.25,-0.09744999999999998,-0.3897999999999999
+bollinger_lower,ma_exit_ema9,Energy,2,0.5,0.10019999999999996,0.2003999999999999
+bollinger_lower,ma_exit_ema9,Financials,1,1.0,3.4501,3.4501
+bollinger_lower,ma_exit_ema9,Health Care,4,0.0,-0.53335,-2.1334
+bollinger_lower,ma_exit_ema9,Industrials,1,0.0,-0.2793,-0.2793
+bollinger_lower,ma_exit_ema9,Information Technology,5,0.6,-0.4268000000000002,-2.134000000000001
+bollinger_lower,ma_exit_ema9,Real Estate,1,1.0,0.2661,0.2661
+bollinger_lower,mfe_lockin_trail,Communication Services,1,0.0,-1.5361,-1.5361
+bollinger_lower,mfe_lockin_trail,Consumer Discretionary,4,0.25,-0.5543749999999998,-2.2174999999999994
+bollinger_lower,mfe_lockin_trail,Energy,2,0.5,0.34455000000000013,0.6891000000000003
+bollinger_lower,mfe_lockin_trail,Financials,1,0.0,-0.448,-0.448
+bollinger_lower,mfe_lockin_trail,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,mfe_lockin_trail,Industrials,1,0.0,-0.2631,-0.2631
+bollinger_lower,mfe_lockin_trail,Information Technology,5,0.2,1.2606999999999995,6.303499999999998
+bollinger_lower,mfe_lockin_trail,Real Estate,1,0.0,-2.3868,-2.3868
+bollinger_lower,multi_tier_partial,Communication Services,1,0.0,-1.5361,-1.5361
+bollinger_lower,multi_tier_partial,Consumer Discretionary,4,0.25,-0.2404000000000001,-0.9616000000000005
+bollinger_lower,multi_tier_partial,Energy,2,0.5,0.5227999999999999,1.0455999999999999
+bollinger_lower,multi_tier_partial,Financials,1,1.0,0.897,0.897
+bollinger_lower,multi_tier_partial,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,multi_tier_partial,Industrials,1,0.0,-0.2631,-0.2631
+bollinger_lower,multi_tier_partial,Information Technology,5,0.2,0.28065999999999997,1.4032999999999998
+bollinger_lower,multi_tier_partial,Real Estate,1,0.0,-2.3868,-2.3868
+bollinger_lower,next_pivot_target,Communication Services,1,1.0,10.2523,10.2523
+bollinger_lower,next_pivot_target,Consumer Discretionary,4,0.25,-8.487125,-33.9485
+bollinger_lower,next_pivot_target,Energy,2,1.0,9.04115,18.0823
+bollinger_lower,next_pivot_target,Financials,1,1.0,7.981,7.981
+bollinger_lower,next_pivot_target,Health Care,4,1.0,2.31555,9.2622
+bollinger_lower,next_pivot_target,Industrials,1,0.0,-10.0,-10.0
+bollinger_lower,next_pivot_target,Information Technology,5,0.2,-5.56194,-27.8097
+bollinger_lower,next_pivot_target,Real Estate,1,0.0,-10.0,-10.0
+bollinger_lower,r_multiple_2r,Communication Services,1,0.0,-2.1803,-2.1803
+bollinger_lower,r_multiple_2r,Consumer Discretionary,4,0.0,-3.61425,-14.457
+bollinger_lower,r_multiple_2r,Energy,2,0.5,3.6340999999999997,7.268199999999999
+bollinger_lower,r_multiple_2r,Financials,1,1.0,7.174,7.174
+bollinger_lower,r_multiple_2r,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,r_multiple_2r,Industrials,1,0.0,-2.9015,-2.9015
+bollinger_lower,r_multiple_2r,Information Technology,5,0.2,-0.2746399999999998,-1.3731999999999989
+bollinger_lower,r_multiple_2r,Real Estate,1,0.0,-2.6063,-2.6063
+bollinger_lower,r_multiple_3r,Communication Services,1,0.0,-2.1803,-2.1803
+bollinger_lower,r_multiple_3r,Consumer Discretionary,4,0.0,-3.61425,-14.457
+bollinger_lower,r_multiple_3r,Energy,2,0.5,6.1829,12.3658
+bollinger_lower,r_multiple_3r,Financials,1,0.0,-3.587,-3.587
+bollinger_lower,r_multiple_3r,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,r_multiple_3r,Industrials,1,0.0,-2.9015,-2.9015
+bollinger_lower,r_multiple_3r,Information Technology,5,0.2,2.27646,11.3823
+bollinger_lower,r_multiple_3r,Real Estate,1,0.0,-2.6063,-2.6063
+bollinger_lower,regime_flip,Communication Services,1,1.0,4.3042,4.3042
+bollinger_lower,regime_flip,Consumer Discretionary,4,0.0,-8.170175,-32.6807
+bollinger_lower,regime_flip,Energy,2,1.0,15.136299999999999,30.272599999999997
+bollinger_lower,regime_flip,Financials,1,1.0,12.8557,12.8557
+bollinger_lower,regime_flip,Health Care,4,0.25,0.483025,1.9321
+bollinger_lower,regime_flip,Industrials,1,0.0,-2.3987,-2.3987
+bollinger_lower,regime_flip,Information Technology,5,0.4,1.2719199999999997,6.359599999999999
+bollinger_lower,regime_flip,Real Estate,1,0.0,-5.1051,-5.1051
+bollinger_lower,reverse_signal,Communication Services,1,0.0,-1.5361,-1.5361
+bollinger_lower,reverse_signal,Consumer Discretionary,4,0.25,-0.5543749999999998,-2.2174999999999994
+bollinger_lower,reverse_signal,Energy,2,0.5,0.34455000000000013,0.6891000000000003
+bollinger_lower,reverse_signal,Financials,1,0.0,-0.448,-0.448
+bollinger_lower,reverse_signal,Health Care,4,0.0,-2.301425,-9.2057
+bollinger_lower,reverse_signal,Industrials,1,0.0,-0.2631,-0.2631
+bollinger_lower,reverse_signal,Information Technology,5,0.2,1.9212999999999998,9.606499999999999
+bollinger_lower,reverse_signal,Real Estate,1,0.0,-2.3868,-2.3868
+bollinger_lower,smc_mitigation_zone,Communication Services,1,1.0,0.4098,0.4098
+bollinger_lower,smc_mitigation_zone,Consumer Discretionary,4,0.25,-0.1871,-0.7484
+bollinger_lower,smc_mitigation_zone,Energy,2,0.5,1.4263,2.8526
+bollinger_lower,smc_mitigation_zone,Financials,1,0.0,-0.448,-0.448
+bollinger_lower,smc_mitigation_zone,Health Care,4,0.0,-0.53335,-2.1334
+bollinger_lower,smc_mitigation_zone,Industrials,1,0.0,-0.2793,-0.2793
+bollinger_lower,smc_mitigation_zone,Information Technology,5,0.6,-0.3629000000000002,-1.8145000000000011
+bollinger_lower,smc_mitigation_zone,Real Estate,1,0.0,-2.3868,-2.3868
+bollinger_lower,time_stop_10d,Communication Services,1,0.0,-2.8267,-2.8267
+bollinger_lower,time_stop_10d,Consumer Discretionary,4,0.25,-2.02085,-8.0834
+bollinger_lower,time_stop_10d,Energy,2,0.5,1.3409499999999999,2.6818999999999997
+bollinger_lower,time_stop_10d,Financials,1,0.0,-0.1714,-0.1714
+bollinger_lower,time_stop_10d,Health Care,4,0.5,-1.45735,-5.8294
+bollinger_lower,time_stop_10d,Industrials,1,0.0,-3.8776,-3.8776
+bollinger_lower,time_stop_10d,Information Technology,5,0.4,3.2510999999999997,16.255499999999998
+bollinger_lower,time_stop_10d,Real Estate,1,0.0,-6.9069,-6.9069
+bollinger_lower,time_stop_20d,Communication Services,1,1.0,4.3042,4.3042
+bollinger_lower,time_stop_20d,Consumer Discretionary,4,0.0,-8.170175,-32.6807
+bollinger_lower,time_stop_20d,Energy,2,1.0,15.136299999999999,30.272599999999997
+bollinger_lower,time_stop_20d,Financials,1,1.0,12.8557,12.8557
+bollinger_lower,time_stop_20d,Health Care,4,0.25,0.483025,1.9321
+bollinger_lower,time_stop_20d,Industrials,1,0.0,-2.3987,-2.3987
+bollinger_lower,time_stop_20d,Information Technology,5,0.4,1.2719199999999997,6.359599999999999
+bollinger_lower,time_stop_20d,Real Estate,1,0.0,-5.1051,-5.1051
+bollinger_lower,trailing_10pct,Communication Services,1,0.0,-8.1695,-8.1695
+bollinger_lower,trailing_10pct,Consumer Discretionary,4,0.25,-6.604925,-26.4197
+bollinger_lower,trailing_10pct,Energy,2,0.5,2.0743,4.1486
+bollinger_lower,trailing_10pct,Financials,1,0.0,-2.9566,-2.9566
+bollinger_lower,trailing_10pct,Health Care,4,0.5,0.7594749999999997,3.0378999999999987
+bollinger_lower,trailing_10pct,Industrials,1,0.0,-8.8975,-8.8975
+bollinger_lower,trailing_10pct,Information Technology,5,0.2,-3.9744,-19.872
+bollinger_lower,trailing_10pct,Real Estate,1,0.0,-9.1848,-9.1848
+bollinger_lower,trailing_15pct,Communication Services,1,0.0,-8.9164,-8.9164
+bollinger_lower,trailing_15pct,Consumer Discretionary,4,0.0,-9.205425,-36.8217
+bollinger_lower,trailing_15pct,Energy,2,1.0,10.438,20.876
+bollinger_lower,trailing_15pct,Financials,1,0.0,-4.0569,-4.0569
+bollinger_lower,trailing_15pct,Health Care,4,0.25,1.6955500000000008,6.782200000000003
+bollinger_lower,trailing_15pct,Industrials,1,0.0,-8.8858,-8.8858
+bollinger_lower,trailing_15pct,Information Technology,5,0.2,-8.5095,-42.5475
+bollinger_lower,trailing_15pct,Real Estate,1,0.0,-14.2301,-14.2301
+bollinger_lower,trailing_5pct,Communication Services,1,0.0,-2.0602,-2.0602
+bollinger_lower,trailing_5pct,Consumer Discretionary,4,0.0,-4.0065,-16.026
+bollinger_lower,trailing_5pct,Energy,2,0.5,2.0257,4.0514
+bollinger_lower,trailing_5pct,Financials,1,0.0,-1.7224,-1.7224
+bollinger_lower,trailing_5pct,Health Care,4,0.0,-4.171925,-16.6877
+bollinger_lower,trailing_5pct,Industrials,1,0.0,-2.7325,-2.7325
+bollinger_lower,trailing_5pct,Information Technology,5,0.0,-3.46828,-17.3414
+bollinger_lower,trailing_5pct,Real Estate,1,0.0,-4.1395,-4.1395
+bollinger_tight,atr_trail_1x,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,atr_trail_1x,Consumer Discretionary,2,0.0,-1.5404,-3.0808
+bollinger_tight,atr_trail_1x,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,atr_trail_1x,Industrials,1,0.0,-0.225,-0.225
+bollinger_tight,atr_trail_1x,Information Technology,3,0.3333333333333333,1.3902666666666665,4.1708
+bollinger_tight,atr_trail_1x,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,atr_trail_2x,Communication Services,1,0.0,-7.6904,-7.6904
+bollinger_tight,atr_trail_2x,Consumer Discretionary,2,0.5,-1.6921000000000002,-3.3842000000000003
+bollinger_tight,atr_trail_2x,Health Care,3,0.0,-4.7729333333333335,-14.3188
+bollinger_tight,atr_trail_2x,Industrials,1,0.0,-2.3502,-2.3502
+bollinger_tight,atr_trail_2x,Information Technology,3,0.3333333333333333,-0.45103333333333345,-1.3531000000000004
+bollinger_tight,atr_trail_2x,Real Estate,1,0.0,-6.6181,-6.6181
+bollinger_tight,atr_trail_mae_conditional,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,atr_trail_mae_conditional,Consumer Discretionary,2,0.0,-1.5404,-3.0808
+bollinger_tight,atr_trail_mae_conditional,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,atr_trail_mae_conditional,Industrials,1,0.0,-0.225,-0.225
+bollinger_tight,atr_trail_mae_conditional,Information Technology,3,0.3333333333333333,1.3902666666666665,4.1708
+bollinger_tight,atr_trail_mae_conditional,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,atr_trail_vix_conditional,Communication Services,1,0.0,-3.661,-3.661
+bollinger_tight,atr_trail_vix_conditional,Consumer Discretionary,2,0.0,-2.1199,-4.2398
+bollinger_tight,atr_trail_vix_conditional,Health Care,3,0.0,-4.0721,-12.2163
+bollinger_tight,atr_trail_vix_conditional,Industrials,1,0.0,-1.4196,-1.4196
+bollinger_tight,atr_trail_vix_conditional,Information Technology,3,0.3333333333333333,2.0164666666666666,6.0493999999999994
+bollinger_tight,atr_trail_vix_conditional,Real Estate,1,0.0,-4.3202,-4.3202
+bollinger_tight,break_even_at_1r,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,break_even_at_1r,Consumer Discretionary,2,0.0,-1.5404,-3.0808
+bollinger_tight,break_even_at_1r,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,break_even_at_1r,Industrials,1,0.0,-0.225,-0.225
+bollinger_tight,break_even_at_1r,Information Technology,3,0.3333333333333333,1.4375999999999998,4.312799999999999
+bollinger_tight,break_even_at_1r,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,breakeven_plus_trail,Communication Services,1,0.0,-4.8814,-4.8814
+bollinger_tight,breakeven_plus_trail,Consumer Discretionary,2,0.0,-2.5565,-5.113
+bollinger_tight,breakeven_plus_trail,Health Care,3,0.3333333333333333,1.1217666666666668,3.3653000000000004
+bollinger_tight,breakeven_plus_trail,Industrials,1,0.0,0.0,0.0
+bollinger_tight,breakeven_plus_trail,Information Technology,3,0.3333333333333333,0.017966666666666242,0.05389999999999873
+bollinger_tight,breakeven_plus_trail,Real Estate,1,0.0,0.0,0.0
+bollinger_tight,chandelier_3x,Communication Services,1,0.0,-0.1636,-0.1636
+bollinger_tight,chandelier_3x,Consumer Discretionary,2,0.0,-0.13715,-0.2743
+bollinger_tight,chandelier_3x,Health Care,3,0.0,-0.45366666666666666,-1.361
+bollinger_tight,chandelier_3x,Industrials,1,0.0,-1.5913,-1.5913
+bollinger_tight,chandelier_3x,Information Technology,3,0.0,-0.6374000000000001,-1.9122000000000001
+bollinger_tight,chandelier_3x,Real Estate,1,0.0,-1.3313,-1.3313
+bollinger_tight,class_time_stop,Communication Services,1,0.0,-2.7715,-2.7715
+bollinger_tight,class_time_stop,Consumer Discretionary,2,0.0,-6.290100000000001,-12.580200000000001
+bollinger_tight,class_time_stop,Health Care,3,0.3333333333333333,-1.4555666666666667,-4.3667
+bollinger_tight,class_time_stop,Industrials,1,1.0,9.2213,9.2213
+bollinger_tight,class_time_stop,Information Technology,3,0.3333333333333333,-2.4468,-7.340400000000001
+bollinger_tight,class_time_stop,Real Estate,1,1.0,0.901,0.901
+bollinger_tight,earnings_blackout,Communication Services,1,1.0,2.357,2.357
+bollinger_tight,earnings_blackout,Consumer Discretionary,2,0.5,8.3948,16.7896
+bollinger_tight,earnings_blackout,Health Care,3,0.3333333333333333,40.22996666666667,120.68990000000001
+bollinger_tight,earnings_blackout,Industrials,1,1.0,29.1842,29.1842
+bollinger_tight,earnings_blackout,Information Technology,3,1.0,54.45296666666667,163.3589
+bollinger_tight,earnings_blackout,Real Estate,1,0.0,-9.1146,-9.1146
+bollinger_tight,fixed_4r_2r,Communication Services,1,0.0,-7.6904,-7.6904
+bollinger_tight,fixed_4r_2r,Consumer Discretionary,2,0.0,-4.358750000000001,-8.717500000000001
+bollinger_tight,fixed_4r_2r,Health Care,3,0.0,-5.429466666666666,-16.2884
+bollinger_tight,fixed_4r_2r,Industrials,1,1.0,10.28,10.28
+bollinger_tight,fixed_4r_2r,Information Technology,3,0.3333333333333333,4.173166666666667,12.5195
+bollinger_tight,fixed_4r_2r,Real Estate,1,0.0,-6.6181,-6.6181
+bollinger_tight,hybrid_50pct_target,Communication Services,1,1.0,3.661,3.661
+bollinger_tight,hybrid_50pct_target,Consumer Discretionary,2,0.0,-10.0,-20.0
+bollinger_tight,hybrid_50pct_target,Health Care,3,0.6666666666666666,1.7643666666666669,5.293100000000001
+bollinger_tight,hybrid_50pct_target,Industrials,1,1.0,7.1238,7.1238
+bollinger_tight,hybrid_50pct_target,Information Technology,3,0.3333333333333333,-1.6889000000000003,-5.066700000000001
+bollinger_tight,hybrid_50pct_target,Real Estate,1,1.0,5.2102,5.2102
+bollinger_tight,ma_exit_ema9,Communication Services,1,0.0,-2.3197,-2.3197
+bollinger_tight,ma_exit_ema9,Consumer Discretionary,2,0.5,0.32855,0.6571
+bollinger_tight,ma_exit_ema9,Health Care,3,0.0,-1.5202,-4.5606
+bollinger_tight,ma_exit_ema9,Industrials,1,0.0,-0.4628,-0.4628
+bollinger_tight,ma_exit_ema9,Information Technology,3,1.0,1.9522666666666666,5.8568
+bollinger_tight,ma_exit_ema9,Real Estate,1,0.0,-1.7429,-1.7429
+bollinger_tight,mfe_lockin_trail,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,mfe_lockin_trail,Consumer Discretionary,2,0.0,-1.5404,-3.0808
+bollinger_tight,mfe_lockin_trail,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,mfe_lockin_trail,Industrials,1,0.0,-0.225,-0.225
+bollinger_tight,mfe_lockin_trail,Information Technology,3,0.3333333333333333,2.2689,6.8067
+bollinger_tight,mfe_lockin_trail,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,multi_tier_partial,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,multi_tier_partial,Consumer Discretionary,2,0.5,-1.2182499999999998,-2.4364999999999997
+bollinger_tight,multi_tier_partial,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,multi_tier_partial,Industrials,1,1.0,0.7067,0.7067
+bollinger_tight,multi_tier_partial,Information Technology,3,0.3333333333333333,2.145166666666667,6.4355
+bollinger_tight,multi_tier_partial,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,next_pivot_target,Communication Services,1,1.0,0.3421,0.3421
+bollinger_tight,next_pivot_target,Consumer Discretionary,2,1.0,1.26295,2.5259
+bollinger_tight,next_pivot_target,Health Care,3,1.0,2.1563333333333334,6.469
+bollinger_tight,next_pivot_target,Industrials,1,1.0,7.71,7.71
+bollinger_tight,next_pivot_target,Information Technology,3,0.3333333333333333,-4.045766666666666,-12.1373
+bollinger_tight,next_pivot_target,Real Estate,1,1.0,2.1921,2.1921
+bollinger_tight,r_multiple_2r,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,r_multiple_2r,Consumer Discretionary,2,0.5,0.32709999999999995,0.6541999999999999
+bollinger_tight,r_multiple_2r,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,r_multiple_2r,Industrials,1,1.0,5.14,5.14
+bollinger_tight,r_multiple_2r,Information Technology,3,0.3333333333333333,2.7059666666666664,8.117899999999999
+bollinger_tight,r_multiple_2r,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,r_multiple_3r,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,r_multiple_3r,Consumer Discretionary,2,0.0,-2.95255,-5.9051
+bollinger_tight,r_multiple_3r,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,r_multiple_3r,Industrials,1,1.0,7.71,7.71
+bollinger_tight,r_multiple_3r,Information Technology,3,0.3333333333333333,4.2727,12.818100000000001
+bollinger_tight,r_multiple_3r,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,regime_flip,Communication Services,1,1.0,0.9267,0.9267
+bollinger_tight,regime_flip,Consumer Discretionary,2,0.0,-1.43005,-2.8601
+bollinger_tight,regime_flip,Health Care,3,0.0,-3.7956333333333334,-11.3869
+bollinger_tight,regime_flip,Industrials,1,1.0,2.7338,2.7338
+bollinger_tight,regime_flip,Information Technology,3,0.3333333333333333,1.22,3.66
+bollinger_tight,regime_flip,Real Estate,1,0.0,-0.5557,-0.5557
+bollinger_tight,reverse_signal,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,reverse_signal,Consumer Discretionary,2,0.0,-1.5404,-3.0808
+bollinger_tight,reverse_signal,Health Care,3,0.0,-2.8669333333333333,-8.6008
+bollinger_tight,reverse_signal,Industrials,1,0.0,-0.225,-0.225
+bollinger_tight,reverse_signal,Information Technology,3,0.3333333333333333,1.3902666666666665,4.1708
+bollinger_tight,reverse_signal,Real Estate,1,0.0,-2.8801,-2.8801
+bollinger_tight,smc_mitigation_zone,Communication Services,1,0.0,-2.4407,-2.4407
+bollinger_tight,smc_mitigation_zone,Consumer Discretionary,2,0.0,-1.04365,-2.0873
+bollinger_tight,smc_mitigation_zone,Health Care,3,0.0,-1.5202,-4.5606
+bollinger_tight,smc_mitigation_zone,Industrials,1,1.0,0.0526,0.0526
+bollinger_tight,smc_mitigation_zone,Information Technology,3,1.0,3.2403999999999997,9.7212
+bollinger_tight,smc_mitigation_zone,Real Estate,1,0.0,-1.7429,-1.7429
+bollinger_tight,time_stop_10d,Communication Services,1,1.0,8.4461,8.4461
+bollinger_tight,time_stop_10d,Consumer Discretionary,2,1.0,1.35795,2.7159
+bollinger_tight,time_stop_10d,Health Care,3,0.6666666666666666,-0.44626666666666653,-1.3387999999999995
+bollinger_tight,time_stop_10d,Industrials,1,1.0,2.0499,2.0499
+bollinger_tight,time_stop_10d,Information Technology,3,0.3333333333333333,3.280233333333334,9.840700000000002
+bollinger_tight,time_stop_10d,Real Estate,1,0.0,-3.7805,-3.7805
+bollinger_tight,time_stop_20d,Communication Services,1,1.0,0.9267,0.9267
+bollinger_tight,time_stop_20d,Consumer Discretionary,2,0.0,-1.43005,-2.8601
+bollinger_tight,time_stop_20d,Health Care,3,0.0,-3.7956333333333334,-11.3869
+bollinger_tight,time_stop_20d,Industrials,1,1.0,2.7338,2.7338
+bollinger_tight,time_stop_20d,Information Technology,3,0.3333333333333333,1.22,3.66
+bollinger_tight,time_stop_20d,Real Estate,1,0.0,-0.5557,-0.5557
+bollinger_tight,trailing_10pct,Communication Services,1,0.0,-2.3985,-2.3985
+bollinger_tight,trailing_10pct,Consumer Discretionary,2,0.0,-8.03935,-16.0787
+bollinger_tight,trailing_10pct,Health Care,3,0.3333333333333333,0.8788666666666668,2.6366000000000005
+bollinger_tight,trailing_10pct,Industrials,1,1.0,6.5376,6.5376
+bollinger_tight,trailing_10pct,Information Technology,3,0.3333333333333333,-1.311,-3.933
+bollinger_tight,trailing_10pct,Real Estate,1,1.0,1.78,1.78
+bollinger_tight,trailing_15pct,Communication Services,1,0.0,-8.4412,-8.4412
+bollinger_tight,trailing_15pct,Consumer Discretionary,2,0.0,-12.4788,-24.9576
+bollinger_tight,trailing_15pct,Health Care,3,0.3333333333333333,3.181866666666666,9.545599999999999
+bollinger_tight,trailing_15pct,Industrials,1,1.0,0.6188,0.6188
+bollinger_tight,trailing_15pct,Information Technology,3,0.3333333333333333,-7.4113999999999995,-22.234199999999998
+bollinger_tight,trailing_15pct,Real Estate,1,0.0,-3.8744,-3.8744
+bollinger_tight,trailing_5pct,Communication Services,1,0.0,-7.6904,-7.6904
+bollinger_tight,trailing_5pct,Consumer Discretionary,2,0.0,-2.1822,-4.3644
+bollinger_tight,trailing_5pct,Health Care,3,0.0,-5.0,-15.0
+bollinger_tight,trailing_5pct,Industrials,1,0.0,-2.4264,-2.4264
+bollinger_tight,trailing_5pct,Information Technology,3,0.0,-2.0071,-6.0213
+bollinger_tight,trailing_5pct,Real Estate,1,0.0,-5.0,-5.0
+cpr_narrow_bullish,atr_trail_1x,Broad Market,1,0.0,-0.6243,-0.6243
+cpr_narrow_bullish,atr_trail_1x,Communication Services,1,1.0,3.4483,3.4483
+cpr_narrow_bullish,atr_trail_1x,Consumer Discretionary,2,0.0,-1.0648499999999999,-2.1296999999999997
+cpr_narrow_bullish,atr_trail_1x,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,atr_trail_1x,Energy,3,0.3333333333333333,0.7177000000000001,2.1531000000000002
+cpr_narrow_bullish,atr_trail_1x,Financials,5,0.4,-1.4729800000000002,-7.3649000000000004
+cpr_narrow_bullish,atr_trail_1x,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,atr_trail_1x,Industrials,2,0.5,0.41370000000000007,0.8274000000000001
+cpr_narrow_bullish,atr_trail_1x,Information Technology,3,0.0,-1.4058333333333335,-4.2175
+cpr_narrow_bullish,atr_trail_2x,Broad Market,1,0.0,-2.5379,-2.5379
+cpr_narrow_bullish,atr_trail_2x,Communication Services,1,1.0,1.6395,1.6395
+cpr_narrow_bullish,atr_trail_2x,Consumer Discretionary,2,0.0,-2.2833,-4.5666
+cpr_narrow_bullish,atr_trail_2x,Consumer Staples,1,0.0,-2.6765,-2.6765
+cpr_narrow_bullish,atr_trail_2x,Energy,3,0.3333333333333333,-0.7109333333333335,-2.1328000000000005
+cpr_narrow_bullish,atr_trail_2x,Financials,5,0.4,0.05887999999999991,0.29439999999999955
+cpr_narrow_bullish,atr_trail_2x,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,atr_trail_2x,Industrials,2,1.0,1.4159000000000002,2.8318000000000003
+cpr_narrow_bullish,atr_trail_2x,Information Technology,3,0.3333333333333333,0.43573333333333314,1.3071999999999995
+cpr_narrow_bullish,atr_trail_mae_conditional,Broad Market,1,0.0,-0.6243,-0.6243
+cpr_narrow_bullish,atr_trail_mae_conditional,Communication Services,1,1.0,3.4483,3.4483
+cpr_narrow_bullish,atr_trail_mae_conditional,Consumer Discretionary,2,0.0,-1.0648499999999999,-2.1296999999999997
+cpr_narrow_bullish,atr_trail_mae_conditional,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,atr_trail_mae_conditional,Energy,3,0.3333333333333333,0.7177000000000001,2.1531000000000002
+cpr_narrow_bullish,atr_trail_mae_conditional,Financials,5,0.4,-1.4729800000000002,-7.3649000000000004
+cpr_narrow_bullish,atr_trail_mae_conditional,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,atr_trail_mae_conditional,Industrials,2,0.5,0.41370000000000007,0.8274000000000001
+cpr_narrow_bullish,atr_trail_mae_conditional,Information Technology,3,0.0,-1.4058333333333335,-4.2175
+cpr_narrow_bullish,atr_trail_vix_conditional,Broad Market,1,0.0,-1.5811,-1.5811
+cpr_narrow_bullish,atr_trail_vix_conditional,Communication Services,1,1.0,0.5568,0.5568
+cpr_narrow_bullish,atr_trail_vix_conditional,Consumer Discretionary,2,0.0,-1.0648499999999999,-2.1296999999999997
+cpr_narrow_bullish,atr_trail_vix_conditional,Consumer Staples,1,0.0,-2.0074,-2.0074
+cpr_narrow_bullish,atr_trail_vix_conditional,Energy,3,0.0,-0.723,-2.169
+cpr_narrow_bullish,atr_trail_vix_conditional,Financials,5,0.2,-0.9065799999999999,-4.5329
+cpr_narrow_bullish,atr_trail_vix_conditional,Health Care,1,0.0,-0.8857,-0.8857
+cpr_narrow_bullish,atr_trail_vix_conditional,Industrials,2,0.5,-0.38620000000000004,-0.7724000000000001
+cpr_narrow_bullish,atr_trail_vix_conditional,Information Technology,3,0.0,-1.2630666666666668,-3.7892
+cpr_narrow_bullish,break_even_at_1r,Broad Market,1,0.0,-2.0065,-2.0065
+cpr_narrow_bullish,break_even_at_1r,Communication Services,1,0.0,0.0,0.0
+cpr_narrow_bullish,break_even_at_1r,Consumer Discretionary,2,0.0,-0.9712,-1.9424
+cpr_narrow_bullish,break_even_at_1r,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,break_even_at_1r,Energy,3,0.3333333333333333,9.066600000000001,27.199800000000003
+cpr_narrow_bullish,break_even_at_1r,Financials,5,0.2,-1.06502,-5.325100000000001
+cpr_narrow_bullish,break_even_at_1r,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,break_even_at_1r,Industrials,2,0.5,0.2639,0.5278
+cpr_narrow_bullish,break_even_at_1r,Information Technology,3,0.0,-0.7656333333333333,-2.2969
+cpr_narrow_bullish,breakeven_plus_trail,Broad Market,1,0.0,-4.013,-4.013
+cpr_narrow_bullish,breakeven_plus_trail,Communication Services,1,0.0,0.0,0.0
+cpr_narrow_bullish,breakeven_plus_trail,Consumer Discretionary,2,0.0,-1.94235,-3.8847
+cpr_narrow_bullish,breakeven_plus_trail,Consumer Staples,1,0.0,-2.6765,-2.6765
+cpr_narrow_bullish,breakeven_plus_trail,Energy,3,0.3333333333333333,10.0974,30.2922
+cpr_narrow_bullish,breakeven_plus_trail,Financials,5,0.2,-1.7119600000000001,-8.559800000000001
+cpr_narrow_bullish,breakeven_plus_trail,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,breakeven_plus_trail,Industrials,2,0.5,1.2111,2.4222
+cpr_narrow_bullish,breakeven_plus_trail,Information Technology,3,0.3333333333333333,-2.1534,-6.4602
+cpr_narrow_bullish,chandelier_3x,Broad Market,1,0.0,-0.1696,-0.1696
+cpr_narrow_bullish,chandelier_3x,Communication Services,1,1.0,0.0341,0.0341
+cpr_narrow_bullish,chandelier_3x,Consumer Discretionary,2,0.0,-3.1763500000000002,-6.3527000000000005
+cpr_narrow_bullish,chandelier_3x,Consumer Staples,1,0.0,-3.4729,-3.4729
+cpr_narrow_bullish,chandelier_3x,Energy,3,0.6666666666666666,-0.7252000000000001,-2.1756
+cpr_narrow_bullish,chandelier_3x,Financials,5,0.4,-0.46704000000000007,-2.3352000000000004
+cpr_narrow_bullish,chandelier_3x,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,chandelier_3x,Industrials,2,0.5,0.6535000000000001,1.3070000000000002
+cpr_narrow_bullish,chandelier_3x,Information Technology,3,0.3333333333333333,0.3768666666666667,1.1306
+cpr_narrow_bullish,class_time_stop,Broad Market,1,0.0,-5.8081,-5.8081
+cpr_narrow_bullish,class_time_stop,Communication Services,1,0.0,-6.8218,-6.8218
+cpr_narrow_bullish,class_time_stop,Consumer Discretionary,2,0.5,-3.9538,-7.9076
+cpr_narrow_bullish,class_time_stop,Consumer Staples,1,0.0,-4.4469,-4.4469
+cpr_narrow_bullish,class_time_stop,Energy,3,1.0,10.249433333333334,30.7483
+cpr_narrow_bullish,class_time_stop,Financials,5,0.6,0.0632200000000001,0.3161000000000005
+cpr_narrow_bullish,class_time_stop,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,class_time_stop,Industrials,2,0.5,-0.9582999999999999,-1.9165999999999999
+cpr_narrow_bullish,class_time_stop,Information Technology,3,1.0,5.739166666666667,17.2175
+cpr_narrow_bullish,earnings_blackout,Broad Market,1,1.0,5.2231,5.2231
+cpr_narrow_bullish,earnings_blackout,Communication Services,1,0.0,-34.6896,-34.6896
+cpr_narrow_bullish,earnings_blackout,Consumer Discretionary,2,0.5,-5.0013000000000005,-10.002600000000001
+cpr_narrow_bullish,earnings_blackout,Consumer Staples,1,0.0,-10.9095,-10.9095
+cpr_narrow_bullish,earnings_blackout,Energy,3,0.6666666666666666,14.347299999999999,43.0419
+cpr_narrow_bullish,earnings_blackout,Financials,5,0.2,-17.50934,-87.5467
+cpr_narrow_bullish,earnings_blackout,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,earnings_blackout,Industrials,2,1.0,7.17925,14.3585
+cpr_narrow_bullish,earnings_blackout,Information Technology,3,1.0,18.4995,55.4985
+cpr_narrow_bullish,fixed_4r_2r,Broad Market,1,0.0,-4.013,-4.013
+cpr_narrow_bullish,fixed_4r_2r,Communication Services,1,0.0,-4.1638,-4.1638
+cpr_narrow_bullish,fixed_4r_2r,Consumer Discretionary,2,0.0,-3.9032,-7.8064
+cpr_narrow_bullish,fixed_4r_2r,Consumer Staples,1,0.0,-2.6765,-2.6765
+cpr_narrow_bullish,fixed_4r_2r,Energy,3,0.6666666666666666,4.216366666666667,12.649099999999999
+cpr_narrow_bullish,fixed_4r_2r,Financials,5,0.4,0.48231999999999997,2.4116
+cpr_narrow_bullish,fixed_4r_2r,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,fixed_4r_2r,Industrials,2,0.5,-0.6833,-1.3666
+cpr_narrow_bullish,fixed_4r_2r,Information Technology,3,0.3333333333333333,-0.41286666666666666,-1.2386
+cpr_narrow_bullish,hybrid_50pct_target,Broad Market,1,0.0,-10.0,-10.0
+cpr_narrow_bullish,hybrid_50pct_target,Communication Services,1,1.0,3.1229,3.1229
+cpr_narrow_bullish,hybrid_50pct_target,Consumer Discretionary,2,0.5,-1.49195,-2.9839
+cpr_narrow_bullish,hybrid_50pct_target,Consumer Staples,1,0.0,-10.0,-10.0
+cpr_narrow_bullish,hybrid_50pct_target,Energy,3,0.6666666666666666,3.7919666666666667,11.3759
+cpr_narrow_bullish,hybrid_50pct_target,Financials,5,0.6,-7.78396,-38.9198
+cpr_narrow_bullish,hybrid_50pct_target,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,hybrid_50pct_target,Industrials,2,1.0,7.0263,14.0526
+cpr_narrow_bullish,hybrid_50pct_target,Information Technology,3,0.6666666666666666,3.5560999999999994,10.668299999999999
+cpr_narrow_bullish,ma_exit_ema9,Broad Market,1,0.0,-1.1326,-1.1326
+cpr_narrow_bullish,ma_exit_ema9,Communication Services,1,1.0,3.5703,3.5703
+cpr_narrow_bullish,ma_exit_ema9,Consumer Discretionary,2,0.0,-1.8683,-3.7366
+cpr_narrow_bullish,ma_exit_ema9,Consumer Staples,1,0.0,-2.4103,-2.4103
+cpr_narrow_bullish,ma_exit_ema9,Energy,3,0.6666666666666666,2.5947,7.7841
+cpr_narrow_bullish,ma_exit_ema9,Financials,5,0.6,3.03858,15.1929
+cpr_narrow_bullish,ma_exit_ema9,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,ma_exit_ema9,Industrials,2,0.5,0.6744500000000001,1.3489000000000002
+cpr_narrow_bullish,ma_exit_ema9,Information Technology,3,0.0,-1.4398,-4.3194
+cpr_narrow_bullish,mfe_lockin_trail,Broad Market,1,0.0,-0.6243,-0.6243
+cpr_narrow_bullish,mfe_lockin_trail,Communication Services,1,1.0,3.0691,3.0691
+cpr_narrow_bullish,mfe_lockin_trail,Consumer Discretionary,2,0.0,-1.0648499999999999,-2.1296999999999997
+cpr_narrow_bullish,mfe_lockin_trail,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,mfe_lockin_trail,Energy,3,0.3333333333333333,0.05223333333333343,0.15670000000000028
+cpr_narrow_bullish,mfe_lockin_trail,Financials,5,0.4,-1.4729800000000002,-7.3649000000000004
+cpr_narrow_bullish,mfe_lockin_trail,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,mfe_lockin_trail,Industrials,2,0.5,0.41370000000000007,0.8274000000000001
+cpr_narrow_bullish,mfe_lockin_trail,Information Technology,3,0.0,-1.4058333333333335,-4.2175
+cpr_narrow_bullish,multi_tier_partial,Broad Market,1,0.0,-0.6243,-0.6243
+cpr_narrow_bullish,multi_tier_partial,Communication Services,1,1.0,3.2313,3.2313
+cpr_narrow_bullish,multi_tier_partial,Consumer Discretionary,2,0.5,-0.6444,-1.2888
+cpr_narrow_bullish,multi_tier_partial,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,multi_tier_partial,Energy,3,0.6666666666666666,1.1824666666666668,3.5474
+cpr_narrow_bullish,multi_tier_partial,Financials,5,0.6,-1.4693200000000002,-7.3466000000000005
+cpr_narrow_bullish,multi_tier_partial,Health Care,1,1.0,1.6252,1.6252
+cpr_narrow_bullish,multi_tier_partial,Industrials,2,0.5,0.2328500000000001,0.4657000000000002
+cpr_narrow_bullish,multi_tier_partial,Information Technology,3,0.3333333333333333,-0.9316666666666666,-2.795
+cpr_narrow_bullish,next_pivot_target,Broad Market,1,1.0,0.8171,0.8171
+cpr_narrow_bullish,next_pivot_target,Communication Services,1,1.0,6.2457,6.2457
+cpr_narrow_bullish,next_pivot_target,Consumer Discretionary,2,0.0,-6.96085,-13.9217
+cpr_narrow_bullish,next_pivot_target,Consumer Staples,1,1.0,0.0175,0.0175
+cpr_narrow_bullish,next_pivot_target,Energy,3,1.0,2.519233333333333,7.5577
+cpr_narrow_bullish,next_pivot_target,Financials,5,0.4,-3.3668799999999997,-16.8344
+cpr_narrow_bullish,next_pivot_target,Health Care,1,1.0,0.4353,0.4353
+cpr_narrow_bullish,next_pivot_target,Industrials,2,1.0,0.15455,0.3091
+cpr_narrow_bullish,next_pivot_target,Information Technology,3,0.6666666666666666,-0.7037000000000001,-2.1111000000000004
+cpr_narrow_bullish,r_multiple_2r,Broad Market,1,0.0,-2.0065,-2.0065
+cpr_narrow_bullish,r_multiple_2r,Communication Services,1,1.0,4.1638,4.1638
+cpr_narrow_bullish,r_multiple_2r,Consumer Discretionary,2,0.0,-1.9516,-3.9032
+cpr_narrow_bullish,r_multiple_2r,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,r_multiple_2r,Energy,3,0.6666666666666666,2.1427333333333336,6.4282
+cpr_narrow_bullish,r_multiple_2r,Financials,5,0.6,2.07228,10.3614
+cpr_narrow_bullish,r_multiple_2r,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,r_multiple_2r,Industrials,2,0.5,0.2639,0.5278
+cpr_narrow_bullish,r_multiple_2r,Information Technology,3,0.3333333333333333,-0.20643333333333333,-0.6193
+cpr_narrow_bullish,r_multiple_3r,Broad Market,1,0.0,-2.0065,-2.0065
+cpr_narrow_bullish,r_multiple_3r,Communication Services,1,1.0,6.2457,6.2457
+cpr_narrow_bullish,r_multiple_3r,Consumer Discretionary,2,0.0,-1.9516,-3.9032
+cpr_narrow_bullish,r_multiple_3r,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,r_multiple_3r,Energy,3,0.6666666666666666,3.598433333333333,10.7953
+cpr_narrow_bullish,r_multiple_3r,Financials,5,0.4,1.24668,6.2334
+cpr_narrow_bullish,r_multiple_3r,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,r_multiple_3r,Industrials,2,0.5,0.2639,0.5278
+cpr_narrow_bullish,r_multiple_3r,Information Technology,3,0.3333333333333333,0.4005000000000001,1.2015000000000002
+cpr_narrow_bullish,regime_flip,Broad Market,1,0.0,-3.5434,-3.5434
+cpr_narrow_bullish,regime_flip,Communication Services,1,0.0,-4.9535,-4.9535
+cpr_narrow_bullish,regime_flip,Consumer Discretionary,2,0.5,-3.86315,-7.7263
+cpr_narrow_bullish,regime_flip,Consumer Staples,1,0.0,-0.2094,-0.2094
+cpr_narrow_bullish,regime_flip,Energy,3,1.0,6.987100000000001,20.9613
+cpr_narrow_bullish,regime_flip,Financials,5,0.4,-1.0099199999999997,-5.049599999999998
+cpr_narrow_bullish,regime_flip,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,regime_flip,Industrials,2,0.5,0.21915000000000007,0.43830000000000013
+cpr_narrow_bullish,regime_flip,Information Technology,3,1.0,4.026,12.078
+cpr_narrow_bullish,reverse_signal,Broad Market,1,0.0,-0.6243,-0.6243
+cpr_narrow_bullish,reverse_signal,Communication Services,1,1.0,3.4483,3.4483
+cpr_narrow_bullish,reverse_signal,Consumer Discretionary,2,0.0,-1.0648499999999999,-2.1296999999999997
+cpr_narrow_bullish,reverse_signal,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,reverse_signal,Energy,3,0.3333333333333333,0.7177000000000001,2.1531000000000002
+cpr_narrow_bullish,reverse_signal,Financials,5,0.4,-1.4729800000000002,-7.3649000000000004
+cpr_narrow_bullish,reverse_signal,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,reverse_signal,Industrials,2,0.5,0.41370000000000007,0.8274000000000001
+cpr_narrow_bullish,reverse_signal,Information Technology,3,0.0,-1.4058333333333335,-4.2175
+cpr_narrow_bullish,smc_mitigation_zone,Broad Market,1,0.0,-1.1326,-1.1326
+cpr_narrow_bullish,smc_mitigation_zone,Communication Services,1,0.0,-0.2051,-0.2051
+cpr_narrow_bullish,smc_mitigation_zone,Consumer Discretionary,2,0.5,-0.5050999999999999,-1.0101999999999998
+cpr_narrow_bullish,smc_mitigation_zone,Consumer Staples,1,0.0,-1.3382,-1.3382
+cpr_narrow_bullish,smc_mitigation_zone,Energy,3,0.3333333333333333,0.7177000000000001,2.1531000000000002
+cpr_narrow_bullish,smc_mitigation_zone,Financials,5,0.2,-1.8149000000000002,-9.0745
+cpr_narrow_bullish,smc_mitigation_zone,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,smc_mitigation_zone,Industrials,2,0.5,0.41370000000000007,0.8274000000000001
+cpr_narrow_bullish,smc_mitigation_zone,Information Technology,3,0.6666666666666666,0.2329,0.6987
+cpr_narrow_bullish,time_stop_10d,Broad Market,1,0.0,-1.1326,-1.1326
+cpr_narrow_bullish,time_stop_10d,Communication Services,1,1.0,6.2948,6.2948
+cpr_narrow_bullish,time_stop_10d,Consumer Discretionary,2,0.0,-6.732799999999999,-13.465599999999998
+cpr_narrow_bullish,time_stop_10d,Consumer Staples,1,0.0,-1.5105,-1.5105
+cpr_narrow_bullish,time_stop_10d,Energy,3,0.6666666666666666,2.9887333333333337,8.9662
+cpr_narrow_bullish,time_stop_10d,Financials,5,0.4,-0.8352999999999998,-4.176499999999999
+cpr_narrow_bullish,time_stop_10d,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,time_stop_10d,Industrials,2,0.5,1.1506500000000002,2.3013000000000003
+cpr_narrow_bullish,time_stop_10d,Information Technology,3,0.3333333333333333,-2.0152666666666668,-6.0458
+cpr_narrow_bullish,time_stop_20d,Broad Market,1,0.0,-3.5434,-3.5434
+cpr_narrow_bullish,time_stop_20d,Communication Services,1,0.0,-4.9535,-4.9535
+cpr_narrow_bullish,time_stop_20d,Consumer Discretionary,2,0.5,-3.86315,-7.7263
+cpr_narrow_bullish,time_stop_20d,Consumer Staples,1,0.0,-0.2094,-0.2094
+cpr_narrow_bullish,time_stop_20d,Energy,3,1.0,6.987100000000001,20.9613
+cpr_narrow_bullish,time_stop_20d,Financials,5,0.4,-1.0099199999999997,-5.049599999999998
+cpr_narrow_bullish,time_stop_20d,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,time_stop_20d,Industrials,2,0.5,0.21915000000000007,0.43830000000000013
+cpr_narrow_bullish,time_stop_20d,Information Technology,3,1.0,4.026,12.078
+cpr_narrow_bullish,trailing_10pct,Broad Market,1,0.0,-9.0093,-9.0093
+cpr_narrow_bullish,trailing_10pct,Communication Services,1,0.0,-4.3347,-4.3347
+cpr_narrow_bullish,trailing_10pct,Consumer Discretionary,2,0.5,-1.96185,-3.9237
+cpr_narrow_bullish,trailing_10pct,Consumer Staples,1,0.0,-10.0,-10.0
+cpr_narrow_bullish,trailing_10pct,Energy,3,0.3333333333333333,7.101766666666667,21.305300000000003
+cpr_narrow_bullish,trailing_10pct,Financials,5,0.2,-4.6687199999999995,-23.3436
+cpr_narrow_bullish,trailing_10pct,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,trailing_10pct,Industrials,2,1.0,9.99995,19.9999
+cpr_narrow_bullish,trailing_10pct,Information Technology,3,0.6666666666666666,6.453833333333333,19.3615
+cpr_narrow_bullish,trailing_15pct,Broad Market,1,0.0,-13.1496,-13.1496
+cpr_narrow_bullish,trailing_15pct,Communication Services,1,0.0,-10.6361,-10.6361
+cpr_narrow_bullish,trailing_15pct,Consumer Discretionary,2,0.5,-4.309950000000001,-8.619900000000001
+cpr_narrow_bullish,trailing_15pct,Consumer Staples,1,0.0,-15.0,-15.0
+cpr_narrow_bullish,trailing_15pct,Energy,3,0.6666666666666666,11.277333333333333,33.832
+cpr_narrow_bullish,trailing_15pct,Financials,5,0.2,-6.4922200000000005,-32.4611
+cpr_narrow_bullish,trailing_15pct,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,trailing_15pct,Industrials,2,1.0,9.45725,18.9145
+cpr_narrow_bullish,trailing_15pct,Information Technology,3,0.3333333333333333,4.547766666666667,13.643300000000002
+cpr_narrow_bullish,trailing_5pct,Broad Market,1,0.0,-3.7752,-3.7752
+cpr_narrow_bullish,trailing_5pct,Communication Services,1,1.0,0.98,0.98
+cpr_narrow_bullish,trailing_5pct,Consumer Discretionary,2,0.0,-3.6163,-7.2326
+cpr_narrow_bullish,trailing_5pct,Consumer Staples,1,0.0,-5.0,-5.0
+cpr_narrow_bullish,trailing_5pct,Energy,3,0.3333333333333333,-1.1236333333333335,-3.3709000000000002
+cpr_narrow_bullish,trailing_5pct,Financials,5,0.4,0.5691399999999998,2.845699999999999
+cpr_narrow_bullish,trailing_5pct,Health Care,1,1.0,1.6855,1.6855
+cpr_narrow_bullish,trailing_5pct,Industrials,2,0.5,0.5818000000000001,1.1636000000000002
+cpr_narrow_bullish,trailing_5pct,Information Technology,3,0.3333333333333333,-0.48039999999999994,-1.4411999999999998
+monthly_bias_momentum_long,atr_trail_1x,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,atr_trail_1x,Consumer Staples,1,0.0,-1.1398,-1.1398
+monthly_bias_momentum_long,atr_trail_1x,Financials,1,0.0,-0.0938,-0.0938
+monthly_bias_momentum_long,atr_trail_1x,Information Technology,3,0.3333333333333333,0.30186666666666656,0.9055999999999997
+monthly_bias_momentum_long,atr_trail_2x,Consumer Discretionary,1,0.0,-6.1291,-6.1291
+monthly_bias_momentum_long,atr_trail_2x,Consumer Staples,1,0.0,-2.6661,-2.6661
+monthly_bias_momentum_long,atr_trail_2x,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,atr_trail_2x,Information Technology,3,0.6666666666666666,2.044166666666667,6.1325
+monthly_bias_momentum_long,atr_trail_mae_conditional,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,atr_trail_mae_conditional,Consumer Staples,1,0.0,-1.1398,-1.1398
+monthly_bias_momentum_long,atr_trail_mae_conditional,Financials,1,0.0,-0.0938,-0.0938
+monthly_bias_momentum_long,atr_trail_mae_conditional,Information Technology,3,0.3333333333333333,0.30186666666666656,0.9055999999999997
+monthly_bias_momentum_long,atr_trail_vix_conditional,Consumer Discretionary,1,0.0,-1.9794,-1.9794
+monthly_bias_momentum_long,atr_trail_vix_conditional,Consumer Staples,1,0.0,-1.1398,-1.1398
+monthly_bias_momentum_long,atr_trail_vix_conditional,Financials,1,0.0,-0.0938,-0.0938
+monthly_bias_momentum_long,atr_trail_vix_conditional,Information Technology,3,0.0,-1.4817333333333333,-4.4452
+monthly_bias_momentum_long,break_even_at_1r,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,break_even_at_1r,Consumer Staples,1,0.0,-1.6215,-1.6215
+monthly_bias_momentum_long,break_even_at_1r,Financials,1,0.0,-0.0938,-0.0938
+monthly_bias_momentum_long,break_even_at_1r,Information Technology,3,0.3333333333333333,-0.4295,-1.2885
+monthly_bias_momentum_long,breakeven_plus_trail,Consumer Discretionary,1,0.0,-5.2785,-5.2785
+monthly_bias_momentum_long,breakeven_plus_trail,Consumer Staples,1,0.0,-3.2431,-3.2431
+monthly_bias_momentum_long,breakeven_plus_trail,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,breakeven_plus_trail,Information Technology,3,0.6666666666666666,16.565099999999997,49.695299999999996
+monthly_bias_momentum_long,chandelier_3x,Consumer Discretionary,1,0.0,-6.1291,-6.1291
+monthly_bias_momentum_long,chandelier_3x,Consumer Staples,1,0.0,-3.7277,-3.7277
+monthly_bias_momentum_long,chandelier_3x,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,chandelier_3x,Information Technology,3,0.6666666666666666,17.529566666666664,52.588699999999996
+monthly_bias_momentum_long,class_time_stop,Consumer Discretionary,1,0.0,-1.8428,-1.8428
+monthly_bias_momentum_long,class_time_stop,Consumer Staples,1,1.0,1.4626,1.4626
+monthly_bias_momentum_long,class_time_stop,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,class_time_stop,Information Technology,3,0.6666666666666666,13.745633333333332,41.2369
+monthly_bias_momentum_long,earnings_blackout,Consumer Discretionary,1,1.0,8.3631,8.3631
+monthly_bias_momentum_long,earnings_blackout,Consumer Staples,1,1.0,15.3124,15.3124
+monthly_bias_momentum_long,earnings_blackout,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,earnings_blackout,Information Technology,3,0.6666666666666666,28.50193333333333,85.5058
+monthly_bias_momentum_long,fixed_4r_2r,Consumer Discretionary,1,0.0,-6.1291,-6.1291
+monthly_bias_momentum_long,fixed_4r_2r,Consumer Staples,1,0.0,-3.2431,-3.2431
+monthly_bias_momentum_long,fixed_4r_2r,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,fixed_4r_2r,Information Technology,3,0.6666666666666666,13.037833333333333,39.1135
+monthly_bias_momentum_long,hybrid_50pct_target,Consumer Discretionary,1,0.0,-10.0,-10.0
+monthly_bias_momentum_long,hybrid_50pct_target,Consumer Staples,1,1.0,10.0885,10.0885
+monthly_bias_momentum_long,hybrid_50pct_target,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,hybrid_50pct_target,Information Technology,3,0.6666666666666666,7.7624,23.287200000000002
+monthly_bias_momentum_long,ma_exit_ema9,Consumer Discretionary,1,0.0,-3.6685,-3.6685
+monthly_bias_momentum_long,ma_exit_ema9,Consumer Staples,1,0.0,-1.1875,-1.1875
+monthly_bias_momentum_long,ma_exit_ema9,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,ma_exit_ema9,Information Technology,3,0.3333333333333333,0.38456666666666656,1.1536999999999997
+monthly_bias_momentum_long,mfe_lockin_trail,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,mfe_lockin_trail,Consumer Staples,1,0.0,-1.1398,-1.1398
+monthly_bias_momentum_long,mfe_lockin_trail,Financials,1,0.0,-0.0938,-0.0938
+monthly_bias_momentum_long,mfe_lockin_trail,Information Technology,3,0.3333333333333333,0.3237333333333332,0.9711999999999996
+monthly_bias_momentum_long,multi_tier_partial,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,multi_tier_partial,Consumer Staples,1,0.0,-1.1398,-1.1398
+monthly_bias_momentum_long,multi_tier_partial,Financials,1,1.0,0.3492,0.3492
+monthly_bias_momentum_long,multi_tier_partial,Information Technology,3,0.6666666666666666,0.4920666666666668,1.4762000000000004
+monthly_bias_momentum_long,next_pivot_target,Consumer Discretionary,1,1.0,0.2588,0.2588
+monthly_bias_momentum_long,next_pivot_target,Consumer Staples,1,0.0,-3.2431,-3.2431
+monthly_bias_momentum_long,next_pivot_target,Financials,1,1.0,0.0326,0.0326
+monthly_bias_momentum_long,next_pivot_target,Information Technology,3,0.6666666666666666,1.2642,3.7926
+monthly_bias_momentum_long,r_multiple_2r,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,r_multiple_2r,Consumer Staples,1,0.0,-1.6215,-1.6215
+monthly_bias_momentum_long,r_multiple_2r,Financials,1,1.0,2.4705,2.4705
+monthly_bias_momentum_long,r_multiple_2r,Information Technology,3,0.6666666666666666,2.162666666666667,6.488
+monthly_bias_momentum_long,r_multiple_3r,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,r_multiple_3r,Consumer Staples,1,0.0,-1.6215,-1.6215
+monthly_bias_momentum_long,r_multiple_3r,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,r_multiple_3r,Information Technology,3,0.3333333333333333,0.8826333333333333,2.6479
+monthly_bias_momentum_long,regime_flip,Consumer Discretionary,1,1.0,0.7248,0.7248
+monthly_bias_momentum_long,regime_flip,Consumer Staples,1,1.0,1.0137,1.0137
+monthly_bias_momentum_long,regime_flip,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,regime_flip,Information Technology,3,0.6666666666666666,11.240133333333333,33.7204
+monthly_bias_momentum_long,reverse_signal,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,reverse_signal,Consumer Staples,1,0.0,-1.1398,-1.1398
+monthly_bias_momentum_long,reverse_signal,Financials,1,0.0,-0.0938,-0.0938
+monthly_bias_momentum_long,reverse_signal,Information Technology,3,0.3333333333333333,0.30186666666666656,0.9055999999999997
+monthly_bias_momentum_long,smc_mitigation_zone,Consumer Discretionary,1,0.0,-2.6393,-2.6393
+monthly_bias_momentum_long,smc_mitigation_zone,Consumer Staples,1,0.0,-1.1398,-1.1398
+monthly_bias_momentum_long,smc_mitigation_zone,Financials,1,0.0,-0.0938,-0.0938
+monthly_bias_momentum_long,smc_mitigation_zone,Information Technology,3,0.3333333333333333,0.7656666666666666,2.2969999999999997
+monthly_bias_momentum_long,time_stop_10d,Consumer Discretionary,1,0.0,-5.045,-5.045
+monthly_bias_momentum_long,time_stop_10d,Consumer Staples,1,0.0,-3.0655,-3.0655
+monthly_bias_momentum_long,time_stop_10d,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,time_stop_10d,Information Technology,3,1.0,5.0066,15.0198
+monthly_bias_momentum_long,time_stop_20d,Consumer Discretionary,1,1.0,0.7248,0.7248
+monthly_bias_momentum_long,time_stop_20d,Consumer Staples,1,1.0,1.0137,1.0137
+monthly_bias_momentum_long,time_stop_20d,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,time_stop_20d,Information Technology,3,0.6666666666666666,11.240133333333333,33.7204
+monthly_bias_momentum_long,trailing_10pct,Consumer Discretionary,1,0.0,-7.0241,-7.0241
+monthly_bias_momentum_long,trailing_10pct,Consumer Staples,1,1.0,15.3124,15.3124
+monthly_bias_momentum_long,trailing_10pct,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,trailing_10pct,Information Technology,3,0.6666666666666666,14.242866666666666,42.7286
+monthly_bias_momentum_long,trailing_15pct,Consumer Discretionary,1,0.0,-12.1895,-12.1895
+monthly_bias_momentum_long,trailing_15pct,Consumer Staples,1,1.0,15.3124,15.3124
+monthly_bias_momentum_long,trailing_15pct,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,trailing_15pct,Information Technology,3,0.6666666666666666,15.694266666666666,47.0828
+monthly_bias_momentum_long,trailing_5pct,Consumer Discretionary,1,0.0,-6.1291,-6.1291
+monthly_bias_momentum_long,trailing_5pct,Consumer Staples,1,0.0,-4.6328,-4.6328
+monthly_bias_momentum_long,trailing_5pct,Financials,1,1.0,2.3738,2.3738
+monthly_bias_momentum_long,trailing_5pct,Information Technology,3,0.6666666666666666,2.296,6.888
+po3_bullish,atr_trail_1x,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,atr_trail_1x,Consumer Discretionary,1,0.0,-2.2976,-2.2976
+po3_bullish,atr_trail_1x,Consumer Staples,2,0.5,-0.9746999999999999,-1.9493999999999998
+po3_bullish,atr_trail_1x,Energy,1,0.0,-1.7503,-1.7503
+po3_bullish,atr_trail_1x,Financials,1,1.0,0.6795,0.6795
+po3_bullish,atr_trail_1x,Health Care,1,0.0,-2.2391,-2.2391
+po3_bullish,atr_trail_1x,Industrials,3,0.3333333333333333,-0.5520666666666667,-1.6562000000000001
+po3_bullish,atr_trail_1x,Information Technology,2,0.5,-1.18785,-2.3757
+po3_bullish,atr_trail_1x,Real Estate,1,0.0,-1.8053,-1.8053
+po3_bullish,atr_trail_2x,Broad Market,1,0.0,-2.2693,-2.2693
+po3_bullish,atr_trail_2x,Consumer Discretionary,1,0.0,-9.9268,-9.9268
+po3_bullish,atr_trail_2x,Consumer Staples,2,0.0,-2.162,-4.324
+po3_bullish,atr_trail_2x,Energy,1,0.0,-1.8295,-1.8295
+po3_bullish,atr_trail_2x,Financials,1,0.0,-0.0857,-0.0857
+po3_bullish,atr_trail_2x,Health Care,1,1.0,23.1698,23.1698
+po3_bullish,atr_trail_2x,Industrials,3,0.3333333333333333,-1.938,-5.814
+po3_bullish,atr_trail_2x,Information Technology,2,0.5,-0.5941000000000001,-1.1882000000000001
+po3_bullish,atr_trail_2x,Real Estate,1,0.0,-4.321,-4.321
+po3_bullish,atr_trail_mae_conditional,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,atr_trail_mae_conditional,Consumer Discretionary,1,0.0,-2.2976,-2.2976
+po3_bullish,atr_trail_mae_conditional,Consumer Staples,2,0.5,-0.9746999999999999,-1.9493999999999998
+po3_bullish,atr_trail_mae_conditional,Energy,1,0.0,-1.7503,-1.7503
+po3_bullish,atr_trail_mae_conditional,Financials,1,1.0,0.6795,0.6795
+po3_bullish,atr_trail_mae_conditional,Health Care,1,0.0,-2.2391,-2.2391
+po3_bullish,atr_trail_mae_conditional,Industrials,3,0.3333333333333333,-0.5520666666666667,-1.6562000000000001
+po3_bullish,atr_trail_mae_conditional,Information Technology,2,0.5,-1.18785,-2.3757
+po3_bullish,atr_trail_mae_conditional,Real Estate,1,0.0,-1.8053,-1.8053
+po3_bullish,atr_trail_vix_conditional,Broad Market,1,0.0,-0.851,-0.851
+po3_bullish,atr_trail_vix_conditional,Consumer Discretionary,1,0.0,-2.2976,-2.2976
+po3_bullish,atr_trail_vix_conditional,Consumer Staples,2,0.0,-0.9321999999999999,-1.8643999999999998
+po3_bullish,atr_trail_vix_conditional,Energy,1,0.0,-0.3114,-0.3114
+po3_bullish,atr_trail_vix_conditional,Financials,1,0.0,-0.2467,-0.2467
+po3_bullish,atr_trail_vix_conditional,Health Care,1,0.0,-3.5676,-3.5676
+po3_bullish,atr_trail_vix_conditional,Industrials,3,0.3333333333333333,-0.3684666666666667,-1.1054000000000002
+po3_bullish,atr_trail_vix_conditional,Information Technology,2,0.5,-1.21045,-2.4209
+po3_bullish,atr_trail_vix_conditional,Real Estate,1,0.0,-2.9218,-2.9218
+po3_bullish,break_even_at_1r,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,break_even_at_1r,Consumer Discretionary,1,0.0,-9.9268,-9.9268
+po3_bullish,break_even_at_1r,Consumer Staples,2,0.0,-1.07445,-2.1489
+po3_bullish,break_even_at_1r,Energy,1,0.0,-1.7503,-1.7503
+po3_bullish,break_even_at_1r,Financials,1,0.0,0.0,0.0
+po3_bullish,break_even_at_1r,Health Care,1,0.0,-2.7329,-2.7329
+po3_bullish,break_even_at_1r,Industrials,3,0.0,-1.3840666666666666,-4.1522
+po3_bullish,break_even_at_1r,Information Technology,2,0.5,-1.2076500000000001,-2.4153000000000002
+po3_bullish,break_even_at_1r,Real Estate,1,0.0,-2.8238,-2.8238
+po3_bullish,breakeven_plus_trail,Broad Market,1,0.0,-2.2693,-2.2693
+po3_bullish,breakeven_plus_trail,Consumer Discretionary,1,0.0,-7.7624,-7.7624
+po3_bullish,breakeven_plus_trail,Consumer Staples,2,0.0,-2.14885,-4.2977
+po3_bullish,breakeven_plus_trail,Energy,1,0.0,0.0,0.0
+po3_bullish,breakeven_plus_trail,Financials,1,0.0,0.0,0.0
+po3_bullish,breakeven_plus_trail,Health Care,1,1.0,15.7946,15.7946
+po3_bullish,breakeven_plus_trail,Industrials,3,0.0,-2.6977333333333333,-8.0932
+po3_bullish,breakeven_plus_trail,Information Technology,2,0.5,-2.8256,-5.6512
+po3_bullish,breakeven_plus_trail,Real Estate,1,0.0,-5.6476,-5.6476
+po3_bullish,chandelier_3x,Broad Market,1,0.0,-3.5067,-3.5067
+po3_bullish,chandelier_3x,Consumer Discretionary,1,0.0,-2.4749,-2.4749
+po3_bullish,chandelier_3x,Consumer Staples,2,0.0,-3.15105,-6.3021
+po3_bullish,chandelier_3x,Energy,1,0.0,-3.2624,-3.2624
+po3_bullish,chandelier_3x,Financials,1,0.0,-1.6548,-1.6548
+po3_bullish,chandelier_3x,Health Care,1,0.0,-0.1475,-0.1475
+po3_bullish,chandelier_3x,Industrials,3,0.3333333333333333,-2.1939333333333333,-6.581799999999999
+po3_bullish,chandelier_3x,Information Technology,2,0.0,-1.61155,-3.2231
+po3_bullish,chandelier_3x,Real Estate,1,0.0,-0.089,-0.089
+po3_bullish,class_time_stop,Broad Market,1,0.0,-5.9592,-5.9592
+po3_bullish,class_time_stop,Consumer Discretionary,1,0.0,-6.0799,-6.0799
+po3_bullish,class_time_stop,Consumer Staples,2,0.5,-2.0534999999999997,-4.106999999999999
+po3_bullish,class_time_stop,Energy,1,1.0,13.8415,13.8415
+po3_bullish,class_time_stop,Financials,1,1.0,1.1415,1.1415
+po3_bullish,class_time_stop,Health Care,1,1.0,13.7055,13.7055
+po3_bullish,class_time_stop,Industrials,3,0.3333333333333333,-1.1383333333333332,-3.4149999999999996
+po3_bullish,class_time_stop,Information Technology,2,1.0,11.2889,22.5778
+po3_bullish,class_time_stop,Real Estate,1,0.0,-4.1444,-4.1444
+po3_bullish,earnings_blackout,Broad Market,1,0.0,-0.877,-0.877
+po3_bullish,earnings_blackout,Consumer Discretionary,1,0.0,-0.9453,-0.9453
+po3_bullish,earnings_blackout,Consumer Staples,2,0.5,7.67675,15.3535
+po3_bullish,earnings_blackout,Energy,1,1.0,30.4788,30.4788
+po3_bullish,earnings_blackout,Financials,1,1.0,8.2289,8.2289
+po3_bullish,earnings_blackout,Health Care,1,1.0,140.6201,140.6201
+po3_bullish,earnings_blackout,Industrials,3,0.3333333333333333,-1.0554000000000003,-3.166200000000001
+po3_bullish,earnings_blackout,Information Technology,2,1.0,32.443650000000005,64.88730000000001
+po3_bullish,earnings_blackout,Real Estate,1,0.0,-14.1928,-14.1928
+po3_bullish,fixed_4r_2r,Broad Market,1,0.0,-2.2693,-2.2693
+po3_bullish,fixed_4r_2r,Consumer Discretionary,1,0.0,-9.9268,-9.9268
+po3_bullish,fixed_4r_2r,Consumer Staples,2,0.5,0.5104000000000002,1.0208000000000004
+po3_bullish,fixed_4r_2r,Energy,1,1.0,12.6686,12.6686
+po3_bullish,fixed_4r_2r,Financials,1,0.0,-3.1722,-3.1722
+po3_bullish,fixed_4r_2r,Health Care,1,1.0,10.9317,10.9317
+po3_bullish,fixed_4r_2r,Industrials,3,0.0,-3.8205666666666667,-11.4617
+po3_bullish,fixed_4r_2r,Information Technology,2,0.5,3.7008,7.4016
+po3_bullish,fixed_4r_2r,Real Estate,1,0.0,-5.6476,-5.6476
+po3_bullish,hybrid_50pct_target,Broad Market,1,0.0,-10.0,-10.0
+po3_bullish,hybrid_50pct_target,Consumer Discretionary,1,0.0,-10.0,-10.0
+po3_bullish,hybrid_50pct_target,Consumer Staples,2,0.5,-4.0028,-8.0056
+po3_bullish,hybrid_50pct_target,Energy,1,1.0,9.1309,9.1309
+po3_bullish,hybrid_50pct_target,Financials,1,1.0,2.3792,2.3792
+po3_bullish,hybrid_50pct_target,Health Care,1,1.0,11.9967,11.9967
+po3_bullish,hybrid_50pct_target,Industrials,3,0.6666666666666666,-1.5694333333333332,-4.7082999999999995
+po3_bullish,hybrid_50pct_target,Information Technology,2,1.0,5.8952,11.7904
+po3_bullish,hybrid_50pct_target,Real Estate,1,1.0,4.3518,4.3518
+po3_bullish,ma_exit_ema9,Broad Market,1,0.0,-2.3222,-2.3222
+po3_bullish,ma_exit_ema9,Consumer Discretionary,1,1.0,1.594,1.594
+po3_bullish,ma_exit_ema9,Consumer Staples,2,0.5,-0.8027,-1.6054
+po3_bullish,ma_exit_ema9,Energy,1,1.0,2.9149,2.9149
+po3_bullish,ma_exit_ema9,Financials,1,1.0,0.8649,0.8649
+po3_bullish,ma_exit_ema9,Health Care,1,0.0,-0.969,-0.969
+po3_bullish,ma_exit_ema9,Industrials,3,0.3333333333333333,-0.5603,-1.6809
+po3_bullish,ma_exit_ema9,Information Technology,2,0.5,0.12074999999999997,0.24149999999999994
+po3_bullish,ma_exit_ema9,Real Estate,1,0.0,-1.1768,-1.1768
+po3_bullish,mfe_lockin_trail,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,mfe_lockin_trail,Consumer Discretionary,1,0.0,-2.2976,-2.2976
+po3_bullish,mfe_lockin_trail,Consumer Staples,2,0.5,-0.9746999999999999,-1.9493999999999998
+po3_bullish,mfe_lockin_trail,Energy,1,0.0,-1.7503,-1.7503
+po3_bullish,mfe_lockin_trail,Financials,1,1.0,0.6795,0.6795
+po3_bullish,mfe_lockin_trail,Health Care,1,0.0,-2.2391,-2.2391
+po3_bullish,mfe_lockin_trail,Industrials,3,0.3333333333333333,-0.5520666666666667,-1.6562000000000001
+po3_bullish,mfe_lockin_trail,Information Technology,2,0.5,-1.18785,-2.3757
+po3_bullish,mfe_lockin_trail,Real Estate,1,0.0,-1.8053,-1.8053
+po3_bullish,multi_tier_partial,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,multi_tier_partial,Consumer Discretionary,1,0.0,-2.2976,-2.2976
+po3_bullish,multi_tier_partial,Consumer Staples,2,0.5,-0.7863499999999999,-1.5726999999999998
+po3_bullish,multi_tier_partial,Energy,1,0.0,-0.1111,-0.1111
+po3_bullish,multi_tier_partial,Financials,1,1.0,0.9817,0.9817
+po3_bullish,multi_tier_partial,Health Care,1,0.0,-2.2391,-2.2391
+po3_bullish,multi_tier_partial,Industrials,3,0.3333333333333333,-0.7139666666666667,-2.1419
+po3_bullish,multi_tier_partial,Information Technology,2,0.5,-0.75315,-1.5063
+po3_bullish,multi_tier_partial,Real Estate,1,0.0,-1.8053,-1.8053
+po3_bullish,next_pivot_target,Broad Market,1,0.0,-2.2693,-2.2693
+po3_bullish,next_pivot_target,Consumer Discretionary,1,1.0,2.4803,2.4803
+po3_bullish,next_pivot_target,Consumer Staples,2,0.5,-3.00555,-6.0111
+po3_bullish,next_pivot_target,Energy,1,1.0,1.5434,1.5434
+po3_bullish,next_pivot_target,Financials,1,1.0,5.2524,5.2524
+po3_bullish,next_pivot_target,Health Care,1,1.0,0.6533,0.6533
+po3_bullish,next_pivot_target,Industrials,3,1.0,0.7716666666666666,2.315
+po3_bullish,next_pivot_target,Information Technology,2,0.5,0.8898000000000001,1.7796000000000003
+po3_bullish,next_pivot_target,Real Estate,1,1.0,0.8552,0.8552
+po3_bullish,r_multiple_2r,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,r_multiple_2r,Consumer Discretionary,1,0.0,-9.9268,-9.9268
+po3_bullish,r_multiple_2r,Consumer Staples,2,0.5,0.2552000000000001,0.5104000000000002
+po3_bullish,r_multiple_2r,Energy,1,1.0,6.3343,6.3343
+po3_bullish,r_multiple_2r,Financials,1,0.0,-1.6548,-1.6548
+po3_bullish,r_multiple_2r,Health Care,1,0.0,-2.7329,-2.7329
+po3_bullish,r_multiple_2r,Industrials,3,0.3333333333333333,-0.22606666666666664,-0.6781999999999999
+po3_bullish,r_multiple_2r,Information Technology,2,0.5,4.271850000000001,8.543700000000001
+po3_bullish,r_multiple_2r,Real Estate,1,0.0,-2.8238,-2.8238
+po3_bullish,r_multiple_3r,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,r_multiple_3r,Consumer Discretionary,1,0.0,-9.9268,-9.9268
+po3_bullish,r_multiple_3r,Consumer Staples,2,0.0,-1.7392499999999997,-3.4784999999999995
+po3_bullish,r_multiple_3r,Energy,1,0.0,-3.1671,-3.1671
+po3_bullish,r_multiple_3r,Financials,1,0.0,-1.6548,-1.6548
+po3_bullish,r_multiple_3r,Health Care,1,0.0,-2.7329,-2.7329
+po3_bullish,r_multiple_3r,Industrials,3,0.3333333333333333,0.33533333333333326,1.0059999999999998
+po3_bullish,r_multiple_3r,Information Technology,2,0.5,4.271850000000001,8.543700000000001
+po3_bullish,r_multiple_3r,Real Estate,1,0.0,-2.8238,-2.8238
+po3_bullish,regime_flip,Broad Market,1,0.0,-5.54,-5.54
+po3_bullish,regime_flip,Consumer Discretionary,1,0.0,-10.8197,-10.8197
+po3_bullish,regime_flip,Consumer Staples,2,0.5,-4.38465,-8.7693
+po3_bullish,regime_flip,Energy,1,1.0,6.6358,6.6358
+po3_bullish,regime_flip,Financials,1,1.0,0.7076,0.7076
+po3_bullish,regime_flip,Health Care,1,1.0,7.295,7.295
+po3_bullish,regime_flip,Industrials,3,0.3333333333333333,1.3080666666666667,3.9242
+po3_bullish,regime_flip,Information Technology,2,1.0,8.58065,17.1613
+po3_bullish,regime_flip,Real Estate,1,0.0,-6.1141,-6.1141
+po3_bullish,reverse_signal,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,reverse_signal,Consumer Discretionary,1,0.0,-2.2976,-2.2976
+po3_bullish,reverse_signal,Consumer Staples,2,0.5,-0.9746999999999999,-1.9493999999999998
+po3_bullish,reverse_signal,Energy,1,0.0,-1.7503,-1.7503
+po3_bullish,reverse_signal,Financials,1,1.0,0.6795,0.6795
+po3_bullish,reverse_signal,Health Care,1,0.0,-2.2391,-2.2391
+po3_bullish,reverse_signal,Industrials,3,0.3333333333333333,-0.5520666666666667,-1.6562000000000001
+po3_bullish,reverse_signal,Information Technology,2,0.5,-1.18785,-2.3757
+po3_bullish,reverse_signal,Real Estate,1,0.0,-1.8053,-1.8053
+po3_bullish,smc_mitigation_zone,Broad Market,1,0.0,-1.1347,-1.1347
+po3_bullish,smc_mitigation_zone,Consumer Discretionary,1,1.0,1.594,1.594
+po3_bullish,smc_mitigation_zone,Consumer Staples,2,0.5,-0.9746999999999999,-1.9493999999999998
+po3_bullish,smc_mitigation_zone,Energy,1,0.0,-1.7503,-1.7503
+po3_bullish,smc_mitigation_zone,Financials,1,1.0,0.6795,0.6795
+po3_bullish,smc_mitigation_zone,Health Care,1,0.0,-0.969,-0.969
+po3_bullish,smc_mitigation_zone,Industrials,3,0.3333333333333333,-0.5384666666666668,-1.6154000000000002
+po3_bullish,smc_mitigation_zone,Information Technology,2,0.5,-0.97495,-1.9499
+po3_bullish,smc_mitigation_zone,Real Estate,1,0.0,-1.8053,-1.8053
+po3_bullish,time_stop_10d,Broad Market,1,0.0,-4.8018,-4.8018
+po3_bullish,time_stop_10d,Consumer Discretionary,1,0.0,-21.3239,-21.3239
+po3_bullish,time_stop_10d,Consumer Staples,2,0.5,-5.90075,-11.8015
+po3_bullish,time_stop_10d,Energy,1,1.0,5.1294,5.1294
+po3_bullish,time_stop_10d,Financials,1,1.0,2.7174,2.7174
+po3_bullish,time_stop_10d,Health Care,1,0.0,-1.2909,-1.2909
+po3_bullish,time_stop_10d,Industrials,3,0.3333333333333333,-1.5822,-4.7466
+po3_bullish,time_stop_10d,Information Technology,2,0.5,-2.2908500000000003,-4.5817000000000005
+po3_bullish,time_stop_10d,Real Estate,1,0.0,-5.818,-5.818
+po3_bullish,time_stop_20d,Broad Market,1,0.0,-5.54,-5.54
+po3_bullish,time_stop_20d,Consumer Discretionary,1,0.0,-10.8197,-10.8197
+po3_bullish,time_stop_20d,Consumer Staples,2,0.5,-4.38465,-8.7693
+po3_bullish,time_stop_20d,Energy,1,1.0,6.6358,6.6358
+po3_bullish,time_stop_20d,Financials,1,1.0,0.7076,0.7076
+po3_bullish,time_stop_20d,Health Care,1,1.0,7.295,7.295
+po3_bullish,time_stop_20d,Industrials,3,0.3333333333333333,1.3080666666666667,3.9242
+po3_bullish,time_stop_20d,Information Technology,2,1.0,8.58065,17.1613
+po3_bullish,time_stop_20d,Real Estate,1,0.0,-6.1141,-6.1141
+po3_bullish,trailing_10pct,Broad Market,1,0.0,-10.0,-10.0
+po3_bullish,trailing_10pct,Consumer Discretionary,1,0.0,-9.9268,-9.9268
+po3_bullish,trailing_10pct,Consumer Staples,2,0.0,-5.194,-10.388
+po3_bullish,trailing_10pct,Energy,1,1.0,8.7604,8.7604
+po3_bullish,trailing_10pct,Financials,1,0.0,-5.8519,-5.8519
+po3_bullish,trailing_10pct,Health Care,1,1.0,15.7946,15.7946
+po3_bullish,trailing_10pct,Industrials,3,0.3333333333333333,-3.699033333333333,-11.0971
+po3_bullish,trailing_10pct,Information Technology,2,0.5,-4.5897,-9.1794
+po3_bullish,trailing_10pct,Real Estate,1,0.0,-8.8519,-8.8519
+po3_bullish,trailing_15pct,Broad Market,1,0.0,-15.0,-15.0
+po3_bullish,trailing_15pct,Consumer Discretionary,1,0.0,-13.6451,-13.6451
+po3_bullish,trailing_15pct,Consumer Staples,2,0.0,-10.87145,-21.7429
+po3_bullish,trailing_15pct,Energy,1,1.0,2.7182,2.7182
+po3_bullish,trailing_15pct,Financials,1,1.0,8.2289,8.2289
+po3_bullish,trailing_15pct,Health Care,1,1.0,31.4907,31.4907
+po3_bullish,trailing_15pct,Industrials,3,0.0,-9.049066666666667,-27.147199999999998
+po3_bullish,trailing_15pct,Information Technology,2,1.0,6.2568,12.5136
+po3_bullish,trailing_15pct,Real Estate,1,0.0,-5.3362,-5.3362
+po3_bullish,trailing_5pct,Broad Market,1,0.0,-5.0,-5.0
+po3_bullish,trailing_5pct,Consumer Discretionary,1,0.0,-3.4857,-3.4857
+po3_bullish,trailing_5pct,Consumer Staples,2,0.0,-2.8411,-5.6822
+po3_bullish,trailing_5pct,Energy,1,0.0,-0.3114,-0.3114
+po3_bullish,trailing_5pct,Financials,1,1.0,0.5563,0.5563
+po3_bullish,trailing_5pct,Health Care,1,1.0,22.2276,22.2276
+po3_bullish,trailing_5pct,Industrials,3,0.0,-2.7426333333333335,-8.2279
+po3_bullish,trailing_5pct,Information Technology,2,0.5,0.7109000000000001,1.4218000000000002
+po3_bullish,trailing_5pct,Real Estate,1,0.0,-3.7881,-3.7881
+smc_choch_reversal,atr_trail_1x,Broad Market,1,0.0,-0.4032,-0.4032
+smc_choch_reversal,atr_trail_1x,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,atr_trail_1x,Financials,1,0.0,-1.1138,-1.1138
+smc_choch_reversal,atr_trail_1x,Health Care,1,0.0,-0.4192,-0.4192
+smc_choch_reversal,atr_trail_1x,Industrials,1,0.0,-1.1095,-1.1095
+smc_choch_reversal,atr_trail_1x,Information Technology,2,0.5,-0.011050000000000004,-0.02210000000000001
+smc_choch_reversal,atr_trail_2x,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,atr_trail_2x,Energy,1,0.0,-3.9212,-3.9212
+smc_choch_reversal,atr_trail_2x,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,atr_trail_2x,Health Care,1,0.0,-1.649,-1.649
+smc_choch_reversal,atr_trail_2x,Industrials,1,0.0,-2.3054,-2.3054
+smc_choch_reversal,atr_trail_2x,Information Technology,2,0.0,-3.2451,-6.4902
+smc_choch_reversal,atr_trail_mae_conditional,Broad Market,1,0.0,-0.4032,-0.4032
+smc_choch_reversal,atr_trail_mae_conditional,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,atr_trail_mae_conditional,Financials,1,0.0,-1.1138,-1.1138
+smc_choch_reversal,atr_trail_mae_conditional,Health Care,1,0.0,-0.4192,-0.4192
+smc_choch_reversal,atr_trail_mae_conditional,Industrials,1,0.0,-1.1095,-1.1095
+smc_choch_reversal,atr_trail_mae_conditional,Information Technology,2,0.5,-0.011050000000000004,-0.02210000000000001
+smc_choch_reversal,atr_trail_vix_conditional,Broad Market,1,0.0,-0.1907,-0.1907
+smc_choch_reversal,atr_trail_vix_conditional,Energy,1,0.0,-1.4705,-1.4705
+smc_choch_reversal,atr_trail_vix_conditional,Financials,1,0.0,-0.7739,-0.7739
+smc_choch_reversal,atr_trail_vix_conditional,Health Care,1,0.0,-0.8661,-0.8661
+smc_choch_reversal,atr_trail_vix_conditional,Industrials,1,0.0,-1.1768,-1.1768
+smc_choch_reversal,atr_trail_vix_conditional,Information Technology,2,0.0,-1.6495000000000002,-3.2990000000000004
+smc_choch_reversal,break_even_at_1r,Broad Market,1,0.0,-0.8674,-0.8674
+smc_choch_reversal,break_even_at_1r,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,break_even_at_1r,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,break_even_at_1r,Health Care,1,0.0,-0.3302,-0.3302
+smc_choch_reversal,break_even_at_1r,Industrials,1,0.0,0.0,0.0
+smc_choch_reversal,break_even_at_1r,Information Technology,2,0.0,0.0,0.0
+smc_choch_reversal,breakeven_plus_trail,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,breakeven_plus_trail,Energy,1,0.0,-3.9212,-3.9212
+smc_choch_reversal,breakeven_plus_trail,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,breakeven_plus_trail,Health Care,1,1.0,16.2548,16.2548
+smc_choch_reversal,breakeven_plus_trail,Industrials,1,1.0,0.5834,0.5834
+smc_choch_reversal,breakeven_plus_trail,Information Technology,2,0.0,-2.9198,-5.8396
+smc_choch_reversal,chandelier_3x,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,chandelier_3x,Energy,1,1.0,2.6671,2.6671
+smc_choch_reversal,chandelier_3x,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,chandelier_3x,Health Care,1,0.0,-2.5189,-2.5189
+smc_choch_reversal,chandelier_3x,Industrials,1,0.0,-3.2393,-3.2393
+smc_choch_reversal,chandelier_3x,Information Technology,2,0.0,-4.5451500000000005,-9.090300000000001
+smc_choch_reversal,class_time_stop,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,class_time_stop,Energy,1,1.0,5.7504,5.7504
+smc_choch_reversal,class_time_stop,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,class_time_stop,Health Care,1,1.0,5.9526,5.9526
+smc_choch_reversal,class_time_stop,Industrials,1,1.0,3.934,3.934
+smc_choch_reversal,class_time_stop,Information Technology,2,0.0,-28.7992,-57.5984
+smc_choch_reversal,earnings_blackout,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,earnings_blackout,Energy,1,0.0,-9.8873,-9.8873
+smc_choch_reversal,earnings_blackout,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,earnings_blackout,Health Care,1,1.0,14.4135,14.4135
+smc_choch_reversal,earnings_blackout,Industrials,1,0.0,-10.4179,-10.4179
+smc_choch_reversal,earnings_blackout,Information Technology,2,0.5,-31.02935,-62.0587
+smc_choch_reversal,fixed_4r_2r,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,fixed_4r_2r,Energy,1,0.0,-3.9212,-3.9212
+smc_choch_reversal,fixed_4r_2r,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,fixed_4r_2r,Health Care,1,0.0,-3.0495,-3.0495
+smc_choch_reversal,fixed_4r_2r,Industrials,1,0.0,-4.615,-4.615
+smc_choch_reversal,fixed_4r_2r,Information Technology,2,0.0,-7.4961,-14.9922
+smc_choch_reversal,hybrid_50pct_target,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,hybrid_50pct_target,Energy,1,1.0,2.9409,2.9409
+smc_choch_reversal,hybrid_50pct_target,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,hybrid_50pct_target,Health Care,1,1.0,10.4145,10.4145
+smc_choch_reversal,hybrid_50pct_target,Industrials,1,1.0,3.7529,3.7529
+smc_choch_reversal,hybrid_50pct_target,Information Technology,2,0.0,-42.2042,-84.4084
+smc_choch_reversal,ma_exit_ema9,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,ma_exit_ema9,Energy,1,0.0,-2.5146,-2.5146
+smc_choch_reversal,ma_exit_ema9,Financials,1,0.0,-1.1727,-1.1727
+smc_choch_reversal,ma_exit_ema9,Health Care,1,0.0,-1.4229,-1.4229
+smc_choch_reversal,ma_exit_ema9,Industrials,1,0.0,-0.378,-0.378
+smc_choch_reversal,ma_exit_ema9,Information Technology,2,0.0,-2.5887,-5.1774
+smc_choch_reversal,mfe_lockin_trail,Broad Market,1,0.0,-0.4032,-0.4032
+smc_choch_reversal,mfe_lockin_trail,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,mfe_lockin_trail,Financials,1,0.0,-1.1138,-1.1138
+smc_choch_reversal,mfe_lockin_trail,Health Care,1,0.0,-0.4192,-0.4192
+smc_choch_reversal,mfe_lockin_trail,Industrials,1,0.0,-1.1095,-1.1095
+smc_choch_reversal,mfe_lockin_trail,Information Technology,2,0.5,-0.011050000000000004,-0.02210000000000001
+smc_choch_reversal,multi_tier_partial,Broad Market,1,0.0,-0.4032,-0.4032
+smc_choch_reversal,multi_tier_partial,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,multi_tier_partial,Financials,1,0.0,-1.1138,-1.1138
+smc_choch_reversal,multi_tier_partial,Health Care,1,1.0,0.2881,0.2881
+smc_choch_reversal,multi_tier_partial,Industrials,1,0.0,-1.1095,-1.1095
+smc_choch_reversal,multi_tier_partial,Information Technology,2,1.0,1.3717000000000001,2.7434000000000003
+smc_choch_reversal,next_pivot_target,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,next_pivot_target,Energy,1,1.0,1.4722,1.4722
+smc_choch_reversal,next_pivot_target,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,next_pivot_target,Health Care,1,1.0,0.388,0.388
+smc_choch_reversal,next_pivot_target,Industrials,1,1.0,0.9281,0.9281
+smc_choch_reversal,next_pivot_target,Information Technology,2,0.5,-4.2955,-8.591
+smc_choch_reversal,r_multiple_2r,Broad Market,1,0.0,-0.8674,-0.8674
+smc_choch_reversal,r_multiple_2r,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,r_multiple_2r,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,r_multiple_2r,Health Care,1,0.0,-1.5247,-1.5247
+smc_choch_reversal,r_multiple_2r,Industrials,1,0.0,-2.3075,-2.3075
+smc_choch_reversal,r_multiple_2r,Information Technology,2,0.0,-3.3864,-6.7728
+smc_choch_reversal,r_multiple_3r,Broad Market,1,0.0,-0.8674,-0.8674
+smc_choch_reversal,r_multiple_3r,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,r_multiple_3r,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,r_multiple_3r,Health Care,1,0.0,-1.5247,-1.5247
+smc_choch_reversal,r_multiple_3r,Industrials,1,0.0,-2.3075,-2.3075
+smc_choch_reversal,r_multiple_3r,Information Technology,2,0.0,-3.3864,-6.7728
+smc_choch_reversal,regime_flip,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,regime_flip,Energy,1,1.0,5.8946,5.8946
+smc_choch_reversal,regime_flip,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,regime_flip,Health Care,1,1.0,1.1463,1.1463
+smc_choch_reversal,regime_flip,Industrials,1,1.0,0.9848,0.9848
+smc_choch_reversal,regime_flip,Information Technology,2,0.0,-15.752,-31.504
+smc_choch_reversal,reverse_signal,Broad Market,1,0.0,-0.4032,-0.4032
+smc_choch_reversal,reverse_signal,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,reverse_signal,Financials,1,0.0,-1.1138,-1.1138
+smc_choch_reversal,reverse_signal,Health Care,1,0.0,-0.4192,-0.4192
+smc_choch_reversal,reverse_signal,Industrials,1,0.0,-1.1095,-1.1095
+smc_choch_reversal,reverse_signal,Information Technology,2,0.5,-0.011050000000000004,-0.02210000000000001
+smc_choch_reversal,smc_mitigation_zone,Broad Market,1,0.0,-0.4032,-0.4032
+smc_choch_reversal,smc_mitigation_zone,Energy,1,0.0,-1.9606,-1.9606
+smc_choch_reversal,smc_mitigation_zone,Financials,1,0.0,-1.1138,-1.1138
+smc_choch_reversal,smc_mitigation_zone,Health Care,1,0.0,-0.4192,-0.4192
+smc_choch_reversal,smc_mitigation_zone,Industrials,1,0.0,-1.1095,-1.1095
+smc_choch_reversal,smc_mitigation_zone,Information Technology,2,0.5,-0.011050000000000004,-0.02210000000000001
+smc_choch_reversal,time_stop_10d,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,time_stop_10d,Energy,1,0.0,-1.6133,-1.6133
+smc_choch_reversal,time_stop_10d,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,time_stop_10d,Health Care,1,1.0,0.9839,0.9839
+smc_choch_reversal,time_stop_10d,Industrials,1,0.0,-0.4099,-0.4099
+smc_choch_reversal,time_stop_10d,Information Technology,2,0.0,-5.680299999999999,-11.360599999999998
+smc_choch_reversal,time_stop_20d,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,time_stop_20d,Energy,1,1.0,5.8946,5.8946
+smc_choch_reversal,time_stop_20d,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,time_stop_20d,Health Care,1,1.0,1.1463,1.1463
+smc_choch_reversal,time_stop_20d,Industrials,1,1.0,0.9848,0.9848
+smc_choch_reversal,time_stop_20d,Information Technology,2,0.0,-15.752,-31.504
+smc_choch_reversal,trailing_10pct,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,trailing_10pct,Energy,1,0.0,-4.7047,-4.7047
+smc_choch_reversal,trailing_10pct,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,trailing_10pct,Health Care,1,1.0,16.2548,16.2548
+smc_choch_reversal,trailing_10pct,Industrials,1,1.0,0.5834,0.5834
+smc_choch_reversal,trailing_10pct,Information Technology,2,0.0,-8.372399999999999,-16.744799999999998
+smc_choch_reversal,trailing_15pct,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,trailing_15pct,Energy,1,0.0,-7.9134,-7.9134
+smc_choch_reversal,trailing_15pct,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,trailing_15pct,Health Care,1,1.0,9.7962,9.7962
+smc_choch_reversal,trailing_15pct,Industrials,1,0.0,-5.0045,-5.0045
+smc_choch_reversal,trailing_15pct,Information Technology,2,0.0,-12.014600000000002,-24.029200000000003
+smc_choch_reversal,trailing_5pct,Broad Market,1,1.0,0.5462,0.5462
+smc_choch_reversal,trailing_5pct,Energy,1,1.0,2.7941,2.7941
+smc_choch_reversal,trailing_5pct,Financials,1,1.0,0.4907,0.4907
+smc_choch_reversal,trailing_5pct,Health Care,1,0.0,-3.7076,-3.7076
+smc_choch_reversal,trailing_5pct,Industrials,1,0.0,-2.9013,-2.9013
+smc_choch_reversal,trailing_5pct,Information Technology,2,0.0,-1.8414,-3.6828
+stochrsi_overbought_short,atr_trail_1x,Consumer Discretionary,1,0.0,-0.1126,-0.1126
+stochrsi_overbought_short,atr_trail_1x,Energy,2,1.0,2.01045,4.0209
+stochrsi_overbought_short,atr_trail_1x,Financials,1,0.0,-0.1064,-0.1064
+stochrsi_overbought_short,atr_trail_1x,Health Care,2,0.0,-1.3876000000000002,-2.7752000000000003
+stochrsi_overbought_short,atr_trail_2x,Consumer Discretionary,1,1.0,0.447,0.447
+stochrsi_overbought_short,atr_trail_2x,Energy,2,0.0,-1.1595499999999999,-2.3190999999999997
+stochrsi_overbought_short,atr_trail_2x,Financials,1,0.0,-2.5837,-2.5837
+stochrsi_overbought_short,atr_trail_2x,Health Care,2,0.5,1.6417000000000002,3.2834000000000003
+stochrsi_overbought_short,atr_trail_mae_conditional,Consumer Discretionary,1,0.0,-0.1126,-0.1126
+stochrsi_overbought_short,atr_trail_mae_conditional,Energy,2,1.0,2.01045,4.0209
+stochrsi_overbought_short,atr_trail_mae_conditional,Financials,1,0.0,-0.1064,-0.1064
+stochrsi_overbought_short,atr_trail_mae_conditional,Health Care,2,0.0,-1.3876000000000002,-2.7752000000000003
+stochrsi_overbought_short,atr_trail_vix_conditional,Consumer Discretionary,1,0.0,-0.1126,-0.1126
+stochrsi_overbought_short,atr_trail_vix_conditional,Energy,2,0.5,0.1189,0.2378
+stochrsi_overbought_short,atr_trail_vix_conditional,Financials,1,0.0,-0.9846,-0.9846
+stochrsi_overbought_short,atr_trail_vix_conditional,Health Care,2,0.0,-1.4408,-2.8816
+stochrsi_overbought_short,break_even_at_1r,Consumer Discretionary,1,0.0,-0.1126,-0.1126
+stochrsi_overbought_short,break_even_at_1r,Energy,2,0.0,-0.26165,-0.5233
+stochrsi_overbought_short,break_even_at_1r,Financials,1,0.0,-2.4472,-2.4472
+stochrsi_overbought_short,break_even_at_1r,Health Care,2,0.0,-1.3876000000000002,-2.7752000000000003
+stochrsi_overbought_short,breakeven_plus_trail,Consumer Discretionary,1,0.0,0.0,0.0
+stochrsi_overbought_short,breakeven_plus_trail,Energy,2,0.0,0.0,0.0
+stochrsi_overbought_short,breakeven_plus_trail,Financials,1,0.0,-4.8945,-4.8945
+stochrsi_overbought_short,breakeven_plus_trail,Health Care,2,0.5,-1.09935,-2.1987
+stochrsi_overbought_short,chandelier_3x,Consumer Discretionary,1,0.0,-0.3478,-0.3478
+stochrsi_overbought_short,chandelier_3x,Energy,2,0.0,-0.27890000000000004,-0.5578000000000001
+stochrsi_overbought_short,chandelier_3x,Financials,1,0.0,-2.5558,-2.5558
+stochrsi_overbought_short,chandelier_3x,Health Care,2,0.0,-0.46904999999999997,-0.9380999999999999
+stochrsi_overbought_short,class_time_stop,Consumer Discretionary,1,0.0,-4.8911,-4.8911
+stochrsi_overbought_short,class_time_stop,Energy,2,1.0,1.8146,3.6292
+stochrsi_overbought_short,class_time_stop,Financials,1,0.0,-3.1397,-3.1397
+stochrsi_overbought_short,class_time_stop,Health Care,2,0.5,-0.9870999999999999,-1.9741999999999997
+stochrsi_overbought_short,earnings_blackout,Consumer Discretionary,1,0.0,-9.3268,-9.3268
+stochrsi_overbought_short,earnings_blackout,Energy,2,0.5,-11.926300000000001,-23.852600000000002
+stochrsi_overbought_short,earnings_blackout,Financials,1,0.0,-13.0218,-13.0218
+stochrsi_overbought_short,earnings_blackout,Health Care,2,0.5,-27.655749999999998,-55.311499999999995
+stochrsi_overbought_short,fixed_4r_2r,Consumer Discretionary,1,0.0,-2.8411,-2.8411
+stochrsi_overbought_short,fixed_4r_2r,Energy,2,0.5,1.1427,2.2854
+stochrsi_overbought_short,fixed_4r_2r,Financials,1,0.0,-4.8945,-4.8945
+stochrsi_overbought_short,fixed_4r_2r,Health Care,2,0.5,1.0233499999999998,2.0466999999999995
+stochrsi_overbought_short,hybrid_50pct_target,Consumer Discretionary,1,1.0,2.1815,2.1815
+stochrsi_overbought_short,hybrid_50pct_target,Energy,2,1.0,6.926550000000001,13.853100000000001
+stochrsi_overbought_short,hybrid_50pct_target,Financials,1,1.0,5.7538,5.7538
+stochrsi_overbought_short,hybrid_50pct_target,Health Care,2,1.0,4.3918,8.7836
+stochrsi_overbought_short,ma_exit_ema9,Consumer Discretionary,1,1.0,1.9595,1.9595
+stochrsi_overbought_short,ma_exit_ema9,Energy,2,1.0,2.2948500000000003,4.589700000000001
+stochrsi_overbought_short,ma_exit_ema9,Financials,1,1.0,0.8672,0.8672
+stochrsi_overbought_short,ma_exit_ema9,Health Care,2,0.5,0.06834999999999991,0.13669999999999982
+stochrsi_overbought_short,mfe_lockin_trail,Consumer Discretionary,1,0.0,-0.1126,-0.1126
+stochrsi_overbought_short,mfe_lockin_trail,Energy,2,1.0,2.5198,5.0396
+stochrsi_overbought_short,mfe_lockin_trail,Financials,1,0.0,-0.1064,-0.1064
+stochrsi_overbought_short,mfe_lockin_trail,Health Care,2,0.0,-1.3876000000000002,-2.7752000000000003
+stochrsi_overbought_short,multi_tier_partial,Consumer Discretionary,1,1.0,0.3931,0.3931
+stochrsi_overbought_short,multi_tier_partial,Energy,2,1.0,3.76825,7.5365
+stochrsi_overbought_short,multi_tier_partial,Financials,1,0.0,-0.1064,-0.1064
+stochrsi_overbought_short,multi_tier_partial,Health Care,2,0.5,-1.0641500000000002,-2.1283000000000003
+stochrsi_overbought_short,next_pivot_target,Consumer Discretionary,1,1.0,1.5343,1.5343
+stochrsi_overbought_short,next_pivot_target,Energy,2,1.0,0.6680999999999999,1.3361999999999998
+stochrsi_overbought_short,next_pivot_target,Financials,1,1.0,1.5977,1.5977
+stochrsi_overbought_short,next_pivot_target,Health Care,2,0.5,-2.3213,-4.6426
+stochrsi_overbought_short,r_multiple_2r,Consumer Discretionary,1,1.0,2.809,2.809
+stochrsi_overbought_short,r_multiple_2r,Energy,2,1.0,6.196199999999999,12.392399999999999
+stochrsi_overbought_short,r_multiple_2r,Financials,1,0.0,-2.4472,-2.4472
+stochrsi_overbought_short,r_multiple_2r,Health Care,2,0.5,0.5117,1.0234
+stochrsi_overbought_short,r_multiple_3r,Consumer Discretionary,1,0.0,-1.4045,-1.4045
+stochrsi_overbought_short,r_multiple_3r,Energy,2,1.0,9.395,18.79
+stochrsi_overbought_short,r_multiple_3r,Financials,1,0.0,-2.4472,-2.4472
+stochrsi_overbought_short,r_multiple_3r,Health Care,2,0.5,1.4405999999999999,2.8811999999999998
+stochrsi_overbought_short,regime_flip,Consumer Discretionary,1,0.0,-4.0284,-4.0284
+stochrsi_overbought_short,regime_flip,Energy,2,1.0,13.44915,26.8983
+stochrsi_overbought_short,regime_flip,Financials,1,0.0,-5.7,-5.7
+stochrsi_overbought_short,regime_flip,Health Care,2,0.5,-0.5297499999999999,-1.0594999999999999
+stochrsi_overbought_short,reverse_signal,Consumer Discretionary,1,0.0,-0.1126,-0.1126
+stochrsi_overbought_short,reverse_signal,Energy,2,1.0,2.01045,4.0209
+stochrsi_overbought_short,reverse_signal,Financials,1,0.0,-0.1064,-0.1064
+stochrsi_overbought_short,reverse_signal,Health Care,2,0.0,-1.3876000000000002,-2.7752000000000003
+stochrsi_overbought_short,smc_mitigation_zone,Consumer Discretionary,1,0.0,-0.1126,-0.1126
+stochrsi_overbought_short,smc_mitigation_zone,Energy,2,1.0,1.44855,2.8971
+stochrsi_overbought_short,smc_mitigation_zone,Financials,1,1.0,0.8672,0.8672
+stochrsi_overbought_short,smc_mitigation_zone,Health Care,2,0.0,-1.3876000000000002,-2.7752000000000003
+stochrsi_overbought_short,time_stop_10d,Consumer Discretionary,1,1.0,0.175,0.175
+stochrsi_overbought_short,time_stop_10d,Energy,2,1.0,2.08795,4.1759
+stochrsi_overbought_short,time_stop_10d,Financials,1,0.0,-4.3801,-4.3801
+stochrsi_overbought_short,time_stop_10d,Health Care,2,0.5,0.019300000000000095,0.03860000000000019
+stochrsi_overbought_short,time_stop_20d,Consumer Discretionary,1,0.0,-4.0284,-4.0284
+stochrsi_overbought_short,time_stop_20d,Energy,2,1.0,13.44915,26.8983
+stochrsi_overbought_short,time_stop_20d,Financials,1,0.0,-5.7,-5.7
+stochrsi_overbought_short,time_stop_20d,Health Care,2,0.5,-0.5297499999999999,-1.0594999999999999
+stochrsi_overbought_short,trailing_10pct,Consumer Discretionary,1,0.0,-6.1127,-6.1127
+stochrsi_overbought_short,trailing_10pct,Energy,2,1.0,4.55875,9.1175
+stochrsi_overbought_short,trailing_10pct,Financials,1,0.0,-7.3921,-7.3921
+stochrsi_overbought_short,trailing_10pct,Health Care,2,1.0,1.95815,3.9163
+stochrsi_overbought_short,trailing_15pct,Consumer Discretionary,1,0.0,-4.3891,-4.3891
+stochrsi_overbought_short,trailing_15pct,Energy,2,0.5,0.2448,0.4896
+stochrsi_overbought_short,trailing_15pct,Financials,1,0.0,-0.6128,-0.6128
+stochrsi_overbought_short,trailing_15pct,Health Care,2,0.5,0.43875,0.8775
+stochrsi_overbought_short,trailing_5pct,Consumer Discretionary,1,0.0,-1.2894,-1.2894
+stochrsi_overbought_short,trailing_5pct,Energy,2,0.5,0.28695,0.5739
+stochrsi_overbought_short,trailing_5pct,Financials,1,0.0,-2.5106,-2.5106
+stochrsi_overbought_short,trailing_5pct,Health Care,2,0.5,1.2933500000000002,2.5867000000000004

@@ -1,0 +1,3 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
+earnings_blackout,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,337.7375,chandelier_3x,206.1931,131.54440000000002,10,25,1.0
+earnings_blackout,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,55.9637,trailing_10pct,34.040400000000005,21.923299999999998,11,25,1.0

@@ -1,0 +1,77 @@
+{
+  "break_retest_confluence": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -12.2259873015873,
+      "entry_date": "2023-09-05",
+      "exit_date": "2023-09-18",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -7.963638095238095,
+      "entry_date": "2023-09-05",
+      "exit_date": "2023-10-25",
+      "regime": "neutral"
+    }
+  ],
+  "cpr_narrow_bullish": [],
+  "cpr_narrow_momentum": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -8.163233333333332,
+      "entry_date": "2023-10-20",
+      "exit_date": "2023-11-03",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -6.269704761904762,
+      "entry_date": "2023-11-15",
+      "exit_date": "2024-02-29",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -5.229849206349207,
+      "entry_date": "2023-11-08",
+      "exit_date": "2023-12-04",
+      "regime": "neutral"
+    }
+  ],
+  "hull_rsi": [],
+  "prev_day_low_bounce": [],
+  "smc_bos_continuation": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -5.523203174603175,
+      "entry_date": "2024-02-07",
+      "exit_date": "2024-02-29",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -4.905038095238096,
+      "entry_date": "2024-02-20",
+      "exit_date": "2024-02-29",
+      "regime": "neutral"
+    }
+  ],
+  "smc_order_block_bounce": [],
+  "stochrsi_overbought_short": [
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -10.315777777777777,
+      "entry_date": "2023-09-04",
+      "exit_date": "2023-09-11",
+      "regime": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -5.956433333333333,
+      "entry_date": "2023-09-04",
+      "exit_date": "2023-10-25",
+      "regime": "neutral"
+    }
+  ]
+}

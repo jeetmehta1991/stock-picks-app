@@ -1,0 +1,2 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,composite_score,recommended
+double_bottom_long,earnings_blackout,8,0.625,8.4912,7.2986,58.3885,-6.4513,103.8,75.32,True

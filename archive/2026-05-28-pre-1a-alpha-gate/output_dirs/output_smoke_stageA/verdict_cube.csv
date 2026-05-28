@@ -1,0 +1,13 @@
+strategy,regime,sector,verdict,gates_passed,n_trades,gate_1_sample_size_value,gate_1_sample_size_passed
+break_retest_confluence,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+break_retest_confluence,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_momentum,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_momentum,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,5,5,False
+hull_rsi,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+prev_day_low_bounce,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_bos_continuation,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_bos_continuation,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+smc_order_block_bounce,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_overbought_short,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_overbought_short,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,2,2,False

@@ -1,0 +1,9 @@
+strategy,sharpe_adj,win_rate_adj,profit_factor_adj,haircut_pct_applied
+cpr_narrow_bullish,0.0,0.9,inf,0.2
+hull_rsi,0.0,0.8,inf,0.4
+smc_order_block_bounce,0.0,0.9,inf,0.2
+prev_day_low_bounce,0.0,0.9,inf,0.2
+cpr_narrow_momentum,0.0,0.4,2.89072,0.4
+stochrsi_overbought_short,0.0,0.26664,0.0715,0.4
+break_retest_confluence,0.0,0.0,0.0,0.2
+smc_bos_continuation,0.0,0.0,0.0,0.2

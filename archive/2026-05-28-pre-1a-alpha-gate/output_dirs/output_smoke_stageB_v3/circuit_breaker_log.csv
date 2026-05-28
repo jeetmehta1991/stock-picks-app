@@ -1,0 +1,17 @@
+date,event,z_score,today_dispersion,level,dd_from_peak,rolling_peak_equity,current_equity
+2022-01-03,dispersion_cb_triggered_dec128,3.1279,0.035115,,,,
+2022-04-19,halt_triggered,,,6.0,-0.2082,100000.0,79180.3
+2022-06-21,halt_triggered,,,6.0,-0.2319,100000.0,76807.88
+2022-08-23,halt_triggered,,,6.0,-0.2848,100000.0,71516.45
+2022-10-18,halt_resumed,,,6.0,-0.2618,100000.0,73817.99
+2022-10-19,halt_triggered,,,6.0,-0.2618,100000.0,73817.99
+2022-11-10,halt_resumed,,,6.0,-0.2427,100000.0,75734.52
+2022-11-10,dispersion_cb_triggered_dec128,3.4483,0.038001,,,,
+2022-11-11,halt_triggered,,,6.0,-0.2427,100000.0,75734.52
+2023-01-11,halt_triggered,,,6.0,-0.2461,100000.0,75389.76
+2023-03-14,halt_triggered,,,6.0,-0.2524,100000.0,74760.17
+2023-05-16,halt_triggered,,,6.0,-0.2554,100000.0,74459.19
+2023-07-18,halt_triggered,,,6.0,-0.2667,100000.0,73332.05
+2023-08-08,halt_resumed,,,6.0,-0.241,100000.0,75899.31
+2023-08-21,dispersion_cb_triggered_dec128,3.2554,0.026659,,,,
+2023-10-25,dispersion_cb_triggered_dec128,4.3102,0.028616,,,,

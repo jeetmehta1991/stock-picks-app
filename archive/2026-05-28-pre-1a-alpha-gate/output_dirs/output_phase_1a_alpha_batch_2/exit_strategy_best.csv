@@ -1,0 +1,11 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,composite_score,recommended
+smc_inverse_fvg,hybrid_50pct_target,84,0.6786,0.599,-4.307,-361.7855,-445.7387,230.1,27.14,True
+xs_momentum_top_decile,time_stop_20d,16,0.75,7.9159,3.4147,54.6356,-4.0175,29.0,83.97,True
+monthly_bias_momentum_long,earnings_blackout,20,0.7,9.4781,44.6117,892.233,-70.3387,960.6,58.0,True
+stochrsi_oversold,next_pivot_target,6,1.0,999.0,1.4159,8.4953,0.0,5.7,100.0,True
+po3_bullish,earnings_blackout,24,0.75,5.5906,29.3907,705.3772,-51.9373,899.7,60.0,True
+buyback_8k_recent_long,time_stop_10d,17,0.4706,1.1967,0.2435,4.1387,-7.0382,14.6,44.17,True
+cpr_narrow_bullish,ma_exit_ema9,7,0.4286,2.8747,3.1352,21.9463,-7.1028,15.9,66.49,True
+htf_aligned_breakout_long,hybrid_50pct_target,7,0.7143,1.4528,1.2937,9.0562,-10.0,93.1,57.16,True
+avwap_252_breakout,hybrid_50pct_target,5,0.8,2.4268,2.8536,14.268,-10.0,170.0,77.0,True
+williams_r_oversold,hybrid_50pct_target,6,0.8333,3.6922,4.487,26.9221,-10.0,114.0,78.33,True

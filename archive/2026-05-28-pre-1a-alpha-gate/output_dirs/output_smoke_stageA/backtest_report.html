@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<!-- Source of truth (per CHECKLIST #77): data sourced from output_v2/backtest_results.csv, trade_log.csv, exit_strategy_comparison.csv, improvements_summary.json. Generator: backtest/results/writer.py::_write_html(). -->
+<title>Backtest Report  -  2026-05-20 16:08 UTC</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;padding:2rem 1rem}
+h1{font-size:1.7rem;color:#f0f6fc;margin-bottom:.4rem}
+h2{font-size:1rem;color:#58a6ff;margin:2.5rem 0 .75rem;border-bottom:1px solid #21262d;padding-bottom:.4rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:1.5rem 0}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:1rem 1.2rem}
+.stat .v{font-size:2rem;font-weight:700;color:#f0f6fc} .stat .l{font-size:.75rem;color:#8b949e;margin-top:3px}
+.note{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.9rem 1.2rem;
+       font-size:.82rem;color:#8b949e;margin-bottom:1.5rem}
+.note strong{color:#c9d1d9}
+.improvements{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.imp-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.9rem 1.1rem}
+.imp-card .title{font-size:.7rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.imp-card .val{font-size:1.1rem;font-weight:600;color:#f0f6fc}
+.imp-card .sub{font-size:.72rem;color:#8b949e;margin-top:.2rem}
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:1rem}
+th{background:#161b22;color:#8b949e;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;
+    padding:.55rem .8rem;text-align:left;border-bottom:1px solid #21262d}
+td{padding:.55rem .8rem;border-bottom:1px solid #21262d}
+tr:hover td{background:#1c2128}
+footer{text-align:center;margin-top:3rem;font-size:.75rem;color:#484f58;
+        padding-top:1rem;border-top:1px solid #21262d}
+</style></head><body>
+<h1>Backtest Report  -  Stage 2</h1>
+<p style="color:#8b949e;font-size:.85rem">Generated 2026-05-20 16:08 UTC &nbsp;|&nbsp; 8 strategy classes (Layer 1 baseline; full layered roster per CANONICAL_FACTS.md F-002) &nbsp;|&nbsp; 17 exit methods (per F-004) &nbsp;|&nbsp; 5 improvements applied</p>
+
+<div class="stats">
+  <div class="stat"><div class="v">17</div><div class="l">Trades simulated</div></div>
+  <div class="stat"><div class="v">8</div><div class="l">Strategies tested</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">0</div><div class="l">Passing all criteria</div></div>
+  <div class="stat"><div class="v">10</div><div class="l">Long trades</div></div>
+  <div class="stat"><div class="v">7</div><div class="l">Short trades</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">40.1%</div><div class="l">Gross ROI</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">27.7%</div><div class="l">Net ROI (after costs)</div></div>
+  <div class="stat"><div class="v" style="color:#f85149">-4.0%</div><div class="l">Transaction costs</div></div>
+</div>
+
+<h2>Improvements applied</h2>
+<div class="improvements">
+  <div class="imp-card"><div class="title">Transaction costs</div>
+    <div class="val">-4.00% total</div>
+    <div class="sub">0.08% ETF . 0.10% large-cap . 0.15% mid-cap round-trip</div></div>
+  <div class="imp-card"><div class="title">Survivorship bias haircut</div>
+    <div class="val">-8.5% applied</div>
+    <div class="sub">2% annual over 0.5 years  -  gross 36.1% -> adjusted 27.7%</div></div>
+  <div class="imp-card"><div class="title">Walk-forward validation</div>
+    <div class="val">In-sample 2022-23 . OOS 2024</div>
+    <div class="sub">ROBUST = passes both . OVERFIT = fails out-of-sample</div></div>
+  <div class="imp-card"><div class="title">Correlation filter</div>
+    <div class="val">Max 0.70 correlation</div>
+    <div class="sub">Max 3 positions per sector . prevents concentrated drawdowns</div></div>
+  <div class="imp-card"><div class="title">Slippage model</div>
+    <div class="val">Applied at entry</div>
+    <div class="sub">Spread + gap penalty . 0.03% ETF . 0.08% large-cap . 0.15% high-vol</div></div>
+  <div class="imp-card"><div class="title">Bonferroni correction</div>
+    <div class="val">500+ trades required</div>
+    <div class="sub">8 strategy classes tested (Layer 1 baseline) . adjusted p=0.00034</div></div>
+</div>
+
+<h2>Strategy performance (net of transaction costs)</h2>
+<div class="note"><strong>Pass criteria:</strong> 55%+ win rate . profit factor &gt;1.2 . 500+ trades . 2+ regimes . positive net ROI . max drawdown &lt;20%
+&nbsp;.&nbsp; [WARN] = flagged for look-ahead bias audit</div>
+<table><thead><tr><th>Strategy</th><th>Category</th><th>L/S</th><th>Trades</th>
+<th>Win rate</th><th>Profit factor</th><th>Net ROI</th><th>Max DD</th><th>Regimes</th><th>Walk-forward</th><th>Pass</th>
+</tr></thead><tbody><tr>
+              <td style="color:#58a6ff;font-weight:600">cpr_narrow_bullish</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>0L/1S</td>
+              <td>1</td>
+              <td style="color:#3fb950;font-weight:500">100.0%  [ok]</td>
+              <td>inf</td>
+              <td style="color:#3fb950">12.5%</td>
+              <td style="color:#e3b341">0.0%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">hull_rsi</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>1L/0S</td>
+              <td>1</td>
+              <td style="color:#3fb950;font-weight:500">100.0%  [ok]</td>
+              <td>inf</td>
+              <td style="color:#3fb950">4.2%</td>
+              <td style="color:#e3b341">0.0%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">smc_order_block_bounce</td>
+              <td style="color:#8b949e">smc</td>
+              <td>1L/0S</td>
+              <td>1</td>
+              <td style="color:#3fb950;font-weight:500">100.0%  [ok]</td>
+              <td>inf</td>
+              <td style="color:#3fb950">8.8%</td>
+              <td style="color:#e3b341">0.0%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">prev_day_low_bounce</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>1L/0S</td>
+              <td>1</td>
+              <td style="color:#3fb950;font-weight:500">100.0%  [ok]</td>
+              <td>inf</td>
+              <td style="color:#3fb950">1.4%</td>
+              <td style="color:#e3b341">0.0%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">cpr_narrow_momentum</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>4L/2S</td>
+              <td>6</td>
+              <td style="color:#e3b341;font-weight:500">50.0%</td>
+              <td>3.36</td>
+              <td style="color:#3fb950">46.5%</td>
+              <td style="color:#e3b341">-6.3%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">stochrsi_overbought_short</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>0L/3S</td>
+              <td>3</td>
+              <td style="color:#f85149;font-weight:500">33.3%</td>
+              <td>0.07</td>
+              <td style="color:#f85149">-15.1%</td>
+              <td style="color:#e3b341">-6.0%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">break_retest_confluence</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>2L/0S</td>
+              <td>2</td>
+              <td style="color:#f85149;font-weight:500">0.0%</td>
+              <td>0.00</td>
+              <td style="color:#f85149">-20.2%</td>
+              <td style="color:#e3b341">-8.0%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">smc_bos_continuation</td>
+              <td style="color:#8b949e">smc</td>
+              <td>1L/1S</td>
+              <td>2</td>
+              <td style="color:#f85149;font-weight:500">0.0%</td>
+              <td>0.00</td>
+              <td style="color:#f85149">-10.4%</td>
+              <td style="color:#e3b341">-4.9%</td>
+              <td style="font-size:11px"> - </td>
+              <td style="color:#e3b341;font-weight:500"> - </td>
+              <td>[WARN]</td>
+            </tr></tbody></table>
+
+<h2>Walk-forward validation  -  in-sample (2022-23) vs out-of-sample (2024)</h2>
+<div class="note"><strong>ROBUST</strong> = strategy passes both periods  -  real edge &nbsp;.&nbsp;
+<strong>OVERFIT</strong> = passes in-sample, fails 2024  -  curve-fitted to training data, do not trade &nbsp;.&nbsp;
+Win rate degradation &gt;5% is a red flag</div>
+<table><thead><tr><th>Strategy</th><th>Verdict</th><th>IS trades</th><th>IS win rate</th>
+<th>OOS trades</th><th>OOS win rate</th><th>WR degradation</th></tr></thead><tbody>
+<tr><td colspan="7" style="text-align:center;color:#484f58;padding:2rem">Run full Phase 1A to see walk-forward results</td></tr>
+</tbody></table>
+
+<footer><p>Stock Picks &amp; Automated Trading System  -  Stage 2 &nbsp;.&nbsp; All improvements applied</p>
+<p>Point-in-time data . No look-ahead bias . 8 strategy classes (Layer 1 baseline; full roster CANONICAL_FACTS.md F-002) . 17 exits (F-004) . 4 regime types + 7 historical windows (F-006) . 5 improvements</p></footer>
+</body></html>

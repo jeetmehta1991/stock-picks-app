@@ -1,0 +1,59 @@
+=== Bucket D3 (Lever C) cProfile - process_day hot path ===
+
+Profile scenario: 20 mega-cap T1a tickers x 30 trading days (2024-01-02 -> 2024-02-15) sequential (workers=0).
+Sub-systems exercised: screen_universe + compute_all_signals + cross_sectional + exit_manager + portfolio_gate + writer.
+
+=== SORTED BY CUMULATIVE ===
+         831379556 function calls (801335718 primitive calls) in 706.469 seconds
+
+   Ordered by: cumulative time
+   List reduced from 3883 to 40 due to restriction <40>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.002    0.002  706.513  706.513 run_phase1a.py:139(main)
+        1    0.058    0.058  680.871  680.871 backtest.py:331(run)
+       33    0.094    0.003  680.737   20.628 backtest.py:577(_process_day)
+       33    0.024    0.001  634.215   19.219 screener.py:4134(screen_universe)
+      693    0.614    0.001  619.918    0.895 screener.py:3708(screen_instrument)
+      717    0.544    0.001  211.979    0.296 smc_ict.py:70(compute_smc_signals)
+     4302    0.135    0.000  197.922    0.046 smc.py:9(wrap)
+  2387467    8.702    0.000  148.109    0.000 frame.py:4337(__getitem__)
+      693    0.221    0.000  138.985    0.201 technical.py:1106(compute_all_signals)
+  2502187    2.466    0.000   97.395    0.000 frame.py:4292(_ixs)
+      717    5.001    0.007   96.387    0.134 smc.py:900(retracements)
+  2360974    2.371    0.000   95.319    0.000 frame.py:4966(_get_item)
+      693    0.522    0.001   87.876    0.127 pead.py:115(compute_pead_signals)
+4573898/4573897    7.209    0.000   87.744    0.000 indexing.py:1192(__getitem__)
+      693    0.878    0.001   84.823    0.122 pead.py:73(load_quarterly_eps)
+  4571781   10.400    0.000   68.747    0.000 indexing.py:1740(_getitem_axis)
+      693    3.429    0.005   62.711    0.090 technical.py:662(compute_supertrend)
+206579124/205863606   38.610    0.000   61.991    0.000 {built-in method builtins.isinstance}
+891286/891118    7.514    0.000   61.582    0.000 series.py:369(__init__)
+  2375176    4.570    0.000   60.273    0.000 frame.py:4954(_box_col_values)
+      904    0.067    0.000   56.230    0.062 smart_money.py:619(institutional_signal)
+      717    2.180    0.003   55.440    0.077 smc.py:55(fvg)
+365504/355359    0.652    0.000   53.404    0.000 common.py:67(new_method)
+      693    0.547    0.001   46.455    0.067 pairs_trading.py:272(compute_pair_signals_for_ticker)
+    29865    1.867    0.000   45.112    0.002 pead.py:40(_safe_eps)
+  2906781    5.335    0.000   44.383    0.000 series.py:945(__getitem__)
+    30525    0.537    0.000   44.296    0.001 ast.py:50(literal_eval)
+    10102    0.185    0.000   43.859    0.004 parquet.py:508(read_parquet)
+    10102    0.317    0.000   42.667    0.004 parquet.py:240(read)
+    38200    0.484    0.000   36.576    0.001 datetimes.py:687(to_datetime)
+      693    0.081    0.000   36.385    0.053 news_sentiment.py:133(compute_news_sentiment_signals)
+      211    0.069    0.000   35.584    0.169 smart_money.py:660(smart_money_score)
+   361572    1.412    0.000   34.964    0.000 frame.py:1538(iterrows)
+     1116    0.057    0.000   33.367    0.030 smart_money.py:104(_filter_bulk_by_ticker)
+      717    2.310    0.003   31.976    0.045 smc.py:221(bos_choch)
+     4851    6.271    0.001   31.566    0.007 volume_profile.py:46(compute_volume_profile)
+  2430618    4.327    0.000   30.989    0.000 base.py:5384(__getitem__)
+   184425    0.624    0.000   30.566    0.000 series.py:6726(_cmp_method)
+   981717    8.385    0.000   30.189    0.000 construction.py:531(sanitize_array)
+    26018    0.151    0.000   29.004    0.001 frame.py:4406(_getitem_bool_array)
+
+
+
+=== TOP 40 BY CUMULATIVE TIME ===
+
+
+=== SORTED BY TOTTIME ===

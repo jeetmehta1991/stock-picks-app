@@ -1,0 +1,58 @@
+{
+  "cpr_narrow_bullish": [],
+  "institutional_buy_momentum_long": [],
+  "macd_crossover": [
+    {
+      "ticker": "SPY",
+      "pnl_pct": -11.290222222222221,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-03-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.311909523809526,
+      "entry_date": "2024-01-02",
+      "exit_date": "2024-01-08",
+      "regime": "bull"
+    },
+    {
+      "ticker": "TSLA",
+      "pnl_pct": -0.3990476190476191,
+      "entry_date": "2024-04-25",
+      "exit_date": "2024-05-10",
+      "regime": "bull"
+    }
+  ],
+  "monthly_bias_momentum_long": [
+    {
+      "ticker": "V",
+      "pnl_pct": -1.7729380952380953,
+      "entry_date": "2024-01-04",
+      "exit_date": "2024-06-28",
+      "regime": "bull"
+    }
+  ],
+  "pairs_mean_reversion_long": [],
+  "po3_bullish": [],
+  "ultimate_oscillator": [],
+  "williams_r_oversold": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -11.045809523809522,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-03-06",
+      "regime": "bull"
+    }
+  ],
+  "xs_low_beta_long": [
+    {
+      "ticker": "JNJ",
+      "pnl_pct": -9.279652380952381,
+      "entry_date": "2024-01-01",
+      "exit_date": "2024-06-28",
+      "regime": "bull"
+    }
+  ],
+  "xs_quality_top_quintile_long": []
+}

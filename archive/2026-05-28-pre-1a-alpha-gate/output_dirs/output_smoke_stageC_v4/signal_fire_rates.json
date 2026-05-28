@@ -1,0 +1,44 @@
+{
+  "total_trades": 132,
+  "signals": {
+    "smart_money_score": {
+      "fired_count": 66,
+      "fire_rate": 0.5,
+      "expected_min_rate": 0.2,
+      "alert": null
+    },
+    "congressional_signal": {
+      "fired_count": 62,
+      "fire_rate": 0.4697,
+      "expected_min_rate": 0.2,
+      "alert": null
+    },
+    "insider_signal": {
+      "fired_count": 12,
+      "fire_rate": 0.0909,
+      "expected_min_rate": 0.05,
+      "alert": null
+    },
+    "institutional_signal": {
+      "fired_count": 0,
+      "fire_rate": 0.0,
+      "expected_min_rate": 0.15,
+      "alert": "SILENT REGRESSION SUSPECT: fire_rate=0.0% < 50%% of expected_min 15.0%"
+    },
+    "macro_score": {
+      "fired_count": 103,
+      "fire_rate": 0.7803,
+      "expected_min_rate": 0.3,
+      "alert": null
+    },
+    "sentiment_score": {
+      "fired_count": 74,
+      "fire_rate": 0.5606,
+      "expected_min_rate": 0.3,
+      "alert": null
+    }
+  },
+  "flags": [
+    "institutional_signal: SILENT REGRESSION SUSPECT: fire_rate=0.0% < 50%% of expected_min 15.0%"
+  ]
+}

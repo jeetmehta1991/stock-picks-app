@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><title>Phase 1B Canary Validation</title>
+<style>body{font-family:sans-serif;} table{border-collapse:collapse;}
+td,th{border:1px solid #ccc;padding:6px 12px;}</style></head>
+<body>
+<h1>Sprint 7 Phase B Canary Validation</h1>
+<h2>Overall: <span style="color:green;">
+PASS</span></h2>
+<p>Signals: 30 | Tier distribution: {1: 2, 2: 4, 3: 15, 4: 6, 5: 3}</p><p>LLM model(s): ['dry_run_mock']</p><p>Generated: 2026-05-27T08:27:05.332573+00:00</p>
+<table>
+<tr><th>Check</th><th>Status</th><th>Detail</th></tr>
+<tr><td>G1 sample size</td><td style='color:green;'>PASS</td><td>N=30 in [20, 50]</td></tr><tr><td>G2 tier distribution</td><td style='color:green;'>PASS</td><td>max tier share=50% <= 70%; distribution={3: 0.5, 4: 0.2, 2: 0.13333333333333333, 5: 0.1, 1: 0.06666666666666667}</td></tr><tr><td>G3 PIT compliance</td><td style='color:green;'>PASS</td><td>30/30 PIT compliant</td></tr><tr><td>G4 score-tier coherence</td><td style='color:green;'>PASS</td><td>tier=1 mean=16.5 (n=2), tier=5 mean=92.7 (n=3)</td></tr><tr><td>G5 context quality</td><td style='color:green;'>PASS</td><td>skipped (all dry-run mock contexts)</td></tr>
+</table>
+</body></html>

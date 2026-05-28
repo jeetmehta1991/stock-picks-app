@@ -1,0 +1,901 @@
+exit_a,exit_b,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,a_total_pnl_pct,b_total_pnl_pct,edge,dominates,n_a,n_b
+atr_trail_1x,atr_trail_2x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,4.988499999999998,-18.281399999999998,False,10,10
+atr_trail_1x,atr_trail_mae_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.292900000000001,0.0,False,10,10
+atr_trail_1x,atr_trail_vix_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-6.121500000000001,-7.1714,False,10,10
+atr_trail_1x,break_even_at_1r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-5.773,-7.519900000000002,False,10,10
+atr_trail_1x,breakeven_plus_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,17.4655,-30.7584,False,10,10
+atr_trail_1x,chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-23.5964,10.303499999999998,True,10,10
+atr_trail_1x,class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-37.8063,24.513399999999997,True,10,10
+atr_trail_1x,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,55.78810000000001,-69.081,False,10,10
+atr_trail_1x,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,7.6523999999999965,-20.945299999999996,False,10,10
+atr_trail_1x,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-137.0188,123.7259,True,10,10
+atr_trail_1x,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-4.9031,-8.389800000000001,False,10,10
+atr_trail_1x,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.292900000000001,0.0,False,10,10
+atr_trail_1x,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-11.89,-1.4029000000000007,False,10,10
+atr_trail_1x,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-4.6026,-8.6903,False,10,10
+atr_trail_1x,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-6.515500000000001,-6.7774,False,10,10
+atr_trail_1x,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,2.3055,-15.598400000000002,False,10,10
+atr_trail_1x,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.4844,0.19149999999999956,True,10,10
+atr_trail_1x,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.292900000000001,0.0,False,10,10
+atr_trail_1x,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-12.956400000000002,-0.33649999999999913,False,10,10
+atr_trail_1x,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,19.2747,-32.5676,False,10,10
+atr_trail_1x,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.4844,0.19149999999999956,True,10,10
+atr_trail_1x,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,3.4089999999999954,-16.701899999999995,False,10,10
+atr_trail_1x,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-45.046,31.753099999999996,True,10,10
+atr_trail_1x,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,14.1754,-27.4683,False,10,10
+atr_trail_2x,atr_trail_mae_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-13.292900000000001,18.281399999999998,True,10,10
+atr_trail_2x,atr_trail_vix_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-6.121500000000001,11.11,True,10,10
+atr_trail_2x,break_even_at_1r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-5.773,10.761499999999998,True,10,10
+atr_trail_2x,breakeven_plus_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,17.4655,-12.477,False,10,10
+atr_trail_2x,chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-23.5964,28.584899999999998,True,10,10
+atr_trail_2x,class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-37.8063,42.794799999999995,True,10,10
+atr_trail_2x,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,55.78810000000001,-50.79960000000001,False,10,10
+atr_trail_2x,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,7.6523999999999965,-2.663899999999998,False,10,10
+atr_trail_2x,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-137.0188,142.0073,True,10,10
+atr_trail_2x,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-4.9031,9.891599999999999,True,10,10
+atr_trail_2x,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-13.292900000000001,18.281399999999998,True,10,10
+atr_trail_2x,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-11.89,16.8785,True,10,10
+atr_trail_2x,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-4.6026,9.591099999999997,True,10,10
+atr_trail_2x,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-6.515500000000001,11.504,True,10,10
+atr_trail_2x,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,2.3055,2.6829999999999985,True,10,10
+atr_trail_2x,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-13.4844,18.4729,True,10,10
+atr_trail_2x,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-13.292900000000001,18.281399999999998,True,10,10
+atr_trail_2x,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-12.956400000000002,17.9449,True,10,10
+atr_trail_2x,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,19.2747,-14.286200000000001,False,10,10
+atr_trail_2x,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-13.4844,18.4729,True,10,10
+atr_trail_2x,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,3.4089999999999954,1.579500000000003,True,10,10
+atr_trail_2x,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,-45.046,50.034499999999994,True,10,10
+atr_trail_2x,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,4.988499999999998,14.1754,-9.186900000000001,False,10,10
+atr_trail_mae_conditional,atr_trail_vix_conditional,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-6.121500000000001,-7.1714,False,10,10
+atr_trail_mae_conditional,break_even_at_1r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-5.773,-7.519900000000002,False,10,10
+atr_trail_mae_conditional,breakeven_plus_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,17.4655,-30.7584,False,10,10
+atr_trail_mae_conditional,chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-23.5964,10.303499999999998,True,10,10
+atr_trail_mae_conditional,class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-37.8063,24.513399999999997,True,10,10
+atr_trail_mae_conditional,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,55.78810000000001,-69.081,False,10,10
+atr_trail_mae_conditional,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,7.6523999999999965,-20.945299999999996,False,10,10
+atr_trail_mae_conditional,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-137.0188,123.7259,True,10,10
+atr_trail_mae_conditional,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-4.9031,-8.389800000000001,False,10,10
+atr_trail_mae_conditional,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.292900000000001,0.0,False,10,10
+atr_trail_mae_conditional,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-11.89,-1.4029000000000007,False,10,10
+atr_trail_mae_conditional,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-4.6026,-8.6903,False,10,10
+atr_trail_mae_conditional,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-6.515500000000001,-6.7774,False,10,10
+atr_trail_mae_conditional,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,2.3055,-15.598400000000002,False,10,10
+atr_trail_mae_conditional,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.4844,0.19149999999999956,True,10,10
+atr_trail_mae_conditional,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.292900000000001,0.0,False,10,10
+atr_trail_mae_conditional,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-12.956400000000002,-0.33649999999999913,False,10,10
+atr_trail_mae_conditional,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,19.2747,-32.5676,False,10,10
+atr_trail_mae_conditional,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.4844,0.19149999999999956,True,10,10
+atr_trail_mae_conditional,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,3.4089999999999954,-16.701899999999995,False,10,10
+atr_trail_mae_conditional,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-45.046,31.753099999999996,True,10,10
+atr_trail_mae_conditional,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,14.1754,-27.4683,False,10,10
+atr_trail_vix_conditional,break_even_at_1r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-5.773,-0.34850000000000136,False,10,10
+atr_trail_vix_conditional,breakeven_plus_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,17.4655,-23.587,False,10,10
+atr_trail_vix_conditional,chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-23.5964,17.474899999999998,True,10,10
+atr_trail_vix_conditional,class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-37.8063,31.6848,True,10,10
+atr_trail_vix_conditional,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,55.78810000000001,-61.90960000000001,False,10,10
+atr_trail_vix_conditional,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,7.6523999999999965,-13.773899999999998,False,10,10
+atr_trail_vix_conditional,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-137.0188,130.8973,True,10,10
+atr_trail_vix_conditional,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-4.9031,-1.2184000000000008,False,10,10
+atr_trail_vix_conditional,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-13.292900000000001,7.1714,True,10,10
+atr_trail_vix_conditional,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-11.89,5.7684999999999995,True,10,10
+atr_trail_vix_conditional,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-4.6026,-1.5189000000000012,False,10,10
+atr_trail_vix_conditional,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-6.515500000000001,0.39400000000000013,True,10,10
+atr_trail_vix_conditional,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,2.3055,-8.427000000000001,False,10,10
+atr_trail_vix_conditional,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-13.4844,7.3629,True,10,10
+atr_trail_vix_conditional,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-13.292900000000001,7.1714,True,10,10
+atr_trail_vix_conditional,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-12.956400000000002,6.834900000000001,True,10,10
+atr_trail_vix_conditional,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,19.2747,-25.3962,False,10,10
+atr_trail_vix_conditional,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-13.4844,7.3629,True,10,10
+atr_trail_vix_conditional,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,3.4089999999999954,-9.530499999999996,False,10,10
+atr_trail_vix_conditional,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,-45.046,38.924499999999995,True,10,10
+atr_trail_vix_conditional,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.121500000000001,14.1754,-20.2969,False,10,10
+break_even_at_1r,breakeven_plus_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,17.4655,-23.2385,False,10,10
+break_even_at_1r,chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-23.5964,17.8234,True,10,10
+break_even_at_1r,class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-37.8063,32.0333,True,10,10
+break_even_at_1r,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,55.78810000000001,-61.56110000000001,False,10,10
+break_even_at_1r,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,7.6523999999999965,-13.425399999999996,False,10,10
+break_even_at_1r,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-137.0188,131.2458,True,10,10
+break_even_at_1r,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-4.9031,-0.8698999999999995,False,10,10
+break_even_at_1r,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-13.292900000000001,7.519900000000002,True,10,10
+break_even_at_1r,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-11.89,6.117000000000001,True,10,10
+break_even_at_1r,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-4.6026,-1.1703999999999999,False,10,10
+break_even_at_1r,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-6.515500000000001,0.7425000000000015,True,10,10
+break_even_at_1r,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,2.3055,-8.0785,False,10,10
+break_even_at_1r,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-13.4844,7.711400000000001,True,10,10
+break_even_at_1r,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-13.292900000000001,7.519900000000002,True,10,10
+break_even_at_1r,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-12.956400000000002,7.1834000000000024,True,10,10
+break_even_at_1r,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,19.2747,-25.0477,False,10,10
+break_even_at_1r,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-13.4844,7.711400000000001,True,10,10
+break_even_at_1r,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,3.4089999999999954,-9.181999999999995,False,10,10
+break_even_at_1r,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,-45.046,39.272999999999996,True,10,10
+break_even_at_1r,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-5.773,14.1754,-19.9484,False,10,10
+breakeven_plus_trail,chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-23.5964,41.061899999999994,True,10,10
+breakeven_plus_trail,class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-37.8063,55.2718,True,10,10
+breakeven_plus_trail,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,55.78810000000001,-38.32260000000001,False,10,10
+breakeven_plus_trail,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,7.6523999999999965,9.813100000000002,True,10,10
+breakeven_plus_trail,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-137.0188,154.4843,True,10,10
+breakeven_plus_trail,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-4.9031,22.3686,True,10,10
+breakeven_plus_trail,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-13.292900000000001,30.7584,True,10,10
+breakeven_plus_trail,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-11.89,29.3555,True,10,10
+breakeven_plus_trail,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-4.6026,22.068099999999998,True,10,10
+breakeven_plus_trail,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-6.515500000000001,23.981,True,10,10
+breakeven_plus_trail,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,2.3055,15.159999999999998,True,10,10
+breakeven_plus_trail,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-13.4844,30.9499,True,10,10
+breakeven_plus_trail,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-13.292900000000001,30.7584,True,10,10
+breakeven_plus_trail,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-12.956400000000002,30.4219,True,10,10
+breakeven_plus_trail,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,19.2747,-1.8092000000000006,False,10,10
+breakeven_plus_trail,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-13.4844,30.9499,True,10,10
+breakeven_plus_trail,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,3.4089999999999954,14.056500000000003,True,10,10
+breakeven_plus_trail,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,-45.046,62.5115,True,10,10
+breakeven_plus_trail,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,17.4655,14.1754,3.290099999999999,True,10,10
+chandelier_3x,class_time_stop,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-37.8063,14.209900000000001,True,10,10
+chandelier_3x,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,55.78810000000001,-79.3845,False,10,10
+chandelier_3x,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,7.6523999999999965,-31.248799999999996,False,10,10
+chandelier_3x,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-137.0188,113.4224,True,10,10
+chandelier_3x,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-4.9031,-18.6933,False,10,10
+chandelier_3x,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-13.292900000000001,-10.303499999999998,False,10,10
+chandelier_3x,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-11.89,-11.706399999999999,False,10,10
+chandelier_3x,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-4.6026,-18.9938,False,10,10
+chandelier_3x,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-6.515500000000001,-17.0809,False,10,10
+chandelier_3x,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,2.3055,-25.901899999999998,False,10,10
+chandelier_3x,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-13.4844,-10.111999999999998,False,10,10
+chandelier_3x,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-13.292900000000001,-10.303499999999998,False,10,10
+chandelier_3x,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-12.956400000000002,-10.639999999999997,False,10,10
+chandelier_3x,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,19.2747,-42.8711,False,10,10
+chandelier_3x,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-13.4844,-10.111999999999998,False,10,10
+chandelier_3x,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,3.4089999999999954,-27.005399999999995,False,10,10
+chandelier_3x,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,-45.046,21.4496,True,10,10
+chandelier_3x,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-23.5964,14.1754,-37.7718,False,10,10
+class_time_stop,earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,55.78810000000001,-93.59440000000001,False,10,10
+class_time_stop,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,7.6523999999999965,-45.45869999999999,False,10,10
+class_time_stop,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-137.0188,99.2125,True,10,10
+class_time_stop,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-4.9031,-32.9032,False,10,10
+class_time_stop,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-13.292900000000001,-24.513399999999997,False,10,10
+class_time_stop,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-11.89,-25.9163,False,10,10
+class_time_stop,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-4.6026,-33.2037,False,10,10
+class_time_stop,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-6.515500000000001,-31.290799999999997,False,10,10
+class_time_stop,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,2.3055,-40.1118,False,10,10
+class_time_stop,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-13.4844,-24.3219,False,10,10
+class_time_stop,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-13.292900000000001,-24.513399999999997,False,10,10
+class_time_stop,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-12.956400000000002,-24.849899999999998,False,10,10
+class_time_stop,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,19.2747,-57.081,False,10,10
+class_time_stop,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-13.4844,-24.3219,False,10,10
+class_time_stop,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,3.4089999999999954,-41.2153,False,10,10
+class_time_stop,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,-45.046,7.239699999999999,True,10,10
+class_time_stop,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-37.8063,14.1754,-51.981700000000004,False,10,10
+earnings_blackout,fixed_4r_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,7.6523999999999965,48.135700000000014,True,10,10
+earnings_blackout,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-137.0188,192.8069,True,10,10
+earnings_blackout,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-4.9031,60.69120000000001,True,10,10
+earnings_blackout,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-13.292900000000001,69.081,True,10,10
+earnings_blackout,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-11.89,67.6781,True,10,10
+earnings_blackout,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-4.6026,60.39070000000001,True,10,10
+earnings_blackout,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-6.515500000000001,62.30360000000001,True,10,10
+earnings_blackout,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,2.3055,53.482600000000005,True,10,10
+earnings_blackout,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-13.4844,69.27250000000001,True,10,10
+earnings_blackout,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-13.292900000000001,69.081,True,10,10
+earnings_blackout,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-12.956400000000002,68.74450000000002,True,10,10
+earnings_blackout,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,19.2747,36.513400000000004,True,10,10
+earnings_blackout,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-13.4844,69.27250000000001,True,10,10
+earnings_blackout,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,3.4089999999999954,52.37910000000001,True,10,10
+earnings_blackout,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,-45.046,100.8341,True,10,10
+earnings_blackout,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,55.78810000000001,14.1754,41.612700000000004,True,10,10
+fixed_4r_2r,hybrid_50pct_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-137.0188,144.6712,True,10,10
+fixed_4r_2r,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-4.9031,12.555499999999997,True,10,10
+fixed_4r_2r,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-13.292900000000001,20.945299999999996,True,10,10
+fixed_4r_2r,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-11.89,19.542399999999997,True,10,10
+fixed_4r_2r,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-4.6026,12.254999999999995,True,10,10
+fixed_4r_2r,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-6.515500000000001,14.167899999999998,True,10,10
+fixed_4r_2r,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,2.3055,5.346899999999996,True,10,10
+fixed_4r_2r,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-13.4844,21.136799999999997,True,10,10
+fixed_4r_2r,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-13.292900000000001,20.945299999999996,True,10,10
+fixed_4r_2r,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-12.956400000000002,20.6088,True,10,10
+fixed_4r_2r,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,19.2747,-11.622300000000003,False,10,10
+fixed_4r_2r,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-13.4844,21.136799999999997,True,10,10
+fixed_4r_2r,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,3.4089999999999954,4.243400000000001,True,10,10
+fixed_4r_2r,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,-45.046,52.69839999999999,True,10,10
+fixed_4r_2r,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,7.6523999999999965,14.1754,-6.523000000000003,False,10,10
+hybrid_50pct_target,ma_exit_ema9,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-4.9031,-132.1157,False,10,10
+hybrid_50pct_target,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-13.292900000000001,-123.7259,False,10,10
+hybrid_50pct_target,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-11.89,-125.1288,False,10,10
+hybrid_50pct_target,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-4.6026,-132.4162,False,10,10
+hybrid_50pct_target,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-6.515500000000001,-130.5033,False,10,10
+hybrid_50pct_target,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,2.3055,-139.3243,False,10,10
+hybrid_50pct_target,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-13.4844,-123.5344,False,10,10
+hybrid_50pct_target,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-13.292900000000001,-123.7259,False,10,10
+hybrid_50pct_target,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-12.956400000000002,-124.0624,False,10,10
+hybrid_50pct_target,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,19.2747,-156.2935,False,10,10
+hybrid_50pct_target,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-13.4844,-123.5344,False,10,10
+hybrid_50pct_target,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,3.4089999999999954,-140.4278,False,10,10
+hybrid_50pct_target,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,-45.046,-91.9728,False,10,10
+hybrid_50pct_target,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-137.0188,14.1754,-151.1942,False,10,10
+ma_exit_ema9,mfe_lockin_trail,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-13.292900000000001,8.389800000000001,True,10,10
+ma_exit_ema9,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-11.89,6.9869,True,10,10
+ma_exit_ema9,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-4.6026,-0.30050000000000043,False,10,10
+ma_exit_ema9,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-6.515500000000001,1.612400000000001,True,10,10
+ma_exit_ema9,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,2.3055,-7.208600000000001,False,10,10
+ma_exit_ema9,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-13.4844,8.5813,True,10,10
+ma_exit_ema9,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-13.292900000000001,8.389800000000001,True,10,10
+ma_exit_ema9,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-12.956400000000002,8.053300000000002,True,10,10
+ma_exit_ema9,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,19.2747,-24.177799999999998,False,10,10
+ma_exit_ema9,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-13.4844,8.5813,True,10,10
+ma_exit_ema9,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,3.4089999999999954,-8.312099999999996,False,10,10
+ma_exit_ema9,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,-45.046,40.1429,True,10,10
+ma_exit_ema9,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.9031,14.1754,-19.0785,False,10,10
+mfe_lockin_trail,multi_tier_partial,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-11.89,-1.4029000000000007,False,10,10
+mfe_lockin_trail,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-4.6026,-8.6903,False,10,10
+mfe_lockin_trail,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-6.515500000000001,-6.7774,False,10,10
+mfe_lockin_trail,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,2.3055,-15.598400000000002,False,10,10
+mfe_lockin_trail,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.4844,0.19149999999999956,True,10,10
+mfe_lockin_trail,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.292900000000001,0.0,False,10,10
+mfe_lockin_trail,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-12.956400000000002,-0.33649999999999913,False,10,10
+mfe_lockin_trail,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,19.2747,-32.5676,False,10,10
+mfe_lockin_trail,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.4844,0.19149999999999956,True,10,10
+mfe_lockin_trail,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,3.4089999999999954,-16.701899999999995,False,10,10
+mfe_lockin_trail,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-45.046,31.753099999999996,True,10,10
+mfe_lockin_trail,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,14.1754,-27.4683,False,10,10
+multi_tier_partial,next_pivot_target,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,-4.6026,-7.287400000000001,False,10,10
+multi_tier_partial,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,-6.515500000000001,-5.374499999999999,False,10,10
+multi_tier_partial,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,2.3055,-14.195500000000001,False,10,10
+multi_tier_partial,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,-13.4844,1.5944000000000003,True,10,10
+multi_tier_partial,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,-13.292900000000001,1.4029000000000007,True,10,10
+multi_tier_partial,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,-12.956400000000002,1.0664000000000016,True,10,10
+multi_tier_partial,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,19.2747,-31.1647,False,10,10
+multi_tier_partial,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,-13.4844,1.5944000000000003,True,10,10
+multi_tier_partial,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,3.4089999999999954,-15.298999999999996,False,10,10
+multi_tier_partial,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,-45.046,33.156,True,10,10
+multi_tier_partial,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-11.89,14.1754,-26.0654,False,10,10
+next_pivot_target,r_multiple_2r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,-6.515500000000001,1.9129000000000014,True,10,10
+next_pivot_target,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,2.3055,-6.908099999999999,False,10,10
+next_pivot_target,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,-13.4844,8.881800000000002,True,10,10
+next_pivot_target,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,-13.292900000000001,8.6903,True,10,10
+next_pivot_target,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,-12.956400000000002,8.353800000000003,True,10,10
+next_pivot_target,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,19.2747,-23.877299999999998,False,10,10
+next_pivot_target,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,-13.4844,8.881800000000002,True,10,10
+next_pivot_target,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,3.4089999999999954,-8.011599999999994,False,10,10
+next_pivot_target,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,-45.046,40.4434,True,10,10
+next_pivot_target,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-4.6026,14.1754,-18.778,False,10,10
+r_multiple_2r,r_multiple_3r,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,2.3055,-8.821000000000002,False,10,10
+r_multiple_2r,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,-13.4844,6.9689,True,10,10
+r_multiple_2r,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,-13.292900000000001,6.7774,True,10,10
+r_multiple_2r,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,-12.956400000000002,6.440900000000001,True,10,10
+r_multiple_2r,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,19.2747,-25.7902,False,10,10
+r_multiple_2r,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,-13.4844,6.9689,True,10,10
+r_multiple_2r,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,3.4089999999999954,-9.924499999999997,False,10,10
+r_multiple_2r,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,-45.046,38.530499999999996,True,10,10
+r_multiple_2r,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-6.515500000000001,14.1754,-20.6909,False,10,10
+r_multiple_3r,regime_flip,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,-13.4844,15.789900000000001,True,10,10
+r_multiple_3r,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,-13.292900000000001,15.598400000000002,True,10,10
+r_multiple_3r,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,-12.956400000000002,15.261900000000002,True,10,10
+r_multiple_3r,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,19.2747,-16.9692,False,10,10
+r_multiple_3r,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,-13.4844,15.789900000000001,True,10,10
+r_multiple_3r,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,3.4089999999999954,-1.1034999999999955,False,10,10
+r_multiple_3r,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,-45.046,47.3515,True,10,10
+r_multiple_3r,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,2.3055,14.1754,-11.8699,False,10,10
+regime_flip,reverse_signal,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,-13.292900000000001,-0.19149999999999956,False,10,10
+regime_flip,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,-12.956400000000002,-0.5279999999999987,False,10,10
+regime_flip,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,19.2747,-32.759100000000004,False,10,10
+regime_flip,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,-13.4844,0.0,False,10,10
+regime_flip,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,3.4089999999999954,-16.893399999999996,False,10,10
+regime_flip,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,-45.046,31.5616,True,10,10
+regime_flip,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,14.1754,-27.6598,False,10,10
+reverse_signal,smc_mitigation_zone,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-12.956400000000002,-0.33649999999999913,False,10,10
+reverse_signal,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,19.2747,-32.5676,False,10,10
+reverse_signal,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-13.4844,0.19149999999999956,True,10,10
+reverse_signal,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,3.4089999999999954,-16.701899999999995,False,10,10
+reverse_signal,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,-45.046,31.753099999999996,True,10,10
+reverse_signal,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.292900000000001,14.1754,-27.4683,False,10,10
+smc_mitigation_zone,time_stop_10d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-12.956400000000002,19.2747,-32.2311,False,10,10
+smc_mitigation_zone,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-12.956400000000002,-13.4844,0.5279999999999987,True,10,10
+smc_mitigation_zone,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-12.956400000000002,3.4089999999999954,-16.365399999999998,False,10,10
+smc_mitigation_zone,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-12.956400000000002,-45.046,32.0896,True,10,10
+smc_mitigation_zone,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-12.956400000000002,14.1754,-27.131800000000002,False,10,10
+time_stop_10d,time_stop_20d,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,19.2747,-13.4844,32.759100000000004,True,10,10
+time_stop_10d,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,19.2747,3.4089999999999954,15.865700000000004,True,10,10
+time_stop_10d,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,19.2747,-45.046,64.3207,True,10,10
+time_stop_10d,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,19.2747,14.1754,5.0992999999999995,True,10,10
+time_stop_20d,trailing_10pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,3.4089999999999954,-16.893399999999996,False,10,10
+time_stop_20d,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,-45.046,31.5616,True,10,10
+time_stop_20d,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-13.4844,14.1754,-27.6598,False,10,10
+trailing_10pct,trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,3.4089999999999954,-45.046,48.455,True,10,10
+trailing_10pct,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,3.4089999999999954,14.1754,-10.766400000000004,False,10,10
+trailing_15pct,trailing_5pct,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,-45.046,14.1754,-59.2214,False,10,10
+atr_trail_1x,atr_trail_2x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-48.8072,24.6414,True,10,10
+atr_trail_1x,atr_trail_mae_conditional,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-24.1658,0.0,False,10,10
+atr_trail_1x,atr_trail_vix_conditional,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-26.8697,2.703900000000001,True,10,10
+atr_trail_1x,break_even_at_1r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-25.8481,1.682299999999998,True,10,10
+atr_trail_1x,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-47.2515,23.0857,True,10,10
+atr_trail_1x,chandelier_3x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-41.803799999999995,17.637999999999995,True,10,10
+atr_trail_1x,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-25.4964,1.3306000000000004,True,10,10
+atr_trail_1x,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,81.65079999999999,-105.8166,False,10,10
+atr_trail_1x,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-63.3778,39.212,True,10,10
+atr_trail_1x,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,0.28679999999999906,-24.4526,False,10,10
+atr_trail_1x,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-26.9958,2.8299999999999983,True,10,10
+atr_trail_1x,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-24.1658,0.0,False,10,10
+atr_trail_1x,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-23.2699,-0.895900000000001,False,10,10
+atr_trail_1x,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-25.6461,1.4802999999999997,True,10,10
+atr_trail_1x,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-31.3935,7.227699999999999,True,10,10
+atr_trail_1x,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-31.3935,7.227699999999999,True,10,10
+atr_trail_1x,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-17.223499999999998,-6.942300000000003,False,10,10
+atr_trail_1x,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-24.1658,0.0,False,10,10
+atr_trail_1x,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-23.765700000000002,-0.40009999999999835,False,10,10
+atr_trail_1x,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.322599999999998,5.156799999999997,True,10,10
+atr_trail_1x,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-17.223499999999998,-6.942300000000003,False,10,10
+atr_trail_1x,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-6.4533,-17.712500000000002,False,10,10
+atr_trail_1x,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.045300000000005,4.879500000000004,True,10,10
+atr_trail_1x,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-43.1984,19.0326,True,10,10
+atr_trail_2x,atr_trail_mae_conditional,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-24.1658,-24.6414,False,10,10
+atr_trail_2x,atr_trail_vix_conditional,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-26.8697,-21.9375,False,10,10
+atr_trail_2x,break_even_at_1r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-25.8481,-22.959100000000003,False,10,10
+atr_trail_2x,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-47.2515,-1.5557000000000016,False,10,10
+atr_trail_2x,chandelier_3x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-41.803799999999995,-7.003400000000006,False,10,10
+atr_trail_2x,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-25.4964,-23.3108,False,10,10
+atr_trail_2x,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,81.65079999999999,-130.458,False,10,10
+atr_trail_2x,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-63.3778,14.570599999999999,True,10,10
+atr_trail_2x,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,0.28679999999999906,-49.094,False,10,10
+atr_trail_2x,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-26.9958,-21.811400000000003,False,10,10
+atr_trail_2x,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-24.1658,-24.6414,False,10,10
+atr_trail_2x,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-23.2699,-25.537300000000002,False,10,10
+atr_trail_2x,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-25.6461,-23.1611,False,10,10
+atr_trail_2x,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-31.3935,-17.413700000000002,False,10,10
+atr_trail_2x,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-31.3935,-17.413700000000002,False,10,10
+atr_trail_2x,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-17.223499999999998,-31.583700000000004,False,10,10
+atr_trail_2x,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-24.1658,-24.6414,False,10,10
+atr_trail_2x,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-23.765700000000002,-25.0415,False,10,10
+atr_trail_2x,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-29.322599999999998,-19.484600000000004,False,10,10
+atr_trail_2x,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-17.223499999999998,-31.583700000000004,False,10,10
+atr_trail_2x,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-6.4533,-42.3539,False,10,10
+atr_trail_2x,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-29.045300000000005,-19.761899999999997,False,10,10
+atr_trail_2x,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-48.8072,-43.1984,-5.608800000000002,False,10,10
+atr_trail_mae_conditional,atr_trail_vix_conditional,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-26.8697,2.703900000000001,True,10,10
+atr_trail_mae_conditional,break_even_at_1r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-25.8481,1.682299999999998,True,10,10
+atr_trail_mae_conditional,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-47.2515,23.0857,True,10,10
+atr_trail_mae_conditional,chandelier_3x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-41.803799999999995,17.637999999999995,True,10,10
+atr_trail_mae_conditional,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-25.4964,1.3306000000000004,True,10,10
+atr_trail_mae_conditional,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,81.65079999999999,-105.8166,False,10,10
+atr_trail_mae_conditional,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-63.3778,39.212,True,10,10
+atr_trail_mae_conditional,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,0.28679999999999906,-24.4526,False,10,10
+atr_trail_mae_conditional,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-26.9958,2.8299999999999983,True,10,10
+atr_trail_mae_conditional,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-24.1658,0.0,False,10,10
+atr_trail_mae_conditional,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-23.2699,-0.895900000000001,False,10,10
+atr_trail_mae_conditional,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-25.6461,1.4802999999999997,True,10,10
+atr_trail_mae_conditional,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-31.3935,7.227699999999999,True,10,10
+atr_trail_mae_conditional,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-31.3935,7.227699999999999,True,10,10
+atr_trail_mae_conditional,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-17.223499999999998,-6.942300000000003,False,10,10
+atr_trail_mae_conditional,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-24.1658,0.0,False,10,10
+atr_trail_mae_conditional,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-23.765700000000002,-0.40009999999999835,False,10,10
+atr_trail_mae_conditional,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.322599999999998,5.156799999999997,True,10,10
+atr_trail_mae_conditional,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-17.223499999999998,-6.942300000000003,False,10,10
+atr_trail_mae_conditional,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-6.4533,-17.712500000000002,False,10,10
+atr_trail_mae_conditional,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.045300000000005,4.879500000000004,True,10,10
+atr_trail_mae_conditional,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-43.1984,19.0326,True,10,10
+atr_trail_vix_conditional,break_even_at_1r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-25.8481,-1.021600000000003,False,10,10
+atr_trail_vix_conditional,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-47.2515,20.3818,True,10,10
+atr_trail_vix_conditional,chandelier_3x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-41.803799999999995,14.934099999999994,True,10,10
+atr_trail_vix_conditional,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-25.4964,-1.3733000000000004,False,10,10
+atr_trail_vix_conditional,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,81.65079999999999,-108.5205,False,10,10
+atr_trail_vix_conditional,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-63.3778,36.5081,True,10,10
+atr_trail_vix_conditional,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,0.28679999999999906,-27.1565,False,10,10
+atr_trail_vix_conditional,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-26.9958,0.12609999999999744,True,10,10
+atr_trail_vix_conditional,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-24.1658,-2.703900000000001,False,10,10
+atr_trail_vix_conditional,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-23.2699,-3.599800000000002,False,10,10
+atr_trail_vix_conditional,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-25.6461,-1.2236000000000011,False,10,10
+atr_trail_vix_conditional,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-31.3935,4.523799999999998,True,10,10
+atr_trail_vix_conditional,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-31.3935,4.523799999999998,True,10,10
+atr_trail_vix_conditional,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-17.223499999999998,-9.646200000000004,False,10,10
+atr_trail_vix_conditional,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-24.1658,-2.703900000000001,False,10,10
+atr_trail_vix_conditional,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-23.765700000000002,-3.103999999999999,False,10,10
+atr_trail_vix_conditional,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-29.322599999999998,2.452899999999996,True,10,10
+atr_trail_vix_conditional,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-17.223499999999998,-9.646200000000004,False,10,10
+atr_trail_vix_conditional,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-6.4533,-20.416400000000003,False,10,10
+atr_trail_vix_conditional,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-29.045300000000005,2.175600000000003,True,10,10
+atr_trail_vix_conditional,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.8697,-43.1984,16.328699999999998,True,10,10
+break_even_at_1r,breakeven_plus_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-47.2515,21.4034,True,10,10
+break_even_at_1r,chandelier_3x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-41.803799999999995,15.955699999999997,True,10,10
+break_even_at_1r,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-25.4964,-0.35169999999999746,False,10,10
+break_even_at_1r,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,81.65079999999999,-107.49889999999999,False,10,10
+break_even_at_1r,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-63.3778,37.529700000000005,True,10,10
+break_even_at_1r,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,0.28679999999999906,-26.1349,False,10,10
+break_even_at_1r,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-26.9958,1.1477000000000004,True,10,10
+break_even_at_1r,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-24.1658,-1.682299999999998,False,10,10
+break_even_at_1r,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-23.2699,-2.578199999999999,False,10,10
+break_even_at_1r,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-25.6461,-0.20199999999999818,False,10,10
+break_even_at_1r,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-31.3935,5.545400000000001,True,10,10
+break_even_at_1r,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-31.3935,5.545400000000001,True,10,10
+break_even_at_1r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-17.223499999999998,-8.624600000000001,False,10,10
+break_even_at_1r,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-24.1658,-1.682299999999998,False,10,10
+break_even_at_1r,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-23.765700000000002,-2.0823999999999963,False,10,10
+break_even_at_1r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-29.322599999999998,3.474499999999999,True,10,10
+break_even_at_1r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-17.223499999999998,-8.624600000000001,False,10,10
+break_even_at_1r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-6.4533,-19.3948,False,10,10
+break_even_at_1r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-29.045300000000005,3.197200000000006,True,10,10
+break_even_at_1r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.8481,-43.1984,17.3503,True,10,10
+breakeven_plus_trail,chandelier_3x,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-41.803799999999995,-5.447700000000005,False,10,10
+breakeven_plus_trail,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-25.4964,-21.7551,False,10,10
+breakeven_plus_trail,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,81.65079999999999,-128.9023,False,10,10
+breakeven_plus_trail,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-63.3778,16.1263,True,10,10
+breakeven_plus_trail,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,0.28679999999999906,-47.5383,False,10,10
+breakeven_plus_trail,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-26.9958,-20.2557,False,10,10
+breakeven_plus_trail,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-24.1658,-23.0857,False,10,10
+breakeven_plus_trail,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-23.2699,-23.9816,False,10,10
+breakeven_plus_trail,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-25.6461,-21.6054,False,10,10
+breakeven_plus_trail,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-31.3935,-15.858,False,10,10
+breakeven_plus_trail,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-31.3935,-15.858,False,10,10
+breakeven_plus_trail,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-17.223499999999998,-30.028000000000002,False,10,10
+breakeven_plus_trail,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-24.1658,-23.0857,False,10,10
+breakeven_plus_trail,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-23.765700000000002,-23.485799999999998,False,10,10
+breakeven_plus_trail,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-29.322599999999998,-17.928900000000002,False,10,10
+breakeven_plus_trail,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-17.223499999999998,-30.028000000000002,False,10,10
+breakeven_plus_trail,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-6.4533,-40.7982,False,10,10
+breakeven_plus_trail,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-29.045300000000005,-18.206199999999995,False,10,10
+breakeven_plus_trail,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-47.2515,-43.1984,-4.053100000000001,False,10,10
+chandelier_3x,class_time_stop,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-25.4964,-16.307399999999994,False,10,10
+chandelier_3x,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,81.65079999999999,-123.45459999999999,False,10,10
+chandelier_3x,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-63.3778,21.574000000000005,True,10,10
+chandelier_3x,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,0.28679999999999906,-42.090599999999995,False,10,10
+chandelier_3x,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-26.9958,-14.807999999999996,False,10,10
+chandelier_3x,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-24.1658,-17.637999999999995,False,10,10
+chandelier_3x,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-23.2699,-18.533899999999996,False,10,10
+chandelier_3x,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-25.6461,-16.157699999999995,False,10,10
+chandelier_3x,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-31.3935,-10.410299999999996,False,10,10
+chandelier_3x,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-31.3935,-10.410299999999996,False,10,10
+chandelier_3x,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-17.223499999999998,-24.580299999999998,False,10,10
+chandelier_3x,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-24.1658,-17.637999999999995,False,10,10
+chandelier_3x,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-23.765700000000002,-18.038099999999993,False,10,10
+chandelier_3x,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-29.322599999999998,-12.481199999999998,False,10,10
+chandelier_3x,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-17.223499999999998,-24.580299999999998,False,10,10
+chandelier_3x,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-6.4533,-35.3505,False,10,10
+chandelier_3x,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-29.045300000000005,-12.75849999999999,False,10,10
+chandelier_3x,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-41.803799999999995,-43.1984,1.394600000000004,True,10,10
+class_time_stop,earnings_blackout,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,81.65079999999999,-107.1472,False,10,10
+class_time_stop,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-63.3778,37.8814,True,10,10
+class_time_stop,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,0.28679999999999906,-25.7832,False,10,10
+class_time_stop,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-26.9958,1.4993999999999978,True,10,10
+class_time_stop,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-24.1658,-1.3306000000000004,False,10,10
+class_time_stop,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-23.2699,-2.2265000000000015,False,10,10
+class_time_stop,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-25.6461,0.14969999999999928,True,10,10
+class_time_stop,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-31.3935,5.897099999999998,True,10,10
+class_time_stop,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-31.3935,5.897099999999998,True,10,10
+class_time_stop,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-17.223499999999998,-8.272900000000003,False,10,10
+class_time_stop,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-24.1658,-1.3306000000000004,False,10,10
+class_time_stop,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-23.765700000000002,-1.7306999999999988,False,10,10
+class_time_stop,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-29.322599999999998,3.8261999999999965,True,10,10
+class_time_stop,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-17.223499999999998,-8.272900000000003,False,10,10
+class_time_stop,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-6.4533,-19.043100000000003,False,10,10
+class_time_stop,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-29.045300000000005,3.5489000000000033,True,10,10
+class_time_stop,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.4964,-43.1984,17.701999999999998,True,10,10
+earnings_blackout,fixed_4r_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-63.3778,145.02859999999998,True,10,10
+earnings_blackout,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,0.28679999999999906,81.36399999999999,True,10,10
+earnings_blackout,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-26.9958,108.64659999999999,True,10,10
+earnings_blackout,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-24.1658,105.8166,True,10,10
+earnings_blackout,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-23.2699,104.92069999999998,True,10,10
+earnings_blackout,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-25.6461,107.2969,True,10,10
+earnings_blackout,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-31.3935,113.04429999999999,True,10,10
+earnings_blackout,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-31.3935,113.04429999999999,True,10,10
+earnings_blackout,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-17.223499999999998,98.87429999999999,True,10,10
+earnings_blackout,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-24.1658,105.8166,True,10,10
+earnings_blackout,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-23.765700000000002,105.41649999999998,True,10,10
+earnings_blackout,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-29.322599999999998,110.97339999999998,True,10,10
+earnings_blackout,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-17.223499999999998,98.87429999999999,True,10,10
+earnings_blackout,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-6.4533,88.10409999999999,True,10,10
+earnings_blackout,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-29.045300000000005,110.6961,True,10,10
+earnings_blackout,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,81.65079999999999,-43.1984,124.8492,True,10,10
+fixed_4r_2r,hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,0.28679999999999906,-63.6646,False,10,10
+fixed_4r_2r,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-26.9958,-36.382000000000005,False,10,10
+fixed_4r_2r,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-24.1658,-39.212,False,10,10
+fixed_4r_2r,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-23.2699,-40.1079,False,10,10
+fixed_4r_2r,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-25.6461,-37.731700000000004,False,10,10
+fixed_4r_2r,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-31.3935,-31.9843,False,10,10
+fixed_4r_2r,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-31.3935,-31.9843,False,10,10
+fixed_4r_2r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-17.223499999999998,-46.154300000000006,False,10,10
+fixed_4r_2r,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-24.1658,-39.212,False,10,10
+fixed_4r_2r,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-23.765700000000002,-39.6121,False,10,10
+fixed_4r_2r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-29.322599999999998,-34.0552,False,10,10
+fixed_4r_2r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-17.223499999999998,-46.154300000000006,False,10,10
+fixed_4r_2r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-6.4533,-56.9245,False,10,10
+fixed_4r_2r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-29.045300000000005,-34.332499999999996,False,10,10
+fixed_4r_2r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-63.3778,-43.1984,-20.1794,False,10,10
+hybrid_50pct_target,ma_exit_ema9,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-26.9958,27.2826,True,10,10
+hybrid_50pct_target,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-24.1658,24.4526,True,10,10
+hybrid_50pct_target,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-23.2699,23.5567,True,10,10
+hybrid_50pct_target,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-25.6461,25.9329,True,10,10
+hybrid_50pct_target,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-31.3935,31.6803,True,10,10
+hybrid_50pct_target,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-31.3935,31.6803,True,10,10
+hybrid_50pct_target,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-17.223499999999998,17.510299999999997,True,10,10
+hybrid_50pct_target,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-24.1658,24.4526,True,10,10
+hybrid_50pct_target,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-23.765700000000002,24.052500000000002,True,10,10
+hybrid_50pct_target,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-29.322599999999998,29.609399999999997,True,10,10
+hybrid_50pct_target,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-17.223499999999998,17.510299999999997,True,10,10
+hybrid_50pct_target,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-6.4533,6.740099999999998,True,10,10
+hybrid_50pct_target,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-29.045300000000005,29.332100000000004,True,10,10
+hybrid_50pct_target,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,0.28679999999999906,-43.1984,43.4852,True,10,10
+ma_exit_ema9,mfe_lockin_trail,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-24.1658,-2.8299999999999983,False,10,10
+ma_exit_ema9,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-23.2699,-3.7258999999999993,False,10,10
+ma_exit_ema9,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-25.6461,-1.3496999999999986,False,10,10
+ma_exit_ema9,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-31.3935,4.3977,True,10,10
+ma_exit_ema9,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-31.3935,4.3977,True,10,10
+ma_exit_ema9,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-17.223499999999998,-9.772300000000001,False,10,10
+ma_exit_ema9,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-24.1658,-2.8299999999999983,False,10,10
+ma_exit_ema9,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-23.765700000000002,-3.2300999999999966,False,10,10
+ma_exit_ema9,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-29.322599999999998,2.3267999999999986,True,10,10
+ma_exit_ema9,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-17.223499999999998,-9.772300000000001,False,10,10
+ma_exit_ema9,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-6.4533,-20.5425,False,10,10
+ma_exit_ema9,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-29.045300000000005,2.0495000000000054,True,10,10
+ma_exit_ema9,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-26.9958,-43.1984,16.2026,True,10,10
+mfe_lockin_trail,multi_tier_partial,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-23.2699,-0.895900000000001,False,10,10
+mfe_lockin_trail,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-25.6461,1.4802999999999997,True,10,10
+mfe_lockin_trail,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-31.3935,7.227699999999999,True,10,10
+mfe_lockin_trail,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-31.3935,7.227699999999999,True,10,10
+mfe_lockin_trail,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-17.223499999999998,-6.942300000000003,False,10,10
+mfe_lockin_trail,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-24.1658,0.0,False,10,10
+mfe_lockin_trail,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-23.765700000000002,-0.40009999999999835,False,10,10
+mfe_lockin_trail,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.322599999999998,5.156799999999997,True,10,10
+mfe_lockin_trail,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-17.223499999999998,-6.942300000000003,False,10,10
+mfe_lockin_trail,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-6.4533,-17.712500000000002,False,10,10
+mfe_lockin_trail,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.045300000000005,4.879500000000004,True,10,10
+mfe_lockin_trail,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-43.1984,19.0326,True,10,10
+multi_tier_partial,next_pivot_target,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-25.6461,2.3762000000000008,True,10,10
+multi_tier_partial,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-31.3935,8.1236,True,10,10
+multi_tier_partial,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-31.3935,8.1236,True,10,10
+multi_tier_partial,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-17.223499999999998,-6.046400000000002,False,10,10
+multi_tier_partial,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-24.1658,0.895900000000001,True,10,10
+multi_tier_partial,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-23.765700000000002,0.4958000000000027,True,10,10
+multi_tier_partial,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-29.322599999999998,6.052699999999998,True,10,10
+multi_tier_partial,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-17.223499999999998,-6.046400000000002,False,10,10
+multi_tier_partial,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-6.4533,-16.8166,False,10,10
+multi_tier_partial,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-29.045300000000005,5.775400000000005,True,10,10
+multi_tier_partial,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.2699,-43.1984,19.9285,True,10,10
+next_pivot_target,r_multiple_2r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-31.3935,5.747399999999999,True,10,10
+next_pivot_target,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-31.3935,5.747399999999999,True,10,10
+next_pivot_target,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-17.223499999999998,-8.422600000000003,False,10,10
+next_pivot_target,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-24.1658,-1.4802999999999997,False,10,10
+next_pivot_target,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-23.765700000000002,-1.880399999999998,False,10,10
+next_pivot_target,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-29.322599999999998,3.676499999999997,True,10,10
+next_pivot_target,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-17.223499999999998,-8.422600000000003,False,10,10
+next_pivot_target,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-6.4533,-19.192800000000002,False,10,10
+next_pivot_target,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-29.045300000000005,3.399200000000004,True,10,10
+next_pivot_target,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-25.6461,-43.1984,17.5523,True,10,10
+r_multiple_2r,r_multiple_3r,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-31.3935,0.0,False,10,10
+r_multiple_2r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-17.223499999999998,-14.170000000000002,False,10,10
+r_multiple_2r,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-24.1658,-7.227699999999999,False,10,10
+r_multiple_2r,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-23.765700000000002,-7.627799999999997,False,10,10
+r_multiple_2r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-29.322599999999998,-2.0709000000000017,False,10,10
+r_multiple_2r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-17.223499999999998,-14.170000000000002,False,10,10
+r_multiple_2r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-6.4533,-24.9402,False,10,10
+r_multiple_2r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-29.045300000000005,-2.348199999999995,False,10,10
+r_multiple_2r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-43.1984,11.8049,True,10,10
+r_multiple_3r,regime_flip,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-17.223499999999998,-14.170000000000002,False,10,10
+r_multiple_3r,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-24.1658,-7.227699999999999,False,10,10
+r_multiple_3r,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-23.765700000000002,-7.627799999999997,False,10,10
+r_multiple_3r,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-29.322599999999998,-2.0709000000000017,False,10,10
+r_multiple_3r,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-17.223499999999998,-14.170000000000002,False,10,10
+r_multiple_3r,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-6.4533,-24.9402,False,10,10
+r_multiple_3r,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-29.045300000000005,-2.348199999999995,False,10,10
+r_multiple_3r,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-31.3935,-43.1984,11.8049,True,10,10
+regime_flip,reverse_signal,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-24.1658,6.942300000000003,True,10,10
+regime_flip,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-23.765700000000002,6.542200000000005,True,10,10
+regime_flip,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-29.322599999999998,12.0991,True,10,10
+regime_flip,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-17.223499999999998,0.0,False,10,10
+regime_flip,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-6.4533,-10.770199999999999,False,10,10
+regime_flip,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-29.045300000000005,11.821800000000007,True,10,10
+regime_flip,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-43.1984,25.9749,True,10,10
+reverse_signal,smc_mitigation_zone,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-23.765700000000002,-0.40009999999999835,False,10,10
+reverse_signal,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.322599999999998,5.156799999999997,True,10,10
+reverse_signal,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-17.223499999999998,-6.942300000000003,False,10,10
+reverse_signal,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-6.4533,-17.712500000000002,False,10,10
+reverse_signal,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-29.045300000000005,4.879500000000004,True,10,10
+reverse_signal,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-24.1658,-43.1984,19.0326,True,10,10
+smc_mitigation_zone,time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.765700000000002,-29.322599999999998,5.556899999999995,True,10,10
+smc_mitigation_zone,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.765700000000002,-17.223499999999998,-6.542200000000005,False,10,10
+smc_mitigation_zone,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.765700000000002,-6.4533,-17.312400000000004,False,10,10
+smc_mitigation_zone,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.765700000000002,-29.045300000000005,5.279600000000002,True,10,10
+smc_mitigation_zone,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-23.765700000000002,-43.1984,19.432699999999997,True,10,10
+time_stop_10d,time_stop_20d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-29.322599999999998,-17.223499999999998,-12.0991,False,10,10
+time_stop_10d,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-29.322599999999998,-6.4533,-22.8693,False,10,10
+time_stop_10d,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-29.322599999999998,-29.045300000000005,-0.2772999999999932,False,10,10
+time_stop_10d,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-29.322599999999998,-43.1984,13.875800000000002,True,10,10
+time_stop_20d,trailing_10pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-6.4533,-10.770199999999999,False,10,10
+time_stop_20d,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-29.045300000000005,11.821800000000007,True,10,10
+time_stop_20d,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-17.223499999999998,-43.1984,25.9749,True,10,10
+trailing_10pct,trailing_15pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-6.4533,-29.045300000000005,22.592000000000006,True,10,10
+trailing_10pct,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-6.4533,-43.1984,36.7451,True,10,10
+trailing_15pct,trailing_5pct,neutral,Health Care,unknown,mid_15_25,long_ge_11d,-29.045300000000005,-43.1984,14.153099999999995,True,10,10
+atr_trail_1x,atr_trail_2x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-13.153400000000001,0.7650000000000023,True,17,17
+atr_trail_1x,atr_trail_mae_conditional,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-12.388399999999999,0.0,False,17,17
+atr_trail_1x,atr_trail_vix_conditional,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-6.5184,-5.869999999999999,False,17,17
+atr_trail_1x,break_even_at_1r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-33.661,21.272600000000004,True,17,17
+atr_trail_1x,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-2.956600000000001,-9.431799999999999,False,17,17
+atr_trail_1x,chandelier_3x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-17.700899999999997,5.312499999999998,True,17,17
+atr_trail_1x,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-10.7345,-1.6538999999999984,False,17,17
+atr_trail_1x,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,1571.2321,-1583.6205,False,17,17
+atr_trail_1x,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,16.1474,-28.535800000000002,False,17,17
+atr_trail_1x,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,76.13820000000001,-88.52660000000002,False,17,17
+atr_trail_1x,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-22.1339,9.745500000000002,True,17,17
+atr_trail_1x,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-15.9982,3.6098000000000017,True,17,17
+atr_trail_1x,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-20.7029,8.3145,True,17,17
+atr_trail_1x,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,0.382900000000002,-12.7713,False,17,17
+atr_trail_1x,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-9.564200000000001,-2.8241999999999976,False,17,17
+atr_trail_1x,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,1.2441000000000022,-13.6325,False,17,17
+atr_trail_1x,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-1.3803999999999998,-11.008,False,17,17
+atr_trail_1x,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-12.388399999999999,0.0,False,17,17
+atr_trail_1x,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-10.9348,-1.4535999999999998,False,17,17
+atr_trail_1x,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-7.563399999999999,-4.825,False,17,17
+atr_trail_1x,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-1.3803999999999998,-11.008,False,17,17
+atr_trail_1x,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,106.9639,-119.3523,False,17,17
+atr_trail_1x,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,134.7995,-147.18789999999998,False,17,17
+atr_trail_1x,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-33.6292,21.2408,True,17,17
+atr_trail_2x,atr_trail_mae_conditional,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-12.388399999999999,-0.7650000000000023,False,17,17
+atr_trail_2x,atr_trail_vix_conditional,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-6.5184,-6.635000000000002,False,17,17
+atr_trail_2x,break_even_at_1r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-33.661,20.5076,True,17,17
+atr_trail_2x,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-2.956600000000001,-10.1968,False,17,17
+atr_trail_2x,chandelier_3x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-17.700899999999997,4.547499999999996,True,17,17
+atr_trail_2x,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-10.7345,-2.4189000000000007,False,17,17
+atr_trail_2x,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,1571.2321,-1584.3854999999999,False,17,17
+atr_trail_2x,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,16.1474,-29.300800000000002,False,17,17
+atr_trail_2x,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,76.13820000000001,-89.29160000000002,False,17,17
+atr_trail_2x,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-22.1339,8.9805,True,17,17
+atr_trail_2x,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-15.9982,2.8447999999999993,True,17,17
+atr_trail_2x,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-20.7029,7.549499999999998,True,17,17
+atr_trail_2x,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,0.382900000000002,-13.536300000000004,False,17,17
+atr_trail_2x,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-9.564200000000001,-3.5892,False,17,17
+atr_trail_2x,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,1.2441000000000022,-14.397500000000004,False,17,17
+atr_trail_2x,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-1.3803999999999998,-11.773000000000001,False,17,17
+atr_trail_2x,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-12.388399999999999,-0.7650000000000023,False,17,17
+atr_trail_2x,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-10.9348,-2.218600000000002,False,17,17
+atr_trail_2x,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-7.563399999999999,-5.5900000000000025,False,17,17
+atr_trail_2x,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-1.3803999999999998,-11.773000000000001,False,17,17
+atr_trail_2x,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,106.9639,-120.1173,False,17,17
+atr_trail_2x,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,134.7995,-147.9529,False,17,17
+atr_trail_2x,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-13.153400000000001,-33.6292,20.475799999999996,True,17,17
+atr_trail_mae_conditional,atr_trail_vix_conditional,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-6.5184,-5.869999999999999,False,17,17
+atr_trail_mae_conditional,break_even_at_1r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-33.661,21.272600000000004,True,17,17
+atr_trail_mae_conditional,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-2.956600000000001,-9.431799999999999,False,17,17
+atr_trail_mae_conditional,chandelier_3x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-17.700899999999997,5.312499999999998,True,17,17
+atr_trail_mae_conditional,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-10.7345,-1.6538999999999984,False,17,17
+atr_trail_mae_conditional,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,1571.2321,-1583.6205,False,17,17
+atr_trail_mae_conditional,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,16.1474,-28.535800000000002,False,17,17
+atr_trail_mae_conditional,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,76.13820000000001,-88.52660000000002,False,17,17
+atr_trail_mae_conditional,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-22.1339,9.745500000000002,True,17,17
+atr_trail_mae_conditional,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-15.9982,3.6098000000000017,True,17,17
+atr_trail_mae_conditional,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-20.7029,8.3145,True,17,17
+atr_trail_mae_conditional,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,0.382900000000002,-12.7713,False,17,17
+atr_trail_mae_conditional,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-9.564200000000001,-2.8241999999999976,False,17,17
+atr_trail_mae_conditional,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,1.2441000000000022,-13.6325,False,17,17
+atr_trail_mae_conditional,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-1.3803999999999998,-11.008,False,17,17
+atr_trail_mae_conditional,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-12.388399999999999,0.0,False,17,17
+atr_trail_mae_conditional,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-10.9348,-1.4535999999999998,False,17,17
+atr_trail_mae_conditional,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-7.563399999999999,-4.825,False,17,17
+atr_trail_mae_conditional,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-1.3803999999999998,-11.008,False,17,17
+atr_trail_mae_conditional,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,106.9639,-119.3523,False,17,17
+atr_trail_mae_conditional,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,134.7995,-147.18789999999998,False,17,17
+atr_trail_mae_conditional,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-33.6292,21.2408,True,17,17
+atr_trail_vix_conditional,break_even_at_1r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-33.661,27.1426,True,17,17
+atr_trail_vix_conditional,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-2.956600000000001,-3.561799999999999,False,17,17
+atr_trail_vix_conditional,chandelier_3x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-17.700899999999997,11.182499999999997,True,17,17
+atr_trail_vix_conditional,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-10.7345,4.216100000000001,True,17,17
+atr_trail_vix_conditional,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,1571.2321,-1577.7504999999999,False,17,17
+atr_trail_vix_conditional,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,16.1474,-22.6658,False,17,17
+atr_trail_vix_conditional,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,76.13820000000001,-82.65660000000001,False,17,17
+atr_trail_vix_conditional,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-22.1339,15.6155,True,17,17
+atr_trail_vix_conditional,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-15.9982,9.479800000000001,True,17,17
+atr_trail_vix_conditional,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-20.7029,14.1845,True,17,17
+atr_trail_vix_conditional,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,0.382900000000002,-6.901300000000002,False,17,17
+atr_trail_vix_conditional,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-9.564200000000001,3.0458000000000016,True,17,17
+atr_trail_vix_conditional,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,1.2441000000000022,-7.762500000000002,False,17,17
+atr_trail_vix_conditional,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-1.3803999999999998,-5.138,False,17,17
+atr_trail_vix_conditional,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-12.388399999999999,5.869999999999999,True,17,17
+atr_trail_vix_conditional,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-10.9348,4.416399999999999,True,17,17
+atr_trail_vix_conditional,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-7.563399999999999,1.044999999999999,True,17,17
+atr_trail_vix_conditional,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-1.3803999999999998,-5.138,False,17,17
+atr_trail_vix_conditional,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,106.9639,-113.4823,False,17,17
+atr_trail_vix_conditional,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,134.7995,-141.3179,False,17,17
+atr_trail_vix_conditional,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-6.5184,-33.6292,27.110799999999998,True,17,17
+break_even_at_1r,breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-2.956600000000001,-30.7044,False,17,17
+break_even_at_1r,chandelier_3x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-17.700899999999997,-15.960100000000004,False,17,17
+break_even_at_1r,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-10.7345,-22.9265,False,17,17
+break_even_at_1r,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,1571.2321,-1604.8931,False,17,17
+break_even_at_1r,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,16.1474,-49.808400000000006,False,17,17
+break_even_at_1r,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,76.13820000000001,-109.79920000000001,False,17,17
+break_even_at_1r,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-22.1339,-11.5271,False,17,17
+break_even_at_1r,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-15.9982,-17.6628,False,17,17
+break_even_at_1r,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-20.7029,-12.958100000000002,False,17,17
+break_even_at_1r,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,0.382900000000002,-34.0439,False,17,17
+break_even_at_1r,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-9.564200000000001,-24.0968,False,17,17
+break_even_at_1r,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,1.2441000000000022,-34.905100000000004,False,17,17
+break_even_at_1r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-1.3803999999999998,-32.2806,False,17,17
+break_even_at_1r,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-12.388399999999999,-21.272600000000004,False,17,17
+break_even_at_1r,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-10.9348,-22.726200000000002,False,17,17
+break_even_at_1r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-7.563399999999999,-26.097600000000003,False,17,17
+break_even_at_1r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-1.3803999999999998,-32.2806,False,17,17
+break_even_at_1r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,106.9639,-140.6249,False,17,17
+break_even_at_1r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,134.7995,-168.4605,False,17,17
+break_even_at_1r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-33.661,-33.6292,-0.03180000000000405,False,17,17
+breakeven_plus_trail,chandelier_3x,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-17.700899999999997,14.744299999999996,True,17,17
+breakeven_plus_trail,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-10.7345,7.7779,True,17,17
+breakeven_plus_trail,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,1571.2321,-1574.1887,False,17,17
+breakeven_plus_trail,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,16.1474,-19.104000000000003,False,17,17
+breakeven_plus_trail,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,76.13820000000001,-79.0948,False,17,17
+breakeven_plus_trail,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-22.1339,19.1773,True,17,17
+breakeven_plus_trail,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-15.9982,13.041599999999999,True,17,17
+breakeven_plus_trail,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-20.7029,17.746299999999998,True,17,17
+breakeven_plus_trail,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,0.382900000000002,-3.339500000000003,False,17,17
+breakeven_plus_trail,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-9.564200000000001,6.607600000000001,True,17,17
+breakeven_plus_trail,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,1.2441000000000022,-4.200700000000003,False,17,17
+breakeven_plus_trail,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-1.3803999999999998,-1.576200000000001,False,17,17
+breakeven_plus_trail,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-12.388399999999999,9.431799999999999,True,17,17
+breakeven_plus_trail,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-10.9348,7.978199999999998,True,17,17
+breakeven_plus_trail,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-7.563399999999999,4.606799999999998,True,17,17
+breakeven_plus_trail,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-1.3803999999999998,-1.576200000000001,False,17,17
+breakeven_plus_trail,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,106.9639,-109.92049999999999,False,17,17
+breakeven_plus_trail,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,134.7995,-137.7561,False,17,17
+breakeven_plus_trail,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-2.956600000000001,-33.6292,30.672599999999996,True,17,17
+chandelier_3x,class_time_stop,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-10.7345,-6.966399999999997,False,17,17
+chandelier_3x,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,1571.2321,-1588.933,False,17,17
+chandelier_3x,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,16.1474,-33.848299999999995,False,17,17
+chandelier_3x,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,76.13820000000001,-93.8391,False,17,17
+chandelier_3x,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-22.1339,4.433000000000003,True,17,17
+chandelier_3x,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-15.9982,-1.7026999999999965,False,17,17
+chandelier_3x,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-20.7029,3.0020000000000024,True,17,17
+chandelier_3x,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,0.382900000000002,-18.0838,False,17,17
+chandelier_3x,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-9.564200000000001,-8.136699999999996,False,17,17
+chandelier_3x,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,1.2441000000000022,-18.945,False,17,17
+chandelier_3x,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-1.3803999999999998,-16.320499999999996,False,17,17
+chandelier_3x,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-12.388399999999999,-5.312499999999998,False,17,17
+chandelier_3x,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-10.9348,-6.766099999999998,False,17,17
+chandelier_3x,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-7.563399999999999,-10.1375,False,17,17
+chandelier_3x,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-1.3803999999999998,-16.320499999999996,False,17,17
+chandelier_3x,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,106.9639,-124.66479999999999,False,17,17
+chandelier_3x,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,134.7995,-152.50039999999998,False,17,17
+chandelier_3x,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-17.700899999999997,-33.6292,15.9283,True,17,17
+class_time_stop,earnings_blackout,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,1571.2321,-1581.9666,False,17,17
+class_time_stop,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,16.1474,-26.8819,False,17,17
+class_time_stop,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,76.13820000000001,-86.87270000000001,False,17,17
+class_time_stop,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-22.1339,11.3994,True,17,17
+class_time_stop,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-15.9982,5.2637,True,17,17
+class_time_stop,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-20.7029,9.968399999999999,True,17,17
+class_time_stop,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,0.382900000000002,-11.117400000000004,False,17,17
+class_time_stop,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-9.564200000000001,-1.1702999999999992,False,17,17
+class_time_stop,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,1.2441000000000022,-11.978600000000004,False,17,17
+class_time_stop,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-1.3803999999999998,-9.3541,False,17,17
+class_time_stop,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-12.388399999999999,1.6538999999999984,True,17,17
+class_time_stop,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-10.9348,0.2002999999999986,True,17,17
+class_time_stop,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-7.563399999999999,-3.171100000000002,False,17,17
+class_time_stop,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-1.3803999999999998,-9.3541,False,17,17
+class_time_stop,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,106.9639,-117.69839999999999,False,17,17
+class_time_stop,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,134.7995,-145.534,False,17,17
+class_time_stop,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.7345,-33.6292,22.894699999999997,True,17,17
+earnings_blackout,fixed_4r_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,16.1474,1555.0846999999999,True,17,17
+earnings_blackout,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,76.13820000000001,1495.0938999999998,True,17,17
+earnings_blackout,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-22.1339,1593.366,True,17,17
+earnings_blackout,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-15.9982,1587.2303,True,17,17
+earnings_blackout,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-20.7029,1591.935,True,17,17
+earnings_blackout,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,0.382900000000002,1570.8491999999999,True,17,17
+earnings_blackout,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-9.564200000000001,1580.7963,True,17,17
+earnings_blackout,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,1.2441000000000022,1569.988,True,17,17
+earnings_blackout,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-1.3803999999999998,1572.6125,True,17,17
+earnings_blackout,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-12.388399999999999,1583.6205,True,17,17
+earnings_blackout,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-10.9348,1582.1669,True,17,17
+earnings_blackout,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-7.563399999999999,1578.7955,True,17,17
+earnings_blackout,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-1.3803999999999998,1572.6125,True,17,17
+earnings_blackout,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,106.9639,1464.2682,True,17,17
+earnings_blackout,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,134.7995,1436.4325999999999,True,17,17
+earnings_blackout,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1571.2321,-33.6292,1604.8613,True,17,17
+fixed_4r_2r,hybrid_50pct_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,76.13820000000001,-59.99080000000001,False,17,17
+fixed_4r_2r,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-22.1339,38.2813,True,17,17
+fixed_4r_2r,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-15.9982,32.1456,True,17,17
+fixed_4r_2r,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-20.7029,36.850300000000004,True,17,17
+fixed_4r_2r,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,0.382900000000002,15.764499999999998,True,17,17
+fixed_4r_2r,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-9.564200000000001,25.711600000000004,True,17,17
+fixed_4r_2r,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,1.2441000000000022,14.903299999999998,True,17,17
+fixed_4r_2r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-1.3803999999999998,17.5278,True,17,17
+fixed_4r_2r,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-12.388399999999999,28.535800000000002,True,17,17
+fixed_4r_2r,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-10.9348,27.0822,True,17,17
+fixed_4r_2r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-7.563399999999999,23.7108,True,17,17
+fixed_4r_2r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-1.3803999999999998,17.5278,True,17,17
+fixed_4r_2r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,106.9639,-90.81649999999999,False,17,17
+fixed_4r_2r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,134.7995,-118.65209999999999,False,17,17
+fixed_4r_2r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,16.1474,-33.6292,49.7766,True,17,17
+hybrid_50pct_target,ma_exit_ema9,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-22.1339,98.27210000000001,True,17,17
+hybrid_50pct_target,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-15.9982,92.13640000000001,True,17,17
+hybrid_50pct_target,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-20.7029,96.84110000000001,True,17,17
+hybrid_50pct_target,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,0.382900000000002,75.7553,True,17,17
+hybrid_50pct_target,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-9.564200000000001,85.70240000000001,True,17,17
+hybrid_50pct_target,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,1.2441000000000022,74.89410000000001,True,17,17
+hybrid_50pct_target,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-1.3803999999999998,77.5186,True,17,17
+hybrid_50pct_target,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-12.388399999999999,88.52660000000002,True,17,17
+hybrid_50pct_target,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-10.9348,87.07300000000001,True,17,17
+hybrid_50pct_target,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-7.563399999999999,83.70160000000001,True,17,17
+hybrid_50pct_target,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-1.3803999999999998,77.5186,True,17,17
+hybrid_50pct_target,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,106.9639,-30.825699999999983,False,17,17
+hybrid_50pct_target,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,134.7995,-58.66129999999998,False,17,17
+hybrid_50pct_target,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,76.13820000000001,-33.6292,109.76740000000001,True,17,17
+ma_exit_ema9,mfe_lockin_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-15.9982,-6.1357,False,17,17
+ma_exit_ema9,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-20.7029,-1.431000000000001,False,17,17
+ma_exit_ema9,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,0.382900000000002,-22.516800000000003,False,17,17
+ma_exit_ema9,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-9.564200000000001,-12.5697,False,17,17
+ma_exit_ema9,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,1.2441000000000022,-23.378000000000004,False,17,17
+ma_exit_ema9,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-1.3803999999999998,-20.753500000000003,False,17,17
+ma_exit_ema9,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-12.388399999999999,-9.745500000000002,False,17,17
+ma_exit_ema9,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-10.9348,-11.199100000000001,False,17,17
+ma_exit_ema9,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-7.563399999999999,-14.570500000000003,False,17,17
+ma_exit_ema9,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-1.3803999999999998,-20.753500000000003,False,17,17
+ma_exit_ema9,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,106.9639,-129.0978,False,17,17
+ma_exit_ema9,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,134.7995,-156.9334,False,17,17
+ma_exit_ema9,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-22.1339,-33.6292,11.495299999999997,True,17,17
+mfe_lockin_trail,multi_tier_partial,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-20.7029,4.704699999999999,True,17,17
+mfe_lockin_trail,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,0.382900000000002,-16.381100000000004,False,17,17
+mfe_lockin_trail,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-9.564200000000001,-6.433999999999999,False,17,17
+mfe_lockin_trail,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,1.2441000000000022,-17.242300000000004,False,17,17
+mfe_lockin_trail,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-1.3803999999999998,-14.6178,False,17,17
+mfe_lockin_trail,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-12.388399999999999,-3.6098000000000017,False,17,17
+mfe_lockin_trail,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-10.9348,-5.0634000000000015,False,17,17
+mfe_lockin_trail,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-7.563399999999999,-8.434800000000003,False,17,17
+mfe_lockin_trail,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-1.3803999999999998,-14.6178,False,17,17
+mfe_lockin_trail,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,106.9639,-122.96209999999999,False,17,17
+mfe_lockin_trail,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,134.7995,-150.7977,False,17,17
+mfe_lockin_trail,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-15.9982,-33.6292,17.630999999999997,True,17,17
+multi_tier_partial,next_pivot_target,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,0.382900000000002,-21.085800000000003,False,17,17
+multi_tier_partial,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,-9.564200000000001,-11.138699999999998,False,17,17
+multi_tier_partial,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,1.2441000000000022,-21.947000000000003,False,17,17
+multi_tier_partial,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,-1.3803999999999998,-19.322499999999998,False,17,17
+multi_tier_partial,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,-12.388399999999999,-8.3145,False,17,17
+multi_tier_partial,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,-10.9348,-9.7681,False,17,17
+multi_tier_partial,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,-7.563399999999999,-13.139500000000002,False,17,17
+multi_tier_partial,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,-1.3803999999999998,-19.322499999999998,False,17,17
+multi_tier_partial,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,106.9639,-127.6668,False,17,17
+multi_tier_partial,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,134.7995,-155.5024,False,17,17
+multi_tier_partial,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-20.7029,-33.6292,12.926299999999998,True,17,17
+next_pivot_target,r_multiple_2r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,-9.564200000000001,9.947100000000002,True,17,17
+next_pivot_target,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,1.2441000000000022,-0.8612000000000002,False,17,17
+next_pivot_target,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,-1.3803999999999998,1.7633000000000019,True,17,17
+next_pivot_target,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,-12.388399999999999,12.7713,True,17,17
+next_pivot_target,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,-10.9348,11.317700000000002,True,17,17
+next_pivot_target,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,-7.563399999999999,7.946300000000001,True,17,17
+next_pivot_target,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,-1.3803999999999998,1.7633000000000019,True,17,17
+next_pivot_target,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,106.9639,-106.58099999999999,False,17,17
+next_pivot_target,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,134.7995,-134.4166,False,17,17
+next_pivot_target,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,0.382900000000002,-33.6292,34.0121,True,17,17
+r_multiple_2r,r_multiple_3r,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,1.2441000000000022,-10.808300000000003,False,17,17
+r_multiple_2r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,-1.3803999999999998,-8.183800000000002,False,17,17
+r_multiple_2r,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,-12.388399999999999,2.8241999999999976,True,17,17
+r_multiple_2r,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,-10.9348,1.3705999999999978,True,17,17
+r_multiple_2r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,-7.563399999999999,-2.0008000000000026,False,17,17
+r_multiple_2r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,-1.3803999999999998,-8.183800000000002,False,17,17
+r_multiple_2r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,106.9639,-116.5281,False,17,17
+r_multiple_2r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,134.7995,-144.3637,False,17,17
+r_multiple_2r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-9.564200000000001,-33.6292,24.064999999999998,True,17,17
+r_multiple_3r,regime_flip,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,-1.3803999999999998,2.624500000000002,True,17,17
+r_multiple_3r,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,-12.388399999999999,13.6325,True,17,17
+r_multiple_3r,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,-10.9348,12.178900000000002,True,17,17
+r_multiple_3r,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,-7.563399999999999,8.807500000000001,True,17,17
+r_multiple_3r,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,-1.3803999999999998,2.624500000000002,True,17,17
+r_multiple_3r,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,106.9639,-105.71979999999999,False,17,17
+r_multiple_3r,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,134.7995,-133.5554,False,17,17
+r_multiple_3r,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,1.2441000000000022,-33.6292,34.8733,True,17,17
+regime_flip,reverse_signal,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,-12.388399999999999,11.008,True,17,17
+regime_flip,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,-10.9348,9.5544,True,17,17
+regime_flip,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,-7.563399999999999,6.182999999999999,True,17,17
+regime_flip,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,-1.3803999999999998,0.0,False,17,17
+regime_flip,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,106.9639,-108.34429999999999,False,17,17
+regime_flip,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,134.7995,-136.1799,False,17,17
+regime_flip,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,-33.6292,32.248799999999996,True,17,17
+reverse_signal,smc_mitigation_zone,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-10.9348,-1.4535999999999998,False,17,17
+reverse_signal,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-7.563399999999999,-4.825,False,17,17
+reverse_signal,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-1.3803999999999998,-11.008,False,17,17
+reverse_signal,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,106.9639,-119.3523,False,17,17
+reverse_signal,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,134.7995,-147.18789999999998,False,17,17
+reverse_signal,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-12.388399999999999,-33.6292,21.2408,True,17,17
+smc_mitigation_zone,time_stop_10d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.9348,-7.563399999999999,-3.3714000000000004,False,17,17
+smc_mitigation_zone,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.9348,-1.3803999999999998,-9.5544,False,17,17
+smc_mitigation_zone,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.9348,106.9639,-117.89869999999999,False,17,17
+smc_mitigation_zone,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.9348,134.7995,-145.7343,False,17,17
+smc_mitigation_zone,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-10.9348,-33.6292,22.694399999999998,True,17,17
+time_stop_10d,time_stop_20d,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-7.563399999999999,-1.3803999999999998,-6.182999999999999,False,17,17
+time_stop_10d,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-7.563399999999999,106.9639,-114.5273,False,17,17
+time_stop_10d,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-7.563399999999999,134.7995,-142.3629,False,17,17
+time_stop_10d,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-7.563399999999999,-33.6292,26.0658,True,17,17
+time_stop_20d,trailing_10pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,106.9639,-108.34429999999999,False,17,17
+time_stop_20d,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,134.7995,-136.1799,False,17,17
+time_stop_20d,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,-1.3803999999999998,-33.6292,32.248799999999996,True,17,17
+trailing_10pct,trailing_15pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,106.9639,134.7995,-27.8356,False,17,17
+trailing_10pct,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,106.9639,-33.6292,140.5931,True,17,17
+trailing_15pct,trailing_5pct,neutral,Industrials,unknown,mid_15_25,long_ge_11d,134.7995,-33.6292,168.4287,True,17,17

@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-05-27T06:17:48.345159",
+  "transaction_costs": {
+    "applied": true,
+    "gross_total_roi": -5.975,
+    "net_total_roi": -7.449,
+    "total_cost": 0.764
+  },
+  "survivorship_bias": {
+    "gross_roi": -6.739,
+    "adjusted_roi": -7.449,
+    "haircut_pct": 0.71,
+    "years": 0.08
+  },
+  "bonferroni": {
+    "n_strategies": 186,
+    "base_significance": 0.05,
+    "adjusted_significance": 0.000269,
+    "min_win_rate": 0.55,
+    "min_trades_required": 500,
+    "false_positive_prob_uncorrected": 1.0,
+    "false_positive_prob_corrected": 0.05,
+    "recommendation": "With 186 strategies tested, require at least 500 trades per strategy for statistical validity (Bonferroni-corrected at p=0.0003)"
+  },
+  "walk_forward_summary": {
+    "total": 0,
+    "robust": 0,
+    "overfit": 0
+  }
+}

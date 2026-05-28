@@ -1,0 +1,32 @@
+{
+  "proportions": {
+    "bull": 0.29545454545454547,
+    "neutral": 0.4696969696969697,
+    "bear": 0.23484848484848486,
+    "crisis": 0.0,
+    "calm": 0.0,
+    "volatile": 0.0
+  },
+  "n_train": 92,
+  "n_test": 40,
+  "per_regime": {
+    "bull": 27,
+    "bull_test": 12,
+    "bull_status": "INSUFFICIENT_SAMPLE",
+    "neutral": 43,
+    "neutral_test": 19,
+    "neutral_status": "INSUFFICIENT_SAMPLE",
+    "bear": 22,
+    "bear_test": 9,
+    "bear_status": "INSUFFICIENT_SAMPLE",
+    "crisis": 0,
+    "crisis_test": 0,
+    "crisis_status": "INSUFFICIENT_SAMPLE",
+    "calm": 0,
+    "calm_test": 0,
+    "calm_status": "INSUFFICIENT_SAMPLE",
+    "volatile": 0,
+    "volatile_test": 0,
+    "volatile_status": "INSUFFICIENT_SAMPLE"
+  }
+}

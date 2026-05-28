@@ -1,0 +1,5 @@
+tier,trades,win_rate,avg_pnl,profit_factor,total_roi,tier_3_consolidated
+VERY_HIGH,1,0.0,-1.7729,0.0,-1.7729,HIGH
+HIGH,10,0.7,8.5786,3.6276,85.7862,MEDIUM
+MEDIUM_HIGH,2,0.5,0.4331,1.0933,0.8662,MEDIUM
+LOW,3,0.6667,7.9834,61.0182,23.9501,LOW

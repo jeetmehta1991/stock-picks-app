@@ -1,0 +1,16 @@
+date,event,z_score,today_dispersion,ticker,level,reason,exit_price
+2023-02-02,dispersion_cb_triggered_dec128,6.3938,0.05874,,,,
+2023-04-27,dispersion_cb_triggered_dec128,3.1151,0.030329,,,,
+2023-05-25,dispersion_cb_triggered_dec128,8.0194,0.056424,,,,
+2023-07-20,dispersion_cb_triggered_dec128,4.9895,0.031694,,,,
+2023-08-21,dispersion_cb_triggered_dec128,3.2554,0.026659,,,,
+2023-10-25,dispersion_cb_triggered_dec128,4.3102,0.028616,,,,
+2024-01-25,dispersion_cb_triggered_dec128,6.1354,0.032104,,,,
+2024-02-02,dispersion_cb_triggered_dec128,6.8082,0.049147,,,,
+2024-04-19,dispersion_cb_triggered_dec128,5.7524,0.0295,,,,
+2024-04-24,,,,TSLA,1.0,overnight_gap_up_12.6pct,162.84
+2024-04-24,dispersion_cb_triggered_dec128,3.409,0.029422,,,,
+2024-07-24,dispersion_cb_triggered_dec128,3.3404,0.035617,,,,
+2024-10-11,dispersion_cb_triggered_dec128,3.54,0.025838,,,,
+2024-10-24,dispersion_cb_triggered_dec128,7.2677,0.049654,,,,
+2024-11-06,dispersion_cb_triggered_dec128,3.3635,0.047315,,,,

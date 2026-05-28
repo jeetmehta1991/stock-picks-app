@@ -1,0 +1,96 @@
+entry_date,sector,trades,total_trades,sector_pct
+2022-01-03,Broad Market,1,10,10.0
+2022-01-03,Communication Services,1,10,10.0
+2022-01-03,Consumer Staples,2,10,20.0
+2022-01-03,Energy,2,10,20.0
+2022-01-03,Financials,2,10,20.0
+2022-01-03,Health Care,1,10,10.0
+2022-01-03,Information Technology,1,10,10.0
+2022-01-04,Consumer Discretionary,1,4,25.0
+2022-01-04,Financials,1,4,25.0
+2022-01-04,Industrials,2,4,50.0
+2022-01-05,Communication Services,1,6,16.666666666666664
+2022-01-05,Consumer Discretionary,1,6,16.666666666666664
+2022-01-05,Consumer Staples,1,6,16.666666666666664
+2022-01-05,Information Technology,2,6,33.33333333333333
+2022-01-05,Real Estate,1,6,16.666666666666664
+2022-01-06,Health Care,1,2,50.0
+2022-01-06,Real Estate,1,2,50.0
+2022-01-10,Health Care,1,2,50.0
+2022-01-10,Information Technology,1,2,50.0
+2022-01-11,Consumer Discretionary,1,2,50.0
+2022-01-11,Industrials,1,2,50.0
+2022-01-13,Consumer Discretionary,1,2,50.0
+2022-01-13,Information Technology,1,2,50.0
+2022-01-18,Financials,1,3,33.33333333333333
+2022-01-18,Health Care,1,3,33.33333333333333
+2022-01-18,Information Technology,1,3,33.33333333333333
+2022-01-19,Communication Services,1,4,25.0
+2022-01-19,Consumer Discretionary,1,4,25.0
+2022-01-19,Health Care,1,4,25.0
+2022-01-19,Information Technology,1,4,25.0
+2022-01-20,Health Care,2,2,100.0
+2022-01-24,Health Care,1,1,100.0
+2022-01-27,Consumer Discretionary,3,6,50.0
+2022-01-27,Consumer Staples,1,6,16.666666666666664
+2022-01-27,Information Technology,2,6,33.33333333333333
+2022-01-28,Energy,1,3,33.33333333333333
+2022-01-28,Information Technology,1,3,33.33333333333333
+2022-01-28,Real Estate,1,3,33.33333333333333
+2022-01-31,Consumer Staples,1,3,33.33333333333333
+2022-01-31,Energy,1,3,33.33333333333333
+2022-01-31,Information Technology,1,3,33.33333333333333
+2022-02-02,Broad Market,1,1,100.0
+2022-02-03,Industrials,1,3,33.33333333333333
+2022-02-03,Information Technology,2,3,66.66666666666666
+2022-02-07,Health Care,2,3,66.66666666666666
+2022-02-07,Industrials,1,3,33.33333333333333
+2022-02-09,Communication Services,1,1,100.0
+2022-02-14,Health Care,2,3,66.66666666666666
+2022-02-14,Real Estate,1,3,33.33333333333333
+2022-02-16,Consumer Discretionary,1,1,100.0
+2022-02-22,Consumer Discretionary,1,2,50.0
+2022-02-22,Real Estate,1,2,50.0
+2022-02-23,Financials,1,1,100.0
+2022-04-25,Consumer Staples,2,8,25.0
+2022-04-25,Energy,3,8,37.5
+2022-04-25,Health Care,3,8,37.5
+2022-06-27,Communication Services,1,9,11.11111111111111
+2022-06-27,Energy,1,9,11.11111111111111
+2022-06-27,Health Care,5,9,55.55555555555556
+2022-06-27,Industrials,1,9,11.11111111111111
+2022-06-27,Information Technology,1,9,11.11111111111111
+2022-08-29,Communication Services,1,5,20.0
+2022-08-29,Consumer Discretionary,1,5,20.0
+2022-08-29,Energy,2,5,40.0
+2022-08-29,Information Technology,1,5,20.0
+2022-10-31,Energy,2,7,28.57142857142857
+2022-10-31,Financials,1,7,14.285714285714285
+2022-10-31,Health Care,2,7,28.57142857142857
+2022-10-31,Industrials,1,7,14.285714285714285
+2022-10-31,Information Technology,1,7,14.285714285714285
+2023-01-02,Consumer Discretionary,1,6,16.666666666666664
+2023-01-02,Financials,3,6,50.0
+2023-01-02,Industrials,1,6,16.666666666666664
+2023-01-02,Information Technology,1,6,16.666666666666664
+2023-01-04,Health Care,1,2,50.0
+2023-01-04,Industrials,1,2,50.0
+2023-03-06,Communication Services,2,7,28.57142857142857
+2023-03-06,Consumer Discretionary,1,7,14.285714285714285
+2023-03-06,Industrials,1,7,14.285714285714285
+2023-03-06,Information Technology,3,7,42.857142857142854
+2023-05-08,Financials,1,7,14.285714285714285
+2023-05-08,Health Care,2,7,28.57142857142857
+2023-05-08,Industrials,1,7,14.285714285714285
+2023-05-08,Information Technology,3,7,42.857142857142854
+2023-07-10,Communication Services,2,8,25.0
+2023-07-10,Financials,2,8,25.0
+2023-07-10,Information Technology,4,8,50.0
+2023-08-14,Consumer Discretionary,2,7,28.57142857142857
+2023-08-14,Energy,2,7,28.57142857142857
+2023-08-14,Health Care,1,7,14.285714285714285
+2023-08-14,Industrials,2,7,28.57142857142857
+2023-11-13,Communication Services,1,6,16.666666666666664
+2023-11-13,Health Care,2,6,33.33333333333333
+2023-11-13,Industrials,1,6,16.666666666666664
+2023-11-13,Information Technology,2,6,33.33333333333333

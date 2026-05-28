@@ -1,0 +1,6 @@
+date,ticker,level,reason,exit_price,event,z_score,today_dispersion,dd_from_peak,rolling_peak_equity,current_equity
+2024-01-16,APLD,1.0,overnight_gap_down_16.6pct,6.25,,,,,,
+2024-01-16,,,,,dispersion_cb_triggered_dec128,4.3078,0.048492,,,
+2024-02-16,BE,1.0,overnight_gap_down_24.8pct,9.0,,,,,,
+2024-02-28,,,,,dispersion_cb_triggered_dec128,10.0,0.073943,,,
+2024-03-20,,6.0,,,halt_triggered,,,-0.207,100000.0,79301.66

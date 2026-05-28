@@ -1,0 +1,7 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+cpr_narrow_bullish,next_pivot_target,31,0.7419,1.6984,1.0388,32.2041,-20.0,10.7,0.9355,50.63,True
+po3_bullish,ma_exit_ema9,19,0.4211,4.0318,2.5891,49.1933,-10.5297,9.3,1.0,61.05,True
+smc_choch_reversal,class_time_stop,6,1.0,999.0,4.3575,26.1452,0.0,36.0,1.0,100.0,True
+hull_rsi,next_pivot_target,8,1.0,999.0,1.9905,15.9239,0.0,5.4,1.0,100.0,True
+po3_bearish,hybrid_50pct_target,8,0.75,2.1546,3.6278,29.0226,-22.8956,128.6,0.75,60.0,True
+avwap_50_reclaim,fixed_4r_2r,11,0.4545,1.5588,1.6586,18.2448,-16.6616,13.2,1.0,39.95,True

@@ -1,0 +1,16 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+po3_bullish,hybrid_50pct_target,24,0.6667,4.1275,5.4312,130.3491,-30.0,62.9,0.6667,56.67,True
+ultimate_oscillator,r_multiple_2r,6,0.5,2.0083,2.1785,13.0708,-4.3112,6.7,1.0,73.53,True
+smc_choch_reversal,class_time_stop,6,0.6667,2.1916,2.5112,15.0673,-1.7524,35.5,1.0,84.04,True
+cpr_narrow_bullish,hybrid_50pct_target,31,0.6774,2.7,4.7046,145.842,-37.123,77.1,0.7419,57.1,True
+xs_quality_top_quintile_long,next_pivot_target,16,0.8125,2.1187,1.1316,18.1064,-8.5877,6.8,0.9375,79.62,True
+ichimoku_cloud_breakout,trailing_15pct,9,0.6667,2.4901,2.5256,22.7303,-0.1801,86.9,0.5556,86.4,True
+pairs_mean_reversion_long,hybrid_50pct_target,7,0.7143,3.7988,4.7569,33.2983,-1.8974,103.4,0.7143,85.73,True
+xs_momentum_top_decile,trailing_10pct,7,0.2857,1.9958,4.3548,30.4839,-23.2478,24.1,0.8571,41.3,True
+smc_order_block_bounce,r_multiple_2r,7,0.5714,1.8917,1.5666,10.9661,-6.6921,6.4,0.8571,69.57,True
+avwap_50_reclaim,breakeven_plus_trail,10,0.4,6.9584,8.1616,81.6163,-12.5647,18.0,0.8,57.15,True
+smc_inverse_fvg,time_stop_10d,5,0.4,2.0494,1.5125,7.5624,-5.0506,13.8,1.0,68.42,True
+xs_low_beta_long,next_pivot_target,15,0.8,3.2253,1.3965,20.9469,-5.5067,11.3,0.9333,83.74,True
+williams_r_oversold,class_time_stop,7,0.5714,2.1894,2.4681,17.277,-9.1245,35.9,1.0,69.17,True
+monthly_bias_momentum_long,hybrid_50pct_target,22,0.5909,2.1106,4.1216,90.675,-42.1923,40.2,0.8636,53.64,True
+pre_fomc_long_sleeve,hybrid_50pct_target,6,0.6667,1.0613,0.2043,1.2257,-10.0,37.0,1.0,43.51,True

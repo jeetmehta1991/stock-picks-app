@@ -1,0 +1,4 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+macd_fast_crossover,time_stop_10d,7,0.7143,5.8669,4.5749,32.024,-6.5799,13.6,1.0,78.7,True
+risk_off_bond_equity_short,time_stop_10d,5,0.6,1.7532,0.6025,3.0126,-3.9996,15.0,1.0,70.6,True
+xs_low_beta_long,multi_tier_partial,6,1.0,999.0,0.9769,5.8614,0.0,2.0,1.0,100.0,True

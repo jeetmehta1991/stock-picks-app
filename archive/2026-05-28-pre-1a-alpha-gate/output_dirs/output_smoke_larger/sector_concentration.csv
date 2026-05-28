@@ -1,0 +1,223 @@
+entry_date,sector,trades,total_trades,sector_pct
+2023-01-02,Communication Services,1,8,12.5
+2023-01-02,Consumer Discretionary,1,8,12.5
+2023-01-02,Consumer Staples,2,8,25.0
+2023-01-02,Energy,1,8,12.5
+2023-01-02,Financials,1,8,12.5
+2023-01-02,Health Care,1,8,12.5
+2023-01-02,Information Technology,1,8,12.5
+2023-01-03,Consumer Discretionary,1,7,14.285714285714285
+2023-01-03,Consumer Staples,1,7,14.285714285714285
+2023-01-03,Health Care,2,7,28.57142857142857
+2023-01-03,Information Technology,3,7,42.857142857142854
+2023-01-05,Consumer Staples,1,1,100.0
+2023-01-10,Financials,1,1,100.0
+2023-01-11,Consumer Discretionary,1,1,100.0
+2023-01-17,Information Technology,1,1,100.0
+2023-01-23,Communication Services,1,2,50.0
+2023-01-23,Health Care,1,2,50.0
+2023-01-24,Information Technology,1,1,100.0
+2023-01-31,Energy,1,1,100.0
+2023-02-06,Health Care,1,1,100.0
+2023-02-07,Information Technology,1,1,100.0
+2023-02-09,Consumer Discretionary,1,1,100.0
+2023-02-10,Health Care,1,1,100.0
+2023-02-13,Information Technology,1,1,100.0
+2023-02-16,Consumer Staples,1,1,100.0
+2023-02-17,Communication Services,1,1,100.0
+2023-02-20,Consumer Discretionary,1,1,100.0
+2023-02-21,Consumer Discretionary,1,1,100.0
+2023-02-23,Communication Services,1,1,100.0
+2023-02-27,Consumer Discretionary,1,1,100.0
+2023-03-02,Information Technology,1,1,100.0
+2023-03-07,Financials,1,1,100.0
+2023-03-09,Consumer Staples,1,1,100.0
+2023-03-13,Communication Services,1,6,16.666666666666664
+2023-03-13,Consumer Staples,1,6,16.666666666666664
+2023-03-13,Energy,1,6,16.666666666666664
+2023-03-13,Information Technology,3,6,50.0
+2023-03-15,Consumer Staples,1,6,16.666666666666664
+2023-03-15,Energy,1,6,16.666666666666664
+2023-03-15,Financials,1,6,16.666666666666664
+2023-03-15,Information Technology,3,6,50.0
+2023-03-20,Consumer Staples,1,2,50.0
+2023-03-20,Information Technology,1,2,50.0
+2023-03-23,Communication Services,2,3,66.66666666666666
+2023-03-23,Consumer Discretionary,1,3,33.33333333333333
+2023-03-28,Consumer Discretionary,1,2,50.0
+2023-03-28,Health Care,1,2,50.0
+2023-03-30,Consumer Staples,1,1,100.0
+2023-04-03,Information Technology,1,1,100.0
+2023-04-11,Health Care,2,2,100.0
+2023-04-20,Financials,1,1,100.0
+2023-04-25,Financials,1,1,100.0
+2023-05-01,Consumer Discretionary,1,1,100.0
+2023-05-04,Energy,1,1,100.0
+2023-05-12,Consumer Discretionary,1,1,100.0
+2023-05-29,Consumer Discretionary,1,1,100.0
+2023-06-05,Health Care,1,1,100.0
+2023-06-07,Consumer Staples,1,1,100.0
+2023-06-09,Health Care,1,1,100.0
+2023-06-19,Financials,1,1,100.0
+2023-06-23,Consumer Discretionary,1,1,100.0
+2023-07-03,Consumer Discretionary,1,1,100.0
+2023-07-05,Health Care,1,1,100.0
+2023-07-18,Health Care,1,1,100.0
+2023-07-24,Financials,1,1,100.0
+2023-07-26,Health Care,1,1,100.0
+2023-08-02,Consumer Discretionary,1,1,100.0
+2023-08-14,Information Technology,1,1,100.0
+2023-08-16,Information Technology,2,2,100.0
+2023-08-22,Financials,1,1,100.0
+2023-08-24,Communication Services,1,1,100.0
+2023-08-29,Consumer Discretionary,1,1,100.0
+2023-09-21,Consumer Staples,1,2,50.0
+2023-09-21,Information Technology,1,2,50.0
+2023-09-28,Consumer Discretionary,1,1,100.0
+2023-10-02,Consumer Discretionary,1,2,50.0
+2023-10-02,Health Care,1,2,50.0
+2023-10-03,Consumer Discretionary,1,1,100.0
+2023-10-10,Financials,1,1,100.0
+2023-10-11,Energy,1,1,100.0
+2023-10-26,Information Technology,1,1,100.0
+2023-10-30,Consumer Discretionary,1,2,50.0
+2023-10-30,Information Technology,1,2,50.0
+2023-11-02,Financials,1,1,100.0
+2023-11-06,Consumer Discretionary,1,1,100.0
+2023-11-07,Communication Services,1,1,100.0
+2023-11-08,Communication Services,1,1,100.0
+2023-11-09,Financials,1,1,100.0
+2023-11-15,Information Technology,1,1,100.0
+2023-11-20,Consumer Discretionary,1,1,100.0
+2023-11-27,Consumer Staples,1,1,100.0
+2023-12-06,Consumer Staples,1,1,100.0
+2023-12-14,Consumer Discretionary,1,1,100.0
+2023-12-15,Information Technology,1,1,100.0
+2023-12-28,Health Care,1,1,100.0
+2024-01-08,Health Care,1,1,100.0
+2024-01-12,Consumer Discretionary,1,1,100.0
+2024-01-24,Health Care,1,1,100.0
+2024-02-06,Consumer Staples,1,1,100.0
+2024-02-08,Communication Services,1,1,100.0
+2024-02-26,Consumer Discretionary,1,2,50.0
+2024-02-26,Health Care,1,2,50.0
+2024-02-29,Information Technology,1,1,100.0
+2024-03-06,Information Technology,1,1,100.0
+2024-03-11,Energy,1,1,100.0
+2024-03-13,Communication Services,1,2,50.0
+2024-03-13,Consumer Discretionary,1,2,50.0
+2024-03-21,Health Care,1,1,100.0
+2024-04-04,Information Technology,1,1,100.0
+2024-04-08,Consumer Staples,1,1,100.0
+2024-04-15,Consumer Discretionary,1,1,100.0
+2024-04-17,Consumer Discretionary,1,1,100.0
+2024-04-23,Financials,1,1,100.0
+2024-04-25,Health Care,1,1,100.0
+2024-04-29,Communication Services,1,3,33.33333333333333
+2024-04-29,Consumer Discretionary,1,3,33.33333333333333
+2024-04-29,Information Technology,1,3,33.33333333333333
+2024-05-06,Consumer Discretionary,1,1,100.0
+2024-05-07,Health Care,1,1,100.0
+2024-05-13,Financials,1,1,100.0
+2024-05-17,Health Care,1,1,100.0
+2024-05-21,Consumer Staples,1,1,100.0
+2024-06-03,Information Technology,1,1,100.0
+2024-06-10,Consumer Discretionary,1,1,100.0
+2024-06-21,Energy,1,1,100.0
+2024-06-25,Consumer Discretionary,1,1,100.0
+2024-07-08,Financials,1,1,100.0
+2024-07-09,Information Technology,1,1,100.0
+2024-07-22,Consumer Discretionary,1,1,100.0
+2024-07-26,Health Care,1,1,100.0
+2024-07-29,Consumer Discretionary,1,2,50.0
+2024-07-29,Information Technology,1,2,50.0
+2024-08-01,Health Care,1,2,50.0
+2024-08-01,Information Technology,1,2,50.0
+2024-08-02,Consumer Staples,1,1,100.0
+2024-08-05,Communication Services,2,8,25.0
+2024-08-05,Consumer Discretionary,1,8,12.5
+2024-08-05,Consumer Staples,1,8,12.5
+2024-08-05,Financials,2,8,25.0
+2024-08-05,Health Care,1,8,12.5
+2024-08-05,Information Technology,1,8,12.5
+2024-08-06,Communication Services,2,9,22.22222222222222
+2024-08-06,Consumer Discretionary,1,9,11.11111111111111
+2024-08-06,Consumer Staples,1,9,11.11111111111111
+2024-08-06,Financials,2,9,22.22222222222222
+2024-08-06,Health Care,1,9,11.11111111111111
+2024-08-06,Information Technology,2,9,22.22222222222222
+2024-08-07,Communication Services,1,6,16.666666666666664
+2024-08-07,Consumer Staples,3,6,50.0
+2024-08-07,Financials,1,6,16.666666666666664
+2024-08-07,Health Care,1,6,16.666666666666664
+2024-08-08,Communication Services,1,8,12.5
+2024-08-08,Consumer Discretionary,1,8,12.5
+2024-08-08,Consumer Staples,4,8,50.0
+2024-08-08,Health Care,2,8,25.0
+2024-08-09,Financials,1,2,50.0
+2024-08-09,Health Care,1,2,50.0
+2024-08-12,Consumer Discretionary,1,3,33.33333333333333
+2024-08-12,Financials,1,3,33.33333333333333
+2024-08-12,Information Technology,1,3,33.33333333333333
+2024-08-19,Information Technology,1,1,100.0
+2024-09-02,Financials,1,1,100.0
+2024-09-03,Communication Services,1,7,14.285714285714285
+2024-09-03,Consumer Staples,2,7,28.57142857142857
+2024-09-03,Health Care,3,7,42.857142857142854
+2024-09-03,Information Technology,1,7,14.285714285714285
+2024-09-04,Communication Services,1,4,25.0
+2024-09-04,Consumer Discretionary,2,4,50.0
+2024-09-04,Financials,1,4,25.0
+2024-09-05,Information Technology,1,1,100.0
+2024-09-09,Consumer Discretionary,1,6,16.666666666666664
+2024-09-09,Consumer Staples,2,6,33.33333333333333
+2024-09-09,Financials,2,6,33.33333333333333
+2024-09-09,Health Care,1,6,16.666666666666664
+2024-09-10,Communication Services,1,3,33.33333333333333
+2024-09-10,Consumer Discretionary,1,3,33.33333333333333
+2024-09-10,Financials,1,3,33.33333333333333
+2024-09-12,Consumer Staples,1,1,100.0
+2024-09-16,Information Technology,1,1,100.0
+2024-09-19,Health Care,1,2,50.0
+2024-09-19,Information Technology,1,2,50.0
+2024-09-23,Consumer Discretionary,1,2,50.0
+2024-09-23,Consumer Staples,1,2,50.0
+2024-10-01,Health Care,1,1,100.0
+2024-10-03,Consumer Discretionary,1,6,16.666666666666664
+2024-10-03,Consumer Staples,3,6,50.0
+2024-10-03,Financials,1,6,16.666666666666664
+2024-10-03,Health Care,1,6,16.666666666666664
+2024-10-07,Consumer Discretionary,2,7,28.57142857142857
+2024-10-07,Consumer Staples,3,7,42.857142857142854
+2024-10-07,Energy,1,7,14.285714285714285
+2024-10-07,Health Care,1,7,14.285714285714285
+2024-10-08,Consumer Staples,1,4,25.0
+2024-10-08,Financials,2,4,50.0
+2024-10-08,Information Technology,1,4,25.0
+2024-10-09,Health Care,1,1,100.0
+2024-10-14,Financials,1,3,33.33333333333333
+2024-10-14,Information Technology,2,3,66.66666666666666
+2024-10-15,Consumer Discretionary,1,1,100.0
+2024-10-21,Communication Services,2,2,100.0
+2024-10-23,Health Care,1,1,100.0
+2024-11-04,Energy,1,1,100.0
+2024-11-11,Consumer Discretionary,1,3,33.33333333333333
+2024-11-11,Consumer Staples,1,3,33.33333333333333
+2024-11-11,Financials,1,3,33.33333333333333
+2024-11-19,Health Care,1,1,100.0
+2024-11-22,Consumer Discretionary,1,1,100.0
+2024-12-03,Information Technology,1,1,100.0
+2024-12-10,Health Care,1,1,100.0
+2024-12-12,Health Care,1,1,100.0
+2024-12-19,Consumer Staples,2,3,66.66666666666666
+2024-12-19,Financials,1,3,33.33333333333333
+2024-12-20,Consumer Discretionary,2,4,50.0
+2024-12-20,Financials,1,4,25.0
+2024-12-20,Information Technology,1,4,25.0
+2024-12-23,Consumer Staples,1,3,33.33333333333333
+2024-12-23,Financials,1,3,33.33333333333333
+2024-12-23,Information Technology,1,3,33.33333333333333
+2024-12-24,Consumer Discretionary,1,1,100.0
+2024-12-27,Communication Services,1,1,100.0
+2024-12-30,Energy,1,2,50.0
+2024-12-30,Information Technology,1,2,50.0

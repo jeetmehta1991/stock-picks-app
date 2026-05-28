@@ -1,0 +1,37 @@
+{
+  "per_window": {
+    "2018Q4_selloff": {
+      "n_trades": 0,
+      "win_rate": 0.0,
+      "mean_pnl_pct": 0.0,
+      "total_pnl_pct": 0.0,
+      "verdict": "INSUFFICIENT_SAMPLE"
+    },
+    "2020Q1_covid": {
+      "n_trades": 0,
+      "win_rate": 0.0,
+      "mean_pnl_pct": 0.0,
+      "total_pnl_pct": 0.0,
+      "verdict": "INSUFFICIENT_SAMPLE"
+    },
+    "2022_full_year": {
+      "n_trades": 94,
+      "win_rate": 0.14893617021276595,
+      "mean_pnl_pct": -3.8767993583248894,
+      "total_pnl_pct": -364.4191396825396,
+      "verdict": "FAIL"
+    },
+    "2022Q4_inflation": {
+      "n_trades": 7,
+      "win_rate": 0.0,
+      "mean_pnl_pct": 0.0,
+      "total_pnl_pct": 0.0,
+      "verdict": "INSUFFICIENT_SAMPLE"
+    }
+  },
+  "summary": {
+    "PASS": 0,
+    "FAIL": 1,
+    "INSUFFICIENT_SAMPLE": 3
+  }
+}

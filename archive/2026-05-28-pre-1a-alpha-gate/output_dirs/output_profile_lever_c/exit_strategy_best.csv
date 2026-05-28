@@ -1,0 +1,3 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+williams_r_oversold,trailing_5pct,6,0.8333,14.884,10.8721,65.2325,0.0,30.3,0.6667,93.33,True
+po3_bullish,regime_flip,5,1.0,999.0,1.8323,9.1616,0.0,24.2,1.0,100.0,True

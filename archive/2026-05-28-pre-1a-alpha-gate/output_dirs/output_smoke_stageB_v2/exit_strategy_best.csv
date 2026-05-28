@@ -1,0 +1,10 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
+news_sentiment_long,smc_mitigation_zone,7,0.2857,0.2944,-0.8241,-5.7686,-4.6509,2.7,1.0,34.45,True
+head_and_shoulders_bottom_long,next_pivot_target,6,1.0,999.0,1.6885,10.131,0.0,2.3,1.0,100.0,True
+double_bottom_long,time_stop_20d,12,0.5,1.9467,2.1951,26.3415,-7.5095,28.6,1.0,67.14,True
+halloween_seasonal_long,next_pivot_target,7,0.8571,3.6546,2.0264,14.1851,-5.3435,5.7,1.0,86.27,True
+smc_bos_continuation,hybrid_50pct_target,13,0.8462,7.1678,9.1157,118.5039,-19.2132,109.1,0.9231,65.03,True
+hull_rsi,smc_mitigation_zone,5,0.4,0.2061,-0.6806,-3.4029,-2.254,1.6,1.0,42.62,True
+avwap_50_reclaim,r_multiple_3r,7,0.5714,1.6122,1.4072,9.8503,-7.4511,12.7,1.0,60.05,True
+cpr_narrow_bullish,next_pivot_target,5,1.0,999.0,0.6952,3.4761,0.0,1.4,1.0,100.0,True
+cup_and_handle_long,ma_exit_ema9,12,0.5833,1.7597,0.6138,7.3655,-5.4796,12.6,0.9167,67.9,True

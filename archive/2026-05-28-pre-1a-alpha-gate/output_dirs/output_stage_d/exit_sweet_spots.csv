@@ -1,0 +1,9 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
+breakeven_plus_trail,bull,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,179.5498,trailing_10pct,153.78480000000002,25.764999999999986,23,25,1.0
+earnings_blackout,bull,Industrials,unknown,mid_15_25,long_ge_11d,1708.5065,trailing_15pct,601.4038,1107.1027,18,25,1.0
+earnings_blackout,bull,Information Technology,unknown,mid_15_25,long_ge_11d,399.13939999999997,breakeven_plus_trail,185.3704,213.76899999999998,18,25,1.0
+earnings_blackout,bull,Health Care,unknown,mid_15_25,long_ge_11d,139.5042,time_stop_10d,9.8083,129.6959,19,25,1.0
+r_multiple_2r,bull,Materials,unknown,mid_15_25,long_ge_11d,16.1328,breakeven_plus_trail,15.6998,0.43299999999999983,10,25,1.0
+time_stop_10d,bull,Financials,unknown,mid_15_25,long_ge_11d,0.6755000000000004,r_multiple_2r,-3.6496999999999984,4.325199999999999,13,25,1.0
+trailing_15pct,bull,Health Care,unknown,low_lt_15,long_ge_11d,179.555,breakeven_plus_trail,93.29129999999999,86.26370000000001,12,25,1.0
+trailing_15pct,bull,Consumer Discretionary,unknown,low_lt_15,long_ge_11d,203.9054,trailing_10pct,165.728,38.17739999999998,15,25,1.0

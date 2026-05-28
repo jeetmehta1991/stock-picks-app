@@ -1,0 +1,11 @@
+{
+  "reference_capital_cad": 100000.0,
+  "total_pnl_dollar": 4382.78,
+  "portfolio_return_pct": 4.38,
+  "max_portfolio_heat_pct": 15.8,
+  "avg_position_size_pct": 1.69,
+  "spy_buy_hold_return_pct": 15.93,
+  "spy_buy_hold_window": "2023-09-01..2024-03-28",
+  "vs_spy_excess_return_pct": -11.55,
+  "note": "Portfolio return applies tier-based position sizing to all trades"
+}

@@ -1,0 +1,3 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+cpr_narrow_momentum,neutral,6,0.5,7.745,46.4702
+stochrsi_overbought_short,neutral,3,0.3333,-5.0364,-15.1092

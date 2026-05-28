@@ -1,0 +1,13 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,composite_score,recommended
+williams_stoch_dual,earnings_blackout,18,0.7222,18.9934,79.085,1423.5305,-43.1652,910.8,58.89,True
+ichimoku_cloud_breakout,r_multiple_2r,11,0.5455,3.8077,3.5989,39.5882,-4.8537,13.9,74.54,True
+avwap_50_reclaim,next_pivot_target,29,0.8621,4.1109,3.2267,93.575,-9.0141,11.1,80.96,True
+macd_crossover,earnings_blackout,9,1.0,999.0,88.2128,793.9152,0.0,1184.9,100.0,True
+cpr_narrow_bullish,earnings_blackout,94,0.6277,1.1522,7.6685,720.8356,-3019.1592,810.8,29.67,True
+avwap_252_breakout,time_stop_10d,5,0.8,3.8304,4.4443,22.2217,-7.8511,14.4,80.22,True
+supertrend_macd,breakeven_plus_trail,5,0.8,999.0,25.4483,127.2413,0.0,54.2,92.0,True
+williams_r_oversold,breakeven_plus_trail,6,0.8333,6.8121,7.4188,44.5125,-7.6586,62.7,81.84,True
+hull_rsi,hybrid_50pct_target,12,0.6667,2.1365,3.7882,45.4581,-20.0,137.4,56.67,True
+ultimate_oscillator,class_time_stop,5,0.4,2.2897,3.0036,15.018,-11.6444,37.0,58.53,True
+stochrsi_oversold,regime_flip,5,0.8,2.5099,2.9478,14.7392,-9.7617,28.4,77.36,True
+pivot_r1_breakout,earnings_blackout,11,0.6364,4.4134,33.0916,364.0072,-76.7584,725.4,55.46,True

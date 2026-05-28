@@ -1,0 +1,9 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+cpr_narrow_bullish,bull,4,1.0,12.1173,48.4694
+ichimoku_cloud_breakout,bull,3,0.6667,6.2433,18.7299
+lead_lag_sector_rotation,bull,4,0.25,7.1323,28.5292
+macd_crossover,bull,5,0.2,-3.6627,-18.3133
+po3_bullish,bull,6,0.8333,0.4782,2.8689
+supertrend_macd,bull,3,0.0,-10.3433,-31.03
+xs_low_beta_long,bull,7,0.5714,3.1397,21.9782
+xs_quality_top_quintile_long,bull,5,1.0,17.2441,86.2206

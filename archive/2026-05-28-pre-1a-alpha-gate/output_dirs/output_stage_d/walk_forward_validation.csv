@@ -1,0 +1,36 @@
+strategy,verdict,sector,fold_1_is_trades,fold_1_is_win_rate,fold_1_is_pf,fold_1_oos_trades,fold_1_oos_win_rate,fold_1_oos_pf,fold_1_oos_sufficient,fold_1_wr_degradation,fold_2_is_trades,fold_2_is_win_rate,fold_2_is_pf,fold_2_oos_trades,fold_2_oos_win_rate,fold_2_oos_pf,fold_2_oos_sufficient,fold_2_wr_degradation,fold_3_is_trades,fold_3_is_win_rate,fold_3_is_pf,fold_3_oos_trades,fold_3_oos_win_rate,fold_3_oos_pf,fold_3_oos_sufficient,fold_3_wr_degradation,fold_4_is_trades,fold_4_is_win_rate,fold_4_is_pf,fold_4_oos_trades,fold_4_oos_win_rate,fold_4_oos_pf,fold_4_oos_sufficient,fold_4_wr_degradation
+bollinger_lower,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,17,0.1765,0.808,False,,19,0.1579,0.697,0,0.0,0.0,False,,19,0.1579,0.697,0,0.0,0.0,False,,20,0.15,0.652,0,0.0,0.0,False,
+hull_rsi,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,10,0.3,0.379,False,,13,0.3077,0.309,0,0.0,0.0,False,,13,0.3077,0.309,0,0.0,0.0,False,,13,0.3077,0.309,0,0.0,0.0,False,
+cmf_flip,INSUFFICIENT_OOS_DATA,Materials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+orb_stocks_in_play_short,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,10,0.3,0.403,False,,10,0.3,0.403,0,0.0,0.0,False,,10,0.3,0.403,0,0.0,0.0,False,,11,0.2727,0.305,0,0.0,0.0,False,
+smc_inverse_fvg,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,11,0.4545,1.329,False,,11,0.4545,1.329,0,0.0,0.0,False,,13,0.3846,1.047,9,0.3333,1.784,False,-0.0513,22,0.3636,1.366,6,0.3333,1.251,False,-0.0303
+po3_htf_aligned_short,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+po3_bearish,INSUFFICIENT_OOS_DATA,Materials,0,0,0,11,0.4545,1.72,False,,11,0.4545,1.72,0,0.0,0.0,False,,11,0.4545,1.72,8,0.25,0.344,False,-0.2045,19,0.3684,0.88,0,0.0,0.0,False,
+htf_aligned_breakout_short,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,8,0.375,0.799,False,,8,0.375,0.799,0,0.0,0.0,False,,8,0.375,0.799,0,0.0,0.0,False,,11,0.3636,1.213,0,0.0,0.0,False,
+smc_bos_retest_entry,INSUFFICIENT_OOS_DATA,Health Care,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+macd_fast_crossover,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,6,0.1667,0.081,0,0.0,0.0,False,
+stochrsi_overbought_short,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,7,0.1429,0.032,False,,7,0.1429,0.032,0,0.0,0.0,False,,7,0.1429,0.032,0,0.0,0.0,False,,9,0.1111,0.026,0,0.0,0.0,False,
+xs_momentum_bottom_decile_short,INSUFFICIENT_OOS_DATA,Financials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+cpr_narrow_momentum,INSUFFICIENT_OOS_DATA,Health Care,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+avwap_252_breakout,INSUFFICIENT_OOS_DATA,Utilities,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,7,0.1429,0.304,0,0.0,0.0,False,
+orb_stocks_in_play_long,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,5,0.4,0.243,False,,5,0.4,0.243,0,0.0,0.0,False,,8,0.5,1.503,8,0.0,0.0,False,-0.5,16,0.25,0.351,19,0.4737,3.163,False,0.2237
+cpr_narrow_bullish,INSUFFICIENT_OOS_DATA,Materials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,8,0.375,0.514,5,0.4,0.428,False,0.025,13,0.3846,0.472,5,0.6,1.023,False,0.2154
+pivot_r1_breakout,INSUFFICIENT_OOS_DATA,Communication Services,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,5,0.4,3.509,False,,9,0.4444,2.67,0,0.0,0.0,False,
+smc_liquidity_sweep_reversal,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+buyback_8k_recent_long,INSUFFICIENT_OOS_DATA,Health Care,0,0,0,5,0.2,0.465,False,,5,0.2,0.465,0,0.0,0.0,False,,7,0.1429,0.37,0,0.0,0.0,False,,9,0.1111,0.263,15,0.2,2.337,False,0.0889
+xs_low_beta_long,INSUFFICIENT_OOS_DATA,Materials,0,0,0,5,0.0,0.0,False,,5,0.0,0.0,10,0.3,2.271,False,0.3,15,0.2,1.214,8,0.625,2.371,False,0.425,21,0.2857,1.146,9,0.6667,10.07,False,0.381
+smc_bos_continuation,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,5,0.4,0.179,6,0.1667,0.071,False,-0.2333,11,0.2727,0.129,8,0.25,0.559,False,-0.0227
+po3_bullish,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,7,0.4286,0.817,6,0.0,0.0,False,-0.4286,13,0.2308,0.157,6,0.5,0.379,False,0.2692
+htf_aligned_breakout_long,INSUFFICIENT_OOS_DATA,Unknown,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,8,0.125,0.043,8,0.5,6.481,False,0.375
+monthly_bias_momentum_long,INSUFFICIENT_OOS_DATA,Financials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,8,0.25,1.351,False,,12,0.25,0.955,8,0.375,2.63,False,0.125,20,0.3,1.47,6,0.5,6.712,False,0.2
+smc_choch_reversal,INSUFFICIENT_OOS_DATA,Unknown,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,5,0.4,1.361,False,,9,0.4444,0.858,10,0.3,0.213,False,-0.1444
+smc_premium_short,INSUFFICIENT_OOS_DATA,Materials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+xs_combined_momentum_low_ivol,INSUFFICIENT_OOS_DATA,Health Care,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+xs_momentum_top_decile,INSUFFICIENT_OOS_DATA,Health Care,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,5,0.2,0.059,7,0.7143,3.794,False,0.5143,12,0.5,1.813,0,0.0,0.0,False,
+bollinger_tight,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+avwap_50_reclaim,INSUFFICIENT_OOS_DATA,Consumer Discretionary,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,5,0.8,4.765,False,,9,0.6667,2.53,8,0.75,2.985,False,0.0833,17,0.7059,2.727,0,0.0,0.0,False,
+williams_r_oversold,INSUFFICIENT_OOS_DATA,Materials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+ultimate_oscillator,INSUFFICIENT_OOS_DATA,Health Care,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+stochrsi_oversold,INSUFFICIENT_OOS_DATA,Industrials,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+smc_order_block_bounce,INSUFFICIENT_OOS_DATA,Energy,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,
+volume_spike_breakout,INSUFFICIENT_OOS_DATA,Information Technology,0,0,0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,,0,0.0,0.0,0,0.0,0.0,False,

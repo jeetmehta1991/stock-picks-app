@@ -1,0 +1,11 @@
+strategy,point_sharpe,ci_low,ci_high,n_trades,method
+force_index_breakout,-3.9783371669442698,,,2,insufficient_sample
+golden_cross_9_21,0.0,,,1,insufficient_sample
+lead_lag_sector_rotation,66.18390360656419,,,2,insufficient_sample
+macd_crossover,0.0,,,1,insufficient_sample
+macd_fast_crossover,0.0,,,1,insufficient_sample
+monthly_bias_momentum_long,-1.1022233977830773,,,2,insufficient_sample
+po3_bullish,0.6211958731178265,,,5,insufficient_sample
+williams_r_oversold,8.508659451974786,,,6,insufficient_sample
+xs_low_beta_long,1.10320750614432,,,3,insufficient_sample
+xs_quality_top_quintile_long,-4.4051866098515635,,,3,insufficient_sample
