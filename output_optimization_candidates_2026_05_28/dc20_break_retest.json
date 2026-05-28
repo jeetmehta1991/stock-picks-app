@@ -1,0 +1,160 @@
+{
+  "strategy": "dc20_break_retest",
+  "n_trades": 7,
+  "aggregate": {
+    "n": 7,
+    "win_rate": 0.1429,
+    "mean_pp": -5.3872,
+    "std_pp": 13.4595,
+    "sum_pp": -37.7107,
+    "profit_factor": 0.3821,
+    "sharpe": -1.9676,
+    "t_stat": -1.059,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "adx_trending",
+        "fires_at": 100.0,
+        "n_present": 7
+      },
+      {
+        "clause": "resistance_break_retest",
+        "fires_at": 28.6,
+        "n_present": 7
+      },
+      {
+        "clause": "support_break_retest",
+        "fires_at": 71.4,
+        "n_present": 7
+      },
+      {
+        "clause": "vol_spike_15x",
+        "fires_at": 100.0,
+        "n_present": 7
+      }
+    ],
+    "restrictive": [
+      {
+        "clause": "resistance_break_retest",
+        "fires_at": 28.6,
+        "n_present": 7
+      }
+    ],
+    "always_on": [
+      {
+        "clause": "adx_trending",
+        "fires_at": 100.0,
+        "n_present": 7
+      },
+      {
+        "clause": "vol_spike_15x",
+        "fires_at": 100.0,
+        "n_present": 7
+      }
+    ],
+    "proposals": [
+      "consider OR-fallback for `resistance_break_retest` (fires only 28.6% on fired trades)",
+      "clauses ['adx_trending', 'vol_spike_15x'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 3,
+        "win_rate": 0.0,
+        "mean_pp": -12.8494,
+        "std_pp": 3.5344,
+        "sum_pp": -38.5481,
+        "profit_factor": 0.0,
+        "sharpe": -30.1393,
+        "t_stat": -6.2969,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 3,
+        "win_rate": 0.3333,
+        "mean_pp": 3.7511,
+        "std_pp": 17.594,
+        "sum_pp": 11.2533,
+        "profit_factor": 1.9325,
+        "sharpe": 0.7904,
+        "t_stat": 0.3693,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -10.4159,
+        "std_pp": 0.0,
+        "sum_pp": -10.4159,
+        "profit_factor": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -1.9676,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 7,
+      "min": 1,
+      "p25": 5.0,
+      "median": 7.0,
+      "p75": 12.0,
+      "max": 31
+    },
+    "proposals": [
+      "consider time_stop_20d exit (75% close by day 20)"
+    ]
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

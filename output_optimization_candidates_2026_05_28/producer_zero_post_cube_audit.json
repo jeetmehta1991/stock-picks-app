@@ -1,0 +1,1173 @@
+{
+  "summary": {
+    "active_count": 185,
+    "fired_count": 100,
+    "quiet_count": 85,
+    "PRODUCER_LAYER_ZERO_LIKELY": 6,
+    "COMPOUND_RESTRICTIVE": 31,
+    "SKIPPED_AT_ENGINE": 48
+  },
+  "buckets": {
+    "PRODUCER_LAYER_ZERO_LIKELY": [
+      "smc_choch_reversal",
+      "smc_equal_highs_sweep_short",
+      "smc_equal_lows_sweep_long",
+      "smc_liquidity_sweep_reversal",
+      "smc_ote_long",
+      "smc_ote_short"
+    ],
+    "COMPOUND_RESTRICTIVE": [
+      "52w_low_breakdown",
+      "classification_change_breakout_long",
+      "classification_change_from_tech_short",
+      "classification_change_momentum_long",
+      "classification_change_oversold_long",
+      "classification_change_recent_long",
+      "classification_change_to_defensive_short",
+      "classification_change_to_tech_long",
+      "classification_change_volume_long",
+      "classification_change_with_insider_long",
+      "classification_change_with_institutional_long",
+      "gold_silver_risk_off_long",
+      "institutional_high_conviction_long",
+      "institutional_recent_init_momentum_long",
+      "institutional_recent_init_volume_long",
+      "institutional_strong_conviction_long",
+      "rsi_overbought_short",
+      "sector_rotation_defensive_long",
+      "smc_bos_continuation",
+      "smc_bos_retest_entry",
+      "smc_breaker_block_long",
+      "smc_breaker_block_short",
+      "smc_discount_long",
+      "smc_fvg_retest_long",
+      "smc_fvg_retest_short",
+      "smc_inverse_fvg",
+      "smc_mitigation_block_long",
+      "smc_mitigation_block_short",
+      "smc_order_block_bounce",
+      "smc_premium_short",
+      "weekly_bias_pullback_long"
+    ],
+    "SKIPPED_AT_ENGINE": [
+      "52w_high_breakout",
+      "avwap_20high_rejection_short",
+      "bb_squeeze_volume",
+      "camarilla_rsi_obv",
+      "camarilla_rsi_obv_short",
+      "cup_and_handle_long",
+      "cup_and_handle_retest_long",
+      "death_cross_50_200_volume",
+      "donchian_breakdown_retest_short",
+      "donchian_breakdown_short",
+      "flag_bull_long",
+      "flag_bull_retest_long",
+      "golden_cross_volume",
+      "ichimoku_cloud_breakdown",
+      "insider_cluster_with_director_long",
+      "institutional_capitulation_short",
+      "institutional_committed_growth_long",
+      "institutional_increased_with_directors_long",
+      "institutional_insider_combo_long",
+      "institutional_oversold_long",
+      "institutional_persistence_breakout_long",
+      "institutional_persistence_momentum_long",
+      "institutional_persistence_oversold_long",
+      "institutional_persistence_volume_long",
+      "institutional_volume_confirmation_long",
+      "institutional_with_directors_long",
+      "institutional_with_officers_long",
+      "january_effect_small_cap_long",
+      "macd_crossover_short",
+      "macd_ichimoku",
+      "mfi_oversold",
+      "parabolic_sar_flip_short",
+      "pivot_fib_confluence",
+      "post_deletion_drift_short",
+      "post_inclusion_drift_long",
+      "pre_fomc_quality_momentum_long",
+      "pre_holiday_long",
+      "rsi9_extreme",
+      "supertrend_ichimoku_adx",
+      "supertrend_macd_short",
+      "triangle_ascending_long",
+      "triangle_ascending_retest_long",
+      "value_area_breakout_long",
+      "volume_spike_breakout",
+      "volume_spike_breakout_retest",
+      "weekly_bias_pullback_short",
+      "xs_combined_momentum_low_ivol",
+      "xs_momentum_quality_combined"
+    ]
+  },
+  "per_strategy": {
+    "52w_high_breakout": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "break_52w_high",
+        "vol_spike_2x",
+        "year_high"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "52w_low_breakdown": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "break_52w_low",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": null
+    },
+    "avwap_20high_rejection_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 6,
+      "n_keys_present": 6,
+      "n_keys_truthy": 6,
+      "gate_keys": [
+        "above_avwap_20high",
+        "bearish_engulfing",
+        "pct_from_avwap_20high",
+        "price_above_ema_200",
+        "shooting_star",
+        "vol_spike_15x"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "bb_squeeze_volume": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "above_vwap",
+        "squeeze_fire_dn",
+        "squeeze_fire_up",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "camarilla_rsi_obv": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 5,
+      "n_keys_present": 5,
+      "n_keys_truthy": 5,
+      "gate_keys": [
+        "cmf_positive",
+        "near_cam_r3",
+        "near_cam_s3",
+        "obv_bullish",
+        "rsi_14"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "camarilla_rsi_obv_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "cmf_positive",
+        "near_cam_r3",
+        "obv_bullish",
+        "rsi_14"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "classification_change_breakout_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 5,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "classification_changed_recent",
+        "days_since_classification_change",
+        "new_sector",
+        "price_above_ema_200",
+        "resistance_break_retest"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_from_tech_short": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 4,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "classification_change_from_tech",
+        "new_sector",
+        "price_above_ema_200",
+        "prior_sector"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_momentum_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "classification_changed_recent",
+        "macd_12_26_9_bullish",
+        "price_above_ema_50"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_oversold_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "classification_changed_recent",
+        "price_above_ema_200",
+        "rsi_14"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_recent_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 5,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "classification_changed_recent",
+        "days_since_classification_change",
+        "new_sector",
+        "price_above_ema_200",
+        "prior_sector"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_to_defensive_short": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "classification_change_to_defensive",
+        "new_sector",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_to_tech_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "classification_change_to_tech",
+        "new_sector",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_volume_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 5,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "classification_changed_recent",
+        "days_since_classification_change",
+        "new_sector",
+        "price_above_ema_200",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_with_insider_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 4,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "classification_changed_recent",
+        "insider_cluster_active",
+        "new_sector",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": null
+    },
+    "classification_change_with_institutional_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 4,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "classification_changed_recent",
+        "institutional_buy",
+        "new_sector",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": null
+    },
+    "cup_and_handle_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 5,
+      "n_keys_present": 5,
+      "n_keys_truthy": 5,
+      "gate_keys": [
+        "cup_handle_detected",
+        "price_above_ema_200",
+        "price_above_ema_50",
+        "rsi_14",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "cup_and_handle_retest_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 5,
+      "n_keys_present": 5,
+      "n_keys_truthy": 5,
+      "gate_keys": [
+        "cup_handle_detected",
+        "price_above_ema_200",
+        "price_above_ema_50",
+        "resistance_break_retest",
+        "rsi_14"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "death_cross_50_200_volume": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "ema_50_200_death_cross",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "donchian_breakdown_retest_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "macd_12_26_9_bullish",
+        "support_break_retest",
+        "vol_spike_15x"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "donchian_breakdown_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "dc10_breakout_dn",
+        "macd_12_26_9_bullish",
+        "vol_spike_15x"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "flag_bull_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "flag_bull_detected",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "flag_bull_retest_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "flag_bull_detected",
+        "price_above_ema_200",
+        "resistance_break_retest"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "gold_silver_risk_off_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "risk_off_regime_gold_signal",
+        "sector"
+      ],
+      "dominant_skip_reason": null
+    },
+    "golden_cross_volume": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "ema_50_200_death_cross",
+        "ema_50_200_golden_cross",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "ichimoku_cloud_breakdown": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "adx_trending",
+        "ichi_below_cloud",
+        "ichi_tk_cross_dn"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "insider_cluster_with_director_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "insider_cluster_active",
+        "insider_director_buyers_30d",
+        "insider_unique_buyers_30d",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_capitulation_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "institutional_negative",
+        "price_above_ema_50",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "institutional_committed_growth_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "committed_growth_holders",
+        "institutional_persistence_growing",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_high_conviction_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "institutional_new_positions",
+        "price_above_ema_50"
+      ],
+      "dominant_skip_reason": null
+    },
+    "institutional_increased_with_directors_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "insider_director_buyers_30d",
+        "institutional_increased",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_insider_combo_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "insider_cluster_active",
+        "institutional_buy",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_oversold_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "institutional_buy",
+        "price_above_ema_200",
+        "rsi_14"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_persistence_breakout_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "institutional_increased",
+        "price_above_ema_200",
+        "resistance_break_retest"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_persistence_momentum_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "institutional_increased",
+        "macd_12_26_9_bullish",
+        "price_above_ema_50"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_persistence_oversold_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "institutional_increased",
+        "price_above_ema_200",
+        "rsi_14"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_persistence_volume_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "institutional_increased",
+        "price_above_ema_50",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "institutional_recent_init_momentum_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "institutional_new_positions",
+        "macd_12_26_9_bullish",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": null
+    },
+    "institutional_recent_init_volume_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "institutional_new_positions",
+        "price_above_ema_50",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": null
+    },
+    "institutional_strong_conviction_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "institutional_increased",
+        "institutional_new_positions",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": null
+    },
+    "institutional_volume_confirmation_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "institutional_buy",
+        "price_above_ema_50",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "institutional_with_directors_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "insider_director_buyers_30d",
+        "institutional_buy",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "institutional_with_officers_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "insider_officer_buyers_30d",
+        "institutional_buy",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "january_effect_small_cap_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "cap_band",
+        "is_january",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "macd_crossover_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 1,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "macd_12_26_9_crossover_dn"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "macd_ichimoku": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "ichi_above_cloud",
+        "ichi_below_cloud",
+        "macd_12_26_9_crossover_dn",
+        "macd_12_26_9_crossover_up"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "mfi_oversold": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 7,
+      "n_keys_present": 7,
+      "n_keys_truthy": 7,
+      "gate_keys": [
+        "mfi_overbought",
+        "mfi_oversold",
+        "near_r1",
+        "near_r2",
+        "near_s1",
+        "near_s2",
+        "obv_bullish"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "parabolic_sar_flip_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "adx_trending",
+        "psar_flip_dn"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "pivot_fib_confluence": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 8,
+      "n_keys_present": 8,
+      "n_keys_truthy": 8,
+      "gate_keys": [
+        "at_key_fib",
+        "bearish_engulfing",
+        "bullish_engulfing",
+        "hammer",
+        "near_r1",
+        "near_r2",
+        "near_s1",
+        "near_s2"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "post_deletion_drift_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 0,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "post_inclusion_drift_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 0,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "pre_fomc_quality_momentum_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "pre_fomc_d1",
+        "price_above_ema_200",
+        "xs_momentum_top_decile"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "pre_holiday_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "dow",
+        "is_pre_holiday",
+        "price_above_ema_200"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "rsi9_extreme": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "price_above_ema_200",
+        "rsi_9_extreme_os",
+        "rsi_9_rising"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "rsi_overbought_short": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "bearish_engulfing",
+        "price_above_sma_50",
+        "rsi_14",
+        "rsi_14_rising"
+      ],
+      "dominant_skip_reason": null
+    },
+    "sector_rotation_defensive_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "defensive_leadership",
+        "sector"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_bos_continuation": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 6,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "force_index_breakout",
+        "price_above_ema_200",
+        "rsi_14",
+        "smc_bos_bearish",
+        "smc_bos_bullish",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_bos_retest_entry": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "price_above_ema_200",
+        "smc_bos_retest_long",
+        "smc_bos_retest_short"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_breaker_block_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "price_above_ema_200",
+        "smc_breaker_block_bullish"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_breaker_block_short": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "price_above_ema_200",
+        "smc_breaker_block_bearish"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_choch_reversal": {
+      "bucket": "PRODUCER_LAYER_ZERO_LIKELY",
+      "n_gate_keys": 4,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [
+        "smc_choch_bearish",
+        "smc_choch_bullish",
+        "smc_fvg_bearish_active",
+        "smc_fvg_bullish_active"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_discount_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 5,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "price_above_ema_200",
+        "smc_bos_bullish",
+        "smc_choch_bullish",
+        "smc_dealing_range_pct",
+        "smc_in_discount_zone"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_equal_highs_sweep_short": {
+      "bucket": "PRODUCER_LAYER_ZERO_LIKELY",
+      "n_gate_keys": 2,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [
+        "smc_equal_highs_swept",
+        "smc_fvg_bearish_active"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_equal_lows_sweep_long": {
+      "bucket": "PRODUCER_LAYER_ZERO_LIKELY",
+      "n_gate_keys": 2,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [
+        "smc_equal_lows_swept",
+        "smc_fvg_bullish_active"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_fvg_retest_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "price_above_ema_200",
+        "smc_fvg_retest_long_zone"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_fvg_retest_short": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 2,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "price_above_ema_200",
+        "smc_fvg_retest_short_zone"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_inverse_fvg": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 5,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "force_index_breakout",
+        "price_above_ema_200",
+        "smc_inverse_fvg_bearish",
+        "smc_inverse_fvg_bullish",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_liquidity_sweep_reversal": {
+      "bucket": "PRODUCER_LAYER_ZERO_LIKELY",
+      "n_gate_keys": 6,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [
+        "smc_bos_bearish",
+        "smc_bos_bullish",
+        "smc_choch_bearish",
+        "smc_choch_bullish",
+        "smc_liquidity_swept_dn",
+        "smc_liquidity_swept_up"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_mitigation_block_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "price_above_ema_200",
+        "rsi_14",
+        "smc_mitigation_block_long"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_mitigation_block_short": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 3,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "price_above_ema_200",
+        "rsi_14",
+        "smc_mitigation_block_short"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_order_block_bounce": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 4,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "price_above_ema_200",
+        "rsi_14",
+        "smc_ob_bearish_active",
+        "smc_ob_bullish_active"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_ote_long": {
+      "bucket": "PRODUCER_LAYER_ZERO_LIKELY",
+      "n_gate_keys": 4,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [
+        "smc_bos_bullish",
+        "smc_choch_bullish",
+        "smc_ote_long_zone",
+        "smc_retracement_pct"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_ote_short": {
+      "bucket": "PRODUCER_LAYER_ZERO_LIKELY",
+      "n_gate_keys": 4,
+      "n_keys_present": 0,
+      "n_keys_truthy": 0,
+      "gate_keys": [
+        "smc_bos_bearish",
+        "smc_choch_bearish",
+        "smc_ote_short_zone",
+        "smc_retracement_pct"
+      ],
+      "dominant_skip_reason": null
+    },
+    "smc_premium_short": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 5,
+      "n_keys_present": 1,
+      "n_keys_truthy": 1,
+      "gate_keys": [
+        "price_above_ema_200",
+        "smc_bos_bearish",
+        "smc_choch_bearish",
+        "smc_dealing_range_pct",
+        "smc_in_premium_zone"
+      ],
+      "dominant_skip_reason": null
+    },
+    "supertrend_ichimoku_adx": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "adx_strong",
+        "ichi_above_cloud",
+        "ichi_below_cloud",
+        "supertrend_bullish"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "supertrend_macd_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "adx",
+        "macd_12_26_9_bullish",
+        "supertrend_bullish"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "triangle_ascending_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 2,
+      "n_keys_present": 2,
+      "n_keys_truthy": 2,
+      "gate_keys": [
+        "price_above_ema_200",
+        "triangle_ascending_detected"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "triangle_ascending_retest_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "price_above_ema_200",
+        "resistance_break_retest",
+        "triangle_ascending_detected"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "value_area_breakout_long": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "price_above_ema_200",
+        "vol_spike_2x",
+        "vp_above_value_area"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "volume_spike_breakout": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "above_vwap",
+        "dc20_breakout_dn",
+        "dc20_breakout_up",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "volume_spike_breakout_retest": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "above_vwap",
+        "resistance_break_retest",
+        "support_break_retest",
+        "vol_spike_2x"
+      ],
+      "dominant_skip_reason": "no_next_bar"
+    },
+    "weekly_bias_pullback_long": {
+      "bucket": "COMPOUND_RESTRICTIVE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "bullish_engulfing",
+        "hammer",
+        "rsi_14",
+        "weekly_bias_bull"
+      ],
+      "dominant_skip_reason": null
+    },
+    "weekly_bias_pullback_short": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 4,
+      "n_keys_present": 4,
+      "n_keys_truthy": 4,
+      "gate_keys": [
+        "bearish_engulfing",
+        "rsi_14",
+        "shooting_star",
+        "weekly_bias_bear"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "xs_combined_momentum_low_ivol": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "price_above_ema_200",
+        "xs_ivol_decile",
+        "xs_momentum_top_decile"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    },
+    "xs_momentum_quality_combined": {
+      "bucket": "SKIPPED_AT_ENGINE",
+      "n_gate_keys": 3,
+      "n_keys_present": 3,
+      "n_keys_truthy": 3,
+      "gate_keys": [
+        "price_above_ema_200",
+        "xs_momentum_top_decile",
+        "xs_quality_top_quintile"
+      ],
+      "dominant_skip_reason": "portfolio_gate_ticker_already_in_portfolio"
+    }
+  },
+  "family_clusters": {
+    "smc_choch_bearish": [
+      "smc_choch_reversal"
+    ],
+    "smc_equal_highs_swept": [
+      "smc_equal_highs_sweep_short"
+    ],
+    "smc_equal_lows_swept": [
+      "smc_equal_lows_sweep_long"
+    ],
+    "smc_bos_bearish": [
+      "smc_liquidity_sweep_reversal",
+      "smc_ote_short"
+    ],
+    "smc_bos_bullish": [
+      "smc_ote_long"
+    ]
+  },
+  "priority_families": {}
+}

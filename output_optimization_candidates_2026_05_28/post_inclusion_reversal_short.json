@@ -1,0 +1,117 @@
+{
+  "strategy": "post_inclusion_reversal_short",
+  "n_trades": 8,
+  "aggregate": {
+    "n": 8,
+    "win_rate": 0.5,
+    "mean_pp": 4.75,
+    "std_pp": 16.2121,
+    "sum_pp": 38.0003,
+    "profit_factor": 2.1637,
+    "sharpe": 0.7134,
+    "t_stat": 0.8287,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [],
+    "restrictive": [],
+    "always_on": [],
+    "proposals": []
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 4,
+        "win_rate": 0.5,
+        "mean_pp": -1.3808,
+        "std_pp": 10.6846,
+        "sum_pp": -5.5233,
+        "profit_factor": 0.7346,
+        "sharpe": -0.3545,
+        "t_stat": -0.2585,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 3,
+        "win_rate": 0.6667,
+        "mean_pp": 14.9438,
+        "std_pp": 22.3446,
+        "sum_pp": 44.8314,
+        "profit_factor": 5.255,
+        "sharpe": 1.6005,
+        "t_stat": 1.1584,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -1.3078,
+        "std_pp": 0.0,
+        "sum_pp": -1.3078,
+        "profit_factor": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.7134,
+    "tier_rec": "MEDIUM_HIGH",
+    "size_pct": 1.5
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 8,
+      "min": 4,
+      "p25": 22.8,
+      "median": 37.5,
+      "p75": 61.2,
+      "max": 85
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

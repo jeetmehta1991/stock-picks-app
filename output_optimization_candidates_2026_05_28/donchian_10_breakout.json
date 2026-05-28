@@ -1,0 +1,139 @@
+{
+  "strategy": "donchian_10_breakout",
+  "n_trades": 4,
+  "aggregate": {
+    "n": 4,
+    "win_rate": 0.25,
+    "mean_pp": -3.8964,
+    "std_pp": 7.8473,
+    "sum_pp": -15.5855,
+    "profit_factor": 0.2631,
+    "sharpe": -1.4963,
+    "t_stat": -0.993,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "dc10_breakout_dn",
+        "fires_at": 0.0,
+        "n_present": 4
+      },
+      {
+        "clause": "dc10_breakout_up",
+        "fires_at": 100.0,
+        "n_present": 4
+      },
+      {
+        "clause": "macd_12_26_9_bullish",
+        "fires_at": 100.0,
+        "n_present": 4
+      },
+      {
+        "clause": "vol_above_avg",
+        "fires_at": 100.0,
+        "n_present": 4
+      }
+    ],
+    "restrictive": [
+      {
+        "clause": "dc10_breakout_dn",
+        "fires_at": 0.0,
+        "n_present": 4
+      }
+    ],
+    "always_on": [
+      {
+        "clause": "dc10_breakout_up",
+        "fires_at": 100.0,
+        "n_present": 4
+      },
+      {
+        "clause": "macd_12_26_9_bullish",
+        "fires_at": 100.0,
+        "n_present": 4
+      },
+      {
+        "clause": "vol_above_avg",
+        "fires_at": 100.0,
+        "n_present": 4
+      }
+    ],
+    "proposals": [
+      "consider OR-fallback for `dc10_breakout_dn` (fires only 0.0% on fired trades)",
+      "clauses ['dc10_breakout_up', 'macd_12_26_9_bullish', 'vol_above_avg'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bull": {
+        "n": 2,
+        "win_rate": 0.5,
+        "mean_pp": 2.5586,
+        "std_pp": 4.251,
+        "sum_pp": 5.1172,
+        "profit_factor": 12.4411,
+        "sharpe": 1.4487,
+        "t_stat": 0.8512,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 2,
+        "win_rate": 0.0,
+        "mean_pp": -10.3514,
+        "std_pp": 0.0673,
+        "sum_pp": -20.7027,
+        "profit_factor": 0.0,
+        "sharpe": -704.3874,
+        "t_stat": -217.3787,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -1.4963,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

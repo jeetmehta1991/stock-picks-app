@@ -1,0 +1,183 @@
+{
+  "strategy": "camarilla_s3_bounce",
+  "n_trades": 14,
+  "aggregate": {
+    "n": 14,
+    "win_rate": 0.2143,
+    "mean_pp": 7.5311,
+    "std_pp": 39.7829,
+    "sum_pp": 105.4356,
+    "profit_factor": 2.2224,
+    "sharpe": 0.3854,
+    "t_stat": 0.7083,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": [
+      {
+        "clause": "rsi_14 < 35.0",
+        "empirical": {
+          "min": 28.63,
+          "p25": 32.0325,
+          "median": 50.05,
+          "p75": 70.06,
+          "max": 77.65,
+          "n": 14
+        },
+        "verdict": "normal",
+        "proposal": null
+      },
+      {
+        "clause": "rsi_14 > 65.0",
+        "empirical": {
+          "min": 28.63,
+          "p25": 32.0325,
+          "median": 50.05,
+          "p75": 70.06,
+          "max": 77.65,
+          "n": 14
+        },
+        "verdict": "normal",
+        "proposal": null
+      }
+    ]
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "near_cam_r3",
+        "fires_at": 100.0,
+        "n_present": 14
+      },
+      {
+        "clause": "near_cam_s3",
+        "fires_at": 100.0,
+        "n_present": 14
+      },
+      {
+        "clause": "obv_bullish",
+        "fires_at": 50.0,
+        "n_present": 14
+      },
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 14
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "near_cam_r3",
+        "fires_at": 100.0,
+        "n_present": 14
+      },
+      {
+        "clause": "near_cam_s3",
+        "fires_at": 100.0,
+        "n_present": 14
+      },
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 14
+      }
+    ],
+    "proposals": [
+      "clauses ['near_cam_r3', 'near_cam_s3', 'rsi_14'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 5,
+        "win_rate": 0.2,
+        "mean_pp": -1.6024,
+        "std_pp": 11.8088,
+        "sum_pp": -8.0119,
+        "profit_factor": 0.6878,
+        "sharpe": -0.2915,
+        "t_stat": -0.3034,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 8,
+        "win_rate": 0.25,
+        "mean_pp": 14.5215,
+        "std_pp": 52.241,
+        "sum_pp": 116.1719,
+        "profit_factor": 3.0076,
+        "sharpe": 0.5598,
+        "t_stat": 0.7862,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -2.7244,
+        "std_pp": 0.0,
+        "sum_pp": -2.7244,
+        "profit_factor": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.3854,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 14,
+      "min": 13,
+      "p25": 20.0,
+      "median": 43.0,
+      "p75": 80.0,
+      "max": 211
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

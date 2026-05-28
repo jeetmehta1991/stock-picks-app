@@ -1,0 +1,129 @@
+{
+  "strategy": "rsi_volume_200ema",
+  "n_trades": 3,
+  "aggregate": {
+    "n": 3,
+    "win_rate": 0.3333,
+    "mean_pp": 7.534,
+    "std_pp": 32.2027,
+    "sum_pp": 22.6019,
+    "profit_factor": 2.0221,
+    "sharpe": 0.5708,
+    "t_stat": 0.4052,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": [
+      {
+        "clause": "rsi_14 < 35.0",
+        "empirical": {
+          "min": 65.04,
+          "p25": 65.105,
+          "median": 65.17,
+          "p75": 65.68,
+          "max": 66.19,
+          "n": 3
+        },
+        "verdict": "normal",
+        "proposal": null
+      },
+      {
+        "clause": "rsi_14 > 65.0",
+        "empirical": {
+          "min": 65.04,
+          "p25": 65.105,
+          "median": 65.17,
+          "p75": 65.68,
+          "max": 66.19,
+          "n": 3
+        },
+        "verdict": "BINDING",
+        "proposal": "loosen rsi_14 > 65.0 -> 48.75 (BINDING; min fire=65.040)"
+      }
+    ]
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "vol_above_avg",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "vol_above_avg",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "proposals": [
+      "clauses ['rsi_14', 'vol_above_avg'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "neutral": {
+        "n": 3,
+        "win_rate": 0.3333,
+        "mean_pp": 7.534,
+        "std_pp": 32.2027,
+        "sum_pp": 22.6019,
+        "profit_factor": 2.0221,
+        "sharpe": 0.5708,
+        "t_stat": 0.4052,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.5708,
+    "tier_rec": "MEDIUM",
+    "size_pct": 0.75
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

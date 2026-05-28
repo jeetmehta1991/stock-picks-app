@@ -1,0 +1,119 @@
+{
+  "strategy": "institutional_distribution_short",
+  "n_trades": 2,
+  "aggregate": {
+    "n": 2,
+    "win_rate": 0.0,
+    "mean_pp": -0.9433,
+    "std_pp": 0.0739,
+    "sum_pp": -1.8867,
+    "profit_factor": 0.0,
+    "sharpe": -28.3929,
+    "t_stat": -18.0638,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "institutional_negative",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "price_above_ema_50",
+        "fires_at": 0.0,
+        "n_present": 2
+      }
+    ],
+    "restrictive": [
+      {
+        "clause": "price_above_ema_50",
+        "fires_at": 0.0,
+        "n_present": 2
+      }
+    ],
+    "always_on": [
+      {
+        "clause": "institutional_negative",
+        "fires_at": 100.0,
+        "n_present": 2
+      }
+    ],
+    "proposals": [
+      "consider OR-fallback for `price_above_ema_50` (fires only 0.0% on fired trades)",
+      "clauses ['institutional_negative'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -0.9956,
+        "std_pp": 0.0,
+        "sum_pp": -0.9956,
+        "profit_factor": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -0.8911,
+        "std_pp": 0.0,
+        "sum_pp": -0.8911,
+        "profit_factor": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -28.3929,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

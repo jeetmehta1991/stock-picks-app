@@ -1,0 +1,154 @@
+{
+  "strategy": "naked_poc_retest_long",
+  "n_trades": 2,
+  "aggregate": {
+    "n": 2,
+    "win_rate": 0.0,
+    "mean_pp": -5.049,
+    "std_pp": 4.6399,
+    "sum_pp": -10.0981,
+    "profit_factor": 0.0,
+    "sharpe": -2.0218,
+    "t_stat": -1.5389,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": [
+      {
+        "clause": "naked_poc_count > 0.0",
+        "empirical": {
+          "min": 6.0,
+          "p25": 6.0,
+          "median": 6.0,
+          "p75": 6.0,
+          "max": 6.0,
+          "n": 2
+        },
+        "verdict": "LOOSE",
+        "proposal": "tighten naked_poc_count > 0.0 -> ~6.0 (LOOSE; p25 fire=6.000)"
+      },
+      {
+        "clause": "naked_poc_nearest_distance_pct < 0.02",
+        "empirical": {
+          "min": 0.006,
+          "p25": 0.0061,
+          "median": 0.0062,
+          "p75": 0.0063,
+          "max": 0.0065,
+          "n": 2
+        },
+        "verdict": "LOOSE",
+        "proposal": "tighten naked_poc_nearest_distance_pct < 0.02 -> ~0.006 (LOOSE; p75 fire=0.006)"
+      }
+    ]
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "naked_poc_count",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "naked_poc_nearest_distance_pct",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 100.0,
+        "n_present": 2
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "naked_poc_count",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "naked_poc_nearest_distance_pct",
+        "fires_at": 100.0,
+        "n_present": 2
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 100.0,
+        "n_present": 2
+      }
+    ],
+    "proposals": [
+      "clauses ['naked_poc_count', 'naked_poc_nearest_distance_pct', 'price_above_ema_200'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -1.7681,
+        "std_pp": 0.0,
+        "sum_pp": -1.7681,
+        "profit_factor": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -8.33,
+        "std_pp": 0.0,
+        "sum_pp": -8.33,
+        "profit_factor": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -2.0218,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}
