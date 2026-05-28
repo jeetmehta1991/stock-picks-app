@@ -1362,3 +1362,21 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Past pattern:** session 2026-05-26 owner correction in `feedback_no_write_only_md_files.md` ("7 of 10 artifacts I created this session had ZERO external references"). 3-check was specified but not strong enough. Owner is now codifying the explicit-approval gate as the stronger fix.
 
     **Joint:** `feedback_no_write_only_md_files.md` (the 3-check stays as the secondary filter; #92 is the primary gate), #6 (modifying CLAUDE.md needs owner approval - same family rule for that critical doc), #67/#67.b (per-turn doc-sync still applies to existing docs).
+
+93. **HARD RULE - After every push, verify CI Test Pyramid status (full 13 tiers) before claiming pyramid green. NEVER report "X/X tests green" from a focused subset.** (Owner directive 2026-05-28 reaffirming `feedback_pyramid_full_13_tiers_mandatory` after ~12 consecutive CI Test Pyramid failures from Batches 412-422 went unnoticed because I only ran `test_unit.py + test_integration.py + Batch-specific files` locally.)
+
+    Past failure (this exact pattern owner has called out repeatedly):
+      - Across Batches 412-422 (2026-05-28), I claimed "999/999 green" / "995/995 green" / etc. on each push.
+      - The "X/X" counts came from a focused subset (~10 of 14 test files), NOT the full pyramid.
+      - CI ran the full 13-tier pyramid (per `.github/workflows/test-pyramid.yml`) and failed Tier 3 (`test_data_integrity.py::test_data_integrity_2_ohlcv_freshness`) on EVERY push.
+      - Owner noticed 2026-05-28 turn 67: "By the way all actions from 306-420 have failed on git." Owner had to discover this themselves; I had no proactive check.
+      - Lineage: `feedback_pyramid_full_13_tiers_mandatory.md` (2026-05-12 codification of identical violation in Batches 49-68) → I repeated it 10 more times. Same pattern, same memory directive, same failure.
+
+    **Apply before claiming any push is green:**
+      a. Run the FULL pyramid via `python -m pytest backtest/tests/ -q --tb=line` (NOT a focused subset). If any test fails, fix or surface BEFORE push.
+      b. After `git push origin main` succeeds, poll `https://api.github.com/repos/<owner>/<repo>/actions/runs?per_page=3` (or `gh run list --limit 3` when `gh` CLI is available) for the most recent workflow run targeting the just-pushed commit.
+      c. Wait for `status == "completed"` (typically 5-15 minutes for the Test Pyramid). Report `conclusion` truthfully — `failure` is NOT "green".
+      d. If any tier red, investigate the failed step via the workflow's job → step logs (REST API: `/actions/runs/<run_id>/jobs`). Don't silently skip the tier.
+      e. The status update MUST include CI conclusion. "X/X local green + CI status: PENDING" is acceptable. "X/X green" without CI verification is NOT.
+
+    **Joint:** `feedback_pyramid_full_13_tiers_mandatory.md` (this is the codified hard-rule version), CHECKLIST #69 (full 13-tier pyramid mandatory), CHECKLIST #75 (pyramid runs every push, no doc/data exception), L163 (this directive's codified lesson).

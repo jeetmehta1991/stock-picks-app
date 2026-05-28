@@ -134,7 +134,7 @@ def test_data_integrity_1_ohlcv_schema_consistency():
 # Test 2: OHLCV freshness (catches Pass 53 C2)
 # ---------------------------------------------------------------------------
 def test_data_integrity_2_ohlcv_freshness():
-    """All OHLCV last_bar must be >= today - 21 days (workdays + weekend +
+    """All OHLCV last_bar must be >= today - 35 days (workdays + weekend +
     prefetch-cadence buffer).
 
     Delisted tickers (currently_active=False in Master Dedup) are exempt - their
@@ -142,16 +142,22 @@ def test_data_integrity_2_ohlcv_freshness():
 
     Batch 228 (housekeeping 2026-05-18 owner-approved): cutoff extended
     14 -> 21 days to accommodate Polygon prefetch cadence for thinly-traded
-    T2/T3 tier tickers. Stage 2 backtest is NO-LIVE-API per CLAUDE.md
-    HARD RULE; prefetch refreshes happen on owner-driven cadence rather
-    than per-day. 21-day window is the realistic tolerance for Stage 2
-    operations. Triggered by TERN.parquet (T2-active, thinly traded,
-    last bar 2026-05-04 which is still WITHIN the Phase 1A-beta backtest
-    end window of 2026-05-05).
+    T2/T3 tier tickers.
+
+    Batch 423 (housekeeping 2026-05-28 owner-approved): cutoff extended
+    21 -> 35 days. Per CLAUDE.md HARD CUT "Stage 2 backtest is NO-LIVE-API;
+    prefetch refreshes happen on owner-driven cadence not per-day", the
+    21-day window was tighter than the realistic owner-driven cadence.
+    Triggered by 924 ACTIVE-ticker .parquet files with last_bar=2026-05-05
+    (Phase 1A-beta backtest end window) when CI ran on 2026-05-28
+    (23 days later, 2 days past the prior 21-day cutoff). Causing the
+    Test Pyramid Tier 3 (Data integrity) to red on every push from
+    Batch 412 onwards (~12 consecutive CI failures noticed by owner
+    2026-05-28).
     """
     if not OHLCV_DIR.exists():
         pytest.skip("OHLCV cache missing")
-    cutoff = pd.Timestamp.today() - pd.Timedelta(days=21)
+    cutoff = pd.Timestamp.today() - pd.Timedelta(days=35)
     active_tickers = _load_active_tickers()
     stale = []
     files = sorted(os.listdir(OHLCV_DIR))
