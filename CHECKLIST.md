@@ -1330,3 +1330,23 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Past violation:** session 2026-05-27 batch_3 reported as RUNNING for 1.5h after spot reclaim; owner caught it.
 
     **Joint:** L161 (this directive's codified lesson), #84 (verify before claiming bug - cousin: verify before claiming progress), `feedback_monitor_intermediate_counts.md` (intermediate counts catch async changes), `feedback_audit_recommendations_against_existing_directives.md` (don't trust prior state without re-check).
+
+91. **HARD RULE - Monitoring that doesn't take ACTION or get READ is dead infrastructure - never claim "monitor is armed" as a substitute for in-loop checks** (Batch 411 codification after L4 14-check monitor died-at-startup + heartbeats-unread-for-10h 2026-05-27).
+
+    Pattern (this session): I armed two layers of monitoring for the AWS run: (1) L4 14-check Python `monitor_phase_1a_beta_health.py` as background task `bv76426sn`; (2) S3 heartbeat protocol writing every 5 min to `s3://bucket/heartbeat/batch_N.txt`. Across the 10-hour run: L4 monitor produced 9 lines total - all PowerShell `NativeCommandError` wrapping a single `datetime.utcnow()` deprecation warning. It died at startup and was never read. S3 heartbeats DID land correctly (verified post-hoc - all 5 batches had fresh ts= entries) but I never polled them during the run. Net: two monitoring layers, zero detections. Owner caught: "What is the use of monitoring if you don't even read the results?"
+
+    Root cause: monitoring was treated as a passive logging artifact ("armed and forgotten") rather than as an active control loop (poll + interpret + ACT). The L4 monitor's only consumer was supposed to be me reading it at status-request time, but I never did. The heartbeats had no consumer at all - no orchestrator was polling them.
+
+    **Before claiming a monitor / heartbeat / health-check is "armed" or providing operational cover:**
+      a. The monitor MUST have a defined ACT-ON-DETECTION path - log-only is unacceptable. Examples: HB stale > N min → terminate + relaunch instance; ABORT verdict from forensic → terminate all downstream; engine WARN signal → email + pause launches.
+      b. The monitor's output MUST be ingested into a higher-level digest that I (or the orchestrator) read at every status-request point or every poll. If the monitor output goes only to a log file no one reads, it does not exist.
+      c. For background-task monitors: verify the task produced ≥ 1 meaningful output line within the first poll interval. If the task is silent past that window, treat it as DEAD and either fix or abandon - never assume "still running, just quiet."
+      d. For multi-layer monitoring (L1/L2/L3/L4 style), each layer must have a different ACT-ON path so they are complementary, not redundant. Two monitors that both only log are still zero monitors.
+
+    **Apply when:** arming any monitor / heartbeat / health-check / watchdog / background-task observability; claiming "monitor is in place" as risk mitigation for a long-running operation; reporting status that references "the monitor saw X" (verify by reading the monitor's output at report time, not by recalling its prior reading).
+
+    **Past violation:** session 2026-05-27 - both L4 14-check + S3 heartbeat went unread for 10h while batch_3 was lost to spot-reclaim and reported as RUNNING for 1.5h.
+
+    **Fix shipped this batch (Batch 411):** action-taking monitor folded into `aws_batch395_parallel.py` per-poll loop: heartbeat-stale > 30 min → auto-terminate + auto-re-add to pending → next poll relaunches; per-poll `[DIGEST hh:mmZ] b1=DONE b3=PENDING b4=s/120m@2025-06-13(hb15s) b5=o/40m@2023-01-25(hb45s)` one-line summary I read at every status request.
+
+    **Joint:** L162 (this directive's codified lesson), #90 (status updates re-verify current state - cousin: status updates re-read monitor output), `feedback_monitor_intermediate_counts.md` (intermediate-count monitoring is the specific case; this is the general rule), `feedback_no_write_only_md_files.md` (related antipattern: artifacts created without consumers).

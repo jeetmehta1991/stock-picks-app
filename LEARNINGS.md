@@ -1643,3 +1643,41 @@ The 1.5-hour gap was entirely on me. The L4 14-check monitor I had armed earlier
 Caching status from earlier in the session is NOT acceptable for resources that can change asynchronously. The re-verification cost is bounded (seconds); the stale-reporting cost is unbounded (hours, in this case).
 
 **Cross-references.** Batch 395 (AWS orchestration this lesson applies to), Batch 409 (per-batch forensic framework — should be paired with the L161 status-verification habit), Batch 410 (this lesson's codification + CHECKLIST #90), L157 (verify data availability before claiming bug — cousin: verify current state before claiming progress), L158 (AWS new-account compounding gates — included spot capacity reliability as one of the 10 gates; this lesson is the operational counterpart).
+
+---
+
+## L162 — Monitoring without action-on-read is dead infrastructure (Batch 411 codification, owner critique 2026-05-27)
+
+**Owner critique (verbatim).** "What is the use of monitoring if you don't even read the results?"
+
+**Pattern.** Across the 2026-05-27 AWS Phase 1A-beta run (~10 hours), I (assistant) armed two layers of monitoring and consulted neither:
+
+1. **L4 14-check Python monitor.** Background task `bv76426sn` running `python scripts/monitor_phase_1a_beta_health.py` with checks W1-W14 (heartbeat staleness, trade-count baseline ratio, zero-fire strategy detection, etc.). Total output across 10 hours: **9 lines**, all PowerShell `NativeCommandError` wrapping a single `datetime.datetime.utcnow() is deprecated` warning. The monitor died at startup because PowerShell wraps stderr into ErrorRecord; the wrapping killed the tee'd output stream. I never re-read the file to notice it had stopped at line 9.
+
+2. **S3 heartbeat protocol.** `aws_batch395_bootstrap.sh` writes `s3://bucket/heartbeat/batch_N.txt` every 5 minutes with `ts=`, `elapsed_seconds=`, last 2 screener log lines. ALL 5 batches produced fresh heartbeats throughout the run (verified post-hoc - batch_4 was 1.5 min fresh at the time of L162 discovery). I never polled them during the run. No orchestrator-level consumer existed.
+
+**Net result of "two-layer monitoring": zero detections.**
+
+When owner asked for status updates, I responded from cached state (L161 lesson) - never reading either monitor. The L4 monitor would have caught batch_3's spot-reclaim via W2 (heartbeat staleness) if it had been alive. The S3 heartbeats would have caught it if anything had been polling them. Both layers existed, both were "armed," both went unread. Owner caught the structural failure when batch_3 was lost for 1.5 hours.
+
+**Compounding pattern.** This is a degenerate case of an antipattern I keep repeating: creating artifacts that have no consumer (cf. `feedback_no_write_only_md_files.md`). The L4 monitor was a "write-only" log file with no read path. The heartbeats were "write-only" S3 objects with no read path. The monitoring infrastructure was theater - it satisfied the "I should be monitoring this" instinct without actually monitoring.
+
+**Why "armed" felt like progress when it wasn't.** Setting up a monitor feels productive because it produces visible action (background task ID, S3 prefix listing, command output). The cost of skipping the "wire-in-the-consumer" step is invisible at setup time and only surfaces when something goes wrong - by which time the gap between "monitor armed" and "monitor consumed" has already cost real wall-time and credits.
+
+**Closure (Batch 411).** Folded action-taking monitor INTO the existing orchestrator (`scripts/aws_batch395_parallel.py`) per-poll loop. Three changes:
+
+1. **`read_heartbeat(bucket, batch_index) -> dict | None`** new function. Pulls S3 heartbeat for each running batch every poll (5 min), parses `ts=`, computes `age_sec` against now-UTC, extracts last engine_date from screener log lines.
+
+2. **Per-poll heartbeat-stale auto-kill.** If `age_sec > HEARTBEAT_STALE_KILL_SEC` (1800s = 30 min), `[STALE-KILL]` log + `aws ec2 terminate-instances` + re-add to `pending`. Next poll iteration's launch loop relaunches via existing on-demand/spot slot logic. Auto-relaunch path closes the batch_3 gap structurally.
+
+3. **Per-poll one-line digest.** `[DIGEST 02:25Z] b1=DONE b3=PENDING b4=s/120m@2025-06-13(hb15s) b5=o/40m@2023-01-25(hb45s)` printed every poll. Format: `b<idx>=<lifecycle>/<elapsed_min>@<engine_date>(hb<age_sec>s)`. This is the line I read at every owner status request - no more recall-from-memory. The digest IS the read protocol.
+
+**Rule.**
+  - **a.** Before claiming a monitor / heartbeat / watchdog is "armed" or providing operational cover for a long-running operation: define the ACT-ON path. Log-only is unacceptable. Examples: HB stale → terminate + relaunch; ABORT verdict → terminate all downstream; engine WARN → email + pause launches.
+  - **b.** The monitor's output MUST be ingested into a higher-level digest that the orchestrator OR I read at every poll OR every status-request point. If output goes only to an unconsumed log file, the monitor does not exist.
+  - **c.** For background-task monitors: verify the task produced ≥ 1 meaningful output line within the first poll interval. Silent past that window = DEAD. Fix or abandon, never assume "still running, just quiet."
+  - **d.** For multi-layer monitoring (L1/L2/L3/L4 style), each layer must have a DIFFERENT ACT-ON path. Two log-only monitors are still zero monitors.
+
+**Apply when.** Arming any monitor, heartbeat, health-check, watchdog, background-task observability; claiming "monitor is in place" as risk mitigation; reporting status referencing "the monitor saw X" (verify by reading the monitor's output at report time, not by recalling its prior reading).
+
+**Cross-references.** Batch 411 (codification + monitor-action shipped in same commit per L149), CHECKLIST #91 (joint codification), L161 / CHECKLIST #90 (status updates re-verify current state - this lesson is the layer beneath that one: status updates can't re-verify a monitor that died at startup), `feedback_monitor_intermediate_counts.md` (intermediate-count monitoring is the specific case of this general rule), `feedback_no_write_only_md_files.md` (write-only files antipattern - L162 is the same antipattern applied to monitors), DEC-594 spec-without-build pattern (L162 is "monitor-without-consumer" instance of the same family).

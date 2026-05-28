@@ -18,18 +18,59 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+
+HEARTBEAT_STALE_WARN_SEC = 600   # 10 min
+HEARTBEAT_STALE_KILL_SEC = 1800  # 30 min: terminate + relaunch
 
 
 def s3_check_complete(bucket: str, batch_index: int) -> bool:
     cmd = ["aws", "s3api", "head-object", "--bucket", bucket,
            "--key", f"outputs/batch_{batch_index}/_COMPLETE"]
     return subprocess.run(cmd, capture_output=True, timeout=30).returncode == 0
+
+
+def read_heartbeat(bucket: str, batch_index: int) -> dict | None:
+    """Batch 411: read heartbeat/batch_N.txt; return dict or None if missing."""
+    cmd = ["aws", "s3", "cp",
+           f"s3://{bucket}/heartbeat/batch_{batch_index}.txt", "-"]
+    r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    if r.returncode != 0:
+        return None
+    hb: dict = {}
+    for line in r.stdout.splitlines():
+        if line.startswith("ts="):
+            hb["ts"] = line[3:].strip()
+        elif line.startswith("elapsed_seconds="):
+            hb["elapsed"] = int(line.split("=", 1)[1].strip())
+        elif "screen_universe" in line:
+            m = re.search(r"\[(\d{4}-\d{2}-\d{2})\]", line)
+            if m:
+                hb["engine_date"] = m.group(1)
+    if hb.get("ts"):
+        try:
+            ts = datetime.fromisoformat(hb["ts"].replace("Z", "+00:00"))
+            hb["age_sec"] = int(
+                (datetime.now(timezone.utc) - ts).total_seconds())
+        except Exception:
+            hb["age_sec"] = None
+    return hb
+
+
+def terminate_instance(region: str, instance_id: str) -> None:
+    """Batch 411: terminate a hung/reclaimed instance."""
+    subprocess.run(
+        ["aws", "ec2", "terminate-instances", "--region", region,
+         "--instance-ids", instance_id, "--no-cli-pager"],
+        capture_output=True, timeout=30,
+    )
 
 
 def running_instances(region: str) -> list[dict]:
@@ -167,6 +208,46 @@ def main() -> int:
         ondemand_busy = any(i["lifecycle"] != "spot" for i in instances)
         spot_busy = any(i["lifecycle"] == "spot" for i in instances)
 
+        # Batch 411: per-poll heartbeat check + one-line digest.
+        # Stale heartbeat > KILL threshold => terminate instance so its slot
+        # frees and the next poll iteration relaunches via pending logic.
+        digest_parts = []
+        for inst in instances:
+            b = inst["batch_index"]
+            if b is None:
+                continue
+            hb = read_heartbeat(args.bucket, b)
+            if hb is None:
+                digest_parts.append(f"b{b}={inst['lifecycle'][:1]}/no-hb")
+                continue
+            age = hb.get("age_sec")
+            ed = hb.get("engine_date", "?")
+            el = hb.get("elapsed", 0)
+            tag = inst["lifecycle"][:1]
+            if age is None:
+                digest_parts.append(f"b{b}={tag}/hb-bad")
+            elif age > HEARTBEAT_STALE_KILL_SEC:
+                print(f"[STALE-KILL] batch_{b} HB age={age}s > "
+                      f"{HEARTBEAT_STALE_KILL_SEC}s; terminating {inst['id']}")
+                terminate_instance(args.region, inst["id"])
+                if b not in pending:
+                    pending.append(b)
+                digest_parts.append(f"b{b}={tag}/KILLED-stale")
+            elif age > HEARTBEAT_STALE_WARN_SEC:
+                digest_parts.append(
+                    f"b{b}={tag}/WARN-stale({age}s)@{ed}")
+            else:
+                m = el // 60
+                digest_parts.append(f"b{b}={tag}/{m}m@{ed}(hb{age}s)")
+
+        for b in completed_with_forensic:
+            digest_parts.append(f"b{b}=DONE")
+        for b in pending:
+            if b not in running_idx:
+                digest_parts.append(f"b{b}=PENDING")
+
+        print(f"[DIGEST {datetime.now(timezone.utc).strftime('%H:%MZ')}] "
+              + " ".join(sorted(set(digest_parts))))
         print(f"[STATE] running={instances} ondemand_busy={ondemand_busy} "
               f"spot_busy={spot_busy} pending={pending}")
 
