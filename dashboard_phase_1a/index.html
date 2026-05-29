@@ -233,6 +233,32 @@
 <section class="panel" id="quiet">
   <h2>12. Quiet Strategies (producer-zero audit)</h2>
   <p class="desc">Strategies with 0 fires in cube. Per <code>producer_zero_post_cube_audit.json</code>: 3-bucket classification by gate-key empirical emission.</p>
+
+  <!-- Batch 438 (2026-05-29): plain-English bucket explainer block. -->
+  <details style="margin:.5rem 0;background:#1a1f29;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px" open>
+    <summary style="cursor:pointer;color:var(--accent);font-weight:600">What do these buckets mean? (click to collapse)</summary>
+    <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
+      <p style="margin:.3rem 0"><strong>The setup.</strong> A strategy is a list of entry conditions joined by AND (e.g. <code>near_52w_high AND price_above_ema_200 AND resistance_break_retest</code>). Each condition has a "producer" - the function that computes whether the condition is true today on this ticker. If a strategy fires zero trades in a backtest, it's "quiet". The optimizer (<code>producer_zero_post_cube_audit.json</code>) classifies the reason into one of three buckets so you know whether to fix the producer, restructure the rules, or loosen a downstream gate.</p>
+
+      <p style="margin:.5rem 0 .2rem"><strong>1. PRODUCER_LAYER_ZERO_LIKELY</strong> (broken signal feed).</p>
+      <p style="margin:.2rem 0">At least one of the strategy's clauses NEVER returns truthy on any day or ticker in the backtest window. The producer is silently broken: bad data path, schema drift, exception caught and discarded. The strategy can't fire because its required ingredient is missing.</p>
+      <p style="margin:.2rem 0;color:var(--muted)"><em>Example.</em> SMC clauses depend on <code>compute_smc_signals</code> in <code>backtest/signals/smc_ict.py</code>. If the vendored library fails to import in the AWS environment, every SMC clause returns false silently. Batch 416 wired diagnostic logging so the actual failure mode shows up in <code>backtest.signals.screener</code> logs at the next cube re-run.</p>
+      <p style="margin:.2rem 0"><em>Fix:</em> repair the producer (data path, schema, import) - not the strategy rules.</p>
+
+      <p style="margin:.5rem 0 .2rem"><strong>2. COMPOUND_RESTRICTIVE</strong> (clauses fire alone but AND never satisfies).</p>
+      <p style="margin:.2rem 0">Each individual clause emits truthy on a reasonable share of days/tickers, but when you AND them all together the joint condition almost never happens. <strong>Everyday analogy.</strong> "I want to go for a run if it's sunny AND between 60-70F AND weekend AND my running partner is free AND I had at least 7 hours sleep." Each individual condition is common; the AND of all 5 might happen twice a year.</p>
+      <p style="margin:.2rem 0;color:var(--muted)"><em>Trading example.</em> A strategy with clauses <code>near_52w_high</code> (fires 8% of ticker-days), <code>price_above_ema_200</code> (60%), <code>resistance_break_retest</code> (5%). Each clause is fine on its own. But the AND - multiplied with correlation discount - lands around 0.1% of ticker-days, then liquidity/sector/regime gates trim further until zero trades.</p>
+      <p style="margin:.2rem 0"><em>Fix:</em> open Tab 11 -&gt; pick the strategy -&gt; <code>dimension_b_compound</code> section shows per-clause <code>fires_at</code> rates. The <code>restrictive</code> array is the AND-killer (low fire rate). The <code>always_on</code> array fires ~100% of the time - those don't add any restriction, drop them. The <code>proposals</code> array is the optimizer's suggestion.</p>
+
+      <p style="margin:.5rem 0 .2rem"><strong>3. SKIPPED_AT_ENGINE</strong> (downstream gate kicks the trade).</p>
+      <p style="margin:.2rem 0">The strategy DOES generate candidate trades that pass the screener, but a downstream engine gate rejects them: liquidity floor (ADV too low), position-size cap full, daily-cash limit, ticker-uniqueness (already in a position on this ticker), confidence tier too low.</p>
+      <p style="margin:.2rem 0;color:var(--muted)"><em>Example.</em> A small-cap momentum strategy generates 30 candidates a day on illiquid tickers. ADV floor rejects all 30. Strategy looks quiet from the outside.</p>
+      <p style="margin:.2rem 0"><em>Fix:</em> Tab 8 (Skipped) shows reason codes per skipped trade. Either loosen the gate (e.g. tier the strategy to a smaller-cap universe with a lower ADV floor) or accept the strategy is incompatible with current rules.</p>
+
+      <p style="margin:.5rem 0;background:#0d1117;padding:.4rem;border-radius:4px;font-size:.82rem"><strong>Quick decision rule:</strong> PRODUCER fix the data; COMPOUND restructure the rules; SKIPPED loosen the downstream gate or move the strategy to a more permissive tier.</p>
+    </div>
+  </details>
+
   <div id="quiet-kpis" class="kpis"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
     <div>
@@ -420,17 +446,52 @@
   <p class="desc">Per-regime verdicts (Tab 2) are calibrated against 8 historical regime windows (covid_crisis_2020, bear_correction_2022, rate_rising_2022_2023, strong_bull_2023, rate_falling_2024, ai_sector_bull_2024, tariff_shock_2025, ai_divergence_2025_2026). Source: <code>output_v2/strategy_regime_matrix.json</code>.</p>
 
   <h3 style="margin-top:1rem">Position sizing (confidence tiers)</h3>
+  <p class="desc"><strong>Two-stage process</strong> (Batch 438 correction - prior table tied sizing to the 9 criteria, which was wrong). Stage 1 assigns a <em>preliminary tier</em> per-trade at entry from rule-based confluence. Stage 2 lets agent scores shift the tier +/-1 in Phase 1B+. Phase 1A-beta has no agents, so Stage 2 is a no-op and Stage 1 is final. The strategy-level 9-criteria verdict (Tab 1's PASS pill) is a POST-HOC backtest summary; it does NOT feed into per-trade sizing.</p>
+
+  <h4 style="margin:.5rem 0 .3rem">Size table</h4>
   <table class="display compact" style="font-size:.82rem">
-    <thead><tr><th>Tier</th><th>Size</th><th>Trigger</th></tr></thead>
+    <thead><tr><th>Tier</th><th>% of equity</th></tr></thead>
     <tbody>
-      <tr><td>EXCEPTIONAL</td><td>5%</td><td>All 9 criteria + agent score ≥ 90</td></tr>
-      <tr><td>VERY HIGH</td><td>4%</td><td>All 9 criteria + agent score ≥ 75</td></tr>
-      <tr><td>HIGH</td><td>3%</td><td>All 9 criteria + agent score ≥ 60</td></tr>
-      <tr><td>MEDIUM-HIGH</td><td>1.5%</td><td>Default for fully-passing strategies</td></tr>
-      <tr><td>MEDIUM</td><td>0.75%</td><td>Per-regime PASS only (not universal)</td></tr>
-      <tr><td>LOW</td><td>skip</td><td>Below thresholds</td></tr>
+      <tr><td>EXCEPTIONAL</td><td>5.0%</td></tr>
+      <tr><td>VERY HIGH</td><td>4.0%</td></tr>
+      <tr><td>HIGH</td><td>3.0%</td></tr>
+      <tr><td>MEDIUM-HIGH</td><td>1.5%</td></tr>
+      <tr><td>MEDIUM</td><td>0.75%</td></tr>
+      <tr><td>LOW</td><td>skip (no trade)</td></tr>
+      <tr><td>AVOID</td><td>skip (negative smart-money confluence)</td></tr>
     </tbody>
   </table>
+
+  <h4 style="margin:.7rem 0 .3rem">Stage 1 - Rule-based preliminary tier (the only step active in Phase 1A-beta)</h4>
+  <p class="desc">Source: <code>backtest/engine/backtest.py::_assign_confidence_tier</code>. Two inputs: <code>strategy_count</code> (how many strategies fired on the same ticker on the same day - "confluence") and <code>sm.composite_signal</code> (smart-money: congressional + insider). First match wins, in this order:</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Rule</th><th>Tier</th></tr></thead>
+    <tbody>
+      <tr><td>smart-money = <code>congressional_sell+insider_cluster_sell</code></td><td>AVOID</td></tr>
+      <tr><td>smart-money = <code>congressional+insider_cluster</code> AND strategy_count &gt;= 4</td><td>EXCEPTIONAL</td></tr>
+      <tr><td>smart-money = <code>congressional_or_insider</code> AND strategy_count &gt;= 3</td><td>VERY_HIGH</td></tr>
+      <tr><td>strategy_count &gt;= 4 (no smart-money)</td><td>HIGH</td></tr>
+      <tr><td>strategy_count &gt;= 3</td><td>MEDIUM_HIGH</td></tr>
+      <tr><td>strategy_count &gt;= 2</td><td>MEDIUM</td></tr>
+      <tr><td>strategy_count &gt;= 1 AND sm.score &gt;= 2</td><td>LOW</td></tr>
+      <tr><td>else</td><td>LOW</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin:.7rem 0 .3rem">Stage 2 - Agent tier adjustment (Phase 1B+ only)</h4>
+  <p class="desc">Source: <code>backtest/engine/backtest.py::_adjust_tier_by_agent</code>. In Phase 1B-alpha the agent pipeline (11 active LLM nodes per propagate()) returns a 0-100 score per trade. Score &gt;= 75 upgrades the preliminary tier by one slot; score &lt;= 40 downgrades by one. <strong>Phase 1A-beta has agents OFF, so Stage 2 is a no-op</strong> and the preliminary tier IS the final tier.</p>
+
+  <h4 style="margin:.7rem 0 .3rem">Concrete example - Phase 1A-beta (no agents)</h4>
+  <div style="background:#1a1f29;border-left:3px solid var(--accent);padding:.6rem .8rem;font-size:.82rem;margin:.4rem 0;border-radius:4px">
+    <p style="margin:.2rem 0"><strong>Setup.</strong> Starting equity = $100,000. Date = 2026-05-20. Ticker = AAPL @ $185.</p>
+    <p style="margin:.4rem 0"><strong>Example A - EXCEPTIONAL.</strong> On this day, 4 strategies fire on AAPL: <code>near_52w_high</code>, <code>rsi_oversold_reversion</code>, <code>bollinger_tight</code>, <code>ma_crossover</code>. Smart money signal: congressional buys + insider cluster buys = <code>congressional+insider_cluster</code>. Rule match: <em>"smart-money = congressional+insider_cluster AND strategy_count &gt;= 4"</em> -&gt; preliminary tier = <strong>EXCEPTIONAL</strong>. No agents in 1A-beta -&gt; final tier = EXCEPTIONAL. Position = $100,000 x 5.0% = <strong>$5,000</strong> = 27 shares.</p>
+    <p style="margin:.4rem 0"><strong>Example B - MEDIUM.</strong> Same day, MSFT. 2 strategies fire. No smart-money signal. Rule match: "strategy_count &gt;= 2" -&gt; <strong>MEDIUM</strong> -&gt; $100,000 x 0.75% = <strong>$750</strong>.</p>
+    <p style="margin:.4rem 0"><strong>Example C - SKIP.</strong> NVDA. 1 strategy fires. Smart-money score = 0. Final rule "else" -&gt; <strong>LOW</strong> -&gt; <strong>no trade.</strong></p>
+    <p style="margin:.4rem 0"><strong>Example D - AVOID.</strong> META. 5 strategies fire. But smart money signal: congressional sell + insider cluster sell. The first rule kicks in: -&gt; <strong>AVOID</strong> regardless of confluence -&gt; <strong>no trade.</strong></p>
+  </div>
+
+  <h4 style="margin:.7rem 0 .3rem">Why "9 criteria" is mentioned elsewhere but NOT here</h4>
+  <p class="desc">Tab 1 (Strategies) shows a PASS pill if a strategy's POST-HOC backtest aggregate passed the 9 criteria (win rate / PF / EV / W:L / DD / ROI / smart-money lift / macro / min trades). That is a strategy-level summary computed AFTER the backtest finished, used for strategy approval/deprecation decisions. It does NOT influence per-trade sizing - the strategy could have an overall FAIL pill yet still emit individual trades during the backtest, and each of those trades got a tier from Stage 1 above. Sharpe (criterion 10) and per-regime verdict (criterion 11) are evaluated separately, which is why the dashboard sometimes says "9" and sometimes "11" - 9 are the legacy <code>passes_all</code> gates, +2 are tracked separately.</p>
 
   <h3 style="margin-top:1rem">Tab navigation guide — what each tab shows + what to look for</h3>
   <table class="display compact" style="font-size:.82rem">
@@ -452,6 +513,29 @@
       <tr><td>11. Candidates</td><td>Per-strategy 9-dim optimizer drill-down (aggregate KPIs + dim A-I summary + collapsible raw JSON)</td><td>Per-strategy A-I dimension status; which dims have proposals</td><td><code>output_optimization_candidates_2026_05_28/&lt;strategy&gt;.json</code></td></tr>
       <tr><td>12. Quiet</td><td>3-bucket classification of zero-fire strategies (PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE)</td><td>Strategies that need producer fix OR clause restructure OR liquidity tuning</td><td><code>producer_zero_post_cube_audit.json</code></td></tr>
       <tr><td>13. Cell Cube</td><td>Per-(strategy × exit) cell verdicts with DEC-426 5-Gate columns</td><td>5-Gate strict PASS = 1A-α gate candidate</td><td><code>exit_method_analysis.json</code> (Lens B L2)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Quiet-strategy buckets explained (Tab 12)</h3>
+  <p class="desc">Strategies that fired zero trades in the cube get classified into one of three buckets so you know how to fix each one. Tab 12 shows the live lists; this section is the persistent explainer.</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Bucket</th><th>What it means</th><th>Where to fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>PRODUCER_LAYER_ZERO_LIKELY</strong></td>
+        <td>At least one clause's producer never emits truthy. The signal feed is broken (bad data path, schema drift, silent exception). The strategy can't fire because the ingredient is missing.</td>
+        <td>Fix the producer (data source / formula / import). Not the rules.</td>
+      </tr>
+      <tr>
+        <td><strong>COMPOUND_RESTRICTIVE</strong></td>
+        <td>Each clause is fine alone, but the AND of all clauses almost never happens. <em>Analogy:</em> "sunny AND 60-70F AND weekend AND running partner free AND 7+ hours sleep" - each is common; the AND of all 5 fires twice a year.</td>
+        <td>Tab 11 -&gt; strategy -&gt; <code>dimension_b_compound</code>. Drop <code>always_on</code> clauses; loosen <code>restrictive</code> clauses; follow the <code>proposals</code> hint.</td>
+      </tr>
+      <tr>
+        <td><strong>SKIPPED_AT_ENGINE</strong></td>
+        <td>The strategy DOES generate candidate trades that pass the screener, but a downstream gate rejects them: liquidity floor (ADV too low), position cap full, daily-cash limit, ticker-uniqueness, confidence tier too low.</td>
+        <td>Tab 8 (Skipped) -&gt; reason code per trade. Loosen the offending gate or move the strategy to a more permissive tier.</td>
+      </tr>
     </tbody>
   </table>
 

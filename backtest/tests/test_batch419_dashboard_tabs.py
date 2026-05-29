@@ -405,6 +405,63 @@ def test_batch437_tab14_phase_1a_beta_cube_only_banner():
         "Phase 1A-beta dashboard is cube-only")
 
 
+def test_batch438_position_sizing_two_stage_block_present():
+    """Tab 14 Position sizing section was rewritten to (a) drop the
+    wrong '9 criteria + agent score' trigger column and (b) explain
+    the actual two-stage process: Stage 1 = rule-based confluence
+    tier (Phase 1A-beta active), Stage 2 = agent tier adjustment
+    (Phase 1B+ only)."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "Stage 1 - Rule-based preliminary tier" in html, (
+        "Position sizing section must lead with Stage 1 (rule-based "
+        "preliminary tier) - this is the only stage active in 1A-beta")
+    assert "Stage 2 - Agent tier adjustment" in html, (
+        "Position sizing section must include Stage 2 (agent "
+        "adjustment) with 'Phase 1B+ only' qualifier")
+    assert "_assign_confidence_tier" in html, (
+        "Stage 1 must cite the actual code function")
+    assert "_adjust_tier_by_agent" in html, (
+        "Stage 2 must cite the actual code function")
+    # Worked example must be present.
+    assert "Example A - EXCEPTIONAL" in html, (
+        "Position sizing must include worked examples (A through D)")
+    # Old (wrong) sizing-trigger text must be removed.
+    assert "All 9 criteria + agent score" not in html, (
+        "Old (wrong) 'All 9 criteria + agent score X' trigger column "
+        "must be removed - sizing does not consume the 9 criteria")
+
+
+def test_batch438_quiet_tab_bucket_explainer_present():
+    """Tab 12 must include a plain-English explainer for the 3
+    quiet-strategy buckets (PRODUCER_LAYER_ZERO_LIKELY /
+    COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE) with everyday analogy
+    + fix instructions, not just a one-liner per bucket."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    # The explainer is a <details> block on Tab 12.
+    assert "What do these buckets mean?" in html, (
+        "Tab 12 must include a 'What do these buckets mean?' details "
+        "block with full bucket explanations")
+    # Each bucket must have the 4-element explanation: meaning + analogy /
+    # example + fix.
+    for bucket in ["PRODUCER_LAYER_ZERO_LIKELY",
+                   "COMPOUND_RESTRICTIVE", "SKIPPED_AT_ENGINE"]:
+        assert bucket in html, f"Tab 12 explainer missing bucket: {bucket}"
+    assert "everyday analogy" in html.lower() or "sunny AND" in html, (
+        "Compound restrictive bucket must include the everyday analogy")
+    assert "Quick decision rule" in html, (
+        "Explainer must close with the quick decision rule")
+
+
+def test_batch438_reference_tab_quiet_bucket_table_present():
+    """Tab 14 must also document the 3 quiet-strategy buckets so the
+    explanation persists in the reference page even after a user
+    closes the Tab 12 details block."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "Quiet-strategy buckets explained (Tab 12)" in html, (
+        "Tab 14 must include a 'Quiet-strategy buckets explained' "
+        "section with the 3-bucket table")
+
+
 def test_batch430_candidate_detail_is_div_with_structured_render():
     """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
     structured render (KPIs + per-dimension table + collapsible JSON) in
