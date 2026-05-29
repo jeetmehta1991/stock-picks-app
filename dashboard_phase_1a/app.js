@@ -123,25 +123,49 @@ function renderStrategies() {
 
 // ---- TAB: Regime ----
 function renderRegime() {
+  // Batch 433 (2026-05-29): data structure is
+  //   { strategy: { regime_verdicts: { regime: "PASS"|"FAIL"|... },
+  //                 overall_win_rate, total_trades, passes_all, best_regimes } }
+  // Previous code read top-level strategy keys AS regimes - so the
+  // columns became literally `best_regimes / regime_verdicts /
+  // overall_win_rate / total_trades / passes_all`, none of which are
+  // verdict strings, so every cell rendered empty.
   const matrix = D.strategy_regime_matrix || {};
   const strategies = Object.keys(matrix);
   const wrap = $("#regime-heatmap");
   if (!strategies.length) { wrap.innerHTML = '<div class="empty">No strategy_regime_matrix.json</div>'; return; }
-  const regimes = Array.from(new Set(strategies.flatMap(s => Object.keys(matrix[s] || {}))));
-  let html = `<div class="heatmap" style="grid-template-columns: 250px repeat(${regimes.length}, minmax(80px, 1fr))">`;
+  // Extract regime names from each strategy's regime_verdicts dict.
+  const regimes = Array.from(new Set(
+    strategies.flatMap(s => Object.keys((matrix[s] || {}).regime_verdicts || {}))
+  ));
+  // 3 trailing summary columns: total_trades, overall_win_rate, passes_all.
+  const summaryCols = ["Trades", "Win %", "Passes"];
+  const totalCols = 1 + regimes.length + summaryCols.length;
+  let html = `<div class="heatmap" style="grid-template-columns: 250px repeat(${regimes.length}, minmax(80px, 1fr)) repeat(${summaryCols.length}, minmax(70px, 1fr))">`;
   html += `<div class="cell" style="background:#0d1117;color:var(--muted);font-weight:600">Strategy ↓ / Regime →</div>`;
   for (const r of regimes) html += `<div class="cell" style="background:#0d1117;color:var(--muted);font-weight:600">${r}</div>`;
+  for (const c of summaryCols) html += `<div class="cell" style="background:#0d1117;color:var(--accent);font-weight:600">${c}</div>`;
   for (const s of strategies) {
+    const entry = matrix[s] || {};
+    const verdicts = entry.regime_verdicts || {};
     html += `<div class="cell" style="background:#0d1117;text-align:left;font-weight:500">${s}</div>`;
     for (const r of regimes) {
-      const cell = matrix[s][r] || {};
-      const v = cell.verdict || cell.status || cell;
+      const v = verdicts[r] || "";
       let bg = "#30363d", color = "var(--muted)";
       if (v === "PASS") { bg = "#10b98155"; color = "#10b981"; }
       else if (v === "FAIL") { bg = "#ef444455"; color = "#ef4444"; }
       else if (v === "INSUFFICIENT_DATA") { bg = "#f59e0b33"; color = "#f59e0b"; }
-      html += `<div class="cell" style="background:${bg};color:${color}" title="${JSON.stringify(cell)}">${typeof v === 'string' ? v : ''}</div>`;
+      html += `<div class="cell" style="background:${bg};color:${color}" title="${s} / ${r}: ${v}">${v || "—"}</div>`;
     }
+    // Summary columns
+    const trades = entry.total_trades;
+    const winRate = entry.overall_win_rate;
+    const passes = entry.passes_all;
+    const passClass = passes === true ? "#10b98155" : passes === false ? "#ef444455" : "#30363d";
+    const passColor = passes === true ? "#10b981" : passes === false ? "#ef4444" : "var(--muted)";
+    html += `<div class="cell" style="background:#0d1117;color:var(--text)">${fmtInt(trades)}</div>`;
+    html += `<div class="cell" style="background:#0d1117;color:var(--text)">${fmtPct(winRate, 1)}</div>`;
+    html += `<div class="cell" style="background:${passClass};color:${passColor};font-weight:600">${passes === true ? "✓" : passes === false ? "✗" : "—"}</div>`;
   }
   html += "</div>";
   wrap.innerHTML = html;

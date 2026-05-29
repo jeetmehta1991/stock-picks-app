@@ -222,6 +222,41 @@ def test_batch430_optimizer_target_is_div():
         "renamed to #optimizer-md-rendered)")
 
 
+def test_batch433_render_regime_reads_regime_verdicts_nested():
+    """Tab 2 Regime heatmap previously read top-level keys of each
+    strategy entry AS regime names — so the columns became literally
+    `best_regimes / regime_verdicts / overall_win_rate / total_trades /
+    passes_all` (because that is what the keys actually are) and every
+    cell rendered empty because none of those values are verdict strings.
+    The actual data nests verdicts under entry.regime_verdicts. Pin that
+    renderRegime reads from the nested location."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    # The fix must walk into regime_verdicts, not the top level.
+    assert "regime_verdicts" in app_js, (
+        "renderRegime must read regime names from "
+        "entry.regime_verdicts (not the strategy's top-level keys)")
+    # Sanity: a `flatMap` over top-level keys would look like
+    # `Object.keys(matrix[s] || {})` with no `.regime_verdicts` lookup.
+    # Require the lookup is present in the flatMap.
+    assert "regime_verdicts || {}))" in app_js or "regime_verdicts) || {})" in app_js, (
+        "renderRegime must build the regimes column list from "
+        "Object.keys(matrix[s].regime_verdicts || {})")
+
+
+def test_batch433_render_regime_emits_summary_columns():
+    """Batch 433 appends 3 summary columns (Trades / Win % / Passes) to
+    the regime heatmap so the strategy-level aggregates are visible
+    alongside the per-regime verdicts."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    for label in ['"Trades"', '"Win %"', '"Passes"']:
+        assert label in app_js, (
+            f"renderRegime must emit summary column header {label}")
+    # entry.total_trades / overall_win_rate / passes_all must be read
+    for k in ["total_trades", "overall_win_rate", "passes_all"]:
+        assert f"entry.{k}" in app_js or f'["{k}"]' in app_js, (
+            f"renderRegime must read entry.{k} for the summary column")
+
+
 def test_batch430_candidate_detail_is_div_with_structured_render():
     """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
     structured render (KPIs + per-dimension table + collapsible JSON) in
