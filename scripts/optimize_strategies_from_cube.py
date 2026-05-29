@@ -81,7 +81,12 @@ TIER_SIZE_PCT = {
 # Stats helpers
 # ---------------------------------------------------------------------
 def _cell_stats(pnls: pd.Series, hold_days: pd.Series | None = None) -> dict:
-    """Per-cell stats with Batch 375 trade-frequency Sharpe annualization."""
+    """Per-cell stats with Batch 375 trade-frequency Sharpe annualization.
+
+    Batch 457 (2026-05-29): adds skew + kurtosis so _dec426_verdict can
+    call metrics.py::_deflated_sharpe instead of hardcoding PSR=False.
+    Closes queue items AU1 + #4 (PSR-hardcoded-False P0).
+    """
     pnls = pnls.astype(float)
     n = len(pnls)
     if n == 0:
@@ -102,6 +107,13 @@ def _cell_stats(pnls: pd.Series, hold_days: pd.Series | None = None) -> dict:
     else:
         sharpe = (mu / std * np.sqrt(252)) if std > 0 else 0.0
     t_stat = (mu * np.sqrt(n)) / std if std > 0 else 0.0
+    # Batch 457: skew + kurtosis for PSR computation downstream.
+    if n >= 4 and std > 0:
+        skew_val = float(pnls.skew())
+        kurt_val = float(pnls.kurt())  # pandas .kurt() returns excess kurtosis
+    else:
+        skew_val = 0.0
+        kurt_val = 0.0
     return {
         "n":           n,
         "win_rate":    round(wr, 4),
@@ -111,6 +123,8 @@ def _cell_stats(pnls: pd.Series, hold_days: pd.Series | None = None) -> dict:
         "profit_factor": round(pf, 4),
         "sharpe":      round(sharpe, 4),
         "t_stat":      round(t_stat, 4),
+        "skew":        round(skew_val, 4),
+        "kurtosis":    round(kurt_val, 4),
     }
 
 
@@ -124,10 +138,23 @@ def _dec426_verdict(stats: dict, m_total_candidates: int = 1) -> dict:
     raw_p = float(2 * (1 - t_dist.cdf(abs(stats["t_stat"]),
                                        df=max(1, n - 1)))) if stats["std_pp"] > 0 else 1.0
     bonf_p = min(1.0, raw_p * m_total_candidates)
+    # Batch 457 (2026-05-29): replace placeholder PSR=False with real
+    # deflated-Sharpe PSR via metrics.py::_deflated_sharpe. Closes
+    # queue items AU1 + #4 (PSR-hardcoded-False P0).
+    # Requires _cell_stats to have populated skew + kurtosis (Batch 457).
+    from backtest.results.metrics import _deflated_sharpe
+    psr_result = _deflated_sharpe(
+        sharpe=stats.get("sharpe", 0.0),
+        n_trades=n,
+        skew=stats.get("skew", 0.0),
+        kurtosis=stats.get("kurtosis", 3.0),
+    )
+    psr_value = psr_result.get("psr")
+    psr_pass = (psr_value is not None) and (psr_value >= GATE_PSR_MIN)
     gates = {
         "n_>=_30":     n >= GATE_N_MIN,
         "p_<_0.05":    bonf_p < GATE_P_MAX,
-        "psr_>=_0.95": False,  # placeholder; full PSR via deflated_sharpe.py (DEC-247)
+        "psr_>=_0.95": psr_pass,
         "t_>=_3.4":    stats["t_stat"] >= GATE_T_MIN,
         "rr_>=_2.0":   stats["profit_factor"] >= GATE_RR_MIN,
     }
@@ -137,6 +164,8 @@ def _dec426_verdict(stats: dict, m_total_candidates: int = 1) -> dict:
         "gates":           gates,
         "raw_p":           round(raw_p, 6),
         "bonferroni_p":    round(bonf_p, 6),
+        "psr":             round(psr_value, 4) if psr_value is not None else None,
+        "deflated_sharpe": round(psr_result.get("deflated_sharpe"), 4) if psr_result.get("deflated_sharpe") is not None else None,
     }
 
 

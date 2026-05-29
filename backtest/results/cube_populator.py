@@ -156,9 +156,23 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
     sharpe = (expected_value / std) * annualization_factor if std > 0 else 0.0
     # T-stat (one-sample) - annualization-invariant
     t_stat = (expected_value * np.sqrt(n)) / std if std > 0 else 0.0
-    # PSR placeholder (DEC-247 via deflated_sharpe.py wires the real one;
-    # this approximation is monotonic in sharpe + n for ranking)
-    psr = min(0.99, max(0.0, 0.5 + (sharpe * np.sqrt(n) / 50)))
+    # Batch 457 (AU1 + queue #4 2026-05-29): wire real DEC-247 PSR via
+    # metrics._deflated_sharpe (Bailey & Lopez de Prado 2014). Replaces the
+    # monotonic placeholder so the strict 5-Gate (PSR >= 0.95) is a real check
+    # rather than a hardcoded fail.
+    from backtest.results.metrics import _deflated_sharpe
+    pnls_series = pd.Series(pnls)
+    skew_val = float(pnls_series.skew()) if n >= 4 and std > 0 else 0.0
+    kurt_val = float(pnls_series.kurt()) if n >= 4 and std > 0 else 0.0
+    psr_result = _deflated_sharpe(
+        sharpe=sharpe,
+        n_trades=n,
+        skew=skew_val,
+        kurtosis=kurt_val,
+    )
+    psr_value = psr_result.get("psr")
+    psr = round(psr_value, 4) if psr_value is not None else 0.0
+    deflated_sharpe_value = psr_result.get("deflated_sharpe")
     # R:R ratio
     rr_ratio = win_loss_ratio if win_loss_ratio != float("inf") else 99.0
     # Bonferroni p-value (placeholder; caller should pass M for full universe-
@@ -175,9 +189,12 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
         "total_roi":      round(total_roi, 4),
         "sharpe":         round(sharpe, 4),
         "t_stat":         round(t_stat, 4),
-        "psr":            round(psr, 4),
+        "psr":            psr,
+        "deflated_sharpe": round(deflated_sharpe_value, 4) if deflated_sharpe_value is not None else None,
         "bonferroni_p":   round(raw_p, 6),
         "rr_ratio":       round(rr_ratio, 4),
+        "skew":           round(skew_val, 4),
+        "kurtosis":       round(kurt_val, 4),
     }
 
 
