@@ -1428,3 +1428,15 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Does NOT apply to:** turns that don't modify the queue (a pure clarifying answer, an explanation that produces no commits).
 
     **Joint:** CHECKLIST #94 (queue maintenance), CHECKLIST #90 (status updates re-verify state).
+
+97. **HARD RULE — When an owner message contains multiple sub-questions, enumerate ALL of them explicitly before answering, then mark each as answered as you go. Partial answers to multi-part questions are a process failure.** (Owner correction 2026-05-29 Batch 449: *"you missed this!!!"* — I answered "are there other Pattern 3 gaps" but skipped the second clause "is there anything else in our analysis that we should be using and we should be doing but we are not currently.")
+
+    Past failure pattern: I read multi-clause questions and answered the part I had a ready response for, treating the rest as "covered" or "implicit." Owner had to re-ask the missed clause for it to surface.
+
+    **Apply when:** every owner message containing the word "and", semicolons, multiple sentences ending in "?", or compound subjects with multiple verbs. Before producing the answer:
+      a. Enumerate the sub-questions as a numbered list in the answer (or internally).
+      b. Confirm each enumerated item is independently addressed before composing the response.
+      c. If any item is being deferred or rolled into another, state that explicitly ("not answering Q2 because it's covered by Q1's answer" rather than skipping).
+      d. Failing to address every enumerated sub-question = process violation.
+
+    **Joint:** CHECKLIST #95 (codify findings same turn — including this kind of process gap), L165 family (state must be SHOWN, not assumed).

@@ -1773,3 +1773,22 @@ Every claim was technically correct for the focused subset I ran. None reflected
 **Apply when.** Every turn that modifies the queue. NOT required for pure clarifying answers that don't touch the queue file.
 
 **Cross-references.** CHECKLIST #94 (queue maintenance), CHECKLIST #96 (display mandate), CHECKLIST #90 (status updates re-verify state — same family: state must be SHOWN, not assumed).
+
+---
+
+### L166 — Multi-part owner questions must be enumerated before answering; partial answer is a process failure [critical/process]
+
+**Symptom.** Owner asked Batch 448: *"Thinking of above such audit gaps, broadly thinking are there other such gaps in Pattern 3: Tests check 'script runs' not 'verdict is meaningful'. Is there anything else in our analysis that we should be using and we should be doing but we are not currently."*
+
+I parsed this as ONE question ("any other Pattern 3 gaps?") and answered with 7 candidate audit gaps. I skipped the second clause entirely: "is there anything else in our analysis that we should be using and we should be doing but we are not currently." That clause is categorically different — it's about MISSING analysis capabilities, not just BUGGY existing ones. Owner responded *"you missed this!!!"*.
+
+**Why it matters.** Owner questions are dense and multi-clause. Treating them as single-clause loses the high-value parts. In this case the second clause surfaced 23 concrete gaps including unconsumed signals (Polygon news, CFTC COT, Apewisdom, pytrends, options IV), missing statistical methods (inter-strategy correlation, capacity analysis, random-walk adversarial baseline, final-OOS holdout), and decision-quality gaps (dynamic retirement criteria, correlation-aware confluence, realistic slippage model).
+
+**Rule.** Codified as CHECKLIST #97. Before composing an answer to any owner message:
+1. Enumerate the sub-questions (every "and", every separate sentence, every compound subject becomes a numbered item).
+2. Confirm each enumerated item is addressed before sending.
+3. If skipping any, state it explicitly ("not answering Q2 because…") rather than silently omitting.
+
+**Apply when.** Every owner message. Especially when message uses "and", semicolons, multiple "?" sentences, or compound predicate structures.
+
+**Cross-references.** CHECKLIST #97 (codified rule), Batch 448 (the missed answer), Batch 449 (the recovery + codification turn).
