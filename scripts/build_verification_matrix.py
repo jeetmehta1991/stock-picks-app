@@ -160,20 +160,52 @@ def grep_id_in_source(item_id: str, source_files: List[Path]) -> List[Tuple[Path
 
 
 def load_coverage() -> Dict[str, Dict]:
-    """Read coverage_report.json -> {filepath: {executed_lines: set, missing_lines: set, percent: float}}."""
-    cov_path = REPO / "coverage_report.json"
-    if not cov_path.exists():
-        return {}
-    data = json.loads(cov_path.read_text(encoding="utf-8"))
+    """Merge ALL `coverage_report*.json` files in the repo root into one
+    {filepath: {executed_lines: set, missing_lines: set, percent: float}}.
+
+    Batch 459 (AU3): the matrix now consumes coverage from multiple canonical
+    runs so engine-consumption status covers `scripts/*` (optimizer, walk-
+    forward, merge, dashboard build) in addition to `backtest/*`. Each canonical
+    run writes its own `coverage_report_<tag>.json`; we union per-file
+    executed_lines and recompute `percent` from the union. Missing-lines is
+    intersected (a line is missing only if MISSING in every run).
+
+    Canonical coverage reports expected (any subset may exist):
+      coverage_report.json                    -- backtest/run_phase1a.py canonical
+      coverage_report_optimizer.json          -- scripts/optimize_strategies_from_cube.py
+      coverage_report_walk_forward.json       -- scripts/walk_forward_batch414_cells.py
+      coverage_report_merge.json              -- scripts/merge_batch_outputs.py
+      coverage_report_dashboard_phase_1a.json -- scripts/build_dashboard_phase_1a.py
+    """
     out: Dict[str, Dict] = {}
-    for relpath, info in data.get("files", {}).items():
-        # Normalize path: coverage may emit forward or backslashes
-        key = relpath.replace("\\", "/")
-        out[key] = {
-            "executed_lines": set(info.get("executed_lines", [])),
-            "missing_lines": set(info.get("missing_lines", [])),
-            "percent": info.get("summary", {}).get("percent_covered", 0.0),
-        }
+    reports = sorted(REPO.glob("coverage_report*.json"))
+    if not reports:
+        return {}
+    for cov_path in reports:
+        try:
+            data = json.loads(cov_path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        for relpath, info in data.get("files", {}).items():
+            key = relpath.replace("\\", "/")
+            executed = set(info.get("executed_lines", []))
+            missing = set(info.get("missing_lines", []))
+            if key in out:
+                # Union executed; intersect missing (a line is missing only
+                # if NO run touched it).
+                out[key]["executed_lines"] |= executed
+                out[key]["missing_lines"] &= missing
+                # Recompute percent from the union: executed / (executed + missing)
+                total = len(out[key]["executed_lines"]) + len(out[key]["missing_lines"])
+                out[key]["percent"] = (
+                    100.0 * len(out[key]["executed_lines"]) / total if total else 0.0
+                )
+            else:
+                out[key] = {
+                    "executed_lines": executed,
+                    "missing_lines": missing,
+                    "percent": info.get("summary", {}).get("percent_covered", 0.0),
+                }
     return out
 
 
@@ -189,19 +221,26 @@ def _files_imported_by(target_module_relpath: str) -> List[str]:
     # Module basename for `from X.Y import foo` matching
     basename = mod_dotted.rsplit(".", 1)[-1]
     importers: List[str] = []
-    for p in (REPO / "backtest").rglob("*.py"):
-        if "/tests/" in str(p).replace("\\", "/"):
+    # Batch 459 (AU3): scan both backtest/ and scripts/ for importers so a
+    # backtest/* helper imported only by scripts/optimize_strategies_from_cube.py
+    # registers as wired through the optimizer call path.
+    for sub in ("backtest", "scripts"):
+        root = REPO / sub
+        if not root.exists():
             continue
-        try:
-            text = p.read_text(encoding="utf-8", errors="ignore")
-        except Exception:
-            continue
-        # Match `from backtest.results.basename import ...` OR
-        # `import backtest.results.basename` OR `from ... import basename` if dotted matches
-        pat1 = re.compile(rf"\bfrom\s+{re.escape(mod_dotted)}\s+import\b")
-        pat2 = re.compile(rf"\bimport\s+{re.escape(mod_dotted)}\b")
-        if pat1.search(text) or pat2.search(text):
-            importers.append(str(p.relative_to(REPO)).replace("\\", "/"))
+        for p in root.rglob("*.py"):
+            if "/tests/" in str(p).replace("\\", "/"):
+                continue
+            try:
+                text = p.read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+                continue
+            # Match `from backtest.results.basename import ...` OR
+            # `import backtest.results.basename` OR `from ... import basename` if dotted matches
+            pat1 = re.compile(rf"\bfrom\s+{re.escape(mod_dotted)}\s+import\b")
+            pat2 = re.compile(rf"\bimport\s+{re.escape(mod_dotted)}\b")
+            if pat1.search(text) or pat2.search(text):
+                importers.append(str(p.relative_to(REPO)).replace("\\", "/"))
     return importers
 
 
@@ -263,22 +302,28 @@ def _symbol_consumed_externally(symbol: str, defining_file: Path,
     """
     pattern = re.compile(rf"\b{re.escape(symbol)}\b")
     defining_norm = str(defining_file).replace("\\", "/")
-    for p in (REPO / "backtest").rglob("*.py"):
-        norm = str(p).replace("\\", "/")
-        if norm == defining_norm:
+    # Batch 459 (AU3): include scripts/ so symbols consumed only by the
+    # optimizer/walk-forward layers register as externally-consumed.
+    for sub in ("backtest", "scripts"):
+        root = REPO / sub
+        if not root.exists():
             continue
-        if "/tests/" in norm:
-            continue
-        try:
-            text = p.read_text(encoding="utf-8", errors="ignore")
-        except Exception:
-            continue
-        if not pattern.search(text):
-            continue
-        # Symbol is referenced. Check if this file has any coverage.
-        rel = str(p.relative_to(REPO)).replace("\\", "/")
-        if rel in coverage_keys or rel.replace("/", "\\") in coverage_keys:
-            return True
+        for p in root.rglob("*.py"):
+            norm = str(p).replace("\\", "/")
+            if norm == defining_norm:
+                continue
+            if "/tests/" in norm:
+                continue
+            try:
+                text = p.read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+                continue
+            if not pattern.search(text):
+                continue
+            # Symbol is referenced. Check if this file has any coverage.
+            rel = str(p.relative_to(REPO)).replace("\\", "/")
+            if rel in coverage_keys or rel.replace("/", "\\") in coverage_keys:
+                return True
     return False
 
 
@@ -351,16 +396,24 @@ def is_engine_consumed(hits: List[Tuple[Path, int]], coverage: Dict[str, Dict]) 
         return ("N/A", "no source tag")
 
     code_hits: List[Tuple[Path, int]] = []
+    repo_norm = str(REPO).replace("\\", "/")
     for f, ln in hits:
         norm = str(f).replace("\\", "/")
         if "/tests/" in norm:
             continue
-        if not norm.startswith(str(REPO).replace("\\", "/") + "/backtest/"):
+        # Batch 459 (AU3): accept both backtest/ and scripts/ tags so the
+        # optimizer + walk-forward + merge layers contribute to engine
+        # consumption status.
+        in_scope = (
+            norm.startswith(repo_norm + "/backtest/")
+            or norm.startswith(repo_norm + "/scripts/")
+        )
+        if not in_scope:
             continue
         code_hits.append((f, ln))
 
     if not code_hits:
-        return ("N/A", "no source tag in backtest/")
+        return ("N/A", "no source tag in backtest/ or scripts/")
 
     # Classify each tagged source file independently, then combine.
     per_file_status: List[Tuple[str, str]] = []  # (rel, status)
@@ -488,8 +541,23 @@ def grep_id_in_tests(item_id: str) -> Dict[str, str]:
 
 
 def collect_source_files() -> List[Path]:
-    src = REPO / "backtest"
-    return [p for p in src.rglob("*.py") if "tests" not in p.parts]
+    """Batch 459 (AU3): include `scripts/*.py` in the source-file scan so
+    DEC/BUG tags whose only home is the optimizer / walk-forward / merge /
+    dashboard pipeline get real engine-consumption status instead of N/A.
+
+    Test files are still excluded -- tag references in tests live in the
+    pyramid-tier columns, not the engine-consumption column.
+    """
+    files: List[Path] = []
+    for sub in ("backtest", "scripts"):
+        src = REPO / sub
+        if not src.exists():
+            continue
+        files.extend(
+            p for p in src.rglob("*.py")
+            if "tests" not in p.parts
+        )
+    return files
 
 
 def emit_matrix(items: List[Tuple[str, str, str]], coverage: Dict[str, Dict], source_files: List[Path]) -> str:
@@ -516,8 +584,22 @@ def emit_matrix(items: List[Tuple[str, str, str]], coverage: Dict[str, Dict], so
                  "N/A = no source tag found (methodology/scope decision, no code expected).")
     lines.append("- 13 pyramid tier columns: YES if any test file in that tier references the ID.")
     lines.append("")
-    lines.append("Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents "
-                 "--no-git --tickers AAPL --start 2023-01-01 --end 2023-06-30`")
+    lines.append("**Canonical runs (Batch 459 / AU3 dual-source coverage).** Run each "
+                 "of these before regenerating the matrix; the loader unions executed "
+                 "lines across every `coverage_report*.json` it finds in the repo root:")
+    lines.append("")
+    lines.append("  1. `python -m coverage run --rcfile=.coveragerc-backtest "
+                 "backtest/run_phase1a.py --no-agents --no-git "
+                 "--tickers AAPL --start 2023-01-01 --end 2023-06-30 "
+                 "&& python -m coverage json -o coverage_report.json`")
+    lines.append("  2. `python -m coverage run --rcfile=.coveragerc-optimizer "
+                 "scripts/optimize_strategies_from_cube.py "
+                 "--input-dir output_batch395_final --output-dir /tmp/optimizer_test "
+                 "&& python -m coverage json -o coverage_report_optimizer.json` "
+                 "(extends matrix coverage to the cube-cell verdict pathway)")
+    lines.append("")
+    lines.append("Add more coverage runs by writing additional "
+                 "`coverage_report_<tag>.json` files; the loader merges them automatically.")
     lines.append("")
     # Header
     header = ["ID", "engine"] + LAYER_ORDER
