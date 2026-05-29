@@ -429,6 +429,50 @@ function renderCubeCells() {
   });
 }
 
+// ---- Batch 441 (2026-05-29): Cube Diff iteration tracking tab ----
+function renderCubeDiff() {
+  const diff = D.cube_diff;
+  if (!diff || Object.keys(diff).length === 0) {
+    // No diff payload yet (pre-merge or build script not yet extended).
+    // The static <details> block in index.html already explains the
+    // run objectives + the "TBD" trade-count entries; the live-diff
+    // section shows its own "Diff not yet computed" callout. Nothing
+    // to render here until D.cube_diff appears.
+    return;
+  }
+  // KPIs.
+  const kpis = $("#cubediff-kpis");
+  if (kpis) {
+    kpis.innerHTML = [
+      kpi(diff.total_trades_prior || "—", "Trades (prior)"),
+      kpi(diff.total_trades_current || "—", "Trades (current)"),
+      kpi((diff.cells_improved || 0), "Cells improved", "good"),
+      kpi((diff.cells_regressed || 0), "Cells regressed", "bad"),
+      kpi((diff.cells_new || 0), "New cells", "good"),
+      kpi((diff.cells_retired || 0), "Retired cells", "warn"),
+      kpi((diff.verdict_upgrades || 0), "Verdict upgrades", "good"),
+      kpi((diff.verdict_downgrades || 0), "Verdict downgrades", "bad"),
+    ].join("");
+  }
+  // Hide the "not yet computed" callout when diff IS computed.
+  const status = $("#cubediff-status");
+  if (status) status.style.display = "none";
+  // Buckets table.
+  if (diff.bucket_diff) {
+    const rows = Object.entries(diff.bucket_diff).map(([b, d]) => ({
+      bucket: b, prior: d.prior, current: d.current, delta: d.delta,
+    }));
+    buildTable("#cubediff-buckets", rows, { pageLength: 10 });
+  }
+  // Improved + regressed cells.
+  if (Array.isArray(diff.cells_improved_top20)) {
+    buildTable("#cubediff-improved", diff.cells_improved_top20, { pageLength: 20 });
+  }
+  if (Array.isArray(diff.cells_regressed_top20)) {
+    buildTable("#cubediff-regressed", diff.cells_regressed_top20, { pageLength: 20 });
+  }
+}
+
 // ---- Batch 434 (2026-05-29): Reference / Background tab ----
 function renderReference() {
   // Populate top-of-tab live counts. Static content is in index.html;
@@ -474,4 +518,6 @@ try { renderQuiet(); } catch (e) { console.error("quiet:", e); }
 try { renderCubeCells(); } catch (e) { console.error("cubecells:", e); }
 // Batch 434: Reference / Background tab
 try { renderReference(); } catch (e) { console.error("reference:", e); }
+// Batch 441: Cube Diff iteration tracking tab
+try { renderCubeDiff(); } catch (e) { console.error("cubediff:", e); }
 try { renderRaw(); } catch (e) { console.error("raw:", e); }

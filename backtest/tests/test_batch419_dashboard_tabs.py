@@ -563,6 +563,72 @@ def test_batch440_optimization_proposals_per_bucket():
             "fix batches that the proposals depend on)")
 
 
+def test_batch441_cubediff_tab_button_and_panel():
+    """Tab 16 Cube Diff must be wired into nav + panel."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert '<button class="tab-btn" data-panel="cubediff">16. Cube Diff</button>' in html, (
+        "Tab 16 Cube Diff button missing from nav")
+    assert '<section class="panel" id="cubediff">' in html, (
+        "Tab 16 Cube Diff panel section missing")
+
+
+def test_batch441_cubediff_answers_owner_questions():
+    """Tab 16 must answer the 4 owner questions inline (static content
+    that exists pre-merge-data so the framework is useful immediately):
+    1. why limited rows in Cell Cube
+    2. what did this Phase 1A-beta run test + objectives
+    3. trade-count latest vs prior
+    4. how to iterate."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "Why are there so few rows in Tab 13 Cell Cube?" in html, (
+        "Tab 16 must answer 'why so few rows in Tab 13'")
+    assert "Theoretical ceiling: 4,625 cells per regime" in html, (
+        "Answer must cite the theoretical ceiling")
+    assert "n &lt; 5" in html, (
+        "Answer must cite the n < 5 exclusion filter")
+    assert "What did this Phase 1A-beta re-run actually test?" in html, (
+        "Tab 16 must answer 'what did this run test'")
+    # 6 objectives.
+    for obj in ["Validate Batch 415", "Surface SMC silent-failure",
+                "Re-evaluate 1A-alpha gate", "Validate Batch 421",
+                "Refresh quiet-bucket lists",
+                "Refresh STRATEGY_REGIME_AFFINITY"]:
+        assert obj in html, f"Tab 16 objective missing: {obj}"
+    assert "29,159" in html, (
+        "Tab 16 must include prior cube trade count (29,159)")
+    assert "How to iterate on this dashboard" in html, (
+        "Tab 16 must include the 5-step 'how to iterate' workflow")
+
+
+def test_batch441_cubediff_renderer_and_dispatch():
+    """app.js must define renderCubeDiff() + dispatch it, AND it must
+    no-op gracefully when D.cube_diff is absent (pre-merge state)."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert "function renderCubeDiff()" in app_js, (
+        "renderCubeDiff() function must be defined")
+    assert "renderCubeDiff();" in app_js, (
+        "renderCubeDiff() must be dispatched")
+    # The early-return on missing diff prevents the static
+    # "diff not yet computed" callout from being hidden when no
+    # data is available.
+    assert "D.cube_diff" in app_js, (
+        "renderCubeDiff must check D.cube_diff")
+
+
+def test_batch441_build_script_compute_cube_diff_helper():
+    """The build script must include compute_cube_diff() that joins
+    the snapshot + current optimizer output and emits cube_diff."""
+    build = (REPO / "scripts" / "build_dashboard_phase_1a.py").read_text(encoding="utf-8")
+    assert "def compute_cube_diff(" in build, (
+        "build script must define compute_cube_diff()")
+    # Must look in archive/*-pre-rerun-cube-snapshot/ for the prior data.
+    assert "pre-rerun-cube-snapshot" in build, (
+        "compute_cube_diff must look in archive/<date>-pre-rerun-cube-snapshot/")
+    # Must emit cube_diff into the payload.
+    assert '"cube_diff":' in build, (
+        "build script must emit cube_diff in the payload")
+
+
 def test_batch430_candidate_detail_is_div_with_structured_render():
     """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
     structured render (KPIs + per-dimension table + collapsible JSON) in

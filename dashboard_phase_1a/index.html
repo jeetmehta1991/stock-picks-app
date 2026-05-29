@@ -102,6 +102,8 @@
   <button class="tab-btn" data-panel="reference">14. Reference</button>
   <!-- Batch 439 (2026-05-29): owner-directed Sample Trades walkthrough tab -->
   <button class="tab-btn" data-panel="sample">15. Sample Trades</button>
+  <!-- Batch 441 (2026-05-29): owner-directed Cube Diff tracking tab -->
+  <button class="tab-btn" data-panel="cubediff">16. Cube Diff</button>
   <button class="tab-btn" data-panel="raw">Raw JSON</button>
 </nav>
 
@@ -724,6 +726,88 @@
     </tbody>
   </table>
   <p class="desc" style="margin-top:.5rem"><strong>Takeaway.</strong> This sample is engineered to land near break-even on purpose - it mirrors the empirical cube finding (most cells fail strict 5-Gate). A 62.5% win rate sounds good, but with 0.63 W:L ratio + only 8 trades, profit factor 1.04 doesn't clear the 1.5 overall threshold. To pass the 9 criteria the strategy mix needs EITHER higher win rate (~70%) OR larger avg-win/avg-loss ratio (~1.5+). The cube optimizer (Tab 11) is what hunts for parameter combinations that achieve this.</p>
+</section>
+
+<!-- Batch 441 (2026-05-29): Cube Diff tracking - per-cell deltas between
+     iterations so owner can validate whether each optimization batch
+     actually moved the needle. -->
+<section class="panel" id="cubediff">
+  <h2>16. Cube Diff - Iteration tracking</h2>
+  <p class="desc">Track Phase 1A-beta cube changes across iterations: per-cell Sharpe / n / verdict deltas, quiet-bucket movement, total trade count, and which optimizations actually moved cells from FAIL -&gt; PASS.</p>
+
+  <!-- Owner-question answers + run-objectives block (Batch 441 static content). -->
+  <details style="margin:.4rem 0;background:#1a1f29;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px" open>
+    <summary style="cursor:pointer;color:var(--accent);font-weight:600">Run objectives + answers to "what did we test" / "why limited rows" (click to collapse)</summary>
+    <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
+
+      <h4 style="margin:.4rem 0 .2rem;color:var(--accent)">Why are there so few rows in Tab 13 Cell Cube?</h4>
+      <p style="margin:.3rem 0"><strong>Theoretical ceiling: 4,625 cells per regime</strong> (185 strategies x 25 exit methods). Today's payload shows ~100 cells.</p>
+      <p style="margin:.3rem 0">Two compounding filters:</p>
+      <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><code>scripts/optimize_strategies_from_cube.py::analyze_exit_methods</code> Layer 2 excludes every (strategy, exit_method) cell with <code>n &lt; 5</code> trades. Most strategy-exit pairings never reach 5 trades because each strategy only fires N times in the window and that N gets divided across 25 exits.</li>
+        <li>The current payload was generated from the <em>prior</em> cube (pre-2026-05-29 re-run). Only 20 strategies + 23 exits produced enough cells. The just-finished re-run + merge will refresh this once the new optimizer pass runs.</li>
+      </ul>
+      <p style="margin:.3rem 0">After the merge + optimizer re-run, expected cell count: similar order of magnitude (100-200). The cube depth is structurally trade-count-limited; the fix is more trades per strategy (= longer window, larger universe, more relaxed entry gates), NOT more cells per strategy.</p>
+
+      <h4 style="margin:.6rem 0 .2rem;color:var(--accent)">What did this Phase 1A-beta re-run actually test?</h4>
+      <p style="margin:.3rem 0">Shape A launch on AWS (3 x c7a.8xlarge spot, ~$9.30, ~5h wall-time). Full cube: 185 active strategies x 25 exit methods x 7 historical regime windows, run with all four legacy gates OFF (<code>--no-portfolio-cap --no-dd-halt --no-regime-affinity --no-event-suppression</code>) on the canonical 2020-01-01 -&gt; 2026-05-XX window. Commit <code>948769bf2</code> (Batch 424 orchestrator slot logic).</p>
+      <p style="margin:.3rem 0"><strong>Key objectives of THIS iteration:</strong></p>
+      <ol style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><strong>Validate Batch 415 (signals_at_entry enrichment).</strong> Prior cube: <code>signals_at_entry</code> dict was missing <code>ticker</code> + <code>strategy_name</code> + <code>category</code>, so <code>exit_earnings_blackout</code> always returned <code>"no_earnings_known"</code> and <code>exit_class_time_stop</code> always defaulted to <code>"momentum"</code>. Batch 415 added those keys at <code>run_exit_comparison</code> before each exit_fn call. Post-merge check: how many cells changed (especially for earnings-sensitive strategies and class-time-stop variants).</li>
+        <li><strong>Surface SMC silent-failure root cause via Batch 416.</strong> Prior cube: 0 of 29,159 trades had any <code>smc_*</code> key despite <code>compute_smc_signals</code> returning 28 keys locally. Batch 416 wired <code>_log_silent_producer_failure</code> rate-limited diagnostic logging at the SMC + classification_change + institutional_signal call sites. Post-merge: read engine logs (1 line per producer+exception-type) to identify the actual AWS-environment failure.</li>
+        <li><strong>Re-evaluate 1A-alpha gate.</strong> Currently LOCKED at best OOS Sharpe 0.419 (walk_forward_batch414_cells.json). If the re-run with fixes pushes any strategy past 0.7 OOS in any regime, gate opens; Phase 1B-alpha $300 Haiku agent budget becomes eligible. If not, loop back to entry-side optimization.</li>
+        <li><strong>Validate Batch 421 (PEAD lru_cache).</strong> Engine-speedup batch. Profile previously showed <code>load_quarterly_eps</code> at 67s cumtime / ~12% of total engine cost. lru_cache means each ticker's parquet reads once instead of once-per-day. Validate ~10-12% wall-time reduction vs prior cube.</li>
+        <li><strong>Refresh quiet-bucket lists.</strong> Prior bucket counts: PRODUCER_LAYER_ZERO_LIKELY = 6 (all SMC), COMPOUND_RESTRICTIVE = 31, SKIPPED_AT_ENGINE = 48. Post-merge re-audit shows movement: SKIPPED should drop most because <code>--no-portfolio-cap</code> + <code>--no-event-suppression</code> were the main blockers; if it stays at ~48 the cause is structural (liquidity floor).</li>
+        <li><strong>Refresh STRATEGY_REGIME_AFFINITY (Batches 417/418).</strong> 14 new + 15 override entries derived from prior cube cell stats. Validate they still hold under fresh data; surface any contradictions.</li>
+      </ol>
+
+      <h4 style="margin:.6rem 0 .2rem;color:var(--accent)">Total trade count - latest run vs previous</h4>
+      <table class="display compact" style="font-size:.85rem;width:auto">
+        <thead><tr><th></th><th>Total trades</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Prior cube</td><td><strong>29,159</strong></td><td><code>archive/2026-05-29-pre-rerun-cube-snapshot/trade_log_prior.csv</code> (snapshotted before merge overwrite)</td></tr>
+          <tr><td>Latest re-run</td><td><strong>TBD (merge in flight)</strong></td><td><code>output_batch395_final/trade_log.csv</code> once merge completes</td></tr>
+          <tr><td>Delta</td><td><strong>TBD</strong></td><td>Will populate post-merge + dashboard rebuild</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:.3rem 0;color:var(--muted);font-size:.82rem">Expected directional move: total trade count should rise modestly because Batch 415 fixes earnings_blackout / class_time_stop seeing the right ticker - those exits previously short-circuited and produced fewer cube replays. The PRODUCER_LAYER_ZERO_LIKELY bucket (6 SMC strategies, 0 trades each prior) should NOT contribute new trades yet - Batch 416 only logs the failure, doesn't fix the producer.</p>
+    </div>
+  </details>
+
+  <!-- Live diff KPIs + table (will populate when build_dashboard supports cube_diff payload). -->
+  <h3 style="margin-top:1rem">Live diff (current run vs prior snapshot)</h3>
+  <div id="cubediff-status" style="background:#3a2f1f;border-left:3px solid var(--warn);padding:.5rem .8rem;border-radius:4px;font-size:.85rem;margin-bottom:.5rem">
+    <strong>Diff not yet computed.</strong> The just-finished cube re-run (commit <code>948769bf2</code>) is still being merged from S3 (<code>aws_batch395_merge.py</code> background task). Once the merge + optimizer re-run + dashboard rebuild complete, this section will auto-populate with:
+    <ul style="margin:.3rem 0 .2rem;padding-left:1.4rem">
+      <li>Per-cell n / Sharpe / win-rate / profit-factor / verdict deltas.</li>
+      <li>Verdict-flip counts (FAIL -&gt; PASS-relaxed = improvement; PASS-strict -&gt; FAIL = regression).</li>
+      <li>New cells (didn't reach n &gt;= 5 before, do now) + retired cells (had n &gt;= 5 before, don't now).</li>
+      <li>Bucket-count diff: PRODUCER 6 -&gt; X, COMPOUND 31 -&gt; X, SKIPPED 48 -&gt; X.</li>
+      <li>Total trade-count delta.</li>
+      <li>Top 20 most-improved cells (largest +Sharpe delta) and top 20 most-regressed.</li>
+    </ul>
+    Prior baseline snapshot: <code>archive/2026-05-29-pre-rerun-cube-snapshot/exit_method_analysis_prior.json</code>.
+  </div>
+
+  <div id="cubediff-kpis" class="kpis"></div>
+
+  <h4 style="margin-top:.7rem">Bucket count delta</h4>
+  <table id="cubediff-buckets" class="display compact" style="font-size:.85rem"></table>
+
+  <h4 style="margin-top:.7rem">Most-improved cells (top 20 by +Sharpe delta)</h4>
+  <table id="cubediff-improved" class="display compact" style="font-size:.85rem"></table>
+
+  <h4 style="margin-top:.7rem">Most-regressed cells (top 20 by -Sharpe delta)</h4>
+  <table id="cubediff-regressed" class="display compact" style="font-size:.85rem"></table>
+
+  <h3 style="margin-top:1rem">How to iterate on this dashboard</h3>
+  <ol style="font-size:.85rem">
+    <li><strong>Snapshot.</strong> Before launching the next cube re-run, copy <code>output_batch395_final/trade_log.csv</code> + <code>output_optimization_candidates_*/exit_method_analysis.json</code> + <code>producer_zero_post_cube_audit.json</code> to <code>archive/&lt;date&gt;-pre-rerun-cube-snapshot/</code>. Append <code>_prior</code> suffix to filenames.</li>
+    <li><strong>Launch the cube re-run</strong> with the new batch of fixes (e.g. STRATEGY_EXIT_OVERRIDE updates, producer fixes, gate-threshold tuning).</li>
+    <li><strong>Merge + optimize.</strong> <code>aws_batch395_merge.py --upload-final</code> then <code>scripts/optimize_strategies_from_cube.py</code> on the new <code>output_batch395_final/</code>.</li>
+    <li><strong>Rebuild dashboard</strong> with <code>scripts/build_dashboard_phase_1a.py --source output_batch395_final</code>. The build script (Batch 441b extension) loads both the prior snapshot AND the current optimizer output, joins on (strategy, exit_method), computes per-cell deltas, and emits <code>D.cube_diff</code>. This Tab 16 then renders the diff KPIs + 3 tables above.</li>
+    <li><strong>Read the diff.</strong> Are the cells we tried to improve actually improved? Did the verdict flip from FAIL to PASS-relaxed? Did the bucket counts move in the expected direction? If yes, the optimization batch is validated; commit. If no, the hypothesis was wrong and we need a different lever.</li>
+  </ol>
 </section>
 
 <section class="panel" id="raw">
