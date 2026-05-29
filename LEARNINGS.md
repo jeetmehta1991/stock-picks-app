@@ -1901,3 +1901,49 @@ Without this schema-comparison evidence, the queue row should be rejected and re
 **Apply when.** Any codification of a new lesson. Any audit. Owner-prompted "are there other gaps" questions trigger the full 5-pattern sweep.
 
 **Cross-references.** CHECKLIST #100 (this turn's codification), AU1-AU6 queue rows (concrete remediation items), Batches 446 (PSR finding) / 447 (placeholder sweep + meta-fix row 0) / 448 (CHECKLIST #95/96/97 + missing-analysis sweep) / 451 (CHECKLIST #98 prefetch-consumer pair) / 453 (CHECKLIST #99 schema verification) / 455 (this codification + comprehensive audit), L164/L167/L168 (lessons-must-propagate-across-layers family).
+
+---
+
+### L170 — Round-2 sweep: dead code at config / output / script / DEC-resolved layers [critical/process]
+
+**Owner directive 2026-05-29 Batch 456.** *"Do another round of extremely comprehensive sweep per pattern. Add another sweep but focus on whats there but not being used or called upon."*
+
+**Method.** Four parallel sweeps complementing the L169 Round-1 5-pattern sweep:
+1. Config-flag dead code: top-level UPPERCASE constants in `backtest/config.py` with no runtime reader.
+2. Output dead code: filenames written by `backtest/results/writer.py` with no downstream consumer.
+3. Script dead code: `scripts/*.py` files with no references in any other `.py` / `.md` / `.sh` / `.yml`.
+4. DEC-RESOLVED vs VERIFICATION_MATRIX: sampling of BUG-IDs claimed RESOLVED-IMPLEMENTED to check `engine:` status in matrix.
+
+**Findings.**
+1. **18 unused config flags** of 221 top-level constants. Several are real Phase 1A-β concerns shipped as spec without consumer:
+   - `WALK_FORWARD_FOLDS` (DEC-505 4-fold) — defined but no caller uses the constant.
+   - `TIER_3_POSITION_SIZE_PCT` — Tier 3 sizing simplification (DEC-503) — defined but not consumed.
+   - `CASH_MANAGEMENT_TRIGGER_PCT` + `CASH_MANAGEMENT_NOTE` — designed but unwired.
+   - `SECTOR_PASSING_CRITERIA` — sector-level gates designed but not consumed.
+   - `AGENT_AB_DECAY_NET_SHARPE_FLOOR` — agent retirement criterion never checked.
+   - `DROPPED_STRATEGY_REEVAL_DAYS` — re-evaluation cadence never triggered.
+   - 12 more (mostly notes, deprecation markers, email/Stage-4 flags acceptable as DEFERRED).
+
+2. **18 write-only outputs** of 50 distinct filenames written by writer.py. Many are "stub" pattern (analyst_data_stub.json / cache_freshness_checksum_stub.json etc.) — DEC-skeleton placeholders that never got their consumers. **The non-stub write-only files are the concerning subset:**
+   - `top_losers_per_strategy.json` — sounds optimization-relevant; never read.
+   - `trade_log_in_sample.csv` + `trade_log_out_of_sample.csv` — walk-forward splits; nothing consumes them. (Walk-forward script does its own splitting internally — these are duplicate work.)
+   - `trade_pnl_decomposition.csv` — PnL attribution; never read.
+   - `edge_decay_metrics.csv`, `slippage_advanced.csv`, `stop_cluster_pattern.json`, `test_coverage_gate.json`, `yfinance_hardcut_verify.json`, `benchmark_curve.parquet`, `dec_constants_verification.json`.
+
+3. **21 orphan scripts** of 131 `scripts/*.py`. Categories:
+   - **Intentional one-shot** (~3): `revert_batch_69_phase_1`, `migrate_string_dates`. Archive.
+   - **Wire-or-delete prefetch parsers** (~6): `parse_aaii_asset_allocation`, `parse_aaii_sentiment`, `prefetch_fred_metadata`, `prefetch_polygon_grouped_daily`, `prefetch_polygon_options_smoke`, `prefetch_polygon_prev_related`, `prefetch_polygon_statics`. The Sprint 0A prefetch infrastructure exists but these specific helpers never got wired into the orchestration.
+   - **Build scripts needing cron/doc references** (~3): `build_dashboard_stage_3`, `build_russell_events`, `build_wiring_catalog`.
+   - **Diagnostic helpers** (~2): `profile_engine`, `diagnose_per_day_timing` — keep but document in MONITORING_FRAMEWORK.md.
+   - **Sequential variant we don't use** (~1): `aws_batch395_sequential` — we standardized on the parallel orchestrator (Batch 411/424); archive.
+   - **Multi-batch launcher** (~1): `launch_phase_1a_beta_multibatch` — superseded by `aws_batch395_parallel`; archive.
+   - **Stage D ticker generator** (~1): `generate_stage_d_tickers` — Stage D specific.
+   - **Remediation helpers** (~2): `remediate_spec_without_build`, `remediate_test_signal_unverified` — meta-fix scripts that may themselves be unused. Confirm and archive.
+
+4. **BUG-RESOLVED-IMPLEMENTED with engine: UNKNOWN** sampled across BUG-014 through BUG-023 and BUG-133. ALL show engine status `UNKNOWN` in VERIFICATION_MATRIX despite RESOLVED-IMPLEMENTED text. The RESOLVED claim lives in AUDIT_INDEX text; the matrix wasn't re-run after each fix. This is **Pattern 1 + Pattern 4 combined** — wired-by-text-claim plus matrix not re-built. The DECs that did get marked engine: YES were the 267 that happened to execute during the small canonical AAPL backtest. The other 464 items live in code paths the canonical run doesn't reach.
+
+**Rule.** Codified as CHECKLIST #100 (every queue item ships tests + wired + activated). Round-2 sweeps complement Round-1 by catching the 18+18+21+ N dead-code instances that Round-1's pattern-vocabulary missed. **Future sweeps must alternate "scope" and "lens"** — Round 1 patterned by anti-pattern category; Round 2 patterned by surface (config / output / script / DEC). Both are needed because each catches the other's blind spots.
+
+**Apply when.** Owner-prompted "find more gaps" questions. After any new lesson lands (run the sweep at the new lesson's level of abstraction). Quarterly even without prompt.
+
+**Cross-references.** CHECKLIST #100 (codified rule), AU7/AU8/AU9/AU10 queue rows (concrete remediation), L164/L167/L168/L169 (lessons-must-propagate family), Batch 456 (this codification).
