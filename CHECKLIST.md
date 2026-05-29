@@ -625,7 +625,7 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Scope — what gets swept:**
     - All `*.md` files at repo root EXCEPT those in `archive/` folder (point-in-time snapshots — see L143)
     - All `*.md` files under `scripts/`, `backtest/`, etc. that are forward-looking (READMEs, design docs)
-    - `CLAUDE.md`, `AUDIT_INDEX.md` (DEC bodies — current canonical state), `CHECKLIST.md`, `LEARNINGS.md`, `PROJECT_PLAN.md`, `DETAILED_PROJECT_PLAN.md`, `TRADING_RULES_AND_INFORMATION.md`, `STRATEGY_REGISTER.md`, `BUG_REGISTER.md`, `ENGINEERING_REGISTER.md`, `DOCUMENTATION_REGISTER.md`, `IMPLEMENTATION_READINESS_DASHBOARD.md`, `PASS_NN_PRIORITIES.md` (current Pass), `EXPLANATION.md`, `README.md`, `UNIVERSAL_LEARNINGS.md`, `AUDIT_TRIAGE.md`, etc.
+    - `CLAUDE.md`, `AUDIT_INDEX.md` (DEC bodies — current canonical state), `CHECKLIST.md`, `LEARNINGS.md`, `PROJECT_PLAN.md`, `DETAILED_PROJECT_PLAN.md`, `TRADING_RULES_AND_INFORMATION.md`, `STRATEGY_REGISTER.md`, `BUG_REGISTER.md`, `ENGINEERING_REGISTER.md`, `DOCUMENTATION_REGISTER.md`, `IMPLEMENTATION_READINESS_DASHBOARD.md`, `EXPLANATION.md`, `README.md`, `UNIVERSAL_LEARNINGS.md`, etc. (AUDIT_TRIAGE.md / PASS_NN_PRIORITIES.md archived Batch 425/426)
 
     **Scope — what is EXCLUDED (per L143 don't-rewrite-history):**
     - `archive/**` (literal archive folder — point-in-time snapshots stored here are immutable)

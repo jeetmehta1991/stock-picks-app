@@ -1091,7 +1091,7 @@ This project's documentation lives across multiple specialized files. The map:
 - **PROJECT_PLAN_v1_outdated.md** — pre-Pass-53 PROJECT_PLAN (April 2026)
 - **PROJECT_PLAN_ARCHIVE.md** — pre-April-2026 reference
 - **EXPLANATION.md** — early project explanation (historical)
-- **AUDIT_TRIAGE.md** — Pass 52 audit triage (historical)
+- **AUDIT_TRIAGE.md** — Pass 52 audit triage (historical; archived Batch 426 → `archive/2026-05-28-pre-1a-alpha-gate/docs/`)
 
 ### Operational
 - **CLAUDE.md** — Claude session context guide
