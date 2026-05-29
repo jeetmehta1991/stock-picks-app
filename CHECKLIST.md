@@ -1387,16 +1387,19 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
     Fix: project-level sequential execution queue at `EXECUTION_QUEUE.md`. Distinct from per-session TodoWrite: TodoWrite is "what am I doing in this conversation"; EXECUTION_QUEUE is "what is the project's next milestone." Survives across sessions.
 
-    **Apply when:** every turn that ships code / archives docs / closes a decision / advances cube state / addresses an owner directive. End that turn with an `EXECUTION_QUEUE.md` update — advance status (PENDING → IN_PROGRESS → DONE), move DONE items to the completed log, add newly-discovered items at the appropriate queue position, surface BLOCKED/DEFERRED with reason. **Does NOT apply to**: pure conversational answers, status reports, queries that don't produce changes.
+    **Apply when:** every turn that ships code / archives docs / closes a decision / advances cube state / addresses an owner directive **OR surfaces a new finding** (something didn't behave as expected, a bug was spotted, a follow-up is needed). End that turn with an `EXECUTION_QUEUE.md` update — advance status, move RESOLVED items to the bottom of the active queue (NOT to the Completed log unless they're truly never coming back), add newly-discovered items + findings as fresh rows, surface BLOCKED/DEFERRED with reason. **Does NOT apply to**: pure conversational answers, status reports, queries that don't produce changes.
 
     **How to apply:**
       a. Read `EXECUTION_QUEUE.md` at start of turn (alongside TodoWrite) to know the next target.
-      b. Top item is what to execute next unless owner says otherwise. If top is BLOCKED/DEFERRED, the next non-blocked PENDING runs.
-      c. End-of-turn: Edit `EXECUTION_QUEUE.md` to reflect new state. Move DONE items to completed log (one-line entry, slug + commit SHA + one-sentence outcome). Add newly-discovered work in the position implied by priority + dependencies.
-      d. DEFERRED items retain their position — they're skipped *without* being moved down. They surface again when the queue is consulted next turn.
-      e. Reorder freely via Edit when priorities shift — but the new top is what runs next.
-      f. Failure to update at end of a meaningful-change turn = non-compliant.
+      b. Top item is what to execute next unless owner says otherwise. If top is BLOCKED/DEFERRED, the next non-blocked PENDING/REOPENED runs.
+      c. End-of-turn: Edit `EXECUTION_QUEUE.md` to reflect new state.
+      d. DEFERRED items retain their position — skipped *without* being moved.
+      e. RESOLVED items move to the BOTTOM of the active queue table (not the Completed log) and stay tagged RESOLVED. This preserves traceability for when the same area is touched later. Only DONE-ARCHIVED items (truly never coming back) get pushed to the Completed log section.
+      f. REOPENED items move to row #1 of the active queue. Update Notes with what changed.
+      g. **Findings-become-items mandate (owner directive 2026-05-29 Batch 444):** anything discovered in a status report ("X was supposed to drop but didn't", "Y stayed at N", "Z needs investigation") becomes a queue row that SAME turn. Don't let findings dangle in chat history.
+      h. Reorder freely via Edit when priorities shift — but the new top is what runs next.
+      i. Failure to update at end of a meaningful-change turn = non-compliant.
 
-    **Status enum:** PENDING / IN_PROGRESS / BLOCKED / DEFERRED / DONE. Only ONE item is IN_PROGRESS at any time.
+    **Status enum:** PENDING / IN_PROGRESS / BLOCKED / DEFERRED / RESOLVED / REOPENED / DONE-ARCHIVED. Only ONE item is IN_PROGRESS at any time.
 
     **Joint:** TodoWrite (per-session), `MONITORING_FRAMEWORK.md` (operational state that informs queue items), CHECKLIST #67/#67.b (per-turn doc sync — EXECUTION_QUEUE update is one of those required syncs), `feedback_audit_recommendations_against_existing_directives.md` (queue items must be audited against existing rules before adding).
