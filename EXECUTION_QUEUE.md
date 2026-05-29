@@ -32,7 +32,7 @@
 
 | # | Slug | Item | Status | Notes |
 |---|---|---|---|---|
-| 1 | `cube-batch-5-merge` | Phase 1A-β cube re-run batch_5 completion + merge via `aws_batch395_merge.py` | IN_PROGRESS | batch_5 ~60% complete at 01:16Z 2026-05-29; ETA ~30-40 min. Then download to `output_batch395_final/` + per-cell forensic refresh. |
+| 1 | `cube-merge-rebuild` | Cube re-run COMPLETE; run merge + rebuild dashboard | IN_PROGRESS | All 5 batches _COMPLETE 2026-05-29 ~03:00Z. All 5 forensic verdicts = WARN (engine logs clean). Orchestrator exited cleanly. **Next:** `python scripts/aws_batch395_merge.py --bucket stock-picks-batch395-jm-7421 --upload-final` to combine batch_1..5 outputs into `output_batch395_final/` + S3 upload of merged artifacts. Then rebuild dashboard from fresh cube data. |
 | 2 | `cube-optimizer-rerun` | Re-run `scripts/optimize_strategies_from_cube.py` on fresh cube | PENDING | Stage 3 of locked workflow. Produces refreshed `output_optimization_candidates_2026_05_28/` JSONs + `optimization_summary.md`. |
 | 3 | `cube-walk-forward` | Run `scripts/walk_forward_batch414_cells.py` on fresh cube cells | PENDING | DEC-505 4-fold expanding-window walk-forward. Prior result LOCKED 1A-α gate at 0.419 OOS Sharpe; this re-run uses Batches 414/415/416/421 fixes. |
 | 4 | `smc-silent-failure-rootcause` | Surface SMC silent-failure root cause from L2 logs in fresh cube engine output | PENDING | Batch 416 instrumented producer call sites; SMC keys absent on prior cube. AWS-environment-specific failure mode expected in `_log_silent_producer_failure` log lines. |
