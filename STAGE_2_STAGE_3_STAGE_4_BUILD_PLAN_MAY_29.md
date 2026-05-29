@@ -242,7 +242,7 @@ Per owner directive 2026-05-25: "Phase 1A beta will compulsorily analyse each st
 - **Phase definitions:** [PROJECT_PLAN.md §3.6-3.11](PROJECT_PLAN.md)
 - **Current track plan + tools:** [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) (T0-T7 tracks)
 - **T1.1-T1.5 strategy drafts:** [IMPLEMENTATION_DRAFTS_T1.md](IMPLEMENTATION_DRAFTS_T1.md)
-- **INV triage prep:** [TRIAGE_PREP_2026_05_19.md](TRIAGE_PREP_2026_05_19.md)
+- **INV triage prep:** [TRIAGE_PREP_2026_05_19.md](archive/2026-05-28-pre-1a-alpha-gate/docs/TRIAGE_PREP_2026_05_19.md) (archived Batch 425)
 - **T0 close-out automation:** [scripts/run_t0_close_out.py](scripts/run_t0_close_out.py)
 - **T5b cointegrated pairs precompute:** [scripts/precompute_cointegrated_pairs.py](scripts/precompute_cointegrated_pairs.py)
 - **A/B test DECs:** DEC-131, DEC-207-216, DEC-242 (see AUDIT_INDEX.md)

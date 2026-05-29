@@ -54,3 +54,12 @@ data_prefetch/**/*.checkpoint
 .coverage
 coverage_report.json
 htmlcov/
+
+# Batch 425 (2026-05-28): regenerable Phase 1B LLM-response cache (14k+ files / 100+ MB).
+# Re-running Phase 1B re-fetches; committing would inflate repo without value.
+backtest/agents/cache/
+
+# Batch 425: root-level scratch / vm state orphans (preempt future re-creation)
+/tmp_*.js
+/tmp_*.json
+/vm_*.json
