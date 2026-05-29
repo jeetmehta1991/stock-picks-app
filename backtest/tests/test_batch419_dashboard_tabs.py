@@ -163,3 +163,85 @@ def test_batch422_app_js_defensive_data_lookup():
     assert "typeof PHASE_1A_DATA" in app_js, (
         "app.js must also have a `typeof PHASE_1A_DATA !== 'undefined'` "
         "fallback per Batch 422 defensive pattern")
+
+
+def test_batch430_buildtable_window_ready_bug_removed():
+    """app.js's buildTable() previously had `$(window).ready(...)` which
+    threw SyntaxError because `$` was overridden as document.querySelector
+    (so `$(window)` -> `document.querySelector(window)` -> '[object Window]
+    is not a valid selector'). That killed every buildTable() call so
+    Tabs 1-9 + Exits + Trades + Tab 13 (CubeCells) showed only their
+    <h2> header + an empty <table> stub. Batch 430 removes the line."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert "$(window).ready" not in app_js, (
+        "buildTable() must not contain `$(window).ready(...)` - "
+        "throws because `$` is overridden as document.querySelector")
+
+
+def test_batch430_marked_js_loaded_in_index():
+    """Tab 10 Optimizer Summary renders optimization_summary.md via
+    marked.js. The CDN script must be loaded BEFORE app.js so marked is
+    in scope when renderOptimizer fires."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "marked.min.js" in html, (
+        "index.html must load marked.min.js for Tab 10 markdown render")
+    # Order check: marked.min.js must appear before app.js
+    pos_marked = html.find("marked.min.js")
+    pos_app = html.find("app.js")
+    assert 0 < pos_marked < pos_app, (
+        f"marked.min.js (pos {pos_marked}) must precede app.js "
+        f"(pos {pos_app}) so `marked` is in scope when renderOptimizer runs")
+
+
+def test_batch430_optimizer_uses_marked_parse():
+    """renderOptimizer must call marked.parse() instead of dumping raw
+    markdown into a <pre> with .textContent."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert "marked.parse" in app_js, (
+        "renderOptimizer must use marked.parse() for Tab 10 rendering")
+    # Target element renamed in index.html
+    assert "#optimizer-md-rendered" in app_js, (
+        "renderOptimizer must target #optimizer-md-rendered (Batch 430 "
+        "rename of #optimizer-md-pre)")
+
+
+def test_batch430_optimizer_target_is_div():
+    """Batch 430 changed the optimizer markdown container from <pre> to
+    <div> so marked.js's HTML output renders properly (rather than being
+    displayed as escaped text inside a preformatted block)."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    # The optimizer summary container should be a <div> with class md-render
+    import re
+    m = re.search(r'<div\s+id="optimizer-md-rendered"[^>]*class="md-render"', html)
+    assert m is not None, (
+        "Tab 10 optimizer markdown container must be "
+        "<div id='optimizer-md-rendered' class='md-render' ...>")
+    # And the prior <pre id="optimizer-md-pre"> must be gone
+    assert 'id="optimizer-md-pre"' not in html, (
+        "Old <pre id='optimizer-md-pre'> must be removed (Batch 430 "
+        "renamed to #optimizer-md-rendered)")
+
+
+def test_batch430_candidate_detail_is_div_with_structured_render():
+    """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
+    structured render (KPIs + per-dimension table + collapsible JSON) in
+    <div>."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert 'id="candidate-detail"' in html, (
+        "candidate-detail element must exist for Tab 11")
+    # Must be a <div> not <pre> now
+    import re
+    m_div = re.search(r'<div\s+id="candidate-detail"', html)
+    m_pre = re.search(r'<pre\s+id="candidate-detail"', html)
+    assert m_div is not None and m_pre is None, (
+        "candidate-detail must be a <div> (Batch 430 switched from <pre>)")
+
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    # Structured render markers
+    assert "Per-dimension summary" in app_js, (
+        "renderCandidates must build a per-dimension summary table")
+    assert "dimension_a_thresholds" in app_js, (
+        "renderCandidates must enumerate the 9 dimension keys")
+    # Collapsible raw JSON fallback retained
+    assert "Raw JSON (full payload)" in app_js, (
+        "renderCandidates must retain a collapsible full-JSON fallback")

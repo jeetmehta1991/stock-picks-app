@@ -28,8 +28,13 @@ function buildTable(selector, rows, opts = {}) {
   }
   const cols = opts.columns || Object.keys(rows[0]).map(k => ({ title: k, data: k, defaultContent: "—" }));
   $(selector).innerHTML = "<thead><tr>" + cols.map(c => `<th>${c.title}</th>`).join("") + "</tr></thead>";
-  // eslint-disable-next-line no-undef
-  $(window).ready(() => $(selector));
+  // Batch 430 (2026-05-29): removed a broken window-ready wrapper here.
+  // The line passed the window object through the local `$` helper which
+  // is overridden as document.querySelector at the top of this file.
+  // querySelector(window) throws SyntaxError ("[object Window] is not a
+  // valid selector"), which killed every buildTable() call - tabs 1-9 +
+  // Exits + Trades + Tab 13 only ever rendered their <h2> header + an
+  // empty <table> stub. DataTable does not need a wrapper here.
   jQuery(selector).DataTable({
     data: rows,
     columns: cols,
@@ -263,7 +268,20 @@ function renderOptimizer() {
     kpi(summary.COMPOUND_RESTRICTIVE ?? "—", "Compound restrictive"),
   ].join("");
   $("#optimizer-kpis").innerHTML = html;
-  $("#optimizer-md-pre").textContent = md ? md.slice(0, 50000) : `(no optimization_summary.md found at ${optDir})`;
+  // Batch 430 (2026-05-29): render markdown via marked.js for readability.
+  // Was: raw markdown text dumped into <pre> with .textContent.
+  const target = $("#optimizer-md-rendered");
+  if (md) {
+    if (typeof marked !== "undefined" && marked && marked.parse) {
+      target.innerHTML = marked.parse(md.slice(0, 50000));
+    } else {
+      // marked.js failed to load -> fall back to escaped raw text
+      target.style.whiteSpace = "pre-wrap";
+      target.textContent = md.slice(0, 50000);
+    }
+  } else {
+    target.textContent = `(no optimization_summary.md found at ${optDir})`;
+  }
 }
 
 function renderCandidates() {
@@ -277,7 +295,54 @@ function renderCandidates() {
   }
   picker.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join("");
   function show(name) {
-    detail.textContent = JSON.stringify(psc[name] || {}, null, 2);
+    // Batch 430: structured render (was: raw JSON.stringify dump).
+    const obj = psc[name] || {};
+    const agg = obj.aggregate || {};
+    const dims = [
+      ["A — Thresholds",      obj.dimension_a_thresholds],
+      ["B — Compound logic",  obj.dimension_b_compound],
+      ["C — Regime",          obj.dimension_c_regime],
+      ["D — Exit method",     obj.dimension_d_exit],
+      ["E — Sizing",          obj.dimension_e_sizing],
+      ["F — Universe",        obj.dimension_f_universe],
+      ["G — Hold",            obj.dimension_g_hold],
+      ["H — Cooldown",        obj.dimension_h_cooldown],
+      ["I — Macro",           obj.dimension_i_macro],
+    ];
+    const verdictClass = agg.verdict === "PASS" ? "good"
+      : agg.verdict === "FAIL" ? "bad" : "warn";
+    const aggKpis = [
+      kpi(fmtInt(agg.n), "Trades (n)"),
+      kpi(fmtPct(agg.win_rate, 1), "Win rate"),
+      kpi(fmtNum(agg.sharpe, 2), "Sharpe", (agg.sharpe ?? 0) >= 0.7 ? "good" : "bad"),
+      kpi(fmtNum(agg.profit_factor, 2), "PF", (agg.profit_factor ?? 0) >= 1.3 ? "good" : "bad"),
+      kpi(fmtNum(agg.t_stat, 2), "t-stat", (agg.t_stat ?? 0) >= 3.4 ? "good" : "warn"),
+      kpi(agg.verdict || "—", "Verdict", verdictClass),
+      kpi(agg.five_gate_pass ? "✓" : "✗", "5-Gate strict", agg.five_gate_pass ? "good" : "bad"),
+    ].join("");
+    const dimRows = dims.map(([label, dim]) => {
+      if (!dim) return `<tr><td>${label}</td><td>—</td><td>—</td><td>—</td></tr>`;
+      const status = dim.status || "—";
+      const cands = Array.isArray(dim.candidates) ? dim.candidates.length
+        : (dim.proposals && dim.proposals.length) ? dim.proposals.length : 0;
+      const notes = (dim.proposals && dim.proposals[0]) ? dim.proposals[0]
+        : (dim.restrictive && dim.restrictive.length) ? `${dim.restrictive.length} restrictive`
+        : (dim.candidates && dim.candidates[0]) ? `top: ${JSON.stringify(dim.candidates[0]).slice(0,80)}…`
+        : "—";
+      return `<tr><td>${label}</td><td>${status}</td><td>${cands}</td><td style="font-size:.75rem;color:var(--muted)">${notes}</td></tr>`;
+    }).join("");
+    detail.innerHTML = `
+      <div class="kpis" style="margin-bottom:.75rem">${aggKpis}</div>
+      <h4 style="margin:.5rem 0">Per-dimension summary (${obj.n_trades ?? 0} trades total)</h4>
+      <table class="display compact" style="width:100%;font-size:.8rem">
+        <thead><tr><th>Dimension</th><th>Status</th><th>Candidates / Proposals</th><th>Top note</th></tr></thead>
+        <tbody>${dimRows}</tbody>
+      </table>
+      <details style="margin-top:.75rem">
+        <summary style="cursor:pointer;color:var(--muted);font-size:.8rem">Raw JSON (full payload)</summary>
+        <pre style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow:auto;max-height:400px;white-space:pre-wrap">${JSON.stringify(obj, null, 2)}</pre>
+      </details>
+    `;
   }
   picker.addEventListener("change", () => show(picker.value));
   show(names[0]);
