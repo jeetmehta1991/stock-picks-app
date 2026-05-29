@@ -4,7 +4,7 @@
 **Owner:** mandatory per DEC-503 + CHECKLIST #69 + feedback_pyramid_full_13_tiers_mandatory.md
 **Created:** Batch 345 2026-05-25 in response to owner directive to "Create a new testing pyramid reference md document".
 
-This document supersedes the 9-tier subset in CHECKLIST #69 by enumerating the **full 13 tiers** from `IMPLEMENTATION_PLAN.md` Track T2 + `BATCH_318_PROCESS_POOL_DESIGN.md`. Any partial-pyramid run must report partial status per memory rule.
+This document supersedes the 9-tier subset in CHECKLIST #69 by enumerating the **full 13 tiers** from `IMPLEMENTATION_PLAN.md` Track T2 + `archive/2026-05-28-pre-1a-alpha-gate/docs/BATCH_318_PROCESS_POOL_DESIGN.md` (archived Batch 428). Any partial-pyramid run must report partial status per memory rule.
 
 ---
 
