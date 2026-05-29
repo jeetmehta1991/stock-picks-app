@@ -629,6 +629,71 @@ def test_batch441_build_script_compute_cube_diff_helper():
         "build script must emit cube_diff in the payload")
 
 
+def test_batch443_rounds_and_cellcompare_tabs_wired():
+    """Tabs 17 (Iteration Rounds) + 18 (Cell Cube Comparison) must be
+    wired into nav + panels."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert '<button class="tab-btn" data-panel="rounds">17. Iteration Rounds</button>' in html
+    assert '<button class="tab-btn" data-panel="cellcompare">18. Cell Cube Compare</button>' in html
+    assert '<section class="panel" id="rounds">' in html
+    assert '<section class="panel" id="cellcompare">' in html
+
+
+def test_batch443_rounds_registry_exists_with_r2_r3():
+    """archive/cube_rounds/rounds.json must exist and contain at least
+    R2 (pre-rerun) + R3 (current). Append-only."""
+    import json as _json
+    p = REPO / "archive" / "cube_rounds" / "rounds.json"
+    assert p.exists(), "archive/cube_rounds/rounds.json must exist"
+    data = _json.loads(p.read_text(encoding="utf-8"))
+    rounds = data.get("rounds", [])
+    ids = [r["id"] for r in rounds]
+    assert "R2" in ids and "R3" in ids, (
+        f"rounds.json must include both R2 and R3, found: {ids}")
+    # Required schema fields per round.
+    required = {"id", "label", "date_completed", "commit",
+                "universe_size_traded", "time_window_start",
+                "time_window_end", "n_strategies_registered",
+                "n_strategies_fired", "n_strategies_quiet",
+                "buckets", "L2_cells_n_gte_5", "trades_total",
+                "objectives", "changes_from_prior", "findings"}
+    for r in rounds:
+        missing = required - set(r.keys())
+        assert not missing, (
+            f"round {r.get('id')} missing required fields: {missing}")
+
+
+def test_batch443_global_round_banner_present():
+    """Every tab must make its data source explicit via the global
+    round banner at top of dashboard (Batch 443)."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert 'id="round-banner"' in html, (
+        "Global round banner element missing from header")
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert "function renderRoundBanner()" in app_js, (
+        "renderRoundBanner() function must be defined")
+    assert "renderRoundBanner();" in app_js, (
+        "renderRoundBanner() must be dispatched")
+    # Banner copy must surface the current round, trades, fired count.
+    assert "Showing data from" in app_js, (
+        "Banner copy must lead with 'Showing data from <round>'")
+
+
+def test_batch443_build_script_loads_iteration_rounds():
+    """Build script must include load_iteration_rounds() that reads the
+    registry, joins per-round exit_method_analysis L2 cells by
+    (strategy, exit_method), and emits cell_cube_comparison."""
+    build = (REPO / "scripts" / "build_dashboard_phase_1a.py").read_text(encoding="utf-8")
+    assert "def load_iteration_rounds(" in build, (
+        "build script must define load_iteration_rounds()")
+    assert "cube_rounds" in build and "rounds.json" in build, (
+        "load_iteration_rounds must point at archive/cube_rounds/rounds.json")
+    for k in ['"iteration_rounds":', '"current_round":',
+              '"round_ids":', '"cell_cube_comparison":']:
+        assert k in build, (
+            f"build script must emit payload key: {k}")
+
+
 def test_batch430_candidate_detail_is_div_with_structured_render():
     """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
     structured render (KPIs + per-dimension table + collapsible JSON) in

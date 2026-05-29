@@ -76,7 +76,9 @@
 
 <header>
 <h1>Phase 1A Trade Summary Dashboard</h1>
-<div class="sub">Rules + smart-money baseline (no agents). 9-tab analytical view of the canonical Phase 1A backtest.</div>
+<div class="sub">Rules + smart-money baseline (no agents). Phase 1A-β cube view.</div>
+<!-- Batch 443 (2026-05-29): global round banner so every tab makes its data source explicit. -->
+<div id="round-banner" style="background:#1a1f29;border-left:4px solid var(--accent);padding:.4rem .7rem;border-radius:4px;margin:.4rem 0;font-size:.85rem;color:var(--text)"></div>
 <div class="meta" id="meta-line">Loading…</div>
 </header>
 
@@ -104,6 +106,9 @@
   <button class="tab-btn" data-panel="sample">15. Sample Trades</button>
   <!-- Batch 441 (2026-05-29): owner-directed Cube Diff tracking tab -->
   <button class="tab-btn" data-panel="cubediff">16. Cube Diff</button>
+  <!-- Batch 443 (2026-05-29): owner-directed Iteration Rounds + Cell Cube Comparison tabs -->
+  <button class="tab-btn" data-panel="rounds">17. Iteration Rounds</button>
+  <button class="tab-btn" data-panel="cellcompare">18. Cell Cube Compare</button>
   <button class="tab-btn" data-panel="raw">Raw JSON</button>
 </nav>
 
@@ -812,6 +817,26 @@
     <li><strong>Rebuild dashboard</strong> with <code>scripts/build_dashboard_phase_1a.py --source output_batch395_final</code>. The build script (Batch 441b extension) loads both the prior snapshot AND the current optimizer output, joins on (strategy, exit_method), computes per-cell deltas, and emits <code>D.cube_diff</code>. This Tab 16 then renders the diff KPIs + 3 tables above.</li>
     <li><strong>Read the diff.</strong> Are the cells we tried to improve actually improved? Did the verdict flip from FAIL to PASS-relaxed? Did the bucket counts move in the expected direction? If yes, the optimization batch is validated; commit. If no, the hypothesis was wrong and we need a different lever.</li>
   </ol>
+</section>
+
+<!-- Batch 443 (2026-05-29): Iteration Rounds registry tab. -->
+<section class="panel" id="rounds">
+  <h2>17. Iteration Rounds</h2>
+  <p class="desc">Phase 1A-beta cube re-run history. Each row is one full cube iteration. Source: <code>archive/cube_rounds/rounds.json</code> (append-only). Snapshot the prior round's outputs to <code>archive/&lt;date&gt;-pre-rerun-cube-snapshot/</code> BEFORE launching a new round so the diff can be computed.</p>
+
+  <h3 style="margin-top:.5rem">Round summary table</h3>
+  <table id="rounds-summary-table" class="display compact" style="font-size:.82rem;width:100%"></table>
+
+  <h3 style="margin-top:1rem">Per-round detail (objectives / changes / findings)</h3>
+  <div id="rounds-detail"></div>
+</section>
+
+<!-- Batch 443 (2026-05-29): Cell Cube cross-round comparison tab. -->
+<section class="panel" id="cellcompare">
+  <h2>18. Cell Cube Comparison</h2>
+  <p class="desc">Per-(strategy x exit_method) cell across every round. n / Sharpe / verdict for each round side-by-side, sorted by absolute |R3-R2 Sharpe delta| so the most-changed cells bubble up. Use this to validate whether a specific cell actually moved the way you expected from the round's changes.</p>
+  <div id="cellcompare-kpis" class="kpis"></div>
+  <table id="cellcompare-table" class="display compact" style="font-size:.78rem;width:100%"></table>
 </section>
 
 <section class="panel" id="raw">

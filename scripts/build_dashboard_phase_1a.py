@@ -68,6 +68,81 @@ def load_json(name: str) -> dict | list:
         return {}
 
 
+def load_iteration_rounds() -> dict:
+    """Batch 443 (2026-05-29): load the persistent cube rounds registry
+    at archive/cube_rounds/rounds.json. Returns a dict with the rounds
+    list + a per-round cell-level Sharpe / n / verdict lookup so Tab 17
+    + Tab 18 can render without re-loading each round's payload."""
+    rounds_path = REPO / "archive" / "cube_rounds" / "rounds.json"
+    if not rounds_path.exists():
+        return {"rounds": [], "cell_compare": []}
+    try:
+        registry = json.loads(rounds_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"rounds": [], "cell_compare": []}
+    rounds = registry.get("rounds", [])
+
+    # For Tab 18: build a per-(strategy, exit_method) row containing
+    # n / sharpe / verdict for every round so a single table shows
+    # the cross-round evolution per cell.
+    per_round_l2 = {}
+    for r in rounds:
+        rid = r.get("id", "?")
+        path = r.get("exit_method_analysis_path")
+        if not path:
+            per_round_l2[rid] = {}
+            continue
+        ema_path = REPO / path
+        if not ema_path.exists():
+            per_round_l2[rid] = {}
+            continue
+        try:
+            ema = json.loads(ema_path.read_text(encoding="utf-8"))
+        except Exception:
+            per_round_l2[rid] = {}
+            continue
+        per_round_l2[rid] = {
+            (row["strategy"], row["exit_method"]): row
+            for row in ema.get("layer_2_per_strategy_exit_cell", [])
+        }
+
+    # Union of all cell keys across all rounds.
+    all_keys = set()
+    for d in per_round_l2.values():
+        all_keys.update(d.keys())
+
+    cell_compare = []
+    round_ids = [r.get("id", "?") for r in rounds]
+    for k in sorted(all_keys):
+        strat, em = k
+        row = {"strategy": strat, "exit_method": em}
+        for rid in round_ids:
+            cell = per_round_l2.get(rid, {}).get(k)
+            row[f"{rid}_n"] = cell.get("n") if cell else None
+            row[f"{rid}_sharpe"] = cell.get("sharpe") if cell else None
+            row[f"{rid}_verdict"] = cell.get("verdict") if cell else None
+        # Convenience delta R3 vs R2 if both present.
+        if "R2" in round_ids and "R3" in round_ids:
+            s2 = row.get("R2_sharpe")
+            s3 = row.get("R3_sharpe")
+            if s2 is not None and s3 is not None:
+                row["sharpe_delta_R3_R2"] = round(s3 - s2, 4)
+            else:
+                row["sharpe_delta_R3_R2"] = None
+        cell_compare.append(row)
+    # Sort by absolute Sharpe delta DESC so the most-changed cells
+    # bubble to the top of Tab 18.
+    cell_compare.sort(
+        key=lambda r: -abs(r.get("sharpe_delta_R3_R2") or 0))
+
+    return {
+        "rounds":       rounds,
+        "round_ids":    round_ids,
+        "current_round": round_ids[-1] if round_ids else None,
+        "cell_compare": cell_compare,
+    }
+
+
 def compute_cube_diff(current_opt: dict, current_out_dir: Path) -> dict:
     """Batch 441 (2026-05-29): per-cell + per-bucket + trade-count delta
     between the current cube run and the prior snapshot. Used by Tab 16.
@@ -351,6 +426,10 @@ def build() -> dict:
     # ---- Batch 441 (2026-05-29): Cube Diff (Tab 16) ----
     cube_diff = compute_cube_diff(opt, OUT_DIR)
 
+    # ---- Batch 443 (2026-05-29): Iteration Rounds (Tab 17) +
+    #      Cell Cube Comparison (Tab 18) ----
+    iter_rounds = load_iteration_rounds()
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_dir": str(OUT_DIR.relative_to(REPO)),
@@ -362,6 +441,12 @@ def build() -> dict:
         "producer_zero_audit":      opt["producer_zero_audit"],
         # Batch 441: cube iteration diff (Tab 16)
         "cube_diff":                cube_diff,
+        # Batch 443: iteration rounds registry (Tab 17) + cross-round
+        # cell-level comparison (Tab 18)
+        "iteration_rounds":         iter_rounds.get("rounds", []),
+        "current_round":            iter_rounds.get("current_round"),
+        "round_ids":                iter_rounds.get("round_ids", []),
+        "cell_cube_comparison":     iter_rounds.get("cell_compare", []),
         # Tab 1
         "backtest_results": backtest_results,
         "winning_strategies": winning,

@@ -429,6 +429,114 @@ function renderCubeCells() {
   });
 }
 
+// ---- Batch 443 (2026-05-29): global round banner + Tab 17 + Tab 18 ----
+function renderRoundBanner() {
+  const banner = document.getElementById("round-banner");
+  if (!banner) return;
+  const cur = D.current_round;
+  const rounds = D.iteration_rounds || [];
+  const meta = rounds.find(r => r.id === cur) || (rounds[rounds.length - 1]) || {};
+  if (!cur) {
+    banner.innerHTML = `<strong>No round metadata found.</strong> Populate <code>archive/cube_rounds/rounds.json</code> and rebuild.`;
+    return;
+  }
+  const trades = (meta.trades_total || "?").toLocaleString();
+  banner.innerHTML = `<strong>Showing data from ${cur}</strong> (${meta.label || ""}) - completed ${meta.date_completed || "?"} - commit <code>${(meta.commit || "?").slice(0, 24)}</code> - ${trades} trades / ${meta.n_strategies_fired || "?"} fired strategies / ${meta.L2_cells_n_gte_5 || "?"} L2 cells. See Tab 17 for full round history; Tab 18 for per-cell cross-round comparison.`;
+}
+
+function renderRounds() {
+  const rounds = D.iteration_rounds || [];
+  if (!rounds.length) {
+    const t = document.getElementById("rounds-detail");
+    if (t) t.innerHTML = '<div class="empty">No iteration rounds registered.</div>';
+    return;
+  }
+  // Summary table: one row per round.
+  const rows = rounds.map(r => ({
+    id:              r.id,
+    label:           r.label,
+    date:            r.date_completed,
+    commit:          (r.commit || "").slice(0, 24),
+    universe:        r.universe_size_traded,
+    window:          `${r.time_window_start} -> ${r.time_window_end}`,
+    strategies:      `${r.n_strategies_fired}/${r.n_strategies_registered} fired`,
+    quiet:           r.n_strategies_quiet,
+    PRODUCER:        (r.buckets || {}).PRODUCER_LAYER_ZERO_LIKELY,
+    COMPOUND:        (r.buckets || {}).COMPOUND_RESTRICTIVE,
+    SKIPPED:         (r.buckets || {}).SKIPPED_AT_ENGINE,
+    L2_cells:        r.L2_cells_n_gte_5,
+    trades:          r.trades_total,
+  }));
+  buildTable("#rounds-summary-table", rows, { pageLength: 10 });
+  // Per-round detail blocks (collapsible, latest first).
+  const target = $("#rounds-detail");
+  if (target) {
+    const blocks = [...rounds].reverse().map((r, i) => {
+      const objList = (r.objectives || []).map(o => `<li>${o}</li>`).join("");
+      const chgList = (r.changes_from_prior || []).map(o => `<li>${o}</li>`).join("");
+      const finList = (r.findings || []).map(o => `<li>${o}</li>`).join("");
+      const open = i === 0 ? "open" : "";
+      return `
+        <details ${open} style="margin:.4rem 0;background:#1a1f29;border:1px solid var(--border);padding:.5rem .8rem;border-radius:6px">
+          <summary style="cursor:pointer;color:var(--accent);font-weight:600">${r.id} - ${r.label} (${r.date_completed})</summary>
+          <div style="font-size:.85rem;margin-top:.5rem">
+            <p style="margin:.2rem 0"><strong>Infra:</strong> ${r.infra || "—"}</p>
+            <p style="margin:.2rem 0"><strong>Universe traded:</strong> ${r.universe_size_traded} unique tickers / window ${r.time_window_start} to ${r.time_window_end}</p>
+            <p style="margin:.2rem 0"><strong>Commit:</strong> <code>${r.commit}</code></p>
+            <p style="margin:.4rem 0 .2rem"><strong>Objectives:</strong></p><ul style="margin:.2rem 0;padding-left:1.4rem">${objList}</ul>
+            <p style="margin:.4rem 0 .2rem"><strong>Changes from prior round:</strong></p><ul style="margin:.2rem 0;padding-left:1.4rem">${chgList}</ul>
+            <p style="margin:.4rem 0 .2rem"><strong>Findings:</strong></p><ul style="margin:.2rem 0;padding-left:1.4rem">${finList}</ul>
+          </div>
+        </details>
+      `;
+    }).join("");
+    target.innerHTML = blocks;
+  }
+}
+
+function renderCellCompare() {
+  const rows = D.cell_cube_comparison || [];
+  const ids = D.round_ids || [];
+  if (!rows.length || !ids.length) return;
+  // KPIs.
+  const moved = rows.filter(r => r.sharpe_delta_R3_R2 != null && Math.abs(r.sharpe_delta_R3_R2) > 0.01).length;
+  const up = rows.filter(r => (r.sharpe_delta_R3_R2 || 0) > 0).length;
+  const down = rows.filter(r => (r.sharpe_delta_R3_R2 || 0) < 0).length;
+  const onlyCurrent = rows.filter(r => r[`${ids[ids.length-1]}_n`] != null && r[`${ids[0]}_n`] == null).length;
+  const onlyPrior = rows.filter(r => r[`${ids[0]}_n`] != null && r[`${ids[ids.length-1]}_n`] == null).length;
+  const kpis = $("#cellcompare-kpis");
+  if (kpis) {
+    kpis.innerHTML = [
+      kpi(rows.length, "Total cells (union)"),
+      kpi(moved, "Cells with |delta| > 0.01"),
+      kpi(up, "Improved", "good"),
+      kpi(down, "Regressed", "bad"),
+      kpi(onlyCurrent, "New in latest", "good"),
+      kpi(onlyPrior, "Retired in latest", "warn"),
+    ].join("");
+  }
+  // Build per-round columns dynamically.
+  const cols = [
+    { title: "Strategy", data: "strategy" },
+    { title: "Exit method", data: "exit_method" },
+  ];
+  for (const rid of ids) {
+    cols.push({ title: `${rid} n`, data: `${rid}_n`, render: v => v == null ? "—" : v });
+    cols.push({ title: `${rid} Sharpe`, data: `${rid}_sharpe`, render: v => v == null ? "—" : Number(v).toFixed(2) });
+    cols.push({ title: `${rid} verdict`, data: `${rid}_verdict`, render: v => v || "—" });
+  }
+  if (ids.length >= 2) {
+    cols.push({ title: `${ids[ids.length-1]}-${ids[0]} ΔSharpe`,
+                data: "sharpe_delta_R3_R2",
+                render: v => v == null ? "—" : (v > 0 ? "+" : "") + Number(v).toFixed(2) });
+  }
+  buildTable("#cellcompare-table", rows, {
+    columns: cols,
+    pageLength: 25,
+    order: [[cols.length - 1, "desc"]],
+  });
+}
+
 // ---- Batch 441 (2026-05-29): Cube Diff iteration tracking tab ----
 function renderCubeDiff() {
   const diff = D.cube_diff;
@@ -520,4 +628,8 @@ try { renderCubeCells(); } catch (e) { console.error("cubecells:", e); }
 try { renderReference(); } catch (e) { console.error("reference:", e); }
 // Batch 441: Cube Diff iteration tracking tab
 try { renderCubeDiff(); } catch (e) { console.error("cubediff:", e); }
+// Batch 443: global round banner + Iteration Rounds + Cell Cube Comparison
+try { renderRoundBanner(); } catch (e) { console.error("roundbanner:", e); }
+try { renderRounds(); } catch (e) { console.error("rounds:", e); }
+try { renderCellCompare(); } catch (e) { console.error("cellcompare:", e); }
 try { renderRaw(); } catch (e) { console.error("raw:", e); }
