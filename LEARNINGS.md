@@ -1821,3 +1821,34 @@ I parsed this as ONE question ("any other Pattern 3 gaps?") and answered with 7 
 **Apply when:** every new data acquisition. Every audit of Sprint 0A or its successor. Every claim that a data source is "wired."
 
 **Cross-references.** CHECKLIST #98 (codified rule), Batch 451 (this codification turn + queue rows P10-P16), DEC-507 (same pattern at agent-toolkit layer), L164 (same meta-pattern across file/layer boundaries), `feedback_wired_means_engine_consumed.md` (parent lesson — wired ≠ consumed).
+
+---
+
+### L168 — Queue items proposing wiring must verify both schemas from actual parquet, not from docstrings [critical/process]
+
+**Symptom.** Batch 451 (2026-05-29) proposed:
+- P14: "Wire SEC EDGAR Form 4 to differentiate filer role (CEO/CFO vs director/owner)."
+- P17: "Wire SEC EDGAR direct insider into `smart_money_score()` composite to replace Quiver-aggregated path for filer-role differentiation."
+
+Owner asked the basic verification question: "what's the difference between SEC EDGAR Form 4 and Quiver `live/insidertrading` — aren't they the same?" Schema inspection (Batch 453) surfaced:
+
+**Quiver `insider/AAPL.parquet`** (249 rows): `Ticker, Date, Name, AcquiredDisposedCode, TransactionCode (P/S/etc.), Shares, PricePerShare, SharesOwnedFollowing, fileDate, officerTitle, isDirector, isOfficer, isTenPercentOwner, isOther, directOrIndirectOwnership, uploaded`. **All filer-role and transaction-detail columns present.** And `insider_signal()` line 422 already does `ceo_buy = ceo_titles.str.contains("CEO|Chief Executive")` — the CEO differentiation I claimed was missing already exists.
+
+**SEC EDGAR `4/AAPL.parquet`** (586 rows): `ticker, cik, form, filing_date, accession_number, primary_doc`. **JUST FILING INDEX.** Actual Form 4 content is in XBRL `primary_doc` XML files referenced by URL. To get role/transaction data equivalent to Quiver, would need to fetch and parse ~1.17M XML files.
+
+**P14 and P17 were both based on a misread.** Quiver IS the decoded SEC Form 4. SEC EDGAR cache is filing index. The only Form 4-related "missing" enhancements are CFO regex, director-only differentiation, transaction-size weighting, sold-fraction weighting — all of which are against Quiver columns, not SEC EDGAR.
+
+**Real value of SEC EDGAR cache** (Quiver doesn't have these): SC 13D activist filings, SC 13G passive filings, 8-K material events. BUT these are ALSO filing-index only in the cache; require an XML extractor pass before usable. Queue row P17a (pre-req) was added; P17b (the actual composite wiring) is blocked on it.
+
+**Why it happened.** I read the docstring of `smart_money.py` ("SEC EDGAR via edgartools (DEC-456 + R1 owner-approved Pass 53): Form 4 (insider direct), 8-K, 13D/G") and inferred that the SEC EDGAR cache had decoded transactions. I never opened the parquet to verify. This is the same wired-by-docstring anti-pattern that L164 codified for code paths and L167 codified for prefetch-vs-consumer pairings — now repeated at the **queue-item proposal layer**. Three lessons existed; I still fell in.
+
+**Rule.** Codified as CHECKLIST #99. Any queue item proposing "wire data source X into consumer Y" must include in its Notes:
+1. The source parquet columns: actual `pd.read_parquet(X).columns` output.
+2. The consumer-required columns: what Y needs.
+3. Resolution: direct wiring (if X covers Y), or pre-req extractor (if X needs decoding), or different source (if X doesn't have what Y needs).
+
+Without this schema-comparison evidence, the queue row should be rejected and rewritten.
+
+**Apply when.** Every queue item with "wire X into Y" structure. Every audit that claims a data source has a particular field. Every codification of a producer-consumer link.
+
+**Cross-references.** CHECKLIST #99 (codified rule), Batch 453 (this codification turn + P14/P17 correction + P17a/P17b split), L164 (lessons-must-propagate-across-layers — same anti-pattern), L167 (prefetch-vs-consumer pair — same anti-pattern), CHECKLIST #98 (prefetch-DEC-must-have-producer-DEC), `feedback_wired_means_engine_consumed.md` (parent lesson).

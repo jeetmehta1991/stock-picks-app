@@ -1455,3 +1455,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Same family as:** DEC-507 (data DEC + toolkit DEC ≠ integration; wiring is a third explicit deliverable). DEC-507 was scoped to the agent-toolkit layer; this rule extends it to the screener-producer layer.
 
     **Joint:** CHECKLIST #95 (codify finding same turn), L167 (this rule's lesson record), `feedback_wired_means_engine_consumed.md` (same theme: wired = consumed, not greppable).
+
+99. **HARD RULE — Any queue item that proposes wiring data source X into consumer Y MUST include schema verification of both sides. Inspect the actual parquet columns before claiming "source X has what Y needs."** (Owner-prompted finding 2026-05-29 Batch 453: I proposed P14 ("wire SEC EDGAR Form 4 to differentiate filer role") and P17 ("wire SEC EDGAR direct insider into composite") without reading either the Quiver parquet schema or the SEC EDGAR parquet schema. Quiver insider parquet already has the filer-role columns; SEC EDGAR Form 4 parquet is filing-index only. Both my proposed fixes were against the wrong premises.)
+
+    Past failure pattern: I read the docstring of `smart_money.py` ("SEC EDGAR via edgartools (DEC-456 + R1 owner-approved Pass 53)") and inferred that the SEC EDGAR cache contained decoded Form 4 transactions. I then queued P14 + P17 against that assumption. Owner asked the basic verification question ("what's the difference between SEC EDGAR Form 4 and Quiver insider — aren't they the same?") and the actual schema comparison surfaced: Quiver IS the decoded data; SEC EDGAR cache is just filing index.
+
+    **Same anti-pattern as L164 / L167 / #98:** assuming wiring from docstrings / DEC references / file paths rather than verifying with `pd.read_parquet(path).columns`. Three lessons codified about this pattern; I still fell into it.
+
+    **Apply when:** proposing any queue item of the form "wire data source X into composite Y" or "use feature Z from cache W." Before adding the row:
+      a. Run `pd.read_parquet(<source X path>); print(cols, sample_rows)`.
+      b. Compare to what consumer Y needs.
+      c. If X is missing a column Y needs, the queue item is "build extractor for X first" (pre-req), NOT "wire X into Y."
+      d. Document the schema check in the queue Notes column.
+
+    **How to enforce:** any queue item proposing "wire X into Y" must include in its Notes:
+      - The source parquet columns ("X has cols: a, b, c").
+      - The consumer-required columns ("Y needs: d, e, f").
+      - Resolution: direct wiring OR pre-req extractor.
+
+    Failure to include this schema-comparison evidence in the queue item is a #99 violation. The queue item should be rejected and rewritten before it ships.
+
+    **Joint:** CHECKLIST #95 (codify finding same turn), CHECKLIST #98 (prefetch-consumer pair), L164 (lessons must propagate across layers), L168 (this rule's lesson record).
