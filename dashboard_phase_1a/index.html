@@ -116,6 +116,8 @@
   <h2>1. Per-strategy ranking</h2>
   <p class="desc">All evaluated strategies with their core 9-criteria scores. PASS/FAIL pills reflect the overall thresholds per CLAUDE.md. Click headers to sort.</p>
   <div class="kpi-grid" id="strat-kpis"></div>
+  <!-- Batch 435 (2026-05-29): inclusion-criteria callout for new viewers. -->
+  <div id="strat-inclusion-callout" class="callout" style="background:#1a1f29;border-left:3px solid var(--accent);padding:.6rem .8rem;margin:.5rem 0;font-size:.85rem;border-radius:4px;color:var(--text)"></div>
   <table id="strategies-table" class="display compact"></table>
   <h3>Winning strategies (declared)</h3>
   <pre id="winning-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
@@ -261,10 +263,22 @@
 <section class="panel" id="reference">
   <h2>14. Reference / Background</h2>
   <p class="desc">Schema, methodology, and tab-by-tab navigation guide. Read this first if anything below is unclear.</p>
+
+  <!-- Batch 435 (2026-05-29): "First-time viewer" mental-model block. -->
+  <div style="background:#1a1f29;border:1px solid var(--accent);padding:.8rem 1rem;border-radius:6px;margin-bottom:.75rem;font-size:.88rem">
+    <h3 style="margin:0 0 .4rem;color:var(--accent);font-size:1rem">First-time viewer? Start here.</h3>
+    <p style="margin:.3rem 0"><strong>What this dashboard is.</strong> A read-only post-mortem of one backtest run plus the cube optimizer outputs that derive from it. Nothing here runs live trading.</p>
+    <p style="margin:.3rem 0"><strong>Two datasets are stitched together.</strong> The headline tabs (Overview, 1-9, Exits, Trades) come from the <em>Phase 1A baseline</em> backtest in <code>output_v2/</code> (a single config, a single run, ~36 strategies that actually fired trades). The cube tabs (10-13) come from the <em>Phase 1A-beta cube</em> in <code>output_batch395_final/</code> (every strategy x every exit method x every regime). The cube can have 100 strategies fire because it removes the cap / dd-halt / regime / event-suppression gates the baseline run applied. The two datasets share the strategy roster but not the trades.</p>
+    <p style="margin:.3rem 0"><strong>Recommended reading order:</strong> Overview (portfolio health) -> Tab 1 (strategy ranking, see inclusion criteria there) -> Tab 2 (per-regime) -> Tab 4 (equity curve) -> Tab 13 (cube cell verdicts) -> Tab 10 (cube optimizer's recommendations) -> Tab 11 (drill down on a strategy) -> Tab 12 (zero-fire diagnosis).</p>
+    <p style="margin:.3rem 0"><strong>What "good" looks like.</strong> Portfolio Sharpe &gt;= 0.7 OOS in &gt;= 1 regime (the 1A-alpha gate). Per-strategy: passes the 9-criteria gates (see table below) AND has a cube cell that passes the DEC-426 5-Gate (also below). Currently the 1A-alpha gate is LOCKED at OOS Sharpe 0.419 - a cube re-run is in flight.</p>
+    <p style="margin:.3rem 0"><strong>If a tab looks empty / wrong:</strong> hard-refresh (Ctrl+Shift+R). If still wrong, F12 -&gt; Console and paste any errors.</p>
+  </div>
+
   <div id="reference-counts" class="kpis"></div>
 
-  <h3 style="margin-top:1rem">Strategy library — 185 active / 100 fired / 36 in Tab 1 / 85 quiet</h3>
-  <p class="desc">The 185 figure is registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code>. The 36 in Tab 1 are strategies that met the <code>backtest_results.csv</code> inclusion threshold in this run (the live <code>output_v2/</code> Phase 1A baseline). 64 strategies fired some trades but didn't make the CSV threshold; 85 are quiet (zero trades — see Tab 12).</p>
+  <h3 style="margin-top:1rem">Strategy library and the count buckets you'll see</h3>
+  <p class="desc"><strong>Why "185" and "36" don't match.</strong> The numbers come from two different runs (see the blue box above). The 185 is registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code>. The 36 in Tab 1 are strategies that fired <em>at least one trade in the <code>output_v2/</code> baseline backtest</em> - that is the literal inclusion criteria for <code>backtest_results.csv</code>. The 100 in the cube (Tabs 10-13) is a different run with different gates removed; that is why it's higher. The 85 quiet count comes from the cube too.</p>
+  <p class="desc"><strong>Tab 1 inclusion criteria (literal):</strong> <code>compute_all_metrics</code> in <code>backtest/results/metrics.py</code> iterates over <code>df_trades["strategy"].unique()</code>. Any strategy with at least one row in <code>trade_log.csv</code> ends up as a row in <code>backtest_results.csv</code>. No threshold on number of trades. Strategies with zero trades simply don't appear (they're tracked separately in the cube's Quiet bucket - Tab 12).</p>
   <table class="display compact" style="font-size:.85rem;margin-bottom:.5rem">
     <thead><tr><th>Layer</th><th>Scope</th><th>~Count</th><th>Where</th></tr></thead>
     <tbody>

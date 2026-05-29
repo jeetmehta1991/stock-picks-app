@@ -101,21 +101,31 @@ function renderStrategies() {
   const passing = rows.filter(r => r.passes_all === true || r.passes_all === "True").length;
   const avgSharpe = rows.reduce((a, r) => a + (Number(r.sharpe) || 0), 0) / rows.length;
   const avgPF = rows.reduce((a, r) => a + (Number(r.profit_factor) || 0), 0) / rows.length;
-  // Batch 434: surface the 185 / 100 / 36 / 85 split from producer_zero_audit
-  // so owner understands why only ~36 strategies appear in this table.
+  // Batch 435 (2026-05-29): surface counts from BOTH datasets with
+  // explicit labels so the new viewer doesn't conflate them.
+  //   - 185 / 100 / 85 come from producer_zero_audit (Phase 1A-beta CUBE).
+  //   - 36 comes from THIS table's source (output_v2 / backtest_results.csv).
+  // Inclusion criteria for THIS table: strategy fired >= 1 trade in
+  // the backtest run that produced output_v2. Source code:
+  // backtest/results/metrics.py::compute_all_metrics iterates over
+  // df["strategy"].unique(), so any strategy with at least one row in
+  // trade_log.csv ends up here.
   const pza = (D.producer_zero_audit || {}).summary || {};
-  const active = pza.active_count;
-  const fired = pza.fired_count;
-  const quiet = pza.quiet_count;
+  const sourceDir = D.source_dir || "output_v2";
   $("#strat-kpis").innerHTML = [
-    active != null ? kpi(active, "Active (registered)") : "",
-    fired != null ? kpi(fired, "Fired ≥1 trade") : "",
-    kpi(rows.length, "In this table (CSV-included)"),
-    quiet != null ? kpi(quiet, "Quiet (see Tab 12)", "warn") : "",
+    kpi(pza.active_count != null ? pza.active_count : 185, "Registered (code)"),
+    kpi(rows.length, "In this table (this run)", "good"),
+    pza.fired_count != null ? kpi(pza.fired_count, "Fired in cube") : "",
+    pza.quiet_count != null ? kpi(pza.quiet_count, "Quiet in cube (Tab 12)", "warn") : "",
     kpi(passing, "Passing all 9 gates", passing > 0 ? "good" : "bad"),
     kpi(fmtNum(avgSharpe, 2), "Avg Sharpe"),
     kpi(fmtNum(avgPF, 2), "Avg profit factor"),
   ].join("");
+  // Inclusion-criteria callout above the table.
+  const callout = document.getElementById("strat-inclusion-callout");
+  if (callout) {
+    callout.innerHTML = `<strong>Inclusion criteria for this table:</strong> a strategy appears here if it fired <em>at least one trade</em> during the <code>${sourceDir}</code> backtest run. Strategies with zero trades are excluded - they live in Tab 12 (Quiet Strategies). The other count buckets above (Fired in cube / Quiet in cube) come from a <em>separate</em> dataset - the Phase 1A-beta cube re-run output - and will not equal the "In this table" count.`;
+  }
   // Columns — auto-detect
   const cols = Object.keys(rows[0]).map(k => ({
     title: k, data: k,

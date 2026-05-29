@@ -306,16 +306,64 @@ def test_batch434_strategies_tab_surfaces_185_100_36_85_split():
     in-table / quiet split so owner understands why only 36 strategies
     appear in the CSV."""
     app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
-    # KPI labels Batch 434 added (avoid embedding non-ASCII >= char in
-    # test source; the app.js uses U+2265 - look for the surrounding
-    # ASCII tokens instead).
-    for label in ['"Active (registered)"', '"Fired ',
-                  '"In this table (CSV-included)"', '"Quiet (see Tab 12)"']:
+    # KPI labels (Batch 434 introduced the split; Batch 435 relabeled
+    # to distinguish baseline vs cube source).
+    for label in ['"Registered (code)"', '"In this table (this run)"',
+                  '"Fired in cube"', '"Quiet in cube (Tab 12)"']:
         assert label in app_js, (
             f"renderStrategies KPI label missing: {label}")
-    # Must read producer_zero_audit.summary for the counts
+    # Must read producer_zero_audit.summary for the cube counts
     assert "producer_zero_audit" in app_js, (
         "renderStrategies must read producer_zero_audit for the split")
+
+
+def test_batch435_strat_inclusion_callout_present():
+    """Tab 1 must include an explicit inclusion-criteria callout for
+    new viewers - prior version mixed cube vs baseline counts without
+    labeling, which obscured why only 36 strategies appear in the table."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert 'id="strat-inclusion-callout"' in html, (
+        "Tab 1 must include an inclusion-criteria callout div with "
+        "id=strat-inclusion-callout")
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert "strat-inclusion-callout" in app_js, (
+        "renderStrategies must populate the inclusion-criteria callout")
+    # The callout text must mention the criteria + the cube-vs-baseline gap.
+    assert "Inclusion criteria" in app_js, (
+        "Callout text must say 'Inclusion criteria'")
+
+
+def test_batch435_kpi_labels_distinguish_cube_from_baseline():
+    """Tab 1 KPIs must not conflate cube-fired with baseline-included.
+    Pre-Batch-435 layout said '100 Fired >=1 trade' which was the CUBE
+    count, mislabeled. Pin that the baseline-only KPI says 'this run'
+    and the cube KPIs say 'cube'."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert '"In this table (this run)"' in app_js, (
+        "Baseline KPI must say 'In this table (this run)' to "
+        "distinguish from cube counts")
+    assert '"Fired in cube"' in app_js, (
+        "Cube-fired KPI must be labeled 'Fired in cube' (not "
+        "'Fired >=1 trade' which conflates with baseline)")
+    assert '"Quiet in cube (Tab 12)"' in app_js, (
+        "Quiet KPI must be labeled 'Quiet in cube' to make the "
+        "source explicit")
+    assert '"Registered (code)"' in app_js, (
+        "Registered count KPI must say 'Registered (code)'")
+
+
+def test_batch435_reference_first_time_viewer_block():
+    """Tab 14 Reference must include a 'First-time viewer' callout that
+    explains the two-dataset architecture before the live counts."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "First-time viewer?" in html, (
+        "Tab 14 must lead with a 'First-time viewer?' callout")
+    # Must explain the two-dataset architecture.
+    assert "Two datasets are stitched together" in html, (
+        "Callout must explicitly state the two-dataset architecture")
+    # Must list the recommended reading order.
+    assert "Recommended reading order" in html, (
+        "Callout must include a recommended reading order")
 
 
 def test_batch430_candidate_detail_is_div_with_structured_render():
