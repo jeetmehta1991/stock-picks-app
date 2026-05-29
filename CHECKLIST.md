@@ -1476,3 +1476,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
     Failure to include this schema-comparison evidence in the queue item is a #99 violation. The queue item should be rejected and rewritten before it ships.
 
     **Joint:** CHECKLIST #95 (codify finding same turn), CHECKLIST #98 (prefetch-consumer pair), L164 (lessons must propagate across layers), L168 (this rule's lesson record).
+
+100. **HARD RULE — Every queue item ships in three states: (a) Implemented (code exists), (b) Wired (the call path consumes it), (c) Activated (default-on, or explicitly flag-gated with a written reason + sunset date). No queue item closes as RESOLVED while any of {tests, wiring, activation} remains pending. Tests means the FULL pyramid for that file, not a subset.** (Owner directive 2026-05-29 Batch 455: *"For each item in queue in want the entire testing pyramid deployed and items to be executed, wired and activated. No activation is to be left as pending unless necessary!"*)
+
+    Past failure pattern: queue items shipped as "RESOLVED-IMPLEMENTED" with code merged but the engine call path bypassing it (Pattern 1) or feature behind an inactive flag (activation pending). Examples from this session: PSR placeholder (implemented + wired but value placeholder); SEC EDGAR Form 4 (prefetched + accessor exists but composite-wiring missing); ~150 DECs flipped from RESOLVED-IMPLEMENTED to RESOLVED-DECIDED-PARTIAL after the wired=greppable lesson landed.
+
+    **Activation states and their meanings.**
+      - DEFAULT-ON — feature consumed without explicit flag. Highest activation.
+      - FLAG-ON-DEFAULT — behind a flag whose default is True. Effectively default-on but flippable.
+      - FLAG-ON-EXPLICIT — behind a flag, default False, must be explicitly enabled. Acceptable ONLY if there is a documented reason (data-quality risk, blast radius, owner-gated rollout) AND a sunset date for promotion to DEFAULT-ON.
+      - DEAD-CODE — implemented + wired but never reached at runtime. Unacceptable.
+
+    **Apply when:** closing any queue item as RESOLVED, claiming any DEC as RESOLVED-IMPLEMENTED, declaring any batch as shipped.
+
+    **How to apply:** end the work with a 3-cell status block in the queue Notes column:
+      - `tests: <pyramid tier list> N/N pass`
+      - `wired: <consumer file:line> calls <implementation>`
+      - `activated: <state from above>` (with reason + sunset if not DEFAULT-ON)
+
+    Without all three cells filled, the queue item stays PENDING / IN_PROGRESS, not RESOLVED. RESOLVED with one cell missing is a #100 violation.
+
+    **Joint:** CHECKLIST #69 (full 13-tier pyramid mandatory), CHECKLIST #93 (CI verification after push), CHECKLIST #94 (queue maintenance), CHECKLIST #95 (codify findings), CHECKLIST #98 (prefetch-consumer pair), CHECKLIST #99 (schema verification), `feedback_wired_means_engine_consumed.md`, L164 / L167 / L168 (lessons-must-propagate family).

@@ -1852,3 +1852,52 @@ Without this schema-comparison evidence, the queue row should be rejected and re
 **Apply when.** Every queue item with "wire X into Y" structure. Every audit that claims a data source has a particular field. Every codification of a producer-consumer link.
 
 **Cross-references.** CHECKLIST #99 (codified rule), Batch 453 (this codification turn + P14/P17 correction + P17a/P17b split), L164 (lessons-must-propagate-across-layers — same anti-pattern), L167 (prefetch-vs-consumer pair — same anti-pattern), CHECKLIST #98 (prefetch-DEC-must-have-producer-DEC), `feedback_wired_means_engine_consumed.md` (parent lesson).
+
+---
+
+### L169 — Comprehensive 5-pattern audit (Batch 455) — scope, method, findings [critical/process]
+
+**Owner directive 2026-05-29 Batch 455.** *"Audit the entire decisions, project codebase, everything against these patterns and identify all gaps! be comprehensive and do not miss out on anything! consume as many tokens as you need but be extremely thorough."*
+
+**Method.** Sweep all `backtest/*.py` + `scripts/*.py` for surface forms of each pattern. Cross-reference with VERIFICATION_MATRIX scope. Compare function names across files for parallel-universe smells. Findings logged as queue rows AU1-AU6 + this lesson.
+
+**Pattern 1 — Wired = greppable string, not engine-consumed call path. Findings:**
+1. `scripts/optimize_strategies_from_cube.py:130` PSR=False (queue #4).
+2. `backtest/results/cube_populator.py:159` SAME PSR placeholder in a SECOND file (queue AU1). Identical anti-pattern, identical comment.
+3. `backtest/engine/exit_context.py:268, 293, 335, 420` — `exit_regime` defaults to entry regime (queue row 0 noted, needs own row).
+4. `scripts/run_phase_1b_alpha_smoke.py:129` regime hardcoded `"bull"` (queue row 0 noted).
+5. **132+ silent `except: pass` swallows in critical paths** (queue AU2): backtest.py 30 / writer.py 30 / screener.py 25 / exit_strategies.py 15 / metrics.py 13 / exit_context.py 11 / smc_ict.py 8 (SMC file!) / cpcv.py 8. Each is a potential runtime non-consumption hidden behind clean test output.
+
+**Pattern 2 — Decisions audited in isolation; integration GAP between them was nobody's job. Findings:**
+1. DEC-426 5-Gate + DEC-247 PSR helper — separately audited, never integrated (queue #4).
+2. DEC-426 referenced in 5 code files + 4 test files; the 5 code files compute the gate THREE different ways (`compute_strategy_metrics` in metrics.py + `_cell_stats` in optimize_strategies_from_cube.py + `cube_populator.py` computation block). No test asserts the three agree.
+3. Sprint 0A prefetch DECs + their producer DECs — only 2 of 8 prefetched APIs have downstream producers (queue P10-P17, codified as CHECKLIST #98 + L167).
+4. SEC EDGAR Form 4 prefetch DEC + `sec_catalyst_signal` accessor DEC + `smart_money_score` composite DEC — three DECs exist; composite never calls the accessor (queue P17a/b).
+
+**Pattern 3 — Tests check "script runs" not "verdict is meaningful". Findings:**
+1. Tests for `optimize_strategies_from_cube.py` assert exit code 0 + JSON output. No test asserts "strict 5-Gate pass count > 0 on synthetic positive-edge data" or "= 0 on random-walk data" (queue M3 + AU6).
+2. VERIFICATION_MATRIX canonical backtest is `run_phase1a.py --tickers AAPL --start 2023-01-01 --end 2023-06-30` — 6 months, 1 ticker. Coverage rating LAZY-WIRED for most engine code is structurally suspicious; many functions are conditionally gated by conditions a small backtest doesn't trigger.
+3. Dashboard tests (`test_batch419_dashboard_tabs.py` etc.) assert HTML strings present + KPI labels exist. Do NOT assert "renderer actually produces non-empty data" or "tab loads without console errors" (R3 regime-empty-cells bug shipped because of exactly this).
+4. Bonferroni `_dec426_verdict(m_total_candidates=1)` default → tests pass with no Bonferroni correction by default; no test asserts the production call site passes the real M ≈ 4,625 (queue 0b).
+5. Walk-forward fold construction — tests assert 4 folds exist + JSON valid. No test asserts fold N's OOS year is AFTER fold N's IS window (queue 0c).
+
+**Pattern 4 — VERIFICATION_MATRIX coverage didn't include `scripts/*`. Findings:**
+1. Canonical backtest hardcoded in matrix script header — only `backtest/run_phase1a.py` instrumented. `scripts/optimize_strategies_from_cube.py` returns 0 grep hits in VERIFICATION_MATRIX.md.
+2. Same for `scripts/walk_forward_batch414_cells.py` (1A-α gate code path!), `scripts/aws_batch395_*.py` orchestration, `scripts/build_dashboard_phase_1a.py`, `scripts/merge_batch_outputs.py`.
+3. VERIFICATION_MATRIX surfaced 267 engine-YES + (731 - 267) = 464 items NOT verified at runtime by the canonical backtest. The matrix correctly flagged this gap but no follow-up extended canonical coverage to scripts/*.
+4. Closes via queue AU3 (extend matrix to include optimizer + walk-forward + merge + dashboard build canonical coverage runs).
+
+**Pattern 5 — Strategy-level vs cube-cell-level (and other parallel universes) audited separately. Findings:**
+1. **CONFIRMED at scale**: `optimize_strategies_from_cube.py::_cell_stats` calls ZERO of metrics.py's 13 functions (`_profit_factor`, `_max_drawdown`, `_calmar`, `_sharpe`, `_adf_test`, `_chow_test`, `_event_window_breakdown`, `_event_conditional_win_rate`, `_sharpe_daily`, `_sortino_ratio`, `_deflated_sharpe`, `_cost_sensitivity_sharpe`, `_kelly_criterion`). Verified via grep across all 13. Two parallel universes.
+2. **THREE parallel universes** with `cube_populator.py` added — also self-contained Sharpe/PF/WR computation. Three implementations of the same statistics.
+3. `equity_curve` computed in 5 files (queue AU4): metrics.py, quant_audit.py, writer.py, engine/backtest.py, engine/portfolio.py. Likely diverge on compounding base, cost inclusion, ordering.
+4. `portfolio_metrics` computed in 6 files (queue AU5): metrics.py, writer.py, build_dashboard_phase_1a.py, merge_batch_outputs.py, run_t0_close_out.py, verify_batch_69_phase_3.py.
+5. **Single test would catch all 5**: assert `cell_stats_via_metrics_py == cell_stats_via_optimizer == cell_stats_via_cube_populator` on synthetic data. Doesn't exist.
+
+**Volume of findings.** Five patterns × 30 specific gaps = ~30 individual code locations needing remediation, consolidatable into ~8 queue items (AU1-AU6 + the existing #0/#4/#5/M3/0b/0c rows). The lesson is NOT "we have many bugs" — it's "**these are the same 5 anti-patterns hitting different files at different layers,** and the codified rules (L164/L167/L168/#95/#98/#99/#100) only land when the SWEEPS that apply them are run."
+
+**Rule.** Codified as CHECKLIST #100 (every queue item must ship tests + wired + activated). The sweep itself becomes a recurring artifact: when a new lesson is codified, the codifier must run `grep -rn "<pattern>" scripts/ backtest/` and convert every hit to a queue row. The sweep is the test that the lesson actually landed.
+
+**Apply when.** Any codification of a new lesson. Any audit. Owner-prompted "are there other gaps" questions trigger the full 5-pattern sweep.
+
+**Cross-references.** CHECKLIST #100 (this turn's codification), AU1-AU6 queue rows (concrete remediation items), Batches 446 (PSR finding) / 447 (placeholder sweep + meta-fix row 0) / 448 (CHECKLIST #95/96/97 + missing-analysis sweep) / 451 (CHECKLIST #98 prefetch-consumer pair) / 453 (CHECKLIST #99 schema verification) / 455 (this codification + comprehensive audit), L164/L167/L168 (lessons-must-propagate-across-layers family).
