@@ -352,10 +352,150 @@
   <table id="cube-cells-table" class="display compact"></table>
 </section>
 
-<!-- Batch 434 (2026-05-29): owner-directed Reference / Background tab. -->
+<!-- Batch 434 (2026-05-29): owner-directed Reference / Background tab.
+     Batch 445 (2026-05-29): added top-of-tab flowchart, Lens A + Lens B
+     explanations, cube-cell-metrics expansion preview. -->
 <section class="panel" id="reference">
   <h2>14. Reference / Background</h2>
   <p class="desc">Schema, methodology, and tab-by-tab navigation guide. Read this first if anything below is unclear.</p>
+
+  <!-- Batch 445: data-flow flowchart at the top so a new viewer
+       can answer "where do I look for X?" without reading the
+       whole reference page. -->
+  <h3 style="margin-top:.5rem">Where do I look for X? (data-flow flowchart)</h3>
+  <p class="desc" style="font-size:.85rem">A pipeline of stages with a tab consumer at each stage. Start at the top of the pipeline and walk down to the question you're trying to answer.</p>
+  <div style="background:#0d1117;border:1px solid var(--border);padding:.7rem;border-radius:6px;font-family:Menlo,Consolas,monospace;font-size:.78rem;line-height:1.5;color:var(--text);overflow-x:auto;margin-bottom:.5rem">
+<pre style="margin:0;color:var(--text);white-space:pre">
+  [Universe build]                            -> 1,531 tickers traded; 5 buckets T1a/T1c/T2/T3/ETFs
+       |                                         (Tab 14 Universe section)
+       v
+  [Backtest engine: walk day-by-day]
+       |   - classify regime (bull/neutral/bear/crisis)
+       |   - run 185 screeners; emit candidates
+       |   - score smart-money; assign confidence tier (Stage 1)
+       |   - in Phase 1B+: agents adjust tier (Stage 2 - off in 1A-beta)
+       |   - size position; check liquidity/cap/event gates (all off in 1A-beta)
+       v
+  [Trade execution + close via PRIMARY exit]   -> trade_log.csv (1 row per trade)
+       |                                         (Tab 1 Strategies / Tab 7 Sector
+       v                                          / Tab 8 Skipped / Trades tab)
+  [Cube replay: same trades x 25 exit methods] -> trade_exit_detail.csv (n_trades x 25 rows)
+       |                                         (Tabs 10-13 cube-side)
+       v
+  [Lens A - per-strategy 9-dim drill-down]     -> per_strategy_candidates JSONs
+       |   Batch 388: 9 dimensions A-I                            (Tab 11 Candidates)
+       v
+  [Lens B - per-(strategy x exit) cell verdict] -> exit_method_analysis.layer_2_*
+       |   Batch 391: 5-Gate (DEC-426)                            (Tab 13 Cell Cube)
+       v
+  [Optimizer summary + winners]                -> optimization_summary.md
+       |   STRATEGY_EXIT_OVERRIDE candidates                      (Tab 10 Optimizer)
+       v
+  [Walk-forward 4-fold (DEC-505)]              -> walk_forward_batch414_cells.json
+       |   1A-alpha gate: OOS Sharpe >= 0.7 in >= 1 regime        (Tab 5 Walk-fwd
+       |                                                           when populated)
+       v
+  [1A-alpha gate decision] -- LOCKED if no cell clears 0.7 OOS Sharpe
+       |
+       v
+  [Phase 1B-alpha agent overlay ($300 Haiku)]  -- only fires when gate opens
+</pre>
+  </div>
+
+  <p class="desc" style="font-size:.82rem"><strong>Cross-round view:</strong> Tab 16 (Cube Diff) shows the immediate R(n-1) -&gt; R(n) delta. Tab 17 (Iteration Rounds) is the persistent registry with every round's objectives + changes + findings. Tab 18 (Cell Cube Comparison) is the per-(strategy x exit) cell across all rounds side-by-side.</p>
+
+  <h3 style="margin-top:1rem">Quick "which tab answers which question?" lookup</h3>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>I want to know...</th><th>Go to</th></tr></thead>
+    <tbody>
+      <tr><td>What is the overall portfolio return / Sharpe / DD?</td><td>Overview (data may be blank in 1A-beta cube)</td></tr>
+      <tr><td>Which strategies fired ≥ 1 trade and how did they each rank?</td><td>Tab 1</td></tr>
+      <tr><td>Per-strategy 9-dim optimizer findings (which clauses are restrictive, which exits pair best)?</td><td>Tab 11 (Lens A)</td></tr>
+      <tr><td>For a given strategy × exit cell, did the 5-Gate verdict clear?</td><td>Tab 13 (Lens B)</td></tr>
+      <tr><td>Which exits perform best on average across all strategies?</td><td>Tab 10 (L1 in optimization_summary.md)</td></tr>
+      <tr><td>Within a family (e.g. time_stop), which variant won (10d vs 20d)?</td><td>Tab 10 (L3 in optimization_summary.md)</td></tr>
+      <tr><td>Why is a strategy producing 0 trades?</td><td>Tab 12 (Quiet — 3-bucket diagnosis)</td></tr>
+      <tr><td>What candidate trades did the engine reject (and why)?</td><td>Tab 8 (Skipped)</td></tr>
+      <tr><td>How did the cube change between R2 and R3 (or any prior pair)?</td><td>Tab 16 (Cube Diff) / Tab 18 (Cell Cube Comparison)</td></tr>
+      <tr><td>What was each round's objective + what we changed + what we found?</td><td>Tab 17 (Iteration Rounds)</td></tr>
+      <tr><td>How does a trade actually flow start-to-finish?</td><td>Tab 15 (Sample Trades — 10 walked-through scenarios)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Lens A vs Lens B - the two cube-optimizer views</h3>
+  <p class="desc" style="font-size:.85rem">The optimizer (<code>scripts/optimize_strategies_from_cube.py</code>) emits two complementary views of the cube. Same trade data, sliced differently. Use both - they answer different questions.</p>
+
+  <h4 style="margin:.5rem 0 .2rem;color:var(--accent)">Lens A - Per-strategy 9-dimension drill-down (Tab 11 Candidates)</h4>
+  <p class="desc" style="font-size:.85rem">For ONE strategy at a time, decompose its trades along nine independent dimensions to find what's tunable. Authored Batch 388. Output: one JSON per strategy under <code>output_optimization_candidates_&lt;date&gt;/&lt;strategy&gt;.json</code>.</p>
+  <p style="font-size:.85rem">Use Lens A when you've identified a strategy that almost passes (e.g. it's in COMPOUND_RESTRICTIVE or has Sharpe 0.5-0.7) and you want to know which lever moves the needle: should you loosen a clause? change the exit pairing? widen the regime filter? cap the hold duration?</p>
+  <table class="display compact" style="font-size:.82rem;width:auto">
+    <thead><tr><th>Dim</th><th>Slice</th><th>Key fields in JSON</th><th>Use to answer</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>Entry-gate thresholds</td><td><code>candidates</code> (BINDING vs LOOSE per Batch 380)</td><td>Which numeric threshold (RSI &lt; X, ADX &gt; Y) is the binding constraint?</td></tr>
+      <tr><td>B</td><td>Compound logic (AND/OR clauses)</td><td><code>per_clause.fires_at</code>, <code>restrictive</code>, <code>always_on</code>, <code>proposals</code></td><td>Which clauses are AND-restrictive vs always_on noise? Drop always_on; loosen restrictive.</td></tr>
+      <tr><td>C</td><td>Regime</td><td><code>per_regime</code></td><td>Does this strategy only work in bull? In which historical regime windows does it pass?</td></tr>
+      <tr><td>D</td><td>Exit method pairing</td><td><code>best_exit</code> by Sharpe</td><td>Which of 25 exits pairs best for this strategy? Feeds STRATEGY_EXIT_OVERRIDE.</td></tr>
+      <tr><td>E</td><td>Sizing</td><td><code>per_tier</code></td><td>Are EXCEPTIONAL trades actually higher quality, or does the tier rank not differentiate?</td></tr>
+      <tr><td>F</td><td>Universe tier</td><td><code>per_tier_T1a / T1c / T2 / T3</code></td><td>Should this strategy run on T1a only, or extend to T3 momentum names?</td></tr>
+      <tr><td>G</td><td>Hold duration</td><td><code>per_hold_bucket</code></td><td>Optimal hold range; informs time_stop variant selection.</td></tr>
+      <tr><td>H</td><td>Cooldown</td><td><code>per_cooldown</code></td><td>Do back-to-back entries on same ticker degrade WR?</td></tr>
+      <tr><td>I</td><td>Macro</td><td><code>per_macro_regime</code></td><td>Combined regime + macro overlay; complements Dim C.</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin:.7rem 0 .2rem;color:var(--accent)">Lens B - Per-(strategy x exit) cell verdict (Tab 13 Cell Cube)</h4>
+  <p class="desc" style="font-size:.85rem">For EVERY (strategy, exit_method) pair with n ≥ 5 trades, compute the DEC-426 5-Gate verdict. Authored Batch 391. Output: <code>exit_method_analysis.json::layer_2_per_strategy_exit_cell</code>. Currently ~100 cells per round (see Tab 16 for why).</p>
+  <p style="font-size:.85rem">Use Lens B when you want the headline pass/fail screening across the entire cube at once. Sortable. Cells with <code>five_gate_pass = true</code> are 1A-alpha gate candidates pending walk-forward.</p>
+  <table class="display compact" style="font-size:.82rem;width:auto">
+    <thead><tr><th>Field</th><th>What it is</th><th>Pass threshold</th></tr></thead>
+    <tbody>
+      <tr><td><code>n</code></td><td>Number of trades in the cell</td><td>≥ 30 (Gate 1)</td></tr>
+      <tr><td><code>win_rate</code></td><td>Wins / n</td><td>Per CLAUDE.md 9 criteria</td></tr>
+      <tr><td><code>mean_pp</code></td><td>Mean PnL %</td><td>(input to other gates)</td></tr>
+      <tr><td><code>std_pp</code></td><td>Std PnL %</td><td>(input to Sharpe / t-stat)</td></tr>
+      <tr><td><code>profit_factor</code></td><td>Gross winners $ / gross losers $</td><td>Strategy gate; not in cell 5-Gate</td></tr>
+      <tr><td><code>sharpe</code></td><td>Per-trade Sharpe</td><td>Strategy gate (≥ 0.7 OOS for 1A-α)</td></tr>
+      <tr><td><code>t_stat</code></td><td>t-statistic vs 0</td><td>≥ 3.4 (Gate 4)</td></tr>
+      <tr><td><code>verdict</code></td><td>PASS / FAIL / INSUFFICIENT_SAMPLE</td><td>Composite of all 5 gates</td></tr>
+      <tr><td><code>five_gate_pass</code></td><td>All 5 gates clear (strict)</td><td>True iff every gate passes</td></tr>
+      <tr><td><code>gates</code></td><td>{n_gte_30, p_lt_0.05_bonf, psr_gte_0.95, t_gte_3.4, rr_gte_2.0}</td><td>Per-gate booleans</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.82rem;color:var(--muted);margin-top:.3rem">5-Gate (DEC-426): n &gt;= 30 AND Bonferroni p &lt; 0.05 across 4625 cells/regime AND PSR (Probabilistic Sharpe Ratio) &gt;= 0.95 AND t-stat &gt;= 3.4 AND R:R &gt;= 2.0. Strict requires all 5; 4-of-5 (excluding PSR) is the "relaxed" pass bucket.</p>
+
+  <h3 style="margin-top:1rem">Coming next: cube-cell metrics expansion (queued — see EXECUTION_QUEUE item #4)</h3>
+  <p class="desc" style="font-size:.85rem">The current L2 cell tracks 13 fields. 5 tiers of additional metrics queued. Each tier ships with its own glossary + interpretation rule inline in Tab 13 so you can read a number and know what to do with it. Preview:</p>
+  <table class="display compact" style="font-size:.78rem">
+    <thead><tr><th>Tier</th><th>Metric</th><th>What it tells you</th><th>Interpretation rule</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td><code>sortino</code></td><td>Sharpe but only penalizes downside vol</td><td>If sortino &gt;&gt; sharpe → strategy gives up profitable upside variance; sharpe undersells it</td><td>metrics.py::_sortino_ratio</td></tr>
+      <tr><td>A</td><td><code>calmar</code></td><td>Return / max DD</td><td>Strategies with calmar &lt; 0.5 spend more time in drawdown than in profit</td><td>metrics.py::_calmar</td></tr>
+      <tr><td>A</td><td><code>deflated_sharpe</code></td><td>Sharpe adjusted for multiple testing across cells</td><td>If deflated &lt;&lt; raw, the raw Sharpe is selection-biased noise</td><td>metrics.py PSR variant</td></tr>
+      <tr><td>A</td><td><code>sharpe_at_5/10/20_bps</code></td><td>Sharpe net of round-trip slippage</td><td>If sharpe@20bps &lt; 0, strategy is dependent on no-cost execution</td><td>metrics.py DEC-404</td></tr>
+      <tr><td>A</td><td><code>avg_mae</code></td><td>Average max adverse excursion (% in red before recover/stop)</td><td>Big avg_mae = trades are pain to hold; trim stops or widen entries</td><td>trade_log.max_adverse_excursion</td></tr>
+      <tr><td>A</td><td><code>avg_mfe</code></td><td>Average max favorable excursion (% in green before exit)</td><td>If avg_mfe &gt;&gt; mean_pp, exit gives back too much profit</td><td>trade_log.max_favourable_excursion</td></tr>
+      <tr><td>A</td><td><code>mfe_mae_ratio</code></td><td>"Edge ratio" - structural advantage before exit</td><td>&gt; 2.0 is good; &lt; 1.0 means losing trades drop further than winners run</td><td>computed from above two</td></tr>
+      <tr><td>A</td><td><code>exit_efficiency</code></td><td>(exit - entry) / (best_price_reached - entry)</td><td>1.0 = exit caught the peak; 0.3 = gave back 70% of run-up</td><td>trade_log entry/exit/highest_close</td></tr>
+      <tr><td>A</td><td><code>hold_days_median / std / skew</code></td><td>Trade duration distribution</td><td>Right-skewed = trend strategy; flat distribution = chop</td><td>trade_log.hold_days</td></tr>
+      <tr><td>A</td><td><code>survivorship_sharpe</code></td><td>Sharpe after delisting/M&amp;A haircut</td><td>If big drop vs raw, strategy depends on dead names</td><td>trade_log.survivorship_haircut</td></tr>
+      <tr><td>A</td><td><code>capital_weighted_sharpe</code></td><td>Tier-weighted Sharpe (EXCEPTIONAL 6.7x MEDIUM)</td><td>Differs from unit Sharpe when tier mix is skewed</td><td>trade_log.confidence_tier × sizing</td></tr>
+      <tr><td>B</td><td><code>wr_with_smart_money / wr_without</code></td><td>Win rate conditional on smart-money signal</td><td>&gt; 3pp lift validates the smart-money gate (matches criterion 7)</td><td>trade_log.congressional/insider/institutional_signal</td></tr>
+      <tr><td>B</td><td><code>wr_by_vix_bucket</code></td><td>Win rate × VIX-at-entry bucket</td><td>Sharp cliffs across vol buckets = vol-dependent edge</td><td>trade_log.signals_at_entry.vix_at_entry</td></tr>
+      <tr><td>B</td><td><code>wr_by_days_to_earnings</code></td><td>Win rate × days-to-earnings bucket</td><td>Spike in 0-5 day bucket = pre-earnings drift effect</td><td>trade_log.days_to_earnings</td></tr>
+      <tr><td>B</td><td><code>wr_by_event_window</code></td><td>Win rate during FOMC/CPI/NFP window</td><td>If concentrated in events, will collapse when 1B-alpha turns event-suppression back on</td><td>trade_log.signals_at_entry.event_within_5d</td></tr>
+      <tr><td>C</td><td><code>sharpe_ci_95_low / high</code></td><td>Bootstrap 95% CI for Sharpe</td><td>If CI crosses 0, the point Sharpe is unreliable; widen n before trusting</td><td>NEW - bootstrap per cell</td></tr>
+      <tr><td>C</td><td><code>oos_sharpe</code></td><td>Out-of-sample Sharpe from walk-forward</td><td>OOS &gt; 0.7 in &gt;= 1 regime = 1A-alpha gate cell</td><td>walk_forward_batch414_cells.json</td></tr>
+      <tr><td>C</td><td><code>is_oos_decay</code></td><td>OOS / IS Sharpe ratio</td><td>&lt; 0.7 = significant overfit; cell unlikely to deploy</td><td>derived from oos_sharpe</td></tr>
+      <tr><td>C</td><td><code>effective_n</code></td><td>n adjusted for trade autocorrelation</td><td>If effective_n &lt;&lt; n, trades are clustered (e.g. one signal hits multiple tickers same day)</td><td>NEW - lag-1 autocorr</td></tr>
+      <tr><td>D</td><td><code>sqn</code></td><td>System Quality Number = mean(R) / std(R) × √n</td><td>Van Tharp: &lt; 1.6 = poor; 1.6-1.9 = avg; 2.0+ = excellent</td><td>NEW</td></tr>
+      <tr><td>D</td><td><code>k_ratio</code></td><td>Slope of log-equity curve / std error of slope</td><td>Smoothness score; higher = steady up-trend, less choppy</td><td>NEW</td></tr>
+      <tr><td>D</td><td><code>mar</code></td><td>CAGR / max DD</td><td>Industry-standard return-per-unit-suffering</td><td>NEW</td></tr>
+      <tr><td>E</td><td><code>kelly_fraction</code></td><td>Theoretical optimal sizing implied by WR + W/L</td><td>Compare to actual tier %; flag if actual &gt; 0.5 × Kelly (over-risking)</td><td>NEW</td></tr>
+      <tr><td>E</td><td><code>cvar_5pct</code></td><td>Expected Shortfall - avg loss in worst 5% of trades</td><td>More robust than max_loss; sizing input</td><td>NEW</td></tr>
+      <tr><td>E</td><td><code>risk_of_ruin</code></td><td>Probability of -50% portfolio DD given cell edge + actual sizing</td><td>If &gt; 5%, cell sizing is aggressive vs edge quality</td><td>NEW</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.82rem;color:var(--muted);margin-top:.3rem"><strong>Implementation order (queued):</strong> Tier A first (data exists; trivial to surface), then Tier B (slicing existing trade-log columns), then C (new computation: bootstrap + walk-forward join), then D (composite scores; literature formulas), then E (risk-management; needs sizing context). When each tier lands in Tab 13, the columns above will become the glossary inline next to the table for live reference.</p>
 
   <!-- Batch 437 (2026-05-29): Phase 1A-beta cube-only dashboard. -->
   <div style="background:#1a1f29;border:1px solid var(--accent);padding:.8rem 1rem;border-radius:6px;margin-bottom:.75rem;font-size:.88rem">

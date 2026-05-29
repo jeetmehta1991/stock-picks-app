@@ -694,6 +694,81 @@ def test_batch443_build_script_loads_iteration_rounds():
             f"build script must emit payload key: {k}")
 
 
+def test_batch445_reference_tab_data_flow_flowchart_present():
+    """Tab 14 Reference must lead with a 'Where do I look for X?'
+    data-flow flowchart so a new viewer can answer their question
+    without reading the whole reference page."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "Where do I look for X?" in html, (
+        "Tab 14 must include the data-flow flowchart")
+    # Pipeline stages.
+    for stage in ["[Universe build]", "[Backtest engine",
+                  "[Trade execution",
+                  "[Cube replay",
+                  "[Lens A",
+                  "[Lens B",
+                  "[Optimizer summary",
+                  "[Walk-forward",
+                  "[1A-alpha gate decision]",
+                  "[Phase 1B-alpha"]:
+        assert stage in html, f"Flowchart stage missing: {stage}"
+    # Cross-round view callout.
+    assert "Tab 16 (Cube Diff)" in html or "Tab 16" in html
+    assert "Tab 17" in html
+    assert "Tab 18" in html
+
+
+def test_batch445_lens_a_and_lens_b_explainers_present():
+    """Tab 14 must explain Lens A (per-strategy 9-dim) + Lens B
+    (per-cell 5-Gate) with field-by-field tables for each lens."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "Lens A vs Lens B" in html, (
+        "Tab 14 must include the Lens A vs Lens B section")
+    assert "Lens A - Per-strategy 9-dimension drill-down" in html, (
+        "Lens A subsection missing")
+    assert "Lens B - Per-(strategy x exit) cell verdict" in html, (
+        "Lens B subsection missing")
+    # All 9 dimensions named in Lens A table.
+    for d in ["Entry-gate thresholds", "Compound logic",
+              "Regime", "Exit method pairing", "Sizing",
+              "Universe tier", "Hold duration", "Cooldown",
+              "Macro"]:
+        assert d in html, f"Lens A dimension missing: {d}"
+    # Lens B field-by-field table includes the 5-Gate fields.
+    for f in ["<code>n</code>", "<code>sharpe</code>",
+              "<code>t_stat</code>", "<code>verdict</code>",
+              "<code>five_gate_pass</code>", "<code>gates</code>"]:
+        assert f in html, f"Lens B field missing: {f}"
+
+
+def test_batch445_cube_cell_metrics_expansion_preview_present():
+    """Tab 14 must include the 'Coming next: cube-cell metrics
+    expansion' preview block listing all 5 tiers (A-E) so the owner
+    can see what's queued + interpretation rules before each tier
+    actually lands in Tab 13."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "Coming next: cube-cell metrics expansion" in html, (
+        "Tab 14 must include the metrics-expansion preview")
+    # 5 tiers present.
+    for t in ["sortino", "calmar", "deflated_sharpe",
+              "sharpe_at_5/10/20_bps",
+              "avg_mae", "avg_mfe", "mfe_mae_ratio",
+              "exit_efficiency",
+              "wr_with_smart_money",
+              "wr_by_vix_bucket",
+              "sharpe_ci_95_low",
+              "oos_sharpe",
+              "sqn", "k_ratio", "mar",
+              "kelly_fraction", "cvar_5pct", "risk_of_ruin"]:
+        assert t in html, (
+            f"Metrics-expansion preview must include: {t}")
+    # Implementation order note.
+    assert "Tier A first" in html or "Implementation order" in html
+    # The glossary-inline mandate must be cited.
+    assert "glossary" in html.lower() and "Tab 13" in html, (
+        "Preview must cite the 'glossary inline in Tab 13' mandate")
+
+
 def test_batch430_candidate_detail_is_div_with_structured_render():
     """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
     structured render (KPIs + per-dimension table + collapsible JSON) in
