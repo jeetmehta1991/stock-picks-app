@@ -1729,3 +1729,47 @@ Every claim was technically correct for the focused subset I ran. None reflected
 **Past violations.** 12+ in this session alone (Batches 412-422). Same pattern previously codified in 2026-05-12 `feedback_pyramid_full_13_tiers_mandatory.md` after Batches 49-68. Total repeat-count of this violation across project history: 20+. Owner has explicitly authorized ending conversations on repeated violations of this class.
 
 **Cross-references.** Batch 423 (this codification), CHECKLIST #93 (HARD RULE codifying the verification protocol), `feedback_pyramid_full_13_tiers_mandatory.md` (prior codification of the same violation; this lesson is the second time owner has codified the same rule because the first didn't stick), CHECKLIST #69 (full 13-tier pyramid mandatory), CHECKLIST #75 (pyramid every push no doc/data exception), CHECKLIST #90 (status updates re-verify state - same family: never claim from memory/recall).
+
+---
+
+### L164 — Lessons codified for one file/layer must be explicitly re-audited across ALL parallel files/layers; the placeholder-as-hardcode anti-pattern is one of many surface forms [critical/process]
+
+**Symptom.** Batch 446 (2026-05-29) surfaced two audit gaps in `scripts/optimize_strategies_from_cube.py` that had been live for months:
+1. PSR gate hardcoded `False` with `# placeholder; full PSR via deflated_sharpe.py (DEC-247)` — strict 5-Gate could never pass by code; 0 of 100 R3 cells verified.
+2. `_cell_stats` parallel-universe — self-contained reimplementation that calls ZERO functions from `metrics.py`, ignoring 14+ rich helpers (Sortino, Calmar, daily Sharpe, ADF, Chow, event-conditional WR, deflated Sharpe, cost-sensitivity, Kelly) that are computed for strategy-level `backtest_results.csv`.
+
+**Why it wasn't caught earlier.**
+1. **`feedback_wired_means_engine_consumed`** existed (codified after ~150 false-positive RESOLVED-IMPLEMENTED claims) but was scoped to `backtest/*`. `scripts/*` was never re-audited under the same lens. Grep "DEC-247" hits the reference; grep "# placeholder" next to it would have caught the bug instantly. The first grep ran; the second never did.
+2. **DEC-507 (data DEC + toolkit DEC ≠ integration; wiring is a third explicit deliverable)** codified the integration-gap pattern, but scoped to the agent-toolkit layer. Never extended to the cube-optimizer layer.
+3. **Tests check "script runs" not "verdict is meaningful".** Tests for `optimize_strategies_from_cube.py` assert exit code 0 + JSON output. NO test asserts "on synthetic data with a known edge, strict 5-Gate pass count > 0." A single such semantic-integration test would have flagged this on day one.
+4. **VERIFICATION_MATRIX** was built from `coverage run` against the canonical backtest. The optimizer is a separate script; its non-consumption of `_deflated_sharpe` didn't appear as a coverage gap because the optimizer wasn't in the run.
+5. **Strategy-level and cube-cell-level audited separately.** "Do these two functions agree on what Sharpe means?" was never a discrete audit target.
+
+**Sweep finding.** `grep -rn "placeholder" scripts/ backtest/` returned 14 hits. Live-impact subset:
+- `scripts/optimize_strategies_from_cube.py:130` PSR=False (already found)
+- `backtest/results/cube_populator.py:159` SAME PSR placeholder in a SECOND file
+- `backtest/engine/exit_context.py:268, 293, 335, 420` exit_regime defaults to entry regime
+- `scripts/run_phase_1b_alpha_smoke.py:129` Phase 1B-α smoke hardcodes `regime: "bull"`
+
+**Rule.**
+1. When a lesson is codified for a specific file or layer, the codification turn MUST include an explicit sweep across all parallel files/layers, with the result documented (either "extended to layer X" or "X is out of scope because...").
+2. `# placeholder` / `# TODO` / hardcoded sentinel values that ship in production output are a banned pattern. Preflight to be updated to flag any new placeholder string in `scripts/` or `backtest/` after the current sweep closes (Batch 447 queue item #0).
+3. Semantic-integration tests are required, not just pyramid coverage. For every numerical pipeline (compute → store → render), at least one test must assert the meaningful invariant ("output > 0 on synthetic positive-edge data", "verdict pass count > 0 on known-good fixture") — not just "script exits 0."
+
+**Apply when.** Every codification of a new CHECKLIST rule or LEARNINGS entry. Every audit. Every claim that a bug class is closed.
+
+**Cross-references.** CHECKLIST #95 (this lesson's codified rule), Batch 446 (PSR finding), Batch 447 (sweep + meta-fix queue row #0), `feedback_wired_means_engine_consumed` (one-layer-scoped predecessor), DEC-507 (wiring-matrix pattern), DEC-426 (5-Gate definition that the PSR placeholder invalidates), DEC-247 (deflated_sharpe — never wired into _cell_stats), EXECUTION_QUEUE.md items #4 + #5 (the concrete fixes).
+
+---
+
+### L165 — EXECUTION_QUEUE display at end of each turn is the contract surface; without it, the queue is private state [process/discipline]
+
+**Symptom.** I had been updating the queue and ending turns with narrative summaries / status tables / recommendations — but not the actual queue contents. Owner had to re-open `EXECUTION_QUEUE.md` to see what was now at the top.
+
+**Why this matters.** The queue is the contract between owner and Claude for "what runs next." If the contract is not displayed, it's not a contract — it's a memo to self. Discoveries that promote items, resolutions that sink items, reorderings that swap priorities — all only land when owner can see the current state.
+
+**Rule.** Every turn that updates `EXECUTION_QUEUE.md` ends with a rendered queue snapshot (table or one-line-per-row) showing all active rows with status. Codified as CHECKLIST #96.
+
+**Apply when.** Every turn that modifies the queue. NOT required for pure clarifying answers that don't touch the queue file.
+
+**Cross-references.** CHECKLIST #94 (queue maintenance), CHECKLIST #96 (display mandate), CHECKLIST #90 (status updates re-verify state — same family: state must be SHOWN, not assumed).

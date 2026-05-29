@@ -1403,3 +1403,28 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Status enum:** PENDING / IN_PROGRESS / BLOCKED / DEFERRED / RESOLVED / REOPENED / DONE-ARCHIVED. Only ONE item is IN_PROGRESS at any time.
 
     **Joint:** TodoWrite (per-session), `MONITORING_FRAMEWORK.md` (operational state that informs queue items), CHECKLIST #67/#67.b (per-turn doc sync — EXECUTION_QUEUE update is one of those required syncs), `feedback_audit_recommendations_against_existing_directives.md` (queue items must be audited against existing rules before adding).
+
+95. **HARD RULE — When a process gap or audit gap is discovered, codify it in CHECKLIST.md AND LEARNINGS.md the SAME turn as a new numbered rule + L-entry. Adding to queue alone is insufficient.** (Owner directive 2026-05-29 Batch 448: *"Add the above to checklist and learnings as applicable. You are mandatorily required to add to checklist and learnings in each turn if such gaps are found! This is a process error on your end!"*)
+
+    Past failure pattern: Batch 446 surfaced two audit gaps (PSR hardcoded False bug, `_cell_stats` parallel-universe). I queued them as items #4 + #5 in EXECUTION_QUEUE.md but did NOT add a corresponding CHECKLIST rule or LEARNINGS entry. The queue tracks what to DO; CHECKLIST + LEARNINGS prevent the gap from recurring elsewhere. Without the second step, the next time the same anti-pattern appears in a different file, it will be missed again — which is exactly what L143 documents for the original wired=yes-grep bug.
+
+    **Apply when:** discovering ANY of (a) a code path that doesn't do what the comments / DEC claim, (b) tests that pass without checking the meaningful invariant, (c) a lesson that exists for one file/layer not being applied to a parallel file/layer, (d) a "placeholder" / "TODO" / hardcoded sentinel value that ships in production output, (e) a previously-codified rule whose scope didn't cover the new finding.
+
+    **How to apply:** end the turn with three artifacts, not one:
+      a. New CHECKLIST.md numbered rule (mandatory) that turns the finding into a forward-looking gate.
+      b. New LEARNINGS.md L-entry (mandatory) that captures the past-tense story (what happened / why / how to detect next time).
+      c. New EXECUTION_QUEUE.md row for the concrete fix (the queue is the WHERE-TO-DO; CHECKLIST + LEARNINGS are the WHAT-NOT-TO-REPEAT).
+
+    Failing to ship all three when a gap is found is itself a process violation and a CHECKLIST #95 breach.
+
+    **Joint:** CHECKLIST #94 (EXECUTION_QUEUE update), CHECKLIST #67/#67.b (per-turn doc sync), `feedback_wired_means_engine_consumed.md` (same lesson at the lower layer), `feedback_pyramid_full_13_tiers_mandatory.md` (same "lessons must propagate" theme).
+
+96. **HARD RULE — Show `EXECUTION_QUEUE.md` (or its top 5-10 rows) at the END of every turn that updated it. Mandatory.** (Owner directive 2026-05-29 Batch 448: *"You are required to show the queue at the end of each turn mandatorily."*)
+
+    Past failure pattern: I updated the queue but ended the turn with a narrative summary that didn't show the current queue state. Owner could not see what was now at the top without re-opening the file. The queue is the contract for "what runs next"; if it's not visible, it might as well be private state.
+
+    **Apply when:** every turn that modifies `EXECUTION_QUEUE.md`. End the turn with a rendered queue snapshot (table or one-line-per-row summary) so the owner can read the current next-target without opening another file. Status icons / row numbers preserved.
+
+    **Does NOT apply to:** turns that don't modify the queue (a pure clarifying answer, an explanation that produces no commits).
+
+    **Joint:** CHECKLIST #94 (queue maintenance), CHECKLIST #90 (status updates re-verify state).
