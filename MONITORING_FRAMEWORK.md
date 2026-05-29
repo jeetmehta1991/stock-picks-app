@@ -70,9 +70,12 @@
 |---|---|
 | Code | `scripts/aws_batch395_parallel.py` (action-taking variant) + `scripts/aws_batch395_monitor.py` (read-only multi-instance) |
 | Action-taking variant shipped | Batch 411 (2026-05-27) |
+| Slot logic | Batch 424 (2026-05-28): binary `ondemand_busy`/`spot_busy` flags → integer `ondemand_count`/`spot_count` counters. `--spot-slots` (default 1) + `--od-slots` (default 1). Shape A topology = `--spot-slots 3 --od-slots 0` = 3 × c7a.8xlarge spot = 96 vCPU = full quota ≈ $9.30 / ~5h cube wall-time. |
 | Cadence | 5-minute poll loop |
 | **Act on detection** | (a) Heartbeat stale > 30 min → `terminate_instance` + re-add to `pending` → next poll relaunches. (b) Spot reclaim detected via `describe-spot-instance-requests` → same auto-relaunch. (c) Per-poll one-line `[DIGEST hh:mmZ b1=DONE b3=PENDING b4=s/120m@2025-06-13(hb15s) b5=o/40m@2023-01-25(hb45s)]` summary line — this is what I read at every owner status request, replacing recall-from-memory. (d) Forensic rc=2 ABORT → terminate all downstream. |
 | Consumer | Owner status reports; per-poll digest is the read protocol |
+| **Stdout caveat (Batch 424 observation)** | When orchestrator runs with stdout redirected to file (background launch), Python block-buffers parent-process prints — `[INIT] parallel runner`, `[LAUNCH] batch_N spot`, `[STATE]`, `[DIGEST]` lines never flush in real-time. The `subprocess.run(capture_output=False)` calls to `aws_batch395_launch.py` DO flow through inherited stdout — so `[OK] batch_N: launched i-...` and `[FORENSIC batch_N] verdict=...` ARE visible in real-time. **Monitor patterns must include launch.py / forensic markers, not just orchestrator markers.** Real-time status verification still uses direct S3 + EC2 queries (per L4 protocol below), not log-tail. |
+| **PATH prerequisite** | `aws` binary must be on PATH BEFORE the orchestrator starts (it calls `subprocess.run(["aws", ...])`). On Windows: prepend `C:\Program Files\Amazon\AWSCLIV2` to PATH in the parent shell. Symptom of missing PATH: `FileNotFoundError: [WinError 2]` at first poll. |
 | Failure mode caught | L162 — pre-Batch-411 `monitor_phase_1a_beta_health.py` died at startup on PowerShell `NativeCommandError` and was never re-read across 10h. Batch 411 folds action-taking INTO the orchestrator so the same process that polls also relaunches + emits digest. |
 
 ### L5 — Per-(strategy × exit) cube cell forensic (post-merge)
@@ -115,10 +118,24 @@ Before issuing any status update that references long-running resources:
 1. **EC2 / spot instances** — run `aws ec2 describe-instances` for current `State.Name` + `StateReason.Message`; for spot, also `describe-spot-instance-requests` for `Status.Code`.
 2. **S3 sentinels** — `aws s3 ls s3://bucket/path/_COMPLETE` for each tracked batch.
 3. **S3 heartbeats** — pull each tracked batch's heartbeat file + compare `ts=` to current time (> 15 min stale = surface in report).
-4. **Background tasks** — read tail of each task's output file at report time (or invoke status-check command).
-5. **L4 monitor output** — read the latest poll digest and include any WARN/KILL signals.
+4. **Background tasks** — read tail of each task's output file at report time. **Caveat (Batch 424):** when the task is the L4 orchestrator with stdout redirected, the parent-process print lines (`[DIGEST]`, `[STATE]`) may be stuck in Python's block buffer. Treat absence of digest lines as "buffered, not absent" — fall back to direct S3 + EC2 queries (steps 1-3).
+5. **L4 monitor output** — read the latest poll digest and include any WARN/KILL signals. If digest is missing due to buffering (see step 4), reconstruct status from S3 `_COMPLETE` + `heartbeat/` + `forensic/` listings.
 
 Caching prior state from earlier in the same session is NOT acceptable for resources that can change asynchronously. Cost of re-verification = 1-2 seconds; cost of stale reporting = the entire delta between actual change and detection (1.5 hours in the Batch 410 incident).
+
+---
+
+## Pre-launch operational protocol (L4)
+
+Before invoking `scripts/aws_batch395_parallel.py` for a fresh cube run:
+
+1. **PATH** — confirm `aws` is on PATH in the parent shell (`which aws` returns a path). If not: `export PATH="/c/Program Files/Amazon/AWSCLIV2:$PATH"` (Git Bash) or PowerShell equivalent.
+2. **Quota** — confirm spot vCPU quota covers the topology: 3 × c7a.8xlarge = 96 vCPU. `aws service-quotas get-service-quota --quota-code L-34B43A08` (or trust an explicit owner quota report — the `batch395-runner` IAM user lacks ServiceQuotas read permission by default).
+3. **Live spot price floor** — `aws ec2 describe-spot-price-history --instance-types c7a.8xlarge --product-descriptions "Linux/UNIX"` for the cheapest AZ. Compare to `--spot-max-price` (default 0.90) and update if spot floor exceeds it.
+4. **S3 archive prior run** — `aws s3 mv s3://bucket/outputs/ s3://bucket/outputs_<YYYY-MM-DD>_run/ --recursive` (and same for `heartbeat/`, `forensic/`, `final/`). Skipping archive = orchestrator finds prior `_COMPLETE` markers and short-circuits, treating "already done" as success. Same-bucket S3 mv = $0 in-region transfer.
+5. **AMI + key pair + SG + IAM role** — confirm `aws_batch395_state.json` or recent successful launch shows still-valid resource IDs. AMI must be `available` (`aws ec2 describe-images --image-ids <id>`).
+6. **Commit hash** — `--commit <sha>` must reference a pushed commit (the user-data bootstrap script does `git fetch && git checkout <sha>`); CI Test Pyramid must be green for that sha.
+7. **Slot flags** — explicit `--spot-slots N --od-slots M` matching the approved Shape (do not rely on Batch 424 defaults 1+1, which were preserved only for backward-compat).
 
 ---
 
@@ -146,7 +163,7 @@ Caching prior state from earlier in the same session is NOT acceptable for resou
 | Gap | Where | Open Question |
 |---|---|---|
 | L3 forensic has batch-aggregate PnL checks (`all_regimes_negative_pnl`) which conflict with `feedback_strategy_x_exit_cell_analysis` cell-level mandate | `scripts/aws_batch395_forensic_per_batch.py` | Should L3 ABORT triggers be cell-level (verdict matrix) instead of batch-aggregate? Owner deferred 2026-05-28. |
-| L2 instrumentation (Batch 416) is dormant until next cube re-run | `backtest/signals/screener.py` | Cube re-run pending operational decision (~$17/~3h AWS) |
+| L2 instrumentation (Batch 416) active in cube re-run launched 2026-05-28 commit 948769bf2 Shape A | `backtest/signals/screener.py` | First diagnostic logs surface in batch_1..5 engine logs post-merge; SMC silent-failure root cause expected in the log tail |
 | L4 digest format is single-line; not all signals visible (e.g., engine-date stuck for 2+ polls = stall not yet detected) | `scripts/aws_batch395_parallel.py` | Add `[DIGEST stale-detect]` row if engine_date doesn't advance across N polls |
 | L5 PSR gate at 0.95 may be too aggressive for current universe (0 strict-5-gate cells in `output_batch395_final` despite 26 cells passing 4 of 5) | `scripts/optimize_strategies_from_cube.py::_dec426_verdict` | Owner-discussion: lower PSR to 0.9 OR multi-regime PASS requirement OR accept current threshold |
 | L6 walk-forward only computed for Batch 414 winners (9 strategies × 4 folds) | `scripts/walk_forward_batch414_cells.py` | Extend to all 100 fired strategies post-cube-rerun |
@@ -162,6 +179,8 @@ Caching prior state from earlier in the same session is NOT acceptable for resou
 | L161 / CHECKLIST #90 | 410 | batch_3 spot-reclaim reported as RUNNING for 1.5h (cached state from launch event, not re-queried) | Status updates re-verify current state via API/files at report time |
 | L162 / CHECKLIST #91 | 411 | L4 14-check monitor died at startup on PowerShell `NativeCommandError`; produced 9 lines total over 10h; never re-read. S3 heartbeats also went unread. | Action-taking monitor folded INTO orchestrator with per-poll digest |
 | (SMC silent-failure) | 416 | 0 of 29,159 trades had any smc_* key despite `compute_smc_signals` returning 28 keys in isolation. `try/except: pass` swallowed actual AWS-environment error. | Replace silent passes with rate-limited diagnostic logging helpers |
+| (L4 stdout buffering) | 424 | Orchestrator parent-process prints (`[DIGEST]`, `[STATE]`, `[LAUNCH]`) silently buffered when stdout redirected to file in background launch; Monitor patterns targeting orchestrator markers fired zero events across an hour of cube run, while launch.py + forensic markers DID flow through. | Document buffering caveat in L4 row + Status-reporting step 4; use direct S3/EC2 queries (not log-tail) for status; include launch.py/forensic markers in Monitor patterns. Open follow-up: `PYTHONUNBUFFERED=1` env var or `-u` flag on next launch to flush in real-time. |
+| (AWS CLI PATH prereq) | 424 | First orchestrator launch failed with `FileNotFoundError: [WinError 2]` because `aws` was not on PATH in the parent shell — the orchestrator calls `subprocess.run(["aws", ...])` requiring `aws` resolvable. | Documented in L4 row + Pre-launch operational protocol step 1. |
 
 ---
 
