@@ -137,6 +137,18 @@ class Portfolio:
         self.benchmark: str = benchmark
         self.cash: float = float(starting_capital)
         self.positions: dict[str, Position] = {}
+        # Canonical PORTFOLIO equity curve: list of (date, equity_dollar)
+        # tuples appended once per trading day by mark_to_market(). Single
+        # source of truth for portfolio-level Sharpe / max-DD / alpha / beta
+        # (consumed by writer.compute_portfolio_metrics_from_curves and
+        # agents.our_risk_toolkit). Distinct from the per-STRATEGY synthetic
+        # equity curve at metrics.py:~2222 which is `(1 + pnl/100).cumprod()`
+        # of a single strategy's trade pnl series -- different math (returns-
+        # based, no portfolio cash), different unit (compounded multiplier,
+        # not dollars), different scope (one strategy at a time). The two
+        # entities are NOT interchangeable; the writer never feeds the
+        # cumprod result to compute_portfolio_metrics_from_curves and the
+        # ADF/Chow tests never read Portfolio.equity_curve.
         self.equity_curve: list[tuple[date, float]] = []
         self.benchmark_curve: list[tuple[date, float]] = []
         # Peak equity used for drawdown calc - starts at initial capital

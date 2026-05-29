@@ -2219,6 +2219,11 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     event_wr = _event_conditional_win_rate(g)
     # DEC-414 ADF stationarity test + DEC-416 Chow structural break test
     # on the per-strategy compounded equity curve (DEC-111 children).
+    # Batch 460 (AU4): name shadows Portfolio.equity_curve but is a DIFFERENT
+    # entity -- per-strategy returns-based compounded multiplier curve, no
+    # portfolio cash dynamics, no dates, just `(1 + pnl_pct/100).cumprod()`.
+    # See portfolio.py:~140 for the canonical Portfolio.equity_curve
+    # definition; the two are not interchangeable.
     equity_curve = (1.0 + pnl / 100.0).cumprod()
     adf_result = _adf_test(equity_curve)
     chow_result = _chow_test(equity_curve)
