@@ -2725,6 +2725,17 @@ def compute_portfolio_metrics_from_curves(
 
     Returns a dict suitable for inclusion in backtest_report.html and the
     site_picks JSON. All percent values are in %, NOT decimal. NaN/inf-safe.
+
+    Batch 461 (AU5) -- SINGLE SOURCE OF TRUTH FOR `portfolio_metrics`:
+      Only this function computes the `portfolio_metrics` dict. Downstream
+      flow is strictly canonical -> writer -> dashboard:
+        compute_portfolio_metrics_from_curves(...)   <-- HERE (compute)
+          -> writer.py:~1059 calls this then writes portfolio_metrics.json
+            -> scripts/build_dashboard_phase_1a.py:~361 json.loads the file
+      No other module recomputes portfolio_metrics. backtest.py + portfolio.py
+      mention the name only in comments/docstrings referencing the chain.
+      If a new path needs portfolio metrics, it MUST call this function or
+      consume the JSON -- do not re-implement the math.
     """
     out: dict = {
         "starting_capital":             round(float(starting_capital), 2),
