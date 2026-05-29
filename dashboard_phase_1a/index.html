@@ -100,6 +100,8 @@
   <button class="tab-btn" data-panel="cubecells">13. Cell Cube</button>
   <!-- Batch 434 (2026-05-29): owner-directed Reference / Background tab -->
   <button class="tab-btn" data-panel="reference">14. Reference</button>
+  <!-- Batch 439 (2026-05-29): owner-directed Sample Trades walkthrough tab -->
+  <button class="tab-btn" data-panel="sample">15. Sample Trades</button>
   <button class="tab-btn" data-panel="raw">Raw JSON</button>
 </nav>
 
@@ -513,6 +515,7 @@
       <tr><td>11. Candidates</td><td>Per-strategy 9-dim optimizer drill-down (aggregate KPIs + dim A-I summary + collapsible raw JSON)</td><td>Per-strategy A-I dimension status; which dims have proposals</td><td><code>output_optimization_candidates_2026_05_28/&lt;strategy&gt;.json</code></td></tr>
       <tr><td>12. Quiet</td><td>3-bucket classification of zero-fire strategies (PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE)</td><td>Strategies that need producer fix OR clause restructure OR liquidity tuning</td><td><code>producer_zero_post_cube_audit.json</code></td></tr>
       <tr><td>13. Cell Cube</td><td>Per-(strategy × exit) cell verdicts with DEC-426 5-Gate columns</td><td>5-Gate strict PASS = 1A-α gate candidate</td><td><code>exit_method_analysis.json</code> (Lens B L2)</td></tr>
+      <tr><td>15. Sample Trades</td><td>10 hand-built scenarios end-to-end (regime → strategies firing → smart money → tier → sizing → exit → P&amp;L → running equity)</td><td>Mental model for how a trade flows; the AVOID + LOW + crisis-haircut paths in particular</td><td>None - illustrative, not cube data</td></tr>
     </tbody>
   </table>
 
@@ -560,6 +563,109 @@
     <li><b>Cube optimizer</b> &mdash; <code>scripts/optimize_strategies_from_cube.py</code> emits the Stage 3 candidates (Tab 10/11) + verdict cube (Tab 13).</li>
     <li><b>Walk-forward</b> &mdash; <code>scripts/walk_forward_batch414_cells.py</code> implements DEC-505 4-fold expanding-window for the 1A-α gate.</li>
   </ol>
+</section>
+
+<!-- Batch 439 (2026-05-29): owner-directed Sample Trades walkthrough.
+     10 illustrative scenarios end-to-end (strategies firing, smart-money
+     signals, tier assignment, position sizing, exit method, P&L,
+     running equity) covering EXCEPTIONAL / VERY_HIGH / HIGH /
+     MEDIUM_HIGH / MEDIUM / LOW / AVOID + crisis 50% haircut + the
+     five most-common exit methods. NOT live data - hand-built so the
+     mechanics are unambiguous. -->
+<section class="panel" id="sample">
+  <h2>15. Sample Trades - Worked walkthrough</h2>
+  <p class="desc">10 hand-built scenarios that walk through the full pipeline: regime classification -&gt; strategies firing -&gt; smart-money composite -&gt; <code>_assign_confidence_tier</code> -&gt; (optional) <code>_adjust_tier_by_agent</code> -&gt; position sizing -&gt; exit method -&gt; P&amp;L -&gt; running equity. Starting equity $100,000. Phase 1A-beta (agents off, all 4 legacy gates off). These are illustrative - NOT from the cube run.</p>
+
+  <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.4rem;margin-bottom:.5rem">
+    <div class="kpi"><div class="v">$100,000</div><div class="l">Starting equity</div></div>
+    <div class="kpi"><div class="v">10</div><div class="l">Scenarios</div></div>
+    <div class="kpi"><div class="v">8</div><div class="l">Trades placed</div></div>
+    <div class="kpi"><div class="v">2</div><div class="l">Skipped (AVOID + LOW)</div></div>
+    <div class="kpi"><div class="v good">5 / 3</div><div class="l">Wins / Losses</div></div>
+    <div class="kpi"><div class="v">$100,010</div><div class="l">Final equity</div></div>
+  </div>
+
+  <table class="display compact" style="font-size:.78rem;width:100%">
+    <thead>
+      <tr>
+        <th>#</th><th>Date</th><th>Ticker</th><th>Regime</th><th>Strategies</th>
+        <th>Smart $</th><th>Tier</th><th>Size %</th><th>Pos $</th>
+        <th>Entry</th><th>Exit</th><th>Exit reason</th><th>P&amp;L $</th><th>Equity after</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>02-15</td><td>AAPL</td><td>bull</td><td>4 (near_52w_high, rsi_pullback, breakout_retest, ma_crossover)</td><td>cong+insider buy</td><td><strong>EXCEPTIONAL</strong></td><td>5.0%</td><td>$4,995</td><td>$185.00</td><td>$202.00</td><td>atr_trail_1x</td><td class="good">+$459</td><td>$100,459</td></tr>
+      <tr><td>2</td><td>02-22</td><td>MSFT</td><td>bull</td><td>3 (bollinger_tight, rsi_pullback, vwap_reclaim)</td><td>none</td><td>MEDIUM_HIGH</td><td>1.5%</td><td>$1,230</td><td>$410.00</td><td>$425.00</td><td>atr_trail_1x</td><td class="good">+$45</td><td>$100,504</td></tr>
+      <tr style="background:#3a1f1f"><td>3</td><td>02-28</td><td>META</td><td>bull</td><td>5 (would have been EXCEPTIONAL+)</td><td><strong>cong_sell + insider_cluster_sell</strong></td><td><strong>AVOID</strong></td><td>skip</td><td>-</td><td>$580</td><td>-</td><td>-</td><td>$0</td><td>$100,504</td></tr>
+      <tr style="background:#2a2a3a"><td>4</td><td>03-03</td><td>NVDA</td><td>bull</td><td>1 (rsi_pullback)</td><td>none</td><td><strong>LOW</strong></td><td>skip</td><td>-</td><td>$890</td><td>-</td><td>-</td><td>$0</td><td>$100,504</td></tr>
+      <tr><td>5</td><td>03-05</td><td>TSLA</td><td>neutral</td><td>3 (support_bounce, oversold_reversal, volume_spike)</td><td>none</td><td>MEDIUM_HIGH</td><td>1.5%</td><td>$1,480</td><td>$185.00</td><td>$170.20</td><td><strong>atr stop hit</strong></td><td class="bad">-$118</td><td>$100,386</td></tr>
+      <tr><td>6</td><td>03-09</td><td>GOOGL</td><td>bull</td><td>3 (pullback, ema9_cross, channel_low)</td><td>none</td><td>MEDIUM_HIGH</td><td>1.5%</td><td>$1,450</td><td>$145.00</td><td>$146.00</td><td><strong>time_stop_20d</strong></td><td class="good">+$10</td><td>$100,396</td></tr>
+      <tr><td>7</td><td>03-12</td><td>NFLX</td><td>bull</td><td>2 (momentum_breakout, rsi_strong)</td><td>none</td><td>MEDIUM</td><td>0.75%</td><td>$620</td><td>$620.00</td><td>$632.00</td><td><strong>earnings_blackout</strong></td><td class="good">+$12</td><td>$100,408</td></tr>
+      <tr><td>8</td><td>03-15</td><td>JPM</td><td>bull -&gt; bear</td><td>4 (cup_handle, rsi_pullback, vol_spike, channel_break)</td><td>cong OR insider</td><td>VERY_HIGH</td><td>4.0%</td><td>$3,870</td><td>$215.00</td><td>$208.00</td><td><strong>regime_flip</strong></td><td class="bad">-$126</td><td>$100,282</td></tr>
+      <tr style="background:#3a2f1f"><td>9</td><td>03-22</td><td>COST</td><td><strong>crisis</strong></td><td>3 (defensives_bid, support_hold, oversold)</td><td>none</td><td>MED_HIGH x 0.5</td><td>0.75%</td><td>$710</td><td>$710.00</td><td>$735.00</td><td>atr_trail_1x</td><td class="good">+$25</td><td>$100,307</td></tr>
+      <tr><td>10</td><td>03-29</td><td>AMZN</td><td>bull</td><td>4 (cup_handle, breakout_retest, rsi_strong, ma_cross)</td><td>cong+insider buy</td><td><strong>EXCEPTIONAL</strong></td><td>5.0%</td><td>$4,914</td><td>$182.00</td><td>$171.50</td><td><strong>atr stop hit (gap-down)</strong></td><td class="bad">-$284</td><td>$100,010</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Per-trade walkthrough (mechanics)</h3>
+  <details style="margin:.4rem 0" open>
+    <summary><strong>Trade 1 - EXCEPTIONAL win (cluster + confluence + follow-through)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">2026-02-15 09:35 ET. AAPL @ $185.00. Regime classifier: vol 14%, SPY +5% over 200-EMA -&gt; bull. Screener fires 4 strategies on AAPL: <code>near_52w_high</code>, <code>rsi_pullback</code>, <code>breakout_retest</code>, <code>ma_crossover_bullish</code> -&gt; <code>strategy_count = 4</code>. Smart-money producers run: congressional disclosure 14 days old shows 3 senators bought AAPL; insider feed shows 2 Form 4 buys this week -&gt; <code>composite_signal = congressional+insider_cluster</code>.</p>
+    <p style="margin:.3rem 0;font-size:.84rem"><strong>Stage 1 _assign_confidence_tier:</strong> first rule match = "smart-money = congressional+insider_cluster AND strategy_count &gt;= 4" -&gt; <strong>EXCEPTIONAL</strong>.<br><strong>Stage 2 _adjust_tier_by_agent:</strong> Phase 1A-beta has agents off -&gt; no-op -&gt; final tier = EXCEPTIONAL.</p>
+    <p style="margin:.3rem 0;font-size:.84rem"><strong>Sizing:</strong> $100,000 x 5.0% = $5,000 -&gt; floor($5,000 / $185) = <strong>27 shares</strong> ($4,995 deployed). Initial stop $173.90 (6% below). Exit method: <code>atr_trail_1x</code>.<br><strong>Days 1-18:</strong> price drifts up to $208 on day 12 (high-water); trailing stop ratchets to $202. Day 18 close $202 -&gt; trailing stop hits. Exit @ $202.00. PnL = 27 x $17 = <strong>+$459</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 2 - MEDIUM_HIGH win (3 strats, no smart money)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">MSFT @ $410. 3 strategies fire: <code>bollinger_tight</code>, <code>rsi_pullback</code>, <code>vwap_reclaim</code>. No congressional / insider in window -&gt; <code>sm.composite_signal = "none"</code>, <code>sm.score = 0</code>. Stage 1 first matching rule: "strategy_count &gt;= 3" -&gt; <strong>MEDIUM_HIGH</strong> (1.5%). $100,459 x 1.5% = $1,506.89 -&gt; 3 shares x $410 = $1,230 (capital efficiency drops on high-priced tickers). 12 days. Exit @ $425. PnL = 3 x $15 = <strong>+$45</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 3 - AVOID skip (negative smart-money cluster blocks entry)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">META @ $580. 5 strategies fire (would normally be EXCEPTIONAL+). BUT smart-money composite: congressional disclosure shows 4 senators sold; insider cluster shows 6 Form 4 sells in 10 days -&gt; <code>composite_signal = "congressional_sell+insider_cluster_sell"</code>. Stage 1 first rule: <code>composite_signal == "congressional_sell+insider_cluster_sell"</code> -&gt; <strong>AVOID</strong> regardless of confluence -&gt; no trade. This catches insider-cluster-coordinated distribution before a drop.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 4 - LOW skip (insufficient confluence)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">NVDA @ $890. 1 strategy fires (<code>rsi_pullback</code>). No smart-money signal, <code>sm.score = 0</code>. Stage 1 falls through all confluence rules -&gt; final rule "else" -&gt; <strong>LOW</strong> -&gt; no trade.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 5 - Stopped out (ATR stop hit)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">TSLA @ $185. Regime classifier: vol 26% -&gt; neutral. 3 strats: <code>support_bounce</code>, <code>oversold_reversal</code>, <code>volume_spike</code>. No smart money -&gt; tier <strong>MEDIUM_HIGH</strong> (1.5%). Position: $100,504 x 1.5% = $1,507 -&gt; 8 shares ($1,480). Initial stop $172.05 (~7% below); atr_trail_1x. Day 3: guidance scare, TSLA gaps to $169. Stop fills @ <strong>$170.20</strong>. PnL = 8 x -$14.80 = <strong>-$118.40</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 6 - time_stop_20d (no follow-through)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">GOOGL @ $145. 3 strats. Tier MEDIUM_HIGH, position 10 shares. Price oscillates $143-$148 for 20 trading days. No trailing-stop activation, no follow-through. Day 20 close $146. <code>time_stop_20d</code> fires -&gt; exit. PnL = 10 x $1 = <strong>+$10</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 7 - earnings_blackout exit (event protection)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">NFLX @ $620. 2 strats -&gt; tier <strong>MEDIUM</strong> (0.75%). Position 1 share ($620). Day 6: earnings 2 days away. <code>exit_earnings_blackout</code> checks <code>days_to_earnings &lt;= 3</code> -&gt; exits before announcement to avoid binary risk. Exit @ $632. PnL = <strong>+$12</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 8 - regime_flip exit (macro change)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">JPM @ $215. 4 strats. Smart money: <code>congressional_or_insider</code> (3 senators bought) -&gt; rule "smart_money = congressional_or_insider AND strat_count &gt;= 3" -&gt; <strong>VERY_HIGH</strong> (4%). Position 18 shares ($3,870). Day 5: SPY breaks 200-EMA on rate-hike news -&gt; regime classifier flips to bear. <code>exit_regime_flip</code> exits next bar @ <strong>$208</strong>. PnL = 18 x -$7 = <strong>-$126</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 9 - Crisis regime + 50% size haircut</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">COST @ $710. Regime classifier: 20-day vol 33% -&gt; <code>crisis</code> flag. 3 strats. Smart money none. Stage 1 -&gt; MEDIUM_HIGH (1.5%). <strong>CLAUDE.md rule:</strong> "crisis regime longs allowed at 50% size; flagged regime=crisis_CRISIS_FLAG" -&gt; effective size = 0.75%. Position: $100,282 x 0.75% = $752 -&gt; 1 share ($710). 8 days; vol normalizes back to neutral; exit @ $735 via atr_trail_1x. PnL = <strong>+$25</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 10 - EXCEPTIONAL loss (gap-down past stop)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">AMZN @ $182. 4 strats + <code>congressional+insider_cluster</code> (buy) -&gt; <strong>EXCEPTIONAL</strong> (5%). Position 27 shares ($4,914). Day 2: AMZN pre-announces weak Q2 guidance; gaps from $179 to $173 at open. ATR stop was at $173 but gap opens below -&gt; fills @ <strong>$171.50</strong> with slippage. PnL = 27 x -$10.50 = <strong>-$283.50</strong>. <em>Even high-confluence trades can lose; sizing matters because losses ARE 5% positions, not 0.75%.</em></p>
+  </details>
+
+  <h3 style="margin-top:1rem">Aggregate (8 placed trades, 2 skips)</h3>
+  <table class="display compact" style="font-size:.85rem;width:auto">
+    <tbody>
+      <tr><td>Trades placed</td><td>8 of 10 (2 skipped: AVOID + LOW)</td></tr>
+      <tr><td>Wins / Losses</td><td>5 / 3 (62.5% win rate)</td></tr>
+      <tr><td>Avg win</td><td>($459 + $45 + $10 + $12 + $25) / 5 = <strong>$110.20</strong></td></tr>
+      <tr><td>Avg loss</td><td>($118 + $126 + $284) / 3 = <strong>$176.00</strong></td></tr>
+      <tr><td>Win / loss ratio</td><td>0.63 (avg-win / avg-loss; below the 1.0 criterion)</td></tr>
+      <tr><td>Profit factor</td><td>(5 x $110) / (3 x $176) = 1.04 (barely above 1)</td></tr>
+      <tr><td>Total P&amp;L</td><td>+$551 - $528 = <strong>+$10</strong> net (essentially break-even)</td></tr>
+      <tr><td>Tier mix</td><td>2 EXCEPTIONAL (5%) / 1 VERY_HIGH (4%) / 4 MEDIUM_HIGH (1.5%) / 1 MEDIUM (0.75%) / 1 crisis-haircut MED_HIGH (0.75%) / 1 AVOID / 1 LOW</td></tr>
+      <tr><td>Exit-method mix</td><td>3 atr_trail_1x / 2 atr stop hit / 1 time_stop_20d / 1 earnings_blackout / 1 regime_flip</td></tr>
+    </tbody>
+  </table>
+  <p class="desc" style="margin-top:.5rem"><strong>Takeaway.</strong> This sample is engineered to land near break-even on purpose - it mirrors the empirical cube finding (most cells fail strict 5-Gate). A 62.5% win rate sounds good, but with 0.63 W:L ratio + only 8 trades, profit factor 1.04 doesn't clear the 1.5 overall threshold. To pass the 9 criteria the strategy mix needs EITHER higher win rate (~70%) OR larger avg-win/avg-loss ratio (~1.5+). The cube optimizer (Tab 11) is what hunts for parameter combinations that achieve this.</p>
 </section>
 
 <section class="panel" id="raw">

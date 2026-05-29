@@ -462,6 +462,65 @@ def test_batch438_reference_tab_quiet_bucket_table_present():
         "section with the 3-bucket table")
 
 
+def test_batch439_sample_trades_tab_button_and_panel():
+    """Owner-directed Tab 15 Sample Trades must be wired in nav + panel."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert '<button class="tab-btn" data-panel="sample">15. Sample Trades</button>' in html, (
+        "Tab 15 Sample Trades button missing from nav")
+    assert '<section class="panel" id="sample">' in html, (
+        "Tab 15 Sample Trades panel section missing")
+
+
+def test_batch439_sample_trades_covers_full_pipeline():
+    """Tab 15 must walk through the full pipeline for each trade:
+    regime, strategies, smart-money, _assign_confidence_tier, sizing,
+    exit method, P&L. Pin that the 10 scenarios + the key code paths
+    are mentioned."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    # Code paths must be cited.
+    assert "_assign_confidence_tier" in html, (
+        "Tab 15 must cite _assign_confidence_tier in the walkthrough")
+    assert "_adjust_tier_by_agent" in html, (
+        "Tab 15 must cite _adjust_tier_by_agent so the agents-off "
+        "Phase 1A-beta no-op is explicit")
+    # 10 trade scenarios must be present.
+    for i in range(1, 11):
+        assert f"Trade {i} -" in html, (
+            f"Tab 15 must include 'Trade {i} - ...' summary line")
+    # The 7 distinct sizing/exit outcomes must each appear.
+    for outcome in ["EXCEPTIONAL", "VERY_HIGH", "MEDIUM_HIGH",
+                    "MEDIUM", "AVOID", "LOW",
+                    "atr_trail_1x", "time_stop_20d",
+                    "earnings_blackout", "regime_flip",
+                    "crisis"]:
+        assert outcome in html, (
+            f"Tab 15 must include outcome / exit method: {outcome}")
+
+
+def test_batch439_sample_trades_aggregate_block_present():
+    """Tab 15 must close with an aggregate summary so the reader sees
+    the win-rate / W:L / PF math that explains why a 62.5% WR + 0.63
+    W:L combo doesn't actually pass the 9 criteria."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "62.5% win rate" in html, (
+        "Aggregate must compute the win rate")
+    assert "Avg win" in html and "Avg loss" in html, (
+        "Aggregate must report avg-win and avg-loss")
+    assert "Profit factor" in html, (
+        "Aggregate must report profit factor")
+    # Takeaway paragraph (so a new viewer doesn't just see numbers).
+    assert "Takeaway" in html, (
+        "Aggregate must include a 'Takeaway' explanation")
+
+
+def test_batch439_reference_tab14_navigation_includes_tab15():
+    """Tab 14 navigation-guide table must include a row for Tab 15
+    so a new viewer who lands on Tab 14 first can discover it."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "15. Sample Trades</td>" in html, (
+        "Tab 14 navigation guide must reference 15. Sample Trades")
+
+
 def test_batch430_candidate_detail_is_div_with_structured_render():
     """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
     structured render (KPIs + per-dimension table + collapsible JSON) in
