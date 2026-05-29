@@ -1792,3 +1792,32 @@ I parsed this as ONE question ("any other Pattern 3 gaps?") and answered with 7 
 **Apply when.** Every owner message. Especially when message uses "and", semicolons, multiple "?" sentences, or compound predicate structures.
 
 **Cross-references.** CHECKLIST #97 (codified rule), Batch 448 (the missed answer), Batch 449 (the recovery + codification turn).
+
+---
+
+### L167 — Prefetch-without-consumer is dead data; every data-acquisition phase must pair the prefetch DEC with a producer DEC [critical/process]
+
+**Symptom.** Sprint 0A scoped 8 APIs and wired them as prefetch sources (Polygon news 454MB, CFTC COT 35MB, Apewisdom 192KB, Stocktwits 24MB, Pytrends 12MB, Finnhub 1.5k earnings rows, SEC EDGAR Form 4 133MB, Quiver 602MB). All 8 successfully cache to `data_prefetch/`. But only 2-3 actually have downstream consumers in `backtest/signals/*` (Quiver's congressional + insider via `smart_money.py`; Finnhub partially via `pead.py`). The other 600+MB sits unused.
+
+**Specific orphans surfaced 2026-05-29 (Batch 451) when owner asked "what data do we have that we're not using?":**
+- Polygon news has `sentiment` column on newer rows — no `news_sentiment_producer.py` exists.
+- Polygon news has `insights_json` per-row machine-readable analyst breakdown — unconsumed.
+- CFTC COT for 10 macro/index series — no producer; no ETF strategy uses commercials positioning.
+- Apewisdom global ranking (with `rank_24h_ago` momentum baked into schema) — no producer.
+- Stocktwits 24MB per-ticker sentiment — no producer.
+- Pytrends Google search interest — no producer.
+- SEC EDGAR Form 4 has filer role per filing — current `smart_money.py` aggregates to truthy and discards the role (CEO/CFO vs director vs 10%-owner is academically validated as +5pp/6mo differentiator per Cohen-Malloy-Pomorski 2012).
+- Quiver `housetrading`, `lobbying`, `gov_contracts`, `patentmomentum`, `offexchange`, `corporatedonors` — all unconsumed despite individual academic-validated alpha factors.
+
+**Why it happened.** Sprint 0A DECs were scoped as "prefetch from API X". The "compute signal from API X cache" step was implicit — never logged as a separate DEC, never time-budgeted, never tracked. The completion criterion for Sprint 0A was "data lands in `data_prefetch/`", not "data is consumed by a producer that the screener calls."
+
+**Why it's the SAME pattern as DEC-507.** DEC-507 codified "data DEC + toolkit DEC ≠ integration; wiring is a third explicit deliverable" for the agent-toolkit layer. The exact same gap exists at the screener-producer layer for Sprint 0A. Lesson scoped to one boundary; not applied to a parallel boundary. Echoes L164 ("Lessons codified for one file/layer must be explicitly re-audited across ALL parallel files/layers").
+
+**Rule.**
+1. Every data-prefetch DEC ships PAIRED with a producer DEC (or producer-implementation) in the same batch — not "future work."
+2. Audit step in any Sprint-0A-style completion: `for dir in data_prefetch/*/; do grep -rln "$(basename $dir)" backtest/signals/ || echo ORPHAN: $dir; done` — orphans become queue items.
+3. The 8 prefetch sources surfaced this turn each get a queue row (P10-P16 in EXECUTION_QUEUE.md). The producer side closes the loop.
+
+**Apply when:** every new data acquisition. Every audit of Sprint 0A or its successor. Every claim that a data source is "wired."
+
+**Cross-references.** CHECKLIST #98 (codified rule), Batch 451 (this codification turn + queue rows P10-P16), DEC-507 (same pattern at agent-toolkit layer), L164 (same meta-pattern across file/layer boundaries), `feedback_wired_means_engine_consumed.md` (parent lesson — wired ≠ consumed).

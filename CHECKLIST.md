@@ -1440,3 +1440,18 @@ State compliance visibly: "Checklist: ✅ [each item]"
       d. Failing to address every enumerated sub-question = process violation.
 
     **Joint:** CHECKLIST #95 (codify findings same turn — including this kind of process gap), L165 family (state must be SHOWN, not assumed).
+
+98. **HARD RULE — Every data-prefetch DEC must come paired with a producer-DEC that consumes it. Prefetch without a downstream consumer is dead data and should be flagged in audits.** (Owner-question-driven finding 2026-05-29 Batch 451: of 8 prefetched data sources [Polygon news 454MB, CFTC COT 35MB, Apewisdom, Stocktwits 24MB, Pytrends 12MB, Finnhub earnings 1.5k rows, SEC EDGAR Form 4 133MB, Quiver 602MB], **only 2-3 are actually consumed by `backtest/signals/*` producers**. The rest sit on disk as dead data.)
+
+    Past failure pattern: Sprint 0A scoped 8 APIs and wired them as prefetch sources. The wiring was complete from API to parquet cache. The CONSUMER side — `backtest/signals/<name>_producer.py` that reads the parquet and emits a screener-callable signal — was never paired into the same DEC. Result: 600+MB of high-value alt-data (Quiver patent momentum, lobbying, housetrading; Polygon news with sentiment scores; SEC EDGAR Form 4 with role differentiation) cached on disk with no downstream consumer.
+
+    **Apply when:**
+    - Proposing a new prefetch data source.
+    - Auditing an existing prefetch directory.
+    - Closing a Sprint 0A-style data-acquisition phase.
+
+    **How to apply:** every prefetch-DEC ships paired with a producer-DEC (or producer-implementation) in the same batch. Audit step: `for dir in data_prefetch/*/; do grep -rln "$(basename $dir)" backtest/signals/ || echo "ORPHAN: $dir"; done` — every prefetch dir must have at least one downstream consumer. Orphans become queue items.
+
+    **Same family as:** DEC-507 (data DEC + toolkit DEC ≠ integration; wiring is a third explicit deliverable). DEC-507 was scoped to the agent-toolkit layer; this rule extends it to the screener-producer layer.
+
+    **Joint:** CHECKLIST #95 (codify finding same turn), L167 (this rule's lesson record), `feedback_wired_means_engine_consumed.md` (same theme: wired = consumed, not greppable).
