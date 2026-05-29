@@ -1,6 +1,0 @@
-tier,size_pct_adv,realized_vol_annualized,slippage_bps
-EXCEPTIONAL,0.05,0.3,23.75
-VERY_HIGH,0.04,0.3,19.25
-HIGH,0.03,0.25,14.625
-MEDIUM-HIGH,0.015,0.25,7.875
-MEDIUM,0.0075,0.2,4.375

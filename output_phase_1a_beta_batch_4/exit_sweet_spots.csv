@@ -1,5 +1,0 @@
-exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
-earnings_blackout,neutral,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,521.8289,ma_exit_ema9,19.513699999999996,502.3152,12,18,1.0
-earnings_blackout,neutral,Financials,unknown,mid_atr_1_2.5pct,long_ge_11d,513.1987,trailing_15pct,110.6675,402.5312,10,18,1.0
-r_multiple_2r,neutral,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,49.0022,regime_flip,29.8075,19.1947,12,18,1.0
-trailing_15pct,neutral,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,126.55770000000001,class_time_stop,116.8188,9.738900000000015,11,18,1.0

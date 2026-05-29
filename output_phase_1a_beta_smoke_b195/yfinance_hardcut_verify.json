@@ -1,6 +1,0 @@
-{
-  "ticker": "AAPL",
-  "rows_returned": 0,
-  "hard_cut_active": true,
-  "note": "BUG-228: yfinance HARD CUT per DEC-497 D4; stub must return empty DataFrame"
-}

@@ -1,8 +1,0 @@
-exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
-breakeven_plus_trail,bull,Health Care,unknown,crisis_atr_ge_5pct,long_ge_11d,391.00260000000003,earnings_blackout,295.3916,95.61100000000005,13,18,1.0
-class_time_stop,bull,Consumer Discretionary,unknown,high_atr_2.5_5pct,long_ge_11d,61.1502,fixed_4r_2r,40.6014,20.5488,15,18,1.0
-class_time_stop,bull,Health Care,unknown,high_atr_2.5_5pct,long_ge_11d,37.0657,trailing_10pct,21.936300000000003,15.129399999999997,10,18,1.0
-earnings_blackout,bull,Information Technology,unknown,crisis_atr_ge_5pct,long_ge_11d,1768.0439,breakeven_plus_trail,132.1722,1635.8717,10,18,1.0
-earnings_blackout,bull,Health Care,unknown,crisis_atr_ge_5pct,medium_4_10d,578.5006,trailing_15pct,83.02270000000001,495.4779,16,18,1.0
-earnings_blackout,bull,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,438.08619999999996,trailing_15pct,106.82679999999999,331.25939999999997,16,18,1.0
-earnings_blackout,bull,Industrials,unknown,high_atr_2.5_5pct,long_ge_11d,258.16360000000003,hybrid_50pct_target,35.9223,222.24130000000002,19,18,1.0
