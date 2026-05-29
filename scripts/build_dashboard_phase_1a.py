@@ -183,12 +183,31 @@ def build() -> dict:
 
     # ---- Trade-level + exit breakdowns (cross-tab) ----
     # Batch 180: fall back to CSV if parquet missing (smoke runs emit CSV-only)
-    trade_log = load_parquet("trade_log.parquet", head=10000) or load_csv("trade_log.csv", head=10000)
+    # Batch 437b (2026-05-29): cube trade_log has wide text columns
+    # (signals_at_entry ~10.9 KB/row, context_paragraph, agent_reasoning,
+    # context_bullets, fail_reason). 10000 rows -> 109+ MB of just one
+    # column blew the 100 MB GitHub file cap. Reduce preview head to
+    # 1000 + drop the wide blob columns so the dashboard table stays
+    # under a few MB.
+    _PREVIEW_HEAD = 1000
+    _DROP_COLS = ["signals_at_entry", "context_paragraph",
+                  "agent_reasoning", "context_bullets", "fail_reason"]
+    trade_log = (load_parquet("trade_log.parquet", head=_PREVIEW_HEAD)
+                 or load_csv("trade_log.csv", head=_PREVIEW_HEAD))
+    if trade_log:
+        for row in trade_log:
+            for c in _DROP_COLS:
+                row.pop(c, None)
     exit_methods = load_csv("exit_method_multi_dim_cube.csv")
     exit_best = load_csv("exit_strategy_best.csv")
     exit_comparison = load_csv("exit_strategy_comparison.csv")
 
     # ---- Per-dimension exit breakdowns (extra optional tabs) ----
+    # Batch 437b: cap each breakdown at 200 rows. Cube outputs are
+    # large (4625 cells x N regimes); 20 of them at full size totalled
+    # ~230 MB. Owner can drill into a specific breakdown via the cube
+    # tabs if needed.
+    _BREAKDOWN_HEAD = 200
     other_breakdowns: dict[str, list] = {}
     for csv in OUT_DIR.glob("exit_by_*.csv"):
         # Skip the ones already used in dedicated tabs
@@ -198,7 +217,8 @@ def build() -> dict:
             "exit_by_circuit_breaker_active_during_hold.csv",
         ):
             continue
-        other_breakdowns[csv.stem.replace("exit_by_", "")] = load_csv(csv.name)
+        other_breakdowns[csv.stem.replace("exit_by_", "")] = load_csv(
+            csv.name, head=_BREAKDOWN_HEAD)
 
     # ---- Batch 419: cube-optimizer outputs (Tabs 10-13) ----
     opt = load_optimizer_dir()

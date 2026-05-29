@@ -101,38 +101,29 @@ function renderStrategies() {
   const passing = rows.filter(r => r.passes_all === true || r.passes_all === "True").length;
   const avgSharpe = rows.reduce((a, r) => a + (Number(r.sharpe) || 0), 0) / rows.length;
   const avgPF = rows.reduce((a, r) => a + (Number(r.profit_factor) || 0), 0) / rows.length;
-  // Batch 435 (2026-05-29): surface counts from BOTH datasets with
-  // explicit labels so the new viewer doesn't conflate them.
-  //   - 185 / 100 / 85 come from producer_zero_audit (Phase 1A-beta CUBE).
-  //   - 36 comes from THIS table's source (output_v2 / backtest_results.csv).
-  // Inclusion criteria for THIS table: strategy fired >= 1 trade in
-  // the backtest run that produced output_v2. Source code:
-  // backtest/results/metrics.py::compute_all_metrics iterates over
-  // df["strategy"].unique(), so any strategy with at least one row in
-  // trade_log.csv ends up here.
+  // Batch 437 (2026-05-29): cube-only source. All KPIs come from the
+  // same Phase 1A-beta cube run; no more baseline/cube split.
   const pza = (D.producer_zero_audit || {}).summary || {};
-  const sourceDir = D.source_dir || "output_v2";
+  const sourceDir = D.source_dir || "output_batch395_final";
   $("#strat-kpis").innerHTML = [
     kpi(pza.active_count != null ? pza.active_count : 185, "Registered (code)"),
-    kpi(rows.length, "In this table (this run)", "good"),
-    pza.fired_count != null ? kpi(pza.fired_count, "Fired in cube") : "",
-    pza.quiet_count != null ? kpi(pza.quiet_count, "Quiet in cube (Tab 12)", "warn") : "",
+    kpi(rows.length, "Fired in this cube run", "good"),
+    pza.quiet_count != null ? kpi(pza.quiet_count, "Quiet (Tab 12)", "warn") : "",
     kpi(passing, "Passing all 9 gates", passing > 0 ? "good" : "bad"),
     kpi(fmtNum(avgSharpe, 2), "Avg Sharpe"),
     kpi(fmtNum(avgPF, 2), "Avg profit factor"),
   ].join("");
   // Inclusion-criteria callout above the table.
-  // Batch 436 (2026-05-29): explicit two-run comparison so the new
-  // viewer can answer "if cube fired 100 and threshold is 1, why is
-  // this table only 36" without bouncing to Tab 14.
+  // Batch 437 (2026-05-29): cube-only Phase 1A-beta source. Was prior
+  // (Batches 435/436) baseline+cube two-run comparison, but that
+  // misrepresented the architecture - Phase 1A-beta is cube-only per
+  // owner directive; baseline gates only return in Phase 1B-alpha.
   const callout = document.getElementById("strat-inclusion-callout");
   if (callout) {
-    const cubeFired = pza.fired_count;
-    const baselineFired = rows.length;
     callout.innerHTML = `
-      <strong>Inclusion criteria for this table:</strong> a strategy appears here if it fired <em>at least one trade</em> during the <code>${sourceDir}</code> backtest run. No min-trade threshold. Source: <code>backtest/results/metrics.py::compute_all_metrics</code>.
+      <strong>Inclusion criteria for this table:</strong> a strategy appears here if it fired <em>at least one trade</em> during the Phase 1A-beta cube run (<code>${sourceDir}</code>). No min-trade threshold. Source: <code>backtest/results/metrics.py::compute_all_metrics</code> iterates over <code>trade_log["strategy"].unique()</code>.
       <br><br>
-      <strong>Why this table has ${baselineFired} but the cube has ${cubeFired != null ? cubeFired : '~100'}:</strong> they are two <em>different</em> backtest runs. <code>${sourceDir}</code> applied the portfolio cap (max 25 open), drawdown halt, regime-affinity gate, and event suppression. The cube (<code>output_batch395_final</code>) had all four flags turned off (<code>--no-portfolio-cap --no-dd-halt --no-regime-affinity --no-event-suppression</code>), so 64 strategies whose candidates were blocked in <code>${sourceDir}</code> were able to fire trades in the cube. Same threshold, different gates upstream of the trade log. See Tab 14 (First-time viewer block) for the full comparison.
+      <strong>Why this is ${rows.length} rows out of 185 registered:</strong> 185 = registered strategies in code. The Phase 1A-beta cube is the lenient run with all four legacy gates OFF (cap / dd-halt / regime / event suppression - those return in Phase 1B-alpha only). In this run, ${rows.length} fired &gt;= 1 trade and made the table; the remaining ${(pza.quiet_count != null ? pza.quiet_count : "~85")} are quiet (see Tab 12 for the 3-bucket diagnosis: PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE).
     `;
   }
   // Columns — auto-detect

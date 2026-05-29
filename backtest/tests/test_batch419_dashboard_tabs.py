@@ -306,10 +306,11 @@ def test_batch434_strategies_tab_surfaces_185_100_36_85_split():
     in-table / quiet split so owner understands why only 36 strategies
     appear in the CSV."""
     app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
-    # KPI labels (Batch 434 introduced the split; Batch 435 relabeled
-    # to distinguish baseline vs cube source).
-    for label in ['"Registered (code)"', '"In this table (this run)"',
-                  '"Fired in cube"', '"Quiet in cube (Tab 12)"']:
+    # KPI labels (Batch 437 collapsed to cube-only labels - dropped
+    # the baseline-vs-cube split because Phase 1A-beta is cube-only
+    # per owner directive).
+    for label in ['"Registered (code)"', '"Fired in this cube run"',
+                  '"Quiet (Tab 12)"']:
         assert label in app_js, (
             f"renderStrategies KPI label missing: {label}")
     # Must read producer_zero_audit.summary for the cube counts
@@ -333,75 +334,75 @@ def test_batch435_strat_inclusion_callout_present():
         "Callout text must say 'Inclusion criteria'")
 
 
-def test_batch435_kpi_labels_distinguish_cube_from_baseline():
-    """Tab 1 KPIs must not conflate cube-fired with baseline-included.
-    Pre-Batch-435 layout said '100 Fired >=1 trade' which was the CUBE
-    count, mislabeled. Pin that the baseline-only KPI says 'this run'
-    and the cube KPIs say 'cube'."""
+def test_batch437_kpi_labels_cube_only():
+    """Batch 437 collapsed Tab 1 KPI labels to a single cube source
+    after owner clarified Phase 1A-beta = cube-only. The prior
+    Batch 435 split (baseline vs cube) was structurally wrong."""
     app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
-    assert '"In this table (this run)"' in app_js, (
-        "Baseline KPI must say 'In this table (this run)' to "
-        "distinguish from cube counts")
-    assert '"Fired in cube"' in app_js, (
-        "Cube-fired KPI must be labeled 'Fired in cube' (not "
-        "'Fired >=1 trade' which conflates with baseline)")
-    assert '"Quiet in cube (Tab 12)"' in app_js, (
-        "Quiet KPI must be labeled 'Quiet in cube' to make the "
-        "source explicit")
+    assert '"Fired in this cube run"' in app_js, (
+        "Cube-fired KPI must say 'Fired in this cube run'")
+    assert '"Quiet (Tab 12)"' in app_js, (
+        "Quiet KPI must be 'Quiet (Tab 12)' (no baseline/cube split)")
     assert '"Registered (code)"' in app_js, (
         "Registered count KPI must say 'Registered (code)'")
+    # The baseline-cube split labels must be GONE.
+    for old in ['"In this table (this run)"', '"Fired in cube"',
+                '"Quiet in cube (Tab 12)"']:
+        assert old not in app_js, (
+            f"Old Batch 435/436 label `{old}` must be removed "
+            "(Phase 1A-beta dashboard is cube-only)")
 
 
-def test_batch435_reference_first_time_viewer_block():
-    """Tab 14 Reference must include a 'First-time viewer' callout that
-    explains the two-dataset architecture before the live counts."""
+def test_batch437_reference_first_time_viewer_block_cube_only():
+    """Tab 14 First-time viewer block must explain the cube-only Phase
+    1A-beta architecture (Batch 437 superseded Batch 435/436 framing
+    that incorrectly treated baseline output_v2 as a parallel source)."""
     html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
     assert "First-time viewer?" in html, (
         "Tab 14 must lead with a 'First-time viewer?' callout")
-    # Must explain the two-run / two-dataset architecture
-    # (Batch 436 made it a concrete comparison table - prior phrasing
-    # "Two datasets are stitched together" was replaced by the more
-    # explicit "Why '36' and '100' don't add up" + table).
-    assert ('"36" and "100" don' in html
-            or "two different backtest runs" in html
-            or "Two datasets are stitched together" in html), (
-        "Callout must explicitly explain that headline tabs and cube "
-        "tabs come from different backtest runs (Batch 436 comparison "
-        "table OR prior 'Two datasets' phrasing)")
+    # Must explain the cube-only Phase 1A-beta architecture.
+    assert "Phase 1A-beta runs with all four legacy gates OFF" in html, (
+        "Tab 14 banner must explain Phase 1A-beta = all-gates-off")
+    assert "single source for every tab" in html, (
+        "Tab 14 banner must state cube is the single source")
     # Must list the recommended reading order.
     assert "Recommended reading order" in html, (
-        "Callout must include a recommended reading order")
+        "Tab 14 banner must include a recommended reading order")
 
 
-def test_batch436_strat_callout_explains_36_vs_cube():
-    """Tab 1 inclusion callout must answer the exact question 'why this
-    table has fewer than the cube fired count' in-place so the viewer
-    doesn't have to bounce to Tab 14."""
+def test_batch437_tab1_callout_explains_185_vs_fired_cube_only():
+    """Tab 1 callout post-Batch-437 must explain the 185 vs fired
+    split as cube-only (no baseline comparison)."""
     app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
-    # Look for the specific phrasing that answers the count delta.
-    assert "different</em> backtest runs" in app_js or "different backtest runs" in app_js, (
-        "Tab 1 callout must explicitly tell the viewer that the table "
-        "and the 'fired in cube' KPI are from different runs")
-    # The 4 flag mentions must be present so the viewer can see the
-    # mechanism (not just the headline).
+    # Must cite "Phase 1A-beta" + "cube" + "all four legacy gates OFF".
+    assert "Phase 1A-beta cube run" in app_js, (
+        "Callout must identify the source as the Phase 1A-beta cube run")
+    assert "185 registered" in app_js, (
+        "Callout must cite 185 = registered strategies")
+    # The 4 flags must still be present in the architecture banner
+    # (now in Tab 14, not Tab 1).
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
     for flag in ["--no-portfolio-cap", "--no-dd-halt",
                  "--no-regime-affinity", "--no-event-suppression"]:
-        assert flag in app_js, (
-            f"Tab 1 callout must cite the {flag} flag that the cube "
-            "removed so the viewer understands the mechanism")
+        assert flag in html, (
+            f"Tab 14 architecture banner must cite the {flag} flag")
 
 
-def test_batch436_reference_two_run_comparison_table():
-    """Tab 14 must include the explicit two-run comparison table so the
-    same answer is also documented in the reference page."""
+def test_batch437_tab14_phase_1a_beta_cube_only_banner():
+    """Tab 14 must lead with the Phase 1A-beta cube-only architecture
+    banner (NOT the prior Batch 436 'two different runs' framing)."""
     html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
-    # Comparison table headings.
-    for col in ["Strict run (Tab 1's source)",
-                "Lenient cube (Tabs 10-13's source)",
-                "Portfolio cap (max open positions)",
-                "Strategies that fired"]:
-        assert col in html, (
-            f"Tab 14 two-run comparison table missing row/col: {col}")
+    assert "Phase 1A-beta runs with all four legacy gates OFF" in html, (
+        "Tab 14 banner must explain Phase 1A-beta = all-gates-off")
+    assert "Returns in" in html and "Phase 1B-alpha" in html, (
+        "Tab 14 banner must clarify the gates return in Phase 1B-alpha")
+    # The cube source must be the single source.
+    assert "single source for every tab" in html, (
+        "Tab 14 banner must explicitly state cube is the single source")
+    # Old Batch 436 'two-run comparison' headings must be REMOVED.
+    assert "Strict run (Tab 1's source)" not in html, (
+        "Old Batch 436 'Strict run' column must be removed - "
+        "Phase 1A-beta dashboard is cube-only")
 
 
 def test_batch430_candidate_detail_is_div_with_structured_render():

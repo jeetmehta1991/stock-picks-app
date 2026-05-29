@@ -264,37 +264,34 @@
   <h2>14. Reference / Background</h2>
   <p class="desc">Schema, methodology, and tab-by-tab navigation guide. Read this first if anything below is unclear.</p>
 
-  <!-- Batch 435 (2026-05-29): "First-time viewer" mental-model block. -->
-  <!-- Batch 436 (2026-05-29): explicit two-run comparison table. -->
+  <!-- Batch 437 (2026-05-29): Phase 1A-beta cube-only dashboard. -->
   <div style="background:#1a1f29;border:1px solid var(--accent);padding:.8rem 1rem;border-radius:6px;margin-bottom:.75rem;font-size:.88rem">
     <h3 style="margin:0 0 .4rem;color:var(--accent);font-size:1rem">First-time viewer? Start here.</h3>
-    <p style="margin:.3rem 0"><strong>What this dashboard is.</strong> A read-only post-mortem of one backtest run plus the cube optimizer outputs that derive from it. Nothing here runs live trading.</p>
+    <p style="margin:.3rem 0"><strong>What this dashboard is.</strong> A read-only post-mortem of the Phase 1A-beta cube run. Per owner directive: Phase 1A-beta runs with all four legacy gates OFF (portfolio cap / drawdown halt / regime affinity / event suppression). Those gates only return in Phase 1B-alpha. The dashboard reflects this: the cube's <code>output_batch395_final/</code> is the single source for every tab.</p>
 
-    <p style="margin:.5rem 0 .3rem"><strong>Why "36" and "100" don't add up.</strong> The dashboard stitches together <em>two different backtest runs</em> that share the same 185-strategy roster but apply different rule sets. The same strategy can fire trades in one run and stay quiet in the other.</p>
+    <p style="margin:.5rem 0 .3rem"><strong>What "Phase 1A-beta lenient" means in concrete CLI terms.</strong></p>
     <table class="display compact" style="font-size:.82rem;margin:.4rem 0;width:auto">
-      <thead><tr><th></th><th>Strict run (Tab 1's source)</th><th>Lenient cube (Tabs 10-13's source)</th></tr></thead>
+      <thead><tr><th>Gate</th><th>Phase 1A-beta (this dashboard)</th><th>Returns in</th></tr></thead>
       <tbody>
-        <tr><td><strong>Output dir</strong></td><td><code>output_v2/</code></td><td><code>output_batch395_final/</code></td></tr>
-        <tr><td><strong>Phase</strong></td><td>1A baseline</td><td>1A-beta cube</td></tr>
-        <tr><td><strong>Portfolio cap (max open positions)</strong></td><td>25</td><td>off (<code>--no-portfolio-cap</code>)</td></tr>
-        <tr><td><strong>Drawdown halt</strong></td><td>on</td><td>off (<code>--no-dd-halt</code>)</td></tr>
-        <tr><td><strong>Regime-affinity gate</strong></td><td>on</td><td>off (<code>--no-regime-affinity</code>)</td></tr>
-        <tr><td><strong>Event suppression (FOMC/CPI/earnings)</strong></td><td>on</td><td>off (<code>--no-event-suppression</code>)</td></tr>
-        <tr><td><strong>Strategies that fired &gt;= 1 trade</strong></td><td><strong>36</strong></td><td><strong>100</strong></td></tr>
+        <tr><td>Portfolio cap (max open positions)</td><td>off (<code>--no-portfolio-cap</code>)</td><td>Phase 1B-alpha</td></tr>
+        <tr><td>Drawdown halt</td><td>off (<code>--no-dd-halt</code>)</td><td>Phase 1B-alpha</td></tr>
+        <tr><td>Regime-affinity gate</td><td>off (<code>--no-regime-affinity</code>)</td><td>Phase 1B-alpha</td></tr>
+        <tr><td>Event suppression (FOMC/CPI/NFP/earnings)</td><td>off (<code>--no-event-suppression</code>)</td><td>Phase 1B-alpha</td></tr>
       </tbody>
     </table>
-    <p style="margin:.3rem 0;font-size:.82rem"><em>The same inclusion threshold applies in both runs - "fired &gt;= 1 trade" - but the cube's relaxed gates let 64 more strategies actually place a trade. Those 64 weren't pruned; the baseline gates simply blocked their candidates before they hit the trade log. The 85 quiet count is cube-only (strategies that didn't fire even with all gates off).</em></p>
 
-    <p style="margin:.3rem 0"><strong>Recommended reading order:</strong> Overview (portfolio health) -> Tab 1 (strategy ranking, see inclusion criteria there) -> Tab 2 (per-regime) -> Tab 4 (equity curve) -> Tab 13 (cube cell verdicts) -> Tab 10 (cube optimizer's recommendations) -> Tab 11 (drill down on a strategy) -> Tab 12 (zero-fire diagnosis).</p>
-    <p style="margin:.3rem 0"><strong>What "good" looks like.</strong> Portfolio Sharpe &gt;= 0.7 OOS in &gt;= 1 regime (the 1A-alpha gate). Per-strategy: passes the 9-criteria gates (see table below) AND has a cube cell that passes the DEC-426 5-Gate (also below). Currently the 1A-alpha gate is LOCKED at OOS Sharpe 0.419 - a cube re-run is in flight.</p>
+    <p style="margin:.5rem 0 .3rem"><strong>Why some tabs say "No data".</strong> The cube engine writes per-strategy + per-exit + per-regime artifacts (trade_log, backtest_results, exit_strategy_*, regime/sector/event breakdowns), but does NOT emit the analyst overlays a single-run produces - <code>equity_curve.parquet</code>, <code>portfolio_metrics.json</code>, <code>improvements_summary.json</code>, <code>strategy_regime_matrix.json</code>, walk-forward + smart-money + congressional + bootstrap artifacts. Tabs that need those will render "No data" until the missing analyst step runs on the merged cube trade log. The structurally cube-native tabs (1 Strategies, Exits, Trades, 7 Sector, 8 Skipped, 9 CircuitBreakers, 10 Optimizer, 11 Candidates, 12 Quiet, 13 Cell Cube) are the ones currently meaningful.</p>
+
+    <p style="margin:.3rem 0"><strong>Recommended reading order for Phase 1A-beta verdict review:</strong> Tab 1 (101 strategies that fired in the cube) -> Tab 13 Cell Cube (per-strategy x exit method 5-Gate verdicts) -> Tab 10 Optimizer (Stage 3 candidate summary) -> Tab 11 Candidates (per-strategy 9-dim drill-down) -> Tab 12 Quiet (zero-fire diagnosis) -> Tabs 7-9 (sector / skipped / circuit).</p>
+    <p style="margin:.3rem 0"><strong>What "good" looks like for the 1A-alpha gate.</strong> &gt;= 1 strategy with rules-only Sharpe &gt;= 0.7 OOS in &gt;= 1 regime. Currently LOCKED at best OOS Sharpe 0.419 (per walk_forward_batch414_cells.json). The in-flight cube re-run re-evaluates this with Batches 414/415/416/421 fixes active.</p>
     <p style="margin:.3rem 0"><strong>If a tab looks empty / wrong:</strong> hard-refresh (Ctrl+Shift+R). If still wrong, F12 -&gt; Console and paste any errors.</p>
   </div>
 
   <div id="reference-counts" class="kpis"></div>
 
   <h3 style="margin-top:1rem">Strategy library and the count buckets you'll see</h3>
-  <p class="desc"><strong>Why "185" and "36" don't match.</strong> The numbers come from two different runs (see the blue box above). The 185 is registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code>. The 36 in Tab 1 are strategies that fired <em>at least one trade in the <code>output_v2/</code> baseline backtest</em> - that is the literal inclusion criteria for <code>backtest_results.csv</code>. The 100 in the cube (Tabs 10-13) is a different run with different gates removed; that is why it's higher. The 85 quiet count comes from the cube too.</p>
-  <p class="desc"><strong>Tab 1 inclusion criteria (literal):</strong> <code>compute_all_metrics</code> in <code>backtest/results/metrics.py</code> iterates over <code>df_trades["strategy"].unique()</code>. Any strategy with at least one row in <code>trade_log.csv</code> ends up as a row in <code>backtest_results.csv</code>. No threshold on number of trades. Strategies with zero trades simply don't appear (they're tracked separately in the cube's Quiet bucket - Tab 12).</p>
+  <p class="desc"><strong>Single source for every tab.</strong> The whole dashboard is built from the Phase 1A-beta cube output (<code>output_batch395_final/</code>) per owner directive. 185 = registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code>. ~101 = strategies that fired &gt;= 1 trade in the cube (Tab 1 + the optimizer JSONs). ~85 = quiet strategies that produced zero trades even with all gates off (Tab 12 has the 3-bucket diagnosis).</p>
+  <p class="desc"><strong>Tab 1 inclusion criteria (literal):</strong> <code>compute_all_metrics</code> in <code>backtest/results/metrics.py</code> iterates over <code>df_trades["strategy"].unique()</code>. Any strategy with at least one row in <code>trade_log.csv</code> ends up as a row in <code>backtest_results.csv</code>. No threshold on number of trades. Strategies with zero trades simply don't appear in this table - Tab 12 has them.</p>
   <table class="display compact" style="font-size:.85rem;margin-bottom:.5rem">
     <thead><tr><th>Layer</th><th>Scope</th><th>~Count</th><th>Where</th></tr></thead>
     <tbody>
