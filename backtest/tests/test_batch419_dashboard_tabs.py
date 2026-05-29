@@ -358,12 +358,50 @@ def test_batch435_reference_first_time_viewer_block():
     html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
     assert "First-time viewer?" in html, (
         "Tab 14 must lead with a 'First-time viewer?' callout")
-    # Must explain the two-dataset architecture.
-    assert "Two datasets are stitched together" in html, (
-        "Callout must explicitly state the two-dataset architecture")
+    # Must explain the two-run / two-dataset architecture
+    # (Batch 436 made it a concrete comparison table - prior phrasing
+    # "Two datasets are stitched together" was replaced by the more
+    # explicit "Why '36' and '100' don't add up" + table).
+    assert ('"36" and "100" don' in html
+            or "two different backtest runs" in html
+            or "Two datasets are stitched together" in html), (
+        "Callout must explicitly explain that headline tabs and cube "
+        "tabs come from different backtest runs (Batch 436 comparison "
+        "table OR prior 'Two datasets' phrasing)")
     # Must list the recommended reading order.
     assert "Recommended reading order" in html, (
         "Callout must include a recommended reading order")
+
+
+def test_batch436_strat_callout_explains_36_vs_cube():
+    """Tab 1 inclusion callout must answer the exact question 'why this
+    table has fewer than the cube fired count' in-place so the viewer
+    doesn't have to bounce to Tab 14."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    # Look for the specific phrasing that answers the count delta.
+    assert "different</em> backtest runs" in app_js or "different backtest runs" in app_js, (
+        "Tab 1 callout must explicitly tell the viewer that the table "
+        "and the 'fired in cube' KPI are from different runs")
+    # The 4 flag mentions must be present so the viewer can see the
+    # mechanism (not just the headline).
+    for flag in ["--no-portfolio-cap", "--no-dd-halt",
+                 "--no-regime-affinity", "--no-event-suppression"]:
+        assert flag in app_js, (
+            f"Tab 1 callout must cite the {flag} flag that the cube "
+            "removed so the viewer understands the mechanism")
+
+
+def test_batch436_reference_two_run_comparison_table():
+    """Tab 14 must include the explicit two-run comparison table so the
+    same answer is also documented in the reference page."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    # Comparison table headings.
+    for col in ["Strict run (Tab 1's source)",
+                "Lenient cube (Tabs 10-13's source)",
+                "Portfolio cap (max open positions)",
+                "Strategies that fired"]:
+        assert col in html, (
+            f"Tab 14 two-run comparison table missing row/col: {col}")
 
 
 def test_batch430_candidate_detail_is_div_with_structured_render():

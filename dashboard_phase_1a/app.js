@@ -122,9 +122,18 @@ function renderStrategies() {
     kpi(fmtNum(avgPF, 2), "Avg profit factor"),
   ].join("");
   // Inclusion-criteria callout above the table.
+  // Batch 436 (2026-05-29): explicit two-run comparison so the new
+  // viewer can answer "if cube fired 100 and threshold is 1, why is
+  // this table only 36" without bouncing to Tab 14.
   const callout = document.getElementById("strat-inclusion-callout");
   if (callout) {
-    callout.innerHTML = `<strong>Inclusion criteria for this table:</strong> a strategy appears here if it fired <em>at least one trade</em> during the <code>${sourceDir}</code> backtest run. Strategies with zero trades are excluded - they live in Tab 12 (Quiet Strategies). The other count buckets above (Fired in cube / Quiet in cube) come from a <em>separate</em> dataset - the Phase 1A-beta cube re-run output - and will not equal the "In this table" count.`;
+    const cubeFired = pza.fired_count;
+    const baselineFired = rows.length;
+    callout.innerHTML = `
+      <strong>Inclusion criteria for this table:</strong> a strategy appears here if it fired <em>at least one trade</em> during the <code>${sourceDir}</code> backtest run. No min-trade threshold. Source: <code>backtest/results/metrics.py::compute_all_metrics</code>.
+      <br><br>
+      <strong>Why this table has ${baselineFired} but the cube has ${cubeFired != null ? cubeFired : '~100'}:</strong> they are two <em>different</em> backtest runs. <code>${sourceDir}</code> applied the portfolio cap (max 25 open), drawdown halt, regime-affinity gate, and event suppression. The cube (<code>output_batch395_final</code>) had all four flags turned off (<code>--no-portfolio-cap --no-dd-halt --no-regime-affinity --no-event-suppression</code>), so 64 strategies whose candidates were blocked in <code>${sourceDir}</code> were able to fire trades in the cube. Same threshold, different gates upstream of the trade log. See Tab 14 (First-time viewer block) for the full comparison.
+    `;
   }
   // Columns — auto-detect
   const cols = Object.keys(rows[0]).map(k => ({

@@ -265,10 +265,26 @@
   <p class="desc">Schema, methodology, and tab-by-tab navigation guide. Read this first if anything below is unclear.</p>
 
   <!-- Batch 435 (2026-05-29): "First-time viewer" mental-model block. -->
+  <!-- Batch 436 (2026-05-29): explicit two-run comparison table. -->
   <div style="background:#1a1f29;border:1px solid var(--accent);padding:.8rem 1rem;border-radius:6px;margin-bottom:.75rem;font-size:.88rem">
     <h3 style="margin:0 0 .4rem;color:var(--accent);font-size:1rem">First-time viewer? Start here.</h3>
     <p style="margin:.3rem 0"><strong>What this dashboard is.</strong> A read-only post-mortem of one backtest run plus the cube optimizer outputs that derive from it. Nothing here runs live trading.</p>
-    <p style="margin:.3rem 0"><strong>Two datasets are stitched together.</strong> The headline tabs (Overview, 1-9, Exits, Trades) come from the <em>Phase 1A baseline</em> backtest in <code>output_v2/</code> (a single config, a single run, ~36 strategies that actually fired trades). The cube tabs (10-13) come from the <em>Phase 1A-beta cube</em> in <code>output_batch395_final/</code> (every strategy x every exit method x every regime). The cube can have 100 strategies fire because it removes the cap / dd-halt / regime / event-suppression gates the baseline run applied. The two datasets share the strategy roster but not the trades.</p>
+
+    <p style="margin:.5rem 0 .3rem"><strong>Why "36" and "100" don't add up.</strong> The dashboard stitches together <em>two different backtest runs</em> that share the same 185-strategy roster but apply different rule sets. The same strategy can fire trades in one run and stay quiet in the other.</p>
+    <table class="display compact" style="font-size:.82rem;margin:.4rem 0;width:auto">
+      <thead><tr><th></th><th>Strict run (Tab 1's source)</th><th>Lenient cube (Tabs 10-13's source)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Output dir</strong></td><td><code>output_v2/</code></td><td><code>output_batch395_final/</code></td></tr>
+        <tr><td><strong>Phase</strong></td><td>1A baseline</td><td>1A-beta cube</td></tr>
+        <tr><td><strong>Portfolio cap (max open positions)</strong></td><td>25</td><td>off (<code>--no-portfolio-cap</code>)</td></tr>
+        <tr><td><strong>Drawdown halt</strong></td><td>on</td><td>off (<code>--no-dd-halt</code>)</td></tr>
+        <tr><td><strong>Regime-affinity gate</strong></td><td>on</td><td>off (<code>--no-regime-affinity</code>)</td></tr>
+        <tr><td><strong>Event suppression (FOMC/CPI/earnings)</strong></td><td>on</td><td>off (<code>--no-event-suppression</code>)</td></tr>
+        <tr><td><strong>Strategies that fired &gt;= 1 trade</strong></td><td><strong>36</strong></td><td><strong>100</strong></td></tr>
+      </tbody>
+    </table>
+    <p style="margin:.3rem 0;font-size:.82rem"><em>The same inclusion threshold applies in both runs - "fired &gt;= 1 trade" - but the cube's relaxed gates let 64 more strategies actually place a trade. Those 64 weren't pruned; the baseline gates simply blocked their candidates before they hit the trade log. The 85 quiet count is cube-only (strategies that didn't fire even with all gates off).</em></p>
+
     <p style="margin:.3rem 0"><strong>Recommended reading order:</strong> Overview (portfolio health) -> Tab 1 (strategy ranking, see inclusion criteria there) -> Tab 2 (per-regime) -> Tab 4 (equity curve) -> Tab 13 (cube cell verdicts) -> Tab 10 (cube optimizer's recommendations) -> Tab 11 (drill down on a strategy) -> Tab 12 (zero-fire diagnosis).</p>
     <p style="margin:.3rem 0"><strong>What "good" looks like.</strong> Portfolio Sharpe &gt;= 0.7 OOS in &gt;= 1 regime (the 1A-alpha gate). Per-strategy: passes the 9-criteria gates (see table below) AND has a cube cell that passes the DEC-426 5-Gate (also below). Currently the 1A-alpha gate is LOCKED at OOS Sharpe 0.419 - a cube re-run is in flight.</p>
     <p style="margin:.3rem 0"><strong>If a tab looks empty / wrong:</strong> hard-refresh (Ctrl+Shift+R). If still wrong, F12 -&gt; Console and paste any errors.</p>
