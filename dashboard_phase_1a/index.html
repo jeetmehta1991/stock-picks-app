@@ -98,6 +98,8 @@
   <button class="tab-btn" data-panel="candidates">11. Candidates</button>
   <button class="tab-btn" data-panel="quiet">12. Quiet</button>
   <button class="tab-btn" data-panel="cubecells">13. Cell Cube</button>
+  <!-- Batch 434 (2026-05-29): owner-directed Reference / Background tab -->
+  <button class="tab-btn" data-panel="reference">14. Reference</button>
   <button class="tab-btn" data-panel="raw">Raw JSON</button>
 </nav>
 
@@ -253,6 +255,200 @@
   <h2>13. Cell Verdict Cube</h2>
   <p class="desc">Per-(strategy × exit) cell verdicts from Lens B L2 (Batch 391 <code>analyze_exit_methods</code>). 4-of-5 DEC-426 gates (n≥30, p&lt;0.05 Bonferroni, t≥3.4, R:R≥2.0). PSR&lt;0.95 excluded from this gate; strict 5-Gate is the 1A-α requirement.</p>
   <table id="cube-cells-table" class="display compact"></table>
+</section>
+
+<!-- Batch 434 (2026-05-29): owner-directed Reference / Background tab. -->
+<section class="panel" id="reference">
+  <h2>14. Reference / Background</h2>
+  <p class="desc">Schema, methodology, and tab-by-tab navigation guide. Read this first if anything below is unclear.</p>
+  <div id="reference-counts" class="kpis"></div>
+
+  <h3 style="margin-top:1rem">Strategy library — 185 active / 100 fired / 36 in Tab 1 / 85 quiet</h3>
+  <p class="desc">The 185 figure is registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code>. The 36 in Tab 1 are strategies that met the <code>backtest_results.csv</code> inclusion threshold in this run (the live <code>output_v2/</code> Phase 1A baseline). 64 strategies fired some trades but didn't make the CSV threshold; 85 are quiet (zero trades — see Tab 12).</p>
+  <table class="display compact" style="font-size:.85rem;margin-bottom:.5rem">
+    <thead><tr><th>Layer</th><th>Scope</th><th>~Count</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Layer 1 baseline</td><td>Long-direction technical / momentum / mean-reversion</td><td>~60</td><td><code>screener.py</code> &mdash; classic SR/MA/pivot/RSI patterns</td></tr>
+      <tr><td>Layer 2 (Phase 0.D)</td><td>ICT / Earnings / Calendar overlays</td><td>+30-40</td><td><code>signals/smc_ict.py</code> + earnings overlay producers</td></tr>
+      <tr><td>Layer 2D</td><td>Form-derived ICT (FVG / OB / BOS / CHoCH)</td><td>+10-15</td><td><code>signals/smc_ict.py</code> via <code>vendored/smartmoneyconcepts</code></td></tr>
+      <tr><td>Layer 3 (Pass 52)</td><td>Chart-pattern + categories</td><td>+30-40</td><td><code>signals/chart_patterns.py</code></td></tr>
+      <tr><td>Layer 4</td><td>PENDING (Phase 1A-α onwards)</td><td>0</td><td>future</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">25 Exit methods</h3>
+  <p class="desc">Source: <code>backtest/engine/exit_strategies.py::EXIT_STRATEGIES</code>. Phase 1A-β cube replays every entry through every exit so each (strategy × exit × regime) cell gets its own verdict. The 9 winners pinned in Batch 414 all pair with <code>breakeven_plus_trail</code>.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;font-size:.78rem">
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Trailing stops (5)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>atr_trail_1x</code> — 1× ATR trailing (Phase 1A v3 winner)</li>
+        <li><code>atr_trail_2x</code></li>
+        <li><code>atr_trail_mae_conditional</code></li>
+        <li><code>atr_trail_vix_conditional</code></li>
+        <li><code>chandelier_3x</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Fixed % trail (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>trailing_5pct</code></li>
+        <li><code>trailing_10pct</code></li>
+        <li><code>trailing_15pct</code></li>
+      </ul>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Time-based (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>time_stop_10d</code></li>
+        <li><code>time_stop_20d</code></li>
+        <li><code>class_time_stop</code> — per strategy layer</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">R:R / break-even (5)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>r_multiple_2r</code> / <code>r_multiple_3r</code></li>
+        <li><code>break_even_at_1r</code></li>
+        <li><code>breakeven_plus_trail</code> — Batch 414 winner</li>
+        <li><code>fixed_4r_2r</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">MFE / multi-tier (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>mfe_lockin_trail</code></li>
+        <li><code>hybrid_50pct_target</code></li>
+        <li><code>multi_tier_partial</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Regime / signal (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>regime_flip</code></li>
+        <li><code>reverse_signal</code></li>
+        <li><code>ma_exit_ema9</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Event / structure (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>earnings_blackout</code> — exits before earnings</li>
+        <li><code>next_pivot_target</code></li>
+        <li><code>smc_mitigation_zone</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:1rem">9 Success criteria (from CLAUDE.md)</h3>
+  <p class="desc">All overall thresholds must pass for a strategy to advance overall. Each strategy ALSO gets a per-regime verdict — a strategy valid in crisis but not bull is deployed only during crisis (intentional).</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>#</th><th>Criterion</th><th>Per-regime threshold</th><th>Overall threshold</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Win rate</td><td>≥55% (high-vol: ≥50%)</td><td>same</td></tr>
+      <tr><td>2</td><td>Profit factor</td><td>&gt;1.3 (high-vol: &gt;1.2)</td><td>&gt;1.5 (literature canonical)</td></tr>
+      <tr><td>3</td><td>Expected value</td><td>&gt;0</td><td>same</td></tr>
+      <tr><td>4</td><td>Win/loss ratio</td><td>&gt;1.0</td><td>same</td></tr>
+      <tr><td>5</td><td>Max drawdown</td><td>&lt;20 pct-points (high-vol: &lt;25)</td><td>same</td></tr>
+      <tr><td>6</td><td>Total ROI</td><td>&gt;0%</td><td>same</td></tr>
+      <tr><td>7</td><td>Smart money lift</td><td>≥3pp win rate improvement</td><td>same</td></tr>
+      <tr><td>8</td><td>Macro correlation</td><td>≥5pp win rate diff</td><td>same</td></tr>
+      <tr><td>9</td><td>Min trades</td><td>≥30</td><td>≥100</td></tr>
+      <tr><td>10</td><td>Sharpe ratio</td><td>≥0.7</td><td>≥1.0</td></tr>
+      <tr><td>11</td><td>Per-regime verdict</td><td colspan="2">PASS in ≥1 regime (not universal pass required)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">DEC-426 5-Gate (Phase 1A-β cube cell-level — different from the 9 criteria above)</h3>
+  <p class="desc">Per-(strategy × exit × regime) cell-level gate used by the cube optimizer. Stricter than the 9 criteria because each cell has fewer trades — the gates correct for multiple-testing.</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Gate</th><th>Threshold</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>n</td><td>≥ 30</td><td>Minimum trades for statistical power</td></tr>
+      <tr><td>p (Bonferroni)</td><td>&lt; 0.05</td><td>Multiple-testing correction across 4625 cells/regime</td></tr>
+      <tr><td>PSR (Probabilistic Sharpe)</td><td>≥ 0.95</td><td>Prob. that true Sharpe &gt; 0; strict 5-Gate gate</td></tr>
+      <tr><td>t-stat</td><td>≥ 3.4</td><td>Bailey-Lopez de Prado strict significance</td></tr>
+      <tr><td>R:R</td><td>≥ 2.0</td><td>Edge over implementation costs</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Universe — 5-bucket architecture (DEC-303 / 477 / 494)</h3>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Tier</th><th>Scope</th><th>Count</th><th>File</th></tr></thead>
+    <tbody>
+      <tr><td>T1a</td><td>S&amp;P 500 PIT</td><td>614 (503 active + 111 historical)</td><td><code>Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv</code></td></tr>
+      <tr><td>T1 ETFs</td><td>Sector + broad-market ETFs</td><td>27</td><td><code>Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv</code></td></tr>
+      <tr><td>T1c</td><td>NASDAQ-100 PIT</td><td>161 (101 active + 60 historical)</td><td><code>Backtesting universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv</code></td></tr>
+      <tr><td>T2</td><td>Spinoffs &gt; $5B + recent IPOs &gt; $10B</td><td>347</td><td><code>Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv</code></td></tr>
+      <tr><td>T3</td><td>Momentum top-100 non-T1 (Jegadeesh-Titman 12-1)</td><td>1923 period-rows / 1220 unique</td><td><code>Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv</code></td></tr>
+      <tr><td>Master dedup</td><td>All 5 buckets unique with resolved_tier (T3&gt;T2&gt;T1c&gt;T1a&gt;ETF, DEC-504)</td><td>1937</td><td>Computed in <code>backtest/data/universe.py</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Regime classification (real-time, no lookahead)</h3>
+  <ul style="font-size:.85rem">
+    <li><code>bull</code> &mdash; SPY above 200 EMA + 20-day realized vol &lt; 20%</li>
+    <li><code>neutral</code> &mdash; SPY above 200 EMA + vol 20-30%</li>
+    <li><code>bear</code> &mdash; SPY below 200 EMA</li>
+    <li><code>crisis</code> &mdash; vol &gt; 30% (flagged; longs allowed at 50% size per CLAUDE.md)</li>
+  </ul>
+  <p class="desc">Per-regime verdicts (Tab 2) are calibrated against 8 historical regime windows (covid_crisis_2020, bear_correction_2022, rate_rising_2022_2023, strong_bull_2023, rate_falling_2024, ai_sector_bull_2024, tariff_shock_2025, ai_divergence_2025_2026). Source: <code>output_v2/strategy_regime_matrix.json</code>.</p>
+
+  <h3 style="margin-top:1rem">Position sizing (confidence tiers)</h3>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Tier</th><th>Size</th><th>Trigger</th></tr></thead>
+    <tbody>
+      <tr><td>EXCEPTIONAL</td><td>5%</td><td>All 9 criteria + agent score ≥ 90</td></tr>
+      <tr><td>VERY HIGH</td><td>4%</td><td>All 9 criteria + agent score ≥ 75</td></tr>
+      <tr><td>HIGH</td><td>3%</td><td>All 9 criteria + agent score ≥ 60</td></tr>
+      <tr><td>MEDIUM-HIGH</td><td>1.5%</td><td>Default for fully-passing strategies</td></tr>
+      <tr><td>MEDIUM</td><td>0.75%</td><td>Per-regime PASS only (not universal)</td></tr>
+      <tr><td>LOW</td><td>skip</td><td>Below thresholds</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Tab navigation guide — what each tab shows + what to look for</h3>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Tab</th><th>Shows</th><th>Look for</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Overview</td><td>Portfolio KPIs (return, Sharpe, DD, heat) + key-value pairs</td><td>Sharpe ≥ 0.7 (1A-α gate); DD &lt; 20%; positive return</td><td><code>portfolio_summary.json</code> + <code>portfolio_metrics.json</code></td></tr>
+      <tr><td>1. Strategies</td><td>36 strategies passing min-trades threshold + 9-criteria PASS/FAIL</td><td>Strategies with green PASS pills + Sharpe &gt; 0.7</td><td><code>backtest_results.csv</code></td></tr>
+      <tr><td>2. Regime</td><td>Per-(strategy × regime) PASS / FAIL / INSUFFICIENT_DATA verdict</td><td>Green cells = regime-specific deployment candidates; "best_regimes" column</td><td><code>strategy_regime_matrix.json</code></td></tr>
+      <tr><td>3. MAE/MFE</td><td>Max Adverse / Favorable Excursion bucket histograms</td><td>Wide MFE distribution = healthy trend-catching; tight MAE = good stops</td><td><code>exit_by_mae_bucket.csv</code> / <code>exit_by_mfe_bucket.csv</code></td></tr>
+      <tr><td>4. Equity</td><td>Portfolio equity curve (Chart.js) + 6 KPIs</td><td>Smooth uptrend; no extended DD; alpha vs SPY &gt; 0</td><td><code>equity_curve.parquet</code></td></tr>
+      <tr><td>5. Walk-fwd</td><td>Improvements / rolling Sharpe stability / stress metrics JSON</td><td>OOS Sharpe ≥ IS Sharpe (or close); rolling Sharpe stable across folds</td><td><code>improvements_summary.json</code> + <code>rolling_sharpe_stability.json</code></td></tr>
+      <tr><td>6. Smart-$</td><td>Exit performance by smart-money signal present + congressional correlation</td><td>≥3pp win-rate lift when smart-money signal active</td><td><code>exit_by_smart_money_signal_present.csv</code></td></tr>
+      <tr><td>7. Sector</td><td>By-sector trades + concentration breakdowns</td><td>No single sector &gt; 50% of trades on most days</td><td><code>exit_by_sector.csv</code> + sector concentration report</td></tr>
+      <tr><td>8. Skipped</td><td>Reasons trades were skipped (liquidity / cash / etc.)</td><td>If a strategy is in Tab 12 SKIPPED_AT_ENGINE bucket, look here for which gate</td><td><code>skipped_trades.csv</code></td></tr>
+      <tr><td>9. CircuitBreakers</td><td>Circuit breaker activations log + by-active duration</td><td>Few activations (rare events); active duration brief</td><td><code>circuit_breaker_log.csv</code></td></tr>
+      <tr><td>Exits</td><td>25-method exit comparison + best per strategy + per-method cube</td><td>Which exit pairs best with which strategy</td><td><code>exit_strategy_comparison.csv</code> + <code>exit_method_multi_dim_cube.csv</code></td></tr>
+      <tr><td>Trades</td><td>First 10,000 trades from <code>trade_log.parquet</code></td><td>Full audit. For complete log, download the parquet.</td><td><code>trade_log.parquet</code></td></tr>
+      <tr><td>10. Optimizer</td><td>Stage 3 optimization summary (markdown rendered) + bucket KPIs</td><td>Buckets: PASS-strict / PASS-relaxed / FAIL; 9-dim optimizer findings</td><td><code>output_optimization_candidates_2026_05_28/optimization_summary.md</code></td></tr>
+      <tr><td>11. Candidates</td><td>Per-strategy 9-dim optimizer drill-down (aggregate KPIs + dim A-I summary + collapsible raw JSON)</td><td>Per-strategy A-I dimension status; which dims have proposals</td><td><code>output_optimization_candidates_2026_05_28/&lt;strategy&gt;.json</code></td></tr>
+      <tr><td>12. Quiet</td><td>3-bucket classification of zero-fire strategies (PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE)</td><td>Strategies that need producer fix OR clause restructure OR liquidity tuning</td><td><code>producer_zero_post_cube_audit.json</code></td></tr>
+      <tr><td>13. Cell Cube</td><td>Per-(strategy × exit) cell verdicts with DEC-426 5-Gate columns</td><td>5-Gate strict PASS = 1A-α gate candidate</td><td><code>exit_method_analysis.json</code> (Lens B L2)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Glossary</h3>
+  <ul style="font-size:.82rem">
+    <li><b>PIT (point-in-time)</b> &mdash; data filtered to what would have been known at decision time; no lookahead.</li>
+    <li><b>Cube</b> &mdash; Phase 1A-β cube = 185 strategies × 25 exits × 7 regime windows = ~32,375 cells per regime window evaluated.</li>
+    <li><b>1A-α gate</b> &mdash; owner gate: ≥1 strategy with rules-only Sharpe ≥ 0.7 OOS in ≥1 regime. Currently LOCKED at 0.419 (best). Gate must open before Phase 1B-α $300 agent budget.</li>
+    <li><b>1A-β cube re-run</b> &mdash; full re-evaluation of cube on AWS spot infrastructure. Currently running Shape A: 3 × c7a.8xlarge spot, ~$9.30, ~5h.</li>
+    <li><b>5-Gate (DEC-426)</b> &mdash; strict cell-level gate above. Differs from the 9 criteria which are strategy-level overall.</li>
+    <li><b>Smart money</b> &mdash; aggregated congressional trades + insider buys + 13F flows. Acts as a quality multiplier on candidate trades.</li>
+    <li><b>BUG-95 portfolio metrics</b> &mdash; per-trade aggregates differ from compounded portfolio returns once position sizing + heat caps apply. The dashboard exposes both views.</li>
+  </ul>
+
+  <h3 style="margin-top:1rem">Data flow</h3>
+  <ol style="font-size:.82rem">
+    <li><b>Prefetch</b> &mdash; OHLCV + macro + sentiment + smart-money cached in <code>backtest/data/cache/</code> and <code>data_prefetch/</code> (Sprint 0A multi-API mandate).</li>
+    <li><b>Backtest engine</b> &mdash; <code>backtest/engine/backtest.py</code> walks day-by-day, classifies regime, runs screener (Tab 12), enters trades, runs exits (Tab 13).</li>
+    <li><b>Trade outputs</b> &mdash; per-trade rows in <code>trade_log.parquet</code> + per-exit replay in <code>trade_exit_detail.csv</code>.</li>
+    <li><b>Metrics</b> &mdash; <code>results/metrics.py</code> computes the 9 criteria + per-regime verdict from trade outputs.</li>
+    <li><b>Dashboard build</b> &mdash; <code>scripts/build_dashboard_phase_1a.py</code> serializes all outputs into <code>data.js</code> for this dashboard.</li>
+    <li><b>Cube optimizer</b> &mdash; <code>scripts/optimize_strategies_from_cube.py</code> emits the Stage 3 candidates (Tab 10/11) + verdict cube (Tab 13).</li>
+    <li><b>Walk-forward</b> &mdash; <code>scripts/walk_forward_batch414_cells.py</code> implements DEC-505 4-fold expanding-window for the 1A-α gate.</li>
+  </ol>
 </section>
 
 <section class="panel" id="raw">

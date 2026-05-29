@@ -101,8 +101,17 @@ function renderStrategies() {
   const passing = rows.filter(r => r.passes_all === true || r.passes_all === "True").length;
   const avgSharpe = rows.reduce((a, r) => a + (Number(r.sharpe) || 0), 0) / rows.length;
   const avgPF = rows.reduce((a, r) => a + (Number(r.profit_factor) || 0), 0) / rows.length;
+  // Batch 434: surface the 185 / 100 / 36 / 85 split from producer_zero_audit
+  // so owner understands why only ~36 strategies appear in this table.
+  const pza = (D.producer_zero_audit || {}).summary || {};
+  const active = pza.active_count;
+  const fired = pza.fired_count;
+  const quiet = pza.quiet_count;
   $("#strat-kpis").innerHTML = [
-    kpi(rows.length, "Strategies evaluated"),
+    active != null ? kpi(active, "Active (registered)") : "",
+    fired != null ? kpi(fired, "Fired ≥1 trade") : "",
+    kpi(rows.length, "In this table (CSV-included)"),
+    quiet != null ? kpi(quiet, "Quiet (see Tab 12)", "warn") : "",
     kpi(passing, "Passing all 9 gates", passing > 0 ? "good" : "bad"),
     kpi(fmtNum(avgSharpe, 2), "Avg Sharpe"),
     kpi(fmtNum(avgPF, 2), "Avg profit factor"),
@@ -410,6 +419,31 @@ function renderCubeCells() {
   });
 }
 
+// ---- Batch 434 (2026-05-29): Reference / Background tab ----
+function renderReference() {
+  // Populate top-of-tab live counts. Static content is in index.html;
+  // these KPIs come from the live data so the numbers reflect the
+  // current run rather than a stale doc.
+  const pza = (D.producer_zero_audit || {}).summary || {};
+  const psc = D.per_strategy_candidates || {};
+  const rows = D.backtest_results || [];
+  const ema = D.exit_method_analysis || {};
+  const l2 = (ema.layer_2_per_strategy_exit_cell || []);
+  const distinctExits = new Set(l2.map(r => r.exit_method).filter(Boolean));
+  const target = $("#reference-counts");
+  if (!target) return;
+  target.innerHTML = [
+    kpi(pza.active_count != null ? pza.active_count : 185, "Strategies registered"),
+    kpi(pza.fired_count != null ? pza.fired_count : "—", "Fired ≥1 trade", pza.fired_count > 0 ? "good" : "warn"),
+    kpi(rows.length, "In Tab 1 (CSV-included)"),
+    kpi(pza.quiet_count != null ? pza.quiet_count : "—", "Quiet (Tab 12)", "warn"),
+    kpi(Object.keys(psc).length || 101, "Per-strategy JSONs"),
+    kpi(distinctExits.size || 25, "Exit methods"),
+    kpi(9, "Success criteria"),
+    kpi(7, "Historical regime windows"),
+  ].join("");
+}
+
 // ---- Render all ----
 try { renderOverview(); } catch (e) { console.error("overview:", e); }
 try { renderStrategies(); } catch (e) { console.error("strategies:", e); }
@@ -428,4 +462,6 @@ try { renderOptimizer(); } catch (e) { console.error("optimizer:", e); }
 try { renderCandidates(); } catch (e) { console.error("candidates:", e); }
 try { renderQuiet(); } catch (e) { console.error("quiet:", e); }
 try { renderCubeCells(); } catch (e) { console.error("cubecells:", e); }
+// Batch 434: Reference / Background tab
+try { renderReference(); } catch (e) { console.error("reference:", e); }
 try { renderRaw(); } catch (e) { console.error("raw:", e); }

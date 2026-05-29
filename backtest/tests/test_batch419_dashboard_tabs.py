@@ -224,7 +224,7 @@ def test_batch430_optimizer_target_is_div():
 
 def test_batch433_render_regime_reads_regime_verdicts_nested():
     """Tab 2 Regime heatmap previously read top-level keys of each
-    strategy entry AS regime names — so the columns became literally
+    strategy entry AS regime names - so the columns became literally
     `best_regimes / regime_verdicts / overall_win_rate / total_trades /
     passes_all` (because that is what the keys actually are) and every
     cell rendered empty because none of those values are verdict strings.
@@ -255,6 +255,67 @@ def test_batch433_render_regime_emits_summary_columns():
     for k in ["total_trades", "overall_win_rate", "passes_all"]:
         assert f"entry.{k}" in app_js or f'["{k}"]' in app_js, (
             f"renderRegime must read entry.{k} for the summary column")
+
+
+def test_batch434_reference_tab_button_and_panel():
+    """Owner-directed Reference / Background tab (#14) must be wired
+    into both the nav and the panels."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert '<button class="tab-btn" data-panel="reference">14. Reference</button>' in html, (
+        "Reference tab button missing from nav")
+    assert '<section class="panel" id="reference">' in html, (
+        "Reference panel section missing")
+
+
+def test_batch434_reference_content_includes_required_sections():
+    """Reference tab must include: Strategy library (layers), 25 Exit
+    methods, 9 Success criteria, DEC-426 5-Gate, Universe 5-bucket,
+    Regime classification, Position sizing, Tab navigation guide,
+    Glossary, Data flow."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    required_headings = [
+        "Strategy library",
+        "25 Exit methods",
+        "9 Success criteria",
+        "DEC-426 5-Gate",
+        "5-bucket architecture",
+        "Regime classification",
+        "Position sizing",
+        "Tab navigation guide",
+        "Glossary",
+        "Data flow",
+    ]
+    for h in required_headings:
+        assert h in html, f"Reference tab missing required section: {h}"
+
+
+def test_batch434_render_reference_function_present_and_dispatched():
+    """app.js must define renderReference() AND dispatch it in the
+    try/catch render block."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    assert "function renderReference()" in app_js, (
+        "renderReference() function must be defined")
+    assert "renderReference();" in app_js, (
+        "renderReference() must be dispatched in the render-all block")
+    assert "#reference-counts" in app_js, (
+        "renderReference must populate the #reference-counts KPI grid")
+
+
+def test_batch434_strategies_tab_surfaces_185_100_36_85_split():
+    """Tab 1 Strategies KPI grid must surface the registered / fired /
+    in-table / quiet split so owner understands why only 36 strategies
+    appear in the CSV."""
+    app_js = (REPO / "dashboard_phase_1a" / "app.js").read_text(encoding="utf-8")
+    # KPI labels Batch 434 added (avoid embedding non-ASCII >= char in
+    # test source; the app.js uses U+2265 - look for the surrounding
+    # ASCII tokens instead).
+    for label in ['"Active (registered)"', '"Fired ',
+                  '"In this table (CSV-included)"', '"Quiet (see Tab 12)"']:
+        assert label in app_js, (
+            f"renderStrategies KPI label missing: {label}")
+    # Must read producer_zero_audit.summary for the counts
+    assert "producer_zero_audit" in app_js, (
+        "renderStrategies must read producer_zero_audit for the split")
 
 
 def test_batch430_candidate_detail_is_div_with_structured_render():
