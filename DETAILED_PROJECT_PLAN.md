@@ -1580,7 +1580,7 @@ This section captures the Pass 53 owner-directed scope expansion of Sprint 0A be
 <!-- canonical-fact-scope: F-012 prefetch endpoint inventory; cross-referenced in API_AUDIT.md §18 -->
 ### §3.16.2 Multi-API prefetch endpoint inventory + consumer mapping (Pass 53 current state 2026-05-06)
 
-**Authority:** This section is the canonical prefetch endpoint inventory. [API_AUDIT.md §22](API_AUDIT.md) mirrors this structure. [CANONICAL_FACTS.md F-012](CANONICAL_FACTS.md) summarizes at the API level.
+**Authority:** This section is the canonical prefetch endpoint inventory. [API_AUDIT.md §22](archive/2026-05-28-pre-1a-alpha-gate/docs/API_AUDIT.md) mirrors this structure (archived Batch 431). [CANONICAL_FACTS.md F-012](CANONICAL_FACTS.md) summarizes at the API level.
 
 **Scope per owner directive 2026-05-06:** every endpoint currently prefetched, its cache path + verified file count, the Stage(s) and Phase(s) that consume it, the agent / signal category / strategy-set that reads it, and current prefetch state. State is split into **Prefetch state** (raw data cached?) and **Consumer state** (parser + toolkit + agent wired?) per CANONICAL_FACTS.md F-003/F-012 Option B refactor.
 
@@ -1719,7 +1719,7 @@ Stage 4-5 (Email-approved live → Full automation)
 - [CANONICAL_FACTS.md F-012](CANONICAL_FACTS.md) — API-level summary with prefetch/consumer split
 - [CANONICAL_FACTS.md F-003](CANONICAL_FACTS.md) — signal universe per category mapping to prefetch endpoints
 - [TRADINGAGENTS_DATA_AUDIT.md §1071](TRADINGAGENTS_DATA_AUDIT.md) — DEC-507 wiring matrix (Agent × Toolkit × Data path × Verified status)
-- [API_AUDIT.md §18](API_AUDIT.md) — mirrored prefetch inventory + per-API capability detail
+- [API_AUDIT.md §18](archive/2026-05-28-pre-1a-alpha-gate/docs/API_AUDIT.md) — mirrored prefetch inventory + per-API capability detail (archived Batch 431)
 - DECs: DEC-440 (Polygon news replaces AV+Finnhub), DEC-441 (Polygon $30/mo), DEC-450 (Quiver Trader), DEC-484 (SEC EDGAR replaces FMP), DEC-490 (Phase 1A skipped strategies pending fundamentals), DEC-497 (NO-LIVE-API HARD CUT), DEC-499 (18-classifier sector taxonomy), DEC-500 (Polygon ticker events), DEC-502 (Quiver Trader endpoint expansion), DEC-505 (5-year walk-forward window), DEC-506 (Polygon Options + Ortex point-of-need subscription)
 
 ### §3.16.3 NO-LIVE-API HARD CUT refactor (DEC-497 owner directive Q8)
