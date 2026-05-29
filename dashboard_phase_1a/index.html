@@ -217,9 +217,67 @@
 <!-- Batch 419: cube-optimizer tabs per PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md Stage 3 -->
 <section class="panel" id="optimizer">
   <h2>10. Optimizer Summary</h2>
-  <p class="desc">Top-line output from <code>scripts/optimize_strategies_from_cube.py</code> (Batch 388 + Batch 391). Source dir + bucket counts + L1/L2/L3 + 1A-α gate.</p>
+  <p class="desc">Top-line output from <code>scripts/optimize_strategies_from_cube.py</code> (Batch 388 + Batch 391). The KPIs below + the markdown report come from this script.</p>
+
+  <!-- Batch 440 (2026-05-29): plain-English explainer for what the KPIs + jargon mean. -->
+  <details style="margin:.4rem 0;background:#1a1f29;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px" open>
+    <summary style="cursor:pointer;color:var(--accent);font-weight:600">What do these KPIs and L1 / L2 / L3 mean? (click to collapse)</summary>
+    <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
+      <p style="margin:.3rem 0"><strong>Source dir.</strong> Which cube directory the optimizer read. <code>output_batch395_final/</code> = the merged Phase 1A-beta cube run. <code>output_optimization_candidates_2026_05_28/</code> is where the per-strategy JSONs + this summary were written.</p>
+
+      <p style="margin:.5rem 0 .2rem"><strong>Bucket counts.</strong> The optimizer classifies every strategy that fired in the cube into one of three Lens-B verdicts based on the DEC-426 5-Gate (n &gt;= 30, p &lt; 0.05 Bonferroni, PSR &gt;= 0.95, t &gt;= 3.4, R:R &gt;= 2.0). Buckets:</p>
+      <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><strong>PASS-strict</strong> - clears all 5 gates including PSR. Eligible for the 1A-alpha gate.</li>
+        <li><strong>PASS-relaxed</strong> - clears 4 of 5 (PSR &lt; 0.95). Common bucket; statistically promising but not strict.</li>
+        <li><strong>FAIL</strong> - clears fewer than 4 gates. Strategy is unlikely to survive walk-forward.</li>
+      </ul>
+
+      <p style="margin:.5rem 0 .2rem"><strong>L1 / L2 / L3 - three layers of cube analysis.</strong> The same trade data is sliced three different ways:</p>
+      <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><strong>L1 - Per-exit-method aggregate.</strong> For each of the 25 exit methods, pool ALL strategies that used it and compute aggregate Sharpe / PF / WR. Answers: "which exit method is best on average?" Useful as the default exit when a specific strategy doesn't have a clear cell winner.</li>
+        <li><strong>L2 - Per-(strategy x exit_method) cell.</strong> The headline lens. For every (strategy, exit_method) cell with n &gt;= 5 trades, compute the 5-Gate verdict. Tab 13 (Cell Cube) is the sortable view; this is where STRATEGY_EXIT_OVERRIDE candidates come from.</li>
+        <li><strong>L3 - Parameter-variant winner within a family.</strong> When a strategy has cells in multiple variants of the same exit family - e.g., <code>time_stop_10d</code> vs <code>time_stop_20d</code>, or <code>r_multiple_2r</code> vs <code>r_multiple_3r</code>, or <code>trailing_5pct</code> vs <code>trailing_10pct</code> vs <code>trailing_15pct</code> - L3 picks the winning variant per strategy. Answers: "given this strategy uses some-kind-of-time-stop, which exact day count works?"</li>
+      </ul>
+
+      <p style="margin:.5rem 0"><strong>1A-alpha gate.</strong> Owner-set gate: at least one strategy must show rules-only OOS Sharpe &gt;= 0.7 in at least one regime under 4-fold walk-forward. Currently LOCKED (best OOS Sharpe 0.419 in the prior cube). If the just-finished cube re-run opens it, Phase 1B-alpha ($300 Haiku agent overlay budget) becomes eligible. If not, loop back to entry-side optimization (Dim A thresholds, Dim B compound logic) and re-cube.</p>
+
+      <p style="margin:.5rem 0;background:#0d1117;padding:.4rem;border-radius:4px;font-size:.82rem"><strong>Quick read order:</strong> KPIs (overall bucket counts) -&gt; Tab 13 Cell Cube (sort by Sharpe DESC; look for 5-Gate strict passes in the top rows) -&gt; Tab 11 Candidates (drill into a specific strategy to see its 9-dim findings) -&gt; come back here to see the markdown report's recommendations.</p>
+    </div>
+  </details>
+
   <div id="optimizer-kpis" class="kpis"></div>
-  <h3>optimization_summary.md (script-generated)</h3>
+
+  <!-- Batch 440 (2026-05-29): per-bucket optimization proposals + how the latest cube re-run helps each. -->
+  <h3 style="margin-top:1rem">Optimization proposals - per Quiet bucket</h3>
+  <p class="desc">For each of the three quiet buckets, the workflow to optimize + a concrete example from the current cube + how the just-finished cube re-run (Batches 414 / 415 / 416 / 421) helps.</p>
+
+  <h4 style="margin:.7rem 0 .3rem">PRODUCER_LAYER_ZERO_LIKELY (6 strategies, all SMC)</h4>
+  <p class="desc" style="font-size:.85rem">Current list: <code>smc_choch_reversal</code>, <code>smc_equal_highs_sweep_short</code>, <code>smc_equal_lows_sweep_long</code>, <code>smc_liquidity_sweep_reversal</code>, <code>smc_ote_long</code>, <code>smc_ote_short</code>. All 6 are SMC (Smart Money Concept) strategies. The common factor: their producers depend on <code>backtest/signals/smc_ict.py::compute_smc_signals</code> which calls into the <code>vendored/smartmoneyconcepts</code> library. Investigation 2026-05-28 showed 0 of 29,159 trades had any <code>smc_*</code> key in <code>signals_at_entry</code> despite <code>compute_smc_signals</code> returning 28 keys in isolation on the local machine.</p>
+  <p style="font-size:.85rem;margin:.3rem 0"><strong>Proposal:</strong> the issue is environmental, not strategic. Fix the producer (likely an AWS-instance import failure in smartmoneyconcepts library, or a silent KeyError in the SMC compute path). DO NOT relax the strategy clauses - they require SMC keys that simply weren't there.</p>
+  <p style="font-size:.85rem;margin:.3rem 0;background:#1a3320;padding:.4rem;border-radius:4px"><strong>How the latest batch helps:</strong> <strong>Batch 416 (Silent producer logging)</strong> wired <code>_log_silent_producer_failure</code> at all 3 producer call sites in <code>screener.py</code>, including the SMC site. The just-finished cube re-run engine logs (downloaded by the merge) will now contain a rate-limited diagnostic line per (producer, exception-type) - first SMC failure surfaces the actual exception class and traceback. Once root cause is identified, the fix is either (a) install the missing native dep in the AMI bootstrap, (b) pin a compatible numba/smartmoneyconcepts version, or (c) catch + remediate the specific exception. Then re-cube and these 6 strategies should fire.</p>
+
+  <h4 style="margin:.7rem 0 .3rem">COMPOUND_RESTRICTIVE (31 strategies)</h4>
+  <p class="desc" style="font-size:.85rem">Sample from current cube: <code>52w_low_breakdown</code>, 8 of 31 are <code>classification_change_*</code> variants (e.g. <code>classification_change_breakout_long</code>, <code>classification_change_momentum_long</code>, <code>classification_change_to_defensive_short</code>). These compound the Polygon ticker-classification-change event with one or two additional technical clauses (breakout, momentum, RSI, etc.). The optimizer found that the AND of (classification_change AND technical_signal) almost never fires together.</p>
+  <p style="font-size:.85rem;margin:.3rem 0"><strong>Proposal:</strong> for each strategy in this bucket, open Tab 11 Candidates -&gt; <code>dimension_b_compound</code>. The optimizer already produced concrete recommendations per strategy:</p>
+  <ul style="font-size:.85rem;margin:.3rem 0;padding-left:1.4rem">
+    <li><code>always_on</code> array - clauses with <code>fires_at</code> &gt;= 90%. They're not restricting anything; drop them to simplify.</li>
+    <li><code>restrictive</code> array - clauses with <code>fires_at</code> &lt;= 10% and high "n_present but rarely co-occurs". Either (a) loosen the threshold, (b) replace AND with OR for two near-equivalent clauses, or (c) substitute with a less-restrictive proxy (e.g. <code>classification_change_within_5d</code> instead of <code>classification_change_today</code>).</li>
+    <li><code>proposals</code> array - script-generated text suggestion per strategy.</li>
+  </ul>
+  <p style="font-size:.85rem;margin:.3rem 0;background:#1a3320;padding:.4rem;border-radius:4px"><strong>How the latest batch helps:</strong> <strong>Batch 415 (signals_at_entry enrichment)</strong> added <code>ticker</code>, <code>strategy_name</code>, <code>category</code> to the signals dict inside <code>run_exit_comparison</code>. This had a knock-on effect on COMPOUND_RESTRICTIVE diagnosis: previously, exit methods like <code>exit_earnings_blackout</code> and <code>exit_class_time_stop</code> couldn't look up the ticker's earnings calendar / strategy layer because the signals dict didn't have those keys - they always returned "no_earnings_known" / "momentum" defaults, which broke the dimension_b analysis for any strategy whose compound condition included an earnings or layer-conditional clause. After Batch 415 the cube can correctly evaluate those compound conditions, so the post-merge bucket list will more accurately reflect which strategies are truly compound-restrictive vs which were misclassified by the prior bug.</p>
+
+  <h4 style="margin:.7rem 0 .3rem">SKIPPED_AT_ENGINE (48 strategies)</h4>
+  <p class="desc" style="font-size:.85rem">Largest bucket. Sample: <code>52w_high_breakout</code>, <code>bb_squeeze_volume</code>, <code>cup_and_handle_long</code>, <code>death_cross_50_200_volume</code>, <code>camarilla_rsi_obv</code> (long + short). These DO generate candidates that pass the screener - the downstream engine gates kick them. Tab 8 (Skipped) shows the reason codes per skipped trade.</p>
+  <p style="font-size:.85rem;margin:.3rem 0"><strong>Proposal:</strong> open Tab 8 and group by <code>skip_reason</code>. The top reasons typically are:</p>
+  <ul style="font-size:.85rem;margin:.3rem 0;padding-left:1.4rem">
+    <li><strong>liquidity_floor</strong> (ADV too low) - candidate ticker doesn't have enough avg dollar volume. Fix: lower the ADV floor for small-cap strategies (tier-specific liquidity policy per DEC-321 / 366); or move the strategy to a more permissive tier.</li>
+    <li><strong>tier_too_low</strong> - candidate scored LOW in <code>_assign_confidence_tier</code>. Fix: this is by design for low-confluence trades; not a problem unless the strategy is supposed to be a singleton signal (e.g. a high-conviction breakout). If singleton: bypass the confluence rule for that strategy class.</li>
+    <li><strong>uniqueness</strong> - already in a position on this ticker. Fix: usually NOT a problem in Phase 1A-beta (the cube doesn't enforce uniqueness with <code>--no-portfolio-cap</code>); if this rises post-1B-alpha, allow stacked entries with smaller per-add sizing.</li>
+    <li><strong>cash_limit</strong> - daily cash spent. Fix: raise per-day allocation OR queue candidates across days.</li>
+  </ul>
+  <p style="font-size:.85rem;margin:.3rem 0;background:#1a3320;padding:.4rem;border-radius:4px"><strong>How the latest batch helps:</strong> the cube was run with <strong>--no-portfolio-cap and --no-event-suppression</strong>, so <code>uniqueness</code>, <code>cash_limit</code>, and event-window skips should have dropped significantly between the prior baseline (where 48 strategies were SKIPPED_AT_ENGINE) and the just-finished re-run. If the post-merge re-audit shows the bucket SHRINKS (say to 20-25), that confirms the cap/event gates were the main blockers and SKIPPED_AT_ENGINE was largely a Phase-1B-alpha problem hiding in Phase 1A-beta data. If it STAYS at ~48, the remaining cause is structural (liquidity floor or tier-too-low) and needs per-strategy tuning. <strong>Batch 421 (PEAD lru_cache)</strong> doesn't directly affect this bucket; <strong>Batch 414 (STRATEGY_EXIT_OVERRIDE)</strong> only pairs the 9 prior winners with <code>breakeven_plus_trail</code> which doesn't help quiet strategies.</p>
+
+  <h3 style="margin-top:1rem">optimization_summary.md (script-generated)</h3>
   <!-- Batch 430: was <pre>; switched to <div> + marked.js render. -->
   <div id="optimizer-md-rendered" class="md-render" style="font-size:.85rem;color:var(--text);background:#0d1117;padding:.75rem;border-radius:4px;overflow:auto;max-height:600px"></div>
 </section>

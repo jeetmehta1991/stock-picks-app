@@ -521,6 +521,48 @@ def test_batch439_reference_tab14_navigation_includes_tab15():
         "Tab 14 navigation guide must reference 15. Sample Trades")
 
 
+def test_batch440_optimizer_tab_explainer_block_present():
+    """Tab 10 must include a plain-English explainer block for KPIs +
+    L1 / L2 / L3 + 1A-alpha gate so a new viewer understands what the
+    optimizer summary actually says."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "What do these KPIs and L1 / L2 / L3 mean?" in html, (
+        "Tab 10 must include the 'What do these KPIs and L1 / L2 / L3 "
+        "mean?' details block")
+    # Each layer must have its own bullet.
+    for layer in ["L1 - Per-exit-method aggregate",
+                  "L2 - Per-(strategy x exit_method) cell",
+                  "L3 - Parameter-variant winner within a family"]:
+        assert layer in html, f"Tab 10 explainer missing layer: {layer}"
+    # Bucket definitions.
+    for bucket in ["PASS-strict", "PASS-relaxed", "FAIL"]:
+        assert bucket in html, f"Tab 10 explainer missing bucket: {bucket}"
+    # 1A-alpha gate definition.
+    assert "1A-alpha gate" in html and "0.7" in html, (
+        "Tab 10 explainer must define the 1A-alpha gate (OOS Sharpe "
+        ">= 0.7)")
+
+
+def test_batch440_optimization_proposals_per_bucket():
+    """Tab 10 must include optimization proposals + 'how the latest
+    batch helps' for each of the 3 quiet buckets."""
+    html = (REPO / "dashboard_phase_1a" / "index.html").read_text(encoding="utf-8")
+    assert "Optimization proposals - per Quiet bucket" in html, (
+        "Tab 10 must include the 'Optimization proposals' section")
+    # Each bucket must have its own subsection with a 'How the latest
+    # batch helps' green callout.
+    for bucket in ["PRODUCER_LAYER_ZERO_LIKELY (6 strategies",
+                   "COMPOUND_RESTRICTIVE (31 strategies)",
+                   "SKIPPED_AT_ENGINE (48 strategies)"]:
+        assert bucket in html, (
+            f"Tab 10 proposals must include the bucket header: {bucket}")
+    # The 4 fix-citation batches must be referenced.
+    for batch in ["Batch 415", "Batch 416", "Batch 421", "Batch 414"]:
+        assert batch in html, (
+            f"Tab 10 proposals must cite {batch} (the cube re-run's "
+            "fix batches that the proposals depend on)")
+
+
 def test_batch430_candidate_detail_is_div_with_structured_render():
     """Tab 11 candidate-detail switched from raw JSON dump in <pre> to
     structured render (KPIs + per-dimension table + collapsible JSON) in
