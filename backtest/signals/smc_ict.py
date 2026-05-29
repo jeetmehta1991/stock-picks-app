@@ -30,6 +30,8 @@ from typing import Optional
 
 import pandas as pd
 
+from backtest.util.silent_failure_logger import log_silent_failure
+
 
 # Suppress the library's startup banner (Unicode glyph triggers
 # UnicodeEncodeError on cp1252 Windows consoles). The import remains
@@ -38,7 +40,10 @@ with contextlib.redirect_stdout(io.StringIO()):
     try:
         from vendored.smartmoneyconcepts.smartmoneyconcepts import smc as _smc
         _SMC_AVAILABLE = True
-    except Exception:
+    except Exception as _e:
+        # Batch 458 (AU2): log the import failure so the SMC silent-failure
+        # mode (queue item #3 PRODUCER_LAYER_ZERO_LIKELY) surfaces in logs.
+        log_silent_failure("smc_ict.import_smartmoneyconcepts", _e)
         _smc = None
         _SMC_AVAILABLE = False
 
@@ -169,8 +174,8 @@ def compute_smc_signals(
                 out["smc_fvg_retest_short_zone"] = retest_short
                 out.setdefault("smc_inverse_fvg_bullish", False)
                 out.setdefault("smc_inverse_fvg_bearish", False)
-    except Exception:
-        pass
+    except Exception as _e:
+        log_silent_failure("smc_ict.fvg_compute", _e)
     try:
         swings = _smc.swing_highs_lows(ohlc, swing_length=swing_length)
         # Order blocks (with Top/Bottom/MitigatedIndex for breaker /
@@ -224,8 +229,8 @@ def compute_smc_signals(
                     out["smc_breaker_block_bearish"]  = breaker_bear
                     out["smc_mitigation_block_long"]  = mitigation_long
                     out["smc_mitigation_block_short"] = mitigation_short
-        except Exception:
-            pass
+        except Exception as _e:
+            log_silent_failure("smc_ict.order_block_compute", _e)
         # BOS / CHoCH with Level for retest logic
         bos_df = None
         try:
@@ -266,8 +271,8 @@ def compute_smc_signals(
                             retest_short = True
                 out["smc_bos_retest_long"]  = retest_long
                 out["smc_bos_retest_short"] = retest_short
-        except Exception:
-            pass
+        except Exception as _e:
+            log_silent_failure("smc_ict.bos_choch_compute", _e)
         # Liquidity sweeps (with Swept flag exposing equal-highs/lows
         # taken-out events explicitly)
         try:
@@ -316,8 +321,8 @@ def compute_smc_signals(
                                 eq_lows_swept = True
                     out["smc_equal_highs_swept"] = eq_highs_swept
                     out["smc_equal_lows_swept"]  = eq_lows_swept
-        except Exception:
-            pass
+        except Exception as _e:
+            log_silent_failure("smc_ict.liquidity_compute", _e)
         # Batch 216: retracements primitive for OTE (Optimal Trade Entry)
         # 62-79% Fibonacci zone after CHoCH.
         try:
@@ -333,10 +338,10 @@ def compute_smc_signals(
                     out["smc_ote_long_zone"]  = bool(in_ote and float(direction) > 0)
                     out["smc_ote_short_zone"] = bool(in_ote and float(direction) < 0)
                     out["smc_retracement_pct"] = round(float(cur_ret), 2)
-        except Exception:
-            pass
-    except Exception:
-        pass
+        except Exception as _e:
+            log_silent_failure("smc_ict.retracement_compute", _e)
+    except Exception as _e:
+        log_silent_failure("smc_ict.swing_highs_lows_compute", _e)
     # Batch 216: dealing range pct - close position within
     # lookback-period high/low range. Used for premium/discount filter.
     try:
@@ -350,6 +355,6 @@ def compute_smc_signals(
                 out["smc_dealing_range_pct"] = round(pct, 4)
                 out["smc_in_discount_zone"]  = pct < 0.5
                 out["smc_in_premium_zone"]   = pct > 0.5
-    except Exception:
-        pass
+    except Exception as _e:
+        log_silent_failure("smc_ict.dealing_range_compute", _e)
     return out

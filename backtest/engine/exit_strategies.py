@@ -1484,7 +1484,12 @@ def run_exit_comparison(
             from backtest.engine.exit_strategies_vectorized import (
                 EXIT_STRATEGIES_VECTORIZED,
             )
-        except ImportError:
+        except ImportError as _e:
+            # Batch 458 (AU2): log first import failure so a missing
+            # vectorized-exits module silently degrading the engine to the
+            # scalar path is visible in run logs.
+            from backtest.util.silent_failure_logger import log_silent_failure
+            log_silent_failure("exit_strategies_vectorized.import", _e)
             EXIT_STRATEGIES_VECTORIZED = {}
     else:
         EXIT_STRATEGIES_VECTORIZED = {}

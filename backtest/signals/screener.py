@@ -3810,8 +3810,8 @@ def screen_instrument(
         pead = compute_pead_signals(ticker, df, as_of)
         if pead:
             signals.update(pead)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("pead", _e)
     # Batch 222: insider buying cluster signals (Quiver SEC Form 4).
     # No-op when global insiders parquet missing or ticker has no
     # qualifying transactions in lookback.
@@ -3820,8 +3820,8 @@ def screen_instrument(
         insider = compute_insider_cluster_signals(ticker, as_of)
         if insider:
             signals.update(insider)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("insider_buying", _e)
     # Batch 332 (2026-05-25 owner-approved Path C Wave 3 classification_change):
     # inject recent-classification-change signals into per-ticker signals
     # dict. Reads sector_history.csv via universe.get_classification_change_signals.
@@ -3876,8 +3876,8 @@ def screen_instrument(
         pers = compute_persistence_signals(ticker, as_of)
         if pers:
             signals.update(pers)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("institutional_persistence", _e)
     # Batch 224: macro event signals (pre-FOMC proximity) + recent 8-K
     # filing flag (buyback proxy). Pre-FOMC signals are universe-wide
     # (same value for all tickers on a given day); 8-K is per-ticker.
@@ -3892,8 +3892,8 @@ def screen_instrument(
         recent_8k = compute_recent_8k_signal(ticker, as_of)
         if recent_8k:
             signals.update(recent_8k)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("macro_events", _e)
     # Batch 210: SMC / ICT signals via vendored smartmoneyconcepts library.
     # Returns empty dict when library unavailable or insufficient history.
     try:
@@ -3918,8 +3918,8 @@ def screen_instrument(
         chart_out = compute_all_chart_patterns(df)
         if chart_out:
             signals.update(chart_out)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("chart_patterns", _e)
     # Batch 252: index rebalance signals (DEC-370). Graceful no-op when
     # data_prefetch/derived/index_rebalance_events.parquet missing.
     try:
@@ -3927,8 +3927,8 @@ def screen_instrument(
         ir_out = compute_index_rebalance_signals(ticker, as_of)
         if ir_out:
             signals.update(ir_out)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("index_rebalance", _e)
     # Batch 253: pairs trading signals (DEC-369). Reads T5b precompute
     # parquet. Graceful no-op when precompute missing (fires 0 trades).
     try:
@@ -3937,8 +3937,8 @@ def screen_instrument(
         pair_out = compute_pair_signals_for_ticker(ticker, as_of, ticker_close)
         if pair_out:
             signals.update(pair_out)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("pairs_trading", _e)
     # Batch 253: news sentiment signals (DEC-411). 7-day window from
     # Polygon news cache (1.05M articles).
     try:
@@ -3946,23 +3946,23 @@ def screen_instrument(
         news_out = compute_news_sentiment_signals(ticker, as_of, lookback_days=7)
         if news_out:
             signals.update(news_out)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("news_sentiment", _e)
     # Batch 254: calendar effects (DEC-368). Universe-wide; lru_cache once
     # per as_of date.
     try:
         cal_out = _cached_calendar_signals(str(as_of))
         if cal_out:
             signals.update(cal_out)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("calendar_effects", _e)
     # Batch 254: cross-asset signals (DEC-369). Universe-wide; lru_cache.
     try:
         xa_out = _cached_cross_asset_signals(str(as_of))
         if xa_out:
             signals.update(xa_out)
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("cross_asset", _e)
     # Batch 255: volume profile signals (60-day VPVR + naked POCs).
     try:
         from backtest.signals.volume_profile import compute_volume_profile, compute_period_pocs
@@ -3977,8 +3977,8 @@ def screen_instrument(
                 signals["naked_poc_nearest_distance_pct"] = min(
                     abs(close - p) / close for p in period_pocs
                 )
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("volume_profile", _e)
     # Batch 220: merge cross-sectional factor ranks from the universe-
     # wide pre-pass. No-op when xs_features is None.
     if xs_features:
@@ -4005,8 +4005,8 @@ def screen_instrument(
             signals.update(monthly)
         if weekly or monthly:
             signals.update(compute_htf_alignment(weekly, monthly))
-    except Exception:
-        pass
+    except Exception as _e:
+        _log_silent_producer_failure("multi_timeframe", _e)
 
     triggered_long  = []
     triggered_short = []
@@ -4240,7 +4240,8 @@ def screen_universe(
     try:
         from backtest.signals.cross_sectional import compute_cross_sectional_features
         xs_features = compute_cross_sectional_features(ohlcv_dict, as_of)
-    except Exception:
+    except Exception as _e:
+        _log_silent_producer_failure("cross_sectional_features", _e)
         xs_features = {}
 
     candidates = []
