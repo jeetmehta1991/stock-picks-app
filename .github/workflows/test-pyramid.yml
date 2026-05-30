@@ -28,10 +28,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
 
       - name: Install dependencies
@@ -42,6 +42,9 @@ jobs:
           pip install pandas-ta --quiet || pip install ta --quiet || true
           # Optional libs that some tests skip on if missing
           pip install freezegun --quiet || true
+          # Batch 483 (2026-05-30): test_property.py imports hypothesis;
+          # without this the catchall tier sees ImportError, not a skip.
+          pip install hypothesis --quiet || true
           # DEC-414/416 statistical methodology (Pass 53 Batch 41) + DEC-210
           # PSR / scipy.stats - required by Batch 49-68 helpers in metrics.py.
           # Previously omitted in CI -> caused test_dec_414/test_dec_416 +
