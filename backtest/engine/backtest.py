@@ -140,6 +140,16 @@ class BacktestEngine:
         # ohlcv_dict is populated) and torn down at end of backtest.
         self.screen_pool_workers  = max(0, int(screen_pool_workers or 0))
         self._screen_pool         = None
+        # Batch 489 (M9 wire-in): strategy-cluster lookup for
+        # correlation-aware effective_strategy_count in _assign_confidence_tier.
+        # Default empty -> back-compat: confidence tier uses raw
+        # strategy_count exactly as pre-Batch-489. To activate, call
+        # `engine.load_strategy_cluster_lookup(<path>)` before run(); the
+        # path points at a JSON written by a prior-run scripts utility (not
+        # yet shipped -- M1 correlation matrix lives in
+        # backtest.results.strategy_correlation; the lookup generator is a
+        # follow-on batch).
+        self._strategy_cluster_lookup: dict[str, int] = {}
         # Batch 394 (2026-05-27) owner-mandated wall-time guard.
         #   warn_run_hours: log WARN once when exceeded (default None=off)
         #   max_run_hours:  hard sys.exit(1) when exceeded; flushes a final
@@ -1525,8 +1535,17 @@ class BacktestEngine:
                                    ticker, as_of, e)
 
                 # Stage 1  -  rule-based preliminary tier
+                # Batch 489 (M9 wire-in): also pass strategy names so
+                # _assign_confidence_tier can use effective_strategy_count
+                # (cluster-collapsed) when self._strategy_cluster_lookup is
+                # populated. Defaults to raw count when lookup is empty.
+                firing_strategy_names = [
+                    s["strategy"] for s in cand["strategies"] if "strategy" in s
+                ]
                 preliminary_tier = self._assign_confidence_tier(
-                    len(cand["strategies"]), sm, macro, sent)
+                    len(cand["strategies"]), sm, macro, sent,
+                    firing_strategies=firing_strategy_names,
+                )
 
                 # Earnings proximity  -  context for agents, not a blocker
                 earn_days = days_to_next_earnings(ticker, as_of)
@@ -2056,7 +2075,8 @@ class BacktestEngine:
             return None
         return {"open": float(future.iloc[0]["open"]), "date": future.index[0].date()}
 
-    def _assign_confidence_tier(self, strategy_count, sm, macro, sent) -> str:
+    def _assign_confidence_tier(self, strategy_count, sm, macro, sent,
+                                  firing_strategies=None) -> str:
         """Stage 1  -  rule-based preliminary tier before agents run.
 
         Batch 263 (Class B confluence, owner-approved 2026-05-20):
@@ -2064,24 +2084,95 @@ class BacktestEngine:
         Post-1A-alpha forensic showed 1165 of 1181 trades got HIGH tier
         because strategy_count >= 3 was too easy. HIGH now requires >=4
         strategies + VERY_HIGH requires >=3 + smart money confluence.
+
+        Batch 489 (M9 wire-in 2026-05-30): when `firing_strategies` list +
+        a populated `self._strategy_cluster_lookup` are both present, use
+        the EFFECTIVE strategy count (number of distinct clusters firing)
+        instead of the raw count. Five strategies that are surface forms
+        of the same underlying pattern count as 1 independent signal, not
+        5 (closes M9 queue item). Back-compat: when lookup is empty
+        (default) OR firing_strategies is None, falls back to raw
+        strategy_count -- preserves pre-Batch-489 behaviour exactly.
         """
+        # M9 wire-in: derive effective count when lookup + names available
+        effective_count = strategy_count
+        if firing_strategies is not None and \
+                getattr(self, "_strategy_cluster_lookup", None):
+            try:
+                from backtest.engine.correlation_aware_count import (
+                    effective_strategy_count,
+                )
+                effective_count = effective_strategy_count(
+                    firing_strategies, self._strategy_cluster_lookup,
+                )
+            except Exception as exc:
+                logger.debug("effective_strategy_count failed: %s; "
+                             "falling back to raw count", exc)
+                effective_count = strategy_count
         sm_sig = sm.get("composite_signal", "none")
         # AVOID  -  strong negative smart money regardless of technical signals
         if sm_sig == "congressional_sell+insider_cluster_sell":
             return "AVOID"
-        if sm_sig == "congressional+insider_cluster" and strategy_count >= 4:
+        if sm_sig == "congressional+insider_cluster" and effective_count >= 4:
             return "EXCEPTIONAL"
-        if sm_sig == "congressional_or_insider" and strategy_count >= 3:
+        if sm_sig == "congressional_or_insider" and effective_count >= 3:
             return "VERY_HIGH"
-        if strategy_count >= 4:                                    # Batch 263: was >= 3
+        if effective_count >= 4:                                    # Batch 263: was >= 3
             return "HIGH"
-        if strategy_count >= 3:                                    # Batch 263: was >= 2
+        if effective_count >= 3:                                    # Batch 263: was >= 2
             return "MEDIUM_HIGH"
-        if strategy_count >= 2:                                    # Batch 263: was sm + count>=1
+        if effective_count >= 2:                                    # Batch 263: was sm + count>=1
             return "MEDIUM"
-        if sm.get("score", 0) >= 2 and strategy_count >= 1:
+        if sm.get("score", 0) >= 2 and effective_count >= 1:
             return "LOW"  # Batch 263: was else; now MEDIUM-LOW floor on smart-money-confluence-only
         return "LOW"
+
+    def load_strategy_cluster_lookup(self, path) -> int:
+        """Batch 489 (M9 wire-in): load a precomputed strategy-cluster
+        lookup JSON to activate effective_strategy_count in
+        _assign_confidence_tier.
+
+        Path must point at a JSON file containing a dict
+        {strategy_name -> cluster_id (int)}. Returns the number of
+        clusters (max cluster_id + 1) after loading.
+
+        Generator (follow-on batch): scripts/build_strategy_clusters.py
+        will read a prior cube trade_log, call M1's
+        `compute_strategy_correlation_matrix` +
+        `build_strategy_cluster_lookup`, and dump the result here. Until
+        that ships, the lookup stays empty + the engine falls back to
+        raw strategy_count.
+        """
+        import json
+        from pathlib import Path as _P
+        p = _P(path)
+        if not p.exists():
+            logger.warning(
+                "load_strategy_cluster_lookup: %s does not exist; "
+                "cluster lookup remains empty (engine uses raw strategy_count)",
+                path,
+            )
+            return 0
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                raise ValueError(f"expected dict, got {type(data).__name__}")
+            self._strategy_cluster_lookup = {str(k): int(v)
+                                              for k, v in data.items()}
+            n_clusters = (max(self._strategy_cluster_lookup.values()) + 1
+                          if self._strategy_cluster_lookup else 0)
+            logger.info(
+                "Batch 489 M9: loaded strategy_cluster_lookup from %s -- "
+                "%d strategies across %d clusters", path,
+                len(self._strategy_cluster_lookup), n_clusters,
+            )
+            return n_clusters
+        except Exception as exc:
+            logger.warning(
+                "load_strategy_cluster_lookup failed for %s: %s; "
+                "cluster lookup remains empty", path, exc,
+            )
+            return 0
 
     def _adjust_tier_by_agent(self, preliminary_tier: str, agent_score: int) -> str:
         """Stage 2  -  agent score adjusts tier +/-1 level based on quality assessment."""

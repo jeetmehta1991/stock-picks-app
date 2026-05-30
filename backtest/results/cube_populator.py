@@ -179,7 +179,14 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
     # wide correction). Use simplistic two-tail normal approx.
     from scipy.stats import t as t_dist
     raw_p = float(2 * (1 - t_dist.cdf(abs(t_stat), df=max(1, n - 1)))) if std > 0 else 1.0
-    return {
+
+    # Batch 489 (M11 wire-in): pnl-concentration HHI + top1/top5 shares.
+    # Surfaces cells whose Sharpe is driven by 1-2 outsized trades vs cells
+    # with broadly distributed wins. Safe-additive: pure function of pnls.
+    from backtest.results.pnl_concentration import compute_pnl_concentration
+    conc = compute_pnl_concentration(pnls)
+
+    out = {
         "n_trades":       n,
         "win_rate":       round(win_rate, 4),
         "expected_value": round(expected_value, 4),
@@ -195,7 +202,27 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
         "rr_ratio":       round(rr_ratio, 4),
         "skew":           round(skew_val, 4),
         "kurtosis":       round(kurt_val, 4),
+        # Batch 489 M11 wire-in additions:
+        "pnl_concentration_top1_pct": conc["pnl_concentration_top1_pct"],
+        "pnl_concentration_top5_pct": conc["pnl_concentration_top5_pct"],
+        "pnl_hhi":                    conc["pnl_hhi"],
     }
+
+    # Batch 489 (M2 wire-in): capacity flags when trade_log carries
+    # adv_at_entry + position_dollars columns. Most trade logs in this
+    # repo carry these (writer.py emits them); fall back gracefully when
+    # missing so older trade_log artefacts still consume cleanly.
+    if "adv_at_entry" in trades.columns and "position_dollars" in trades.columns:
+        from backtest.results.capacity_analysis import compute_cell_capacity
+        cap = compute_cell_capacity(
+            trades["adv_at_entry"].astype(float).values,
+            trades["position_dollars"].astype(float).values,
+        )
+        out["median_size_pct_of_adv"]  = cap["median_size_pct_of_adv"]
+        out["max_size_pct_of_adv"]     = cap["max_size_pct_of_adv"]
+        out["capacity_concern_flag"]   = bool(cap["capacity_concern_flag"])
+
+    return out
 
 
 def evaluate_cell_criteria(metrics: dict, regime: str) -> dict:
