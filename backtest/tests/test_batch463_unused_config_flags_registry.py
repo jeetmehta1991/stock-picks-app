@@ -66,32 +66,10 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
     "BURST_DAY_STRESS_START_YEAR":    ("a", "DEC-082 stress window start -- writer should slice"),
     "SECTOR_PASSING_CRITERIA":        ("a", "DEC-153 per-sector gates -- metrics.py should apply"),
 
-    # --- b: delete (truly orphaned; non-actionable) ---
-    "FORK_FIRST_PRINCIPLE_NOTE":      ("b", "CLAUDE.md text duplicated as a config string; never read"),
-    "CASH_MANAGEMENT_NOTE":           ("b", "Free-form note duplicating a comment; not a flag"),
-    "HOLDOUT_FINAL_TEST_PERIOD_NOTE": ("b", "Note duplicating a CLAUDE.md sentence"),
-    "BATCH_64_DEFERRED_REMAINS_DEFERRED": ("b", "One-time decision record; lives in AUDIT.md"),
-    "BATCH_64_MASS_RESOLUTION_DATE":  ("b", "One-time decision record"),
-    "BATCH_64_MASS_RESOLUTION_NOTE":  ("b", "One-time decision record"),
-    "FINNHUB_DEPRECATED":             ("b", "Boolean asserting deprecation; not consumed"),
-    "DEC_067_PHASE_B_EXIT_METHODS":   ("b", "List duplicating EXIT_STRATEGIES registry; not consumed"),
-    "DEC_075_IMPLEMENTED_VIA":        ("b", "Documentation marker for a DEC; not a runtime config"),
-    "DEC_422_CUBE_PHASE_STATUS":      ("b", "Status string; not a runtime gate"),
-    "DEC_422_PARENT_NOTE":            ("b", "Note duplicating CLAUDE.md text"),
-    "DEC_427_HEATMAP_DIMENSIONS_PER_PAIR": ("b", "Heatmap config never consumed by dashboard"),
-    "DEC_427_OUTPUT_FORMAT":          ("b", "Format documentation; not a flag"),
-    "DEC_501_SUPERSEDED_BY":          ("b", "Supersession marker; lives in AUDIT_INDEX"),
-    "DEC_506_CORRECTS":               ("b", "Correction marker"),
-    "DEC_506_SUPERSEDES":             ("b", "Supersession marker"),
-    "ADVERSARIAL_AUDIT_ARCHIVE_PATHS": ("b", "Path list documenting archived files; not consumed"),
-    "WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE": ("b", "Lesson reference; not a flag"),
-    "WIKIPEDIA_PAGEVIEWS_REST_URL":   ("b", "URL pre-Sprint-5 plan; never wired"),
-    "SMOKE_TEST_INSUFFICIENT_SAMPLE_LABEL": ("b", "Label string; not consumed by smoke tests"),
-    "INTERLISTED_PREFERRED_CANADIAN_BANKS": ("b", "Stage 4 specific list; not Stage 2 relevant"),
-    "CONVERSION":                     ("b", "Single-word generic constant; unclear purpose"),
-    "DASHBOARD_1_FEATURES":           ("b", "Dashboard catalog; supplanted by dashboard_stage_2 data.js"),
-    "DASHBOARD_1_FRAMEWORK":          ("b", "Dashboard catalog; supplanted"),
-    "DASHBOARD_1_PATH":               ("b", "Dashboard catalog; supplanted"),
+    # --- b: delete (truly orphaned; pre-approved autonomous deletes) ---
+    # Batch 468 (2026-05-29): all 25 (b) "delete" entries removed from
+    # backtest/config.py per owner pre-approval. Registry's b-bucket is
+    # now empty by design.
 
     # --- c: defer (intentionally unused in Stage 2; Phase 1B+ / Stage 4) ---
     "EMAIL_DAILY_SUMMARY_ENABLED":    ("c", "Stage 4 email gateway -- defer until Stage 4 starts"),

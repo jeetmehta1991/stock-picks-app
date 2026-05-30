@@ -1149,7 +1149,32 @@ def compute_all_signals(df: pd.DataFrame) -> dict:
     signals.update(compute_volume(df))
     signals.update(compute_candles(df))
     signals.update(compute_break_retest_signals(df))  # BUG-111
+    signals.update(compute_simple_returns(df))        # Batch 467 P10
     return {k: v for k, v in signals.items() if v is not None}
+
+
+def compute_simple_returns(df: pd.DataFrame) -> dict:
+    """Batch 467 (P10): simple percent-change returns over 5 / 10 / 20
+    trading-day lookbacks. Returns dict with `pct_change_5d`,
+    `pct_change_10d`, `pct_change_20d` as floats in fractional units
+    (0.10 = +10 percent). Returns {} when history is too short.
+
+    These are generic momentum signals used by news-reversal strategies
+    (e.g. `pct_change_5d > 0.10` to flag overreaction after positive
+    news) and any future strategy that needs short-horizon return
+    context without recomputing.
+    """
+    if df is None or df.empty or len(df) < 21:
+        return {}
+    close = df["close"].astype(float)
+    last = float(close.iloc[-1])
+    out: dict = {}
+    for lb in (5, 10, 20):
+        if len(close) > lb:
+            prev = float(close.iloc[-(lb + 1)])
+            if prev > 0:
+                out[f"pct_change_{lb}d"] = round((last - prev) / prev, 6)
+    return out
 
 
 def compute_macro_overlays(

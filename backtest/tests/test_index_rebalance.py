@@ -36,9 +36,18 @@ def _mock_events_df():
 
 
 def test_load_events_missing_returns_empty():
-    """Graceful no-op when prefetch file missing."""
+    """Graceful no-op when prefetch file missing.
+
+    Batch 479 (2026-05-29): also reset the module-level `_CACHED_EVENTS`
+    singleton. Without this reset, earlier tests in the pyramid that
+    called `_load_events()` against the real parquet populate the cache
+    with 357 rows, and `_load_events` returns the cache without
+    re-checking `_EVENTS_PATH`. This caused a local-only failure that
+    did not surface in isolation (test pollution).
+    """
     with patch("backtest.signals.index_rebalance._EVENTS_PATH",
-                Path("/nonexistent/index_rebalance_events.parquet")):
+                Path("/nonexistent/index_rebalance_events.parquet")), \
+         patch("backtest.signals.index_rebalance._CACHED_EVENTS", None):
         df = _load_events()
         assert df.empty
         # Schema preserved

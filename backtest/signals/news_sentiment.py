@@ -199,13 +199,81 @@ def compute_news_sentiment_signals(
     cur_avg, cur_n, n_pos, n_neg, uses_polygon = _score_window(cur)
     prior_avg, prior_n, _p_pos, _p_neg, _p_polygon = _score_window(prior)
 
+    # Batch 467 (P10): add fixed-window 5d / 30d sentiment + 5d volume z-score
+    # for strat_news_momentum_long + strat_news_reversal_short. Independent
+    # of `lookback_days` so the same producer feeds both shift-detector
+    # strategies (lookback-driven) and momentum/reversal strategies
+    # (fixed-window). Tetlock 2007 / Da-Engelberg-Gao 2011 use ~5d windows;
+    # 30d baseline is the canonical news-volume baseline window.
+    five_start = as_of - timedelta(days=5)
+    thirty_start = as_of - timedelta(days=30)
+    five_d = df[(df["published_date"] >= five_start)
+                & (df["published_date"] <= as_of)]
+    thirty_d = df[(df["published_date"] >= thirty_start)
+                  & (df["published_date"] <= as_of)]
+
+    # Recency-weighted mean within 5d window: weight = 1 - age/5 (linear).
+    # Equivalent to volume-weighted with weight ~ recency since multiple
+    # articles per day count as multiple recent-bucket observations.
+    def _recency_weighted_mean(sub: pd.DataFrame) -> float:
+        if sub.empty:
+            return 0.0
+        s_scores = []
+        weights = []
+        for _, row in sub.iterrows():
+            sc, _ = _score_article(row)
+            age = (as_of - row["published_date"]).days
+            w = max(0.0, 1.0 - (age / 5.0))
+            if w <= 0:
+                continue
+            s_scores.append(sc)
+            weights.append(w)
+        if not weights:
+            return 0.0
+        total_w = sum(weights)
+        return sum(s * w for s, w in zip(s_scores, weights)) / total_w \
+            if total_w > 0 else 0.0
+
+    sentiment_5d = _recency_weighted_mean(five_d)
+    avg_30d, _n30, _, _, _ = _score_window(thirty_d)
+
+    # Volume z-score: count_5d vs trailing 30-day daily-count distribution
+    # (exclude the last 5 days from baseline so the z-score is "5d count
+    # relative to its own prior 25 days"). Cohen-Frazzini-Malloy news-
+    # volume papers use a similar normalisation.
+    baseline_end = as_of - timedelta(days=5)
+    baseline_start = as_of - timedelta(days=30)
+    baseline = df[(df["published_date"] >= baseline_start)
+                  & (df["published_date"] < baseline_end)]
+    count_5d = int(len(five_d))
+    # Per-day counts in baseline:
+    if baseline.empty:
+        vol_zscore_5d = 0.0
+    else:
+        daily = baseline.groupby("published_date").size()
+        # Reindex to fill missing days as 0:
+        full_idx = pd.date_range(baseline_start, baseline_end - timedelta(days=1),
+                                  freq="D").date
+        daily = daily.reindex(full_idx, fill_value=0)
+        mu = float(daily.mean())
+        sd = float(daily.std(ddof=1)) if len(daily) > 1 else 0.0
+        # Compare count_5d (5-day total) to expected 5 * mu with std
+        # sqrt(5)*sd (variance of independent daily counts).
+        expected = 5.0 * mu
+        sd_5 = (5 ** 0.5) * sd
+        vol_zscore_5d = ((count_5d - expected) / sd_5) if sd_5 > 0 else 0.0
+
     if cur_n == 0:
         return {"news_count_7d": 0, "news_article_count": 0,
                 "news_sentiment_score": 0.0, "news_sentiment_mean": 0.0,
                 "news_bullish_pct": 0.0, "news_bearish_pct": 0.0,
                 "news_sentiment_shift": 0.0,
                 "news_prior_article_count": int(prior_n),
-                "news_uses_polygon_score": False}
+                "news_uses_polygon_score": False,
+                "news_sentiment_5d": round(float(sentiment_5d), 4),
+                "news_sentiment_30d": round(float(avg_30d), 4),
+                "news_volume_zscore_5d": round(float(vol_zscore_5d), 4),
+                "news_count_5d": count_5d}
 
     # Shift only meaningful when prior window has articles to compare against.
     shift = (cur_avg - prior_avg) if prior_n > 0 else 0.0
@@ -221,4 +289,9 @@ def compute_news_sentiment_signals(
         "news_sentiment_shift":      round(float(shift), 4),
         "news_prior_article_count":  int(prior_n),
         "news_uses_polygon_score":   bool(uses_polygon),
+        # Batch 467 (P10) additions
+        "news_sentiment_5d":         round(float(sentiment_5d), 4),
+        "news_sentiment_30d":        round(float(avg_30d), 4),
+        "news_volume_zscore_5d":     round(float(vol_zscore_5d), 4),
+        "news_count_5d":             count_5d,
     }

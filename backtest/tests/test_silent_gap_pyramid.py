@@ -1627,9 +1627,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   181 after Batch 337 (+3 classification_change + 3 persistence)
     #   184 after Batch 338 (+3 persistence; Wave 3 COMPLETE 30/30)
     #   186 after Batch 344 (+2 true multi-quarter persistence; 333b consumer)
-    assert len(ALL_STRATEGIES) == 186, (
-        f"BUG-111 + Wave 3 + 333b: ALL_STRATEGIES count must be 186 "
-        f"after Batches 329-344, got {len(ALL_STRATEGIES)}"
+    #   188 after Batch 467 P10 (+2 news_momentum_long + news_reversal_short)
+    assert len(ALL_STRATEGIES) == 188, (
+        f"BUG-111 + Wave 3 + 333b + P10: ALL_STRATEGIES count must be 188 "
+        f"after Batches 329-344 + 467, got {len(ALL_STRATEGIES)}"
     )
 
 

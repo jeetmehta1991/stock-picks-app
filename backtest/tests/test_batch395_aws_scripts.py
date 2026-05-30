@@ -139,6 +139,11 @@ def test_launch_dry_run_does_not_call_aws():
         pytest.skip("AWS CLI not installed in this test env")
     if r.returncode != 0:
         pytest.skip("AWS creds not configured in this environment")
+    # Batch 482 (2026-05-29): bumped 60s -> 180s. Under xdist parallel load
+    # the subprocess can be CPU-starved and exceed 60s; the script itself
+    # is fast (~5s) but contention varies. 180s gives safe headroom; CI
+    # runners are typically less loaded but the limit only triggers when
+    # something is actually wrong with the script.
     r = subprocess.run(
         [sys.executable, str(SCRIPTS["launch"]),
          "--bucket", "test-bucket-no-real",
@@ -146,7 +151,7 @@ def test_launch_dry_run_does_not_call_aws():
          "--ami-id", "ami-0c80e2b6ccb9ad6d1",
          "--batches", "1",
          "--dry-run"],
-        capture_output=True, text=True, timeout=60,
+        capture_output=True, text=True, timeout=180,
     )
     assert "DRY-RUN" in r.stdout or r.returncode != 0
 

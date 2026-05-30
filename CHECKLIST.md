@@ -1497,3 +1497,41 @@ State compliance visibly: "Checklist: ✅ [each item]"
     Without all three cells filled, the queue item stays PENDING / IN_PROGRESS, not RESOLVED. RESOLVED with one cell missing is a #100 violation.
 
     **Joint:** CHECKLIST #69 (full 13-tier pyramid mandatory), CHECKLIST #93 (CI verification after push), CHECKLIST #94 (queue maintenance), CHECKLIST #95 (codify findings), CHECKLIST #98 (prefetch-consumer pair), CHECKLIST #99 (schema verification), `feedback_wired_means_engine_consumed.md`, L164 / L167 / L168 (lessons-must-propagate family).
+
+101. **HARD RULE — No idling while a pyramid (or any blocking long-running task) runs if there are active items in the queue. Start the next queue item / bundle immediately on the working tree; reschedule the pyramid only AFTER all new edits land, never before.** (Owner directive 2026-05-29 Batch 470: *"Add in checklist that no idling while pyramid runs if any active items in the queue!"*)
+
+    Past failure pattern: I kicked off a 35-40 min full pyramid and scheduled a sleep-wakeup to fire 25 min later, effectively idling on the work the owner had set me loose on. Even after the prior directive ("CI polling is non-blocking — move to next item and circle back when it completes"), I repeated the pattern by scheduling a wakeup to wait for the pyramid output rather than continuing to the next queue item.
+
+    **Apply when:** any background task is running that doesn't depend on my next decision -- pyramid, CI poll, long bash, AWS run, prefetch job. The trigger is "the running task does not require my input for its next step."
+
+    **How to apply:**
+      a. Check queue: is there a next PENDING / IN_PROGRESS item I can advance?
+      b. If yes: start work on it immediately. Edit files, write tests, draft commit messages on the working tree.
+      c. If the in-flight task's result might invalidate my edits (e.g., a pyramid validating a state that no longer matches the working tree), KILL the in-flight task with TaskStop and re-launch it once all new edits land. Better to re-run a 38-min pyramid once over the full bundle than waste 38 min on a stale state.
+      d. If no queue item is actionable, the answer is "wait for owner" not "sleep through this cycle."
+
+    Explicit anti-pattern: `ScheduleWakeup(delaySeconds=1500)` to wait for a pyramid that the harness already auto-notifies on completion. The wakeup adds zero value and costs an entire cycle of work the queue needs.
+
+    **Joint:** CHECKLIST #93 (CI non-blocking), CHECKLIST #94 (queue maintenance), CHECKLIST #96 (queue display end-of-turn -- the queue is the source of "what to work on next" during pyramid runs), `feedback_queue_cadence_directives.md` (owner-approved bundle/CI/delete cadence).
+
+102. **HARD RULE — CI pyramid is the ground truth; local pyramid is an OPTIONAL pre-push sanity check for risky changes. Results MUST match between local and CI on the same commit.** (Owner directive 2026-05-29 Batch 479: *"yes to both. But the results need to match on local and CI"* in response to the pre-push gate / cycle-time discussion.)
+
+    **Rationale.** Local runs on Windows; CI + AWS production runs on Linux. CI is closer to the deployment target, so it's the source of truth. Running both is OK; relying ONLY on local is not, because local-green ≠ Linux-green when platform-specific code paths exist. Conversely, relying ONLY on CI for routine batches is fine.
+
+    **Cycle-time defaults.**
+      - Safe-additive batches (new producer module / new tests / pure-doc): push to feature branch, let CI verify, merge when green.
+      - Risky batches (count assertions touched, schema changes, engine code mutated, golden snapshots regenerated): run local pyramid first via `pytest backtest/tests/ -n auto` (xdist parallel; installed Batch 479). Then push.
+      - Pre-push local with xdist is also fine as a default for any batch that touches more than one file -- xdist drops the wall-time from ~38min to ~10min.
+
+    **Results-matching invariant (NON-NEGOTIABLE).**
+      a. Same commit SHA must produce IDENTICAL `passed / failed / skipped / xfailed` counts on local and CI. If they diverge, the divergence is a bug -- platform-specific code path, test pollution from process state, ordering-sensitive test, dependency-version drift -- and must be fixed BEFORE the batch ships.
+      b. Tests that are intentionally environment-dependent must be marked `@pytest.mark.linux_only` or `@pytest.mark.windows_only` so the local/CI delta is explicit.
+      c. Test pollution (mutable module globals, lru_cache, monkeypatch that doesn't clear cache) is the most common cause of "passes in isolation, fails in suite, passes on CI" patterns. Fix the test (clear the global / reset the cache) in the same batch that surfaces the divergence; do not paper over with re-ordering.
+
+    **Apply when:** every batch ships. Before declaring "pyramid green," report which runner produced the result (local or CI) + the counts.
+
+    **How to enforce:**
+      - After each push, the GitHub check-runs API result becomes the validated state. Quote its `completed -> success` line in the commit-followup.
+      - When local + CI diverge: open the divergence as a queue item, fix it, do not ship the batch until parity restored.
+
+    **Joint:** CHECKLIST #69 (full 13-tier pyramid mandatory -- both runners must pass the FULL pyramid, not subsets), CHECKLIST #93 (CI verification after push), CHECKLIST #101 (no idling during pyramid -- doubly important now that CI is the gate), `feedback_pyramid_full_13_tiers_mandatory`.

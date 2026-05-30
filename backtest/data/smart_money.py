@@ -31,6 +31,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -416,24 +417,70 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
             ceo_titles = buys["officerTitle"].fillna("").astype(str)
             ceo_buy = bool(ceo_titles.str.contains(
                 "CEO|Chief Executive", case=False, na=False).any())
+            # Batch 469 (P14): CFO regex -- missing from prior signal.
+            cfo_buy = bool(ceo_titles.str.contains(
+                "CFO|Chief Financial", case=False, na=False).any())
         else:
             ceo_buy = False
+            cfo_buy = False
+        # Batch 469 (P14): director-only buy -- isDirector=True AND
+        # isOfficer=False (Cohen-Malloy-Pomorski 2012 shows director-only
+        # purchases are a distinct signal class from C-suite purchases).
+        director_only_buy = False
+        if (not buys.empty and "isDirector" in buys.columns
+                and "isOfficer" in buys.columns):
+            d = buys["isDirector"].fillna(False).astype(bool)
+            o = buys["isOfficer"].fillna(False).astype(bool)
+            director_only_buy = bool((d & ~o).any())
+        # Batch 469 (P14): large-dollar-buy -- PricePerShare * Shares > $1M.
+        # Captures conviction independent of role; complements CEO/CFO regex.
+        large_dollar_buy = False
+        if (not buys.empty and "PricePerShare" in buys.columns
+                and "Shares" in buys.columns):
+            pps = pd.to_numeric(buys["PricePerShare"], errors="coerce").fillna(0)
+            shrs = pd.to_numeric(buys["Shares"], errors="coerce").fillna(0)
+            dollars = (pps * shrs).abs()
+            large_dollar_buy = bool((dollars > 1_000_000).any())
+        # Batch 469 (P14): concentrated-sell -- sold-fraction
+        # Shares / SharesOwnedFollowing > 50%. Captures liquidation events
+        # vs. routine diversification trims.
+        concentrated_sell = False
+        if (not sells.empty and "Shares" in sells.columns
+                and "SharesOwnedFollowing" in sells.columns):
+            sold_s = pd.to_numeric(sells["Shares"], errors="coerce").fillna(0).abs()
+            holding = pd.to_numeric(
+                sells["SharesOwnedFollowing"], errors="coerce").fillna(0).abs()
+            # Total holdings BEFORE the sale = remaining + sold.
+            total_before = holding + sold_s
+            with np.errstate(divide="ignore", invalid="ignore"):
+                frac = sold_s.where(total_before > 0, 0) / total_before.where(
+                    total_before > 0, 1)
+            concentrated_sell = bool((frac > 0.50).any())
         # Cluster buy: 3+ unique insider names purchasing
         cluster_buy = buys["Name"].nunique() >= 3 if not buys.empty else False
         # Cluster sell: 3+ unique insider names selling
         cluster_sell = sells["Name"].nunique() >= 3 if not sells.empty else False
         # Composite signal
         signal = "none"
-        if cluster_sell:
-            signal = "cluster_sell"
+        if cluster_sell or concentrated_sell:
+            signal = "cluster_sell" if cluster_sell else "concentrated_sell"
         elif ceo_buy and cluster_buy:
             signal = "strong_buy"
-        elif ceo_buy or cluster_buy:
+        elif ceo_buy or cfo_buy or large_dollar_buy or cluster_buy:
             signal = "buy"
-        elif len(buys) >= 1:
+        elif director_only_buy or len(buys) >= 1:
             signal = "weak_buy"
-        return {"signal": signal, "buy_count": len(buys), "sell_count": len(sells),
-                "ceo_buy": ceo_buy, "cluster_buy": cluster_buy}
+        return {
+            "signal":             signal,
+            "buy_count":          len(buys),
+            "sell_count":         len(sells),
+            "ceo_buy":            ceo_buy,
+            "cfo_buy":            cfo_buy,
+            "director_only_buy":  director_only_buy,
+            "large_dollar_buy":   large_dollar_buy,
+            "concentrated_sell":  concentrated_sell,
+            "cluster_buy":        cluster_buy,
+        }
     except Exception as exc:
         logger.debug("insider_signal(%s): %s", ticker, exc)
         return {"signal": "none", "buy_count": 0, "sell_count": 0}

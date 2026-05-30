@@ -139,6 +139,21 @@ jobs:
           python -m pytest backtest/tests/test_silent_gap_pyramid.py -q --tb=short
         continue-on-error: false
 
+      - name: Tier 12 — Catch-all (CHECKLIST #102 results-match invariant)
+        # Batch 481 (2026-05-29 owner directive 2026-05-29): the tier-by-
+        # tier CI runs above cover the named files but miss new batch tests
+        # added since the workflow was last edited. This catch-all runs
+        # everything under backtest/tests/ to guarantee local and CI
+        # produce IDENTICAL pass/fail/skip counts on the same commit
+        # (CHECKLIST #102). Uses pytest-xdist `-n auto` for parallel
+        # execution to keep wall time bounded (~10-15 min on a 4-core
+        # runner). Tests already run in earlier tiers will run a second
+        # time but their results are deterministic, so no false positives.
+        run: |
+          pip install pytest-xdist --quiet
+          python -m pytest backtest/tests/ -n auto -q --tb=short
+        continue-on-error: false
+
       - name: Performance / load (G3) — informational; cache may be empty in CI
         run: |
           python -m pytest backtest/tests/test_performance_load.py -q --tb=short || echo "skipped (likely no cache in CI)"

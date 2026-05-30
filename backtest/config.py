@@ -421,12 +421,6 @@ POSITION_SIZE_MULT = {
 # Only in bull market (VIX < 20, SPY above 200 EMA)
 # Bear market: exit only, no conversion
 # -----------------------------------------------------------------------------
-CONVERSION = {
-    "enabled_regimes": ["bull"],          # only convert in bull market
-    "requires_long_signal": True,         # long signal must be firing at conversion point
-    "flag_as_conversion_pair": True,      # both trades flagged in trade log
-}
-
 # -----------------------------------------------------------------------------
 # PASSING CRITERIA  -  all 10 metrics, strategy must pass ALL to advance
 # -----------------------------------------------------------------------------
@@ -760,15 +754,6 @@ CROSS_ASSET_STRATEGY_TICKERS = ("TLT", "GLD", "UUP", "USO")
 # rebalance trigger when idle cash > threshold.
 CASH_MANAGEMENT_TICKER = "SGOV"
 CASH_MANAGEMENT_TRIGGER_PCT = 0.15  # >15% idle cash triggers SGOV rebalance hint
-CASH_MANAGEMENT_NOTE = (
-    "Idle cash above CASH_MANAGEMENT_TRIGGER_PCT routes to SGOV (T-bills) "
-    "for yield; manual rebalance during Stage 2."
-)
-
-# DEC-174 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
-# (owner-approved Path C 20-DEC bundle). Strategy classification by trigger
-# type per Pass 52 turn 119 spec. Enables filtering/aggregation by trigger
-# family in dashboards + DEC-422 cube dim.
 STRATEGY_TRIGGER_TYPES = ("catalyst", "technical", "stat_arb")
 
 # DEC-213 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
@@ -808,13 +793,6 @@ TICKER_LIFECYCLE_EVENT_TYPES = (
 # AND TSX volume >= 100K shares/day; US-NYSE otherwise.
 INTERLISTED_ROUTING_TRADE_SIZE_THRESHOLD_USD = 50_000
 INTERLISTED_ROUTING_TSX_MIN_ADV_SHARES = 100_000
-INTERLISTED_PREFERRED_CANADIAN_BANKS = ("TD", "RY", "BNS", "ENB", "CNQ", "SU")
-
-# DEC-254 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
-# (owner-approved Path C 20-DEC bundle). ETF substitution table for
-# index-strategy CAD-funded execution per Pass 52 turn 91 spec.
-# Default unhedged per medium-high risk profile (DEC-090 owner-accepts).
-_ETF_TSX_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 ETF_TSX_SUBSTITUTION = {
     "SPY": "XUU.TO",   # iShares Core S&P 500 (CAD-unhedged)
     "QQQ": "XQQ.TO",   # iShares NASDAQ-100 (CAD-unhedged)
@@ -834,12 +812,6 @@ BURST_DAY_STRESS_START_YEAR = 2018
 # Smoke test minimum sample = n >= 30 per cell (matches DEC-426).
 _SMOKE_TEST_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 SMOKE_TEST_MIN_TRADES_PER_CELL = 30
-SMOKE_TEST_INSUFFICIENT_SAMPLE_LABEL = "INSUFFICIENT_SAMPLE"
-
-# DEC-290 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
-# (owner-approved Path C 20-DEC bundle). Dropped strategy re-evaluation
-# cadence per Pass 52 turn 56 spec: QUARTERLY (3 months) per strategy
-# decay risk DEC-249/250. Originally 6 months (recommended), tightened to 3.
 DROPPED_STRATEGY_REEVAL_DAYS = 90
 
 # DEC-349 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
@@ -1062,18 +1034,6 @@ EMAIL_APPROVAL_GATEWAY_DISABLED = True  # explicit per DEC-033
 # DEC-045 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
 # (owner-approved Path C 20-DEC bundle). Fork-first principle from CLAUDE.md
 # already documented. This codifies the prefer-fork-over-custom decision tree.
-FORK_FIRST_PRINCIPLE_NOTE = (
-    "Default to forking battle-tested libraries unless integration cost > "
-    "rebuild cost OR requirement is genuinely novel to this project. Custom "
-    "code reserved for what's UNIQUE (signal computation, agent prompts, "
-    "risk context, earnings_tolerant logic, PIT semantics)."
-)
-
-# DEC-125 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
-# (owner-approved Path C 20-DEC bundle). Form 144 prefetch (proposed insider
-# sales -- leading indicator vs Form 4 actual sales). Sprint 4 scope; joint
-# DEC-450 Quiver paid endpoints (if Form 144 endpoint available; else SEC
-# EDGAR scrape). This constant marks the deferred-prefetch flag.
 FORM_144_PREFETCH_ENABLED = False  # Sprint 4 activation
 FORM_144_SOURCE_PRIORITY = ("quiver_paid", "sec_edgar")
 
@@ -1129,17 +1089,7 @@ POLYGON_STOCKS_STARTER_MONTHLY_USD = 29
 # must include archive comparison (CHECKLIST #63). This constant codifies
 # the audit-must-include-archives invariant.
 ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON = True
-ADVERSARIAL_AUDIT_ARCHIVE_PATHS = (
-    "archive/", "PROJECT_PLAN_ARCHIVE.md", "AUDIT_INDEX_ARCHIVE.md",
-)
-
-# DEC-440 / DEC-453 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61
-# 2026-05-11 (owner-approved Path C 20-DEC bundle). Alpha Vantage replaced
-# by Polygon (DEC-440); Finnhub fully deprecated (DEC-453). DEC-606 already
-# guards finnhub.financials_reported path. These flags surface the broader
-# deprecation policy for programmatic checks.
 ALPHA_VANTAGE_DEPRECATED = True
-FINNHUB_DEPRECATED = True
 CANONICAL_NEWS_SOURCE = "polygon"  # DEC-440
 CANONICAL_FUNDAMENTALS_SOURCES = ("polygon_financials", "sec_xbrl")  # DEC-606
 
@@ -1301,12 +1251,6 @@ CI_REGRESSION_BEHAVIOR_ASSERTIONS = {
 # implementation lives in DEC-435 (Batch 49) -- _aep_pct_metric helper in
 # metrics.py. This constant codifies the cross-reference so future audits
 # don't re-open the parent (DEC-075) when child (DEC-435) is RESOLVED-IMPLEMENTED.
-DEC_075_IMPLEMENTED_VIA = "DEC-435"
-
-# DEC-184 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
-# (owner-approved Path C 23-DEC close-out). Parallel backtest execution
-# for Stage 1 baseline -- worker count + ProcessPool preference per
-# DEC-329 multi-process safety (Batch 60).
 PARALLEL_BACKTEST_WORKERS_DEFAULT = 4
 PARALLEL_BACKTEST_EXECUTOR = "ProcessPoolExecutor"  # not ThreadPool (GIL+globals)
 
@@ -1322,16 +1266,6 @@ AB_TEST_REGISTRY_SCHEMA = (
 # DEC-422 Phase 1/2/4/5/7 status -- DEC-425/426/428/429/431 codified as
 # phase-status constants. Phases 3 + 6 already RESOLVED upstream. Full
 # implementation deferred to Sprint 8+ cube build-out.
-DEC_422_CUBE_PHASE_STATUS = {
-    "phase_1_dimensional_slicing":      "SPEC_READY",  # DEC-425
-    "phase_2_per_cell_statistical":     "SPEC_READY",  # DEC-426
-    "phase_3_top_20_pct_filter":        "RESOLVED",
-    "phase_4_combined_3d_analysis":     "SPEC_READY",  # DEC-428
-    "phase_5_decision_lookup_builder":  "SPEC_READY",  # DEC-429
-    "phase_6_visualization":            "RESOLVED",
-    "phase_7_validation_regression":    "SPEC_READY",  # DEC-431
-}
-_DEC_422_CUBE_PHASES_DEFERRED_TAG_ANCHOR = None  # spacer: breaks deferred-tier joint-tag adjacency to the IMPLEMENTED-tier sibling wire below; see joint-tag annotation index at end of file
 DEC_422_TOP_PCT_FILTER = 0.20  # top-20% strategies for Phase 4 combined analysis
 DEC_422_FIVE_GATE_VALIDITY = {
     "min_trades_per_cell": 30,
@@ -1345,19 +1279,6 @@ DEC_422_FIVE_GATE_VALIDITY = {
 # (owner-approved Path C 23-DEC close-out). DEC-067 Phase B 6 new simple
 # exit methods. Skeleton specs; full implementation in exit_strategies.py
 # deferred to Sprint 7+ exit-roster expansion.
-DEC_067_PHASE_B_EXIT_METHODS = {
-    "time_stop":              {"trigger": "fixed_holding_period_days",  "default_days": 30},
-    "profit_target_2r":       {"trigger": "+2*initial_risk",            "scope": "exit_all"},
-    "profit_target_3r":       {"trigger": "+3*initial_risk",            "scope": "exit_all"},
-    "scale_out_partial_50pct": {"trigger": "+1.5*initial_risk",         "scope": "exit_50pct"},
-    "swing_high_low_break":   {"trigger": "close_breaks_n_bar_swing",   "n_bars": 5},
-    "ema_trail_20":           {"trigger": "close_below_20ema",          "scope": "exit_all"},
-}
-
-# DEC-441 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
-# (owner-approved Path C 23-DEC close-out). Polygon Stocks Starter
-# subscription cross-reference -- already active; cost corrected per
-# DEC-479 (Batch 61) to $29/mo. This constant codifies the live-status.
 POLYGON_STOCKS_STARTER_ACTIVE = True
 POLYGON_STOCKS_STARTER_TIER = "stocks_starter"
 
@@ -1466,45 +1387,6 @@ AAII_EXTENDED_SCHEMA_VERSION = 2  # was 1 (5-col); now 2 (13-col)
 # REST endpoint is structured / non-HTML-scrape / stable / has explicit
 # rate-limit -> qualifies as alt-data signal source.
 WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED = True
-WIKIPEDIA_PAGEVIEWS_REST_URL = (
-    "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/"
-    "en.wikipedia/all-access/all-agents/{ticker_or_company}/daily/{start}/{end}"
-)
-WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE = (
-    "L88 banned Wikipedia HTML scrape as runtime source. REST API "
-    "pageviews endpoint (structured JSON, rate-limited) is explicitly "
-    "authorized as alt-data signal per DEC-593."
-)
-
-# Batch 64 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-11 -- owner
-# directive "Unblock all decisions and resolve them all this turn".
-# Mass-resolution of remaining 134 non-RESOLVED-IMPLEMENTED non-REJECTED
-# audit entries (PARTIAL-SPEC-ONLY + DEFERRED_TO_STAGE_3/4/SPRINT/PHASE_X
-# + BLOCKED_ON_X + PROPOSED + PARTIAL + parsing-artifact statuses).
-#
-# Reframing: "deferred" entries are owner-approved-deferred design decisions
-# (the decision IS resolved; the IMPLEMENTATION is deferred to a later
-# Stage/Sprint/Phase per scope-gate). Status normalization brings the
-# AUDIT_INDEX in line with this distinction. BLOCKED_ON_X entries are
-# unblocked given upstream dependency closure during Batches 49-63.
-# PROPOSED entries are owner-approved via this directive.
-BATCH_64_MASS_RESOLUTION_DATE = "2026-05-11"
-BATCH_64_MASS_RESOLUTION_NOTE = (
-    "Owner directive: Unblock all decisions and resolve them all. "
-    "Status normalized to RESOLVED-IMPLEMENTED; downstream Stage/Sprint/"
-    "Phase implementation continues per per-DEC original scope."
-)
-BATCH_64_DEFERRED_REMAINS_DEFERRED = (
-    "DEFERRED-status decisions resolved as 'owner-approved-deferred design "
-    "decisions'. The DECISION is resolved; the IMPLEMENTATION remains "
-    "scope-gated to Stage 3+ / Stage 4+ / Phase 1B+ / Phase 1C+ / Phase 2 "
-    "/ Sprint 6+ / Sprint 7+ / Sprint 8+ per per-DEC original scope."
-)
-
-# DEC-018 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
-# (owner-approved Path C 10-DEC PARTIAL-SPEC-ONLY closure). Cooldown after
-# stop-out per Pass 52 turn 115 spec (BUG-133): per-ticker 5 trading days
-# post-stop prevents whipsaw re-entry.
 TICKER_STOPOUT_COOLDOWN_DAYS = 5
 
 # DEC-037 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
@@ -1530,13 +1412,6 @@ COLD_START_CI_MAX_MINUTES = 30
 # DEC-152 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
 # Hold-out final test period (never touched during audits) per Pass 53 audit.
 HOLDOUT_FINAL_TEST_PERIOD_START = "2025-01-01"  # never audited; final-validation only
-HOLDOUT_FINAL_TEST_PERIOD_NOTE = (
-    "Hold-out period MUST NOT be referenced during audit/iteration. "
-    "Used only once for final out-of-sample validation pre-Stage-3."
-)
-
-# DEC-177 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
-# Random seed defaults for backtest reproducibility.
 BACKTEST_DEFAULT_SEED = 20260511  # ISO date YYYYMMDD seed
 BACKTEST_SEED_OUTPUT_FIELD = "random_seed"
 
@@ -1670,34 +1545,6 @@ AGENT_AB_NET_LIFT_FORMULA = (
 # DEC-422 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
 # Cube parent decision -- meta-decision umbrella for cube phases.
 # Phase status constants already codified in Batch 63 DEC_422_CUBE_PHASE_STATUS.
-DEC_422_PARENT_NOTE = (
-    "Phase 1B-alpha dimensional space optimization framework. Comprehensive "
-    "discovery system to identify best (strategy, exit, sizing, regime) "
-    "tuples per cube cell. Children: DEC-425 (Phase 1) + DEC-426 (Phase 2) + "
-    "DEC-427 (Phase 3 marginal heatmap) + DEC-428 (Phase 4 3D combined) + "
-    "DEC-429 (Phase 5 lookup table) + DEC-430 (Phase 6 dashboard viz) + "
-    "DEC-431 (Phase 7 validation). All phases SPEC_READY; full impl deferred "
-    "to Sprint 8+ cube build-out."
-)
-
-# DEC-427 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
-# Cube Phase 3 marginal heatmap analysis (Approach A) config.
-DEC_427_HEATMAP_DIMENSIONS_PER_PAIR = 2  # 2D slicing for statistical validity
-DEC_427_OUTPUT_FORMAT = "marginal_best_exit_per_strategy_per_dimension"
-
-# DEC-430 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
-# Cube Phase 6 Dashboard 1 visualization config.
-DASHBOARD_1_FRAMEWORK = "streamlit"
-DASHBOARD_1_PATH = "dashboard_1_cube_explorer/"
-DASHBOARD_1_FEATURES = (
-    "pick_2_dims_heatmap",
-    "pick_3_dims_3d_scatter",
-    "per_cell_drill_down",
-    "filter_strategy_subset",
-)
-
-# DEC-437 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
-# Property-based testing via hypothesis library (Layer 3 catch defense).
 PROPERTY_BASED_TESTING_LIB = "hypothesis"
 PROPERTY_BASED_TESTING_DEFENSE_LAYER = 3
 PROPERTY_BASED_TESTING_TARGETS = (
@@ -1773,11 +1620,6 @@ TIER_3_MOMENTUM_TIE_BREAKERS = ("vol_ascending", "adv_descending")
 # Stage 2 per owner directive 2026-05-05). This constant records the
 # original deferral decision for historical context.
 DEC_501_ORIGINAL_DEFERRAL = "Polygon Options NOT upgraded (Q1=C 2026-05-05)"
-DEC_501_SUPERSEDED_BY = "DEC-506"
-
-# DEC-502 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
-# Quiver Trader-tier agent-input expansion -- 8 endpoint groups +
-# Apewisdom + pytrends supplement.
 QUIVER_TRADER_TIER_ENDPOINT_GROUPS = (
     "congresstrading",
     "senatortrading",
@@ -1795,9 +1637,6 @@ QUIVER_SUPPLEMENTAL_SOURCES = ("apewisdom", "pytrends")
 # deferral; corrects DEC-468 Sprint-7 timing to Stage 2 now).
 POLYGON_OPTIONS_STAGE_2_IN_SCOPE = True
 ORTEX_SHORT_INTEREST_STAGE_2_IN_SCOPE = True
-DEC_506_SUPERSEDES = ("DEC-501",)
-DEC_506_CORRECTS = ("DEC-468 timing Sprint 7 -> Stage 2",)
-
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

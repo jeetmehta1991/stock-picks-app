@@ -3271,6 +3271,57 @@ def strat_news_sentiment_shift_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+def strat_news_momentum_long(s):
+    """Batch 467 (P10): news-driven breakout. Requires positive 5-day
+    recency-weighted sentiment AND unusual news volume AND a 20-day
+    Donchian breakout. Captures "news-confirmed breakout" entries.
+
+    Source: Tetlock 2007 RFS news-tone return predictability +
+    Da-Engelberg-Gao 2011 RFS news-attention predicts attention-induced
+    returns. Combined with a price-breakout filter to avoid pure
+    sentiment-driven false positives.
+    """
+    fires = (
+        s.get("news_sentiment_5d", 0.0) >= 0.5
+        and s.get("news_volume_zscore_5d", 0.0) >= 1.5
+        and s.get("dc20_breakout_up", False)
+    )
+    sent = s.get("news_sentiment_5d", 0.0)
+    vz   = s.get("news_volume_zscore_5d", 0.0)
+    return _strat(fires, "long", "news_sentiment",
+        ["news_sentiment_5d>=0.5", "news_volume_zscore_5d>=1.5",
+         "dc20_breakout_up"],
+        [f"5d recency-weighted sentiment {sent:.2f} (bullish)",
+         f"News volume z-score {vz:.2f} (unusual coverage)",
+         "Donchian-20 breakout up (price confirms)"])
+
+
+def strat_news_reversal_short(s):
+    """Batch 467 (P10): overreaction fade. Strong positive news + sharp
+    5-day move up => fade the overreaction short. Implements De
+    Bondt-Thaler 1985 overreaction hypothesis adapted to the news cycle.
+
+    Tetlock 2007 shows that news-tone-driven price moves of >10% in
+    short windows tend to partially reverse over the next 5-10 trading
+    days. Threshold (sentiment >= +0.7) is set higher than the momentum
+    strategy to isolate STRONG-positive news days; a more selective
+    short trigger than the momentum-long counterpart.
+    """
+    fires = (
+        s.get("news_sentiment_5d", 0.0) >= 0.7
+        and s.get("pct_change_5d", 0.0) > 0.10
+        and s.get("news_article_count", 0) >= 3
+    )
+    sent = s.get("news_sentiment_5d", 0.0)
+    pct  = s.get("pct_change_5d", 0.0)
+    return _strat(fires, "short", "news_sentiment",
+        ["news_sentiment_5d>=0.7", "pct_change_5d>0.10",
+         "news_article_count>=3"],
+        [f"5d sentiment {sent:.2f} (strongly bullish)",
+         f"Price up {pct*100:.1f} pct in 5d (large positive move)",
+         "Coverage threshold met (>=3 articles)"])
+
+
 # ---------------------------------------------------------------------------
 # Index rebalance (DEC-370 / Batch 251) - 4 strategies, imported from module
 # ---------------------------------------------------------------------------
@@ -3539,9 +3590,11 @@ ALL_STRATEGIES = {
     # Pairs trading (2 - Batch 253 2026-05-20 / DEC-369)
     "pairs_mean_reversion_long":        strat_pairs_mean_reversion_long,
     "pairs_mean_reversion_short":       strat_pairs_mean_reversion_short,
-    # News sentiment (2 - Batch 253 2026-05-20 / DEC-411)
+    # News sentiment (4 - Batch 253 + Batch 467 P10 2026-05-29)
     "news_sentiment_long":              strat_news_sentiment_long,
     "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
+    "news_momentum_long":               strat_news_momentum_long,
+    "news_reversal_short":              strat_news_reversal_short,
     # Calendar effects (4 - Batch 254 2026-05-20 / DEC-368)
     "totm_long":                        strat_totm_long,
     "pre_holiday_long":                 strat_pre_holiday_long,
@@ -3948,6 +4001,47 @@ def screen_instrument(
             signals.update(news_out)
     except Exception as _e:
         _log_silent_producer_failure("news_sentiment", _e)
+    # Batch 471 (P13): Google Trends search-volume signals.
+    try:
+        from backtest.signals.search_volume import compute_search_volume_signals
+        sv_out = compute_search_volume_signals(ticker, as_of)
+        if sv_out:
+            signals.update(sv_out)
+    except Exception as _e:
+        _log_silent_producer_failure("search_volume", _e)
+    # Batch 472 (P11): CFTC COT macro positioning (universe-wide).
+    try:
+        from backtest.signals.cot_positioning import get_all_cot_signals
+        cot_out = get_all_cot_signals(as_of)
+        if cot_out:
+            signals.update(cot_out)
+    except Exception as _e:
+        _log_silent_producer_failure("cot_positioning", _e)
+    # Batch 473 (P16-housetrading): Quiver House-member trading signals.
+    try:
+        from backtest.signals.congressional_alt_data import compute_housetrading_signals
+        ht_out = compute_housetrading_signals(ticker, as_of)
+        if ht_out:
+            signals.update(ht_out)
+    except Exception as _e:
+        _log_silent_producer_failure("housetrading", _e)
+    # Batch 473 (P16-gov_contracts): Quiver federal contract awards.
+    try:
+        from backtest.signals.congressional_alt_data import compute_gov_contracts_signals
+        gc_out = compute_gov_contracts_signals(ticker, as_of)
+        if gc_out:
+            signals.update(gc_out)
+    except Exception as _e:
+        _log_silent_producer_failure("gov_contracts", _e)
+    # Batch 480 (P16-lobbying): Quiver federal lobbying spend (Hill-Kelly-
+    # Lockhart 2014 alpha factor).
+    try:
+        from backtest.signals.congressional_alt_data import compute_lobbying_signals
+        lb_out = compute_lobbying_signals(ticker, as_of)
+        if lb_out:
+            signals.update(lb_out)
+    except Exception as _e:
+        _log_silent_producer_failure("lobbying", _e)
     # Batch 254: calendar effects (DEC-368). Universe-wide; lru_cache once
     # per as_of date.
     try:

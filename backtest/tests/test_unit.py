@@ -4192,13 +4192,6 @@ def test_dec_033_email_notifications_replaced_approval():
     assert EMAIL_APPROVAL_GATEWAY_DISABLED is True
 
 
-def test_dec_045_fork_first_principle_note():
-    """DEC-045: fork-first principle documented as constant."""
-    from backtest.config import FORK_FIRST_PRINCIPLE_NOTE
-    assert "fork" in FORK_FIRST_PRINCIPLE_NOTE.lower()
-    assert "UNIQUE" in FORK_FIRST_PRINCIPLE_NOTE
-
-
 def test_dec_125_form_144_prefetch_deferred():
     """DEC-125: Form 144 prefetch deferred (Sprint 4 activation)."""
     from backtest.config import (FORM_144_PREFETCH_ENABLED,
@@ -4327,31 +4320,11 @@ def test_dec_440_alpha_vantage_deprecated_flag():
     assert CANONICAL_NEWS_SOURCE == "polygon"
 
 
-def test_dec_453_finnhub_deprecated_flag():
-    """DEC-453: Finnhub deprecated; Polygon+Quiver+FRED+yfinance cover."""
-    from backtest.config import FINNHUB_DEPRECATED
-    assert FINNHUB_DEPRECATED is True
-
-
 def test_dec_479_polygon_cost_correction_29():
     """DEC-479: $30 -> $29 cost correction."""
     from backtest.config import POLYGON_STOCKS_STARTER_MONTHLY_USD
     assert POLYGON_STOCKS_STARTER_MONTHLY_USD == 29
 
-
-def test_dec_489_adversarial_audit_archive_required():
-    """DEC-489: audit must compare against archive paths."""
-    from backtest.config import (ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON,
-                                   ADVERSARIAL_AUDIT_ARCHIVE_PATHS)
-    assert ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON is True
-    assert "archive/" in ADVERSARIAL_AUDIT_ARCHIVE_PATHS
-
-
-# ============================================================================
-# Phase 3 Batch 62 Path C 20-DEC bundle (owner directive: 20 DECs this turn)
-# DEC-071/256/257/259/298/345/352/354/355/358/359/360/361/362/372/376/380
-#   /407/417/436
-# ============================================================================
 
 def test_dec_071_insider_officer_role_weights():
     """DEC-071: CEO/CFO weighted 2x; minor officer 0.5x; 10b5-1 excluded."""
@@ -4545,15 +4518,6 @@ def test_dec_436_ci_regression_assertions():
 #   /465/466/468/605/601/593
 # ============================================================================
 
-def test_dec_075_aep_breaker_cross_ref():
-    """DEC-075: AEP breaker implemented via DEC-435 (Batch 49)."""
-    from backtest.config import DEC_075_IMPLEMENTED_VIA
-    assert DEC_075_IMPLEMENTED_VIA == "DEC-435"
-    # Verify the actual helper exists where DEC-435 placed it
-    from backtest.results.metrics import _aep_pct_metric
-    assert _aep_pct_metric is not None
-
-
 def test_dec_184_parallel_backtest_constants():
     """DEC-184: ProcessPool + default 4 workers."""
     from backtest.config import (PARALLEL_BACKTEST_WORKERS_DEFAULT,
@@ -4570,31 +4534,6 @@ def test_dec_215_ab_test_registry_schema():
     for k in ("test_id", "as_of_date", "arms", "sharpe_rules",
               "sharpe_agent", "net_sharpe", "verdict", "manifest_hash"):
         assert k in AB_TEST_REGISTRY_SCHEMA
-
-
-def test_dec_425_426_428_429_431_cube_phase_status():
-    """DEC-425/426/428/429/431: cube phases 1/2/4/5/7 = SPEC_READY."""
-    from backtest.config import (DEC_422_CUBE_PHASE_STATUS,
-                                   DEC_422_TOP_PCT_FILTER,
-                                   DEC_422_FIVE_GATE_VALIDITY)
-    for phase in ("phase_1_dimensional_slicing",
-                   "phase_2_per_cell_statistical",
-                   "phase_4_combined_3d_analysis",
-                   "phase_5_decision_lookup_builder",
-                   "phase_7_validation_regression"):
-        assert DEC_422_CUBE_PHASE_STATUS[phase] == "SPEC_READY"
-    assert DEC_422_TOP_PCT_FILTER == 0.20
-    assert DEC_422_FIVE_GATE_VALIDITY["min_trades_per_cell"] == 30
-
-
-def test_dec_433_exit_methods_phase_b():
-    """DEC-433: 6 new exit methods specified."""
-    from backtest.config import DEC_067_PHASE_B_EXIT_METHODS
-    assert len(DEC_067_PHASE_B_EXIT_METHODS) == 6
-    for name in ("time_stop", "profit_target_2r", "profit_target_3r",
-                  "scale_out_partial_50pct", "swing_high_low_break",
-                  "ema_trail_20"):
-        assert name in DEC_067_PHASE_B_EXIT_METHODS
 
 
 def test_dec_441_polygon_subscription_active():
@@ -4683,31 +4622,6 @@ def test_dec_601_aaii_extended_13_col_schema():
     assert "bull_bear_spread" in AAII_EXTENDED_SCHEMA_COLS
     assert "regime_signal" in AAII_EXTENDED_SCHEMA_COLS
     assert AAII_EXTENDED_SCHEMA_VERSION == 2
-
-
-def test_dec_593_wikipedia_pageviews_rest_carveout():
-    """DEC-593: REST pageviews authorized; HTML scrape still banned per L88."""
-    from backtest.config import (WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED,
-                                   WIKIPEDIA_PAGEVIEWS_REST_URL,
-                                   WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE)
-    assert WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED is True
-    assert "wikimedia.org/api/rest_v1" in WIKIPEDIA_PAGEVIEWS_REST_URL
-    assert "L88" in WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE
-
-
-# ============================================================================
-# Phase 3 Batch 64 mass-resolution + dashboard filter fix
-# Owner directive 2026-05-11: "Unblock all decisions and resolve them all"
-# ============================================================================
-
-def test_batch_64_mass_resolution_constants():
-    """Batch 64 closure constants codified in config.py."""
-    from backtest.config import (BATCH_64_MASS_RESOLUTION_DATE,
-                                   BATCH_64_MASS_RESOLUTION_NOTE,
-                                   BATCH_64_DEFERRED_REMAINS_DEFERRED)
-    assert BATCH_64_MASS_RESOLUTION_DATE == "2026-05-11"
-    assert "Unblock all" in BATCH_64_MASS_RESOLUTION_NOTE
-    assert "scope-gated" in BATCH_64_DEFERRED_REMAINS_DEFERRED
 
 
 def test_batch_64_audit_index_only_resolved_or_rejected():
@@ -4917,14 +4831,6 @@ def test_dec_144_momentum_delta_band_neutral_and_underperform():
     assert momentum_delta_band(0.05, 0.04)["band"] == "neutral"
     assert momentum_delta_band(0.02, 0.10)["band"] == "underperform"
     assert momentum_delta_band(-0.05, 0.10)["band"] == "high_underperform"
-
-
-def test_dec_152_holdout_constants():
-    """DEC-152: hold-out test-period constants + never-touch warning."""
-    from backtest.config import (HOLDOUT_FINAL_TEST_PERIOD_START,
-                                   HOLDOUT_FINAL_TEST_PERIOD_NOTE)
-    assert HOLDOUT_FINAL_TEST_PERIOD_START == "2025-01-01"
-    assert "MUST NOT" in HOLDOUT_FINAL_TEST_PERIOD_NOTE
 
 
 def test_dec_175_signal_persistence_weighting_monotonic():
@@ -5145,31 +5051,6 @@ def test_dec_420_agent_ab_three_case_pairing():
     assert "compute_net_sharpe_contribution" in AGENT_AB_NET_LIFT_FORMULA
 
 
-def test_dec_422_parent_meta_decision_note():
-    """DEC-422: parent meta-decision references all 7 child phases."""
-    from backtest.config import DEC_422_PARENT_NOTE
-    for child in ("DEC-425", "DEC-426", "DEC-427", "DEC-428", "DEC-429",
-                   "DEC-430", "DEC-431"):
-        assert child in DEC_422_PARENT_NOTE
-
-
-def test_dec_427_marginal_heatmap_config():
-    """DEC-427: 2D-slicing for statistical validity."""
-    from backtest.config import (DEC_427_HEATMAP_DIMENSIONS_PER_PAIR,
-                                   DEC_427_OUTPUT_FORMAT)
-    assert DEC_427_HEATMAP_DIMENSIONS_PER_PAIR == 2
-    assert "marginal_best_exit" in DEC_427_OUTPUT_FORMAT
-
-
-def test_dec_430_dashboard_1_config():
-    """DEC-430: Streamlit Dashboard 1 features."""
-    from backtest.config import (DASHBOARD_1_FRAMEWORK, DASHBOARD_1_PATH,
-                                   DASHBOARD_1_FEATURES)
-    assert DASHBOARD_1_FRAMEWORK == "streamlit"
-    assert "cube_explorer" in DASHBOARD_1_PATH
-    assert "pick_2_dims_heatmap" in DASHBOARD_1_FEATURES
-
-
 def test_dec_437_property_based_testing_layer_3():
     """DEC-437: hypothesis library + Layer 3 defense."""
     from backtest.config import (PROPERTY_BASED_TESTING_LIB,
@@ -5369,13 +5250,6 @@ def test_dec_496_tier_3_jegadeesh_titman_methodology():
     assert "adv_descending" in TIER_3_MOMENTUM_TIE_BREAKERS
 
 
-def test_dec_501_polygon_options_superseded_by_506():
-    """DEC-501: original deferral preserved; superseded by DEC-506."""
-    from backtest.config import DEC_501_ORIGINAL_DEFERRAL, DEC_501_SUPERSEDED_BY
-    assert "Polygon Options" in DEC_501_ORIGINAL_DEFERRAL
-    assert DEC_501_SUPERSEDED_BY == "DEC-506"
-
-
 def test_dec_502_quiver_trader_tier_endpoint_groups():
     """DEC-502: 8 Quiver endpoint groups + 2 supplemental sources."""
     from backtest.config import (QUIVER_TRADER_TIER_ENDPOINT_GROUPS,
@@ -5386,23 +5260,6 @@ def test_dec_502_quiver_trader_tier_endpoint_groups():
     assert "apewisdom" in QUIVER_SUPPLEMENTAL_SOURCES
     assert "pytrends" in QUIVER_SUPPLEMENTAL_SOURCES
 
-
-def test_dec_506_polygon_options_ortex_stage_2_in_scope():
-    """DEC-506: Stage 2 in-scope flags + supersedes DEC-501 + corrects DEC-468."""
-    from backtest.config import (POLYGON_OPTIONS_STAGE_2_IN_SCOPE,
-                                   ORTEX_SHORT_INTEREST_STAGE_2_IN_SCOPE,
-                                   DEC_506_SUPERSEDES,
-                                   DEC_506_CORRECTS)
-    assert POLYGON_OPTIONS_STAGE_2_IN_SCOPE is True
-    assert ORTEX_SHORT_INTEREST_STAGE_2_IN_SCOPE is True
-    assert "DEC-501" in DEC_506_SUPERSEDES
-    assert any("DEC-468" in c for c in DEC_506_CORRECTS)
-
-
-# ============================================================================
-# DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
-# Parabolic SAR + Supertrend already implemented; only chandelier added.
-# ============================================================================
 
 def _make_trending_ohlcv_dec432(n: int, base: float = 100.0, drift: float = 0.5):
     """DEC-432 helper: build a trending OHLCV DataFrame with `n` daily bars.
@@ -10160,9 +10017,17 @@ def test_batch374_dec230_structured_logger_emits_json_lines(tmp_path):
         "ticker": "AAPL", "strategy": "rsi_oversold", "regime": "bull",
     })
     log.warning("gate_block", extra={"ticker": "MSFT", "exit_method": "trail"})
-    # Force flush
-    for h in log.handlers:
-        h.flush()
+    # Batch 482 (2026-05-29): h.flush() alone left the file empty under
+    # xdist load on Windows (TimedRotatingFileHandler buffer not surfacing
+    # to the OS-level write before the test reads the file). Close the
+    # handlers explicitly to force the stream to disk before the read.
+    for h in list(log.handlers):
+        try:
+            h.flush()
+            h.close()
+        except Exception:
+            pass
+        log.removeHandler(h)
 
     # Find the structured log file
     log_files = list(tmp_path.glob("structured_*.jsonl"))
@@ -10324,9 +10189,10 @@ def test_batch373_e1_doc_count_pin_against_code():
         STRATEGIES_DISABLED_MISSING_PRODUCER,
     )
 
-    # F-002 strategy counts
-    assert len(ALL_STRATEGIES) == 186, (
-        f"F-002 drift: ALL_STRATEGIES expected 186 (CLAUDE.md / CANONICAL_FACTS); "
+    # F-002 strategy counts (Batch 467 P10: 186 -> 188; added
+    # news_momentum_long + news_reversal_short)
+    assert len(ALL_STRATEGIES) == 188, (
+        f"F-002 drift: ALL_STRATEGIES expected 188 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10341,8 +10207,8 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 185, (
-        f"F-002 drift: active strategy count expected 185 (Batch 372); got {active}."
+    assert active == 187, (
+        f"F-002 drift: active strategy count expected 187 (Batch 467); got {active}."
     )
 
     # F-004 exit method count
@@ -10352,10 +10218,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
 
     # Cube cells = active strategies x exits
-    expected_cells = 185 * 25
-    assert expected_cells == 4625, (
-        f"Phase 1A-beta cube cells: expected 4,625 (185 active x 25 exits "
-        f"per memory project_phase_1a_beta_is_exit_cube); got {expected_cells}."
+    expected_cells = 187 * 25
+    assert expected_cells == 4675, (
+        f"Phase 1A-beta cube cells: expected 4,675 (187 active x 25 exits "
+        f"per Batch 467 P10 adding news_momentum_long + news_reversal_short); "
+        f"got {expected_cells}."
     )
 
 
