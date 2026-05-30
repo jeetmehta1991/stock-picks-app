@@ -1514,24 +1514,51 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
     **Joint:** CHECKLIST #93 (CI non-blocking), CHECKLIST #94 (queue maintenance), CHECKLIST #96 (queue display end-of-turn -- the queue is the source of "what to work on next" during pyramid runs), `feedback_queue_cadence_directives.md` (owner-approved bundle/CI/delete cadence).
 
-102. **HARD RULE — CI pyramid is the ground truth; local pyramid is an OPTIONAL pre-push sanity check for risky changes. Results MUST match between local and CI on the same commit.** (Owner directive 2026-05-29 Batch 479: *"yes to both. But the results need to match on local and CI"* in response to the pre-push gate / cycle-time discussion.)
+102. **HARD RULE — CI pyramid is the ground truth on Linux (deployment target); local pyramid is fast iteration on Windows. BOTH must pass on their own platform. Counts do NOT have to match exactly -- legitimate platform divergences are allowed.** (Owner directive 2026-05-30 Batch 486: *"1. Relax"* in response to the cycle-time / results-matching cost discussion. Replaces the prior 2026-05-29 Batch 479 "results must match" framing, which was too strict and consumed ~5 hours of CI churn on Batches 482-485 chasing parity that the engine's cross-platform non-determinism makes impossible.)
 
-    **Rationale.** Local runs on Windows; CI + AWS production runs on Linux. CI is closer to the deployment target, so it's the source of truth. Running both is OK; relying ONLY on local is not, because local-green ≠ Linux-green when platform-specific code paths exist. Conversely, relying ONLY on CI for routine batches is fine.
+    **Rationale.** Local runs on Windows; CI + AWS production runs on Linux. Each is its own environment with its own dep stack (Win MSVC vs Linux glibc fp libs, different pandas-ta / numba variants). Some tests will legitimately diverge -- engine output, file paths, dep-version-sensitive tests -- and that's OK as long as each platform's full suite still passes.
+
+    **What MUST be true:**
+      - CI Test Pyramid completes with `conclusion: success` on Linux (the deployment target). This is the ship gate.
+      - Local pyramid completes with all tests passing on Windows (for the dev who runs it). Optional pre-push for routine batches; recommended for risky ones (count assertions, engine code mutated, golden regen).
+
+    **What is allowed to differ between local and CI:**
+      - Total `passed` / `skipped` counts (different platform-specific skips). Example: `test_engine_optimization_parity` PASSes on Windows (where the golden was generated) and SKIPs on Linux (platform sidecar mismatch, per Batch 484).
+      - Number of `xfailed` / `xpassed` (rare; OK).
+      - Wall-time (CI is much faster; expected).
+
+    **What is NOT allowed:**
+      - Any FAILED test on either platform's full pyramid. A FAILED test on either runner blocks the ship.
+      - Platform-specific code paths that aren't marked. Tests that pass on Windows + fail on Linux (or vice-versa) without an explicit `pytest.mark.skipif(...)` or sidecar guard are a bug -- the test should either be made platform-portable, marked explicitly, OR fixed.
 
     **Cycle-time defaults.**
-      - Safe-additive batches (new producer module / new tests / pure-doc): push to feature branch, let CI verify, merge when green.
-      - Risky batches (count assertions touched, schema changes, engine code mutated, golden snapshots regenerated): run local pyramid first via `pytest backtest/tests/ -n auto` (xdist parallel; installed Batch 479). Then push.
-      - Pre-push local with xdist is also fine as a default for any batch that touches more than one file -- xdist drops the wall-time from ~38min to ~10min.
+      - Safe-additive batches (new producer / new tests / pure-doc): push to FEATURE BRANCH (CHECKLIST #103), let CI verify, merge to main when green. NO local pyramid required.
+      - Risky batches (count assertions, schema, engine, golden): run local pyramid first via `pytest backtest/tests/ -n auto` (xdist parallel). Then push to feature branch.
+      - Pre-push local with xdist drops wall-time from ~38min to ~30-40min on this codebase (slower than originally projected per Batch 482 honest-accounting; the long-tail integration tests dominate).
 
-    **Results-matching invariant (NON-NEGOTIABLE).**
-      a. Same commit SHA must produce IDENTICAL `passed / failed / skipped / xfailed` counts on local and CI. If they diverge, the divergence is a bug -- platform-specific code path, test pollution from process state, ordering-sensitive test, dependency-version drift -- and must be fixed BEFORE the batch ships.
-      b. Tests that are intentionally environment-dependent must be marked `@pytest.mark.linux_only` or `@pytest.mark.windows_only` so the local/CI delta is explicit.
-      c. Test pollution (mutable module globals, lru_cache, monkeypatch that doesn't clear cache) is the most common cause of "passes in isolation, fails in suite, passes on CI" patterns. Fix the test (clear the global / reset the cache) in the same batch that surfaces the divergence; do not paper over with re-ordering.
+    **Apply when:** every batch ships. Report which runner produced the green state in the commit-followup.
 
-    **Apply when:** every batch ships. Before declaring "pyramid green," report which runner produced the result (local or CI) + the counts.
+    **Joint:** CHECKLIST #69 (full 13-tier pyramid mandatory -- both runners must pass the FULL pyramid, not subsets), CHECKLIST #93 (CI verification after push), CHECKLIST #101 (no idling during pyramid), CHECKLIST #103 (feature-branch workflow), `feedback_pyramid_full_13_tiers_mandatory`.
 
-    **How to enforce:**
-      - After each push, the GitHub check-runs API result becomes the validated state. Quote its `completed -> success` line in the commit-followup.
-      - When local + CI diverge: open the divergence as a queue item, fix it, do not ship the batch until parity restored.
+103. **HARD RULE — Risky / multi-file batches go to a feature branch first; only merge to `main` after CI is green. Main stays reliable.** (Owner directive 2026-05-30 Batch 486: *"2. Approved"* in response to "switch to feature-branch workflow for risky bundles?")
 
-    **Joint:** CHECKLIST #69 (full 13-tier pyramid mandatory -- both runners must pass the FULL pyramid, not subsets), CHECKLIST #93 (CI verification after push), CHECKLIST #101 (no idling during pyramid -- doubly important now that CI is the gate), `feedback_pyramid_full_13_tiers_mandatory`.
+    **Rationale.** Batches 482-485 demonstrated the cost of pushing risky changes directly to main: 4 consecutive RED commits, CI churn, no way for other consumers (cron jobs, AWS pulls of main, future contributors) to trust main. Feature-branch isolation absorbs CI cycles; main only sees green commits.
+
+    **Apply when:**
+      - The batch touches more than one file AND any of: count assertions / golden snapshots / engine code / schema / new test files. Use feature branch.
+      - The batch is a pure single-file fix OR a doc-only sweep. Direct-to-main is OK.
+      - When in doubt: feature branch.
+
+    **How to apply:**
+      a. Create a feature branch: `git checkout -b batch/<NNN>-<slug>` (e.g. `batch/486-checklist-cycle-time-relax`).
+      b. Commit there. Push: `git push -u origin batch/<NNN>-<slug>`.
+      c. CI fires on the branch (workflow `on: push: branches: [main]` -- update workflow to also trigger on `branches: [main, batch/**]` OR just trigger via PR).
+      d. If CI red: fix on the branch, push, repeat.
+      e. When CI green: fast-forward merge or PR into main. Main now has a green commit.
+      f. Delete the feature branch (local + remote).
+
+    **Workflow update needed (one-time):** `.github/workflows/test-pyramid.yml` `on:` block must include `batch/**` to trigger CI on feature branches, OR rely on the `pull_request` trigger when opening a PR to main. Either works.
+
+    **Exception:** CI workflow edits (yml changes) must go directly to main because the workflow's `on: push: branches: [main]` is what makes it fire. A workflow change on a feature branch wouldn't be exercised until merged. Risk-mitigation: validate the workflow yml syntax locally with `actionlint` or `yamllint` before pushing.
+
+    **Joint:** CHECKLIST #93 (CI verification after push), CHECKLIST #101 (no idling), CHECKLIST #102 (CI = ground truth), feedback_standing_approvals (commit + push every turn -- still applies; branch determines the push target).
