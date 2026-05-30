@@ -79,6 +79,24 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "before AWS-based launch was the canonical path. Either re-wire "
         "as the documented `pytest`-pre-AWS smoke runner or archive.",
     ),
+    "scripts/check_platform_determinism.py": (
+        "c",
+        "Batch 498 DET1 cross-platform-determinism diagnostic. Manual-run "
+        "harness operator invokes on each target platform (Windows / Linux) "
+        "to produce SHA-256 fingerprints of 9 indicators against seeded "
+        "synthetic OHLCV. Output drives the queue row DET1 root-cause "
+        "diff. Consumed by test_batch498_det1_platform_determinism.py "
+        "(reads committed Windows fixture + future Linux fixture).",
+    ),
+    "scripts/analyst_overlay_from_trade_log.py": (
+        "c",
+        "Batch 499 item-7 analyst-overlay generator. Operator-run "
+        "post-cube pass that reconstructs equity_curve + portfolio "
+        "summary + strategy_regime_matrix from a merged trade_log.csv "
+        "so dashboard Tabs 2 + 4 receive their JSON feeds. Consumed by "
+        "test_batch499_analyst_overlay.py (unit tests on the math). "
+        "Needs cron/launcher wiring before dashboard refresh automation.",
+    ),
 }
 
 
