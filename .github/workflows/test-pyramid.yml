@@ -22,7 +22,12 @@ jobs:
     # eat ~8-10 min on a fresh runner; 11 sequential pytest tiers + the new
     # silent-gap pyramid tier (Batches 302+303, 40 tests) need another ~25
     # min. 45 min gives safe headroom without bloating the budget.
-    timeout-minutes: 45
+    # Batch 485 (2026-05-30): bumped 45 -> 75 min after the new Tier 12
+    # catch-all (CHECKLIST #102 parity invariant) hit the 45-min timeout on
+    # the Batch 484 run (45m18s -> cancelled). Tier 12 reruns the full
+    # 3000-test suite with xdist; the runner accounted for ~25-28 min of
+    # the prior runs. 75 min gives margin without bloating beyond 1h.
+    timeout-minutes: 75
 
     steps:
       - name: Checkout
