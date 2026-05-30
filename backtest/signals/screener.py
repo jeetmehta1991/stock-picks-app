@@ -3323,6 +3323,176 @@ def strat_news_reversal_short(s):
 
 
 # ---------------------------------------------------------------------------
+# SM1 smart-money sleeve strategies (Batch 487 / SM1 queue item 2026-05-30)
+# ---------------------------------------------------------------------------
+# Owner directive 2026-05-25 Batch 450: smart money currently sizing-only.
+# These sleeves gate ENTRY on a smart-money composite signal so the cube
+# replay can rank sleeve cells vs base cells empirically. The smart-money
+# composite OR's together: insider_cluster_active, institutional_strong_buy,
+# institutional_buy, cfo_buy (Batch 469), large_dollar_buy (Batch 469).
+# Each sleeve adds the gate on top of an existing base condition.
+def _has_smart_money_buy(s) -> bool:
+    """Composite OR of bullish smart-money signals available on signals dict."""
+    return bool(
+        s.get("insider_cluster_active", False)
+        or s.get("institutional_strong_buy", False)
+        or s.get("institutional_buy", False)
+        or s.get("cfo_buy", False)
+        or s.get("large_dollar_buy", False)
+    )
+
+
+def strat_bollinger_tight_with_smart_money_long(s):
+    """Bollinger-tight squeeze + smart-money confirmation. Sleeve variant
+    of bollinger_tight base; smart-money signal validates the squeeze
+    is fundamentally backed rather than technical-only."""
+    base_fires = (
+        s.get("bb_squeeze", False)
+        and s.get("close_above_open", True)
+        and s.get("price_above_ema_200", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["bb_squeeze", "close_above_open", "price_above_ema_200",
+         "smart_money_buy"],
+        ["Bollinger band squeeze tight", "Above 200 EMA",
+         "Smart-money buy confirmation"])
+
+
+def strat_mfi_oversold_with_smart_money_long(s):
+    """MFI oversold + smart-money buy. Money-flow oversold often precedes
+    a bounce; smart-money buy raises confidence the bounce is real."""
+    base_fires = (
+        s.get("mfi_14_oversold", False)
+        and s.get("price_above_ema_200", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["mfi_14_oversold", "price_above_ema_200", "smart_money_buy"],
+        ["MFI(14) oversold", "Above 200 EMA",
+         "Smart-money buy confirmation"])
+
+
+def strat_rsi_oversold_with_smart_money_long(s):
+    """RSI oversold + smart-money buy. Classic mean-reversion entry with
+    institutional / insider corroboration."""
+    base_fires = (
+        s.get("rsi_14_oversold", False)
+        and s.get("price_above_ema_200", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["rsi_14_oversold", "price_above_ema_200", "smart_money_buy"],
+        ["RSI(14) oversold", "Above 200 EMA",
+         "Smart-money buy confirmation"])
+
+
+def strat_52w_high_breakout_with_smart_money_long(s):
+    """52-week high breakout + smart-money buy. Reduces false-breakout
+    risk by requiring institutional/insider confirmation on the breakout day."""
+    base_fires = (
+        s.get("near_52w_high", False)
+        and s.get("close_above_open", True)
+        and s.get("vol_above_avg", False)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["near_52w_high", "close_above_open", "vol_above_avg",
+         "smart_money_buy"],
+        ["Near 52w high", "Volume above average",
+         "Smart-money buy confirmation"])
+
+
+def strat_squeeze_breakout_with_smart_money_long(s):
+    """Squeeze breakout + smart-money buy. Volatility-contraction trade
+    with institutional sponsor."""
+    base_fires = (
+        s.get("squeeze_on_release", False)
+        and s.get("close_above_open", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["squeeze_on_release", "close_above_open", "smart_money_buy"],
+        ["TTM squeeze releasing", "Bullish candle",
+         "Smart-money buy confirmation"])
+
+
+def strat_xs_momentum_with_smart_money_long(s):
+    """Cross-sectional momentum (top-decile) + smart-money buy. Jegadeesh-
+    Titman 12-1 momentum with smart-money corroboration."""
+    base_fires = (
+        s.get("xs_momentum_top_decile", False)
+        and s.get("price_above_ema_200", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["xs_momentum_top_decile", "price_above_ema_200",
+         "smart_money_buy"],
+        ["XS momentum top decile", "Above 200 EMA",
+         "Smart-money buy confirmation"])
+
+
+def strat_xs_low_beta_with_smart_money_long(s):
+    """Cross-sectional low-beta (Frazzini-Pedersen 2014 betting-against-beta)
+    + smart-money buy. Pairs the BAB anomaly with smart-money confirmation."""
+    base_fires = (
+        s.get("xs_low_beta_top_quintile", False)
+        and s.get("price_above_ema_200", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["xs_low_beta_top_quintile", "price_above_ema_200",
+         "smart_money_buy"],
+        ["XS low-beta top quintile", "Above 200 EMA",
+         "Smart-money buy confirmation"])
+
+
+def strat_donchian_breakout_with_smart_money_long(s):
+    """Donchian 20 breakout + smart-money buy. Classic trend-following
+    entry; smart-money confirms the breakout has fundamental backing."""
+    base_fires = (
+        s.get("dc20_breakout_up", False)
+        and s.get("close_above_open", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["dc20_breakout_up", "close_above_open", "smart_money_buy"],
+        ["Donchian-20 breakout up", "Bullish candle",
+         "Smart-money buy confirmation"])
+
+
+def strat_macd_bullish_with_smart_money_long(s):
+    """MACD bullish cross + smart-money buy. Momentum-onset signal with
+    institutional/insider sponsor."""
+    base_fires = (
+        s.get("macd_bullish_cross", False)
+        and s.get("price_above_ema_200", True)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["macd_bullish_cross", "price_above_ema_200", "smart_money_buy"],
+        ["MACD bullish cross", "Above 200 EMA",
+         "Smart-money buy confirmation"])
+
+
+def strat_pead_with_smart_money_long(s):
+    """PEAD (post-earnings-announcement drift) + smart-money composite
+    buy. Variant of strat_pead_with_insider_confirmation_long that uses
+    the broader smart-money composite (insider + institutional + CFO +
+    large-dollar) rather than insider_cluster alone."""
+    base_fires = (
+        s.get("within_pead_window", False)
+        and s.get("pead_positive_surprise", False)
+    )
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["within_pead_window", "pead_positive_surprise",
+         "smart_money_buy"],
+        ["Within PEAD window", "Positive earnings surprise",
+         "Smart-money buy confirmation"])
+
+
+# ---------------------------------------------------------------------------
 # Index rebalance (DEC-370 / Batch 251) - 4 strategies, imported from module
 # ---------------------------------------------------------------------------
 from backtest.signals.index_rebalance import (
@@ -3595,6 +3765,17 @@ ALL_STRATEGIES = {
     "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
     "news_momentum_long":               strat_news_momentum_long,
     "news_reversal_short":              strat_news_reversal_short,
+    # SM1 smart-money sleeves (10 - Batch 487 2026-05-30)
+    "bollinger_tight_with_smart_money_long":    strat_bollinger_tight_with_smart_money_long,
+    "mfi_oversold_with_smart_money_long":       strat_mfi_oversold_with_smart_money_long,
+    "rsi_oversold_with_smart_money_long":       strat_rsi_oversold_with_smart_money_long,
+    "52w_high_breakout_with_smart_money_long":  strat_52w_high_breakout_with_smart_money_long,
+    "squeeze_breakout_with_smart_money_long":   strat_squeeze_breakout_with_smart_money_long,
+    "xs_momentum_with_smart_money_long":        strat_xs_momentum_with_smart_money_long,
+    "xs_low_beta_with_smart_money_long":        strat_xs_low_beta_with_smart_money_long,
+    "donchian_breakout_with_smart_money_long":  strat_donchian_breakout_with_smart_money_long,
+    "macd_bullish_with_smart_money_long":       strat_macd_bullish_with_smart_money_long,
+    "pead_with_smart_money_long":               strat_pead_with_smart_money_long,
     # Calendar effects (4 - Batch 254 2026-05-20 / DEC-368)
     "totm_long":                        strat_totm_long,
     "pre_holiday_long":                 strat_pre_holiday_long,

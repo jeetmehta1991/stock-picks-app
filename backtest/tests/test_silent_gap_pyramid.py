@@ -1628,9 +1628,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   184 after Batch 338 (+3 persistence; Wave 3 COMPLETE 30/30)
     #   186 after Batch 344 (+2 true multi-quarter persistence; 333b consumer)
     #   188 after Batch 467 P10 (+2 news_momentum_long + news_reversal_short)
-    assert len(ALL_STRATEGIES) == 188, (
-        f"BUG-111 + Wave 3 + 333b + P10: ALL_STRATEGIES count must be 188 "
-        f"after Batches 329-344 + 467, got {len(ALL_STRATEGIES)}"
+    #   198 after Batch 487 SM1 (+10 smart-money sleeve strategies)
+    assert len(ALL_STRATEGIES) == 198, (
+        f"BUG-111 + Wave 3 + 333b + P10 + SM1: ALL_STRATEGIES count must be 198 "
+        f"after Batches 329-344 + 467 + 487, got {len(ALL_STRATEGIES)}"
     )
 
 

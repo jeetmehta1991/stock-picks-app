@@ -82,7 +82,7 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 
 ### F-002 — Strategy roster (planned + LIVE)
 
-**Live value (`len(ALL_STRATEGIES)` 2026-05-29 Batch 467):** **188 IMPLEMENTED strategy classes registered** in `backtest/signals/screener.py::ALL_STRATEGIES` (was 186 through Batch 372; Batch 467 P10 added `news_momentum_long` + `news_reversal_short`). `DEPRECATED_STRATEGIES` set is empty (Batch 316a un-deprecation 2026-05-25 reversed Batch 218). `STRATEGIES_DISABLED_MISSING_PRODUCER` set holds **1 strategy** (`dxy_headwind_multinational_short`; Batch 372 2026-05-26 owner-directed disable — foreign_rev_pct producer absent across Polygon Stocks Starter, SEC EDGAR companyfacts, SEC XBRL prefetch, Finnhub financials_reported; semantically distinct from literature-null deprecation). **187 active for Phase 1A-β cube mode** (187 × 25 = 4,675 cells; was 185 × 25 = 4,625 pre-Batch-467). Re-enable is a single-line removal once a 10-K XBRL segment-axis parser ships or paid Polygon Plus tier is approved.
+**Live value (`len(ALL_STRATEGIES)` 2026-05-30 Batch 487):** **198 IMPLEMENTED strategy classes registered** in `backtest/signals/screener.py::ALL_STRATEGIES` (was 188 through Batch 467; Batch 487 SM1 added 10 smart-money sleeve strategies). `DEPRECATED_STRATEGIES` set is empty (Batch 316a un-deprecation 2026-05-25 reversed Batch 218). `STRATEGIES_DISABLED_MISSING_PRODUCER` set holds **1 strategy** (`dxy_headwind_multinational_short`; Batch 372 2026-05-26 owner-directed disable — foreign_rev_pct producer absent across Polygon Stocks Starter, SEC EDGAR companyfacts, SEC XBRL prefetch, Finnhub financials_reported; semantically distinct from literature-null deprecation). **197 active for Phase 1A-β cube mode** (197 × 26 = 5,122 cells; was 187 × 25 = 4,675 pre-Batch-487; Batch 487 SM2 also added 26th exit method `smart_money_reversal`). Re-enable is a single-line removal once a 10-K XBRL segment-axis parser ships or paid Polygon Plus tier is approved.
 
 **Value (planned target):** **199 RESOLVED-DECIDED strategy classes across 6 layers post owner "Approve all" + Layer 1.I symmetry + Q1+Q2+Q3 (Layer 5 flag schema + Layer 6 27 new) 2026-05-06 (was 134 pre-symmetry; 108-118 pre-Pass-53-Option-2). Goes to 203 when Layer 4 PENDING-DEC promoted; ~213 with Layer 2D form-derived ICT estimate. ~200-400+ multi-TF variants projected. Total unique testable strategies projected: 200+ confirmed (could exceed 400 with full multi-TF expansion).** Gap: 199 (target) - 186 (live) = 13 classes pending implementation across Layers 2D + 4 + 6 remainder.
 
@@ -211,7 +211,7 @@ A category can have prefetch ✅ but consumer 🔴 (data sitting on disk, no cod
 
 ### F-004 — Exit methods
 
-**Live value (`len(EXIT_STRATEGIES)` 2026-05-25 Batch 357):** **25 exit methods** registered in `backtest/engine/exit_strategies.py::EXIT_STRATEGIES`. All 25 are testable; Phase 1A-β cube mode simulates every method per entry (186 × 25 = 4,650 cells). Single-config-per-strategy via `STRATEGY_EXIT_OVERRIDE` is the future deployment mode for live trading, not the backtest mode.
+**Live value (`len(EXIT_STRATEGIES)` 2026-05-30 Batch 487):** **26 exit methods** registered in `backtest/engine/exit_strategies.py::EXIT_STRATEGIES` (was 25 through Batch 357; Batch 487 SM2 added `smart_money_reversal` -- exits LONG on bearish smart-money flip during hold, SHORT symmetric). All 26 are testable; Phase 1A-β cube mode simulates every method per entry (197 × 26 = 5,122 cells; was 186 × 25 = 4,650 pre-Batch-487). Single-config-per-strategy via `STRATEGY_EXIT_OVERRIDE` is the future deployment mode for live trading, not the backtest mode.
 
 **Value (planned target):** **20 exit methods + 8 cross-cutting exit DECs (Pass 53 owner-approved 2026-05-06)** = 9 baseline (pre-Pass-52) + 8 new (DEC-067 phases A+B = DEC-432/433) + 3 R-multiple/break-even (DEC-517) = 20 method classes; PLUS 8 cross-cutting decisions (DEC-516 regime-flip exit + DEC-518 earnings-blackout + DEC-519 strategy-to-exit-mapping + DEC-520 signal-reversal precise definition + DEC-521 per-class time stops + DEC-514 backtest fill methodology + DEC-515 Level-6 DD-from-peak breaker + DEC-522-527 P2 backlog).
 
@@ -259,7 +259,7 @@ A category can have prefetch ✅ but consumer 🔴 (data sitting on disk, no cod
 - `CLAUDE.md` Approved Rules table (mentions atr_trail_1x as default)
 - `STRATEGY_REGISTER.md` (no specific exit-count claim; OK)
 
-**Acceptable phrasing variants:** **"25 exit methods" (LIVE, code-derived 2026-05-25)** • "17 exit methods" (legacy planned target). *Not acceptable:* "12 exit methods" or "9 exit methods" (both stale; refer to pre-Batch-282-285 counts).
+**Acceptable phrasing variants:** **"26 exit methods" (LIVE, code-derived 2026-05-30)** • "25 exit methods" (pre-Batch-487) • "17 exit methods" (legacy planned target). *Not acceptable:* "12 exit methods" or "9 exit methods" (both stale; refer to pre-Batch-282-285 counts).
 
 **Code-current state (2026-05-25 Batch 357):** **All 25 methods implemented and registered in `backtest/engine/exit_strategies.py::EXIT_STRATEGIES`.** Test coverage via `backtest/tests/test_exit_strategies.py`. Phase 1A-β cube mode (per `project_phase_1a_beta_is_exit_cube` memory) tests every method against every entry.
 

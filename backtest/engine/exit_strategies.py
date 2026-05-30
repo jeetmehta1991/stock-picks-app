@@ -1372,7 +1372,116 @@ def exit_multi_tier_partial(df_full, entry_date, entry_price, direction, atr,
                          "multi_tier_end_of_data_batch227b", direction)
 
 
+def exit_smart_money_reversal(df_full, entry_date, entry_price, direction,
+                                atr, signals=None, max_days=252,
+                                check_every=5):
+    """Batch 487 / SM2 (2026-05-30 owner-approved): smart-money reversal
+    exit. While in a LONG, exit at next bar open if smart-money signal
+    flips BEARISH during the hold (insider cluster_sell OR concentrated_sell
+    in the trailing 5d window). For SHORT, symmetric -- exit on smart-money
+    buy flip.
+
+    Sampling: check every `check_every` bars (default 5) to keep cost
+    bounded; trail-stop fallback (1xATR) on between-bars.
+
+    Source: Cohen-Malloy-Pomorski 2012 -- insider sells while institutional
+    flow remains positive is a stronger reversal signal than either alone.
+    Tests: Stage 2 Phase 1A-beta cube replay; if exit-method dominance
+    materialises this method earns a permanent slot in the cube via
+    DEC-067.
+    """
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty or atr == 0:
+        return exit_trailing_pct(df_full, entry_date, entry_price,
+                                  direction, atr, trail_pct=0.10)
+    ticker = (signals or {}).get("ticker", "")
+    if not ticker:
+        # No ticker -> fall back to ATR trail
+        return exit_atr_trail(df_full, entry_date, entry_price, direction,
+                              atr, 1.0)
+    try:
+        from backtest.data.smart_money import insider_signal
+    except Exception:
+        insider_signal = None
+    h, l, c = df_full["high"], df_full["low"], df_full["close"]
+    tr = pd.concat([h - l, (h - c.shift()).abs(), (l - c.shift()).abs()],
+                   axis=1).max(axis=1)
+    atr_series = tr.ewm(alpha=1/14, adjust=False).mean()
+    best = entry_price
+    stop = (entry_price - 1.0 * atr) if direction == "long" \
+        else (entry_price + 1.0 * atr)
+    for i, (idx, row) in enumerate(future.iterrows()):
+        close = float(row["close"])
+        high = float(row.get("high", close))
+        low = float(row.get("low", close))
+        bar_open = float(row.get("open", close))
+        try:
+            current_atr = float(atr_series.loc[idx])
+            if not (current_atr > 0):
+                current_atr = atr
+        except (KeyError, ValueError):
+            current_atr = atr
+        if direction == "long":
+            if close > best:
+                best = close
+                stop = max(stop, best - 1.0 * current_atr)
+        else:
+            if close < best:
+                best = close
+                stop = min(stop, best + 1.0 * current_atr)
+        # ATR trail-stop safety check
+        fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+        if fill is not None:
+            return _base_result(entry_price, fill, entry_date, idx.date(),
+                                 "smart_money_trail_safety_batch487",
+                                 direction)
+        # Smart-money signal check every N bars
+        if insider_signal is not None and (i % check_every == 0):
+            try:
+                sm = insider_signal(ticker, idx.date(), lookback_days=5)
+            except Exception:
+                sm = {}
+            if direction == "long":
+                # Exit long on bearish smart-money flip
+                bearish_flip = bool(
+                    sm.get("signal") in ("cluster_sell", "concentrated_sell")
+                    or sm.get("concentrated_sell", False)
+                )
+                if bearish_flip:
+                    return _base_result(
+                        entry_price, bar_open, entry_date, idx.date(),
+                        "smart_money_reversal_bearish_flip_batch487",
+                        direction,
+                    )
+            else:
+                # Exit short on bullish smart-money flip
+                bullish_flip = bool(
+                    sm.get("signal") in ("buy", "strong_buy")
+                    or sm.get("cluster_buy", False)
+                    or sm.get("cfo_buy", False)
+                    or sm.get("large_dollar_buy", False)
+                )
+                if bullish_flip:
+                    return _base_result(
+                        entry_price, bar_open, entry_date, idx.date(),
+                        "smart_money_reversal_bullish_flip_batch487",
+                        direction,
+                    )
+    # No flip detected -> fall back to end-of-data exit at max_days
+    target_idx = min(max_days - 1, len(future) - 1)
+    target_row = future.iloc[target_idx]
+    return _base_result(
+        entry_price, float(target_row["close"]),
+        entry_date, future.index[target_idx].date(),
+        "smart_money_reversal_end_of_data_batch487", direction,
+    )
+
+
 EXIT_STRATEGIES = {
+    # Batch 487 (2026-05-30 owner-approved SM2): smart-money reversal exit.
+    # Exit LONG on bearish smart-money flip (cluster_sell / concentrated_sell);
+    # SHORT symmetric. Roster grows 25 -> 26.
+    "smart_money_reversal":   lambda df, ed, ep, d, a, s: exit_smart_money_reversal(df, ed, ep, d, a, s),
     # Batch 227b (2026-05-18 owner-approved): multi-tier partial-fill exit
     # (1/3 at 1R, 1/3 at 2R, 1/3 trails). Roster grows 24 -> 25.
     "multi_tier_partial":     lambda df, ed, ep, d, a, s: exit_multi_tier_partial(df, ed, ep, d, a, s),
