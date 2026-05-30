@@ -19,21 +19,37 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Batch 490 (2026-05-30): the previous workflow ran 12 tiers + a Tier-12
+  # catch-all SEQUENTIALLY in a single job, so wall-clock time was the SUM of
+  # all tier durations (~25-45 min). This rewrite runs each tier as a
+  # parallel matrix job, so wall-clock = MAX(tier) which is the Tier-12
+  # catch-all (~10-15 min). Net CI speedup ~2-3x. Each job gets its own
+  # cached pip install, so the install cost (~3-4 min cold) repeats per
+  # matrix entry, but happens in parallel rather than serial -- still a net
+  # win because the prior sequential job did the install once but then ran
+  # 13 tiers serially in the same job.
+
   pyramid:
-    name: Run Pass 53 test pyramid (DEC-503)
+    name: ${{ matrix.tier.name }}
     runs-on: ubuntu-latest
-    # Batch 304 (2026-05-22): bumped 25 -> 45 min. Pre-Batch-304 pyramid
-    # fit in 25 min but heavy deps (numba builds from source on cold cache,
-    # smartmoneyconcepts editable install, xgboost + scipy + statsmodels)
-    # eat ~8-10 min on a fresh runner; 11 sequential pytest tiers + the new
-    # silent-gap pyramid tier (Batches 302+303, 40 tests) need another ~25
-    # min. 45 min gives safe headroom without bloating the budget.
-    # Batch 485 (2026-05-30): bumped 45 -> 75 min after the new Tier 12
-    # catch-all (CHECKLIST #102 parity invariant) hit the 45-min timeout on
-    # the Batch 484 run (45m18s -> cancelled). Tier 12 reruns the full
-    # 3000-test suite with xdist; the runner accounted for ~25-28 min of
-    # the prior runs. 75 min gives margin without bloating beyond 1h.
-    timeout-minutes: 75
+    timeout-minutes: ${{ matrix.tier.timeout || 30 }}
+    strategy:
+      fail-fast: false
+      matrix:
+        tier:
+          - { name: "Tier 1 Unit",                paths: "backtest/tests/test_unit.py",                                               timeout: 20 }
+          - { name: "Tier 2 Integration",         paths: "backtest/tests/test_integration.py",                                        timeout: 30 }
+          - { name: "Tier 3 Data integrity",      paths: "backtest/tests/test_data_integrity.py",                                     timeout: 20 }
+          - { name: "Tier 4 Bad-data stress",     paths: "backtest/tests/test_engine_bad_data_stress.py",                             timeout: 20 }
+          - { name: "Tier 5 Acceptance",          paths: "backtest/tests/test_acceptance_functional.py",                              timeout: 20 }
+          - { name: "Tier 5b Phase gates",        paths: "backtest/tests/test_gates.py",                                              timeout: 20 }
+          - { name: "Tier 6 Partial-spec",        paths: "backtest/tests/test_partial_spec_artifacts.py backtest/tests/test_partial_spec_artifacts_v2.py", timeout: 20 }
+          - { name: "Tier 7 N1/N2/N5/N6 wiring",  paths: "backtest/tests/test_n1_n2_artifacts.py backtest/tests/test_n5_n6_wiring.py", timeout: 20 }
+          - { name: "Tier 8 Walk-forward",        paths: "backtest/tests/test_walk_forward_4fold.py",                                 timeout: 30 }
+          - { name: "Tier 9 Exit context",        paths: "backtest/tests/test_exit_context.py backtest/tests/test_exit_conditional_analyzer.py", timeout: 20 }
+          - { name: "Tier 10 Cache schema",       paths: "backtest/tests/test_cache_schema_b.py",                                     timeout: 20 }
+          - { name: "Tier 11 Silent-gap",         paths: "backtest/tests/test_silent_gap_pyramid.py",                                 timeout: 20 }
+          - { name: "Tier 12 Catch-all (xdist)",  paths: "backtest/tests/",                                                            timeout: 45, xdist: true }
 
     steps:
       - name: Checkout
@@ -51,139 +67,81 @@ jobs:
           pip install pytest pandas numpy filelock pyarrow psutil python-dateutil pytz
           pip install yfinance requests --quiet
           pip install pandas-ta --quiet || pip install ta --quiet || true
-          # Optional libs that some tests skip on if missing
           pip install freezegun --quiet || true
-          # Batch 483 (2026-05-30): test_property.py imports hypothesis;
-          # without this the catchall tier sees ImportError, not a skip.
           pip install hypothesis --quiet || true
-          # DEC-414/416 statistical methodology (Pass 53 Batch 41) + DEC-210
-          # PSR / scipy.stats - required by Batch 49-68 helpers in metrics.py.
-          # Previously omitted in CI -> caused test_dec_414/test_dec_416 +
-          # any helper using statsmodels/scipy to fail with ImportError.
           pip install "statsmodels>=0.14.0" --quiet
           pip install scipy --quiet
-          # DEC-235 NYSE calendar (optional; falls back to Mon-Fri if missing)
           pip install pandas-market-calendars --quiet || true
-          # Batch 249 CI fix (Pass 53 Day 9+ 2026-05-20): root cause of 30+
-          # consecutive Test Pyramid #313-#343 failures. Two tests in
-          # test_unit.py require dependencies not previously installed in CI:
-          #   - test_batch228_xgboost_meta_labeler_preferred: xgboost + sklearn
-          #     (Joubert-Snyman 2024 meta-labeler per DEC-045 fork-first)
-          #   - test_batch216_compute_smc_signals_emits_new_keys: numba
-          #     (smartmoneyconcepts library dep per vendored/smartmoneyconcepts
-          #      setup.py install_requires; library import silently fails
-          #      without numba -> compute_smc_signals returns {})
           pip install xgboost --quiet
           pip install scikit-learn --quiet
           pip install "numba>=0.58.1" --quiet
-          # Batch 250 CI fix (Pass 53 Day 9+ 2026-05-20): vendored
-          # smartmoneyconcepts library needs editable install so its
-          # internal absolute import `from smartmoneyconcepts.smc import smc`
-          # (inside vendored/smartmoneyconcepts/smartmoneyconcepts/__init__.py)
-          # resolves. Without this, smc_ict.py catches ImportError and sets
-          # _SMC_AVAILABLE=False -> compute_smc_signals returns {} -> test_batch216
-          # asserts smc_fvg_retest_long_zone in {} which fails.
-          # Suppress library's startup print (unicode star) by setting SMC_CREDIT=0
-          # before any import attempt.
+          export SMC_CREDIT=0
+          pip install -e vendored/smartmoneyconcepts/ --quiet
+          # xdist needed for Tier 12 catch-all; harmless on other tiers
+          pip install pytest-xdist --quiet
+
+      - name: Run ${{ matrix.tier.name }}
+        run: |
+          if [ "${{ matrix.tier.xdist }}" = "true" ]; then
+            python -m pytest ${{ matrix.tier.paths }} -n auto -q --tb=short
+          else
+            python -m pytest ${{ matrix.tier.paths }} -q --tb=short
+          fi
+
+  informational:
+    name: Informational tiers (G1 + G3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Informational only -- can fail without blocking; runs in parallel
+    # alongside the mandatory pyramid matrix.
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pandas numpy filelock pyarrow psutil python-dateutil pytz
+          pip install yfinance requests --quiet
+          pip install pandas-ta --quiet || pip install ta --quiet || true
+          pip install freezegun --quiet || true
+          pip install hypothesis --quiet || true
+          pip install "statsmodels>=0.14.0" --quiet
+          pip install scipy --quiet
+          pip install pandas-market-calendars --quiet || true
           export SMC_CREDIT=0
           pip install -e vendored/smartmoneyconcepts/ --quiet
 
-      - name: Tier 1 — Unit tests
-        run: |
-          python -m pytest backtest/tests/test_unit.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 2 — Integration tests
-        run: |
-          python -m pytest backtest/tests/test_integration.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 3 — Data integrity tests (DEC-591)
-        run: |
-          python -m pytest backtest/tests/test_data_integrity.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 4 — Bad-data stress (G2 / DEC-503)
-        run: |
-          python -m pytest backtest/tests/test_engine_bad_data_stress.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 5 — Acceptance / functional (G5 / DEC-503)
-        run: |
-          python -m pytest backtest/tests/test_acceptance_functional.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 5b — Phase gates (DEC-595)
-        run: |
-          python -m pytest backtest/tests/test_gates.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 6 — Day-9 partial-spec artifacts
-        run: |
-          python -m pytest backtest/tests/test_partial_spec_artifacts.py backtest/tests/test_partial_spec_artifacts_v2.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 7 — N1/N2/N5/N6 wiring
-        run: |
-          python -m pytest backtest/tests/test_n1_n2_artifacts.py backtest/tests/test_n5_n6_wiring.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 8 — Walk-forward 4-fold (DEC-505)
-        run: |
-          python -m pytest backtest/tests/test_walk_forward_4fold.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 9 — Exit context + conditional analyzer
-        run: |
-          python -m pytest backtest/tests/test_exit_context.py backtest/tests/test_exit_conditional_analyzer.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 10 — Cache schema regression (Pass 53 H6)
-        run: |
-          python -m pytest backtest/tests/test_cache_schema_b.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 11 — Silent-gap pyramid (Batches 302+303, all 13 tiers)
-        # Would have caught BUG-286 (market_cap silent-gap) pre-merge. 40
-        # tests, ~30s on local with cold cache; reads live caches at
-        # data_prefetch/polygon/{reference,ohlcv_daily,news,financials} +
-        # data_prefetch/quiver/* + data_prefetch/sec_edgar/* (all committed
-        # to repo so CI checkout has them).
-        run: |
-          python -m pytest backtest/tests/test_silent_gap_pyramid.py -q --tb=short
-        continue-on-error: false
-
-      - name: Tier 12 — Catch-all (CHECKLIST #102 results-match invariant)
-        # Batch 481 (2026-05-29 owner directive 2026-05-29): the tier-by-
-        # tier CI runs above cover the named files but miss new batch tests
-        # added since the workflow was last edited. This catch-all runs
-        # everything under backtest/tests/ to guarantee local and CI
-        # produce IDENTICAL pass/fail/skip counts on the same commit
-        # (CHECKLIST #102). Uses pytest-xdist `-n auto` for parallel
-        # execution to keep wall time bounded (~10-15 min on a 4-core
-        # runner). Tests already run in earlier tiers will run a second
-        # time but their results are deterministic, so no false positives.
-        run: |
-          pip install pytest-xdist --quiet
-          python -m pytest backtest/tests/ -n auto -q --tb=short
-        continue-on-error: false
-
-      - name: Performance / load (G3) — informational; cache may be empty in CI
+      - name: Performance / load (G3)
         run: |
           python -m pytest backtest/tests/test_performance_load.py -q --tb=short || echo "skipped (likely no cache in CI)"
         continue-on-error: true
 
-      - name: E2E smoke (G1) — informational; cache may be empty in CI
+      - name: E2E smoke (G1)
         run: |
           python -m pytest backtest/tests/test_e2e_phase1a_smoke.py -q --tb=short || echo "skipped (likely no cache in CI)"
         continue-on-error: true
 
-      - name: Summary
-        if: always()
+  summary:
+    name: Pyramid summary
+    needs: [pyramid]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Aggregate
         run: |
           echo "### Test Pyramid Result" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Time:** $(date +%Y-%m-%d' '%H:%M' UTC')" >> $GITHUB_STEP_SUMMARY
-          echo "**Mandatory tiers (12):** Unit + Integration + Data integrity + Bad-data (G2) + Acceptance (G5) + Phase Gates + Partial-spec + Wiring + Walk-forward + Exit context + Cache schema + Silent-gap pyramid (Batches 302+303)" >> $GITHUB_STEP_SUMMARY
-          echo "**Informational tiers (2):** Performance/load (G3) + E2E smoke (G1) — skip on cache-empty CI" >> $GITHUB_STEP_SUMMARY
-          echo "**G4:** This workflow itself — automated pyramid execution on every push to main" >> $GITHUB_STEP_SUMMARY
+          echo "**Layout (Batch 490):** 13 mandatory tiers run as PARALLEL matrix jobs (wall time = max-of-tiers, not sum). Informational G1 + G3 run as a separate parallel job." >> $GITHUB_STEP_SUMMARY
+          echo "**Mandatory tiers (13):** Unit + Integration + Data integrity + Bad-data (G2) + Acceptance (G5) + Phase Gates + Partial-spec + Wiring + Walk-forward + Exit context + Cache schema + Silent-gap + Catch-all (xdist)" >> $GITHUB_STEP_SUMMARY
+          echo "**Informational (2):** Performance/load (G3) + E2E smoke (G1)" >> $GITHUB_STEP_SUMMARY
+          echo "**G4:** This workflow itself -- automated pyramid execution on every push to main + batch/** branches" >> $GITHUB_STEP_SUMMARY
