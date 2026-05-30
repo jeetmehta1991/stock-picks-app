@@ -2,7 +2,13 @@ name: Test Pyramid
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      # Batch 488 (2026-05-30): trigger CI on `batch/**` feature branches per
+      # CHECKLIST #103 feature-branch workflow. PAT lacks pull_requests:write
+      # scope so PRs can't be opened from the SDK environment; firing on
+      # push covers the same goal -- CI validates the branch before merge.
+      - 'batch/**'
     paths:
       - 'backtest/**'
       - 'scripts/**'
