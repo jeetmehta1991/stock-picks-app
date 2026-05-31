@@ -36,10 +36,13 @@ REPO = Path(__file__).resolve().parent.parent.parent
 # Config flag exists + default
 # ---------------------------------------------------------------------------
 
-def test_batch510a_bug61_block_mode_default_is_ticker():
-    """Default preserves prior owner-approved Option A behavior."""
+def test_batch510a_bug61_block_mode_active_value():
+    """Batch 514 (2026-05-31) owner-activated R4: flipped to
+    'ticker_strategy' (was 'ticker' in Batch 510a default). Allows
+    different strategies to stack on same ticker; same strategy still
+    blocked. Recovers 685k blocked candidates from R3 item #2."""
     from backtest.config import BUG_61_BLOCK_MODE
-    assert BUG_61_BLOCK_MODE == "ticker"
+    assert BUG_61_BLOCK_MODE == "ticker_strategy"
 
 
 def test_batch510a_bug61_block_mode_legal_values_documented():
@@ -139,12 +142,17 @@ def test_batch510a_off_mode_imposes_no_block():
 # Owner-direction pin: changing default requires owner sign-off
 # ---------------------------------------------------------------------------
 
-def test_batch510a_default_change_requires_owner_signoff():
-    """Pin the default at 'ticker'. A change to the default value
-    surfaces this assertion -- forces co-update of the queue row +
-    owner sign-off."""
+def test_batch510a_mode_change_requires_owner_signoff():
+    """Pin the ACTIVE mode (Batch 514 owner-approved = 'ticker_strategy').
+    A change to this value surfaces here and forces co-update of the
+    queue row + owner sign-off."""
     from backtest.config import BUG_61_BLOCK_MODE
-    assert BUG_61_BLOCK_MODE == "ticker", (
-        "Default BUG_61_BLOCK_MODE changed. Owner sign-off required for "
-        "behavior change; update this pin + queue row #9 + R4 spec."
+    legal = {"ticker", "ticker_direction", "ticker_strategy", "off"}
+    assert BUG_61_BLOCK_MODE in legal, (
+        f"BUG_61_BLOCK_MODE {BUG_61_BLOCK_MODE!r} not in legal set "
+        f"{legal}. Owner sign-off required to add a new mode."
+    )
+    assert BUG_61_BLOCK_MODE == "ticker_strategy", (
+        "BUG_61_BLOCK_MODE changed from Batch 514 owner-activated "
+        "'ticker_strategy'. Owner sign-off required to switch modes."
     )
