@@ -68,11 +68,15 @@ def test_strong_positive_drift_passes_5gate():
 
     Pairs with test_random_walk_zero_5gate_passes as a two-sided check on
     the 5-Gate pipeline.
+
+    Batch 506 (2026-05-31, 0a Path-2 swap): enforced gate changed from
+    profit_factor to actual R:R = avg_win / abs(avg_loss). Synthetic
+    fixture updated to asymmetric wins/losses (150 wins @ 1.5%, 50
+    losses @ -0.5% -> R:R = 3.0, PF = 9.0) so both gates pass.
     """
     from scripts.optimize_strategies_from_cube import _cell_stats, _dec426_verdict
 
-    rng = np.random.RandomState(101)
-    pnl = pd.Series(rng.normal(loc=0.6, scale=1.0, size=200))
+    pnl = pd.Series([1.5]*150 + [-0.5]*50)
     hold = pd.Series([20.0] * 200)
     stats = _cell_stats(pnl, hold)
     verdict = _dec426_verdict(stats, m_total_candidates=1)
