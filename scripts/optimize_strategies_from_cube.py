@@ -166,26 +166,29 @@ def _dec426_verdict(stats: dict, m_total_candidates: int = 1) -> dict:
     )
     psr_value = psr_result.get("psr")
     psr_pass = (psr_value is not None) and (psr_value >= GATE_PSR_MIN)
-    # Batch 502 (2026-05-31, 0a path 1): rename gate key
-    # `"rr_>=_2.0"` -> `"pf_>=_2.0"` to honest-up the math. The gate
-    # has always tested profit_factor; the prior label was wrong (per
-    # Batch 492 counter-example: WR=60% with PF=2.0 implies actual
-    # R:R=1.33, not 2.0). NEW informational `"rr_actual_>=_2.0"`
-    # field exposes the true-R:R reading WITHOUT enforcing it -- a
-    # future Path-2 owner decision can swap this into the `verdict`
-    # check to tighten the gate; today it's diagnostic-only.
+    # Batch 502 (Path 1): renamed "rr_>=_2.0" -> "pf_>=_2.0" + shipped
+    # informational "rr_actual_>=_2.0".
+    # Batch 506 (2026-05-31, owner decision Path 2): SWAP the enforced
+    # gate from profit_factor to actual R:R. Per Batch 492 counter-
+    # examples (WR=60% PF=2.0 implies R:R=1.33; 90% WR + R:R=0.5 has
+    # PF=4.5), the previously-enforced PF gate let cells through that
+    # the dict-key name "rr_>=_2.0" would have rejected. The enforced
+    # gate is now actual R:R = avg_win / abs(avg_loss). The pf reading
+    # stays in the gates dict as informational (NOT enforced).
     rr_actual_pass = stats.get("rr_ratio", 0.0) >= GATE_RR_MIN
+    pf_pass = stats["profit_factor"] >= GATE_RR_MIN
     gates = {
-        "n_>=_30":         n >= GATE_N_MIN,
-        "p_<_0.05":        bonf_p < GATE_P_MAX,
-        "psr_>=_0.95":     psr_pass,
-        "t_>=_3.4":        stats["t_stat"] >= GATE_T_MIN,
-        # Renamed Batch 502; same behaviour: enforced gate uses profit_factor.
-        "pf_>=_2.0":       stats["profit_factor"] >= GATE_RR_MIN,
-        # New informational reading; NOT enforced in the verdict today.
+        "n_>=_30":          n >= GATE_N_MIN,
+        "p_<_0.05":         bonf_p < GATE_P_MAX,
+        "psr_>=_0.95":      psr_pass,
+        "t_>=_3.4":         stats["t_stat"] >= GATE_T_MIN,
+        # Batch 506: rr_actual_>=_2.0 is NOW the enforced gate.
         "rr_actual_>=_2.0": rr_actual_pass,
+        # Batch 506: pf_>=_2.0 stays informational (NOT enforced); kept
+        # for backward-compat dashboards + diagnostic comparison.
+        "pf_>=_2.0":        pf_pass,
     }
-    enforced_gates = ["n_>=_30", "p_<_0.05", "t_>=_3.4", "pf_>=_2.0"]
+    enforced_gates = ["n_>=_30", "p_<_0.05", "t_>=_3.4", "rr_actual_>=_2.0"]
     return {
         "verdict":         "PASS" if all(gates[k] for k in enforced_gates) else "FAIL",
         "five_gate_pass":  all(gates[k] for k in enforced_gates + ["psr_>=_0.95"]),

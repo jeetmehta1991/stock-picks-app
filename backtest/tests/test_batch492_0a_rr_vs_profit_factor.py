@@ -143,34 +143,31 @@ def test_batch492_0a_counterexample_inverse_high_wr_low_rr():
 # Pin current production behaviour
 # ---------------------------------------------------------------------------
 
-def test_batch492_0a_current_production_gate_uses_profit_factor():
+def test_batch492_0a_current_production_gate_state():
     """Pin the enforced-gate state at
     scripts/optimize_strategies_from_cube.py.
 
-    Batch 502 (2026-05-31) Path-1 update: the dict key was renamed
-    from `"rr_>=_2.0"` -> `"pf_>=_2.0"` (honest-up the label). The
-    enforced behaviour is UNCHANGED -- still gates on profit_factor.
-    A NEW informational `"rr_actual_>=_2.0"` reading ships alongside
-    but is NOT in the enforced verdict path; Path-2 (owner-gated)
-    will swap that into enforcement later.
+    Batch 506 (2026-05-31) Path-2 SWAP: enforced gate moved from
+    profit_factor to actual R:R = avg_win / abs(avg_loss). pf reading
+    stays in gates dict as informational.
+
+    History:
+      Batch 492: documented PF vs R:R counter-examples
+      Batch 502 (Path-1): renamed key + added informational rr_actual
+      Batch 506 (Path-2): SWAP -- rr_actual is now enforced; pf is informational
     """
     from pathlib import Path
     optimizer = Path(__file__).resolve().parent.parent.parent / "scripts" / \
         "optimize_strategies_from_cube.py"
     src = optimizer.read_text(encoding="utf-8")
-    # Pin: renamed pf_>=_2.0 key bound to profit_factor (Batch 502 Path-1).
-    assert '"pf_>=_2.0":       stats["profit_factor"] >= GATE_RR_MIN' in src, (
-        "Production gate no longer reads stats['profit_factor'] for "
-        "pf gate. If deliberate Path-2 fix (swap to avg_win/abs(avg_loss)), "
-        "update this test + queue row 0a status."
-    )
-    # Pin: rr_actual_>=_2.0 informational reading shipped (Batch 502).
-    assert '"rr_actual_>=_2.0": rr_actual_pass' in src, (
-        "Batch 502 informational rr_actual reading missing from gates dict."
-    )
-    assert 'enforced_gates = ["n_>=_30", "p_<_0.05", "t_>=_3.4", "pf_>=_2.0"]' in src, (
-        "Batch 502 enforced_gates list changed; verify rr_actual_>=_2.0 "
-        "still NOT enforced (Path-2 swap not yet shipped)."
+    # Pin: both gates assigned in gates dict
+    assert 'rr_actual_pass = stats.get("rr_ratio", 0.0) >= GATE_RR_MIN' in src
+    assert 'pf_pass = stats["profit_factor"] >= GATE_RR_MIN' in src
+    # Pin: Batch 506 enforced_gates list -- rr_actual_>=_2.0 is 4th enforced
+    assert ('enforced_gates = ["n_>=_30", "p_<_0.05", "t_>=_3.4", '
+            '"rr_actual_>=_2.0"]') in src, (
+        "Batch 506 enforced_gates list changed. Verify rr_actual_>=_2.0 "
+        "is the enforced 4th gate."
     )
 
 
