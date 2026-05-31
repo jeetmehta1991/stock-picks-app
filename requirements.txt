@@ -1,40 +1,85 @@
-# Core data
-yfinance>=0.2.40
-pandas>=2.0.0
-numpy>=1.24.0
+# Stock-picks engine -- LOCKED dependency manifest.
+#
+# Batch 525 (2026-05-31) -- the entire file is hard-pinned ("==") so a
+# new laptop / cloud instance / CI runner resolves to bit-identical
+# library versions every time. Loose pins (">=") are forbidden by
+# `backtest/tests/test_batch525_requirements_lock.py`.
+#
+# Why hard pins matter (DET1 lineage):
+#   Batch 484 cross-platform diff revealed the engine produces DIFFERENT
+#   trade tuples on Windows vs Linux when pandas / numpy versions drift.
+#   Batch 518 traced it to `rsi_14` sub-epsilon divergence between
+#   pandas 3.0.2 + 3.0.3 (NaN handling in
+#   `.diff().clip(lower=0).rolling().mean()`). Batch 520 pinned CI;
+#   Batch 525 pins the local environment so the same lock applies on a
+#   new laptop / cloud instance / contributor machine.
+#
+# Setup procedure for a fresh machine:
+#   python -m venv .venv
+#   source .venv/bin/activate           # mac/linux
+#   # OR  .venv\Scripts\Activate.ps1    # windows
+#   pip install -r requirements.txt
+#   pip install -e vendored/smartmoneyconcepts/
+#   python scripts/verify_environment.py   # MUST pass before any engine run
+#
+# When to bump a pin: bump intentionally + regenerate the Windows
+# fingerprint baseline (`scripts/check_platform_determinism.py
+# --output backtest/tests/fixtures/platform_determinism_windows.json`)
+# + re-trigger the DET1 workflow to regenerate the Linux baseline +
+# confirm cross-platform diff still matches.
 
-# Technical indicators
-pandas-ta>=0.3.14b
+# ---------------------------------------------------------------------------
+# Core numerics (DET1 hot path -- DO NOT bump without baseline regen)
+# ---------------------------------------------------------------------------
+pandas==3.0.2
+numpy==2.4.4
+pyarrow==24.0.0
+scipy==1.17.1
 
-# Parquet cache — required for data persistence
-pyarrow>=10.0.0
+# ---------------------------------------------------------------------------
+# Statistical methodology
+# ---------------------------------------------------------------------------
+# DEC-111/414/416: ADF stationarity + Chow split-sample structural break
+# tests on per-strategy equity curves. statsmodels powers both.
+statsmodels==0.14.6
 
-# S&P 500 constituent list from Wikipedia
-lxml>=4.9.0
-html5lib>=1.1
+# ---------------------------------------------------------------------------
+# Phase 1B ML stack
+# ---------------------------------------------------------------------------
+scikit-learn==1.8.0
+xgboost==3.2.0
+numba==0.65.1
 
-# HTTP requests
-requests>=2.28.0
+# ---------------------------------------------------------------------------
+# Concurrency + IO + time
+# ---------------------------------------------------------------------------
+filelock==3.29.0
+python-dateutil==2.9.0.post0
+pytz==2026.1.post1
+requests==2.33.1
 
-# Anthropic agents (Phase 1B+)
-anthropic>=0.20.0
-filelock>=1.4.0
+# ---------------------------------------------------------------------------
+# Data sources (HARD CUT: yfinance is one-time SETUP only per Stage 2
+# NO-LIVE-API rule; kept pinned because some setup paths still import it).
+# Wikipedia helpers (lxml/html5lib) are similarly one-time per L88 exception.
+# ---------------------------------------------------------------------------
+yfinance==1.3.0
+lxml==6.1.0
 
-# Statistical methodology (DEC-111/414/416 Pass 53 Phase 3 Batch 41 owner-approved
-# 2026-05-11). statsmodels powers ADF stationarity test (DEC-414) and Chow
-# split-sample structural break test (DEC-416) on per-strategy equity curves.
-# Standard econometrics library; scipy and numpy already present.
-statsmodels>=0.14.0
+# ---------------------------------------------------------------------------
+# Agents (Phase 1B+)
+# ---------------------------------------------------------------------------
+anthropic==0.97.0
 
-# DEC-275 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
-# (owner-approved Path C 20-DEC bundle). requirements.txt audit per Pass 52
-# turn 117 spec: add openai (TradingAgents LLM client per DEC-051) and
-# fredapi (FRED expansion per DEC-407/448). tradingagents library is a
-# vendored fork (see vendored/tradingagents/) not pip-installable; install
-# via `pip install -e vendored/tradingagents/` at session setup.
-openai>=1.10.0
-fredapi>=0.5.1
+# ---------------------------------------------------------------------------
+# Test runner (Tier 12 catch-all needs xdist)
+# ---------------------------------------------------------------------------
+pytest==9.0.3
+pytest-xdist==3.8.0
+hypothesis==6.152.4
 
-# DEC-235 Pass 53 v8h+1 Phase 3 Batch 59 - NYSE calendar handling per
-# Pass 52 turn 58 spec. Stdlib fallback (Mon-Fri only) when not installed.
-pandas-market-calendars>=4.3.0
+# ---------------------------------------------------------------------------
+# Vendored editable install (not pip-installable from PyPI -- install
+# separately AFTER pip install -r requirements.txt):
+#   pip install -e vendored/smartmoneyconcepts/
+# ---------------------------------------------------------------------------
