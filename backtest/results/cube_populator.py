@@ -222,6 +222,24 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
         out["max_size_pct_of_adv"]     = cap["max_size_pct_of_adv"]
         out["capacity_concern_flag"]   = bool(cap["capacity_concern_flag"])
 
+    # Batch 530 (2026-05-31) -- closes the queue-item-#5 "wire-in is a
+    # one-liner follow-on" note. Both metric bundles emit their own dict
+    # whose keys are safe to merge into `out` (no key collisions verified
+    # by Batch 504 schema review). Silent-failure guarded so a row that
+    # lacks an expected column (e.g. old trade_log without `regime`)
+    # doesn't crash cell-metric emission; downstream consumers s.get()
+    # with defaults.
+    try:
+        from backtest.results.cube_metrics_tier_b import compute_tier_b_metrics
+        out.update(compute_tier_b_metrics(trades))
+    except Exception:
+        pass
+    try:
+        from backtest.results.cube_metrics_tier_cde import compute_tier_cde_metrics
+        out.update(compute_tier_cde_metrics(trades))
+    except Exception:
+        pass
+
     return out
 
 
