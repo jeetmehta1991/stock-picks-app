@@ -1389,6 +1389,30 @@ AAII_EXTENDED_SCHEMA_VERSION = 2  # was 1 (5-col); now 2 (13-col)
 WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED = True
 TICKER_STOPOUT_COOLDOWN_DAYS = 5
 
+# BUG-61 concurrent-block mode (Batch 510a 2026-05-31 per owner directive
+# "investigate + fix bug; surface recommendation for approval"):
+# Mode-A "ticker"           : BLOCK any new entry on a ticker that already
+#                              has ANY open position (current default;
+#                              prior owner-approved behavior; 49.7% of R3
+#                              skip events).
+# Mode-B "ticker_direction" : BLOCK only same-direction entries on the
+#                              ticker (a long open allows a new short; a
+#                              short open allows a new long). Permits
+#                              hedging-pair strategies to coexist.
+# Mode-C "ticker_strategy"  : BLOCK only when the SAME strategy already
+#                              has an open position on the ticker. Lets
+#                              different strategies stack on the same
+#                              name (e.g. pead_long + xs_momentum_long
+#                              both open AAPL).
+# Mode-D "off"              : DISABLE the block entirely. Portfolio cap +
+#                              max-loss-cap + cooldown still apply.
+#
+# Default remains "ticker" -- changing the default is an owner-gated
+# decision. Owner sets BUG_61_BLOCK_MODE to "ticker_direction" or
+# "ticker_strategy" for R4 cube to recover the 685k blocked candidates
+# without removing concentration risk management.
+BUG_61_BLOCK_MODE = "ticker"
+
 # DEC-037 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
 # Characterization-test-first approach absorbed by DEC-438 golden-master.
 DEC_037_ABSORBED_BY = ("DEC-438",)
