@@ -144,23 +144,33 @@ def test_batch492_0a_counterexample_inverse_high_wr_low_rr():
 # ---------------------------------------------------------------------------
 
 def test_batch492_0a_current_production_gate_uses_profit_factor():
-    """Pin the assertion that today's gate at
-    scripts/optimize_strategies_from_cube.py:159 uses profit_factor.
+    """Pin the enforced-gate state at
+    scripts/optimize_strategies_from_cube.py.
 
-    If a future commit changes the gate to use actual R:R, this test
-    surfaces the change explicitly and forces a co-update of the dict
-    key name + the test below.
+    Batch 502 (2026-05-31) Path-1 update: the dict key was renamed
+    from `"rr_>=_2.0"` -> `"pf_>=_2.0"` (honest-up the label). The
+    enforced behaviour is UNCHANGED -- still gates on profit_factor.
+    A NEW informational `"rr_actual_>=_2.0"` reading ships alongside
+    but is NOT in the enforced verdict path; Path-2 (owner-gated)
+    will swap that into enforcement later.
     """
     from pathlib import Path
     optimizer = Path(__file__).resolve().parent.parent.parent / "scripts" / \
         "optimize_strategies_from_cube.py"
     src = optimizer.read_text(encoding="utf-8")
-    # Pin: the rr_>=_2.0 key is bound to profit_factor today
-    assert '"rr_>=_2.0":   stats["profit_factor"] >= GATE_RR_MIN' in src, (
-        "Production gate at scripts/optimize_strategies_from_cube.py:159 "
-        "no longer reads `stats[\"profit_factor\"]` for the rr gate. If "
-        "this is a deliberate fix (use actual avg_win/avg_loss), update "
-        "this test + rename the dict key to honest-up."
+    # Pin: renamed pf_>=_2.0 key bound to profit_factor (Batch 502 Path-1).
+    assert '"pf_>=_2.0":       stats["profit_factor"] >= GATE_RR_MIN' in src, (
+        "Production gate no longer reads stats['profit_factor'] for "
+        "pf gate. If deliberate Path-2 fix (swap to avg_win/abs(avg_loss)), "
+        "update this test + queue row 0a status."
+    )
+    # Pin: rr_actual_>=_2.0 informational reading shipped (Batch 502).
+    assert '"rr_actual_>=_2.0": rr_actual_pass' in src, (
+        "Batch 502 informational rr_actual reading missing from gates dict."
+    )
+    assert 'enforced_gates = ["n_>=_30", "p_<_0.05", "t_>=_3.4", "pf_>=_2.0"]' in src, (
+        "Batch 502 enforced_gates list changed; verify rr_actual_>=_2.0 "
+        "still NOT enforced (Path-2 swap not yet shipped)."
     )
 
 
