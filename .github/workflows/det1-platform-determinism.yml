@@ -1,0 +1,81 @@
+name: DET1 Linux Determinism Baseline
+
+# Batch 508 (2026-05-31, DET1 unblock per owner directive 2026-05-31):
+# Generates the Linux SHA-256 fingerprint baseline that Batch 498's
+# cross-platform diff test compares against the committed Windows
+# baseline at backtest/tests/fixtures/platform_determinism_windows.json.
+#
+# Owner triggers from the GitHub Actions UI -> "DET1 Linux Determinism
+# Baseline" -> "Run workflow". Workflow:
+#   (1) checks out the branch
+#   (2) installs the same Python 3.13 + numpy + pandas combo used by
+#       the test pyramid (consistency with CI fingerprint)
+#   (3) runs scripts/check_platform_determinism.py
+#   (4) commits the produced fixture back to the branch
+#
+# Once both Windows + Linux baselines are committed, the cross-platform
+# diff test in backtest/tests/test_batch498_det1_platform_determinism.py
+# activates and names the first diverging indicator (root-cause of DET1).
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: "Branch to commit the Linux baseline back to"
+        required: true
+        default: "main"
+        type: string
+
+permissions:
+  contents: write   # needed to push the baseline JSON back
+
+jobs:
+  generate_linux_baseline:
+    name: Generate Linux determinism baseline + commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install minimum deps for harness
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas
+
+      - name: Run platform-determinism harness
+        run: |
+          python scripts/check_platform_determinism.py \
+              --output backtest/tests/fixtures/platform_determinism_linux.json
+          echo "--- baseline contents ---"
+          cat backtest/tests/fixtures/platform_determinism_linux.json
+
+      - name: Commit baseline back to ${{ inputs.target_branch }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backtest/tests/fixtures/platform_determinism_linux.json
+          if git diff --cached --quiet; then
+            echo "no changes (fixture already up to date)"
+            exit 0
+          fi
+          git commit -m "Batch 508: DET1 Linux determinism baseline (auto-generated via workflow_dispatch)."
+          git push origin HEAD:${{ inputs.target_branch }}
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### DET1 Linux Baseline" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ inputs.target_branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Fingerprint file:** backtest/tests/fixtures/platform_determinism_linux.json" >> $GITHUB_STEP_SUMMARY
+          echo "**Next:** run test_batch498_cross_platform_diff_when_both_baselines_present to surface diverging indicators." >> $GITHUB_STEP_SUMMARY
