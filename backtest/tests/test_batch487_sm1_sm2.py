@@ -48,9 +48,11 @@ def test_sm1_all_ten_sleeves_registered():
         assert name in ALL_STRATEGIES, f"missing sleeve: {name}"
 
 
-def test_all_strategies_count_is_198_after_sm1():
+def test_all_strategies_count_is_200_after_sm1_plus_m6_path2():
+    """SM1 brought count 188 -> 198 (Batch 487; 10 smart-money sleeves).
+    Batch 507 M6 Path-2 brought 198 -> 200 (2 YoY-growth PEAD sleeves)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 198
+    assert len(ALL_STRATEGIES) == 200
 
 
 # ----------------------------------------------------------------------

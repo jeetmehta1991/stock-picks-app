@@ -2113,6 +2113,55 @@ def strat_pead_short(s):
          "Bernard-Thomas 60-day drift continuation (negative)"])
 
 
+def strat_pead_long_high_yoy_growth_only(s):
+    """Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go).
+    PEAD long restricted to high YoY-growth surprise cells.
+
+    Entry filter: yoy_surprise_high (yoy_growth >= +5%) AND
+    within_pead_window. Surrogate for analyst-surprise definition per
+    M6 Path-2 owner decision -- ships YoY-growth sleeve in lieu of
+    paid Finnhub re-prefetch (Path-1).
+
+    Academic backing: Bernard-Thomas 1989 PEAD + Foster-Olsen-Shevlin
+    1984 "Earnings Releases, Anomalies, and the Behavior of Security
+    Returns" -- bottom-decile / top-decile YoY EPS growth exhibits the
+    same 60-day drift pattern as analyst-surprise.
+    """
+    fires = (
+        s.get("within_pead_window", False)
+        and s.get("yoy_surprise_high", False)
+    )
+    yoy = s.get("earnings_eps_yoy_growth", 0.0)
+    thr = s.get("yoy_surprise_threshold_long", 0.05)
+    return _strat(fires, "long", "event_driven",
+        ["within_pead_window", "yoy_surprise_high",
+         f"earnings_eps_yoy_growth>={thr*100:.0f}pct"],
+        [f"Within PEAD drift window (<=60d post-earnings)",
+         f"YoY EPS growth: {yoy*100:.1f}% (>= {thr*100:.0f}% threshold)",
+         "M6 Path-2: YoY-growth surprise sleeve (Batch 507)"])
+
+
+def strat_pead_short_negative_yoy_growth(s):
+    """Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go).
+    PEAD short restricted to negative YoY-growth surprise cells.
+
+    Entry filter: yoy_surprise_negative (yoy_growth <= -5%) AND
+    within_pead_window. Symmetric short side of the YoY-growth sleeve.
+    """
+    fires = (
+        s.get("within_pead_window", False)
+        and s.get("yoy_surprise_negative", False)
+    )
+    yoy = s.get("earnings_eps_yoy_growth", 0.0)
+    thr = s.get("yoy_surprise_threshold_short", -0.05)
+    return _strat(fires, "short", "event_driven",
+        ["within_pead_window", "yoy_surprise_negative",
+         f"earnings_eps_yoy_growth<={thr*100:.0f}pct"],
+        [f"Within PEAD drift window (<=60d post-earnings)",
+         f"YoY EPS growth: {yoy*100:.1f}% (<= {thr*100:.0f}% threshold)",
+         "M6 Path-2: YoY-growth surprise sleeve short (Batch 507)"])
+
+
 def strat_avwap_252_breakout(s):
     """Batch 208 (new strategy family 2026-05-17 owner-approved research review).
     Anchored VWAP from 252-day swing low breakout. Brian Shannon (2022)
@@ -3571,6 +3620,9 @@ ALL_STRATEGIES = {
     # PEAD family (2 - Batch 209 2026-05-17 owner-approved research review)
     "pead_long":                    strat_pead_long,
     "pead_short":                   strat_pead_short,
+    # Batch 507 (2026-05-31, M6 Path-2 sleeves registered per owner go):
+    "pead_long_high_yoy_growth_only":   strat_pead_long_high_yoy_growth_only,
+    "pead_short_negative_yoy_growth":   strat_pead_short_negative_yoy_growth,
     # Anchored VWAP family (3 - Batch 208 2026-05-17 owner-approved research review)
     "avwap_252_breakout":           strat_avwap_252_breakout,
     "avwap_50_reclaim":             strat_avwap_50_reclaim,
@@ -4046,6 +4098,18 @@ def screen_instrument(
             signals.update(pead)
     except Exception as _e:
         _log_silent_producer_failure("pead", _e)
+    # Batch 507 (2026-05-31, M6 Path-2 sleeves wired per owner directive):
+    # YoY-growth surprise signal layered on top of PEAD. Emits
+    # yoy_surprise_high / yoy_surprise_negative consumed by
+    # strat_pead_long_high_yoy_growth_only + strat_pead_short_negative_yoy_growth.
+    # Graceful empty when PEAD data missing (degrades same as PEAD).
+    try:
+        from backtest.signals.earnings_surprise_yoy import compute_yoy_surprise_signal
+        yoy_signal = compute_yoy_surprise_signal(ticker, df, as_of)
+        if yoy_signal:
+            signals.update(yoy_signal)
+    except Exception as _e:
+        _log_silent_producer_failure("earnings_surprise_yoy", _e)
     # Batch 222: insider buying cluster signals (Quiver SEC Form 4).
     # No-op when global insiders parquet missing or ticker has no
     # qualifying transactions in lookback.

@@ -146,17 +146,14 @@ def test_batch503_owner_tunable_thresholds(monkeypatch):
 # Sleeve strategies NOT yet registered in ALL_STRATEGIES
 # ---------------------------------------------------------------------------
 
-def test_batch503_sleeve_strategies_not_in_all_strategies():
-    """Per CLAUDE.md ALL decisions need owner approval -- sleeves are
-    SCAFFOLDED + ready, NOT registered. Owner one-line approval flips
-    them into ALL_STRATEGIES."""
+def test_batch503_sleeve_strategies_registered_post_batch507():
+    """Batch 503 originally pinned sleeves NOT in ALL_STRATEGIES (awaiting
+    owner approval). Batch 507 (2026-05-31, owner directive M6 Path-2
+    registration) flipped this -- both sleeves are now REGISTERED."""
     from backtest.signals.screener import ALL_STRATEGIES
-    sleeve_names = {"pead_long_high_yoy_growth_only",
-                    "pead_short_negative_yoy_growth"}
-    in_registry = sleeve_names.intersection(set(ALL_STRATEGIES.keys()))
-    assert not in_registry, (
-        f"Sleeve strategies {in_registry} registered before owner "
-        f"approval. Move sleeve defs out of "
-        f"backtest/signals/earnings_surprise_yoy.SLEEVE_DEFINITIONS "
-        f"into ALL_STRATEGIES only on explicit owner go."
+    assert "pead_long_high_yoy_growth_only" in ALL_STRATEGIES, (
+        "Batch 507 must register pead_long_high_yoy_growth_only"
+    )
+    assert "pead_short_negative_yoy_growth" in ALL_STRATEGIES, (
+        "Batch 507 must register pead_short_negative_yoy_growth"
     )
