@@ -1409,6 +1409,34 @@ class BacktestEngine:
                     })
                     continue
 
+                # Batch 510b (2026-05-31, R4 spec per owner directive):
+                # STRATEGY_REQUIRED_MACRO_REGIME -- when a strategy is keyed
+                # here, accept the candidate only if `macro_score` matches.
+                # macro_score sign: < 0 = "negative", > 0 = "positive",
+                # == 0 = "neutral" (matches the Batch 501 bucketing).
+                # Default empty dict -> no behavior change for non-R4 runs.
+                # Owner populates the dict in backtest/config.py for R4
+                # cube spec; populated entries activate the filter.
+                from backtest.config import STRATEGY_REQUIRED_MACRO_REGIME
+                _req_macro = STRATEGY_REQUIRED_MACRO_REGIME.get(
+                    strat_entry["strategy"]
+                )
+                if _req_macro is not None:
+                    _macro_val = float(macro.get("macro_score", 0) or 0)
+                    if _macro_val < 0:
+                        _macro_band = "negative"
+                    elif _macro_val > 0:
+                        _macro_band = "positive"
+                    else:
+                        _macro_band = "neutral"
+                    if _macro_band != _req_macro:
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "reason": f"required_macro_regime_mismatch_{_req_macro}_got_{_macro_band}_batch510b",
+                        })
+                        continue
+
                 # Batch 203 (regime SELECTOR per AMH research review owner-
                 # approved 2026-05-17): the BUG-34 blocklist is a hard
                 # exclusion; the SELECTOR adds a soft regime-affinity

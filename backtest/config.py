@@ -860,6 +860,35 @@ STRATEGY_REGIME_BLOCKLIST: dict[str, list[str]] = {
     # "strat_rsi_overbought_short": ["bear"],
 }
 
+# Batch 510b (2026-05-31, R4 cube spec per owner directive 2026-05-31):
+# Required macro regime per strategy. When a strategy is keyed here, the
+# engine accepts the candidate only when `macro_score` matches the listed
+# constraint (typically "neutral" only). Default empty -> no filter.
+#
+# Backed by Batch 501 entry-side optimizer analysis on merged R3 cube:
+# `macro_score == neutral` is the dominant entry-side lift across 5 of
+# the 9 LOCK-causing candidate strategies (Sharpe lifts +1.6 to +4.5):
+#   bollinger_tight              -0.06 -> +4.41 (n=36)
+#   monthly_bias_momentum_long    0.80 -> +3.90 (n=82) [regime_neutral]
+#   xs_quality_top_quintile_long  0.21 -> +3.07 (n=76)
+#   pead_long                     1.13 -> +3.40 (n=58)
+#   adx_initiation               -0.40 -> +1.84 (n=138)
+#
+# Default empty -> no behavior change for non-R4 runs. Owner populates
+# for R4 cube spec (separate from the default to keep R3-replay tests
+# deterministic).
+STRATEGY_REQUIRED_MACRO_REGIME: dict[str, str] = {
+    # Owner-approved R4 spec (Batch 510b 2026-05-31; activate by setting
+    # the env var STOCKPICKS_R4_MACRO_FILTER=1 OR adding entries below
+    # for the cube run). Empty default = no filter, matching pre-Batch-510b.
+    # Example (uncomment for R4):
+    # "bollinger_tight":              "neutral",
+    # "monthly_bias_momentum_long":   "neutral",
+    # "xs_quality_top_quintile_long": "neutral",
+    # "pead_long":                    "neutral",
+    # "adx_initiation":               "neutral",
+}
+
 # Batch 218 (research-review deprecations 2026-05-18 owner-approved):
 # strategies with no replicable peer-reviewed edge in 2015-2024 literature
 # are excluded from the screener loop. This shrinks the multi-testing
