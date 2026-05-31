@@ -70,6 +70,20 @@ lxml==6.1.0
 # Agents (Phase 1B+)
 # ---------------------------------------------------------------------------
 anthropic==0.97.0
+# DEC-275 / DEC-051: openai is the TradingAgents LLM client (vendored fork
+# at vendored/tradingagents/). Pin to last 1.x stable -- 2.x is a breaking
+# API change. Required by test_dec_275_requirements_audit_includes_missing_deps.
+openai==1.109.1
+
+# ---------------------------------------------------------------------------
+# Data fetchers (optional, Phase 1B+ paths)
+# ---------------------------------------------------------------------------
+# DEC-407/448 FRED expansion -- macro indicator pulls. Required by
+# test_dec_275_requirements_audit_includes_missing_deps.
+fredapi==0.5.2
+# DEC-235 NYSE calendar handling (stdlib Mon-Fri fallback when missing).
+# Required by test_dec_275_requirements_audit_includes_missing_deps.
+pandas-market-calendars==5.4.0
 
 # ---------------------------------------------------------------------------
 # Test runner (Tier 12 catch-all needs xdist)
