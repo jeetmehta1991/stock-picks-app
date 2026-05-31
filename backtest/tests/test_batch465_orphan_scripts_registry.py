@@ -93,16 +93,42 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "test_batch499_analyst_overlay.py (unit tests on the math). "
         "Needs cron/launcher wiring before dashboard refresh automation.",
     ),
-    "scripts/entry_side_threshold_optimizer.py": (
+    # Batch 530 post-merge sync: scripts/entry_side_threshold_optimizer.py
+    # REMOVED -- batch/521 multi-feature optimizer test now imports
+    # BATCH_414_STRATEGIES from it -> no longer orphan per AU9 scanner.
+    "scripts/entry_side_multi_feature_optimizer.py": (
         "c",
-        "Batch 501 entry-side threshold optimizer (Dim A). Operator-run "
-        "post-cube analysis that scans 7 entry-time features against "
-        "per-strategy baseline Sharpe and emits ranked lift candidates "
-        "(`entry_threshold_candidates.csv`). Surfaces the macro_neutral "
-        "filter as the dominant unlock for the LOCKED 1A-alpha gate. "
-        "Consumed by test_batch501_entry_side_threshold_optimizer.py "
-        "(unit tests on math) + queue row #9 fallback recommendation. "
-        "Needs caller/cron wiring once R4 cube spec is owner-approved.",
+        "Batch 521 multi-feature entry-side optimizer (pairwise feature "
+        "buckets). Operator-run post-cube companion to Batch 501 "
+        "single-feature optimizer. Consumed by "
+        "test_batch521_multi_feature_entry_optimizer.py only. Needs "
+        "caller/cron wiring once R4 cube spec is owner-approved.",
+    ),
+    "scripts/validate_sec_edgar_decoded_completeness.py": (
+        "c",
+        "Batch 526 SEC EDGAR decoded-cache 6-gate validator (coverage / "
+        "schema / min-rows / status-dist / spot-check / sample-sanity). "
+        "Operator-run after P17a scoped extraction completes to gate "
+        "the P17b/c/d/e sleeve wire-in batch. Consumed by "
+        "test_batch526_sec_edgar_decoded_validator.py only.",
+    ),
+    # Batch 530 post-merge sync: scripts/diff_trade_logs.py REMOVED --
+    # AU9 scanner sees a reference outside test/EXECUTION_QUEUE excluded
+    # set (likely the script's own setup docs or another doc file).
+    # Not orphan per scanner; registry agrees.
+    "scripts/check_merge_train_conflicts.py": (
+        "c",
+        "Batch 529 merge-train conflict detector (git merge-tree "
+        "simulation across batch/** branches). Operator-run before "
+        "merging accumulated feature branches. Consumed by "
+        "test_batch529_merge_train_conflict_detector.py only.",
+    ),
+    "scripts/verify_environment.py": (
+        "c",
+        "Batch 525 laptop-portable environment verifier (requirements.txt "
+        "pin diff + cross-platform fingerprint diff). Operator-run on "
+        "fresh machine after `pip install -r requirements.txt`. "
+        "Documented in requirements.txt setup procedure.",
     ),
     # Batch 524 hotfix (2026-05-31): scripts/extract_sec_edgar_xml_pilot.py
     # REMOVED -- Batch 515 scoped wrapper imports it (pilot has caller now),
