@@ -79,15 +79,11 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "before AWS-based launch was the canonical path. Either re-wire "
         "as the documented `pytest`-pre-AWS smoke runner or archive.",
     ),
-    "scripts/check_platform_determinism.py": (
-        "c",
-        "Batch 498 DET1 cross-platform-determinism diagnostic. Manual-run "
-        "harness operator invokes on each target platform (Windows / Linux) "
-        "to produce SHA-256 fingerprints of 9 indicators against seeded "
-        "synthetic OHLCV. Output drives the queue row DET1 root-cause "
-        "diff. Consumed by test_batch498_det1_platform_determinism.py "
-        "(reads committed Windows fixture + future Linux fixture).",
-    ),
+    # Batch 517 hotfix (2026-05-31): scripts/check_platform_determinism.py
+    # REMOVED from CLASSIFICATION because Batch 508 workflow
+    # `.github/workflows/det1-platform-determinism.yml` now references
+    # it -- it has a caller and is no longer orphan. AU9 scanner pin
+    # would have flagged it on next regen; removed proactively.
     "scripts/analyst_overlay_from_trade_log.py": (
         "c",
         "Batch 499 item-7 analyst-overlay generator. Operator-run "
@@ -107,6 +103,16 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "Consumed by test_batch501_entry_side_threshold_optimizer.py "
         "(unit tests on math) + queue row #9 fallback recommendation. "
         "Needs caller/cron wiring once R4 cube spec is owner-approved.",
+    ),
+    "scripts/extract_sec_edgar_xml_pilot.py": (
+        "c",
+        "Batch 509/514 P17a pilot extractor (10 SP500 tickers x 2021-2026 "
+        "x SC_13D/SC_13G/8_K). Operator-run via --no-dry-run after owner "
+        "approval; UA-fixed in Batch 514 -> 1150/1150 OK (100%). Consumed "
+        "by test_batch509_p17a_pilot_extraction.py + scripts/extract_sec_"
+        "edgar_xml_scoped.py (Batch 515 full-universe wrapper). Caller "
+        "wiring TBD: invoked by Batch 515 scoped wrapper which is "
+        "currently the only caller -- both manual-trigger today.",
     ),
 }
 
