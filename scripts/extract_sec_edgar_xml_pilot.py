@@ -53,11 +53,10 @@ PILOT_FORMS = ("SC_13D", "SC_13G", "8_K")
 # SEC EDGAR rate limit: 10 req/sec. Throttle to 8/sec for safety.
 RATE_LIMIT_SLEEP_SEC = 0.125
 
-# SEC requires identifiable User-Agent (compliance: contact email).
-USER_AGENT = (
-    "jeetmehta1991-stock-picks-app/1.0 "
-    "(jeetmehta1991@users.noreply.github.com)"
-)
+# SEC requires identifiable User-Agent in `Name email@domain.com` format.
+# Batch 518 (2026-05-31): UA hotfix -- prior "jeetmehta1991-stock-picks-
+# app/1.0 (...@noreply...)" returned 403. SEC's standard format accepted.
+USER_AGENT = "Stock Picks Research jeetmehta1991@gmail.com"
 
 
 def _filter_pilot_window(df: pd.DataFrame) -> pd.DataFrame:
