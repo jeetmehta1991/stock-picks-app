@@ -10210,8 +10210,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 487 SM1: 188 -> 198 (10 smart-money sleeves)
     #   Batch 507 M6 Path-2: 198 -> 200 (2 YoY-growth PEAD sleeves)
     #   Batch 519 P15 sleeves: 200 -> 202 (squeeze_setup_long + short_borrow_trap_avoid)
-    assert len(ALL_STRATEGIES) == 202, (
-        f"F-002 drift: ALL_STRATEGIES expected 202 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 531 P17 sleeves: 202 -> 204 (activist_13d_long + m_and_a_target_long)
+    assert len(ALL_STRATEGIES) == 204, (
+        f"F-002 drift: ALL_STRATEGIES expected 204 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10226,7 +10227,7 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 201, (
+    assert active == 203, (
         f"F-002 drift: active strategy count expected 201 (Batch 487 SM1 + "
         f"Batch 507 M6 Path-2); got {active}."
     )

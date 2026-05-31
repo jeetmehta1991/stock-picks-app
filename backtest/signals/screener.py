@@ -3736,6 +3736,13 @@ ALL_STRATEGIES = {
     # Batch 519 (2026-05-31, P15 sleeves registered per owner directive):
     "squeeze_setup_long":               strat_squeeze_setup_long,
     "short_borrow_trap_avoid":          strat_short_borrow_trap_avoid,
+    # Batch 531 (2026-05-31, P17 sleeves activated per owner directive
+    # 2026-05-31 "wire in activate truly pending items"). Scaffolded
+    # in Batch 522; producer compute_sec_edgar_signals wired below in
+    # screen_instrument; modifier helpers wired in
+    # backtest/data/smart_money.py + tier-assignment per Batch 531.
+    "activist_13d_long":                strat_activist_13d_long,
+    "m_and_a_target_long":              strat_m_and_a_target_long,
     # Anchored VWAP family (3 - Batch 208 2026-05-17 owner-approved research review)
     "avwap_252_breakout":           strat_avwap_252_breakout,
     "avwap_50_reclaim":             strat_avwap_50_reclaim,
@@ -4439,6 +4446,24 @@ def screen_instrument(
             signals.update(cd_out)
     except Exception as _e:
         _log_silent_producer_failure("corporatedonors", _e)
+    # Batch 531 (2026-05-31, P17 wire-in activation per owner directive
+    # "wire in activate truly pending items"). Producer bundle returns
+    # `sc_13d_filed_within_30d`, `sc_13d_latest_filer_identity`,
+    # `sc_13d_latest_percent_owned`, `8k_item_1_01_filed_within_30d`,
+    # `8k_item_5_02_filed_within_7d`, `sc_13g_filed_within_30d`,
+    # `sc_13g_latest_filer_identity`, `sc_13g_latest_percent_owned`.
+    # Consumed by strat_activist_13d_long (P17b) +
+    # strat_m_and_a_target_long (P17c) + tier_modifier_officer_change_5_02
+    # (P17d) + smart_money_score_modifier_13g (P17e).
+    # Silent-failure: missing decoded parquet -> empty dict -> sleeves
+    # don't fire that bar; modifiers no-op. Safe-additive.
+    try:
+        from backtest.signals.sec_edgar_extractor import compute_sec_edgar_signals
+        se_out = compute_sec_edgar_signals(ticker, as_of)
+        if se_out:
+            signals.update(se_out)
+    except Exception as _e:
+        _log_silent_producer_failure("sec_edgar", _e)
     # Batch 254: calendar effects (DEC-368). Universe-wide; lru_cache once
     # per as_of date.
     try:

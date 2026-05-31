@@ -749,6 +749,31 @@ def smart_money_score(
         elif score < 0:   composite = "negative"
         else:             composite = "none"
 
+    # Batch 531 (2026-05-31, P17e activation per owner directive "wire in
+    # activate truly pending items"). +1 to score when SC 13G passive
+    # filing landed in last 30 days (Vanguard/BlackRock crossing 5% =>
+    # index reweighting + forced fund buying signal). Modifier is
+    # composite-recompute-safe: re-evaluates composite from the new
+    # score so downstream tier-assignment sees the boosted band.
+    try:
+        from backtest.signals.sec_edgar_modifiers import (
+            smart_money_score_modifier_13g,
+        )
+        new_score = smart_money_score_modifier_13g(ticker, as_of, score)
+        if new_score != score:
+            score = new_score
+            # Recompute composite band from new score to keep them
+            # consistent for downstream consumers.
+            if score >= 6:    composite = "congressional+insider_cluster"
+            elif score >= 4:  composite = "congressional_or_insider"
+            elif score >= 2:  composite = "any_buy"
+            elif score >= 1:  composite = "weak_buy"
+            elif score <= -4: composite = "congressional_sell+insider_cluster_sell"
+            elif score < 0:   composite = "negative"
+            else:             composite = "none"
+    except Exception:
+        pass
+
     return {
         # Tier assignment keys (backtest engine)
         "composite_signal":      composite,

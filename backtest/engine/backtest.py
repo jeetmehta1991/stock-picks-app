@@ -1615,6 +1615,21 @@ class BacktestEngine:
                     len(cand["strategies"]), sm, macro, sent,
                     firing_strategies=firing_strategy_names,
                 )
+                # Batch 531 (2026-05-31, P17d activation per owner directive
+                # "wire in activate truly pending items"). Apply officer-
+                # change tier modifier: if 8-K Item 5.02 was filed in last
+                # 7 days, downgrade preliminary tier by 1 slot (CEO/CFO
+                # departure uncertainty premium). Silent-failure guarded;
+                # no-op when decoded cache miss OR no 5.02 filing in window.
+                try:
+                    from backtest.signals.sec_edgar_modifiers import (
+                        tier_modifier_officer_change_5_02,
+                    )
+                    preliminary_tier = tier_modifier_officer_change_5_02(
+                        ticker, as_of, preliminary_tier,
+                    )
+                except Exception:
+                    pass
 
                 # Earnings proximity  -  context for agents, not a blocker
                 earn_days = days_to_next_earnings(ticker, as_of)

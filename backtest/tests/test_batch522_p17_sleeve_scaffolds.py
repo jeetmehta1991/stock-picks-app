@@ -228,45 +228,61 @@ def test_batch522_smart_money_score_modifier_noop_when_no_13g():
 
 
 # ---------------------------------------------------------------------------
-# 5. NOT-REGISTERED guard (the safety lock until owner approves)
+# 5. WIRED + REGISTERED assertion (Batch 531 ACTIVATED)
 # ---------------------------------------------------------------------------
+# Batch 531 (2026-05-31, owner directive "wire in activate truly pending
+# items") flipped these from NOT-REGISTERED/NOT-WIRED safety guards to
+# REGISTERED/WIRED assertions. If activation is ever reverted, these
+# tests fire and force the revert commit to also document the rollback.
 
-def test_batch522_p17_strategies_are_NOT_registered_in_all_strategies():
-    """Scaffold-only ship: the 2 P17 sleeve strategies MUST NOT appear
-    in ALL_STRATEGIES until P17a scoped extraction completes + owner
-    approves the registration batch. Flipping this test to expect
-    presence is the explicit owner-gate."""
+def test_batch522_p17_strategies_ARE_registered_in_all_strategies():
+    """Batch 531 ACTIVATED: the 2 P17 sleeve strategies MUST appear in
+    ALL_STRATEGIES. Producer compute_sec_edgar_signals wired in
+    screen_instrument so they receive their boolean trigger signals."""
     from backtest.signals.screener import ALL_STRATEGIES
-    must_not_register = {"activist_13d_long", "m_and_a_target_long"}
-    registered = must_not_register & set(ALL_STRATEGIES.keys())
-    assert not registered, (
-        f"Batch 522 SCAFFOLD-only invariant violated: {registered} "
-        f"appear in ALL_STRATEGIES. P17a scoped extraction must "
-        f"complete + owner approval batch must register these "
-        f"explicitly. See EXECUTION_QUEUE.md P17b/c."
+    must_register = {"activist_13d_long", "m_and_a_target_long"}
+    missing = must_register - set(ALL_STRATEGIES.keys())
+    assert not missing, (
+        f"Batch 531 P17 sleeve activation regressed: {missing} absent "
+        f"from ALL_STRATEGIES. Restore registrations in screener.py "
+        f"ALL_STRATEGIES dict per Batch 531 wire-in block."
     )
 
 
-def test_batch522_modifiers_not_wired_in_tier_or_score_logic():
-    """SCAFFOLD invariant: the tier + score modifier helpers must
-    not be referenced by `_assign_confidence_tier` or `smart_money_score`
-    yet (their wire-in is the explicit owner-approved follow-on batch).
-    This is a grep-style assertion -- if a future commit wires them
-    in, this test fires and forces the wire-in commit to also flip
-    this guard.
-    """
+def test_batch522_modifiers_ARE_wired_in_tier_and_score_logic():
+    """Batch 531 ACTIVATED: P17d tier modifier wired into
+    `backtest/engine/backtest.py` (post-preliminary_tier hook); P17e
+    smart-money modifier wired into `backtest/data/smart_money.py`
+    (post-composite-band hook). Both silent-failure guarded."""
     repo = Path(__file__).resolve().parent.parent.parent
-    screener_text = (repo / "backtest" / "signals" / "screener.py").read_text(
+    engine_text = (repo / "backtest" / "engine" / "backtest.py").read_text(
         encoding="utf-8",
     )
     smart_money_text = (repo / "backtest" / "data" / "smart_money.py").read_text(
         encoding="utf-8",
     )
-    assert "tier_modifier_officer_change_5_02" not in screener_text, (
-        "P17d tier modifier is wired into screener.py -- flip this "
-        "test + EXECUTION_QUEUE P17d status when intentional."
+    assert "tier_modifier_officer_change_5_02" in engine_text, (
+        "Batch 531 P17d tier modifier wire-in removed from "
+        "engine/backtest.py -- restore the post-preliminary_tier hook."
     )
-    assert "smart_money_score_modifier_13g" not in smart_money_text, (
-        "P17e smart-money modifier is wired into smart_money.py -- flip "
-        "this test + EXECUTION_QUEUE P17e status when intentional."
+    assert "smart_money_score_modifier_13g" in smart_money_text, (
+        "Batch 531 P17e modifier wire-in removed from "
+        "data/smart_money.py -- restore the post-composite-band hook."
+    )
+
+
+def test_batch531_producer_compute_sec_edgar_signals_wired_in_screener():
+    """Batch 531: producer bundle wired into screen_instrument via
+    silent-failure logger pattern (mirrors P15 + P16 producers)."""
+    repo = Path(__file__).resolve().parent.parent.parent
+    screener_text = (repo / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8",
+    )
+    assert "compute_sec_edgar_signals" in screener_text, (
+        "Batch 531 producer wire-in regressed: compute_sec_edgar_signals "
+        "absent from screener.py. Restore try/except block."
+    )
+    assert '_log_silent_producer_failure("sec_edgar"' in screener_text, (
+        "Batch 531 producer not guarded by silent-failure logger -- "
+        "restore standard wrapper per Batch 458 convention."
     )
