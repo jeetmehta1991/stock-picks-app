@@ -1630,10 +1630,11 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   188 after Batch 467 P10 (+2 news_momentum_long + news_reversal_short)
     #   198 after Batch 487 SM1 (+10 smart-money sleeve strategies)
     #   200 after Batch 507 M6 Path-2 (+2 YoY-growth PEAD sleeves)
-    assert len(ALL_STRATEGIES) == 200, (
-        f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6: ALL_STRATEGIES count must "
-        f"be 200 after Batches 329-344 + 467 + 487 + 507, got "
-        f"{len(ALL_STRATEGIES)}"
+    #   202 after Batch 519 P15 sleeves (+squeeze_setup_long + short_borrow_trap_avoid)
+    assert len(ALL_STRATEGIES) == 202, (
+        f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15: ALL_STRATEGIES "
+        f"count must be 202 after Batches 329-344 + 467 + 487 + 507 + 519, "
+        f"got {len(ALL_STRATEGIES)}"
     )
 
 

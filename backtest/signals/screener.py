@@ -2162,6 +2162,61 @@ def strat_pead_short_negative_yoy_growth(s):
          "M6 Path-2: YoY-growth surprise sleeve short (Batch 507)"])
 
 
+def strat_squeeze_setup_long(s):
+    """Batch 519 (2026-05-31, P15 sleeve per owner directive).
+    Short-squeeze setup: high short interest + bullish breakout.
+
+    Long fires when: short_interest_pct >= 20% (FINRA cache via
+    compute_short_interest_signals) AND donchian-20 breakout up
+    AND volume above 20-day average. The high SI primes a squeeze;
+    the DC20 breakout is the trigger; volume confirms participation.
+
+    Academic backing: Cohen-Diether-Malloy 2007 'Supply and Demand
+    Shifts in the Shorting Market' -- shorted stocks underperform on
+    average BUT high-SI names with positive surprises exhibit
+    asymmetric upside (squeeze). Most relevant during high-VIX +
+    Reddit-era retail-driven moves (2021-2026).
+    """
+    si_pct = s.get("short_interest_pct", 0.0) or 0.0
+    fires = (
+        si_pct >= 0.20
+        and s.get("dc20_breakout_up", False)
+        and s.get("vol_above_avg", False)
+    )
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["short_interest_pct>=20pct", "dc20_breakout_up", "vol_above_avg"],
+        [f"Short interest {si_pct*100:.1f}% (>= 20% threshold)",
+         "Price broke 20-day Donchian high",
+         "Volume above 20d avg confirms breakout",
+         "Cohen-Diether-Malloy 2007 squeeze-setup"])
+
+
+def strat_short_borrow_trap_avoid(s):
+    """Batch 519 (2026-05-31, P15 sleeve per owner directive).
+    Avoid-side gate for short strategies when borrow is tight.
+
+    Fires `avoid` direction when days_to_cover > 5 -- meaning it would
+    take >5 trading days of typical volume to cover the open short
+    interest. Hard-to-borrow names carry asymmetric upside risk: when
+    they DO move against shorts, the squeeze is rapid (FINRA Reg SHO).
+    Per CHECKLIST risk-management convention, an 'avoid' strategy
+    blocks SHORT entries on the ticker for the bar -- works the same
+    way as Batch 190 crisis-long-exclusion list, but per-bar instead
+    of by-ticker.
+
+    Academic backing: Cohen-Diether-Malloy 2007 -- shorted names with
+    high DTC have higher subsequent positive returns (the 'borrow
+    constraint' premium).
+    """
+    dtc = s.get("days_to_cover", 0.0) or 0.0
+    fires = dtc > 5.0
+    return _strat(fires, "avoid", "smart_money_sleeve",
+        ["days_to_cover>5"],
+        [f"Days-to-cover {dtc:.1f} (>5 threshold)",
+         "Hard-to-borrow -> squeeze risk asymmetric vs upside expectancy",
+         "Cohen-Diether-Malloy 2007 borrow-constraint premium"])
+
+
 def strat_avwap_252_breakout(s):
     """Batch 208 (new strategy family 2026-05-17 owner-approved research review).
     Anchored VWAP from 252-day swing low breakout. Brian Shannon (2022)
@@ -3623,6 +3678,9 @@ ALL_STRATEGIES = {
     # Batch 507 (2026-05-31, M6 Path-2 sleeves registered per owner go):
     "pead_long_high_yoy_growth_only":   strat_pead_long_high_yoy_growth_only,
     "pead_short_negative_yoy_growth":   strat_pead_short_negative_yoy_growth,
+    # Batch 519 (2026-05-31, P15 sleeves registered per owner directive):
+    "squeeze_setup_long":               strat_squeeze_setup_long,
+    "short_borrow_trap_avoid":          strat_short_borrow_trap_avoid,
     # Anchored VWAP family (3 - Batch 208 2026-05-17 owner-approved research review)
     "avwap_252_breakout":           strat_avwap_252_breakout,
     "avwap_50_reclaim":             strat_avwap_50_reclaim,
@@ -4110,6 +4168,21 @@ def screen_instrument(
             signals.update(yoy_signal)
     except Exception as _e:
         _log_silent_producer_failure("earnings_surprise_yoy", _e)
+    # Batch 519 (2026-05-31, P15 sleeves wired per owner directive):
+    # FINRA short-interest signals -- short_interest_pct + days_to_cover.
+    # Consumed by strat_squeeze_setup_long (long entry when high SI +
+    # bullish breakout) + strat_short_borrow_trap_avoid (avoid-direction
+    # gate when DTC > 5 days; blocks short entries on hard-to-borrow
+    # names). Graceful empty when ticker missing from
+    # data_prefetch/finra/short_interest/ cache (Batch 516 populated
+    # 1926 universe tickers).
+    try:
+        from backtest.signals.short_interest import compute_short_interest_signals
+        si_signal = compute_short_interest_signals(ticker, as_of)
+        if si_signal:
+            signals.update(si_signal)
+    except Exception as _e:
+        _log_silent_producer_failure("short_interest", _e)
     # Batch 222: insider buying cluster signals (Quiver SEC Form 4).
     # No-op when global insiders parquet missing or ticker has no
     # qualifying transactions in lookback.

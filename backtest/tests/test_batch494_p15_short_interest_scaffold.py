@@ -36,21 +36,31 @@ FINRA_DIR = REPO / "data_prefetch" / "finra"
 
 
 # ---------------------------------------------------------------------------
-# Data-gap pin (BLOCKED-NOT-PREFETCHED state)
+# Cache-presence pin (POST-PREFETCH state per Batch 516)
 # ---------------------------------------------------------------------------
 
-def test_batch494_p15_finra_cache_not_present_today():
-    """As of 2026-05-30 no FINRA prefetch has run. Pin the empirical
-    state so the queue row reflects reality.
+def test_batch494_p15_finra_cache_status_aware():
+    """Batch 494 originally asserted the FINRA cache directory did NOT
+    exist (BLOCKED-NOT-PREFETCHED state). Batch 516 (2026-05-31) ran the
+    prefetch and populated 1926 universe-ticker parquets on the
+    `batch/516-p15-prefetch-cache` branch.
 
-    When the prefetch runs and this directory appears, this assertion
-    flips, surfacing the change in CI.
+    This test is now status-aware:
+      - If cache dir exists -> assert >= 1000 universe parquets present
+        (Batch 516 final state: 1926 tickers).
+      - If cache dir does NOT exist (branched before 516 merged) ->
+        soft-pass.
     """
-    assert not FINRA_DIR.exists(), (
-        f"FINRA cache directory {FINRA_DIR} now exists -- the prefetch "
-        f"ran. Update queue row P15 to PARTIAL-RESOLVED + flip this "
-        f"assertion to existence."
-    )
+    if FINRA_DIR.exists():
+        cache_dir = FINRA_DIR / "short_interest"
+        parquets = list(cache_dir.glob("*.parquet"))
+        assert len(parquets) >= 1000, (
+            f"FINRA cache present but only {len(parquets)} parquets; "
+            f"expected >=1000 (Batch 516 universe-filter). Cache may have "
+            f"been corrupted or partially regenerated."
+        )
+    # else: branched before Batch 516 merged; soft-pass (cache will land
+    # when 516 is on main).
 
 
 def test_batch494_p15_producer_module_importable():
@@ -174,16 +184,16 @@ def test_batch494_p15_producer_carries_observation_count_and_date():
 # Strategy-level pin (sleeve strategies NOT yet in ALL_STRATEGIES)
 # ---------------------------------------------------------------------------
 
-def test_batch494_p15_sleeve_strategies_not_yet_registered():
-    """Pin: the new sleeve names land in ALL_STRATEGIES only after the
-    prefetch runs + the wiring batch fires. If they appear today (no
-    data) the cube would compute zero-trade cells across them.
-    """
+def test_batch494_p15_sleeve_strategies_registered_post_batch519():
+    """Batch 494 originally pinned sleeves NOT in ALL_STRATEGIES. Batch
+    516 (2026-05-31) ran the prefetch (1926 universe tickers cached);
+    Batch 519 (2026-05-31, owner directive) registered both sleeves
+    + wired the producer into screen_instrument. Test now asserts
+    both sleeves PRESENT in ALL_STRATEGIES."""
     from backtest.signals.screener import ALL_STRATEGIES
-    sleeve_names = {"squeeze_setup_long", "short_borrow_trap_avoid"}
-    in_registry = sleeve_names.intersection(set(ALL_STRATEGIES.keys()))
-    assert not in_registry, (
-        f"Sleeve strategies {in_registry} registered before prefetch -- "
-        f"cube would compute degenerate cells. Run prefetch first, then "
-        f"register."
+    assert "squeeze_setup_long" in ALL_STRATEGIES, (
+        "Batch 519 must register squeeze_setup_long"
+    )
+    assert "short_borrow_trap_avoid" in ALL_STRATEGIES, (
+        "Batch 519 must register short_borrow_trap_avoid"
     )
