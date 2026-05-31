@@ -244,6 +244,84 @@ def eight_k_item_filed_within_days(
             f"{lookback_days}d": bool(hits.any())}
 
 
+def sc_13g_filed_within_days(
+    ticker: str,
+    as_of: date,
+    lookback_days: int = 30,
+    df: Optional[pd.DataFrame] = None,
+) -> dict:
+    """Batch 522 (2026-05-31, P17e SCAFFOLD) -- did an SC 13G passive
+    filing land in the last `lookback_days` ending at as_of?
+
+    Mirrors `sc_13d_filed_within_days` but reads from SC_13G decoded
+    cache. Per EXECUTION_QUEUE P17e: passive 5%+ filing is moderate
+    signal -- Vanguard/BlackRock crossing 5% predicts index reweighting;
+    smart-passive concentration signals quality. Use case: low-priority
+    add to `smart_money_score`.
+    """
+    src = df if df is not None else _load_decoded("SC_13G", ticker)
+    if src is None or src.empty or "filing_date" not in src.columns:
+        return {}
+    from datetime import timedelta
+    cutoff = as_of - timedelta(days=lookback_days)
+    window = src[(src["filing_date"] > cutoff) & (src["filing_date"] <= as_of)]
+    if window.empty:
+        return {f"sc_13g_filed_within_{lookback_days}d": False}
+    latest = window.iloc[-1]
+    out = {f"sc_13g_filed_within_{lookback_days}d": True}
+    if "filer_identity" in latest.index and latest["filer_identity"]:
+        out["sc_13g_latest_filer_identity"] = str(latest["filer_identity"])
+    if "percent_owned" in latest.index and pd.notna(latest["percent_owned"]):
+        out["sc_13g_latest_percent_owned"] = float(latest["percent_owned"])
+    return out
+
+
+def compute_sec_edgar_signals(ticker: str, as_of: date) -> dict:
+    """Batch 522 (2026-05-31, P17b/c/d/e producer bundle) -- compute the
+    full SEC EDGAR signal pack consumed by the P17 sleeve strategies +
+    modifiers. Returns a dict that screener.screen_instrument can
+    `signals.update()` with.
+
+    Bundle:
+      sc_13d_filed_within_30d         (P17b primary trigger)
+      sc_13d_latest_filer_identity    (P17b enrichment when present)
+      sc_13d_latest_percent_owned     (P17b enrichment when present)
+      8k_item_1_01_filed_within_30d   (P17c primary trigger)
+      8k_item_5_02_filed_within_7d    (P17d primary trigger)
+      sc_13g_filed_within_30d         (P17e primary trigger)
+      sc_13g_latest_filer_identity    (P17e enrichment)
+      sc_13g_latest_percent_owned     (P17e enrichment)
+
+    Returns an empty dict on any failure (silent-failure pattern per
+    Batch 458 logger; matches the convention used by
+    compute_short_interest_signals etc.).
+
+    NOT WIRED into screen_instrument in Batch 522 -- producer ships
+    SCAFFOLD-ONLY; owner approves wire-in once P17a scoped extraction
+    completes (~6h ETA per EXECUTION_QUEUE).
+    """
+    out: dict = {}
+    try:
+        out.update(sc_13d_filed_within_days(ticker, as_of, lookback_days=30))
+    except Exception:
+        pass
+    try:
+        out.update(eight_k_item_filed_within_days(
+            ticker, as_of, item_code="1.01", lookback_days=30))
+    except Exception:
+        pass
+    try:
+        out.update(eight_k_item_filed_within_days(
+            ticker, as_of, item_code="5.02", lookback_days=7))
+    except Exception:
+        pass
+    try:
+        out.update(sc_13g_filed_within_days(ticker, as_of, lookback_days=30))
+    except Exception:
+        pass
+    return out
+
+
 __all__ = [
     "EDGAR_BASE",
     "build_edgar_filing_url",
@@ -251,4 +329,6 @@ __all__ = [
     "extract_sc_13d_fields",
     "sc_13d_filed_within_days",
     "eight_k_item_filed_within_days",
+    "sc_13g_filed_within_days",
+    "compute_sec_edgar_signals",
 ]
