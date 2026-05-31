@@ -1,0 +1,22 @@
+{
+  "indicator_fingerprints": {
+    "atr_14": "73a555e0ca1daaec7822ba3984c91af1643556db9a7061caf7226d92be2b7964",
+    "bollinger_width_20": "abe82bba67ff798c13a6e0279ad9921d25e2f485e2537e424e79c56a12ee8fbf",
+    "close_ema_20": "404848ea2b214ca4ef88f2d778963b80501e235b1e6928dc08dddb244cc4522c",
+    "close_log_returns": "73bdb8f5236e4ebb061bca85b8a0847b6abb9e02b8dd92d910eddf6c0836040f",
+    "close_pct_change": "8ff8c62cee08095de9426988cf7d2488f8241a423c85266014d3eb2c3c1aabef",
+    "close_raw": "7ade8711e7d787ac740c7a935c13f7f870640340e76c63b08e7c7e14d64e0476",
+    "close_sma_20": "3b648e3d36a9e53afaf74832d393ff0f4a5a76d6e166cff84c437b9df996657b",
+    "close_std_20": "9a3e8348454e87a18d8fa0b1ccad024011c9a362344e58a8085659de224605ce",
+    "rsi_14": "5fe0a365c6d25ce4e77c9a352c664c44d99b87eb9a841e4a5fc024e12da55d3a"
+  },
+  "machine": "x86_64",
+  "numpy_version": "2.4.6",
+  "pandas_version": "3.0.3",
+  "platform_key": "Linux|6.17.0-1015-azure|py3.13|numpy2.4.6|pandas3.0.3",
+  "python_version": "3.13.13",
+  "release": "6.17.0-1015-azure",
+  "synthetic_n_rows": 252,
+  "synthetic_seed": 42,
+  "system": "Linux"
+}
