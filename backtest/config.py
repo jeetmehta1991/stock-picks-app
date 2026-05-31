@@ -878,15 +878,16 @@ STRATEGY_REGIME_BLOCKLIST: dict[str, list[str]] = {
 # for R4 cube spec (separate from the default to keep R3-replay tests
 # deterministic).
 STRATEGY_REQUIRED_MACRO_REGIME: dict[str, str] = {
-    # Owner-approved R4 spec (Batch 510b 2026-05-31; activate by setting
-    # the env var STOCKPICKS_R4_MACRO_FILTER=1 OR adding entries below
-    # for the cube run). Empty default = no filter, matching pre-Batch-510b.
-    # Example (uncomment for R4):
-    # "bollinger_tight":              "neutral",
-    # "monthly_bias_momentum_long":   "neutral",
-    # "xs_quality_top_quintile_long": "neutral",
-    # "pead_long":                    "neutral",
-    # "adx_initiation":               "neutral",
+    # Batch 514 (2026-05-31) -- R4 cube spec ACTIVATED per owner directive.
+    # Source: Batch 501 entry-side optimizer found `macro_score == neutral`
+    # is the dominant entry-side lift across these 5 strategies (Sharpe
+    # lifts from negative/low up to +1.84 to +4.41). Wiring these as
+    # required entry gates is the R4 cube unblock for 1A-alpha.
+    "bollinger_tight":              "neutral",
+    "monthly_bias_momentum_long":   "neutral",
+    "xs_quality_top_quintile_long": "neutral",
+    "pead_long":                    "neutral",
+    "adx_initiation":               "neutral",
 }
 
 # Batch 218 (research-review deprecations 2026-05-18 owner-approved):
@@ -1436,11 +1437,15 @@ TICKER_STOPOUT_COOLDOWN_DAYS = 5
 # Mode-D "off"              : DISABLE the block entirely. Portfolio cap +
 #                              max-loss-cap + cooldown still apply.
 #
-# Default remains "ticker" -- changing the default is an owner-gated
-# decision. Owner sets BUG_61_BLOCK_MODE to "ticker_direction" or
-# "ticker_strategy" for R4 cube to recover the 685k blocked candidates
-# without removing concentration risk management.
-BUG_61_BLOCK_MODE = "ticker"
+# Batch 514 (2026-05-31, R4 cube activation per owner directive):
+# FLIPPED from "ticker" (prior owner-approved Option A) to
+# "ticker_strategy" -- allows different strategies to stack on the
+# same ticker (e.g. pead_long + xs_momentum_long both open AAPL)
+# while still blocking the SAME strategy from re-entering. Recovers
+# up to 685k blocked candidates per R3 item #2 diagnosis without
+# removing concentration risk management (portfolio cap +
+# cooldown + max-loss-cap still apply downstream).
+BUG_61_BLOCK_MODE = "ticker_strategy"
 
 # DEC-037 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
 # Characterization-test-first approach absorbed by DEC-438 golden-master.

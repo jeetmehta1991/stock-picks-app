@@ -35,13 +35,22 @@ def test_batch510b_required_macro_regime_dict_exists():
     assert isinstance(STRATEGY_REQUIRED_MACRO_REGIME, dict)
 
 
-def test_batch510b_required_macro_regime_default_empty():
-    """Default empty dict -> no behavior change for non-R4 runs."""
+def test_batch510b_required_macro_regime_active_r4_entries():
+    """Batch 514 (2026-05-31) -- R4 cube ACTIVATED per owner directive.
+    Dict now contains the 5 candidate strategies (entry filter:
+    macro_score == neutral), backed by Batch 501 entry-side optimizer
+    findings."""
     from backtest.config import STRATEGY_REQUIRED_MACRO_REGIME
-    assert STRATEGY_REQUIRED_MACRO_REGIME == {}, (
-        "Default STRATEGY_REQUIRED_MACRO_REGIME must be empty. Owner "
-        "populates the dict for R4 cube spec; any default entry is a "
-        "behavior change requiring owner sign-off."
+    expected = {
+        "bollinger_tight":              "neutral",
+        "monthly_bias_momentum_long":   "neutral",
+        "xs_quality_top_quintile_long": "neutral",
+        "pead_long":                    "neutral",
+        "adx_initiation":               "neutral",
+    }
+    assert STRATEGY_REQUIRED_MACRO_REGIME == expected, (
+        "Batch 514 R4 activation: STRATEGY_REQUIRED_MACRO_REGIME drifted "
+        "from owner-approved 5-strategy macro_neutral set."
     )
 
 
@@ -106,13 +115,15 @@ def test_batch510b_macro_score_sign_classifies_correctly():
 # Owner-sign-off pin: changing default requires explicit approval
 # ---------------------------------------------------------------------------
 
-def test_batch510b_default_change_requires_owner_signoff():
-    """Pin the default empty state. Any commit that populates the dict
-    flips this assertion -- forces co-update of queue row #9 R4 spec +
-    owner sign-off."""
+def test_batch510b_active_set_size_pinned():
+    """Pin the active set size at 5 (Batch 514 owner-activated R4).
+    A change in size surfaces here forcing co-update of queue row #9
+    + owner sign-off."""
     from backtest.config import STRATEGY_REQUIRED_MACRO_REGIME
-    assert len(STRATEGY_REQUIRED_MACRO_REGIME) == 0, (
-        "STRATEGY_REQUIRED_MACRO_REGIME populated. Owner sign-off "
-        "required for behavior change; update queue row #9 R4 spec + "
-        "this pin in the same commit."
+    assert len(STRATEGY_REQUIRED_MACRO_REGIME) == 5, (
+        f"STRATEGY_REQUIRED_MACRO_REGIME size changed from 5 (Batch 514 "
+        f"R4 activation) to {len(STRATEGY_REQUIRED_MACRO_REGIME)}. "
+        f"Owner sign-off required; update queue row #9 + this pin."
     )
+    # All 5 entries must be 'neutral' regime
+    assert all(v == "neutral" for v in STRATEGY_REQUIRED_MACRO_REGIME.values())
