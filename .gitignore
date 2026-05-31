@@ -63,3 +63,12 @@ backtest/agents/cache/
 /tmp_*.js
 /tmp_*.json
 /vm_*.json
+
+# Batch 500 (2026-05-31): large cube outputs exceed GitHub 100MB limit
+output_batch395_final/trade_log.csv
+output_batch395_final/trade_exit_detail.csv
+output_batch395_final/skipped_trades.csv
+output_batch395_final/exit_by_entry_atr_ratio.csv
+output_batch395_batch_*/trade_log.csv
+output_batch395_batch_*/trade_exit_detail.csv
+output_batch395_batch_*/skipped_trades.csv
