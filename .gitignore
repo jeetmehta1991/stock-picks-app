@@ -52,7 +52,13 @@ data_prefetch/**/*.checkpoint
 
 # Coverage artifacts (build outputs, not source)
 .coverage
+.coverage_*
 coverage_report.json
+# Batch 523 (2026-05-31, AU3 follow-on): per-canonical-run coverage
+# JSONs (coverage_report_optimizer.json, etc.) consumed by
+# build_verification_matrix.py merge logic (Batch 459). Reproducible
+# from canonical runs, so kept local; the matrix output is committed.
+coverage_report_*.json
 htmlcov/
 
 # Batch 425 (2026-05-28): regenerable Phase 1B LLM-response cache (14k+ files / 100+ MB).

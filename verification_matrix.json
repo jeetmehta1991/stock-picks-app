@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-05-20T04:52:37.716746+00:00",
+  "generated_at": "2026-05-31T07:20:47.371407+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `QUIVER_SUBSCRIPTION_CANCEL_STAGE` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-002": {
       "kind": "DEC",
@@ -34,8 +34,8 @@
     "DEC-006": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PHASE_1F_DEFERRED_STRATEGY_FAMILIES` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-007": {
       "kind": "DEC",
@@ -76,8 +76,8 @@
     "DEC-013": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-015": {
       "kind": "DEC",
@@ -88,20 +88,20 @@
     "DEC-018": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TICKER_STOPOUT_COOLDOWN_DAYS` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_trader_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-019": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-021": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/live_trading/risk_overlay.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-027": {
       "kind": "DEC",
@@ -112,8 +112,8 @@
     "DEC-028": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-029": {
       "kind": "DEC",
@@ -149,13 +149,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `EMAIL_OPERATIONAL_MODE` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `EMAIL_OPERATIONAL_MODE` consumed externally"
     },
     "DEC-034": {
       "kind": "DEC",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "tier": "IMPLEMENTED",
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/live_trading/risk_overlay.py)"
     },
     "DEC-035": {
       "kind": "DEC",
@@ -173,13 +173,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_037_ABSORBED_BY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `DEC_037_ABSORBED_BY` consumed externally"
     },
     "DEC-038": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `LAYERED_EXECUTION_BUDGETS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `LAYERED_EXECUTION_BUDGETS` consumed externally"
     },
     "DEC-039": {
       "kind": "DEC",
@@ -208,8 +208,8 @@
     "DEC-045": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ICTSMC_CACHE_DIR` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-046": {
       "kind": "DEC",
@@ -280,8 +280,8 @@
     "DEC-057": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 140-244 executed in backtest/run_phase1a.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/agent_gate_config.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-058": {
       "kind": "DEC",
@@ -304,38 +304,38 @@
     "DEC-061": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-062": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-067": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/backtest.py never executed"
+      "tier": "FUNC-DEAD",
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-070": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "DEC-071": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_347_ABSORBED_BY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `DEC_347_ABSORBED_BY` consumed externally"
     },
     "DEC-072": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SMART_MONEY_CONGRESSIONAL_WEIGHTS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `SMART_MONEY_CONGRESSIONAL_WEIGHTS` consumed externally"
     },
     "DEC-073": {
       "kind": "DEC",
@@ -353,13 +353,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2153-2174 executed in backtest/results/metrics.py"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `PARALLEL_BACKTEST_WORKERS_DEFAULT` consumed externally"
     },
     "DEC-076": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-078": {
       "kind": "DEC",
@@ -370,14 +370,14 @@
     "DEC-078A": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1295-1310 executed in backtest/results/metrics.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-078B": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-079": {
       "kind": "DEC",
@@ -394,14 +394,14 @@
     "DEC-082": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/stress_tests.py (74%); adjacent symbol `Status` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-083": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TIERED_MIN_TRADES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `TIERED_MIN_TRADES` consumed externally"
     },
     "DEC-084": {
       "kind": "DEC",
@@ -413,7 +413,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `FRED_MACRO_EXPANSION_SERIES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `FRED_MACRO_EXPANSION_SERIES` consumed externally"
     },
     "DEC-086": {
       "kind": "DEC",
@@ -425,13 +425,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PORTFOLIO_VOL_TARGET_ANNUALIZED` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `PORTFOLIO_VOL_TARGET_ANNUALIZED` consumed externally"
     },
     "DEC-088": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PORTFOLIO_VOL_TARGET_ANNUALIZED` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `PORTFOLIO_VOL_TARGET_ANNUALIZED` consumed externally"
     },
     "DEC-089": {
       "kind": "DEC",
@@ -442,14 +442,14 @@
     "DEC-090": {
       "kind": "DEC",
       "tier": "UNKNOWN",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-091": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-092": {
       "kind": "DEC",
@@ -503,25 +503,25 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CROSS_ASSET_STRATEGY_TICKERS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `CROSS_ASSET_STRATEGY_TICKERS` consumed externally"
     },
     "DEC-106": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_347_ABSORBED_BY` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-107": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `NON_ICT_TIMEFRAME_DIMENSIONS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `NON_ICT_TIMEFRAME_DIMENSIONS` consumed externally"
     },
     "DEC-108": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
+      "evidence": "function body 82-217 executed in backtest/engine/backtest.py"
     },
     "DEC-110": {
       "kind": "DEC",
@@ -532,8 +532,8 @@
     "DEC-111": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 2179-2476 executed in backtest/results/metrics.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-112": {
       "kind": "DEC",
@@ -557,19 +557,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CASH_MANAGEMENT_TICKER` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `CASH_MANAGEMENT_TICKER` consumed externally"
     },
     "DEC-117": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CACHE_METADATA_SCHEMA` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `CACHE_METADATA_SCHEMA` consumed externally"
     },
     "DEC-118": {
       "kind": "DEC",
-      "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "tier": "IMPLEMENTED",
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/agents/toolkits/our_technical_toolkit.py)"
     },
     "DEC-119": {
       "kind": "DEC",
@@ -591,27 +591,27 @@
     },
     "DEC-122": {
       "kind": "DEC",
-      "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "tier": "IMPLEMENTED",
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/live_trading/ib_executor.py)"
     },
     "DEC-123": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-124": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 61-71 executed in backtest/engine/exit_context.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/state_augmentation.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-125": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `FORM_144_PREFETCH_ENABLED` consumed externally"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-126": {
       "kind": "DEC",
@@ -629,7 +629,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "DEC-129": {
       "kind": "DEC",
@@ -646,8 +646,8 @@
     "DEC-131": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1539-1555 executed in backtest/results/metrics.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/agent_gate_config.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-132": {
       "kind": "DEC",
@@ -665,19 +665,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "DEC-135": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "DEC-136": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PORTFOLIO_REBALANCE_DRIFT_X_TARGET` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `PORTFOLIO_REBALANCE_DRIFT_X_TARGET` consumed externally"
     },
     "DEC-138": {
       "kind": "DEC",
@@ -699,7 +699,7 @@
     },
     "DEC-142": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -711,7 +711,7 @@
     },
     "DEC-144": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -737,37 +737,37 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "DEC-149": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
+      "evidence": "function body 82-217 executed in backtest/engine/backtest.py"
     },
     "DEC-150": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "DEC-151": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "DEC-152": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `HOLDOUT_FINAL_TEST_PERIOD_START` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `HOLDOUT_FINAL_TEST_PERIOD_START` consumed externally"
     },
     "DEC-153": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/bootstrap_ci.py (45%); adjacent symbol `Status` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-155": {
       "kind": "DEC",
@@ -851,7 +851,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `OWNER_SKILLS_AUDIT_AREAS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `OWNER_SKILLS_AUDIT_AREAS` consumed externally"
     },
     "DEC-170": {
       "kind": "DEC",
@@ -880,12 +880,12 @@
     "DEC-174": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `STRATEGY_TRIGGER_TYPES` consumed externally"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-175": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -898,8 +898,8 @@
     "DEC-177": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `BACKTEST_DEFAULT_SEED` consumed externally"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-178": {
       "kind": "DEC",
@@ -910,8 +910,8 @@
     "DEC-179": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 312-414 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/monitor_phase_1a_beta_health.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-180": {
       "kind": "DEC",
@@ -940,8 +940,8 @@
     "DEC-184": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PARALLEL_BACKTEST_WORKERS_DEFAULT` consumed externally"
+      "engine": "DECLARED-ONLY",
+      "evidence": "tagged symbol declared in backtest/engine/improvements.py but not consumed by any executing file (config constant for deferred / unwired feature)"
     },
     "DEC-185": {
       "kind": "DEC",
@@ -964,8 +964,8 @@
     "DEC-189": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TRADE_RATIONALE_FIELDS` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-190": {
       "kind": "DEC",
@@ -1061,19 +1061,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AB_TEST_ARMS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `AB_TEST_ARMS` consumed externally"
     },
     "DEC-206": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-207": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AB_TEST_MIN_PAIRED_TRADES_PER_ARM` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/results/ab_orchestrator.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-208": {
       "kind": "DEC",
@@ -1084,12 +1084,12 @@
     "DEC-209": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 722-757 executed in backtest/results/metrics.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/results/cube_populator.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-210": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -1109,25 +1109,25 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TRADE_RATIONALE_FIELDS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `TRADE_RATIONALE_FIELDS` consumed externally"
     },
     "DEC-214": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_AB_REVALIDATION_DAYS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `AGENT_AB_REVALIDATION_DAYS` consumed externally"
     },
     "DEC-215": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AB_TEST_REGISTRY_DIR` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/results/ab_orchestrator.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-216": {
       "kind": "DEC",
-      "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "tier": "IMPLEMENTED",
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-217": {
       "kind": "DEC",
@@ -1137,9 +1137,9 @@
     },
     "DEC-218": {
       "kind": "DEC",
-      "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "tier": "IMPLEMENTED",
+      "engine": "YES",
+      "evidence": "function body 140-379 executed in backtest/run_phase1a.py"
     },
     "DEC-219": {
       "kind": "DEC",
@@ -1151,7 +1151,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SYNC_FROM_CLAUDE_CONFLICT_POLICY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `SYNC_FROM_CLAUDE_CONFLICT_POLICY` consumed externally"
     },
     "DEC-222": {
       "kind": "DEC",
@@ -1187,13 +1187,13 @@
       "kind": "DEC",
       "tier": "DEFERRED",
       "engine": "N/A",
-      "evidence": "no source tag"
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-231": {
       "kind": "DEC",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "tier": "IMPLEMENTED",
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/live_trading/risk_overlay.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-232": {
       "kind": "DEC",
@@ -1210,14 +1210,14 @@
     "DEC-234": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-235": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 486-497 executed in backtest/engine/backtest.py"
+      "evidence": "function body 772-783 executed in backtest/engine/backtest.py"
     },
     "DEC-236": {
       "kind": "DEC",
@@ -1282,14 +1282,14 @@
     "DEC-246": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/results/ab_orchestrator.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-247": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/results/cube_populator.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-248": {
       "kind": "DEC",
@@ -1299,21 +1299,21 @@
     },
     "DEC-249": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
     "DEC-250": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/edge_decay.py (93%); adjacent symbol `Status` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-251": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DI_REFACTOR_CANDIDATE_MODULES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `DI_REFACTOR_CANDIDATE_MODULES` consumed externally"
     },
     "DEC-252": {
       "kind": "DEC",
@@ -1325,31 +1325,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `INTERLISTED_ROUTING_TRADE_SIZE_THRESHOLD_USD` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `INTERLISTED_ROUTING_TRADE_SIZE_THRESHOLD_USD` consumed externally"
     },
     "DEC-254": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-255": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "DEC-256": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-257": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `FUNDAMENTALS_CACHE_DIR` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-258": {
       "kind": "DEC",
@@ -1361,7 +1361,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ICTSMC_CACHE_DIR` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `ICTSMC_CACHE_DIR` consumed externally"
     },
     "DEC-260": {
       "kind": "DEC",
@@ -1372,20 +1372,20 @@
     "DEC-261": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-262": {
       "kind": "DEC",
-      "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "tier": "IMPLEMENTED",
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/agents/toolkits/our_risk_toolkit.py)"
     },
     "DEC-263": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `BURST_DAY_STRESS_TOP_N` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `BURST_DAY_STRESS_TOP_N` consumed externally"
     },
     "DEC-265": {
       "kind": "DEC",
@@ -1401,9 +1401,9 @@
     },
     "DEC-267": {
       "kind": "DEC",
-      "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "tier": "IMPLEMENTED",
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/paper_trading/paper_portfolio.py)"
     },
     "DEC-268": {
       "kind": "DEC",
@@ -1415,7 +1415,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `STAGE_4_ENTRY_GATES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `STAGE_4_ENTRY_GATES` consumed externally"
     },
     "DEC-270": {
       "kind": "DEC",
@@ -1445,7 +1445,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SYNC_FROM_CLAUDE_CONFLICT_POLICY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `SYNC_FROM_CLAUDE_CONFLICT_POLICY` consumed externally"
     },
     "DEC-275": {
       "kind": "DEC",
@@ -1463,7 +1463,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `STRATEGY_PROMOTION_STATES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `STRATEGY_PROMOTION_STATES` consumed externally"
     },
     "DEC-278": {
       "kind": "DEC",
@@ -1475,13 +1475,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "DEC-280": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (48%); adjacent symbol `DEFAULT_SLIPPAGE_ALPHA` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/run_live_end_of_day.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-281": {
       "kind": "DEC",
@@ -1503,7 +1503,7 @@
     },
     "DEC-284": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -1535,7 +1535,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AGENT_AB_REVALIDATION_DAYS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `AGENT_AB_REVALIDATION_DAYS` consumed externally"
     },
     "DEC-291": {
       "kind": "DEC",
@@ -1564,8 +1564,8 @@
     "DEC-295": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 173-176 executed in backtest/engine/exit_manager.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-296": {
       "kind": "DEC",
@@ -1582,8 +1582,8 @@
     "DEC-298": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CACHE_AUTO_ADJUST` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-301": {
       "kind": "DEC",
@@ -1594,20 +1594,20 @@
     "DEC-302": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 280-302 executed in backtest/data/macro.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/prefetch_polygon_corp_actions.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-303": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `INDEX_REBALANCE_STRATEGIES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `INDEX_REBALANCE_STRATEGIES` consumed externally"
     },
     "DEC-304": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 444-461 executed in backtest/data/macro.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/refresh_economic_calendar.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-305": {
       "kind": "DEC",
@@ -1649,13 +1649,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 136-183 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 144-191 executed in backtest/engine/exit_strategies.py"
     },
     "DEC-312": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 377-452 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 385-460 executed in backtest/engine/exit_strategies.py"
     },
     "DEC-313": {
       "kind": "DEC",
@@ -1667,37 +1667,37 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "DEC-315": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/circuit_breakers.py (40%); adjacent symbol `Status` consumed externally"
+      "evidence": "module-level tag in backtest/engine/circuit_breakers.py (68%); adjacent symbol `Status` consumed externally"
     },
     "DEC-316": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "DEC-317": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-318": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/refresh_aaii_sentiment.py)"
     },
     "DEC-319": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/refresh_aaii_sentiment.py)"
     },
     "DEC-320": {
       "kind": "DEC",
@@ -1708,8 +1708,8 @@
     "DEC-321": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 434-491 executed in backtest/data/universe.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-323": {
       "kind": "DEC",
@@ -1721,13 +1721,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 281-346 executed in backtest/data/smart_money.py"
+      "evidence": "function body 282-347 executed in backtest/data/smart_money.py"
     },
     "DEC-325": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_fundamentals_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-328": {
       "kind": "DEC",
@@ -1739,7 +1739,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PARALLEL_BACKTEST_WORKERS_DEFAULT` consumed externally"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "DEC-330": {
       "kind": "DEC",
@@ -1757,7 +1757,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SMART_MONEY_CONGRESSIONAL_WEIGHTS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `SMART_MONEY_CONGRESSIONAL_WEIGHTS` consumed externally"
     },
     "DEC-333": {
       "kind": "DEC",
@@ -1767,7 +1767,7 @@
     },
     "DEC-334": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -1775,13 +1775,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `COMPOSITE_SCORE_WEIGHTS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `COMPOSITE_SCORE_WEIGHTS` consumed externally"
     },
     "DEC-338": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CONVERSION_SHORT_TO_LONG_ENABLED` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `CONVERSION_SHORT_TO_LONG_ENABLED` consumed externally"
     },
     "DEC-339": {
       "kind": "DEC",
@@ -1798,8 +1798,8 @@
     "DEC-341": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/data/universe.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-343": {
       "kind": "DEC",
@@ -1817,79 +1817,79 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ICT_TIMEFRAMES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `ICT_TIMEFRAMES` consumed externally"
     },
     "DEC-347": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_347_ABSORBED_BY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `DEC_347_ABSORBED_BY` consumed externally"
     },
     "DEC-348": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-349": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `EVENT_WINDOW_PRE_DAYS` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-350": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `NON_ICT_TIMEFRAME_DIMENSIONS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `NON_ICT_TIMEFRAME_DIMENSIONS` consumed externally"
     },
     "DEC-352": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS` consumed externally"
     },
     "DEC-353": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CALENDAR_SEASONAL_STRATEGIES` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/live_trading/ib_executor.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-354": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CHART_PATTERN_STRATEGIES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `CHART_PATTERN_STRATEGIES` consumed externally"
     },
     "DEC-355": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/signals/screener.py never executed"
+      "tier": "FUNC-DEAD",
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_technical_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-356": {
       "kind": "DEC",
-      "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "tier": "IMPLEMENTED",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/signals/chart_patterns.py)"
     },
     "DEC-357": {
       "kind": "DEC",
-      "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "tier": "IMPLEMENTED",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/signals/chart_patterns.py)"
     },
     "DEC-358": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS` consumed externally"
     },
     "DEC-359": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/config.py)"
     },
     "DEC-360": {
       "kind": "DEC",
@@ -1913,13 +1913,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `COMMODITY_ETF_EXPANSION_APPROVED` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `COMMODITY_ETF_EXPANSION_APPROVED` consumed externally"
     },
     "DEC-364": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 224-235 executed in backtest/data/universe.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-365": {
       "kind": "DEC",
@@ -1930,8 +1930,8 @@
     "DEC-366": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_technical_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-367": {
       "kind": "DEC",
@@ -1943,19 +1943,19 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CALENDAR_SEASONAL_STRATEGIES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `CALENDAR_SEASONAL_STRATEGIES` consumed externally"
     },
     "DEC-369": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `CROSS_ASSET_STRATEGY_TICKERS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `CROSS_ASSET_STRATEGY_TICKERS` consumed externally"
     },
     "DEC-370": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `INDEX_REBALANCE_STRATEGIES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `INDEX_REBALANCE_STRATEGIES` consumed externally"
     },
     "DEC-371": {
       "kind": "DEC",
@@ -1967,7 +1967,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `GITHUB_ACTIONS_WORKFLOWS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `GITHUB_ACTIONS_WORKFLOWS` consumed externally"
     },
     "DEC-373": {
       "kind": "DEC",
@@ -1991,7 +1991,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `GITHUB_ACTIONS_WORKFLOWS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `GITHUB_ACTIONS_WORKFLOWS` consumed externally"
     },
     "DEC-377": {
       "kind": "DEC",
@@ -2002,8 +2002,8 @@
     "DEC-378": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-379": {
       "kind": "DEC",
@@ -2014,8 +2014,8 @@
     "DEC-380": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-381": {
       "kind": "DEC",
@@ -2063,25 +2063,25 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
+      "evidence": "function body 82-217 executed in backtest/engine/backtest.py"
     },
     "DEC-389": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_347_ABSORBED_BY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `DEC_347_ABSORBED_BY` consumed externally"
     },
     "DEC-390": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `NON_ICT_TIMEFRAME_DIMENSIONS` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/refresh_aaii_sentiment.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-391": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `NON_ICT_TIMEFRAME_DIMENSIONS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `NON_ICT_TIMEFRAME_DIMENSIONS` consumed externally"
     },
     "DEC-392": {
       "kind": "DEC",
@@ -2111,7 +2111,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
+      "evidence": "function body 521-540 executed in backtest/data/smart_money.py"
     },
     "DEC-398": {
       "kind": "DEC",
@@ -2128,14 +2128,14 @@
     "DEC-400": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1211-1229 executed in backtest/results/metrics.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-401": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-402": {
       "kind": "DEC",
@@ -2153,25 +2153,25 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2179-2476 executed in backtest/results/metrics.py"
+      "evidence": "function body 2179-2525 executed in backtest/results/metrics.py"
     },
     "DEC-405": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/stress_tests.py (74%); adjacent symbol `Status` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-406": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TIERED_MIN_TRADES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `TIERED_MIN_TRADES` consumed externally"
     },
     "DEC-407": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `FRED_MACRO_EXPANSION_SERIES` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-408": {
       "kind": "DEC",
@@ -2193,7 +2193,7 @@
     },
     "DEC-411": {
       "kind": "DEC",
-      "tier": "DECIDED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/signals/screener.py never executed"
     },
@@ -2212,8 +2212,8 @@
     "DEC-415": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/rolling_sharpe_test.py (52%); adjacent symbol `Status` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-416": {
       "kind": "DEC",
@@ -2224,8 +2224,8 @@
     "DEC-417": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "DEC-418": {
       "kind": "DEC",
@@ -2241,7 +2241,7 @@
     },
     "DEC-420": {
       "kind": "DEC",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -2254,56 +2254,56 @@
     "DEC-422": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `STRATEGY_TRIGGER_TYPES` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/results/cube_populator.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-423": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-425": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-426": {
       "kind": "DEC",
-      "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "tier": "IMPLEMENTED",
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/results/cube_metrics_tier_b.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-427": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-428": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-429": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-430": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-431": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-432": {
       "kind": "DEC",
@@ -2314,8 +2314,8 @@
     "DEC-433": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "YES",
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `POLYGON_STOCKS_STARTER_ACTIVE` consumed externally"
     },
     "DEC-434": {
       "kind": "DEC",
@@ -2327,7 +2327,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PARALLEL_BACKTEST_WORKERS_DEFAULT` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `PARALLEL_BACKTEST_WORKERS_DEFAULT` consumed externally"
     },
     "DEC-436": {
       "kind": "DEC",
@@ -2338,32 +2338,32 @@
     "DEC-437": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PROPERTY_BASED_TESTING_LIB` consumed externally"
+      "engine": "N/A",
+      "evidence": "no source tag"
     },
     "DEC-438": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_037_ABSORBED_BY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `DEC_037_ABSORBED_BY` consumed externally"
     },
     "DEC-439": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SEC_EDGAR_DIFFERENTIAL_REFERENCE` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `SEC_EDGAR_DIFFERENTIAL_REFERENCE` consumed externally"
     },
     "DEC-440": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ALPHA_VANTAGE_DEPRECATED` consumed externally"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/signals/screener.py never executed"
     },
     "DEC-441": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `POLYGON_STOCKS_STARTER_ACTIVE` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-442": {
       "kind": "DEC",
@@ -2416,8 +2416,8 @@
     "DEC-450": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `FORM_144_PREFETCH_ENABLED` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-451": {
       "kind": "DEC",
@@ -2428,8 +2428,8 @@
     "DEC-453": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ALPHA_VANTAGE_DEPRECATED` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-454": {
       "kind": "DEC",
@@ -2446,8 +2446,8 @@
     "DEC-456": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `SEC_EDGAR_DIFFERENTIAL_REFERENCE` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-457": {
       "kind": "DEC",
@@ -2459,31 +2459,31 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `LEAD_LAG_INTRA_SECTOR_STRATEGY` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `LEAD_LAG_INTRA_SECTOR_STRATEGY` consumed externally"
     },
     "DEC-459": {
       "kind": "DEC",
       "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/agents/agent_gate_config.py)"
     },
     "DEC-460": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `POLYGON_PIT_VERIFICATION_DONE` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `POLYGON_PIT_VERIFICATION_DONE` consumed externally"
     },
     "DEC-461": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `POLYGON_PIT_VERIFICATION_DONE` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-462": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/agents/agent_gate_config.py)"
     },
     "DEC-463": {
       "kind": "DEC",
@@ -2501,13 +2501,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "DEC-466": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "DEC-467": {
       "kind": "DEC",
@@ -2519,7 +2519,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ORTEX_SHORT_INTEREST_CACHE_DIR` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `ORTEX_SHORT_INTEREST_CACHE_DIR` consumed externally"
     },
     "DEC-486": {
       "kind": "DEC",
@@ -2542,50 +2542,50 @@
     "DEC-477": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 172-189 executed in backtest/data/universe.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_index_rebalance_events.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-478": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `POLYGON_TIER_SELECTED` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `POLYGON_TIER_SELECTED` consumed externally"
     },
     "DEC-479": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `POLYGON_STOCKS_STARTER_MONTHLY_USD` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `POLYGON_STOCKS_STARTER_MONTHLY_USD` consumed externally"
     },
     "DEC-483": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 194-203 executed in backtest/data/universe.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/refresh_extended_universe.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-484": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PHASE_1A_SKIPPED_REASONS` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-485": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED` consumed externally"
     },
     "DEC-490": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `PHASE_1A_SKIPPED_STRATEGIES` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `PHASE_1A_SKIPPED_STRATEGIES` consumed externally"
     },
     "DEC-489": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON` consumed externally"
     },
     "DEC-469": {
       "kind": "DEC",
@@ -2650,26 +2650,26 @@
     "DEC-491": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-492": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-493": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-496": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 224-235 executed in backtest/data/universe.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-495": {
       "kind": "DEC",
@@ -2680,14 +2680,14 @@
     "DEC-494": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 58-66 executed in backtest/data/universe.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-497": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/data/cache.py (45%); adjacent symbol `logger` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-498": {
       "kind": "DEC",
@@ -2698,56 +2698,56 @@
     "DEC-499": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 717-795 executed in backtest/data/universe.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/universe.py never executed"
     },
     "DEC-500": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-501": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_501_ORIGINAL_DEFERRAL` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-502": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `QUIVER_TRADER_TIER_ENDPOINT_GROUPS` consumed externally"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-503": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 83-101 executed in backtest/data/smart_money.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-508": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/phase_1b_canary_compute.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-507": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 658-700 executed in backtest/data/macro.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/langgraph_pipeline.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-506": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `DEC_501_ORIGINAL_DEFERRAL` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `DEC_501_ORIGINAL_DEFERRAL` consumed externally"
     },
     "DEC-505": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `BACKTEST_START` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/util/holdout_guard.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-610": {
       "kind": "DEC",
@@ -2758,8 +2758,8 @@
     "DEC-609": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-608": {
       "kind": "DEC",
@@ -2776,14 +2776,14 @@
     "DEC-606": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ALPHA_VANTAGE_DEPRECATED` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_sprint0a.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-605": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `FINNHUB_SOCIAL_SENTIMENT_EXCLUDED_PHASE_1A` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_sprint0a.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-597": {
       "kind": "DEC",
@@ -2800,8 +2800,8 @@
     "DEC-599": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_sprint0a.py)"
     },
     "DEC-600": {
       "kind": "DEC",
@@ -2812,8 +2812,8 @@
     "DEC-601": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AAII_EXTENDED_SCHEMA_COLS` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_sprint0a.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-602": {
       "kind": "DEC",
@@ -2842,32 +2842,32 @@
     "DEC-594": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 73-133 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/audit_decs_for_artifacts.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-595": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-591": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/audit_decs_for_artifacts.py)"
     },
     "DEC-592": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "DEC-593": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED` consumed externally"
     },
     "DEC-589": {
       "kind": "DEC",
@@ -2878,86 +2878,86 @@
     "DEC-590": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 206-342 executed in backtest/engine/improvements.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "DEC-504": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 140-244 executed in backtest/run_phase1a.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/generate_stage_d_tickers.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-001": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-002": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-003": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/engine/exit_manager.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "BUG-004": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-005": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-006": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 119-176 executed in backtest/engine/improvements.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-007": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "BUG-008": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "BUG-009": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 65-146 executed in backtest/signals/technical.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-010": {
       "kind": "BUG",
       "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-011": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 308-326 executed in backtest/signals/screener.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-012": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-013": {
       "kind": "BUG",
@@ -2974,8 +2974,8 @@
     "BUG-015": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 61-66 executed in backtest/results/metrics.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-016": {
       "kind": "BUG",
@@ -2991,7 +2991,7 @@
     },
     "BUG-018": {
       "kind": "BUG",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/engine/backtest.py never executed"
     },
@@ -3010,20 +3010,20 @@
     "BUG-021": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 49-51 executed in backtest/engine/exit_strategies.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/exit_strategies.py never executed"
     },
     "BUG-022": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/signals/screener.py (91%); adjacent symbol `text` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-023": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/signals/screener.py (91%); adjacent symbol `text` consumed externally"
+      "evidence": "module-level tag in backtest/signals/screener.py (100%); adjacent symbol `text` consumed externally"
     },
     "BUG-024": {
       "kind": "BUG",
@@ -3046,26 +3046,26 @@
     "BUG-028": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 244-268 executed in backtest/signals/technical.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-029": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 312-414 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-030": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 195-229 executed in backtest/engine/exit_manager.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-031": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "N/A",
+      "evidence": "no coverage data for tagged files"
     },
     "BUG-032": {
       "kind": "BUG",
@@ -3083,19 +3083,19 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "BUG-036": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/revert_batch_69_phase_1.py)"
     },
     "BUG-037": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1222-1243 executed in backtest/engine/improvements.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-038": {
       "kind": "BUG",
@@ -3124,8 +3124,8 @@
     "BUG-045": {
       "kind": "BUG",
       "tier": "DECIDED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_verification_matrix.py)"
     },
     "BUG-046": {
       "kind": "BUG",
@@ -3189,15 +3189,15 @@
     },
     "BUG-060": {
       "kind": "BUG",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/signals/screener.py never executed"
     },
     "BUG-061": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-063": {
       "kind": "BUG",
@@ -3250,8 +3250,8 @@
     "BUG-073": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/prepopulate_cache_index.py)"
     },
     "BUG-074": {
       "kind": "BUG",
@@ -3267,15 +3267,15 @@
     },
     "BUG-077": {
       "kind": "BUG",
-      "tier": "IMPLEMENTED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/signals/screener.py never executed"
     },
     "BUG-078": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 502-686 executed in backtest/engine/exit_manager.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/exit_manager.py never executed"
     },
     "BUG-079": {
       "kind": "BUG",
@@ -3286,8 +3286,8 @@
     "BUG-080": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 502-686 executed in backtest/engine/exit_manager.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-081": {
       "kind": "BUG",
@@ -3304,8 +3304,8 @@
     "BUG-083": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1067-1097 executed in backtest/data/smart_money.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/data/smart_money.py never executed"
     },
     "BUG-084": {
       "kind": "BUG",
@@ -3370,14 +3370,14 @@
     "BUG-095": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `STARTING_CAPITAL` consumed externally"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-096": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 2558-2628 executed in backtest/results/metrics.py"
+      "evidence": "function body 2607-2677 executed in backtest/results/metrics.py"
     },
     "BUG-097": {
       "kind": "BUG",
@@ -3442,14 +3442,14 @@
     "BUG-110": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-111": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 1068-1074 executed in backtest/signals/screener.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper backtest/agents/toolkits/our_technical_toolkit.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-112": {
       "kind": "BUG",
@@ -3485,7 +3485,7 @@
       "kind": "BUG",
       "tier": "DECIDED",
       "engine": "YES",
-      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
+      "evidence": "function body 521-540 executed in backtest/data/smart_money.py"
     },
     "BUG-187": {
       "kind": "BUG",
@@ -3532,26 +3532,26 @@
     "BUG-270": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 384-439 executed in backtest/data/smart_money.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-271": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 179-216 executed in backtest/data/smart_money.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-272": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 83-101 executed in backtest/data/smart_money.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-273": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 83-101 executed in backtest/data/smart_money.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-274": {
       "kind": "BUG",
@@ -3568,8 +3568,8 @@
     "BUG-276": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no coverage data for tagged files"
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/agents/pipeline.py)"
     },
     "BUG-279": {
       "kind": "BUG",
@@ -3598,20 +3598,50 @@
     "BUG-284": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. backtest/agents/toolkits/our_fundamentals_toolkit.py)"
+    },
+    "BUG-286": {
+      "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/audit_trade_log_forensic.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
+    },
+    "BUG-287": {
+      "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "YES",
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
+    },
+    "BUG-288": {
+      "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/signals/cross_sectional.py)"
+    },
+    "BUG-289": {
+      "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/signals/cross_sectional.py)"
+    },
+    "BUG-290": {
+      "kind": "BUG",
+      "tier": "IMPLEMENTED",
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/signals/screener.py never executed"
     },
     "BUG-214": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 427-478 executed in backtest/engine/exit_manager.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/exit_manager.py never executed"
     },
     "BUG-215": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/exit_manager.py (79%); adjacent symbol `ClosedTrade` consumed externally"
+      "evidence": "module-level tag in backtest/engine/exit_manager.py (92%); adjacent symbol `ClosedTrade` consumed externally"
     },
     "BUG-216": {
       "kind": "BUG",
@@ -3623,13 +3653,13 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/data/smart_money.py (30%); adjacent symbol `PREFETCH_POLYGON_NEWS_DIR` consumed externally"
+      "evidence": "module-level tag in backtest/data/smart_money.py (47%); adjacent symbol `PREFETCH_POLYGON_NEWS_DIR` consumed externally"
     },
     "BUG-218": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 299-305 executed in backtest/engine/backtest.py"
+      "evidence": "function body 383-389 executed in backtest/engine/backtest.py"
     },
     "BUG-219": {
       "kind": "BUG",
@@ -3670,14 +3700,14 @@
     "BUG-225": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 52-61 executed in backtest/engine/regime_filter.py"
+      "engine": "FUNC-DEAD",
+      "evidence": "function in backtest/engine/regime_filter.py never executed"
     },
     "BUG-205": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 74-79 executed in backtest/engine/improvements.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-206": {
       "kind": "BUG",
@@ -3713,7 +3743,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 31-1187 executed in backtest/results/writer.py"
+      "evidence": "function body 31-1213 executed in backtest/results/writer.py"
     },
     "BUG-229": {
       "kind": "BUG",
@@ -3725,19 +3755,19 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 136-183 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 144-191 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-231": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 377-452 executed in backtest/engine/exit_strategies.py"
+      "evidence": "function body 385-460 executed in backtest/engine/exit_strategies.py"
     },
     "BUG-232": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 271-308 executed in backtest/engine/exit_manager.py"
+      "evidence": "function body 460-521 executed in backtest/engine/exit_manager.py"
     },
     "BUG-233": {
       "kind": "BUG",
@@ -3755,7 +3785,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `AAII_PUB_LAG_DAYS` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `AAII_PUB_LAG_DAYS` consumed externally"
     },
     "BUG-236": {
       "kind": "BUG",
@@ -3767,37 +3797,37 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 500-1531 executed in backtest/engine/backtest.py"
+      "evidence": "function body 786-2095 executed in backtest/engine/backtest.py"
     },
     "BUG-238": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 195-269 executed in backtest/engine/backtest.py"
+      "evidence": "function body 279-353 executed in backtest/engine/backtest.py"
     },
     "BUG-239": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 299-305 executed in backtest/engine/backtest.py"
+      "evidence": "function body 383-389 executed in backtest/engine/backtest.py"
     },
     "BUG-240": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 281-346 executed in backtest/data/smart_money.py"
+      "evidence": "function body 282-347 executed in backtest/data/smart_money.py"
     },
     "BUG-241": {
       "kind": "BUG",
       "tier": "DECIDED",
       "engine": "YES",
-      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
+      "evidence": "function body 521-540 executed in backtest/data/smart_money.py"
     },
     "BUG-242": {
       "kind": "BUG",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "function body 119-176 executed in backtest/engine/improvements.py"
+      "engine": "PARTIAL-ORPHAN",
+      "evidence": "primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not actual implementation chain)"
     },
     "BUG-243": {
       "kind": "BUG",
@@ -3905,7 +3935,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `ATR_FALLBACK_PCT` consumed externally"
+      "evidence": "module-level tag in backtest/config.py (100%); adjacent symbol `ATR_FALLBACK_PCT` consumed externally"
     },
     "BUG-260": {
       "kind": "BUG",
@@ -3988,8 +4018,8 @@
     "BUG-116": {
       "kind": "BUG",
       "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "BUG-117": {
       "kind": "BUG",
@@ -4079,7 +4109,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/config.py (99%); adjacent symbol `TICKER_STOPOUT_COOLDOWN_DAYS` consumed externally"
+      "evidence": "function body 861-886 executed in backtest/results/metrics.py"
     },
     "BUG-134": {
       "kind": "BUG",
@@ -4089,7 +4119,7 @@
     },
     "BUG-135": {
       "kind": "BUG",
-      "tier": "DEFERRED",
+      "tier": "FUNC-DEAD",
       "engine": "FUNC-DEAD",
       "evidence": "function in backtest/results/metrics.py never executed"
     },
@@ -4108,8 +4138,8 @@
     "BUG-138": {
       "kind": "BUG",
       "tier": "DEFERRED",
-      "engine": "N/A",
-      "evidence": "no source tag"
+      "engine": "NO",
+      "evidence": "every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py)"
     },
     "BUG-139": {
       "kind": "BUG",
