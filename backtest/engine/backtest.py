@@ -1227,15 +1227,56 @@ class BacktestEngine:
                 _survivors += 1
             _n_strategies_for_split = max(1, _survivors)
 
-            # BUG-61: ticker-level concurrent-position block (owner-approved Option A)
-            # Skip the entire strategy loop if any prior open position exists on this ticker
-            if ticker in open_tickers:
-                self.skipped_trades.append({
-                    "ticker": ticker, "date": as_of,
-                    "strategy": "(any)",
-                    "reason": "ticker_already_open_concurrent_block_bug61",
-                })
-                continue
+            # BUG-61 concurrent-block (Batch 510a 2026-05-31 -- modes added
+            # per owner directive "investigate + fix" to recover 685k blocked
+            # candidates without removing concentration risk management).
+            # Mode logic gated on config.BUG_61_BLOCK_MODE. The default
+            # ("ticker") preserves the prior owner-approved Option A behavior
+            # exactly; alternate modes only fire when owner sets the flag.
+            from backtest.config import BUG_61_BLOCK_MODE as _bug61_mode
+            if _bug61_mode == "off":
+                pass  # No block; portfolio cap + cooldown + max-loss still apply
+            elif _bug61_mode == "ticker_direction":
+                # Block only same-direction entries on this ticker
+                _open_dirs = {
+                    t.direction for t in self.open_trades if t.ticker == ticker
+                }
+                # The candidate has one or more strategies; if any candidate
+                # direction matches an open direction, block; otherwise allow.
+                _cand_dirs = {
+                    s.get("direction") for s in cand.get("strategies", [])
+                }
+                if _open_dirs & _cand_dirs:
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": "(any-same-direction)",
+                        "reason": "ticker_already_open_same_direction_bug61_mode_b",
+                    })
+                    continue
+            elif _bug61_mode == "ticker_strategy":
+                # Block only when the SAME strategy already has an open pos
+                # on this ticker. Different strategies can stack.
+                _open_strats = {
+                    t.strategy for t in self.open_trades if t.ticker == ticker
+                }
+                _cand_strats = {
+                    s.get("strategy") for s in cand.get("strategies", [])
+                }
+                if _open_strats & _cand_strats:
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": "(same-strategy)",
+                        "reason": "ticker_already_open_same_strategy_bug61_mode_c",
+                    })
+                    continue
+            else:  # default "ticker": owner-approved Option A (prior behavior)
+                if ticker in open_tickers:
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": "(any)",
+                        "reason": "ticker_already_open_concurrent_block_bug61",
+                    })
+                    continue
 
             # DEC-018 RESOLVED-IMPLEMENTED Batch 73 2026-05-12 owner-mandated
             # wiring: 5-trading-day cooldown after a stop-out on this ticker.
