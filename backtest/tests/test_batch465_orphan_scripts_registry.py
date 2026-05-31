@@ -104,15 +104,28 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "(unit tests on math) + queue row #9 fallback recommendation. "
         "Needs caller/cron wiring once R4 cube spec is owner-approved.",
     ),
-    "scripts/extract_sec_edgar_xml_pilot.py": (
+    # Batch 524 hotfix (2026-05-31): scripts/extract_sec_edgar_xml_pilot.py
+    # REMOVED -- Batch 515 scoped wrapper imports it (pilot has caller now),
+    # so AU9 scanner reports it as non-orphan. Registry must agree.
+    "scripts/extract_sec_edgar_xml_scoped.py": (
         "c",
-        "Batch 509/514 P17a pilot extractor (10 SP500 tickers x 2021-2026 "
-        "x SC_13D/SC_13G/8_K). Operator-run via --no-dry-run after owner "
-        "approval; UA-fixed in Batch 514 -> 1150/1150 OK (100%). Consumed "
-        "by test_batch509_p17a_pilot_extraction.py + scripts/extract_sec_"
-        "edgar_xml_scoped.py (Batch 515 full-universe wrapper). Caller "
-        "wiring TBD: invoked by Batch 515 scoped wrapper which is "
-        "currently the only caller -- both manual-trigger today.",
+        "Batch 515 P17a full-universe SEC EDGAR extractor "
+        "(~1722 tickers x 3 forms x 2020-2026). Calls "
+        "extract_sec_edgar_xml_pilot via monkey-patched PILOT window. "
+        "Operator-run after owner approves scaling beyond pilot. "
+        "Consumed by manual trigger only -- no cron/launcher yet. "
+        "Caller wiring TBD post-extraction completion + cube ingest.",
+    ),
+    "scripts/prefetch_finra_short_interest.py": (
+        "c",
+        "Batch 513 P15 FINRA biweekly short-interest prefetch fetcher. "
+        "Pulls cdn.finra.org/equity/otcmarket/biweekly/shrtYYYYMMDD.csv "
+        "(pipe-delimited despite .csv extension) for 1926 universe "
+        "tickers; writes data_prefetch/finra/short_interest/*.parquet. "
+        "Operator-run manually; biweekly cadence (15th + EOM) means "
+        "the cron wiring is a separate batch decision (Sprint 5 "
+        "refresh cadence). Consumed by Batch 519 P15 sleeves "
+        "(strat_squeeze_setup_long + strat_short_borrow_trap_avoid).",
     ),
 }
 
