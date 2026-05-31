@@ -4360,6 +4360,30 @@ def screen_instrument(
             signals.update(lb_out)
     except Exception as _e:
         _log_silent_producer_failure("lobbying", _e)
+    # Batch 528 (P16-completion 2026-05-31): 3 remaining Quiver alt-data
+    # sub-feeds wired with silent-failure logger pattern. Closes P16
+    # PARTIAL -> RESOLVED.
+    try:
+        from backtest.signals.congressional_alt_data import compute_patentmomentum_signals
+        pm_out = compute_patentmomentum_signals(ticker, as_of)
+        if pm_out:
+            signals.update(pm_out)
+    except Exception as _e:
+        _log_silent_producer_failure("patentmomentum", _e)
+    try:
+        from backtest.signals.congressional_alt_data import compute_offexchange_signals
+        oe_out = compute_offexchange_signals(ticker, as_of)
+        if oe_out:
+            signals.update(oe_out)
+    except Exception as _e:
+        _log_silent_producer_failure("offexchange", _e)
+    try:
+        from backtest.signals.congressional_alt_data import compute_corporatedonors_signals
+        cd_out = compute_corporatedonors_signals(ticker, as_of)
+        if cd_out:
+            signals.update(cd_out)
+    except Exception as _e:
+        _log_silent_producer_failure("corporatedonors", _e)
     # Batch 254: calendar effects (DEC-368). Universe-wide; lru_cache once
     # per as_of date.
     try:

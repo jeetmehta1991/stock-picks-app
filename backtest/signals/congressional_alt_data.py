@@ -35,6 +35,48 @@ _LOBBYING_DIR = (
     Path(__file__).parent.parent.parent / "data_prefetch"
     / "quiver" / "lobbying"
 )
+_PATENTMOMENTUM_PATH = (
+    Path(__file__).parent.parent.parent / "data_prefetch"
+    / "quiver" / "patentmomentum" / "global.parquet"
+)
+_OFFEXCHANGE_DIR = (
+    Path(__file__).parent.parent.parent / "data_prefetch"
+    / "quiver" / "offexchange"
+)
+_CORPORATEDONORS_PATH = (
+    Path(__file__).parent.parent.parent / "data_prefetch"
+    / "quiver" / "corporatedonors" / "global.parquet"
+)
+
+# Module-level cache for the global parquets (patentmomentum 5.8M rows,
+# corporatedonors 25K rows). Cache on first read so per-ticker producer
+# calls don't re-read multi-MB files inside the screener inner loop.
+_PATENT_DF_CACHE: pd.DataFrame | None = None
+_DONORS_DF_CACHE: pd.DataFrame | None = None
+
+
+def _load_patent_global() -> pd.DataFrame | None:
+    global _PATENT_DF_CACHE
+    if _PATENT_DF_CACHE is None:
+        if not _PATENTMOMENTUM_PATH.exists():
+            return None
+        try:
+            _PATENT_DF_CACHE = pd.read_parquet(_PATENTMOMENTUM_PATH)
+        except Exception:
+            return None
+    return _PATENT_DF_CACHE
+
+
+def _load_donors_global() -> pd.DataFrame | None:
+    global _DONORS_DF_CACHE
+    if _DONORS_DF_CACHE is None:
+        if not _CORPORATEDONORS_PATH.exists():
+            return None
+        try:
+            _DONORS_DF_CACHE = pd.read_parquet(_CORPORATEDONORS_PATH)
+        except Exception:
+            return None
+    return _DONORS_DF_CACHE
 
 
 def compute_housetrading_signals(
@@ -198,3 +240,176 @@ def compute_lobbying_signals(
         "lobbying_amount_q":   round(q_sum, 2),
         "lobbying_amount_yoy": round(yoy, 4),
     }
+
+
+def compute_patentmomentum_signals(
+    ticker: str,
+    as_of: date,
+    lookback_days: int = 90,
+) -> dict:
+    """Batch 528 (2026-05-31, P16 completion) -- patent-activity
+    momentum signals from Quiver patentmomentum global feed.
+
+    Source: `data_prefetch/quiver/patentmomentum/global.parquet`
+    (cols: ticker, date, momentum). 5.8M rows across ~all listed
+    tickers since 2010-ish.
+
+    Returns dict with:
+      patent_momentum_recent      -- latest momentum reading <= as_of
+      patent_momentum_90d_avg     -- trailing 90-day mean
+      patent_momentum_above_avg   -- bool: recent > 90d_avg
+
+    Academic backing: Hirshleifer-Hsu-Li 2013 RFS -- innovation
+    intensity predicts equity returns. Quiver's `momentum` is a
+    derived measure (USPTO grant + citation flow) normalized per
+    sector; magnitudes are relative, not dollar-denominated.
+    """
+    df = _load_patent_global()
+    if df is None or df.empty:
+        return {}
+    if "ticker" not in df.columns or "date" not in df.columns \
+            or "momentum" not in df.columns:
+        return {}
+    try:
+        sub = df[df["ticker"].astype(str).str.upper() == ticker.upper()]
+        if sub.empty:
+            return {}
+        sub = sub.copy()
+        sub["d"] = pd.to_datetime(sub["date"], errors="coerce").dt.date
+        sub["momentum"] = pd.to_numeric(sub["momentum"], errors="coerce")
+        sub = sub.dropna(subset=["d", "momentum"])
+        sub = sub[sub["d"] <= as_of].sort_values("d")
+    except Exception:
+        return {}
+    if sub.empty:
+        return {}
+    recent = float(sub.iloc[-1]["momentum"])
+    window_start = as_of - timedelta(days=lookback_days)
+    window = sub[sub["d"] >= window_start]
+    if window.empty:
+        avg = recent
+    else:
+        avg = float(window["momentum"].mean())
+    return {
+        "patent_momentum_recent":     round(recent, 4),
+        "patent_momentum_90d_avg":    round(avg, 4),
+        "patent_momentum_above_avg":  bool(recent > avg),
+    }
+
+
+def compute_offexchange_signals(
+    ticker: str,
+    as_of: date,
+    lookback_days: int = 30,
+) -> dict:
+    """Batch 528 (2026-05-31, P16 completion) -- off-exchange / OTC
+    dark-pool activity signals.
+
+    Source: `data_prefetch/quiver/offexchange/<TICKER>.parquet`
+    (cols: Ticker, Date, OTC_Short, OTC_Total, DPI).
+    OTC_Short = volume executed in dark pools that was short.
+    OTC_Total = total dark-pool volume.
+    DPI = Dark Pool Index (proportion of dark trading).
+
+    Returns dict with:
+      otc_short_ratio_recent     -- latest OTC_Short / OTC_Total
+      otc_volume_recent          -- latest OTC_Total
+      dpi_recent                 -- latest DPI value
+      dpi_30d_avg                -- trailing 30-day DPI mean
+      dpi_elevated               -- bool: DPI > 30d_avg
+
+    Academic backing: Comerton-Forde-Putnins 2015 JFE -- elevated
+    dark-pool activity predicts short-horizon price discovery
+    distortions. High institutional dark trading often precedes
+    public-market moves.
+    """
+    safe_ticker = ticker.replace(".", "-")
+    path = _OFFEXCHANGE_DIR / f"{safe_ticker}.parquet"
+    if not path.exists():
+        return {}
+    try:
+        df = pd.read_parquet(path)
+    except Exception:
+        return {}
+    if df.empty or "Date" not in df.columns:
+        return {}
+    try:
+        df = df.copy()
+        df["d"] = pd.to_datetime(df["Date"], errors="coerce").dt.date
+        df = df.dropna(subset=["d"])
+        df = df[df["d"] <= as_of].sort_values("d")
+    except Exception:
+        return {}
+    if df.empty:
+        return {}
+    last = df.iloc[-1]
+    out: dict = {}
+    if "OTC_Short" in df.columns and "OTC_Total" in df.columns:
+        total = float(last.get("OTC_Total", 0) or 0)
+        short = float(last.get("OTC_Short", 0) or 0)
+        out["otc_short_ratio_recent"] = round(short / total, 4) \
+            if total > 0 else 0.0
+        out["otc_volume_recent"]      = round(total, 2)
+    if "DPI" in df.columns:
+        dpi_recent = float(last.get("DPI", 0) or 0)
+        window_start = as_of - timedelta(days=lookback_days)
+        window = df[df["d"] >= window_start]
+        dpi_avg = float(window["DPI"].mean()) if not window.empty \
+            else dpi_recent
+        out["dpi_recent"]   = round(dpi_recent, 4)
+        out["dpi_30d_avg"]  = round(dpi_avg, 4)
+        out["dpi_elevated"] = bool(dpi_recent > dpi_avg)
+    return out
+
+
+def compute_corporatedonors_signals(
+    ticker: str,
+    as_of: date,
+    lookback_days: int = 365,
+) -> dict:
+    """Batch 528 (2026-05-31, P16 completion) -- corporate PAC
+    donation signals from Quiver corporatedonors global feed.
+
+    Source: `data_prefetch/quiver/corporatedonors/global.parquet`
+    (cols: BioGuideID, CandidateName, CompanyCMTENM,
+    TransactionDate, TransactionAmount, Ticker, CommitteeName, Cycle).
+
+    Returns dict with:
+      corp_donations_1y           -- sum of TransactionAmount over 365d
+      corp_donations_count_1y     -- count of donations over 365d
+      corp_donations_unique_pacs  -- distinct CommitteeName count
+
+    Academic backing: Akey 2015 RFS -- companies that contribute to
+    eventual winners realize regulatory-favorable outcomes. Donation
+    volume is a noisy proxy for political-favor exposure; combine
+    with lobbying for higher SNR.
+    """
+    df = _load_donors_global()
+    if df is None or df.empty:
+        return {}
+    if "Ticker" not in df.columns or "TransactionDate" not in df.columns \
+            or "TransactionAmount" not in df.columns:
+        return {}
+    try:
+        sub = df[df["Ticker"].astype(str).str.upper() == ticker.upper()]
+        if sub.empty:
+            return {}
+        sub = sub.copy()
+        sub["d"] = pd.to_datetime(sub["TransactionDate"],
+                                    errors="coerce").dt.date
+        sub["amt"] = pd.to_numeric(sub["TransactionAmount"],
+                                     errors="coerce").fillna(0)
+        sub = sub.dropna(subset=["d"])
+        window_start = as_of - timedelta(days=lookback_days)
+        sub = sub[(sub["d"] <= as_of) & (sub["d"] >= window_start)]
+    except Exception:
+        return {}
+    if sub.empty:
+        return {}
+    out: dict = {
+        "corp_donations_1y":       round(float(sub["amt"].sum()), 2),
+        "corp_donations_count_1y": int(len(sub)),
+    }
+    if "CommitteeName" in sub.columns:
+        out["corp_donations_unique_pacs"] = int(sub["CommitteeName"].nunique())
+    return out
