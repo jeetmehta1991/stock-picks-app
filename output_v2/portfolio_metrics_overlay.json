@@ -1,0 +1,8 @@
+{
+  "starting_capital": 100000.0,
+  "ending_equity": -46434.45,
+  "total_return_pct": -146.4345,
+  "max_drawdown_pct": -222.5808,
+  "n_equity_points": 403,
+  "n_trades_closed": 1181
+}
