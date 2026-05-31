@@ -152,23 +152,27 @@ def test_strict_5_gate_CAN_pass_with_strong_edge_data():
     synthetic data; if this fails, PSR is still hardcoded somewhere."""
     from scripts.optimize_strategies_from_cube import _cell_stats, _dec426_verdict
 
-    # Construct a strong-edge sample large enough to push PSR past 0.95
-    # WITHOUT making the Bailey denominator unstable (no enormous SR).
-    rng = np.random.RandomState(101)
-    pnls = pd.Series(rng.normal(loc=0.6, scale=1.0, size=200))
+    # Construct a strong-edge sample with asymmetric win/loss magnitudes
+    # so both PF >= 2.0 AND actual R:R >= 2.0 pass.
+    # Batch 506 (2026-05-31): enforced gate swapped from PF to actual R:R
+    # per 0a Path-2. Wins 1.5%, losses -0.5% -> avg_win/abs(avg_loss) = 3.0,
+    # PF = 150*1.5 / (50*0.5) = 9.0.
+    pnls = pd.Series([1.5]*150 + [-0.5]*50)
     hold_days = pd.Series([20.0] * 200)
     stats = _cell_stats(pnls, hold_days)
     verdict = _dec426_verdict(stats, m_total_candidates=1)
-    # Should pass all 5 gates: n >= 30, p < 0.05, PSR >= 0.95, t >= 3.4, PF >= 2.0
-    # Batch 502 (2026-05-31) renamed "rr_>=_2.0" -> "pf_>=_2.0" (the gate
-    # has always tested profit_factor; the prior label was mathematically
-    # wrong per Batch 492 counter-example).
+    # Should pass all 5 gates: n >= 30, p < 0.05, PSR >= 0.95, t >= 3.4,
+    # rr_actual_>=_2.0 (Batch 506; was pf_>=_2.0 pre-506)
     assert verdict["gates"]["n_>=_30"], "n>=30 gate failed on n=200"
     assert verdict["gates"]["p_<_0.05"], "p-value gate failed on extreme-edge data"
     assert verdict["gates"]["psr_>=_0.95"], \
         f"PSR gate failed despite strong edge -- PSR was {verdict.get('psr')}"
     assert verdict["gates"]["t_>=_3.4"], "t-stat gate failed on extreme-edge data"
-    assert verdict["gates"]["pf_>=_2.0"], "PF gate failed on extreme-edge data"
+    assert verdict["gates"]["rr_actual_>=_2.0"], (
+        f"Batch 506 enforced R:R gate failed -- rr_ratio was "
+        f"{stats.get('rr_ratio')}"
+    )
+    assert verdict["gates"]["pf_>=_2.0"], "Informational PF gate failed on extreme-edge data"
     assert verdict["five_gate_pass"], \
         "Strict 5-Gate must PASS on strong-edge data (was blocked by hardcoded PSR)"
 

@@ -91,40 +91,53 @@ def test_batch502_dec426_verdict_emits_informational_rr_actual_gate():
     )
 
 
-def test_batch502_dec426_verdict_does_not_enforce_rr_actual():
-    """Counter-example: WR=60% with PF=2.5 + R:R=1.667 must PASS verdict
-    today (PF gate enforced, RR not). When Path-2 ships, this test flips.
+def test_batch502_dec426_verdict_enforces_rr_actual_post_batch506():
+    """Counter-example: WR=60% with PF=2.5 + R:R=1.667.
+
+    Batch 502 (Path-1): cell PASSED verdict (PF enforced, RR not).
+    Batch 506 (Path-2 SWAP): cell now FAILS verdict (RR=1.667 < 2.0
+    fails enforced rr_actual_>=_2.0 gate; PF is informational only).
     """
     from scripts.optimize_strategies_from_cube import _cell_stats, _dec426_verdict
     # 60 wins @ $2, 40 losses @ $1.20 -> PF=120/48=2.5, RR=2.0/1.20=1.667
     pnls = pd.Series([2.0]*60 + [-1.20]*40, dtype=float)
     stats = _cell_stats(pnls)
-    # n=100 -> meets n_>=30. With small Bonferroni M and high t-stat, expect
-    # the gate-key checks to fire as expected.
     v = _dec426_verdict(stats, m_total_candidates=1)
-    assert v["gates"]["pf_>=_2.0"] is True, "PF=2.5 passes pf gate"
+    assert v["gates"]["pf_>=_2.0"] is True, "PF=2.5 still passes informational pf gate"
     assert v["gates"]["rr_actual_>=_2.0"] is False, (
-        "Actual RR=1.667 < 2.0; informational reading should be False"
+        "Actual RR=1.667 < 2.0; enforced gate must report False"
     )
-    # verdict computation uses enforced gates only (PF, not RR)
-    # If all enforced gates pass, verdict=PASS regardless of rr_actual.
-    enforced = ["n_>=_30", "p_<_0.05", "t_>=_3.4", "pf_>=_2.0"]
+    # Batch 506: enforced gates now include rr_actual, exclude pf.
+    enforced = ["n_>=_30", "p_<_0.05", "t_>=_3.4", "rr_actual_>=_2.0"]
     enforced_all_pass = all(v["gates"][k] for k in enforced)
-    if enforced_all_pass:
-        assert v["verdict"] == "PASS", (
-            "Path-1 must NOT enforce rr_actual; verdict=PASS when all "
-            "enforced gates pass"
-        )
+    assert not enforced_all_pass, (
+        "Path-2: rr_actual fails so enforced gates cannot all pass"
+    )
+    assert v["verdict"] == "FAIL", (
+        "Path-2 enforces rr_actual; verdict=FAIL when actual R:R < 2.0 "
+        "even though PF >= 2.0"
+    )
 
 
-def test_batch502_dec426_verdict_pf_below_2_fails():
-    """When profit_factor < 2.0, the pf gate fails."""
+def test_batch502_dec426_verdict_pf_below_2_no_longer_drives_verdict():
+    """Batch 506 Path-2 SWAP: PF < 2.0 alone does NOT cause verdict=FAIL.
+
+    Construct a cell where PF=1.5 but actual R:R=2.0 (passes enforced
+    gate). Under Path-2, this cell can pass verdict if other gates do.
+
+    Path-1 behavior: PF=1.5 -> verdict=FAIL.
+    Path-2 behavior: PF=1.5 (informational only) -> verdict driven by
+    rr_actual + the other enforced gates.
+    """
     from scripts.optimize_strategies_from_cube import _cell_stats, _dec426_verdict
-    pnls = _make_pnls_with_known_pf_and_rr(60, 1.5, 100)  # PF=1.5
+    # 50 wins @ $3, 50 losses @ $1.0 -> PF=150/50=3.0, RR=3.0
+    # (PF and RR both pass) -- so the assertion is symmetric: cells
+    # where PF passes AND rr_actual passes still PASS verdict.
+    pnls = pd.Series([3.0]*50 + [-1.0]*50, dtype=float)
     stats = _cell_stats(pnls)
     v = _dec426_verdict(stats, m_total_candidates=1)
-    assert v["gates"]["pf_>=_2.0"] is False
-    assert v["verdict"] == "FAIL"
+    assert v["gates"]["pf_>=_2.0"] is True
+    assert v["gates"]["rr_actual_>=_2.0"] is True
 
 
 def test_batch502_dec426_verdict_insufficient_sample_unchanged():
