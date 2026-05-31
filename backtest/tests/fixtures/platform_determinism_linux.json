@@ -11,9 +11,9 @@
     "rsi_14": "5fe0a365c6d25ce4e77c9a352c664c44d99b87eb9a841e4a5fc024e12da55d3a"
   },
   "machine": "x86_64",
-  "numpy_version": "2.4.6",
-  "pandas_version": "3.0.3",
-  "platform_key": "Linux|6.17.0-1015-azure|py3.13|numpy2.4.6|pandas3.0.3",
+  "numpy_version": "2.4.4",
+  "pandas_version": "3.0.2",
+  "platform_key": "Linux|6.17.0-1015-azure|py3.13|numpy2.4.4|pandas3.0.2",
   "python_version": "3.13.13",
   "release": "6.17.0-1015-azure",
   "synthetic_n_rows": 252,
