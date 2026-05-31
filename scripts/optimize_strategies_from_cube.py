@@ -114,6 +114,19 @@ def _cell_stats(pnls: pd.Series, hold_days: pd.Series | None = None) -> dict:
     else:
         skew_val = 0.0
         kurt_val = 0.0
+    # Batch 502 (2026-05-31, 0a path 1): emit ACTUAL R:R alongside
+    # profit_factor. R:R = avg_win / abs(avg_loss); profit_factor =
+    # (WR/(1-WR)) * R:R. The current 5-Gate uses profit_factor under
+    # the "rr_>=_2.0" key which is mis-named (see queue row 0a +
+    # test_batch492_0a counter-example: WR=60% PF=2.0 implies R:R=1.33,
+    # NOT 2.0). Path-1 fix: ship actual R:R alongside so gate-key
+    # rename in _dec426_verdict is honest + a future Path-2 swap can
+    # gate on the ACTUAL R:R without recomputing.
+    avg_win  = float(wins.mean()) if len(wins) > 0 else 0.0
+    avg_loss_abs = float(abs(losses.mean())) if len(losses) > 0 else 0.0
+    rr_actual = (avg_win / avg_loss_abs) if avg_loss_abs > 0 else (
+        99.0 if avg_win > 0 else 0.0
+    )
     return {
         "n":           n,
         "win_rate":    round(wr, 4),
@@ -121,6 +134,8 @@ def _cell_stats(pnls: pd.Series, hold_days: pd.Series | None = None) -> dict:
         "std_pp":      round(std, 4),
         "sum_pp":      round(float(pnls.sum()), 4),
         "profit_factor": round(pf, 4),
+        # Batch 502 (0a path 1): true R:R = avg_win / abs(avg_loss).
+        "rr_ratio":    round(rr_actual, 4),
         "sharpe":      round(sharpe, 4),
         "t_stat":      round(t_stat, 4),
         "skew":        round(skew_val, 4),
@@ -151,16 +166,29 @@ def _dec426_verdict(stats: dict, m_total_candidates: int = 1) -> dict:
     )
     psr_value = psr_result.get("psr")
     psr_pass = (psr_value is not None) and (psr_value >= GATE_PSR_MIN)
+    # Batch 502 (2026-05-31, 0a path 1): rename gate key
+    # `"rr_>=_2.0"` -> `"pf_>=_2.0"` to honest-up the math. The gate
+    # has always tested profit_factor; the prior label was wrong (per
+    # Batch 492 counter-example: WR=60% with PF=2.0 implies actual
+    # R:R=1.33, not 2.0). NEW informational `"rr_actual_>=_2.0"`
+    # field exposes the true-R:R reading WITHOUT enforcing it -- a
+    # future Path-2 owner decision can swap this into the `verdict`
+    # check to tighten the gate; today it's diagnostic-only.
+    rr_actual_pass = stats.get("rr_ratio", 0.0) >= GATE_RR_MIN
     gates = {
-        "n_>=_30":     n >= GATE_N_MIN,
-        "p_<_0.05":    bonf_p < GATE_P_MAX,
-        "psr_>=_0.95": psr_pass,
-        "t_>=_3.4":    stats["t_stat"] >= GATE_T_MIN,
-        "rr_>=_2.0":   stats["profit_factor"] >= GATE_RR_MIN,
+        "n_>=_30":         n >= GATE_N_MIN,
+        "p_<_0.05":        bonf_p < GATE_P_MAX,
+        "psr_>=_0.95":     psr_pass,
+        "t_>=_3.4":        stats["t_stat"] >= GATE_T_MIN,
+        # Renamed Batch 502; same behaviour: enforced gate uses profit_factor.
+        "pf_>=_2.0":       stats["profit_factor"] >= GATE_RR_MIN,
+        # New informational reading; NOT enforced in the verdict today.
+        "rr_actual_>=_2.0": rr_actual_pass,
     }
+    enforced_gates = ["n_>=_30", "p_<_0.05", "t_>=_3.4", "pf_>=_2.0"]
     return {
-        "verdict":         "PASS" if all([gates["n_>=_30"], gates["p_<_0.05"], gates["t_>=_3.4"], gates["rr_>=_2.0"]]) else "FAIL",
-        "five_gate_pass":  all(gates.values()),
+        "verdict":         "PASS" if all(gates[k] for k in enforced_gates) else "FAIL",
+        "five_gate_pass":  all(gates[k] for k in enforced_gates + ["psr_>=_0.95"]),
         "gates":           gates,
         "raw_p":           round(raw_p, 6),
         "bonferroni_p":    round(bonf_p, 6),
