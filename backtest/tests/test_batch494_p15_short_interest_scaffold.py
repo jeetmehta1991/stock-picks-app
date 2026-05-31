@@ -78,9 +78,17 @@ def test_batch494_p15_producer_module_importable():
 
 
 def test_batch494_p15_producer_returns_empty_on_missing_cache():
-    """Cache miss -> {} (NOT raise). Strategies degrade quietly."""
+    """Cache miss -> {} (NOT raise). Strategies degrade quietly.
+
+    Batch 524 (2026-05-31) fix: prior assertion used "AAPL" + date
+    inside coverage, but Batch 516 populated 1926 universe parquets
+    INCLUDING AAPL -- so AAPL now returns real signals not {}. Use a
+    nonsense ticker that is GUARANTEED absent from the FINRA cache
+    so the cache-miss path is what's being exercised.
+    """
     from backtest.signals.short_interest import compute_short_interest_signals
-    out = compute_short_interest_signals("AAPL", date(2024, 1, 15))
+    out = compute_short_interest_signals("___NONEXISTENT_TICKER___",
+                                          date(2024, 1, 15))
     assert out == {}, (
         "Producer must return empty dict on cache miss, not raise"
     )
