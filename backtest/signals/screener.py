@@ -2191,6 +2191,61 @@ def strat_squeeze_setup_long(s):
          "Cohen-Diether-Malloy 2007 squeeze-setup"])
 
 
+def strat_activist_13d_long(s):
+    """Batch 522 (2026-05-31, P17b SCAFFOLD per EXECUTION_QUEUE).
+
+    Long fires when SC 13D (activist) filing landed in the last
+    30 days. Trigger boolean is `sc_13d_filed_within_30d` from
+    `compute_sec_edgar_signals(ticker, as_of)`.
+
+    Academic backing: Brav-Jiang-Partnoy-Thomas 2008 *Journal of
+    Finance* documented +6.8% abnormal return in the 30d window around
+    13D filing announcement; Bebchuk-Brav-Jiang 2015 RFS show sustained
+    +3-5pp/yr alpha for 5 years post-filing. Filers most associated:
+    Icahn, Ackman, Peltz, Elliott, ValueAct, Starboard.
+
+    NOT REGISTERED in ALL_STRATEGIES in Batch 522 -- ships SCAFFOLD-only
+    pending P17a scoped extraction completion (in flight ~6h) + owner
+    approval for ALL_STRATEGIES wire-in.
+    """
+    fires = bool(s.get("sc_13d_filed_within_30d", False))
+    filer = s.get("sc_13d_latest_filer_identity", "")
+    pct = s.get("sc_13d_latest_percent_owned", None)
+    bullets = ["SC 13D filed within last 30 days (activist signal)"]
+    if filer:
+        bullets.append(f"Filer: {filer}")
+    if pct is not None:
+        bullets.append(f"Percent owned: {pct:.1f}%")
+    bullets.append("Brav-Jiang-Partnoy-Thomas 2008 +6.8% 30d CAR")
+    return _strat(fires, "long", "sec_edgar_sleeve",
+        ["sc_13d_filed_within_30d"], bullets)
+
+
+def strat_m_and_a_target_long(s):
+    """Batch 522 (2026-05-31, P17c SCAFFOLD per EXECUTION_QUEUE).
+
+    Long fires when 8-K Item 1.01 (material definitive agreement)
+    landed in the last 30 days. Trigger boolean is
+    `8k_item_1_01_filed_within_30d` from `compute_sec_edgar_signals`.
+
+    Academic backing: Pawliczek-Skinner 2018 *Review of Accounting
+    Studies* -- Items 1.01 + 2.02 predict short-term returns
+    (~2-3pp 10-day CAR). Item 1.01 is frequently the FIRST public
+    disclosure that a company is being acquired or signed a major
+    partnership; stock often gaps 10-30% on the next bar.
+
+    NOT REGISTERED in ALL_STRATEGIES in Batch 522 -- ships SCAFFOLD-only
+    pending P17a scoped extraction completion + owner approval for
+    ALL_STRATEGIES wire-in.
+    """
+    fires = bool(s.get("8k_item_1_01_filed_within_30d", False))
+    return _strat(fires, "long", "sec_edgar_sleeve",
+        ["8k_item_1_01_filed_within_30d"],
+        ["8-K Item 1.01 (material definitive agreement) filed <=30d ago",
+         "Often first public disclosure of M&A or major partnership",
+         "Pawliczek-Skinner 2018 +2-3pp 10-day CAR"])
+
+
 def strat_short_borrow_trap_avoid(s):
     """Batch 519 (2026-05-31, P15 sleeve per owner directive).
     Avoid-side gate for short strategies when borrow is tight.
