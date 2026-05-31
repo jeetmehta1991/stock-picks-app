@@ -64,7 +64,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pandas numpy filelock pyarrow psutil python-dateutil pytz
+          # Batch 520 (2026-05-31) DET1 production fix: pin pandas/numpy to
+          # the EXACT Windows-local versions used to generate the committed
+          # Windows baseline (platform_determinism_windows.json). Prior CI
+          # used latest pip-resolved (pandas 3.0.3 + numpy 2.4.6) and rsi_14
+          # diverged sub-epsilon vs the Windows baseline (Batch 518 trace).
+          # Same versions across all platforms => same fingerprints => no
+          # DET1 drift. Re-evaluate when upgrading either library.
+          pip install "pandas==3.0.2" "numpy==2.4.4" filelock pyarrow psutil python-dateutil pytz pytest
           pip install yfinance requests --quiet
           pip install pandas-ta --quiet || pip install ta --quiet || true
           pip install freezegun --quiet || true
@@ -109,7 +116,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pandas numpy filelock pyarrow psutil python-dateutil pytz
+          # Batch 520 (2026-05-31) DET1 production fix: same pin rationale
+          # as the pyramid matrix above. Informational jobs use the same
+          # pandas/numpy versions to keep G1/G3 in fingerprint parity.
+          pip install "pandas==3.0.2" "numpy==2.4.4" filelock pyarrow psutil python-dateutil pytz pytest
           pip install yfinance requests --quiet
           pip install pandas-ta --quiet || pip install ta --quiet || true
           pip install freezegun --quiet || true

@@ -35,7 +35,11 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install pandas
-        run: pip install pandas pyarrow
+        # Batch 520 (2026-05-31) DET1 production fix: pin pandas+numpy
+        # everywhere the engine touches data. Prepare-step only reads JSON
+        # splits, but pinning anyway keeps the resolved set consistent
+        # with the batch + merge jobs below.
+        run: pip install "pandas==3.0.2" "numpy==2.4.4" pyarrow
       - name: Generate batch splits
         run: python scripts/generate_phase_1a_beta_batches.py
       - name: Upload splits artifact
@@ -75,7 +79,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas numpy filelock pyarrow psutil python-dateutil pytz scipy
+          # Batch 520 (2026-05-31) DET1 production fix: pin pandas/numpy to
+          # the Windows-local versions used to generate the committed
+          # Windows fingerprint baseline. Phase 1A-beta cube must be
+          # bit-identical to local-dev runs for owner verifiability.
+          pip install "pandas==3.0.2" "numpy==2.4.4" filelock pyarrow psutil python-dateutil pytz scipy
           pip install xgboost scikit-learn numba --quiet || true
           pip install pandas-ta --quiet || pip install ta --quiet || true
           pip install requests yfinance freezegun --quiet || true
@@ -129,7 +137,9 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: |
-          pip install pandas numpy pyarrow scipy
+          # Batch 520 (2026-05-31) DET1 production fix: pin pandas/numpy
+          # for the merge step too (reads + concatenates per-batch parquets).
+          pip install "pandas==3.0.2" "numpy==2.4.4" pyarrow scipy
 
       - name: Download all batch outputs
         uses: actions/download-artifact@v4
