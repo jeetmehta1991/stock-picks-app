@@ -97,6 +97,17 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "test_batch499_analyst_overlay.py (unit tests on the math). "
         "Needs cron/launcher wiring before dashboard refresh automation.",
     ),
+    "scripts/entry_side_threshold_optimizer.py": (
+        "c",
+        "Batch 501 entry-side threshold optimizer (Dim A). Operator-run "
+        "post-cube analysis that scans 7 entry-time features against "
+        "per-strategy baseline Sharpe and emits ranked lift candidates "
+        "(`entry_threshold_candidates.csv`). Surfaces the macro_neutral "
+        "filter as the dominant unlock for the LOCKED 1A-alpha gate. "
+        "Consumed by test_batch501_entry_side_threshold_optimizer.py "
+        "(unit tests on math) + queue row #9 fallback recommendation. "
+        "Needs caller/cron wiring once R4 cube spec is owner-approved.",
+    ),
 }
 
 

@@ -159,13 +159,16 @@ def test_strict_5_gate_CAN_pass_with_strong_edge_data():
     hold_days = pd.Series([20.0] * 200)
     stats = _cell_stats(pnls, hold_days)
     verdict = _dec426_verdict(stats, m_total_candidates=1)
-    # Should pass all 5 gates: n >= 30, p < 0.05, PSR >= 0.95, t >= 3.4, R:R >= 2.0
+    # Should pass all 5 gates: n >= 30, p < 0.05, PSR >= 0.95, t >= 3.4, PF >= 2.0
+    # Batch 502 (2026-05-31) renamed "rr_>=_2.0" -> "pf_>=_2.0" (the gate
+    # has always tested profit_factor; the prior label was mathematically
+    # wrong per Batch 492 counter-example).
     assert verdict["gates"]["n_>=_30"], "n>=30 gate failed on n=200"
     assert verdict["gates"]["p_<_0.05"], "p-value gate failed on extreme-edge data"
     assert verdict["gates"]["psr_>=_0.95"], \
         f"PSR gate failed despite strong edge -- PSR was {verdict.get('psr')}"
     assert verdict["gates"]["t_>=_3.4"], "t-stat gate failed on extreme-edge data"
-    assert verdict["gates"]["rr_>=_2.0"], "R:R gate failed on extreme-edge data"
+    assert verdict["gates"]["pf_>=_2.0"], "PF gate failed on extreme-edge data"
     assert verdict["five_gate_pass"], \
         "Strict 5-Gate must PASS on strong-edge data (was blocked by hardcoded PSR)"
 
