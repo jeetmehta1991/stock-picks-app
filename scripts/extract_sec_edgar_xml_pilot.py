@@ -54,11 +54,9 @@ PILOT_FORMS = ("SC_13D", "SC_13G", "8_K")
 RATE_LIMIT_SLEEP_SEC = 0.125
 
 # SEC requires identifiable User-Agent in `Name email@domain.com` format.
-# Batch 512 hotfix (2026-05-31): 403 rejection on the prior UA
-# "jeetmehta1991-stock-picks-app/1.0 (jeetmehta1991@users.noreply.github.com)"
-# -- the parenthesized noreply email was rejected. SEC's preferred format
-# is `<Company/Project Name> <real email>`. Verified 200 OK on the same
-# AAPL 8-K filing after the change.
+# Batch 512/518 hotfix (2026-05-31): prior UA
+# "jeetmehta1991-stock-picks-app/1.0 (...@noreply.github.com)" returned 403.
+# SEC's standard `Name email@domain.com` format accepted -> 200 OK.
 USER_AGENT = "Stock Picks Research jeetmehta1991@gmail.com"
 
 

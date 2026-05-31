@@ -98,15 +98,32 @@ def _compute_indicator_fingerprints(df: pd.DataFrame) -> dict:
     out["atr_14"]               = _hash_array(
         tr.rolling(14).mean().values)
 
-    # RSI-like
+    # RSI-14 -- Batch 518 attempted Wilder's recursive smoothing but the
+    # accumulated float64 rounding still diverged across numpy 2.4.4
+    # (Win) and 2.4.6 (Linux). Batch 518b: hybrid using pandas rolling
+    # (proven bit-identical across versions per std_20 match) for
+    # avg_gain/avg_loss + vectorized numpy `where` for NaN-safe division.
+    # Avoids `.replace(0, np.nan)` which had ambiguous pandas-version
+    # semantics (Batch 515 root cause).
     delta = df["close"].diff()
     gain = delta.clip(lower=0)
     loss = (-delta).clip(lower=0)
-    avg_gain = gain.rolling(14).mean()
-    avg_loss = loss.rolling(14).mean()
-    rs = avg_gain / avg_loss.replace(0, np.nan)
-    rsi = 100 - 100 / (1 + rs)
-    out["rsi_14"]               = _hash_array(rsi.values)
+    avg_gain = gain.rolling(14).mean().values
+    avg_loss = loss.rolling(14).mean().values
+    # Vectorized division with explicit zero-handling -- no .replace()
+    with np.errstate(divide='ignore', invalid='ignore'):
+        safe_loss = np.where(avg_loss > 0, avg_loss, 1.0)
+        rs = avg_gain / safe_loss
+        rsi = 100.0 - 100.0 / (1.0 + rs)
+        # Override zero-loss + positive-gain -> RSI = 100 (canonical)
+        rsi = np.where((avg_loss == 0) & (avg_gain > 0), 100.0, rsi)
+        # Override both-zero / NaN inputs -> NaN
+        nan_mask = (
+            np.isnan(avg_gain) | np.isnan(avg_loss)
+            | ((avg_loss == 0) & (avg_gain == 0))
+        )
+        rsi = np.where(nan_mask, np.nan, rsi)
+    out["rsi_14"] = _hash_array(rsi)
 
     # Bollinger band width
     mid = df["close"].rolling(20).mean()
