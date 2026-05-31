@@ -104,14 +104,19 @@ def test_batch498_current_platform_baseline_matches():
 # ---------------------------------------------------------------------------
 
 def test_batch498_cross_platform_diff_when_both_baselines_present():
-    """Once a Linux baseline is committed alongside Windows, this test
-    runs the diff that root-causes DET1. It does NOT FAIL if they
-    differ -- DET1 is the known issue -- but it does PRINT the diff so
-    the diagnostic surfaces in CI logs.
+    """Cross-platform diff: surface divergent indicators in CI logs.
 
-    To make this test ASSERT parity (after DET1 is fixed): flip the
-    final `assert True` to `assert not divergences`.
+    Batch 518/518b investigation outcome (2026-05-31): only `rsi_14`
+    diverges between Windows (numpy 2.4.4 + pandas 3.0.2) and Linux
+    (numpy 2.4.6 + pandas 3.0.3). The divergence is sub-epsilon and
+    traces to pandas-version-dependent NaN handling in
+    `.diff().clip(lower=0).rolling(14).mean()`. Pure-numpy Wilder's
+    smoothing also diverged. Practical fix is pinning pandas version
+    across Windows-local + CI + AWS production OR accepting the drift
+    as sub-trade-decision noise. ACCEPTED divergences (post-Batch-518):
+    {'rsi_14'}. New divergences beyond this set FAIL the test.
     """
+    ACCEPTED_DIVERGENT = {"rsi_14"}
     win_path   = FIXTURES / "platform_determinism_windows.json"
     linux_path = FIXTURES / "platform_determinism_linux.json"
     if not (win_path.exists() and linux_path.exists()):
@@ -135,15 +140,21 @@ def test_batch498_cross_platform_diff_when_both_baselines_present():
                 "windows":   w[:16],
                 "linux":     l[:16],
             })
-    # Print so CI logs surface the diagnostic, do not fail (DET1 known)
+    # Print diagnostic
     if divergences:
         print(f"\nDET1 cross-platform divergences "
               f"({len(divergences)} indicators):")
         for d in divergences[:10]:
             print(f"  - {d['indicator']:30s} "
                   f"win={d['windows']}... linux={d['linux']}...")
-    # Flip this assertion to `assert not divergences` once DET1 is fixed.
-    assert True
+    # Batch 518/518b: fail when divergent set differs from accepted.
+    divergent_indicators = {d["indicator"] for d in divergences}
+    unexpected = divergent_indicators - ACCEPTED_DIVERGENT
+    assert not unexpected, (
+        f"NEW cross-platform divergence beyond accepted set "
+        f"{ACCEPTED_DIVERGENT}: {unexpected}. Either fix the underlying "
+        f"impl OR add to ACCEPTED_DIVERGENT with documented rationale."
+    )
 
 
 # ---------------------------------------------------------------------------
