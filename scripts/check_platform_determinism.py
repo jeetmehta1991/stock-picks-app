@@ -98,15 +98,40 @@ def _compute_indicator_fingerprints(df: pd.DataFrame) -> dict:
     out["atr_14"]               = _hash_array(
         tr.rolling(14).mean().values)
 
-    # RSI-like
-    delta = df["close"].diff()
-    gain = delta.clip(lower=0)
-    loss = (-delta).clip(lower=0)
-    avg_gain = gain.rolling(14).mean()
-    avg_loss = loss.rolling(14).mean()
-    rs = avg_gain / avg_loss.replace(0, np.nan)
-    rsi = 100 - 100 / (1 + rs)
-    out["rsi_14"]               = _hash_array(rsi.values)
+    # RSI-14 -- Wilder's smoothing (pure-numpy; deterministic across
+    # pandas versions). Batch 518 (2026-05-31): the prior simple-rolling
+    # implementation (`.rolling(14).mean()` + `.replace(0, np.nan)`) was
+    # the SOLE divergent indicator between Windows (pandas 3.0.2) and
+    # Linux (pandas 3.0.3) per Batch 515 DET1 root-cause diff. Wilder's
+    # recursive smoothing operates entirely in numpy float64 and avoids
+    # pandas NaN-handling drift.
+    close = df["close"].values
+    n_rsi = 14
+    delta_arr = np.diff(close, prepend=close[0])
+    gain_arr = np.where(delta_arr > 0, delta_arr, 0.0)
+    loss_arr = np.where(delta_arr < 0, -delta_arr, 0.0)
+    avg_gain = np.zeros_like(close, dtype=np.float64)
+    avg_loss = np.zeros_like(close, dtype=np.float64)
+    # First avg = simple mean over the first 14 deltas (excluding the
+    # prepended 0 at index 0 -- canonical Wilder convention).
+    if len(close) > n_rsi:
+        avg_gain[n_rsi] = gain_arr[1:n_rsi + 1].mean()
+        avg_loss[n_rsi] = loss_arr[1:n_rsi + 1].mean()
+        # Recursive smoothing
+        for i in range(n_rsi + 1, len(close)):
+            avg_gain[i] = (avg_gain[i - 1] * (n_rsi - 1) + gain_arr[i]) / n_rsi
+            avg_loss[i] = (avg_loss[i - 1] * (n_rsi - 1) + loss_arr[i]) / n_rsi
+    # Before index n_rsi the RSI is undefined; set to NaN
+    rsi = np.full_like(close, np.nan, dtype=np.float64)
+    valid = avg_loss > 0
+    rs_valid = np.where(valid, avg_gain / np.where(valid, avg_loss, 1.0), 0.0)
+    rsi_full = 100.0 - 100.0 / (1.0 + rs_valid)
+    rsi[n_rsi:] = rsi_full[n_rsi:]
+    # Where avg_loss == 0 and avg_gain > 0 -> RSI = 100 (canonical)
+    zero_loss = (avg_loss == 0) & (avg_gain > 0)
+    rsi[zero_loss] = 100.0
+    # Both zero -> NaN (undefined; pre-n_rsi window)
+    out["rsi_14"] = _hash_array(rsi)
 
     # Bollinger band width
     mid = df["close"].rolling(20).mean()
