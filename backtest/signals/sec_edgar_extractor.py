@@ -165,20 +165,42 @@ def extract_sc_13d_fields(html_text: str) -> dict:
 # Consumer signal helpers (read the decoded cache)
 # ---------------------------------------------------------------------------
 
+# Batch 534 (2026-06-01) perf fix: cache decoded DataFrames in-memory
+# keyed by (form, ticker). Prior implementation read the parquet from
+# disk on every producer call -- with 4 producer calls per
+# `compute_sec_edgar_signals` * 388 tickers * 1044 bars per R4 batch
+# = ~1.6M disk reads. Cache eliminates repeat reads (first-touch fills
+# cache; subsequent calls O(1) dict lookup). Bounded memory: 3,782
+# parquets total across 3 forms at ~30KB each = ~110MB peak.
+_DECODED_DF_CACHE: dict[tuple[str, str], pd.DataFrame] = {}
+
+
 def _load_decoded(form: str, ticker: str) -> pd.DataFrame:
-    """Load decoded filings for (form, ticker). Empty DataFrame on miss."""
+    """Load decoded filings for (form, ticker). Empty DataFrame on miss.
+
+    Batch 534: in-memory cache keyed by (form, ticker). First call reads
+    the parquet + normalizes filing_date dtype; subsequent calls return
+    the cached DataFrame directly (zero disk IO).
+    """
     safe_ticker = ticker.replace(".", "-").upper()
+    cache_key = (form, safe_ticker)
+    cached = _DECODED_DF_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
     path = _DECODED_CACHE_DIR / form / f"{safe_ticker}.parquet"
     if not path.exists():
-        return pd.DataFrame()
+        _DECODED_DF_CACHE[cache_key] = pd.DataFrame()
+        return _DECODED_DF_CACHE[cache_key]
     try:
         df = pd.read_parquet(path)
         if "filing_date" in df.columns:
             df = df.copy()
             df["filing_date"] = pd.to_datetime(df["filing_date"]).dt.date
+        _DECODED_DF_CACHE[cache_key] = df
         return df
     except Exception:
-        return pd.DataFrame()
+        _DECODED_DF_CACHE[cache_key] = pd.DataFrame()
+        return _DECODED_DF_CACHE[cache_key]
 
 
 def sc_13d_filed_within_days(
