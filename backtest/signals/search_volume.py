@@ -34,6 +34,28 @@ import pandas as pd
 
 _PYTRENDS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "pytrends"
 
+# Batch 535 OPT-A: per-ticker pytrends cache.
+_PYTRENDS_BY_TICKER: dict[str, pd.DataFrame] = {}
+
+
+def _load_pytrends_parquet(ticker: str) -> pd.DataFrame:
+    """B535 OPT-A cached per-ticker pytrends lookup."""
+    safe_ticker = ticker.replace(".", "-")
+    cached = _PYTRENDS_BY_TICKER.get(safe_ticker)
+    if cached is not None:
+        return cached
+    path = _PYTRENDS_DIR / f"{safe_ticker}.parquet"
+    if not path.exists():
+        _PYTRENDS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _PYTRENDS_BY_TICKER[safe_ticker]
+    try:
+        df = pd.read_parquet(path)
+        _PYTRENDS_BY_TICKER[safe_ticker] = df
+        return df
+    except Exception:
+        _PYTRENDS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _PYTRENDS_BY_TICKER[safe_ticker]
+
 
 def compute_search_volume_signals(ticker: str, as_of: date) -> dict:
     """Compute search-volume signals for a ticker as-of a date.
@@ -45,14 +67,8 @@ def compute_search_volume_signals(ticker: str, as_of: date) -> dict:
 
     Returns {} on data miss / insufficient history.
     """
-    safe_ticker = ticker.replace(".", "-")
-    path = _PYTRENDS_DIR / f"{safe_ticker}.parquet"
-    if not path.exists():
-        return {}
-    try:
-        df = pd.read_parquet(path)
-    except Exception:
-        return {}
+    # B535 OPT-A: cached per-ticker lookup.
+    df = _load_pytrends_parquet(ticker)
     if df.empty or "date" not in df.columns \
             or "search_volume_index" not in df.columns:
         return {}

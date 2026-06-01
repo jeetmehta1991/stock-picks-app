@@ -134,11 +134,11 @@ def test_batch519_short_borrow_trap_avoid_registered():
     assert "short_borrow_trap_avoid" in ALL_STRATEGIES
 
 
-def test_batch519_all_strategies_count_is_202_post_p15():
+def test_batch519_all_strategies_count_is_204_post_p17():
     """SM1 188->198 (Batch 487) + M6 198->200 (Batch 507) + P15
-    200->202 (Batch 519)."""
+    200->202 (Batch 519) + P17 202->204 (Batch 531)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 202
+    assert len(ALL_STRATEGIES) == 204
 
 
 # ---------------------------------------------------------------------------

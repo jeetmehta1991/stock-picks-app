@@ -36,6 +36,29 @@ import pandas as pd
 
 _NEWS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "news"
 
+# Batch 535 OPT-A: per-ticker news parquet cache. Polygon news prefetch
+# has ~1926 tickers; each parquet ~50-500KB; max ~1GB if all loaded.
+_NEWS_BY_TICKER: dict[str, pd.DataFrame] = {}
+
+
+def _load_news_parquet(ticker: str) -> pd.DataFrame:
+    """B535 OPT-A cached per-ticker news lookup."""
+    safe_ticker = ticker.replace(".", "-")
+    cached = _NEWS_BY_TICKER.get(safe_ticker)
+    if cached is not None:
+        return cached
+    path = _NEWS_DIR / f"{safe_ticker}.parquet"
+    if not path.exists():
+        _NEWS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _NEWS_BY_TICKER[safe_ticker]
+    try:
+        df = pd.read_parquet(path)
+        _NEWS_BY_TICKER[safe_ticker] = df
+        return df
+    except Exception:
+        _NEWS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _NEWS_BY_TICKER[safe_ticker]
+
 # Lightweight finance-domain sentiment lexicons. Not as accurate as
 # FinBERT but reproducible and offline. Loughran-McDonald 2011 JF
 # financial dictionary subset.
@@ -171,14 +194,8 @@ def compute_news_sentiment_signals(
 
     Returns empty dict on data miss (consumer's .get() fallback to 0).
     """
-    safe_ticker = ticker.replace(".", "-")
-    path = _NEWS_DIR / f"{safe_ticker}.parquet"
-    if not path.exists():
-        return {}
-    try:
-        df = pd.read_parquet(path)
-    except Exception:
-        return {}
+    # B535 OPT-A: cached per-ticker lookup (was per-call disk read).
+    df = _load_news_parquet(ticker)
     if df.empty or "published_utc" not in df.columns:
         return {}
     try:
