@@ -52,6 +52,11 @@ _SI_CACHE_DIR = (
 EXPECTED_COLS = ("settlement_date", "short_interest",
                  "shares_outstanding", "avg_daily_volume")
 
+# Batch 535 OPT-A: per-ticker in-memory cache (first call fills, subsequent
+# calls O(1) lookup -- no disk IO). 1926 universe-active tickers x ~5KB
+# each = ~10MB max.
+_SI_BY_TICKER: dict[str, pd.DataFrame] = {}
+
 
 def _load_ticker_si(ticker: str) -> pd.DataFrame:
     """Load the cached per-ticker FINRA short-interest history.
@@ -59,21 +64,33 @@ def _load_ticker_si(ticker: str) -> pd.DataFrame:
     Returns empty DataFrame on cache miss or schema mismatch (graceful
     empty per L86: never raise from producer; let strategies degrade
     quietly when source data is absent).
+
+    Batch 535 OPT-A: in-memory cache by safe_ticker; first call reads
+    disk, subsequent calls return cached DataFrame.
     """
     safe_ticker = ticker.replace(".", "-").upper()
+    cached = _SI_BY_TICKER.get(safe_ticker)
+    if cached is not None:
+        return cached
     path = _SI_CACHE_DIR / f"{safe_ticker}.parquet"
+    empty = pd.DataFrame(columns=list(EXPECTED_COLS))
     if not path.exists():
-        return pd.DataFrame(columns=list(EXPECTED_COLS))
+        _SI_BY_TICKER[safe_ticker] = empty
+        return empty
     try:
         df = pd.read_parquet(path)
     except Exception:
-        return pd.DataFrame(columns=list(EXPECTED_COLS))
+        _SI_BY_TICKER[safe_ticker] = empty
+        return empty
     missing = [c for c in EXPECTED_COLS if c not in df.columns]
     if missing:
-        return pd.DataFrame(columns=list(EXPECTED_COLS))
+        _SI_BY_TICKER[safe_ticker] = empty
+        return empty
     df = df.copy()
     df["settlement_date"] = pd.to_datetime(df["settlement_date"]).dt.date
-    return df.sort_values("settlement_date").reset_index(drop=True)
+    df = df.sort_values("settlement_date").reset_index(drop=True)
+    _SI_BY_TICKER[safe_ticker] = df
+    return df
 
 
 def compute_short_interest_signals(

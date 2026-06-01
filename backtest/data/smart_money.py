@@ -102,11 +102,46 @@ def _load_quiver_bulk(dataset: str) -> pd.DataFrame:
         return pd.DataFrame()
 
 
+# Batch 535 OPT-A Phase 4: pre-index bulk DataFrames by ticker so
+# `_filter_bulk_by_ticker` is O(1) dict lookup (vs O(N-row scan) per
+# call). Profile showed _filter_bulk_by_ticker = 159s / 4326 calls =
+# 37ms/call doing full-table scans. Insider trading + 13F bulk feeds
+# can be 100K+ rows each.
+# Structure: {dataset_name: (cached_df_ref, {ticker_upper: filtered_df})}
+_BULK_INDEX: dict[str, tuple[pd.DataFrame, dict[str, pd.DataFrame]]] = {}
+
+
 def _filter_bulk_by_ticker(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
-    """Filter a Quiver bulk DataFrame by Ticker column (case-insensitive)."""
+    """Filter a Quiver bulk DataFrame by Ticker column (case-insensitive).
+
+    Batch 535 OPT-A Phase 4: pre-indexes by ticker on first call against
+    a given df. Subsequent calls with same df return O(1) dict lookup.
+    Cache invalidation: identity-check (`is`) on df vs cached df --
+    different DataFrame triggers rebuild.
+    """
     if df.empty or "Ticker" not in df.columns:
         return df
-    return df[df["Ticker"].astype(str).str.upper() == ticker.upper()].copy()
+    # Use id() of df as the dataset key (DataFrames don't have a stable
+    # name attribute; identity is the natural cache key here).
+    # Note: if the global _BULK_CACHE replaces df with a new object,
+    # the id may change and we'll rebuild -- which is what we want.
+    df_id = id(df)
+    key = f"__id_{df_id}"
+    cached_pair = _BULK_INDEX.get(key)
+    if cached_pair is None or cached_pair[0] is not df:
+        # First call OR df changed -- build the index
+        try:
+            tmp = df.copy()
+            tmp["_TKR"] = tmp["Ticker"].astype(str).str.upper()
+            by_tkr = {
+                k: v.drop(columns=["_TKR"]).copy()
+                for k, v in tmp.groupby("_TKR", sort=False)
+            }
+            _BULK_INDEX[key] = (df, by_tkr)
+        except Exception:
+            return df[df["Ticker"].astype(str).str.upper() == ticker.upper()].copy()
+    by_tkr = _BULK_INDEX[key][1]
+    return by_tkr.get(ticker.upper(), df.iloc[0:0].copy())
 
 
 def _reset_bulk_cache_for_tests():

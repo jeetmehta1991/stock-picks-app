@@ -66,6 +66,51 @@ _DONORS_DF_CACHE: pd.DataFrame | None = None
 _DONORS_BY_TICKER: dict[str, pd.DataFrame] | None = None
 _DONORS_INDEXED_FROM: pd.DataFrame | None = None
 
+# Batch 535 (2026-06-01, OPT-A producer caching sweep): per-ticker file
+# caches for the remaining 4 per-ticker producers. Each first call reads
+# disk; subsequent calls return cached DataFrame (zero IO). Empty
+# DataFrame cached on miss so non-existent ticker files don't repeat
+# Path.exists() stat per call. Memory bounded: ~1937 tickers x ~50KB
+# each x 4 producers = ~388MB max -- fits 32GB c7a.4xlarge easily.
+_HOUSETRADING_BY_TICKER: dict[str, pd.DataFrame] = {}
+_GOV_CONTRACTS_BY_TICKER: dict[str, pd.DataFrame] = {}
+_LOBBYING_BY_TICKER: dict[str, pd.DataFrame] = {}
+_OFFEXCHANGE_BY_TICKER: dict[str, pd.DataFrame] = {}
+
+
+def _load_ticker_parquet(
+    cache: dict[str, pd.DataFrame],
+    base_dir: Path,
+    ticker: str,
+) -> pd.DataFrame:
+    """Batch 535 OPT-A: generic per-ticker file cache lookup.
+
+    First call reads the parquet from `base_dir/<safe_ticker>.parquet`
+    + caches it (empty DataFrame on miss). Subsequent calls return the
+    cached DataFrame directly. Profile-driven (B534 found pre-cache
+    240ms/call; post-cache 7ms/call).
+    """
+    safe_ticker = ticker.replace(".", "-").upper()
+    cached = cache.get(safe_ticker)
+    if cached is not None:
+        return cached
+    path = base_dir / f"{safe_ticker}.parquet"
+    if not path.exists():
+        # Try non-uppered variant for backward compat with existing data
+        alt_path = base_dir / f"{ticker.replace('.', '-')}.parquet"
+        if alt_path.exists():
+            path = alt_path
+        else:
+            cache[safe_ticker] = pd.DataFrame()
+            return cache[safe_ticker]
+    try:
+        df = pd.read_parquet(path)
+        cache[safe_ticker] = df
+        return df
+    except Exception:
+        cache[safe_ticker] = pd.DataFrame()
+        return cache[safe_ticker]
+
 
 def _load_patent_global() -> pd.DataFrame | None:
     global _PATENT_DF_CACHE
@@ -165,14 +210,9 @@ def compute_housetrading_signals(
       house_cluster_buy     -- bool: >=3 distinct buyers
       house_cluster_sell    -- bool: >=3 distinct sellers
     """
-    safe_ticker = ticker.replace(".", "-")
-    path = _HOUSETRADING_DIR / f"{safe_ticker}.parquet"
-    if not path.exists():
-        return {}
-    try:
-        df = pd.read_parquet(path)
-    except Exception:
-        return {}
+    # B535 OPT-A: cached per-ticker lookup (was per-call disk read).
+    df = _load_ticker_parquet(_HOUSETRADING_BY_TICKER,
+                                _HOUSETRADING_DIR, ticker)
     if df.empty or "Date" not in df.columns \
             or "Transaction" not in df.columns:
         return {}
@@ -216,14 +256,9 @@ def compute_gov_contracts_signals(ticker: str, as_of: date) -> dict:
 
     Quiver gov_contracts cadence is QUARTERLY (Year + Qtr columns).
     """
-    safe_ticker = ticker.replace(".", "-")
-    path = _GOV_CONTRACTS_DIR / f"{safe_ticker}.parquet"
-    if not path.exists():
-        return {}
-    try:
-        df = pd.read_parquet(path)
-    except Exception:
-        return {}
+    # B535 OPT-A: cached per-ticker lookup.
+    df = _load_ticker_parquet(_GOV_CONTRACTS_BY_TICKER,
+                                _GOV_CONTRACTS_DIR, ticker)
     if df.empty:
         return {}
     if "Year" not in df.columns or "Qtr" not in df.columns \
@@ -277,14 +312,9 @@ def compute_lobbying_signals(
     Hill-Kelly-Lockhart 2014 RFS documents +0.8 pp/month alpha on heavy
     lobbiers; cumulative spend serves as the heaviness proxy here.
     """
-    safe_ticker = ticker.replace(".", "-")
-    path = _LOBBYING_DIR / f"{safe_ticker}.parquet"
-    if not path.exists():
-        return {}
-    try:
-        df = pd.read_parquet(path)
-    except Exception:
-        return {}
+    # B535 OPT-A: cached per-ticker lookup.
+    df = _load_ticker_parquet(_LOBBYING_BY_TICKER,
+                                _LOBBYING_DIR, ticker)
     if df.empty or "Date" not in df.columns or "Amount" not in df.columns:
         return {}
     try:
@@ -394,14 +424,9 @@ def compute_offexchange_signals(
     distortions. High institutional dark trading often precedes
     public-market moves.
     """
-    safe_ticker = ticker.replace(".", "-")
-    path = _OFFEXCHANGE_DIR / f"{safe_ticker}.parquet"
-    if not path.exists():
-        return {}
-    try:
-        df = pd.read_parquet(path)
-    except Exception:
-        return {}
+    # B535 OPT-A: cached per-ticker lookup.
+    df = _load_ticker_parquet(_OFFEXCHANGE_BY_TICKER,
+                                _OFFEXCHANGE_DIR, ticker)
     if df.empty or "Date" not in df.columns:
         return {}
     try:

@@ -42,10 +42,38 @@ Output keys merged into per-ticker signals dict:
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
 from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd
+
+
+# Batch 535 OPT-A: per-ticker Polygon financials cache. Shared semantic
+# with PEAD's @lru_cache (same source dir) but kept separate to avoid
+# import cycle. Returns COPY on each call so caller mutations
+# (e.g. df["filing_date_dt"] = ...) don't pollute the cache.
+_FINANCIALS_BY_TICKER: dict[str, pd.DataFrame] = {}
+
+
+def _load_financials_cached(base_dir: Path, ticker: str) -> pd.DataFrame:
+    """B535 OPT-A: cached per-ticker financials parquet load. Returns a
+    .copy() so caller can mutate freely without polluting cache."""
+    safe_ticker = ticker.replace(".", "-")
+    cached = _FINANCIALS_BY_TICKER.get(safe_ticker)
+    if cached is not None:
+        return cached.copy()
+    fin_path = base_dir / f"{safe_ticker}.parquet"
+    if not fin_path.exists():
+        _FINANCIALS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _FINANCIALS_BY_TICKER[safe_ticker].copy()
+    try:
+        df = pd.read_parquet(fin_path)
+        _FINANCIALS_BY_TICKER[safe_ticker] = df
+        return df.copy()
+    except Exception:
+        _FINANCIALS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _FINANCIALS_BY_TICKER[safe_ticker].copy()
 
 
 def compute_cross_sectional_features(
@@ -255,14 +283,11 @@ def compute_quality_factor(
         return {}
     quality_map = {}
     for ticker in universe_tickers:
-        safe_ticker = ticker.replace(".", "-")
-        fin_path = polygon_financials_dir / f"{safe_ticker}.parquet"
-        if not fin_path.exists():
+        # B535 OPT-A: route through cached loader (shared with PEAD).
+        df = _load_financials_cached(polygon_financials_dir, ticker)
+        if df.empty or "financials_json" not in df.columns:
             continue
         try:
-            df = pd.read_parquet(fin_path)
-            if df.empty or "financials_json" not in df.columns:
-                continue
             # Filter to filings on/before as_of
             if "filing_date" in df.columns:
                 df["filing_date_dt"] = pd.to_datetime(df["filing_date"], errors="coerce").dt.date
