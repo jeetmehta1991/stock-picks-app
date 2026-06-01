@@ -51,8 +51,20 @@ _CORPORATEDONORS_PATH = (
 # Module-level cache for the global parquets (patentmomentum 5.8M rows,
 # corporatedonors 25K rows). Cache on first read so per-ticker producer
 # calls don't re-read multi-MB files inside the screener inner loop.
+# Batch 534 (2026-06-01) update: also pre-INDEX by ticker -- profile
+# showed `df[df["ticker"]==tkr]` scanning 5.8M rows per call took 240ms
+# (the worst per-call hotspot). Pre-grouping into a dict-of-DataFrames
+# at cache-load time turns per-call lookup into O(1).
 _PATENT_DF_CACHE: pd.DataFrame | None = None
+_PATENT_BY_TICKER: dict[str, pd.DataFrame] | None = None
+# Strong reference to the DataFrame the index was built from. Used for
+# identity comparison so monkeypatched caches in tests trigger rebuild.
+# (id() comparison can suffer object-reuse after GC; storing a ref to
+# the DataFrame itself is reliable.)
+_PATENT_INDEXED_FROM: pd.DataFrame | None = None
 _DONORS_DF_CACHE: pd.DataFrame | None = None
+_DONORS_BY_TICKER: dict[str, pd.DataFrame] | None = None
+_DONORS_INDEXED_FROM: pd.DataFrame | None = None
 
 
 def _load_patent_global() -> pd.DataFrame | None:
@@ -67,6 +79,39 @@ def _load_patent_global() -> pd.DataFrame | None:
     return _PATENT_DF_CACHE
 
 
+def _patent_for_ticker(ticker: str) -> pd.DataFrame | None:
+    """Batch 534 (2026-06-01): O(1) per-ticker lookup against pre-indexed
+    cache (vs prior O(5.8M-row scan) per call).
+
+    Index is invalidated when the underlying `_PATENT_DF_CACHE` is
+    replaced (identity change) so monkeypatching in tests works
+    correctly.
+    """
+    global _PATENT_BY_TICKER, _PATENT_INDEXED_FROM
+    df = _load_patent_global()
+    if df is None:
+        return None
+    if _PATENT_BY_TICKER is None or _PATENT_INDEXED_FROM is not df:
+        # First call OR underlying cache was replaced -- rebuild index.
+        if df.empty or "ticker" not in df.columns:
+            _PATENT_BY_TICKER = {}
+            _PATENT_INDEXED_FROM = df
+            return None
+        try:
+            tmp = df.copy()
+            tmp["_TKR"] = tmp["ticker"].astype(str).str.upper()
+            _PATENT_BY_TICKER = {
+                k: v.drop(columns=["_TKR"])
+                for k, v in tmp.groupby("_TKR", sort=False)
+            }
+            _PATENT_INDEXED_FROM = df
+        except Exception:
+            _PATENT_BY_TICKER = {}
+            _PATENT_INDEXED_FROM = df
+            return None
+    return _PATENT_BY_TICKER.get(ticker.upper())
+
+
 def _load_donors_global() -> pd.DataFrame | None:
     global _DONORS_DF_CACHE
     if _DONORS_DF_CACHE is None:
@@ -77,6 +122,33 @@ def _load_donors_global() -> pd.DataFrame | None:
         except Exception:
             return None
     return _DONORS_DF_CACHE
+
+
+def _donors_for_ticker(ticker: str) -> pd.DataFrame | None:
+    """Batch 534 (2026-06-01): O(1) per-ticker lookup against pre-indexed
+    donor cache. Invalidates index on cache identity change."""
+    global _DONORS_BY_TICKER, _DONORS_INDEXED_FROM
+    df = _load_donors_global()
+    if df is None:
+        return None
+    if _DONORS_BY_TICKER is None or _DONORS_INDEXED_FROM is not df:
+        if df.empty or "Ticker" not in df.columns:
+            _DONORS_BY_TICKER = {}
+            _DONORS_INDEXED_FROM = df
+            return None
+        try:
+            tmp = df.copy()
+            tmp["_TKR"] = tmp["Ticker"].astype(str).str.upper()
+            _DONORS_BY_TICKER = {
+                k: v.drop(columns=["_TKR"])
+                for k, v in tmp.groupby("_TKR", sort=False)
+            }
+            _DONORS_INDEXED_FROM = df
+        except Exception:
+            _DONORS_BY_TICKER = {}
+            _DONORS_INDEXED_FROM = df
+            return None
+    return _DONORS_BY_TICKER.get(ticker.upper())
 
 
 def compute_housetrading_signals(
@@ -264,16 +336,15 @@ def compute_patentmomentum_signals(
     derived measure (USPTO grant + citation flow) normalized per
     sector; magnitudes are relative, not dollar-denominated.
     """
-    df = _load_patent_global()
-    if df is None or df.empty:
+    # Batch 534 (2026-06-01) perf fix: was scanning 5.8M-row global
+    # DataFrame on every call (240ms/call hotspot per profile). Now O(1)
+    # dict lookup against pre-indexed cache.
+    sub = _patent_for_ticker(ticker)
+    if sub is None or sub.empty:
         return {}
-    if "ticker" not in df.columns or "date" not in df.columns \
-            or "momentum" not in df.columns:
+    if "date" not in sub.columns or "momentum" not in sub.columns:
         return {}
     try:
-        sub = df[df["ticker"].astype(str).str.upper() == ticker.upper()]
-        if sub.empty:
-            return {}
         sub = sub.copy()
         sub["d"] = pd.to_datetime(sub["date"], errors="coerce").dt.date
         sub["momentum"] = pd.to_numeric(sub["momentum"], errors="coerce")
@@ -384,16 +455,15 @@ def compute_corporatedonors_signals(
     volume is a noisy proxy for political-favor exposure; combine
     with lobbying for higher SNR.
     """
-    df = _load_donors_global()
-    if df is None or df.empty:
+    # Batch 534 (2026-06-01) perf fix: O(1) dict lookup vs prior O(N)
+    # row scan.
+    sub = _donors_for_ticker(ticker)
+    if sub is None or sub.empty:
         return {}
-    if "Ticker" not in df.columns or "TransactionDate" not in df.columns \
-            or "TransactionAmount" not in df.columns:
+    if "TransactionDate" not in sub.columns \
+            or "TransactionAmount" not in sub.columns:
         return {}
     try:
-        sub = df[df["Ticker"].astype(str).str.upper() == ticker.upper()]
-        if sub.empty:
-            return {}
         sub = sub.copy()
         sub["d"] = pd.to_datetime(sub["TransactionDate"],
                                     errors="coerce").dt.date
