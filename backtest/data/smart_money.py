@@ -48,20 +48,38 @@ PREFETCH_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "quiver"
 _BULK_CACHE: dict[str, Optional[pd.DataFrame]] = {}
 
 
+# Batch 535 OPT-A Phase 5: per-(dataset, ticker) prefetch cache.
+# Profile showed congressional_signal + insider_signal calling
+# _load_prefetch -> pd.read_parquet on every call. Cache eliminates
+# repeat disk reads. Bounded memory: 1937 tickers x ~10 datasets x
+# ~10KB each = ~190MB max.
+_PREFETCH_CACHE: dict[tuple[str, str], Optional[pd.DataFrame]] = {}
+
+
 def _load_prefetch(dataset: str, ticker: str) -> Optional[pd.DataFrame]:
     """Load pre-fetched Quiver data from Parquet cache. Returns None if not cached.
 
     Per-ticker pattern. Used for endpoints with per-ticker variants
     (congresstrading, lobbying, govcontracts, offexchange, topshareholders, etc.).
+
+    Batch 535 OPT-A Phase 5: in-memory cache keyed by (dataset, ticker).
+    First call reads disk; subsequent calls return cached DataFrame.
     """
+    cache_key = (dataset, ticker.replace('-', '_'))
+    if cache_key in _PREFETCH_CACHE:
+        return _PREFETCH_CACHE[cache_key]
     path = PREFETCH_DIR / dataset / f"{ticker.replace('-','_')}.parquet"
     if not path.exists():
+        _PREFETCH_CACHE[cache_key] = None
         return None
     try:
         df = pd.read_parquet(path)
-        return df if not df.empty else pd.DataFrame()
+        result = df if not df.empty else pd.DataFrame()
+        _PREFETCH_CACHE[cache_key] = result
+        return result
     except Exception as exc:
         logger.debug("prefetch load %s/%s: %s", dataset, ticker, exc)
+        _PREFETCH_CACHE[cache_key] = None
         return None
 
 
@@ -633,13 +651,27 @@ def _institutional_signal_from_perticker_history(
     Per-ticker schema: Date, ReportPeriod, Name, Ticker, Fund, Class, Value,
                        Shares, SH/PRN, Put/Call, Direction
     """
-    path = PREFETCH_DIR / "institutional" / f"{ticker}.parquet"
-    if not path.exists():
+    # Batch 535 OPT-A Phase 5: cached per-ticker institutional history.
+    # Was reading parquet on every call (2485 calls / 73s / 29ms each).
+    cache_key = ("institutional_perticker", ticker)
+    if cache_key in _PREFETCH_CACHE:
+        df = _PREFETCH_CACHE[cache_key]
+        if df is None or df.empty:
+            return {"signal": "none"}
+    else:
+        path = PREFETCH_DIR / "institutional" / f"{ticker}.parquet"
+        if not path.exists():
+            _PREFETCH_CACHE[cache_key] = None
+            return {"signal": "none"}
+        try:
+            df = pd.read_parquet(path)
+            _PREFETCH_CACHE[cache_key] = df
+        except Exception:
+            _PREFETCH_CACHE[cache_key] = None
+            return {"signal": "none"}
+    if df is None or df.empty or "ReportPeriod" not in df.columns:
         return {"signal": "none"}
     try:
-        df = pd.read_parquet(path)
-        if df.empty or "ReportPeriod" not in df.columns:
-            return {"signal": "none"}
         if "Fund" not in df.columns or "Shares" not in df.columns:
             return {"signal": "none"}
         df = df.copy()
