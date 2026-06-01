@@ -53,17 +53,25 @@ jobs:
     name: Phase 1A-beta batch ${{ matrix.batch_id }}
     needs: prepare
     runs-on: ubuntu-latest
-    # Batch 305 (2026-05-22): each batch ~78 tkrs x 4y ~= 5h on GH-hosted
-    # ubuntu-latest (Stage D pace 0.22 sec/tkr/sim-day * 1044 days * 78
-    # tkrs = ~17,900s = 5h). 350-min cap leaves ~50min headroom before
-    # the GH-hosted 6-hour hard cap. Previous 5x388 design (Batch 181)
-    # projected at ~25h per batch and timed-out every run.
+    # Batch 533 (2026-06-01) UPDATED: this GH-hosted path is NOT the
+    # canonical R4 launch route. Production R4 runs on AWS c7a.4xlarge
+    # x5 via `scripts/aws_batch395_launch.py` with pool=12 workers.
+    # See that script for canonical wall-time estimate (~4-5h per
+    # instance / ~5h total wall across 5 parallel; ~$20-25 on-demand).
+    # This workflow is retained for (a) developer-smoke runs of
+    # single batches on GH-hosted ubuntu-latest, (b) CI parity check
+    # of engine output vs AWS, (c) ad-hoc debugging.
+    # Wall-time on GH-hosted (sequential, no pool): per-batch ~5h
+    # at Stage D pace 0.22 sec/tkr/sim-day * 1044 days * 78 tkrs.
+    # 350-min cap leaves ~50min headroom before GH 6-hour hard cap.
+    # **Batch 305 (2026-05-22) historical note:** original design;
+    # superseded by AWS launch path as primary.
     timeout-minutes: 350
     strategy:
       fail-fast: false
       # GH free-tier private-repo concurrency cap is 20 parallel jobs.
-      # 25 batches with max-parallel:20 -> wave 1 of 20, wave 2 of 5,
-      # total wall clock ~10h (5h per wave + overhead).
+      # AWS path uses 5 c7a.4xlarge instances and finishes in ~5h
+      # wall (pool=12 workers per instance). GH path is dev-only.
       max-parallel: 20
       matrix:
         batch_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
