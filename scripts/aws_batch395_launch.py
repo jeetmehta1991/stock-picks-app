@@ -179,7 +179,8 @@ def build_user_data(batch_index: int, bucket: str, commit: str,
                     phase: str, start: str, end: str,
                     workers: int, repo_url: str,
                     max_run_hours: float | None = None,
-                    warn_run_hours: float | None = None) -> str:
+                    warn_run_hours: float | None = None,
+                    smoke_tickers: str | None = None) -> str:
     """Construct the user-data shell script.  Prepends env-var exports
     to the bootstrap content, then base64-encodes for AWS user-data."""
     bootstrap_path = REPO / "scripts" / "aws_batch395_bootstrap.sh"
@@ -199,6 +200,10 @@ def build_user_data(batch_index: int, bucket: str, commit: str,
         header += f"export BATCH395_MAX_HOURS={max_run_hours}\n"
     if warn_run_hours is not None:
         header += f"export BATCH395_WARN_HOURS={warn_run_hours}\n"
+    # Smoke-mode override: explicit ticker list bypasses splits.json lookup
+    # in bootstrap. Used for tiny empirical pace measurements (B534+).
+    if smoke_tickers:
+        header += f'export BATCH395_TICKERS="{smoke_tickers}"\n'
     # Strip the shebang from the bootstrap content (header already has one)
     if bootstrap.startswith("#!"):
         bootstrap = bootstrap.split("\n", 1)[1]
@@ -247,6 +252,10 @@ def main() -> int:
                          "--batch-start 2 --batches 4 to launch indices "
                          "2,3,4,5 only (e.g. when reusing an already-"
                          "completed batch_1 output).")
+    ap.add_argument("--smoke-tickers", default=None,
+                    help="(SMOKE MODE) comma-separated ticker list -- "
+                         "bypasses splits.json. Used for tiny empirical "
+                         "pace measurements (B534+).")
     ap.add_argument("--dry-run", action="store_true",
                     help="print what would be launched; do not actually launch")
     args = ap.parse_args()
@@ -275,6 +284,7 @@ def main() -> int:
             args.start, args.end, args.workers, args.repo_url,
             max_run_hours=args.max_run_hours,
             warn_run_hours=args.warn_run_hours,
+            smoke_tickers=args.smoke_tickers,
         )
 
         cmd = [

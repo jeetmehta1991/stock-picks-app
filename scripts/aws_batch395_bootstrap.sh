@@ -87,15 +87,23 @@ echo "[$(date)] Data sync complete. Disk usage:"
 df -h /
 
 # Phase 5: determine ticker subset for this batch
-echo "[$(date)] Resolving tickers for batch_${BATCH395_INDEX}..."
-aws s3 cp "s3://$BATCH395_BUCKET/aws_batch395_splits.json" /tmp/splits.json \
-    --no-progress --only-show-errors
-TICKERS=$(python -c "
+# Batch 534+ smoke override: when BATCH395_TICKERS is set in user-data
+# env, use it directly instead of splits.json. Lets us run a tiny
+# smoke (30 tickers x 6 months) for empirical pace measurement.
+if [ -n "${BATCH395_TICKERS:-}" ]; then
+    TICKERS="$BATCH395_TICKERS"
+    echo "[$(date)] SMOKE MODE: using env-supplied ticker list"
+else
+    echo "[$(date)] Resolving tickers for batch_${BATCH395_INDEX}..."
+    aws s3 cp "s3://$BATCH395_BUCKET/aws_batch395_splits.json" /tmp/splits.json \
+        --no-progress --only-show-errors
+    TICKERS=$(python -c "
 import json, sys
 splits = json.load(open('/tmp/splits.json'))
 key = f'batch_${BATCH395_INDEX}'
 print(','.join(splits[key]))
 ")
+fi
 TICKER_COUNT=$(echo "$TICKERS" | tr ',' '\n' | wc -l)
 echo "[$(date)] Batch $BATCH395_INDEX -> $TICKER_COUNT tickers"
 
