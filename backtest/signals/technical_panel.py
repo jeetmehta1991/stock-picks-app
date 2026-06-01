@@ -153,42 +153,67 @@ def compute_ema_sma_panel(
     close_panel: pd.DataFrame,
     as_of_idx: Optional[int] = None,
 ) -> dict[str, dict]:
-    """Vectorized EMA + SMA across all tickers for the standard periods.
+    """Vectorized EMA + SMA across all tickers.
 
-    Matches the canonical periods technical.compute_ema_sma emits:
-      EMA: 8, 13, 21, 34, 55
-      SMA: 20, 50, 200
-    Returns the level (rounded 2dp) + above/below flags + cross flags.
+    Matches `technical.compute_ema_sma` schema EXACTLY:
+      Pairs: (9, 21), (20, 50), (50, 200)
+      Keys per pair: ema_<f>_<s>_bullish, _golden_cross, _death_cross,
+                     sma_<f>_<s>_bullish, _golden_cross,
+                     price_above_ema_<f>, price_above_ema_<s>,
+                     price_above_sma_<s>
+    Schema-parity verified by test_batch538_parity_gate.
     """
     if close_panel is None or close_panel.empty:
         return {ticker: {} for ticker in close_panel.columns}
     if as_of_idx is None:
         as_of_idx = len(close_panel) - 1
     out: dict[str, dict] = {ticker: {} for ticker in close_panel.columns}
-    last_price = close_panel.iloc[as_of_idx]
+    last_close = close_panel.iloc[as_of_idx]
+    prev_close = close_panel.iloc[as_of_idx - 1] if as_of_idx >= 1 else last_close
 
-    for span in (8, 13, 21, 34, 55):
-        if as_of_idx < span:
+    # Pre-compute the unique spans we'll need (vectorized once each)
+    spans_needed = {9, 21, 20, 50, 200}
+    ema_levels: dict[int, tuple[pd.Series, pd.Series]] = {}
+    sma_levels: dict[int, tuple[pd.Series, pd.Series]] = {}
+
+    for span in spans_needed:
+        if as_of_idx < span + 1:
             continue
-        ema_panel = close_panel.ewm(span=span, adjust=False).mean()
-        ema_last = ema_panel.iloc[as_of_idx]
-        for ticker in close_panel.columns:
-            v = _safe_float(ema_last.get(ticker), 0.0)
-            price = _safe_float(last_price.get(ticker), 0.0)
-            out[ticker][f"ema_{span}"]           = round(v, 2)
-            out[ticker][f"price_above_ema_{span}"] = price > v
-            out[ticker][f"price_below_ema_{span}"] = price < v
-    for period in (20, 50, 200):
-        if as_of_idx < period:
+        ema_full = close_panel.ewm(span=span, adjust=False).mean()
+        ema_levels[span] = (ema_full.iloc[as_of_idx],
+                            ema_full.iloc[as_of_idx - 1])
+        sma_full = close_panel.rolling(span).mean()
+        sma_levels[span] = (sma_full.iloc[as_of_idx],
+                            sma_full.iloc[as_of_idx - 1])
+
+    for fast, slow in ((9, 21), (20, 50), (50, 200)):
+        if slow not in ema_levels or fast not in ema_levels:
             continue
-        sma_panel = close_panel.rolling(period).mean()
-        sma_last = sma_panel.iloc[as_of_idx]
+        if slow not in sma_levels or fast not in sma_levels:
+            continue
+        ef_last, ef_prev = ema_levels[fast]
+        es_last, es_prev = ema_levels[slow]
+        sf_last, sf_prev = sma_levels[fast]
+        ss_last, ss_prev = sma_levels[slow]
         for ticker in close_panel.columns:
-            v = _safe_float(sma_last.get(ticker), 0.0)
-            price = _safe_float(last_price.get(ticker), 0.0)
-            out[ticker][f"sma_{period}"]            = round(v, 2)
-            out[ticker][f"price_above_sma_{period}"] = price > v
-            out[ticker][f"price_below_sma_{period}"] = price < v
+            efv = _safe_float(ef_last.get(ticker), 0.0)
+            esv = _safe_float(es_last.get(ticker), 0.0)
+            efp = _safe_float(ef_prev.get(ticker), 0.0)
+            esp = _safe_float(es_prev.get(ticker), 0.0)
+            sfv = _safe_float(sf_last.get(ticker), 0.0)
+            ssv = _safe_float(ss_last.get(ticker), 0.0)
+            sfp = _safe_float(sf_prev.get(ticker), 0.0)
+            ssp = _safe_float(ss_prev.get(ticker), 0.0)
+            close = _safe_float(last_close.get(ticker), 0.0)
+            sigs = out[ticker]
+            sigs[f"ema_{fast}_{slow}_bullish"]      = efv > esv
+            sigs[f"ema_{fast}_{slow}_golden_cross"] = efv > esv and efp <= esp
+            sigs[f"ema_{fast}_{slow}_death_cross"]  = efv < esv and efp >= esp
+            sigs[f"sma_{fast}_{slow}_bullish"]      = sfv > ssv
+            sigs[f"sma_{fast}_{slow}_golden_cross"] = sfv > ssv and sfp <= ssp
+            sigs[f"price_above_ema_{fast}"]         = close > efv
+            sigs[f"price_above_ema_{slow}"]         = close > esv
+            sigs[f"price_above_sma_{slow}"]         = close > ssv
     return out
 
 

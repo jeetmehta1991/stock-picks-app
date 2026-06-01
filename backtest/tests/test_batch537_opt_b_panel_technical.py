@@ -95,7 +95,10 @@ def test_batch537_simple_returns_panel_matches_per_ticker():
 
 
 def test_batch537_ema_sma_panel_matches_per_ticker():
-    """EMA/SMA levels match per-ticker to 2dp."""
+    """Per-ticker compute_ema_sma uses pairs (9,21), (20,50), (50,200)
+    and emits composite keys (e.g. ema_9_21_bullish, sma_50_200_golden_cross,
+    price_above_ema_9). Panel must emit the SAME boolean keys with same
+    values. Schema-parity verified key-by-key."""
     from backtest.signals.technical_panel import compute_ema_sma_panel
     from backtest.signals import technical as t
     panel = _make_close_panel(n_dates=250, n_tickers=3)
@@ -103,20 +106,15 @@ def test_batch537_ema_sma_panel_matches_per_ticker():
     for ticker in panel.columns:
         df = pd.DataFrame({"close": panel[ticker].values})
         per_ticker = t.compute_ema_sma(df)
-        for span in (8, 13, 21, 34, 55):
-            k = f"ema_{span}"
-            if k in per_ticker and k in panel_out[ticker]:
-                assert abs(panel_out[ticker][k] - per_ticker[k]) < 0.01, (
-                    f"{ticker}.{k} mismatch: panel="
-                    f"{panel_out[ticker][k]} per_ticker={per_ticker[k]}"
-                )
-        for period in (20, 50, 200):
-            k = f"sma_{period}"
-            if k in per_ticker and k in panel_out[ticker]:
-                assert abs(panel_out[ticker][k] - per_ticker[k]) < 0.01, (
-                    f"{ticker}.{k} mismatch: panel="
-                    f"{panel_out[ticker][k]} per_ticker={per_ticker[k]}"
-                )
+        # Every key per_ticker emits must also be in panel + match
+        for k, pv in per_ticker.items():
+            assert k in panel_out[ticker], (
+                f"{ticker}: panel missing key {k!r} that per-ticker emits"
+            )
+            pp = panel_out[ticker][k]
+            assert pv == pp, (
+                f"{ticker}.{k} mismatch: panel={pp} per_ticker={pv}"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -190,23 +188,27 @@ def test_batch537_aggregator_emits_all_indicator_keys():
         assert "rsi_2_oversold" in sig
         # Returns keys
         assert "pct_change_5d" in sig
-        # EMA/SMA keys
-        assert "ema_20" in sig or "ema_21" in sig
-        assert "sma_50" in sig
+        # EMA/SMA composite keys (per-ticker schema match)
+        assert "ema_20_50_bullish" in sig
+        assert "price_above_ema_50" in sig
+        assert "sma_50_200_golden_cross" in sig
 
 
-def test_batch537_panel_not_wired_into_screener_yet():
-    """Phase 6 scaffolding: technical_panel must NOT be imported by
-    screener.py yet. Wire-in is a separate batch that requires
-    screen_universe refactor + parity validation.
-    """
+def test_batch537_panel_wired_into_screener_behind_feature_flag():
+    """Batch 538 OPT-B Phase 7 LANDED: technical_panel is now wired
+    into screen_universe BEHIND USE_PANEL_TECHNICAL_SIGNALS feature
+    flag (default OFF). Parity gate
+    `test_batch538_parity_gate_signals_match_when_panel_provided`
+    validates wire-in correctness; flag stays OFF until full
+    Phase 1A-beta cube parity is verified."""
     from pathlib import Path
     screener_text = (
         Path(__file__).resolve().parent.parent / "signals" / "screener.py"
     ).read_text(encoding="utf-8")
-    assert "technical_panel" not in screener_text, (
-        "Batch 537 invariant violated: technical_panel is wired into "
-        "screener.py. The wire-in requires screen_universe to build a "
-        "close_panel + parity-validated trade_log diff. Flip this test "
-        "when wire-in lands."
+    assert "technical_panel" in screener_text, (
+        "B538 wire-in missing -- restore the panel import + dispatch "
+        "block in screen_universe (gated by USE_PANEL_TECHNICAL_SIGNALS)."
+    )
+    assert "USE_PANEL_TECHNICAL_SIGNALS" in screener_text, (
+        "B538 feature flag missing -- restore config gate."
     )
