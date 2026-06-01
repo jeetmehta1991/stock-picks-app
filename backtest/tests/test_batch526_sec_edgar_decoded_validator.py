@@ -132,15 +132,19 @@ def test_batch526_synthetic_happy_path_passes_all_gates(synthetic_cache):
 
 
 def test_batch526_coverage_gate_fires_on_partial_decoded(synthetic_cache):
-    """Removing a decoded parquet drops coverage below 50% only if
-    the index set is large enough -- with 8 tickers, removing 5
-    drops coverage to 3/8 = 37.5% < 50% floor."""
+    """Removing decoded parquets drops coverage below the per-form floor.
+    Batch 532 (2026-06-01): SC_13D floor lowered to 0.30 to recognise
+    rare-event sparsity. With 8 tickers, removing 6 drops coverage to
+    2/8 = 25% < 30% SC_13D floor -- gate FAILS."""
     v, _, decoded_dir = synthetic_cache
-    for tkr in ("AAPL", "MSFT", "AMZN", "GOOGL", "META"):
+    for tkr in ("AAPL", "MSFT", "AMZN", "GOOGL", "META", "JPM"):
         (decoded_dir / "SC_13D" / f"{tkr}.parquet").unlink()
     g = v.gate_1_coverage()
-    assert g["pass"] is False
-    assert g["details"]["SC_13D"]["ratio"] < v.COVERAGE_FLOOR_PCT
+    assert g["pass"] is False, (
+        f"expected gate FAIL with 2/8=25% coverage; got "
+        f"pass=True; details={g['details']}"
+    )
+    assert g["details"]["SC_13D"]["ratio"] < v.COVERAGE_FLOORS["SC_13D"]
 
 
 def test_batch526_schema_gate_fires_on_missing_column(synthetic_cache):
