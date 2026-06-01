@@ -1113,18 +1113,32 @@ def compute_break_retest_signals(df: pd.DataFrame) -> dict:
 # MASTER AGGREGATOR
 # -----------------------------------------------------------------------------
 
-def compute_all_signals(df: pd.DataFrame) -> dict:
+def compute_all_signals(df: pd.DataFrame,
+                          skip_indicators: set | None = None) -> dict:
     """
     Compute all ~220 technical signals from a point-in-time OHLCV DataFrame.
     Returns flat dict. df must already be sliced to as_of date by fetcher.
+
+    Batch 538 OPT-B Phase 7: `skip_indicators` is a set of indicator
+    names (e.g. {"rsi", "ema_sma", "simple_returns"}) whose computation
+    is skipped because the caller has already populated those keys
+    (e.g. via panel-style compute_panel_signals_for_as_of). When the
+    panel path runs upstream, the per-ticker function call here is
+    redundant -- skipping it is the actual speedup.
+
+    SAFETY: caller MUST pre-populate the skipped indicators' keys
+    in the signals dict it merges with this function's output, otherwise
+    downstream strategies see missing keys.
     """
     if df.empty or len(df) < 10:
         return {}
+    skip = skip_indicators or set()
     signals = {}
     signals.update(compute_pivots(df))
     signals.update(compute_fibonacci(df))
     signals.update(compute_vwap(df))
-    signals.update(compute_rsi(df))
+    if "rsi" not in skip:
+        signals.update(compute_rsi(df))
     signals.update(compute_stochrsi(df))
     signals.update(compute_stochastic(df))
     signals.update(compute_macd(df))
@@ -1133,7 +1147,8 @@ def compute_all_signals(df: pd.DataFrame) -> dict:
     signals.update(compute_roc(df))
     signals.update(compute_awesome_oscillator(df))
     signals.update(compute_ultimate_oscillator(df))
-    signals.update(compute_ema_sma(df))
+    if "ema_sma" not in skip:
+        signals.update(compute_ema_sma(df))
     signals.update(compute_dema_tema(df))
     signals.update(compute_adx(df))
     signals.update(compute_parabolic_sar(df))
@@ -1149,7 +1164,8 @@ def compute_all_signals(df: pd.DataFrame) -> dict:
     signals.update(compute_volume(df))
     signals.update(compute_candles(df))
     signals.update(compute_break_retest_signals(df))  # BUG-111
-    signals.update(compute_simple_returns(df))        # Batch 467 P10
+    if "simple_returns" not in skip:
+        signals.update(compute_simple_returns(df))        # Batch 467 P10
     return {k: v for k, v in signals.items() if v is not None}
 
 

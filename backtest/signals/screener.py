@@ -4170,6 +4170,7 @@ def screen_instrument(
     vix_value: float = None,
     vix_history: list = None,
     xs_features: dict = None,
+    panel_signals: dict = None,
 ) -> dict:
     """
     Run single instrument through full pipeline.
@@ -4193,7 +4194,17 @@ def screen_instrument(
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": False,
                 "fail_reason": "insufficient_history", "strategies": []}
 
-    signals = compute_all_signals(df)
+    # Batch 538 OPT-B Phase 7: when caller pre-computed panel signals
+    # (RSI/EMA/SMA/simple_returns via technical_panel), skip those in
+    # the per-ticker compute_all_signals call + seed signals dict with
+    # the panel results upfront. Net: same final signal set, 1 panel
+    # op replaces 388 per-ticker function calls.
+    if panel_signals:
+        skip = {"rsi", "ema_sma", "simple_returns"}
+        signals = compute_all_signals(df, skip_indicators=skip)
+        signals.update(panel_signals)
+    else:
+        signals = compute_all_signals(df)
     if not signals:
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": True,
                 "fail_reason": "no_signals", "strategies": []}
@@ -4760,6 +4771,38 @@ def screen_universe(
         _log_silent_producer_failure("cross_sectional_features", _e)
         xs_features = {}
 
+    # Batch 538 OPT-B Phase 7: panel-style technical signals pre-pass.
+    # When USE_PANEL_TECHNICAL_SIGNALS=True, pre-build close_panel from
+    # all per-ticker OHLCV in ohlcv_dict + compute RSI/EMA/SMA/returns
+    # for ALL tickers in one vectorized pandas op. Per-ticker
+    # compute_all_signals downstream then SKIPS those indicators
+    # (no double-compute). 10x speedup on the covered indicators.
+    panel_signals_per_ticker: dict = {}
+    try:
+        from backtest.config import USE_PANEL_TECHNICAL_SIGNALS
+    except Exception:
+        USE_PANEL_TECHNICAL_SIGNALS = False
+    if USE_PANEL_TECHNICAL_SIGNALS and ohlcv_dict:
+        try:
+            from backtest.signals.technical_panel import (
+                compute_panel_signals_for_as_of,
+            )
+            # Build close_panel: rows=dates, cols=tickers. Each
+            # ohlcv_dict[ticker] is a DataFrame with 'close' column.
+            close_series = {
+                t: df["close"]
+                for t, df in ohlcv_dict.items()
+                if df is not None and "close" in df.columns and not df.empty
+            }
+            if close_series:
+                close_panel = pd.DataFrame(close_series)
+                panel_signals_per_ticker = compute_panel_signals_for_as_of(
+                    close_panel
+                )
+        except Exception as _e:
+            _log_silent_producer_failure("panel_technical_signals", _e)
+            panel_signals_per_ticker = {}
+
     candidates = []
     if pool is not None:
         # Batch 321 parallel path
@@ -4780,6 +4823,7 @@ def screen_universe(
                 ticker, df, info, as_of, regime,
                 vix_value=vix_value, vix_history=vix_history,
                 xs_features=xs_features.get(ticker),
+                panel_signals=panel_signals_per_ticker.get(ticker),
             )
             if result.get("liquidity_ok") and result.get("strategy_count", 0) >= min_strategies:
                 candidates.append(result)

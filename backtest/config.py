@@ -1855,3 +1855,22 @@ CRISIS_LONG_EXCLUSIONS = {
 # 126%/yr (if decimal-units). Renamed and clarified.
 # -----------------------------------------------------------------------------
 SHORT_ANNUAL_BORROW_RATE = 0.005   # decimal: 0.005 = 0.5% per year  # BUG-081
+
+# -----------------------------------------------------------------------------
+# OPT-B Phase 7 (Batch 538, 2026-06-01): panel-style technical signals
+# feature flag.
+#
+# When True, screen_universe pre-builds a close_panel from all per-ticker
+# OHLCV and calls backtest.signals.technical_panel for vectorized
+# computation of RSI, simple_returns, EMA/SMA. Per-ticker
+# compute_all_signals SKIPS those indicators (no double-compute).
+#
+# Default OFF -- the wire-in changes the engine output path. Validate
+# parity via test_batch538_panel_wire_in_parity_gate BEFORE flipping ON
+# in production R4. Once parity holds across full Phase 1A-beta cube,
+# this flag flips to True permanently.
+#
+# Expected speedup when ON: ~20% additional R4 wall reduction on top of
+# OPT-A's 30%. Net R4 cost on c7a.16xlarge: ~$22 (within $25 budget).
+# -----------------------------------------------------------------------------
+USE_PANEL_TECHNICAL_SIGNALS = False
