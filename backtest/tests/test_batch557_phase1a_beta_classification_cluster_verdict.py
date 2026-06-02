@@ -131,18 +131,19 @@ def test_batch557_sector_history_data_gap_pin():
     df["added_date"] = pd.to_datetime(df["added_date"], errors="coerce")
     events_2021_plus = df[df["added_date"] >= "2021-01-01"]
     n = len(events_2021_plus)
-    # Batch 561 expansion: 13 tickers x 1 added_date row = 13 events.
-    assert n == 13, (
-        f"sector_history.csv has {n} events 2021+; expected 13 from "
-        f"the 2023-03-17 batch (V/MA/PYPL/FISV/FIS/GPN/JKHY -> "
-        f"Financials, ADP/PAYX/BR -> Industrials, TGT/DG/DLTR -> "
+    # Batch 561 + 561a (2026-06-02): 14 tickers x 1 added_date row = 14 events.
+    # FLT restored after B561a fetched FLT.parquet from Polygon.
+    assert n == 14, (
+        f"sector_history.csv has {n} events 2021+; expected 14 from "
+        f"the 2023-03-17 batch (all of V/MA/PYPL/FISV/FIS/GPN/JKHY/FLT "
+        f"-> Financials, ADP/PAYX/BR -> Industrials, TGT/DG/DLTR -> "
         f"Consumer Staples). If new events added: GOOD -- re-audit "
         f"the classification_change cluster's fire rates and update "
         f"this test pin."
     )
     expected_syms = {
-        # IT -> Financials (7; FLT excluded per OHLCV cache gap)
-        "V", "MA", "PYPL", "FISV", "FIS", "GPN", "JKHY",
+        # IT -> Financials (8; FLT restored in B561a)
+        "V", "MA", "PYPL", "FISV", "FIS", "GPN", "JKHY", "FLT",
         # IT -> Industrials (3)
         "ADP", "PAYX", "BR",
         # Consumer Discretionary -> Consumer Staples (3)

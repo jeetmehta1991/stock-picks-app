@@ -14,11 +14,10 @@ batch across:
   - 2026-06-02 web search returned 5+ independent sources confirming
     the same 14-name list (no source dispute).
 
-Expansion adds 13 of 14 names. FLT (FleetCor) excluded because the
-Polygon OHLCV cache has only CPAY.parquet (the post-2024-03 rename
-ticker), not FLT.parquet. Backtest at 2023-era dates would query FLT
-which isn't in cache anyway. Restore FLT row once FLT.parquet is
-added via prefetch.
+Expansion adds all 14 of 14 names. Batch 561a follow-on (2026-06-02)
+fetched FLT.parquet from Polygon (706 rows 2021-06-03 to 2024-03-22,
+the pre-CPAY-rename window) via `scripts/fetch_flt_one_time_b561.py`
+and restored the FLT row pair in sector_history.csv.
 
 Pins:
 
@@ -56,7 +55,10 @@ SECTOR_HISTORY_CSV = (
 
 
 # Cohort definitions (from S&P DJI 2023-03-17 batch, cross-verified)
-IT_TO_FINANCIALS_2023 = ["V", "MA", "PYPL", "FISV", "FIS", "GPN", "JKHY"]
+IT_TO_FINANCIALS_2023 = [
+    "V", "MA", "PYPL", "FISV", "FIS", "GPN", "JKHY",
+    "FLT",  # B561a follow-on: restored after FLT.parquet prefetch
+]
 IT_TO_INDUSTRIALS_2023 = ["ADP", "PAYX", "BR"]
 CONS_DISC_TO_STAPLES_2023 = ["TGT", "DG", "DLTR"]
 ALL_2023_TICKERS = (
@@ -163,21 +165,31 @@ def test_batch561_window_expiry_at_91_days():
         )
 
 
-def test_batch561_flt_documented_excluded_per_cache_gap():
-    """FLT (FleetCor) is excluded from the CSV because OHLCV cache
-    has only CPAY.parquet (post-2024-03 rename). Pin both invariants:
-    FLT not in CSV + documentation comment explains why."""
+def test_batch561a_flt_restored_with_parquet():
+    """B561a follow-on: FLT.parquet was fetched + FLT row pair restored
+    in sector_history.csv. Verify both invariants."""
     df = pd.read_csv(SECTOR_HISTORY_CSV, comment="#")
     syms = set(df["Symbol"].tolist())
-    assert "FLT" not in syms, (
-        "FLT should NOT be in sector_history.csv per the OHLCV-cache "
-        "gap documented in CSV header. If FLT.parquet has been added "
-        "to prefetch, restore the FLT row pair and update this test."
+    assert "FLT" in syms, (
+        "FLT row pair should be present post-B561a follow-on"
     )
-    # Verify the documentation comment is present
-    csv_text = SECTOR_HISTORY_CSV.read_text(encoding="utf-8")
-    assert "FLT" in csv_text and "CPAY" in csv_text, (
-        "CSV header must document FLT exclusion + CPAY rename"
+    # FLT.parquet must exist with pre-2024-03-25 history
+    flt_parquet = (
+        SECTOR_HISTORY_CSV.parent.parent
+        / "data_prefetch" / "polygon" / "ohlcv_daily" / "FLT.parquet"
+    )
+    assert flt_parquet.exists(), (
+        f"FLT.parquet must exist at {flt_parquet} per B561a; if missing, "
+        f"re-run scripts/fetch_flt_one_time_b561.py"
+    )
+    flt_df = pd.read_parquet(flt_parquet)
+    flt_df["date"] = pd.to_datetime(flt_df["date"])
+    # FLT pre-rename data should end on/around 2024-03-22 (last FLT
+    # trading day before CPAY rename on 2024-03-25)
+    last_date = flt_df["date"].max()
+    assert last_date.year == 2024 and last_date.month <= 3, (
+        f"FLT.parquet last date {last_date} -- expected pre-CPAY-rename "
+        f"(March 2024 or earlier)"
     )
 
 
