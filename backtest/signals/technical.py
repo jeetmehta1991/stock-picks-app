@@ -999,8 +999,9 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result = {}
     c,h,l,v = df["close"],df["high"],df["low"],df["volume"]
 
-    # OBV
-    direction = c.diff().apply(lambda x: 1 if x>0 else (-1 if x<0 else 0))
+    # OBV - B547 OPT-C: np.sign replaces per-element Python lambda
+    # (direction was 1/0/-1; np.sign returns the same on numeric Series).
+    direction = np.sign(c.diff()).fillna(0)
     obv       = (direction*v).cumsum()
     obv_ma    = obv.rolling(20).mean()
     result["obv_bullish"]   = _safe_float(obv.iloc[-1]) > _safe_float(obv_ma.iloc[-1])
