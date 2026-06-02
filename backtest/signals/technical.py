@@ -1167,11 +1167,13 @@ def compute_break_retest_signals(df: pd.DataFrame) -> dict:
     low   = df["low"].values
     n     = len(close)
 
-    # 14-bar ATR
-    tr_vals = [max(high[i] - low[i],
-                   abs(high[i] - close[i - 1]),
-                   abs(low[i]  - close[i - 1])) for i in range(1, n)]
-    atr = float(np.mean(tr_vals[-14:])) if len(tr_vals) >= 14 else float(np.mean(tr_vals))
+    # Batch 545 OPT-C: vectorize TR list-comp (was Python loop over n bars).
+    # Numpy ops give ~50-100x speedup on the TR portion of this call.
+    tr1 = high[1:] - low[1:]
+    tr2 = np.abs(high[1:] - close[:-1])
+    tr3 = np.abs(low[1:] - close[:-1])
+    tr_arr = np.maximum(np.maximum(tr1, tr2), tr3)
+    atr = float(np.mean(tr_arr[-14:])) if len(tr_arr) >= 14 else float(np.mean(tr_arr))
     if atr <= 0:
         atr = close[-1] * 0.01
     tolerance = 1.5 * atr
