@@ -41,6 +41,55 @@ _NEWS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / 
 _NEWS_BY_TICKER: dict[str, pd.DataFrame] = {}
 
 
+def _precompute_article_scores(df: pd.DataFrame) -> pd.DataFrame:
+    """Batch 552 OPT-C: pre-compute per-article _article_score + _uses_polygon
+    columns once at cache fill time. _score_window then becomes a vectorized
+    aggregation (mean / >0 count / <0 count) over numeric columns instead of
+    a Python for-loop over .iterrows() calling _score_article per row.
+
+    Score derivation matches _score_article semantics exactly:
+      - Polygon `sentiment` field, when populated, maps positive/bullish=+1,
+        negative/bearish=-1, neutral=0 via _polygon_sentiment_to_score
+      - Otherwise fall back to _rule_based_sentiment on title + ". " + description
+    """
+    if df.empty:
+        return df
+    n = len(df)
+    sentiment_raw = df["sentiment"] if "sentiment" in df.columns else pd.Series(
+        [None] * n, index=df.index
+    )
+
+    # Vectorize the Polygon-sentiment mapping: lowercase + strip
+    sentiment_str = sentiment_raw.where(
+        sentiment_raw.apply(lambda x: isinstance(x, str)), other=None,
+    )
+    sentiment_lower = sentiment_str.str.lower().str.strip()
+    polygon_map = {
+        "positive": 1.0, "bullish": 1.0,
+        "negative": -1.0, "bearish": -1.0,
+        "neutral": 0.0,
+    }
+    polygon_scores = sentiment_lower.map(polygon_map)
+    uses_polygon = polygon_scores.notna()
+
+    # Rule-based fallback for non-Polygon rows
+    title = df["title"] if "title" in df.columns else pd.Series([""] * n, index=df.index)
+    desc = df["description"] if "description" in df.columns else pd.Series([""] * n, index=df.index)
+    combined = title.fillna("").astype(str) + ". " + desc.fillna("").astype(str)
+    # _rule_based_sentiment is cheap-ish but still Python; only apply on
+    # the fallback rows. Most articles in Polygon news have sentiment
+    # populated so the fallback subset is small.
+    rule_scores = combined[~uses_polygon].apply(_rule_based_sentiment)
+    # Merge: polygon scores where present, rule-based where not
+    final = polygon_scores.fillna(0.0).astype(float)
+    if not rule_scores.empty:
+        final.loc[~uses_polygon] = rule_scores
+    df = df.copy()
+    df["_article_score"] = final
+    df["_uses_polygon"] = uses_polygon
+    return df
+
+
 def _load_news_parquet(ticker: str) -> pd.DataFrame:
     """B535 OPT-A cached per-ticker news lookup.
 
@@ -49,6 +98,10 @@ def _load_news_parquet(ticker: str) -> pd.DataFrame:
     the producer re-did this conversion on every call (~30-40ms each
     for typical news cache size). Cache now serves the converted
     DataFrame ready for boolean date filters.
+
+    Batch 552 OPT-C: also pre-compute _article_score + _uses_polygon
+    so _score_window aggregates a numeric column (sum / count >0 /
+    count <0) instead of looping per-row.
     """
     safe_ticker = ticker.replace(".", "-")
     cached = _NEWS_BY_TICKER.get(safe_ticker)
@@ -67,6 +120,8 @@ def _load_news_parquet(ticker: str) -> pd.DataFrame:
                                                   errors="coerce")
             df = df.dropna(subset=["published_dt"])
             df["published_date"] = df["published_dt"].dt.date
+            # B552 OPT-C: pre-score articles
+            df = _precompute_article_scores(df)
         _NEWS_BY_TICKER[safe_ticker] = df
         return df
     except Exception:
@@ -150,7 +205,26 @@ def _score_article(row) -> tuple:
 
 def _score_window(sub: pd.DataFrame) -> tuple:
     """Score every article in a window. Returns (mean, n, n_pos, n_neg,
-    used_polygon_any). Empty window returns (0.0, 0, 0, 0, False)."""
+    used_polygon_any). Empty window returns (0.0, 0, 0, 0, False).
+
+    Batch 552 OPT-C: vectorized aggregation over pre-computed
+    `_article_score` + `_uses_polygon` columns (populated by
+    _precompute_article_scores at cache load time). Pre-fix used a
+    Python for-loop over .iterrows() calling _score_article per row.
+    """
+    n = len(sub)
+    if n == 0:
+        return 0.0, 0, 0, 0, False
+    if "_article_score" in sub.columns:
+        scores = sub["_article_score"].to_numpy()
+        avg = float(scores.mean())
+        n_pos = int((scores > 0).sum())
+        n_neg = int((scores < 0).sum())
+        uses_polygon = bool(sub["_uses_polygon"].any()) if "_uses_polygon" in sub.columns else False
+        return avg, n, n_pos, n_neg, uses_polygon
+    # Fallback path (cache layer pre-B552 or upstream callers passing
+    # non-cached DataFrames): preserve original semantics via per-row
+    # _score_article.
     scores = []
     uses_polygon = False
     for _, row in sub.iterrows():
@@ -158,13 +232,13 @@ def _score_window(sub: pd.DataFrame) -> tuple:
         scores.append(s)
         if used_p:
             uses_polygon = True
-    n = len(scores)
-    if n == 0:
+    n_list = len(scores)
+    if n_list == 0:
         return 0.0, 0, 0, 0, False
-    avg = sum(scores) / n
+    avg = sum(scores) / n_list
     n_pos = sum(1 for s in scores if s > 0)
     n_neg = sum(1 for s in scores if s < 0)
-    return avg, n, n_pos, n_neg, uses_polygon
+    return avg, n_list, n_pos, n_neg, uses_polygon
 
 
 def compute_news_sentiment_signals(
