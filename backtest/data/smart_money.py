@@ -370,6 +370,52 @@ def _load_congressional_processed(ticker: str) -> Optional[pd.DataFrame]:
     return df
 
 
+# Batch 549 OPT-C: pre-processed institutional 13F cache. Mirrors B548
+# congressional pattern. Raw cache lives in _PREFETCH_CACHE under key
+# ("institutional_perticker", ticker); this layer adds report_period (date),
+# report_period_ts (datetime64), available_after_ts (datetime64 + 45 days),
+# Shares_num (numeric coerced) -- all ONCE per ticker. Source-identity
+# invalidation.
+_INSTITUTIONAL_PROCESSED_CACHE: dict[str, tuple] = {}
+
+
+def _load_institutional_processed(ticker: str) -> Optional[pd.DataFrame]:
+    """Return cached institutional 13F DataFrame with report_period_ts +
+    available_after_ts + Shares_num pre-computed. None when no data."""
+    cache_key = ("institutional_perticker", ticker)
+    raw = _PREFETCH_CACHE.get(cache_key)
+    if raw is None and cache_key not in _PREFETCH_CACHE:
+        path = PREFETCH_DIR / "institutional" / f"{ticker}.parquet"
+        if not path.exists():
+            _PREFETCH_CACHE[cache_key] = None
+            return None
+        try:
+            raw = pd.read_parquet(path)
+            _PREFETCH_CACHE[cache_key] = raw
+        except Exception:
+            _PREFETCH_CACHE[cache_key] = None
+            return None
+    if raw is None or raw.empty:
+        return None
+    if not {"ReportPeriod", "Fund", "Shares"}.issubset(raw.columns):
+        return None
+    cached = _INSTITUTIONAL_PROCESSED_CACHE.get(ticker)
+    if cached is not None and cached[0] is raw:
+        return cached[1]
+    df = raw.copy()
+    df["report_period_ts"] = pd.to_datetime(df["ReportPeriod"], errors="coerce")
+    df = df.dropna(subset=["report_period_ts"])
+    if df.empty:
+        _INSTITUTIONAL_PROCESSED_CACHE[ticker] = (raw, df)
+        return df
+    df["report_period"] = df["report_period_ts"].dt.date
+    # Batch 549 OPT-C: vectorized timedelta add (was per-row Python lambda)
+    df["available_after_ts"] = df["report_period_ts"] + pd.Timedelta(days=45)
+    df["Shares_num"] = pd.to_numeric(df["Shares"], errors="coerce").fillna(0)
+    _INSTITUTIONAL_PROCESSED_CACHE[ticker] = (raw, df)
+    return df
+
+
 def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> dict:
     df = _load_congressional_processed(ticker)
     if df is None or df.empty:
@@ -688,34 +734,16 @@ def _institutional_signal_from_perticker_history(
     """
     # Batch 535 OPT-A Phase 5: cached per-ticker institutional history.
     # Was reading parquet on every call (2485 calls / 73s / 29ms each).
-    cache_key = ("institutional_perticker", ticker)
-    if cache_key in _PREFETCH_CACHE:
-        df = _PREFETCH_CACHE[cache_key]
-        if df is None or df.empty:
-            return {"signal": "none"}
-    else:
-        path = PREFETCH_DIR / "institutional" / f"{ticker}.parquet"
-        if not path.exists():
-            _PREFETCH_CACHE[cache_key] = None
-            return {"signal": "none"}
-        try:
-            df = pd.read_parquet(path)
-            _PREFETCH_CACHE[cache_key] = df
-        except Exception:
-            _PREFETCH_CACHE[cache_key] = None
-            return {"signal": "none"}
-    if df is None or df.empty or "ReportPeriod" not in df.columns:
+    # Batch 549 OPT-C: in-memory pre-processed cache stores DataFrame with
+    # report_period_ts + available_after_ts + Shares_num pre-computed at
+    # fill time. Per-call work reduces to as_of filter + groupby. Identity
+    # check on raw cached source for invalidation.
+    df = _load_institutional_processed(ticker)
+    if df is None or df.empty:
         return {"signal": "none"}
     try:
-        if "Fund" not in df.columns or "Shares" not in df.columns:
-            return {"signal": "none"}
-        df = df.copy()
-        df["report_period"] = pd.to_datetime(
-            df["ReportPeriod"], errors="coerce").dt.date
-        df = df.dropna(subset=["report_period"])
-        df["available_after"] = df["report_period"].apply(
-            lambda d: d + timedelta(days=45) if d else None)
-        df = df[df["available_after"] <= as_of]
+        as_of_ts = pd.Timestamp(as_of)
+        df = df[df["available_after_ts"] <= as_of_ts]
         if df.empty:
             return {"signal": "none"}
         quarters = sorted(df["report_period"].unique())
@@ -723,10 +751,9 @@ def _institutional_signal_from_perticker_history(
             return {"signal": "none"}
         latest_q = quarters[-1]
         prior_q = quarters[-2] if len(quarters) >= 2 else None
-        latest = df[df["report_period"] == latest_q].copy()
-        latest["Shares"] = pd.to_numeric(
-            latest["Shares"], errors="coerce").fillna(0)
-        latest_by_fund = latest.groupby("Fund")["Shares"].sum()
+        latest = df[df["report_period"] == latest_q]
+        # Batch 549 OPT-C: Shares_num pre-converted in cache layer
+        latest_by_fund = latest.groupby("Fund")["Shares_num"].sum()
         if prior_q is None:
             new_pos = int((latest_by_fund > 0).sum())
             return {
@@ -734,21 +761,16 @@ def _institutional_signal_from_perticker_history(
                 "new_positions": new_pos, "increased": 0, "decreased": 0,
                 "source": "perticker_no_prior",
             }
-        prior = df[df["report_period"] == prior_q].copy()
-        prior["Shares"] = pd.to_numeric(
-            prior["Shares"], errors="coerce").fillna(0)
-        prior_by_fund = prior.groupby("Fund")["Shares"].sum()
-        all_funds = set(latest_by_fund.index) | set(prior_by_fund.index)
-        new_pos = increased = decreased = 0
-        for fund in all_funds:
-            cur = float(latest_by_fund.get(fund, 0.0))
-            prv = float(prior_by_fund.get(fund, 0.0))
-            if prv == 0 and cur > 0:
-                new_pos += 1
-            elif cur > prv > 0:
-                increased += 1
-            elif cur < prv:
-                decreased += 1
+        prior = df[df["report_period"] == prior_q]
+        prior_by_fund = prior.groupby("Fund")["Shares_num"].sum()
+        # Batch 549 OPT-C: vectorize per-fund classification via outer-join
+        # reindex (was Python for-loop over union of fund names).
+        all_idx = latest_by_fund.index.union(prior_by_fund.index)
+        cur_arr = latest_by_fund.reindex(all_idx, fill_value=0.0).to_numpy()
+        prv_arr = prior_by_fund.reindex(all_idx, fill_value=0.0).to_numpy()
+        new_pos = int(((prv_arr == 0) & (cur_arr > 0)).sum())
+        increased = int(((prv_arr > 0) & (cur_arr > prv_arr)).sum())
+        decreased = int((cur_arr < prv_arr).sum())
         signal = "none"
         if new_pos >= 3 or (new_pos >= 1 and increased >= 2):
             signal = "strong_buy"
