@@ -238,6 +238,13 @@ def find_cointegrated_pairs(
 # mid-backtest). Keyed by str(pairs_dir) so callers passing a custom path
 # don't share state.
 _PAIRS_SNAPSHOTS_CACHE: dict = {}
+# Batch 551 OPT-C: per-snapshot pairs DataFrame cache + per-peer OHLCV cache.
+# Profile (post-B548): compute_pair_signals_for_ticker = 65ms/call x 693 = 45s.
+# Bottlenecks: pd.read_parquet(snapshot) per call + pd.read_parquet(peer)
+# inside the per-row loop. Both deterministic given key -> module-level
+# cache eliminates re-reads.
+_PAIRS_DF_CACHE: dict = {}  # {snapshot_path: pairs_df}
+_PEER_OHLCV_CACHE: dict = {}  # {peer_ticker: ohlcv_df_with_date_dt}
 
 
 def _load_pair_snapshots(pairs_dir):
@@ -302,9 +309,16 @@ def compute_pair_signals_for_ticker(
             latest = p
     if latest is None:
         return {}
-    try:
-        pairs_df = pd.read_parquet(latest)
-    except Exception:
+    # Batch 551 OPT-C: cached pairs_df read by snapshot path.
+    pairs_df = _PAIRS_DF_CACHE.get(latest)
+    if pairs_df is None:
+        try:
+            pairs_df = pd.read_parquet(latest)
+            _PAIRS_DF_CACHE[latest] = pairs_df
+        except Exception:
+            _PAIRS_DF_CACHE[latest] = pd.DataFrame()
+            return {}
+    if pairs_df.empty:
         return {}
     mine = pairs_df[(pairs_df["ticker_a"] == ticker) | (pairs_df["ticker_b"] == ticker)]
     if mine.empty:
@@ -318,17 +332,33 @@ def compute_pair_signals_for_ticker(
         is_a = row["ticker_a"] == ticker
         peer = row["ticker_b"] if is_a else row["ticker_a"]
         peer_safe = str(peer).replace(".", "-")
-        peer_path = ohlcv_dir / f"{peer_safe}.parquet"
-        if not peer_path.exists():
+        # Batch 551 OPT-C: cached peer OHLCV by peer ticker. date_dt
+        # pre-computed at fill time (one parquet read per peer per session).
+        peer_df = _PEER_OHLCV_CACHE.get(peer_safe)
+        if peer_df is None:
+            peer_path = ohlcv_dir / f"{peer_safe}.parquet"
+            if not peer_path.exists():
+                _PEER_OHLCV_CACHE[peer_safe] = pd.DataFrame()
+                continue
+            try:
+                peer_df = pd.read_parquet(peer_path)
+                if "date" in peer_df.columns:
+                    peer_df = peer_df.copy()
+                    peer_df["date_dt"] = pd.to_datetime(
+                        peer_df["date"], errors="coerce").dt.date
+                    peer_df = peer_df.sort_values("date_dt")
+                _PEER_OHLCV_CACHE[peer_safe] = peer_df
+            except Exception:
+                _PEER_OHLCV_CACHE[peer_safe] = pd.DataFrame()
+                continue
+        if peer_df.empty or "date_dt" not in peer_df.columns:
             continue
         try:
-            peer_df = pd.read_parquet(peer_path)
-            if "date" in peer_df.columns:
-                peer_df["date_dt"] = pd.to_datetime(peer_df["date"], errors="coerce").dt.date
-                peer_df = peer_df[peer_df["date_dt"] <= as_of].sort_values("date_dt")
-                peer_close = pd.Series(peer_df["close"].values[-90:], index=peer_df["date_dt"].values[-90:])
-            else:
-                continue
+            sliced = peer_df[peer_df["date_dt"] <= as_of]
+            peer_close = pd.Series(
+                sliced["close"].values[-90:],
+                index=sliced["date_dt"].values[-90:],
+            )
             if is_a:
                 z = pair_zscore(ticker_close, peer_close, row["hedge_ratio"], row["intercept"])
             else:
