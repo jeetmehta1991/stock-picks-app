@@ -331,44 +331,79 @@ def analyst_bullets(analyst: dict, current_price: Optional[float] = None) -> lis
 # CONGRESSIONAL TRADES
 # -----------------------------------------------------------------------------
 
+# Batch 548 OPT-C: pre-processed congressional cache. _load_prefetch already
+# caches the raw DataFrame; this layer additionally pre-converts disclosure_date
+# / transaction_date columns ONCE per ticker (was per-call). Source-DataFrame
+# identity check (`is`) handles cache invalidation. The as_of-dependent
+# filtering still happens per call (cheap pandas boolean indexing).
+_CONGRESS_PROCESSED_CACHE: dict[str, tuple] = {}
+
+
+def _load_congressional_processed(ticker: str) -> Optional[pd.DataFrame]:
+    """Return cached DataFrame with disclosure_date + transaction_date
+    columns pre-computed as datetime64. Returns None when no data."""
+    raw = _load_prefetch("congressional", ticker)
+    if raw is None or raw.empty:
+        return None
+    cached = _CONGRESS_PROCESSED_CACHE.get(ticker)
+    if cached is not None and cached[0] is raw:
+        return cached[1]
+    df = raw.copy()
+    # ReportDate / Date / date fallback chain
+    if "ReportDate" in df.columns:
+        disc_src = df["ReportDate"]
+    elif "Date" in df.columns:
+        disc_src = df["Date"]
+    elif "date" in df.columns:
+        disc_src = df["date"]
+    else:
+        disc_src = pd.Series([""] * len(df), index=df.index)
+    df["disclosure_dt"] = pd.to_datetime(disc_src, errors="coerce")
+    if "TransactionDate" in df.columns:
+        df["transaction_dt"] = pd.to_datetime(df["TransactionDate"], errors="coerce")
+    elif "transactionDate" in df.columns:
+        df["transaction_dt"] = pd.to_datetime(df["transactionDate"], errors="coerce")
+    else:
+        df["transaction_dt"] = df["disclosure_dt"]
+    df = df.dropna(subset=["disclosure_dt"])
+    _CONGRESS_PROCESSED_CACHE[ticker] = (raw, df)
+    return df
+
+
 def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> dict:
-    data = _get_quiver_data("congressional", f"historical/congresstrading/{ticker}", ticker)
-    if not data:
+    df = _load_congressional_processed(ticker)
+    if df is None or df.empty:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
     try:
-        df = pd.DataFrame(data)
-        if df.empty:
-            return {"signal": "none", "buy_count": 0, "sell_count": 0}
-
         # DEC-324 fix (Pass 51) BUG-240: use BOTH disclosure_date (PIT availability)
         # AND transaction_date (age-weighting). STOCK Act gives members up
         # to 45 days to disclose; a trade DISCLOSED 5 days ago might have
         # been TRANSACTED 40 days ago. Smart-money signal value comes from
         # when they ACTUALLY POSITIONED, not when paperwork landed.
         # Previously age-weighted by disclosure date, mis-weighting late filings.
-        df["disclosure_date"] = pd.to_datetime(
-            df.get("ReportDate", df.get("Date", df.get("date", "")))
-        ).dt.date
-        # Transaction date  -  fall back to disclosure_date if not present (some
-        # Quiver records have only one). Schema field tested: "TransactionDate".
-        if "TransactionDate" in df.columns:
-            df["transaction_date"] = pd.to_datetime(df["TransactionDate"]).dt.date
-        elif "transactionDate" in df.columns:
-            df["transaction_date"] = pd.to_datetime(df["transactionDate"]).dt.date
-        else:
-            # Fallback: disclosure_date as proxy when transaction_date missing
-            df["transaction_date"] = df["disclosure_date"]
+        # Batch 548 OPT-C: disclosure_dt + transaction_dt are pre-converted at
+        # cache load; per-call work is only the as_of-dependent filters.
+        as_of_ts = pd.Timestamp(as_of)
+        window_start_ts = pd.Timestamp(as_of - timedelta(days=lookback_days))
 
         # PIT filter: only trades where DISCLOSURE was on/before as_of are visible
-        df = df[df["disclosure_date"] <= as_of]
+        df = df[df["disclosure_dt"] <= as_of_ts]
 
         # Age-weight by TRANSACTION date (when they actually traded)
-        window_start = as_of - timedelta(days=lookback_days)
-        recent = df[df["transaction_date"] >= window_start].copy()
+        recent_mask = df["transaction_dt"] >= window_start_ts
+        recent = df[recent_mask].copy()
+        if recent.empty:
+            return {"signal": "none", "buy_count": 0, "sell_count": 0,
+                    "senate_buys": 0, "cluster_buy": False}
         # Age-weight: <30 days = full, 30-60 days = 0.5x, >60 days = excluded
-        recent["age_days"] = (pd.Timestamp(as_of) - pd.to_datetime(recent["transaction_date"])).dt.days
-        recent["weight"]   = recent["age_days"].apply(
-            lambda d: 1.0 if d < 30 else 0.5 if d < 60 else 0.0)
+        age_days_arr = (as_of_ts - recent["transaction_dt"]).dt.days.to_numpy()
+        # Batch 548 OPT-C: np.where replaces per-element Python lambda
+        weight_arr = np.where(
+            age_days_arr < 30, 1.0,
+            np.where(age_days_arr < 60, 0.5, 0.0),
+        )
+        recent["age_days"] = age_days_arr
+        recent["weight"] = weight_arr
         recent = recent[recent["weight"] > 0]  # exclude >60 days
 
         buys   = recent[recent.get("Transaction","transaction").str.contains(

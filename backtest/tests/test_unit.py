@@ -796,18 +796,41 @@ def test_regime_filter_has_unknown_entry():
 
 
 def test_congressional_uses_transaction_date():
-    """DEC-324: congressional_signal age-weights by transaction_date, not disclosure_date."""
+    """DEC-324: congressional_signal age-weights by transaction_date, not disclosure_date.
+
+    Batch 548 OPT-C update: the Quiver field-read + date-conversion logic
+    moved to the _load_congressional_processed helper for caching; the
+    age-weight (using transaction_dt) stays in congressional_signal. This
+    test now greps BOTH source bodies so the DEC-324 invariant remains
+    pinned across the refactor.
+    """
     import inspect
-    from backtest.data.smart_money import congressional_signal
-    src = inspect.getsource(congressional_signal)
-    assert "transaction_date" in src, \
-        "DEC-324: congressional_signal must reference transaction_date"
-    assert "TransactionDate" in src, \
+    from backtest.data.smart_money import (
+        congressional_signal, _load_congressional_processed,
+    )
+    sig_src = inspect.getsource(congressional_signal)
+    helper_src = inspect.getsource(_load_congressional_processed)
+    combined = sig_src + helper_src
+
+    # Age-weight body must use transaction_dt (post-B548) or
+    # transaction_date (pre-B548)
+    assert "transaction_dt" in sig_src or "transaction_date" in sig_src, (
+        "DEC-324: congressional_signal must reference transaction_date/dt"
+    )
+    # Quiver TransactionDate field-read must exist SOMEWHERE in the
+    # congressional code path (helper post-B548; signal body pre-B548)
+    assert "TransactionDate" in combined, \
         "DEC-324: must read Quiver TransactionDate field"
-    # Ensure age-weight uses transaction_date (not disclosure_date)
-    age_weight_section = src[src.find("age_days"):src.find("buys   = recent")]
-    assert "transaction_date" in age_weight_section, \
-        "DEC-324: age_days must be computed from transaction_date"
+    # Ensure age-weight uses transaction_dt (B548) or transaction_date (legacy)
+    age_marker_end = (
+        sig_src.find("buys   = recent") if "buys   = recent" in sig_src
+        else sig_src.find("buys")
+    )
+    age_weight_section = sig_src[sig_src.find("age_days"):age_marker_end]
+    assert ("transaction_dt" in age_weight_section
+            or "transaction_date" in age_weight_section), (
+        "DEC-324: age_days must be computed from transaction_date/dt"
+    )
     print("[OK] DEC-324: congressional age-weighting uses transaction_date")
 
 
