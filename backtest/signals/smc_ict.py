@@ -164,8 +164,13 @@ def compute_smc_signals(
             if "Top" in fvg_df.columns and "Bottom" in fvg_df.columns:
                 retest_long = False
                 retest_short = False
-                # Scan last 50 FVGs - balance coverage vs cost
-                tail = fvg_df.tail(50)
+                # Batch 556 OPT-C Phase 4 producer fix: filter to non-zero
+                # FVG events FIRST then tail(20). Pre-fix tail(50) of
+                # OHLCV-aligned rows catches mostly NaN rows. FVG is denser
+                # than OB so impact smaller, but apply for consistency
+                # with B556 OB + B390 liquidity patterns.
+                fvg_events = fvg_df[fvg_df["FVG"].fillna(0) != 0]
+                tail = fvg_events.tail(20) if not fvg_events.empty else fvg_df.iloc[0:0]
                 for idx_pos in range(len(tail)):
                     row = tail.iloc[idx_pos]
                     fvg_val = row.get("FVG")
@@ -227,7 +232,15 @@ def compute_smc_signals(
                     breaker_bear = False
                     mitigation_long = False
                     mitigation_short = False
-                    tail = ob_df.tail(50)
+                    # Batch 556 OPT-C Phase 4 producer fix (mirrors Batch 390
+                    # liquidity fix): OB events are SPARSE in the OHLCV-aligned
+                    # DataFrame (empirical: ~2 events per 500 bars on AAPL).
+                    # tail(50) catches 0-1 actual events; filter to non-zero
+                    # OB rows FIRST, then take last 20 ACTUAL events. Keep
+                    # the same "current_idx - swing_safe" PIT slicing implicit
+                    # in iloc bounds (rows beyond current_idx aren't here).
+                    ob_events = ob_df[ob_df["OB"].fillna(0) != 0]
+                    tail = ob_events.tail(20) if not ob_events.empty else ob_df.iloc[0:0]
                     for idx_pos in range(len(tail)):
                         row = tail.iloc[idx_pos]
                         ob_val = row.get("OB")
@@ -286,7 +299,12 @@ def compute_smc_signals(
             # Batch 216: BOS retest - price within 0.5pct of a recently-
             # broken BOS Level. Scan last 50 BOS strikes.
             if "BOS" in bos_df.columns and "Level" in bos_df.columns:
-                tail = bos_df.tail(50)
+                # Batch 556 OPT-C Phase 4 producer fix: filter to non-zero
+                # BOS events FIRST. tail(50) of OHLCV-aligned df catches
+                # ~1-2 actual BOS events on AAPL; filter-then-tail(20)
+                # catches 20 actual breaks for retest evaluation.
+                bos_events = bos_df[bos_df["BOS"].fillna(0) != 0]
+                tail = bos_events.tail(20) if not bos_events.empty else bos_df.iloc[0:0]
                 retest_long = False
                 retest_short = False
                 tol = 0.005  # 0.5% tolerance
