@@ -1874,3 +1874,24 @@ SHORT_ANNUAL_BORROW_RATE = 0.005   # decimal: 0.005 = 0.5% per year  # BUG-081
 # OPT-A's 30%. Net R4 cost on c7a.16xlarge: ~$22 (within $25 budget).
 # -----------------------------------------------------------------------------
 USE_PANEL_TECHNICAL_SIGNALS = False
+
+# -----------------------------------------------------------------------------
+# OPT-D Phase 2 (Batch 541, 2026-06-02): pre-computed signals feature flag.
+#
+# When True, screen_instrument first tries
+# backtest.signals.precomputed_cache.load_precomputed_signals(ticker,
+# as_of). On cache HIT, signals dict is returned without running
+# compute_all_signals. On MISS, falls back to per-ticker compute path
+# (backward-compat for tickers/dates not yet materialized).
+#
+# Default OFF -- wire-in changes engine path. Empirical parity verified
+# locally (B541 validation 2026-06-02): direct compute_all_signals vs
+# precomputed parquet read on AAPL 2024-06-14 -> 335 keys, 0 value diffs.
+# Production flip to True is owner-gated after a real Phase 1A-beta
+# smoke run validates parity at scale.
+#
+# Expected speedup when ON + materialized: backtest wall drops 10-50x on
+# the compute layer. Walk-forward / IS-OOS replay near-instant.
+# Trade-off: ~21GB storage + multi-hour one-time precompute step.
+# -----------------------------------------------------------------------------
+USE_PRECOMPUTED_SIGNALS = False

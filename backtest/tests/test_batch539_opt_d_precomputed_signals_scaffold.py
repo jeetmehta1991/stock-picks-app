@@ -184,16 +184,16 @@ def test_batch539_precompute_cache_info_diagnostic(tmp_path, monkeypatch):
 # NOT-WIRED guard
 # ---------------------------------------------------------------------------
 
-def test_batch539_precomputed_cache_not_yet_wired_in_screener():
-    """Scaffold-only ship: screener.py must NOT yet call
-    load_precomputed_signals. Wire-in is Batch 541 (separate parity
-    gate batch). Flipping this test = explicit wire-in commit."""
+def test_batch539_precomputed_cache_wired_in_screener_behind_flag():
+    """Batch 541 LANDED: precomputed_cache wired into screen_instrument
+    behind USE_PRECOMPUTED_SIGNALS feature flag (default OFF). Parity
+    gate test_batch541_parity_gate_cache_vs_compute validates correctness.
+    Flag stays OFF in production until Phase 1A-beta smoke parity
+    verified at scale."""
     repo = Path(__file__).resolve().parent.parent.parent
     screener_text = (repo / "backtest" / "signals" / "screener.py").read_text(
         encoding="utf-8")
-    assert "load_precomputed_signals" not in screener_text, (
-        "Batch 539 SCAFFOLD-only invariant violated: screener imports "
-        "load_precomputed_signals. The wire-in requires its own batch + "
-        "parity gate against compute_all_signals output. Flip this test "
-        "when Batch 541 (USE_PRECOMPUTED_SIGNALS flag + wire-in) lands."
+    assert "load_precomputed_signals" in screener_text, (
+        "Batch 541 wire-in missing -- restore cache-first lookup in "
+        "screen_instrument."
     )

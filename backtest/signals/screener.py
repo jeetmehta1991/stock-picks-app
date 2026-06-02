@@ -4194,17 +4194,38 @@ def screen_instrument(
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": False,
                 "fail_reason": "insufficient_history", "strategies": []}
 
-    # Batch 538 OPT-B Phase 7: when caller pre-computed panel signals
-    # (RSI/EMA/SMA/simple_returns via technical_panel), skip those in
-    # the per-ticker compute_all_signals call + seed signals dict with
-    # the panel results upfront. Net: same final signal set, 1 panel
-    # op replaces 388 per-ticker function calls.
-    if panel_signals:
-        skip = {"rsi", "ema_sma", "simple_returns"}
-        signals = compute_all_signals(df, skip_indicators=skip)
-        signals.update(panel_signals)
-    else:
-        signals = compute_all_signals(df)
+    # Batch 541 OPT-D Phase 2: try pre-computed signals cache FIRST.
+    # If hit, skip compute_all_signals entirely (~25ms savings per
+    # call). Falls back to compute path on miss (backward-compat for
+    # tickers/dates not yet materialized).
+    signals = None
+    try:
+        from backtest.config import USE_PRECOMPUTED_SIGNALS
+    except Exception:
+        USE_PRECOMPUTED_SIGNALS = False
+    if USE_PRECOMPUTED_SIGNALS:
+        try:
+            from backtest.signals.precomputed_cache import (
+                load_precomputed_signals,
+            )
+            precomp = load_precomputed_signals(ticker, as_of)
+            if precomp is not None:
+                signals = precomp
+        except Exception:
+            signals = None
+
+    if signals is None:
+        # Batch 538 OPT-B Phase 7: when caller pre-computed panel signals
+        # (RSI/EMA/SMA/simple_returns via technical_panel), skip those in
+        # the per-ticker compute_all_signals call + seed signals dict with
+        # the panel results upfront. Net: same final signal set, 1 panel
+        # op replaces 388 per-ticker function calls.
+        if panel_signals:
+            skip = {"rsi", "ema_sma", "simple_returns"}
+            signals = compute_all_signals(df, skip_indicators=skip)
+            signals.update(panel_signals)
+        else:
+            signals = compute_all_signals(df)
     if not signals:
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": True,
                 "fail_reason": "no_signals", "strategies": []}
