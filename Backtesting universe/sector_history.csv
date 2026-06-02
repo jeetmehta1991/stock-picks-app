@@ -1,9 +1,11 @@
 # Sector reclassifications — historical PIT-correct sector for major GICS changes
 # Pass 53 v8h+1 Phase 3 Batch 46 (DEC-323/394, owner-approved Path C 2026-05-11)
-# Batch 561 (2026-06-02): expanded 2023-03-17 batch to all 13 of 14 affected
-# S&P 500 names that have OHLCV cache coverage. Owner-directive "Execute"
-# 2026-06-02 to fix the classification_change_* producer-zero cluster
-# (B557 audit found only V/MA were present; 12 of 14 missing).
+# Batch 561 (2026-06-02): expanded 2023-03-17 batch to 13 of 14 names.
+# Batch 561a follow-on (2026-06-02): added FLT after fetching FLT.parquet
+# from Polygon (scripts/fetch_flt_one_time_b561.py; 706 rows 2021-06-03 to
+# 2024-03-22, the pre-CPAY-rename window). Owner-directive
+# "Execute follow on" 2026-06-02. All 14 of 14 affected S&P 500 names from
+# the 2023-03-17 GICS reclassification are now in this CSV.
 #
 # Schema: Symbol, Sector, added_date, removed_date
 # Active row: added_date <= as_of AND (removed_date IS NULL OR removed_date > as_of)
@@ -37,11 +39,10 @@
 #      retailers in Broadline Retail merger):
 #      TGT (Target), DG (Dollar General), DLTR (Dollar Tree)
 #
-# FLT (FleetCor) excluded from this CSV: Polygon OHLCV cache has only
-# CPAY.parquet (post-2024-03 ticker rename), no FLT.parquet for 2023-era
-# data. Backtest at 2023 dates queries the ticker active then. To
-# rectify: add FLT.parquet to prefetch cache via Polygon ticker_events
-# API, then re-add FLT row pair here.
+# FLT (FleetCor) row pair RESTORED in B561a follow-on (2026-06-02):
+# fetched FLT.parquet from Polygon (706 rows 2021-06-03 to 2024-03-22).
+# The pre-rename ticker has full pre-2024-03-25 OHLCV data. Post-rename
+# CPAY data (2024-03-25 onward) lives in CPAY.parquet (separate file).
 #
 # 3. 2021-2022 / 2024-2026: no other major S&P 500 sector reclassifications
 #    were found in cross-verification (2026-06-02 web search). The
@@ -85,6 +86,8 @@ GPN,Information Technology,,2023-03-17
 GPN,Financials,2023-03-17,
 JKHY,Information Technology,,2023-03-17
 JKHY,Financials,2023-03-17,
+FLT,Information Technology,,2023-03-17
+FLT,Financials,2023-03-17,
 ADP,Information Technology,,2023-03-17
 ADP,Industrials,2023-03-17,
 PAYX,Information Technology,,2023-03-17
