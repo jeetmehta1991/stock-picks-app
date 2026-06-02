@@ -7234,6 +7234,12 @@ def test_batch267_news_sentiment_shift_positive_delta(tmp_path, monkeypatch):
     import pandas as pd
     import backtest.signals.news_sentiment as ns
 
+    # B535 OPT-A + B552 OPT-C: _NEWS_BY_TICKER cache must be cleared
+    # so the monkeypatched _NEWS_DIR is actually consulted (cache layer
+    # is keyed by ticker, not by dir; cross-test re-use of 'TST' ticker
+    # would otherwise return the prior test's DataFrame).
+    ns._NEWS_BY_TICKER.clear()
+
     fake = pd.DataFrame({
         "ticker": ["TST"] * 6,
         "published_utc": pd.to_datetime([
@@ -7266,6 +7272,10 @@ def test_batch267_news_sentiment_shift_zero_when_prior_empty(tmp_path, monkeypat
     from datetime import date
     import pandas as pd
     import backtest.signals.news_sentiment as ns
+
+    # B535 OPT-A + B552 OPT-C: clear _NEWS_BY_TICKER cache so prior
+    # test's 'TST' DataFrame doesn't bleed into this one.
+    ns._NEWS_BY_TICKER.clear()
 
     fake = pd.DataFrame({
         "ticker": ["TST"] * 3,
