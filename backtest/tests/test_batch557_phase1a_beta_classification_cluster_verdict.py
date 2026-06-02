@@ -116,11 +116,13 @@ def test_batch557_ten_classification_strategies_registered():
 
 
 def test_batch557_sector_history_data_gap_pin():
-    """sector_history.csv has only 2 events in 2021-2026 (V/MA 2023-03-17).
-    This pin documents the data gap as the ROOT CAUSE for the 10
-    classification_change strategies' producer-zero status. If new
-    events get added (owner expansion task), this test will fail and
-    prompt a cluster re-audit."""
+    """Batch 561 update (2026-06-02): sector_history.csv expanded to
+    cover the full 2023-03-17 GICS reclassification batch (13 of 14
+    affected names; FLT excluded due to OHLCV cache rename gap).
+
+    This pin documents the CURRENT count + tickers so a future
+    expansion (e.g. adding individual 2024/2025/2026 reclassifications
+    or restoring FLT after cache fix) prompts a cluster re-audit."""
     repo_root = Path(__file__).parent.parent.parent
     csv_path = repo_root / "Backtesting universe" / "sector_history.csv"
     if not csv_path.exists():
@@ -129,14 +131,24 @@ def test_batch557_sector_history_data_gap_pin():
     df["added_date"] = pd.to_datetime(df["added_date"], errors="coerce")
     events_2021_plus = df[df["added_date"] >= "2021-01-01"]
     n = len(events_2021_plus)
-    assert n == 2, (
-        f"sector_history.csv has {n} events 2021+; expected 2 (V/MA "
-        f"2023-03-17 only). If new events were added: GOOD -- re-audit "
+    # Batch 561 expansion: 13 tickers x 1 added_date row = 13 events.
+    assert n == 13, (
+        f"sector_history.csv has {n} events 2021+; expected 13 from "
+        f"the 2023-03-17 batch (V/MA/PYPL/FISV/FIS/GPN/JKHY -> "
+        f"Financials, ADP/PAYX/BR -> Industrials, TGT/DG/DLTR -> "
+        f"Consumer Staples). If new events added: GOOD -- re-audit "
         f"the classification_change cluster's fire rates and update "
         f"this test pin."
     )
-    # Pin the specific tickers expected
+    expected_syms = {
+        # IT -> Financials (7; FLT excluded per OHLCV cache gap)
+        "V", "MA", "PYPL", "FISV", "FIS", "GPN", "JKHY",
+        # IT -> Industrials (3)
+        "ADP", "PAYX", "BR",
+        # Consumer Discretionary -> Consumer Staples (3)
+        "TGT", "DG", "DLTR",
+    }
     syms = set(events_2021_plus["Symbol"].tolist())
-    assert syms == {"V", "MA"}, (
-        f"expected V/MA only in 2021+ window; got {syms}"
+    assert syms == expected_syms, (
+        f"expected {expected_syms} in 2021+ window; got {syms}"
     )

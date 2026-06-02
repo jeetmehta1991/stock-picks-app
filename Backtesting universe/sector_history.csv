@@ -1,20 +1,54 @@
 # Sector reclassifications — historical PIT-correct sector for major GICS changes
 # Pass 53 v8h+1 Phase 3 Batch 46 (DEC-323/394, owner-approved Path C 2026-05-11)
+# Batch 561 (2026-06-02): expanded 2023-03-17 batch to all 13 of 14 affected
+# S&P 500 names that have OHLCV cache coverage. Owner-directive "Execute"
+# 2026-06-02 to fix the classification_change_* producer-zero cluster
+# (B557 audit found only V/MA were present; 12 of 14 missing).
 #
 # Schema: Symbol, Sector, added_date, removed_date
 # Active row: added_date <= as_of AND (removed_date IS NULL OR removed_date > as_of)
 #
 # Sources:
-# - S&P Dow Jones Indices press releases
-# - S&P announcement archive (https://www.spglobal.com/spdji/en/landing/announcements/)
-# - MSCI GICS sector taxonomy revisions
+# - S&P Dow Jones Indices announcement archive
+#   (https://www.spglobal.com/spdji/en/landing/announcements/)
+# - S&P DJI Indexology Blog: 2023-02-03 "2023 GICS Changes: S&P 500 Impact Analysis"
+# - LSEG Lipper Alpha: "2023 GICS Classification Change: Impact on S&P 500"
+# - Yahoo Finance / ETF Strategy / Zacks coverage (2026-06-02 cross-verified
+#   3+ sources confirming the 14-company list).
+# - MSCI GICS sector taxonomy revisions (August 2024 methodology)
 #
 # Major events covered:
 # 1. 2018-09-24: GICS reclassification creates Communication Services sector
 #    - Moves: META, GOOGL, GOOG from Information Technology -> Communication Services
 #    - Moves: NFLX, DIS, CMCSA, T from Consumer Discretionary -> Communication Services
 #    - Moves: VZ from Telecommunication Services -> Communication Services (renamed sector)
-# 2. 2023-03-17: S&P moves V (Visa) and MA (Mastercard) from Information Technology -> Financials
+# 2. 2023-03-17: S&P/MSCI GICS revision (announced 2022-12-15 per S&P DJI press)
+#    moved 14 S&P 500 names across 3 transitions:
+#    - IT -> Financials (8 names; new "Transaction & Payment Processing
+#      Services" sub-industry):
+#      V (Visa), MA (Mastercard), PYPL (PayPal), FISV (Fiserv; later
+#      renamed FI 2024-03), FIS (Fidelity National Info Services),
+#      GPN (Global Payments), FLT (FleetCor; later renamed CPAY 2024-03),
+#      JKHY (Jack Henry & Associates)
+#    - IT -> Industrials (3 names; legacy data processing):
+#      ADP (Automatic Data Processing), PAYX (Paychex),
+#      BR (Broadridge Financial)
+#    - Consumer Discretionary -> Consumer Staples (3 names; consumable
+#      retailers in Broadline Retail merger):
+#      TGT (Target), DG (Dollar General), DLTR (Dollar Tree)
+#
+# FLT (FleetCor) excluded from this CSV: Polygon OHLCV cache has only
+# CPAY.parquet (post-2024-03 ticker rename), no FLT.parquet for 2023-era
+# data. Backtest at 2023 dates queries the ticker active then. To
+# rectify: add FLT.parquet to prefetch cache via Polygon ticker_events
+# API, then re-add FLT row pair here.
+#
+# 3. 2021-2022 / 2024-2026: no other major S&P 500 sector reclassifications
+#    were found in cross-verification (2026-06-02 web search). The
+#    2023-03-17 revision was the only multi-name event in this window.
+#    Single-name changes (e.g. spin-offs, mergers redirecting sector
+#    classification) may exist but require S&P DJI press-release-level
+#    drill-down. Add here as discovered.
 #
 # Tickers not listed in this file fall back to current-snapshot sector via
 # Master Dedup Universe CSV (DEC-499 18-classifier).
@@ -41,3 +75,25 @@ V,Information Technology,,2023-03-17
 V,Financials,2023-03-17,
 MA,Information Technology,,2023-03-17
 MA,Financials,2023-03-17,
+PYPL,Information Technology,,2023-03-17
+PYPL,Financials,2023-03-17,
+FISV,Information Technology,,2023-03-17
+FISV,Financials,2023-03-17,
+FIS,Information Technology,,2023-03-17
+FIS,Financials,2023-03-17,
+GPN,Information Technology,,2023-03-17
+GPN,Financials,2023-03-17,
+JKHY,Information Technology,,2023-03-17
+JKHY,Financials,2023-03-17,
+ADP,Information Technology,,2023-03-17
+ADP,Industrials,2023-03-17,
+PAYX,Information Technology,,2023-03-17
+PAYX,Industrials,2023-03-17,
+BR,Information Technology,,2023-03-17
+BR,Industrials,2023-03-17,
+TGT,Consumer Discretionary,,2023-03-17
+TGT,Consumer Staples,2023-03-17,
+DG,Consumer Discretionary,,2023-03-17
+DG,Consumer Staples,2023-03-17,
+DLTR,Consumer Discretionary,,2023-03-17
+DLTR,Consumer Staples,2023-03-17,
