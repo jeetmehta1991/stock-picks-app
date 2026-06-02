@@ -485,6 +485,37 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
 # INSIDER TRADES
 # -----------------------------------------------------------------------------
 
+# Batch 550 OPT-C: pre-processed insider per-ticker cache. Filtered sub-DataFrame
+# from `_filter_bulk_by_ticker` is already cached (B535 OPT-A Phase 4); this
+# layer adds filing_date_ts (datetime64) pre-computed at cache fill. Source
+# identity check on the filtered sub-DataFrame.
+_INSIDER_PROCESSED_CACHE: dict[str, tuple] = {}
+
+
+def _load_insider_processed(ticker: str) -> Optional[pd.DataFrame]:
+    """Return cached insider DataFrame filtered to `ticker` with filing_date_ts
+    pre-computed (datetime64). None when no insider rows."""
+    bulk = _load_quiver_bulk("insiders")
+    df_raw = _filter_bulk_by_ticker(bulk, ticker)
+    if df_raw is None or df_raw.empty:
+        return None
+    cached = _INSIDER_PROCESSED_CACHE.get(ticker)
+    if cached is not None and cached[0] is df_raw:
+        return cached[1]
+    df = df_raw.copy()
+    if "fileDate" in df.columns:
+        df["filing_date_ts"] = pd.to_datetime(df["fileDate"], errors="coerce")
+        df = df[df["filing_date_ts"].notna()]
+    elif "Date" in df.columns:
+        df["filing_date_ts"] = pd.to_datetime(df["Date"], errors="coerce")
+        df = df[df["filing_date_ts"].notna()]
+    else:
+        _INSIDER_PROCESSED_CACHE[ticker] = (df_raw, df_raw.iloc[0:0])
+        return df_raw.iloc[0:0]
+    _INSIDER_PROCESSED_CACHE[ticker] = (df_raw, df)
+    return df
+
+
 def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
     """Insider trading signal from Quiver `live/insiders` bulk feed.
 
@@ -516,29 +547,18 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
 
     Returns dict per existing schema for backward compatibility.
     """
-    bulk = _load_quiver_bulk("insiders")
-    df = _filter_bulk_by_ticker(bulk, ticker)
-    if df.empty:
+    # Batch 550 OPT-C: filing_date_ts (datetime64) pre-converted at cache
+    # fill time. Per-call work is just the as_of + window filter. DEC-512
+    # invariant (use fileDate not Date) preserved in _load_insider_processed.
+    df = _load_insider_processed(ticker)
+    if df is None or df.empty:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
     try:
-        df = df.copy()
-        # Pass 53 Day-9 v8f DEC-512 fix (BUG-INSIDER-PIT): use fileDate (SEC
-        # filing date) for PIT cutoff, NOT Date (transaction date). Pre-fix
-        # used Date which gave ~6-day lookahead  -  public didn't know about
-        # the transaction until the SEC Form 4 was filed. Fall back to Date
-        # only when fileDate is absent (defensive; should not happen with
-        # current Quiver schema).
-        if "fileDate" in df.columns:
-            df["filing_date"] = pd.to_datetime(df["fileDate"], errors="coerce").dt.date
-            # Drop rows where fileDate is unparseable rather than silently
-            # falling back to Date (which would re-introduce the lookahead)
-            df = df[df["filing_date"].notna()]
-        else:
-            df["filing_date"] = pd.to_datetime(df["Date"]).dt.date
-        df = df[df["filing_date"] <= as_of]
+        as_of_ts = pd.Timestamp(as_of)
+        window_start_ts = pd.Timestamp(as_of - timedelta(days=lookback_days))
+        df = df[df["filing_date_ts"] <= as_of_ts]
         # Window
-        window_start = as_of - timedelta(days=lookback_days)
-        recent = df[df["filing_date"] >= window_start].copy()
+        recent = df[df["filing_date_ts"] >= window_start_ts].copy()
         # Filter to meaningful transactions:
         # buys: TransactionCode in ('P', 'L')  -  open-market purchase (real money)
         # sells: TransactionCode == 'S'  -  open-market sale
