@@ -1,8 +1,98 @@
 # Phase 1A-beta Cube Optimization Workflow
 
 **Locked 2026-05-28** (owner directive: "Lock the above. ... Create a new reference md file").
+**Updated 2026-06-02 (R4 iteration)** — strategy/exit counts refreshed to live values (204 registered / 203 active strategies / 26 exit methods / 36,946 cells); R4 launch flow + Batch 532 phased PILOT→WAVE structure + 5 abort gates documented; R5/R6 iteration framing added.
 
-**Status.** Canonical reference for how (strategy × exit × regime) cube data flows from a Phase 1A-beta cube run through optimization → owner review → implementation → re-validation → the 1A-α owner gate. Authoritative across re-run iterations. Stage 1 (the AWS cube run) is the only stage that is environment-specific; Stages 2-6 are platform-agnostic and re-used on every iteration.
+**Status.** Canonical reference for how (strategy × exit × regime) cube data flows from a Phase 1A-beta cube run through optimization → owner review → implementation → re-validation → the 1A-α owner gate. Authoritative across re-run iterations (R3 → R4 → R5 → R6…). Stage 1 (the AWS cube run) is the only stage that is environment-specific; Stages 2-6 are platform-agnostic and re-used on every iteration.
+
+**R-iteration goal (owner directive 2026-06-02):** Each R-cycle (R4, R5, R6, …) is an OPTIMIZATION pass on (strategy × exit) cells. R4 produces baseline cell verdicts under all OPT-A/B/C/D + producer fixes (B556/B559/B561). Owner reviews + approves changes from the Stage 3 outputs. R5 re-runs with those changes and produces DELTA cell verdicts. Iterate until cell verdicts stabilize (PASS-cell count delta < 5% iter-over-iter) AND 1A-α gate passes (≥1 strategy with OOS Sharpe ≥ 0.7 in ≥1 regime). **Top (strategy × exit) combinations from the converged cube feed Phase 1B-α agent overlay roster.**
+
+---
+
+## Workflow at a glance
+
+End-to-end flow from a cube run to the Phase 1B-α handoff. Third-person reader entry point.
+
+```mermaid
+flowchart TD
+    Start([Owner triggers R-iteration]) --> S1
+
+    subgraph S1[STAGE 1 — Cube Run on AWS]
+        direction TB
+        SMOKE[SMOKE: 1 inst · 5 tkrs · ~25 min · ~$0.20<br/>validates engine end-to-end]
+        PILOT[PILOT: 2 inst · 776 tkrs · ~7h · spot ~$5 / on-demand ~$12<br/>batches 1-2 of 5]
+        WAVE[WAVE: 3 inst · 1,161 tkrs · ~7h · spot ~$7 / on-demand ~$18<br/>batches 3-5 of 5]
+        MERGE[Merge all 5 batches<br/>scripts/aws_batch395_merge.py]
+        SMOKE --> PILOT
+        PILOT -- 5 abort gates PASS --> WAVE
+        PILOT -- gate FAIL --> ABORT([ABORT: investigate, fix root cause, relaunch])
+        WAVE --> MERGE
+    end
+
+    S1 --> S2
+
+    subgraph S2[STAGE 2 — Optimizer]
+        direction LR
+        OPT[scripts/optimize_strategies_from_cube.py]
+        OPT --> LA[Lens A: 9 dimensions per strategy<br/>Batch 388]
+        OPT --> LB[Lens B: 3 layers per exit<br/>Batch 391]
+        OPT --> PZ[Producer-zero re-audit<br/>3 buckets · Batch 389]
+    end
+
+    S2 --> S3
+
+    subgraph S3[STAGE 3 — Outputs]
+        direction TB
+        SUM[optimization_summary.md<br/>top-line proposals + bucket counts]
+        CAND[optimization_candidates_*.json<br/>~100-150 per-strategy files]
+        PZJ[producer_zero_reaudit.json<br/>3-bucket classification]
+        CVC[cell_verdict_cube.csv<br/>36,946 cells = single source of truth]
+    end
+
+    S3 --> S4
+
+    subgraph S4[STAGE 4 — Owner Per-Change Approval]
+        direction TB
+        REVIEW{Owner reviews<br/>each candidate}
+        REVIEW --> APP[Approved → Stage 5]
+        REVIEW --> REJ[Rejected + reason<br/>logged to approvals.json]
+        REVIEW --> DEF[Deferred<br/>auto-resurfaces when unblocker lands]
+        REVIEW --> AWA[Awaiting<br/>default, top of queue next iter]
+    end
+
+    S4 --> S5
+
+    subgraph S5[STAGE 5 — Implementation Batches]
+        direction TB
+        BATCH[Bundle 5+ approved changes per batch<br/>per feedback_path_c_min_batch_size]
+        BATCH --> DEC[Create DECs in dashboard_stage_2]
+        DEC --> CODE[Edit screener.py / config.py /<br/>exit_strategies.py]
+        CODE --> TEST[Run full 13-tier pyramid<br/>per CHECKLIST #69]
+    end
+
+    S5 --> S6
+
+    subgraph S6[STAGE 6 — Re-run + Walk-forward + Gate]
+        direction TB
+        RERUN[Re-run cube R+1 with applied changes]
+        WF[Walk-forward DEC-505<br/>3y IS / 1y OOS per cell]
+        GATE{1A-α Gate:<br/>any strategy<br/>Sharpe≥0.7 OOS<br/>in ≥1 regime?}
+        RERUN --> WF --> GATE
+    end
+
+    S6 --> Decide
+
+    Decide{Converged?<br/>PASS-cell delta &lt;5pct<br/>AND 1A-α PASS}
+    Decide -- No --> S1
+    Decide -- Yes --> FINAL([R-final: top cells feed<br/>Phase 1B-α agent overlay roster<br/>$300 Haiku budget unlocked])
+
+    style FINAL fill:#9f9,stroke:#333,stroke-width:2px
+    style GATE fill:#ff9,stroke:#333,stroke-width:2px
+    style ABORT fill:#f99,stroke:#333,stroke-width:2px
+    style Decide fill:#ff9,stroke:#333,stroke-width:2px
+```
+
+**One-line summary:** R4 produces cube → optimizer surfaces ~100-150 per-strategy change candidates → owner approves per-change → Stage 5 implements 5+ at a time → R5 cube measures the delta → loop until 1A-α gate opens → top cells deploy to Phase 1B-α.
 
 ---
 
@@ -19,17 +109,71 @@
 
 ## Core principle (do not violate)
 
-**Unit of analysis: `(strategy × exit_method × regime)` CELL.** Live: `len(ALL_STRATEGIES) × len(EXIT_STRATEGIES) × 7 regimes = 185 × 25 × 7 = 32,375 cells`. No batch-aggregated PnL anywhere. Aggregation is the trap; cells are the answer (`feedback_strategy_x_exit_cell_analysis.md`).
+**Unit of analysis: `(strategy × exit_method × regime)` CELL.** Live as of 2026-06-02 (R4 launch): `len(ALL_STRATEGIES) × len(EXIT_STRATEGIES) × 7 regimes = 204 registered / 203 active × 26 × 7 = 36,946 cells` (5,278 per regime). No batch-aggregated PnL anywhere. Aggregation is the trap; cells are the answer (`feedback_strategy_x_exit_cell_analysis.md`).
 
-DEC-426 5-Gate validity per cell: `n ≥ 30`, `p < 0.05` Bonferroni-corrected over 4,625 cells/regime, `PSR ≥ 0.95`, `t ≥ 3.4`, `R:R ≥ 2.0`. CLAUDE.md 11 criteria layered on top per cell.
+Counts drift over time as strategies/exits get added; always re-derive from `len(ALL_STRATEGIES)` + `len(EXIT_STRATEGIES)` at iteration start (`feedback_doc_count_drift_must_be_test_pinned`). Recent additions:
+- Batch 467 P10 +2 news strategies
+- Batch 487 SM1 +10 smart-money sleeves + SM2 +1 exit method (`smart_money_reversal` = 26th exit)
+- Batch 507 M6 +2 YoY-growth PEAD sleeves
+- Batch 519 P15 +2 short-interest sleeves (`squeeze_setup_long` + `short_borrow_trap_avoid`)
+- Batch 531 P17 +2 SEC EDGAR sleeves (`activist_13d_long` + `m_and_a_target_long`)
 
-No a-priori pruning (`project_no_apriori_strategy_pruning.md`): a strategy may be deprecated only if its 25-exit cube row shows 0 PASS cells in any regime AND 0/25 exits fire `n ≥ 30` in any regime.
+DEC-426 5-Gate validity per cell: `n ≥ 30`, `p < 0.05` Bonferroni-corrected over 5,278 cells/regime (updated for live count), `PSR ≥ 0.95`, `t ≥ 3.4`, `R:R ≥ 2.0`. CLAUDE.md 11 criteria layered on top per cell.
+
+No a-priori pruning (`project_no_apriori_strategy_pruning.md`): a strategy may be deprecated only if its 26-exit cube row shows 0 PASS cells in any regime AND 0/26 exits fire `n ≥ 30` in any regime.
 
 ---
 
 ## Stage 1 — Cube run
 
-**Action.** Run Phase 1A-beta engine across the full universe (~1937 tickers × ~5y × 185 strategies × 25 exits). 5-batch AWS orchestration via `scripts/aws_batch395_*.py` is the canonical execution path; single-machine Hetzner remains the fallback.
+**Action.** Run Phase 1A-beta engine across the full universe (1,937 tickers × ~4y 2022-05 to 2026-04 × 203 active strategies × 26 exits = 36,946 (strategy × exit × regime) cells). 5-batch AWS orchestration via `scripts/aws_batch395_*.py` is the canonical execution path; single-machine Hetzner remains the fallback.
+
+**R4 launch flow (2026-06-02 — current iteration):**
+Post-Batch-532 phased PILOT → WAVE structure per `feedback_monitor_intermediate_counts` (R3 burned 10h before anomalies surfaced; phased approach catches problems early):
+
+| Phase | Batches | Wall (est) | Spot cost (est) | Gate |
+|---|---|---|---|---|
+| **SMOKE** | 1 instance, `--smoke-tickers` 5 names | ~25min | ~$0.15 | Engine boots + produces trades + self-terminates |
+| **PILOT** | 2 instances (batch_1 + batch_2 of 5) | ~6.8h | ~$4.80 | 5 abort gates via `scripts/phased_r4_run.py --phase pilot` |
+| **WAVE** | 3 instances (batches 3-5) | ~6.8h | ~$7.20 | Final cube assembly post merge |
+| **Total** | 5 batches, 1,937 tkrs | ~13-15h end-to-end | **~$12-15** | Within $25 budget |
+
+**Cost reduction vs R3 baseline:**
+- R3 (pre-OPT, on-demand, workers=12): ~$20-25 / 5h per batch
+- R4 (post-OPT, spot, workers=4): ~$12-15 / 6.8h per batch
+- Spot pricing ~2.5x cheaper offsets workers=4 slowdown; net ~6x cost reduction
+
+**SMOKE-1 lesson (2026-06-02):** workers=12 default OOM'd at insider bulk feed load (12 workers × 1M-row Quiver insider parquet + 388-ticker ohlcv_dict per worker exceeded c7a.4xlarge 32GB RAM). **R4 uses `--workers 4`** (validated by SMOKE-2 + SMOKE-3). If WAVE wall is too slow at workers=4, can ramp to workers=6 or 8 (~3-4 GB/worker × 8 = ~28 GB still under 32 GB).
+
+**5 hard abort gates (`scripts/phased_r4_run.py` from Batch 532):**
+1. `total_trades < 0.5 × baseline` — catastrophic trade-count drop (R3 had 7,191 → 361 from cap saturation pre-OPT; this gate catches at PILOT)
+2. `zero_fire_strategies > 20%` — >40 strategies firing 0 trades (producer-zero cluster; B556/B559/B561 fixes should drop this)
+3. `cap_saturation_rate > 0.20` — >5 strategies hit `max_candidates/day` ceiling on >20% of bars
+4. `p17_signal_emission == 0` — 0 P17 SEC EDGAR sleeve fires (would mean wire-in broken OR decoded cache empty)
+5. `det1_cross_platform_diff > 0.05` — Linux trade-count diff from Windows-local baseline >5% (platform-FP escape beyond known `rsi_14`)
+
+### Stage 1 flow detail
+
+```mermaid
+flowchart LR
+    Launch[Owner runs<br/>aws_batch395_launch.py<br/>--spot OR on-demand] --> S
+    S[SMOKE batch<br/>5 tickers<br/>--smoke-tickers AAPL,MSFT,...]
+    S -- engine produces trades<br/>+ self-terminates --> P
+    P[PILOT batches 1+2<br/>776 tickers<br/>workers=4]
+    P -- per-batch artifacts to S3:<br/>trade_log + trade_exit_detail<br/>+ skipped_trades + _COMPLETE --> G
+    G{phased_r4_run.py<br/>5 abort gates}
+    G -- PROCEED --> W
+    G -- WARN --> WR[Owner review]
+    G -- ABORT --> X([Stop · investigate])
+    WR -- approve continue --> W
+    W[WAVE batches 3+4+5<br/>1,161 tickers]
+    W -- 5 _COMPLETE sentinels --> M[Merge<br/>aws_batch395_merge.py<br/>--upload-final]
+    M --> CUBE[output_batch395_final/<br/>trade_log.csv<br/>trade_exit_detail.csv<br/>verdict_cube.csv]
+
+    style G fill:#ff9
+    style X fill:#f99
+    style CUBE fill:#9f9
+```
 
 **Outputs (per batch, before merge):**
 - `outputs/batch_N/trade_log.csv` (fires with `signals_at_entry` JSON)
@@ -80,7 +224,7 @@ For each fired strategy + each quiet strategy:
 
 | Layer | What it produces | Action implied |
 |---|---|---|
-| L1 — per-exit aggregate | Across all 185 strategies that used each of 25 exits: aggregate Sharpe, PF, WR, n. Ranks exits with `n_strategies_paired ≥ 5` gate. | Top-5 = default-good exits for new strategies; bottom-5 = deprecation candidates only if L2 confirms 0 PASS cells anywhere. |
+| L1 — per-exit aggregate | Across all 203 active strategies that used each of 26 exits: aggregate Sharpe, PF, WR, n. Ranks exits with `n_strategies_paired ≥ 5` gate. | Top-5 = default-good exits for new strategies; bottom-5 = deprecation candidates only if L2 confirms 0 PASS cells anywhere. |
 | L2 — per-(strategy × exit) cell verdict | Each cell `n ≥ 5`: Sharpe + DEC-426 5-Gate. PASS cells become `STRATEGY_EXIT_OVERRIDE` candidates. | Direct evidence for deployed config per strategy. Feeds Phase 1B-α winners list. |
 | L3 — within-family variant ranking | `time_stop` (10d/20d/class_time_stop), `r_multiple` (2r/3r), `trailing` (5/10/15pct), `atr_trail` (1x/2x/mae_conditional/vix_conditional), `chandelier`, `breakeven`, `partial` (multi_tier_partial/hybrid_50pct_target). | Per-family default + per-strategy override. |
 
@@ -94,8 +238,53 @@ For quiet (zero-fire) strategies, three buckets:
 Phase 1A-beta single-batch baseline (2026-05-26) showed ~106 COMPOUND_RESTRICTIVE strategies. Post-AWS-cube re-audit will produce the live count + per-strategy gate-keys table.
 
 **Dashboard view/expectations:**
-- All 13 existing tabs refresh against the merged AWS cube. Expected counts: ~29k trades, ~85-100 fired strategies of 185, ~32,375 cells computed.
+- All 13 existing tabs refresh against the merged AWS cube. Expected R4 counts (post-OPT + producer fixes): ~40-60k trades (vs R3's 29k due to BUG-61 ticker_strategy block-mode unlock + B556 SMC + B561 sector_history producer fixes), ~120-150 fired strategies of 203 (vs R3's ~85-100 from 185), ~36,946 cells computed.
 - **NEW "Optimizer Status" widget on Overview** — last-run timestamp, input/output dirs, runtime, summary.md top-line proposals.
+
+### Stage 2 flow detail
+
+```mermaid
+flowchart TB
+    CUBE[Merged R{N} cube<br/>output_batch395_final/] --> OPT[scripts/optimize_strategies_from_cube.py]
+
+    OPT --> LA
+    OPT --> LB
+    OPT --> PZ
+
+    subgraph LA[Lens A — Per-strategy 9 dimensions · Batch 388]
+        direction TB
+        A[A · Entry-gate thresholds<br/>BINDING vs LOOSE clauses]
+        B[B · Compound logic<br/>AND-clause fire rates +<br/>pairwise correlations]
+        C[C · Regime applicability<br/>per-regime 5-Gate verdict]
+        D[D · Best exit pairing<br/>per-strategy top exit by Sharpe]
+        E[E · Sizing tier<br/>Sharpe → tier mapping]
+        F[F · Universe filter<br/>per-sector / cap_band verdict]
+        G[G · Hold-duration limits<br/>empirical hold-days distribution]
+        H[H · Cooldown / re-entry<br/>post-stop behavior]
+        I[I · Macro overlay<br/>per-macro-regime verdict]
+    end
+
+    subgraph LB[Lens B — Per-exit 3 layers · Batch 391]
+        direction TB
+        L1[L1 · Per-exit aggregate<br/>26 exits across 203 strategies<br/>Sharpe/PF/WR/n ranking]
+        L2[L2 · Per-strategy x exit cell verdict<br/>5,278 cells per regime<br/>PASS cells → STRATEGY_EXIT_OVERRIDE]
+        L3[L3 · Within-family variant ranking<br/>time_stop, r_multiple, trailing,<br/>atr_trail, chandelier, breakeven, partial]
+    end
+
+    subgraph PZ[Producer-zero re-audit · Batch 389]
+        direction TB
+        PLZ[PRODUCER_LAYER_ZERO_LIKELY<br/>gate keys absent from corpus<br/>→ producer-side fix]
+        CR[COMPOUND_RESTRICTIVE<br/>individual clauses fire,<br/>AND-compound never satisfies<br/>→ Dim B restructure]
+        SE[SKIPPED_AT_ENGINE<br/>shows in skipped_trades.csv<br/>→ downstream gate]
+    end
+
+    LA --> OUT1[Per-strategy candidate JSONs]
+    LB --> OUT2[Cell verdict cube +<br/>L1/L3 family rankings]
+    PZ --> OUT3[producer_zero_reaudit.json]
+    OUT1 & OUT2 & OUT3 --> S3([Stage 3 outputs])
+
+    style S3 fill:#9f9
+```
 
 ---
 
@@ -108,7 +297,7 @@ Three reviewable artifacts emitted to `output_optimization_candidates_<YYYY_MM_D
 | `optimization_summary.md` (living) | **NEW tab "Optimizer Summary"** — server-side render. Top blocks: bucket counts + L1 exit ranking + L2 PASS-cell table + L3 family-winner mapping + top proposals. |
 | `optimization_candidates_<strategy>.json` (~85-100 files) | **NEW tab "Candidates"** — per-strategy drill-down sidebar. Shows 9-dim findings + L2 winning-exit cells per regime + L3 family-winner mapping + proposed changes. Per-change approval radio: Approved / Rejected / Deferred / Awaiting. State persists to `approvals.json`. |
 | `producer_zero_reaudit.json` | **NEW tab "Quiet Strategies"** — 3-column layout PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE. Per-strategy gate-keys + per-clause empirical fire rate + Dim B compound-restriction analysis. COMPOUND_RESTRICTIVE highlighted as priority. |
-| (master cell table — derived) | **NEW tab "Cell Verdict Cube"** — 32,375 cells (185×25×7 regimes), sortable by Sharpe/PF/WR/n/p/PSR, filterable by `cell_verdict ∈ {PASS, FAIL, INSUFFICIENT_SAMPLE}` and regime. PASS highlighted. **Single source of cell-level truth.** |
+| (master cell table — derived) | **NEW tab "Cell Verdict Cube"** — 36,946 cells (203 active × 26 × 7 regimes), sortable by Sharpe/PF/WR/n/p/PSR, filterable by `cell_verdict ∈ {PASS, FAIL, INSUFFICIENT_SAMPLE}` and regime. PASS highlighted. **Single source of cell-level truth.** |
 
 **Existing tab auto-mappings:**
 - **2. Regime** — per-regime PASS-cell counts (Dim C).
@@ -123,18 +312,86 @@ Three reviewable artifacts emitted to `output_optimization_candidates_<YYYY_MM_D
 
 **Owner interacts with the Candidates tab.** No bulk approvals. Each candidate change has status: Approved / Rejected / Deferred / Awaiting.
 
-**Six change classes the owner approves from:**
-1. `STRATEGY_EXIT_OVERRIDE` — per L2 PASS cell
-2. Entry-gate threshold loosening — per Dim A BINDING analysis
-3. Compound-logic restructure — per Dim B (priority queue: 106 CR strategies)
-4. Sizing tier remap — per Dim E
-5. `STRATEGY_REGIME_AFFINITY` — per Dim C (re-engaged in 1B-α; Phase 1A-β bypassed via `--no-regime-affinity`)
-6. Roster deprecation — only if cell shows 0 PASS in any regime, per `project_no_apriori_strategy_pruning` empirical-only rule
+**Why per-change granularity (not per-strategy or per-batch):** if the next iteration's cube regresses after a Stage 5 implementation batch lands, the owner needs to know WHICH approved change caused the regression. Bundling 10 approvals into "approved batch 1" hides causality. Per-change tracking means each approved change is independently revertible and its delta (R5 vs R4) is independently observable on the Candidates tab "Lift" column.
 
-**Dashboard view:**
+### Four approval statuses
+
+| Status | Meaning | Re-surfaces next iteration? |
+|---|---|---|
+| **Awaiting** | Optimizer surfaced it; owner hasn't decided yet. Default for new candidates. | Yes — appears at top of "Awaiting" filter until acted on. |
+| **Approved** | Greenlit — feeds the next Stage 5 implementation batch. Will appear as a new DEC + code change + R{N+1} cube. | No — graduates to "Implemented" status post Stage 5. |
+| **Rejected** | Owner judged it wrong (literature contradicts the empirical signal, fluke from sample bias, contradicts an existing DEC, etc.). Stays in queue with rejection reason. | Only re-proposed if the cube data changes materially (e.g., new strategy added that re-triggers the recommendation) — wouldn't re-surface on routine R+1 re-run. |
+| **Deferred** | "Right idea, wrong time" — e.g., a `STRATEGY_REGIME_AFFINITY` rule that only applies once Phase 1A-β bypass-flags are removed. | Yes — auto-resurfaces when its dependency unblocks (e.g., transition to Phase 1B-α). |
+
+### Six change classes
+
+| # | Class | Data source | Concrete example | Implements via |
+|---|---|---|---|---|
+| 1 | **`STRATEGY_EXIT_OVERRIDE`** | Lens B Layer 2 (per-cell verdict) | "`pead_long`'s best exit in bull regime is `breakeven_plus_trail` with Sharpe 2.84 / n=58 / PSR 0.97 — override default `atr_trail_1x` for `pead_long` deployment" | `backtest/config.py::STRATEGY_EXIT_OVERRIDE` dict |
+| 2 | **Entry-gate threshold loosening** | Lens A Dim A (BINDING vs LOOSE clauses) | "`bollinger_tight`'s `vol_spike_2x` clause fires 5% of bars; loosening to `vol_above_avg` (38% fire) unblocks 7x candidates without changing semantic intent" | `backtest/signals/screener.py::strat_<name>` predicate edit |
+| 3 | **Compound-logic restructure** | Lens A Dim B (AND-clause fire rates + pairwise correlations) | "`smc_choch_reversal` requires `smc_choch_bullish AND smc_fvg_bullish_active`. Individual fire rates 12% + 53%. Joint co-fire 0% empirically. Restructure to OR or drop the rarer clause." | `backtest/signals/screener.py::strat_<name>` predicate restructure |
+| 4 | **Sizing tier remap** | Lens A Dim E (Sharpe → tier mapping) | "`monthly_bias_momentum_long` Sharpe 1.6 / cell PASS — currently MEDIUM (0.75% sizing). Re-tier to HIGH (3%) per CLAUDE.md sizing table" | `backtest/config.py` sizing tier dict |
+| 5 | **`STRATEGY_REGIME_AFFINITY`** | Lens A Dim C (per-regime DEC-426 5-Gate verdict) | "`xs_low_beta_long` passes in bear+crisis regimes only — affinity-map to `{bear, crisis}` so it's skipped in bull/neutral days" | `backtest/config.py::STRATEGY_REGIME_AFFINITY` dict |
+| 6 | **Roster deprecation** | Cube cells: 0 PASS in any regime AND 0/26 exits fire `n ≥ 30` in any regime | Only "empirical" deprecation per `project_no_apriori_strategy_pruning`. Literature-bet failure alone is **not** sufficient — needs cube-empirical evidence across all 26 exits in all 7 regimes. | `backtest/config.py::DEPRECATED_STRATEGIES` set |
+
+**Important: Class 5 (`STRATEGY_REGIME_AFFINITY`) is Phase 1A-β `DEFERRED` by default.** Phase 1A-β cubes run with `--no-regime-affinity` so every (strategy × regime) cell gets measured. The affinity map gets RE-engaged at Phase 1B-α. Stage 4 approvals for Class 5 will sit as `Deferred` until 1B-α transition.
+
+### Discipline rules around Stage 4
+
+1. **Per-DEC unit-test isolation (`feedback_path_c_min_batch_size`)** — Each approved change becomes a discrete DEC with its own unit test. Stage 5 batches bundle ≥5 approvals (per-DEC unit tests preserved; integration + 13-tier pyramid runs once per batch).
+2. **Empirical-only deprecation (`project_no_apriori_strategy_pruning`)** — Class 6 gate-locked to data: zero PASS cells AND zero `n ≥ 30` cells across the 26-exit cube row. If a strategy fires too rarely to verdict (INSUFFICIENT_SAMPLE everywhere), it stays. Owner cannot deprecate based on literature alone.
+3. **Pre-approval cross-sweep (`feedback_audit_recommendations_against_existing_directives`)** — Before flipping a candidate to `Approved`, sweep existing CLAUDE.md / DEC log / memory for contradictions (e.g., approving a `vol_spike_2x` loosening contradicts a prior DEC that tightened that exact gate). Surface conflicts to owner inline on the Candidates tab.
+4. **Approval audit trail** — Every status flip writes a row to `approvals.json` with timestamp + owner + (optional) rationale. Provides traceability across R-iterations.
+5. **No silent reclassification** — A candidate moved from `Approved` → `Rejected` mid-flight (e.g., during Stage 5 implementation, the owner sees a problem) requires the rationale in `approvals.json`; can't just toggle without note.
+
+### Dashboard view
+
 - **Candidates tab** counts header: "N Approved / N Rejected / N Deferred / N Awaiting" with class filter.
+- **Per-strategy drill-down** shows: 9-dim Lens A findings + L2 winning-exit cells per regime + L3 family-winner mapping + proposed changes per class + 4-status radio.
 - **Cell Verdict Cube tab** — PASS cells mapped to an approved change show green check; rejected show red.
-- **dashboard_stage_2** — DEC count climbs as approved changes get logged (Stage 5).
+- **dashboard_stage_2** — DEC count climbs as approved changes get logged via Stage 5.
+- **Post-R{N+1} cube refresh:** Candidates tab "Lift" column populates with predicted-vs-actual Sharpe delta per implemented change.
+
+### Stage 4 flow detail
+
+```mermaid
+flowchart TB
+    CAND[Candidate change<br/>from Stage 3 output] --> SWEEP{Pre-approval<br/>cross-sweep<br/>CLAUDE.md / DECs / memory}
+    SWEEP -- contradiction found --> CONFLICT[Surface conflict<br/>on Candidates tab]
+    SWEEP -- clean --> REVIEW{Owner<br/>decision}
+    CONFLICT --> REVIEW
+
+    REVIEW -- Greenlight --> APP[Approved]
+    REVIEW -- Wrong direction --> REJ[Rejected + reason<br/>→ approvals.json]
+    REVIEW -- Right idea wrong time --> DEF[Deferred + dependency<br/>→ approvals.json]
+    REVIEW -- TBD --> AWA[Awaiting]
+
+    APP --> CLASS{Change class}
+    CLASS --> C1[1 · STRATEGY_EXIT_OVERRIDE<br/>config.py dict]
+    CLASS --> C2[2 · Entry-gate loosening<br/>screener.py predicate edit]
+    CLASS --> C3[3 · Compound restructure<br/>screener.py predicate restructure]
+    CLASS --> C4[4 · Sizing tier remap<br/>config.py sizing dict]
+    CLASS --> C5[5 · STRATEGY_REGIME_AFFINITY<br/>AUTO-DEFERRED in Phase 1A-β]
+    CLASS --> C6[6 · Roster deprecation<br/>config.py DEPRECATED_STRATEGIES set<br/>empirical-only gate]
+
+    C5 --> WAIT[Sits as Deferred<br/>until Phase 1B-α transition]
+    C1 & C2 & C3 & C4 & C6 --> BATCH[Stage 5 batch:<br/>bundle 5+ approvals<br/>per feedback_path_c_min_batch_size]
+
+    BATCH --> R5([R+1 cube re-run])
+    R5 --> LIFT[Candidates tab Lift column:<br/>predicted vs actual Sharpe delta<br/>per implemented change]
+
+    style APP fill:#9f9
+    style REJ fill:#f99
+    style DEF fill:#ff9
+    style WAIT fill:#ddd
+    style C5 fill:#ddd
+    style LIFT fill:#9f9
+```
+
+**Reading the diagram:**
+- The pre-approval sweep is a hard discipline gate (`feedback_audit_recommendations_against_existing_directives`). Any contradiction with prior CLAUDE.md / DECs / memory surfaces on the Candidates tab before the owner can flip the radio.
+- Class 5 (regime affinity) is greyed-out in Phase 1A-β because cubes run with `--no-regime-affinity`; approvals park as `Deferred` until Phase 1B-α.
+- Only `Approved` candidates flow through to Stage 5. `Rejected` / `Deferred` / `Awaiting` stay in the candidate pool with their state preserved across iterations via `approvals.json`.
 
 ---
 
@@ -167,6 +424,19 @@ Three reviewable artifacts emitted to `output_optimization_candidates_<YYYY_MM_D
 **1A-α owner gate (per CLAUDE.md):** ≥1 strategy passing rules-only Sharpe ≥ 0.7 OOS in ≥1 regime → GATE OPEN → $300 Phase 1B-α agent overlay budget eligible to commit.
 
 **Loop condition:** loop Stage 4 → Stage 5 → Stage 6 until cell verdicts stabilize (PASS-cell count delta < 5% iter-over-iter) AND 1A-α gate passes.
+
+**R-iteration nomenclature (2026-06-02):**
+- **R3** — pre-OPT baseline (2026-05-28). 29,360 trades, 0 PASS verdicts, max OOS Sharpe 0.406 (< 0.7 → 1A-α LOCKED).
+- **R4** (in flight 2026-06-02) — post all-OPT + producer fixes (B556/B559/B561/B561a). First post-OPT cube. Produces baseline for optimization.
+- **R5** — Stage 5 implementation batches from R4 optimizer output applied. Run again, generate delta cube vs R4.
+- **R6+** — Iterate until convergence.
+- **R-final** = the converged cube. Top (strategy × exit) cells with PASS verdict ≥1 regime feed Phase 1B-α agent overlay roster.
+
+**Inter-iteration delta tracking (Cell Verdict Cube tab):**
+- PASS-cell count this iteration vs prior
+- Per-(strategy × exit) Sharpe delta column
+- Strategies graduating from FAIL → PASS (or reverse)
+- Strategies stabilizing in INSUFFICIENT_SAMPLE bucket (candidates for universe expansion or hold-period extension)
 
 **Dashboard view:**
 - All 13 tabs refreshed against the new cube. Each implemented change has a **"Lift" column** on Candidates tab showing predicted-vs-actual metric movement.
@@ -210,3 +480,217 @@ Implementation queue once owner approves dashboard expansion:
 - `CHECKLIST.md` — #67 doc sync per turn, #69 full 13-tier pyramid, #77 source attribution, #85 visible pre-flight, #91 monitoring must act.
 - `LEARNINGS.md` — L149 (spec without build), L162 (monitoring without action).
 - Feedback memory: `feedback_strategy_x_exit_cell_analysis` (cell-level mandate), `project_no_apriori_strategy_pruning`, `feedback_path_c_min_batch_size`, `feedback_pyramid_full_13_tiers_mandatory`, `feedback_doc_count_drift_must_be_test_pinned`, `feedback_no_write_only_md_files`.
+
+---
+
+## R-iteration termination criteria
+
+The Stage 4 → 5 → 6 loop runs until BOTH of these conditions hold simultaneously:
+
+| Criterion | How to compute | Threshold |
+|---|---|---|
+| **1. PASS-cell stability** | `PASS_count(R{N+1}) − PASS_count(R{N})` over the cube | < 5% change |
+| **2. 1A-α gate** | Any strategy in any regime with OOS Sharpe ≥ 0.7 (walk-forward DEC-505) | ≥ 1 such cell |
+
+**Behavior at termination:**
+- Cube is declared "R-final" — the converged verdict.
+- Top (strategy × exit) cells with PASS verdict in ≥1 regime are extracted to a deployment roster.
+- That roster becomes the **input universe** for Phase 1B-α agent overlay ($300 Haiku budget).
+- Stage 4 candidates still in `Deferred` or `Awaiting` migrate to Phase 1B-α planning queue.
+
+**Behavior if termination never reached:**
+- If after ~6-10 R-iterations PASS-cell count keeps oscillating or never crosses 1A-α gate, the strategy roster fundamentally lacks edge in this universe → **Phase 1A-β re-scope decision** (owner-level), e.g.:
+  - Expand universe (T1b Russell 1000-non-S&P deferred to Stage 3 per CLAUDE.md DEC)
+  - Expand date window further back
+  - Introduce a new strategy layer (Layer 4 PENDING per CLAUDE.md)
+  - Revisit DEC-426 5-Gate thresholds (last resort — changing gates is a methodology revision, owner-only)
+
+---
+
+## Reference tables
+
+### Live counts (auto-derived; re-derive at iteration start)
+
+```python
+from backtest.signals.screener import ALL_STRATEGIES
+from backtest.engine.exit_strategies import EXIT_STRATEGIES
+from backtest import config as cfg
+
+n_strat = len(ALL_STRATEGIES)                                    # 204 (2026-06-02)
+n_disabled = len(cfg.STRATEGIES_DISABLED_MISSING_PRODUCER)       # 1
+n_dep = len(cfg.DEPRECATED_STRATEGIES)                           # 0
+n_active = n_strat - n_disabled                                  # 203
+n_exits = len(EXIT_STRATEGIES)                                   # 26
+n_regimes = 7                                                    # bull / neutral / bear / crisis / + sub-classifications
+cells_per_regime = n_active * n_exits                            # 5,278
+total_cells = cells_per_regime * n_regimes                       # 36,946
+```
+
+### DEC-426 5-Gate validity criteria (per cell)
+
+| Gate | Threshold | Why |
+|---|---|---|
+| 1 — Sample size | `n_trades ≥ 30` | t-distribution approximation reliability |
+| 2 — Statistical significance | `p < 0.05 / cells_per_regime` (Bonferroni) | Multiple-comparison correction |
+| 3 — Probabilistic Sharpe Ratio | `PSR ≥ 0.95` (Bailey-Lopez de Prado 2014) | Bias-corrected Sharpe confidence |
+| 4 — t-statistic | `t ≥ 3.4` | Robust signal beyond noise floor |
+| 5 — Risk-reward ratio | `R:R ≥ 2.0` (proxy: profit_factor) | Asymmetric edge required |
+
+### 7 regimes (per `classify_regime` + sub-classifications in cube populator)
+
+| Label | Trigger | Position-sizing modifier |
+|---|---|---|
+| `bull` | SPY > 200 EMA + VIX < 20 + bear_score < 2 | Standard tier |
+| `neutral` | Mixed signals (default fallback) | Standard tier |
+| `bear` | Composite bear score ≥ threshold | Reduced size (75%) |
+| `crisis` | VIX ≥ 40 | Reduced size (50%); crisis_CRISIS_FLAG long allowed (buy-the-dip) |
+| `unknown` | Missing VIX (DEC-316 / BUG-225) | Skip entry |
+| + sub-classifications | (cube-level: per cube_populator) | per regime |
+
+Note: Code returns 5 atomic labels; the cube_populator decorates into 7-regime grid (per CLAUDE.md "7 historical regimes evaluated"). See `backtest/engine/regime_filter.py::classify_regime`.
+
+### 26 exit methods (`backtest/engine/exit_strategies.py::EXIT_STRATEGIES`)
+
+| # | Name | Family | Description |
+|---|---|---|---|
+| 1 | `smart_money_reversal` | smart_money | Exit on smart-money signal flip during hold (B487 SM2) |
+| 2 | `multi_tier_partial` | partial | Take partial profits at multiple R-multiples |
+| 3 | `reverse_signal` | structural | Exit when opposite-direction signal fires |
+| 4 | `smc_mitigation_zone` | smc | Exit at SMC mitigation block touch |
+| 5 | `chandelier_3x` | chandelier | Chandelier exit at 3× ATR |
+| 6 | `atr_trail_vix_conditional` | atr_trail | ATR trail width modulated by VIX |
+| 7 | `mfe_lockin_trail` | trailing | Lock-in trailing on MFE achievement |
+| 8 | `atr_trail_mae_conditional` | atr_trail | ATR trail width modulated by MAE distribution |
+| 9 | `trailing_10pct` | trailing | Fixed 10pct trailing stop |
+| 10 | `trailing_5pct` | trailing | Fixed 5pct trailing stop |
+| 11 | `trailing_15pct` | trailing | Fixed 15pct trailing stop |
+| 12 | `atr_trail_1x` | atr_trail | ATR trail at 1× (default per CLAUDE.md) |
+| 13 | `atr_trail_2x` | atr_trail | ATR trail at 2× |
+| 14 | `fixed_4r_2r` | r_multiple | Target 4R / stop 2R (R:R 2.0) |
+| 15 | `next_pivot_target` | structural | Exit at next pivot level (R/S) |
+| 16 | `ma_exit_ema9` | ma | Exit on EMA9 cross |
+| 17 | `time_stop_10d` | time_stop | Exit after 10 days |
+| 18 | `time_stop_20d` | time_stop | Exit after 20 days |
+| 19 | `breakeven_plus_trail` | breakeven | Move stop to breakeven then trail |
+| 20 | `hybrid_50pct_target` | partial | Take 50pct at target, trail the rest |
+| 21 | `regime_flip` | structural | Exit on regime label change |
+| 22 | `r_multiple_2r` | r_multiple | Exit at +2R |
+| 23 | `r_multiple_3r` | r_multiple | Exit at +3R |
+| 24 | `break_even_at_1r` | breakeven | Move stop to entry once price reaches +1R |
+| 25 | `earnings_blackout` | event | Force exit before earnings announcement |
+| 26 | `class_time_stop` | time_stop | Strategy-class-specific time stop |
+
+### CLAUDE.md 11 passing criteria (layered on top of DEC-426 5-Gate)
+
+Per cell: thresholds layered as "Per-regime threshold" vs "Overall threshold":
+
+| # | Criterion | Per-regime threshold | Overall threshold |
+|---|---|---|---|
+| 1 | Win rate | ≥55pct (high-vol: ≥50pct) | same |
+| 2 | Profit factor | >1.3 (high-vol: >1.2) | >1.5 |
+| 3 | Expected value | >0 | same |
+| 4 | Win/loss ratio | >1.0 | same |
+| 5 | Max drawdown | <20pp (high-vol: <25pp) | same |
+| 6 | Total ROI | >0pct | same |
+| 7 | Smart money lift | ≥3pp WR improvement | same |
+| 8 | Macro correlation | ≥5pp WR diff | same |
+| 9 | Min trades | ≥30 | ≥100 |
+| 10 | Sharpe ratio | ≥0.7 | ≥1.0 |
+| 11 | Per-regime verdict | PASS in ≥1 regime | (PASS-anywhere is enough) |
+
+Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys; engine consumes via `metrics.py`.
+
+---
+
+## File artifact catalog
+
+### Stage 1 outputs (per batch, before merge)
+
+| File | Path on S3 | Contents |
+|---|---|---|
+| `trade_log.csv` | `outputs/batch_N/` | One row per closed trade (with `signals_at_entry` JSON column) |
+| `trade_exit_detail.csv` | `outputs/batch_N/` | Cube rows: one per `(trade, exit_method)` simulated |
+| `skipped_trades.csv` | `outputs/batch_N/` | One row per gate-rejected candidate with reason |
+| `_COMPLETE` | `outputs/batch_N/` | Sentinel file with timestamp; merge polls for these |
+| `batch395-engine.log` | `outputs/batch_N/` | Engine stdout/stderr |
+| `batch395-bootstrap.log` | `outputs/batch_N/` | Cloud-init + pip + S3 sync logs |
+| Heartbeat blob | `heartbeat/batch_N.txt` | Updated every 5 min during run with elapsed + tmux state + last 2 log lines |
+
+### Stage 1 merged outputs (post-merge)
+
+| File | Path | Contents |
+|---|---|---|
+| `trade_log.csv` | `output_batch395_final/` | All-batch concatenated trade log |
+| `trade_exit_detail.csv` | `output_batch395_final/` | All-batch cube rows |
+| `skipped_trades.csv` | `output_batch395_final/` | All-batch skip log |
+| `verdict_cube.csv` | `output_batch395_final/` | The (strategy × exit × regime × sector) verdict cube (5,278 / regime) |
+| `equity_curve.parquet` | `output_batch395_final/` | Daily portfolio equity (post Batch 499 analyst overlay) |
+| `strategy_regime_matrix.json` | `output_batch395_final/` | `{strategy: {regime: {wr, n, avg_pnl_pct}}}` matrix |
+| `portfolio_metrics_overlay.json` | `output_batch395_final/` | total_return / max_drawdown / Sharpe / etc |
+| `backtest_results.csv` | `output_batch395_final/` | Per-strategy aggregate metrics (with `passes_all` boolean) |
+
+### Stage 3 outputs (optimizer)
+
+| File | Path | Contents |
+|---|---|---|
+| `optimization_summary.md` | `output_optimization_candidates_<date>/` | Living top-line summary (proposals + bucket counts + L1/L3 rankings) |
+| `optimization_candidates_<strategy>.json` | `output_optimization_candidates_<date>/` | Per-strategy: 9-dim findings + L2 winning-exit cells + L3 family map + proposed changes |
+| `producer_zero_reaudit.json` | `output_optimization_candidates_<date>/` | 3-bucket classification of quiet strategies |
+| `cell_verdict_cube.csv` | `output_optimization_candidates_<date>/` | Master cell-level table (36,946 cells); single source of cell-level truth |
+
+### Stage 4 state
+
+| File | Contents |
+|---|---|
+| `approvals.json` | Per-candidate status history (Awaiting / Approved / Rejected / Deferred + timestamp + owner + rationale) |
+
+### Stage 5 artifacts
+
+| File | Contents |
+|---|---|
+| `backtest/config.py` | Touch points: `STRATEGY_EXIT_OVERRIDE`, `STRATEGY_REGIME_AFFINITY`, `PASSING_CRITERIA`, sizing tier dicts, `DEPRECATED_STRATEGIES`, `STRATEGIES_DISABLED_MISSING_PRODUCER` |
+| `backtest/signals/screener.py` | Per-strategy predicate edits (`strat_<name>` functions) |
+| `backtest/engine/exit_strategies.py` | Only if exit-method behavior itself changes (rare) |
+| `AUDIT.md` | Append-only DEC log with batch number + rationale + cross-reference to candidate JSON |
+| `dashboard_stage_2/data.json` | Updated DEC inventory |
+
+---
+
+## Glossary (third-person reader)
+
+| Term | Definition |
+|---|---|
+| **Cube** | The (strategy × exit_method × regime × sector) 4-D verdict matrix produced by Phase 1A-β. Each cell carries n_trades, Sharpe, PF, WR, p-value, PSR, t-stat, 5-Gate verdict. |
+| **Cell** | Single tuple in the cube — typically `(strategy, exit_method, regime)`; sector slice optional. The atomic unit of optimization analysis. |
+| **R3 / R4 / R5...** | Sequential cube run iterations within Phase 1A-β. R3 was the pre-OPT baseline (2026-05-28); R4 is the current post-OPT run (2026-06-02); R5+ apply Stage 5 implementation deltas. |
+| **R-final** | The converged cube where PASS-cell delta < 5% iter-over-iter AND 1A-α gate passes. Roster feeds Phase 1B-α. |
+| **5-Gate (DEC-426)** | Per-cell validity criteria: `n ≥ 30`, `p < 0.05` Bonferroni, `PSR ≥ 0.95`, `t ≥ 3.4`, `R:R ≥ 2.0`. |
+| **PSR** | Probabilistic Sharpe Ratio (Bailey & Lopez de Prado 2014). Confidence-corrected Sharpe estimate. |
+| **DSR** | Deflated Sharpe Ratio — Sharpe penalized for multiple-comparison and skew/kurtosis. |
+| **1A-α gate** | The owner-set decision: ≥1 strategy with OOS Sharpe ≥ 0.7 in ≥1 regime. Unblocks $300 Haiku budget for Phase 1B-α. |
+| **1A-β** | Phase 1A-beta — the cube-evaluation MODE (rules-only, no agents, full universe × full window × all strategies × all exits). Distinct from a specific cube RUN (R3, R4, etc). |
+| **1B-α** | Phase 1B-alpha — agent overlay on top of the converged 1A-β cube's top cells. Runs LLM agents (TradingAgents pattern; Haiku Phase 1B). |
+| **BUG-61** | Concurrent-position-block bug at engine `backtest.py:1230+`; R4 activated `BUG_61_BLOCK_MODE=ticker_strategy` mode (recovers 685k blocked candidates per Batch 514). |
+| **OPT-A/B/C/D** | Sequenced engine performance optimization passes shipped B534-B561: A (producer caching), B (panel cross-ticker signals), C (Numba JIT + cache pre-processing + SMC panel cache), D (precomputed signals materialization). Cumulative ~60pct wall reduction. |
+| **Producer** | Code path that emits a signal key into the per-(ticker, as_of) signals dict. A "producer-zero" strategy never produces a candidate because its underlying signal keys are missing or always-False. |
+| **Lens A / Lens B** | Orthogonal analytical views of the same cube cells: Lens A is per-strategy (9 dimensions); Lens B is per-exit (3 layers). Both run from the same script in one invocation. |
+| **STRATEGY_EXIT_OVERRIDE** | `backtest/config.py` dict: per-strategy default-exit override when L2 cell shows a clear winner exit. |
+| **STRATEGY_REGIME_AFFINITY** | `backtest/config.py` dict: per-strategy regime whitelist. Auto-bypassed in Phase 1A-β; re-engages 1B-α. |
+| **PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE** | The 3 producer-zero buckets (Batch 389). Each maps to a distinct fix path: producer-side patch / Dim B restructure / downstream gate audit. |
+| **walk-forward (DEC-505)** | Rolling 3y in-sample / 1y out-of-sample per cell. Walk-forward Sharpe ≥ 0.7 OOS in ≥1 regime is the per-cell 1A-α gate criterion. |
+| **PASS / FAIL / INSUFFICIENT_SAMPLE** | Cell verdict labels. PASS = clears all 5 gates + 11 criteria. INSUFFICIENT_SAMPLE = n < 30 (the most common state pre-convergence). FAIL = n ≥ 30 but fails ≥1 gate. |
+| **DEC-NNN** | Decision record IDs (sequential). Each Stage 5 approved change becomes a new DEC in `dashboard_stage_2`. |
+| **BUG-NNN** | Bug record IDs. Producer / engine / data issues. |
+| **Bonferroni denominator** | `max(len(fired_strategies) * 9, 1)` in the optimizer (`_dec426_verdict`). Adjusts p-value threshold for multiple comparison across cells. |
+
+---
+
+## Quick-start for a new reader
+
+1. **Read this file top-to-bottom.** ~25 min.
+2. **Look at `PHASE_1A_BETA_STATUS.md`** for current run state + per-strategy data references.
+3. **Read `CLAUDE.md` "Critical Rules" + "Approved Rules"** — owner-set boundaries that constrain Stage 4 approvals.
+4. **Skim `scripts/optimize_strategies_from_cube.py`** docstring — the Stage 2 engine.
+5. **Look at any prior `output_optimization_candidates_<date>/`** if one exists — concrete examples of Stage 3 outputs.
+6. **`AUDIT.md`** — append-only DEC log; search for "STRATEGY_EXIT_OVERRIDE" / "STRATEGY_REGIME_AFFINITY" / "DEPRECATED_STRATEGIES" to see prior Stage 5 implementations.
+7. **For dashboard visuals:** `dashboard_phase_1a/` on the live Pages site (`https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/`).
