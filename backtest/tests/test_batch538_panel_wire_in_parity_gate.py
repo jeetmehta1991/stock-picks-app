@@ -92,13 +92,18 @@ def test_batch538_compute_all_signals_skip_rsi_excludes_rsi_keys():
     )
 
 
-def test_batch538_feature_flag_exists_and_defaults_off():
-    """USE_PANEL_TECHNICAL_SIGNALS must exist in config + default False."""
+def test_batch538_feature_flag_exists():
+    """USE_PANEL_TECHNICAL_SIGNALS must exist in config.
+
+    Batch 542 (2026-06-02): flipped from False to True per owner
+    directive after 2026-06-02 parity validation (5-ticker local test
+    showed identical strategy_count + tickers between flag ON and
+    OFF). Wire-in is now ACTIVE in production R4 path."""
     from backtest import config
     assert hasattr(config, "USE_PANEL_TECHNICAL_SIGNALS")
-    assert config.USE_PANEL_TECHNICAL_SIGNALS is False, (
-        "Default must be OFF until parity is validated against full "
-        "Phase 1A-beta cube."
+    assert config.USE_PANEL_TECHNICAL_SIGNALS is True, (
+        "Owner approved flip to True in Batch 542 after parity "
+        "validation. If reverted to False, document why."
     )
 
 
@@ -211,19 +216,16 @@ def test_batch538_panel_signal_keys_match_per_ticker_keys():
 # Default safety (off until parity proven on real cube run)
 # ---------------------------------------------------------------------------
 
-def test_batch538_default_path_unchanged():
-    """With USE_PANEL_TECHNICAL_SIGNALS=False (default), screen_universe
-    must use the per-ticker path (no panel pre-compute). Backward-compat
-    invariant: pre-OPT-B engine output must be unchanged when the flag
-    is off."""
-    from backtest import config
-    assert config.USE_PANEL_TECHNICAL_SIGNALS is False
-    # Verify screen_instrument WITHOUT panel_signals still works
+def test_batch538_per_ticker_path_still_works_when_panel_signals_none():
+    """Even with USE_PANEL_TECHNICAL_SIGNALS=True (B542), screen_instrument
+    must still work when called WITHOUT panel_signals (e.g. by callers
+    that don't go through screen_universe). Backward-compat invariant."""
     from backtest.signals.screener import screen_instrument
     ohlcv = _make_ohlcv_dict(n_tickers=2, n_dates=100)
     result = screen_instrument(
         "T0", ohlcv["T0"], {"ticker": "T0"}, date(2024, 4, 1), "neutral",
+        panel_signals=None,
     )
     assert result.get("liquidity_ok"), (
-        "default path broken: liquidity check failing"
+        "per-ticker path broken: liquidity check failing"
     )
