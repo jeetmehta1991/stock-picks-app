@@ -4363,7 +4363,11 @@ def screen_instrument(
     # Returns empty dict when library unavailable or insufficient history.
     try:
         from backtest.signals.smc_ict import compute_smc_signals
-        smc_out = compute_smc_signals(df)
+        # B555 OPT-C Phase 4: pass ticker so compute_smc_signals can
+        # read the 6 SMC primitives from the panel cache (primed at
+        # engine init from full per-ticker OHLCV) instead of recomputing
+        # via the vendored library on every (ticker, as_of) call.
+        smc_out = compute_smc_signals(df, ticker=ticker)
         if smc_out:
             signals.update(smc_out)
         else:

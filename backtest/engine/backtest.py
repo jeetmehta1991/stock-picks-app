@@ -396,6 +396,37 @@ class BacktestEngine:
         if not self.ohlcv_dict:
             self.load_data()
 
+        # Batch 555 OPT-C Phase 4 wire-in: prime the SMC primitive
+        # panel-cache from the FULL per-ticker OHLCV once per session
+        # (before per-day iteration). compute_smc_signals will read the
+        # 6 SMC primitives (FVG/swings/OB/BOS_CHOCH/liquidity/retracements)
+        # from cache, sliced respecting PIT lookahead, instead of running
+        # the vendored smartmoneyconcepts library per (ticker, as_of)
+        # call. Gated by USE_SMC_PANEL_CACHE config flag.
+        try:
+            from backtest.config import USE_SMC_PANEL_CACHE
+        except Exception:
+            USE_SMC_PANEL_CACHE = False
+        if USE_SMC_PANEL_CACHE:
+            try:
+                from backtest.signals.smc_panel_cache import (
+                    prime_ticker_primitives,
+                )
+                primed = 0
+                for t, full_df in self.ohlcv_dict.items():
+                    if full_df is None or full_df.empty:
+                        continue
+                    prime_ticker_primitives(t, full_df, swing_length=20)
+                    primed += 1
+                logger.info(
+                    "B555 OPT-C SMC panel-cache primed for %d tickers",
+                    primed,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "B555 OPT-C SMC panel-cache prime failed: %s", exc,
+                )
+
         trading_days = self._trading_days()
         # DEC-515 Level 6 CB: record backtest start date for min_history check
         if trading_days:
