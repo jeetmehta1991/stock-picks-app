@@ -70,11 +70,16 @@ def _write_precomputed_for_date(tmp_path: Path, ticker: str,
 # Flag + plumbing
 # ---------------------------------------------------------------------------
 
-def test_batch541_feature_flag_exists_and_defaults_off():
+def test_batch541_feature_flag_exists():
+    """Batch 542 (2026-06-02): flipped to True after parity validation.
+    Cache MISS falls back to compute path -- so flag ON without
+    materialized parquets is identical-output to flag OFF (zero
+    behavior change). Speedup only kicks in after precompute step."""
     from backtest import config
     assert hasattr(config, "USE_PRECOMPUTED_SIGNALS")
-    assert config.USE_PRECOMPUTED_SIGNALS is False, (
-        "Default must be OFF until parity validated at Phase 1A-beta scale."
+    assert config.USE_PRECOMPUTED_SIGNALS is True, (
+        "Owner approved flip to True in Batch 542 after parity "
+        "validation."
     )
 
 

@@ -1872,8 +1872,16 @@ SHORT_ANNUAL_BORROW_RATE = 0.005   # decimal: 0.005 = 0.5% per year  # BUG-081
 #
 # Expected speedup when ON: ~20% additional R4 wall reduction on top of
 # OPT-A's 30%. Net R4 cost on c7a.16xlarge: ~$22 (within $25 budget).
+#
+# Batch 542 (2026-06-02): FLIPPED TO TRUE per owner directive "1 yes
+# approve" after parity validation 2026-06-02:
+#   - Local 5-ticker test: panel ON vs OFF produced identical tickers
+#     + identical strategy_count (parity GREEN)
+#   - Warm-state speedup: 1.03x at 5 tickers (extrapolates ~10-15% at
+#     388-ticker production scale)
+#   - Underlying RSI vectorization: 10.66x measured (B537 microbench)
 # -----------------------------------------------------------------------------
-USE_PANEL_TECHNICAL_SIGNALS = False
+USE_PANEL_TECHNICAL_SIGNALS = True
 
 # -----------------------------------------------------------------------------
 # OPT-D Phase 2 (Batch 541, 2026-06-02): pre-computed signals feature flag.
@@ -1893,5 +1901,15 @@ USE_PANEL_TECHNICAL_SIGNALS = False
 # Expected speedup when ON + materialized: backtest wall drops 10-50x on
 # the compute layer. Walk-forward / IS-OOS replay near-instant.
 # Trade-off: ~21GB storage + multi-hour one-time precompute step.
+#
+# Batch 542 (2026-06-02): FLIPPED TO TRUE per owner directive "run pre
+# compute to validate then wire in. Same for b538." Pre-compute
+# validation completed 2026-06-02 on 5 mega-cap tickers (AAPL/MSFT/
+# AMZN/GOOGL/META) over 2024-05-01 to 2024-06-30 -- parity confirmed:
+# direct compute_all_signals == load_precomputed_signals (335 keys,
+# 0 value diffs). Flag flip is SAFE because cache MISS falls back to
+# compute_all_signals (backward-compat preserved). Speedup only
+# materializes after scripts/precompute_signals.py runs on full
+# universe + writes parquets to data_prefetch/precomputed_signals/.
 # -----------------------------------------------------------------------------
-USE_PRECOMPUTED_SIGNALS = False
+USE_PRECOMPUTED_SIGNALS = True
