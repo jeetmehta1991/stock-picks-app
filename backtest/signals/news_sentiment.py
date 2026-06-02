@@ -42,7 +42,14 @@ _NEWS_BY_TICKER: dict[str, pd.DataFrame] = {}
 
 
 def _load_news_parquet(ticker: str) -> pd.DataFrame:
-    """B535 OPT-A cached per-ticker news lookup."""
+    """B535 OPT-A cached per-ticker news lookup.
+
+    B545 OPT-C update: pre-compute published_date + published_dt at
+    cache load time (one-shot pd.to_datetime + .dt.date). Pre-OPT-C
+    the producer re-did this conversion on every call (~30-40ms each
+    for typical news cache size). Cache now serves the converted
+    DataFrame ready for boolean date filters.
+    """
     safe_ticker = ticker.replace(".", "-")
     cached = _NEWS_BY_TICKER.get(safe_ticker)
     if cached is not None:
@@ -53,6 +60,13 @@ def _load_news_parquet(ticker: str) -> pd.DataFrame:
         return _NEWS_BY_TICKER[safe_ticker]
     try:
         df = pd.read_parquet(path)
+        # B545 OPT-C: do the date conversion ONCE at cache fill.
+        if not df.empty and "published_utc" in df.columns:
+            df = df.copy()
+            df["published_dt"] = pd.to_datetime(df["published_utc"],
+                                                  errors="coerce")
+            df = df.dropna(subset=["published_dt"])
+            df["published_date"] = df["published_dt"].dt.date
         _NEWS_BY_TICKER[safe_ticker] = df
         return df
     except Exception:
@@ -195,14 +209,10 @@ def compute_news_sentiment_signals(
     Returns empty dict on data miss (consumer's .get() fallback to 0).
     """
     # B535 OPT-A: cached per-ticker lookup (was per-call disk read).
+    # B545 OPT-C: date conversion pre-computed at cache fill; producer
+    # now just consumes published_date column directly.
     df = _load_news_parquet(ticker)
-    if df.empty or "published_utc" not in df.columns:
-        return {}
-    try:
-        df["published_dt"] = pd.to_datetime(df["published_utc"], errors="coerce")
-        df = df.dropna(subset=["published_dt"])
-        df["published_date"] = df["published_dt"].dt.date
-    except Exception:
+    if df.empty or "published_date" not in df.columns:
         return {}
 
     # Current window: [as_of - lookback_days, as_of]
