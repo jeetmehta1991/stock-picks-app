@@ -1113,19 +1113,28 @@ def compute_candles(df: pd.DataFrame) -> dict:
         c[-2]>o[-2] and c[-1]<o[-1] and c[-1]<o[-2] and o[-1]>c[-2])
 
     # -- Three-bar patterns --
+    # Batch 559 OPT-C Phase 4 producer correctness fix: operator-precedence
+    # bug. `A and B if C else D and E` parsed as `(A and B) if C else (D and E)`
+    # not `A and (B if C else D) and E` -- so the prior code only checked 2 of
+    # 4 intended morning_star / evening_star conditions when mid_rng > 0.
+    # Empirical (NVDA 504 bars): buggy parse fired morning_star 66x; intended
+    # 4-condition AND fires 29x. The bug OVER-FIRED morning_star + evening_star.
     if n >= 3:
         mid_body = abs(c[-2]-o[-2])
         mid_rng  = h[-2]-l[-2]
+        mid_small = (mid_body < 0.3*mid_rng) if mid_rng > 0 else False
         result["morning_star"] = (
-            c[-3]<o[-3] and
-            mid_body < 0.3*mid_rng if mid_rng>0 else False and
-            c[-1]>o[-1] and
-            c[-1] > (o[-3]+c[-3])/2)
+            c[-3]<o[-3]
+            and mid_small
+            and c[-1]>o[-1]
+            and c[-1] > (o[-3]+c[-3])/2
+        )
         result["evening_star"] = (
-            c[-3]>o[-3] and
-            mid_body < 0.3*mid_rng if mid_rng>0 else False and
-            c[-1]<o[-1] and
-            c[-1] < (o[-3]+c[-3])/2)
+            c[-3]>o[-3]
+            and mid_small
+            and c[-1]<o[-1]
+            and c[-1] < (o[-3]+c[-3])/2
+        )
 
     # -- Five-bar patterns --
     if n >= 5:
