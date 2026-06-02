@@ -79,6 +79,7 @@ def compute_smc_signals(
     liquidity_range_pct: float = 0.01,
     dealing_range_lookback: int = 50,
     event_recency_bars: int = 90,
+    ticker: Optional[str] = None,
 ) -> dict:
     """Compute SMC / ICT signals for a single-ticker OHLCV DataFrame.
 
@@ -123,11 +124,35 @@ def compute_smc_signals(
     out: dict = {}
     close = float(ohlc["close"].iloc[-1])
     current_idx = len(ohlc) - 1
+    # B555 OPT-C Phase 4: when ticker provided + USE_SMC_PANEL_CACHE flag
+    # ON + cache primed for this ticker, read the 6 SMC primitives from
+    # the cache (sliced respecting PIT lookahead) instead of calling the
+    # vendored library per-call. Cache MISS falls back to per-call compute
+    # for back-compat.
+    _cached_primitives = None
+    if ticker is not None:
+        try:
+            from backtest.config import USE_SMC_PANEL_CACHE
+        except Exception:
+            USE_SMC_PANEL_CACHE = False
+        if USE_SMC_PANEL_CACHE:
+            try:
+                from backtest.signals.smc_panel_cache import get_primitives_at
+                _cached_primitives = get_primitives_at(
+                    ticker, current_idx, swing_length=swing_length,
+                )
+            except Exception as _e:
+                log_silent_failure("smc_ict.cache_lookup", _e)
+                _cached_primitives = None
     # FVG: Bullish (1) / Bearish (-1) / no FVG (0). Library also exposes
     # Top / Bottom / MitigatedIndex columns enabling retest / inverse logic.
     fvg_df = None
     try:
-        fvg_df = _smc.fvg(ohlc)
+        # B555 OPT-C: cache-first dispatch
+        if _cached_primitives is not None and "fvg" in _cached_primitives:
+            fvg_df = _cached_primitives["fvg"]
+        else:
+            fvg_df = _smc.fvg(ohlc)
         if "FVG" in fvg_df.columns:
             recent = fvg_df["FVG"].tail(fvg_lookback)
             out["smc_fvg_bullish_active"] = bool((recent == 1).any())
@@ -177,11 +202,18 @@ def compute_smc_signals(
     except Exception as _e:
         log_silent_failure("smc_ict.fvg_compute", _e)
     try:
-        swings = _smc.swing_highs_lows(ohlc, swing_length=swing_length)
+        # B555 OPT-C: cache-first dispatch
+        if _cached_primitives is not None and "swings" in _cached_primitives:
+            swings = _cached_primitives["swings"]
+        else:
+            swings = _smc.swing_highs_lows(ohlc, swing_length=swing_length)
         # Order blocks (with Top/Bottom/MitigatedIndex for breaker /
         # mitigation logic)
         try:
-            ob_df = _smc.ob(ohlc, swings)
+            if _cached_primitives is not None and "ob" in _cached_primitives:
+                ob_df = _cached_primitives["ob"]
+            else:
+                ob_df = _smc.ob(ohlc, swings)
             if "OB" in ob_df.columns:
                 # Batch 273: use event_recency_bars instead of fvg_lookback
                 # (OB detection lags by ~swing_length bars, so 5-bar tail
@@ -234,7 +266,10 @@ def compute_smc_signals(
         # BOS / CHoCH with Level for retest logic
         bos_df = None
         try:
-            bos_df = _smc.bos_choch(ohlc, swings)
+            if _cached_primitives is not None and "bos_choch" in _cached_primitives:
+                bos_df = _cached_primitives["bos_choch"]
+            else:
+                bos_df = _smc.bos_choch(ohlc, swings)
             if "BOS" in bos_df.columns:
                 # Batch 273: BOS detection requires swing confirmation
                 # which lags by 20-80 bars. Tail(5) misses 100% of events;
@@ -276,7 +311,10 @@ def compute_smc_signals(
         # Liquidity sweeps (with Swept flag exposing equal-highs/lows
         # taken-out events explicitly)
         try:
-            liq_df = _smc.liquidity(ohlc, swings, range_percent=liquidity_range_pct)
+            if _cached_primitives is not None and "liquidity" in _cached_primitives:
+                liq_df = _cached_primitives["liquidity"]
+            else:
+                liq_df = _smc.liquidity(ohlc, swings, range_percent=liquidity_range_pct)
             if "Liquidity" in liq_df.columns:
                 # Batch 273: same liquidity-detection-lag fix as BOS/OB.
                 liq_val = _most_recent_event_within(
@@ -326,7 +364,10 @@ def compute_smc_signals(
         # Batch 216: retracements primitive for OTE (Optimal Trade Entry)
         # 62-79% Fibonacci zone after CHoCH.
         try:
-            ret_df = _smc.retracements(ohlc, swings)
+            if _cached_primitives is not None and "retracements" in _cached_primitives:
+                ret_df = _cached_primitives["retracements"]
+            else:
+                ret_df = _smc.retracements(ohlc, swings)
             if (
                 "Direction" in ret_df.columns
                 and "CurrentRetracement%" in ret_df.columns

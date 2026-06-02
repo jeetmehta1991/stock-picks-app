@@ -1913,3 +1913,28 @@ USE_PANEL_TECHNICAL_SIGNALS = True
 # universe + writes parquets to data_prefetch/precomputed_signals/.
 # -----------------------------------------------------------------------------
 USE_PRECOMPUTED_SIGNALS = True
+
+# -----------------------------------------------------------------------------
+# USE_SMC_PANEL_CACHE - Batch 555 OPT-C Phase 4 wire-in flag (2026-06-02)
+#
+# When True, `compute_smc_signals` reads the 6 SMC primitives (FVG, swings,
+# OB, BOS_CHOCH, liquidity, retracements) from `backtest.signals.smc_panel_cache`
+# instead of calling the vendored smartmoneyconcepts library per call.
+# Cache is primed at engine init from `self.ohlcv_dict` (full per-ticker
+# OHLCV) once per backtest session. Cache primitives are sliced at each
+# (ticker, as_of) call respecting PIT lookahead semantics:
+#   - FVG: 1-bar lookahead -> filter Index <= current_idx - 1
+#   - Swing-dependent: swing_length-bar lookahead -> filter Index <= current_idx - swing_length
+#
+# Empirical parity (B554 parity gate on AAPL OHLCV):
+#   FVG exact (0/3710 bars differ), swings within 5pct tolerance,
+#   OB 0.12pct divergence (forward-mutation residual, much smaller
+#   than 30pct ceiling).
+#
+# Expected speedup: profile shows compute_smc_signals = 175s. Cache reduces
+# per-call work to dict-lookup + boolean slice. Projected 175s -> ~10-20s.
+#
+# Cache MISS (ticker not primed) falls back to per-call library compute,
+# preserving back-compat.
+# -----------------------------------------------------------------------------
+USE_SMC_PANEL_CACHE = False
