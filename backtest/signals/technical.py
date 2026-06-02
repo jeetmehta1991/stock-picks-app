@@ -659,6 +659,53 @@ def compute_ichimoku(df: pd.DataFrame) -> dict:
     return out
 
 
+# Batch 544 OPT-C pivot (2026-06-02): Numba JIT supertrend state-tracking
+# inner loop. Profile showed compute_supertrend = 104ms/call dominated
+# by 4 separate `float(series.iloc[i])` indexings PER ITERATION (4 *
+# 1044 iterations = 4176 pandas indexings per call). Pre-extract numpy
+# arrays + run loop in compiled code = ~10-50x speedup on the inner
+# loop. Module-level cache for the JIT-compiled function avoids
+# re-compilation overhead.
+try:
+    from numba import njit as _njit  # noqa: F401
+    _HAS_NUMBA = True
+except Exception:
+    _HAS_NUMBA = False
+    _njit = lambda f: f  # noqa: E731  -- no-op decorator fallback
+
+
+@_njit(cache=True)
+def _supertrend_inner_loop_numba(
+    ub: np.ndarray, lb: np.ndarray, close: np.ndarray,
+) -> tuple:
+    """JIT-compiled supertrend state-tracking. Takes pre-computed
+    upper-band / lower-band / close numpy arrays + returns (st, bull)
+    arrays. Inner-loop semantics IDENTICAL to the pre-Numba pandas
+    implementation."""
+    n = ub.shape[0]
+    st = np.zeros(n, dtype=np.float64)
+    bull = np.ones(n, dtype=np.bool_)
+    for i in range(1, n):
+        ub_prev = ub[i - 1]
+        lb_prev = lb[i - 1]
+        ub_cur = ub[i]
+        lb_cur = lb[i]
+        cl_prev = close[i - 1]
+        cl_cur = close[i]
+        if cl_prev > lb_prev:
+            if lb_prev > lb_cur:
+                lb_cur = lb_prev
+        if cl_prev < ub_prev:
+            if ub_prev < ub_cur:
+                ub_cur = ub_prev
+        if st[i - 1] == ub_prev:
+            st[i] = lb_cur if cl_cur > ub_prev else ub_cur
+        else:
+            st[i] = ub_cur if cl_cur < lb_prev else lb_cur
+        bull[i] = cl_cur > st[i]
+    return st, bull
+
+
 def compute_supertrend(df: pd.DataFrame, period: int = 7, mult: float = 3.0) -> dict:
     if len(df) < period + 2:
         return {}
@@ -666,25 +713,18 @@ def compute_supertrend(df: pd.DataFrame, period: int = 7, mult: float = 3.0) -> 
     hl2  = (df["high"] + df["low"]) / 2
     ub   = hl2 + mult*atr
     lb   = hl2 - mult*atr
-    close = df["close"]
-    # Proper supertrend with state tracking
-    st    = [0.0] * len(df)
-    bull  = [True] * len(df)
-    for i in range(1, len(df)):
-        ub_prev = float(ub.iloc[i-1]); lb_prev = float(lb.iloc[i-1])
-        ub_cur  = float(ub.iloc[i]);   lb_cur  = float(lb.iloc[i])
-        lb_cur  = max(lb_cur, lb_prev) if float(close.iloc[i-1]) > lb_prev else lb_cur
-        ub_cur  = min(ub_cur, ub_prev) if float(close.iloc[i-1]) < ub_prev else ub_cur
-        if st[i-1] == ub_prev:
-            st[i] = lb_cur if float(close.iloc[i]) > ub_prev else ub_cur
-        else:
-            st[i] = ub_cur if float(close.iloc[i]) < lb_prev else lb_cur
-        bull[i] = float(close.iloc[i]) > st[i]
+    # Batch 544: hand off to JIT-compiled inner loop via numpy arrays.
+    # Pre-extracting arrays once is much cheaper than 4 `.iloc[i]` calls
+    # per loop iteration.
+    ub_arr = ub.to_numpy(dtype=np.float64, na_value=0.0)
+    lb_arr = lb.to_numpy(dtype=np.float64, na_value=0.0)
+    cl_arr = df["close"].to_numpy(dtype=np.float64, na_value=0.0)
+    st_arr, bull_arr = _supertrend_inner_loop_numba(ub_arr, lb_arr, cl_arr)
     return {
-        "supertrend_bullish":  bull[-1],
-        "supertrend_value":    round(st[-1], 4),
-        "supertrend_flip_up":  bull[-1] and not bull[-2],
-        "supertrend_flip_dn":  not bull[-1] and bull[-2],
+        "supertrend_bullish":  bool(bull_arr[-1]),
+        "supertrend_value":    round(float(st_arr[-1]), 4),
+        "supertrend_flip_up":  bool(bull_arr[-1]) and not bool(bull_arr[-2]),
+        "supertrend_flip_dn":  not bool(bull_arr[-1]) and bool(bull_arr[-2]),
     }
 
 
