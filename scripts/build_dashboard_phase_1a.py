@@ -37,9 +37,18 @@ _parser.add_argument("--optimizer-dir", default="output_optimization_candidates_
                           "JSONs + exit_method_analysis + producer_zero audit + "
                           "optimization_summary.md). Empty / non-existent = "
                           "Batch 419 tabs rendered as 'no data'.")
+_parser.add_argument("--approvals", default="",
+                     help="Batch 569: Stage 4 approvals.json (per-change owner "
+                          "decisions). Default empty -> looks for "
+                          "<optimizer-dir>/approvals.json. Non-existent = "
+                          "Candidates tab approvals header rendered as 'no data'.")
 _args, _ = _parser.parse_known_args()
 OUT_DIR = REPO / _args.source
 OPT_DIR = REPO / _args.optimizer_dir
+if _args.approvals:
+    APPROVALS_PATH = Path(_args.approvals)
+else:
+    APPROVALS_PATH = OPT_DIR / "approvals.json"
 DASH = REPO / "dashboard_phase_1a"
 DASH.mkdir(parents=True, exist_ok=True)
 
@@ -268,6 +277,68 @@ def compute_cube_diff(current_opt: dict, current_out_dir: Path) -> dict:
     }
 
 
+def load_stage_4_approvals() -> dict:
+    """Batch 569: load approvals.json (Stage 4 per-change owner decisions)
+    and emit a dashboard-ready payload.
+
+    Per PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md Stage 4: surfaces
+    counts header ("N Approved / N Rejected / N Deferred / N Awaiting" +
+    by-class breakdown) + a lite per-row list for the Candidates tab.
+
+    Returns {"present": False} when approvals.json is missing - tab
+    renders as "no data" gracefully.
+    """
+    payload = {
+        "present":   False,
+        "path":      str(APPROVALS_PATH),
+        "version":   None,
+        "generated_at":           None,
+        "last_cross_sweep_at":    None,
+        "summary":   {},
+        "cross_sweep_summary":    {},
+        "rows_lite": [],
+    }
+    if not APPROVALS_PATH.exists():
+        return payload
+    try:
+        data = json.loads(APPROVALS_PATH.read_text(encoding="utf-8"))
+    except Exception as e:
+        payload["error"] = f"parse error: {e}"
+        return payload
+    payload["present"] = True
+    payload["version"] = data.get("version")
+    payload["generated_at"] = data.get("generated_at")
+    payload["last_cross_sweep_at"] = data.get("last_cross_sweep_at")
+    payload["summary"] = data.get("summary", {})
+    payload["cross_sweep_summary"] = data.get("cross_sweep_summary", {})
+    # Lite per-row list: candidate_id + strategy + change_class + status
+    # + n_conflicts + max_severity (so the tab can filter without bloating
+    # the data.json with full conflicts arrays - those stay in
+    # approvals.json for the drill-down panel which fetches lazily).
+    severity_rank = {"blocker": 3, "warning": 2, "info": 1}
+    rows_lite = []
+    for r in data.get("approvals", []):
+        confs = r.get("conflicts", []) or []
+        max_sev = ""
+        if confs:
+            max_sev = max(
+                confs,
+                key=lambda c: severity_rank.get(c.get("severity", ""), 0),
+            )["severity"]
+        rows_lite.append({
+            "candidate_id":      r["candidate_id"],
+            "strategy":          r["strategy"],
+            "change_class":      r["change_class"],
+            "change_class_name": r["change_class_name"],
+            "status":            r["status"],
+            "n_conflicts":       len(confs),
+            "max_severity":      max_sev,
+            "dimension_source":  r.get("dimension_source", ""),
+        })
+    payload["rows_lite"] = rows_lite
+    return payload
+
+
 def load_optimizer_dir() -> dict:
     """Batch 419: aggregate cube-optimizer outputs into 4 payload sections
     consumed by the 4 new dashboard tabs (Optimizer Summary / Candidates /
@@ -432,6 +503,9 @@ def build() -> dict:
     #      Cell Cube Comparison (Tab 18) ----
     iter_rounds = load_iteration_rounds()
 
+    # ---- Batch 569 (2026-06-03): Stage 4 approvals (workflow Stage 4) ----
+    stage_4_approvals = load_stage_4_approvals()
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_dir": (
@@ -452,6 +526,8 @@ def build() -> dict:
         "current_round":            iter_rounds.get("current_round"),
         "round_ids":                iter_rounds.get("round_ids", []),
         "cell_cube_comparison":     iter_rounds.get("cell_compare", []),
+        # Batch 569: Stage 4 approvals (per PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md)
+        "stage_4_approvals":        stage_4_approvals,
         # Tab 1
         "backtest_results": backtest_results,
         "winning_strategies": winning,
