@@ -1,4 +1,17 @@
-Phase 1A-beta single-batch run completed 2026-05-26 22:51 EDT
-  361 trades / 31 strategies fired / 155 quiet
-  source: output_phase_1a_beta_single_local/ (pre-Batch-369 code)
-  status: NEXT 1A-beta RUN PAUSED per owner directive 2026-05-26
+Phase 1A-beta R4 full cube run completed 2026-06-03 21:20 EDT
+  source: C:/tmp/r4_final/ (merged from 5 batches: PILOT-3 b1+b2 checkpoint-recovery + WAVE b3 spot + b4/b5 on-demand)
+  scope: 203 active strategies x 26 exit methods x 7 regimes; 1,937-ticker T1+T2+T3 universe
+  trades: 58,401 (35,839 IS + 22,562 OOS; vs R3's 29,360 = +99 pct)
+  WR:     28.4 pct (16,602 wins)
+  mean PnL per trade: -1.03 pct
+  sum PnL (ROI):      -59,975 pct-points
+  strategies fired:   115 (vs R3's ~85; +34 pct)
+  strategy x exit cells: 2,574 from cube rebuild
+  IS window: 2022-01..2024-06 / OOS window: 2024-07..2026-04
+  survivors (IS+OOS-positive n>=10): 0
+  underperformers (OOS-negative n>=5): 0
+  quiet (registered active, zero trades): 90 / 203
+  optimizer outputs: C:/tmp/r4_optimization_candidates/ (115 candidate JSONs + producer_zero_post_cube_audit.json + exit_method_analysis.json)
+  bucket classification: 7 PRODUCER_LAYER_ZERO_LIKELY / 38 COMPOUND_RESTRICTIVE / 44 SKIPPED_AT_ENGINE
+  status: STAGE 3 DELIVERED -- awaiting Stage 4 per-change owner approval (Approved/Rejected/Deferred/Awaiting) across 6 change classes
+  R4 cost: $28.72 total ($3.72 over $25 budget; tradeoff for 100 pct cube coverage approved during run)
