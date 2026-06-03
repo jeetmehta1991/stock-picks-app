@@ -282,17 +282,17 @@ def _derive_class6_deprecation(pz: dict) -> list:
 
 def extract_all(input_dir: Path) -> list:
     rows = []
-    cand_files = [
-        f for f in sorted(input_dir.glob("*.json"))
-        if f.name not in {
-            "producer_zero_post_cube_audit.json",
-            "exit_method_analysis.json",
-            "r4_proposed_changes.json",
-            "approvals.json",
-        }
-    ]
-    for f in cand_files:
-        d = json.loads(f.read_text(encoding="utf-8"))
+    cand_files = []
+    for f in sorted(input_dir.glob("*.json")):
+        # Filter by content shape, not by filename - any prior output file
+        # (proposed_changes, approvals, audit) is a list or wrong-shaped dict.
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if isinstance(d, dict) and "strategy" in d and "aggregate" in d:
+            cand_files.append((f, d))
+    for f, d in cand_files:
         strat = d.get("strategy", f.stem)
         agg = d.get("aggregate", {})
         b = d.get("dimension_b_compound", {})
