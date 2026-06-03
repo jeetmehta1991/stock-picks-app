@@ -281,8 +281,10 @@ def load_optimizer_dir() -> dict:
         "per_strategy_candidates": {},
         "exit_method_analysis": {},
         "producer_zero_audit": {},
-        "optimizer_dir": str(OPT_DIR.relative_to(REPO)) if OPT_DIR.exists()
-                        else None,
+        "optimizer_dir": (
+            str(OPT_DIR.relative_to(REPO)) if OPT_DIR.exists() and OPT_DIR.is_relative_to(REPO)
+            else (str(OPT_DIR) if OPT_DIR.exists() else None)
+        ),
     }
     if not OPT_DIR.exists():
         return out
@@ -432,7 +434,10 @@ def build() -> dict:
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source_dir": str(OUT_DIR.relative_to(REPO)),
+        "source_dir": (
+            str(OUT_DIR.relative_to(REPO)) if OUT_DIR.is_relative_to(REPO)
+            else str(OUT_DIR)
+        ),
         # Batch 419: optimizer payload sections (4 new tabs)
         "optimizer_dir":            opt["optimizer_dir"],
         "optimizer_summary_md":     opt["optimizer_summary_md"],
