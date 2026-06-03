@@ -130,33 +130,29 @@ def test_batch569_max_severity_correctness(built_payload):
 
 
 def test_batch569_no_data_graceful(tmp_path, monkeypatch):
-    """Pin (6) - when approvals.json is absent in optimizer-dir, payload
-    must show stage_4_approvals.present=False (graceful fallback)."""
-    # Create an empty optimizer dir + source dir; builder should run +
-    # write a dashboard payload with stage_4_approvals.present=False
+    """Pin (6) - when approvals.json is absent, load_stage_4_approvals()
+    returns present=False (graceful fallback).
+
+    NOTE: tests the helper in-process; does NOT shell out to the builder.
+    Earlier draft of this test ran the builder subprocess against a
+    pytest tmp_path, which silently clobbered the real R4 dashboard
+    data.json (builder hardcodes its output path). Fixed by importing
+    + monkeypatching APPROVALS_PATH instead."""
+    import importlib
     fake_opt = tmp_path / "opt"
     fake_opt.mkdir()
-    fake_src = tmp_path / "src"
-    fake_src.mkdir()
-    # Need a minimal backtest_results.csv so the builder doesn't crash
-    # on other tabs.
-    (fake_src / "backtest_results.csv").write_text("strategy,n_trades\n", encoding="utf-8")
-    (fake_src / "trade_log.csv").write_text("ticker,strategy\n", encoding="utf-8")
-    rc = subprocess.run(
-        [
-            sys.executable,
-            str(REPO / "scripts" / "build_dashboard_phase_1a.py"),
-            "--source",        str(fake_src),
-            "--optimizer-dir", str(fake_opt),
-        ],
-        capture_output=True, text=True, timeout=60,
+    fake_approvals = fake_opt / "approvals.json"
+    # fake_approvals deliberately does NOT exist
+    # Import the builder module and monkeypatch its APPROVALS_PATH
+    sys.path.insert(0, str(REPO / "scripts"))
+    try:
+        mod = importlib.import_module("build_dashboard_phase_1a")
+        monkeypatch.setattr(mod, "APPROVALS_PATH", fake_approvals)
+        out = mod.load_stage_4_approvals()
+    finally:
+        sys.path.pop(0)
+    assert out["present"] is False, (
+        f"absent approvals.json should -> present=False; got {out}"
     )
-    # Builder may fail on missing CSVs elsewhere; we only care that the
-    # approvals fallback path doesn't crash. So just verify if it did
-    # produce a payload, the fallback is correct.
-    if rc.returncode == 0 and DASH_DATA.exists():
-        payload = json.loads(DASH_DATA.read_text(encoding="utf-8"))
-        sa = payload.get("stage_4_approvals", {})
-        assert sa.get("present") is False, (
-            f"absent approvals.json should -> present=False; got {sa}"
-        )
+    assert out["rows_lite"] == []
+    assert out["summary"] == {}
