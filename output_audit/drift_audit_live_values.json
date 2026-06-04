@@ -13,5 +13,5 @@
   "regime_count": 4,
   "phase_1a_beta_actual_wall_hours": 10.5,
   "phase_1a_beta_pool_speedup_target": "4-8x",
-  "tests_collected": 3651
+  "tests_collected": 3661
 }

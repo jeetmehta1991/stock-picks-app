@@ -1067,13 +1067,33 @@ def compute_volume(df: pd.DataFrame) -> dict:
     # loosens on donchian_10_breakout + rsi_volume_200ema. Any above-average
     # volume vs 20d mean - softer than the 1.5x / 2x spike gates.
     result["vol_above_avg"] = ratio >= 1.0
+    # B589 (2026-06-04 owner directive 52w_high_breakout_with_smart_money_long
+    # walk: "vol_above_avg = >= 1.2x make it"). Strategy-specific
+    # threshold; ADDITIVE - existing strategies using vol_above_avg
+    # (>= 1.0) unchanged.
+    result["vol_spike_12x"] = ratio >= 1.2
     result["vol_spike_15x"] = ratio >= 1.5
-    # B586 (2026-06-04 owner directive 52w_high_breakout walk):
-    # vol_spike_17x = strict >1.7x. Owner picked between 1.5-2.0
-    # for 52w high breakout volume confirmation.
+    # B586: vol_spike_17x = strict >1.7x for 52w_high_breakout
     result["vol_spike_17x"] = ratio >  1.7
     result["vol_spike_2x"]  = ratio >= 2.0
     result["vol_spike_3x"]  = ratio >= 3.0
+
+    # B589 (2026-06-04 owner directive 52w_high_breakout walk: "add
+    # close above open and close within 40% of day high. Add inverse
+    # for mirror"). Range-position signals:
+    #   close_in_top_40pct_of_range:  close in top 40% of bar range
+    #   close_in_bottom_40pct_of_range: close in bottom 40% (mirror)
+    # Both used by the 52w high/low breakout strategies.
+    h_today = _safe_float(h.iloc[-1])
+    l_today = _safe_float(l.iloc[-1])
+    c_today = _safe_float(c.iloc[-1])
+    bar_range = h_today - l_today
+    if bar_range > 0:
+        result["close_in_top_40pct_of_range"]    = ((h_today - c_today) / bar_range) <= 0.40
+        result["close_in_bottom_40pct_of_range"] = ((c_today - l_today) / bar_range) <= 0.40
+    else:
+        result["close_in_top_40pct_of_range"]    = False
+        result["close_in_bottom_40pct_of_range"] = False
 
     # A/D Line
     clv = ((c-l)-(h-c))/(h-l).replace(0,np.nan)
@@ -1141,6 +1161,13 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["near_52w_low"]    = _safe_float(c.iloc[-1]) <= year_low*1.02
     result["break_52w_low"]   = _safe_float(c.iloc[-1]) <  year_low   # strict per spec
     result["year_low"]        = round(year_low,4)
+    # B589 (2026-06-04 owner directive 52w_high_breakout_with_smart_money_long
+    # walk: "near_52w_high - make it 95% of prev 52 week high").
+    # Wider tolerance variants for smart-money sleeves. ADDITIVE - the
+    # existing near_52w_high (98%) + near_52w_low (102%) preserved for
+    # other consumers.
+    result["near_52w_high_95pct"] = _safe_float(c.iloc[-1]) >= year_high*0.95
+    result["near_52w_low_105pct"] = _safe_float(c.iloc[-1]) <= year_low*1.05
 
     # B586 (2026-06-04 owner directive 52w_high_breakout walk): pullback
     # retest detector signals. Per owner spec earlier: "Alternative
