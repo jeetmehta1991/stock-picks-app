@@ -52,19 +52,32 @@ REQUIRED_CONFLICT_KEYS = {"rule", "severity", "source", "evidence", "advice"}
 
 
 @pytest.fixture(scope="module")
-def swept_payload():
+def swept_payload(tmp_path_factory):
+    """Module-scoped: cross_sweep runs against a tmp COPY of the live
+    approvals.json so the LIVE file (which carries owner Stage 4
+    decisions per CHECKLIST #67) is NEVER mutated. Previously this
+    fixture sweep'd APPROVALS in-place and the sweep itself was
+    nondestructive on `status` BUT later test_batch568_rerun_preserves_*
+    tests assume status matches the state-at-sweep-time, which became
+    stale when sibling B567 fixtures clobbered the live file."""
+    import shutil
+    tmp_target = tmp_path_factory.mktemp("approvals_b568") / "approvals.json"
+    shutil.copy(APPROVALS, tmp_target)
     rc = subprocess.run(
         [
             sys.executable,
             str(REPO / "scripts" / "preflight_cross_sweep.py"),
-            "--approvals", str(APPROVALS),
+            "--approvals", str(tmp_target),
         ],
         capture_output=True, text=True, timeout=60,
     )
     assert rc.returncode == 0, (
         f"cross_sweep exit {rc.returncode}; stderr:\n{rc.stderr}"
     )
-    return json.loads(APPROVALS.read_text(encoding="utf-8"))
+    # Stash the tmp path so re-run pin (8) can target the same file
+    payload = json.loads(tmp_target.read_text(encoding="utf-8"))
+    payload["_test_tmp_path"] = str(tmp_target)
+    return payload
 
 
 def test_batch568_sweep_exit_zero(swept_payload):
@@ -138,17 +151,19 @@ def test_batch568_severity_valid(swept_payload):
 def test_batch568_rerun_preserves_status_and_history(swept_payload):
     """Pin (8) - re-running must not clobber status or history."""
     before = {r["candidate_id"]: (r["status"], r["status_set_by"], r["history"])
-              for r in swept_payload["approvals"]}
+              for r in swept_payload["approvals"]
+              if not r.get("candidate_id", "").startswith("_")}
+    tmp_path = swept_payload.get("_test_tmp_path", str(APPROVALS))
     rc = subprocess.run(
         [
             sys.executable,
             str(REPO / "scripts" / "preflight_cross_sweep.py"),
-            "--approvals", str(APPROVALS),
+            "--approvals", tmp_path,
         ],
         capture_output=True, text=True, timeout=60,
     )
     assert rc.returncode == 0
-    after = json.loads(APPROVALS.read_text(encoding="utf-8"))
+    after = json.loads(Path(tmp_path).read_text(encoding="utf-8"))
     for r in after["approvals"]:
         b = before[r["candidate_id"]]
         assert (r["status"], r["status_set_by"], r["history"]) == b, (

@@ -56,13 +56,19 @@ REQUIRED_KEYS = {
 
 
 @pytest.fixture(scope="module")
-def approvals():
+def approvals(tmp_path_factory):
+    """Module-scoped: init_approvals writes to tmp_path so the LIVE
+    approvals.json (which holds owner Stage 4 decisions per CHECKLIST
+    #67 source-of-truth) is NEVER touched. Previously this fixture used
+    --force on APPROVALS itself and clobbered owner state on every
+    pyramid run; B570a follow-on rewrote it."""
+    tmp = tmp_path_factory.mktemp("approvals_b567") / "approvals.json"
     rc = subprocess.run(
         [
             sys.executable,
             str(REPO / "scripts" / "init_approvals.py"),
             "--input",  str(PROPOSED),
-            "--output", str(APPROVALS),
+            "--output", str(tmp),
             "--force",
         ],
         capture_output=True, text=True, timeout=30,
@@ -70,7 +76,7 @@ def approvals():
     assert rc.returncode == 0, (
         f"init_approvals exit {rc.returncode}; stderr:\n{rc.stderr}"
     )
-    return json.loads(APPROVALS.read_text(encoding="utf-8"))
+    return json.loads(tmp.read_text(encoding="utf-8"))
 
 
 def test_batch567_init_exit_zero(approvals):
@@ -152,16 +158,22 @@ def test_batch567_status_set_by_system_init(approvals):
         assert r["history"] == []
 
 
-def test_batch567_refuses_overwrite_without_force(approvals):
+def test_batch567_refuses_overwrite_without_force(tmp_path, approvals):
     """Pin (8) - audit-trail discipline (workflow lines 344-345). The
     second run without --force must REFUSE so in-flight owner decisions
-    can't be silently clobbered."""
+    can't be silently clobbered.
+
+    Uses tmp_path (not the LIVE APPROVALS) - the live owner-decision
+    state must NEVER be touched by tests per CHECKLIST #67."""
+    tmp_target = tmp_path / "approvals.json"
+    # Seed the target so the second run sees an existing file
+    tmp_target.write_text('{"approvals":[]}', encoding="utf-8")
     rc = subprocess.run(
         [
             sys.executable,
             str(REPO / "scripts" / "init_approvals.py"),
             "--input",  str(PROPOSED),
-            "--output", str(APPROVALS),
+            "--output", str(tmp_target),
             # NO --force
         ],
         capture_output=True, text=True, timeout=30,
