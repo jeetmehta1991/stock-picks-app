@@ -1169,45 +1169,130 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["near_52w_high_95pct"] = _safe_float(c.iloc[-1]) >= year_high*0.95
     result["near_52w_low_105pct"] = _safe_float(c.iloc[-1]) <= year_low*1.05
 
-    # B586 (2026-06-04 owner directive 52w_high_breakout walk): pullback
-    # retest detector signals. Per owner spec earlier: "Alternative
-    # Entry: wait for daily close above 52w high, monitor retest, enter
-    # on bounce off this new support on lower volume."
+    # B590 (2026-06-04 owner-directed pullback redesign + clarification
+    # round 2 + false-breakout filters): use a SINGLE INTERNALLY-CONSISTENT
+    # 30-bar window for BOTH (a) breakout detection AND (b) year_high
+    # pre-breakout reference. Plus two additional false-breakout filters
+    # added per owner directive 2026-06-04: 3-candle time filter +
+    # ATR-band filter.
     #
-    # KEY INSIGHT: the "level being retested" is the PRE-BREAKOUT 52w
-    # high (the resistance that was broken), NOT today's running
-    # year_high. So we use a 252-day window ENDING 10 days ago as the
-    # reference level (year_high_ref). Today's close should be near
-    # that reference AND some close in the last 10 days should have
-    # exceeded it (= the breakout day).
+    # LONG fires when ALL 7 conditions hold:
+    #   1. breakout_occurred: max CLOSE in last 30 bars (excluding
+    #      today) > year_high_pre30 (pre-breakout 52w high)
+    #   2. within_3pct_of_year_high_pre30: today's close within +/-3pct
+    #      of the pre-breakout reference (owner B590 directive: 3% tolerance)
+    #   3. today_below_recent_peak: today_close < recent_max_close * 0.99
+    #   4. vol_below_avg: today_vol / 20d_avg < 1.0
+    #   5. close_above_open: bullish bar
+    #   6. breakout_at_least_3_bars_old: the FIRST bar in the 30-day
+    #      window whose close exceeded year_high_pre30 occurred at
+    #      least 3 bars before today (gives the retest time to form)
+    #   7. within_atr_band_long: today_close >= year_high_pre30 - ATR(14)
+    #      (a true breakdown more than 1 ATR below the broken level is
+    #      a failed retest, not a valid pullback)
+    #
+    # SHORT mirror uses year_low_pre30 + symmetric filters.
     try:
-        recent_window_days = 10
-        # PIT-safe reference: max high in [today-272, today-10], i.e.,
-        # the year_high "as it stood 10 days ago"
-        ref_window_end = -(recent_window_days + 1)
-        if len(df) >= 252 + recent_window_days + 1:
-            ref_window = df.iloc[-(252 + recent_window_days + 1):ref_window_end]
-            year_high_ref = float(ref_window["high"].max())
-            year_low_ref  = float(ref_window["low"].min())
-        else:
-            year_high_ref = year_high
-            year_low_ref  = year_low
-        # Recent closes in last 10 days (excluding today)
-        recent_closes = df["close"].iloc[ref_window_end:-1]
-        broke_recently = bool((recent_closes > year_high_ref).any())
-        broke_recently_low = bool((recent_closes < year_low_ref).any())
-        # Today's close within 1pct of the reference level (retest)
+        breakout_window_days = 30
+        retest_tolerance = 0.03
         today_c = _safe_float(c.iloc[-1])
-        within_1pct_high = abs(today_c - year_high_ref) / max(year_high_ref, 0.01) <= 0.01
-        within_1pct_low  = abs(today_c - year_low_ref)  / max(year_low_ref,  0.01) <= 0.01
-        vol_below_avg = ratio < 1.0
-        close_above_open = today_c > _safe_float(df["open"].iloc[-1])
-        close_below_open = today_c < _safe_float(df["open"].iloc[-1])
+        today_o = _safe_float(df["open"].iloc[-1])
+        # Pre-breakout reference: 252-day window ending breakout_window_days
+        # bars ago. Excludes both today and the 30-day breakout-detection
+        # window. Single source of "the pre-breakout 52w resistance level."
+        ref_end = -(breakout_window_days + 1)
+        if len(df) >= 252 + breakout_window_days + 1:
+            ref_window = df.iloc[-(252 + breakout_window_days + 1):ref_end]
+            year_high_pre30 = float(ref_window["high"].max())
+            year_low_pre30  = float(ref_window["low"].min())
+        else:
+            year_high_pre30 = year_high
+            year_low_pre30  = year_low
+        if len(df) >= breakout_window_days + 1:
+            recent_closes = df["close"].iloc[-(breakout_window_days + 1):-1]
+            recent_max_close = float(recent_closes.max())
+            recent_min_close = float(recent_closes.min())
+        else:
+            recent_max_close = today_c
+            recent_min_close = today_c
+        # B590 owner directive 2026-06-04 "close within 1% of moving
+        # ref. make it 3%": tolerance widened from 0.01 -> 0.03 for
+        # both retest-near-level checks. Reference is year_high_pre30 /
+        # year_low_pre30 (STABLE pre-breakout level) - not year_high /
+        # year_low which would drift each day as the breakout itself
+        # prints new highs (B590 owner criticism of B586 design).
+        # LONG: stock recently breached prior 52w high then pulled back
+        breakout_high_occurred = recent_max_close > year_high_pre30
+        within_3pct_high       = abs(today_c - year_high_pre30) / max(year_high_pre30, 0.01) <= retest_tolerance
+        today_below_peak       = today_c < recent_max_close * 0.99
+        vol_below_avg          = ratio < 1.0
+        close_above_open       = today_c > today_o
+        close_below_open       = today_c < today_o
+        # SHORT mirror: stock recently breached prior 52w low then bounced back
+        breakdown_low_occurred = recent_min_close < year_low_pre30
+        within_3pct_low        = abs(today_c - year_low_pre30) / max(year_low_pre30, 0.01) <= retest_tolerance
+        today_above_trough     = today_c > recent_min_close * 1.01
+
+        # B590 false-breakout filter (a) - 3-candle time filter:
+        # Require >=3 candles to form between initial breakout day and
+        # today before validating retest (per owner directive).
+        # Find first bar in the 30-day window whose close exceeded
+        # year_high_pre30 (LONG) / went below year_low_pre30 (SHORT);
+        # require today_idx - breakout_idx >= 3 (i.e. >=3 candles
+        # between the breakout and today).
+        min_candles_post_breakout = 3
+        try:
+            if breakout_high_occurred:
+                # recent_closes has 30 entries indexed 0..29 (oldest..newest);
+                # today is index 30 in absolute terms (=last bar of df).
+                breakout_mask_long = (recent_closes > year_high_pre30).values
+                first_breakout_idx_long = int(np.argmax(breakout_mask_long))  # first True
+                bars_since_breakout_long = (len(recent_closes) - first_breakout_idx_long)
+                breakout_3_candles_old_long = bars_since_breakout_long >= min_candles_post_breakout
+            else:
+                breakout_3_candles_old_long = False
+            if breakdown_low_occurred:
+                breakdown_mask_short = (recent_closes < year_low_pre30).values
+                first_breakdown_idx_short = int(np.argmax(breakdown_mask_short))
+                bars_since_breakdown_short = (len(recent_closes) - first_breakdown_idx_short)
+                breakdown_3_candles_old_short = bars_since_breakdown_short >= min_candles_post_breakout
+            else:
+                breakdown_3_candles_old_short = False
+        except Exception:
+            breakout_3_candles_old_long = False
+            breakdown_3_candles_old_short = False
+
+        # B590 false-breakout filter (b) - ATR band filter:
+        # If today's close is more than 1*ATR below year_high_pre30
+        # (LONG) or more than 1*ATR above year_low_pre30 (SHORT), the
+        # broken S/R has been re-broken and this is a failed retest
+        # rather than a valid pullback. Use ATR(14) computed inline
+        # so the pullback producer remains self-contained.
+        try:
+            atr14_series = _atr_series(df, period=14)
+            atr14 = float(atr14_series.iloc[-1])
+        except Exception:
+            atr14 = 0.0
+        within_atr_band_long  = (today_c >= year_high_pre30 - atr14) if atr14 > 0 else True
+        within_atr_band_short = (today_c <= year_low_pre30  + atr14) if atr14 > 0 else True
+
         result["near_52w_high_retest_long"] = bool(
-            broke_recently and within_1pct_high and vol_below_avg and close_above_open
+            breakout_high_occurred
+            and within_3pct_high
+            and today_below_peak
+            and vol_below_avg
+            and close_above_open
+            and breakout_3_candles_old_long
+            and within_atr_band_long
         )
         result["near_52w_low_retest_short"] = bool(
-            broke_recently_low and within_1pct_low and vol_below_avg and close_below_open
+            breakdown_low_occurred
+            and within_3pct_low
+            and today_above_trough
+            and vol_below_avg
+            and close_below_open
+            and breakdown_3_candles_old_short
+            and within_atr_band_short
         )
     except Exception:
         result["near_52w_high_retest_long"] = False
