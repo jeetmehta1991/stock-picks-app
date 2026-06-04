@@ -182,8 +182,12 @@ def load_regime_affinity() -> dict:
 
 def load_stage_4_status() -> dict:
     """Read approvals.json and build a per-strategy Stage 4 status
-    summary: dict[strategy -> {n_rows, statuses, classes, max_severity}].
-    Empty dict if approvals.json missing."""
+    summary: dict[strategy -> {n_rows, statuses, classes, fired_in_r4}].
+    Empty dict if approvals.json missing.
+
+    B577: also tracks fired_in_r4 boolean - True if strategy has any
+    NON-Class-0 row (Class 0 = QUIET_NO_CANDIDATES backfilled in B576).
+    """
     approvals_path = Path("C:/tmp/r4_optimization_candidates/approvals.json")
     if not approvals_path.exists():
         return {}
@@ -195,10 +199,16 @@ def load_stage_4_status() -> dict:
     for r in data.get("approvals", []):
         name = r["strategy"]
         if name not in per_strategy:
-            per_strategy[name] = {"n_rows": 0, "statuses": [], "classes": []}
+            per_strategy[name] = {
+                "n_rows": 0, "statuses": [], "classes": [],
+                "fired_in_r4": False,
+            }
         per_strategy[name]["n_rows"] += 1
         per_strategy[name]["statuses"].append(r["status"])
         per_strategy[name]["classes"].append(r["change_class"])
+        # If the strategy has ANY non-Class-0 row, it fired in R4
+        if r["change_class"] != 0:
+            per_strategy[name]["fired_in_r4"] = True
     return per_strategy
 
 
@@ -319,6 +329,7 @@ def main() -> int:
         s4 = stage_4.get(name, {})
         if not s4:
             stage_4_str = "no_approvals_row"
+            fired_str = "?"
         else:
             status_counts = {}
             for st in s4["statuses"]:
@@ -326,19 +337,35 @@ def main() -> int:
             # Compact: "1 Approved / 1 Implemented / 0 Awaiting"
             parts = [f"{n} {st}" for st, n in sorted(status_counts.items())]
             stage_4_str = " / ".join(parts) + f" (n_rows={s4['n_rows']})"
+            fired_str = "YES" if s4["fired_in_r4"] else "QUIET"
         rows.append({**meta, "status": status, "regime": regime_str,
-                     "stage_4": stage_4_str})
+                     "stage_4": stage_4_str, "fired_in_r4": fired_str})
 
     out_lines = []
     out_lines.append("# Strategy Roster - Phase 1A-beta cube reference")
     out_lines.append("")
     out_lines.append(f"**Auto-generated** via `scripts/build_strategy_roster.py`. Do NOT hand-edit. Regenerate every turn that modifies strategies, signals, thresholds, regime affinity, or status.")
     out_lines.append("")
+    # B577: fired vs quiet counts
+    fired_n = sum(1 for r in rows if r.get("fired_in_r4") == "YES")
+    quiet_n = sum(1 for r in rows if r.get("fired_in_r4") == "QUIET")
     out_lines.append(f"**Total strategies:** {len(ALL_STRATEGIES)} | **Deprecated:** {len(DEPRECATED_STRATEGIES)} | **Disabled:** {len(STRATEGIES_DISABLED_MISSING_PRODUCER)} | **Active for cube:** {len(ALL_STRATEGIES) - len(DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER)}")
     out_lines.append("")
-    out_lines.append("**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active roster total is 206 (205 + 1 special-path).")
+    out_lines.append(f"**R4 cube fire status:** **{fired_n} FIRED** (have optimizer-extracted Class 1-7 rows) | **{quiet_n} QUIET** (zero R4 fires; Class 0 QUIET_NO_CANDIDATES placeholder per B576 drift backfill)")
     out_lines.append("")
-    out_lines.append("**Stage 4 approvals (per-strategy mapping, B576 drift correction):** Every registered strategy has at least one approvals.json row. Quiet strategies (no R4 fires) carry a `Class 0 QUIET_NO_CANDIDATES` placeholder Awaiting row. See last column for per-strategy Stage 4 status counts.")
+    out_lines.append("**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **206** (205 + 1 special-path). Note: 207 unique strategies in approvals.json = 206 engine + 1 queued (`news_sentiment_shift_short` Class 7 Approved B571 awaiting wiring).")
+    out_lines.append("")
+    out_lines.append("**Count reconciliation:**")
+    out_lines.append(f"- `len(ALL_STRATEGIES)` = {len(ALL_STRATEGIES)} (standard dict path)")
+    out_lines.append(f"- +1 special path (`lead_lag_sector_rotation`)")
+    out_lines.append(f"- **= True engine roster: {len(ALL_STRATEGIES) + 1}**")
+    out_lines.append(f"- +1 queued for wiring (news_sentiment_shift_short)")
+    out_lines.append(f"- Unique strategies in approvals: {len(ALL_STRATEGIES) + 2}")
+    out_lines.append(f"- approvals.json ROWS != strategies (each strategy can have multiple change-class rows)")
+    out_lines.append("")
+    out_lines.append("**TODO (B577 surfaced):** Only 1 of 205 strategies has explicit `STRATEGY_REGIME_AFFINITY` (`head_and_shoulders_bottom_long`). 204 strategies fall through to default 'all regimes'. R4 empirical per-regime cube data should feed back into deployment-time affinity rules. See EXECUTION_QUEUE.md item `regime-affinity-investigation`.")
+    out_lines.append("")
+    out_lines.append("**Stage 4 approvals (per-strategy mapping, B576 drift correction):** Every registered strategy has at least one approvals.json row. Quiet strategies (no R4 fires) carry a `Class 0 QUIET_NO_CANDIDATES` placeholder Awaiting row.")
     out_lines.append("")
     out_lines.append("## Direction counts")
     direction_counts = {}
@@ -356,8 +383,8 @@ def main() -> int:
     out_lines.append("")
     out_lines.append("## Strategy Table")
     out_lines.append("")
-    out_lines.append("| # | Name | Category | Direction | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|---|")
+    out_lines.append("| # | Name | Category | Direction | R4 Fires | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
@@ -368,8 +395,8 @@ def main() -> int:
             sigs = sigs[:117] + "..."
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
-            f"`{trigger}` | {sigs} | {r['regime']} | {r['status']} | "
-            f"{r['stage_4']} |"
+            f"{r['fired_in_r4']} | `{trigger}` | {sigs} | {r['regime']} | "
+            f"{r['status']} | {r['stage_4']} |"
         )
     out_lines.append("")
     out_lines.append("## Signal Glossary")
