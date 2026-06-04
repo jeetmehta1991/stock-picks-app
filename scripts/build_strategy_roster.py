@@ -200,6 +200,11 @@ def load_stage_4_status() -> dict:
     except Exception:
         return {}
     s4_reviewed = data.get("s4_reviewed_strategies", {})
+    # B585: producer_bug_fixes ledger - separate from S4 review per
+    # feedback_per_strategy_deep_dive_stage4 (bug fix alone is NOT
+    # S4 review completion; 7-step walk still required after a
+    # producer bug fix).
+    bug_fixes = data.get("producer_bug_fixes", {})
     per_strategy = {}
     for r in data.get("approvals", []):
         name = r["strategy"]
@@ -210,6 +215,7 @@ def load_stage_4_status() -> dict:
                 "s4_reviewed": False,
                 "s4_review_batch": "",
                 "s4_review_outcome": "",
+                "producer_bug_fix": "",
             }
         per_strategy[name]["n_rows"] += 1
         per_strategy[name]["statuses"].append(r["status"])
@@ -223,6 +229,12 @@ def load_stage_4_status() -> dict:
             per_strategy[name]["s4_reviewed"] = True
             per_strategy[name]["s4_review_batch"] = rv.get("reviewed_in_batch", "")
             per_strategy[name]["s4_review_outcome"] = rv.get("review_outcome", "")
+        # B585: producer bug fix history (separate from S4 review)
+        bf = bug_fixes.get(name, [])
+        if bf:
+            # Compact: most recent batch tag(s); strategy still needs S4 walk
+            batches = [str(e.get("fixed_in_batch", "?")) for e in bf]
+            per_strategy[name]["producer_bug_fix"] = ", ".join(batches)
     return per_strategy
 
 
@@ -435,6 +447,7 @@ def main() -> int:
             stage_4_str = "no_approvals_row"
             fired_str = "?"
             s4_reviewed_str = "N"
+            bug_fix_str = ""
         else:
             status_counts = {}
             for st in s4["statuses"]:
@@ -448,9 +461,12 @@ def main() -> int:
                 s4_reviewed_str = f"Y ({s4.get('s4_review_batch', '')})"
             else:
                 s4_reviewed_str = "N"
+            # B585: Producer Bug Fix column (separate from S4 review)
+            bug_fix_str = s4.get("producer_bug_fix", "")
         rows.append({**meta, "status": status, "regime": regime_str,
                      "stage_4": stage_4_str, "fired_in_r4": fired_str,
-                     "s4_reviewed": s4_reviewed_str})
+                     "s4_reviewed": s4_reviewed_str,
+                     "producer_bug_fix": bug_fix_str})
 
     out_lines = []
     out_lines.append("# Strategy Roster - Phase 1A-beta cube reference")
@@ -467,8 +483,14 @@ def main() -> int:
     out_lines.append("")
     out_lines.append(f"**R4 cube fire status:** **{fired_n} FIRED** (have optimizer-extracted Class 1-7 rows) | **{quiet_n} QUIET** (zero R4 fires; Class 0 QUIET_NO_CANDIDATES placeholder per B576 drift backfill)")
     out_lines.append("")
-    out_lines.append(f"**S4 Review progress (B583):** **{s4_reviewed_n} REVIEWED** ({100.0*s4_reviewed_n/len(rows):.0f}%) | **{s4_pending_n} PENDING** ({100.0*s4_pending_n/len(rows):.0f}%) per `feedback_per_strategy_deep_dive_stage4`. Per-strategy 7-step deep-dive must complete before R5 cube run per `feedback_r5_paused_pending_stage4_completion`.")
+    # B585: separate "S4 reviewed (full 7-step walk)" from "producer
+    # bug fixed (partial work)"
+    bug_fixed_n = sum(1 for r in rows if r.get("producer_bug_fix"))
+    out_lines.append(f"**S4 Review progress (B583+B585):** **{s4_reviewed_n} REVIEWED (full 7-step walk)** ({100.0*s4_reviewed_n/len(rows):.0f}%) | **{s4_pending_n} PENDING** ({100.0*s4_pending_n/len(rows):.0f}%) per `feedback_per_strategy_deep_dive_stage4`. Per-strategy 7-step deep-dive must complete before R5 cube run per `feedback_r5_paused_pending_stage4_completion`.")
     out_lines.append("")
+    if bug_fixed_n:
+        out_lines.append(f"**Producer bug fixes (B585 ledger - SEPARATE from S4 review):** **{bug_fixed_n} strategies** have had a producer bug fix applied. These strategies STILL need a full 7-step S4 walk per owner directive 2026-06-04 'bug fix is NOT S4 review completion.' See `Producer Bug Fix` column for batch tag.")
+        out_lines.append("")
     out_lines.append("**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **206** (205 + 1 special-path). Note: 207 unique strategies in approvals.json = 206 engine + 1 queued (`news_sentiment_shift_short` Class 7 Approved B571 awaiting wiring).")
     out_lines.append("")
     out_lines.append("**Count reconciliation:**")
@@ -499,8 +521,13 @@ def main() -> int:
     out_lines.append("")
     out_lines.append("## Strategy Table")
     out_lines.append("")
-    out_lines.append("| # | Name | Category | Direction | R4 Fires | S4 Reviewed | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
+    # B585: S4 Reviewed + Producer Bug Fix columns moved to positions
+    # 2 + 3 (right after Name) per owner directive 2026-06-04 "I still
+    # cant see the S4 review y/n column" - wide Trigger column was
+    # pushing S4 Reviewed off screen. New order:
+    # # | Name | S4 Reviewed | Producer Fix | R4 Fires | ... rest
+    out_lines.append("| # | Name | S4 Reviewed | Producer Bug Fix | R4 Fires | Category | Direction | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
@@ -510,9 +537,10 @@ def main() -> int:
         if len(sigs) > 120:
             sigs = sigs[:117] + "..."
         out_lines.append(
-            f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
-            f"{r['fired_in_r4']} | {r['s4_reviewed']} | `{trigger}` | {sigs} | "
-            f"{r['regime']} | {r['status']} | {r['stage_4']} |"
+            f"| {i} | `{r['name']}` | {r['s4_reviewed']} | {r['producer_bug_fix']} | "
+            f"{r['fired_in_r4']} | {r['category']} | {r['direction']} | "
+            f"`{trigger}` | {sigs} | {r['regime']} | {r['status']} | "
+            f"{r['stage_4']} |"
         )
     out_lines.append("")
 

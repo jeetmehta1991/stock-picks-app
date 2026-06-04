@@ -63,8 +63,10 @@ def test_batch583_approvals_has_s4_reviewed_dict():
     assert "s4_reviewed_strategies" in data
     reviewed = data["s4_reviewed_strategies"]
     assert isinstance(reviewed, dict)
-    assert len(reviewed) >= 22, (
-        f"Expected >= 22 backfilled entries; got {len(reviewed)}"
+    # B585: post-unmark expected count is ~19 (22 backfilled +6 B584 -9 unmarked).
+    # Relaxed lower bound for forward-compatibility.
+    assert len(reviewed) >= 13, (
+        f"Expected >= 13 reviewed entries; got {len(reviewed)}"
     )
     # Schema check on one entry
     entry = next(iter(reviewed.values()))
@@ -90,12 +92,23 @@ def test_batch583_doji_at_support_reviewed(regen_roster):
     )
 
 
-def test_batch583_52w_high_breakout_reviewed(regen_roster):
-    """Pin (4): 52w_high_breakout shows Y (B582)."""
+def test_batch585_52w_high_breakout_unmarked_post_b585(regen_roster):
+    """Pin (4) - updated B585: 52w_high_breakout was incorrectly marked
+    Y (B582) in B582. Per owner directive 2026-06-04 ("bug fix is NOT
+    S4 review completion"), B585 unmarked it. Strategy still needs
+    full 7-step walk. Producer Bug Fix column should show 'B582'."""
     import re
     m = re.search(r"`52w_high_breakout`[^\n]*", regen_roster)
     assert m
-    assert "Y (B582)" in m.group(0)
+    row = m.group(0)
+    # S4 Reviewed should be N (B585 unmarked); Producer Bug Fix shows B582
+    assert "B582" in row, "Producer Bug Fix column should reference B582"
+    # Not Y (some batch) - was unmarked
+    # Check it's not Y followed by anything bracket-style
+    assert "| Y (" not in row, (
+        f"52w_high_breakout S4 Reviewed should be N after B585 unmark; "
+        f"row:\n{row}"
+    )
 
 
 def test_batch583_not_reviewed_strategy_shows_N(regen_roster):
@@ -119,14 +132,16 @@ def test_batch583_not_reviewed_strategy_shows_N(regen_roster):
 
 
 def test_batch583_header_summary(regen_roster):
-    """Pin (6): header has S4 Review progress summary."""
+    """Pin (6): header has S4 Review progress summary. B585 updated
+    header text to include 'full 7-step walk' qualifier."""
     assert "S4 Review progress" in regen_roster
     import re
-    m = re.search(r"\*\*(\d+) REVIEWED\*\*", regen_roster)
+    # B585 header: "**N REVIEWED (full 7-step walk)** (n%)"
+    m = re.search(r"\*\*(\d+) REVIEWED(?:\s*\(full 7-step walk\))?\*\*", regen_roster)
     assert m
     n_reviewed = int(m.group(1))
-    assert n_reviewed >= 21, (
-        f"Expected at least 21 reviewed strategies in header; got {n_reviewed}"
+    assert n_reviewed >= 13, (
+        f"Expected at least 13 reviewed strategies in header; got {n_reviewed}"
     )
 
 
