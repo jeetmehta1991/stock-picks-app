@@ -1068,6 +1068,10 @@ def compute_volume(df: pd.DataFrame) -> dict:
     # volume vs 20d mean - softer than the 1.5x / 2x spike gates.
     result["vol_above_avg"] = ratio >= 1.0
     result["vol_spike_15x"] = ratio >= 1.5
+    # B586 (2026-06-04 owner directive 52w_high_breakout walk):
+    # vol_spike_17x = strict >1.7x. Owner picked between 1.5-2.0
+    # for 52w high breakout volume confirmation.
+    result["vol_spike_17x"] = ratio >  1.7
     result["vol_spike_2x"]  = ratio >= 2.0
     result["vol_spike_3x"]  = ratio >= 3.0
 
@@ -1137,6 +1141,50 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["near_52w_low"]    = _safe_float(c.iloc[-1]) <= year_low*1.02
     result["break_52w_low"]   = _safe_float(c.iloc[-1]) <  year_low   # strict per spec
     result["year_low"]        = round(year_low,4)
+
+    # B586 (2026-06-04 owner directive 52w_high_breakout walk): pullback
+    # retest detector signals. Per owner spec earlier: "Alternative
+    # Entry: wait for daily close above 52w high, monitor retest, enter
+    # on bounce off this new support on lower volume."
+    #
+    # KEY INSIGHT: the "level being retested" is the PRE-BREAKOUT 52w
+    # high (the resistance that was broken), NOT today's running
+    # year_high. So we use a 252-day window ENDING 10 days ago as the
+    # reference level (year_high_ref). Today's close should be near
+    # that reference AND some close in the last 10 days should have
+    # exceeded it (= the breakout day).
+    try:
+        recent_window_days = 10
+        # PIT-safe reference: max high in [today-272, today-10], i.e.,
+        # the year_high "as it stood 10 days ago"
+        ref_window_end = -(recent_window_days + 1)
+        if len(df) >= 252 + recent_window_days + 1:
+            ref_window = df.iloc[-(252 + recent_window_days + 1):ref_window_end]
+            year_high_ref = float(ref_window["high"].max())
+            year_low_ref  = float(ref_window["low"].min())
+        else:
+            year_high_ref = year_high
+            year_low_ref  = year_low
+        # Recent closes in last 10 days (excluding today)
+        recent_closes = df["close"].iloc[ref_window_end:-1]
+        broke_recently = bool((recent_closes > year_high_ref).any())
+        broke_recently_low = bool((recent_closes < year_low_ref).any())
+        # Today's close within 1pct of the reference level (retest)
+        today_c = _safe_float(c.iloc[-1])
+        within_1pct_high = abs(today_c - year_high_ref) / max(year_high_ref, 0.01) <= 0.01
+        within_1pct_low  = abs(today_c - year_low_ref)  / max(year_low_ref,  0.01) <= 0.01
+        vol_below_avg = ratio < 1.0
+        close_above_open = today_c > _safe_float(df["open"].iloc[-1])
+        close_below_open = today_c < _safe_float(df["open"].iloc[-1])
+        result["near_52w_high_retest_long"] = bool(
+            broke_recently and within_1pct_high and vol_below_avg and close_above_open
+        )
+        result["near_52w_low_retest_short"] = bool(
+            broke_recently_low and within_1pct_low and vol_below_avg and close_below_open
+        )
+    except Exception:
+        result["near_52w_high_retest_long"] = False
+        result["near_52w_low_retest_short"] = False
 
     return result
 

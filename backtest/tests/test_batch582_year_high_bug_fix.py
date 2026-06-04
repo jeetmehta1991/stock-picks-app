@@ -155,13 +155,16 @@ def test_batch582_short_history_no_crash():
 
 
 def test_batch582_downstream_strat_52w_high_breakout_fires():
-    """Pin (9): strat_52w_high_breakout NOW fires on AMD-style scenario.
-    Before B582 fix, it was silent."""
+    """Pin (9): strat_52w_high_breakout fires given full post-B586
+    confluence (break + vol >1.7x + sector outperforming SPY).
+    B582 fixed the break_52w_high producer; B586 added sector filter."""
     from backtest.signals.screener import strat_52w_high_breakout
-    # Inject the post-fix signals
+    # Inject the post-B586 signals (B586 added vol_spike_17x +
+    # sector_outperforming_spy gates beyond B582 producer fix)
     s = {
         "break_52w_high": True,
-        "vol_spike_2x": True,
+        "vol_spike_17x": True,
+        "sector_outperforming_spy": True,
         "year_high": 101.0,
     }
     out = strat_52w_high_breakout(s)
@@ -171,8 +174,14 @@ def test_batch582_downstream_strat_52w_high_breakout_fires():
 
 def test_batch582_amd_realistic_scenario_full_pipeline():
     """Pin (6) end-to-end: build a 252-day OHLCV simulating AMD breaking
-    out, run compute_indicators, check that strat_52w_high_breakout
-    can fire (given vol_spike_2x condition met)."""
+    out, run compute_indicators, check that break_52w_high fires
+    correctly (B582 producer fix verified).
+
+    B586 update: strat_52w_high_breakout now ALSO requires
+    vol_spike_17x + sector_outperforming_spy. This test verifies the
+    PRODUCER (break_52w_high) is correct; the full strategy fires
+    test was moved to B586 (which provides all required signals
+    explicitly)."""
     from backtest.signals.technical import compute_volume as compute_indicators
     from backtest.signals.screener import strat_52w_high_breakout
     n = 252
@@ -180,16 +189,19 @@ def test_batch582_amd_realistic_scenario_full_pipeline():
     closes = list(np.linspace(100, 120, n - 1)) + [125.0]
     highs  = list(np.linspace(101, 121, n - 1)) + [126.0]
     lows   = list(np.linspace( 99, 119, n - 1)) + [124.0]
-    # Volume spike on breakout day
-    volumes = [1_000_000] * (n - 1) + [2_500_000]
+    # Volume spike on breakout day (3x to ensure ratio > 1.7)
+    volumes = [1_000_000] * (n - 1) + [3_000_000]
     df = _build_df(closes, highs, lows, volumes)
     out = compute_indicators(df)
     assert out["break_52w_high"] == True, (
         f"AMD-style breakout should fire break_52w_high; close=125 vs "
         f"year_high={out['year_high']}"
     )
-    # And the strategy should fire
+    # B586: strategy now ALSO requires sector_outperforming_spy.
+    # Inject the post-B586 signals explicitly to verify the strategy
+    # fires end-to-end given full confluence.
     s = dict(out)
+    s["sector_outperforming_spy"] = True  # post-B586 producer (sector_strength.py)
     s_result = strat_52w_high_breakout(s)
     assert s_result["fires"] == True, (
         f"strat_52w_high_breakout should fire on AMD-style breakout + vol_spike_2x; "
