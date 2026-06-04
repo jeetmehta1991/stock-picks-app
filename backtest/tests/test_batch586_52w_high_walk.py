@@ -97,23 +97,20 @@ def test_batch586_sector_strength_unknown():
 
 
 def test_batch586_strat_52w_high_breakout_post_b586():
-    """Pin (4) + (5): all 3 conditions required."""
+    """Pin (4) + (5): all conditions required. B589 added 2 more gates
+    (close_above_open + close_in_top_40pct_of_range)."""
     from backtest.signals.screener import strat_52w_high_breakout
-    # All 3 True -> fires
+    # All conditions True -> fires (B589 added 2 gates -> now 5 total)
     s_all = {"break_52w_high": True, "vol_spike_17x": True,
-             "sector_outperforming_spy": True}
+             "sector_outperforming_spy": True,
+             "close_above_open": True, "close_in_top_40pct_of_range": True}
     assert strat_52w_high_breakout(s_all)["fires"] == True
     # Missing sector filter -> no fire
-    s_no_sector = {"break_52w_high": True, "vol_spike_17x": True,
-                   "sector_outperforming_spy": False}
+    s_no_sector = dict(s_all); s_no_sector["sector_outperforming_spy"] = False
     assert strat_52w_high_breakout(s_no_sector)["fires"] == False
-    # Missing vol -> no fire
-    s_no_vol = {"break_52w_high": True, "vol_spike_17x": False,
-                "sector_outperforming_spy": True}
-    assert strat_52w_high_breakout(s_no_vol)["fires"] == False
-    # Old vol_spike_2x alone should NOT cause fire (we now use _17x)
-    s_old = {"break_52w_high": True, "vol_spike_2x": True,
-             "sector_outperforming_spy": True}
+    # Old vol_spike_2x alone (no _17x) -> no fire
+    s_old = dict(s_all); s_old["vol_spike_17x"] = False
+    s_old["vol_spike_2x"] = True
     assert strat_52w_high_breakout(s_old)["fires"] == False
 
 
@@ -196,11 +193,12 @@ def test_batch586_builder_renders_plain_trigger():
     m = re.search(r"`52w_high_breakout` \|[^\n]*", doc)
     assert m, "52w_high_breakout row missing"
     row = m.group(0)
-    # Plain trigger column should reference the human-readable conditions
-    assert "prior 252d high" in row, (
-        f"52w_high_breakout row missing 'prior 252d high' plain phrase; "
-        f"row:\n{row[:300]}"
+    # Plain trigger column should reference the human-readable conditions.
+    # B589 owner-directed expanded descriptions; phrasing changed.
+    assert "prior 252 trading days" in row, (
+        f"52w_high_breakout row missing '252 trading days' plain phrase; "
+        f"row:\n{row[:400]}"
     )
-    assert "sector ETF outperforming SPY" in row, (
+    assert "sector SPDR ETF" in row or "outperforming" in row.lower(), (
         f"52w_high_breakout row missing sector strength plain phrase"
     )

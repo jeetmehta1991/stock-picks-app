@@ -69,19 +69,21 @@ def test_batch587_sector_strict_inverse_at_equality():
 
 
 def test_batch587_strat_52w_low_breakdown_post_b587():
-    """Pin (4) + (5): post-B587 predicate requires all 3 conditions."""
+    """Pin (4) + (5): post-B587/B589 predicate requires 5 conditions.
+    B589 added close_below_open + close_in_bottom_40pct_of_range."""
     from backtest.signals.screener import strat_52w_low_breakdown
-    # All 3 True -> fires
+    # All 5 True -> fires (B589 added 2 more gates)
     s_all = {"break_52w_low": True, "vol_spike_17x": True,
-             "sector_underperforming_spy": True}
+             "sector_underperforming_spy": True,
+             "close_below_open": True,
+             "close_in_bottom_40pct_of_range": True}
     assert strat_52w_low_breakdown(s_all)["fires"] == True
-    # Sector outperforming (strong) -> no fire (don't short strong sectors)
-    s_strong = {"break_52w_low": True, "vol_spike_17x": True,
-                "sector_underperforming_spy": False}
+    # Sector outperforming (strong) -> no fire
+    s_strong = dict(s_all); s_strong["sector_underperforming_spy"] = False
     assert strat_52w_low_breakdown(s_strong)["fires"] == False
-    # Legacy vol_spike_2x alone -> no fire (we use _17x now)
-    s_old = {"break_52w_low": True, "vol_spike_2x": True,
-             "sector_underperforming_spy": True}
+    # Legacy vol_spike_2x alone -> no fire
+    s_old = dict(s_all); s_old["vol_spike_17x"] = False
+    s_old["vol_spike_2x"] = True
     assert strat_52w_low_breakdown(s_old)["fires"] == False
 
 

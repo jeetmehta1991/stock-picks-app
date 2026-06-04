@@ -321,89 +321,110 @@ def signal_plain_translation(signal: str) -> str:
     Common signals have explicit translations; uncommon ones fall back
     to the raw signal name with a note.
     """
-    # Hand-curated common signal phrases. Extend as new signals appear.
+    # B589 owner directive: comprehensive unambiguous descriptions; do
+    # not assume reader knows period defaults / formula details. Every
+    # entry specifies: WHAT is measured + the COMPARISON OPERATOR +
+    # the THRESHOLD + the LOOKBACK PERIOD / CALCULATION BASIS.
     plain = {
-        # Volume
-        "vol_above_avg":     "volume above 20d avg",
-        "vol_spike_15x":     "volume >= 1.5x 20d avg",
-        "vol_spike_17x":     "volume > 1.7x 20d avg",
-        "vol_spike_2x":      "volume >= 2x 20d avg",
-        "vol_spike_3x":      "volume >= 3x 20d avg",
-        # 52w high/low
-        "break_52w_high":    "close > prior 252d high (strict)",
-        "break_52w_low":     "close < prior 252d low (strict)",
-        "near_52w_high":     "close >= 98% of prior 252d high",
-        "near_52w_low":      "close <= 102% of prior 252d low",
-        "near_52w_high_retest_long":  "prior 252d high broken in last 10d + close within 1% + vol below avg + bullish bar",
-        "near_52w_low_retest_short":  "prior 252d low broken in last 10d + close within 1% + vol below avg + bearish bar",
-        # Sector strength
-        "sector_outperforming_spy":   "stock's sector ETF outperforming SPY (20d trailing return)",
-        # Pivot
-        "near_s1":           "close within 0.30% of pivot S1",
-        "near_s2":           "close within 0.30% of pivot S2",
-        "near_r1":           "close within 0.30% of pivot R1",
-        "near_r2":           "close within 0.30% of pivot R2",
-        "near_pivot":        "close within 0.30% of pivot P",
-        "near_s1_wide":      "close within 1.50% of pivot S1 (doji-only)",
-        "near_s2_wide":      "close within 1.50% of pivot S2 (doji-only)",
-        "near_r1_wide":      "close within 1.50% of pivot R1 (doji-only)",
-        "near_r2_wide":      "close within 1.50% of pivot R2 (doji-only)",
-        # Fib
-        "at_key_fib":        "close within 0.50% of fib 38.2/50/61.8",
-        "at_key_fib_wide":   "close within 1.50% of key fib (doji-only)",
-        # Candle
-        "doji":              "body < 5% of range (indecision)",
-        "hammer":            "lower wick > 2x body + upper wick < body (bullish reversal)",
-        "shooting_star":     "upper wick > 2x body + lower wick < body (bearish reversal)",
-        "bullish_engulfing": "today's bullish body engulfs yesterday's bearish body",
-        "bearish_engulfing": "today's bearish body engulfs yesterday's bullish body",
-        "morning_star":      "3-bar bullish reversal (gap-recovery)",
-        "evening_star":      "3-bar bearish reversal",
-        "three_white_soldiers": "3 consecutive bullish closes near high",
-        "three_black_crows": "3 consecutive bearish closes near low",
-        # Trend / regime
-        "price_above_ema_200":   "close > 200-day EMA",
-        "price_above_sma_50":    "close > 50-day SMA",
-        "ema_50_200_bullish":    "50 EMA > 200 EMA (golden-cross regime)",
-        "ema_50_200_golden_cross": "50 EMA crossed above 200 EMA (one-bar event)",
-        "ema_50_200_death_cross": "50 EMA crossed below 200 EMA (one-bar event)",
-        # Momentum
-        "rsi_14":              "14-day RSI (numeric; check inline comparison)",
-        "rsi_2":               "2-day RSI (Connors)",
-        "obv_bullish":         "OBV in uptrend",
-        # SMC
-        "smc_fvg_bullish_active":  "bullish Fair Value Gap active",
-        "smc_fvg_bearish_active":  "bearish Fair Value Gap active",
-        "smc_choch_bullish":   "bullish Change of Character",
-        "smc_choch_bearish":   "bearish Change of Character",
-        "smc_bos_bullish":     "bullish Break of Structure",
-        "smc_bos_bearish":     "bearish Break of Structure",
-        "smc_liquidity_swept_up":  "upside liquidity swept (stops taken above)",
-        "smc_liquidity_swept_dn":  "downside liquidity swept (stops taken below)",
-        "smc_equal_highs_swept":   "equal highs swept (liquidity grab up)",
-        "smc_equal_lows_swept":    "equal lows swept (liquidity grab down)",
-        "smc_ote_long_zone":   "in OTE long zone (62-79% Fib retracement)",
-        "smc_ote_short_zone":  "in OTE short zone",
-        "smc_breaker_block_bullish":  "bullish breaker block active",
-        "smc_breaker_block_bearish":  "bearish breaker block active",
-        # B581 ICT producers
-        "po3_mmbm_setup":      "PO3 bullish cycle: accumulation + sweep down + reversal + bullish bar",
-        "po3_mmsm_setup":      "PO3 bearish cycle: accumulation + sweep up + reversal + bearish bar",
-        "week_open_gap_up_15pct":   "Monday opened with gap up >= 1.5% vs prior Friday close",
-        "week_open_gap_down_15pct": "Monday opened with gap down >= 1.5% vs prior Friday close",
-        # News sentiment
-        "news_sentiment_shift": "7d sentiment minus prior 7d (e.g. > 0.4 = strong positive shift)",
-        "news_article_count":   "article count in current 7d window",
-        # Donchian
-        "dc10_breakout_up":    "close >= prior 10d max * 0.998 (B584 fix)",
-        "dc10_breakout_dn":    "close <= prior 10d min * 1.002 (B584 fix)",
-        "dc20_breakout_up":    "close >= prior 20d max * 0.998 (B584 fix)",
-        "dc20_breakout_dn":    "close <= prior 20d min * 1.002 (B584 fix)",
-        # Day-of-bar
-        "close_above_open":    "today's bullish bar (close > open)",
-        "close_below_open":    "today's bearish bar (close < open)",
-        "above_prev_high":     "close > prior day's high",
-        "below_prev_low":      "close < prior day's low",
+        # Volume (all use rolling 20-bar mean of daily volume as denominator)
+        "vol_above_avg":     "today's volume >= 20-day average volume (ratio >= 1.0); 20-day window includes today",
+        "vol_spike_12x":     "today's volume >= 1.2x the 20-day average volume (B589 owner-tightened for smart-money sleeves)",
+        "vol_spike_15x":     "today's volume >= 1.5x the 20-day average volume",
+        "vol_spike_17x":     "today's volume STRICTLY GREATER THAN 1.7x the 20-day average volume (B586 owner-picked from 1.5x-2x range for 52w breakouts)",
+        "vol_spike_2x":      "today's volume >= 2.0x the 20-day average volume",
+        "vol_spike_3x":      "today's volume >= 3.0x the 20-day average volume",
+        # 52w high/low (lookback 252 trading days, EXCLUDES today's bar per B582 fix)
+        "break_52w_high":    "today's close STRICTLY GREATER THAN the highest HIGH over prior 252 trading days (52 weeks; excludes today; B582 producer fix)",
+        "break_52w_low":     "today's close STRICTLY LESS THAN the lowest LOW over prior 252 trading days (52 weeks; excludes today; B582 producer fix)",
+        "near_52w_high":     "today's close >= 98% of the highest HIGH over prior 252 trading days (i.e. within 2% below the 52-week high)",
+        "near_52w_low":      "today's close <= 102% of the lowest LOW over prior 252 trading days (i.e. within 2% above the 52-week low)",
+        "near_52w_high_95pct": "today's close >= 95% of the highest HIGH over prior 252 trading days (broader 5% tolerance; B589 owner-directed for smart-money sleeve)",
+        "near_52w_low_105pct": "today's close <= 105% of the lowest LOW over prior 252 trading days (broader 5% tolerance; B589 mirror)",
+        "near_52w_high_retest_long":
+            "All 4 must hold (B586 pullback retest detector): (a) prior-252-day-high (excluding most recent 10 bars) was CLOSED through within the last 10 trading days; (b) today's close is within +/-1% of that prior-high reference level; (c) today's volume is BELOW the 20-bar average volume (ratio < 1.0); (d) today's close is GREATER THAN today's open (bullish reversal bar). All 4 simultaneously required.",
+        "near_52w_low_retest_short":
+            "Mirror of near_52w_high_retest_long: (a) prior-252d-low (excluding most recent 10 bars) was CLOSED through within last 10 trading days; (b) today's close is within +/-1% of that level; (c) today's volume < 20d average (ratio < 1.0); (d) today's close LESS THAN today's open (bearish reversal bar). All 4 required.",
+        # Range-position
+        "close_in_top_40pct_of_range":
+            "(today's high - today's close) / (today's high - today's low) <= 0.40 -- close is in the TOP 40% of today's bar range (strong-close bull signal; B589 added)",
+        "close_in_bottom_40pct_of_range":
+            "(today's close - today's low) / (today's high - today's low) <= 0.40 -- close is in the BOTTOM 40% of today's bar range (strong-close bear signal; B589 added)",
+        # Sector strength (20-day trailing return of stock's GICS sector SPDR ETF vs SPY)
+        "sector_outperforming_spy":
+            "the GICS sector SPDR ETF mapped to this stock's sector has a 20-trading-day trailing return STRICTLY GREATER than SPY's 20-trading-day trailing return (B586). Sector map: Information Technology->XLK, Financials->XLF, Energy->XLE, Health Care->XLV, Industrials->XLI, Consumer Discretionary->XLY, Consumer Staples->XLP, Utilities->XLU, Materials->XLB, Real Estate->XLRE, Communication Services->XLC.",
+        "sector_underperforming_spy":
+            "mirror of sector_outperforming_spy: sector SPDR ETF 20-day trailing return STRICTLY LESS than SPY's 20-day trailing return (B587).",
+        # Pivot points (standard pivot formula on PRIOR day's H/L/C; near = within +/-0.30% by default)
+        "near_s1":           "today's close is within +/-0.30% of pivot point S1 (Standard pivot: S1 = 2P - H, where P = (prior_H + prior_L + prior_C)/3)",
+        "near_s2":           "today's close is within +/-0.30% of pivot point S2 (Standard: S2 = P - (prior_H - prior_L))",
+        "near_s3":           "today's close is within +/-0.30% of pivot point S3 (Standard: S3 = prior_L - 2*(prior_H - P))",
+        "near_r1":           "today's close is within +/-0.30% of pivot point R1 (Standard: R1 = 2P - prior_L)",
+        "near_r2":           "today's close is within +/-0.30% of pivot point R2 (Standard: R2 = P + (prior_H - prior_L))",
+        "near_pivot":        "today's close is within +/-0.30% of the standard pivot point P (P = (prior_H + prior_L + prior_C)/3)",
+        "near_s1_wide":      "today's close within +/-1.50% of pivot S1 (B574 doji-only wider tolerance variant)",
+        "near_s2_wide":      "today's close within +/-1.50% of pivot S2 (B574 doji-only)",
+        "near_r1_wide":      "today's close within +/-1.50% of pivot R1 (B574 doji-only)",
+        "near_r2_wide":      "today's close within +/-1.50% of pivot R2 (B574 doji-only)",
+        # Fibonacci (retracement levels on 50-bar swing high/low; near = within +/-0.50%)
+        "at_key_fib":        "today's close is within +/-0.50% of one of: fib 38.2% / fib 50.0% / fib 61.8% (retracement from prior 50-bar swing-high to swing-low)",
+        "at_key_fib_wide":   "today's close within +/-1.50% of key fib (B574 doji-only wider tolerance)",
+        # Candle patterns (all use today's bar OHLC + 1-3 prior bars depending on pattern)
+        "doji":              "today's |close - open| < 5% of today's (high - low) range -- indecision candle (buyers and sellers equally matched)",
+        "hammer":             "today's lower-wick (open/close-low) > 2x today's body AND upper-wick (high-open/close) < today's body -- bullish reversal candle",
+        "shooting_star":     "today's upper-wick > 2x today's body AND lower-wick < today's body -- bearish reversal candle",
+        "bullish_engulfing": "today's open <= yesterday's close AND today's close >= yesterday's open AND today is bullish AND yesterday was bearish -- bullish reversal 2-bar pattern",
+        "bearish_engulfing": "today's open >= yesterday's close AND today's close <= yesterday's open AND today is bearish AND yesterday was bullish -- bearish reversal 2-bar pattern",
+        "morning_star":      "3-bar bullish reversal: bar -2 strongly bearish, bar -1 small-body (any direction), today strongly bullish closing in upper half of bar -2's body",
+        "evening_star":      "3-bar bearish reversal: bar -2 strongly bullish, bar -1 small-body, today strongly bearish closing in lower half of bar -2's body",
+        "three_white_soldiers": "3 consecutive bullish bars (close > open each), each closing in upper 25% of its range AND each above the prior bar's close",
+        "three_black_crows": "3 consecutive bearish bars (close < open each), each closing in lower 25% of its range AND each below the prior bar's close",
+        # Trend / regime (EMAs computed on close series; SMAs same)
+        "price_above_ema_200":   "today's close STRICTLY GREATER THAN the 200-day exponential moving average of close (long-term uptrend gate)",
+        "price_above_sma_50":    "today's close STRICTLY GREATER THAN the 50-day simple moving average of close",
+        "ema_50_200_bullish":    "today's 50-day EMA STRICTLY GREATER THAN today's 200-day EMA (golden-cross regime - bullish trend backdrop)",
+        "ema_50_200_golden_cross": "ONE-BAR EVENT: today's 50d EMA > today's 200d EMA AND yesterday's 50d EMA <= yesterday's 200d EMA",
+        "ema_50_200_death_cross": "ONE-BAR EVENT: today's 50d EMA < today's 200d EMA AND yesterday's 50d EMA >= yesterday's 200d EMA",
+        # Oscillator / momentum
+        "rsi_14":              "14-day Relative Strength Index of close (Wilder smoothing). Numeric value [0, 100]; check inline strategy code for the specific comparison threshold (e.g. < 30 = oversold, > 70 = overbought)",
+        "rsi_2":               "2-day RSI of close (Connors RSI methodology; faster and more sensitive than 14-day)",
+        "obv_bullish":         "On-Balance Volume in uptrend: today's OBV > OBV from 5 bars ago (cumulative volume on up-days minus volume on down-days)",
+        # SMC (signals from smartmoneyconcepts library; computed on swing_length=20 by default)
+        "smc_fvg_bullish_active":  "Bullish Fair Value Gap (3-bar imbalance where bar -2's high < bar 0's low) is active and unfilled within recent window",
+        "smc_fvg_bearish_active":  "Bearish Fair Value Gap (3-bar imbalance where bar -2's low > bar 0's high) is active and unfilled within recent window",
+        "smc_choch_bullish":   "Change of Character bullish: market structure shifted from down-trend to up-trend (last lower-high failed, broke a recent swing-high)",
+        "smc_choch_bearish":   "Change of Character bearish: market structure shifted from up-trend to down-trend",
+        "smc_bos_bullish":     "Break of Structure bullish: price broke above the most recent confirmed swing-high (trend continuation)",
+        "smc_bos_bearish":     "Break of Structure bearish: price broke below the most recent confirmed swing-low",
+        "smc_liquidity_swept_up":   "Price spiked above a documented liquidity zone (equal-highs cluster) then closed back below -- retail stops above were taken out",
+        "smc_liquidity_swept_dn":   "Price spiked below a documented liquidity zone (equal-lows cluster) then closed back above -- retail stops below were taken out",
+        "smc_equal_highs_swept":    "Equal-highs (cluster of 2+ swing-highs at same level) were taken out by today's high (specific liquidity-grab variant)",
+        "smc_equal_lows_swept":     "Equal-lows (cluster of 2+ swing-lows at same level) were taken out by today's low",
+        "smc_ote_long_zone":   "Price is in the Optimal Trade Entry long zone: 62%-79% Fib retracement of the most recent bullish leg",
+        "smc_ote_short_zone":  "Price is in the OTE short zone: 62%-79% Fib retracement of the most recent bearish leg",
+        "smc_breaker_block_bullish":  "Active bullish breaker block (failed bearish order block that price reversed back through; now acts as support)",
+        "smc_breaker_block_bearish":  "Active bearish breaker block (failed bullish order block; now acts as resistance)",
+        # B581 ICT producers (custom PO3 + week-open-gap)
+        "po3_mmbm_setup":      "PO3 Market Maker Buy Model: (a) last 5 bars in tight range (range/mean_price <= 5%) = accumulation; (b) today's LOW < accumulation range low (sweep down = manipulation); (c) today's close > accumulation range low (closed back inside); (d) today's close > today's open (bullish bar). All 4 required.",
+        "po3_mmsm_setup":      "PO3 Market Maker Sell Model: mirror of mmbm_setup -- accumulation + sweep UP + reversal back below range + bearish bar.",
+        "week_open_gap_up_15pct":   "Today is first trading day of the week (Monday or post-weekend trading day) AND today's open >= 1.5% above prior Friday's close (daily-bar proxy for ICT 'Sunday gap up')",
+        "week_open_gap_down_15pct": "Today is first trading day of the week AND today's open <= -1.5% below prior Friday's close",
+        # News sentiment (Polygon news feed + Loughran-McDonald lexicon fallback)
+        "news_sentiment_shift":     "(current 7d mean sentiment score) MINUS (prior 7d mean sentiment score). Range [-2, +2]. Positive value = sentiment IMPROVING. Strategies check thresholds like > 0.4 (strong positive shift) or < -0.4 (strong negative shift) inline.",
+        "news_article_count":       "number of articles published about this ticker in the current 7-day window (coverage gate)",
+        "news_sentiment_5d":        "5-day recency-weighted mean sentiment score (weight = 1 - age/5; more-recent articles weighted heavier)",
+        "news_volume_zscore_5d":    "5-day article-count vs trailing 25-day baseline article-count, expressed as a z-score (Cohen-Frazzini-Malloy news-attention normalisation)",
+        # Donchian (canonical N-bar channel; B584 fix excludes today from rolling window)
+        "dc10_breakout_up":    "today's close >= 99.8% of the highest HIGH over the PRIOR 10 trading days (B584 fix excludes today). 0.2% slack permits 'almost a breakout'.",
+        "dc10_breakout_dn":    "today's close <= 100.2% of the lowest LOW over the PRIOR 10 trading days (B584 fix). 0.2% slack permits 'almost a breakdown'.",
+        "dc20_breakout_up":    "today's close >= 99.8% of the highest HIGH over the PRIOR 20 trading days (B584 fix)",
+        "dc20_breakout_dn":    "today's close <= 100.2% of the lowest LOW over the PRIOR 20 trading days (B584 fix)",
+        # Day-of-bar primitives
+        "close_above_open":    "today's close STRICTLY GREATER THAN today's open (bullish bar)",
+        "close_below_open":    "today's close STRICTLY LESS THAN today's open (bearish bar)",
+        "above_prev_high":     "today's close STRICTLY GREATER THAN the prior trading day's high",
+        "below_prev_low":      "today's close STRICTLY LESS THAN the prior trading day's low",
+        "smart_money_buy":     "ONE-OR-MORE of these signals True: insider_cluster_active (multiple insiders bought recently), institutional_strong_buy, institutional_buy, cfo_buy (CFO insider buy), large_dollar_buy (single insider transaction > $1M). Composite OR. (helper: _has_smart_money_buy)",
+        "smart_money_sell":    "ONE-OR-MORE of these signals True: insider_cluster_sell (multiple insiders sold recently), institutional_strong_sell, institutional_sell, concentrated_sell (single insider sold > 50% of holdings), cluster_sell. Composite OR. (helper: _has_smart_money_sell B588)",
     }
     return plain.get(signal, signal)
 
@@ -646,11 +667,14 @@ def main() -> int:
         sigs = ", ".join(r["signals_used"]) if r["signals_used"] else "(see source)"
         if len(sigs) > 120:
             sigs = sigs[:117] + "..."
-        # B586: plain-language trigger
+        # B586 + B589: plain-language trigger. B589 owner directive
+        # ("comprehensive information for a new reader") raised truncation
+        # cap so detailed signal definitions are not cut.
         trigger_plain = render_trigger_plain(r["signals_used"], r["fires_expr"])
-        if len(trigger_plain) > 250:
-            trigger_plain = trigger_plain[:247] + "..."
-        # Escape pipes in plain trigger
+        # No truncation - owner wants comprehensive (B589). Long rows wrap
+        # naturally in markdown table renderers; the GitHub Pages dashboard
+        # already handles wide cells.
+        # Escape pipes in plain trigger so they don't break the table
         trigger_plain = trigger_plain.replace("|", "\\|")
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['s4_reviewed']} | {r['producer_bug_fix']} | "

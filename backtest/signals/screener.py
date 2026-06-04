@@ -833,21 +833,27 @@ def strat_volume_spike_breakout(s):
 
 
 def strat_52w_high_breakout(s):
-    """Batch 586 (2026-06-04 owner-directed walk):
-      - vol_spike_2x -> vol_spike_17x (owner picked >1.7x from 1.5-2x range)
-      - ADDED sector_outperforming_spy confluence filter (owner spec)
+    """Batch 589 (2026-06-04 owner directive '52w_high_breakout previous
+    strategies - add close above open and close within 40% of day high'):
+      - B586: vol_spike_2x -> vol_spike_17x; added sector_outperforming_spy
+      - B589: added close_above_open + close_in_top_40pct_of_range
     Producer signals: break_52w_high (B582 fix), vol_spike_17x (B586),
-    sector_outperforming_spy (B586 sector_strength.py).
+    sector_outperforming_spy (B586), close_above_open (existing),
+    close_in_top_40pct_of_range (B589).
     """
     fires = (s.get("break_52w_high")
              and s.get("vol_spike_17x")
-             and s.get("sector_outperforming_spy"))
+             and s.get("sector_outperforming_spy")
+             and s.get("close_above_open")
+             and s.get("close_in_top_40pct_of_range"))
     return _strat(fires, "long", "breakout",
-        ["break_52w_high", "vol_spike_17x", "sector_outperforming_spy"],
+        ["break_52w_high", "vol_spike_17x", "sector_outperforming_spy",
+         "close_above_open", "close_in_top_40pct_of_range"],
         [f"Price broke 52-week high at ${s.get('year_high',0):.2f}",
-         "Most studied momentum signal  -  new highs attract buyers (George-Hwang 2004 JF)",
+         "George-Hwang 2004 JF - new highs attract buyers",
          "Volume >1.7x confirms institutional conviction",
-         "Sector ETF outperforming SPY 20d  -  trade in strong sectors only"])
+         "Sector ETF outperforming SPY 20d - trade strong sectors only",
+         "Bullish bar with close in top 40% of range - strong-close signal (B589)"])
 
 
 def strat_52w_high_breakout_pullback_long(s):
@@ -1258,17 +1264,19 @@ def strat_donchian_breakdown_short(s):
 
 
 def strat_52w_low_breakdown(s):
-    """Batch 587 (2026-06-04 owner directive 'apply same as 52w_high_breakout
-    inversed'). Mirror of strat_52w_high_breakout post-B586 walk:
-      - vol_spike_2x -> vol_spike_17x (owner picked >1.7x from 1.5-2 range)
-      - ADDED sector_underperforming_spy confluence filter
-        (sector ETF underperforming SPY 20d = weak sector)
+    """Batch 589 (2026-06-04 owner directive 'add inverse for mirror'
+    on B589 52w_high_breakout changes):
+      - B587: vol_spike_2x -> vol_spike_17x; sector_underperforming_spy
+      - B589: added close_below_open + close_in_bottom_40pct_of_range
     Producer signals: break_52w_low (B582 fix), vol_spike_17x (B586),
-    sector_underperforming_spy (B587 sector_strength.py extension).
+    sector_underperforming_spy (B587), close_below_open (existing),
+    close_in_bottom_40pct_of_range (B589).
     """
     fires = (s.get("break_52w_low")
              and s.get("vol_spike_17x")
-             and s.get("sector_underperforming_spy"))
+             and s.get("sector_underperforming_spy")
+             and s.get("close_below_open")
+             and s.get("close_in_bottom_40pct_of_range"))
     return _strat(fires, "short", "breakout",
         ["break_52w_low", "vol_spike_17x", "sector_underperforming_spy"],
         [f"Price broke 52-week low  -  serious capitulation signal",
@@ -3810,49 +3818,44 @@ def strat_rsi_oversold_with_smart_money_long(s):
 
 
 def strat_52w_high_breakout_with_smart_money_long(s):
-    """52-week high breakout + smart-money buy. Reduces false-breakout
-    risk by requiring institutional/insider confirmation on the breakout day.
-    Cohen-Frazzini-Malloy 2008 RFS (institutional persistence) + George-Hwang
-    2004 JF (52w momentum) combined; literature ~30-50% false-breakout
-    reduction."""
+    """Batch 589 (2026-06-04 owner directive: "vol_above_avg = >=1.2x
+    make it. near_52w_high - make it 95% of prev 52 week high"):
+      - vol_above_avg (>=1.0) -> vol_spike_12x (>=1.2)
+      - near_52w_high (98pct) -> near_52w_high_95pct (95pct of prior 52w high)
+    Cohen-Frazzini-Malloy 2008 RFS + George-Hwang 2004 JF confluence."""
     base_fires = (
-        s.get("near_52w_high", False)
+        s.get("near_52w_high_95pct", False)
         and s.get("close_above_open", True)
-        and s.get("vol_above_avg", False)
+        and s.get("vol_spike_12x", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["near_52w_high", "close_above_open", "vol_above_avg",
+        ["near_52w_high_95pct", "close_above_open", "vol_spike_12x",
          "smart_money_buy"],
-        ["Near 52w high", "Volume above average",
-         "Smart-money buy confirmation"])
+        ["Close >= 95pct of prior 252d high (broader window per B589)",
+         "Volume >= 1.2x 20d avg (B589 tightened from 1.0x)",
+         "Smart-money buy confirmation (insider cluster / institutional / CFO)"])
 
 
 def strat_52w_low_breakdown_with_smart_money_short(s):
-    """Batch 588 (2026-06-04 owner directive '+ mirror' on
-    52w_high_breakout_with_smart_money_long). Inverse per
-    feedback_long_short_inverse_audit.
-
-    52-week low breakdown + smart-money sell: stock approaching/breaking
-    its 52-week low with institutional distribution + bearish bar +
-    above-avg volume = high-conviction short setup. Reduces false-
-    breakdown risk by requiring smart-money sell-side confirmation.
-
-    Mirror logic: Cohen-Frazzini-Malloy 2008 RFS institutional
-    persistence (works on both directions); 52w-low downside continuation
-    well-documented (Jegadeesh-Titman 1993 momentum, reverse leg).
-    """
+    """Batch 589 (2026-06-04 mirror of B589 high+smart_money changes):
+      - B588: NEW strategy wired (was missing inverse)
+      - B589: vol_above_avg -> vol_spike_12x; near_52w_low (102pct) ->
+        near_52w_low_105pct
+    Mirror of strat_52w_high_breakout_with_smart_money_long.
+    Cohen-Frazzini-Malloy 2008 RFS institutional persistence applies
+    bidirectionally."""
     base_fires = (
-        s.get("near_52w_low", False)
+        s.get("near_52w_low_105pct", False)
         and s.get("close_below_open", True)
-        and s.get("vol_above_avg", False)
+        and s.get("vol_spike_12x", False)
     )
     fires = base_fires and _has_smart_money_sell(s)
     return _strat(fires, "short", "smart_money_sleeve",
-        ["near_52w_low", "close_below_open", "vol_above_avg",
+        ["near_52w_low_105pct", "close_below_open", "vol_spike_12x",
          "smart_money_sell"],
-        ["Near 52w low (within 102% of prior 252d low)",
-         "Volume above average + bearish bar",
+        ["Close <= 105pct of prior 252d low (broader window per B589)",
+         "Volume >= 1.2x 20d avg (B589 tightened from 1.0x) + bearish bar",
          "Smart-money sell confirmation (insider/institutional distribution)"])
 
 
