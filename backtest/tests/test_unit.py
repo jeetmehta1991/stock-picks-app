@@ -11057,7 +11057,9 @@ def test_batch271_short_regime_affinity_expanded_to_neutral():
     expanded = [
         "hull_rsi_short", "rsi_overbought_short", "bollinger_upper_short",
         "stochrsi_overbought_short", "ichimoku_cloud_breakdown",
-        "supertrend_macd_short", "donchian_breakdown_short",
+        "supertrend_macd_short",
+        # Batch 591 deleted donchian_breakdown_short - regime check
+        # still validates remaining names in this expansion list
         "camarilla_rsi_obv_short", "cpr_narrow_momentum_short",
         "52w_low_breakdown", "prev_day_low_breakdown",
         "po3_bearish", "po3_htf_aligned_short", "htf_aligned_breakout_short",

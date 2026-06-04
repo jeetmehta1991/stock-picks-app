@@ -986,6 +986,18 @@ def compute_donchian(df: pd.DataFrame) -> dict:
         # upper channel). Symmetric definition to the breakout flags;
         # owner-directed B584 consistency fix.
         result[f"dc{period}_new_high"]     = today_high > upper_prior
+    # B591 (2026-06-04 owner directive on donchian_10_breakout Stage 4
+    # walk): 1% tolerance variants for dc10 only. LOCAL signals -
+    # consumed ONLY by strat_donchian_10_breakout (per owner B591
+    # answer "signals consumed by donchian_10_breakout alone"). Other
+    # 5 consumers of dc10_breakout_up/dn keep the 0.2% tolerance.
+    if len(df) >= 12:
+        prior = df.iloc[:-1]
+        upper_prior_10 = _safe_float(prior["high"].tail(10).max())
+        lower_prior_10 = _safe_float(prior["low"].tail(10).min())
+        close = _safe_float(df["close"].iloc[-1])
+        result["dc10_breakout_up_1pct"] = close >= upper_prior_10 * 0.99
+        result["dc10_breakout_dn_1pct"] = close <= lower_prior_10 * 1.01
     return result
 
 
