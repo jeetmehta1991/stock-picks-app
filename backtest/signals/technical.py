@@ -998,6 +998,22 @@ def compute_donchian(df: pd.DataFrame) -> dict:
         close = _safe_float(df["close"].iloc[-1])
         result["dc10_breakout_up_1pct"] = close >= upper_prior_10 * 0.99
         result["dc10_breakout_dn_1pct"] = close <= lower_prior_10 * 1.01
+        # B592 (2026-06-05 owner directive answer (i) "Strong-breakout
+        # requirement" - B591 deferred (e) for breakout-entry): close
+        # must clear prior_high by at least 0.5 * ATR(14) (long) or
+        # break prior_low by at least 0.5 * ATR(14) (short) to count
+        # as a real breakout (filters trivial closes-just-above-level).
+        # LOCAL signals - consumed by strat_donchian_10_breakout alone.
+        try:
+            atr14 = float(_atr_series(df, period=14).iloc[-1])
+        except Exception:
+            atr14 = 0.0
+        if atr14 > 0:
+            result["dc10_strong_breakout_up"] = close >= upper_prior_10 + 0.5 * atr14
+            result["dc10_strong_breakout_dn"] = close <= lower_prior_10 - 0.5 * atr14
+        else:
+            result["dc10_strong_breakout_up"] = False
+            result["dc10_strong_breakout_dn"] = False
     return result
 
 

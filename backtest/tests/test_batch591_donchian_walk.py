@@ -77,16 +77,30 @@ def test_batch591_dc10_breakout_up_1pct_blocks_far_close():
     assert out["dc10_breakout_up_1pct"] == False
 
 
-def test_batch591_donchian_breakdown_short_deleted():
-    """Pin (2): donchian_breakdown_short removed from registry."""
-    from backtest.signals.screener import ALL_STRATEGIES
-    assert "donchian_breakdown_short" not in ALL_STRATEGIES
+def test_batch591_donchian_breakdown_short_restored_in_b592():
+    """Pin (2) post-B592: donchian_breakdown_short was deleted in B591
+    then RESTORED in B592 per owner correction 2026-06-05. Both
+    tight-long AND tight-short variants coexist - symmetry achieved
+    by addition, not by deletion."""
+    from backtest.signals.screener import ALL_STRATEGIES, strat_donchian_breakdown_short
+    assert "donchian_breakdown_short" in ALL_STRATEGIES
+    # Original 3-gate logic preserved
+    s = {"dc10_breakout_dn": True, "vol_spike_15x": True,
+         "macd_12_26_9_bullish": False}
+    out = strat_donchian_breakdown_short(s)
+    assert out["fires"] == True
+    assert out["direction"] == "short"
 
 
-def test_batch591_donchian_breakdown_retest_short_deleted():
-    """Pin (3): retest mirror removed too."""
-    from backtest.signals.screener import ALL_STRATEGIES
-    assert "donchian_breakdown_retest_short" not in ALL_STRATEGIES
+def test_batch591_donchian_breakdown_retest_short_restored_in_b592():
+    """Pin (3) post-B592: retest mirror also RESTORED."""
+    from backtest.signals.screener import ALL_STRATEGIES, strat_donchian_breakdown_retest_short
+    assert "donchian_breakdown_retest_short" in ALL_STRATEGIES
+    s = {"support_break_retest": True, "vol_spike_15x": True,
+         "macd_12_26_9_bullish": False}
+    out = strat_donchian_breakdown_retest_short(s)
+    assert out["fires"] == True
+    assert out["direction"] == "short"
 
 
 def test_batch591_donchian_breakout_long_registered():
@@ -120,13 +134,14 @@ def test_batch591_donchian_breakout_retest_long_registered():
     assert strat_donchian_breakout_retest_long(s_no_vol)["fires"] == False
 
 
-def test_batch591_donchian_10_breakout_long_requires_5_gates():
-    """Pin (6): LONG side needs dc10_breakout_up_1pct + vol_above_avg +
-    macd_bullish + close_above_open + close_in_top_40pct_of_range."""
+def test_batch591_donchian_10_breakout_long_requires_6_gates():
+    """Pin (6): LONG side needs ALL 6 gates post-B592 (5 from B591 +
+    dc10_strong_breakout_up from B592)."""
     from backtest.signals.screener import strat_donchian_10_breakout
     s_all = {"dc10_breakout_up_1pct": True, "vol_above_avg": True,
              "macd_12_26_9_bullish": True, "close_above_open": True,
-             "close_in_top_40pct_of_range": True}
+             "close_in_top_40pct_of_range": True,
+             "dc10_strong_breakout_up": True}
     out = strat_donchian_10_breakout(s_all)
     assert out["fires"] == True
     assert out["direction"] == "long"
@@ -140,19 +155,28 @@ def test_batch591_donchian_10_breakout_long_requires_5_gates():
     # Missing close_above_open -> no fire
     s_no_co = dict(s_all); s_no_co["close_above_open"] = False
     assert strat_donchian_10_breakout(s_no_co)["fires"] == False
+    # B592: missing strong-breakout gate -> no fire (trivial breakout)
+    s_no_strong = dict(s_all); s_no_strong["dc10_strong_breakout_up"] = False
+    assert strat_donchian_10_breakout(s_no_strong)["fires"] == False, (
+        "B592 strong-breakout gate should block fire when missing"
+    )
 
 
-def test_batch591_donchian_10_breakout_short_requires_5_gates():
-    """Pin (7): SHORT side mirror gates."""
+def test_batch591_donchian_10_breakout_short_requires_6_gates():
+    """Pin (7): SHORT side mirror gates (6 post-B592)."""
     from backtest.signals.screener import strat_donchian_10_breakout
     s_all = {"dc10_breakout_dn_1pct": True, "vol_above_avg": True,
              "macd_12_26_9_bullish": False, "close_below_open": True,
-             "close_in_bottom_40pct_of_range": True}
+             "close_in_bottom_40pct_of_range": True,
+             "dc10_strong_breakout_dn": True}
     out = strat_donchian_10_breakout(s_all)
     assert out["fires"] == True
     assert out["direction"] == "short"
     s_no_bot = dict(s_all); s_no_bot["close_in_bottom_40pct_of_range"] = False
     assert strat_donchian_10_breakout(s_no_bot)["fires"] == False
+    # B592: missing strong-breakdown gate -> no fire
+    s_no_strong = dict(s_all); s_no_strong["dc10_strong_breakout_dn"] = False
+    assert strat_donchian_10_breakout(s_no_strong)["fires"] == False
 
 
 def test_batch591_donchian_10_breakout_retest_requires_5_gates():
@@ -169,9 +193,10 @@ def test_batch591_donchian_10_breakout_retest_requires_5_gates():
     assert strat_donchian_10_breakout_retest(s_no_top)["fires"] == False
 
 
-def test_batch591_all_strategies_count_preserved():
-    """Pin (9): -2 +2 swap keeps count at 216."""
+def test_batch591_all_strategies_count_after_b592_restoration():
+    """Pin (9) post-B592: B591 was -2 +2 (216 -> 216); B592 restored the
+    2 deletions per owner correction -> +2 net (216 -> 218)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 216, (
-        f"Expected 216 after B591 -2 +2 swap; got {len(ALL_STRATEGIES)}"
+    assert len(ALL_STRATEGIES) == 218, (
+        f"Expected 218 after B592 restoration; got {len(ALL_STRATEGIES)}"
     )

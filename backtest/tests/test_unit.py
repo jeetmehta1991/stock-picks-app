@@ -10249,8 +10249,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 581 Layer 2D ICT second batch: 207 -> 213 (judas_swing_long/_short + mmbm_long + mmsm_short + week_opening_gap_fill_down/_up per Owner inline-spec)
     #   Batch 586 52w pullback variants: 213 -> 215 (52w_high_breakout_pullback_long + 52w_low_breakdown_pullback_short per owner walk)
     #   Batch 588 52w_low_breakdown_with_smart_money_short: 215 -> 216 (mirror per owner '+ mirror' directive)
-    assert len(ALL_STRATEGIES) == 216, (
-        f"F-002 drift: ALL_STRATEGIES expected 216 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 591 donchian tight-long pair: 216 -> 218 (donchian_breakout_long + donchian_breakout_retest_long; +0 net at B591 due to deletion of donchian_breakdown_short + retest_short; restored in B592 per owner correction so net +2)
+    #   Batch 592 (2026-06-05): owner correction restored B591-deleted donchian_breakdown_short + donchian_breakdown_retest_short -> 218 (4 tight + retest variants coexist).
+    assert len(ALL_STRATEGIES) == 218, (
+        f"F-002 drift: ALL_STRATEGIES expected 218 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10265,10 +10267,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 215, (
-        f"F-002 drift: active strategy count expected 215 (Batch 588 +1 "
-        f"52w_low_breakdown_with_smart_money_short; minus 1 disabled); "
-        f"got {active}."
+    assert active == 217, (
+        f"F-002 drift: active strategy count expected 217 (Batch 592 "
+        f"218 registered minus 1 disabled); got {active}."
     )
 
     # F-004 exit method count
@@ -11057,9 +11058,7 @@ def test_batch271_short_regime_affinity_expanded_to_neutral():
     expanded = [
         "hull_rsi_short", "rsi_overbought_short", "bollinger_upper_short",
         "stochrsi_overbought_short", "ichimoku_cloud_breakdown",
-        "supertrend_macd_short",
-        # Batch 591 deleted donchian_breakdown_short - regime check
-        # still validates remaining names in this expansion list
+        "supertrend_macd_short", "donchian_breakdown_short",
         "camarilla_rsi_obv_short", "cpr_narrow_momentum_short",
         "52w_low_breakdown", "prev_day_low_breakdown",
         "po3_bearish", "po3_htf_aligned_short", "htf_aligned_breakout_short",

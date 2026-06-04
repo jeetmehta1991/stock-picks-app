@@ -921,22 +921,29 @@ def strat_donchian_10_breakout(s):
       (c) added close_above_open (long) / close_below_open (short)
       (d) added close_in_top_40pct_of_range (long) /
           close_in_bottom_40pct_of_range (short)
-      (e) SKIPPED - B590 false-breakout filters don't translate
-          to breakout-entry; flagged for clarification.
+
+    Batch 592 (2026-06-05 owner answer (i) "Strong-breakout requirement"
+    closing the B591 (e) deferred item): added dc10_strong_breakout_up
+    (long) / dc10_strong_breakout_dn (short) gate. Today's close must
+    clear prior 10-day high by at least 0.5 * ATR(14) (long) or break
+    prior 10-day low by at least 0.5 * ATR(14) (short) - filters
+    trivial closes-just-above-level pseudo-breakouts.
     """
     fl = (s.get("dc10_breakout_up_1pct") and s.get("vol_above_avg")
           and s.get("macd_12_26_9_bullish")
           and s.get("close_above_open")
-          and s.get("close_in_top_40pct_of_range"))
+          and s.get("close_in_top_40pct_of_range")
+          and s.get("dc10_strong_breakout_up"))
     fs = (s.get("dc10_breakout_dn_1pct") and s.get("vol_above_avg")
           and not s.get("macd_12_26_9_bullish")
           and s.get("close_below_open")
-          and s.get("close_in_bottom_40pct_of_range"))
+          and s.get("close_in_bottom_40pct_of_range")
+          and s.get("dc10_strong_breakout_dn"))
     return _strat3(fl, fs, "breakout",
-        ["dc10_breakout_up_1pct","vol_above_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
-        ["dc10_breakout_dn_1pct","vol_above_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
-        ["Price broke 10-day Donchian high (1pct tolerance)","Volume above 20d avg confirms","MACD positive","Bullish bar (close above open)","Strong close (top 40pct of range)"],
-        ["Price broke 10-day Donchian low (1pct tolerance)","Volume above 20d avg confirms","MACD negative","Bearish bar (close below open)","Strong close (bottom 40pct of range)"])
+        ["dc10_breakout_up_1pct","vol_above_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range","dc10_strong_breakout_up"],
+        ["dc10_breakout_dn_1pct","vol_above_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range","dc10_strong_breakout_dn"],
+        ["Price broke 10-day Donchian high (1pct tolerance)","Volume above 20d avg confirms","MACD positive","Bullish bar (close above open)","Strong close (top 40pct of range)","Strong breakout (close >= prior_high + 0.5*ATR14)"],
+        ["Price broke 10-day Donchian low (1pct tolerance)","Volume above 20d avg confirms","MACD negative","Bearish bar (close below open)","Strong close (bottom 40pct of range)","Strong breakdown (close <= prior_low - 0.5*ATR14)"])
 
 
 # BUG-111 retest variants (Batch 329 2026-05-25 owner-approved option b):
@@ -983,11 +990,27 @@ def strat_donchian_10_breakout_retest(s):
          "MACD negative","Bearish bar (close below open)","Strong close (bottom 40pct of range)"])
 
 
-# Batch 591 (2026-06-04 owner directive Stage 4 walk):
-#   strat_donchian_breakdown_retest_short DELETED (eliminated together with
-#   strat_donchian_breakdown_short to restore symmetry; tight-short variant
-#   replaced by tight-long variant strat_donchian_breakout_long /
-#   strat_donchian_breakout_retest_long below).
+# Batch 592 (2026-06-05 owner correction): strat_donchian_breakdown_retest_short
+# RESTORED. B591 deletion was a misinterpretation - owner intent was to
+# RESTORE long/short symmetry by ADDING the missing tight-long mirror
+# (strat_donchian_breakout_long), NOT to delete the tight-short. Both
+# tight-long AND tight-short variants now coexist post-B592.
+def strat_donchian_breakdown_retest_short(s):
+    """BUG-111 (Batch 329): retest variant of donchian_breakdown_short.
+    Short on the post-break retest of broken support.
+
+    Batch 592 (2026-06-05 owner correction): RESTORED with original
+    3-gate logic. Any further tweaks pending explicit per-strategy
+    Stage 4 walk per feedback_no_rushing_per_strategy_tweak.
+    """
+    fires = (s.get("support_break_retest")
+             and s.get("vol_spike_15x")
+             and not s.get("macd_12_26_9_bullish"))
+    return _strat(fires, "short", "breakout",
+        ["support_break_retest","vol_spike_15x","macd_bearish"],
+        ["Post-break retest of broken Donchian support",
+         "Volume 1.5x confirms institutional supply",
+         "MACD bearish - trend agrees"])
 
 
 def strat_volume_spike_breakout_retest(s):
@@ -1278,14 +1301,25 @@ def strat_stochrsi_overbought_short(s):
 
 # --- Breakdown shorts (3  -  no long equivalent) ---
 
-# Batch 591 (2026-06-04 owner directive Stage 4 walk):
-#   strat_donchian_breakdown_short DELETED. Rationale: it duplicated the
-#   short side of bidirectional strat_donchian_10_breakout at a tighter
-#   vol gate (1.5x vs 1.0x), creating long/short asymmetry (long had
-#   only loose variant; short had both loose AND tight). Owner directive
-#   "eliminate with strat_donchian_breakout_long" - replace the
-#   tight-short variant with a symmetric tight-long variant (added below
-#   in Class 7 NEW Strategy section).
+# Batch 592 (2026-06-05 owner correction): strat_donchian_breakdown_short
+# RESTORED. B591 deletion was a misinterpretation - owner intent was
+# symmetry via ADDING the missing tight-long mirror (donchian_breakout_long),
+# NOT replacing the tight-short. Both tight variants now coexist post-B592.
+def strat_donchian_breakdown_short(s):
+    """Tight short Donchian-10 breakdown - 1.5x vol gate + MACD bearish.
+
+    Batch 592 (2026-06-05 owner correction): RESTORED with original
+    3-gate logic. Any further tweaks pending explicit per-strategy
+    Stage 4 walk per feedback_no_rushing_per_strategy_tweak.
+    """
+    fires = (s.get("dc10_breakout_dn") and
+             s.get("vol_spike_15x") and
+             not s.get("macd_12_26_9_bullish"))
+    return _strat(fires, "short", "breakout",
+        ["dc10_breakout_dn", "vol_spike_1.5x", "macd_bearish"],
+        ["Price broke 10-day Donchian low  -  downside breakout",
+         "Volume 1.5x confirms institutional selling pressure",
+         "MACD negative  -  momentum confirms the breakdown"])
 
 
 def strat_donchian_breakout_long(s):
@@ -4207,11 +4241,12 @@ ALL_STRATEGIES = {
     "macd_crossover_short":         strat_macd_crossover_short,
     "hull_rsi_short":               strat_hull_rsi_short,
     "stochrsi_overbought_short":    strat_stochrsi_overbought_short,
-    # Dedicated shorts  -  Breakdown (2) - Batch 591 deleted donchian_breakdown_short
+    # Dedicated shorts  -  Breakdown (3) - Batch 592 restored donchian_breakdown_short
+    "donchian_breakdown_short":     strat_donchian_breakdown_short,
     "52w_low_breakdown":            strat_52w_low_breakdown,
     "prev_day_low_breakdown":       strat_prev_day_low_breakdown,
-    # Batch 591 (2026-06-04) Class 7 NEW tight-long mirrors (replace deleted
-    # donchian_breakdown_short + donchian_breakdown_retest_short for symmetry):
+    # Batch 591 (2026-06-04) added tight-long mirrors to restore symmetry;
+    # Batch 592 (2026-06-05) owner correction kept both tight pairs coexisting:
     "donchian_breakout_long":           strat_donchian_breakout_long,
     "donchian_breakout_retest_long":    strat_donchian_breakout_retest_long,
     # Dedicated shorts  -  Confluence (2)
@@ -4246,8 +4281,8 @@ ALL_STRATEGIES = {
     # on the initial break. Reuses resistance_break_retest / support_break_retest
     # primitive from technical.compute_break_retest_signals.
     "donchian_10_breakout_retest":      strat_donchian_10_breakout_retest,
-    # Batch 591 deleted donchian_breakdown_retest_short (replaced by
-    # donchian_breakout_retest_long registered above for symmetry)
+    # Batch 592 restored donchian_breakdown_retest_short:
+    "donchian_breakdown_retest_short":  strat_donchian_breakdown_retest_short,
     "volume_spike_breakout_retest":     strat_volume_spike_breakout_retest,
     "cup_and_handle_retest_long":       strat_cup_and_handle_retest_long,
     "flag_bull_retest_long":            strat_flag_bull_retest_long,
