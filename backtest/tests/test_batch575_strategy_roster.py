@@ -105,6 +105,35 @@ def test_batch575_doji_rows_show_wide_flags(regen_doc):
     assert "near_r1_wide" in m_short.group(0)
 
 
+def test_batch578_projected_section_present(regen_doc):
+    """B578: STRATEGY_ROSTER.md must include 'Projected Strategies'
+    section sourced from STRATEGY_REGISTER.md Layer 4 per owner
+    directive 2026-06-04."""
+    assert "## Projected Strategies" in regen_doc
+    # All 5 Layer 4 DECs must be listed
+    for dec_id in ("DEC-141", "DEC-142", "DEC-143", "DEC-145", "DEC-176"):
+        assert dec_id in regen_doc, f"Projected section missing {dec_id}"
+    assert "Layer-2D" in regen_doc, "Layer 2D PENDING-FORM placeholder missing"
+    assert "PENDING_OWNER_APPROVAL" in regen_doc
+    # Note about future approval
+    assert "will be approved" in regen_doc.lower() or "post-approval" in regen_doc.lower()
+
+
+def test_batch578_strategy_roster_full_archived():
+    """B578: STRATEGY_ROSTER_FULL.md must be archived (not at repo root)."""
+    repo = Path(__file__).resolve().parents[2]
+    full_at_root = repo / "STRATEGY_ROSTER_FULL.md"
+    assert not full_at_root.exists(), (
+        "STRATEGY_ROSTER_FULL.md should be archived; found at repo root"
+    )
+    # Should exist in archive/
+    archive_dir = repo / "archive" / "2026-06-04-strategy-roster-full-archival"
+    archive_file = archive_dir / "STRATEGY_ROSTER_FULL.md"
+    assert archive_file.exists(), (
+        f"STRATEGY_ROSTER_FULL.md missing from archive at {archive_file}"
+    )
+
+
 def test_batch575_glossary_has_core_signals(regen_doc):
     """Pin (6)."""
     for sig in ["doji", "near_s1_wide", "vol_spike_15x", "news_sentiment_shift",
