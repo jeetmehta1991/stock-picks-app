@@ -182,11 +182,15 @@ def load_regime_affinity() -> dict:
 
 def load_stage_4_status() -> dict:
     """Read approvals.json and build a per-strategy Stage 4 status
-    summary: dict[strategy -> {n_rows, statuses, classes, fired_in_r4}].
-    Empty dict if approvals.json missing.
+    summary: dict[strategy -> {n_rows, statuses, classes, fired_in_r4,
+    s4_reviewed, s4_review_batch, s4_review_outcome}].
 
     B577: also tracks fired_in_r4 boolean - True if strategy has any
     NON-Class-0 row (Class 0 = QUIET_NO_CANDIDATES backfilled in B576).
+    B583: also tracks s4_reviewed flag from approvals.json
+    `s4_reviewed_strategies` top-level dict (per owner directive
+    2026-06-04: "add another column in strategy table which says s4
+    review completed y/n").
     """
     approvals_path = Path("C:/tmp/r4_optimization_candidates/approvals.json")
     if not approvals_path.exists():
@@ -195,6 +199,7 @@ def load_stage_4_status() -> dict:
         data = json.loads(approvals_path.read_text(encoding="utf-8"))
     except Exception:
         return {}
+    s4_reviewed = data.get("s4_reviewed_strategies", {})
     per_strategy = {}
     for r in data.get("approvals", []):
         name = r["strategy"]
@@ -202,6 +207,9 @@ def load_stage_4_status() -> dict:
             per_strategy[name] = {
                 "n_rows": 0, "statuses": [], "classes": [],
                 "fired_in_r4": False,
+                "s4_reviewed": False,
+                "s4_review_batch": "",
+                "s4_review_outcome": "",
             }
         per_strategy[name]["n_rows"] += 1
         per_strategy[name]["statuses"].append(r["status"])
@@ -209,6 +217,12 @@ def load_stage_4_status() -> dict:
         # If the strategy has ANY non-Class-0 row, it fired in R4
         if r["change_class"] != 0:
             per_strategy[name]["fired_in_r4"] = True
+        # B583: S4 reviewed flag from approvals.json top-level dict
+        rv = s4_reviewed.get(name)
+        if rv:
+            per_strategy[name]["s4_reviewed"] = True
+            per_strategy[name]["s4_review_batch"] = rv.get("reviewed_in_batch", "")
+            per_strategy[name]["s4_review_outcome"] = rv.get("review_outcome", "")
     return per_strategy
 
 
@@ -420,6 +434,7 @@ def main() -> int:
         if not s4:
             stage_4_str = "no_approvals_row"
             fired_str = "?"
+            s4_reviewed_str = "N"
         else:
             status_counts = {}
             for st in s4["statuses"]:
@@ -428,8 +443,14 @@ def main() -> int:
             parts = [f"{n} {st}" for st, n in sorted(status_counts.items())]
             stage_4_str = " / ".join(parts) + f" (n_rows={s4['n_rows']})"
             fired_str = "YES" if s4["fired_in_r4"] else "QUIET"
+            # B583: S4 Review column (Y/N + batch tag)
+            if s4.get("s4_reviewed"):
+                s4_reviewed_str = f"Y ({s4.get('s4_review_batch', '')})"
+            else:
+                s4_reviewed_str = "N"
         rows.append({**meta, "status": status, "regime": regime_str,
-                     "stage_4": stage_4_str, "fired_in_r4": fired_str})
+                     "stage_4": stage_4_str, "fired_in_r4": fired_str,
+                     "s4_reviewed": s4_reviewed_str})
 
     out_lines = []
     out_lines.append("# Strategy Roster - Phase 1A-beta cube reference")
@@ -439,9 +460,14 @@ def main() -> int:
     # B577: fired vs quiet counts
     fired_n = sum(1 for r in rows if r.get("fired_in_r4") == "YES")
     quiet_n = sum(1 for r in rows if r.get("fired_in_r4") == "QUIET")
+    # B583: S4 reviewed counts
+    s4_reviewed_n = sum(1 for r in rows if r.get("s4_reviewed", "N").startswith("Y"))
+    s4_pending_n  = len(rows) - s4_reviewed_n
     out_lines.append(f"**Total strategies:** {len(ALL_STRATEGIES)} | **Deprecated:** {len(DEPRECATED_STRATEGIES)} | **Disabled:** {len(STRATEGIES_DISABLED_MISSING_PRODUCER)} | **Active for cube:** {len(ALL_STRATEGIES) - len(DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER)}")
     out_lines.append("")
     out_lines.append(f"**R4 cube fire status:** **{fired_n} FIRED** (have optimizer-extracted Class 1-7 rows) | **{quiet_n} QUIET** (zero R4 fires; Class 0 QUIET_NO_CANDIDATES placeholder per B576 drift backfill)")
+    out_lines.append("")
+    out_lines.append(f"**S4 Review progress (B583):** **{s4_reviewed_n} REVIEWED** ({100.0*s4_reviewed_n/len(rows):.0f}%) | **{s4_pending_n} PENDING** ({100.0*s4_pending_n/len(rows):.0f}%) per `feedback_per_strategy_deep_dive_stage4`. Per-strategy 7-step deep-dive must complete before R5 cube run per `feedback_r5_paused_pending_stage4_completion`.")
     out_lines.append("")
     out_lines.append("**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **206** (205 + 1 special-path). Note: 207 unique strategies in approvals.json = 206 engine + 1 queued (`news_sentiment_shift_short` Class 7 Approved B571 awaiting wiring).")
     out_lines.append("")
@@ -473,8 +499,8 @@ def main() -> int:
     out_lines.append("")
     out_lines.append("## Strategy Table")
     out_lines.append("")
-    out_lines.append("| # | Name | Category | Direction | R4 Fires | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|---|---|")
+    out_lines.append("| # | Name | Category | Direction | R4 Fires | S4 Reviewed | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
@@ -485,8 +511,8 @@ def main() -> int:
             sigs = sigs[:117] + "..."
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
-            f"{r['fired_in_r4']} | `{trigger}` | {sigs} | {r['regime']} | "
-            f"{r['status']} | {r['stage_4']} |"
+            f"{r['fired_in_r4']} | {r['s4_reviewed']} | `{trigger}` | {sigs} | "
+            f"{r['regime']} | {r['status']} | {r['stage_4']} |"
         )
     out_lines.append("")
 
