@@ -1,17 +1,17 @@
 {
-  "strategy_total": 215,
+  "strategy_total": 216,
   "deprecated_count": 0,
   "missing_producer_count": 1,
   "missing_producer_list": [
     "dxy_headwind_multinational_short"
   ],
-  "strategy_active": 214,
+  "strategy_active": 215,
   "exit_method_total": 26,
-  "cube_cells_active": 5564,
+  "cube_cells_active": 5590,
   "strategy_exit_override_count": 16,
   "agent_count_dec_057": 11,
   "regime_count": 4,
   "phase_1a_beta_actual_wall_hours": 10.5,
   "phase_1a_beta_pool_speedup_target": "4-8x",
-  "tests_collected": 3647
+  "tests_collected": 3651
 }

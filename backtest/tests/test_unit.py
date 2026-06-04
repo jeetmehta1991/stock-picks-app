@@ -10248,8 +10248,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 580 Layer 2D ICT first inline-spec: 205 -> 207 (turtle_soup_long + _short per Raschke 1996)
     #   Batch 581 Layer 2D ICT second batch: 207 -> 213 (judas_swing_long/_short + mmbm_long + mmsm_short + week_opening_gap_fill_down/_up per Owner inline-spec)
     #   Batch 586 52w pullback variants: 213 -> 215 (52w_high_breakout_pullback_long + 52w_low_breakdown_pullback_short per owner walk)
-    assert len(ALL_STRATEGIES) == 215, (
-        f"F-002 drift: ALL_STRATEGIES expected 215 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 588 52w_low_breakdown_with_smart_money_short: 215 -> 216 (mirror per owner '+ mirror' directive)
+    assert len(ALL_STRATEGIES) == 216, (
+        f"F-002 drift: ALL_STRATEGIES expected 216 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10264,9 +10265,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 214, (
-        f"F-002 drift: active strategy count expected 214 (Batch 586 +2 "
-        f"52w pullback variants; minus 1 disabled); got {active}."
+    assert active == 215, (
+        f"F-002 drift: active strategy count expected 215 (Batch 588 +1 "
+        f"52w_low_breakdown_with_smart_money_short; minus 1 disabled); "
+        f"got {active}."
     )
 
     # F-004 exit method count

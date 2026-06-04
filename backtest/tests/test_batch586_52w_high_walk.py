@@ -176,10 +176,11 @@ def test_batch586_pullback_producer_signal_emitted():
     )
 
 
-def test_batch586_all_strategies_count_215():
-    """Pin (9)."""
+def test_batch586_all_strategies_count_at_least_215():
+    """Pin (9). B586 brought count to 215; later batches add more
+    (B588 +1 52w_low_breakdown_with_smart_money_short mirror)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 215
+    assert len(ALL_STRATEGIES) >= 215
 
 
 def test_batch586_builder_renders_plain_trigger():
