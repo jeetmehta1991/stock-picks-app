@@ -2150,6 +2150,117 @@ def strat_turtle_soup_short(s):
          "Bearish close below open - rejection of upside breakout"])
 
 
+def strat_judas_swing_long(s):
+    """Batch 581 (2026-06-04): Judas Swing variant per ICT specification.
+    Distinct from `smc_liquidity_sweep_reversal` (which requires CHoCH/BOS)
+    AND from `turtle_soup_long` (which requires close back above prior_low).
+    Judas Swing focuses on FALSE RANGE BREAK + return to RANGE INTERIOR
+    (deeper return to pivot midpoint vs Turtle Soup's just-back-inside).
+
+    Setup: liquidity swept down (range low taken out) AND price returned
+    near the pivot midpoint (deep return to range interior) AND bullish
+    bar. Catches the "manipulation" move in ICT framing - retail stops
+    hunted then institutions reverse deeper into the range.
+
+    Producers (Layer 2A + technical.py):
+      - smc_liquidity_swept_dn
+      - near_pivot (close within 0.3pct of standard pivot point P; range midpoint)
+      - close_above_open (bullish rejection bar)
+    """
+    fires = (
+        s.get("smc_liquidity_swept_dn", False)
+        and s.get("near_pivot", False)
+        and s.get("close_above_open", False)
+    )
+    return _strat(fires, "long", "ict",
+        ["smc_liquidity_swept_dn", "near_pivot", "close_above_open"],
+        ["Judas Swing long (ICT manipulation reversal)",
+         "Downside liquidity swept - retail stops taken below range low",
+         "Price returned deep to pivot midpoint - institutional reversal",
+         "Bullish bar - rejection of stop-hunt extension"])
+
+
+def strat_judas_swing_short(s):
+    """Mirror of strat_judas_swing_long per feedback_long_short_inverse_audit."""
+    fires = (
+        s.get("smc_liquidity_swept_up", False)
+        and s.get("near_pivot", False)
+        and s.get("close_below_open", False)
+    )
+    return _strat(fires, "short", "ict",
+        ["smc_liquidity_swept_up", "near_pivot", "close_below_open"],
+        ["Judas Swing short (ICT manipulation reversal)",
+         "Upside liquidity swept - retail stops taken above range high",
+         "Price returned deep to pivot midpoint - institutional reversal",
+         "Bearish bar - rejection of stop-hunt extension"])
+
+
+def strat_mmbm_long(s):
+    """Batch 581 (2026-06-04): Market Maker Buy Model (MMBM) - bullish
+    Power-of-3 cycle per ICT methodology + owner inline-spec.
+
+    Setup: Accumulation (tight range last N bars) -> Manipulation
+    (sweep below accumulation low) -> Distribution (close back above
+    accumulation low with bullish bar). The institutional-flow pattern:
+    market makers accumulate at the range low, manipulate price down to
+    trigger retail stops + accumulate cheap liquidity, then distribute
+    upward toward the original range high.
+
+    Producer: compute_po3_signals() in backtest/signals/ict_producers.py
+    consumed via po3_mmbm_setup boolean (combined gate: accumulation +
+    sweep-down + close-above-low + bullish-bar).
+    """
+    fires = bool(s.get("po3_mmbm_setup", False))
+    return _strat(fires, "long", "ict",
+        ["po3_mmbm_setup"],
+        ["MMBM Market Maker Buy Model (ICT PO3 bullish cycle)",
+         "Phase 1 ACCUMULATION: tight range over last N bars",
+         "Phase 2 MANIPULATION: sweep below accumulation low (stops taken)",
+         "Phase 3 DISTRIBUTION setup: price reversed back inside range,",
+         "  bullish bar - institutional reversal into upward distribution"])
+
+
+def strat_mmsm_short(s):
+    """Mirror of strat_mmbm_long. Market Maker Sell Model - bearish PO3.
+    Sweep up to take stops above range high, then distribute downward."""
+    fires = bool(s.get("po3_mmsm_setup", False))
+    return _strat(fires, "short", "ict",
+        ["po3_mmsm_setup"],
+        ["MMSM Market Maker Sell Model (ICT PO3 bearish cycle)",
+         "Phase 1 ACCUMULATION: tight range over last N bars",
+         "Phase 2 MANIPULATION: sweep above accumulation high (stops taken)",
+         "Phase 3 DISTRIBUTION setup: price reversed back inside range,",
+         "  bearish bar - institutional reversal into downward distribution"])
+
+
+def strat_week_opening_gap_fill_down(s):
+    """Batch 581 (2026-06-04): Week Opening Gap Fill - SHORT direction.
+    Daily-bar proxy for ICT Sunday gap. When Monday opens with a
+    significant gap UP (Mon_open > Fri_close by >= 1.5pct), price often
+    drifts DOWN to fill the gap. Fade the gap up.
+
+    Producer: compute_week_opening_gap_signals() in ict_producers.py.
+    """
+    fires = bool(s.get("week_open_gap_up_15pct", False))
+    return _strat(fires, "short", "ict",
+        ["is_week_open", "week_open_gap_up_15pct"],
+        ["Week Opening Gap Fill - fade upside gap (ICT Sunday gap proxy)",
+         "Monday opened with gap up >= 1.5pct vs prior Friday close",
+         "Statistical bias: gaps tend to fill on the week-open bar"])
+
+
+def strat_week_opening_gap_fill_up(s):
+    """Mirror of strat_week_opening_gap_fill_down. When Monday opens
+    with a gap DOWN >= 1.5pct, price often drifts UP to fill. Fade
+    the gap down."""
+    fires = bool(s.get("week_open_gap_down_15pct", False))
+    return _strat(fires, "long", "ict",
+        ["is_week_open", "week_open_gap_down_15pct"],
+        ["Week Opening Gap Fill - fade downside gap (ICT Sunday gap proxy)",
+         "Monday opened with gap down >= 1.5pct vs prior Friday close",
+         "Statistical bias: gaps tend to fill on the week-open bar"])
+
+
 def strat_pead_long(s):
     """Batch 209 (PEAD module 2026-05-17 owner-approved research review).
     Post-Earnings Announcement Drift long entry per Bernard-Thomas (1989)
@@ -3774,6 +3885,14 @@ ALL_STRATEGIES = {
     # feedback_long_short_inverse_audit.
     "turtle_soup_long":             strat_turtle_soup_long,
     "turtle_soup_short":            strat_turtle_soup_short,
+    # ICT Layer 2D second batch (B581 owner directive 2026-06-04):
+    # Judas Swing + MMBM/MMSM + Week Opening Gap. 6 new strategies.
+    "judas_swing_long":             strat_judas_swing_long,
+    "judas_swing_short":            strat_judas_swing_short,
+    "mmbm_long":                    strat_mmbm_long,
+    "mmsm_short":                   strat_mmsm_short,
+    "week_opening_gap_fill_down":   strat_week_opening_gap_fill_down,
+    "week_opening_gap_fill_up":     strat_week_opening_gap_fill_up,
     # Pre-FOMC + 8-K event-driven (3 - Batch 224 2026-05-18 owner-approved)
     "pre_fomc_long_sleeve":                strat_pre_fomc_long_sleeve,
     "pre_fomc_quality_momentum_long":      strat_pre_fomc_quality_momentum_long,
@@ -4468,6 +4587,23 @@ def screen_instrument(
             _log_silent_producer_empty("smc_ict.compute_smc_signals")
     except Exception as _e:
         _log_silent_producer_failure("smc_ict", _e)
+    # B581 (2026-06-04): wire ICT custom producers (PO3 + week-open gap)
+    # per owner inline-spec for MMBM/MMSM + Week Opening Gap. Producers
+    # are additive - emit new keys only consumed by the 4 new B581
+    # strategies (mmbm_long, mmsm_short, week_opening_gap_fill_down,
+    # week_opening_gap_fill_up). No existing strategies depend on them.
+    try:
+        from backtest.signals.ict_producers import (
+            compute_po3_signals, compute_week_opening_gap_signals,
+        )
+        po3_out = compute_po3_signals(df)
+        if po3_out:
+            signals.update(po3_out)
+        wog_out = compute_week_opening_gap_signals(df)
+        if wog_out:
+            signals.update(wog_out)
+    except Exception as _e:
+        _log_silent_producer_failure("ict_producers", _e)
     # Batch 252: chart pattern signals (DEC-355-362). Graceful no-op when
     # history insufficient (most patterns need 60-150 bars).
     try:

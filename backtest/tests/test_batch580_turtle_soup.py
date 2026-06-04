@@ -45,10 +45,11 @@ def test_batch580_both_registered():
     assert "turtle_soup_short" in ALL_STRATEGIES
 
 
-def test_batch580_count_207():
-    """Pin (2). Layer 2D first inline-spec ICT pattern moves count 205 -> 207."""
+def test_batch580_count_at_least_207():
+    """Pin (2). Layer 2D first inline-spec ICT pattern moves count 205 -> 207.
+    Use >= so later batches (B581 +6) don't trip this pin."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 207
+    assert len(ALL_STRATEGIES) >= 207
 
 
 def test_batch580_long_fires_all_conditions_true():
