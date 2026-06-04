@@ -956,30 +956,36 @@ def strat_bullish_engulfing_support(s):
 
 
 def strat_doji_at_support(s):
+    # B574 (2026-06-04 owner-directed narrow-scope per
+    # feedback_narrow_scope_blast_radius): consumes `_wide` flag
+    # variants (1.5pct band) exclusively. Other strategies that use
+    # the narrow 0.3pct near_s1/at_key_fib stay unchanged.
     fires = (s.get("doji") and
-             (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and
+             (s.get("near_s1_wide") or s.get("near_s2_wide") or s.get("at_key_fib_wide")) and
              s.get("vol_spike_15x"))
     return _strat(fires, "long", "candle",
-        ["doji","at_support","vol_spike_1.5x"],
+        ["doji","at_support_wide_1.5pct","vol_spike_1.5x"],
         ["Doji candle at support  -  indecision after downmove",
          "Buyers and sellers equally matched  -  reversal often follows",
-         "Volume spike confirms the level is being contested"])
+         "Volume spike confirms the level is being contested",
+         "Wide 1.5pct support band (B574 owner-directed)"])
 
 
 def strat_doji_at_resistance_short(s):
     """Batch 572 (2026-06-04): inverse of doji_at_support per
-    feedback_long_short_inverse_audit. Doji + at resistance level (R1/R2
-    pivot or key Fib) + volume spike = indecision after upmove with
-    level contested. Sellers and buyers equally matched at overhead
-    resistance -> bearish reversal often follows (Nison symmetric
-    pattern). Mirror of strat_doji_at_support; producer signals exist
-    at technical.py:115 (near_r1/r2), :166 (at_key_fib), :1021
-    (vol_spike_15x), :1098 (doji)."""
+    feedback_long_short_inverse_audit. Mirror of strat_doji_at_support
+    per Nison symmetric pattern.
+
+    B574 (2026-06-04): consumes `_wide` flag variants (1.5pct band)
+    exclusively, narrow-scoped to doji strategies per
+    feedback_narrow_scope_blast_radius. Other strategies use the
+    standard 0.3pct near_r1/at_key_fib unchanged.
+    """
     fires = (s.get("doji") and
-             (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib")) and
+             (s.get("near_r1_wide") or s.get("near_r2_wide") or s.get("at_key_fib_wide")) and
              s.get("vol_spike_15x"))
     return _strat(fires, "short", "candle",
-        ["doji","at_resistance","vol_spike_1.5x"],
+        ["doji","at_resistance_wide_1.5pct","vol_spike_1.5x"],
         ["Doji candle at resistance  -  indecision after upmove",
          "Buyers and sellers equally matched at overhead level",
          "Volume spike confirms the level is being contested"])
