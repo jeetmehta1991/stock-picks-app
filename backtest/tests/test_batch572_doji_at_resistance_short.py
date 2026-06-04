@@ -50,7 +50,7 @@ def test_batch572_fires_when_all_conditions_true():
     from backtest.signals.screener import strat_doji_at_resistance_short
     out = strat_doji_at_resistance_short({
         "doji": True,
-        "near_r1": True,
+        "near_r1_wide": True,
         "vol_spike_15x": True,
     })
     assert out["fires"] is True
@@ -61,7 +61,7 @@ def test_batch572_does_not_fire_without_doji():
     from backtest.signals.screener import strat_doji_at_resistance_short
     out = strat_doji_at_resistance_short({
         "doji": False,
-        "near_r1": True,
+        "near_r1_wide": True,
         "vol_spike_15x": True,
     })
     assert out["fires"] is False
@@ -72,9 +72,9 @@ def test_batch572_does_not_fire_without_resistance():
     from backtest.signals.screener import strat_doji_at_resistance_short
     out = strat_doji_at_resistance_short({
         "doji": True,
-        "near_r1": False,
-        "near_r2": False,
-        "at_key_fib": False,
+        "near_r1_wide": False,
+        "near_r2_wide": False,
+        "at_key_fib_wide": False,
         "vol_spike_15x": True,
     })
     assert out["fires"] is False
@@ -85,7 +85,7 @@ def test_batch572_does_not_fire_without_volume_spike():
     from backtest.signals.screener import strat_doji_at_resistance_short
     out = strat_doji_at_resistance_short({
         "doji": True,
-        "near_r2": True,
+        "near_r2_wide": True,
         "vol_spike_15x": False,
     })
     assert out["fires"] is False
@@ -97,9 +97,9 @@ def test_batch572_fires_at_key_fib_alternative():
     from backtest.signals.screener import strat_doji_at_resistance_short
     out = strat_doji_at_resistance_short({
         "doji": True,
-        "near_r1": False,
-        "near_r2": False,
-        "at_key_fib": True,
+        "near_r1_wide": False,
+        "near_r2_wide": False,
+        "at_key_fib_wide": True,
         "vol_spike_15x": True,
     })
     assert out["fires"] is True
@@ -110,7 +110,7 @@ def test_batch572_direction_is_short():
     from backtest.signals.screener import strat_doji_at_resistance_short
     out = strat_doji_at_resistance_short({
         "doji": True,
-        "near_r1": True,
+        "near_r1_wide": True,
         "vol_spike_15x": True,
     })
     assert out["direction"] == "short"
@@ -121,7 +121,7 @@ def test_batch572_category_is_candle():
     from backtest.signals.screener import strat_doji_at_resistance_short
     out = strat_doji_at_resistance_short({
         "doji": True,
-        "near_r1": True,
+        "near_r1_wide": True,
         "vol_spike_15x": True,
     })
     assert out["category"] == "candle"
@@ -132,7 +132,7 @@ def test_batch572_long_variant_unchanged():
     from backtest.signals.screener import strat_doji_at_support
     out = strat_doji_at_support({
         "doji": True,
-        "near_s1": True,
+        "near_s1_wide": True,
         "vol_spike_15x": True,
     })
     assert out["fires"] is True
@@ -141,19 +141,20 @@ def test_batch572_long_variant_unchanged():
 
 def test_batch572_mirror_invariant():
     """Pin (8): on a doji + vol_spike day, the LONG fires only at
-    support, the SHORT fires only at resistance. No crosstalk."""
+    support, the SHORT fires only at resistance. No crosstalk.
+    Updated B574: uses _wide flags exclusively per narrow-scope fix."""
     from backtest.signals.screener import (
         strat_doji_at_support, strat_doji_at_resistance_short,
     )
     # At support only
     s_at_support = {"doji": True, "vol_spike_15x": True,
-                    "near_s1": True, "near_r1": False,
-                    "at_key_fib": False}
-    assert strat_doji_at_support(s_at_support)["fires"] is True
-    assert strat_doji_at_resistance_short(s_at_support)["fires"] is False
+                    "near_s1_wide": True, "near_r1_wide": False,
+                    "at_key_fib_wide": False}
+    assert strat_doji_at_support(s_at_support)["fires"] == True
+    assert strat_doji_at_resistance_short(s_at_support)["fires"] == False
     # At resistance only
     s_at_resistance = {"doji": True, "vol_spike_15x": True,
-                       "near_s1": False, "near_s2": False,
-                       "near_r1": True, "at_key_fib": False}
-    assert strat_doji_at_support(s_at_resistance)["fires"] is False
-    assert strat_doji_at_resistance_short(s_at_resistance)["fires"] is True
+                       "near_s1_wide": False, "near_s2_wide": False,
+                       "near_r1_wide": True, "at_key_fib_wide": False}
+    assert strat_doji_at_support(s_at_resistance)["fires"] == False
+    assert strat_doji_at_resistance_short(s_at_resistance)["fires"] == True
