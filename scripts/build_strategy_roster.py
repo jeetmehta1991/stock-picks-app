@@ -270,15 +270,17 @@ def load_projected_strategies() -> list:
             "layer":        "Layer 4 (DEC-176)",
             "basis":        "Combinatorial signal compounding; per-cell empirical validation required",
         },
-        # Layer 2D form-derived ICT - owner-driven; no Claude drafts per
-        # workflow directive. Placeholder so owner sees it's tracked.
+        # Layer 2D ICT inline-specification - B579 (Option A 2026-06-04):
+        # PENDING-FORM blocker resolved. Owner specifies one ICT pattern
+        # per turn; each becomes Class 7 NEW_STRATEGY wired on-the-spot
+        # per feedback_wire_new_strategies_on_the_spot + feedback_layer_2d_ict_inline_specification.
         {
             "dec_id":       "Layer-2D",
-            "name":         "form_derived_ict_strategies",
-            "description":  "Form-derived ICT strategies - owner-driven specification; no Claude drafts pending owner form completion",
-            "est_classes":  "TBD-owner",
-            "layer":        "Layer 2D (PENDING-FORM)",
-            "basis":        "ICT methodology; owner-curated pattern specification",
+            "name":         "ict_patterns_owner_inline_spec",
+            "description":  "ICT methodology patterns specified inline by owner one-at-a-time in chat (Option A 2026-06-04; bypasses the PENDING-FORM blocker). Each pattern wired as Class 7 NEW_STRATEGY same-turn. Producer signals reuse Layer 2A smartmoneyconcepts primitives (FVG/OTE/BOS/CHoCH/OB/swings/liquidity).",
+            "est_classes":  "5-15 (per CANONICAL_FACTS.md:97)",
+            "layer":        "Layer 2D (READY-FOR-OWNER-SPECIFICATION)",
+            "basis":        "ICT methodology; owner-curated patterns specified inline, no form tooling required",
         },
     ]
 

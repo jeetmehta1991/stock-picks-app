@@ -279,7 +279,7 @@
 | DEC-143 | `ipo_lockup_secondary_offering` | IPO + lockup expiration + secondary offering systematic framework (3 variants) | 3 | Field-Hanka 2001 JF lockup expiration; Bradley-Jordan-Ritter 2003 RFS IPO short-run drift | Layer 4 (DEC-143) | PENDING_OWNER_APPROVAL |
 | DEC-145 | `iv_delta_vs_historical_pre_earnings` | Pre-earnings implied-volatility delta vs historical IV pattern - fade or fade-the-fade | 1 | Diavatopoulos-Doran-Peterson 2008 options-implied earnings drift | Layer 4 (DEC-145) | PENDING_OWNER_APPROVAL |
 | DEC-176 | `meta_strategies_boolean_combinations` | Meta-strategies (boolean AND/OR combinations of existing strategies) - MULTIPLIER on existing classes, not additive | multiplier | Combinatorial signal compounding; per-cell empirical validation required | Layer 4 (DEC-176) | PENDING_OWNER_APPROVAL |
-| Layer-2D | `form_derived_ict_strategies` | Form-derived ICT strategies - owner-driven specification; no Claude drafts pending owner form completion | TBD-owner | ICT methodology; owner-curated pattern specification | Layer 2D (PENDING-FORM) | PENDING_OWNER_APPROVAL |
+| Layer-2D | `ict_patterns_owner_inline_spec` | ICT methodology patterns specified inline by owner one-at-a-time in chat (Option A 2026-06-04; bypasses the PENDING-FORM blocker). Each pattern wired as Class 7 NEW_STRATEGY same-turn. Producer signals reuse Layer 2A smartmoneyconcepts primitives (FVG/OTE/BOS/CHoCH/OB/swings/liquidity). | 5-15 (per CANONICAL_FACTS.md:97) | ICT methodology; owner-curated patterns specified inline, no form tooling required | Layer 2D (READY-FOR-OWNER-SPECIFICATION) | PENDING_OWNER_APPROVAL |
 
 ## Signal Glossary
 
