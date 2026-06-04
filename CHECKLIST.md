@@ -1562,3 +1562,18 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Exception:** CI workflow edits (yml changes) must go directly to main because the workflow's `on: push: branches: [main]` is what makes it fire. A workflow change on a feature branch wouldn't be exercised until merged. Risk-mitigation: validate the workflow yml syntax locally with `actionlint` or `yamllint` before pushing.
 
     **Joint:** CHECKLIST #93 (CI verification after push), CHECKLIST #101 (no idling), CHECKLIST #102 (CI = ground truth), feedback_standing_approvals (commit + push every turn -- still applies; branch determines the push target).
+
+104. **HARD RULE -- Changes default to LOCAL scope (1 strategy); global changes require EXPLICIT owner approval.** (Owner directive 2026-06-04 in response to B573 blast-radius lapse: "When making changes, the changes need to be applied locally to the current strategy only! If global, needs to be flagged by you and needs to be explicitly approved by me ... add to checklist as well.")
+
+    **Rationale.** B573 changed `near()` global lambda in `backtest/signals/technical.py` from 0.003 -> 0.015 affecting 14 strategies, when the owner directive named only doji (2 strategies). Owner caught it: "Why have 14 strategies been affected? Should just be 2!" B574 fixed it by adding per-strategy `_wide` flag variants. The discipline rule is to never expand the blast radius beyond what the directive scopes.
+
+    **Apply when:** every change at Stage 4 / Stage 5 / anywhere in the codebase that flows from a per-strategy directive.
+
+    **How to apply:**
+      a. **Default to LOCAL.** Modify only the named strategy. Use per-strategy variants, overrides, `_wide` flags, inline computation, or duplicated logic to keep blast radius at exactly 1.
+      b. **If global is genuinely required:** STOP. Surface the blast radius EXPLICITLY in the response (not in a commit-message footnote): "This would also affect strategies X, Y, Z because they share <helper>." Wait for explicit owner approval naming the global change before applying.
+      c. **Pre-flight format:** lead with "Local-only? [yes/no]. If no, blast radius: [list of affected items]. Requires global approval: [yes/no]."
+      d. **What counts as global:** shared lambdas/functions, constants in config.py / CLAUDE.md / CANONICAL_FACTS.md, shared dicts/sets (DEPRECATED_STRATEGIES, STRATEGY_EXIT_OVERRIDE, etc.), producer signals consumed by >=2 strategies, trade_log schema columns.
+      e. **Patterns:** per-strategy flag variants (`near_s1_wide` alongside `near_s1`), per-strategy override dicts (`STRATEGY_RSI_OVERRIDE[strat_name] = 35`), inline computation inside the predicate, duplicate-then-modify.
+
+    **Joint:** `feedback_local_changes_default_global_needs_approval`, `feedback_narrow_scope_blast_radius`, `feedback_audit_recommendations_against_existing_directives`. Lapse history: B573 (caught by owner, fixed in B574).
