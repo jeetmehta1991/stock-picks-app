@@ -131,45 +131,55 @@ def test_batch586_pullback_short_fires():
 
 
 def test_batch586_pullback_producer_signal_emitted():
-    """Pin (8): synthetic data triggers near_52w_high_retest_long.
+    """Pin (8): synthetic data triggers near_52w_high_retest_long under
+    B590-redesigned producer (single 30-bar window for both breakout
+    detection AND year_high_pre30 reference + 3% tolerance per owner
+    B590 directive).
 
-    Build a pre-breakout reference high of 100, then a breakout 10
-    days ago to 103, then pullback to 100.3 (within 1% of 100).
-    Today closes bullish at 100.3 with low volume.
+    B590 producer windows:
+      ref_window = df.iloc[-283:-31]  (252-bar window ending 30 bars
+                                       before today; STABLE pre-breakout
+                                       52w resistance)
+      recent_closes = df.iloc[-31:-1] (last 30 bars before today;
+                                       breakout-detection window)
+      today = df.iloc[-1]
+
+    Setup (total 283 bars):
+      bars 0..251 (252 bars): close=99, HIGH=100, low=98
+        -> year_high_pre30 = max(ref_window.high) = 100
+      bars 252..281 (30 bars): breakout closes 102 / pullback 100.5
+        -> recent_max_close = 102 > year_high_pre30 (100) ✓
+      bar 282 (today): close=100.5, open=100, high=101, low=100
+        -> within_3pct_high: |100.5 - 100|/100 = 0.5% <= 3% ✓
+        -> today_below_peak: 100.5 < 102 * 0.99 = 100.98 ✓
+        -> close_above_open: 100.5 > 100 ✓
+        -> vol_below_avg: today vol < 20d avg ✓
     """
     from backtest.signals.technical import compute_volume
-    # Window structure (260 bars total):
-    #   bars 0..248 (249 bars): closes flat at 99, highs at 100
-    #     -> year_high_ref (window [today-272, today-10]) = 100
-    #   bar 249-258 (10 days ago to yesterday): breakout to 103, pullback to 100.3
-    #   bar 259 (today): close 100.3 with vol 600K (avg ~1M, ratio < 1)
-    # Structure (n=263 bars):
-    #   bars 0..252 (253 bars): reference period, closes=99 highs=100 lows=98
-    #     -> year_high_ref (252 days ending 10 days ago) = 100
-    #   bars 253..261 (9 bars): breakout + pullback
-    #   bar 262 (today): close 100.3 bullish + low vol
-    pre = [99.0] * 253
-    pre_h = [100.0] * 253
-    pre_l = [98.0] * 253
-    breakout = [103.0, 102.5, 101.5, 100.8, 100.5, 100.3, 100.3, 100.3, 100.3]
-    breakout_h = [103.5, 103.0, 102.0, 101.3, 101.0, 100.8, 100.8, 100.8, 100.8]
-    breakout_l = [101.0, 100.0, 100.0, 100.0, 99.5, 99.5, 99.5, 100.0, 100.0]
-    today_c = [100.3]
-    today_h = [100.8]
+    pre   = [99.0]  * 252
+    pre_h = [100.0] * 252
+    pre_l = [98.0]  * 252
+    # 30-bar breakout-detection window: bars 252..281
+    # bar 252 = breakout day (close 102, exceeds 100); bars 253..281 = pullback
+    breakout   = [102.0] + [100.5] * 29
+    breakout_h = [102.5] + [101.0] * 29
+    breakout_l = [100.5] + [100.0] * 29
+    today_c = [100.5]
+    today_h = [101.0]
     today_l = [100.0]
     closes = pre + breakout + today_c
     highs  = pre_h + breakout_h + today_h
     lows   = pre_l + breakout_l + today_l
     n = len(closes)
-    # Today's bar opens at 100.0, closes at 100.3 = bullish
-    opens  = closes[:-1] + [100.0]
-    # Volume below avg today
-    vol = [1_000_000] * (n - 1) + [600_000]
+    assert n == 283, f"fixture must be 283 bars to engage year_high_pre30 window; got {n}"
+    opens = closes[:-1] + [100.0]  # bullish today (close 100.5 > open 100.0)
+    vol = [1_000_000] * (n - 1) + [600_000]  # below avg
     df = _build_df(closes, highs, lows, opens=opens, volumes=vol)
     out = compute_volume(df)
     assert out.get("near_52w_high_retest_long") == True, (
-        f"Expected near_52w_high_retest_long=True; year_high={out.get('year_high')} "
-        f"close={closes[-1]} vol_ratio={out.get('vol_ratio_20d')}"
+        f"Expected near_52w_high_retest_long=True post-B590; "
+        f"year_high={out.get('year_high')} close={closes[-1]} "
+        f"vol_ratio={out.get('vol_ratio_20d')}"
     )
 
 
