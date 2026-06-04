@@ -1258,12 +1258,23 @@ def strat_donchian_breakdown_short(s):
 
 
 def strat_52w_low_breakdown(s):
-    fires = (s.get("break_52w_low") and s.get("vol_spike_2x"))
+    """Batch 587 (2026-06-04 owner directive 'apply same as 52w_high_breakout
+    inversed'). Mirror of strat_52w_high_breakout post-B586 walk:
+      - vol_spike_2x -> vol_spike_17x (owner picked >1.7x from 1.5-2 range)
+      - ADDED sector_underperforming_spy confluence filter
+        (sector ETF underperforming SPY 20d = weak sector)
+    Producer signals: break_52w_low (B582 fix), vol_spike_17x (B586),
+    sector_underperforming_spy (B587 sector_strength.py extension).
+    """
+    fires = (s.get("break_52w_low")
+             and s.get("vol_spike_17x")
+             and s.get("sector_underperforming_spy"))
     return _strat(fires, "short", "breakout",
-        ["break_52w_low", "vol_spike_2x"],
+        ["break_52w_low", "vol_spike_17x", "sector_underperforming_spy"],
         [f"Price broke 52-week low  -  serious capitulation signal",
-         "Volume 2x confirms institutional distribution",
-         "Stocks at new 52-week lows tend to continue lower"])
+         "Volume >1.7x confirms institutional distribution (George-Hwang 2004 JF mirror)",
+         "Sector ETF underperforming SPY 20d  -  sell weak sectors only",
+         "Stocks at new 52-week lows in weak sectors tend to continue lower"])
 
 
 def strat_prev_day_low_breakdown(s):

@@ -137,6 +137,10 @@ def compute_sector_strength_signals(
         return out
     return {
         "sector_outperforming_spy":  bool(sec_ret > spy_ret),
+        # B587 (2026-06-04): inverse signal for short strategies per owner
+        # directive "apply same as 52w_high_breakout inversed" to 52w_low_breakdown.
+        # Strict less-than (boundary equality emits neither True for this).
+        "sector_underperforming_spy": bool(sec_ret < spy_ret),
         "sector_etf_return_20d":     round(float(sec_ret), 4),
         "spy_return_20d":            round(float(spy_ret), 4),
         "sector_etf_ticker":         etf,
