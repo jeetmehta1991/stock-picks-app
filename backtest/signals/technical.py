@@ -942,6 +942,25 @@ def compute_keltner(df: pd.DataFrame, period: int = 20, mult: float = 2.0) -> di
 
 
 def compute_donchian(df: pd.DataFrame) -> dict:
+    """Donchian channel signals.
+
+    Batch 584 (2026-06-04 owner-directed bug fix per Stage 4 audit):
+    `breakout_up` / `breakout_dn` / `new_high` now use the PRIOR
+    N-day window (excluding today) so the breakout check is "today's
+    close vs prior-N high/low", matching the canonical breakout
+    semantic. Pre-B584, `df["high"].rolling(N).max()` included today's
+    intraday high - making `close >= rolling_max * 0.998` effectively
+    require close == today_high == max-of-N (extremely rare;
+    same bug pattern as B582 year_high).
+
+    Affected strategies (6): donchian_10_breakout (dual), donchian_breakdown_short,
+    volume_spike_breakout (dual), squeeze_setup_long, news_momentum_long,
+    donchian_breakout_with_smart_money_long.
+
+    `dc{N}_upper` / `_lower` / `_mid` retain current-rolling semantic
+    (include today) as display-only signals; no consumer uses them
+    for fire-logic.
+    """
     result = {}
     for period in [10, 20]:
         if len(df) < period + 2:
@@ -950,14 +969,23 @@ def compute_donchian(df: pd.DataFrame) -> dict:
         lower = df["low"].rolling(period).min()
         mid   = (upper + lower) / 2
         close = _safe_float(df["close"].iloc[-1])
+        today_high = _safe_float(df["high"].iloc[-1])
         u,l   = _safe_float(upper.iloc[-1]),_safe_float(lower.iloc[-1])
-        pu    = _safe_float(upper.iloc[-2])
+        # B584 fix: PRIOR N-day window (excludes today) for breakout +
+        # new_high comparisons. Uses df.iloc[:-1] so today's bar isn't
+        # included in the level being broken.
+        prior = df.iloc[:-1]
+        upper_prior = _safe_float(prior["high"].tail(period).max())
+        lower_prior = _safe_float(prior["low"].tail(period).min())
         result[f"dc{period}_upper"]        = round(u,4)
         result[f"dc{period}_lower"]        = round(l,4)
         result[f"dc{period}_mid"]          = round(_safe_float(mid.iloc[-1]),4)
-        result[f"dc{period}_breakout_up"]  = close >= u*0.998
-        result[f"dc{period}_breakout_dn"]  = close <= l*1.002
-        result[f"dc{period}_new_high"]     = u > pu   # expanding upper channel
+        result[f"dc{period}_breakout_up"]  = close >= upper_prior * 0.998
+        result[f"dc{period}_breakout_dn"]  = close <= lower_prior * 1.002
+        # new_high: today's high exceeded prior-N-day max (expanded the
+        # upper channel). Symmetric definition to the breakout flags;
+        # owner-directed B584 consistency fix.
+        result[f"dc{period}_new_high"]     = today_high > upper_prior
     return result
 
 
