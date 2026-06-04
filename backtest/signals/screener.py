@@ -3745,6 +3745,25 @@ def _has_smart_money_buy(s) -> bool:
     )
 
 
+def _has_smart_money_sell(s) -> bool:
+    """Batch 588 (2026-06-04 owner directive '+ mirror' on
+    52w_high_breakout_with_smart_money_long): composite OR of bearish
+    smart-money signals. Mirror of _has_smart_money_buy per
+    feedback_long_short_inverse_audit.
+
+    Bearish smart-money: insider cluster sells, institutional
+    distribution, concentrated insider selling. Producer signals
+    emitted by backtest/data/smart_money.py.
+    """
+    return bool(
+        s.get("insider_cluster_sell", False)
+        or s.get("institutional_strong_sell", False)
+        or s.get("institutional_sell", False)
+        or s.get("concentrated_sell", False)
+        or s.get("cluster_sell", False)
+    )
+
+
 def strat_bollinger_tight_with_smart_money_long(s):
     """Bollinger-tight squeeze + smart-money confirmation. Sleeve variant
     of bollinger_tight base; smart-money signal validates the squeeze
@@ -3792,7 +3811,10 @@ def strat_rsi_oversold_with_smart_money_long(s):
 
 def strat_52w_high_breakout_with_smart_money_long(s):
     """52-week high breakout + smart-money buy. Reduces false-breakout
-    risk by requiring institutional/insider confirmation on the breakout day."""
+    risk by requiring institutional/insider confirmation on the breakout day.
+    Cohen-Frazzini-Malloy 2008 RFS (institutional persistence) + George-Hwang
+    2004 JF (52w momentum) combined; literature ~30-50% false-breakout
+    reduction."""
     base_fires = (
         s.get("near_52w_high", False)
         and s.get("close_above_open", True)
@@ -3804,6 +3826,34 @@ def strat_52w_high_breakout_with_smart_money_long(s):
          "smart_money_buy"],
         ["Near 52w high", "Volume above average",
          "Smart-money buy confirmation"])
+
+
+def strat_52w_low_breakdown_with_smart_money_short(s):
+    """Batch 588 (2026-06-04 owner directive '+ mirror' on
+    52w_high_breakout_with_smart_money_long). Inverse per
+    feedback_long_short_inverse_audit.
+
+    52-week low breakdown + smart-money sell: stock approaching/breaking
+    its 52-week low with institutional distribution + bearish bar +
+    above-avg volume = high-conviction short setup. Reduces false-
+    breakdown risk by requiring smart-money sell-side confirmation.
+
+    Mirror logic: Cohen-Frazzini-Malloy 2008 RFS institutional
+    persistence (works on both directions); 52w-low downside continuation
+    well-documented (Jegadeesh-Titman 1993 momentum, reverse leg).
+    """
+    base_fires = (
+        s.get("near_52w_low", False)
+        and s.get("close_below_open", True)
+        and s.get("vol_above_avg", False)
+    )
+    fires = base_fires and _has_smart_money_sell(s)
+    return _strat(fires, "short", "smart_money_sleeve",
+        ["near_52w_low", "close_below_open", "vol_above_avg",
+         "smart_money_sell"],
+        ["Near 52w low (within 102% of prior 252d low)",
+         "Volume above average + bearish bar",
+         "Smart-money sell confirmation (insider/institutional distribution)"])
 
 
 def strat_squeeze_breakout_with_smart_money_long(s):
@@ -4204,6 +4254,8 @@ ALL_STRATEGIES = {
     "mfi_oversold_with_smart_money_long":       strat_mfi_oversold_with_smart_money_long,
     "rsi_oversold_with_smart_money_long":       strat_rsi_oversold_with_smart_money_long,
     "52w_high_breakout_with_smart_money_long":  strat_52w_high_breakout_with_smart_money_long,
+    # B588 (2026-06-04 owner directive '+ mirror'): inverse of above
+    "52w_low_breakdown_with_smart_money_short": strat_52w_low_breakdown_with_smart_money_short,
     "squeeze_breakout_with_smart_money_long":   strat_squeeze_breakout_with_smart_money_long,
     "xs_momentum_with_smart_money_long":        strat_xs_momentum_with_smart_money_long,
     "xs_low_beta_with_smart_money_long":        strat_xs_low_beta_with_smart_money_long,
