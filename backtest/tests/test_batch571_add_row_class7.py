@@ -114,13 +114,20 @@ def test_batch571_live_approvals_has_5_decisions(tmp_approvals):
     assert len(news_class4) == 1
     assert news_class4[0]["status"] == "Rejected"
 
-    # 2. doji_at_support Class 4 Deferred + dependency
+    # 2. doji_at_support Class 4 was Deferred in B571; may have been
+    # unblocked to Approved in B573 (paired Class 2 tolerance loosen
+    # shipped). Either is valid post-B573.
     doji_class4 = [r for r in rows
                    if r["strategy"] == "doji_at_support"
                    and r["change_class"] == 4]
     assert len(doji_class4) == 1
-    assert doji_class4[0]["status"] == "Deferred"
-    assert doji_class4[0]["dependency"] == "doji_at_support_tolerance_loosen"
+    assert doji_class4[0]["status"] in {"Deferred", "Approved", "Implemented"}
+    # The Deferred -> Approved flip in B573 keeps the history breadcrumb
+    history_statuses = [h["to_status"] for h in doji_class4[0]["history"]]
+    assert "Deferred" in history_statuses, (
+        f"history must show the original B571 Deferred flip; got "
+        f"{history_statuses}"
+    )
 
     # 3. Class 2 loosen for news_sentiment_shift_long (owner-added Approved)
     news_class2 = [r for r in rows
@@ -139,10 +146,11 @@ def test_batch571_live_approvals_has_5_decisions(tmp_approvals):
     assert news_short[0]["status"] == "Approved"
     assert news_short[0]["change_class_name"] == "NEW_STRATEGY"
 
-    # 5. Class 2 loosen for doji_at_support
+    # 5. Class 2 loosen for doji_at_support - Approved at B571,
+    # may have been promoted to Implemented at B573
     doji_class2 = [r for r in rows
                    if r["strategy"] == "doji_at_support"
                    and r["change_class"] == 2
                    and r["dimension_source"] == "owner_added"]
     assert len(doji_class2) == 1
-    assert doji_class2[0]["status"] == "Approved"
+    assert doji_class2[0]["status"] in {"Approved", "Implemented"}

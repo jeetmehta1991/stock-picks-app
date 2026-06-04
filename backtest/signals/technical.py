@@ -68,7 +68,14 @@ def compute_pivots(df: pd.DataFrame) -> dict:
     H, L, C, O = prev["high"], prev["low"], prev["close"], prev["open"]
     today = df["close"].iloc[-1]
     rng   = H - L
-    near  = lambda lvl: abs(today - lvl) / max(abs(lvl), 0.01) < 0.003
+    # Batch 573 (2026-06-04 owner directive): tolerance 0.003 -> 0.015
+    # (0.30% -> 1.50%) per Stage 4 Class 2 ENTRY_GATE_LOOSEN candidate.
+    # Affects: near_s1/s2/s3, near_r1/r2/r3, near_cam_s/r, near_wood_s1/r1,
+    # near_pivot, near_prev_high/low/close. Consumed by 14 strategies
+    # (see B573 audit). Owner-chosen value 1.5% from sweep grid
+    # [0.5, 1.0, 1.5, 2.0]; Nison-style support/resistance is a ZONE
+    # not a point.
+    near  = lambda lvl: abs(today - lvl) / max(abs(lvl), 0.01) < 0.015
 
     # -- Standard --
     P  = (H + L + C) / 3
@@ -152,7 +159,12 @@ def compute_fibonacci(df: pd.DataFrame, lookback: int = 50) -> dict:
     w  = df.tail(min(lookback, len(df)))
     sh = w["high"].max();  sl = w["low"].min()
     d  = sh - sl;          today = df["close"].iloc[-1]
-    near = lambda lvl: abs(today - lvl) / max(abs(lvl), 0.01) < 0.005
+    # Batch 573 (2026-06-04 owner directive): tolerance 0.005 -> 0.015
+    # (0.50% -> 1.50%) per Stage 4 Class 2 ENTRY_GATE_LOOSEN candidate.
+    # Aligned with compute_pivots near() above. Affects: near_fib_236/
+    # 382/500/618/786 and at_key_fib (= near_fib_382 OR near_fib_500 OR
+    # near_fib_618).
+    near = lambda lvl: abs(today - lvl) / max(abs(lvl), 0.01) < 0.015
     lvls = {
         "fib_236": sh - 0.236*d, "fib_382": sh - 0.382*d,
         "fib_500": sh - 0.500*d, "fib_618": sh - 0.618*d,
