@@ -1095,6 +1095,11 @@ def compute_volume(df: pd.DataFrame) -> dict:
     # loosens on donchian_10_breakout + rsi_volume_200ema. Any above-average
     # volume vs 20d mean - softer than the 1.5x / 2x spike gates.
     result["vol_above_avg"] = ratio >= 1.0
+    # B594 (2026-06-05 owner directive donchian_20_breakout_retest walk):
+    # vol_below_avg = ratio STRICTLY LESS THAN 1.0. Bulkowski 2005:
+    # retest entry confirmation has LOWER volume than the initial
+    # break (supply absorption thesis). Strategy-specific; ADDITIVE.
+    result["vol_below_avg"] = ratio < 1.0
     # B589 (2026-06-04 owner directive 52w_high_breakout_with_smart_money_long
     # walk: "vol_above_avg = >= 1.2x make it"). Strategy-specific
     # threshold; ADDITIVE - existing strategies using vol_above_avg
@@ -1444,8 +1449,20 @@ def compute_break_retest_signals(df: pd.DataFrame) -> dict:
         atr = close[-1] * 0.01
     tolerance = 1.5 * atr
 
-    # Resistance break-and-retest (long signal)
+    # B594 (2026-06-05 owner directive donchian_20_breakout_retest walk):
+    # STRONG-breakout LOCAL variants require the original breakout bar to
+    # have closed by at least 0.5*ATR(14) BEYOND the broken level, not
+    # just to have crossed it. Filters trivial closes-just-above-level
+    # pseudo-breakouts on the retest pattern. Consumed by
+    # strat_donchian_20_breakout_retest alone. Same lag window 2-8,
+    # same 1.5*ATR retest tolerance, same hold check; ONLY the breakout
+    # detection is tightened.
+    strong_atr_clearance = 0.5 * atr
+
+    # Resistance break-and-retest (long signal) - emits BOTH standard
+    # and _strong variants in one pass.
     resistance_brt = False
+    resistance_brt_strong = False
     for lag in range(2, 9):
         if n <= lag + 2:
             break
@@ -1458,11 +1475,17 @@ def compute_break_retest_signals(df: pd.DataFrame) -> dict:
             # Any subsequent bar retested (low touched within tolerance of level)
             if any(l <= level + tolerance for l in low[idx + 1:]):
                 if close[-1] >= level:  # current bar still above the broken level
-                    resistance_brt = True
-                    break
+                    if not resistance_brt:
+                        resistance_brt = True
+                    # B594 strong check: breakout bar cleared by >= 0.5*ATR
+                    if not resistance_brt_strong and close[idx] >= level + strong_atr_clearance:
+                        resistance_brt_strong = True
+                    if resistance_brt and resistance_brt_strong:
+                        break
 
     # Support breakdown-and-retest (short signal)
     support_brt = False
+    support_brt_strong = False
     for lag in range(2, 9):
         if n <= lag + 2:
             break
@@ -1474,12 +1497,19 @@ def compute_break_retest_signals(df: pd.DataFrame) -> dict:
         if close[idx] < level:     # breakdown: bar at idx closed below prior DC20
             if any(h >= level - tolerance for h in high[idx + 1:]):
                 if close[-1] <= level:  # current bar still below the broken level
-                    support_brt = True
-                    break
+                    if not support_brt:
+                        support_brt = True
+                    if not support_brt_strong and close[idx] <= level - strong_atr_clearance:
+                        support_brt_strong = True
+                    if support_brt and support_brt_strong:
+                        break
 
     return {
-        "resistance_break_retest": resistance_brt,
-        "support_break_retest":    support_brt,
+        "resistance_break_retest":         resistance_brt,
+        "support_break_retest":            support_brt,
+        # B594 LOCAL strong variants (donchian_20_breakout_retest only)
+        "dc20_resistance_break_retest_strong": resistance_brt_strong,
+        "dc20_support_break_retest_strong":    support_brt_strong,
     }
 
 

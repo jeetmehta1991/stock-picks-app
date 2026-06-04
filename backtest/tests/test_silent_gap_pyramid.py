@@ -1603,8 +1603,10 @@ def test_batch329_bug111_six_retest_variants_registered():
     """BUG-111 (Batch 329): 6 new explicit _retest variants registered in
     ALL_STRATEGIES for the price-pattern breakouts that didn't yet have one."""
     from backtest.signals.screener import ALL_STRATEGIES
+    # Batch 594 (2026-06-05): donchian_10_breakout_retest renamed to
+    # donchian_20_breakout_retest (matches DC20-anchored producer).
     expected_new = [
-        "donchian_10_breakout_retest",
+        "donchian_20_breakout_retest",
         "donchian_breakdown_retest_short",
         "volume_spike_breakout_retest",
         "cup_and_handle_retest_long",
@@ -1632,10 +1634,18 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   200 after Batch 507 M6 Path-2 (+2 YoY-growth PEAD sleeves)
     #   202 after Batch 519 P15 sleeves (+squeeze_setup_long + short_borrow_trap_avoid)
     #   204 after Batch 531 P17 sleeves (+activist_13d_long + m_and_a_target_long)
-    assert len(ALL_STRATEGIES) == 204, (
-        f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17: "
-        f"ALL_STRATEGIES count must be 204 after Batches 329-344 + "
-        f"467 + 487 + 507 + 519 + 531, got {len(ALL_STRATEGIES)}"
+    #   205 after Batch 572 candle inverse (doji_at_resistance_short)
+    #   207 after Batch 580 Layer 2D ICT (turtle_soup pair)
+    #   213 after Batch 581 (judas + mmbm/mmsm + week_opening_gap pair)
+    #   215 after Batch 586 (52w pullback variants)
+    #   216 after Batch 588 (52w_low_breakdown_with_smart_money_short)
+    #   218 after Batch 591/592 (donchian_breakout_long + retest_long
+    #       added; donchian_breakdown_short/retest_short kept per B592
+    #       owner correction)
+    assert len(ALL_STRATEGIES) == 218, (
+        f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
+        f"B572/580/581/586/588/591/592 trajectory: ALL_STRATEGIES "
+        f"count must be 218 post-B592, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1645,7 +1655,7 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     parent gates are satisfied; does NOT fire on the naked break without
     the retest pullback."""
     from backtest.signals.screener import (
-        strat_donchian_10_breakout_retest,
+        strat_donchian_20_breakout_retest,
         strat_donchian_breakdown_retest_short,
         strat_volume_spike_breakout_retest,
         strat_cup_and_handle_retest_long,
@@ -1653,13 +1663,16 @@ def test_batch329_retest_variants_fire_on_retest_signal():
         strat_triangle_ascending_retest_long,
     )
 
-    # donchian_10_breakout_retest LONG
-    s = {"resistance_break_retest": True, "vol_above_avg": True,
-         "macd_12_26_9_bullish": True}
-    out = strat_donchian_10_breakout_retest(s)
+    # donchian_20_breakout_retest LONG (renamed B594; post-B594 gates:
+    # dc20_resistance_break_retest_strong + vol_below_avg + macd_bullish
+    # + close_above_open + close_in_top_40pct_of_range)
+    s = {"dc20_resistance_break_retest_strong": True, "vol_below_avg": True,
+         "macd_12_26_9_bullish": True, "close_above_open": True,
+         "close_in_top_40pct_of_range": True}
+    out = strat_donchian_20_breakout_retest(s)
     assert out["fires"] is True and out["direction"] == "long"
-    s2 = dict(s); s2["resistance_break_retest"] = False
-    assert strat_donchian_10_breakout_retest(s2)["fires"] is False
+    s2 = dict(s); s2["dc20_resistance_break_retest_strong"] = False
+    assert strat_donchian_20_breakout_retest(s2)["fires"] is False
 
     # donchian_breakdown_retest_short
     s = {"support_break_retest": True, "vol_spike_15x": True,
@@ -3194,20 +3207,31 @@ def test_batch320_vol_above_avg_signal_present():
 
 
 def test_batch320_donchian_10_breakout_loosen():
-    """Batch 320: strat_donchian_10_breakout fires on vol_above_avg
-    (>=1.0x) instead of vol_spike_15x (>=1.5x)."""
+    """Batch 320 (vol gate loosened to vol_above_avg) + subsequent
+    walks. Post-B591/B592 the strategy requires 6 gates per direction:
+      (b) dc10_breakout_up_1pct (1pct LOCAL tolerance)
+      (c) vol_above_avg (>=1.0x, original B320 loosening preserved)
+      (d) macd_12_26_9_bullish
+      (e) close_above_open
+      (f) close_in_top_40pct_of_range
+      (g) dc10_strong_breakout_up (B592 LOCAL 0.5*ATR clearance)
+    Test updated to assert the post-B592 6-gate behavior; the B320
+    loosening of vol is still validated implicitly via vol_above_avg."""
     from backtest.signals.screener import strat_donchian_10_breakout
     sig_loose = {
-        "dc10_breakout_up": True,
+        "dc10_breakout_up_1pct": True,
         "vol_above_avg": True,
-        "vol_spike_15x": False,  # below the OLD threshold
+        "vol_spike_15x": False,
         "macd_12_26_9_bullish": True,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
+        "dc10_strong_breakout_up": True,
     }
     out = strat_donchian_10_breakout(sig_loose)
     assert out["fires"] is True
     assert out["direction"] == "long"
 
-    # Below average vol -> still gated
+    # Below average vol -> still gated (B320 loosening preserved)
     sig_no_vol = dict(sig_loose); sig_no_vol["vol_above_avg"] = False
     assert strat_donchian_10_breakout(sig_no_vol)["fires"] is False
 

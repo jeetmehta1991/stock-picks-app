@@ -427,6 +427,15 @@ def signal_plain_translation(signal: str) -> str:
         # Break-and-retest (BUG-111 / Batch 329) -- DC20-anchored multi-bar pattern
         "resistance_break_retest": "(BUG-111 multi-bar pattern, anchored on DC20 = prior-20-day max-CLOSE level). ALL conditions: (a) breakout: some bar 2-8 bars ago (lag in 2..8) closed STRICTLY ABOVE the max CLOSE of the 20 bars preceding that bar; (b) retest: between the breakout bar and today, at least one bar's LOW was <= (breakout_level + 1.5*ATR(14)) -- i.e. price came back to within 1.5 ATR of the broken level from above; (c) hold: today's close >= broken_level (still trading above the flipped resistance->support). All 3 required; first lag that satisfies all 3 fires the signal (TYPICAL: 3-5 bars post-breakout).",
         "support_break_retest":    "Mirror of resistance_break_retest (BUG-111). DC20-anchored on prior-20-day min-CLOSE. ALL: (a) breakdown 2-8 bars ago closed STRICTLY BELOW the prior 20d min CLOSE; (b) at least one subsequent bar's HIGH >= (breakdown_level - 1.5*ATR(14)) (retest came back within 1.5 ATR from below); (c) today's close <= broken_level (still below the flipped support->resistance). 1.5*ATR uses 14-bar EWM Wilder ATR.",
+        # B594 LOCAL strong-breakout retest variants (consumed by
+        # strat_donchian_20_breakout_retest alone). Same retest pattern
+        # as the standard variant but ALSO requires the original break
+        # bar to have cleared the level by >= 0.5*ATR(14), not just to
+        # have crossed it.
+        "dc20_resistance_break_retest_strong": "(B594 LOCAL strong variant of resistance_break_retest, consumed by strat_donchian_20_breakout_retest only). ALL conditions of resistance_break_retest PLUS: the original breakout bar (lag 2-8) closed by AT LEAST 0.5*ATR(14) ABOVE the prior-20-day max-close level (not merely crossed it). Filters trivial closes-just-above-level pseudo-breakouts on the retest pattern.",
+        "dc20_support_break_retest_strong": "Mirror of dc20_resistance_break_retest_strong (B594 LOCAL). ALL conditions of support_break_retest PLUS: original breakdown bar closed by AT LEAST 0.5*ATR(14) BELOW the prior-20-day min-close level.",
+        # B594 global vol_below_avg signal
+        "vol_below_avg": "today's volume / 20-day average volume STRICTLY LESS THAN 1.0 (window includes today). Bulkowski 2005: retest pattern forms on LOWER volume than the initial break (supply absorption thesis).",
         # Day-of-bar primitives
         "close_above_open":    "today's close STRICTLY GREATER THAN today's open (bullish bar)",
         "close_below_open":    "today's close STRICTLY LESS THAN today's open (bearish bar)",

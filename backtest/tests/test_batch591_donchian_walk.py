@@ -179,18 +179,21 @@ def test_batch591_donchian_10_breakout_short_requires_6_gates():
     assert strat_donchian_10_breakout(s_no_strong)["fires"] == False
 
 
-def test_batch591_donchian_10_breakout_retest_requires_5_gates():
-    """Pin (8): retest version requires same close gates (no _1pct since
-    consumes resistance_break_retest)."""
-    from backtest.signals.screener import strat_donchian_10_breakout_retest
-    s_all = {"resistance_break_retest": True, "vol_above_avg": True,
+def test_batch591_donchian_20_breakout_retest_requires_5_gates():
+    """Pin (8): renamed B594 from donchian_10_breakout_retest. Post-B594
+    consumes dc20_resistance_break_retest_strong (LOCAL strong-breakout
+    variant) + vol_below_avg (flipped from above; Bulkowski thesis) +
+    macd_bullish + close_above_open + close_in_top_40pct_of_range."""
+    from backtest.signals.screener import strat_donchian_20_breakout_retest
+    s_all = {"dc20_resistance_break_retest_strong": True,
+             "vol_below_avg": True,
              "macd_12_26_9_bullish": True, "close_above_open": True,
              "close_in_top_40pct_of_range": True}
-    out = strat_donchian_10_breakout_retest(s_all)
+    out = strat_donchian_20_breakout_retest(s_all)
     assert out["fires"] == True
     assert out["direction"] == "long"
     s_no_top = dict(s_all); s_no_top["close_in_top_40pct_of_range"] = False
-    assert strat_donchian_10_breakout_retest(s_no_top)["fires"] == False
+    assert strat_donchian_20_breakout_retest(s_no_top)["fires"] == False
 
 
 def test_batch591_all_strategies_count_after_b592_restoration():

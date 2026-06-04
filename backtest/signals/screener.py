@@ -957,36 +957,51 @@ def strat_donchian_10_breakout(s):
 # pre_rebalance_long is event-based (not a price-pattern break) so excluded.
 
 
-def strat_donchian_10_breakout_retest(s):
-    """BUG-111 (Batch 329): retest variant of donchian_10_breakout.
-    Same direction gates as parent, but waits for the post-break pullback
-    (resistance_break_retest / support_break_retest) instead of firing on
-    the break itself. Bulkowski 2005: retest entry has lower fakeout risk.
+def strat_donchian_20_breakout_retest(s):
+    """BUG-111 (Batch 329) retest variant; renamed B594 from
+    donchian_10_breakout_retest to donchian_20_breakout_retest to match
+    the underlying producer anchor (DC20 = prior-20-day max-close, not
+    DC10). Bulkowski 2005: retest entry has lower fakeout risk than
+    break-entry.
 
-    Batch 591 (2026-06-04 owner-directed Stage 4 walk, answer C "apply
-    (c)+(d) to retest as well; skip (e) - time filter semantically
-    baked into retest concept by definition"):
+    Batch 591 (2026-06-04 owner-directed Stage 4 walk, answer C):
       (c) added close_above_open (long) / close_below_open (short)
       (d) added close_in_top_40pct_of_range (long) /
           close_in_bottom_40pct_of_range (short)
-    Note: (b) 1% tolerance does NOT apply here - the retest fires on
-    resistance_break_retest / support_break_retest primitives, which
-    don't directly consume dc10_breakout_up/dn.
+
+    Batch 594 (2026-06-05 owner-directed Stage 4 walk of
+    donchian_10_breakout_retest):
+      (a) RENAMED to donchian_20_breakout_retest (name now matches the
+          DC20-anchored producer)
+      (b) FLIPPED vol gate: vol_above_avg -> vol_below_avg (Bulkowski
+          canonical "retest happens on lower volume" thesis)
+      (e) ADDED strong-breakout requirement on the original break bar:
+          consumes dc20_resistance_break_retest_strong /
+          dc20_support_break_retest_strong (B594 LOCAL signals -
+          breakout bar cleared the level by >= 0.5*ATR(14) instead of
+          merely crossing it)
+      (f) Regime affinity: relies on Batch 291 direction-aware default
+          (long -> {bull, neutral}, short -> {bear, crisis, neutral}).
+          NOT in STRATEGY_REGIME_AFFINITY map - the default handles it.
+          Note: owner approved "SHORT to bear/crisis" but the default
+          also allows neutral for shorts. Documented for follow-up.
     """
-    fl = (s.get("resistance_break_retest") and s.get("vol_above_avg")
+    fl = (s.get("dc20_resistance_break_retest_strong")
+          and s.get("vol_below_avg")
           and s.get("macd_12_26_9_bullish")
           and s.get("close_above_open")
           and s.get("close_in_top_40pct_of_range"))
-    fs = (s.get("support_break_retest") and s.get("vol_above_avg")
+    fs = (s.get("dc20_support_break_retest_strong")
+          and s.get("vol_below_avg")
           and not s.get("macd_12_26_9_bullish")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest","vol_above_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
-        ["support_break_retest","vol_above_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
-        ["Post-break retest of 10-day Donchian high","Volume above 20d avg",
+        ["dc20_resistance_break_retest_strong","vol_below_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
+        ["dc20_support_break_retest_strong","vol_below_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
+        ["Post-break retest of 20-day Donchian high (strong break: >=0.5*ATR clearance)","Volume below 20d avg (Bulkowski retest thesis)",
          "MACD positive","Bullish bar (close above open)","Strong close (top 40pct of range)"],
-        ["Post-break retest of 10-day Donchian low","Volume above 20d avg",
+        ["Post-break retest of 20-day Donchian low (strong break: >=0.5*ATR clearance)","Volume below 20d avg",
          "MACD negative","Bearish bar (close below open)","Strong close (bottom 40pct of range)"])
 
 
@@ -4280,7 +4295,7 @@ ALL_STRATEGIES = {
     # 6 explicit _retest variants for breakouts that previously fired only
     # on the initial break. Reuses resistance_break_retest / support_break_retest
     # primitive from technical.compute_break_retest_signals.
-    "donchian_10_breakout_retest":      strat_donchian_10_breakout_retest,
+    "donchian_20_breakout_retest":      strat_donchian_20_breakout_retest,
     # Batch 592 restored donchian_breakdown_retest_short:
     "donchian_breakdown_retest_short":  strat_donchian_breakdown_retest_short,
     "volume_spike_breakout_retest":     strat_volume_spike_breakout_retest,
