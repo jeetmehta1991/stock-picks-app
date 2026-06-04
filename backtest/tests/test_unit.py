@@ -10244,8 +10244,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 507 M6 Path-2: 198 -> 200 (2 YoY-growth PEAD sleeves)
     #   Batch 519 P15 sleeves: 200 -> 202 (squeeze_setup_long + short_borrow_trap_avoid)
     #   Batch 531 P17 sleeves: 202 -> 204 (activist_13d_long + m_and_a_target_long)
-    assert len(ALL_STRATEGIES) == 204, (
-        f"F-002 drift: ALL_STRATEGIES expected 204 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 572 candle inverse: 204 -> 205 (doji_at_resistance_short per Stage 4 walk)
+    assert len(ALL_STRATEGIES) == 205, (
+        f"F-002 drift: ALL_STRATEGIES expected 205 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10260,9 +10261,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 203, (
-        f"F-002 drift: active strategy count expected 201 (Batch 487 SM1 + "
-        f"Batch 507 M6 Path-2); got {active}."
+    assert active == 204, (
+        f"F-002 drift: active strategy count expected 204 (Batch 572 +1 "
+        f"doji_at_resistance_short minus 1 disabled); got {active}."
     )
 
     # F-004 exit method count

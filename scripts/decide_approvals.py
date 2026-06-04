@@ -45,7 +45,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-VALID_STATUSES = {"Approved", "Rejected", "Deferred", "Awaiting"}
+VALID_STATUSES = {"Approved", "Rejected", "Deferred", "Awaiting", "Implemented"}
 
 # Per-workflow Stage 4 6-class set + B571 Class 7 extension. Class 7
 # NEW_STRATEGY captures owner-surfaced new-strategy candidates that the

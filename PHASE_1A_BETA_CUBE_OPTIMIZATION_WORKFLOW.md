@@ -314,13 +314,14 @@ Three reviewable artifacts emitted to `output_optimization_candidates_<YYYY_MM_D
 
 **Why per-change granularity (not per-strategy or per-batch):** if the next iteration's cube regresses after a Stage 5 implementation batch lands, the owner needs to know WHICH approved change caused the regression. Bundling 10 approvals into "approved batch 1" hides causality. Per-change tracking means each approved change is independently revertible and its delta (R5 vs R4) is independently observable on the Candidates tab "Lift" column.
 
-### Four approval statuses
+### Five approval statuses
 
 | Status | Meaning | Re-surfaces next iteration? |
 |---|---|---|
 | **Awaiting** | Optimizer surfaced it; owner hasn't decided yet. Default for new candidates. | Yes — appears at top of "Awaiting" filter until acted on. |
-| **Approved** | Greenlit — feeds the next Stage 5 implementation batch. Will appear as a new DEC + code change + R{N+1} cube. | No — graduates to "Implemented" status post Stage 5. |
-| **Rejected** | Owner judged it wrong (literature contradicts the empirical signal, fluke from sample bias, contradicts an existing DEC, etc.). Stays in queue with rejection reason. | Only re-proposed if the cube data changes materially (e.g., new strategy added that re-triggers the recommendation) — wouldn't re-surface on routine R+1 re-run. |
+| **Approved** | Greenlit — feeds the next Stage 5 implementation batch. Will appear as a new DEC + code change + R{N+1} cube. | No — graduates to `Implemented` status post Stage 5. |
+| **Implemented (B572)** | Code change has shipped (strategy wired in screener.py for Class 7 NEW_STRATEGY; threshold loosened in config.py for Class 2; etc.). Participates in next cube iteration. For Class 7 new-strategy creations per `feedback_wire_new_strategies_on_the_spot`, this status is reached the SAME turn the candidate is surfaced (skip the Approved-and-wait state). | No — stays implemented; verdict surfaces in next R-iteration's cube. |
+| **Rejected** | Owner judged it wrong (literature contradicts the empirical signal, fluke from sample bias, contradicts an existing DEC, etc.). Stays in queue with rejection reason. | Only re-proposed if the cube data changes materially. |
 | **Deferred** | "Right idea, wrong time" — e.g., a `STRATEGY_REGIME_AFFINITY` rule that only applies once Phase 1A-β bypass-flags are removed. | Yes — auto-resurfaces when its dependency unblocks (e.g., transition to Phase 1B-α). |
 
 ### Seven change classes
