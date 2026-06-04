@@ -418,6 +418,15 @@ def signal_plain_translation(signal: str) -> str:
         "dc10_breakout_dn":    "today's close <= 100.2% of the lowest LOW over the PRIOR 10 trading days (B584 fix). 0.2% slack permits 'almost a breakdown'.",
         "dc20_breakout_up":    "today's close >= 99.8% of the highest HIGH over the PRIOR 20 trading days (B584 fix)",
         "dc20_breakout_dn":    "today's close <= 100.2% of the lowest LOW over the PRIOR 20 trading days (B584 fix)",
+        # B591 LOCAL 1pct-tolerance variants (consumed by donchian_10_breakout alone)
+        "dc10_breakout_up_1pct": "today's close >= 99% of the highest HIGH over the PRIOR 10 trading days (1pct slack vs the 0.2pct default of dc10_breakout_up). LOCAL signal consumed by strat_donchian_10_breakout alone (B591).",
+        "dc10_breakout_dn_1pct": "today's close <= 101% of the lowest LOW over the PRIOR 10 trading days (1pct slack vs 0.2pct default). LOCAL signal (B591).",
+        # B592 LOCAL strong-breakout filter (consumed by donchian_10_breakout alone)
+        "dc10_strong_breakout_up": "today's close >= (highest HIGH over prior 10 days) + 0.5*ATR(14). Volatility-adjusted strong-breakout filter -- close must meaningfully exceed the prior 10-day high, not just touch it. LOCAL signal (B592 close-out of B591 (e); EWM Wilder ATR period 14).",
+        "dc10_strong_breakout_dn": "today's close <= (lowest LOW over prior 10 days) - 0.5*ATR(14). Mirror of dc10_strong_breakout_up (B592).",
+        # Break-and-retest (BUG-111 / Batch 329) -- DC20-anchored multi-bar pattern
+        "resistance_break_retest": "(BUG-111 multi-bar pattern, anchored on DC20 = prior-20-day max-CLOSE level). ALL conditions: (a) breakout: some bar 2-8 bars ago (lag in 2..8) closed STRICTLY ABOVE the max CLOSE of the 20 bars preceding that bar; (b) retest: between the breakout bar and today, at least one bar's LOW was <= (breakout_level + 1.5*ATR(14)) -- i.e. price came back to within 1.5 ATR of the broken level from above; (c) hold: today's close >= broken_level (still trading above the flipped resistance->support). All 3 required; first lag that satisfies all 3 fires the signal (TYPICAL: 3-5 bars post-breakout).",
+        "support_break_retest":    "Mirror of resistance_break_retest (BUG-111). DC20-anchored on prior-20-day min-CLOSE. ALL: (a) breakdown 2-8 bars ago closed STRICTLY BELOW the prior 20d min CLOSE; (b) at least one subsequent bar's HIGH >= (breakdown_level - 1.5*ATR(14)) (retest came back within 1.5 ATR from below); (c) today's close <= broken_level (still below the flipped support->resistance). 1.5*ATR uses 14-bar EWM Wilder ATR.",
         # Day-of-bar primitives
         "close_above_open":    "today's close STRICTLY GREATER THAN today's open (bullish bar)",
         "close_below_open":    "today's close STRICTLY LESS THAN today's open (bearish bar)",
@@ -430,17 +439,31 @@ def signal_plain_translation(signal: str) -> str:
 
 
 def render_trigger_plain(signals_used: list, fires_expr: str) -> str:
-    """Render plain-language trigger conditions. B586: combine signals
-    via AND joiner (most strategies are AND-gated). For OR-gated
-    strategies (rare), the raw fires_expr will still be visible in
-    the Trigger column."""
+    """Render plain-language trigger conditions as bullet-point list.
+
+    Batch 593 (2026-06-05 owner directive): "retain the description but
+    put in bullet points to make it more readable." Each signal renders
+    as a separate <br>-separated bullet inside the table cell so the
+    column remains a single row but reads vertically.
+
+    For OR-gated strategies (rare), the joiner is rendered as
+    "OR" between bullets; for AND-gated (default), no explicit joiner
+    is needed since all bullets must hold.
+    """
     if not signals_used:
         return "(see source)"
     translated = [signal_plain_translation(s) for s in signals_used]
-    # Detect OR in raw expression - if present, hint at it
     has_or = " or " in (fires_expr or "").lower()
-    joiner = " OR " if has_or else " AND "
-    return joiner.join(translated)
+    if has_or:
+        # OR-gated: insert "OR" between bullets to make the logic clear
+        bullets = []
+        for i, t in enumerate(translated):
+            prefix = "- " if i == 0 else "- OR "
+            bullets.append(f"{prefix}{t}")
+    else:
+        # AND-gated: all bullets must hold (implicit AND)
+        bullets = [f"- {t}" for t in translated]
+    return "<br>".join(bullets)
 
 
 def load_signal_definitions() -> list:
