@@ -68,19 +68,43 @@ def _run(*args):
     )
 
 
-def test_batch570_class6_selector_matches_7(tmp_approvals):
-    """Pin (1): selecting --change-class 6 --status-from Deferred
-    finds the 7 PLZL rows that the live approvals.json (post B570
-    decision) already has Deferred."""
-    data = json.loads(tmp_approvals.read_text(encoding="utf-8"))
+@pytest.fixture
+def tmp_approvals_with_class6_deferred(tmp_approvals):
+    """Apply the B570 Class-6 Defer flip on the tmp copy so tests can
+    verify the post-decision state without depending on whether the
+    LIVE approvals.json has been reset by sibling test_batch567
+    fixtures (B567 uses --force which resets all rows to Awaiting).
+
+    This isolates B570 verification from test-order side effects."""
+    rc = _run(
+        "--approvals", str(tmp_approvals),
+        "--change-class", "6",
+        "--status-from", "Awaiting",
+        "--to-status", "Deferred",
+        "--by", "owner_jeet",
+        "--dependency", "producer_audit_per_strategy",
+        "--rationale",
+        "Defer pending per-strategy producer audit per "
+        "project_no_apriori_strategy_pruning + workflow line 343 sweep "
+        "advice; all 7 candidates are recent additions with known "
+        "producer-fix precedent (B556/B559/B561).",
+    )
+    assert rc.returncode == 0, (
+        f"B570 flip subprocess failed; stderr={rc.stderr}"
+    )
+    return tmp_approvals
+
+
+def test_batch570_class6_selector_matches_7(tmp_approvals_with_class6_deferred):
+    """Pin (1): 7 Class-6 rows post-flip."""
+    data = json.loads(tmp_approvals_with_class6_deferred.read_text(encoding="utf-8"))
     class6 = [r for r in data["approvals"] if r["change_class"] == 6]
     assert len(class6) == 7
 
 
-def test_batch570_class6_all_deferred(tmp_approvals):
-    """Pin (2): live approvals.json reflects the owner decision -
-    all 7 Class-6 rows are Deferred."""
-    data = json.loads(tmp_approvals.read_text(encoding="utf-8"))
+def test_batch570_class6_all_deferred(tmp_approvals_with_class6_deferred):
+    """Pin (2): all 7 Class-6 rows are Deferred post-flip."""
+    data = json.loads(tmp_approvals_with_class6_deferred.read_text(encoding="utf-8"))
     class6 = [r for r in data["approvals"] if r["change_class"] == 6]
     statuses = {r["status"] for r in class6}
     assert statuses == {"Deferred"}, (
@@ -88,9 +112,9 @@ def test_batch570_class6_all_deferred(tmp_approvals):
     )
 
 
-def test_batch570_dependency_set(tmp_approvals):
+def test_batch570_dependency_set(tmp_approvals_with_class6_deferred):
     """Pin (3): dependency = producer_audit_per_strategy on all 7."""
-    data = json.loads(tmp_approvals.read_text(encoding="utf-8"))
+    data = json.loads(tmp_approvals_with_class6_deferred.read_text(encoding="utf-8"))
     class6 = [r for r in data["approvals"] if r["change_class"] == 6]
     for r in class6:
         assert r["dependency"] == "producer_audit_per_strategy", (
@@ -99,10 +123,10 @@ def test_batch570_dependency_set(tmp_approvals):
         )
 
 
-def test_batch570_history_populated(tmp_approvals):
+def test_batch570_history_populated(tmp_approvals_with_class6_deferred):
     """Pin (4): each Class-6 row has 1 history entry with the
     Awaiting -> Deferred flip metadata."""
-    data = json.loads(tmp_approvals.read_text(encoding="utf-8"))
+    data = json.loads(tmp_approvals_with_class6_deferred.read_text(encoding="utf-8"))
     class6 = [r for r in data["approvals"] if r["change_class"] == 6]
     for r in class6:
         assert len(r["history"]) == 1
@@ -114,13 +138,17 @@ def test_batch570_history_populated(tmp_approvals):
         assert h["ts"]
 
 
-def test_batch570_summary_recomputed(tmp_approvals):
-    """Pin (5): summary reflects the flips (343 Awaiting + 8 Deferred
-    after Class 6 batch + 1 auto-Deferred Class 5)."""
-    data = json.loads(tmp_approvals.read_text(encoding="utf-8"))
+def test_batch570_summary_recomputed(tmp_approvals_with_class6_deferred):
+    """Pin (5): summary reflects the flips. After the Class-6 batch
+    flip on a pristine tmp_approvals copy: total - 7 Awaiting were
+    Class-6 + 1 was always Class-5 Deferred -> Awaiting -= 7;
+    Deferred += 7."""
+    data = json.loads(tmp_approvals_with_class6_deferred.read_text(encoding="utf-8"))
     bs = data["summary"]["by_status"]
-    assert bs["Awaiting"] == 343, f"Awaiting count: {bs['Awaiting']}"
-    assert bs["Deferred"] == 8, f"Deferred count: {bs['Deferred']}"
+    total = data["summary"]["total"]
+    # 1 Class-5 was auto-Deferred at init; 7 Class-6 flipped here
+    assert bs["Deferred"] == 8
+    assert bs["Awaiting"] == total - bs["Deferred"]
     assert bs["Approved"] == 0
     assert bs["Rejected"] == 0
 
@@ -142,13 +170,13 @@ def test_batch570_dry_run_no_mutation(tmp_approvals):
     assert before == after, "dry-run modified the file"
 
 
-def test_batch570_rerun_is_noop(tmp_approvals):
+def test_batch570_rerun_is_noop(tmp_approvals_with_class6_deferred):
     """Pin (7): re-running the same Defer flip on already-Deferred rows
     is a no-op."""
     rc = _run(
-        "--approvals", str(tmp_approvals),
+        "--approvals", str(tmp_approvals_with_class6_deferred),
         "--change-class", "6",
-        "--status-from", "Deferred",  # re-target already-Deferred rows
+        "--status-from", "Deferred",
         "--to-status", "Deferred",
         "--by", "owner_jeet",
         "--rationale", "noop re-run",
@@ -156,7 +184,7 @@ def test_batch570_rerun_is_noop(tmp_approvals):
     assert rc.returncode == 0
     assert "noop" in rc.stdout.lower() or "0 changed" in rc.stdout
     # Verify rows weren't double-history'd
-    data = json.loads(tmp_approvals.read_text(encoding="utf-8"))
+    data = json.loads(tmp_approvals_with_class6_deferred.read_text(encoding="utf-8"))
     class6 = [r for r in data["approvals"] if r["change_class"] == 6]
     for r in class6:
         assert len(r["history"]) == 1, (
