@@ -74,10 +74,11 @@ def test_batch575_row_count_matches_all_strategies(regen_doc):
 
 
 def test_batch575_columns_present(regen_doc):
-    """Pin (4)."""
+    """Pin (4). B576: Roster Status + Stage 4 Status columns added."""
     expected_headers = [
         "Name", "Category", "Direction", "Trigger",
-        "Signals consumed", "Regime affinity", "Status",
+        "Signals consumed", "Regime affinity",
+        "Roster Status", "Stage 4 Status",
     ]
     for h in expected_headers:
         assert h in regen_doc, f"missing column header: {h}"

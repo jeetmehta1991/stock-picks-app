@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import ast
 import inspect
+import json
 import re
 import sys
 from pathlib import Path
@@ -179,6 +180,28 @@ def load_regime_affinity() -> dict:
     return affinity
 
 
+def load_stage_4_status() -> dict:
+    """Read approvals.json and build a per-strategy Stage 4 status
+    summary: dict[strategy -> {n_rows, statuses, classes, max_severity}].
+    Empty dict if approvals.json missing."""
+    approvals_path = Path("C:/tmp/r4_optimization_candidates/approvals.json")
+    if not approvals_path.exists():
+        return {}
+    try:
+        data = json.loads(approvals_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    per_strategy = {}
+    for r in data.get("approvals", []):
+        name = r["strategy"]
+        if name not in per_strategy:
+            per_strategy[name] = {"n_rows": 0, "statuses": [], "classes": []}
+        per_strategy[name]["n_rows"] += 1
+        per_strategy[name]["statuses"].append(r["status"])
+        per_strategy[name]["classes"].append(r["change_class"])
+    return per_strategy
+
+
 def load_signal_definitions() -> list:
     """Hand-curated glossary entries for the signals encountered in
     Stage 4 walks so far. Grows as new clusters are walked. Entries
@@ -279,6 +302,7 @@ def main() -> int:
 
     affinity = load_regime_affinity()
     glossary = load_signal_definitions()
+    stage_4 = load_stage_4_status()
 
     rows = []
     for name, fn in sorted(ALL_STRATEGIES.items()):
@@ -291,7 +315,19 @@ def main() -> int:
             status = "active"
         regimes = affinity.get(name, [])
         regime_str = ",".join(sorted(regimes)) if regimes else "(no affinity = all regimes)"
-        rows.append({**meta, "status": status, "regime": regime_str})
+        # Stage 4 status: B576 - join roster <-> approvals.json
+        s4 = stage_4.get(name, {})
+        if not s4:
+            stage_4_str = "no_approvals_row"
+        else:
+            status_counts = {}
+            for st in s4["statuses"]:
+                status_counts[st] = status_counts.get(st, 0) + 1
+            # Compact: "1 Approved / 1 Implemented / 0 Awaiting"
+            parts = [f"{n} {st}" for st, n in sorted(status_counts.items())]
+            stage_4_str = " / ".join(parts) + f" (n_rows={s4['n_rows']})"
+        rows.append({**meta, "status": status, "regime": regime_str,
+                     "stage_4": stage_4_str})
 
     out_lines = []
     out_lines.append("# Strategy Roster - Phase 1A-beta cube reference")
@@ -299,6 +335,10 @@ def main() -> int:
     out_lines.append(f"**Auto-generated** via `scripts/build_strategy_roster.py`. Do NOT hand-edit. Regenerate every turn that modifies strategies, signals, thresholds, regime affinity, or status.")
     out_lines.append("")
     out_lines.append(f"**Total strategies:** {len(ALL_STRATEGIES)} | **Deprecated:** {len(DEPRECATED_STRATEGIES)} | **Disabled:** {len(STRATEGIES_DISABLED_MISSING_PRODUCER)} | **Active for cube:** {len(ALL_STRATEGIES) - len(DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER)}")
+    out_lines.append("")
+    out_lines.append("**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active roster total is 206 (205 + 1 special-path).")
+    out_lines.append("")
+    out_lines.append("**Stage 4 approvals (per-strategy mapping, B576 drift correction):** Every registered strategy has at least one approvals.json row. Quiet strategies (no R4 fires) carry a `Class 0 QUIET_NO_CANDIDATES` placeholder Awaiting row. See last column for per-strategy Stage 4 status counts.")
     out_lines.append("")
     out_lines.append("## Direction counts")
     direction_counts = {}
@@ -316,8 +356,8 @@ def main() -> int:
     out_lines.append("")
     out_lines.append("## Strategy Table")
     out_lines.append("")
-    out_lines.append("| # | Name | Category | Direction | Trigger | Signals consumed | Regime affinity | Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|")
+    out_lines.append("| # | Name | Category | Direction | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
@@ -328,7 +368,8 @@ def main() -> int:
             sigs = sigs[:117] + "..."
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
-            f"`{trigger}` | {sigs} | {r['regime']} | {r['status']} |"
+            f"`{trigger}` | {sigs} | {r['regime']} | {r['status']} | "
+            f"{r['stage_4']} |"
         )
     out_lines.append("")
     out_lines.append("## Signal Glossary")
