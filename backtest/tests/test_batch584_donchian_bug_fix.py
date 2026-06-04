@@ -139,56 +139,76 @@ def test_batch584_dc10_display_signals_include_today():
 
 
 def test_batch584_donchian_10_breakout_downstream():
-    """Pin (7): strat_donchian_10_breakout fires given post-fix signals."""
+    """Pin (7): strat_donchian_10_breakout fires given post-fix signals.
+    Batch 591 added (b) dc10_breakout_up_1pct + (c) close_above_open +
+    (d) close_in_top_40pct_of_range gates - test updated to include them."""
     from backtest.signals.screener import strat_donchian_10_breakout
     s = {
-        "dc10_breakout_up": True,
+        "dc10_breakout_up_1pct": True,
         "vol_above_avg": True,
         "macd_12_26_9_bullish": True,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
     }
     out = strat_donchian_10_breakout(s)
-    # _strat3 returns fires_long / fires_short separately
-    assert (out.get("fires_long") or out.get("fires")) == True, (
-        f"donchian_10_breakout long should fire: {out}"
+    assert out.get("fires") == True, (
+        f"donchian_10_breakout long should fire post-B591 with all 5 gates: {out}"
     )
+    assert out.get("direction") == "long"
 
 
-def test_batch584_donchian_breakdown_short_downstream():
-    """Pin (8): strat_donchian_breakdown_short fires given post-fix
-    signals."""
-    from backtest.signals.screener import strat_donchian_breakdown_short
+def test_batch584_donchian_breakout_long_downstream():
+    """Pin (8) POST-B591: strat_donchian_breakdown_short was DELETED in
+    Batch 591; the tight-long mirror strat_donchian_breakout_long
+    replaces it for symmetry. Test asserts the new replacement strategy
+    fires given equivalent post-B584-fix signals."""
+    from backtest.signals.screener import strat_donchian_breakout_long
     s = {
-        "dc10_breakout_dn": True,
+        "dc10_breakout_up": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bullish": True,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
     }
-    out = strat_donchian_breakdown_short(s)
+    out = strat_donchian_breakout_long(s)
     assert out["fires"] == True
-    assert out["direction"] == "short"
+    assert out["direction"] == "long"
 
 
 def test_batch584_full_pipeline_amd_style():
     """Pin (9): full pipeline from synthetic OHLCV through
-    compute_donchian to strat_donchian_10_breakout."""
+    compute_donchian + compute_volume to strat_donchian_10_breakout.
+    Batch 591 added strong-close + bullish-bar gates - fixture updated
+    so today's bar reflects them (open < close, close in top 40% of
+    bar range)."""
     from backtest.signals.technical import compute_donchian, compute_volume
     from backtest.signals.screener import strat_donchian_10_breakout
     n = 30
     cl = list(np.linspace(100, 105, n - 1)) + [110.0]
-    hi = list(np.linspace(101, 106, n - 1)) + [111.0]
-    lo = list(np.linspace( 99, 104, n - 1)) + [109.0]
+    hi = list(np.linspace(101, 106, n - 1)) + [110.5]  # close 110 in top
+                                                        # 40pct: (110.5-110)
+                                                        # /(110.5-108)=0.2
+    lo = list(np.linspace( 99, 104, n - 1)) + [108.0]
     # Volume spike on breakout day
     vol = [1_000_000] * (n - 1) + [2_500_000]
+    # _build_df sets open=close by default - override today's open to
+    # 108.5 so close (110) > open -> close_above_open True
     df = _build_df(cl, hi, lo, vol)
+    df.iloc[-1, df.columns.get_loc("open")] = 108.5
     dc_out = compute_donchian(df)
     vol_out = compute_volume(df)
-    signals = {**dc_out, **vol_out, "macd_12_26_9_bullish": True}
+    # close_above_open is emitted from a separate producer
+    # (compute_overnight_returns); inject directly since this test only
+    # covers the donchian->volume->strategy path
+    signals = {**dc_out, **vol_out,
+               "macd_12_26_9_bullish": True,
+               "close_above_open": True}
     out = strat_donchian_10_breakout(signals)
-    # _strat3 result has fires_long for the up direction
-    fires_l = out.get("fires_long", False) or (
-        out.get("fires") and out.get("direction") == "long"
-    )
-    assert fires_l == True, (
-        f"AMD-style breakout end-to-end should fire donchian_10_breakout long; "
-        f"dc10_breakout_up={dc_out['dc10_breakout_up']} "
-        f"vol_above_avg={vol_out['vol_above_avg']}"
+    assert out.get("fires") == True and out.get("direction") == "long", (
+        f"AMD-style breakout end-to-end should fire donchian_10_breakout long "
+        f"post-B591; dc10_breakout_up_1pct={dc_out.get('dc10_breakout_up_1pct')} "
+        f"vol_above_avg={vol_out.get('vol_above_avg')} "
+        f"close_above_open={vol_out.get('close_above_open')} "
+        f"close_in_top_40pct_of_range={vol_out.get('close_in_top_40pct_of_range')} "
+        f"out={out}"
     )

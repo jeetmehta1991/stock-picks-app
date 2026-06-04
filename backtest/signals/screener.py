@@ -913,13 +913,30 @@ def strat_donchian_10_breakout(s):
     """Batch 320 (2026-05-25): loosened vol gate from vol_spike_15x to
     vol_above_avg (>=1.0x) per owner directive. The 1.5x bar at Phase
     1A-beta scale gated out all 10-day breakouts on the trade log;
-    above-average volume on the breakout day is still required."""
-    fl = (s.get("dc10_breakout_up") and s.get("vol_above_avg") and s.get("macd_12_26_9_bullish"))
-    fs = (s.get("dc10_breakout_dn") and s.get("vol_above_avg") and not s.get("macd_12_26_9_bullish"))
+    above-average volume on the breakout day is still required.
+
+    Batch 591 (2026-06-04 owner-directed Stage 4 walk):
+      (b) dc10_breakout_up/dn -> dc10_breakout_up_1pct/dn_1pct (1% tolerance,
+          LOCAL signals consumed by donchian_10_breakout alone)
+      (c) added close_above_open (long) / close_below_open (short)
+      (d) added close_in_top_40pct_of_range (long) /
+          close_in_bottom_40pct_of_range (short)
+      (e) SKIPPED - B590 false-breakout filters don't translate
+          to breakout-entry; flagged for clarification.
+    """
+    fl = (s.get("dc10_breakout_up_1pct") and s.get("vol_above_avg")
+          and s.get("macd_12_26_9_bullish")
+          and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range"))
+    fs = (s.get("dc10_breakout_dn_1pct") and s.get("vol_above_avg")
+          and not s.get("macd_12_26_9_bullish")
+          and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
-        ["dc10_breakout_up","vol_above_avg","macd_bullish"], ["dc10_breakout_dn","vol_above_avg","macd_bearish"],
-        ["Price broke 10-day Donchian high","Volume above 20d avg confirms","MACD positive"],
-        ["Price broke 10-day Donchian low","Volume above 20d avg confirms","MACD negative"])
+        ["dc10_breakout_up_1pct","vol_above_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
+        ["dc10_breakout_dn_1pct","vol_above_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
+        ["Price broke 10-day Donchian high (1pct tolerance)","Volume above 20d avg confirms","MACD positive","Bullish bar (close above open)","Strong close (top 40pct of range)"],
+        ["Price broke 10-day Donchian low (1pct tolerance)","Volume above 20d avg confirms","MACD negative","Bearish bar (close below open)","Strong close (bottom 40pct of range)"])
 
 
 # BUG-111 retest variants (Batch 329 2026-05-25 owner-approved option b):
@@ -937,31 +954,40 @@ def strat_donchian_10_breakout_retest(s):
     """BUG-111 (Batch 329): retest variant of donchian_10_breakout.
     Same direction gates as parent, but waits for the post-break pullback
     (resistance_break_retest / support_break_retest) instead of firing on
-    the break itself. Bulkowski 2005: retest entry has lower fakeout risk."""
+    the break itself. Bulkowski 2005: retest entry has lower fakeout risk.
+
+    Batch 591 (2026-06-04 owner-directed Stage 4 walk, answer C "apply
+    (c)+(d) to retest as well; skip (e) - time filter semantically
+    baked into retest concept by definition"):
+      (c) added close_above_open (long) / close_below_open (short)
+      (d) added close_in_top_40pct_of_range (long) /
+          close_in_bottom_40pct_of_range (short)
+    Note: (b) 1% tolerance does NOT apply here - the retest fires on
+    resistance_break_retest / support_break_retest primitives, which
+    don't directly consume dc10_breakout_up/dn.
+    """
     fl = (s.get("resistance_break_retest") and s.get("vol_above_avg")
-          and s.get("macd_12_26_9_bullish"))
+          and s.get("macd_12_26_9_bullish")
+          and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range"))
     fs = (s.get("support_break_retest") and s.get("vol_above_avg")
-          and not s.get("macd_12_26_9_bullish"))
+          and not s.get("macd_12_26_9_bullish")
+          and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest","vol_above_avg","macd_bullish"],
-        ["support_break_retest","vol_above_avg","macd_bearish"],
+        ["resistance_break_retest","vol_above_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
+        ["support_break_retest","vol_above_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
         ["Post-break retest of 10-day Donchian high","Volume above 20d avg",
-         "MACD positive"],
+         "MACD positive","Bullish bar (close above open)","Strong close (top 40pct of range)"],
         ["Post-break retest of 10-day Donchian low","Volume above 20d avg",
-         "MACD negative"])
+         "MACD negative","Bearish bar (close below open)","Strong close (bottom 40pct of range)"])
 
 
-def strat_donchian_breakdown_retest_short(s):
-    """BUG-111 (Batch 329): retest variant of donchian_breakdown_short.
-    Short on the post-break retest of broken support."""
-    fires = (s.get("support_break_retest")
-             and s.get("vol_spike_15x")
-             and not s.get("macd_12_26_9_bullish"))
-    return _strat(fires, "short", "breakout",
-        ["support_break_retest","vol_spike_15x","macd_bearish"],
-        ["Post-break retest of broken Donchian support",
-         "Volume 1.5x confirms institutional supply",
-         "MACD bearish - trend agrees"])
+# Batch 591 (2026-06-04 owner directive Stage 4 walk):
+#   strat_donchian_breakdown_retest_short DELETED (eliminated together with
+#   strat_donchian_breakdown_short to restore symmetry; tight-short variant
+#   replaced by tight-long variant strat_donchian_breakout_long /
+#   strat_donchian_breakout_retest_long below).
 
 
 def strat_volume_spike_breakout_retest(s):
@@ -1252,15 +1278,58 @@ def strat_stochrsi_overbought_short(s):
 
 # --- Breakdown shorts (3  -  no long equivalent) ---
 
-def strat_donchian_breakdown_short(s):
-    fires = (s.get("dc10_breakout_dn") and
-             s.get("vol_spike_15x") and
-             not s.get("macd_12_26_9_bullish"))
-    return _strat(fires, "short", "breakout",
-        ["dc10_breakout_dn", "vol_spike_1.5x", "macd_bearish"],
-        ["Price broke 10-day Donchian low  -  downside breakout",
-         "Volume 1.5x confirms institutional selling pressure",
-         "MACD negative  -  momentum confirms the breakdown"])
+# Batch 591 (2026-06-04 owner directive Stage 4 walk):
+#   strat_donchian_breakdown_short DELETED. Rationale: it duplicated the
+#   short side of bidirectional strat_donchian_10_breakout at a tighter
+#   vol gate (1.5x vs 1.0x), creating long/short asymmetry (long had
+#   only loose variant; short had both loose AND tight). Owner directive
+#   "eliminate with strat_donchian_breakout_long" - replace the
+#   tight-short variant with a symmetric tight-long variant (added below
+#   in Class 7 NEW Strategy section).
+
+
+def strat_donchian_breakout_long(s):
+    """Batch 591 (2026-06-04 owner-directed Class 7 NEW): tight long-only
+    Donchian-10 breakout. Mirror of the deleted donchian_breakdown_short
+    (1.5x vol gate) plus B589-style strong-close + bullish-bar gates.
+    Producer signals: dc10_breakout_up (existing 0.2pct tolerance),
+    vol_spike_15x, macd_12_26_9_bullish, close_above_open,
+    close_in_top_40pct_of_range.
+    """
+    fires = (s.get("dc10_breakout_up")
+             and s.get("vol_spike_15x")
+             and s.get("macd_12_26_9_bullish")
+             and s.get("close_above_open")
+             and s.get("close_in_top_40pct_of_range"))
+    return _strat(fires, "long", "breakout",
+        ["dc10_breakout_up","vol_spike_15x","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
+        ["Price broke 10-day Donchian high - upside breakout",
+         "Volume 1.5x confirms institutional buying pressure",
+         "MACD positive - momentum confirms the breakout",
+         "Bullish bar (close above open)",
+         "Strong close (top 40pct of range)"])
+
+
+def strat_donchian_breakout_retest_long(s):
+    """Batch 591 (2026-06-04 owner-directed Class 7 NEW retest mirror):
+    tight long-only retest variant. Mirror of the deleted
+    donchian_breakdown_retest_short. Owner answer C: (c)+(d) apply but
+    skip (e) for retest variants. Producer: resistance_break_retest,
+    vol_spike_15x, macd_12_26_9_bullish, close_above_open,
+    close_in_top_40pct_of_range.
+    """
+    fires = (s.get("resistance_break_retest")
+             and s.get("vol_spike_15x")
+             and s.get("macd_12_26_9_bullish")
+             and s.get("close_above_open")
+             and s.get("close_in_top_40pct_of_range"))
+    return _strat(fires, "long", "breakout",
+        ["resistance_break_retest","vol_spike_15x","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
+        ["Post-break retest of broken Donchian resistance",
+         "Volume 1.5x confirms institutional demand",
+         "MACD bullish - trend agrees",
+         "Bullish bar (close above open)",
+         "Strong close (top 40pct of range)"])
 
 
 def strat_52w_low_breakdown(s):
@@ -4138,10 +4207,13 @@ ALL_STRATEGIES = {
     "macd_crossover_short":         strat_macd_crossover_short,
     "hull_rsi_short":               strat_hull_rsi_short,
     "stochrsi_overbought_short":    strat_stochrsi_overbought_short,
-    # Dedicated shorts  -  Breakdown (3)
-    "donchian_breakdown_short":     strat_donchian_breakdown_short,
+    # Dedicated shorts  -  Breakdown (2) - Batch 591 deleted donchian_breakdown_short
     "52w_low_breakdown":            strat_52w_low_breakdown,
     "prev_day_low_breakdown":       strat_prev_day_low_breakdown,
+    # Batch 591 (2026-06-04) Class 7 NEW tight-long mirrors (replace deleted
+    # donchian_breakdown_short + donchian_breakdown_retest_short for symmetry):
+    "donchian_breakout_long":           strat_donchian_breakout_long,
+    "donchian_breakout_retest_long":    strat_donchian_breakout_retest_long,
     # Dedicated shorts  -  Confluence (2)
     "camarilla_rsi_obv_short":      strat_camarilla_rsi_obv_short,
     "cpr_narrow_momentum_short":    strat_cpr_narrow_momentum_short,
@@ -4174,7 +4246,8 @@ ALL_STRATEGIES = {
     # on the initial break. Reuses resistance_break_retest / support_break_retest
     # primitive from technical.compute_break_retest_signals.
     "donchian_10_breakout_retest":      strat_donchian_10_breakout_retest,
-    "donchian_breakdown_retest_short":  strat_donchian_breakdown_retest_short,
+    # Batch 591 deleted donchian_breakdown_retest_short (replaced by
+    # donchian_breakout_retest_long registered above for symmetry)
     "volume_spike_breakout_retest":     strat_volume_spike_breakout_retest,
     "cup_and_handle_retest_long":       strat_cup_and_handle_retest_long,
     "flag_bull_retest_long":            strat_flag_bull_retest_long,
