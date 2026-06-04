@@ -266,6 +266,21 @@
 | 204 | `xs_momentum_with_smart_money_long` | smart_money_sleeve | long | YES | `(predicate not extracted - read source)` | xs_momentum_top_decile, price_above_ema_200, smart_money_buy | (no affinity = all regimes) | active | 2 Awaiting (n_rows=2) |
 | 205 | `xs_quality_top_quintile_long` | factor | long | YES | `fires = ( s.get("xs_quality_top_quintile", False) and s.get("price_above_ema_200", True) )` | xs_quality_top_quintile, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
 
+## Projected Strategies (PENDING owner approval, will be wired post-approval)
+
+**Source:** [STRATEGY_REGISTER.md](STRATEGY_REGISTER.md) Layer 4 + Layer 2D PENDING sub-decisions.
+
+**Note:** these strategies are NOT in `ALL_STRATEGIES` yet. They are owner-approval-pending additions. On approval of the corresponding DEC, each will be wired into `screener.py` via the standard `_strat()` pattern + registered in `ALL_STRATEGIES` + receive its own Stage 4 approvals row. The flagged strategies will be approved.
+
+| DEC | Proposed Name | Description | Est. Classes | Theoretical Basis | Layer | Status |
+|---|---|---|---|---|---|---|
+| DEC-141 | `sector_neutral_hedge_overlay` | Sector-neutral hedge overlay variant - long sleeve paired with sector-ETF short to neutralize sector beta | 1 | Hedge construction; sector-relative alpha extraction | Layer 4 (DEC-141) | PENDING_OWNER_APPROVAL |
+| DEC-142 | `market_neutral_long_short_spy` | Market-neutral long + short SPY overlay - long sleeve paired with SPY short to neutralize market beta | 1 | Market-neutral construction; absolute-return harvest | Layer 4 (DEC-142) | PENDING_OWNER_APPROVAL |
+| DEC-143 | `ipo_lockup_secondary_offering` | IPO + lockup expiration + secondary offering systematic framework (3 variants) | 3 | Field-Hanka 2001 JF lockup expiration; Bradley-Jordan-Ritter 2003 RFS IPO short-run drift | Layer 4 (DEC-143) | PENDING_OWNER_APPROVAL |
+| DEC-145 | `iv_delta_vs_historical_pre_earnings` | Pre-earnings implied-volatility delta vs historical IV pattern - fade or fade-the-fade | 1 | Diavatopoulos-Doran-Peterson 2008 options-implied earnings drift | Layer 4 (DEC-145) | PENDING_OWNER_APPROVAL |
+| DEC-176 | `meta_strategies_boolean_combinations` | Meta-strategies (boolean AND/OR combinations of existing strategies) - MULTIPLIER on existing classes, not additive | multiplier | Combinatorial signal compounding; per-cell empirical validation required | Layer 4 (DEC-176) | PENDING_OWNER_APPROVAL |
+| Layer-2D | `form_derived_ict_strategies` | Form-derived ICT strategies - owner-driven specification; no Claude drafts pending owner form completion | TBD-owner | ICT methodology; owner-curated pattern specification | Layer 2D (PENDING-FORM) | PENDING_OWNER_APPROVAL |
+
 ## Signal Glossary
 
 | Signal | Definition | Source |

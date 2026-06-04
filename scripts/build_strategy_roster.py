@@ -212,6 +212,77 @@ def load_stage_4_status() -> dict:
     return per_strategy
 
 
+def load_projected_strategies() -> list:
+    """B578: PROJECTED strategies sourced from STRATEGY_REGISTER.md
+    Layer 4 PENDING strategy-additive sub-decisions.
+
+    Per owner directive 2026-06-04: "update future strategies in
+    strategy roster doc from strategy register with a note that the
+    flagged strategies will be approved." These are NOT in
+    ALL_STRATEGIES yet; they are owner-approval-pending additions
+    that will be wired when their respective DECs are RESOLVED-DECIDED.
+
+    Each entry: dec_id, name, description, estimated_classes,
+    theoretical_basis, layer. Status uniformly 'PENDING_OWNER_APPROVAL'.
+
+    Source: STRATEGY_REGISTER.md Layer 4 (Pass 52). Updated when new
+    PENDING DECs land or existing ones get owner-approved (move to
+    ALL_STRATEGIES).
+    """
+    return [
+        {
+            "dec_id":       "DEC-141",
+            "name":         "sector_neutral_hedge_overlay",
+            "description":  "Sector-neutral hedge overlay variant - long sleeve paired with sector-ETF short to neutralize sector beta",
+            "est_classes":  1,
+            "layer":        "Layer 4 (DEC-141)",
+            "basis":        "Hedge construction; sector-relative alpha extraction",
+        },
+        {
+            "dec_id":       "DEC-142",
+            "name":         "market_neutral_long_short_spy",
+            "description":  "Market-neutral long + short SPY overlay - long sleeve paired with SPY short to neutralize market beta",
+            "est_classes":  1,
+            "layer":        "Layer 4 (DEC-142)",
+            "basis":        "Market-neutral construction; absolute-return harvest",
+        },
+        {
+            "dec_id":       "DEC-143",
+            "name":         "ipo_lockup_secondary_offering",
+            "description":  "IPO + lockup expiration + secondary offering systematic framework (3 variants)",
+            "est_classes":  3,
+            "layer":        "Layer 4 (DEC-143)",
+            "basis":        "Field-Hanka 2001 JF lockup expiration; Bradley-Jordan-Ritter 2003 RFS IPO short-run drift",
+        },
+        {
+            "dec_id":       "DEC-145",
+            "name":         "iv_delta_vs_historical_pre_earnings",
+            "description":  "Pre-earnings implied-volatility delta vs historical IV pattern - fade or fade-the-fade",
+            "est_classes":  1,
+            "layer":        "Layer 4 (DEC-145)",
+            "basis":        "Diavatopoulos-Doran-Peterson 2008 options-implied earnings drift",
+        },
+        {
+            "dec_id":       "DEC-176",
+            "name":         "meta_strategies_boolean_combinations",
+            "description":  "Meta-strategies (boolean AND/OR combinations of existing strategies) - MULTIPLIER on existing classes, not additive",
+            "est_classes":  "multiplier",
+            "layer":        "Layer 4 (DEC-176)",
+            "basis":        "Combinatorial signal compounding; per-cell empirical validation required",
+        },
+        # Layer 2D form-derived ICT - owner-driven; no Claude drafts per
+        # workflow directive. Placeholder so owner sees it's tracked.
+        {
+            "dec_id":       "Layer-2D",
+            "name":         "form_derived_ict_strategies",
+            "description":  "Form-derived ICT strategies - owner-driven specification; no Claude drafts pending owner form completion",
+            "est_classes":  "TBD-owner",
+            "layer":        "Layer 2D (PENDING-FORM)",
+            "basis":        "ICT methodology; owner-curated pattern specification",
+        },
+    ]
+
+
 def load_signal_definitions() -> list:
     """Hand-curated glossary entries for the signals encountered in
     Stage 4 walks so far. Grows as new clusters are walked. Entries
@@ -399,6 +470,29 @@ def main() -> int:
             f"{r['status']} | {r['stage_4']} |"
         )
     out_lines.append("")
+
+    # B578: Projected Strategies section sourced from STRATEGY_REGISTER.md
+    # Layer 4 PENDING owner approval per owner directive 2026-06-04:
+    # "update future strategies in strategy roster doc from strategy
+    # register with a note that the flagged strategies will be approved"
+    projected = load_projected_strategies()
+    if projected:
+        out_lines.append("## Projected Strategies (PENDING owner approval, will be wired post-approval)")
+        out_lines.append("")
+        out_lines.append("**Source:** [STRATEGY_REGISTER.md](STRATEGY_REGISTER.md) Layer 4 + Layer 2D PENDING sub-decisions.")
+        out_lines.append("")
+        out_lines.append("**Note:** these strategies are NOT in `ALL_STRATEGIES` yet. They are owner-approval-pending additions. On approval of the corresponding DEC, each will be wired into `screener.py` via the standard `_strat()` pattern + registered in `ALL_STRATEGIES` + receive its own Stage 4 approvals row. The flagged strategies will be approved.")
+        out_lines.append("")
+        out_lines.append("| DEC | Proposed Name | Description | Est. Classes | Theoretical Basis | Layer | Status |")
+        out_lines.append("|---|---|---|---|---|---|---|")
+        for p in projected:
+            out_lines.append(
+                f"| {p['dec_id']} | `{p['name']}` | {p['description']} | "
+                f"{p['est_classes']} | {p['basis']} | {p['layer']} | "
+                f"PENDING_OWNER_APPROVAL |"
+            )
+        out_lines.append("")
+
     out_lines.append("## Signal Glossary")
     out_lines.append("")
     out_lines.append("| Signal | Definition | Source |")
