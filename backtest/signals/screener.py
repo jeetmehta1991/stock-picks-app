@@ -2094,6 +2094,62 @@ def strat_smc_liquidity_sweep_reversal(s):
          "Followed by bearish CHoCH/BOS - reversal confirmed"])
 
 
+def strat_turtle_soup_long(s):
+    """Batch 580 (2026-06-04): Turtle Soup mean-reversion long per Linda
+    Bradford Raschke 'Street Smarts' (1996). First Layer 2D ICT pattern
+    wired via inline-spec protocol (Option A 2026-06-04 per
+    feedback_layer_2d_ict_inline_specification).
+
+    Setup: downside liquidity has been swept (retail stops below
+    support taken out) AND today's bar closes back ABOVE prior-day-low
+    AND closes bullish. The failed-breakdown pattern suggests the
+    downside move was a stop-hunt rather than a genuine trend
+    continuation. ICT framing: 'Judas Swing failed', return-to-range.
+
+    Distinct from `smc_liquidity_sweep_reversal` (which requires CHoCH
+    or BOS confirmation). Turtle Soup is the pure Raschke pattern -
+    no structure-shift confirmation needed, just the sweep + close
+    bullish + back-inside-range. Cleaner same-day signal; mean-reversion
+    direction.
+
+    Producer signals (all Layer 2A wired):
+      - smc_liquidity_swept_dn (smc_ict.py:341)
+      - below_prev_low / above_prev_high (technical.py:139)
+      - close_above_open (technical.py:153)
+    """
+    fires = (
+        s.get("smc_liquidity_swept_dn", False)
+        and not s.get("below_prev_low", True)  # closed back ABOVE prior-day-low
+        and s.get("close_above_open", False)   # bullish reversal bar
+    )
+    return _strat(fires, "long", "ict",
+        ["smc_liquidity_swept_dn", "close_back_above_prev_low", "close_above_open"],
+        ["Turtle Soup long (Raschke Street Smarts 1996)",
+         "Downside liquidity swept - retail stops taken below support",
+         "Price reversed back ABOVE prior-day-low - stop-hunt failed",
+         "Bullish close above open - rejection of downside breakout"])
+
+
+def strat_turtle_soup_short(s):
+    """Batch 580 (2026-06-04): Turtle Soup mean-reversion short. Mirror
+    of strat_turtle_soup_long per feedback_long_short_inverse_audit.
+    Setup: upside liquidity swept (retail stops above resistance taken)
+    AND today closed back BELOW prior-day-high AND closes bearish.
+    Failed-breakout / stop-hunt pattern; mean-reversion to downside.
+    """
+    fires = (
+        s.get("smc_liquidity_swept_up", False)
+        and not s.get("above_prev_high", True)  # closed back BELOW prior-day-high
+        and s.get("close_below_open", False)    # bearish reversal bar
+    )
+    return _strat(fires, "short", "ict",
+        ["smc_liquidity_swept_up", "close_back_below_prev_high", "close_below_open"],
+        ["Turtle Soup short (Raschke Street Smarts 1996)",
+         "Upside liquidity swept - retail stops taken above resistance",
+         "Price reversed back BELOW prior-day-high - stop-hunt failed",
+         "Bearish close below open - rejection of upside breakout"])
+
+
 def strat_pead_long(s):
     """Batch 209 (PEAD module 2026-05-17 owner-approved research review).
     Post-Earnings Announcement Drift long entry per Bernard-Thomas (1989)
@@ -3712,6 +3768,12 @@ ALL_STRATEGIES = {
     "smc_choch_reversal":           strat_smc_choch_reversal,
     "smc_order_block_bounce":       strat_smc_order_block_bounce,
     "smc_liquidity_sweep_reversal": strat_smc_liquidity_sweep_reversal,
+    # ICT Layer 2D first inline-spec pattern (B580 owner directive
+    # 2026-06-04). Raschke Street Smarts 1996 Turtle Soup; mean-reversion
+    # fade of stop-hunt breakouts. Long + short symmetric per
+    # feedback_long_short_inverse_audit.
+    "turtle_soup_long":             strat_turtle_soup_long,
+    "turtle_soup_short":            strat_turtle_soup_short,
     # Pre-FOMC + 8-K event-driven (3 - Batch 224 2026-05-18 owner-approved)
     "pre_fomc_long_sleeve":                strat_pre_fomc_long_sleeve,
     "pre_fomc_quality_momentum_long":      strat_pre_fomc_quality_momentum_long,
