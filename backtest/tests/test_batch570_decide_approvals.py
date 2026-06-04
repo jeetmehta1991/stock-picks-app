@@ -147,11 +147,9 @@ def test_batch570_summary_recomputed(tmp_approvals_with_class6_deferred):
     data = json.loads(tmp_approvals_with_class6_deferred.read_text(encoding="utf-8"))
     bs = data["summary"]["by_status"]
     total = data["summary"]["total"]
-    # Sum of status counts equals total
+    # Sum of status counts equals total (independent of which statuses
+    # exist; B572 added Implemented status, future batches may add more)
     assert sum(bs.values()) == total
-    # Awaiting + Deferred (the two states that exist post-B570) plus
-    # Approved + Rejected from later batches equal total
-    assert bs["Awaiting"] + bs["Deferred"] + bs["Approved"] + bs["Rejected"] == total
     # All 7 Class-6 rows are Deferred
     class6 = [r for r in data["approvals"] if r["change_class"] == 6]
     assert all(r["status"] == "Deferred" for r in class6)
