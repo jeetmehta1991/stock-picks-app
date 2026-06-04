@@ -311,6 +311,117 @@ def load_projected_strategies() -> list:
     ]
 
 
+def signal_plain_translation(signal: str) -> str:
+    """Translate a signal name into a plain-language phrase for the
+    'Trigger Conditions' column. B586 owner directive 2026-06-04:
+    "This detail is missing in the strategy table. update trigger
+    column with such information for all strategies."
+
+    Returns the plain phrase or the signal name itself if no mapping.
+    Common signals have explicit translations; uncommon ones fall back
+    to the raw signal name with a note.
+    """
+    # Hand-curated common signal phrases. Extend as new signals appear.
+    plain = {
+        # Volume
+        "vol_above_avg":     "volume above 20d avg",
+        "vol_spike_15x":     "volume >= 1.5x 20d avg",
+        "vol_spike_17x":     "volume > 1.7x 20d avg",
+        "vol_spike_2x":      "volume >= 2x 20d avg",
+        "vol_spike_3x":      "volume >= 3x 20d avg",
+        # 52w high/low
+        "break_52w_high":    "close > prior 252d high (strict)",
+        "break_52w_low":     "close < prior 252d low (strict)",
+        "near_52w_high":     "close >= 98% of prior 252d high",
+        "near_52w_low":      "close <= 102% of prior 252d low",
+        "near_52w_high_retest_long":  "prior 252d high broken in last 10d + close within 1% + vol below avg + bullish bar",
+        "near_52w_low_retest_short":  "prior 252d low broken in last 10d + close within 1% + vol below avg + bearish bar",
+        # Sector strength
+        "sector_outperforming_spy":   "stock's sector ETF outperforming SPY (20d trailing return)",
+        # Pivot
+        "near_s1":           "close within 0.30% of pivot S1",
+        "near_s2":           "close within 0.30% of pivot S2",
+        "near_r1":           "close within 0.30% of pivot R1",
+        "near_r2":           "close within 0.30% of pivot R2",
+        "near_pivot":        "close within 0.30% of pivot P",
+        "near_s1_wide":      "close within 1.50% of pivot S1 (doji-only)",
+        "near_s2_wide":      "close within 1.50% of pivot S2 (doji-only)",
+        "near_r1_wide":      "close within 1.50% of pivot R1 (doji-only)",
+        "near_r2_wide":      "close within 1.50% of pivot R2 (doji-only)",
+        # Fib
+        "at_key_fib":        "close within 0.50% of fib 38.2/50/61.8",
+        "at_key_fib_wide":   "close within 1.50% of key fib (doji-only)",
+        # Candle
+        "doji":              "body < 5% of range (indecision)",
+        "hammer":            "lower wick > 2x body + upper wick < body (bullish reversal)",
+        "shooting_star":     "upper wick > 2x body + lower wick < body (bearish reversal)",
+        "bullish_engulfing": "today's bullish body engulfs yesterday's bearish body",
+        "bearish_engulfing": "today's bearish body engulfs yesterday's bullish body",
+        "morning_star":      "3-bar bullish reversal (gap-recovery)",
+        "evening_star":      "3-bar bearish reversal",
+        "three_white_soldiers": "3 consecutive bullish closes near high",
+        "three_black_crows": "3 consecutive bearish closes near low",
+        # Trend / regime
+        "price_above_ema_200":   "close > 200-day EMA",
+        "price_above_sma_50":    "close > 50-day SMA",
+        "ema_50_200_bullish":    "50 EMA > 200 EMA (golden-cross regime)",
+        "ema_50_200_golden_cross": "50 EMA crossed above 200 EMA (one-bar event)",
+        "ema_50_200_death_cross": "50 EMA crossed below 200 EMA (one-bar event)",
+        # Momentum
+        "rsi_14":              "14-day RSI (numeric; check inline comparison)",
+        "rsi_2":               "2-day RSI (Connors)",
+        "obv_bullish":         "OBV in uptrend",
+        # SMC
+        "smc_fvg_bullish_active":  "bullish Fair Value Gap active",
+        "smc_fvg_bearish_active":  "bearish Fair Value Gap active",
+        "smc_choch_bullish":   "bullish Change of Character",
+        "smc_choch_bearish":   "bearish Change of Character",
+        "smc_bos_bullish":     "bullish Break of Structure",
+        "smc_bos_bearish":     "bearish Break of Structure",
+        "smc_liquidity_swept_up":  "upside liquidity swept (stops taken above)",
+        "smc_liquidity_swept_dn":  "downside liquidity swept (stops taken below)",
+        "smc_equal_highs_swept":   "equal highs swept (liquidity grab up)",
+        "smc_equal_lows_swept":    "equal lows swept (liquidity grab down)",
+        "smc_ote_long_zone":   "in OTE long zone (62-79% Fib retracement)",
+        "smc_ote_short_zone":  "in OTE short zone",
+        "smc_breaker_block_bullish":  "bullish breaker block active",
+        "smc_breaker_block_bearish":  "bearish breaker block active",
+        # B581 ICT producers
+        "po3_mmbm_setup":      "PO3 bullish cycle: accumulation + sweep down + reversal + bullish bar",
+        "po3_mmsm_setup":      "PO3 bearish cycle: accumulation + sweep up + reversal + bearish bar",
+        "week_open_gap_up_15pct":   "Monday opened with gap up >= 1.5% vs prior Friday close",
+        "week_open_gap_down_15pct": "Monday opened with gap down >= 1.5% vs prior Friday close",
+        # News sentiment
+        "news_sentiment_shift": "7d sentiment minus prior 7d (e.g. > 0.4 = strong positive shift)",
+        "news_article_count":   "article count in current 7d window",
+        # Donchian
+        "dc10_breakout_up":    "close >= prior 10d max * 0.998 (B584 fix)",
+        "dc10_breakout_dn":    "close <= prior 10d min * 1.002 (B584 fix)",
+        "dc20_breakout_up":    "close >= prior 20d max * 0.998 (B584 fix)",
+        "dc20_breakout_dn":    "close <= prior 20d min * 1.002 (B584 fix)",
+        # Day-of-bar
+        "close_above_open":    "today's bullish bar (close > open)",
+        "close_below_open":    "today's bearish bar (close < open)",
+        "above_prev_high":     "close > prior day's high",
+        "below_prev_low":      "close < prior day's low",
+    }
+    return plain.get(signal, signal)
+
+
+def render_trigger_plain(signals_used: list, fires_expr: str) -> str:
+    """Render plain-language trigger conditions. B586: combine signals
+    via AND joiner (most strategies are AND-gated). For OR-gated
+    strategies (rare), the raw fires_expr will still be visible in
+    the Trigger column."""
+    if not signals_used:
+        return "(see source)"
+    translated = [signal_plain_translation(s) for s in signals_used]
+    # Detect OR in raw expression - if present, hint at it
+    has_or = " or " in (fires_expr or "").lower()
+    joiner = " OR " if has_or else " AND "
+    return joiner.join(translated)
+
+
 def load_signal_definitions() -> list:
     """Hand-curated glossary entries for the signals encountered in
     Stage 4 walks so far. Grows as new clusters are walked. Entries
@@ -521,13 +632,12 @@ def main() -> int:
     out_lines.append("")
     out_lines.append("## Strategy Table")
     out_lines.append("")
-    # B585: S4 Reviewed + Producer Bug Fix columns moved to positions
-    # 2 + 3 (right after Name) per owner directive 2026-06-04 "I still
-    # cant see the S4 review y/n column" - wide Trigger column was
-    # pushing S4 Reviewed off screen. New order:
-    # # | Name | S4 Reviewed | Producer Fix | R4 Fires | ... rest
-    out_lines.append("| # | Name | S4 Reviewed | Producer Bug Fix | R4 Fires | Category | Direction | Trigger | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|")
+    # B585+B586: S4 Reviewed + Producer Bug Fix columns at positions
+    # 2+3 (visibility). B586 adds "Trigger Conditions" plain-language
+    # column right after raw Trigger code per owner directive 2026-06-04
+    # "update trigger column with such information for all strategies."
+    out_lines.append("| # | Name | S4 Reviewed | Producer Bug Fix | R4 Fires | Category | Direction | Trigger Conditions (plain) | Trigger (code) | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
@@ -536,11 +646,17 @@ def main() -> int:
         sigs = ", ".join(r["signals_used"]) if r["signals_used"] else "(see source)"
         if len(sigs) > 120:
             sigs = sigs[:117] + "..."
+        # B586: plain-language trigger
+        trigger_plain = render_trigger_plain(r["signals_used"], r["fires_expr"])
+        if len(trigger_plain) > 250:
+            trigger_plain = trigger_plain[:247] + "..."
+        # Escape pipes in plain trigger
+        trigger_plain = trigger_plain.replace("|", "\\|")
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['s4_reviewed']} | {r['producer_bug_fix']} | "
             f"{r['fired_in_r4']} | {r['category']} | {r['direction']} | "
-            f"`{trigger}` | {sigs} | {r['regime']} | {r['status']} | "
-            f"{r['stage_4']} |"
+            f"{trigger_plain} | `{trigger}` | {sigs} | {r['regime']} | "
+            f"{r['status']} | {r['stage_4']} |"
         )
     out_lines.append("")
 

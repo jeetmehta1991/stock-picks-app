@@ -833,13 +833,54 @@ def strat_volume_spike_breakout(s):
 
 
 def strat_52w_high_breakout(s):
-    fires = (s.get("break_52w_high") and
-             s.get("vol_spike_2x"))
+    """Batch 586 (2026-06-04 owner-directed walk):
+      - vol_spike_2x -> vol_spike_17x (owner picked >1.7x from 1.5-2x range)
+      - ADDED sector_outperforming_spy confluence filter (owner spec)
+    Producer signals: break_52w_high (B582 fix), vol_spike_17x (B586),
+    sector_outperforming_spy (B586 sector_strength.py).
+    """
+    fires = (s.get("break_52w_high")
+             and s.get("vol_spike_17x")
+             and s.get("sector_outperforming_spy"))
     return _strat(fires, "long", "breakout",
-        ["break_52w_high","vol_spike_2x"],
+        ["break_52w_high", "vol_spike_17x", "sector_outperforming_spy"],
         [f"Price broke 52-week high at ${s.get('year_high',0):.2f}",
-         "Most studied momentum signal  -  new highs attract buyers",
-         "Volume 2x confirms institutional conviction"])
+         "Most studied momentum signal  -  new highs attract buyers (George-Hwang 2004 JF)",
+         "Volume >1.7x confirms institutional conviction",
+         "Sector ETF outperforming SPY 20d  -  trade in strong sectors only"])
+
+
+def strat_52w_high_breakout_pullback_long(s):
+    """Batch 586 owner directive 'MISSING -- 52w_high_breakout_pullback_long
+    - add along with inverse'. Pullback variant per owner spec: wait
+    for daily close above 52w high, monitor retest, enter on bounce
+    off the new support on lower volume.
+    Producer near_52w_high_retest_long is emitted by compute_volume
+    when (a) prior_year_high broken in last 10 days, (b) close now
+    within 1pct of that level, (c) volume below 20d avg, (d) bullish
+    bar.
+    """
+    fires = s.get("near_52w_high_retest_long", False)
+    return _strat(fires, "long", "breakout",
+        ["near_52w_high_retest_long"],
+        ["52-week high RETEST long (classical breakout pullback)",
+         "Prior 252d high broken in last 10 days; price now retesting as support",
+         "Low-volume retest = sellers exhausted; bullish close = bounce confirmed",
+         "Higher conviction than chase-the-breakout"])
+
+
+def strat_52w_low_breakdown_pullback_short(s):
+    """Batch 586 inverse of strat_52w_high_breakout_pullback_long
+    per feedback_long_short_inverse_audit. Stock broke prior_year_low
+    in last 10 days; retests it as resistance with low-volume
+    rejection + bearish bar."""
+    fires = s.get("near_52w_low_retest_short", False)
+    return _strat(fires, "short", "breakout",
+        ["near_52w_low_retest_short"],
+        ["52-week low RETEST short (mirror of pullback long)",
+         "Prior 252d low broken in last 10 days; price now retesting as resistance",
+         "Low-volume retest + bearish close = rejection of bounce-back",
+         "Higher conviction than chase-the-breakdown"])
 
 
 def strat_inside_bar_breakout(s):
@@ -4000,6 +4041,9 @@ ALL_STRATEGIES = {
     "squeeze_breakout":         strat_squeeze_breakout,
     "volume_spike_breakout":    strat_volume_spike_breakout,
     "52w_high_breakout":        strat_52w_high_breakout,
+    # B586 (2026-06-04 owner-directed pullback variants for 52w pair):
+    "52w_high_breakout_pullback_long":   strat_52w_high_breakout_pullback_long,
+    "52w_low_breakdown_pullback_short":  strat_52w_low_breakdown_pullback_short,
     "inside_bar_breakout":      strat_inside_bar_breakout,
     "force_index_breakout":     strat_force_index_breakout,
     "donchian_10_breakout":     strat_donchian_10_breakout,
@@ -4604,6 +4648,22 @@ def screen_instrument(
             signals.update(wog_out)
     except Exception as _e:
         _log_silent_producer_failure("ict_producers", _e)
+    # B586 (2026-06-04 owner directive 52w_high_breakout walk): sector
+    # strength filter producer. Reads stock's sector via get_sector_pit
+    # + maps to sector-SPDR ETF + compares 20d return vs SPY.
+    # Currently consumed only by strat_52w_high_breakout. Producer is
+    # ADDITIVE; no impact on existing strategies.
+    try:
+        from backtest.signals.sector_strength import compute_sector_strength_signals
+        from backtest.data.universe import get_sector_pit
+        # PIT-correct sector resolution
+        sector = get_sector_pit(ticker, as_of) if as_of else None
+        if sector and sector != "Unknown":
+            ss_out = compute_sector_strength_signals(sector, as_of)
+            if ss_out:
+                signals.update(ss_out)
+    except Exception as _e:
+        _log_silent_producer_failure("sector_strength", _e)
     # Batch 252: chart pattern signals (DEC-355-362). Graceful no-op when
     # history insufficient (most patterns need 60-150 bars).
     try:

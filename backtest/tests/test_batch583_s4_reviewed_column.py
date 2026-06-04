@@ -92,22 +92,20 @@ def test_batch583_doji_at_support_reviewed(regen_roster):
     )
 
 
-def test_batch585_52w_high_breakout_unmarked_post_b585(regen_roster):
-    """Pin (4) - updated B585: 52w_high_breakout was incorrectly marked
-    Y (B582) in B582. Per owner directive 2026-06-04 ("bug fix is NOT
-    S4 review completion"), B585 unmarked it. Strategy still needs
-    full 7-step walk. Producer Bug Fix column should show 'B582'."""
+def test_batch586_52w_high_breakout_walked_post_b586(regen_roster):
+    """Pin (4) - updated B586: 52w_high_breakout was unmarked in B585,
+    then properly walked through full 7-step deep-dive in B586
+    (vol_spike_17x + sector filter + pullback variants). Now shows
+    S4 Reviewed=Y (B586) AND Producer Bug Fix=B582."""
     import re
     m = re.search(r"`52w_high_breakout`[^\n]*", regen_roster)
     assert m
     row = m.group(0)
-    # S4 Reviewed should be N (B585 unmarked); Producer Bug Fix shows B582
+    # Producer Bug Fix B582 still tracked
     assert "B582" in row, "Producer Bug Fix column should reference B582"
-    # Not Y (some batch) - was unmarked
-    # Check it's not Y followed by anything bracket-style
-    assert "| Y (" not in row, (
-        f"52w_high_breakout S4 Reviewed should be N after B585 unmark; "
-        f"row:\n{row}"
+    # S4 Reviewed = Y (B586) after the walk
+    assert "Y (B586)" in row, (
+        f"52w_high_breakout S4 Reviewed should be 'Y (B586)' post-walk; row:\n{row}"
     )
 
 
