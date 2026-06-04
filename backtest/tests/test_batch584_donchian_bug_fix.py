@@ -141,7 +141,8 @@ def test_batch584_dc10_display_signals_include_today():
 def test_batch584_donchian_10_breakout_downstream():
     """Pin (7): strat_donchian_10_breakout fires given post-fix signals.
     Batch 591 added (b) dc10_breakout_up_1pct + (c) close_above_open +
-    (d) close_in_top_40pct_of_range gates - test updated to include them."""
+    (d) close_in_top_40pct_of_range gates; Batch 592 added (e)
+    dc10_strong_breakout_up gate. Test updated for all 6."""
     from backtest.signals.screener import strat_donchian_10_breakout
     s = {
         "dc10_breakout_up_1pct": True,
@@ -149,30 +150,29 @@ def test_batch584_donchian_10_breakout_downstream():
         "macd_12_26_9_bullish": True,
         "close_above_open": True,
         "close_in_top_40pct_of_range": True,
+        "dc10_strong_breakout_up": True,
     }
     out = strat_donchian_10_breakout(s)
     assert out.get("fires") == True, (
-        f"donchian_10_breakout long should fire post-B591 with all 5 gates: {out}"
+        f"donchian_10_breakout long should fire post-B592 with all 6 gates: {out}"
     )
     assert out.get("direction") == "long"
 
 
-def test_batch584_donchian_breakout_long_downstream():
-    """Pin (8) POST-B591: strat_donchian_breakdown_short was DELETED in
-    Batch 591; the tight-long mirror strat_donchian_breakout_long
-    replaces it for symmetry. Test asserts the new replacement strategy
-    fires given equivalent post-B584-fix signals."""
-    from backtest.signals.screener import strat_donchian_breakout_long
+def test_batch584_donchian_breakdown_short_downstream():
+    """Pin (8): strat_donchian_breakdown_short fires given post-fix signals.
+    Batch 591 deleted this strategy; Batch 592 RESTORED it per owner
+    correction 2026-06-05 (both tight-long AND tight-short variants
+    coexist for symmetry)."""
+    from backtest.signals.screener import strat_donchian_breakdown_short
     s = {
-        "dc10_breakout_up": True,
+        "dc10_breakout_dn": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": True,
-        "close_above_open": True,
-        "close_in_top_40pct_of_range": True,
+        "macd_12_26_9_bullish": False,
     }
-    out = strat_donchian_breakout_long(s)
+    out = strat_donchian_breakdown_short(s)
     assert out["fires"] == True
-    assert out["direction"] == "long"
+    assert out["direction"] == "short"
 
 
 def test_batch584_full_pipeline_amd_style():
