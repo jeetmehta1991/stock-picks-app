@@ -1081,14 +1081,33 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["force_index_cross_dn"] = fi_v < 0 and pfi_v >= 0
 
     # 52-week high/low
-    lookback = min(252, len(df))
-    year_high = df["high"].tail(lookback).max()
-    year_low  = df["low"].tail(lookback).min()
+    # Batch 582 (2026-06-04 owner-directed bug fix per Stage 4 audit of
+    # strat_52w_high_breakout QUIET status): year_high / year_low must
+    # EXCLUDE today's bar so the breakout comparison is `today close vs
+    # PRIOR 252-day high` (matches the canonical algorithmic spec). The
+    # previous calculation `df["high"].tail(252).max()` included today's
+    # intraday high, which made `close >= year_high` effectively require
+    # close == today_high == max-of-252d -- extremely rare. AMD example:
+    # AMD broke its 52w high multiple times in the backtest but the bug
+    # gated the strategy down to ~0 fires.
+    # Fix: use df.iloc[:-1] (excluding today) for the 252-day window.
+    # Also: use strict `>` for break (per owner spec "Close > Highest
+    # High (250d)") rather than `>=`. near_52w_high keeps `>=` since
+    # "near" semantics include touching the level.
+    lookback = min(252, len(df) - 1)  # -1 to exclude today
+    if lookback > 0:
+        prior = df.iloc[:-1]  # everything except today
+        year_high = prior["high"].tail(lookback).max()
+        year_low  = prior["low"].tail(lookback).min()
+    else:
+        # Fallback for very-short histories (<= 1 bar): use today
+        year_high = df["high"].iloc[-1]
+        year_low  = df["low"].iloc[-1]
     result["near_52w_high"]   = _safe_float(c.iloc[-1]) >= year_high*0.98
-    result["break_52w_high"]  = _safe_float(c.iloc[-1]) >= year_high
+    result["break_52w_high"]  = _safe_float(c.iloc[-1]) >  year_high  # strict per spec
     result["year_high"]       = round(year_high,4)
     result["near_52w_low"]    = _safe_float(c.iloc[-1]) <= year_low*1.02
-    result["break_52w_low"]   = _safe_float(c.iloc[-1]) <= year_low
+    result["break_52w_low"]   = _safe_float(c.iloc[-1]) <  year_low   # strict per spec
     result["year_low"]        = round(year_low,4)
 
     return result
