@@ -2,18 +2,18 @@
 
 **Auto-generated** via `scripts/build_strategy_roster.py`. Do NOT hand-edit. Regenerate every turn that modifies strategies, signals, thresholds, regime affinity, or status.
 
-**Total strategies:** 205 | **Deprecated:** 0 | **Disabled:** 1 | **Active for cube:** 204
+**Total strategies:** 207 | **Deprecated:** 0 | **Disabled:** 1 | **Active for cube:** 206
 
-**R4 cube fire status:** **122 FIRED** (have optimizer-extracted Class 1-7 rows) | **83 QUIET** (zero R4 fires; Class 0 QUIET_NO_CANDIDATES placeholder per B576 drift backfill)
+**R4 cube fire status:** **124 FIRED** (have optimizer-extracted Class 1-7 rows) | **83 QUIET** (zero R4 fires; Class 0 QUIET_NO_CANDIDATES placeholder per B576 drift backfill)
 
 **Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **206** (205 + 1 special-path). Note: 207 unique strategies in approvals.json = 206 engine + 1 queued (`news_sentiment_shift_short` Class 7 Approved B571 awaiting wiring).
 
 **Count reconciliation:**
-- `len(ALL_STRATEGIES)` = 205 (standard dict path)
+- `len(ALL_STRATEGIES)` = 207 (standard dict path)
 - +1 special path (`lead_lag_sector_rotation`)
-- **= True engine roster: 206**
+- **= True engine roster: 208**
 - +1 queued for wiring (news_sentiment_shift_short)
-- Unique strategies in approvals: 207
+- Unique strategies in approvals: 209
 - approvals.json ROWS != strategies (each strategy can have multiple change-class rows)
 
 **TODO (B577 surfaced):** Only 1 of 205 strategies has explicit `STRATEGY_REGIME_AFFINITY` (`head_and_shoulders_bottom_long`). 204 strategies fall through to default 'all regimes'. R4 empirical per-regime cube data should feed back into deployment-time affinity rules. See EXECUTION_QUEUE.md item `regime-affinity-investigation`.
@@ -24,8 +24,8 @@
 - **?**: 5
 - **avoid**: 1
 - **dual**: 63
-- **long**: 95
-- **short**: 41
+- **long**: 96
+- **short**: 42
 
 ## Category counts
 - **smc**: 18
@@ -55,6 +55,7 @@
 - **sec_edgar_sleeve**: 2
 - **orb**: 2
 - **pairs**: 2
+- **ict**: 2
 
 ## Strategy Table
 
@@ -248,23 +249,25 @@
 | 186 | `totm_long` | calendar | long | YES | `(predicate not extracted - read source)` | is_totm_window, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
 | 187 | `triangle_ascending_long` | chart_pattern | long | YES | `fires = ( s.get("triangle_ascending_detected", False) and s.get("price_above_ema_200", True) )` | triangle_ascending_detected, price_above_ema_200 | (no affinity = all regimes) | active | 2 Awaiting (n_rows=2) |
 | 188 | `triangle_ascending_retest_long` | chart_pattern | long | QUIET | `fires = ( s.get("triangle_ascending_detected", False) and s.get("resistance_break_retest", False) and s.get("price_above_ema_200", True) )` | triangle_ascending_detected, resistance_break_retest, price_above_ema_200 | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 189 | `ultimate_oscillator` | momentum | dual | YES | `fl = ( (s.get("uo_oversold") or (rsi_2 < 5)) and s.get("price_above_sma_200") ) <br> fs = ( (s.get("uo", 50) > 70 or (rsi_2 > 95)) and not s.get("price_above_sma_200") )` | uo_oversold_or_rsi_2<5, price_above_sma_200 | (no affinity = all regimes) | active | 4 Awaiting (n_rows=4) |
-| 190 | `value_area_breakout_long` | volume_profile | long | QUIET | `fires = ( s.get("vp_above_value_area", False) and s.get("vol_spike_2x", False) and s.get("price_above_ema_200", True) )` | vp_above_value_area, vol_spike_2x, price_above_ema_200 | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 191 | `vix_backwardation_long` | cross_asset | long | YES | `fires = ( s.get("vix_term_backwardation", False) and s.get("xs_quality_decile", 0) >= 8 )` | vix_term_backwardation, xs_quality_decile>=8 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
-| 192 | `volume_spike_breakout` | breakout | dual | QUIET | `fl = (s.get("dc20_breakout_up") and s.get("vol_spike_2x") and s.get("above_vwap")) <br> fs = (s.get("dc20_breakout_dn") and s.get("vol_spike_2x") and not s.get("above_vwap"))` | dc20_breakout_up, vol_spike_2x, above_vwap | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 193 | `volume_spike_breakout_retest` | breakout | dual | QUIET | `fl = (s.get("resistance_break_retest") and s.get("vol_spike_2x") and s.get("above_vwap")) <br> fs = (s.get("support_break_retest") and s.get("vol_spike_2x") and not s.get("above_vwap"))` | resistance_break_retest, vol_spike_2x, above_vwap | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 194 | `weekly_bias_pullback_long` | multi_timeframe | long | QUIET | `fires = ( s.get("weekly_bias_bull", False) and s.get("rsi_14", 50) < 40 and (s.get("hammer") or s.get("bullish_engulfing")) )` | weekly_bias_bull, rsi_14<40, bullish_reversal_candle | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 195 | `weekly_bias_pullback_short` | multi_timeframe | short | QUIET | `fires = ( s.get("weekly_bias_bear", False) and s.get("rsi_14", 50) > 60 and (s.get("shooting_star") or s.get("bearish_engulfing")) )` | weekly_bias_bear, rsi_14>60, bearish_reversal_candle | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 196 | `williams_r_oversold` | momentum | dual | YES | `fl = ( (s.get("williams_r_oversold") or (rsi_2 < 5)) and above_200 and s.get("cmf_positive") ) <br> fs = ( (s.get("williams_r", 0) > -20 or (rsi_2 > 95)) and (not above_200) and (not s.get("cmf_positive")) )` | williams_r_oversold_or_rsi_2<5, above_ema_200, cmf_positive | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
-| 197 | `williams_stoch_dual` | confluence | dual | YES | `fl = (s.get("williams_r_oversold") and s.get("stoch_oversold") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3"))) <br> fs = (s.get("williams_r", 0) > -20 and s.get("stoch_overbought") and (s.get("near_r1") or s.get("near_r2") or s...` | williams_r_oversold, stoch_oversold, at_pivot_support | (no affinity = all regimes) | active | 5 Awaiting (n_rows=5) |
-| 198 | `xs_combined_momentum_low_ivol` | factor | long | QUIET | `fires = ( s.get("xs_momentum_top_decile", False) and s.get("xs_ivol_decile", 5) <= 3   # bottom 30% IVOL = high quality and s.get("price_above_ema_200", True) )` | xs_momentum_top_decile, xs_ivol_decile<=3, price_above_ema_200 | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 199 | `xs_low_beta_long` | factor | long | YES | `fires = ( s.get("xs_low_beta_decile", False) and s.get("xs_avoid_high_ivol", True) )` | xs_low_beta_decile, xs_avoid_high_ivol | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
-| 200 | `xs_low_beta_with_smart_money_long` | smart_money_sleeve | long | QUIET | `(predicate not extracted - read source)` | xs_low_beta_top_quintile, price_above_ema_200, smart_money_buy | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
-| 201 | `xs_momentum_bottom_decile_short` | factor | short | YES | `fires = ( s.get("xs_momentum_bottom_decile", False) and (not s.get("price_above_ema_200", True)) )` | xs_momentum_bottom_decile, price_below_ema_200 | (no affinity = all regimes) | active | 4 Awaiting (n_rows=4) |
-| 202 | `xs_momentum_quality_combined` | factor | long | YES | `fires = ( s.get("xs_momentum_top_decile", False) and s.get("xs_quality_top_quintile", False) and s.get("price_above_ema_200", True) )` | xs_momentum_top_decile, xs_quality_top_quintile, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
-| 203 | `xs_momentum_top_decile` | factor | long | YES | `fires = ( s.get("xs_momentum_top_decile", False) and s.get("xs_avoid_high_ivol", True) and s.get("xs_avoid_high_max", True) and s.get("price_above_ema_200", True) )` | xs_momentum_top_decile, xs_avoid_high_ivol, xs_avoid_high_max, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
-| 204 | `xs_momentum_with_smart_money_long` | smart_money_sleeve | long | YES | `(predicate not extracted - read source)` | xs_momentum_top_decile, price_above_ema_200, smart_money_buy | (no affinity = all regimes) | active | 2 Awaiting (n_rows=2) |
-| 205 | `xs_quality_top_quintile_long` | factor | long | YES | `fires = ( s.get("xs_quality_top_quintile", False) and s.get("price_above_ema_200", True) )` | xs_quality_top_quintile, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
+| 189 | `turtle_soup_long` | ict | long | YES | `fires = ( s.get("smc_liquidity_swept_dn", False) and not s.get("below_prev_low", True)  # closed back ABOVE prior-day-low and s.get("close_above_open", False)   # bullish reversal bar )` | smc_liquidity_swept_dn, close_back_above_prev_low, close_above_open | (no affinity = all regimes) | active | 1 Implemented (n_rows=1) |
+| 190 | `turtle_soup_short` | ict | short | YES | `fires = ( s.get("smc_liquidity_swept_up", False) and not s.get("above_prev_high", True)  # closed back BELOW prior-day-high and s.get("close_below_open", False)    # bearish reversal bar )` | smc_liquidity_swept_up, close_back_below_prev_high, close_below_open | (no affinity = all regimes) | active | 1 Implemented (n_rows=1) |
+| 191 | `ultimate_oscillator` | momentum | dual | YES | `fl = ( (s.get("uo_oversold") or (rsi_2 < 5)) and s.get("price_above_sma_200") ) <br> fs = ( (s.get("uo", 50) > 70 or (rsi_2 > 95)) and not s.get("price_above_sma_200") )` | uo_oversold_or_rsi_2<5, price_above_sma_200 | (no affinity = all regimes) | active | 4 Awaiting (n_rows=4) |
+| 192 | `value_area_breakout_long` | volume_profile | long | QUIET | `fires = ( s.get("vp_above_value_area", False) and s.get("vol_spike_2x", False) and s.get("price_above_ema_200", True) )` | vp_above_value_area, vol_spike_2x, price_above_ema_200 | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
+| 193 | `vix_backwardation_long` | cross_asset | long | YES | `fires = ( s.get("vix_term_backwardation", False) and s.get("xs_quality_decile", 0) >= 8 )` | vix_term_backwardation, xs_quality_decile>=8 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
+| 194 | `volume_spike_breakout` | breakout | dual | QUIET | `fl = (s.get("dc20_breakout_up") and s.get("vol_spike_2x") and s.get("above_vwap")) <br> fs = (s.get("dc20_breakout_dn") and s.get("vol_spike_2x") and not s.get("above_vwap"))` | dc20_breakout_up, vol_spike_2x, above_vwap | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
+| 195 | `volume_spike_breakout_retest` | breakout | dual | QUIET | `fl = (s.get("resistance_break_retest") and s.get("vol_spike_2x") and s.get("above_vwap")) <br> fs = (s.get("support_break_retest") and s.get("vol_spike_2x") and not s.get("above_vwap"))` | resistance_break_retest, vol_spike_2x, above_vwap | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
+| 196 | `weekly_bias_pullback_long` | multi_timeframe | long | QUIET | `fires = ( s.get("weekly_bias_bull", False) and s.get("rsi_14", 50) < 40 and (s.get("hammer") or s.get("bullish_engulfing")) )` | weekly_bias_bull, rsi_14<40, bullish_reversal_candle | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
+| 197 | `weekly_bias_pullback_short` | multi_timeframe | short | QUIET | `fires = ( s.get("weekly_bias_bear", False) and s.get("rsi_14", 50) > 60 and (s.get("shooting_star") or s.get("bearish_engulfing")) )` | weekly_bias_bear, rsi_14>60, bearish_reversal_candle | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
+| 198 | `williams_r_oversold` | momentum | dual | YES | `fl = ( (s.get("williams_r_oversold") or (rsi_2 < 5)) and above_200 and s.get("cmf_positive") ) <br> fs = ( (s.get("williams_r", 0) > -20 or (rsi_2 > 95)) and (not above_200) and (not s.get("cmf_positive")) )` | williams_r_oversold_or_rsi_2<5, above_ema_200, cmf_positive | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
+| 199 | `williams_stoch_dual` | confluence | dual | YES | `fl = (s.get("williams_r_oversold") and s.get("stoch_oversold") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3"))) <br> fs = (s.get("williams_r", 0) > -20 and s.get("stoch_overbought") and (s.get("near_r1") or s.get("near_r2") or s...` | williams_r_oversold, stoch_oversold, at_pivot_support | (no affinity = all regimes) | active | 5 Awaiting (n_rows=5) |
+| 200 | `xs_combined_momentum_low_ivol` | factor | long | QUIET | `fires = ( s.get("xs_momentum_top_decile", False) and s.get("xs_ivol_decile", 5) <= 3   # bottom 30% IVOL = high quality and s.get("price_above_ema_200", True) )` | xs_momentum_top_decile, xs_ivol_decile<=3, price_above_ema_200 | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
+| 201 | `xs_low_beta_long` | factor | long | YES | `fires = ( s.get("xs_low_beta_decile", False) and s.get("xs_avoid_high_ivol", True) )` | xs_low_beta_decile, xs_avoid_high_ivol | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
+| 202 | `xs_low_beta_with_smart_money_long` | smart_money_sleeve | long | QUIET | `(predicate not extracted - read source)` | xs_low_beta_top_quintile, price_above_ema_200, smart_money_buy | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
+| 203 | `xs_momentum_bottom_decile_short` | factor | short | YES | `fires = ( s.get("xs_momentum_bottom_decile", False) and (not s.get("price_above_ema_200", True)) )` | xs_momentum_bottom_decile, price_below_ema_200 | (no affinity = all regimes) | active | 4 Awaiting (n_rows=4) |
+| 204 | `xs_momentum_quality_combined` | factor | long | YES | `fires = ( s.get("xs_momentum_top_decile", False) and s.get("xs_quality_top_quintile", False) and s.get("price_above_ema_200", True) )` | xs_momentum_top_decile, xs_quality_top_quintile, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
+| 205 | `xs_momentum_top_decile` | factor | long | YES | `fires = ( s.get("xs_momentum_top_decile", False) and s.get("xs_avoid_high_ivol", True) and s.get("xs_avoid_high_max", True) and s.get("price_above_ema_200", True) )` | xs_momentum_top_decile, xs_avoid_high_ivol, xs_avoid_high_max, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
+| 206 | `xs_momentum_with_smart_money_long` | smart_money_sleeve | long | YES | `(predicate not extracted - read source)` | xs_momentum_top_decile, price_above_ema_200, smart_money_buy | (no affinity = all regimes) | active | 2 Awaiting (n_rows=2) |
+| 207 | `xs_quality_top_quintile_long` | factor | long | YES | `fires = ( s.get("xs_quality_top_quintile", False) and s.get("price_above_ema_200", True) )` | xs_quality_top_quintile, price_above_ema_200 | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
 
 ## Projected Strategies (PENDING owner approval, will be wired post-approval)
 
