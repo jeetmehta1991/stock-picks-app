@@ -824,12 +824,52 @@ def strat_squeeze_breakout(s):
 
 
 def strat_volume_spike_breakout(s):
-    fl = (s.get("dc20_breakout_up") and s.get("vol_spike_2x") and s.get("above_vwap"))
-    fs = (s.get("dc20_breakout_dn") and s.get("vol_spike_2x") and not s.get("above_vwap"))
+    """Batch 597 (2026-06-05 owner-directed Stage 4 walk):
+      (a) Added close_above_open + close_in_top_40pct_of_range (long) /
+          close_below_open + close_in_bottom_40pct_of_range (short).
+          Standardizes with the donchian family upgrades (B589 / B591).
+      (c) Loosened vol gate vol_spike_2x -> vol_spike_15x (>= 1.5x).
+          The 2.0x threshold was gating too many real breakouts at
+          Phase 1A-beta scale (same logic Batch 320 used for
+          donchian_10_breakout from 1.5x -> 1.0x; here 2.0x -> 1.5x).
+      (d) Replaced above_vwap (cumulative-since-history) with
+          Brian Shannon (2022) anchored VWAP:
+            LONG : above_avwap_50low (above AVWAP anchored at recent
+                   50-day swing low - upleg intact)
+            SHORT: NOT above_avwap_20high (price below AVWAP anchored
+                   at recent 20-day swing high - rally given back)
+          NOTE timeframe asymmetry (50 vs 20) - producer only emits
+          {252low, 50low, 20high}; symmetric anchors (50high / 20low)
+          would require new producer fields. Flagged for follow-up.
+      (e) Regime affinity: REMOVED explicit allow-all entry from
+          STRATEGY_REGIME_AFFINITY (was {bull, neutral, bear, crisis}
+          - defeated regime classification). Now relies on Batch 291
+          direction-aware default: LONG -> {bull, neutral}; SHORT ->
+          {bear, crisis, neutral}.
+    """
+    fl = (s.get("dc20_breakout_up")
+          and s.get("vol_spike_15x")
+          and s.get("above_avwap_50low")
+          and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range"))
+    fs = (s.get("dc20_breakout_dn")
+          and s.get("vol_spike_15x")
+          and not s.get("above_avwap_20high")
+          and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
-        ["dc20_breakout_up","vol_spike_2x","above_vwap"], ["dc20_breakout_dn","vol_spike_2x","below_vwap"],
-        ["Price broke above 20-day Donchian high","Volume 2x confirms","Above VWAP"],
-        ["Price broke below 20-day Donchian low","Volume 2x confirms","Below VWAP"])
+        ["dc20_breakout_up","vol_spike_15x","above_avwap_50low","close_above_open","close_in_top_40pct_of_range"],
+        ["dc20_breakout_dn","vol_spike_15x","below_avwap_20high","close_below_open","close_in_bottom_40pct_of_range"],
+        ["Price broke above 20-day Donchian high",
+         "Volume 1.5x confirms institutional buying",
+         "Above 50-day swing-low AVWAP (Brian Shannon 2022) - upleg intact",
+         "Bullish bar (close above open)",
+         "Strong close (top 40pct of range)"],
+        ["Price broke below 20-day Donchian low",
+         "Volume 1.5x confirms institutional selling",
+         "Below 20-day swing-high AVWAP - recent rally given back",
+         "Bearish bar (close below open)",
+         "Strong close (bottom 40pct of range)"])
 
 
 def strat_52w_high_breakout(s):
