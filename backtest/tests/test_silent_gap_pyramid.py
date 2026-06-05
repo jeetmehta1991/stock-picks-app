@@ -1647,10 +1647,12 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       owner correction)
     #   217 after Batch 599 (deleted donchian_20_breakout_retest dual -
     #       B596 convergence option 2)
-    assert len(ALL_STRATEGIES) == 217, (
+    #   219 after Batch 603 (+2 Class 7 NEW news_momentum_short +
+    #       news_reversal_long inverse mirrors)
+    assert len(ALL_STRATEGIES) == 219, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599 trajectory: ALL_STRATEGIES "
-        f"count must be 217 post-B599, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603 trajectory: ALL_STRATEGIES "
+        f"count must be 219 post-B603, got {len(ALL_STRATEGIES)}"
     )
 
 

@@ -1075,6 +1075,11 @@ def strat_volume_spike_breakout_retest(s):
     supply-absorption thesis). This strategy carries the alternative
     "high-conviction 2x-volume retest" thesis - both retest playbooks
     coexist post-B600 without convergence.
+
+    Batch 602 (2026-06-05 owner directive "undo. keep it at DC20
+    itself"): B602 Option B SMC BOS+OTE redesign WAS APPLIED then
+    REVERTED in-flight. Strategy stays on the B600 DC20-anchored
+    gate set. Donchian-touching footprint remains 22 (10pct).
     """
     fl = (s.get("dc20_resistance_break_retest_strong")
           and s.get("vol_spike_2x")
@@ -3961,28 +3966,104 @@ def strat_news_sentiment_shift_long(s):
 
 
 def strat_news_momentum_long(s):
-    """Batch 467 (P10): news-driven breakout. Requires positive 5-day
-    recency-weighted sentiment AND unusual news volume AND a 20-day
+    """Batch 467 (P10) ORIGINAL: news-driven breakout. Requires positive
+    5-day recency-weighted sentiment AND unusual news volume AND a 20-day
     Donchian breakout. Captures "news-confirmed breakout" entries.
 
     Source: Tetlock 2007 RFS news-tone return predictability +
     Da-Engelberg-Gao 2011 RFS news-attention predicts attention-induced
     returns. Combined with a price-breakout filter to avoid pure
     sentiment-driven false positives.
+
+    Batch 603 (2026-06-05 owner-directed Stage 4 walk):
+      (a) Added close_above_open + close_in_top_40pct_of_range
+          (B589-family bullish-bar + strong-close standardization)
+      (b) Added vol_above_avg (news-confirmed price moves should
+          carry volume conviction; pure-sentiment moves without
+          volume = noise risk)
+      (c) Added above_avwap_20low (Brian Shannon 2022 AVWAP from
+          recent 20-day swing low - institutional reference; same
+          AVWAP family as B597/B598/B601)
+      (f) Preserved dc20_breakout_up as the breakout primitive -
+          original B603 A/B test plan retains DC anchor for the
+          baseline; SMC twin (B603 A/B target) gets built separately
+      (i) Regime affinity: Batch 291 direction-aware default
+          (LONG -> {bull, neutral})
+
+    Post-B603 7-gate set:
+      news_sentiment_5d >= 0.5 + news_volume_zscore_5d >= 1.5 +
+      dc20_breakout_up + close_above_open + close_in_top_40pct_of_range +
+      vol_above_avg + above_avwap_20low
     """
     fires = (
         s.get("news_sentiment_5d", 0.0) >= 0.5
         and s.get("news_volume_zscore_5d", 0.0) >= 1.5
         and s.get("dc20_breakout_up", False)
+        and s.get("close_above_open", False)
+        and s.get("close_in_top_40pct_of_range", False)
+        and s.get("vol_above_avg", False)
+        and s.get("above_avwap_20low", False)
     )
     sent = s.get("news_sentiment_5d", 0.0)
     vz   = s.get("news_volume_zscore_5d", 0.0)
     return _strat(fires, "long", "news_sentiment",
         ["news_sentiment_5d>=0.5", "news_volume_zscore_5d>=1.5",
-         "dc20_breakout_up"],
+         "dc20_breakout_up", "close_above_open",
+         "close_in_top_40pct_of_range", "vol_above_avg",
+         "above_avwap_20low"],
         [f"5d recency-weighted sentiment {sent:.2f} (bullish)",
          f"News volume z-score {vz:.2f} (unusual coverage)",
-         "Donchian-20 breakout up (price confirms)"])
+         "Donchian-20 breakout up (price confirms)",
+         "Bullish bar (close above open)",
+         "Strong close (top 40pct of range)",
+         "Volume above 20d avg (institutional confirmation)",
+         "Above 20-day swing-low AVWAP (Brian Shannon 2022)"])
+
+
+def strat_news_momentum_short(s):
+    """Batch 603 (2026-06-05 owner-directed Class 7 NEW): symmetric
+    inverse of news_momentum_long. Negative-news-confirmed breakdown.
+
+    Mirror of news_momentum_long. Fires when 5-day recency-weighted
+    sentiment is STRONGLY NEGATIVE, unusual news volume confirms
+    attention, and price has broken down through the 20-day Donchian
+    low. Tetlock 2007 negative-tone return predictability has stronger
+    effect than positive-tone (negative news drags returns more
+    durably than positive news lifts them).
+
+    7 gates per direction matching news_momentum_long structure:
+      news_sentiment_5d <= -0.5 + news_volume_zscore_5d >= 1.5 +
+      dc20_breakout_dn + close_below_open +
+      close_in_bottom_40pct_of_range + vol_above_avg +
+      NOT above_avwap_20high (price BELOW 20d swing-high AVWAP =
+      recent rally given back; symmetric to LONG above_avwap_20low)
+
+    Regime affinity: Batch 291 direction-aware default
+      (SHORT -> {bear, crisis, neutral})
+    """
+    fires = (
+        s.get("news_sentiment_5d", 0.0) <= -0.5
+        and s.get("news_volume_zscore_5d", 0.0) >= 1.5
+        and s.get("dc20_breakout_dn", False)
+        and s.get("close_below_open", False)
+        and s.get("close_in_bottom_40pct_of_range", False)
+        and s.get("vol_above_avg", False)
+        and not s.get("above_avwap_20high", True)
+    )
+    sent = s.get("news_sentiment_5d", 0.0)
+    vz   = s.get("news_volume_zscore_5d", 0.0)
+    return _strat(fires, "short", "news_sentiment",
+        ["news_sentiment_5d<=-0.5", "news_volume_zscore_5d>=1.5",
+         "dc20_breakout_dn", "close_below_open",
+         "close_in_bottom_40pct_of_range", "vol_above_avg",
+         "below_avwap_20high"],
+        [f"5d recency-weighted sentiment {sent:.2f} (bearish)",
+         f"News volume z-score {vz:.2f} (unusual coverage)",
+         "Donchian-20 breakdown (price confirms negative news)",
+         "Bearish bar (close below open)",
+         "Strong close (bottom 40pct of range)",
+         "Volume above 20d avg (institutional confirmation)",
+         "Below 20-day swing-high AVWAP - recent rally given back"])
 
 
 def strat_news_reversal_short(s):
@@ -4009,6 +4090,42 @@ def strat_news_reversal_short(s):
         [f"5d sentiment {sent:.2f} (strongly bullish)",
          f"Price up {pct*100:.1f} pct in 5d (large positive move)",
          "Coverage threshold met (>=3 articles)"])
+
+
+def strat_news_reversal_long(s):
+    """Batch 603 (2026-06-05 owner-directed Class 7 NEW): symmetric
+    inverse of news_reversal_short. Negative-news-overreaction fade long.
+
+    Mirror of news_reversal_short. Fires when sentiment is STRONGLY
+    NEGATIVE and 5-day price move is sharply DOWN (>=10%) with
+    coverage threshold met. The thesis: De Bondt-Thaler 1985
+    overreaction hypothesis applied to negative news - sharp 5d down
+    moves driven by negative news tend to partially reverse over 5-10
+    trading days as panic selling exhausts and bargain buying emerges.
+
+    Threshold (sentiment <= -0.7) is set symmetrically to the SHORT
+    counterpart's +0.7 - isolates STRONG-negative news days only;
+    a more selective long trigger than news_momentum_long's -0.5.
+
+    Regime affinity: Batch 291 direction-aware default
+      (LONG -> {bull, neutral}). Counter-trend long; fading mean-
+      reversion bounces typically works in bull/neutral regimes - in
+      bear-trend the down move is real, not overreaction.
+    """
+    fires = (
+        s.get("news_sentiment_5d", 0.0) <= -0.7
+        and s.get("pct_change_5d", 0.0) < -0.10
+        and s.get("news_article_count", 0) >= 3
+    )
+    sent = s.get("news_sentiment_5d", 0.0)
+    pct  = s.get("pct_change_5d", 0.0)
+    return _strat(fires, "long", "news_sentiment",
+        ["news_sentiment_5d<=-0.7", "pct_change_5d<-0.10",
+         "news_article_count>=3"],
+        [f"5d sentiment {sent:.2f} (strongly bearish)",
+         f"Price down {pct*100:.1f} pct in 5d (large negative move)",
+         "Coverage threshold met (>=3 articles)",
+         "De Bondt-Thaler 1985 overreaction fade - long the panic"])
 
 
 # ---------------------------------------------------------------------------
@@ -4537,6 +4654,9 @@ ALL_STRATEGIES = {
     "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
     "news_momentum_long":               strat_news_momentum_long,
     "news_reversal_short":              strat_news_reversal_short,
+    # Batch 603 (2026-06-05) Class 7 NEW symmetric inverses per owner walk:
+    "news_momentum_short":              strat_news_momentum_short,
+    "news_reversal_long":               strat_news_reversal_long,
     # SM1 smart-money sleeves (10 - Batch 487 2026-05-30)
     "bollinger_tight_with_smart_money_long":    strat_bollinger_tight_with_smart_money_long,
     "mfi_oversold_with_smart_money_long":       strat_mfi_oversold_with_smart_money_long,
