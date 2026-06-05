@@ -9,7 +9,7 @@ Owner directives applied (answers A + C + D + E approved):
       The 2.0x threshold was gating too many real breakouts.
   (d) Replaced cumulative-since-history above_vwap with Brian Shannon
       (2022) anchored VWAP:
-        LONG : above_avwap_50low (above AVWAP from recent 50-day
+        LONG : above_avwap_20low (above AVWAP from recent 50-day
                swing low - upleg intact)
         SHORT: NOT above_avwap_20high (below AVWAP from recent
                20-day swing high - recent rally given back)
@@ -31,7 +31,7 @@ Pins:
       above_vwap) does NOT fire post-B597
   (4) vol_spike_2x alone (without vol_spike_15x) does NOT fire
       (B597 (c) verifies the vol-gate widening)
-  (5) above_vwap alone (without above_avwap_50low) does NOT fire LONG
+  (5) above_vwap alone (without above_avwap_20low) does NOT fire LONG
       (B597 (d) AVWAP swap verification)
   (6) Regime default LONG = {bull, neutral}; SHORT = {bear, crisis,
       neutral} -- strategy no longer in STRATEGY_REGIME_AFFINITY map
@@ -48,7 +48,7 @@ def test_batch597_volume_spike_breakout_long_5_gates():
     s = {
         "dc20_breakout_up": True,
         "vol_spike_15x": True,
-        "above_avwap_50low": True,
+        "above_avwap_20low": True,
         "close_above_open": True,
         "close_in_top_40pct_of_range": True,
     }
@@ -95,7 +95,7 @@ def test_batch597_vol_gate_widened_15x_not_2x():
         "dc20_breakout_up": True,
         "vol_spike_2x": True,
         "vol_spike_15x": False,  # below the NEW threshold
-        "above_avwap_50low": True,
+        "above_avwap_20low": True,
         "close_above_open": True,
         "close_in_top_40pct_of_range": True,
     }
@@ -105,14 +105,14 @@ def test_batch597_vol_gate_widened_15x_not_2x():
 
 
 def test_batch597_avwap_swap_above_vwap_alone_blocked():
-    """Pin (5): legacy above_vwap signal alone (without above_avwap_50low)
+    """Pin (5): legacy above_vwap signal alone (without above_avwap_20low)
     does NOT fire."""
     from backtest.signals.screener import strat_volume_spike_breakout
     s = {
         "dc20_breakout_up": True,
         "vol_spike_15x": True,
         "above_vwap": True,           # legacy signal True
-        "above_avwap_50low": False,   # but new signal False
+        "above_avwap_20low": False,   # but new signal False
         "close_above_open": True,
         "close_in_top_40pct_of_range": True,
     }

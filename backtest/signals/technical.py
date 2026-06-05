@@ -210,11 +210,14 @@ def compute_vwap(df: pd.DataFrame) -> dict:
     # Brian Shannon (2022) "Maximum Trading Gains With Anchored VWAP".
     # Anchor at recent swing low / high to compute institutional reference
     # level. Pivot/CPR breakouts above AVWAP are markedly higher quality
-    # than naive pivot breaks (CMT Association whitepaper). Three anchors:
+    # than naive pivot breaks (CMT Association whitepaper). Four anchors:
     #   - 252-day swing low (1-year reference)
     #   -  50-day swing low (recent leg)
     #   -  20-day swing high (recent breakout reference)
-    for lookback, key in [(252, "252low"), (50, "50low"), (20, "20high")]:
+    #   -  20-day swing low  (Batch 598 - symmetric to 20high so dual
+    #                         breakout strategies can use a matched-
+    #                         timeframe anchor pair {20low, 20high})
+    for lookback, key in [(252, "252low"), (50, "50low"), (20, "20high"), (20, "20low")]:
         if len(df) < lookback + 5:
             continue
         window = df.tail(lookback)
