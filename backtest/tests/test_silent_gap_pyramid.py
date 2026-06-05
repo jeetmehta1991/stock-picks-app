@@ -1693,13 +1693,17 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     out = strat_donchian_breakdown_retest_short(s)
     assert out["fires"] is True and out["direction"] == "short"
 
-    # volume_spike_breakout_retest LONG + SHORT
-    s = {"resistance_break_retest": True, "vol_spike_2x": True,
-         "above_vwap": True}
+    # volume_spike_breakout_retest LONG + SHORT (B600-walked: now consumes
+    # dc20_*_break_retest_strong + above_avwap_20low/20high + bullish/bearish
+    # bar + top/bottom 40pct of range)
+    s = {"dc20_resistance_break_retest_strong": True, "vol_spike_2x": True,
+         "above_avwap_20low": True,
+         "close_above_open": True, "close_in_top_40pct_of_range": True}
     out = strat_volume_spike_breakout_retest(s)
     assert out["fires"] is True and out["direction"] == "long"
-    s = {"support_break_retest": True, "vol_spike_2x": True,
-         "above_vwap": False}
+    s = {"dc20_support_break_retest_strong": True, "vol_spike_2x": True,
+         "above_avwap_20high": False,
+         "close_below_open": True, "close_in_bottom_40pct_of_range": True}
     out = strat_volume_spike_breakout_retest(s)
     assert out["fires"] is True and out["direction"] == "short"
 

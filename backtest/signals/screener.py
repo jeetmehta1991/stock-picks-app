@@ -1049,18 +1049,56 @@ def strat_donchian_breakdown_retest_short(s):
 
 def strat_volume_spike_breakout_retest(s):
     """BUG-111 (Batch 329): retest variant of volume_spike_breakout.
-    Retest entry with 2x volume + VWAP regime gate."""
-    fl = (s.get("resistance_break_retest") and s.get("vol_spike_2x")
-          and s.get("above_vwap"))
-    fs = (s.get("support_break_retest") and s.get("vol_spike_2x")
-          and not s.get("above_vwap"))
+    Retest entry with 2x volume + VWAP regime gate.
+
+    Batch 600 (2026-06-05 owner-directed Stage 4 walk):
+      (a) Added bullish-bar + strong-close gates: close_above_open +
+          close_in_top_40pct_of_range (LONG); mirrors for SHORT.
+      (c) Replaced standard resistance_break_retest / support_break
+          _retest with B594 LOCAL strong variants
+          dc20_resistance_break_retest_strong / dc20_support_break
+          _retest_strong (original break bar must clear level by
+          >= 0.5*ATR(14)). No new producer code - signals already exist.
+      (d) Replaced cumulative-since-history above_vwap with Brian Shannon
+          (2022) anchored VWAP (same swap as B597/B598 for the
+          non-retest parent volume_spike_breakout):
+            LONG : above_avwap_20low (above AVWAP from recent 20-day
+                   swing low - 20d upleg intact)
+            SHORT: NOT above_avwap_20high (below AVWAP from recent
+                   20-day swing high - 20d rally given back)
+      (e) Regime affinity: rely on Batch 291 direction-aware default
+          (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
+          Strategy NOT in STRATEGY_REGIME_AFFINITY map.
+
+    SKIPPED (b): vol_spike_2x retained as the DELIBERATE differentiator
+    vs the donchian retest pair (which uses vol_below_avg per Bulkowski
+    supply-absorption thesis). This strategy carries the alternative
+    "high-conviction 2x-volume retest" thesis - both retest playbooks
+    coexist post-B600 without convergence.
+    """
+    fl = (s.get("dc20_resistance_break_retest_strong")
+          and s.get("vol_spike_2x")
+          and s.get("above_avwap_20low")
+          and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range"))
+    fs = (s.get("dc20_support_break_retest_strong")
+          and s.get("vol_spike_2x")
+          and not s.get("above_avwap_20high")
+          and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest","vol_spike_2x","above_vwap"],
-        ["support_break_retest","vol_spike_2x","below_vwap"],
-        ["Post-break retest with 2x volume - institutional accumulation",
-         "Above VWAP - intraday buyer in control"],
-        ["Post-breakdown retest with 2x volume - institutional distribution",
-         "Below VWAP - intraday seller in control"])
+        ["dc20_resistance_break_retest_strong","vol_spike_2x","above_avwap_20low","close_above_open","close_in_top_40pct_of_range"],
+        ["dc20_support_break_retest_strong","vol_spike_2x","below_avwap_20high","close_below_open","close_in_bottom_40pct_of_range"],
+        ["Post-break retest of 20-day Donchian high (strong break: >=0.5*ATR clearance)",
+         "Volume 2x confirms institutional accumulation on retest",
+         "Above 20-day swing-low AVWAP (Brian Shannon 2022) - 20d upleg intact",
+         "Bullish bar (close above open)",
+         "Strong close (top 40pct of range)"],
+        ["Post-break retest of 20-day Donchian low (strong break: >=0.5*ATR clearance)",
+         "Volume 2x confirms institutional distribution on retest",
+         "Below 20-day swing-high AVWAP - 20d rally given back",
+         "Bearish bar (close below open)",
+         "Strong close (bottom 40pct of range)"])
 
 
 # -----------------------------------------------------------------------------
