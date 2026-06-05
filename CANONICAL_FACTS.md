@@ -82,7 +82,7 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 
 ### F-002 — Strategy roster (planned + LIVE)
 
-**Live value (`len(ALL_STRATEGIES)` 2026-06-05 Batch 603):** **219 IMPLEMENTED strategy classes registered** (B591 added tight-long pair; B592 restored tight-short pair coexisting at 218; B599 deleted dual donchian_20_breakout_retest per B596 convergence option 2 -> 217; B603 added 2 Class 7 NEW symmetric inverses news_momentum_short + news_reversal_long per news_momentum_long walk -> 219). `DEPRECATED_STRATEGIES` empty. `STRATEGIES_DISABLED_MISSING_PRODUCER` 1. **218 active for next cube iteration** (218 × 26 = 5,668 cells).
+**Live value (`len(ALL_STRATEGIES)` 2026-06-06 Batch 605):** **220 IMPLEMENTED strategy classes registered** (B591 tight-long pair; B592 restored tight-short -> 218; B599 deleted dual -> 217; B603 +2 news inverses -> 219; B605 +1 Class 7 NEW 52wl_break_retest_short per F1 bug fix in 52wh_break_retest walk with new compute_52w_break_retest_signals producer -> 220). `DEPRECATED_STRATEGIES` empty. `STRATEGIES_DISABLED_MISSING_PRODUCER` 1. **219 active for next cube iteration** (219 × 26 = 5,694 cells).
 
 **Value (planned target):** **199 RESOLVED-DECIDED strategy classes across 6 layers post owner "Approve all" + Layer 1.I symmetry + Q1+Q2+Q3 (Layer 5 flag schema + Layer 6 27 new) 2026-05-06 (was 134 pre-symmetry; 108-118 pre-Pass-53-Option-2). Goes to 203 when Layer 4 PENDING-DEC promoted; ~213 with Layer 2D form-derived ICT estimate. ~200-400+ multi-TF variants projected. Total unique testable strategies projected: 200+ confirmed (could exceed 400 with full multi-TF expansion).** Gap: 199 (target) - 186 (live) = 13 classes pending implementation across Layers 2D + 4 + 6 remainder.
 
