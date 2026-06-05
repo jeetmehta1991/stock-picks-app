@@ -1015,17 +1015,32 @@ def strat_donchian_breakdown_retest_short(s):
     Short on the post-break retest of broken support.
 
     Batch 592 (2026-06-05 owner correction): RESTORED with original
-    3-gate logic. Any further tweaks pending explicit per-strategy
-    Stage 4 walk per feedback_no_rushing_per_strategy_tweak.
+    3-gate logic after misinterpreted B591 deletion.
+
+    Batch 596 (2026-06-05 owner-directed Stage 4 walk of tight retest
+    pair):
+      (a) Symmetry: added close_below_open + close_in_bottom_40pct_of_range
+          to match donchian_breakout_retest_long gate count.
+      (b) Flipped vol_spike_15x -> vol_below_avg per Bulkowski retest
+          thesis (retest forms on LOWER volume = supply absorption).
+      (c) Replaced support_break_retest with B594 LOCAL strong variant
+          dc20_support_break_retest_strong (original breakdown bar must
+          clear level by >= 0.5*ATR(14)).
+      (e) Regime affinity: rely on Batch 291 direction-aware default
+          (SHORT -> {bear, crisis, neutral}).
     """
-    fires = (s.get("support_break_retest")
-             and s.get("vol_spike_15x")
-             and not s.get("macd_12_26_9_bullish"))
+    fires = (s.get("dc20_support_break_retest_strong")
+             and s.get("vol_below_avg")
+             and not s.get("macd_12_26_9_bullish")
+             and s.get("close_below_open")
+             and s.get("close_in_bottom_40pct_of_range"))
     return _strat(fires, "short", "breakout",
-        ["support_break_retest","vol_spike_15x","macd_bearish"],
-        ["Post-break retest of broken Donchian support",
-         "Volume 1.5x confirms institutional supply",
-         "MACD bearish - trend agrees"])
+        ["dc20_support_break_retest_strong","vol_below_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
+        ["Post-break retest of broken Donchian support (strong break: >=0.5*ATR clearance)",
+         "Volume below 20d avg (Bulkowski retest thesis)",
+         "MACD bearish - trend agrees",
+         "Bearish bar (close below open)",
+         "Strong close (bottom 40pct of range)"])
 
 
 def strat_volume_spike_breakout_retest(s):
@@ -1383,21 +1398,34 @@ def strat_donchian_breakout_long(s):
 
 def strat_donchian_breakout_retest_long(s):
     """Batch 591 (2026-06-04 owner-directed Class 7 NEW retest mirror):
-    tight long-only retest variant. Mirror of the deleted
-    donchian_breakdown_retest_short. Owner answer C: (c)+(d) apply but
-    skip (e) for retest variants. Producer: resistance_break_retest,
-    vol_spike_15x, macd_12_26_9_bullish, close_above_open,
-    close_in_top_40pct_of_range.
+    tight long-only retest variant. Mirror of donchian_breakdown_retest
+    _short. Owner B591 answer C: (c)+(d) apply but skip (e) for retest
+    variants. Producer: resistance_break_retest, vol_spike_15x,
+    macd_12_26_9_bullish, close_above_open, close_in_top_40pct_of_range.
+
+    Batch 596 (2026-06-05 owner-directed Stage 4 walk of tight retest
+    pair):
+      (a) Already had 5 gates from B591; no change.
+      (b) Flipped vol_spike_15x -> vol_below_avg per Bulkowski thesis.
+      (c) Replaced resistance_break_retest with B594 LOCAL strong
+          variant dc20_resistance_break_retest_strong (original
+          breakout bar must clear level by >= 0.5*ATR(14)).
+      (e) Regime affinity: rely on Batch 291 direction-aware default
+          (LONG -> {bull, neutral}).
+
+    CONVERGENCE NOTE: post-B596 this strategy is functionally identical
+    to the LONG side of donchian_20_breakout_retest (B594). Duplication
+    flagged for owner resolution.
     """
-    fires = (s.get("resistance_break_retest")
-             and s.get("vol_spike_15x")
+    fires = (s.get("dc20_resistance_break_retest_strong")
+             and s.get("vol_below_avg")
              and s.get("macd_12_26_9_bullish")
              and s.get("close_above_open")
              and s.get("close_in_top_40pct_of_range"))
     return _strat(fires, "long", "breakout",
-        ["resistance_break_retest","vol_spike_15x","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
-        ["Post-break retest of broken Donchian resistance",
-         "Volume 1.5x confirms institutional demand",
+        ["dc20_resistance_break_retest_strong","vol_below_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range"],
+        ["Post-break retest of broken Donchian resistance (strong break: >=0.5*ATR clearance)",
+         "Volume below 20d avg (Bulkowski retest thesis)",
          "MACD bullish - trend agrees",
          "Bullish bar (close above open)",
          "Strong close (top 40pct of range)"])
