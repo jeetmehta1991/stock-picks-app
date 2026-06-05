@@ -1604,9 +1604,12 @@ def test_batch329_bug111_six_retest_variants_registered():
     ALL_STRATEGIES for the price-pattern breakouts that didn't yet have one."""
     from backtest.signals.screener import ALL_STRATEGIES
     # Batch 594 (2026-06-05): donchian_10_breakout_retest renamed to
-    # donchian_20_breakout_retest (matches DC20-anchored producer).
+    # donchian_20_breakout_retest.
+    # Batch 599 (2026-06-05): donchian_20_breakout_retest DELETED
+    # (B596 convergence option 2); semantics live in the explicit pair
+    # donchian_breakout_retest_long + donchian_breakdown_retest_short.
     expected_new = [
-        "donchian_20_breakout_retest",
+        "donchian_breakout_retest_long",
         "donchian_breakdown_retest_short",
         "volume_spike_breakout_retest",
         "cup_and_handle_retest_long",
@@ -1642,10 +1645,12 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   218 after Batch 591/592 (donchian_breakout_long + retest_long
     #       added; donchian_breakdown_short/retest_short kept per B592
     #       owner correction)
-    assert len(ALL_STRATEGIES) == 218, (
+    #   217 after Batch 599 (deleted donchian_20_breakout_retest dual -
+    #       B596 convergence option 2)
+    assert len(ALL_STRATEGIES) == 217, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592 trajectory: ALL_STRATEGIES "
-        f"count must be 218 post-B592, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599 trajectory: ALL_STRATEGIES "
+        f"count must be 217 post-B599, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1655,7 +1660,7 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     parent gates are satisfied; does NOT fire on the naked break without
     the retest pullback."""
     from backtest.signals.screener import (
-        strat_donchian_20_breakout_retest,
+        strat_donchian_breakout_retest_long,
         strat_donchian_breakdown_retest_short,
         strat_volume_spike_breakout_retest,
         strat_cup_and_handle_retest_long,
@@ -1663,16 +1668,19 @@ def test_batch329_retest_variants_fire_on_retest_signal():
         strat_triangle_ascending_retest_long,
     )
 
-    # donchian_20_breakout_retest LONG (renamed B594; post-B594 gates:
-    # dc20_resistance_break_retest_strong + vol_below_avg + macd_bullish
-    # + close_above_open + close_in_top_40pct_of_range)
+    # donchian_breakout_retest_long (B596-walked + B599-survives;
+    # the dual donchian_20_breakout_retest was deleted in B599 per
+    # B596 convergence option 2; this explicit per-direction strategy
+    # carries identical post-B596 semantics: dc20_resistance_break
+    # _retest_strong + vol_below_avg + macd_bullish + close_above_open
+    # + close_in_top_40pct_of_range)
     s = {"dc20_resistance_break_retest_strong": True, "vol_below_avg": True,
          "macd_12_26_9_bullish": True, "close_above_open": True,
          "close_in_top_40pct_of_range": True}
-    out = strat_donchian_20_breakout_retest(s)
+    out = strat_donchian_breakout_retest_long(s)
     assert out["fires"] is True and out["direction"] == "long"
     s2 = dict(s); s2["dc20_resistance_break_retest_strong"] = False
-    assert strat_donchian_20_breakout_retest(s2)["fires"] is False
+    assert strat_donchian_breakout_retest_long(s2)["fires"] is False
 
     # donchian_breakdown_retest_short (post-B596 walk: 5 gates;
     # dc20_support_break_retest_strong + vol_below_avg + NOT macd_bullish
