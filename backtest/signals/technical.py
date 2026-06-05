@@ -1516,6 +1516,99 @@ def compute_break_retest_signals(df: pd.DataFrame) -> dict:
     }
 
 
+def compute_52w_break_retest_signals(df: pd.DataFrame) -> dict:
+    """Batch 605 (2026-06-06 owner-directed F1 bug fix in 52wh_break_retest
+    walk): 52-WEEK-HIGH (or LOW) break-and-retest primitive. Same retest
+    structure as compute_break_retest_signals but anchored on year_high
+    / year_low (prior-252-day max-HIGH / min-LOW, excluding today via
+    the B582 fix) instead of DC20-max-CLOSE.
+
+    Bug context (CHECKLIST #105 deep-read surfaced this):
+      The original strat_52wh_break_retest (BUG-111 / Batch 162) was
+      documented as "52-week high break-and-retest" but consumed the
+      DC20-anchored resistance_break_retest signal. The DC20-max-close
+      could be any price; it bore no relationship to the 52w high. The
+      near_52w_high gate (within 2pct of year_high) was added as a
+      proximity filter but did NOT tie the retest event to the year_high
+      breakout. Strategy name + docstring lied about what it detected.
+
+    Fix: build the 52w-anchored equivalent primitive so the strategy
+    can consume what its name promises. Emits:
+      - year_high_break_retest_long (long): some bar 2-8 ago closed
+        > year_high (the prior-252d max-HIGH excluding today); subsequent
+        bar low touched within 1.5*ATR(14) of year_high; today's close
+        still >= year_high.
+      - year_low_break_retest_short (short): mirror around year_low.
+
+    Both emit `False` when df < 252+9 = 261 bars (need enough history
+    to define year_high + 8-bar lag window).
+
+    Producer signals consumed only by strat_52wh_break_retest +
+    strat_52wl_break_retest_short (B605 ADDED).
+    """
+    out = {
+        "year_high_break_retest_long":  False,
+        "year_low_break_retest_short": False,
+    }
+    if len(df) < 252 + 9:  # need 252-day window + max 8-bar lag + today
+        return out
+
+    close = df["close"].values
+    high  = df["high"].values
+    low   = df["low"].values
+    n     = len(close)
+
+    # ATR(14) same as compute_break_retest_signals (vectorized TR).
+    tr1 = high[1:] - low[1:]
+    tr2 = np.abs(high[1:] - close[:-1])
+    tr3 = np.abs(low[1:] - close[:-1])
+    tr_arr = np.maximum(np.maximum(tr1, tr2), tr3)
+    atr = float(np.mean(tr_arr[-14:])) if len(tr_arr) >= 14 else float(np.mean(tr_arr))
+    if atr <= 0:
+        atr = close[-1] * 0.01
+    tolerance = 1.5 * atr
+
+    # year_high / year_low computed at the BREAK bar (lag), using the
+    # 252 bars PRIOR to the break bar. Excludes today (B582 fix carried
+    # through). This way the "broken level" the bar at idx broke is
+    # defined consistently with how a trader would have observed the
+    # year_high at the time of the break.
+    resistance_long = False
+    for lag in range(2, 9):
+        if n <= lag + 252:  # need 252 bars of history BEFORE the break bar
+            break
+        idx = n - 1 - lag                          # break-bar index
+        window_start = idx - 252                   # prior 252 bars
+        if window_start < 0:
+            continue
+        year_high_at_break = float(np.max(high[window_start:idx]))
+        if close[idx] > year_high_at_break:        # break: bar at idx closed above year_high
+            # any subsequent bar's low touched within tolerance of year_high
+            if any(l <= year_high_at_break + tolerance for l in low[idx + 1:]):
+                if close[-1] >= year_high_at_break:  # today still above year_high
+                    resistance_long = True
+                    break
+
+    support_short = False
+    for lag in range(2, 9):
+        if n <= lag + 252:
+            break
+        idx = n - 1 - lag
+        window_start = idx - 252
+        if window_start < 0:
+            continue
+        year_low_at_break = float(np.min(low[window_start:idx]))
+        if close[idx] < year_low_at_break:
+            if any(h >= year_low_at_break - tolerance for h in high[idx + 1:]):
+                if close[-1] <= year_low_at_break:
+                    support_short = True
+                    break
+
+    out["year_high_break_retest_long"]  = resistance_long
+    out["year_low_break_retest_short"] = support_short
+    return out
+
+
 # -----------------------------------------------------------------------------
 # MASTER AGGREGATOR
 # -----------------------------------------------------------------------------
@@ -1571,6 +1664,7 @@ def compute_all_signals(df: pd.DataFrame,
     signals.update(compute_volume(df))
     signals.update(compute_candles(df))
     signals.update(compute_break_retest_signals(df))  # BUG-111
+    signals.update(compute_52w_break_retest_signals(df))  # B605 F1 - 52w-anchored retest
     if "simple_returns" not in skip:
         signals.update(compute_simple_returns(df))        # Batch 467 P10
     return {k: v for k, v in signals.items() if v is not None}

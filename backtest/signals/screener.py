@@ -1567,11 +1567,95 @@ def strat_r1_break_retest(s):
 
 
 def strat_52wh_break_retest(s):
-    """BUG-111: 52-week high break-and-retest -- historical resistance becomes support."""
-    fl = (s.get("resistance_break_retest") and s.get("near_52w_high") and s.get("price_above_ema_200"))
+    """BUG-111 (Batch 162) ORIGINAL: documented as 52-week high break-and-
+    retest but consumed DC20-anchored resistance_break_retest (the only
+    retest primitive at the time). Strategy name + docstring lied about
+    what it detected; near_52w_high was just a proximity filter, not a
+    tie between the break event and the year_high.
+
+    Batch 605 (2026-06-06 owner-directed F1 bug fix per CHECKLIST #105
+    deep-read; full walk + a+b+c+g+e applied):
+
+      F1 - Replaced resistance_break_retest with NEW
+        year_high_break_retest_long primitive (compute_52w_break_retest
+        _signals). Now the retest event is anchored on year_high (prior-
+        252d max-HIGH excluding today) as the strategy name promises.
+      (a) Added close_above_open + close_in_top_40pct_of_range
+          (B589-family bullish-bar + strong-close).
+      (b) Added vol_below_avg (Bulkowski canonical retest = supply-
+          absorption on LOWER volume).
+      (c) Added above_avwap_20low (Brian Shannon 2022 AVWAP from
+          recent 20-day swing low; consistent with B597/B598/B600/B603
+          AVWAP family).
+      (e) Regime affinity: Batch 291 direction-aware default (LONG ->
+          {bull, neutral}).
+
+    Post-B605 7-gate set:
+      year_high_break_retest_long + near_52w_high + price_above_ema_200
+      + close_above_open + close_in_top_40pct_of_range + vol_below_avg
+      + above_avwap_20low
+
+    Academic backing:
+      - George-Hwang 2004 JF: 52w-high attracts sustained buying.
+      - Bulkowski 2005: post-break retest is canonical confirmation;
+        retest forms on LOWER volume (supply absorption).
+    """
+    fl = (s.get("year_high_break_retest_long")
+          and s.get("near_52w_high")
+          and s.get("price_above_ema_200")
+          and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range")
+          and s.get("vol_below_avg")
+          and s.get("above_avwap_20low"))
     return _strat(fl, "long", "breakout",
-        ["resistance_break_retest", "near_52w_high", "price_above_ema_200"],
-        "52-week high break-and-retest: strongest historical resistance confirmed as support above 200 EMA")
+        ["year_high_break_retest_long", "near_52w_high",
+         "price_above_ema_200", "close_above_open",
+         "close_in_top_40pct_of_range", "vol_below_avg",
+         "above_avwap_20low"],
+        ["52-week high broken 2-8 bars ago + retested within 1.5*ATR + still above",
+         "Today's close within 2% of 52-week high",
+         "Above 200-day EMA (trend filter)",
+         "Bullish bar (close above open)",
+         "Strong close (top 40% of range)",
+         "Volume below 20d avg (Bulkowski retest = supply absorption)",
+         "Above 20d swing-low AVWAP (Brian Shannon)"])
+
+
+def strat_52wl_break_retest_short(s):
+    """Batch 605 (2026-06-06 owner-directed Class 7 NEW): symmetric
+    inverse of strat_52wh_break_retest. 52-week LOW breakdown-and-
+    retest -- historical support confirmed as resistance below 200 EMA.
+
+    Mirror 7-gate structure:
+      year_low_break_retest_short + near_52w_low + NOT price_above
+      _ema_200 + close_below_open + close_in_bottom_40pct_of_range +
+      vol_below_avg + NOT above_avwap_20high
+
+    Producer signals: year_low_break_retest_short from B605 NEW
+    compute_52w_break_retest_signals; all others pre-existing.
+
+    Regime affinity: Batch 291 direction-aware default (SHORT ->
+    {bear, crisis, neutral}).
+    """
+    fs = (s.get("year_low_break_retest_short")
+          and s.get("near_52w_low")
+          and not s.get("price_above_ema_200", True)
+          and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range")
+          and s.get("vol_below_avg")
+          and not s.get("above_avwap_20high", True))
+    return _strat(fs, "short", "breakout",
+        ["year_low_break_retest_short", "near_52w_low",
+         "below_ema_200", "close_below_open",
+         "close_in_bottom_40pct_of_range", "vol_below_avg",
+         "below_avwap_20high"],
+        ["52-week low broken 2-8 bars ago + retested within 1.5*ATR + still below",
+         "Today's close within 2% of 52-week low",
+         "Below 200-day EMA (bearish trend filter)",
+         "Bearish bar (close below open)",
+         "Strong close (bottom 40% of range)",
+         "Volume below 20d avg (Bulkowski retest = lower volume)",
+         "Below 20d swing-high AVWAP - recent rally given back"])
 
 
 def strat_break_retest_volume(s):
@@ -4548,6 +4632,8 @@ ALL_STRATEGIES = {
     "dc20_break_retest":            strat_dc20_break_retest,
     "r1_break_retest":              strat_r1_break_retest,
     "52wh_break_retest":            strat_52wh_break_retest,
+    # Batch 605 (2026-06-06) Class 7 NEW symmetric inverse per F1 walk:
+    "52wl_break_retest_short":      strat_52wl_break_retest_short,
     "break_retest_volume":          strat_break_retest_volume,
     "break_retest_confluence":      strat_break_retest_confluence,
     # -----------------------------------------------------------------------

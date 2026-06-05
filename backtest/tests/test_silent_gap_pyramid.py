@@ -1649,10 +1649,13 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       B596 convergence option 2)
     #   219 after Batch 603 (+2 Class 7 NEW news_momentum_short +
     #       news_reversal_long inverse mirrors)
-    assert len(ALL_STRATEGIES) == 219, (
+    #   220 after Batch 605 (+1 Class 7 NEW 52wl_break_retest_short
+    #       per F1 bug fix in 52wh_break_retest walk - new
+    #       compute_52w_break_retest_signals producer)
+    assert len(ALL_STRATEGIES) == 220, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603 trajectory: ALL_STRATEGIES "
-        f"count must be 219 post-B603, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605 trajectory: ALL_STRATEGIES "
+        f"count must be 220 post-B605, got {len(ALL_STRATEGIES)}"
     )
 
 
