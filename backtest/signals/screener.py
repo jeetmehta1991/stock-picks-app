@@ -2625,32 +2625,100 @@ def strat_pead_short_negative_yoy_growth(s):
 
 
 def strat_squeeze_setup_long(s):
-    """Batch 519 (2026-05-31, P15 sleeve per owner directive).
-    Short-squeeze setup: high short interest + bullish breakout.
+    """Batch 519 (2026-05-31, P15 sleeve) ORIGINAL: high SI + DC20
+    breakout + above-avg volume. Three gates total, one weak leading
+    indicator (SI) and two lagging confirmations (Donchian, volume).
 
-    Long fires when: short_interest_pct >= 20% (FINRA cache via
-    compute_short_interest_signals) AND donchian-20 breakout up
-    AND volume above 20-day average. The high SI primes a squeeze;
-    the DC20 breakout is the trigger; volume confirms participation.
+    Batch 601 (2026-06-05 owner-directed Stage 4 walk + desk-research
+    redesign): Option A composite. Eliminates Donchian. Replaces with
+    a 3-layer professional-firm squeeze-detection composite:
 
-    Academic backing: Cohen-Diether-Malloy 2007 'Supply and Demand
-    Shifts in the Shorting Market' -- shorted stocks underperform on
-    average BUT high-SI names with positive surprises exhibit
-    asymmetric upside (squeeze). Most relevant during high-VIX +
-    Reddit-era retail-driven moves (2021-2026).
+      LAYER 1 - POSITIONING (leading, weeks-ahead):
+        (1a) short_interest_pct >= 0.20 (preserved from B519)
+        (1b) days_to_cover >= 8 (owner-framework directive; was unused
+             on the long side - only short_borrow_trap_avoid consumed
+             days_to_cover via the > 5 gate)
+        (1c) institutional_buy OR insider_cluster_active
+             (smart-money flow agrees - someone is buying into the
+             high-SI name; this is the squeeze fuel that turns SI
+             from a paper-position into actual upside risk for shorts)
+
+      LAYER 2 - CATALYST (leading, hours-to-days):
+        (2a) news_sentiment_shift > 0.4 (strong positive narrative
+             shift; owner-framework "catalyst trigger")
+        OR (2b) within_pead_window AND pead_positive_surprise
+             (earnings beat as the catalyst; PEAD post-announcement
+             drift window typically 60d)
+
+      LAYER 3 - CONFIRMATION (entry timing):
+        (3a) above_avwap_20low (institutional reference reclaimed -
+             Brian Shannon 2022 AVWAP from recent 20-day swing low;
+             replaces dc20_breakout_up as a CONTEMPORANEOUS rather
+             than post-event signal. The Donchian breakout fires AFTER
+             the move; AVWAP reclaim fires AS the institutional flow
+             tips.)
+        (3b) vol_spike_15x (>=1.5x volume - institutional aggression
+             vs B519 vol_above_avg >= 1.0x which let retail noise through)
+        (3c) close_above_open (bullish bar; B589-family)
+        (3d) close_in_top_40pct_of_range (strong close; B589-family)
+
+    Academic & professional backing:
+      - Cohen-Diether-Malloy 2007 JF (high SI + positive shock = squeeze)
+      - Boehmer-Jones-Zhang 2008 JF (composition matters: institutional
+        squeeze on retail shorts)
+      - Diether-Lee-Werner 2009 RFS (high SI has concentrated upside
+        tail; multi-signal scoring needed to capture it)
+      - Owner-framework 2026-06-05: SI >= 20% + DTC 8-10 + catalyst +
+        VWAP confirmation + above-avg volume + bullish-bar
+      - Industry alignment: S3 Partners / Ortex / Hazeltree composite
+        squeeze-scoring uses positioning + catalyst + microstructure
+
+    Producer signals required (all already emitted, zero new code):
+      short_interest_pct, days_to_cover  (FINRA cache; B519)
+      institutional_buy, insider_cluster_active  (Quiver smart-money)
+      news_sentiment_shift  (Polygon news)
+      within_pead_window, pead_positive_surprise  (earnings cache)
+      above_avwap_20low  (Brian Shannon AVWAP; B205 + B598)
+      vol_spike_15x, close_above_open, close_in_top_40pct_of_range
+        (compute_volume; B589 family)
+
+    NOTE: This eliminates the Donchian primitive from the strategy
+    entirely. Drops the Donchian-touching footprint from 22 -> 21
+    strategies (10% -> 9.7%).
     """
     si_pct = s.get("short_interest_pct", 0.0) or 0.0
-    fires = (
+    dtc    = s.get("days_to_cover",      0.0) or 0.0
+
+    layer1_positioning = (
         si_pct >= 0.20
-        and s.get("dc20_breakout_up", False)
-        and s.get("vol_above_avg", False)
+        and dtc >= 8.0
+        and (s.get("institutional_buy", False)
+             or s.get("insider_cluster_active", False))
     )
+    layer2_catalyst = (
+        (s.get("news_sentiment_shift", 0.0) or 0.0) > 0.4
+        or (s.get("within_pead_window", False)
+            and s.get("pead_positive_surprise", False))
+    )
+    layer3_confirmation = (
+        s.get("above_avwap_20low", False)
+        and s.get("vol_spike_15x", False)
+        and s.get("close_above_open", False)
+        and s.get("close_in_top_40pct_of_range", False)
+    )
+    fires = layer1_positioning and layer2_catalyst and layer3_confirmation
+
     return _strat(fires, "long", "smart_money_sleeve",
-        ["short_interest_pct>=20pct", "dc20_breakout_up", "vol_above_avg"],
-        [f"Short interest {si_pct*100:.1f}% (>= 20% threshold)",
-         "Price broke 20-day Donchian high",
-         "Volume above 20d avg confirms breakout",
-         "Cohen-Diether-Malloy 2007 squeeze-setup"])
+        ["short_interest_pct>=20pct", "days_to_cover>=8",
+         "institutional_buy|insider_cluster_active",
+         "news_sentiment_shift>0.4|within_pead_window+pead_positive_surprise",
+         "above_avwap_20low", "vol_spike_15x",
+         "close_above_open", "close_in_top_40pct_of_range"],
+        [f"L1 positioning: SI {si_pct*100:.1f}% + DTC {dtc:.1f}d + smart-money buying",
+         "L2 catalyst: news sentiment shift OR positive earnings surprise (PEAD window)",
+         "L3 confirmation: above 20d swing-low AVWAP + 1.5x volume + bullish bar + strong close",
+         "Cohen-Diether-Malloy 2007 + Boehmer-Jones-Zhang 2008 + Diether-Lee-Werner 2009",
+         "S3/Ortex-style composite squeeze-scoring (B601 redesign)"])
 
 
 def strat_activist_13d_long(s):
