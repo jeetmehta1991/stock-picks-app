@@ -161,14 +161,16 @@ def test_batch584_donchian_10_breakout_downstream():
 
 def test_batch584_donchian_breakdown_short_downstream():
     """Pin (8): strat_donchian_breakdown_short fires given post-fix signals.
-    Batch 591 deleted this strategy; Batch 592 RESTORED it per owner
-    correction 2026-06-05 (both tight-long AND tight-short variants
-    coexist for symmetry)."""
+    Batch 591 deleted this strategy; Batch 592 RESTORED it; Batch 595
+    walk added 2 symmetry gates (close_below_open + close_in_bottom_40pct
+    _of_range). Test updated for the 5-gate post-B595 set."""
     from backtest.signals.screener import strat_donchian_breakdown_short
     s = {
         "dc10_breakout_dn": True,
         "vol_spike_15x": True,
         "macd_12_26_9_bullish": False,
+        "close_below_open": True,
+        "close_in_bottom_40pct_of_range": True,
     }
     out = strat_donchian_breakdown_short(s)
     assert out["fires"] == True

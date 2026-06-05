@@ -1324,26 +1324,48 @@ def strat_donchian_breakdown_short(s):
     """Tight short Donchian-10 breakdown - 1.5x vol gate + MACD bearish.
 
     Batch 592 (2026-06-05 owner correction): RESTORED with original
-    3-gate logic. Any further tweaks pending explicit per-strategy
-    Stage 4 walk per feedback_no_rushing_per_strategy_tweak.
+    3-gate logic after misinterpreted B591 deletion.
+
+    Batch 595 (2026-06-05 owner-directed Stage 4 walk of the tight
+    non-retest pair):
+      (a) Restore long/short symmetry with donchian_breakout_long.
+          B591 added close_above_open + close_in_top_40pct_of_range to
+          the long-only tight mirror but NOT to this short variant.
+          B595 fixes that asymmetry. Now requires all 5 gates:
+            dc10_breakout_dn + vol_spike_15x + NOT macd_bullish
+            + close_below_open + close_in_bottom_40pct_of_range
+      (e) Regime affinity: rely on Batch 291 direction-aware default
+          (SHORT -> {bear, crisis, neutral}). NOT in
+          STRATEGY_REGIME_AFFINITY map; default handles it.
     """
-    fires = (s.get("dc10_breakout_dn") and
-             s.get("vol_spike_15x") and
-             not s.get("macd_12_26_9_bullish"))
+    fires = (s.get("dc10_breakout_dn")
+             and s.get("vol_spike_15x")
+             and not s.get("macd_12_26_9_bullish")
+             and s.get("close_below_open")
+             and s.get("close_in_bottom_40pct_of_range"))
     return _strat(fires, "short", "breakout",
-        ["dc10_breakout_dn", "vol_spike_1.5x", "macd_bearish"],
-        ["Price broke 10-day Donchian low  -  downside breakout",
+        ["dc10_breakout_dn","vol_spike_15x","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
+        ["Price broke 10-day Donchian low - downside breakout",
          "Volume 1.5x confirms institutional selling pressure",
-         "MACD negative  -  momentum confirms the breakdown"])
+         "MACD negative - momentum confirms the breakdown",
+         "Bearish bar (close below open)",
+         "Strong close (bottom 40pct of range)"])
 
 
 def strat_donchian_breakout_long(s):
     """Batch 591 (2026-06-04 owner-directed Class 7 NEW): tight long-only
-    Donchian-10 breakout. Mirror of the deleted donchian_breakdown_short
+    Donchian-10 breakout. Mirror of donchian_breakdown_short
     (1.5x vol gate) plus B589-style strong-close + bullish-bar gates.
     Producer signals: dc10_breakout_up (existing 0.2pct tolerance),
     vol_spike_15x, macd_12_26_9_bullish, close_above_open,
     close_in_top_40pct_of_range.
+
+    Batch 595 (2026-06-05 owner-directed Stage 4 walk of the tight
+    non-retest pair): no gate changes here - this strategy already
+    had all 5 gates from B591 inception. B595 (a) brought the SHORT
+    mirror to parity by adding close_below_open + close_in_bottom_40pct
+    _of_range to donchian_breakdown_short. (e) Regime affinity: rely
+    on Batch 291 direction-aware default (LONG -> {bull, neutral}).
     """
     fires = (s.get("dc10_breakout_up")
              and s.get("vol_spike_15x")

@@ -78,15 +78,16 @@ def test_batch591_dc10_breakout_up_1pct_blocks_far_close():
 
 
 def test_batch591_donchian_breakdown_short_restored_in_b592():
-    """Pin (2) post-B592: donchian_breakdown_short was deleted in B591
-    then RESTORED in B592 per owner correction 2026-06-05. Both
-    tight-long AND tight-short variants coexist - symmetry achieved
-    by addition, not by deletion."""
+    """Pin (2) post-B592/B595: donchian_breakdown_short was deleted in
+    B591 then RESTORED in B592. Batch 595 walk added 2 gates for
+    long/short symmetry with donchian_breakout_long (close_below_open
+    + close_in_bottom_40pct_of_range). Now requires 5 gates."""
     from backtest.signals.screener import ALL_STRATEGIES, strat_donchian_breakdown_short
     assert "donchian_breakdown_short" in ALL_STRATEGIES
-    # Original 3-gate logic preserved
     s = {"dc10_breakout_dn": True, "vol_spike_15x": True,
-         "macd_12_26_9_bullish": False}
+         "macd_12_26_9_bullish": False,
+         "close_below_open": True,
+         "close_in_bottom_40pct_of_range": True}
     out = strat_donchian_breakdown_short(s)
     assert out["fires"] == True
     assert out["direction"] == "short"
