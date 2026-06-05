@@ -154,7 +154,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # Volume-flow: allow all (signal is regime-agnostic)
     "cmf_flip":                 {"bear", "neutral"},  # Batch 418 cube override (was {bull, neutral, bear, crisis}; bull negative + 0 crisis trades)
     "force_index_breakout":     {"bull", "neutral", "bear", "crisis"},
-    "volume_spike_breakout":    {"bull", "neutral", "bear", "crisis"},
+    # Batch 597 (2026-06-05 owner-directed Stage 4 walk of
+    # volume_spike_breakout): REMOVED explicit allow-all entry. Now
+    # uses Batch 291 direction-aware default - LONG -> {bull, neutral};
+    # SHORT -> {bear, crisis, neutral}.
     # AVWAP family (Batch 208): allow all regimes; signal self-gates via
     # above_avwap_* + 200-EMA logic inside the strategy itself.
     "avwap_252_breakout":           {"bear", "neutral"},  # Batch 418 cube override (was all-4-regimes; bull negative + 0 crisis trades)

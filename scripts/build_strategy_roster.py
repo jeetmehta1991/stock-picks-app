@@ -436,6 +436,10 @@ def signal_plain_translation(signal: str) -> str:
         "dc20_support_break_retest_strong": "Mirror of dc20_resistance_break_retest_strong (B594 LOCAL). ALL conditions of support_break_retest PLUS: original breakdown bar closed by AT LEAST 0.5*ATR(14) BELOW the prior-20-day min-close level.",
         # B594 global vol_below_avg signal
         "vol_below_avg": "today's volume / 20-day average volume STRICTLY LESS THAN 1.0 (window includes today). Bulkowski 2005: retest pattern forms on LOWER volume than the initial break (supply absorption thesis).",
+        # Brian Shannon (2022) Anchored VWAP signals (Batch 205, used by B597)
+        "above_avwap_50low":  "today's close > AVWAP anchored at the lowest LOW of the prior 50 trading days. AVWAP cumulates (typical_price * volume) since the anchor bar; close above means the upleg from that swing low is still institutionally supported. Used by volume_spike_breakout LONG (B597).",
+        "above_avwap_20high": "today's close > AVWAP anchored at the highest HIGH of the prior 20 trading days. Close above means the breakout-day-to-now leg is still above the breakout reference price. Used INVERTED by volume_spike_breakout SHORT (B597): when close is BELOW this AVWAP, the recent rally has been given back.",
+        "above_avwap_252low": "today's close > AVWAP anchored at the lowest LOW of the prior 252 trading days. 1-year leg reference; used by other strategies (not volume_spike_breakout).",
         # Day-of-bar primitives
         "close_above_open":    "today's close STRICTLY GREATER THAN today's open (bullish bar)",
         "close_below_open":    "today's close STRICTLY LESS THAN today's open (bearish bar)",
