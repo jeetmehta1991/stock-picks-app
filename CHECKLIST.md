@@ -1577,3 +1577,29 @@ State compliance visibly: "Checklist: ✅ [each item]"
       e. **Patterns:** per-strategy flag variants (`near_s1_wide` alongside `near_s1`), per-strategy override dicts (`STRATEGY_RSI_OVERRIDE[strat_name] = 35`), inline computation inside the predicate, duplicate-then-modify.
 
     **Joint:** `feedback_local_changes_default_global_needs_approval`, `feedback_narrow_scope_blast_radius`, `feedback_audit_recommendations_against_existing_directives`. Lapse history: B573 (caught by owner, fixed in B574).
+
+105. **HARD RULE -- Stage 4 walks MUST read all associated scripts and docs end-to-end; surface every bug and issue, not a superficial review.** (Owner directive 2026-06-05 post-B603 news_momentum_long walk: "In the walk we intend to address bugs and All issues and not just do a superficial review. Read all associated scripts and docs! ... Add to checklist as well.")
+
+    **Rationale.** B603 walked `news_momentum_long`. My Step 3 (Producer health) marked every signal "✅ live" without reading the producer source. The owner then asked a basic follow-up about how `news_sentiment_5d` and `news_volume_zscore_5d` are calculated — which required opening `backtest/signals/news_sentiment.py`. Doing that 5-minute read at WALK time would have surfaced:
+      - the exact formula (recency-weighted mean with weight = 1 - age/5)
+      - the Polygon `/v2/reference/news` endpoint dependency
+      - the rule-based Loughran-McDonald fallback when Polygon sentiment is null
+      - the 5d-count vs trailing-25d-baseline z-score (Cohen-Frazzini-Malloy)
+      - the INV-027 history (multi-ticker per-ticker insights, RESOLVED 2026-05-08)
+
+    Owner's correction: "Why wasnt this flagged by you in the walk?" — direct call-out that Step 3 was box-checking, not auditing. **Walks are an opportunity to ALSO surface producer-level bugs, schema gaps, OPEN_INVESTIGATIONS items, doc/code mismatches, silent-gap concerns, and any technical-debt items associated with the strategy.** Doing this at walk time is far cheaper than discovering it during cube post-mortem.
+
+    **Apply when:** every Stage 4 / Stage 5 walk; every recommendation that touches a strategy that depends on a producer.
+
+    **How to apply:**
+      a. **Read the producer source end-to-end** for every signal the strategy consumes. Do not just confirm the signal name exists.
+      b. **Surface the FORMULA**, not just the signal name, in the walk's Step 3 table.
+      c. **Grep `OPEN_INVESTIGATIONS.md`** for the producer name + each signal name. Append matching entries (OPEN, RESOLVED, SUPERSEDED) to the walk's Step 3 as "Producer caveats".
+      d. **Cross-check strategy-docstring claims against producer reality**: range, threshold, units, formula. Flag any mismatch.
+      e. **Check the cache schema** (where applicable): is what the API returns actually persisted? Field-level coverage matches what the producer consumes?
+      f. **Read related scripts** (`scripts/prefetch_*.py`, `scripts/build_*.py` for any signal that involves a prefetcher) to verify the data pipeline matches the strategy's assumptions.
+      g. **Surface every issue found**, not just the gate-tweak proposals. Bugs / silent-gap risks / schema mismatches / doc drift get their own line in Step 7 (proposed tweaks) as "FIX" items distinct from "TIGHTEN" items.
+
+    **Pre-flight format for Step 3:** "Producer files read end-to-end: [list of .py files]. OPEN_INVESTIGATIONS grep results: [list of INV-NNN matches]. Schema-vs-API checks: [field-level table]. Doc-vs-producer mismatches: [list or 'none found']."
+
+    **Joint:** `feedback_walk_step3_must_read_producer_source`, `feedback_per_strategy_deep_dive_stage4`, `feedback_audit_recommendations_against_existing_directives`. Lapse history: B603 (caught by owner via "Why wasn't this flagged in the walk?", documented post-mortem in B604).
