@@ -98,43 +98,37 @@ def test_batch596_long_legacy_vol_spike_blocked():
     assert strat_donchian_breakout_retest_long(s)["fires"] is False
 
 
-def test_batch596_convergence_long_fires_iff_dual_long_fires():
-    """Pin (5): donchian_breakout_retest_long fires IFF donchian_20_break
-    out_retest LONG fires. Same gate set post-B596 - exact duplicates."""
+def test_batch596_convergence_resolved_via_b599_deletion():
+    """Pins (5)+(6) post-B599: convergence between the explicit pair and
+    the dual strat_donchian_20_breakout_retest was the original
+    finding. Owner picked Option 2 in B599 - delete the dual, keep
+    the pair. Verify the dual is gone and the pair still fires under
+    the post-B596 gate set."""
+    from backtest.signals import screener
     from backtest.signals.screener import (
         strat_donchian_breakout_retest_long,
-        strat_donchian_20_breakout_retest,
+        strat_donchian_breakdown_retest_short,
     )
-    s = {
+    assert not hasattr(screener, "strat_donchian_20_breakout_retest"), (
+        "B599 deleted the dual; semantics live in the explicit pair"
+    )
+    # Pair still fires with the post-B596 5-gate set
+    s_long = {
         "dc20_resistance_break_retest_strong": True,
         "vol_below_avg": True,
         "macd_12_26_9_bullish": True,
         "close_above_open": True,
         "close_in_top_40pct_of_range": True,
     }
-    long_out  = strat_donchian_breakout_retest_long(s)
-    dual_out  = strat_donchian_20_breakout_retest(s)
-    assert long_out["fires"] is True
-    assert dual_out["fires"] is True and dual_out["direction"] == "long"
-
-
-def test_batch596_convergence_short_fires_iff_dual_short_fires():
-    """Pin (6): mirror convergence."""
-    from backtest.signals.screener import (
-        strat_donchian_breakdown_retest_short,
-        strat_donchian_20_breakout_retest,
-    )
-    s = {
+    assert strat_donchian_breakout_retest_long(s_long)["fires"] is True
+    s_short = {
         "dc20_support_break_retest_strong": True,
         "vol_below_avg": True,
         "macd_12_26_9_bullish": False,
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }
-    short_out = strat_donchian_breakdown_retest_short(s)
-    dual_out  = strat_donchian_20_breakout_retest(s)
-    assert short_out["fires"] is True
-    assert dual_out["fires"] is True and dual_out["direction"] == "short"
+    assert strat_donchian_breakdown_retest_short(s_short)["fires"] is True
 
 
 def test_batch596_regime_default_long_bull_neutral():
@@ -168,7 +162,8 @@ def test_batch596_regime_default_short_bear_crisis_neutral():
     ) is False
 
 
-def test_batch596_all_strategies_count_preserved_at_218():
-    """Pin (8): no add/delete in B596."""
+def test_batch596_all_strategies_count_post_b599():
+    """Pin (8) post-B599: B596 was net 0 (just gate updates); B599
+    deleted the dual donchian_20_breakout_retest -> 217."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 218
+    assert len(ALL_STRATEGIES) == 217

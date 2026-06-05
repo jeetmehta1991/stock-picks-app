@@ -82,7 +82,7 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 
 ### F-002 — Strategy roster (planned + LIVE)
 
-**Live value (`len(ALL_STRATEGIES)` 2026-06-05 Batch 592):** **218 IMPLEMENTED strategy classes registered** (B591 added donchian_breakout_long + donchian_breakout_retest_long as tight-long mirrors; B592 owner correction restored donchian_breakdown_short + retest_short so all 4 tight + retest variants coexist). `DEPRECATED_STRATEGIES` empty. `STRATEGIES_DISABLED_MISSING_PRODUCER` 1. **217 active for next cube iteration** (217 × 26 = 5,642 cells).
+**Live value (`len(ALL_STRATEGIES)` 2026-06-05 Batch 599):** **217 IMPLEMENTED strategy classes registered** (B591 added tight-long pair; B592 owner correction restored tight-short pair so all 4 tight + retest variants coexisted at 218; B599 deleted dual donchian_20_breakout_retest per owner B596 convergence option 2 - explicit pair donchian_breakout_retest_long + donchian_breakdown_retest_short carries identical semantics post-B596). `DEPRECATED_STRATEGIES` empty. `STRATEGIES_DISABLED_MISSING_PRODUCER` 1. **216 active for next cube iteration** (216 × 26 = 5,616 cells).
 
 **Value (planned target):** **199 RESOLVED-DECIDED strategy classes across 6 layers post owner "Approve all" + Layer 1.I symmetry + Q1+Q2+Q3 (Layer 5 flag schema + Layer 6 27 new) 2026-05-06 (was 134 pre-symmetry; 108-118 pre-Pass-53-Option-2). Goes to 203 when Layer 4 PENDING-DEC promoted; ~213 with Layer 2D form-derived ICT estimate. ~200-400+ multi-TF variants projected. Total unique testable strategies projected: 200+ confirmed (could exceed 400 with full multi-TF expansion).** Gap: 199 (target) - 186 (live) = 13 classes pending implementation across Layers 2D + 4 + 6 remainder.
 

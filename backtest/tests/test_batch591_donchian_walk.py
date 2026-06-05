@@ -190,27 +190,22 @@ def test_batch591_donchian_10_breakout_short_requires_6_gates():
     assert strat_donchian_10_breakout(s_no_strong)["fires"] == False
 
 
-def test_batch591_donchian_20_breakout_retest_requires_5_gates():
-    """Pin (8): renamed B594 from donchian_10_breakout_retest. Post-B594
-    consumes dc20_resistance_break_retest_strong (LOCAL strong-breakout
-    variant) + vol_below_avg (flipped from above; Bulkowski thesis) +
-    macd_bullish + close_above_open + close_in_top_40pct_of_range."""
-    from backtest.signals.screener import strat_donchian_20_breakout_retest
-    s_all = {"dc20_resistance_break_retest_strong": True,
-             "vol_below_avg": True,
-             "macd_12_26_9_bullish": True, "close_above_open": True,
-             "close_in_top_40pct_of_range": True}
-    out = strat_donchian_20_breakout_retest(s_all)
-    assert out["fires"] == True
-    assert out["direction"] == "long"
-    s_no_top = dict(s_all); s_no_top["close_in_top_40pct_of_range"] = False
-    assert strat_donchian_20_breakout_retest(s_no_top)["fires"] == False
+def test_batch591_donchian_20_breakout_retest_deleted_in_b599():
+    """Pin (8) post-B599: the dual strat_donchian_20_breakout_retest was
+    deleted in B599 per owner B596 convergence option 2 (duplicate of
+    the explicit donchian_breakout_retest_long + donchian_breakdown
+    _retest_short pair). Same semantics covered by test_batch596_*
+    pair tests."""
+    from backtest.signals import screener
+    assert not hasattr(screener, "strat_donchian_20_breakout_retest")
+    assert "donchian_20_breakout_retest" not in screener.ALL_STRATEGIES
 
 
-def test_batch591_all_strategies_count_after_b592_restoration():
-    """Pin (9) post-B592: B591 was -2 +2 (216 -> 216); B592 restored the
-    2 deletions per owner correction -> +2 net (216 -> 218)."""
+def test_batch591_all_strategies_count_after_b599_deletion():
+    """Pin (9) post-B599: B591 was -2 +2 (216 -> 216); B592 restored
+    deletions -> 218; B599 deleted the dual donchian_20_breakout_retest
+    -> 217."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 218, (
-        f"Expected 218 after B592 restoration; got {len(ALL_STRATEGIES)}"
+    assert len(ALL_STRATEGIES) == 217, (
+        f"Expected 217 after B599 deletion of dual; got {len(ALL_STRATEGIES)}"
     )

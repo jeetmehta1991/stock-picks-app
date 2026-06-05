@@ -152,7 +152,8 @@ def test_batch597_regime_default_short_bear_crisis_neutral():
     ) is False
 
 
-def test_batch597_all_strategies_count_preserved_at_218():
-    """Pin (7): no add/delete in B597."""
+def test_batch597_all_strategies_count_post_b599():
+    """Pin (7) post-B599: B597 was net 0; B599 deleted the dual
+    donchian_20_breakout_retest -> 217."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 218
+    assert len(ALL_STRATEGIES) == 217

@@ -10251,8 +10251,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 588 52w_low_breakdown_with_smart_money_short: 215 -> 216 (mirror per owner '+ mirror' directive)
     #   Batch 591 donchian tight-long pair: 216 -> 218 (donchian_breakout_long + donchian_breakout_retest_long; +0 net at B591 due to deletion of donchian_breakdown_short + retest_short; restored in B592 per owner correction so net +2)
     #   Batch 592 (2026-06-05): owner correction restored B591-deleted donchian_breakdown_short + donchian_breakdown_retest_short -> 218 (4 tight + retest variants coexist).
-    assert len(ALL_STRATEGIES) == 218, (
-        f"F-002 drift: ALL_STRATEGIES expected 218 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 599 (2026-06-05): owner B596 convergence option 2 deleted donchian_20_breakout_retest dual -> 217 (explicit pair donchian_breakout_retest_long + donchian_breakdown_retest_short carries the same semantics post-B596).
+    assert len(ALL_STRATEGIES) == 217, (
+        f"F-002 drift: ALL_STRATEGIES expected 217 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10267,9 +10268,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 217, (
-        f"F-002 drift: active strategy count expected 217 (Batch 592 "
-        f"218 registered minus 1 disabled); got {active}."
+    assert active == 216, (
+        f"F-002 drift: active strategy count expected 216 (Batch 599 "
+        f"217 registered minus 1 disabled); got {active}."
     )
 
     # F-004 exit method count
