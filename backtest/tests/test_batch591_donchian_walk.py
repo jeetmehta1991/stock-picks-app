@@ -94,11 +94,17 @@ def test_batch591_donchian_breakdown_short_restored_in_b592():
 
 
 def test_batch591_donchian_breakdown_retest_short_restored_in_b592():
-    """Pin (3) post-B592: retest mirror also RESTORED."""
+    """Pin (3) post-B592/B596: retest mirror RESTORED in B592 then
+    walked in B596 (a)+(b)+(c)+(e). New 5-gate fixture:
+    dc20_support_break_retest_strong + vol_below_avg + NOT macd_bullish
+    + close_below_open + close_in_bottom_40pct_of_range."""
     from backtest.signals.screener import ALL_STRATEGIES, strat_donchian_breakdown_retest_short
     assert "donchian_breakdown_retest_short" in ALL_STRATEGIES
-    s = {"support_break_retest": True, "vol_spike_15x": True,
-         "macd_12_26_9_bullish": False}
+    s = {"dc20_support_break_retest_strong": True,
+         "vol_below_avg": True,
+         "macd_12_26_9_bullish": False,
+         "close_below_open": True,
+         "close_in_bottom_40pct_of_range": True}
     out = strat_donchian_breakdown_retest_short(s)
     assert out["fires"] == True
     assert out["direction"] == "short"
@@ -124,14 +130,18 @@ def test_batch591_donchian_breakout_long_registered():
 
 
 def test_batch591_donchian_breakout_retest_long_registered():
-    """Pin (5): retest mirror registered."""
+    """Pin (5) post-B596: retest mirror registered + walked. New
+    5-gate fixture per B596 (b)+(c): dc20_resistance_break_retest_strong
+    + vol_below_avg + macd_bullish + close_above_open +
+    close_in_top_40pct_of_range."""
     from backtest.signals.screener import ALL_STRATEGIES, strat_donchian_breakout_retest_long
     assert "donchian_breakout_retest_long" in ALL_STRATEGIES
-    s_all = {"resistance_break_retest": True, "vol_spike_15x": True,
+    s_all = {"dc20_resistance_break_retest_strong": True,
+             "vol_below_avg": True,
              "macd_12_26_9_bullish": True, "close_above_open": True,
              "close_in_top_40pct_of_range": True}
     assert strat_donchian_breakout_retest_long(s_all)["fires"] == True
-    s_no_vol = dict(s_all); s_no_vol["vol_spike_15x"] = False
+    s_no_vol = dict(s_all); s_no_vol["vol_below_avg"] = False
     assert strat_donchian_breakout_retest_long(s_no_vol)["fires"] == False
 
 

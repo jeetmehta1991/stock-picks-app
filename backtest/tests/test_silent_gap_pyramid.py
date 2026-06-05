@@ -1674,9 +1674,14 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s2 = dict(s); s2["dc20_resistance_break_retest_strong"] = False
     assert strat_donchian_20_breakout_retest(s2)["fires"] is False
 
-    # donchian_breakdown_retest_short
-    s = {"support_break_retest": True, "vol_spike_15x": True,
-         "macd_12_26_9_bullish": False}
+    # donchian_breakdown_retest_short (post-B596 walk: 5 gates;
+    # dc20_support_break_retest_strong + vol_below_avg + NOT macd_bullish
+    # + close_below_open + close_in_bottom_40pct_of_range)
+    s = {"dc20_support_break_retest_strong": True,
+         "vol_below_avg": True,
+         "macd_12_26_9_bullish": False,
+         "close_below_open": True,
+         "close_in_bottom_40pct_of_range": True}
     out = strat_donchian_breakdown_retest_short(s)
     assert out["fires"] is True and out["direction"] == "short"
 
