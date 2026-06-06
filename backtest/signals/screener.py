@@ -1556,14 +1556,84 @@ def strat_dc20_break_retest(s):
 
 
 def strat_r1_break_retest(s):
-    """BUG-111: Pivot R1 break-and-retest -- R1 broken then retested as support."""
-    fl = (s.get("resistance_break_retest") and s.get("above_r1") and s.get("macd_12_26_9_bullish"))
-    fs = (s.get("support_break_retest") and s.get("below_s1") and not s.get("macd_12_26_9_bullish"))
+    """BUG-111 (Batch 162) ORIGINAL: documented as Pivot R1 break-and-
+    retest but consumed DC20-anchored resistance_break_retest (same
+    name-vs-implementation bug pattern as strat_52wh_break_retest,
+    fixed in B605). R1 is a 1-day level recomputed daily from prior
+    day's H/L/C; the DC20-max-CLOSE bore no relationship to any
+    specific R1 value. The above_r1 gate was a same-day position
+    filter, not a "broken R1 acting as support" check.
+
+    Batch 606 (2026-06-06 owner-directed F1 bug fix per CHECKLIST #105
+    deep-read; full walk + a+b+d+e+i applied):
+
+      F1 - Replaced resistance_break_retest / support_break_retest
+        with NEW r1_break_retest_long / s1_break_retest_short
+        primitives (compute_pivot_break_retest_signals). Now the retest
+        event is anchored on the specific R1/S1 value computed at the
+        break-bar B (from bar B-1's H/L/C using standard pivot formula),
+        not on the unrelated DC20-max-CLOSE.
+      (a) Added close_above_open (LONG) / close_below_open (SHORT)
+          (B589-family bullish/bearish bar).
+      (b) Added close_in_top_40pct_of_range (LONG) /
+          close_in_bottom_40pct_of_range (SHORT) (B589-family).
+      (d) Added vol_below_avg (Bulkowski canonical retest = supply-
+          absorption on LOWER volume; same as B594/B596/B603/B605).
+      (e) Added above_avwap_20low (LONG) / NOT above_avwap_20high
+          (SHORT) (Brian Shannon 2022 AVWAP; same family as
+          B597/B598/B600/B601/B603/B605).
+      (i) Regime affinity: Batch 291 direction-aware default
+          (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
+
+    NOTE: above_r1 / below_s1 gates PRESERVED. They check today's
+    close vs today's R1/S1 (intraday position context) - distinct
+    from the F1 anchored-retest detection. Together they require
+    BOTH a historical R1 break-retest event AND today's close to be
+    on the correct side of today's R1.
+
+    Post-B606 7-gate set per direction:
+      LONG:  r1_break_retest_long + above_r1 + macd_12_26_9_bullish +
+             close_above_open + close_in_top_40pct_of_range +
+             vol_below_avg + above_avwap_20low
+      SHORT: s1_break_retest_short + below_s1 + NOT macd_bullish +
+             close_below_open + close_in_bottom_40pct_of_range +
+             vol_below_avg + NOT above_avwap_20high
+    """
+    fl = (s.get("r1_break_retest_long")
+          and s.get("above_r1")
+          and s.get("macd_12_26_9_bullish")
+          and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range")
+          and s.get("vol_below_avg")
+          and s.get("above_avwap_20low"))
+    fs = (s.get("s1_break_retest_short")
+          and s.get("below_s1")
+          and not s.get("macd_12_26_9_bullish")
+          and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range")
+          and s.get("vol_below_avg")
+          and not s.get("above_avwap_20high", True))
     return _strat3(fl, fs, "pivot",
-        ["resistance_break_retest", "above_r1", "macd_12_26_9_bullish"],
-        ["support_break_retest", "below_s1", "macd_12_26_9_bearish"],
-        "R1 break-and-retest: pivot resistance now acting as support with MACD momentum",
-        "S1 breakdown-and-retest: pivot support now acting as resistance with MACD bearish")
+        ["r1_break_retest_long", "above_r1", "macd_12_26_9_bullish",
+         "close_above_open", "close_in_top_40pct_of_range",
+         "vol_below_avg", "above_avwap_20low"],
+        ["s1_break_retest_short", "below_s1", "macd_12_26_9_bearish",
+         "close_below_open", "close_in_bottom_40pct_of_range",
+         "vol_below_avg", "below_avwap_20high"],
+        ["R1 broken 2-8 bars ago + retested within 1.5*ATR + still above (anchored on the SPECIFIC R1 at the break-bar)",
+         "Today's close above today's R1 (intraday position)",
+         "MACD positive (momentum)",
+         "Bullish bar (close above open)",
+         "Strong close (top 40% of range)",
+         "Volume below 20d avg (Bulkowski retest = supply absorption)",
+         "Above 20d swing-low AVWAP (Brian Shannon)"],
+        ["S1 broken 2-8 bars ago + retested within 1.5*ATR + still below (anchored on the SPECIFIC S1 at the break-bar)",
+         "Today's close below today's S1 (intraday position)",
+         "MACD negative",
+         "Bearish bar (close below open)",
+         "Strong close (bottom 40% of range)",
+         "Volume below 20d avg (Bulkowski retest characteristic)",
+         "Below 20d swing-high AVWAP - recent rally given back"])
 
 
 def strat_52wh_break_retest(s):
