@@ -1609,6 +1609,104 @@ def compute_52w_break_retest_signals(df: pd.DataFrame) -> dict:
     return out
 
 
+def compute_pivot_break_retest_signals(df: pd.DataFrame) -> dict:
+    """Batch 606 (2026-06-06 owner-directed F1 bug fix in r1_break_retest
+    walk): pivot-anchored break-and-retest primitive.
+
+    Bug context (CHECKLIST #105 deep-read surfaced this in B606):
+      The original strat_r1_break_retest (BUG-111 / Batch 162) was
+      documented as "Pivot R1 break-and-retest" but consumed the
+      DC20-anchored resistance_break_retest signal. R1 is a 1-day
+      level recomputed daily from prior day's H/L/C; the DC20-max-CLOSE
+      bore no relationship to any specific R1 value. The above_r1
+      gate was a same-day position filter, not a "broken R1 acting
+      as support" check. Same name-vs-implementation lie that
+      compute_52w_break_retest_signals fixed for 52wh_break_retest
+      in B605.
+
+    Fix: build the R1-anchored equivalent of compute_break_retest
+    _signals (DC20-anchored) and compute_52w_break_retest_signals
+    (year-anchored). At each candidate break-bar B (lag 2-8 ago):
+      - Compute R1_at_B from bar B-1's H/L/C using standard pivot
+        formula (R1 = 2*P - L; P = (H+L+C)/3)
+      - Check close[B] > R1_at_B (break occurred AT bar B)
+      - Check subsequent bar's low touched within 1.5*ATR(14) of
+        R1_at_B (retest of THAT specific R1 level)
+      - Check today's close >= R1_at_B (still holding above the
+        broken-then-retested R1)
+    Same mirror for S1 with S1_at_B = 2*P - H.
+
+    Both signals emit False when df < 30 bars (need ATR(14) + lag-8
+    window + bar B-1).
+
+    LOCAL signals consumed only by strat_r1_break_retest (B606 F1).
+    """
+    out = {
+        "r1_break_retest_long":  False,
+        "s1_break_retest_short": False,
+    }
+    if len(df) < 30:
+        return out
+
+    close = df["close"].values
+    high  = df["high"].values
+    low   = df["low"].values
+    n     = len(close)
+
+    # ATR(14) vectorized TR (same as compute_break_retest_signals).
+    tr1 = high[1:] - low[1:]
+    tr2 = np.abs(high[1:] - close[:-1])
+    tr3 = np.abs(low[1:] - close[:-1])
+    tr_arr = np.maximum(np.maximum(tr1, tr2), tr3)
+    atr = float(np.mean(tr_arr[-14:])) if len(tr_arr) >= 14 else float(np.mean(tr_arr))
+    if atr <= 0:
+        atr = close[-1] * 0.01
+    tolerance = 1.5 * atr
+
+    # LONG: R1 break-retest-hold.
+    resistance_long = False
+    for lag in range(2, 9):
+        if n <= lag + 2:  # need bar B AND bar B-1
+            break
+        idx = n - 1 - lag
+        if idx < 1:
+            continue
+        # R1 at bar idx, derived from bar (idx-1)'s H/L/C (standard pivot).
+        H_prev = float(high[idx - 1])
+        L_prev = float(low[idx - 1])
+        C_prev = float(close[idx - 1])
+        P_at_idx  = (H_prev + L_prev + C_prev) / 3.0
+        R1_at_idx = 2.0 * P_at_idx - L_prev
+        if close[idx] > R1_at_idx:                            # break at bar idx
+            if any(l <= R1_at_idx + tolerance for l in low[idx + 1:]):   # retest
+                if close[-1] >= R1_at_idx:                    # today still above R1_at_idx
+                    resistance_long = True
+                    break
+
+    # SHORT mirror: S1 breakdown-retest-hold.
+    support_short = False
+    for lag in range(2, 9):
+        if n <= lag + 2:
+            break
+        idx = n - 1 - lag
+        if idx < 1:
+            continue
+        H_prev = float(high[idx - 1])
+        L_prev = float(low[idx - 1])
+        C_prev = float(close[idx - 1])
+        P_at_idx  = (H_prev + L_prev + C_prev) / 3.0
+        S1_at_idx = 2.0 * P_at_idx - H_prev
+        if close[idx] < S1_at_idx:
+            if any(h >= S1_at_idx - tolerance for h in high[idx + 1:]):
+                if close[-1] <= S1_at_idx:
+                    support_short = True
+                    break
+
+    out["r1_break_retest_long"]  = resistance_long
+    out["s1_break_retest_short"] = support_short
+    return out
+
+
 # -----------------------------------------------------------------------------
 # MASTER AGGREGATOR
 # -----------------------------------------------------------------------------
@@ -1665,6 +1763,7 @@ def compute_all_signals(df: pd.DataFrame,
     signals.update(compute_candles(df))
     signals.update(compute_break_retest_signals(df))  # BUG-111
     signals.update(compute_52w_break_retest_signals(df))  # B605 F1 - 52w-anchored retest
+    signals.update(compute_pivot_break_retest_signals(df))  # B606 F1 - R1/S1-anchored retest
     if "simple_returns" not in skip:
         signals.update(compute_simple_returns(df))        # Batch 467 P10
     return {k: v for k, v in signals.items() if v is not None}
