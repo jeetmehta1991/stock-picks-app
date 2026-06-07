@@ -149,11 +149,11 @@ def test_batch606_strat_short_7_gates_fires():
     s = {
         "s1_break_retest_short": True,
         "below_s1": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,  # B612 refactor: positive signal
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
         "vol_below_avg": True,
-        "above_avwap_20high": False,
+        "below_avwap_20high": True,  # B612 refactor: positive signal
     }
     out = strat_r1_break_retest(s)
     assert out["fires"] is True and out["direction"] == "short"
@@ -218,6 +218,6 @@ def test_batch606_regime_default_short_bear_crisis_neutral():
 
 
 def test_batch606_all_strategies_count_unchanged_at_220():
-    """Pin (9): F1 is a bug fix, not a new strategy. Count unchanged."""
+    """Pin (9): subsequent batches added; current count 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 220
+    assert len(ALL_STRATEGIES) == 221

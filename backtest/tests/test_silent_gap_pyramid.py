@@ -1696,12 +1696,13 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s2 = dict(s); s2["dc20_resistance_break_retest_strong"] = False
     assert strat_donchian_breakout_retest_long(s2)["fires"] is False
 
-    # donchian_breakdown_retest_short (post-B596 walk: 5 gates;
-    # dc20_support_break_retest_strong + vol_below_avg + NOT macd_bullish
+    # donchian_breakdown_retest_short (post-B596 + B612 refactor: 5 gates;
+    # dc20_support_break_retest_strong + vol_below_avg + macd_12_26_9_bearish
+    # (positive signal post-B612 replaces `not macd_bullish` silent-gap)
     # + close_below_open + close_in_bottom_40pct_of_range)
     s = {"dc20_support_break_retest_strong": True,
          "vol_below_avg": True,
-         "macd_12_26_9_bullish": False,
+         "macd_12_26_9_bearish": True,
          "close_below_open": True,
          "close_in_bottom_40pct_of_range": True}
     out = strat_donchian_breakdown_retest_short(s)
@@ -1715,8 +1716,9 @@ def test_batch329_retest_variants_fire_on_retest_signal():
          "close_above_open": True, "close_in_top_40pct_of_range": True}
     out = strat_volume_spike_breakout_retest(s)
     assert out["fires"] is True and out["direction"] == "long"
+    # B612 refactor: positive below_avwap_20high replaces NOT above_avwap_20high
     s = {"dc20_support_break_retest_strong": True, "vol_spike_2x": True,
-         "above_avwap_20high": False,
+         "below_avwap_20high": True,
          "close_below_open": True, "close_in_bottom_40pct_of_range": True}
     out = strat_volume_spike_breakout_retest(s)
     assert out["fires"] is True and out["direction"] == "short"

@@ -61,7 +61,7 @@ def test_batch600_short_fires_5_gates():
     s = {
         "dc20_support_break_retest_strong": True,
         "vol_spike_2x": True,
-        "above_avwap_20high": False,
+        "below_avwap_20high": True,  # B612 refactor: positive signal
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }
@@ -119,7 +119,7 @@ def test_batch600_no_convergence_vs_donchian_retest_pair_short():
     s = {
         "dc20_support_break_retest_strong": True,
         "vol_spike_2x": True,
-        "above_avwap_20high": False,
+        "below_avwap_20high": True,  # B612 refactor: positive signal
         "macd_12_26_9_bullish": False,
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
@@ -161,6 +161,6 @@ def test_batch600_regime_default_short_bear_crisis_neutral():
 
 
 def test_batch600_all_strategies_count_preserved_at_217():
-    """Pin (6): no add/delete in B600."""
+    """Pin (6): subsequent batches added; current count 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 217
+    assert len(ALL_STRATEGIES) == 221

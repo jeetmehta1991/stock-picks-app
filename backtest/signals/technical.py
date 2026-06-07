@@ -241,6 +241,14 @@ def compute_vwap(df: pd.DataFrame) -> dict:
             continue
         out[f"avwap_{key}"]              = round(avwap, 4)
         out[f"above_avwap_{key}"]        = close > avwap
+        # B612 F2 (2026-06-07 owner+AI critique post-B608/B609/B610):
+        # symmetric below_avwap_* signal added to fix silent-gap bug
+        # in volume_spike_breakout + volume_spike_breakout_retest SHORT
+        # sides which used `not s.get("above_avwap_20high")` (no default,
+        # so missing key would auto-pass). Now those strategies can
+        # consume below_avwap_20high explicitly (positive gate, default
+        # False if absent).
+        out[f"below_avwap_{key}"]        = close < avwap
         out[f"pct_from_avwap_{key}"]     = round((close - avwap) / avwap * 100, 3)
     return out
 

@@ -63,7 +63,7 @@ def test_batch597_volume_spike_breakout_short_5_gates():
     s = {
         "dc20_breakout_dn": True,
         "vol_spike_15x": True,
-        "above_avwap_20high": False,  # NOT above -> short condition met
+        "below_avwap_20high": True,  # B612 refactor: positive signal
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }
@@ -153,7 +153,6 @@ def test_batch597_regime_default_short_bear_crisis_neutral():
 
 
 def test_batch597_all_strategies_count_post_b599():
-    """Pin (7) post-B599: B597 was net 0; B599 deleted the dual
-    donchian_20_breakout_retest -> 217."""
+    """Pin (7): subsequent batches added; current count 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 217
+    assert len(ALL_STRATEGIES) == 221
