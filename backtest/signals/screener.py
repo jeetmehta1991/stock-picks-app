@@ -3446,21 +3446,101 @@ def strat_institutional_oversold_long(s):
 
 
 def strat_institutional_breakout_confirmation_long(s):
-    """Wave 3 (Batch 331): institutional sponsorship of post-break retest.
-    Combines Batch 330's smart-money producer with Bulkowski 2005 retest
-    primitive. Institutional accumulation during the retest is the
+    """Wave 3 (Batch 331) ORIGINAL: institutional sponsorship of post-break
+    retest. Combines Batch 330's smart-money producer with Bulkowski 2005
+    retest primitive. Institutional accumulation during the retest is the
     canonical 'smart money sponsored breakout' setup that distinguishes
-    sustained breakouts from fakeouts."""
+    sustained breakouts from fakeouts.
+
+    Batch 610 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST #105
+    deep-read; a + d + g + i applied):
+
+      (a) Added close_above_open (B589-family bullish bar).
+      (d) Added vol_below_avg per Bulkowski canonical retest =
+          supply-absorption on LOWER volume (consistent with
+          B594/B596/B603/B605/B606/B607/B608/B609 retest family).
+      (g) NEW Class 7 strat_institutional_breakdown_confirmation_short
+          - symmetric inverse using institutional_negative +
+          support_break_retest + below-200-EMA + B589 bearish bar +
+          Bulkowski vol.
+      (i) Regime: Batch 291 direction-aware default
+          (LONG -> {bull, neutral}).
+
+    CHECKLIST #105 verdict: NO BUGS surfaced. Strategy is honestly
+    named (no F1 name-vs-impl bug like B605/B606/B607), regime
+    correctly defaults (no F1 regime bug like B608/B609), no silent-
+    gap (long-only with positive .get gates). Only walk in this batch
+    cluster (B605-B610) to surface ZERO bugs - clean strategy.
+
+    Producer signal `institutional_buy` correctness verified end-to-end:
+      - 13F two-source resolution (B294 fix for BUG-273) - bulk path
+        for recency, per-ticker fallback for historical depth
+      - 45-day reporting lag (DEC-325) correctly applied
+      - Classification: buy = new_pos>=1 OR increased>=2
+
+    Post-B610 5-gate set:
+      institutional_buy + resistance_break_retest + price_above_ema_200
+      + close_above_open + vol_below_avg
+
+    Academic backing: Cohen-Frazzini-Malloy 2008 RFS (13F accumulation
+    predicts forward returns) + Bulkowski 2005 (post-break retest).
+    """
     fires = (
         s.get("institutional_buy", False)
         and s.get("resistance_break_retest", False)
         and s.get("price_above_ema_200", True)
+        and s.get("close_above_open", False)
+        and s.get("vol_below_avg", False)
     )
     return _strat(fires, "long", "smart_money_13f",
-        ["institutional_buy","resistance_break_retest","price_above_ema_200"],
+        ["institutional_buy","resistance_break_retest","price_above_ema_200",
+         "close_above_open","vol_below_avg"],
         ["13F institutional accumulation during pullback to broken level",
          "Bulkowski 2005 retest entry with smart-money sponsorship",
-         "Above 200 EMA (regime gate)"])
+         "Above 200 EMA (regime gate)",
+         "Bullish bar (close above open)",
+         "Volume below 20d avg (Bulkowski retest characteristic)"])
+
+
+def strat_institutional_breakdown_confirmation_short(s):
+    """Batch 610 (2026-06-07 owner-directed Class 7 NEW): symmetric
+    inverse of strat_institutional_breakout_confirmation_long. 13F
+    institutional distribution during a retest of broken support =
+    'smart money sponsored breakdown' setup.
+
+    Mirror of the long-side thesis. Cohen-Frazzini-Malloy 2008 RFS
+    shows the institutional 13F signal also predicts NEGATIVE forward
+    returns on the short side - institutional decreased > increased
+    (signal = "negative") is the bearish mirror.
+
+    Producer signals required (all pre-existing - zero new producer code):
+      institutional_negative (from institutional_signal classification
+        when signal == "negative")
+      support_break_retest (DC20-anchored mirror; same shared producer)
+      price_above_ema_200 (must be False for SHORT - below 200d EMA
+        bearish trend filter)
+      close_below_open (B589 bearish bar)
+      vol_below_avg (Bulkowski retest characteristic - SAME as long
+        side; retest happens on lower volume regardless of direction)
+
+    Regime affinity: Batch 291 direction-aware default
+      (SHORT -> {bear, crisis, neutral}).
+    """
+    fires = (
+        s.get("institutional_negative", False)
+        and s.get("support_break_retest", False)
+        and not s.get("price_above_ema_200", True)
+        and s.get("close_below_open", False)
+        and s.get("vol_below_avg", False)
+    )
+    return _strat(fires, "short", "smart_money_13f",
+        ["institutional_negative","support_break_retest","below_ema_200",
+         "close_below_open","vol_below_avg"],
+        ["13F institutional distribution during retest of broken support",
+         "Bulkowski 2005 breakdown-retest entry with smart-money distribution",
+         "Below 200 EMA (bearish trend filter)",
+         "Bearish bar (close below open)",
+         "Volume below 20d avg (Bulkowski retest characteristic)"])
 
 
 def strat_institutional_insider_combo_long(s):
@@ -4913,6 +4993,8 @@ ALL_STRATEGIES = {
     # break-retest, insider co-confirmation, volume spike).
     "institutional_oversold_long":             strat_institutional_oversold_long,
     "institutional_breakout_confirmation_long": strat_institutional_breakout_confirmation_long,
+    # Batch 610 (2026-06-07) Class 7 NEW symmetric inverse per a+d+g+i walk:
+    "institutional_breakdown_confirmation_short": strat_institutional_breakdown_confirmation_short,
     "institutional_insider_combo_long":        strat_institutional_insider_combo_long,
     "institutional_volume_confirmation_long":  strat_institutional_volume_confirmation_long,
     # Wave 3 classification_change (Batch 332 2026-05-25 Path C): 3 strategies
