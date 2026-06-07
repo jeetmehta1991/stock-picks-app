@@ -3281,13 +3281,18 @@ def test_batch320_rsi_volume_200ema_loosen():
 
 
 def test_batch320_break_retest_volume_drops_vol_spike():
-    """Batch 320: strat_break_retest_volume drops vol_spike_2x entirely
-    per Bulkowski (volume elevated on break, low on retest)."""
+    """Batch 320 baseline + B608 walk gates: strat_break_retest_volume
+    still drops vol_spike_2x per Bulkowski (volume elevated on break,
+    low on retest). Post-B608 strategy ALSO requires close_above_open
+    + vol_below_avg (Bulkowski supply-absorption thesis)."""
     from backtest.signals.screener import strat_break_retest_volume
     sig = {
         "resistance_break_retest": True,
         "obv_rising": True,
-        "vol_spike_2x": False,  # explicitly NOT present
+        "vol_spike_2x": False,  # explicitly NOT present (B320 drop)
+        # B608-added gates
+        "close_above_open": True,
+        "vol_below_avg": True,
     }
     out = strat_break_retest_volume(sig)
     assert out["fires"] is True

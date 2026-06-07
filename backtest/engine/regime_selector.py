@@ -302,7 +302,12 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     #   williams_stoch_dual               bear=+0.06
     "awesome_oscillator":              {"bear"},
     "break_retest_confluence":         {"bull"},
-    "break_retest_volume":             {"bear", "neutral"},
+    # Batch 608 F1 (2026-06-07 owner-directed break_retest_volume walk):
+    # removed `break_retest_volume: {"bear", "neutral"}` explicit entry -
+    # strategy is DUAL but the entry capped LONG side to short-bias regimes
+    # which silently mis-regimed long fires since Batch 271 mass-edit. Now
+    # falls back to Batch 291 direction-aware default
+    # (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
     "cpr_narrow_momentum":             {"bull", "neutral"},
     "hull_rsi":                        {"bull", "neutral"},
     "institutional_buy_momentum_long": {"bull"},

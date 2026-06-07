@@ -1086,6 +1086,12 @@ def compute_volume(df: pd.DataFrame) -> dict:
     obv_ma    = obv.rolling(20).mean()
     result["obv_bullish"]   = _safe_float(obv.iloc[-1]) > _safe_float(obv_ma.iloc[-1])
     result["obv_rising"]    = _safe_float(obv.iloc[-1]) > _safe_float(obv.iloc[-5])
+    # B608 F2 (2026-06-07 owner directive break_retest_volume walk):
+    # symmetric obv_falling signal added to fix the silent-gap bug where
+    # strat_break_retest_volume SHORT side used `not obv_rising` which
+    # auto-passed when the OBV key was missing. Now SHORT consumes
+    # obv_falling explicitly.
+    result["obv_falling"]   = _safe_float(obv.iloc[-1]) < _safe_float(obv.iloc[-5])
     result["obv_diverge_bull"] = (c.iloc[-1] < c.iloc[-5] and
                                    _safe_float(obv.iloc[-1]) > _safe_float(obv.iloc[-5]))
 
