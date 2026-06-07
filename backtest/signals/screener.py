@@ -3350,15 +3350,35 @@ def strat_cup_and_handle_long(s):
 
 
 def strat_flag_bull_long(s):
-    """Batch 252: bull flag breakout long (Edwards-Magee + Bulkowski)."""
+    """Batch 252 ORIGINAL: bull flag long (Edwards-Magee + Bulkowski).
+
+    Batch 618 (2026-06-07 owner-directed B607 critique correction):
+    PHANTOM-BREAKOUT BUG FIXED. Pre-B618 the strategy fired on
+    flag_bull_detected + EMA-200 alone - but flag_bull_detected fires
+    the day the flag COMPLETES, and the flag window includes today's
+    bar. By construction today's close <= flag_high (high >= close).
+    So the strategy could not fire on an actual breakout - only on
+    flag-detected-while-still-inside-the-flag. The strategy name said
+    "breakout" but no breakout had occurred.
+
+    Fix: require flag_bull_broke (B618 NEW producer signal in
+    compute_flag_break_retest_signals) - a flag completed K bars ago
+    (K in 1..8), today's close > the historical flag_high. PIT-
+    disciplined via historical-slice detect_flag.
+
+    Naming correction (critique #6): pre-B618 docstring claimed
+    "high-tight flag" but detect_flag defaults are +10% pole / <5%
+    flag, NOT the classic Weinstein high-tight (>=90% pole). Renamed
+    to "standard flag" in the description.
+    """
     fires = (
-        s.get("flag_bull_detected", False)
+        s.get("flag_bull_broke", False)         # B618: breakout-occurred gate
         and s.get("price_above_ema_200", True)
     )
     return _strat(fires, "long", "chart_pattern",
-        ["flag_bull_detected", "price_above_ema_200"],
-        ["Bull flag pattern (+10% pole + tight consolidation)",
-         "High-tight-flag post-consolidation breakout",
+        ["flag_bull_broke", "price_above_ema_200"],
+        ["Bull flag (+10% pole / <5% consolidation - standard flag NOT high-tight)",
+         "Today's close > historical flag-high (B618 phantom-breakout fix)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -3410,24 +3430,55 @@ def strat_flag_bull_retest_long(s):
 
       F1 - Replaced resistance_break_retest with NEW
         flag_bull_break_retest_long primitive
-        (compute_flag_break_retest_signals in chart_patterns.py). Now
-        the retest event is anchored on the SPECIFIC
-        flag_bull_breakout_level emitted by detect_flag when the flag
-        completed K bars ago (K in 3..12). Producer searches for a
-        recent historical flag completion + verifies the break-retest-
-        hold sequence against THAT level.
+        (compute_flag_break_retest_signals in chart_patterns.py).
+
+    Batch 618 (2026-06-07 owner-directed B607 critique correction):
+    DOCSTRING REFRAME per critique #1 - the breakout-occurred gate
+    was buried in producer helper logic. Lifted to first-class
+    requirement. The flag_bull_break_retest_long producer signal
+    encodes a 4-condition AND chain (FIRST-CLASS REQUIREMENTS):
+      (1) FLAG-COMPLETED: a bull flag completed K bars ago
+          (K in 3..12) on a HISTORICAL slice df.iloc[:n-K] - PIT-
+          disciplined so flag_high is computed over bars strictly
+          BEFORE the breakout/retest window.
+      (2) BREAKOUT-OCCURRED: at least one bar in (n-K, n-1) closed
+          STRICTLY ABOVE flag_bull_breakout_level. Without this gate
+          the strategy would anchor a "retest" to a level that was
+          never breached (critique #1 phantom-breakout concern).
+      (3) RETEST: at least one subsequent bar's LOW touched within
+          1.5*ATR(14) of breakout_level.
+      (4) STILL-ABOVE: today's close >= breakout_level (holding the
+          broken level).
+
+    The strategy gate `s.get("flag_bull_break_retest_long")` returns
+    True only when ALL FOUR conditions hold. The producer is unit-
+    tested for PIT discipline in test_batch618_pit_discipline.py.
+
       (a) Added close_above_open (B589-family bullish bar).
       (c) Added vol_below_avg (Bulkowski canonical retest =
           supply-absorption on LOWER volume).
       (i) Regime affinity: Batch 291 direction-aware default
           (LONG -> {bull, neutral}).
 
-    SKIPPED: (b) strong-close top-40% / (d) AVWAP / (e) global pole
-    threshold tighten / (f) MACD / (h) flag_bear_short non-retest
-    (deferred to separate walk; bundling premature). Owner chose
-    narrower set to test F1 effect first.
+    SKIPPED at B607: (b) strong-close top-40% / (d) AVWAP / (e) global
+    pole tighten / (f) MACD / (h) flag_bear_short non-retest. Owner
+    chose narrower set to test F1 effect first.
 
-    Post-B607 4-gate set:
+    NAMING NOTE (B618 critique #6): detect_flag defaults are +10% pole
+    / <5% flag - this is a STANDARD flag, NOT the classic Weinstein
+    high-tight flag (>=90% pole). Per-strategy docstring + STRATEGY
+    _ROSTER updated.
+
+    BULKOWSKI WIN-RATE CITATION CAVEAT (B618 critique #5): prior
+    docstring/walk cited ~70% conditional win-rate from Bulkowski.
+    Bulkowski stats are definition-sensitive; the implementation
+    here (fixed-window detection + ATR tolerance + no minimum-move
+    pole) doesn't match Bulkowski's hand-labeled population. Edge
+    must be validated empirically by the backtest, not assumed from
+    textbook.
+
+    Post-B607 4-gate set (unchanged in B618 - this is a docstring
+    + naming correction batch, no behavior change):
       flag_bull_break_retest_long + price_above_ema_200 +
       close_above_open + vol_below_avg
     """
@@ -3458,8 +3509,23 @@ def strat_flag_bear_retest_short(s):
       flag_bear_break_retest_short + NOT price_above_ema_200 +
       close_below_open + vol_below_avg
 
+    Batch 618 (2026-06-07 owner-directed B607 critique correction
+    per CHECKLIST #105 (m) economic-symmetry audit):
+    STRUCTURAL SYMMETRY does NOT imply ECONOMIC SYMMETRY. Bull and
+    bear flag base rates differ in equities (upward drift bias +
+    squeeze asymmetry disrupt bear-flag downside follow-through;
+    Bulkowski's own stats give bull and bear flags different
+    measured-move reliabilities). This SHORT must be validated as
+    its own strategy with its own expectancy in the cube - NOT
+    assumed to inherit the LONG's hit-rate.
+
     Producer signal flag_bear_break_retest_short from B607 NEW
     compute_flag_break_retest_signals; all others pre-existing.
+
+    PIT-disciplined: producer uses df.iloc[:n-K] historical slice
+    so flag_low is computed over a window strictly BEFORE the
+    breakdown/retest window. Regression-pinned in
+    test_batch618_pit_discipline.
 
     Regime affinity: Batch 291 direction-aware default
       (SHORT -> {bear, crisis, neutral}).
