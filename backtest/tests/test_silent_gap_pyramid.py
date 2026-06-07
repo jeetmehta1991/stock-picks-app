@@ -1667,10 +1667,16 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       52w_high_breakout_with_smart_money_vol_below_long for A/B
     #       test of vol_spike_12x vs vol_below_avg per Bulkowski 2005
     #       retest absorption hypothesis. Net: -1 SHORT + 1 B-twin = 0.)
-    assert len(ALL_STRATEGIES) == 221, (
+    #   222 after Batch 615 (MEDIUM-priority 13F-staleness re-walk of
+    #       squeeze_setup_long: F1 docstring honest STATE/EVENT reframe
+    #       + B-twin strat_squeeze_setup_event_only_long added with L1c
+    #       tightened to EVENT-only smart-money - drops 13F
+    #       institutional_buy STATE half - for A/B vs broader OR
+    #       composite. Net: +1 B-twin = +1; total 221 -> 222.)
+    assert len(ALL_STRATEGIES) == 222, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607/610/611 trajectory: ALL_STRATEGIES "
-        f"count must be 221 post-B611, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615 trajectory: "
+        f"ALL_STRATEGIES count must be 222 post-B615, got {len(ALL_STRATEGIES)}"
     )
 
 
