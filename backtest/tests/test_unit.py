@@ -10258,8 +10258,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 610 (2026-06-07): institutional_breakout_confirmation_long walk + 1 Class 7 NEW (institutional_breakdown_confirmation_short) -> 222.
     #   Batch 611 (2026-06-07): external-AI critique reversed B610's Class 7 NEW - 13F has no short-side data; mechanical symmetry was economically false. Strategy deleted same-day; count back to 221.
     #   Batch 613 (2026-06-07): MEDIUM-priority 13F-staleness re-walk of 52w_high_breakout_with_smart_money_long. F3b deleted strat_52w_low_breakdown_with_smart_money_short (same asymmetric-data issue as B611). B-twin added: strat_52w_high_breakout_with_smart_money_vol_below_long (A/B test of vol_spike_12x vs vol_below_avg per Bulkowski 2005 retest absorption). Net change: -1 SHORT + 1 B-twin = 0; total stays 221.
-    assert len(ALL_STRATEGIES) == 221, (
-        f"F-002 drift: ALL_STRATEGIES expected 221 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 615 (2026-06-07): MEDIUM-priority 13F-staleness re-walk of squeeze_setup_long. F1 docstring reframed honest STATE/EVENT framing per B611 staleness playbook. B-twin added: strat_squeeze_setup_event_only_long (L1c tightened to EVENT-only smart-money - drops 13F institutional_buy state half - for A/B vs broader OR composite). 221 -> 222.
+    assert len(ALL_STRATEGIES) == 222, (
+        f"F-002 drift: ALL_STRATEGIES expected 222 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (

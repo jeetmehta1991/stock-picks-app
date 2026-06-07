@@ -2890,23 +2890,54 @@ def strat_pead_short_negative_yoy_growth(s):
 
 
 def strat_squeeze_setup_long(s):
-    """Batch 519 (2026-05-31, P15 sleeve) ORIGINAL: high SI + DC20
-    breakout + above-avg volume. Three gates total, one weak leading
-    indicator (SI) and two lagging confirmations (Donchian, volume).
+    """Batch 615 (2026-06-07 owner-directed F1 docstring reframe per
+    feedback_13f_state_signal_staleness B611 staleness playbook):
 
-    Batch 601 (2026-06-05 owner-directed Stage 4 walk + desk-research
-    redesign): Option A composite. Eliminates Donchian. Replaces with
-    a 3-layer professional-firm squeeze-detection composite:
+    The L1 layer is a POSITIONING ELIGIBILITY FILTER (slow STATE
+    signals), NOT bar-of-fire conviction:
+      - short_interest_pct (FINRA bi-monthly, ~14d stale)
+      - days_to_cover (FINRA bi-monthly, ~14d stale)
+      - institutional_buy (13F quarterly + DEC-325 45d lag - up to
+        135d stale; provides factor-tilt eligibility, NOT timing)
+      - insider_cluster_active (rolling-30d quasi-event)
 
-      LAYER 1 - POSITIONING (leading, weeks-ahead):
+    The L1 STATE half supplies the YES/NO permission to consider a
+    name; it does NOT carry timing alpha at the bar of fire. The
+    timing alpha + reversal conviction comes from L2 catalyst +
+    L3 confirmation (the EVENT layers below).
+
+    Walker correction: prior docstring described L1c smart-money OR
+    as "the squeeze fuel that turns SI from a paper-position into
+    actual upside risk". That overclaimed for the institutional_buy
+    13F STATE half (which is typically constant for 90+45d).
+
+    For an EVENT-only L1c variant, see strat_squeeze_setup_event_only
+    _long (B615 B-twin) - cube replay will compare current OR composite
+    vs strict EVENT-only smart-money requirement.
+
+    LINEAGE:
+      - B519 (P15) ORIGINAL: high SI + DC20 breakout + above-avg volume
+        (3 weak gates, mostly lagging confirmations).
+      - B601 (Stage 4 walk + desk-research redesign): Option A
+        3-layer composite. Eliminated Donchian. See full structure
+        below.
+      - B615 (Stage 4 re-walk per CHECKLIST #105 a-j): F1 docstring
+        reframed (honest STATE/EVENT framing); B-twin added for
+        empirical A/B vs EVENT-only L1c.
+
+    Architecture:
+
+      LAYER 1 - POSITIONING ELIGIBILITY (slow STATE; weeks-ahead
+        permission, NOT timing):
         (1a) short_interest_pct >= 0.20 (preserved from B519)
         (1b) days_to_cover >= 8 (owner-framework directive; was unused
              on the long side - only short_borrow_trap_avoid consumed
              days_to_cover via the > 5 gate)
         (1c) institutional_buy OR insider_cluster_active
-             (smart-money flow agrees - someone is buying into the
-             high-SI name; this is the squeeze fuel that turns SI
-             from a paper-position into actual upside risk for shorts)
+             (smart-money present on the name - EVENT half supplies
+             rolling-30d insider quasi-event; STATE half supplies 13F
+             eligibility tilt. OR composite allows pure-STATE firing,
+             which the B615 B-twin tightens to EVENT-only for A/B.)
 
       LAYER 2 - CATALYST (leading, hours-to-days):
         (2a) news_sentiment_shift > 0.4 (strong positive narrative
@@ -2979,11 +3010,74 @@ def strat_squeeze_setup_long(s):
          "news_sentiment_shift>0.4|within_pead_window+pead_positive_surprise",
          "above_avwap_20low", "vol_spike_15x",
          "close_above_open", "close_in_top_40pct_of_range"],
-        [f"L1 positioning: SI {si_pct*100:.1f}% + DTC {dtc:.1f}d + smart-money buying",
+        [f"L1 positioning: SI {si_pct*100:.1f}% + DTC {dtc:.1f}d + smart-money present (B615 eligibility filter)",
          "L2 catalyst: news sentiment shift OR positive earnings surprise (PEAD window)",
          "L3 confirmation: above 20d swing-low AVWAP + 1.5x volume + bullish bar + strong close",
          "Cohen-Diether-Malloy 2007 + Boehmer-Jones-Zhang 2008 + Diether-Lee-Werner 2009",
          "S3/Ortex-style composite squeeze-scoring (B601 redesign)"])
+
+
+def strat_squeeze_setup_event_only_long(s):
+    """Batch 615 (2026-06-07 owner-directed B-twin per CHECKLIST #105
+    a-j Stage 4 re-walk of squeeze_setup_long):
+
+    Same 8-gate architecture as strat_squeeze_setup_long (B601 redesign)
+    EXCEPT L1c tightened to EVENT-only smart-money signals (drops the
+    13F STATE half).
+
+    Hypothesis: high-SI squeeze setups firing only when an actual recent
+    bar-of-fire smart-money EVENT is present (rolling-30d insider
+    cluster, today large_dollar_buy, today cfo_buy) have higher hit-rate
+    + R:R than the broader OR composite that allows pure 13F STATE
+    firing (institutional_buy alone often satisfies for any large-cap
+    high-SI name due to 90d state persistence).
+
+    A/B comparison: cube replay vs strat_squeeze_setup_long will surface
+    empirical verdict on whether the strict EVENT requirement is worth
+    the fire-count cut (~40/yr universe-wide drops further to maybe
+    ~10-15/yr; borderline for min_trades thresholds but if hit-rate
+    materially higher, worth deploying alongside the broader twin in
+    different sleeves).
+
+    Source memories: feedback_signal_temporality_event_vs_state +
+    feedback_13f_state_signal_staleness B611 playbook.
+    """
+    si_pct = s.get("short_interest_pct", 0.0) or 0.0
+    dtc    = s.get("days_to_cover",      0.0) or 0.0
+
+    layer1_positioning = (
+        si_pct >= 0.20
+        and dtc >= 8.0
+        # B615 B-twin: EVENT-only smart-money (drops institutional_buy
+        # 13F STATE half from the OR composite)
+        and (s.get("insider_cluster_active", False)
+             or s.get("large_dollar_buy", False)
+             or s.get("cfo_buy", False))
+    )
+    layer2_catalyst = (
+        (s.get("news_sentiment_shift", 0.0) or 0.0) > 0.4
+        or (s.get("within_pead_window", False)
+            and s.get("pead_positive_surprise", False))
+    )
+    layer3_confirmation = (
+        s.get("above_avwap_20low", False)
+        and s.get("vol_spike_15x", False)
+        and s.get("close_above_open", False)
+        and s.get("close_in_top_40pct_of_range", False)
+    )
+    fires = layer1_positioning and layer2_catalyst and layer3_confirmation
+
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["short_interest_pct>=20pct", "days_to_cover>=8",
+         "insider_cluster_active|large_dollar_buy|cfo_buy",
+         "news_sentiment_shift>0.4|within_pead_window+pead_positive_surprise",
+         "above_avwap_20low", "vol_spike_15x",
+         "close_above_open", "close_in_top_40pct_of_range"],
+        [f"L1 positioning: SI {si_pct*100:.1f}% + DTC {dtc:.1f}d + EVENT-only smart-money (B615 B-twin)",
+         "L2 catalyst: news sentiment shift OR positive earnings surprise (PEAD window)",
+         "L3 confirmation: above 20d swing-low AVWAP + 1.5x volume + bullish bar + strong close",
+         "Cohen-Diether-Malloy 2007 + Boehmer-Jones-Zhang 2008 + Diether-Lee-Werner 2009",
+         "B615 EVENT-only A/B twin vs strat_squeeze_setup_long broader OR composite"])
 
 
 def strat_activist_13d_long(s):
@@ -4949,6 +5043,10 @@ ALL_STRATEGIES = {
     "pead_short_negative_yoy_growth":   strat_pead_short_negative_yoy_growth,
     # Batch 519 (2026-05-31, P15 sleeves registered per owner directive):
     "squeeze_setup_long":               strat_squeeze_setup_long,
+    # Batch 615 (2026-06-07 owner-directed B-twin per Stage 4 re-walk):
+    # EVENT-only L1c smart-money (drops 13F STATE half) for A/B vs
+    # broader OR composite above.
+    "squeeze_setup_event_only_long":    strat_squeeze_setup_event_only_long,
     "short_borrow_trap_avoid":          strat_short_borrow_trap_avoid,
     # Batch 531 (2026-05-31, P17 sleeves activated per owner directive
     # 2026-05-31 "wire in activate truly pending items"). Scaffolded
