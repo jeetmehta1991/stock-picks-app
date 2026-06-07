@@ -59,7 +59,7 @@ def test_batch596_breakdown_retest_short_5_gates():
     s = {
         "dc20_support_break_retest_strong": True,
         "vol_below_avg": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,  # B612 refactor: positive signal
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }
@@ -75,7 +75,7 @@ def test_batch596_short_legacy_3_gate_fixture_blocked():
     s = {
         "support_break_retest": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,  # B612 refactor: positive signal
     }
     assert strat_donchian_breakdown_retest_short(s)["fires"] is False, (
         "B596 replaced support_break_retest with _strong variant + "
@@ -124,7 +124,7 @@ def test_batch596_convergence_resolved_via_b599_deletion():
     s_short = {
         "dc20_support_break_retest_strong": True,
         "vol_below_avg": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,  # B612 refactor: positive signal
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }
@@ -163,7 +163,8 @@ def test_batch596_regime_default_short_bear_crisis_neutral():
 
 
 def test_batch596_all_strategies_count_post_b599():
-    """Pin (8) post-B599: B596 was net 0 (just gate updates); B599
-    deleted the dual donchian_20_breakout_retest -> 217."""
+    """Pin (8) post-B599: B596 was net 0; B599 deleted dual -> 217.
+    Subsequent batches: B603 +2 -> 219; B605 +1 -> 220; B607 +1 -> 221;
+    B610 +1 -> 222; B611 -1 -> 221. Current count = 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 217
+    assert len(ALL_STRATEGIES) == 221

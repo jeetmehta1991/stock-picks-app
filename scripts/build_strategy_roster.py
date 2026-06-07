@@ -455,6 +455,13 @@ def signal_plain_translation(signal: str) -> str:
         "above_avwap_20high": "today's close > AVWAP anchored at the highest HIGH of the prior 20 trading days. Close above means the breakout-day-to-now leg is still above the breakout reference price. Used INVERTED by volume_spike_breakout SHORT (B597): when close is BELOW this AVWAP, the recent rally has been given back.",
         "above_avwap_252low": "today's close > AVWAP anchored at the lowest LOW of the prior 252 trading days. 1-year leg reference.",
         "above_avwap_20low":  "today's close > AVWAP anchored at the lowest LOW of the prior 20 trading days (B598 added for symmetric anchor pair with above_avwap_20high). Used by volume_spike_breakout LONG (B598).",
+        # B612 (2026-06-07 owner+AI critique post-B608/B609/B610): symmetric
+        # below_avwap_* signals added to fix silent-gap on SHORT sides that
+        # used `not s.get("above_avwap_20high")` without default=True.
+        "below_avwap_20high": "today's close < AVWAP anchored at the highest HIGH of the prior 20 trading days (B612 F2 - symmetric to above_avwap_20high; fixes silent-gap on volume_spike_breakout SHORT, volume_spike_breakout_retest SHORT, r1_break_retest SHORT).",
+        "below_avwap_20low":  "today's close < AVWAP anchored at the lowest LOW of the prior 20 trading days (B612 F2 - symmetric to above_avwap_20low).",
+        "below_avwap_50low":  "today's close < AVWAP anchored at the lowest LOW of the prior 50 trading days (B612 F2).",
+        "below_avwap_252low": "today's close < AVWAP anchored at the lowest LOW of the prior 252 trading days (B612 F2).",
         # Day-of-bar primitives
         "close_above_open":    "today's close STRICTLY GREATER THAN today's open (bullish bar)",
         "close_below_open":    "today's close STRICTLY LESS THAN today's open (bearish bar)",

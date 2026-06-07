@@ -117,12 +117,16 @@ def test_batch598_strategy_long_legacy_50low_alone_blocked():
 
 
 def test_batch598_strategy_short_still_uses_20high():
-    """Pin (7): SHORT side unchanged."""
+    """Pin (7): SHORT side still uses 20-day swing-high AVWAP anchor.
+    B612 refactor: SHORT now consumes POSITIVE below_avwap_20high
+    (symmetric to above_avwap_20low on LONG side) instead of the
+    inverted `not s.get("above_avwap_20high")` pattern. 20-high anchor
+    preserved."""
     from backtest.signals.screener import strat_volume_spike_breakout
     s = {
         "dc20_breakout_dn": True,
         "vol_spike_15x": True,
-        "above_avwap_20high": False,  # NOT above -> short condition met
+        "below_avwap_20high": True,  # B612 refactor: positive symmetric signal
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }

@@ -1614,4 +1614,18 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
     d. **Step 7 sub-rule (NOT s.get pattern):** every SHORT-side gate using `not s.get(...)` is a FIX candidate. Per `feedback_never_use_NOT_s_get_pattern`. Always require positive symmetric signal; if it doesn't exist, ADD it to producer (B608/B609 F2 pattern). Default=True makes it functionally safe TODAY but the pattern is fragile.
 
-    **Joint extensions:** `feedback_signal_temporality_event_vs_state`, `feedback_asymmetric_data_sources_break_mechanical_inverse`, `feedback_never_use_NOT_s_get_pattern`. Lapse history extension: B610 (4 issues caught by external-AI critique, fixed in B611).
+    **B612 EXTENSIONS (2026-06-07 external-AI critique post-B608/B609/B610):**
+
+    e. **Step 7 fire-count power-check before B603 routing.** Per `feedback_minimum_fire_count_gate_before_cube`. Multi-gate strategies must include a-priori fire-count projection before claiming "let the cube decide empirically." If projected fires/year < 30 (min_trades passing criterion per CLAUDE.md #9), cube can't produce statistically valid PASS/FAIL. Surface three resolutions: drop a gate, treat as exploratory, split into separate strategies.
+
+    f. **Step 7 AVWAP family rule.** Per `feedback_avwap_redundant_with_ema_trend_filter`. AVWAP confluence is REDUNDANT with any EMA trend filter (collinear institutional-reference levels). Default-skip AVWAP when strategy already has any of: ema_*_bullish, price_above_ema_N, hull_bullish, supertrend_bullish, adx_trending. Only add AVWAP if no EMA trend gate present OR using event-anchored AVWAP (earnings day, swing low - not the rolling-window variants currently in producer).
+
+    g. **Step 6 base-rate-asymmetry check.** Per `feedback_asymmetric_data_sources_break_mechanical_inverse` B612 extension. Even SYMMETRIC data sources have asymmetric statistical edges in equity markets. Equity upward drift (~6-8pct/yr) + short-squeeze tail risk degrade short-side expectancy. Step 6 missing-inverse audit must include: "Does SHORT have same expected edge as LONG given equity upward drift + short-squeeze asymmetry?" Structural `_strat3` symmetry in code != symmetric market expectancy.
+
+    h. **Step 5 shared-producer-default sensitivity.** Retest tolerance (1.5*ATR), break tolerance (0.998 or 1.0pct), retest lag window (2-8 bars), pivot anchor choice - these shared-producer defaults often get marked "OK / honestly named" in Step 5 without width-vs-fire-quality calibration. Step 5 must explicitly state: "Sensitivity analysis: [done | deferred | n/a]" - and if deferred, note the gap as outstanding technical debt.
+
+    i. **Step 7 multi-variable-change sequencing.** Per `feedback_sequence_or_split_when_stacking_changes`. When >=3 simultaneous changes on same direction of a dual strategy, surface "ATTRIBUTION CONCERN" with explicit resolutions: (1) sequence across walks, (2) split into separate strategies (SHORT goes to new Class 7 experimental variant), (3) accept attribution sacrifice explicitly in commit message.
+
+    j. **Step 7 producer-additive blast-radius grep.** Per `feedback_never_use_NOT_s_get_pattern` B612 extension. When proposing a new producer signal addition, grep `not s.get("<inverse_signal>"` across screener.py BEFORE classifying as "additive/LOCAL." If consumers exist that rely on the bug-shaped auto-pass behavior, the addition silently changes their behavior - not LOCAL.
+
+    **Joint extensions (full B611+B612 set):** `feedback_signal_temporality_event_vs_state`, `feedback_asymmetric_data_sources_break_mechanical_inverse`, `feedback_never_use_NOT_s_get_pattern`, `feedback_minimum_fire_count_gate_before_cube`, `feedback_avwap_redundant_with_ema_trend_filter`, `feedback_sequence_or_split_when_stacking_changes`. Lapse history extension: B608/B609/B610 (multiple issues across 3 walks caught by external-AI critique, fixed in B611+B612).

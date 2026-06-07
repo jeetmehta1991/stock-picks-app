@@ -854,9 +854,11 @@ def strat_volume_spike_breakout(s):
           and s.get("above_avwap_20low")
           and s.get("close_above_open")
           and s.get("close_in_top_40pct_of_range"))
+    # B612 refactor: NOT s.get(above_avwap_20high) (no default - silent-gap
+    # risk) -> positive below_avwap_20high (B612 added).
     fs = (s.get("dc20_breakout_dn")
           and s.get("vol_spike_15x")
-          and not s.get("above_avwap_20high")
+          and s.get("below_avwap_20high")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
@@ -976,8 +978,12 @@ def strat_donchian_10_breakout(s):
           and s.get("close_above_open")
           and s.get("close_in_top_40pct_of_range")
           and s.get("dc10_strong_breakout_up"))
+    # B612 (2026-06-07 owner+AI critique refactor): SHORT side switched
+    # from `not s.get("macd_12_26_9_bullish")` (no default - silent-gap
+    # risk) to explicit `s.get("macd_12_26_9_bearish")` per
+    # feedback_never_use_NOT_s_get_pattern. Producer signal added in B609.
     fs = (s.get("dc10_breakout_dn_1pct") and s.get("vol_above_avg")
-          and not s.get("macd_12_26_9_bullish")
+          and s.get("macd_12_26_9_bearish")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")
           and s.get("dc10_strong_breakout_dn"))
@@ -1033,9 +1039,10 @@ def strat_donchian_breakdown_retest_short(s):
       (e) Regime affinity: rely on Batch 291 direction-aware default
           (SHORT -> {bear, crisis, neutral}).
     """
+    # B612 refactor: NOT s.get(macd_bullish) -> positive macd_bearish.
     fires = (s.get("dc20_support_break_retest_strong")
              and s.get("vol_below_avg")
-             and not s.get("macd_12_26_9_bullish")
+             and s.get("macd_12_26_9_bearish")
              and s.get("close_below_open")
              and s.get("close_in_bottom_40pct_of_range"))
     return _strat(fires, "short", "breakout",
@@ -1086,9 +1093,10 @@ def strat_volume_spike_breakout_retest(s):
           and s.get("above_avwap_20low")
           and s.get("close_above_open")
           and s.get("close_in_top_40pct_of_range"))
+    # B612 refactor: NOT s.get(above_avwap_20high) (no default) -> positive below_avwap_20high.
     fs = (s.get("dc20_support_break_retest_strong")
           and s.get("vol_spike_2x")
-          and not s.get("above_avwap_20high")
+          and s.get("below_avwap_20high")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
@@ -1400,9 +1408,10 @@ def strat_donchian_breakdown_short(s):
           (SHORT -> {bear, crisis, neutral}). NOT in
           STRATEGY_REGIME_AFFINITY map; default handles it.
     """
+    # B612 refactor: NOT s.get(macd_bullish) -> positive macd_bearish (B609 added).
     fires = (s.get("dc10_breakout_dn")
              and s.get("vol_spike_15x")
-             and not s.get("macd_12_26_9_bullish")
+             and s.get("macd_12_26_9_bearish")
              and s.get("close_below_open")
              and s.get("close_in_bottom_40pct_of_range"))
     return _strat(fires, "short", "breakout",
@@ -1606,13 +1615,15 @@ def strat_r1_break_retest(s):
           and s.get("close_in_top_40pct_of_range")
           and s.get("vol_below_avg")
           and s.get("above_avwap_20low"))
+    # B612 refactor: NOT s.get(macd_bullish) -> positive macd_bearish (B609);
+    # NOT s.get(above_avwap_20high, True) -> positive below_avwap_20high (B612).
     fs = (s.get("s1_break_retest_short")
           and s.get("below_s1")
-          and not s.get("macd_12_26_9_bullish")
+          and s.get("macd_12_26_9_bearish")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")
           and s.get("vol_below_avg")
-          and not s.get("above_avwap_20high", True))
+          and s.get("below_avwap_20high"))
     return _strat3(fl, fs, "pivot",
         ["r1_break_retest_long", "above_r1", "macd_12_26_9_bullish",
          "close_above_open", "close_in_top_40pct_of_range",
