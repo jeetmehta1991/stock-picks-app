@@ -3459,31 +3459,58 @@ def strat_institutional_breakout_confirmation_long(s):
       (d) Added vol_below_avg per Bulkowski canonical retest =
           supply-absorption on LOWER volume (consistent with
           B594/B596/B603/B605/B606/B607/B608/B609 retest family).
-      (g) NEW Class 7 strat_institutional_breakdown_confirmation_short
-          - symmetric inverse using institutional_negative +
-          support_break_retest + below-200-EMA + B589 bearish bar +
-          Bulkowski vol.
+      (g) [REVERSED B611] -- the Class 7 NEW strat_institutional
+          _breakdown_confirmation_short was deleted same-day per
+          external-AI critique. 13F data is long-only by SEC rule;
+          the mechanical mirror was economically false.
       (i) Regime: Batch 291 direction-aware default
           (LONG -> {bull, neutral}).
 
-    CHECKLIST #105 verdict: NO BUGS surfaced. Strategy is honestly
-    named (no F1 name-vs-impl bug like B605/B606/B607), regime
-    correctly defaults (no F1 regime bug like B608/B609), no silent-
-    gap (long-only with positive .get gates). Only walk in this batch
-    cluster (B605-B610) to surface ZERO bugs - clean strategy.
+    Batch 611 (2026-06-07 external-AI critique correction):
+      HONEST REFRAMING of `institutional_buy` role. Original B610
+      docstring claimed "smart-money sponsorship" and "smart money
+      sponsored breakout" - both implied conviction TIMING.
 
-    Producer signal `institutional_buy` correctness verified end-to-end:
+      Reality: `institutional_buy` is classified off the most recent
+      observable 13F filing (with DEC-325 45-day lag). 13F filings are
+      QUARTERLY. Between filings, the boolean is CONSTANT for ~90 days.
+      At fire-time (the retest day), it does ~zero discriminative work -
+      it's effectively "is this name in the institutional-holdings
+      universe with recent positive flow over the last reportable
+      quarter."
+
+      Correct framing: institutional_buy is a slow-moving ELIGIBILITY
+      FILTER (universe restriction to names with confirmed 13F
+      accumulation in the most recent observable quarter), NOT an event-
+      timing signal. The actual TIMING comes from `resistance_break
+      _retest` + `close_above_open` + `vol_below_avg` (Bulkowski retest
+      pattern, fresh each bar) + `price_above_ema_200` (trend filter).
+
+      Implications:
+        - No "smart-money sponsorship" claim (the AI was right - 13F
+          staleness gives no sponsorship CONVICTION on the bar)
+        - Alpha attribution should credit Bulkowski retest + trend
+          filter, NOT 13F sponsorship
+        - 13F adds factor-tilt (Cohen-Frazzini-Malloy 2008 documented
+          long-horizon institutional-ownership premium), not timing alpha
+
+    Producer signal `institutional_buy` integrity verified end-to-end:
       - 13F two-source resolution (B294 fix for BUG-273) - bulk path
         for recency, per-ticker fallback for historical depth
       - 45-day reporting lag (DEC-325) correctly applied
       - Classification: buy = new_pos>=1 OR increased>=2
+      - STATE (constant 90d between filings), NOT EVENT
 
-    Post-B610 5-gate set:
-      institutional_buy + resistance_break_retest + price_above_ema_200
-      + close_above_open + vol_below_avg
+    Post-B611 5-gate set (unchanged from B610):
+      institutional_buy (eligibility filter) + resistance_break_retest
+      (timing) + price_above_ema_200 (trend) + close_above_open (bar
+      shape) + vol_below_avg (Bulkowski supply absorption)
 
-    Academic backing: Cohen-Frazzini-Malloy 2008 RFS (13F accumulation
-    predicts forward returns) + Bulkowski 2005 (post-break retest).
+    Academic backing:
+      - Cohen-Frazzini-Malloy 2008 RFS (13F ownership predicts forward
+        long-horizon returns - factor-tilt, not bar-of-fire timing)
+      - Bulkowski 2005 (post-break retest with drying volume - the
+        timing component)
     """
     fires = (
         s.get("institutional_buy", False)
@@ -3502,45 +3529,21 @@ def strat_institutional_breakout_confirmation_long(s):
          "Volume below 20d avg (Bulkowski retest characteristic)"])
 
 
-def strat_institutional_breakdown_confirmation_short(s):
-    """Batch 610 (2026-06-07 owner-directed Class 7 NEW): symmetric
-    inverse of strat_institutional_breakout_confirmation_long. 13F
-    institutional distribution during a retest of broken support =
-    'smart money sponsored breakdown' setup.
-
-    Mirror of the long-side thesis. Cohen-Frazzini-Malloy 2008 RFS
-    shows the institutional 13F signal also predicts NEGATIVE forward
-    returns on the short side - institutional decreased > increased
-    (signal = "negative") is the bearish mirror.
-
-    Producer signals required (all pre-existing - zero new producer code):
-      institutional_negative (from institutional_signal classification
-        when signal == "negative")
-      support_break_retest (DC20-anchored mirror; same shared producer)
-      price_above_ema_200 (must be False for SHORT - below 200d EMA
-        bearish trend filter)
-      close_below_open (B589 bearish bar)
-      vol_below_avg (Bulkowski retest characteristic - SAME as long
-        side; retest happens on lower volume regardless of direction)
-
-    Regime affinity: Batch 291 direction-aware default
-      (SHORT -> {bear, crisis, neutral}).
-    """
-    fires = (
-        s.get("institutional_negative", False)
-        and s.get("support_break_retest", False)
-        and not s.get("price_above_ema_200", True)
-        and s.get("close_below_open", False)
-        and s.get("vol_below_avg", False)
-    )
-    return _strat(fires, "short", "smart_money_13f",
-        ["institutional_negative","support_break_retest","below_ema_200",
-         "close_below_open","vol_below_avg"],
-        ["13F institutional distribution during retest of broken support",
-         "Bulkowski 2005 breakdown-retest entry with smart-money distribution",
-         "Below 200 EMA (bearish trend filter)",
-         "Bearish bar (close below open)",
-         "Volume below 20d avg (Bulkowski retest characteristic)"])
+# Batch 611 (2026-06-07 external-AI critique): strat_institutional_breakdown
+# _confirmation_short DELETED. The B610 walk applied a mechanical long/short
+# symmetry rule to an asymmetric data source. 13F reports LONG positions of
+# >$100M managers only; ZERO short-side data. `institutional_negative`
+# (decreased > increased) means institutions trimmed LONGS - rebalancing,
+# redemptions, tax-loss, profit-taking - NOT that smart money is short. The
+# "Bulkowski breakdown-retest with smart-money distribution" thesis was
+# economically false. Plus the staleness flaw (13F is a quarterly background
+# state, not a timing signal) made the short leg far noisier than the long
+# without any compensating academic grounding (Cohen-Frazzini-Malloy 2008
+# is documented for long-side institutional ACCUMULATION; no analog for
+# trimming-as-bear-signal). Strategy removed; LONG-side institutional
+# _breakout_confirmation_long docstring reframed (see above) to drop the
+# "smart-money sponsorship" claim in favor of "13F-eligibility filter +
+# Bulkowski retest timing".
 
 
 def strat_institutional_insider_combo_long(s):
@@ -4993,8 +4996,10 @@ ALL_STRATEGIES = {
     # break-retest, insider co-confirmation, volume spike).
     "institutional_oversold_long":             strat_institutional_oversold_long,
     "institutional_breakout_confirmation_long": strat_institutional_breakout_confirmation_long,
-    # Batch 610 (2026-06-07) Class 7 NEW symmetric inverse per a+d+g+i walk:
-    "institutional_breakdown_confirmation_short": strat_institutional_breakdown_confirmation_short,
+    # Batch 611 (2026-06-07) DELETED institutional_breakdown_confirmation_short
+    # (mechanical long/short symmetry applied to asymmetric 13F data source -
+    # false economics + reintroduced silent-gap pattern; see external-AI
+    # critique addressed in B611).
     "institutional_insider_combo_long":        strat_institutional_insider_combo_long,
     "institutional_volume_confirmation_long":  strat_institutional_volume_confirmation_long,
     # Wave 3 classification_change (Batch 332 2026-05-25 Path C): 3 strategies
