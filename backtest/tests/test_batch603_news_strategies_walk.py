@@ -125,55 +125,75 @@ def test_batch603_news_momentum_short_sentiment_sign_required():
 
 
 def test_batch603_news_reversal_long_3_gates_fires():
-    """Pin (5)."""
+    """Pin (5). B614 update: fixture extended with B614 a+b+c gates
+    (close_above_open + close_in_top_40pct_of_range, news_sentiment_shift,
+    news_count_5d). Threshold -0.8 still passes new -0.5 floor."""
     from backtest.signals.screener import strat_news_reversal_long
     s = {
         "news_sentiment_5d": -0.8,
         "pct_change_5d": -0.12,
-        "news_article_count": 5,
+        "news_count_5d": 5,                       # B614 (c)
+        "news_sentiment_shift": 0.3,              # B614 (b) tone improving
+        "close_above_open": True,                 # B614 (a) EVENT anchor
+        "close_in_top_40pct_of_range": True,      # B614 (a)
     }
     out = strat_news_reversal_long(s)
     assert out["fires"] is True and out["direction"] == "long"
 
 
 def test_batch603_news_reversal_long_symmetric_with_short():
-    """Pin (6): mirror sign assertion - news_reversal_short fires on
-    +0.7 / +0.10; news_reversal_long should fire on -0.7 / -0.10."""
+    """Pin (6). B614 update: both fixtures extended with mirrored B614
+    a+b+c gates. Sign-pair preserved (LONG = - / -; SHORT = + / +)."""
     from backtest.signals.screener import (
         strat_news_reversal_short, strat_news_reversal_long
     )
     short_s = {
         "news_sentiment_5d": 0.7,
         "pct_change_5d": 0.11,
-        "news_article_count": 3,
+        "news_count_5d": 3,                       # B614 (c)
+        "news_sentiment_shift": -0.3,             # B614 (b) tone deteriorating
+        "close_below_open": True,                 # B614 (a)
+        "close_in_bottom_40pct_of_range": True,   # B614 (a)
     }
     long_s = {
         "news_sentiment_5d": -0.7,
         "pct_change_5d": -0.11,
-        "news_article_count": 3,
+        "news_count_5d": 3,                       # B614 (c)
+        "news_sentiment_shift": 0.3,              # B614 (b) tone improving
+        "close_above_open": True,                 # B614 (a)
+        "close_in_top_40pct_of_range": True,      # B614 (a)
     }
     assert strat_news_reversal_short(short_s)["fires"] is True
     assert strat_news_reversal_long(long_s)["fires"] is True
 
 
 def test_batch603_news_reversal_long_blocks_weak_negative_sentiment():
-    """Pin (6b): sentiment -0.5 (weaker than the -0.7 threshold) must NOT fire."""
+    """Pin (6b). B614 update: sentiment threshold was -0.7, loosened to
+    -0.5 in B614 (d). Re-tuned pin: sentiment -0.4 (weaker than the new
+    -0.5 floor) must NOT fire."""
     from backtest.signals.screener import strat_news_reversal_long
     s = {
-        "news_sentiment_5d": -0.5,    # not strong enough
+        "news_sentiment_5d": -0.4,    # not strong enough vs new -0.5 floor
         "pct_change_5d": -0.15,
-        "news_article_count": 5,
+        "news_count_5d": 5,
+        "news_sentiment_shift": 0.3,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
     }
     assert strat_news_reversal_long(s)["fires"] is False
 
 
 def test_batch603_news_reversal_long_blocks_small_down_move():
-    """Pin (6c): pct_change -0.05 (smaller than -0.10) must NOT fire."""
+    """Pin (6c). B614 update: fixture extended with B614 gates; isolates
+    the pct_change pin. -0.05 still blocks (smaller than -0.10)."""
     from backtest.signals.screener import strat_news_reversal_long
     s = {
         "news_sentiment_5d": -0.8,
         "pct_change_5d": -0.05,       # smaller than -0.10
-        "news_article_count": 5,
+        "news_count_5d": 5,
+        "news_sentiment_shift": 0.3,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
     }
     assert strat_news_reversal_long(s)["fires"] is False
 

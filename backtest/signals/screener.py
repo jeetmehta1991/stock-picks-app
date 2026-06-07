@@ -4477,64 +4477,105 @@ def strat_news_momentum_short(s):
 
 
 def strat_news_reversal_short(s):
-    """Batch 467 (P10): overreaction fade. Strong positive news + sharp
-    5-day move up => fade the overreaction short. Implements De
-    Bondt-Thaler 1985 overreaction hypothesis adapted to the news cycle.
+    """Batch 614 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST
+    #105 a-j + feedback_sequence_or_split_when_stacking_changes attribution
+    tradeoff explicitly accepted by owner): a+b+c+d applied.
 
-    Tetlock 2007 shows that news-tone-driven price moves of >10% in
-    short windows tend to partially reverse over the next 5-10 trading
-    days. Threshold (sentiment >= +0.7) is set higher than the momentum
-    strategy to isolate STRONG-positive news days; a more selective
-    short trigger than the momentum-long counterpart.
+    Lineage:
+      - B467 (P10) ORIGINAL: news-overreaction fade short. Sentiment >= +0.7
+        AND pct_change_5d > +10pct AND news_article_count >= 3 (7d window).
+      - B614 (a): added close_below_open + close_in_bottom_40pct_of_range
+        gates so the FIRE BAR must itself be the reversal candle (not a
+        delayed echo of a panic move that ended days ago). EVENT gates
+        anchor an otherwise rolling-state strategy.
+      - B614 (b): added news_sentiment_shift < -0.2 (today's news tone
+        DETERIORATING vs prior 7d week). Catches the actual sentiment
+        turn-point rather than rolling-window state. Producer emits
+        news_sentiment_shift natively (news_sentiment.py B267).
+      - B614 (c): swapped news_article_count (7d default) -> news_count_5d
+        for window consistency with the other 5d gates. Producer emits
+        news_count_5d natively (news_sentiment.py B467 P10).
+      - B614 (d): loosened sentiment threshold +0.7 -> +0.5 (symmetric to
+        news_momentum_long's -0.5; B603 docstring claim that "0.7 is more
+        selective" was assertion without empirical backing). Fire-count
+        relief addresses minimum-trades risk per
+        feedback_minimum_fire_count_gate_before_cube.
+
+    Tetlock 2007 RFS shows news-tone-driven price moves of >10pct in short
+    windows tend to partially reverse over 5-10 trading days. De Bondt-
+    Thaler 1985 overreaction hypothesis adapted to the news cycle.
     """
     fires = (
-        s.get("news_sentiment_5d", 0.0) >= 0.7
+        s.get("news_sentiment_5d", 0.0) >= 0.5  # B614 (d): 0.7 -> 0.5
         and s.get("pct_change_5d", 0.0) > 0.10
-        and s.get("news_article_count", 0) >= 3
+        and s.get("news_count_5d", 0) >= 3       # B614 (c): article_count -> count_5d
+        and s.get("news_sentiment_shift", 0.0) < -0.2  # B614 (b): tone turning
+        and s.get("close_below_open", False)     # B614 (a): EVENT bar gate
+        and s.get("close_in_bottom_40pct_of_range", False)  # B614 (a)
     )
     sent = s.get("news_sentiment_5d", 0.0)
     pct  = s.get("pct_change_5d", 0.0)
+    shift = s.get("news_sentiment_shift", 0.0)
     return _strat(fires, "short", "news_sentiment",
-        ["news_sentiment_5d>=0.7", "pct_change_5d>0.10",
-         "news_article_count>=3"],
-        [f"5d sentiment {sent:.2f} (strongly bullish)",
+        ["news_sentiment_5d>=0.5", "pct_change_5d>0.10",
+         "news_count_5d>=3", "news_sentiment_shift<-0.2",
+         "close_below_open", "close_in_bottom_40pct_of_range"],
+        [f"5d sentiment {sent:.2f} (bullish; B614 d loosened to >=+0.5)",
          f"Price up {pct*100:.1f} pct in 5d (large positive move)",
-         "Coverage threshold met (>=3 articles)"])
+         "Coverage threshold met (>=3 articles in 5d; B614 c window-consistent)",
+         f"News tone shift {shift:+.2f} - DETERIORATING (B614 b reversal turn)",
+         "Bearish bar + close in bottom 40pct of range (B614 a EVENT anchor)"])
 
 
 def strat_news_reversal_long(s):
-    """Batch 603 (2026-06-05 owner-directed Class 7 NEW): symmetric
-    inverse of news_reversal_short. Negative-news-overreaction fade long.
+    """Batch 614 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST
+    #105 a-j + feedback_sequence_or_split_when_stacking_changes attribution
+    tradeoff explicitly accepted by owner): a+b+c+d applied.
 
-    Mirror of news_reversal_short. Fires when sentiment is STRONGLY
-    NEGATIVE and 5-day price move is sharply DOWN (>=10%) with
-    coverage threshold met. The thesis: De Bondt-Thaler 1985
-    overreaction hypothesis applied to negative news - sharp 5d down
-    moves driven by negative news tend to partially reverse over 5-10
-    trading days as panic selling exhausts and bargain buying emerges.
+    Lineage:
+      - B603 (Class 7 NEW): symmetric inverse of news_reversal_short. -0.7
+        sentiment + -10pct 5d move + >=3 articles (7d window).
+      - B614 (a): added close_above_open + close_in_top_40pct_of_range so
+        fire bar IS the reversal candle (not a delayed echo of a crash
+        that ended days ago). EVENT anchor.
+      - B614 (b): added news_sentiment_shift > +0.2 (today's tone IMPROVING
+        vs prior week) to capture the actual reversal moment, not stale
+        rolling-state panic.
+      - B614 (c): swapped news_article_count -> news_count_5d for window
+        consistency.
+      - B614 (d): loosened sentiment threshold -0.7 -> -0.5 (symmetric to
+        news_momentum_long's -0.5; addresses fire-count risk per
+        feedback_minimum_fire_count_gate_before_cube).
 
-    Threshold (sentiment <= -0.7) is set symmetrically to the SHORT
-    counterpart's +0.7 - isolates STRONG-negative news days only;
-    a more selective long trigger than news_momentum_long's -0.5.
+    Tetlock 2007 RFS + De Bondt-Thaler 1985 overreaction: sharp 5d down
+    moves driven by negative news tend to partially reverse 5-10 days
+    later as panic exhausts and bargain buyers emerge.
 
-    Regime affinity: Batch 291 direction-aware default
-      (LONG -> {bull, neutral}). Counter-trend long; fading mean-
-      reversion bounces typically works in bull/neutral regimes - in
-      bear-trend the down move is real, not overreaction.
+    Regime affinity: Batch 291 direction-aware default (LONG ->
+    {bull, neutral}). Counter-trend long; works best when panic is
+    macro-tolerable. In bear-trend the down move is real, not
+    overreaction.
     """
     fires = (
-        s.get("news_sentiment_5d", 0.0) <= -0.7
+        s.get("news_sentiment_5d", 0.0) <= -0.5  # B614 (d): -0.7 -> -0.5
         and s.get("pct_change_5d", 0.0) < -0.10
-        and s.get("news_article_count", 0) >= 3
+        and s.get("news_count_5d", 0) >= 3       # B614 (c)
+        and s.get("news_sentiment_shift", 0.0) > 0.2  # B614 (b): tone turning UP
+        and s.get("close_above_open", False)     # B614 (a)
+        and s.get("close_in_top_40pct_of_range", False)  # B614 (a)
     )
     sent = s.get("news_sentiment_5d", 0.0)
     pct  = s.get("pct_change_5d", 0.0)
+    shift = s.get("news_sentiment_shift", 0.0)
     return _strat(fires, "long", "news_sentiment",
-        ["news_sentiment_5d<=-0.7", "pct_change_5d<-0.10",
-         "news_article_count>=3"],
-        [f"5d sentiment {sent:.2f} (strongly bearish)",
+        ["news_sentiment_5d<=-0.5", "pct_change_5d<-0.10",
+         "news_count_5d>=3", "news_sentiment_shift>0.2",
+         "close_above_open", "close_in_top_40pct_of_range"],
+        [f"5d sentiment {sent:.2f} (bearish; B614 d loosened to <=-0.5)",
          f"Price down {pct*100:.1f} pct in 5d (large negative move)",
-         "Coverage threshold met (>=3 articles)",
+         "Coverage threshold met (>=3 articles in 5d; B614 c window-consistent)",
+         f"News tone shift {shift:+.2f} - IMPROVING (B614 b reversal turn)",
+         "Bullish bar + close in top 40pct of range (B614 a EVENT anchor)",
          "De Bondt-Thaler 1985 overreaction fade - long the panic"])
 
 

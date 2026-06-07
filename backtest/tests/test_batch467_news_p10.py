@@ -220,11 +220,17 @@ def test_strat_news_momentum_long_misses_when_no_breakout():
 
 
 def test_strat_news_reversal_short_fires_on_overreaction():
+    """B614 update: fixture extended with B614 a+b+c gates so it still
+    fires post-walk. Threshold 0.8 still passes new +0.5 floor (B614 d).
+    Semantic pin preserved: overreaction triggers SHORT."""
     from backtest.signals.screener import strat_news_reversal_short
     s = {
         "news_sentiment_5d": 0.8,
         "pct_change_5d": 0.15,
-        "news_article_count": 5,
+        "news_count_5d": 5,                       # B614 (c) window-consistent
+        "news_sentiment_shift": -0.3,             # B614 (b) tone deteriorating
+        "close_below_open": True,                 # B614 (a) EVENT anchor
+        "close_in_bottom_40pct_of_range": True,   # B614 (a)
     }
     r = strat_news_reversal_short(s)
     assert r["fires"] is True
@@ -232,11 +238,17 @@ def test_strat_news_reversal_short_fires_on_overreaction():
 
 
 def test_strat_news_reversal_short_misses_when_sentiment_too_low():
+    """B614 update: sentiment 0.4 still blocks (below new 0.5 floor,
+    B614 d loosened from 0.7). All other gates provided so this isolates
+    the threshold test."""
     from backtest.signals.screener import strat_news_reversal_short
     s = {
-        "news_sentiment_5d": 0.4,   # below 0.7 threshold
+        "news_sentiment_5d": 0.4,   # below 0.5 threshold (B614 d loosened)
         "pct_change_5d": 0.20,
-        "news_article_count": 10,
+        "news_count_5d": 10,
+        "news_sentiment_shift": -0.3,
+        "close_below_open": True,
+        "close_in_bottom_40pct_of_range": True,
     }
     r = strat_news_reversal_short(s)
     assert r["fires"] is False
