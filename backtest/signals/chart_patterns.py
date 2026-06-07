@@ -364,6 +364,17 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
     """Batch 607 (2026-06-07 owner-directed F1 bug fix in flag_bull_retest
     _long walk): flag-anchored break-and-retest primitive.
 
+    Batch 618 (2026-06-07 owner-directed B607 critique re-fix):
+      added flag_bull_broke + flag_bear_broke signals (breakout-occurred
+      without retest requirement) to fix the phantom-breakout bug in
+      the PARENT strat_flag_bull_long. The parent strategy used to
+      fire on flag_bull_detected + EMA-200 alone, but flag_bull
+      _detected fires the day the flag COMPLETES - the flag window
+      INCLUDES today's bar, so today's close <= flag_high by
+      definition. No breakout could have occurred yet. B618 fix:
+      run detect_flag on a HISTORICAL slice ending K bars ago, then
+      check that today's close exceeds the historical flag_high.
+
     Bug context (CHECKLIST #105 deep-read surfaced this):
       The original strat_flag_bull_retest_long (BUG-111 / Batch 329)
       was documented as "Bull flag + post-break retest" but consumed
@@ -380,8 +391,14 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
     then checks the break->retest->hold sequence against that
     historical flag's breakout level.
 
-    Emits (LOCAL signals consumed by strat_flag_bull_retest_long +
-    Class 7 NEW strat_flag_bear_retest_short):
+    PIT discipline (B618 test pin per external-AI critique #2): the
+    flag detection slice `df.iloc[:n - K]` STRICTLY excludes bars
+    [n-K, n], so flag_high is computed over a window entirely BEFORE
+    the breakout/retest window. No contamination of the level by the
+    breakout bar's own high. Regression-tested in
+    test_batch618_pit_discipline.py.
+
+    Emits (LOCAL signals):
       - flag_bull_break_retest_long: a bull flag completed K bars ago
         (K in 3..12); at least one close in bars [-K, -1) exceeded
         flag_bull_breakout_level (break); at least one subsequent
@@ -389,6 +406,10 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
         (retest); today's close >= breakout_level (still above).
       - flag_bear_break_retest_short: mirror around
         flag_bear_breakdown_level.
+      - flag_bull_broke (B618): a bull flag completed K bars ago
+        (K in 1..8); today's close > flag_bull_breakout_level. No
+        retest required. Consumed by parent strat_flag_bull_long.
+      - flag_bear_broke (B618): mirror.
 
     Defensive: emits False on insufficient history (< 35 bars: ATR
     14 + flag detection 30 + at least 3 for lag) and on detect_flag
@@ -398,6 +419,10 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
     out = {
         "flag_bull_break_retest_long":  False,
         "flag_bear_break_retest_short": False,
+        # B618 (2026-06-07): breakout-occurred signals (no retest required)
+        # for parent strat_flag_bull_long phantom-breakout fix.
+        "flag_bull_broke":              False,
+        "flag_bear_broke":              False,
     }
     if df is None or len(df) < 35:
         return out
@@ -467,6 +492,46 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
             continue
         if close_arr[-1] <= breakdown_level:
             out["flag_bear_break_retest_short"] = True
+            break
+
+    # B618 (2026-06-07 owner-directed B607 critique re-fix): breakout-
+    # occurred signals (no retest requirement) for parent
+    # strat_flag_bull_long. Search lags 1..8 for a flag that completed
+    # K bars ago + verify today's close exceeds (LONG) or falls below
+    # (SHORT) the historical flag's breakout level. Same PIT-disciplined
+    # historical-slice pattern as the retest signals above.
+    for K in range(1, 9):
+        if K >= n - 30:
+            break
+        df_at_K = df.iloc[:n - K]
+        try:
+            flag = detect_flag(df_at_K)
+        except Exception:
+            continue
+        if not flag.get("flag_bull_detected"):
+            continue
+        breakout_level = flag.get("flag_bull_breakout_level")
+        if breakout_level is None or breakout_level <= 0:
+            continue
+        if close_arr[-1] > breakout_level:
+            out["flag_bull_broke"] = True
+            break
+
+    for K in range(1, 9):
+        if K >= n - 30:
+            break
+        df_at_K = df.iloc[:n - K]
+        try:
+            flag = detect_flag(df_at_K)
+        except Exception:
+            continue
+        if not flag.get("flag_bear_detected"):
+            continue
+        breakdown_level = flag.get("flag_bear_breakdown_level")
+        if breakdown_level is None or breakdown_level <= 0:
+            continue
+        if close_arr[-1] < breakdown_level:
+            out["flag_bear_broke"] = True
             break
 
     return out
