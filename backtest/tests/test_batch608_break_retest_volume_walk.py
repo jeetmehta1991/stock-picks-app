@@ -121,11 +121,13 @@ def test_batch608_regime_default_short_bear_crisis_neutral():
 
 
 def test_batch608_strat_long_4_gates_fires():
-    """Pin (6)."""
+    """Pin (6). B617 update: LONG OBV gate switched from obv_rising
+    (5-bar contaminated window) to obv_bullish (OBV > 20-bar MA - cleaner
+    baseline) per external-AI critique."""
     from backtest.signals.screener import strat_break_retest_volume
     s = {
         "resistance_break_retest": True,
-        "obv_rising": True,
+        "obv_bullish": True,                # B617: switched from obv_rising
         "close_above_open": True,
         "vol_below_avg": True,
     }
@@ -134,11 +136,12 @@ def test_batch608_strat_long_4_gates_fires():
 
 
 def test_batch608_strat_short_4_gates_fires():
-    """Pin (7)."""
+    """Pin (7). B617 update: SHORT switched to obv_bearish (B617 NEW
+    producer signal symmetric to obv_bullish)."""
     from backtest.signals.screener import strat_break_retest_volume
     s = {
         "support_break_retest": True,
-        "obv_falling": True,
+        "obv_bearish": True,                # B617: switched from obv_falling
         "close_below_open": True,
         "vol_below_avg": True,
     }
@@ -193,6 +196,8 @@ def test_batch608_short_legacy_not_obv_rising_does_not_fire():
 
 
 def test_batch608_all_strategies_count_unchanged_at_221():
-    """Pin (10): F1+F2+a+d are bug fixes + gate additions, not new strategies."""
+    """Pin (10): F1+F2+a+d are bug fixes + gate additions, not new strategies.
+    B617 update: subsequent batches (B613/B615) added 2 B-twins (52w_high
+    vol_below + squeeze_setup_event_only); current 222."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 222

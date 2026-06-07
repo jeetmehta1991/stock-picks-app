@@ -1747,59 +1747,72 @@ def strat_52wl_break_retest_short(s):
 
 
 def strat_break_retest_volume(s):
-    """BUG-111: Break-and-retest confirmed by OBV trend on the bounce bar.
+    """BUG-111: Break-and-retest with OBV-vs-20-bar-MA flow confirmation
+    + Bulkowski retest dry-up volume.
 
-    Batch 320 (2026-05-25): dropped vol_spike_2x gate per owner directive
-    and Bulkowski (Encyclopedia of Chart Patterns 2nd ed): volume is
-    typically elevated on the initial BREAK but lower on the retest.
-    Requiring 2x volume on the retest contradicts the canonical pattern
-    and was the firing-rate bottleneck. OBV-rising retained as the
-    institutional-flow confirmation.
+    Batch 617 (2026-06-07 owner-directed external-AI critique re-fix on
+    B608 walk):
 
-    Batch 608 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST #105
-    deep-read; F1 + F2 + a + d + i applied):
+    The B608 walk landed two real fixes (F1 regime; F2 silent-gap) but
+    missed three issues the critique surfaced:
 
-      F1 - regime affinity bug fixed (1-line removal in regime_selector
-        .py). Strategy is DUAL but explicit map entry {bear, neutral}
-        capped LONG side to short-bias regimes since the Batch 271
-        mass-edit. Now falls back to Batch 291 direction-aware default
-        (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
-      F2 - silent-gap bug fixed. SHORT side previously used
-        `not s.get("obv_rising")` which auto-passed when the OBV key
-        was missing (None is falsy; not None = True). Label said
-        "OBV falling" but `not obv_rising` includes flat-OBV + missing
-        cases. Producer now emits obv_falling explicitly
-        (B608 F2 in compute_volume); SHORT consumes it.
-      (a) Added close_above_open (LONG) / close_below_open (SHORT) per
-        B589-family bullish/bearish bar standardization.
-      (d) Added vol_below_avg per Bulkowski canonical retest =
-        supply-absorption on LOWER volume (consistent with B594/B596/
-        B603/B605/B606/B607 retest family).
-      (i) Regime: Batch 291 direction-aware default (post-F1).
+      (1) B320 deleted vol_spike_2x citing Bulkowski - but Bulkowski's
+          rule is HIGH volume on the BREAK + low volume on the retest.
+          B320 threw away the breakout-bar volume half. B608 added
+          vol_below_avg (the retest dry-up half) but still has no
+          breakout-bar volume confirmation. The producer signal
+          resistance_break_retest fires on TODAY's still-holding-above
+          bar (2-8 bars post-break) - the breakout-bar volume cannot
+          be re-captured via a current-bar gate without a new producer
+          signal. B617 leaves the breakout-bar volume gap acknowledged
+          (recategorization deferred) and switches the FLOW gate to
+          a cleaner OBV signal.
 
-    Post-B608 4-gate set per direction:
-      LONG:  resistance_break_retest + obv_rising + close_above_open
+      (2) obv_rising = OBV[-1] > OBV[-5] is a 5-BAR TREND window, not
+          a "bounce-bar" confirmation. The label and docstring claimed
+          bounce-bar timing but the producer is a multi-bar window -
+          a soft thesis-vs-impl mismatch.
+
+      (3) The 5-bar OBV window at the retest bar still contains the
+          breakout bar's volume - obv_rising reads "rising" largely
+          because the breakout day hasn't aged out, not because of
+          accumulation on the dip. Near-tautological on valid setups.
+
+    B617 fixes (2) + (3) by switching to obv_bullish (OBV[-1] > 20-bar
+    MA - longer baseline, less contaminated by the in-window breakout
+    bar) for LONG and the new symmetric obv_bearish for SHORT.
+
+    Fix (1) acknowledged but deferred: restoring breakout-bar volume
+    requires a new producer signal (break_retest_breakout_bar_vol) that
+    captures the original breakout bar's volume relative to its 20-day
+    average at break-time. Out of scope for this re-fix; queued.
+
+    Post-B617 4-gate set per direction:
+      LONG:  resistance_break_retest + obv_bullish + close_above_open
              + vol_below_avg
-      SHORT: support_break_retest + obv_falling + close_below_open
+      SHORT: support_break_retest + obv_bearish + close_below_open
              + vol_below_avg
+
+    Lineage of prior walk batches preserved (B320 / B608 / B617 history
+    in code commit log).
     """
     fl = (s.get("resistance_break_retest")
-          and s.get("obv_rising")
+          and s.get("obv_bullish")           # B617: switched from obv_rising
           and s.get("close_above_open")
           and s.get("vol_below_avg"))
     fs = (s.get("support_break_retest")
-          and s.get("obv_falling")
+          and s.get("obv_bearish")           # B617: switched from obv_falling
           and s.get("close_below_open")
           and s.get("vol_below_avg"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest", "obv_rising", "close_above_open",
+        ["resistance_break_retest", "obv_bullish", "close_above_open",
          "vol_below_avg"],
-        ["support_break_retest", "obv_falling", "close_below_open",
+        ["support_break_retest", "obv_bearish", "close_below_open",
          "vol_below_avg"],
-        ["Break-and-retest + OBV rising: institutional accumulation on the bounce",
+        ["Break-and-retest + OBV above 20-bar MA: institutional accumulation flow (B617 cleaner baseline)",
          "Bullish bar (close above open)",
          "Volume below 20d avg (Bulkowski retest characteristic)"],
-        ["Breakdown-and-retest + OBV falling (explicit): institutional distribution on the rejection",
+        ["Breakdown-and-retest + OBV below 20-bar MA: institutional distribution flow (B617 symmetric)",
          "Bearish bar (close below open)",
          "Volume below 20d avg (Bulkowski retest characteristic)"])
 

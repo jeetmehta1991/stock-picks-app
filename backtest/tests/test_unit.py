@@ -9391,16 +9391,40 @@ def test_batch203_regime_selector_default_allows_uncharacterized():
 def test_batch203_regime_selector_enforces_affinity():
     """Batch 203: strategies WITH affinity entries only fire in permitted regimes.
     Updated Batch 271: shorts now allow neutral too (expansion per T1a forensic).
-    """
+
+    Batch 617 update (external-AI critique on B608/B609/B610 family-bug):
+    bollinger_lower + pivot_r1_breakout (and 17 other Class A dual strategies)
+    had their explicit `{neutral, bear}` / `{bull, neutral}` entries REMOVED
+    in B617 because the dual strategy SHORT/LONG opposite-direction arm was
+    being mis-regimed. Updated pins below: with no map entry + no direction
+    parameter, the legacy allow-all default applies (regression test for
+    Batch 291 backward-compat; the actual regime gating now happens at the
+    engine call site where direction is supplied)."""
     from backtest.engine.regime_selector import should_strategy_fire_in_regime
-    # bollinger_lower: allow neutral+bear, block bull+crisis (Mag-7 fade trap)
+    # bollinger_lower: B617 REMOVED from map (dual; SHORT side mis-regimed).
+    # Without direction param, falls back to legacy allow-all (Batch 291
+    # backward-compat). The explicit "block bull (Mag-7 fade trap)"
+    # constraint is no longer enforced via this map; LONG-side bull-block
+    # must be re-derived from direction-disaggregated cube post-R5.
     assert should_strategy_fire_in_regime("bollinger_lower", "neutral") is True
     assert should_strategy_fire_in_regime("bollinger_lower", "bear") is True
-    assert should_strategy_fire_in_regime("bollinger_lower", "bull") is False
-    assert should_strategy_fire_in_regime("bollinger_lower", "crisis") is False
-    # pivot_r1_breakout: allow bull+neutral, block bear+crisis
-    assert should_strategy_fire_in_regime("pivot_r1_breakout", "bull") is True
-    assert should_strategy_fire_in_regime("pivot_r1_breakout", "bear") is False
+    # With direction="long", B291 default applies: LONG -> {bull, neutral}.
+    # (The prior explicit {neutral, bear} blocked bull; post-B617 LONG fires
+    # in bull - flagged for cube re-validation. SHORT side now correctly
+    # fires in bear/crisis/neutral per direction-aware default.)
+    assert should_strategy_fire_in_regime(
+        "bollinger_lower", "bull", direction="long") is True
+    assert should_strategy_fire_in_regime(
+        "bollinger_lower", "bear", direction="short") is True
+    assert should_strategy_fire_in_regime(
+        "bollinger_lower", "crisis", direction="short") is True
+    # pivot_r1_breakout: B617 REMOVED (dual; SHORT side was blocked from
+    # bear/crisis). Post-B617 with direction LONG, gets {bull, neutral}
+    # default - same as the prior explicit pin.
+    assert should_strategy_fire_in_regime(
+        "pivot_r1_breakout", "bull", direction="long") is True
+    assert should_strategy_fire_in_regime(
+        "pivot_r1_breakout", "bear", direction="long") is False
     # cmf_flip: Batch 418 cube-empirical override 2026-05-28 - was allow-all
     # ("regime-agnostic"), now {bear, neutral} only (bull Sharpe negative;
     # 0 crisis trades in cube). Pin updated per cube data.
@@ -10275,9 +10299,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 220, (
-        f"F-002 drift: active strategy count expected 220 (Batch 611 "
-        f"221 registered minus 1 disabled); got {active}."
+    assert active == 221, (
+        f"F-002 drift: active strategy count expected 221 (B615 added "
+        f"squeeze_setup_event_only_long B-twin: 222 registered minus 1 "
+        f"disabled); got {active}."
     )
 
     # F-004 exit method count
@@ -10654,16 +10679,22 @@ def test_batch291_backward_compat_no_direction_still_allow_all():
 
 def test_batch291_mapped_strategies_unchanged():
     """Batch 291: strategies WITH affinity entries continue to use that
-    affinity (Batch 291 only changes the unmapped-fallback)."""
+    affinity (Batch 291 only changes the unmapped-fallback).
+
+    Batch 617 update: bollinger_lower's explicit `{neutral, bear}` entry
+    was REMOVED by the family audit (dual strategy; SHORT side was
+    mis-regimed for bull-regime mean-reversion-sell-at-top). Re-pinned
+    using a strategy whose explicit entry is preserved: head_and_shoulders_
+    bottom_long (long-only, not dual; explicit {bull, neutral} entry kept)."""
     from backtest.engine.regime_selector import should_strategy_fire_in_regime
-    # bollinger_lower has explicit {neutral, bear} affinity; direction
-    # parameter must NOT override this (bull stays blocked).
+    # head_and_shoulders_bottom_long has explicit {bull, neutral} affinity;
+    # direction parameter must NOT override this (bear stays blocked).
     assert should_strategy_fire_in_regime(
-        "bollinger_lower", "bull", direction="long") is False
+        "head_and_shoulders_bottom_long", "bear", direction="long") is False
     assert should_strategy_fire_in_regime(
-        "bollinger_lower", "neutral", direction="long") is True
+        "head_and_shoulders_bottom_long", "bull", direction="long") is True
     assert should_strategy_fire_in_regime(
-        "bollinger_lower", "bear", direction="long") is True
+        "head_and_shoulders_bottom_long", "neutral", direction="long") is True
 
 
 def test_batch290_spy_auto_included_when_user_universe_lacks_it():

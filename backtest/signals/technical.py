@@ -1112,12 +1112,23 @@ def compute_volume(df: pd.DataFrame) -> dict:
     obv       = (direction*v).cumsum()
     obv_ma    = obv.rolling(20).mean()
     result["obv_bullish"]   = _safe_float(obv.iloc[-1]) > _safe_float(obv_ma.iloc[-1])
+    # B617 F2 (2026-06-07 owner-directed external-AI critique re-fix on
+    # strat_break_retest_volume): obv_bearish symmetric to obv_bullish.
+    # Critique flagged that obv_rising (OBV[-1] > OBV[-5], 5-bar trend) is
+    # contaminated by the breakout bar still sitting in the lookback window
+    # at retest time, so the LONG OBV gate became near-tautological on
+    # valid setups. obv_bullish (OBV[-1] > 20-bar MA) is a cleaner baseline.
+    # break_retest_volume LONG switches to obv_bullish in B617; SHORT
+    # switches to obv_bearish for symmetric framing.
+    result["obv_bearish"]   = _safe_float(obv.iloc[-1]) < _safe_float(obv_ma.iloc[-1])
     result["obv_rising"]    = _safe_float(obv.iloc[-1]) > _safe_float(obv.iloc[-5])
     # B608 F2 (2026-06-07 owner directive break_retest_volume walk):
     # symmetric obv_falling signal added to fix the silent-gap bug where
     # strat_break_retest_volume SHORT side used `not obv_rising` which
-    # auto-passed when the OBV key was missing. Now SHORT consumes
-    # obv_falling explicitly.
+    # auto-passed when the OBV key was missing. obv_rising / obv_falling
+    # retained for back-compat with other consumers; B617 switched
+    # break_retest_volume itself to obv_bullish / obv_bearish (cleaner
+    # 20-bar baseline; see external-AI critique 2026-06-07).
     result["obv_falling"]   = _safe_float(obv.iloc[-1]) < _safe_float(obv.iloc[-5])
     result["obv_diverge_bull"] = (c.iloc[-1] < c.iloc[-5] and
                                    _safe_float(obv.iloc[-1]) > _safe_float(obv.iloc[-5]))

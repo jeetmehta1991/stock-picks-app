@@ -64,6 +64,46 @@ import pandas as pd
 # Conservative default: explicit affinity ONLY for strategies that fired
 # in Phase 1A-beta (25 active). All inactive strategies retain default
 # allow-all behavior so they can demonstrate edge before being gated.
+# =============================================================================
+# Batch 617 (2026-06-07) -- BATCH 271 FAMILY-BUG AUDIT (external-AI critique
+# follow-up on the B608/B609/B610 walk series).
+#
+# AUDIT FINDING: of 62 dual (_strat3) strategies in screener.py, 40 had
+# explicit STRATEGY_REGIME_AFFINITY entries that constrain BOTH directions
+# identically. A `{bull, neutral}` entry on a dual strategy silently blocks
+# the SHORT side from firing in bear/crisis (where short alpha lives);
+# a `{bear}` entry symmetrically blocks the LONG side from bull/neutral.
+# This is the Batch 271-era mass-edit signature - explicit single-direction
+# regime sets were stamped onto dual strategies without direction-awareness,
+# distorting per-regime PASS/FAIL for ~27 strategies for many batches.
+#
+# REMEDIATION SCOPE (CONSERVATIVE): B617 removes 19 clear Class A entries
+# (LONG-bias `{bull,neutral}` or `{neutral,bear}` on dual where SHORT side
+# is mis-regimed). The Batch 291 direction-aware default automatically
+# applies LONG -> {bull, neutral} / SHORT -> {bear, crisis, neutral}
+# correctly per direction once the explicit entry is removed.
+#
+# Removed in B617:
+#   avwap_50_reclaim, bollinger_lower, cpr_narrow_bullish,
+#   cpr_narrow_momentum, donchian_10_breakout, hull_rsi,
+#   ichimoku_cloud_breakout, macd_crossover, mfi_oversold,
+#   pivot_r1_breakout, pivot_r2_continuation, rsi_oversold,
+#   smc_bos_continuation, smc_choch_reversal,
+#   smc_liquidity_sweep_reversal, smc_order_block_bounce,
+#   stoch_oversold, stochrsi_oversold, williams_r_oversold
+#
+# DEFERRED (kept with B617 audit comment; ~21 entries needing direction-
+# disaggregated cube validation before removal):
+#   B417 cube-derived single-bucket entries (awesome_oscillator, morning_star,
+#   parabolic_sar_flip, ppo_crossover, tema_dema, williams_stoch_dual,
+#   macd_fast_crossover, three_white_soldiers) - cube was direction-agnostic;
+#   re-run direction-disaggregated cube before removal.
+#   B418 cube-overrides (bollinger_tight, supertrend_macd, ultimate_oscillator,
+#   adx_initiation, prev_day_high_break, avwap_252_breakout, cmf_flip,
+#   force_index_breakout) - same caveat.
+#   Counter-trend mean-reversion intentionals (pivot_s1/s2_bounce,
+#   prev_day_low_bounce, camarilla_s3_bounce) - intent ambiguous; revisit.
+# =============================================================================
 STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # Batch 252 (Phase 1C+ Wave 1 registrations 2026-05-20):
     # Chart patterns (DEC-355-362): allow bull/neutral; bear typically
@@ -126,25 +166,24 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "value_area_breakout_long":         {"bull", "neutral"},
     "naked_poc_retest_long":            {"bull", "neutral"},
     # Mean-reversion: avoid bull (Mag-7 fade trap)
-    "bollinger_lower":          {"neutral", "bear"},
-    "bollinger_tight":          {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe -0.264)
-    "stochrsi_oversold":        {"bull", "neutral"},
-    "williams_r_oversold":      {"bull", "neutral"},
-    "ultimate_oscillator":      {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
-    "rsi_oversold":             {"bull", "neutral"},
-    "mfi_oversold":             {"bull", "neutral"},
-    "stoch_oversold":           {"bull", "neutral"},
+    # B617 REMOVED bollinger_lower {neutral,bear} - dual; SHORT side was
+    # mis-regimed (couldn't fire in bull where mean-reversion-sell-at-top
+    # belongs). Falls back to Batch 291 direction-aware default.
+    "bollinger_tight":          {"bull"},  # B617 KEPT: B418 cube override; direction-disagg validation pending
+    # B617 REMOVED stochrsi_oversold / williams_r_oversold / rsi_oversold /
+    # mfi_oversold / stoch_oversold {bull,neutral} - all dual mean-reversion
+    # strategies where SHORT side (overbought) was blocked from firing in
+    # bear/crisis where it belongs. Falls back to Batch 291 default.
+    "ultimate_oscillator":      {"bull"},  # B617 KEPT: B418 cube override; direction-disagg validation pending
     # Trend continuation: avoid bear/crisis
-    "pivot_r1_breakout":        {"bull", "neutral"},
-    "pivot_r2_continuation":    {"bull", "neutral"},
-    "cpr_narrow_bullish":       {"bull", "neutral"},
-    "ichimoku_cloud_breakout":  {"bull", "neutral"},
-    "supertrend_macd":          {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
-    "macd_crossover":           {"bull", "neutral"},
-    "adx_initiation":           {"bear"},  # Batch 418 cube override (was {bull, neutral}; bear=+0.30 Sharpe, bull/neutral negative)
-    "prev_day_high_break":      {"bear"},  # Batch 418 cube override (was {bull, neutral}; bear=positive Sharpe, bull negative)
-    "52w_high_breakout":        {"bull", "neutral"},
-    "donchian_10_breakout":     {"bull", "neutral"},
+    # B617 REMOVED pivot_r1_breakout / pivot_r2_continuation /
+    # cpr_narrow_bullish / ichimoku_cloud_breakout / macd_crossover /
+    # donchian_10_breakout {bull,neutral} - all dual trend strategies where
+    # SHORT side was mis-regimed. Falls back to Batch 291 default.
+    "supertrend_macd":          {"bull"},  # B617 KEPT: B418 cube override; direction-disagg validation pending
+    "adx_initiation":           {"bear"},  # B617 KEPT: B418 cube override; direction-disagg validation pending
+    "prev_day_high_break":      {"bear"},  # B617 KEPT: B418 cube override; direction-disagg validation pending
+    "52w_high_breakout":        {"bull", "neutral"},  # LONG-only (no _strat3 short side)
     # Counter-trend bounces: allow neutral/bear (oversold bounces)
     "pivot_s2_bounce":          {"neutral", "bear"},
     "pivot_s3_capitulation":    {"neutral", "bear", "crisis"},
@@ -160,8 +199,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # SHORT -> {bear, crisis, neutral}.
     # AVWAP family (Batch 208): allow all regimes; signal self-gates via
     # above_avwap_* + 200-EMA logic inside the strategy itself.
-    "avwap_252_breakout":           {"bear", "neutral"},  # Batch 418 cube override (was all-4-regimes; bull negative + 0 crisis trades)
-    "avwap_50_reclaim":             {"bull", "neutral"},
+    "avwap_252_breakout":           {"bear", "neutral"},  # B617 KEPT: B418 cube override; direction-disagg validation pending
+    # B617 REMOVED avwap_50_reclaim {bull, neutral} - dual; SHORT side
+    # mis-regimed (avwap-rejection-from-above SHORT should fire in bear).
+    # Falls back to Batch 291 direction-aware default.
     "avwap_20high_rejection_short": {"neutral", "bear", "crisis"},
     # PEAD family (Batch 209): event-driven; allow all regimes (signal
     # self-gates via within_pead_window + pead_*_surprise inside strategy).
@@ -175,10 +216,16 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # explicit-long/short pairs already restricted). The "regime-agnostic"
     # original framing was wishful per Quantum Algo 2026 but unsupported
     # by Phase 1A-alpha data.
-    "smc_bos_continuation":         {"bull", "neutral"},
-    "smc_choch_reversal":           {"bull", "neutral"},
-    "smc_order_block_bounce":       {"bull", "neutral"},
-    "smc_liquidity_sweep_reversal": {"bull", "neutral"},
+    # B617 REMOVED smc_bos_continuation / smc_choch_reversal /
+    # smc_order_block_bounce / smc_liquidity_sweep_reversal {bull,neutral} -
+    # all dual SMC strategies where SHORT side was blocked from firing in
+    # bear/crisis. Tightening rationale in 2026-05-20 comment block above
+    # (Phase 1A-alpha SMC structural-short signals) referred to
+    # SMC SHORT explicit-pairs (smc_bos_continuation_short etc.) and not the
+    # dual entries; the dual constraint silently double-gated the dual SHORT
+    # arms. Batch 291 direction-aware default applies the same
+    # {bull, neutral} to dual LONG arm + {bear, crisis, neutral} to dual
+    # SHORT arm - preserves the intent without the family-bug side-effect.
     # Cross-sectional factor (Batch 220): momentum top decile allow
     # bull/neutral; bottom decile short in bear/crisis; BAB long in
     # bull/neutral; momentum+low-IVOL combined allow all (filter is
@@ -314,8 +361,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # which silently mis-regimed long fires since Batch 271 mass-edit. Now
     # falls back to Batch 291 direction-aware default
     # (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
-    "cpr_narrow_momentum":             {"bull", "neutral"},
-    "hull_rsi":                        {"bull", "neutral"},
+    # B617 REMOVED cpr_narrow_momentum + hull_rsi {bull, neutral} - both
+    # dual; SHORT side mis-regimed. B417 cube source comment lists
+    # bull/neutral Sharpe but cube was direction-agnostic; direction-
+    # disaggregated re-run pending.
     "institutional_buy_momentum_long": {"bull"},
     "institutional_cluster_long":      {"bear"},
     "macd_fast_crossover":             {"bull"},
