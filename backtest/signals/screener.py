@@ -1736,14 +1736,54 @@ def strat_break_retest_volume(s):
     typically elevated on the initial BREAK but lower on the retest.
     Requiring 2x volume on the retest contradicts the canonical pattern
     and was the firing-rate bottleneck. OBV-rising retained as the
-    institutional-flow confirmation."""
-    fl = (s.get("resistance_break_retest") and s.get("obv_rising"))
-    fs = (s.get("support_break_retest") and not s.get("obv_rising"))
+    institutional-flow confirmation.
+
+    Batch 608 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST #105
+    deep-read; F1 + F2 + a + d + i applied):
+
+      F1 - regime affinity bug fixed (1-line removal in regime_selector
+        .py). Strategy is DUAL but explicit map entry {bear, neutral}
+        capped LONG side to short-bias regimes since the Batch 271
+        mass-edit. Now falls back to Batch 291 direction-aware default
+        (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
+      F2 - silent-gap bug fixed. SHORT side previously used
+        `not s.get("obv_rising")` which auto-passed when the OBV key
+        was missing (None is falsy; not None = True). Label said
+        "OBV falling" but `not obv_rising` includes flat-OBV + missing
+        cases. Producer now emits obv_falling explicitly
+        (B608 F2 in compute_volume); SHORT consumes it.
+      (a) Added close_above_open (LONG) / close_below_open (SHORT) per
+        B589-family bullish/bearish bar standardization.
+      (d) Added vol_below_avg per Bulkowski canonical retest =
+        supply-absorption on LOWER volume (consistent with B594/B596/
+        B603/B605/B606/B607 retest family).
+      (i) Regime: Batch 291 direction-aware default (post-F1).
+
+    Post-B608 4-gate set per direction:
+      LONG:  resistance_break_retest + obv_rising + close_above_open
+             + vol_below_avg
+      SHORT: support_break_retest + obv_falling + close_below_open
+             + vol_below_avg
+    """
+    fl = (s.get("resistance_break_retest")
+          and s.get("obv_rising")
+          and s.get("close_above_open")
+          and s.get("vol_below_avg"))
+    fs = (s.get("support_break_retest")
+          and s.get("obv_falling")
+          and s.get("close_below_open")
+          and s.get("vol_below_avg"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest", "obv_rising"],
-        ["support_break_retest", "obv_falling"],
-        "Break-and-retest + OBV rising: institutional accumulation on the bounce",
-        "Breakdown-and-retest + OBV falling: institutional distribution on the rejection")
+        ["resistance_break_retest", "obv_rising", "close_above_open",
+         "vol_below_avg"],
+        ["support_break_retest", "obv_falling", "close_below_open",
+         "vol_below_avg"],
+        ["Break-and-retest + OBV rising: institutional accumulation on the bounce",
+         "Bullish bar (close above open)",
+         "Volume below 20d avg (Bulkowski retest characteristic)"],
+        ["Breakdown-and-retest + OBV falling (explicit): institutional distribution on the rejection",
+         "Bearish bar (close below open)",
+         "Volume below 20d avg (Bulkowski retest characteristic)"])
 
 
 def strat_break_retest_confluence(s):

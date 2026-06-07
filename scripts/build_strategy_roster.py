@@ -388,6 +388,8 @@ def signal_plain_translation(signal: str) -> str:
         "rsi_14":              "14-day Relative Strength Index of close (Wilder smoothing). Numeric value [0, 100]; check inline strategy code for the specific comparison threshold (e.g. < 30 = oversold, > 70 = overbought)",
         "rsi_2":               "2-day RSI of close (Connors RSI methodology; faster and more sensitive than 14-day)",
         "obv_bullish":         "On-Balance Volume in uptrend: today's OBV > OBV from 5 bars ago (cumulative volume on up-days minus volume on down-days)",
+        "obv_rising":          "today's OBV STRICTLY GREATER than OBV from 5 bars ago. Institutional accumulation proxy (Granville 1963).",
+        "obv_falling":         "today's OBV STRICTLY LESS than OBV from 5 bars ago (B608 F2 - symmetric to obv_rising; fixes silent-gap where strat_break_retest_volume SHORT side previously used `not obv_rising` which auto-passed when key was missing). Institutional distribution proxy.",
         # SMC (signals from smartmoneyconcepts library; computed on swing_length=20 by default)
         "smc_fvg_bullish_active":  "Bullish Fair Value Gap (3-bar imbalance where bar -2's high < bar 0's low) is active and unfilled within recent window",
         "smc_fvg_bearish_active":  "Bearish Fair Value Gap (3-bar imbalance where bar -2's low > bar 0's high) is active and unfilled within recent window",
