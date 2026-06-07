@@ -10256,8 +10256,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 605 (2026-06-06): F1 bug fix 52wh_break_retest walk + 1 Class 7 NEW (52wl_break_retest_short) -> 220.
     #   Batch 607 (2026-06-07): F1 bug fix flag_bull_retest_long walk + 1 Class 7 NEW (flag_bear_retest_short) -> 221.
     #   Batch 610 (2026-06-07): institutional_breakout_confirmation_long walk + 1 Class 7 NEW (institutional_breakdown_confirmation_short) -> 222.
-    assert len(ALL_STRATEGIES) == 222, (
-        f"F-002 drift: ALL_STRATEGIES expected 222 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 611 (2026-06-07): external-AI critique reversed B610's Class 7 NEW - 13F has no short-side data; mechanical symmetry was economically false. Strategy deleted same-day; count back to 221.
+    assert len(ALL_STRATEGIES) == 221, (
+        f"F-002 drift: ALL_STRATEGIES expected 221 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10272,9 +10273,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 221, (
-        f"F-002 drift: active strategy count expected 221 (Batch 610 "
-        f"222 registered minus 1 disabled); got {active}."
+    assert active == 220, (
+        f"F-002 drift: active strategy count expected 220 (Batch 611 "
+        f"221 registered minus 1 disabled); got {active}."
     )
 
     # F-004 exit method count

@@ -1603,3 +1603,15 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Pre-flight format for Step 3:** "Producer files read end-to-end: [list of .py files]. OPEN_INVESTIGATIONS grep results: [list of INV-NNN matches]. Schema-vs-API checks: [field-level table]. Doc-vs-producer mismatches: [list or 'none found']."
 
     **Joint:** `feedback_walk_step3_must_read_producer_source`, `feedback_per_strategy_deep_dive_stage4`, `feedback_audit_recommendations_against_existing_directives`. Lapse history: B603 (caught by owner via "Why wasn't this flagged in the walk?", documented post-mortem in B604).
+
+    **B611 EXTENSIONS (2026-06-07 external-AI critique post-B610):**
+
+    a. **Step 3 sub-rule (signal temporality):** classify each consumed producer signal as EVENT (information bar-of-fire) vs STATE (slow background filter). Per `feedback_signal_temporality_event_vs_state`. Slow STATE signals (quarterly 13F, EMA-200 position, persistence counts) provide factor-tilt or universe filtering — NOT timing conviction. Step 4 (thesis check) MUST reject docstrings that credit STATE signals with "sponsorship", "conviction timing", "event confirmation".
+
+    b. **Step 4 sub-rule (internal consistency):** Step 4 (thesis check) must be CONSISTENT with Step 5 (threshold inventory). If Step 5 lists a thesis-critical component as MISSING (e.g., "Bulkowski retest: ✅ ... volume gate: MISSING"), Step 4 must NOT endorse the thesis as ✅. Either implement the missing component as part of the walk OR surface as a name-vs-impl gap. No middle ground.
+
+    c. **Step 6 sub-rule (asymmetric data check):** missing-inverse audit must include DATA-SOURCE SYMMETRY check. Per `feedback_asymmetric_data_sources_break_mechanical_inverse`. Asymmetric data sources (13F long-only, SC 13D activist-bias, insider buying asymmetric stats, short interest short-bias) break mechanical symmetry. Mechanical mirrors on asymmetric sources are economically false. Class 7 NEW proposals must include "DATA-SOURCE SYMMETRY: [yes/no, why]" line.
+
+    d. **Step 7 sub-rule (NOT s.get pattern):** every SHORT-side gate using `not s.get(...)` is a FIX candidate. Per `feedback_never_use_NOT_s_get_pattern`. Always require positive symmetric signal; if it doesn't exist, ADD it to producer (B608/B609 F2 pattern). Default=True makes it functionally safe TODAY but the pattern is fragile.
+
+    **Joint extensions:** `feedback_signal_temporality_event_vs_state`, `feedback_asymmetric_data_sources_break_mechanical_inverse`, `feedback_never_use_NOT_s_get_pattern`. Lapse history extension: B610 (4 issues caught by external-AI critique, fixed in B611).

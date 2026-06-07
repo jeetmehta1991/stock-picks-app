@@ -1658,10 +1658,13 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   222 after Batch 610 (+1 Class 7 NEW institutional_breakdown
     #       _confirmation_short per institutional_breakout_confirmation
     #       _long walk - missing-inverse symmetric mirror)
-    assert len(ALL_STRATEGIES) == 222, (
+    #   221 after Batch 611 (B611 external-AI critique reversed B610's
+    #       Class 7 NEW: 13F is long-only by SEC rule, mechanical
+    #       symmetry was economically false; strategy deleted same-day)
+    assert len(ALL_STRATEGIES) == 221, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607/610 trajectory: ALL_STRATEGIES "
-        f"count must be 222 post-B610, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605/607/610/611 trajectory: ALL_STRATEGIES "
+        f"count must be 221 post-B611, got {len(ALL_STRATEGIES)}"
     )
 
 

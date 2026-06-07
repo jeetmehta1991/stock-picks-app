@@ -101,46 +101,19 @@ def test_batch610_long_blocks_without_vol_below_avg():
     assert strat_institutional_breakout_confirmation_long(s)["fires"] is False
 
 
-def test_batch610_short_5_gates_fires():
-    """Pin (3)."""
-    from backtest.signals.screener import strat_institutional_breakdown_confirmation_short
-    s = {
-        "institutional_negative": True,
-        "support_break_retest": True,
-        "price_above_ema_200": False,   # required NOT-above for SHORT
-        "close_below_open": True,
-        "vol_below_avg": True,
-    }
-    out = strat_institutional_breakdown_confirmation_short(s)
-    assert out["fires"] is True and out["direction"] == "short"
-
-
-def test_batch610_short_requires_institutional_negative_not_buy():
-    """Pin (4): sentiment-sign asymmetry. Positive institutional_buy
-    on SHORT fixture must NOT fire."""
-    from backtest.signals.screener import strat_institutional_breakdown_confirmation_short
-    s = {
-        "institutional_buy": True,        # POSITIVE - wrong for SHORT
-        "institutional_negative": False,
-        "support_break_retest": True,
-        "price_above_ema_200": False,
-        "close_below_open": True,
-        "vol_below_avg": True,
-    }
-    assert strat_institutional_breakdown_confirmation_short(s)["fires"] is False
-
-
-def test_batch610_short_requires_below_ema_200():
-    """Pin (5): SHORT requires price BELOW 200 EMA (trend filter)."""
-    from backtest.signals.screener import strat_institutional_breakdown_confirmation_short
-    s = {
-        "institutional_negative": True,
-        "support_break_retest": True,
-        "price_above_ema_200": True,     # ABOVE - wrong for SHORT
-        "close_below_open": True,
-        "vol_below_avg": True,
-    }
-    assert strat_institutional_breakdown_confirmation_short(s)["fires"] is False
+def test_batch611_short_strategy_deleted():
+    """B611 external-AI critique fix: institutional_breakdown_confirmation
+    _short was deleted same-day after B610 wired it. 13F data is long-only
+    by SEC rule; the mechanical mirror was economically false."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    from backtest.signals import screener
+    assert "institutional_breakdown_confirmation_short" not in ALL_STRATEGIES
+    assert not hasattr(screener, "strat_institutional_breakdown_confirmation_short"), (
+        "B611 deleted the symmetric short - 13F has no short-side data; "
+        "institutional_negative (decreased > increased) means trimmed longs, "
+        "not short conviction. Cohen-Frazzini-Malloy 2008 long-side alpha "
+        "has no analog for the SHORT direction."
+    )
 
 
 def test_batch610_regime_default_long_bull_neutral():
@@ -159,24 +132,10 @@ def test_batch610_regime_default_long_bull_neutral():
         ) is False
 
 
-def test_batch610_regime_default_short_bear_crisis_neutral():
-    """Pin (6) SHORT."""
-    from backtest.engine.regime_selector import (
-        STRATEGY_REGIME_AFFINITY, should_strategy_fire_in_regime,
-    )
-    assert "institutional_breakdown_confirmation_short" not in STRATEGY_REGIME_AFFINITY
-    for r in ["bear", "crisis", "neutral"]:
-        assert should_strategy_fire_in_regime(
-            "institutional_breakdown_confirmation_short", r, direction="short"
-        ) is True
-    assert should_strategy_fire_in_regime(
-        "institutional_breakdown_confirmation_short", "bull", direction="short"
-    ) is False
-
-
-def test_batch610_all_strategies_count_after_b610():
-    """Pin (7): +1 from B610 g (Class 7 NEW)."""
+def test_batch611_all_strategies_count_after_b611_delete():
+    """B611 reverted B610's Class 7 NEW addition - count back to 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222, (
-        f"Expected 222 post-B610 (+1 Class 7 NEW); got {len(ALL_STRATEGIES)}"
+    assert len(ALL_STRATEGIES) == 221, (
+        f"Expected 221 post-B611 (B610 added 1, B611 deleted same-day); "
+        f"got {len(ALL_STRATEGIES)}"
     )
