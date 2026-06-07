@@ -53,79 +53,83 @@ def test_batch580_count_at_least_207():
 
 
 def test_batch580_long_fires_all_conditions_true():
-    """Pin (3)."""
+    """Pin (3). B616 update: swapped `below_prev_low: False` ->
+    `above_prev_low: True` per LOW-priority refactor (positive symmetric
+    signal)."""
     from backtest.signals.screener import strat_turtle_soup_long
     out = strat_turtle_soup_long({
         "smc_liquidity_swept_dn": True,
-        "below_prev_low": False,
+        "above_prev_low": True,         # B616: positive symmetric
         "close_above_open": True,
     })
     assert out["fires"] is True
 
 
 def test_batch580_long_no_sweep_no_fire():
-    """Pin (4): missing sweep -> no fire."""
+    """Pin (4): missing sweep -> no fire. B616 update: positive signal."""
     from backtest.signals.screener import strat_turtle_soup_long
     out = strat_turtle_soup_long({
         "smc_liquidity_swept_dn": False,
-        "below_prev_low": False,
+        "above_prev_low": True,         # B616: positive
         "close_above_open": True,
     })
     assert out["fires"] is False
 
 
 def test_batch580_long_below_prev_low_no_fire():
-    """Pin (5): still below prior-day-low -> no fire (no return-to-range)."""
+    """Pin (5): still below prior-day-low -> no fire (no return-to-range).
+    B616 update: absence of above_prev_low (or explicit False) blocks."""
     from backtest.signals.screener import strat_turtle_soup_long
     out = strat_turtle_soup_long({
         "smc_liquidity_swept_dn": True,
-        "below_prev_low": True,
+        "above_prev_low": False,        # B616: still below prior-day-low
         "close_above_open": True,
     })
     assert out["fires"] is False
 
 
 def test_batch580_long_bearish_bar_no_fire():
-    """Pin (6): bearish bar (close < open) -> no fire (no rejection)."""
+    """Pin (6): bearish bar -> no fire. B616 update: positive signal."""
     from backtest.signals.screener import strat_turtle_soup_long
     out = strat_turtle_soup_long({
         "smc_liquidity_swept_dn": True,
-        "below_prev_low": False,
+        "above_prev_low": True,         # B616: positive
         "close_above_open": False,
     })
     assert out["fires"] is False
 
 
 def test_batch580_short_mirror():
-    """Pin (7)."""
+    """Pin (7). B616 update: swapped `above_prev_high: False` ->
+    `below_prev_high: True` per LOW-priority refactor."""
     from backtest.signals.screener import strat_turtle_soup_short
     # All symmetric conditions True
     out = strat_turtle_soup_short({
         "smc_liquidity_swept_up": True,
-        "above_prev_high": False,
+        "below_prev_high": True,        # B616: positive symmetric
         "close_below_open": True,
     })
     assert out["fires"] is True
     # Missing upside sweep
     out_no_sweep = strat_turtle_soup_short({
         "smc_liquidity_swept_up": False,
-        "above_prev_high": False,
+        "below_prev_high": True,        # B616: positive
         "close_below_open": True,
     })
     assert out_no_sweep["fires"] is False
 
 
 def test_batch580_directions():
-    """Pin (8)."""
+    """Pin (8). B616 update: positive signals."""
     from backtest.signals.screener import strat_turtle_soup_long, strat_turtle_soup_short
     out_l = strat_turtle_soup_long({
         "smc_liquidity_swept_dn": True,
-        "below_prev_low": False,
+        "above_prev_low": True,         # B616: positive
         "close_above_open": True,
     })
     out_s = strat_turtle_soup_short({
         "smc_liquidity_swept_up": True,
-        "above_prev_high": False,
+        "below_prev_high": True,        # B616: positive
         "close_below_open": True,
     })
     assert out_l["direction"] == "long"
@@ -133,16 +137,17 @@ def test_batch580_directions():
 
 
 def test_batch580_category_ict():
-    """Pin (9): Layer 2D classification = 'ict'."""
+    """Pin (9): Layer 2D classification = 'ict'. B616 update: positive
+    signals."""
     from backtest.signals.screener import strat_turtle_soup_long, strat_turtle_soup_short
     out_l = strat_turtle_soup_long({
         "smc_liquidity_swept_dn": True,
-        "below_prev_low": False,
+        "above_prev_low": True,         # B616: positive
         "close_above_open": True,
     })
     out_s = strat_turtle_soup_short({
         "smc_liquidity_swept_up": True,
-        "above_prev_high": False,
+        "below_prev_high": True,        # B616: positive
         "close_below_open": True,
     })
     assert out_l["category"] == "ict"
@@ -151,20 +156,21 @@ def test_batch580_category_ict():
 
 def test_batch580_no_crosstalk():
     """Pin (10): on a downside-sweep bar, LONG fires + SHORT does not.
-    On an upside-sweep bar, SHORT fires + LONG does not."""
+    On an upside-sweep bar, SHORT fires + LONG does not.
+    B616 update: positive signals (above_prev_low / below_prev_high)."""
     from backtest.signals.screener import strat_turtle_soup_long, strat_turtle_soup_short
-    # Downside sweep day
+    # Downside sweep day: LONG conditions satisfied, SHORT not
     s_down = {
         "smc_liquidity_swept_dn": True, "smc_liquidity_swept_up": False,
-        "below_prev_low": False, "above_prev_high": True,
+        "above_prev_low": True, "below_prev_high": False,    # B616
         "close_above_open": True, "close_below_open": False,
     }
     assert strat_turtle_soup_long(s_down)["fires"] is True
     assert strat_turtle_soup_short(s_down)["fires"] is False
-    # Upside sweep day
+    # Upside sweep day: SHORT conditions satisfied, LONG not
     s_up = {
         "smc_liquidity_swept_dn": False, "smc_liquidity_swept_up": True,
-        "below_prev_low": True, "above_prev_high": False,
+        "above_prev_low": False, "below_prev_high": True,    # B616
         "close_above_open": False, "close_below_open": True,
     }
     assert strat_turtle_soup_long(s_up)["fires"] is False

@@ -137,6 +137,12 @@ def compute_pivots(df: pd.DataFrame) -> dict:
         "above_wood_p": today > wp, "near_wood_s1": near(ws1), "near_wood_r1": near(wr1),
         # Previous day flags
         "above_prev_high": today > H,  "below_prev_low":  today < L,
+        # B616 (2026-06-07 owner-directed LOW-priority not-s.get refactor):
+        # symmetric pair so turtle_soup_long/_short can switch from
+        # `not s.get("below_prev_low"|"above_prev_high", True)` (silent-gap
+        # fragile) to positive `above_prev_low` / `below_prev_high` signals.
+        # Strict-less-than convention matches existing strict-greater-than.
+        "below_prev_high": today < H,  "above_prev_low":  today > L,
         "near_prev_high":  near(H),    "near_prev_low":   near(L),
         "near_prev_close": near(C),
         # Batch 211 (ORB stocks-in-play 2026-05-17): gap pct + intraday
