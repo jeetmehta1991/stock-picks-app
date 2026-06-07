@@ -3165,19 +3165,86 @@ def strat_cup_and_handle_retest_long(s):
 
 
 def strat_flag_bull_retest_long(s):
-    """BUG-111 (Batch 329): retest variant of flag_bull_long.
-    Bull flag + post-break retest. Edwards-Magee + Bulkowski 2005:
-    flag retest entry has higher conditional win-rate than naked flag pop."""
+    """BUG-111 (Batch 329) ORIGINAL: retest variant of flag_bull_long.
+    Documented as "Bull flag + post-break retest" but consumed DC20-
+    anchored resistance_break_retest signal. The DC20-max-CLOSE bore
+    no relationship to the flag-high level (which is what should be
+    retested per Edwards-Magee + Bulkowski). Same name-vs-implementation
+    bug pattern that B605 fixed for 52wh_break_retest and B606 fixed
+    for r1_break_retest.
+
+    Batch 607 (2026-06-07 owner-directed F1 bug fix per CHECKLIST #105
+    deep-read; F1 + a + c + g + i applied):
+
+      F1 - Replaced resistance_break_retest with NEW
+        flag_bull_break_retest_long primitive
+        (compute_flag_break_retest_signals in chart_patterns.py). Now
+        the retest event is anchored on the SPECIFIC
+        flag_bull_breakout_level emitted by detect_flag when the flag
+        completed K bars ago (K in 3..12). Producer searches for a
+        recent historical flag completion + verifies the break-retest-
+        hold sequence against THAT level.
+      (a) Added close_above_open (B589-family bullish bar).
+      (c) Added vol_below_avg (Bulkowski canonical retest =
+          supply-absorption on LOWER volume).
+      (i) Regime affinity: Batch 291 direction-aware default
+          (LONG -> {bull, neutral}).
+
+    SKIPPED: (b) strong-close top-40% / (d) AVWAP / (e) global pole
+    threshold tighten / (f) MACD / (h) flag_bear_short non-retest
+    (deferred to separate walk; bundling premature). Owner chose
+    narrower set to test F1 effect first.
+
+    Post-B607 4-gate set:
+      flag_bull_break_retest_long + price_above_ema_200 +
+      close_above_open + vol_below_avg
+    """
     fires = (
-        s.get("flag_bull_detected", False)
-        and s.get("resistance_break_retest", False)
+        s.get("flag_bull_break_retest_long", False)
         and s.get("price_above_ema_200", True)
+        and s.get("close_above_open", False)
+        and s.get("vol_below_avg", False)
     )
     return _strat(fires, "long", "chart_pattern",
-        ["flag_bull_detected","resistance_break_retest","price_above_ema_200"],
-        ["Bull flag pattern + post-break retest",
-         "High-tight-flag with retest confirmation",
-         "Above 200 EMA (regime gate)"])
+        ["flag_bull_break_retest_long","price_above_ema_200",
+         "close_above_open","vol_below_avg"],
+        ["Bull flag broken + retested at SPECIFIC flag_bull_breakout_level (Edwards-Magee + Bulkowski 2005)",
+         "Above 200 EMA (trend filter)",
+         "Bullish bar (close above open)",
+         "Volume below 20d avg (Bulkowski retest = supply absorption on lower volume)"])
+
+
+def strat_flag_bear_retest_short(s):
+    """Batch 607 (2026-06-07 owner-directed Class 7 NEW): symmetric
+    inverse of strat_flag_bull_retest_long per
+    feedback_long_short_inverse_audit. Producer emits flag_bear
+    _break_retest_short (same B607 F1 primitive); strategy fires on
+    bear-flag breakdown-and-retest with below-200-EMA bearish trend
+    + bearish bar + Bulkowski below-avg volume on the retest.
+
+    Mirror 4-gate structure:
+      flag_bear_break_retest_short + NOT price_above_ema_200 +
+      close_below_open + vol_below_avg
+
+    Producer signal flag_bear_break_retest_short from B607 NEW
+    compute_flag_break_retest_signals; all others pre-existing.
+
+    Regime affinity: Batch 291 direction-aware default
+      (SHORT -> {bear, crisis, neutral}).
+    """
+    fires = (
+        s.get("flag_bear_break_retest_short", False)
+        and not s.get("price_above_ema_200", True)
+        and s.get("close_below_open", False)
+        and s.get("vol_below_avg", False)
+    )
+    return _strat(fires, "short", "chart_pattern",
+        ["flag_bear_break_retest_short","below_ema_200",
+         "close_below_open","vol_below_avg"],
+        ["Bear flag broken + retested at SPECIFIC flag_bear_breakdown_level",
+         "Below 200 EMA (bearish trend filter)",
+         "Bearish bar (close below open)",
+         "Volume below 20d avg (Bulkowski retest characteristic)"])
 
 
 def strat_triangle_ascending_retest_long(s):
@@ -4736,6 +4803,8 @@ ALL_STRATEGIES = {
     "volume_spike_breakout_retest":     strat_volume_spike_breakout_retest,
     "cup_and_handle_retest_long":       strat_cup_and_handle_retest_long,
     "flag_bull_retest_long":            strat_flag_bull_retest_long,
+    # Batch 607 (2026-06-07) Class 7 NEW symmetric inverse per F1 walk:
+    "flag_bear_retest_short":           strat_flag_bear_retest_short,
     "triangle_ascending_retest_long":   strat_triangle_ascending_retest_long,
     # Wave 3 13F-based (Batch 330 2026-05-25 owner-approved Path C): 3 of ~10
     # planned 13F-trigger strategies. Producer injection at screen_instrument
