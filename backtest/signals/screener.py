@@ -4548,33 +4548,49 @@ def strat_news_reversal_long(s):
 # institutional_buy, cfo_buy (Batch 469), large_dollar_buy (Batch 469).
 # Each sleeve adds the gate on top of an existing base condition.
 def _has_smart_money_buy(s) -> bool:
-    """Composite OR of bullish smart-money signals available on signals dict."""
-    return bool(
-        s.get("insider_cluster_active", False)
-        or s.get("institutional_strong_buy", False)
-        or s.get("institutional_buy", False)
-        or s.get("cfo_buy", False)
-        or s.get("large_dollar_buy", False)
-    )
+    """Batch 613 (2026-06-07 owner-directed F2a honest-framing per B611
+    staleness playbook): UNION ELIGIBILITY FILTER mixing EVENT and STATE
+    components, NOT a "smart-money confluence" signal.
 
+    EVENT components (bar-of-fire timing alpha):
+      - insider_cluster_active (rolling-30d quasi-event - >=2 unique insider
+        buyers in last 30 days)
+      - cfo_buy (event)
+      - large_dollar_buy (event)
 
-def _has_smart_money_sell(s) -> bool:
-    """Batch 588 (2026-06-04 owner directive '+ mirror' on
-    52w_high_breakout_with_smart_money_long): composite OR of bearish
-    smart-money signals. Mirror of _has_smart_money_buy per
-    feedback_long_short_inverse_audit.
+    STATE components (slow background eligibility filter, 90d persistence;
+    13F quarterly with DEC-325 45-day lag; provide factor-tilt, NOT
+    bar-of-fire conviction):
+      - institutional_strong_buy (13F state)
+      - institutional_buy (13F state)
 
-    Bearish smart-money: insider cluster sells, institutional
-    distribution, concentrated insider selling. Producer signals
-    emitted by backtest/data/smart_money.py.
+    Strategy thesis check: docstrings using `_has_smart_money_buy` must NOT
+    claim "smart-money confluence" or "sponsorship" at the bar of fire when
+    only the STATE components are True. The 13F-state half is ~constant 90d
+    at a time; alpha attribution at fire-bar belongs to the EVENT components
+    + the fast price/volume gates.
     """
     return bool(
-        s.get("insider_cluster_sell", False)
-        or s.get("institutional_strong_sell", False)
-        or s.get("institutional_sell", False)
-        or s.get("concentrated_sell", False)
-        or s.get("cluster_sell", False)
+        # EVENT components (bar-of-fire timing)
+        s.get("insider_cluster_active", False)
+        or s.get("cfo_buy", False)
+        or s.get("large_dollar_buy", False)
+        # STATE components (slow 13F eligibility filter)
+        or s.get("institutional_strong_buy", False)
+        or s.get("institutional_buy", False)
     )
+
+
+# Batch 613 (2026-06-07 owner-directed F3b): _has_smart_money_sell helper
+# DELETED. 13F filings are SEC long-only by rule (Cohen-Frazzini-Malloy 2008
+# applies to accumulation, not distribution); 4 of 5 composite components
+# (insider_cluster_sell, institutional_strong_sell, institutional_sell,
+# cluster_sell) were NEVER EMITTED by producer (smart_money.py) -> silent-gap
+# auto-False at fire time. Only concentrated_sell was actually emitted -> the
+# "OR composite" reduced to a single-signal gate that misled walkers. Per
+# feedback_asymmetric_data_sources_break_mechanical_inverse: the mechanical
+# inverse strategy strat_52w_low_breakdown_with_smart_money_short is also
+# deleted in this batch. No surviving consumer post-B613.
 
 
 def strat_bollinger_tight_with_smart_money_long(s):
@@ -4623,45 +4639,86 @@ def strat_rsi_oversold_with_smart_money_long(s):
 
 
 def strat_52w_high_breakout_with_smart_money_long(s):
-    """Batch 589 (2026-06-04 owner directive: "vol_above_avg = >=1.2x
-    make it. near_52w_high - make it 95% of prev 52 week high"):
-      - vol_above_avg (>=1.0) -> vol_spike_12x (>=1.2)
-      - near_52w_high (98pct) -> near_52w_high_95pct (95pct of prior 52w high)
-    Cohen-Frazzini-Malloy 2008 RFS + George-Hwang 2004 JF confluence."""
+    """Batch 613 (2026-06-07 owner-directed F1+F2a+a re-walk per
+    feedback_13f_state_signal_staleness staleness playbook):
+
+    F1 (docstring reframe): the EVENT half of _has_smart_money_buy
+    (insider_cluster_active / cfo_buy / large_dollar_buy) supplies
+    bar-of-fire timing alpha (Cohen-Frazzini-Malloy 2008 RFS insider
+    accumulation). The STATE half (institutional_strong_buy /
+    institutional_buy) is a slow 13F-derived eligibility filter with
+    ~90d persistence and DEC-325 45-day filing lag - it provides
+    factor-tilt, NOT bar-of-fire conviction. George-Hwang 2004 JF
+    52-week-high anomaly supplies the price-momentum thesis.
+
+    F2a (composite honest-framing): see _has_smart_money_buy docstring
+    update in this batch - mixed EVENT/STATE union, not "confluence".
+
+    (a) Owner directive B589-family standardization: added
+    close_in_top_40pct_of_range gate so the breakout requires a
+    strong-close bar (matches B589 standard for momentum breakouts).
+
+    Lineage:
+      - B588: NEW strategy wired (smart-money sleeve)
+      - B589: vol_above_avg (1.0x) -> vol_spike_12x (1.2x); near_52w_high
+        (98pct) -> near_52w_high_95pct (95pct of prior 52w high)
+      - B613: docstring reframe + close_in_top_40pct_of_range added
+    """
     base_fires = (
         s.get("near_52w_high_95pct", False)
         and s.get("close_above_open", True)
+        and s.get("close_in_top_40pct_of_range", False)
         and s.get("vol_spike_12x", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["near_52w_high_95pct", "close_above_open", "vol_spike_12x",
-         "smart_money_buy"],
+        ["near_52w_high_95pct", "close_above_open",
+         "close_in_top_40pct_of_range", "vol_spike_12x", "smart_money_buy"],
         ["Close >= 95pct of prior 252d high (broader window per B589)",
+         "Bullish bar + close in top 40pct of range (B613 a strong-close gate)",
          "Volume >= 1.2x 20d avg (B589 tightened from 1.0x)",
-         "Smart-money buy confirmation (insider cluster / institutional / CFO)"])
+         "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a"])
 
 
-def strat_52w_low_breakdown_with_smart_money_short(s):
-    """Batch 589 (2026-06-04 mirror of B589 high+smart_money changes):
-      - B588: NEW strategy wired (was missing inverse)
-      - B589: vol_above_avg -> vol_spike_12x; near_52w_low (102pct) ->
-        near_52w_low_105pct
-    Mirror of strat_52w_high_breakout_with_smart_money_long.
-    Cohen-Frazzini-Malloy 2008 RFS institutional persistence applies
-    bidirectionally."""
+def strat_52w_high_breakout_with_smart_money_vol_below_long(s):
+    """Batch 613 (2026-06-07 owner-directed B-twin for A/B test of (b)
+    vol_spike_12x vs vol_below_avg):
+
+    Owner directive: "I am unsure of b and want to A/B test that too."
+
+    A/B-test hypothesis: at the 52-week high with smart-money sponsorship,
+    is lower-volume confirmation (Bulkowski 2005 retest-of-resistance
+    absorption pattern) MORE or LESS reliable than a high-volume breakout
+    bar (vol_spike_12x)?
+
+    Twin strategy: identical to strat_52w_high_breakout_with_smart_money_long
+    EXCEPT vol_spike_12x is replaced by vol_below_avg. Cube replay will
+    surface the empirical verdict per (strategy x exit) cell. Walker may
+    deprecate one twin post-cube based on the result.
+    """
     base_fires = (
-        s.get("near_52w_low_105pct", False)
-        and s.get("close_below_open", True)
-        and s.get("vol_spike_12x", False)
+        s.get("near_52w_high_95pct", False)
+        and s.get("close_above_open", True)
+        and s.get("close_in_top_40pct_of_range", False)
+        and s.get("vol_below_avg", False)
     )
-    fires = base_fires and _has_smart_money_sell(s)
-    return _strat(fires, "short", "smart_money_sleeve",
-        ["near_52w_low_105pct", "close_below_open", "vol_spike_12x",
-         "smart_money_sell"],
-        ["Close <= 105pct of prior 252d low (broader window per B589)",
-         "Volume >= 1.2x 20d avg (B589 tightened from 1.0x) + bearish bar",
-         "Smart-money sell confirmation (insider/institutional distribution)"])
+    fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["near_52w_high_95pct", "close_above_open",
+         "close_in_top_40pct_of_range", "vol_below_avg", "smart_money_buy"],
+        ["Close >= 95pct of prior 252d high (broader window per B589)",
+         "Bullish bar + close in top 40pct of range (B613 a strong-close gate)",
+         "Volume BELOW 20d avg (B613 b A/B twin: Bulkowski 2005 retest absorption)",
+         "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a"])
+
+
+# Batch 613 (2026-06-07 owner-directed F3b): SHORT mirror DELETED.
+# strat_52w_low_breakdown_with_smart_money_short was added B588 as a
+# mechanical inverse but violated feedback_asymmetric_data_sources_break
+# _mechanical_inverse - 13F filings are SEC long-only by rule, so the
+# "smart-money sell" composite collapsed to a near-silent gate (see helper
+# deletion above). No empirical data; not in any cube; safe to delete
+# pre-R5 per feedback_r5_paused_pending_stage4_completion.
 
 
 def strat_squeeze_breakout_with_smart_money_long(s):
@@ -5080,8 +5137,13 @@ ALL_STRATEGIES = {
     "mfi_oversold_with_smart_money_long":       strat_mfi_oversold_with_smart_money_long,
     "rsi_oversold_with_smart_money_long":       strat_rsi_oversold_with_smart_money_long,
     "52w_high_breakout_with_smart_money_long":  strat_52w_high_breakout_with_smart_money_long,
-    # B588 (2026-06-04 owner directive '+ mirror'): inverse of above
-    "52w_low_breakdown_with_smart_money_short": strat_52w_low_breakdown_with_smart_money_short,
+    # B613 (2026-06-07 owner-directed B-twin for A/B test of (b)
+    # vol_spike_12x vs vol_below_avg per Bulkowski 2005 retest hypothesis)
+    "52w_high_breakout_with_smart_money_vol_below_long":
+        strat_52w_high_breakout_with_smart_money_vol_below_long,
+    # B613 (2026-06-07 owner-directed F3b): SHORT mirror DELETED -
+    # asymmetric-data violation per feedback_asymmetric_data_sources_break_
+    # mechanical_inverse; 13F is SEC long-only by rule.
     "squeeze_breakout_with_smart_money_long":   strat_squeeze_breakout_with_smart_money_long,
     "xs_momentum_with_smart_money_long":        strat_xs_momentum_with_smart_money_long,
     "xs_low_beta_with_smart_money_long":        strat_xs_low_beta_with_smart_money_long,
