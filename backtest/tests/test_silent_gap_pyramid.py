@@ -1655,10 +1655,13 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   221 after Batch 607 (+1 Class 7 NEW flag_bear_retest_short
     #       per F1 bug fix in flag_bull_retest_long walk - new
     #       compute_flag_break_retest_signals producer)
-    assert len(ALL_STRATEGIES) == 221, (
+    #   222 after Batch 610 (+1 Class 7 NEW institutional_breakdown
+    #       _confirmation_short per institutional_breakout_confirmation
+    #       _long walk - missing-inverse symmetric mirror)
+    assert len(ALL_STRATEGIES) == 222, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607 trajectory: ALL_STRATEGIES "
-        f"count must be 221 post-B607, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605/607/610 trajectory: ALL_STRATEGIES "
+        f"count must be 222 post-B610, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -2717,13 +2720,18 @@ def test_batch331_institutional_oversold_long_fires():
 
 
 def test_batch331_institutional_breakout_confirmation_long_fires():
-    """Batch 331: institutional_breakout_confirmation_long needs 13F buy +
-    resistance_break_retest + EMA200."""
+    """Batch 331 baseline + B610 walk gates: institutional_breakout
+    _confirmation_long needs 13F buy + resistance_break_retest + EMA200.
+    Post-B610 walk also requires close_above_open (a) + vol_below_avg
+    (d) per B589/Bulkowski standardization."""
     from backtest.signals.screener import strat_institutional_breakout_confirmation_long
     s = {
         "institutional_buy": True,
         "resistance_break_retest": True,
         "price_above_ema_200": True,
+        # B610-added gates
+        "close_above_open": True,
+        "vol_below_avg": True,
     }
     assert strat_institutional_breakout_confirmation_long(s)["fires"] is True
     # No retest -> gated
