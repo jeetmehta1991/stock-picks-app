@@ -301,7 +301,13 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     #   three_white_soldiers              bear=+0.06  bull=+0.08
     #   williams_stoch_dual               bear=+0.06
     "awesome_oscillator":              {"bear"},
-    "break_retest_confluence":         {"bull"},
+    # Batch 609 F1 (2026-06-07 owner-directed break_retest_confluence walk):
+    # removed `break_retest_confluence: {"bull"}` explicit entry - strategy
+    # is DUAL but the entry capped BOTH directions to bull-only since
+    # Batch 271 mass-edit. LONG was over-restricted (couldn't fire in
+    # neutral); SHORT was mis-regimed (firing in bull = wrong). Now falls
+    # back to Batch 291 direction-aware default (LONG -> {bull, neutral};
+    # SHORT -> {bear, crisis, neutral}). Same fix pattern as B608 F1.
     # Batch 608 F1 (2026-06-07 owner-directed break_retest_volume walk):
     # removed `break_retest_volume: {"bear", "neutral"}` explicit entry -
     # strategy is DUAL but the entry capped LONG side to short-bias regimes

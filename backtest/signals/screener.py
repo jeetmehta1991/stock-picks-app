@@ -1787,16 +1787,71 @@ def strat_break_retest_volume(s):
 
 
 def strat_break_retest_confluence(s):
-    """BUG-111: Break-and-retest with multi-indicator confluence confirmation."""
-    fl = (s.get("resistance_break_retest") and s.get("macd_12_26_9_bullish")
-          and s.get("price_above_ema_20") and s.get("price_above_ema_50"))
-    fs = (s.get("support_break_retest") and not s.get("macd_12_26_9_bullish")
-          and not s.get("price_above_ema_20") and not s.get("price_above_ema_50"))
+    """BUG-111: Break-and-retest with multi-indicator confluence confirmation.
+
+    Batch 609 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST #105
+    deep-read; F1 + F2 + a + d + i applied; same bug pattern as B608):
+
+      F1 - regime affinity bug fixed. Strategy is DUAL but
+        STRATEGY_REGIME_AFFINITY had explicit {bull} entry that
+        capped BOTH directions to bull-only since the Batch 271
+        mass-edit. LONG over-restricted; SHORT mis-regimed (firing
+        in bull = wrong for short bias). Fixed by removing the entry;
+        falls back to Batch 291 direction-aware default (LONG ->
+        {bull, neutral}; SHORT -> {bear, crisis, neutral}).
+      F2 - silent-gap bugs fixed (THREE gates this time). SHORT side
+        previously used `not s.get(macd_12_26_9_bullish)`,
+        `not s.get(price_above_ema_20)`, `not s.get(price_above_ema
+        _50)` - each auto-passed when the respective key was missing
+        (None is falsy; not None = True). Labels said macd_bearish /
+        below_ema_20 / below_ema_50 but producer never emitted them.
+        B609 F2 added macd_12_26_9_bearish to compute_macd +
+        below_ema_20 / below_ema_50 to compute_ema_sma; SHORT consumes
+        them explicitly.
+      (a) Added close_above_open (LONG) / close_below_open (SHORT)
+        per B589-family standardization.
+      (d) Added vol_below_avg per Bulkowski canonical retest =
+        supply-absorption on LOWER volume (consistent with B594/B596/
+        B603/B605/B606/B607/B608 retest family).
+      (i) Regime: Batch 291 direction-aware default (post-F1).
+
+    Skipped: (b) strong-close 40pct / (c) B594 strong variants /
+    (e) AVWAP - strategy already has 4 confluence signals; adding
+    more on top would over-tighten.
+
+    Post-B609 6-gate set per direction:
+      LONG:  resistance_break_retest + macd_12_26_9_bullish +
+             price_above_ema_20 + price_above_ema_50 + close_above_open
+             + vol_below_avg
+      SHORT: support_break_retest + macd_12_26_9_bearish (explicit) +
+             below_ema_20 (explicit) + below_ema_50 (explicit) +
+             close_below_open + vol_below_avg
+    """
+    fl = (s.get("resistance_break_retest")
+          and s.get("macd_12_26_9_bullish")
+          and s.get("price_above_ema_20")
+          and s.get("price_above_ema_50")
+          and s.get("close_above_open")
+          and s.get("vol_below_avg"))
+    fs = (s.get("support_break_retest")
+          and s.get("macd_12_26_9_bearish")
+          and s.get("below_ema_20")
+          and s.get("below_ema_50")
+          and s.get("close_below_open")
+          and s.get("vol_below_avg"))
     return _strat3(fl, fs, "confluence",
-        ["resistance_break_retest", "macd_12_26_9_bullish", "price_above_ema_20", "price_above_ema_50"],
-        ["support_break_retest", "macd_bearish", "below_ema_20", "below_ema_50"],
-        "Break-and-retest confluence: MACD + dual EMA confirms breakout continuation",
-        "Breakdown-and-retest confluence: MACD + dual EMA confirms breakdown continuation")
+        ["resistance_break_retest", "macd_12_26_9_bullish",
+         "price_above_ema_20", "price_above_ema_50",
+         "close_above_open", "vol_below_avg"],
+        ["support_break_retest", "macd_12_26_9_bearish",
+         "below_ema_20", "below_ema_50",
+         "close_below_open", "vol_below_avg"],
+        ["Break-and-retest confluence: MACD + dual EMA confirms breakout continuation",
+         "Bullish bar (close above open)",
+         "Volume below 20d avg (Bulkowski retest characteristic)"],
+        ["Breakdown-and-retest confluence: MACD + dual EMA (explicit bearish signals post-B609 F2)",
+         "Bearish bar (close below open)",
+         "Volume below 20d avg (Bulkowski retest characteristic)"])
 
 
 # -----------------------------------------------------------------------------

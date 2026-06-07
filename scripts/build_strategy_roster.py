@@ -390,6 +390,9 @@ def signal_plain_translation(signal: str) -> str:
         "obv_bullish":         "On-Balance Volume in uptrend: today's OBV > OBV from 5 bars ago (cumulative volume on up-days minus volume on down-days)",
         "obv_rising":          "today's OBV STRICTLY GREATER than OBV from 5 bars ago. Institutional accumulation proxy (Granville 1963).",
         "obv_falling":         "today's OBV STRICTLY LESS than OBV from 5 bars ago (B608 F2 - symmetric to obv_rising; fixes silent-gap where strat_break_retest_volume SHORT side previously used `not obv_rising` which auto-passed when key was missing). Institutional distribution proxy.",
+        "macd_12_26_9_bearish":"MACD 12/26/9 histogram STRICTLY LESS than 0 (B609 F2 - symmetric to macd_12_26_9_bullish; fixes silent-gap where strat_break_retest_confluence SHORT used `not macd_bullish` which auto-passed when key was missing).",
+        "below_ema_20":        "today's close STRICTLY LESS than 20-day EMA (B609 F2 - symmetric to price_above_ema_20; fixes silent-gap on strat_break_retest_confluence SHORT side).",
+        "below_ema_50":        "today's close STRICTLY LESS than 50-day EMA (B609 F2 - symmetric to price_above_ema_50).",
         # SMC (signals from smartmoneyconcepts library; computed on swing_length=20 by default)
         "smc_fvg_bullish_active":  "Bullish Fair Value Gap (3-bar imbalance where bar -2's high < bar 0's low) is active and unfilled within recent window",
         "smc_fvg_bearish_active":  "Bearish Fair Value Gap (3-bar imbalance where bar -2's low > bar 0's high) is active and unfilled within recent window",

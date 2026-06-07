@@ -376,6 +376,12 @@ def compute_macd(df: pd.DataFrame) -> dict:
         result[f"{key}_signal"]       = round(ms,4)
         result[f"{key}_hist"]         = round(mh,4)
         result[f"{key}_bullish"]      = mh > 0
+        # B609 F2 (2026-06-07 owner directive break_retest_confluence
+        # walk): explicit macd_*_bearish signal added symmetric to
+        # _bullish to fix the silent-gap bug where strat_break_retest
+        # _confluence SHORT side used `not s.get(_bullish)` which
+        # auto-passed when the key was missing.
+        result[f"{key}_bearish"]      = mh < 0
         result[f"{key}_crossover_up"] = mh > 0 and pmh <= 0
         result[f"{key}_crossover_dn"] = mh < 0 and pmh >= 0
     return result
@@ -491,6 +497,13 @@ def compute_ema_sma(df: pd.DataFrame) -> dict:
         result[f"price_above_ema_{fast}"]         = close > efv
         result[f"price_above_ema_{slow}"]         = close > esv
         result[f"price_above_sma_{slow}"]         = close > ssv
+        # B609 F2 (2026-06-07 owner directive break_retest_confluence
+        # walk): explicit below_ema_N signals symmetric to price_above
+        # _ema_N to fix the silent-gap bug where strat_break_retest
+        # _confluence SHORT side used `not s.get(price_above_ema_N)`
+        # which auto-passed when the key was missing.
+        result[f"below_ema_{fast}"]               = close < efv
+        result[f"below_ema_{slow}"]               = close < esv
     return result
 
 
