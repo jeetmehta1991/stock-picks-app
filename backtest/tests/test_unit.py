@@ -10254,8 +10254,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 599 (2026-06-05): owner B596 convergence option 2 deleted donchian_20_breakout_retest dual -> 217 (explicit pair donchian_breakout_retest_long + donchian_breakdown_retest_short carries the same semantics post-B596).
     #   Batch 603 (2026-06-05): news_momentum_long walk + 2 Class 7 NEW symmetric inverses added (news_momentum_short + news_reversal_long) -> 219.
     #   Batch 605 (2026-06-06): F1 bug fix 52wh_break_retest walk + 1 Class 7 NEW (52wl_break_retest_short) -> 220.
-    assert len(ALL_STRATEGIES) == 220, (
-        f"F-002 drift: ALL_STRATEGIES expected 220 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 607 (2026-06-07): F1 bug fix flag_bull_retest_long walk + 1 Class 7 NEW (flag_bear_retest_short) -> 221.
+    assert len(ALL_STRATEGIES) == 221, (
+        f"F-002 drift: ALL_STRATEGIES expected 221 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10270,9 +10271,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 219, (
-        f"F-002 drift: active strategy count expected 219 (Batch 605 "
-        f"220 registered minus 1 disabled); got {active}."
+    assert active == 220, (
+        f"F-002 drift: active strategy count expected 220 (Batch 607 "
+        f"221 registered minus 1 disabled); got {active}."
     )
 
     # F-004 exit method count

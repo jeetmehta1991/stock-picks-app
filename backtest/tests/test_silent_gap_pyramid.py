@@ -1652,10 +1652,13 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   220 after Batch 605 (+1 Class 7 NEW 52wl_break_retest_short
     #       per F1 bug fix in 52wh_break_retest walk - new
     #       compute_52w_break_retest_signals producer)
-    assert len(ALL_STRATEGIES) == 220, (
+    #   221 after Batch 607 (+1 Class 7 NEW flag_bear_retest_short
+    #       per F1 bug fix in flag_bull_retest_long walk - new
+    #       compute_flag_break_retest_signals producer)
+    assert len(ALL_STRATEGIES) == 221, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605 trajectory: ALL_STRATEGIES "
-        f"count must be 220 post-B605, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605/607 trajectory: ALL_STRATEGIES "
+        f"count must be 221 post-B607, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1720,9 +1723,13 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     s2 = dict(s); s2["resistance_break_retest"] = False
     assert strat_cup_and_handle_retest_long(s2)["fires"] is False
 
-    # flag_bull_retest_long
-    s = {"flag_bull_detected": True, "resistance_break_retest": True,
-         "price_above_ema_200": True}
+    # flag_bull_retest_long (post-B607 F1 walk: NEW flag-anchored producer
+    # signal flag_bull_break_retest_long + B589 bullish bar + Bulkowski
+    # vol_below_avg replace the legacy resistance_break_retest gate)
+    s = {"flag_bull_break_retest_long": True,
+         "price_above_ema_200": True,
+         "close_above_open": True,
+         "vol_below_avg": True}
     assert strat_flag_bull_retest_long(s)["fires"] is True
 
     # triangle_ascending_retest_long
