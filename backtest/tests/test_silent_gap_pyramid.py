@@ -1661,6 +1661,12 @@ def test_batch329_bug111_six_retest_variants_registered():
     #   221 after Batch 611 (B611 external-AI critique reversed B610's
     #       Class 7 NEW: 13F is long-only by SEC rule, mechanical
     #       symmetry was economically false; strategy deleted same-day)
+    #   221 after Batch 613 (MEDIUM-priority 13F-staleness re-walk:
+    #       deleted strat_52w_low_breakdown_with_smart_money_short -
+    #       same asymmetric-data issue as B611; added B-twin strat_
+    #       52w_high_breakout_with_smart_money_vol_below_long for A/B
+    #       test of vol_spike_12x vs vol_below_avg per Bulkowski 2005
+    #       retest absorption hypothesis. Net: -1 SHORT + 1 B-twin = 0.)
     assert len(ALL_STRATEGIES) == 221, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
         f"B572/580/581/586/588/591/592/599/603/605/607/610/611 trajectory: ALL_STRATEGIES "

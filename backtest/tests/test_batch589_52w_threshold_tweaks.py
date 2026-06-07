@@ -158,9 +158,14 @@ def test_batch589_strat_52w_low_breakdown_requires_5():
 
 
 def test_batch589_strat_52w_high_smart_money_new_gates():
-    """Pin (8): _95pct + _12x replaced 98pct + above_avg."""
+    """Pin (8): _95pct + _12x replaced 98pct + above_avg.
+
+    B613 update: close_in_top_40pct_of_range gate added (a) per B589-family
+    standardization. Fixture extended; semantics of B589 pin preserved
+    (strategy still requires _95pct + _12x; legacy fixture still blocked)."""
     from backtest.signals.screener import strat_52w_high_breakout_with_smart_money_long
     s = {"near_52w_high_95pct": True, "close_above_open": True,
+         "close_in_top_40pct_of_range": True,  # B613 (a)
          "vol_spike_12x": True, "institutional_buy": True}
     assert strat_52w_high_breakout_with_smart_money_long(s)["fires"] == True
     # Legacy near_52w_high alone should NOT fire (we use _95pct now)
@@ -169,12 +174,18 @@ def test_batch589_strat_52w_high_smart_money_new_gates():
     assert strat_52w_high_breakout_with_smart_money_long(s_legacy)["fires"] == False
 
 
-def test_batch589_strat_52w_low_smart_money_mirror():
-    """Pin (9): mirror of pin 8."""
-    from backtest.signals.screener import strat_52w_low_breakdown_with_smart_money_short
-    s = {"near_52w_low_105pct": True, "close_below_open": True,
-         "vol_spike_12x": True, "cluster_sell": True}
-    assert strat_52w_low_breakdown_with_smart_money_short(s)["fires"] == True
+def test_batch589_strat_52w_low_smart_money_mirror_DELETED_B613():
+    """Pin (9) SUPERSEDED by Batch 613 F3b.
+
+    Owner directive 2026-06-07: SHORT mirror strat_52w_low_breakdown_with_
+    smart_money_short DELETED because 13F filings are SEC long-only by rule
+    (asymmetric data violates feedback_asymmetric_data_sources_break_
+    mechanical_inverse). _has_smart_money_sell helper also removed (4/5
+    components never emitted by producer = silent-gap). This pin is
+    intentionally kept as a documented superseder; see B613 tests in
+    test_batch613_52w_high_sm_rewalk.py for the deletion pins."""
+    from backtest.signals import screener
+    assert not hasattr(screener, "strat_52w_low_breakdown_with_smart_money_short")
 
 
 def test_batch589_class_0_awaiting_flipped_to_implemented():
