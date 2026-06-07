@@ -62,7 +62,9 @@ def test_batch603_news_momentum_long_legacy_3_gate_blocked():
 
 
 def test_batch603_news_momentum_short_7_gates_fires():
-    """Pin (3): symmetric inverse fires on negative-news-confirmed breakdown."""
+    """Pin (3): symmetric inverse fires on negative-news-confirmed breakdown.
+    B616 update: swapped `above_avwap_20high: False` -> `below_avwap_20high:
+    True` per LOW-priority refactor (positive symmetric signal)."""
     from backtest.signals.screener import strat_news_momentum_short
     s = {
         "news_sentiment_5d": -0.6,
@@ -71,7 +73,7 @@ def test_batch603_news_momentum_short_7_gates_fires():
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
         "vol_above_avg": True,
-        "above_avwap_20high": False,  # below the 20d swing-high AVWAP
+        "below_avwap_20high": True,   # B616: positive symmetric signal
     }
     out = strat_news_momentum_short(s)
     assert out["fires"] is True and out["direction"] == "short"
@@ -95,7 +97,7 @@ def test_batch603_news_momentum_short_symmetric_with_long():
         "vol_above_avg": True,
         "above_avwap_20low": True,
     }
-    # SHORT mirror
+    # SHORT mirror (B616 update: below_avwap_20high positive signal)
     short_s = {
         "news_sentiment_5d": -0.5,
         "news_volume_zscore_5d": 1.5,
@@ -103,7 +105,7 @@ def test_batch603_news_momentum_short_symmetric_with_long():
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
         "vol_above_avg": True,
-        "above_avwap_20high": False,
+        "below_avwap_20high": True,   # B616: positive symmetric signal
     }
     assert strat_news_momentum_long(long_s)["fires"] is True
     assert strat_news_momentum_short(short_s)["fires"] is True

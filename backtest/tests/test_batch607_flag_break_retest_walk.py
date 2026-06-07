@@ -163,11 +163,13 @@ def test_batch607_strat_long_blocks_when_below_ema_200():
 
 
 def test_batch607_strat_bear_retest_short_fires():
-    """Pin (7): Class 7 NEW symmetric inverse."""
+    """Pin (7): Class 7 NEW symmetric inverse.
+    B616 update: swapped `price_above_ema_200: False` -> `below_ema_200:
+    True` per LOW-priority refactor (positive symmetric signal)."""
     from backtest.signals.screener import strat_flag_bear_retest_short
     s = {
         "flag_bear_break_retest_short": True,
-        "price_above_ema_200": False,        # required NOT-above
+        "below_ema_200": True,               # B616: positive symmetric signal
         "close_below_open": True,
         "vol_below_avg": True,
     }
@@ -176,11 +178,13 @@ def test_batch607_strat_bear_retest_short_fires():
 
 
 def test_batch607_strat_bear_blocks_when_above_ema_200():
-    """Pin (7b): SHORT requires price BELOW 200-EMA."""
+    """Pin (7b): SHORT requires price BELOW 200-EMA.
+    B616 update: positive signal absent -> blocks (vs prior
+    `price_above_ema_200: True` which similarly blocked via `not`)."""
     from backtest.signals.screener import strat_flag_bear_retest_short
     s = {
         "flag_bear_break_retest_short": True,
-        "price_above_ema_200": True,         # ABOVE blocks SHORT
+        # below_ema_200 ABSENT -> blocks SHORT (B616 silent-gap closed)
         "close_below_open": True,
         "vol_below_avg": True,
     }

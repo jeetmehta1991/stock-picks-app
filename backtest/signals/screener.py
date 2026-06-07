@@ -1718,13 +1718,20 @@ def strat_52wl_break_retest_short(s):
     Regime affinity: Batch 291 direction-aware default (SHORT ->
     {bear, crisis, neutral}).
     """
+    # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
+    # `not s.get("price_above_ema_200", True)` -> `below_ema_200`
+    # (B609 producer) and `not s.get("above_avwap_20high", True)` ->
+    # `below_avwap_20high` (B612 producer) for positive symmetric
+    # signals per feedback_never_use_NOT_s_get_pattern. Behavior
+    # preserved (default=True was functionally safe; this hardens it
+    # against future producer edits).
     fs = (s.get("year_low_break_retest_short")
           and s.get("near_52w_low")
-          and not s.get("price_above_ema_200", True)
+          and s.get("below_ema_200", False)
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")
           and s.get("vol_below_avg")
-          and not s.get("above_avwap_20high", True))
+          and s.get("below_avwap_20high", False))
     return _strat(fs, "short", "breakout",
         ["year_low_break_retest_short", "near_52w_low",
          "below_ema_200", "close_below_open",
@@ -2649,16 +2656,24 @@ def strat_turtle_soup_long(s):
 
     Producer signals (all Layer 2A wired):
       - smc_liquidity_swept_dn (smc_ict.py:341)
-      - below_prev_low / above_prev_high (technical.py:139)
+      - above_prev_low / below_prev_high (technical.py:139; above_prev_low
+        added in B616 as positive symmetric pair to existing below_prev_low)
       - close_above_open (technical.py:153)
+
+    B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
+    `not s.get("below_prev_low", True)` -> `above_prev_low` (B616 NEW
+    producer signal) for positive symmetric signal per
+    feedback_never_use_NOT_s_get_pattern. Behavior preserved up to the
+    strict-vs-inclusive convention at-tick equality (today_close exactly
+    == prior_low is empirically rare).
     """
     fires = (
         s.get("smc_liquidity_swept_dn", False)
-        and not s.get("below_prev_low", True)  # closed back ABOVE prior-day-low
+        and s.get("above_prev_low", False)     # B616: closed back ABOVE prior-day-low
         and s.get("close_above_open", False)   # bullish reversal bar
     )
     return _strat(fires, "long", "ict",
-        ["smc_liquidity_swept_dn", "close_back_above_prev_low", "close_above_open"],
+        ["smc_liquidity_swept_dn", "above_prev_low", "close_above_open"],
         ["Turtle Soup long (Raschke Street Smarts 1996)",
          "Downside liquidity swept - retail stops taken below support",
          "Price reversed back ABOVE prior-day-low - stop-hunt failed",
@@ -2671,14 +2686,18 @@ def strat_turtle_soup_short(s):
     Setup: upside liquidity swept (retail stops above resistance taken)
     AND today closed back BELOW prior-day-high AND closes bearish.
     Failed-breakout / stop-hunt pattern; mean-reversion to downside.
+
+    B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
+    `not s.get("above_prev_high", True)` -> `below_prev_high` (B616 NEW
+    producer signal symmetric to existing above_prev_high).
     """
     fires = (
         s.get("smc_liquidity_swept_up", False)
-        and not s.get("above_prev_high", True)  # closed back BELOW prior-day-high
+        and s.get("below_prev_high", False)     # B616: closed back BELOW prior-day-high
         and s.get("close_below_open", False)    # bearish reversal bar
     )
     return _strat(fires, "short", "ict",
-        ["smc_liquidity_swept_up", "close_back_below_prev_high", "close_below_open"],
+        ["smc_liquidity_swept_up", "below_prev_high", "close_below_open"],
         ["Turtle Soup short (Raschke Street Smarts 1996)",
          "Upside liquidity swept - retail stops taken above resistance",
          "Price reversed back BELOW prior-day-high - stop-hunt failed",
@@ -3432,9 +3451,12 @@ def strat_flag_bear_retest_short(s):
     Regime affinity: Batch 291 direction-aware default
       (SHORT -> {bear, crisis, neutral}).
     """
+    # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
+    # `not s.get("price_above_ema_200", True)` -> `below_ema_200`
+    # (B609 producer) for positive symmetric signal.
     fires = (
         s.get("flag_bear_break_retest_short", False)
-        and not s.get("price_above_ema_200", True)
+        and s.get("below_ema_200", False)
         and s.get("close_below_open", False)
         and s.get("vol_below_avg", False)
     )
@@ -4545,6 +4567,9 @@ def strat_news_momentum_short(s):
     Regime affinity: Batch 291 direction-aware default
       (SHORT -> {bear, crisis, neutral})
     """
+    # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
+    # `not s.get("above_avwap_20high", True)` -> `below_avwap_20high`
+    # (B612 producer) for positive symmetric signal.
     fires = (
         s.get("news_sentiment_5d", 0.0) <= -0.5
         and s.get("news_volume_zscore_5d", 0.0) >= 1.5
@@ -4552,7 +4577,7 @@ def strat_news_momentum_short(s):
         and s.get("close_below_open", False)
         and s.get("close_in_bottom_40pct_of_range", False)
         and s.get("vol_above_avg", False)
-        and not s.get("above_avwap_20high", True)
+        and s.get("below_avwap_20high", False)
     )
     sent = s.get("news_sentiment_5d", 0.0)
     vz   = s.get("news_volume_zscore_5d", 0.0)

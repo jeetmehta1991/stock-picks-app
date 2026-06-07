@@ -148,33 +148,39 @@ def test_batch605_legacy_fixture_blocked():
 
 
 def test_batch605_52wl_break_retest_short_7_gates_fires():
-    """Pin (7): mirror strategy fires with all 7 gates."""
+    """Pin (7): mirror strategy fires with all 7 gates.
+    B616 update: swapped `price_above_ema_200: False` -> `below_ema_200:
+    True` and `above_avwap_20high: False` -> `below_avwap_20high: True`
+    per LOW-priority refactor (positive symmetric signals)."""
     from backtest.signals.screener import strat_52wl_break_retest_short
     s = {
         "year_low_break_retest_short": True,
         "near_52w_low": True,
-        "price_above_ema_200": False,        # required NOT-above per inverse
+        "below_ema_200": True,                # B616: positive symmetric
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
         "vol_below_avg": True,
-        "above_avwap_20high": False,          # required NOT-above per inverse
+        "below_avwap_20high": True,           # B616: positive symmetric
     }
     out = strat_52wl_break_retest_short(s)
     assert out["fires"] is True and out["direction"] == "short"
 
 
 def test_batch605_52wl_break_retest_short_blocks_when_above_ema_200():
-    """Pin (8): SHORT mirror requires price BELOW 200-EMA; with price
-    ABOVE 200-EMA, the strategy must NOT fire."""
+    """Pin (8): SHORT mirror requires price BELOW 200-EMA.
+    B616 update: with below_ema_200 ABSENT (price IS above 200-EMA), the
+    strategy must NOT fire. Pre-B616 used `price_above_ema_200: True` to
+    flip the NOT gate; B616 silent-gap closure means simply omitting
+    below_ema_200 blocks."""
     from backtest.signals.screener import strat_52wl_break_retest_short
     s = {
         "year_low_break_retest_short": True,
         "near_52w_low": True,
-        "price_above_ema_200": True,         # ABOVE - wrong for SHORT
+        # below_ema_200 ABSENT -> blocks SHORT
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
         "vol_below_avg": True,
-        "above_avwap_20high": False,
+        "below_avwap_20high": True,
     }
     assert strat_52wl_break_retest_short(s)["fires"] is False
 
