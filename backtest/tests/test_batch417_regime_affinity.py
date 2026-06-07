@@ -24,12 +24,22 @@ from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
 
 
 # Batch 417 cube-empirical affinity (regime set per strategy)
-BATCH_417_NEW_ENTRIES = {
+#
+# B617 update (2026-06-07 external-AI critique on B608/B609/B610 walks):
+# 4 of the 14 B417 entries were REMOVED by the family audit because the
+# strategies are dual (_strat3) and the explicit single-bucket regime entry
+# was mis-regimed for one of the two directions:
+#   - break_retest_confluence (B609 F1 removal)
+#   - break_retest_volume (B608 F1 removal)
+#   - cpr_narrow_momentum (B617 family audit)
+#   - hull_rsi (B617 family audit)
+# These now get the Batch 291 direction-aware default (LONG -> {bull,
+# neutral}; SHORT -> {bear, crisis, neutral}). The cube data was
+# direction-agnostic, so a single-bucket entry applied to a dual
+# constrained both directions identically - the Batch 271 family-bug
+# signature. Direction-disaggregated cube validation pending.
+BATCH_417_NEW_ENTRIES_ACTIVE = {
     "awesome_oscillator":              {"bear"},
-    "break_retest_confluence":         {"bull"},
-    "break_retest_volume":             {"bear", "neutral"},
-    "cpr_narrow_momentum":             {"bull", "neutral"},
-    "hull_rsi":                        {"bull", "neutral"},
     "institutional_buy_momentum_long": {"bull"},
     "institutional_cluster_long":      {"bear"},
     "macd_fast_crossover":             {"bull"},
@@ -41,11 +51,19 @@ BATCH_417_NEW_ENTRIES = {
     "williams_stoch_dual":             {"bear"},
 }
 
+BATCH_417_REMOVED_BY_FAMILY_AUDIT = {
+    "break_retest_confluence",   # B609 F1
+    "break_retest_volume",       # B608 F1
+    "cpr_narrow_momentum",       # B617 family audit
+    "hull_rsi",                  # B617 family audit
+}
+
 
 @pytest.mark.parametrize("strategy,expected_regimes",
-                          sorted(BATCH_417_NEW_ENTRIES.items()))
+                          sorted(BATCH_417_NEW_ENTRIES_ACTIVE.items()))
 def test_batch417_strategy_regime_affinity_entry(strategy, expected_regimes):
-    """Each Batch 417 NEW entry must be present + match cube-derived set."""
+    """Each Batch 417 NEW entry STILL ACTIVE post-B617 must be present +
+    match cube-derived set."""
     assert strategy in STRATEGY_REGIME_AFFINITY, (
         f"{strategy} missing from STRATEGY_REGIME_AFFINITY - Batch 417 "
         f"not applied or silently reverted")
@@ -55,12 +73,29 @@ def test_batch417_strategy_regime_affinity_entry(strategy, expected_regimes):
         f"{expected_regimes!r} (Batch 417 cube-empirical)")
 
 
+@pytest.mark.parametrize("strategy", sorted(BATCH_417_REMOVED_BY_FAMILY_AUDIT))
+def test_batch417_removed_by_family_audit(strategy):
+    """B617 family audit: 4 of the 14 B417 entries removed because dual
+    strategy with explicit single-bucket regime entry mis-regimed one of
+    the two directions. Direction-disaggregated cube validation pending."""
+    assert strategy not in STRATEGY_REGIME_AFFINITY, (
+        f"{strategy} should be REMOVED from STRATEGY_REGIME_AFFINITY by "
+        f"B617 family audit (was Batch 417 cube-derived but applied to a "
+        f"dual _strat3 strategy direction-agnostically). Falls back to "
+        f"Batch 291 direction-aware default.")
+
+
 def test_batch417_strategy_regime_affinity_count_floor():
-    """STRATEGY_REGIME_AFFINITY must have at least 113 prior + 14 Batch 417
-    = 127 entries. Floor (not exact) because future batches may add more."""
-    assert len(STRATEGY_REGIME_AFFINITY) >= 127, (
+    """STRATEGY_REGIME_AFFINITY entries post-B617 family audit.
+
+    B617 update: removed 19 Class A entries (dual strategies with explicit
+    single-direction regime entries that mis-regimed the opposite
+    direction). Prior floor was 127; post-B617 floor is 105 (19 removed +
+    other batch maintenance). Future batches may add more after direction-
+    disaggregated cube validation."""
+    assert len(STRATEGY_REGIME_AFFINITY) >= 105, (
         f"STRATEGY_REGIME_AFFINITY has {len(STRATEGY_REGIME_AFFINITY)} "
-        f"entries, expected >= 127 (113 pre-Batch-417 + 14 Batch 417 new)")
+        f"entries, expected >= 105 post-B617 family audit")
 
 
 # Batch 418 (2026-05-28 owner-approved "proceed"): 15 OVERRIDES of existing
@@ -104,15 +139,20 @@ def test_batch418_strategy_regime_affinity_override(strategy, expected_regimes):
 
 def test_batch418_total_cube_derived_entries():
     """Total entries with explicit cube-derivation = 14 (Batch 417 NEW) + 15
-    (Batch 418 OVERRIDES) = 29 distinct strategies whose affinity is now
-    cube-empirical rather than literature-derived. Count-floor still applies."""
-    cube_derived_count = len(BATCH_417_NEW_ENTRIES) + len(BATCH_418_OVERRIDES)
+    (Batch 418 OVERRIDES) = 29 distinct strategies. B617 family audit
+    removed 4 of the 14 B417 entries (dual strategies; direction-disagg
+    cube validation pending) -> 10 B417 active + 15 B418 = 25 active
+    cube-derived entries."""
+    cube_derived_count = (len(BATCH_417_NEW_ENTRIES_ACTIVE)
+                          + len(BATCH_417_REMOVED_BY_FAMILY_AUDIT)
+                          + len(BATCH_418_OVERRIDES))
     assert cube_derived_count == 29, (
-        f"Expected 14 + 15 = 29 cube-derived entries; got "
+        f"Expected 14 + 15 = 29 cube-derived entries (incl B617-removed); got "
         f"{cube_derived_count}")
     # No collision between the two sets (Batch 417 NEW were not-prior-entries;
     # Batch 418 OVERRIDES were prior-entries being changed):
-    overlap = set(BATCH_417_NEW_ENTRIES) & set(BATCH_418_OVERRIDES)
+    all_417 = set(BATCH_417_NEW_ENTRIES_ACTIVE) | BATCH_417_REMOVED_BY_FAMILY_AUDIT
+    overlap = all_417 & set(BATCH_418_OVERRIDES)
     assert not overlap, (
         f"Batch 417 NEW and Batch 418 OVERRIDE sets must be disjoint; "
         f"overlap = {overlap}")

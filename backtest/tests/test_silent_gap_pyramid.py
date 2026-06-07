@@ -3306,15 +3306,23 @@ def test_batch320_rsi_volume_200ema_loosen():
 
 
 def test_batch320_break_retest_volume_drops_vol_spike():
-    """Batch 320 baseline + B608 walk gates: strat_break_retest_volume
-    still drops vol_spike_2x per Bulkowski (volume elevated on break,
-    low on retest). Post-B608 strategy ALSO requires close_above_open
-    + vol_below_avg (Bulkowski supply-absorption thesis)."""
+    """Batch 320 baseline + B608 walk gates + B617 critique re-fix.
+
+    Lineage:
+    - B320 dropped vol_spike_2x (per Bulkowski - volume elevated on break,
+      low on retest; but external-AI critique noted B320 threw away the
+      WRONG half: Bulkowski's high-volume condition is the BREAK bar; B320
+      removed the only volume confirmation entirely).
+    - B608 added close_above_open + vol_below_avg (Bulkowski supply-
+      absorption on retest dry-up).
+    - B617 switched OBV gate from obv_rising (5-bar contaminated window)
+      to obv_bullish (20-bar MA baseline; OBV[-1] > obv_ma_20). Producer
+      added symmetric obv_bearish for SHORT side."""
     from backtest.signals.screener import strat_break_retest_volume
     sig = {
         "resistance_break_retest": True,
-        "obv_rising": True,
-        "vol_spike_2x": False,  # explicitly NOT present (B320 drop)
+        "obv_bullish": True,        # B617: switched from obv_rising
+        "vol_spike_2x": False,      # explicitly NOT present (B320 drop)
         # B608-added gates
         "close_above_open": True,
         "vol_below_avg": True,
@@ -3322,8 +3330,8 @@ def test_batch320_break_retest_volume_drops_vol_spike():
     out = strat_break_retest_volume(sig)
     assert out["fires"] is True
     assert out["direction"] == "long"
-    # OBV not rising -> still gated
-    sig2 = dict(sig); sig2["obv_rising"] = False
+    # OBV below 20-bar MA -> still gated
+    sig2 = dict(sig); sig2["obv_bullish"] = False
     assert strat_break_retest_volume(sig2)["fires"] is False
 
 
