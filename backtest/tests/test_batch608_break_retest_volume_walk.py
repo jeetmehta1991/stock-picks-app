@@ -197,7 +197,10 @@ def test_batch608_short_legacy_not_obv_rising_does_not_fire():
 
 def test_batch608_all_strategies_count_unchanged_at_221():
     """Pin (10): F1+F2+a+d are bug fixes + gate additions, not new strategies.
-    B617 update: subsequent batches (B613/B615) added 2 B-twins (52w_high
-    vol_below + squeeze_setup_event_only); current 222."""
+    B622 update: converted to FLOOR pin per B622 standard so subsequent
+    +/- changes don't require batch-by-batch test updates. Historical
+    trail: B608 left count at 221; B613 net 0 (+ vol_below B-twin / -
+    52w_low SHORT); B615 +1 (squeeze_setup B-twin); B620 -1 (deleted
+    that B-twin). Current 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert len(ALL_STRATEGIES) >= 221

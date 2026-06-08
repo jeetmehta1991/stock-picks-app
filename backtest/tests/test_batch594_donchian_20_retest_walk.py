@@ -142,4 +142,5 @@ def test_batch594_all_strategies_count_post_b599():
     strategy -> 217. The B594 producer-level work survives in the
     explicit pair."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 217
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 217

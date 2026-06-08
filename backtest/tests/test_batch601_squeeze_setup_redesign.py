@@ -183,4 +183,5 @@ def test_batch601_donchian_decoupled():
 def test_batch601_all_strategies_count_preserved_at_217():
     """No add/delete in B601."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 217
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 217

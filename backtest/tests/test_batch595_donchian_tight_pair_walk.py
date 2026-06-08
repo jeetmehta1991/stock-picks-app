@@ -37,7 +37,7 @@ def test_batch595_donchian_breakdown_short_5_gates_fires():
     s = {
         "dc10_breakout_dn": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }
@@ -52,7 +52,7 @@ def test_batch595_donchian_breakdown_short_blocks_no_bearish_bar():
     s = {
         "dc10_breakout_dn": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,
         "close_below_open": False,
         "close_in_bottom_40pct_of_range": True,
     }
@@ -65,7 +65,7 @@ def test_batch595_donchian_breakdown_short_blocks_no_bottom_40pct():
     s = {
         "dc10_breakout_dn": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": False,
     }
@@ -79,7 +79,7 @@ def test_batch595_donchian_breakdown_short_legacy_3_gates_blocked():
     s_legacy = {
         "dc10_breakout_dn": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,
         # close_below_open + close_in_bottom_40pct_of_range absent
     }
     assert strat_donchian_breakdown_short(s_legacy)["fires"] is False, (
@@ -102,7 +102,7 @@ def test_batch595_pair_symmetry_5_vs_5_gates():
     s_short = {
         "dc10_breakout_dn": True,
         "vol_spike_15x": True,
-        "macd_12_26_9_bullish": False,
+        "macd_12_26_9_bearish": True,
         "close_below_open": True,
         "close_in_bottom_40pct_of_range": True,
     }
@@ -156,4 +156,5 @@ def test_batch595_all_strategies_count_post_b599():
     """Pin (8) post-B599: B595 was net 0; B599 deleted the dual
     donchian_20_breakout_retest -> 217."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 217
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 217

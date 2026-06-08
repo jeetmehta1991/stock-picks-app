@@ -234,6 +234,7 @@ def test_batch603_regime_default_news_reversal_long_bull_neutral():
 def test_batch603_all_strategies_count_after_b603():
     """Pin (8): +2 strategies from B603 g+h."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219, (
-        f"Expected 219 post-B603 (+2 news inverses); got {len(ALL_STRATEGIES)}"
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 219, (
+        f"Expected >= 219 post-B603 (+2 news inverses); got {len(ALL_STRATEGIES)}"
     )

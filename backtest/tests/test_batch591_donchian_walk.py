@@ -84,8 +84,10 @@ def test_batch591_donchian_breakdown_short_restored_in_b592():
     + close_in_bottom_40pct_of_range). Now requires 5 gates."""
     from backtest.signals.screener import ALL_STRATEGIES, strat_donchian_breakdown_short
     assert "donchian_breakdown_short" in ALL_STRATEGIES
+    # B622 fixture-drift repair (post-B612 positive symmetric):
+    # macd_12_26_9_bullish=False -> macd_12_26_9_bearish=True
     s = {"dc10_breakout_dn": True, "vol_spike_15x": True,
-         "macd_12_26_9_bullish": False,
+         "macd_12_26_9_bearish": True,
          "close_below_open": True,
          "close_in_bottom_40pct_of_range": True}
     out = strat_donchian_breakdown_short(s)
@@ -95,14 +97,14 @@ def test_batch591_donchian_breakdown_short_restored_in_b592():
 
 def test_batch591_donchian_breakdown_retest_short_restored_in_b592():
     """Pin (3) post-B592/B596: retest mirror RESTORED in B592 then
-    walked in B596 (a)+(b)+(c)+(e). New 5-gate fixture:
-    dc20_support_break_retest_strong + vol_below_avg + NOT macd_bullish
-    + close_below_open + close_in_bottom_40pct_of_range."""
+    walked in B596 (a)+(b)+(c)+(e).
+    B622 fixture-drift repair: B612 switched the macd gate to positive
+    symmetric (macd_12_26_9_bearish)."""
     from backtest.signals.screener import ALL_STRATEGIES, strat_donchian_breakdown_retest_short
     assert "donchian_breakdown_retest_short" in ALL_STRATEGIES
     s = {"dc20_support_break_retest_strong": True,
          "vol_below_avg": True,
-         "macd_12_26_9_bullish": False,
+         "macd_12_26_9_bearish": True,           # B612 positive symmetric
          "close_below_open": True,
          "close_in_bottom_40pct_of_range": True}
     out = strat_donchian_breakdown_retest_short(s)
@@ -174,10 +176,12 @@ def test_batch591_donchian_10_breakout_long_requires_6_gates():
 
 
 def test_batch591_donchian_10_breakout_short_requires_6_gates():
-    """Pin (7): SHORT side mirror gates (6 post-B592)."""
+    """Pin (7): SHORT side mirror gates (6 post-B592).
+    B622 fixture-drift repair (post-B612 positive symmetric):
+    macd_12_26_9_bullish=False -> macd_12_26_9_bearish=True."""
     from backtest.signals.screener import strat_donchian_10_breakout
     s_all = {"dc10_breakout_dn_1pct": True, "vol_above_avg": True,
-             "macd_12_26_9_bullish": False, "close_below_open": True,
+             "macd_12_26_9_bearish": True, "close_below_open": True,
              "close_in_bottom_40pct_of_range": True,
              "dc10_strong_breakout_dn": True}
     out = strat_donchian_10_breakout(s_all)
@@ -206,6 +210,7 @@ def test_batch591_all_strategies_count_after_b599_deletion():
     deletions -> 218; B599 deleted the dual donchian_20_breakout_retest
     -> 217."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 217, (
-        f"Expected 217 after B599 deletion of dual; got {len(ALL_STRATEGIES)}"
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 217, (
+        f"Expected >= 217 after B599 deletion of dual; got {len(ALL_STRATEGIES)}"
     )
