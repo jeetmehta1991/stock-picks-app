@@ -80,7 +80,7 @@
 
 **Validation needed**: post-R5, filter `strat_squeeze_setup_long`'s trade log to the subset where `insider_cluster_active=True` at fire bar + compare hit-rate / Sharpe of the EVENT subset vs the full population. If EVENT subset materially outperforms, consider re-introducing as a smaller A/B test OR loosening L1c to EVENT-only with a less aggressive L3.
 
-**EXECUTION_QUEUE ID**: covered by general R5 trade-log analysis post-launch; no standalone ticket.
+**EXECUTION_QUEUE ID**: `S5-SQUEEZE-EVENT-ONLY-AB` (added B632 per owner directive).
 
 ---
 
@@ -107,7 +107,7 @@
 - If cube produces ≥ 30 trades/regime → estimator's independence-product upper bound was too pessimistic (correlated gates fire more often than independent product implies); re-tune PRIOR_RATES.
 - If cube produces < 30 trades/regime → estimator was correct; owner decides per `feedback_minimum_fire_count_gate_before_cube` resolutions (loosen / mark exploratory / delete).
 
-**EXECUTION_QUEUE ID**: covered by R5 trade-log analysis post-launch; no standalone ticket.
+**EXECUTION_QUEUE ID**: `S5-FIRE-COUNT-CANDIDATES` (added B632 per owner directive).
 
 ---
 
@@ -118,6 +118,8 @@
 **Status**: flagged for manual review; no auto-action.
 
 **Validation needed**: R5 actual fire-count. If < 30/regime, the false-FAIL flag was conservative cover; if ≥ 30, OR-aware estimator extension is warranted. Either way the estimator should be enhanced to compute OR-aware joint rates (B619 follow-up).
+
+**EXECUTION_QUEUE ID**: `S5-OR-AWARE-ESTIMATOR` (added B632 per owner directive).
 
 ---
 
@@ -131,7 +133,7 @@
 
 **Examples of missing signals**: institutional_persistence_*, classification_change_*, mmbm_long, judas_swing_*, week_opening_gap_*, vix_*, sector_*, calendar_* (totm_long, halloween_seasonal_long, etc.).
 
-**EXECUTION_QUEUE ID**: not yet listed; queue follow-up tooling batch when R5 produces signal-rate data.
+**EXECUTION_QUEUE ID**: `S5-PRIOR-RATES-EXPANSION` (added B632 per owner directive).
 
 ---
 
@@ -160,6 +162,8 @@
 These were NOT in the B617 audit because LONG-only strategies don't have the dual-direction-blocking signature. They may still benefit from direction-disaggregated review (e.g., is `institutional_cluster_long` really better in bear than bull?), but the family-bug risk doesn't apply.
 
 **Validation needed** (LOW priority): R5 confirms cube Sharpe sign per regime for these 2 entries; if any single-bucket entry shows the OTHER regime is also profitable, expand the entry.
+
+**EXECUTION_QUEUE ID**: `S5-B417-LONG-ONLY-CUBE` (added B632 per owner directive).
 
 ---
 
