@@ -173,12 +173,17 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
 # -----------------------------------------------------------------------------
 
 def strat_pivot_s1_bounce(s):
+    # B628 F1 family-sweep: `not s.get("obv_bullish")` -> positive
+    # symmetric `obv_bearish` (B617 producer). See B628 commit for
+    # the bundled 7-strategy sweep rationale per CHECKLIST #105 (n).
     fl = (s.get("near_s1") and (s.get("hammer") or s.get("pin_bar")) and s.get("obv_bullish"))
-    fs = (s.get("near_r1") and (s.get("shooting_star") or s.get("bearish_engulfing")) and not s.get("obv_bullish"))
+    fs = (s.get("near_r1") and (s.get("shooting_star") or s.get("bearish_engulfing"))
+          and s.get("obv_bearish"))
     return _strat3(fl, fs, "pivot",
-        ["near_s1","hammer/pin_bar","obv_bullish"], ["near_r1","shooting_star","obv_falling"],
-        ["Price at S1 pivot support","Hammer or pin bar confirming buyers","OBV rising  -  accumulation"],
-        ["Price at R1 pivot resistance","Shooting star or bearish engulfing rejecting highs","OBV falling  -  distribution"])
+        ["near_s1","hammer/pin_bar","obv_bullish"],
+        ["near_r1","shooting_star","obv_bearish"],
+        ["Price at S1 pivot support","Hammer or pin bar confirming buyers","OBV rising - accumulation"],
+        ["Price at R1 pivot resistance","Shooting star or bearish engulfing rejecting highs","OBV falling - distribution (B628 F1)"])
 
 
 def strat_pivot_s2_bounce(s):
@@ -304,12 +309,47 @@ def strat_cpr_narrow_bullish(s):
 
 
 def strat_camarilla_s3_bounce(s):
+    """Camarilla S3/R3 mean-reversion bounce with RSI extreme + OBV
+    flow confirmation.
+
+    Camarilla pivots (Slim Khan / Nick Scott) compute support/
+    resistance levels at C +/- rng*1.1/{12, 6, 4, 2} from prev-day
+    close+range; S3/R3 are the primary support/resistance pair.
+    Strategy fires LONG when price approaches S3 (near_cam_s3) AND
+    RSI is oversold AND OBV confirms accumulation. SHORT mirrors at
+    R3 with overbought RSI + OBV distribution.
+
+    Batch 628 (2026-06-08 owner-directed family-bug sweep per
+    CHECKLIST #105 (n) on `not s.get("obv_bullish")` pattern -
+    bundled 7-strategy sweep):
+
+      F1 - silent-gap fix per `feedback_never_use_NOT_s_get_pattern`.
+        SHORT side `not s.get("obv_bullish")` -> positive symmetric
+        `s.get("obv_bearish", False)` (B617 producer: OBV < 20-bar MA).
+      F2 - docstring added with Camarilla source attribution + B628
+        walk record (pre-B628 the strategy had only context bullets).
+
+    Post-B628 gate set (unchanged count; F1 hardens pattern only):
+      LONG:  near_cam_s3 + rsi_14<35 + obv_bullish
+      SHORT: near_cam_r3 + rsi_14>65 + obv_bearish  (B628 F1)
+
+    DEFERRED to R5 per B624 manifest M1: STRATEGY_REGIME_AFFINITY
+    entry `{bear, crisis, neutral}` is a B623 REMOVE_OK candidate
+    (REMOVE gains +104.2pp PnL). Map removal pends R5 direction-
+    aware confirmation.
+    """
+    # B628 F1: positive symmetric (B617 producer)
     fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35 and s.get("obv_bullish"))
-    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and not s.get("obv_bullish"))
+    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and s.get("obv_bearish"))
     return _strat3(fl, fs, "pivot",
-        ["near_cam_s3","rsi_14<35","obv_bullish"], ["near_cam_r3","rsi_14>65","obv_falling"],
-        ["Price at Camarilla S3  -  primary support","RSI oversold","OBV confirming accumulation"],
-        ["Price at Camarilla R3  -  primary resistance","RSI overbought","OBV confirming distribution"])
+        ["near_cam_s3","rsi_14<35","obv_bullish"],
+        ["near_cam_r3","rsi_14>65","obv_bearish"],
+        ["Price at Camarilla S3 - primary support (Slim Khan / Nick Scott)",
+         "RSI oversold (<35)",
+         "OBV confirming accumulation (above 20-bar MA)"],
+        ["Price at Camarilla R3 - primary resistance",
+         "RSI overbought (>65)",
+         "OBV confirming distribution (B628 F1 positive symmetric)"])
 
 
 def strat_camarilla_r3_breakout(s):
@@ -707,12 +747,15 @@ def strat_rsi_overbought_short(s):
 
 
 def strat_mfi_oversold(s):
+    # B628 F1 family-sweep: positive symmetric obv_bearish.
     fl = (s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
-    fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2")) and not s.get("obv_bullish"))
+    fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2"))
+          and s.get("obv_bearish"))
     return _strat3(fl, fs, "mean_reversion",
-        ["mfi_oversold","at_support","obv_bullish"], ["mfi_overbought","at_resistance","obv_falling"],
-        ["MFI oversold  -  volume-weighted RSI below 20","At pivot support","OBV rising"],
-        ["MFI overbought  -  volume-weighted RSI above 80","At pivot resistance","OBV falling"])
+        ["mfi_oversold","at_support","obv_bullish"],
+        ["mfi_overbought","at_resistance","obv_bearish"],
+        ["MFI oversold - volume-weighted RSI below 20","At pivot support","OBV rising"],
+        ["MFI overbought - volume-weighted RSI above 80","At pivot resistance","OBV falling (B628 F1)"])
 
 
 def strat_cmf_flip(s):
@@ -819,12 +862,14 @@ def strat_bollinger_upper_short(s):
 
 
 def strat_keltner_lower(s):
+    # B628 F1 family-sweep: positive symmetric obv_bearish.
     fl = (s.get("kc_touch_lower") and s.get("hammer") and s.get("obv_bullish"))
-    fs = (s.get("kc_touch_upper") and s.get("shooting_star") and not s.get("obv_bullish"))
+    fs = (s.get("kc_touch_upper") and s.get("shooting_star") and s.get("obv_bearish"))
     return _strat3(fl, fs, "mean_reversion",
-        ["kc_touch_lower","hammer","obv_bullish"], ["kc_touch_upper","shooting_star","obv_falling"],
+        ["kc_touch_lower","hammer","obv_bullish"],
+        ["kc_touch_upper","shooting_star","obv_bearish"],
         ["Price at lower Keltner Channel","Hammer confirms buyers","OBV rising"],
-        ["Price at upper Keltner Channel","Shooting star confirms sellers","OBV falling"])
+        ["Price at upper Keltner Channel","Shooting star confirms sellers","OBV falling (B628 F1)"])
 
 
 def strat_stoch_oversold(s):
@@ -1235,12 +1280,15 @@ def strat_morning_star(s):
 
 
 def strat_bullish_engulfing_support(s):
+    # B628 F1 family-sweep: positive symmetric obv_bearish.
     fl = (s.get("bullish_engulfing") and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
-    fs = (s.get("bearish_engulfing") and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib")) and not s.get("obv_bullish"))
+    fs = (s.get("bearish_engulfing") and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
+          and s.get("obv_bearish"))
     return _strat3(fl, fs, "candle",
-        ["bullish_engulfing","at_support","obv_bullish"], ["bearish_engulfing","at_resistance","obv_falling"],
-        ["Bullish engulfing at support  -  two systems confirming","OBV rising"],
-        ["Bearish engulfing at resistance  -  two systems confirming","OBV falling"])
+        ["bullish_engulfing","at_support","obv_bullish"],
+        ["bearish_engulfing","at_resistance","obv_bearish"],
+        ["Bullish engulfing at support - two systems confirming","OBV rising"],
+        ["Bearish engulfing at resistance - two systems confirming","OBV falling (B628 F1)"])
 
 
 def strat_doji_at_support(s):
@@ -1386,12 +1434,21 @@ def strat_cpr_narrow_momentum(s):
 
 
 def strat_camarilla_rsi_obv(s):
-    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35 and s.get("obv_bullish") and s.get("cmf_positive"))
-    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and not s.get("obv_bullish") and not s.get("cmf_positive"))
+    # B628 F1 family-sweep (partial): obv_bullish gate swapped to
+    # positive symmetric obv_bearish. The cmf_positive gate retains
+    # the `not s.get("cmf_positive")` silent-gap pattern - separate
+    # cmf-family follow-up batch needed (cmf_negative producer signal
+    # also needs adding to compute_volume; surfaced for owner approval).
+    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35
+          and s.get("obv_bullish") and s.get("cmf_positive"))
+    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65
+          and s.get("obv_bearish")             # B628 F1
+          and not s.get("cmf_positive"))       # PENDING cmf-family sweep
     return _strat3(fl, fs, "confluence",
-        ["near_cam_s3","rsi_14<35","obv_bullish","cmf_positive"], ["near_cam_r3","rsi_14>65","obv_falling","cmf_negative"],
-        ["Camarilla S3 + RSI oversold + OBV rising + CMF positive  -  highest conviction long"],
-        ["Camarilla R3 + RSI overbought + OBV falling + CMF negative  -  highest conviction short"])
+        ["near_cam_s3","rsi_14<35","obv_bullish","cmf_positive"],
+        ["near_cam_r3","rsi_14>65","obv_bearish","not cmf_positive"],
+        ["Camarilla S3 + RSI oversold + OBV rising + CMF positive - highest conviction long"],
+        ["Camarilla R3 + RSI overbought + OBV bearish (B628 F1) + CMF negative - highest conviction short"])
 
 
 def strat_supertrend_ichimoku_adx(s):
@@ -1630,15 +1687,18 @@ def strat_prev_day_low_breakdown(s):
 # --- Confluence shorts (2) ---
 
 def strat_camarilla_rsi_obv_short(s):
+    # B628 F1 family-sweep (partial): obv_bullish gate swapped to
+    # positive symmetric obv_bearish. cmf_positive gate retains the
+    # silent-gap pattern - separate cmf-family follow-up batch needed.
     fires = (s.get("near_cam_r3") and
              s.get("rsi_14", 50) > 65 and
-             not s.get("obv_bullish") and
-             not s.get("cmf_positive"))
+             s.get("obv_bearish") and             # B628 F1
+             not s.get("cmf_positive"))           # PENDING cmf-family sweep
     return _strat(fires, "short", "confluence",
-        ["near_cam_r3", "rsi_14>65", "obv_falling", "cmf_negative"],
-        ["Camarilla R3  -  strongest institutional resistance",
+        ["near_cam_r3", "rsi_14>65", "obv_bearish", "not cmf_positive"],
+        ["Camarilla R3 - strongest institutional resistance",
          "RSI-14 overbought above 65",
-         "OBV falling and CMF negative  -  four systems confirming short"])
+         "OBV bearish (B628 F1) + CMF negative - four systems confirming short"])
 
 
 def strat_cpr_narrow_momentum_short(s):
