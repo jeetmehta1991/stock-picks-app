@@ -162,6 +162,53 @@ Per `project_no_apriori_strategy_pruning.md`, all per-strategy tuning + roster d
 
 ---
 
+## B635 (2026-06-08) investigation — pre-resumption status snapshot
+
+**Owner directive 2026-06-08**: "Investigate 1A-β paused run failures" (option E from BCDE autonomous-execution queue). Investigation produces findings + gating questions; no code changes.
+
+**Original pause root causes (per CLAUDE.md 2026-05-26)**:
+- (a) Cap-saturation @25 — **ADDRESSED** by Batch 377 `--no-portfolio-cap` cube flag (auto-enabled `--phase=1a-beta`)
+- (b) 49 strategies stuck at PRODUCER_LAYER_ZERO_CANDIDATES — **PARTIALLY ADDRESSED**:
+  - Batch 415 signals-dict enrichment fix (ticker / strategy_name / category injection)
+  - Batch 416 silent-producer-failure logging (3 producer call sites; 1 SMC empty-return)
+  - Batch 582 year_high producer bug fix (52w family, 3 strats)
+  - Batch 584 Donchian rolling-window bug fix (6 strats)
+  - Batch 585 sweep of all rolling-window producers (CLEAN; no more lurking bugs)
+  - **Remaining**: 49 - ~10 (fixed) = ~39 strategies still need per-strategy producer audits; the PHASE_1A_BETA_PRODUCER_ZERO_AUDIT.json clause-fail audit caveat noted 9 of 49 were false positives, so true count is ~30 needing audit
+- (c) Batch 203/293 regime affinity narrowing — **ADDRESSED**:
+  - Batch 384 `--no-regime-affinity` cube flag (cube-measurement mode bypasses affinity)
+  - Batches 417/418 cube-derived affinity entries (29 new/override entries) — activate post-1A-α deployment
+  - Batch 617 family audit: 19 Class A dual-strategy entries removed
+  - Batch 623 direction-disaggregated audit: 4 REMOVE_OK candidates surfaced (deferred to R5 per B624 manifest M1)
+
+**1A-α gate status** (per Batch 414 walk-forward + this status doc lines 31):
+- All 9 walked strategies FAILED the 1A-α gate (Sharpe ≥ 0.7 OOS ≥1 regime)
+- Best OOS Sharpe = 0.419 (`bollinger_tight` fold_2); cube ceiling genuinely below 0.7
+- Phase 1B-α agent overlay ($300 Haiku budget) **NOT eligible** on current cube
+- Workflow loops back to Stage 4 re-optimization (entry-side threshold + compound-logic restructure) → re-run cube → re-walk-forward
+
+**Methodology improvements since 2026-05-28 (B626-B634)**:
+- 7 family-bug `not s.get(...)` patterns fully eliminated (~75 active instances swept across B608/B616/B617/B627/B628/B629/B630/B631/B633)
+- B619 fire-count estimator built + B621 audit harness
+- B625 walk-template integration (pyramid pin enforcing CHECKLIST k token)
+- B634 PRIOR_RATES expansion (189 → 22 INCOMPLETE) surfaced 14 new REAL FAIL fire-count candidates
+- 4 B623 REMOVE_OK regime-affinity walks complete (force_index_breakout, camarilla_s3_bounce, prev_day_low_bounce, ultimate_oscillator)
+- R5 manifest fully queued (M1-M8 with cross-referenced EXECUTION_QUEUE tickets)
+
+**B635 finding — gating questions for resumption**:
+
+| # | Question | Owner-decision-required |
+|---|---|---|
+| 1 | Re-run cube on AWS Shape A (Batch 424 infrastructure, ~$9.30 + ~5h)? | Cost commit |
+| 2 | Re-walk the 14 new REAL FAIL candidates from B634 fire-count audit before cube? | Scope: per-strategy walks vs cube empirical-validation-first |
+| 3 | Pre-walk the ~30 remaining PRODUCER_LAYER_ZERO_CANDIDATES strategies? | Per-strategy producer audits |
+| 4 | Activate B414 vectorized cube-exit fast path (~20-25% engine speedup; flag DEFAULT OFF)? | Risk vs speed tradeoff |
+| 5 | Apply B623 REMOVE_OK regime-affinity removals (4 entries) now, or wait for R5 to confirm? | Pre-R5 vs post-R5 sequencing — currently deferred per B624 manifest M1 |
+
+**Recommendation**: re-launch cube with current infrastructure (Batch 424 Shape A) **after** addressing question 2 (the 14 new B634 fire-count REAL FAIL candidates may produce INSUFFICIENT_DATA if the cube runs without loosening their gate stacks). The methodology improvements since 2026-05-28 are substantial; the cube ceiling result (0.419 OOS Sharpe vs 0.7 gate) is the binding constraint and may not change without entry-side re-optimization per the workflow's locked Stage 4 loop.
+
+---
+
 ## Cross-references
 
 - Code: `backtest/engine/backtest.py` (cube flags) + `backtest/run_phase1a.py` (auto-enable)
