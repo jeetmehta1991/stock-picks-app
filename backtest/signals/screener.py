@@ -1392,13 +1392,66 @@ def strat_doji_at_resistance_short(s):
 
 
 def strat_three_white_soldiers(s):
+    """Three White Soldiers bullish reversal pattern (Nison
+    *Japanese Candlestick Charting Techniques* 1991).
+
+    Three consecutive bullish candles, each closing higher than the
+    prior + each open higher than the prior. Strong reversal signal
+    indicating sustained buying pressure over 3 days. RSI<60 gate
+    keeps the entry from already-overbought territory.
+
+    Batch 636 (2026-06-08 owner-directed Stage 4 walk per CHECKLIST
+    #105 + EXECUTION_QUEUE S4-WALK deferred candle-cluster):
+
+      F1 - Class 7 NEW missing-inverse wired: `strat_three_black
+        _crows_short` added per `feedback_long_short_inverse_audit` +
+        `feedback_wire_new_strategies_on_the_spot`. Producer signal
+        `three_black_crows` exists (technical.py:1483-1486) but no
+        SHORT strategy consumed it pre-B636. Nison documents the
+        bearish mirror as a canonical reversal pattern with the same
+        playbook semantics.
+      F2 - docstring added with Nison 1991 source citation.
+
+    Economic symmetry per CHECKLIST (m): structurally + economically
+    symmetric to three_black_crows (Nison canonical bearish reversal).
+    """
     fires = (s.get("three_white_soldiers") and
              s.get("rsi_14", 50) < 60)
     return _strat(fires, "long", "candle",
         ["three_white_soldiers","rsi_14<60"],
         ["Three consecutive bullish candles each closing near their high",
-         "Strong reversal signal  -  sustained buying pressure over 3 days",
-         "RSI below 60  -  room to run, not entering overbought"])
+         "Strong reversal signal - sustained buying pressure over 3 days (Nison 1991)",
+         "RSI below 60 - room to run, not entering overbought"])
+
+
+def strat_three_black_crows_short(s):
+    """Three Black Crows bearish reversal pattern (Nison
+    *Japanese Candlestick Charting Techniques* 1991).
+
+    Symmetric SHORT mirror of strat_three_white_soldiers wired in
+    Batch 636 (2026-06-08 owner-directed Class 7 NEW per
+    `feedback_long_short_inverse_audit`).
+
+    Three consecutive bearish candles, each closing lower than the
+    prior + each open lower than the prior. Strong bearish reversal
+    indicating sustained selling pressure over 3 days. RSI>40 gate
+    keeps the entry from already-oversold territory (mirror of
+    LONG side's RSI<60 cap).
+
+    Producer: `three_black_crows` from compute_candle_signals
+    (technical.py:1483-1486) - same B-T-C strict-monotone bearish
+    3-bar pattern.
+
+    Regime affinity: Batch 291 direction-aware default
+      (SHORT -> {bear, crisis, neutral}).
+    """
+    fires = (s.get("three_black_crows") and
+             s.get("rsi_14", 50) > 40)
+    return _strat(fires, "short", "candle",
+        ["three_black_crows","rsi_14>40"],
+        ["Three consecutive bearish candles each closing near their low",
+         "Strong reversal signal - sustained selling pressure over 3 days (Nison 1991)",
+         "RSI above 40 - room to fall, not entering oversold"])
 
 
 def strat_shooting_star_short(s):
@@ -5416,6 +5469,11 @@ ALL_STRATEGIES = {
     "doji_at_support":          strat_doji_at_support,
     "doji_at_resistance_short": strat_doji_at_resistance_short,
     "three_white_soldiers":     strat_three_white_soldiers,
+    # B636 (2026-06-08 owner-directed Class 7 NEW per Stage 4 walk of
+    # three_white_soldiers): symmetric bearish-reversal mirror per
+    # feedback_long_short_inverse_audit + feedback_wire_new_strategies
+    # _on_the_spot. Nison canonical bearish reversal pattern.
+    "three_black_crows_short":  strat_three_black_crows_short,
     "shooting_star_short":      strat_shooting_star_short,
     "evening_star_short":       strat_evening_star_short,
     # Confluence (9)

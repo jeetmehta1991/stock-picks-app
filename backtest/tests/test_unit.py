@@ -10291,8 +10291,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 613 (2026-06-07): MEDIUM-priority 13F-staleness re-walk of 52w_high_breakout_with_smart_money_long. F3b deleted strat_52w_low_breakdown_with_smart_money_short (same asymmetric-data issue as B611). B-twin added: strat_52w_high_breakout_with_smart_money_vol_below_long (A/B test of vol_spike_12x vs vol_below_avg per Bulkowski 2005 retest absorption). Net change: -1 SHORT + 1 B-twin = 0; total stays 221.
     #   Batch 615 (2026-06-07): MEDIUM-priority 13F-staleness re-walk of squeeze_setup_long. F1 docstring reframed honest STATE/EVENT framing per B611 staleness playbook. B-twin added: strat_squeeze_setup_event_only_long (L1c tightened to EVENT-only smart-money - drops 13F institutional_buy state half - for A/B vs broader OR composite). 221 -> 222.
     #   Batch 620 (2026-06-08): B619 fire-count estimator surfaced strat_squeeze_setup_event_only_long as FAIL_FIRE_STARVED (~2.5 fires/yr universe-wide upper bound; below min_trades=30/regime by an order of magnitude). Per CHECKLIST (k) resolution "treat as exploratory or split", B-twin DELETED - the A/B test of EVENT-only L1c can be answered offline post-cube from strat_squeeze_setup_long's trade log filtered by insider_cluster_active=True at fire bar. 222 -> 221.
-    assert len(ALL_STRATEGIES) == 221, (
-        f"F-002 drift: ALL_STRATEGIES expected 221 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 636 (2026-06-08): Stage 4 walk of strat_three_white_soldiers per S4-WALK queue. Owner-directed Class 7 NEW wired same-turn per feedback_wire_new_strategies_on_the_spot - strat_three_black_crows_short symmetric bearish-reversal mirror (Nison 1991 canonical). 221 -> 222.
+    assert len(ALL_STRATEGIES) == 222, (
+        f"F-002 drift: ALL_STRATEGIES expected 222 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10307,10 +10308,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 220, (
-        f"F-002 drift: active strategy count expected 220 (B620 deleted "
-        f"squeeze_setup_event_only_long B-twin per fire-count estimator: "
-        f"221 registered minus 1 disabled); got {active}."
+    assert active == 221, (
+        f"F-002 drift: active strategy count expected 221 (B636 added "
+        f"three_black_crows_short Class 7 NEW per S4-WALK three_white"
+        f"_soldiers walk: 222 registered minus 1 disabled); got {active}."
     )
 
     # F-004 exit method count
