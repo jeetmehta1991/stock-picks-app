@@ -138,28 +138,28 @@ def test_batch628_bullish_engulfing_short_silent_gap_closed():
 # ----- 6 + 7. camarilla_rsi_obv duo (partial F1 only; cmf gate untouched) -----
 
 def test_batch628_camarilla_rsi_obv_short_obv_half_fires():
-    """Pin (11): obv_bearish swap works on the dual (cmf gate still uses
-    `not cmf_positive` silent-gap PENDING follow-up; provide cmf_positive
-    absent to satisfy that gate too)."""
+    """Pin (11): obv_bearish swap works on the dual.
+    B629 follow-up: cmf gate also swapped to positive symmetric
+    cmf_negative; fixture extended."""
     from backtest.signals.screener import strat_camarilla_rsi_obv
     s = {
         "near_cam_r3": True,
         "rsi_14": 70,
         "obv_bearish": True,
-        # cmf_positive ABSENT - the pending silent-gap gate
+        "cmf_negative": True,    # B629 follow-up: positive symmetric
     }
     out = strat_camarilla_rsi_obv(s)
     assert out["fires"] is True and out["direction"] == "short"
 
 
 def test_batch628_camarilla_rsi_obv_short_single_fires():
-    """Pin (12): standalone strat_camarilla_rsi_obv_short fires when
-    obv_bearish True + cmf_positive absent."""
+    """Pin (12). B629 update: cmf_negative positive symmetric."""
     from backtest.signals.screener import strat_camarilla_rsi_obv_short
     s = {
         "near_cam_r3": True,
         "rsi_14": 70,
         "obv_bearish": True,
+        "cmf_negative": True,    # B629 follow-up
     }
     out = strat_camarilla_rsi_obv_short(s)
     assert out["fires"] is True and out["direction"] == "short"

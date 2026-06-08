@@ -2458,18 +2458,20 @@ def test_batch335_classification_change_momentum_long_fires():
 
 def test_batch335_classification_change_from_tech_short_fires():
     """Batch 335: from_tech_short fires when ticker moved OUT of growth +
-    below 200-EMA."""
+    below 200-EMA. B630 sweep update: strategy swapped from
+    `not s.get("price_above_ema_200", True)` to positive symmetric
+    `below_ema_200`; fixture updated to use below_ema_200=True."""
     from backtest.signals.screener import strat_classification_change_from_tech_short
     s = {
         "classification_change_from_tech": True,
         "prior_sector": "Information Technology",
         "new_sector": "Financials",
-        "price_above_ema_200": False,
+        "below_ema_200": True,        # B630 positive symmetric
     }
     out = strat_classification_change_from_tech_short(s)
     assert out["fires"] is True and out["direction"] == "short"
-    # Above 200 EMA: trend disagrees with downward re-rating
-    s2 = dict(s); s2["price_above_ema_200"] = True
+    # Above 200 EMA (below_ema_200=False): trend disagrees with re-rating
+    s2 = dict(s); s2["below_ema_200"] = False
     assert strat_classification_change_from_tech_short(s2)["fires"] is False
 
 
@@ -2687,17 +2689,18 @@ def test_batch332_classification_change_to_tech_long_fires():
 
 
 def test_batch332_classification_change_to_defensive_short_fires():
-    """Batch 332: fires INTO defensive + below 200-EMA trend agreement."""
+    """Batch 332: fires INTO defensive + below 200-EMA trend agreement.
+    B630 sweep update: positive symmetric below_ema_200."""
     from backtest.signals.screener import strat_classification_change_to_defensive_short
     s = {
         "classification_change_to_defensive": True,
         "new_sector": "Real Estate",
-        "price_above_ema_200": False,
+        "below_ema_200": True,           # B630 positive symmetric
     }
     out = strat_classification_change_to_defensive_short(s)
     assert out["fires"] is True and out["direction"] == "short"
-    # Above 200-EMA: trend disagrees with defensive re-rating, gated
-    s2 = dict(s); s2["price_above_ema_200"] = True
+    # Above 200-EMA (below_ema_200=False): trend disagrees, gated
+    s2 = dict(s); s2["below_ema_200"] = False
     assert strat_classification_change_to_defensive_short(s2)["fires"] is False
 
 
