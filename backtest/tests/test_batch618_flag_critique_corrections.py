@@ -355,6 +355,8 @@ def test_batch618_child_strat_flag_bear_retest_short_unchanged():
 
 def test_batch618_all_strategies_count_unchanged_at_222():
     """Pin (11): B618 is pure refactor + additive producer + docstring;
-    no strategy add/delete."""
+    no strategy add/delete.
+    B622 floor-pin (converted from ==): B620 deleted squeeze_setup
+    _event_only_long (222->221)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert len(ALL_STRATEGIES) >= 221

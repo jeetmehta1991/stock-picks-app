@@ -91,15 +91,27 @@ def test_batch576_drift_closed(post_backfill):
 
 
 def test_batch576_quiet_rows_schema(post_backfill):
-    """Pin (2) + (3) + (6)."""
+    """Pin (2) + (3) + (6).
+
+    B622 update: some drift_backfill rows have had their status flipped
+    from 'Awaiting' to 'Implemented' by subsequent batches (when a quiet
+    strategy got walked or wired in). Test relaxed to accept either
+    Awaiting or Implemented as valid post-B576 states; the schema-pin
+    properties (change_class=0, change_class_name, status_set_by,
+    config_touch_point) still hold."""
     quiet = [r for r in post_backfill["approvals"]
              if r["dimension_source"] == "drift_backfill_b576"]
     assert quiet, "expected at least one QUIET_NO_CANDIDATES row"
     for r in quiet:
         assert r["change_class"] == 0
         assert r["change_class_name"] == "QUIET_NO_CANDIDATES"
-        assert r["status"] == "Awaiting"
-        assert r["status_set_by"] == "system_drift_backfill"
+        assert r["status"] in ("Awaiting", "Implemented"), (
+            f"row status {r['status']!r} for {r['strategy']!r} -- expected "
+            f"Awaiting (initial) or Implemented (post-walk)"
+        )
+        # B622 update: post-walk rows may have status_set_by re-stamped
+        # by owner_jeet when status flips Awaiting -> Implemented.
+        assert r["status_set_by"] in ("system_drift_backfill", "owner_jeet")
         assert "n/a" in r["config_touch_point"]
 
 
@@ -109,10 +121,15 @@ def test_batch576_ghost_strategies_legitimate(post_backfill):
     from backtest.signals.screener import ALL_STRATEGIES
     approval_strats = {r["strategy"] for r in post_backfill["approvals"]}
     ghosts = approval_strats - set(ALL_STRATEGIES.keys())
-    # Known legitimate ghosts:
+    # Known legitimate ghosts (B622 fixture-drift repair):
     legitimate_ghosts = {
         "lead_lag_sector_rotation",        # non-ALL_STRATEGIES path
         "news_sentiment_shift_short",      # B571 Class 7 Approved awaiting wiring
+        "donchian_20_breakout_retest",     # B599 deletion (owner directive
+                                           #   B596 convergence option 2);
+                                           #   explicit pair donchian_breakout_retest_long
+                                           #   + donchian_breakdown_retest_short carries
+                                           #   the semantics
     }
     # Every ghost should be either a known legitimate one OR a Class 7
     # owner-added candidate awaiting wiring (dimension_source == 'owner_added')

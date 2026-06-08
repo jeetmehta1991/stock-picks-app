@@ -63,8 +63,9 @@ def test_batch581_all_six_registered():
 def test_batch581_count_213():
     """Pin (2)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 213, (
-        f"ALL_STRATEGIES = {len(ALL_STRATEGIES)}; expected 213 "
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 213, (
+        f"ALL_STRATEGIES = {len(ALL_STRATEGIES)}; expected >= 213 "
         f"(207 pre-B581 + 6 new ICT strategies)"
     )
 

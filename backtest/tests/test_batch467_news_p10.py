@@ -196,12 +196,19 @@ def test_compute_all_signals_integrates_simple_returns():
 # Strategy tests
 # ----------------------------------------------------------------------
 def test_strat_news_momentum_long_fires_on_full_confluence():
+    """B603 walk extended news_momentum_long to 7-gate set
+    (close_in_top_40pct_of_range + vol_above_avg + above_avwap_20low
+    added). B622 fixture-drift repair: extend fixture with the post-B603
+    gates so the original P10 confluence pin still validates."""
     from backtest.signals.screener import strat_news_momentum_long
     s = {
         "news_sentiment_5d": 0.6,
         "news_volume_zscore_5d": 2.0,
         "dc20_breakout_up": True,
         "close_above_open": True,
+        "close_in_top_40pct_of_range": True,  # B603-added
+        "vol_above_avg": True,                # B603-added
+        "above_avwap_20low": True,            # B603-added
     }
     r = strat_news_momentum_long(s)
     assert r["fires"] is True

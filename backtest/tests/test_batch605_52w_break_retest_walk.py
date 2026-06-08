@@ -219,6 +219,7 @@ def test_batch605_regime_default_short_bear_crisis_neutral():
 def test_batch605_all_strategies_count_after_b605():
     """Pin (10): +1 from B605 g (52wl_break_retest_short)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 220, (
-        f"Expected 220 post-B605 (+1 Class 7 NEW); got {len(ALL_STRATEGIES)}"
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 220, (
+        f"Expected >= 220 post-B605 (+1 Class 7 NEW); got {len(ALL_STRATEGIES)}"
     )

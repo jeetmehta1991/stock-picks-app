@@ -22,11 +22,22 @@ import pytest
 # ---------------------------------------------------------------------------
 
 def test_batch519_squeeze_setup_long_fires_on_high_si_plus_breakout():
+    """B601 redesigned squeeze_setup_long to a 3-layer 8-gate composite
+    (positioning L1 + catalyst L2 + confirmation L3). B622 fixture-
+    drift repair: extend fixture with all post-B601 gates so the
+    original B519 SI-threshold pin still validates the threshold
+    semantically (high SI + supporting catalyst + confirmation
+    triggers the strategy)."""
     from backtest.signals.screener import strat_squeeze_setup_long
     s = {
-        "short_interest_pct": 0.25,  # 25% SI -- well above 20% threshold
-        "dc20_breakout_up": True,
-        "vol_above_avg": True,
+        "short_interest_pct": 0.25,           # B519 original SI gate
+        "days_to_cover": 9.0,                  # B601 L1b
+        "institutional_buy": True,             # B601 L1c (OR composite)
+        "news_sentiment_shift": 0.5,           # B601 L2 catalyst
+        "above_avwap_20low": True,             # B601 L3 (B205/B598)
+        "vol_spike_15x": True,                 # B601 L3
+        "close_above_open": True,              # B589/B601 L3
+        "close_in_top_40pct_of_range": True,   # B589/B601 L3
     }
     r = strat_squeeze_setup_long(s)
     assert r["fires"] is True
@@ -68,12 +79,19 @@ def test_batch519_squeeze_setup_long_misses_without_volume():
 
 
 def test_batch519_squeeze_threshold_boundary_at_20_pct():
-    """SI == 20% exactly -> fires (>= comparison)."""
+    """SI == 20% exactly -> fires (>= comparison).
+    B622 fixture-drift repair (post-B601 8-gate): extend fixture with
+    L1+L2+L3 confirmation gates so the SI threshold-edge is isolated."""
     from backtest.signals.screener import strat_squeeze_setup_long
     s = {
-        "short_interest_pct": 0.20,
-        "dc20_breakout_up": True,
-        "vol_above_avg": True,
+        "short_interest_pct": 0.20,            # threshold edge
+        "days_to_cover": 9.0,                  # B601 L1b
+        "institutional_buy": True,             # B601 L1c
+        "news_sentiment_shift": 0.5,           # B601 L2
+        "above_avwap_20low": True,             # B601 L3
+        "vol_spike_15x": True,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
     }
     assert strat_squeeze_setup_long(s)["fires"] is True
 
@@ -138,7 +156,8 @@ def test_batch519_all_strategies_count_is_204_post_p17():
     """SM1 188->198 (Batch 487) + M6 198->200 (Batch 507) + P15
     200->202 (Batch 519) + P17 202->204 (Batch 531)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 204
+    # B622 floor-pin (converted from ==): subsequent batches added more.
+    assert len(ALL_STRATEGIES) >= 204
 
 
 # ---------------------------------------------------------------------------

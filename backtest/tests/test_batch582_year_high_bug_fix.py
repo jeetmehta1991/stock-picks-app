@@ -155,17 +155,19 @@ def test_batch582_short_history_no_crash():
 
 
 def test_batch582_downstream_strat_52w_high_breakout_fires():
-    """Pin (9): strat_52w_high_breakout fires given full post-B586
-    confluence (break + vol >1.7x + sector outperforming SPY).
-    B582 fixed the break_52w_high producer; B586 added sector filter."""
+    """Pin (9): strat_52w_high_breakout fires given full post-B586+B589
+    confluence (break + vol >1.7x + sector + B589 bullish-bar gates).
+    B582 fixed the break_52w_high producer; B586 added sector filter;
+    B589 added close_above_open + close_in_top_40pct_of_range.
+    B622 fixture-drift repair: extend with the B589 gates."""
     from backtest.signals.screener import strat_52w_high_breakout
-    # Inject the post-B586 signals (B586 added vol_spike_17x +
-    # sector_outperforming_spy gates beyond B582 producer fix)
     s = {
         "break_52w_high": True,
         "vol_spike_17x": True,
         "sector_outperforming_spy": True,
         "year_high": 101.0,
+        "close_above_open": True,                # B589
+        "close_in_top_40pct_of_range": True,     # B589
     }
     out = strat_52w_high_breakout(s)
     assert out["fires"] == True
@@ -202,6 +204,8 @@ def test_batch582_amd_realistic_scenario_full_pipeline():
     # fires end-to-end given full confluence.
     s = dict(out)
     s["sector_outperforming_spy"] = True  # post-B586 producer (sector_strength.py)
+    s["close_above_open"] = True          # B589 (B622 fixture-drift)
+    s["close_in_top_40pct_of_range"] = True  # B589 (B622 fixture-drift)
     s_result = strat_52w_high_breakout(s)
     assert s_result["fires"] == True, (
         f"strat_52w_high_breakout should fire on AMD-style breakout + vol_spike_2x; "

@@ -54,7 +54,10 @@ def test_all_strategies_count_is_202_after_sm1_plus_m6_plus_p15():
     Batch 519 P15 sleeves brought 200 -> 202 (squeeze_setup_long +
     short_borrow_trap_avoid)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 202
+    # B622 floor-pin (converted from ==): subsequent batches added more
+    # strategies. Pin historical FLOOR only - this batch DID bring count
+    # to >= 202.
+    assert len(ALL_STRATEGIES) >= 202
 
 
 # ----------------------------------------------------------------------
