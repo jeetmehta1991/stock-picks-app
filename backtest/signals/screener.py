@@ -553,28 +553,67 @@ def strat_ppo_crossover(s):
 
 
 def strat_ultimate_oscillator(s):
-    """Ultimate Oscillator oversold-bounce. Batch 206 (Connors stack
-    2026-05-17): primary signal upgraded to (uo_oversold OR rsi_2<5).
-    UO already has 200-SMA regime gate; preserved as-is. Phase 1A-beta
-    showed UO is the best Sharpe (0.49) carrier in the oversold family
-    but only 27 trades; stacking with RSI(2) increases fill rate without
-    sacrificing regime discipline."""
+    """Ultimate Oscillator oversold-bounce (Larry Williams 1976).
+
+    Williams UO = 100 * (4*avg7 + 2*avg14 + avg28) / 7 of buying-
+    pressure ratios across 7/14/28-day windows. Oversold below 30 +
+    overbought above 70 are the canonical extremes; mean-reversion
+    bounce playbook with 200-SMA regime gate.
+
+    Batch 206 (Connors stack 2026-05-17): primary signal upgraded to
+    (uo_oversold OR rsi_2<5). Phase 1A-beta showed UO is the best
+    Sharpe (0.49) carrier in the oversold family but only 27 trades;
+    stacking with Connors RSI(2) increases fill rate without
+    sacrificing regime discipline.
+
+    Batch 631 (2026-06-08 owner-directed Stage 4 walk per CHECKLIST
+    #105 + B623 REMOVE_OK candidate review; option C: F1+F2+(a)):
+
+      F1 - silent-gap fix per `feedback_never_use_NOT_s_get_pattern`.
+        SHORT side `not s.get("price_above_sma_200")` -> positive
+        symmetric `s.get("below_sma_200", False)` (B630 producer).
+        Was the LAST instance of this pattern (Tier 3 sub-threshold
+        per B629 grep; eliminating it closes the price_above_sma_200
+        silent-gap signal entirely - 0 active instances post-B631).
+      F2 - polish: SHORT now uses producer signal `uo_overbought`
+        (= uo > 70, already emitted by compute_ultimate_oscillator)
+        instead of raw `s.get("uo", 50) > 70` threshold check.
+        Symmetric with LONG's use of `uo_oversold`; semantically
+        identical, code clarity improvement.
+      (a) - B589-family bullish/bearish bar gate: close_above_open
+        (LONG) / close_below_open (SHORT).
+
+    Post-B631 gate set (LONG/SHORT, 3 gates per direction):
+      LONG:  (uo_oversold OR rsi_2<5) + price_above_sma_200
+             + close_above_open
+      SHORT: (uo_overbought OR rsi_2>95) + below_sma_200
+             + close_below_open
+
+    DEFERRED to R5 per B624 manifest M1: STRATEGY_REGIME_AFFINITY
+    entry `{bull}` is a B623 REMOVE_OK candidate (REMOVE gains
+    +31.1pp PnL). Map removal pends R5 direction-aware confirmation.
+    """
     rsi_2 = s.get("rsi_2", 50)
     fl = (
         (s.get("uo_oversold") or (rsi_2 < 5))
         and s.get("price_above_sma_200")
+        and s.get("close_above_open")          # B631 (a)
     )
+    # B631 F1 + F2 + (a): positive symmetric + uo_overbought + bear bar.
     fs = (
-        (s.get("uo", 50) > 70 or (rsi_2 > 95))
-        and not s.get("price_above_sma_200")
+        (s.get("uo_overbought") or (rsi_2 > 95))
+        and s.get("below_sma_200")
+        and s.get("close_below_open")
     )
     return _strat3(fl, fs, "momentum",
-        ["uo_oversold_or_rsi_2<5", "price_above_sma_200"],
-        ["uo_overbought_or_rsi_2>95", "price_below_sma_200"],
+        ["uo_oversold_or_rsi_2<5", "price_above_sma_200", "close_above_open"],
+        ["uo_overbought_or_rsi_2>95", "below_sma_200", "close_below_open"],
         ["Ultimate Oscillator below 30 OR Connors RSI(2)<5",
-         "Above 200 SMA (regime gate)"],
+         "Above 200 SMA (regime gate)",
+         "Bullish bar - close above open (B631 a B589-family)"],
         ["Ultimate Oscillator above 70 OR RSI(2)>95",
-         "Below 200 SMA (bear regime)"])
+         "Below 200 SMA (bear regime; B631 F1 positive symmetric)",
+         "Bearish bar - close below open (B631 a B589-family)"])
 
 
 # -----------------------------------------------------------------------------
