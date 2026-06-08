@@ -440,12 +440,38 @@ def strat_roc_burst(s):
 
 
 def strat_awesome_oscillator(s):
+    """Bill Williams Awesome Oscillator (AO) zero-line cross with
+    EMA-20 trend filter.
+
+    AO = SMA(5, midprice) - SMA(34, midprice); zero-line cross flips
+    momentum bias. EMA-20 confirms direction alignment with the
+    underlying trend.
+
+    Batch 627 (2026-06-08 owner-directed family-bug sweep per
+    CHECKLIST #105 (n) - B626 force_index walk surfaced 3 instances
+    of `not s.get("price_above_ema_20")` pattern; bundled sweep of
+    the 2 remaining):
+
+      F1 - silent-gap fix per `feedback_never_use_NOT_s_get_pattern`.
+        SHORT side `not s.get("price_above_ema_20")` -> `s.get(
+        "below_ema_20", False)` (B609 positive symmetric producer).
+        Pre-B627: missing EMA-20 key auto-fired SHORT (None falsy ->
+        not None = True). Post-B627: missing key blocks SHORT.
+
+    Post-B627 gate set (unchanged count; F1 hardens pattern only):
+      LONG:  ao_cross_up + price_above_ema_20
+      SHORT: ao_cross_dn + below_ema_20  (B627 F1 positive symmetric)
+    """
     fl = (s.get("ao_cross_up") and s.get("price_above_ema_20"))
-    fs = (s.get("ao_cross_dn") and not s.get("price_above_ema_20"))
+    # B627 F1: positive symmetric (B609 producer)
+    fs = (s.get("ao_cross_dn") and s.get("below_ema_20"))
     return _strat3(fl, fs, "momentum",
-        ["ao_cross_up","price_above_ema_20"], ["ao_cross_dn","price_below_ema_20"],
-        ["Awesome Oscillator crossed above zero  -  momentum positive","Above EMA-20"],
-        ["Awesome Oscillator crossed below zero  -  momentum negative","Below EMA-20"])
+        ["ao_cross_up","price_above_ema_20"],
+        ["ao_cross_dn","below_ema_20"],
+        ["Awesome Oscillator crossed above zero - momentum positive",
+         "Above EMA-20 (trend filter)"],
+        ["Awesome Oscillator crossed below zero - momentum negative",
+         "Below EMA-20 (trend filter; B627 F1 positive symmetric)"])
 
 
 def strat_stochrsi_oversold(s):
@@ -802,12 +828,41 @@ def strat_keltner_lower(s):
 
 
 def strat_stoch_oversold(s):
-    fl = (s.get("stoch_oversold") and s.get("stoch_bullish_cross") and s.get("price_above_ema_20"))
-    fs = (s.get("stoch_overbought") and s.get("stoch_bearish_cross") and not s.get("price_above_ema_20"))
+    """Stochastic oversold/overbought mean-reversion with K-vs-D cross
+    + EMA-20 trend filter.
+
+    LONG fires when Stochastic %K is <20 (oversold) AND K crosses above
+    D (turning bullish) AND price aligned with uptrend (above EMA-20).
+    SHORT fires on the symmetric overbought + bearish cross + downtrend.
+
+    Batch 627 (2026-06-08 owner-directed family-bug sweep per
+    CHECKLIST #105 (n) - bundled F1 fix with strat_awesome_oscillator):
+
+      F1 - silent-gap fix per `feedback_never_use_NOT_s_get_pattern`.
+        SHORT side `not s.get("price_above_ema_20")` -> `s.get(
+        "below_ema_20", False)` (B609 positive symmetric producer).
+
+    Post-B627 gate set (unchanged count; F1 hardens pattern only):
+      LONG:  stoch_oversold + stoch_bullish_cross + price_above_ema_20
+      SHORT: stoch_overbought + stoch_bearish_cross + below_ema_20
+             (B627 F1 positive symmetric)
+    """
+    fl = (s.get("stoch_oversold")
+          and s.get("stoch_bullish_cross")
+          and s.get("price_above_ema_20"))
+    # B627 F1: positive symmetric (B609 producer)
+    fs = (s.get("stoch_overbought")
+          and s.get("stoch_bearish_cross")
+          and s.get("below_ema_20"))
     return _strat3(fl, fs, "mean_reversion",
-        ["stoch_oversold","stoch_bullish_cross","price_above_ema_20"], ["stoch_overbought","stoch_bearish_cross","price_below_ema_20"],
-        ["Stochastic oversold below 20","K crossed above D  -  turning bullish","Above EMA-20"],
-        ["Stochastic overbought above 80","K crossed below D  -  turning bearish","Below EMA-20"])
+        ["stoch_oversold","stoch_bullish_cross","price_above_ema_20"],
+        ["stoch_overbought","stoch_bearish_cross","below_ema_20"],
+        ["Stochastic oversold below 20",
+         "K crossed above D - turning bullish",
+         "Above EMA-20 (trend filter)"],
+        ["Stochastic overbought above 80",
+         "K crossed below D - turning bearish",
+         "Below EMA-20 (trend filter; B627 F1 positive symmetric)"])
 
 
 # -----------------------------------------------------------------------------
