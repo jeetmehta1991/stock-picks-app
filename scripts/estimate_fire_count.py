@@ -147,6 +147,208 @@ PRIOR_RATES: dict[str, float] = {
     # SI / DTC (positioning)
     "short_interest_pct":                1.00,  # always emitted; threshold check
     "days_to_cover":                     1.00,  # always emitted
+
+    # ===================================================================
+    # B635 (2026-06-08 owner directive D) PRIOR_RATES expansion per
+    # R5_VALIDATION_MANIFEST M6. 243 INCOMPLETE_PRIORS signals from B621
+    # audit get category-based hand-curated defaults so the estimator
+    # produces usable upper bounds NOW. Post-R5, each will be refined
+    # from signal_fire_rates.json measured frequencies.
+    #
+    # PRIOR CATEGORIES (rough magnitudes):
+    #   Event/cross signals:        ~0.02-0.05 (rare; ~5-13 days/yr)
+    #   Threshold extremes:         ~0.05-0.15 (oversold/overbought)
+    #   Pattern-detected:           ~0.01-0.03 (rare candle/chart patterns)
+    #   Gap signals:                ~0.02-0.05
+    #   State signals:              ~0.40-0.60 (bullish/bearish flags)
+    #   Calendar/event:             ~0.02-0.10
+    #   SMC/ICT:                    ~0.05-0.15
+    #   Smart-money/insider:        ~0.02-0.05
+    #   Cross-sectional decile:     ~0.10 (top-decile by definition)
+    #   Pairs trading:              ~0.05
+    #   Volume profile:             ~0.05-0.10
+    #   Numerical (no threshold):   ~0.50 (assume coin-flip; threshold
+    #                               gates get heuristic multiplier)
+    # ===================================================================
+
+    # --- Event / cross signals (rare; ~0.02-0.05) ---
+    "ao_cross_up": 0.04, "ao_cross_dn": 0.04,
+    "cmf_cross_up": 0.04, "cmf_cross_dn": 0.04,
+    "ema_9_21_golden_cross": 0.02, "ema_9_21_death_cross": 0.02,
+    "ema_20_50_golden_cross": 0.015, "ema_20_50_death_cross": 0.015,
+    "ema_50_200_golden_cross": 0.01, "ema_50_200_death_cross": 0.01,
+    "ichi_tk_cross_up": 0.04, "ichi_tk_cross_dn": 0.04,
+    "macd_12_26_9_crossover_up": 0.03, "macd_12_26_9_crossover_dn": 0.03,
+    "macd_8_21_5_crossover_up": 0.04, "macd_8_21_5_crossover_dn": 0.04,
+    "macd_bullish_cross": 0.03,
+    "ppo_crossover_up": 0.03, "ppo_crossover_dn": 0.03,
+    "psar_flip_up": 0.04, "psar_flip_dn": 0.04,
+    "stoch_bullish_cross": 0.05, "stoch_bearish_cross": 0.05,
+    "stochrsi_cross_up": 0.05, "stochrsi_cross_dn": 0.05,
+    "tema_cross_up": 0.04, "tema_cross_dn": 0.04,
+    "force_index_cross_up": 0.05, "force_index_cross_dn": 0.05,
+    "adx_cross_up": 0.05,
+    "squeeze_fire_up": 0.03, "squeeze_fire_dn": 0.03,
+    "squeeze_on_release": 0.03,
+    "roc_turning_up": 0.05, "roc_turning_dn": 0.05,
+
+    # --- Threshold extremes ---
+    "rsi_14_oversold": 0.05, "rsi_14_rising": 0.50,
+    "rsi_9_extreme_os": 0.05, "rsi_9_rising": 0.50,
+    "mfi_14_oversold": 0.05, "mfi_oversold": 0.05, "mfi_overbought": 0.05,
+    "stoch_oversold": 0.10, "stoch_overbought": 0.10,
+    "stochrsi_oversold": 0.10, "stochrsi_overbought": 0.10,
+    "williams_r_oversold": 0.10,
+    "uo_oversold": 0.06,
+    "adx_trending": 0.30, "adx_strong": 0.10,
+
+    # --- Pattern-detected (rare; ~0.01-0.03) ---
+    "hammer": 0.04, "pin_bar": 0.04, "doji": 0.10,
+    "bullish_engulfing": 0.03, "bearish_engulfing": 0.03,
+    "shooting_star": 0.03, "morning_star": 0.01, "evening_star": 0.01,
+    "three_white_soldiers": 0.01,
+    "inside_bar": 0.05,
+    "head_shoulders_bottom_detected": 0.005,
+    "double_bottom_detected": 0.01,
+    "cup_handle_detected": 0.005,
+    "triangle_ascending_detected": 0.02,
+
+    # --- Gap signals ---
+    "gap_up_2pct": 0.05, "gap_dn_2pct": 0.05,
+    "gap_up_pct": 0.50, "gap_dn_pct": 0.50,  # numerical magnitude
+
+    # --- Near-level / proximity ---
+    "near_pivot": 0.20,
+    "near_r1": 0.15, "near_r1_wide": 0.25, "near_r2": 0.10, "near_r2_wide": 0.18,
+    "near_s1": 0.15, "near_s1_wide": 0.25, "near_s2": 0.10, "near_s2_wide": 0.18,
+    "near_s3": 0.05,
+    "near_cam_r3": 0.10, "near_cam_s3": 0.10,
+    "near_prev_high": 0.20, "near_prev_low": 0.20,
+    "near_52w_high_retest_long": 0.02, "near_52w_low_retest_short": 0.02,
+    "at_key_fib": 0.10, "at_key_fib_wide": 0.20,
+    "above_r1": 0.30, "above_r2": 0.20, "above_cam_r3": 0.15,
+    "below_s1": 0.30, "below_s2": 0.20, "below_cam_s3": 0.15,
+    "above_cpr": 0.55, "below_cpr": 0.45,
+    "cpr_narrow": 0.20, "bb_squeeze": 0.05,
+
+    # --- State signals (continuous; ~0.40-0.60) ---
+    "ema_50_200_bullish": 0.55, "ema_50_200_bearish": 0.45,
+    "hull_bullish": 0.55,
+    "ichi_above_cloud": 0.55, "ichi_below_cloud": 0.30,
+    "ichi_weekly_above_cloud": 0.55, "ichi_weekly_below_cloud": 0.30,
+    "ichi_tk_bullish": 0.55, "ichi_tk_bearish": 0.45,
+    "supertrend_bullish": 0.55,
+    "price_above_hull": 0.55,
+    "price_above_sma_50": 0.55, "price_above_sma_200": 0.65,
+    "price_above_tema": 0.55,
+    "above_vwap": 0.50,
+    "cmf_positive": 0.55,
+    "force_index_breakout": 0.05,
+
+    # --- Bollinger / Keltner touches ---
+    "bb_20_15_touch_lower": 0.10, "bb_20_15_touch_upper": 0.10,
+    "bb_20_20_touch_lower": 0.10, "bb_20_20_touch_upper": 0.10,
+    "kc_touch_lower": 0.08, "kc_touch_upper": 0.08,
+
+    # --- AVWAP percentages ---
+    "pct_from_avwap_20high": 0.50, "pct_from_avwap_252low": 0.50,
+    "pct_from_avwap_50low": 0.50,
+
+    # --- 52w breaks ---
+    "break_52w_high": 0.02, "break_52w_low": 0.02,
+    "dc10_breakout_up": 0.05, "dc10_breakout_up_1pct": 0.03,
+    "dc10_strong_breakout_up": 0.02,
+
+    # --- Retest signals ---
+    "r1_break_retest_long": 0.01, "s1_break_retest_short": 0.01,
+    "year_high_break_retest_long": 0.01,
+
+    # --- Smart-money / insider / institutional ---
+    "insider_unique_buyers_30d": 0.30, "insider_officer_buyers_30d": 0.10,
+    "insider_director_buyers_30d": 0.10,
+    "institutional_increased": 0.40, "institutional_negative": 0.20,
+    "institutional_new_positions": 0.20,
+    "institutional_persistence_growing": 0.15,
+    "institutional_persistence_strong": 0.20,
+    "persistent_holders_4q": 0.30, "total_active_holders": 1.00,
+    "committed_growth_holders": 0.20,
+    "sc_13d_filed_within_30d": 0.005,
+    "sc_13d_latest_filer_identity": 0.005, "sc_13d_latest_percent_owned": 0.005,
+
+    # --- SMC / ICT ---
+    "smc_bos_bullish": 0.10, "smc_bos_bearish": 0.10,
+    "smc_bos_retest_long": 0.03, "smc_bos_retest_short": 0.03,
+    "smc_breaker_block_bullish": 0.05, "smc_breaker_block_bearish": 0.05,
+    "smc_choch_bullish": 0.08, "smc_choch_bearish": 0.08,
+    "smc_dealing_range_pct": 0.50,
+    "smc_equal_highs_swept": 0.05, "smc_equal_lows_swept": 0.05,
+    "smc_fvg_bullish_active": 0.20, "smc_fvg_bearish_active": 0.20,
+    "smc_fvg_retest_long_zone": 0.05, "smc_fvg_retest_short_zone": 0.05,
+    "smc_in_discount_zone": 0.30, "smc_in_premium_zone": 0.30,
+    "smc_inverse_fvg_bullish": 0.05, "smc_inverse_fvg_bearish": 0.05,
+    "smc_mitigation_block_long": 0.05, "smc_mitigation_block_short": 0.05,
+    "smc_ob_bullish_active": 0.15, "smc_ob_bearish_active": 0.15,
+    "smc_ote_long_zone": 0.05, "smc_ote_short_zone": 0.05,
+    "smc_retracement_pct": 0.50,
+    "po3_bullish": 0.05, "po3_bearish": 0.05,
+    "po3_mmbm_setup": 0.02, "po3_mmsm_setup": 0.02,
+
+    # --- Calendar / event signals ---
+    "days_until_fomc": 1.00, "pre_fomc_d1": 0.04,
+    "is_january": 0.083, "is_pre_holiday": 0.04,
+    "is_totm_window": 0.30, "is_halloween_period": 0.50,
+    "days_since_8k": 1.00, "recent_8k_filed": 0.05,
+    "earnings_announcement_return": 0.04, "earnings_eps_yoy_growth": 0.25,
+    "yoy_surprise_high": 0.10, "yoy_surprise_negative": 0.10,
+    "yoy_surprise_threshold_long": 0.10, "yoy_surprise_threshold_short": 0.10,
+    "classification_changed_recent": 0.02,
+    "classification_change_to_tech": 0.005,
+    "classification_change_from_tech": 0.005,
+    "classification_change_to_defensive": 0.005,
+    "days_since_classification_change": 1.00,
+    "new_sector": 1.00, "prior_sector": 1.00, "sector": 1.00,
+
+    # --- HTF / weekly bias ---
+    "htf_aligned_bull": 0.40, "htf_aligned_bear": 0.30,
+    "monthly_bias_bull": 0.55, "monthly_momentum_pos": 0.55,
+    "weekly_bias_bull": 0.55, "weekly_bias_bear": 0.45,
+    "week_open_gap_up_15pct": 0.03, "week_open_gap_down_15pct": 0.03,
+
+    # --- Sector / regime ---
+    "sector_outperforming_spy": 0.50, "sector_underperforming_spy": 0.50,
+    "defensive_leadership": 0.30,
+    "risk_off_regime_bond_signal": 0.20, "risk_off_regime_gold_signal": 0.20,
+    "usd_strengthening": 0.50,
+    "vix_band_high": 0.15, "vix_band_low": 0.15,
+    "vix_term_backwardation": 0.05,
+
+    # --- Cross-sectional rankings (decile/quintile) ---
+    "xs_momentum_top_decile": 0.10, "xs_momentum_bottom_decile": 0.10,
+    "xs_low_beta_decile": 0.10, "xs_low_beta_top_quintile": 0.20,
+    "xs_quality_decile": 0.10, "xs_quality_top_quintile": 0.20,
+    "xs_ivol_decile": 0.10,
+    "xs_avoid_high_ivol": 0.10, "xs_avoid_high_max": 0.10,
+
+    # --- Pairs trading ---
+    "pair_count_active": 1.00, "pair_counterparty": 1.00,
+    "pair_half_life": 1.00, "pair_zscore_signed": 0.50,
+
+    # --- Volume profile ---
+    "vp_above_value_area": 0.40, "vp_close_above_poc": 0.50,
+    "vp_close_near_poc_pct": 0.50,
+    "naked_poc_count": 1.00, "naked_poc_nearest_distance_pct": 0.50,
+
+    # --- News (extension) ---
+    "news_sentiment_mean": 0.50,
+
+    # --- Numerical signals (no threshold; assumed coin-flip;
+    #     threshold-extracted gates get 0.3x heuristic multiplier per
+    #     _gate_rate logic). All "always emitted" magnitudes -> 1.0. ---
+    "rsi_14": 1.00, "rsi_2": 1.00, "rsi_9": 1.00, "rsi_21": 1.00,
+    "adx": 1.00, "uo": 1.00, "williams_r": 1.00,
+    "pct_change_5d": 1.00,
+    "foreign_rev_pct": 1.00,
+    "cap_band": 1.00, "dow": 1.00,
 }
 
 

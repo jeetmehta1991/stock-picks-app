@@ -97,15 +97,39 @@ def test_batch621_or_composite_strategies_get_demoted_verdict():
     )
 
 
-# The REAL FAIL set as of B621 audit (pure-AND strategies, < 5 fires/yr).
+# The REAL FAIL set as of B635 audit (post-PRIOR_RATES expansion;
+# pure-AND strategies, < 5 fires/yr UB).
 # These are CANDIDATES for owner review (loosen / mark exploratory /
-# delete). NOT auto-actioned by this audit.
+# delete) per `feedback_minimum_fire_count_gate_before_cube`. NOT
+# auto-actioned by this audit.
+#
+# B635 update: PRIOR_RATES expansion (243 -> 22 INCOMPLETE) surfaced
+# 14 new REAL FAIL candidates that were previously hidden as
+# INCOMPLETE_PRIORS. Pre-B635 set was 5; post-B635 is 19. Drift
+# detection pin should not break on PRIOR_RATES refinement (post-R5
+# back-fill); accept superset.
 EXPECTED_REAL_FAIL = {
-    "volume_spike_breakout_retest",   # 0.01/yr, 9 gates
-    "volume_spike_breakout",          # 0.07/yr, 9 gates
-    "break_retest_confluence",        # 0.09/yr, 11 gates (B609 walk)
-    "52wl_break_retest_short",        # 0.13/yr, 9 gates  (B605 walk)
-    "break_retest_volume",            # 1.54/yr, 7 gates  (B608/B617 walk)
+    # Pre-B635 set (well-known fire-starved walked strategies):
+    "volume_spike_breakout_retest",
+    "volume_spike_breakout",
+    "break_retest_confluence",
+    "52wl_break_retest_short",
+    "break_retest_volume",
+    # B635 newly surfaced (formerly INCOMPLETE_PRIORS):
+    "stochrsi_oversold",
+    "cup_and_handle_long",
+    "golden_cross_volume",
+    "stoch_oversold",
+    "dc20_break_retest",
+    "morning_star",
+    "52wh_break_retest",
+    "golden_cross_20_50",
+    "activist_13d_long",
+    "donchian_10_breakout",
+    "keltner_lower",
+    "pivot_r2_continuation",
+    "cup_and_handle_retest_long",
+    "r1_break_retest",
 }
 
 
