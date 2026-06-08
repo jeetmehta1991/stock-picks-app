@@ -1,0 +1,1394 @@
+{
+  "trade_log_path": "output_batch395_final\\trade_log.csv",
+  "total_trades": 29360,
+  "deferred_strategies_audited": 21,
+  "results": [
+    {
+      "strategy": "adx_initiation",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 362.36,
+        "remove_total_pnl": -897.63,
+        "delta_pnl": -1260.0,
+        "keep_n": 371,
+        "remove_n": 500
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 346,
+          "mean_pnl_pct": 1.2868983343302063,
+          "std_pnl_pct": 29.415170378137688,
+          "win_rate": 0.2774566473988439,
+          "total_pnl_pct": 445.2668236782514,
+          "sharpe_proxy": 0.0437494774902501
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 373,
+          "mean_pnl_pct": -1.124060747119211,
+          "std_pnl_pct": 19.236720579695348,
+          "win_rate": 0.23056300268096513,
+          "total_pnl_pct": -419.27465867546573,
+          "sharpe_proxy": -0.05843307555788248
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 93,
+          "mean_pnl_pct": -3.814361959754857,
+          "std_pnl_pct": 11.998135751890931,
+          "win_rate": 0.1935483870967742,
+          "total_pnl_pct": -354.7356622572017,
+          "sharpe_proxy": -0.3179128856875707
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 25,
+          "mean_pnl_pct": -3.316198222222222,
+          "std_pnl_pct": 9.977252952001042,
+          "win_rate": 0.24,
+          "total_pnl_pct": -82.90495555555555,
+          "sharpe_proxy": -0.33237587923007644
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 109,
+          "mean_pnl_pct": -0.7621772680937816,
+          "std_pnl_pct": 14.967399432852964,
+          "win_rate": 0.30275229357798167,
+          "total_pnl_pct": -83.0773222222222,
+          "sharpe_proxy": -0.05092249134614707
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 9,
+          "mean_pnl_pct": -4.52432204585538,
+          "std_pnl_pct": 7.257662180863733,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": -40.718898412698415,
+          "sharpe_proxy": -0.6233855934745286
+        }
+      ]
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 205.12,
+        "remove_total_pnl": 115.39,
+        "delta_pnl": -89.73,
+        "keep_n": 107,
+        "remove_n": 126
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 19,
+          "mean_pnl_pct": 3.7186966583124472,
+          "std_pnl_pct": 18.588879125652085,
+          "win_rate": 0.3684210526315789,
+          "total_pnl_pct": 70.6552365079365,
+          "sharpe_proxy": 0.20004953677818904
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 38,
+          "mean_pnl_pct": -0.5020726160005079,
+          "std_pnl_pct": 19.27839856691641,
+          "win_rate": 0.18421052631578946,
+          "total_pnl_pct": -19.0787594080193,
+          "sharpe_proxy": -0.026043273991757432
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": 30.61018571428572,
+          "std_pnl_pct": NaN,
+          "win_rate": 1.0,
+          "total_pnl_pct": 30.61018571428572,
+          "sharpe_proxy": NaN
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 57,
+          "mean_pnl_pct": 0.4738004469575678,
+          "std_pnl_pct": 13.284726571281483,
+          "win_rate": 0.3508771929824561,
+          "total_pnl_pct": 27.006625476581362,
+          "sharpe_proxy": 0.03566505071935881
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 34,
+          "mean_pnl_pct": -0.5329509506393229,
+          "std_pnl_pct": 14.715632983063093,
+          "win_rate": 0.29411764705882354,
+          "total_pnl_pct": -18.120332321736978,
+          "sharpe_proxy": -0.036216651451739856
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 30,
+          "mean_pnl_pct": 2.561608994708995,
+          "std_pnl_pct": 12.769864240177709,
+          "win_rate": 0.4666666666666667,
+          "total_pnl_pct": 76.84826984126984,
+          "sharpe_proxy": 0.2005979818210931
+        }
+      ]
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 74.38,
+        "remove_total_pnl": -483.56,
+        "delta_pnl": -557.94,
+        "keep_n": 71,
+        "remove_n": 122
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 64,
+          "mean_pnl_pct": 0.9795533029165715,
+          "std_pnl_pct": 19.075324648062097,
+          "win_rate": 0.328125,
+          "total_pnl_pct": 62.691411386660576,
+          "sharpe_proxy": 0.0513518548695362
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 78,
+          "mean_pnl_pct": -3.5151244092742933,
+          "std_pnl_pct": 11.715626168402574,
+          "win_rate": 0.23076923076923078,
+          "total_pnl_pct": -274.17970392339487,
+          "sharpe_proxy": -0.30003726294670435
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 33,
+          "mean_pnl_pct": -6.55167797017797,
+          "std_pnl_pct": 7.035966947963674,
+          "win_rate": 0.09090909090909091,
+          "total_pnl_pct": -216.205373015873,
+          "sharpe_proxy": -0.9311695206405332
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 7,
+          "mean_pnl_pct": 1.6700780045351475,
+          "std_pnl_pct": 10.393230195968425,
+          "win_rate": 0.5714285714285714,
+          "total_pnl_pct": 11.690546031746033,
+          "sharpe_proxy": 0.16068902285864672
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 26,
+          "mean_pnl_pct": -1.3948249694749697,
+          "std_pnl_pct": 12.215830866047282,
+          "win_rate": 0.2692307692307692,
+          "total_pnl_pct": -36.26544920634921,
+          "sharpe_proxy": -0.11418175192256062
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 4,
+          "mean_pnl_pct": -1.2158301587301585,
+          "std_pnl_pct": 11.330323536420147,
+          "win_rate": 0.5,
+          "total_pnl_pct": -4.863320634920634,
+          "sharpe_proxy": -0.10730762937368901
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_tight",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 448.05,
+        "remove_total_pnl": -100.81,
+        "delta_pnl": -548.86,
+        "keep_n": 218,
+        "remove_n": 280
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 77,
+          "mean_pnl_pct": -0.615755314858189,
+          "std_pnl_pct": 14.507853900743214,
+          "win_rate": 0.35064935064935066,
+          "total_pnl_pct": -47.41315924408055,
+          "sharpe_proxy": -0.0424428946604325
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 195,
+          "mean_pnl_pct": 1.6665835816035814,
+          "std_pnl_pct": 20.501842145835855,
+          "win_rate": 0.29743589743589743,
+          "total_pnl_pct": 324.9837984126984,
+          "sharpe_proxy": 0.08128945534497165
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 48,
+          "mean_pnl_pct": -5.00465546917422,
+          "std_pnl_pct": 9.328250634779383,
+          "win_rate": 0.20833333333333334,
+          "total_pnl_pct": -240.22346252036255,
+          "sharpe_proxy": -0.5365052532481168
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 31,
+          "mean_pnl_pct": -6.095555350742448,
+          "std_pnl_pct": 7.962312051195328,
+          "win_rate": 0.25806451612903225,
+          "total_pnl_pct": -188.96221587301588,
+          "sharpe_proxy": -0.7655509243483322
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 23,
+          "mean_pnl_pct": 5.350541131815044,
+          "std_pnl_pct": 17.037871503291687,
+          "win_rate": 0.5217391304347826,
+          "total_pnl_pct": 123.06244603174602,
+          "sharpe_proxy": 0.31403811977225726
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 6,
+          "mean_pnl_pct": 0.5654156084656097,
+          "std_pnl_pct": 10.899089712513492,
+          "win_rate": 0.5,
+          "total_pnl_pct": 3.392493650793658,
+          "sharpe_proxy": 0.05187732401325619
+        }
+      ]
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "current_regimes": [
+        "bear",
+        "crisis",
+        "neutral"
+      ],
+      "recommendation": "REMOVE_OK",
+      "comparison": {
+        "keep_total_pnl": -10.74,
+        "remove_total_pnl": 93.44,
+        "delta_pnl": 104.18,
+        "keep_n": 6,
+        "remove_n": 10
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 2,
+          "mean_pnl_pct": 3.249761904761904,
+          "std_pnl_pct": 20.36548342020821,
+          "win_rate": 0.5,
+          "total_pnl_pct": 6.499523809523808,
+          "sharpe_proxy": 0.15957204833827998
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 6,
+          "mean_pnl_pct": 18.445784028388605,
+          "std_pnl_pct": 59.166662405288186,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": 110.67470417033164,
+          "sharpe_proxy": 0.31175975251123783
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 3,
+          "mean_pnl_pct": -4.837130687830688,
+          "std_pnl_pct": 5.681400837068887,
+          "win_rate": 0.0,
+          "total_pnl_pct": -14.511392063492064,
+          "sharpe_proxy": -0.8513975384856369
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 3,
+          "mean_pnl_pct": 7.674175132275134,
+          "std_pnl_pct": 26.233031663341208,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": 23.0225253968254,
+          "sharpe_proxy": 0.2925386295705672
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": -2.7244,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -2.7244,
+          "sharpe_proxy": NaN
+        }
+      ]
+    },
+    {
+      "strategy": "cmf_flip",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 1067.21,
+        "remove_total_pnl": 219.93,
+        "delta_pnl": -847.28,
+        "keep_n": 343,
+        "remove_n": 292
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 241,
+          "mean_pnl_pct": 4.146238357394307,
+          "std_pnl_pct": 25.507794052376877,
+          "win_rate": 0.31950207468879666,
+          "total_pnl_pct": 999.2434441320281,
+          "sharpe_proxy": 0.1625479000214819
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 190,
+          "mean_pnl_pct": 0.7998321227614988,
+          "std_pnl_pct": 21.71158178984229,
+          "win_rate": 0.3105263157894737,
+          "total_pnl_pct": 151.9681033246848,
+          "sharpe_proxy": 0.03683896136649511
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 46,
+          "mean_pnl_pct": 1.9614894755003451,
+          "std_pnl_pct": 37.82103568287706,
+          "win_rate": 0.2391304347826087,
+          "total_pnl_pct": 90.22851587301588,
+          "sharpe_proxy": 0.05186239456653435
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 40,
+          "mean_pnl_pct": -2.502929841269841,
+          "std_pnl_pct": 9.24926704939958,
+          "win_rate": 0.325,
+          "total_pnl_pct": -100.11719365079364,
+          "sharpe_proxy": -0.27060845231323705
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 103,
+          "mean_pnl_pct": -4.469269409770381,
+          "std_pnl_pct": 10.68899879742239,
+          "win_rate": 0.17475728155339806,
+          "total_pnl_pct": -460.3347492063492,
+          "sharpe_proxy": -0.4181186184479811
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 16,
+          "mean_pnl_pct": 4.865831646825397,
+          "std_pnl_pct": 14.500974357364743,
+          "win_rate": 0.5625,
+          "total_pnl_pct": 77.85330634920635,
+          "sharpe_proxy": 0.33555204822179013
+        }
+      ]
+    },
+    {
+      "strategy": "force_index_breakout",
+      "current_regimes": [
+        "bear",
+        "bull",
+        "crisis",
+        "neutral"
+      ],
+      "recommendation": "REMOVE_OK",
+      "comparison": {
+        "keep_total_pnl": -1341.49,
+        "remove_total_pnl": -721.02,
+        "delta_pnl": 620.47,
+        "keep_n": 621,
+        "remove_n": 350
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 115,
+          "mean_pnl_pct": -1.4124571428571429,
+          "std_pnl_pct": 17.161999607596833,
+          "win_rate": 0.23478260869565218,
+          "total_pnl_pct": -162.43257142857144,
+          "sharpe_proxy": -0.08230143195154908
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 142,
+          "mean_pnl_pct": -2.18206251120282,
+          "std_pnl_pct": 13.113626260812993,
+          "win_rate": 0.23943661971830985,
+          "total_pnl_pct": -309.8528765908004,
+          "sharpe_proxy": -0.16639657618758005
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 70,
+          "mean_pnl_pct": -5.127277097505668,
+          "std_pnl_pct": 10.39567576137386,
+          "win_rate": 0.14285714285714285,
+          "total_pnl_pct": -358.90939682539675,
+          "sharpe_proxy": -0.4932124871147446
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 105,
+          "mean_pnl_pct": -1.9327141950113376,
+          "std_pnl_pct": 13.833916880936979,
+          "win_rate": 0.2761904761904762,
+          "total_pnl_pct": -202.93499047619045,
+          "sharpe_proxy": -0.13970838567597593
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 156,
+          "mean_pnl_pct": -2.936114589036609,
+          "std_pnl_pct": 16.797356480151635,
+          "win_rate": 0.25,
+          "total_pnl_pct": -458.033875889711,
+          "sharpe_proxy": -0.17479623013930964
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 33,
+          "mean_pnl_pct": 4.565935545935545,
+          "std_pnl_pct": 14.02904796151801,
+          "win_rate": 0.5454545454545454,
+          "total_pnl_pct": 150.675873015873,
+          "sharpe_proxy": 0.32546296501801175
+        }
+      ]
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 372.51,
+        "remove_total_pnl": 319.06,
+        "delta_pnl": -53.45,
+        "keep_n": 117,
+        "remove_n": 166
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 67,
+          "mean_pnl_pct": 1.6368317462423945,
+          "std_pnl_pct": 22.620549601401414,
+          "win_rate": 0.23880597014925373,
+          "total_pnl_pct": 109.66772699824043,
+          "sharpe_proxy": 0.07236038801378139
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 94,
+          "mean_pnl_pct": 5.515916207402824,
+          "std_pnl_pct": 62.93779102279567,
+          "win_rate": 0.2978723404255319,
+          "total_pnl_pct": 518.4961234958654,
+          "sharpe_proxy": 0.08764076586998412
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 51,
+          "mean_pnl_pct": -2.357619919078742,
+          "std_pnl_pct": 16.053822916485487,
+          "win_rate": 0.21568627450980393,
+          "total_pnl_pct": -120.23861587301586,
+          "sharpe_proxy": -0.14685722717532465
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 17,
+          "mean_pnl_pct": -2.8466966386554624,
+          "std_pnl_pct": 7.85318006213825,
+          "win_rate": 0.4117647058823529,
+          "total_pnl_pct": -48.39384285714286,
+          "sharpe_proxy": -0.3624896686604648
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 23,
+          "mean_pnl_pct": -6.347253002070394,
+          "std_pnl_pct": 7.492683617897719,
+          "win_rate": 0.13043478260869565,
+          "total_pnl_pct": -145.98681904761906,
+          "sharpe_proxy": -0.847126787378124
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 4,
+          "mean_pnl_pct": -7.701426190476191,
+          "std_pnl_pct": 4.88147341918981,
+          "win_rate": 0.0,
+          "total_pnl_pct": -30.805704761904764,
+          "sharpe_proxy": -1.5776847539926615
+        }
+      ]
+    },
+    {
+      "strategy": "morning_star",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 95.95,
+        "remove_total_pnl": 2.94,
+        "delta_pnl": -93.02,
+        "keep_n": 68,
+        "remove_n": 133
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 40,
+          "mean_pnl_pct": 5.778436785714286,
+          "std_pnl_pct": 30.408725714118926,
+          "win_rate": 0.3,
+          "total_pnl_pct": 231.13747142857144,
+          "sharpe_proxy": 0.19002561435947735
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 75,
+          "mean_pnl_pct": 0.08492453295719024,
+          "std_pnl_pct": 22.982497328035517,
+          "win_rate": 0.22666666666666666,
+          "total_pnl_pct": 6.369339971789268,
+          "sharpe_proxy": 0.003695182979684017
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 3,
+          "mean_pnl_pct": 3.798079365079365,
+          "std_pnl_pct": 11.08063336167263,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": 11.394238095238094,
+          "sharpe_proxy": 0.34276735283171955
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 28,
+          "mean_pnl_pct": -4.827985260770975,
+          "std_pnl_pct": 7.987798159554544,
+          "win_rate": 0.25,
+          "total_pnl_pct": -135.1835873015873,
+          "sharpe_proxy": -0.6044200372033708
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 55,
+          "mean_pnl_pct": -1.4089190476190478,
+          "std_pnl_pct": 12.753393415094484,
+          "win_rate": 0.2727272727272727,
+          "total_pnl_pct": -77.49054761904763,
+          "sharpe_proxy": -0.11047405202379305
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 27,
+          "mean_pnl_pct": 4.457724162257495,
+          "std_pnl_pct": 15.365978652462015,
+          "win_rate": 0.4444444444444444,
+          "total_pnl_pct": 120.35855238095236,
+          "sharpe_proxy": 0.29010349832441396
+        }
+      ]
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 75.03,
+        "remove_total_pnl": -86.38,
+        "delta_pnl": -161.41,
+        "keep_n": 125,
+        "remove_n": 153
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 98,
+          "mean_pnl_pct": 1.2568676436400843,
+          "std_pnl_pct": 19.81520734887314,
+          "win_rate": 0.29591836734693877,
+          "total_pnl_pct": 123.17302907672827,
+          "sharpe_proxy": 0.06342944696521484
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 79,
+          "mean_pnl_pct": 0.28772865171462203,
+          "std_pnl_pct": 17.338198120214773,
+          "win_rate": 0.2911392405063291,
+          "total_pnl_pct": 22.73056348545514,
+          "sharpe_proxy": 0.016595072320644232
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 27,
+          "mean_pnl_pct": -4.000040799529688,
+          "std_pnl_pct": 12.757857058711767,
+          "win_rate": 0.18518518518518517,
+          "total_pnl_pct": -108.00110158730158,
+          "sharpe_proxy": -0.3135354770884692
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 27,
+          "mean_pnl_pct": -1.7831117230312419,
+          "std_pnl_pct": 14.488972614186338,
+          "win_rate": 0.25925925925925924,
+          "total_pnl_pct": -48.14401652184353,
+          "sharpe_proxy": -0.1230668157440904
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 87,
+          "mean_pnl_pct": -5.197642182083562,
+          "std_pnl_pct": 10.920880114598805,
+          "win_rate": 0.21839080459770116,
+          "total_pnl_pct": -452.19486984126985,
+          "sharpe_proxy": -0.47593619997123326
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 20,
+          "mean_pnl_pct": 2.3518544444444442,
+          "std_pnl_pct": 9.44839320730114,
+          "win_rate": 0.6,
+          "total_pnl_pct": 47.03708888888889,
+          "sharpe_proxy": 0.24891580958200124
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -33.25,
+        "remove_total_pnl": -40.2,
+        "delta_pnl": -6.95,
+        "keep_n": 38,
+        "remove_n": 74
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 19,
+          "mean_pnl_pct": 2.5298801169590646,
+          "std_pnl_pct": 18.112570567766102,
+          "win_rate": 0.15789473684210525,
+          "total_pnl_pct": 48.06772222222222,
+          "sharpe_proxy": 0.13967537669453425
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 55,
+          "mean_pnl_pct": 0.7475120057720057,
+          "std_pnl_pct": 19.66211891496536,
+          "win_rate": 0.3090909090909091,
+          "total_pnl_pct": 41.11316031746031,
+          "sharpe_proxy": 0.03801787635426487
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 17,
+          "mean_pnl_pct": -3.5331362278244636,
+          "std_pnl_pct": 21.345595215375383,
+          "win_rate": 0.11764705882352941,
+          "total_pnl_pct": -60.06331587301588,
+          "sharpe_proxy": -0.16552062344363772
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 1,
+          "mean_pnl_pct": -10.437209523809525,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -10.437209523809525,
+          "sharpe_proxy": NaN
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 4,
+          "mean_pnl_pct": -9.709539285714285,
+          "std_pnl_pct": 18.00004415737734,
+          "win_rate": 0.25,
+          "total_pnl_pct": -38.83815714285714,
+          "sharpe_proxy": -0.5394175259139472
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": -10.815777777777775,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -10.815777777777775,
+          "sharpe_proxy": NaN
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "INSUFFICIENT_DATA",
+      "comparison": {
+        "keep_total_pnl": 21.12,
+        "remove_total_pnl": 5.21,
+        "delta_pnl": -15.91,
+        "keep_n": 3,
+        "remove_n": 7
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 3,
+          "mean_pnl_pct": 7.040764550264552,
+          "std_pnl_pct": 15.898492863612164,
+          "win_rate": 0.6666666666666666,
+          "total_pnl_pct": 21.122293650793658,
+          "sharpe_proxy": 0.4428573582832605
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 7,
+          "mean_pnl_pct": 0.7444435374149653,
+          "std_pnl_pct": 8.399903110358155,
+          "win_rate": 0.2857142857142857,
+          "total_pnl_pct": 5.211104761904757,
+          "sharpe_proxy": 0.08862525289094957
+        }
+      ]
+    },
+    {
+      "strategy": "ppo_crossover",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 416.45,
+        "remove_total_pnl": 115.44,
+        "delta_pnl": -301.01,
+        "keep_n": 121,
+        "remove_n": 125
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 100,
+          "mean_pnl_pct": 5.1027566936261435,
+          "std_pnl_pct": 28.375468439672368,
+          "win_rate": 0.38,
+          "total_pnl_pct": 510.27566936261434,
+          "sharpe_proxy": 0.17982986622669697
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 75,
+          "mean_pnl_pct": 3.65370291182175,
+          "std_pnl_pct": 28.80432621786858,
+          "win_rate": 0.29333333333333333,
+          "total_pnl_pct": 274.02771838663125,
+          "sharpe_proxy": 0.12684563020797893
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 19,
+          "mean_pnl_pct": -4.600005567254944,
+          "std_pnl_pct": 8.910563985861483,
+          "win_rate": 0.2631578947368421,
+          "total_pnl_pct": -87.40010577784393,
+          "sharpe_proxy": -0.5162417973266156
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 21,
+          "mean_pnl_pct": -4.468085941043084,
+          "std_pnl_pct": 7.961096141619232,
+          "win_rate": 0.23809523809523808,
+          "total_pnl_pct": -93.82980476190477,
+          "sharpe_proxy": -0.5612400430243147
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 71,
+          "mean_pnl_pct": -2.8791843952604514,
+          "std_pnl_pct": 12.786904126148402,
+          "win_rate": 0.2112676056338028,
+          "total_pnl_pct": -204.42209206349204,
+          "sharpe_proxy": -0.22516665229175398
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 10,
+          "mean_pnl_pct": 2.2638433333333325,
+          "std_pnl_pct": 18.339031332742806,
+          "win_rate": 0.3,
+          "total_pnl_pct": 22.638433333333325,
+          "sharpe_proxy": 0.12344399724599574
+        }
+      ]
+    },
+    {
+      "strategy": "prev_day_high_break",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 155.77,
+        "remove_total_pnl": -237.92,
+        "delta_pnl": -393.69,
+        "keep_n": 29,
+        "remove_n": 47
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 24,
+          "mean_pnl_pct": 6.3422708994709,
+          "std_pnl_pct": 23.30041274103098,
+          "win_rate": 0.25,
+          "total_pnl_pct": 152.21450158730158,
+          "sharpe_proxy": 0.2721956460583398
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 28,
+          "mean_pnl_pct": -5.633335544217687,
+          "std_pnl_pct": 8.056281357848569,
+          "win_rate": 0.14285714285714285,
+          "total_pnl_pct": -157.73339523809523,
+          "sharpe_proxy": -0.6992476173550709
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 14,
+          "mean_pnl_pct": -5.981549928205111,
+          "std_pnl_pct": 6.273716273058761,
+          "win_rate": 0.14285714285714285,
+          "total_pnl_pct": -83.74169899487156,
+          "sharpe_proxy": -0.9534300991410306
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 5,
+          "mean_pnl_pct": 0.7119833954772417,
+          "std_pnl_pct": 7.7831530849656705,
+          "win_rate": 0.4,
+          "total_pnl_pct": 3.5599169773862083,
+          "sharpe_proxy": 0.09147750117526848
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 15,
+          "mean_pnl_pct": -6.069199576719577,
+          "std_pnl_pct": 11.024391903063488,
+          "win_rate": 0.26666666666666666,
+          "total_pnl_pct": -91.03799365079365,
+          "sharpe_proxy": -0.5505246575126789
+        }
+      ]
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "REMOVE_OK",
+      "comparison": {
+        "keep_total_pnl": -105.2,
+        "remove_total_pnl": -101.1,
+        "delta_pnl": 4.11,
+        "keep_n": 24,
+        "remove_n": 30
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 14,
+          "mean_pnl_pct": -4.7892666666666655,
+          "std_pnl_pct": 6.643291423538892,
+          "win_rate": 0.2857142857142857,
+          "total_pnl_pct": -67.04973333333332,
+          "sharpe_proxy": -0.7209177441316305
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 20,
+          "mean_pnl_pct": -3.147225476190477,
+          "std_pnl_pct": 11.910569939083507,
+          "win_rate": 0.15,
+          "total_pnl_pct": -62.944509523809536,
+          "sharpe_proxy": -0.26423802490451176
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 9,
+          "mean_pnl_pct": -4.420426102292769,
+          "std_pnl_pct": 16.402508045792445,
+          "win_rate": 0.1111111111111111,
+          "total_pnl_pct": -39.783834920634916,
+          "sharpe_proxy": -0.26949696290054204
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 1,
+          "mean_pnl_pct": 1.6324666666666665,
+          "std_pnl_pct": NaN,
+          "win_rate": 1.0,
+          "total_pnl_pct": 1.6324666666666665,
+          "sharpe_proxy": NaN
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 5,
+          "mean_pnl_pct": -0.1838387301587307,
+          "std_pnl_pct": 14.980656530879031,
+          "win_rate": 0.4,
+          "total_pnl_pct": -0.9191936507936536,
+          "sharpe_proxy": -0.012271740546203115
+        }
+      ]
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "current_regimes": [
+        "bear",
+        "bull",
+        "crisis",
+        "neutral"
+      ],
+      "recommendation": "NO_TRADES",
+      "comparison": {},
+      "stats": []
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "current_regimes": [
+        "bear",
+        "bull",
+        "neutral"
+      ],
+      "recommendation": "NO_TRADES",
+      "comparison": {},
+      "stats": []
+    },
+    {
+      "strategy": "supertrend_macd",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 346.65,
+        "remove_total_pnl": 212.12,
+        "delta_pnl": -134.54,
+        "keep_n": 315,
+        "remove_n": 369
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 150,
+          "mean_pnl_pct": -2.630923699946396,
+          "std_pnl_pct": 17.445585417179085,
+          "win_rate": 0.18,
+          "total_pnl_pct": -394.6385549919594,
+          "sharpe_proxy": -0.15080741844040743
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 314,
+          "mean_pnl_pct": 1.0860706401902773,
+          "std_pnl_pct": 25.609342426561305,
+          "win_rate": 0.2961783439490446,
+          "total_pnl_pct": 341.02618101974707,
+          "sharpe_proxy": 0.04240915764646244
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 55,
+          "mean_pnl_pct": -2.3437702158283256,
+          "std_pnl_pct": 14.631431697919444,
+          "win_rate": 0.2,
+          "total_pnl_pct": -128.9073618705579,
+          "sharpe_proxy": -0.1601873462705365
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 1,
+          "mean_pnl_pct": 5.627888888888889,
+          "std_pnl_pct": NaN,
+          "win_rate": 1.0,
+          "total_pnl_pct": 5.627888888888889,
+          "sharpe_proxy": NaN
+        }
+      ]
+    },
+    {
+      "strategy": "tema_dema",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 436.45,
+        "remove_total_pnl": -259.86,
+        "delta_pnl": -696.32,
+        "keep_n": 143,
+        "remove_n": 207
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 124,
+          "mean_pnl_pct": 4.048563014959085,
+          "std_pnl_pct": 26.274222628657775,
+          "win_rate": 0.3225806451612903,
+          "total_pnl_pct": 502.0218138549266,
+          "sharpe_proxy": 0.15408878398340295
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 118,
+          "mean_pnl_pct": 0.10569432221801096,
+          "std_pnl_pct": 17.586753448407297,
+          "win_rate": 0.2966101694915254,
+          "total_pnl_pct": 12.471930021725294,
+          "sharpe_proxy": 0.006009882524826259
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 57,
+          "mean_pnl_pct": -4.916760371281515,
+          "std_pnl_pct": 9.82273100427406,
+          "win_rate": 0.15789473684210525,
+          "total_pnl_pct": -280.25534116304635,
+          "sharpe_proxy": -0.5005492229342469
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 19,
+          "mean_pnl_pct": -3.45088556220458,
+          "std_pnl_pct": 9.809281711227225,
+          "win_rate": 0.3157894736842105,
+          "total_pnl_pct": -65.56682568188702,
+          "sharpe_proxy": -0.35179798723232353
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 75,
+          "mean_pnl_pct": -3.287818074074074,
+          "std_pnl_pct": 13.154616238800449,
+          "win_rate": 0.21333333333333335,
+          "total_pnl_pct": -246.58635555555557,
+          "sharpe_proxy": -0.24993644925774633
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 13,
+          "mean_pnl_pct": 5.652902197802198,
+          "std_pnl_pct": 12.546683140574963,
+          "win_rate": 0.6153846153846154,
+          "total_pnl_pct": 73.48772857142858,
+          "sharpe_proxy": 0.45054953045886426
+        }
+      ]
+    },
+    {
+      "strategy": "ultimate_oscillator",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "REMOVE_OK",
+      "comparison": {
+        "keep_total_pnl": 89.33,
+        "remove_total_pnl": 120.41,
+        "delta_pnl": 31.08,
+        "keep_n": 335,
+        "remove_n": 350
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 75,
+          "mean_pnl_pct": 0.729910713914758,
+          "std_pnl_pct": 24.776316667680668,
+          "win_rate": 0.29333333333333333,
+          "total_pnl_pct": 54.74330354360686,
+          "sharpe_proxy": 0.029460017148831737
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 298,
+          "mean_pnl_pct": 0.3190522018767854,
+          "std_pnl_pct": 17.53972892852033,
+          "win_rate": 0.29194630872483224,
+          "total_pnl_pct": 95.07755615928205,
+          "sharpe_proxy": 0.018190258422864976
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 13,
+          "mean_pnl_pct": 3.298807326007326,
+          "std_pnl_pct": 10.89186028510708,
+          "win_rate": 0.46153846153846156,
+          "total_pnl_pct": 42.88449523809524,
+          "sharpe_proxy": 0.30286904529228403
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 23,
+          "mean_pnl_pct": -0.9201004463469005,
+          "std_pnl_pct": 13.613655027033046,
+          "win_rate": 0.391304347826087,
+          "total_pnl_pct": -21.16231026597871,
+          "sharpe_proxy": -0.06758658453735086
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 37,
+          "mean_pnl_pct": -0.15545945945945952,
+          "std_pnl_pct": 13.792589666379035,
+          "win_rate": 0.35135135135135137,
+          "total_pnl_pct": -5.7520000000000024,
+          "sharpe_proxy": -0.011271230654995064
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 16,
+          "mean_pnl_pct": 0.22565396825396877,
+          "std_pnl_pct": 10.10873903909846,
+          "win_rate": 0.4375,
+          "total_pnl_pct": 3.6104634920635004,
+          "sharpe_proxy": 0.022322662340098706
+        }
+      ]
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 119.77,
+        "remove_total_pnl": -128.09,
+        "delta_pnl": -247.86,
+        "keep_n": 54,
+        "remove_n": 53
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 41,
+          "mean_pnl_pct": 4.02294154084398,
+          "std_pnl_pct": 19.106176203259643,
+          "win_rate": 0.36585365853658536,
+          "total_pnl_pct": 164.94060317460318,
+          "sharpe_proxy": 0.21055712550989866
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 30,
+          "mean_pnl_pct": -2.5765209523809522,
+          "std_pnl_pct": 9.374781585735278,
+          "win_rate": 0.4,
+          "total_pnl_pct": -77.29562857142857,
+          "sharpe_proxy": -0.27483530456873806
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": -10.767238095238095,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -10.767238095238095,
+          "sharpe_proxy": NaN
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 13,
+          "mean_pnl_pct": -3.474681074481074,
+          "std_pnl_pct": 6.713401176898379,
+          "win_rate": 0.23076923076923078,
+          "total_pnl_pct": -45.170853968253965,
+          "sharpe_proxy": -0.5175738769251375
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 40,
+          "mean_pnl_pct": -3.301674166666666,
+          "std_pnl_pct": 9.69068452459163,
+          "win_rate": 0.325,
+          "total_pnl_pct": -132.06696666666664,
+          "sharpe_proxy": -0.3407059798807969
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 9,
+          "mean_pnl_pct": 0.5711627865961191,
+          "std_pnl_pct": 22.328567725010018,
+          "win_rate": 0.1111111111111111,
+          "total_pnl_pct": 5.140465079365072,
+          "sharpe_proxy": 0.025579911512029724
+        }
+      ]
+    }
+  ]
+}
