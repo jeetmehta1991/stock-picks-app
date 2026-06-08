@@ -1,12 +1,13 @@
 {
   "total_strategies": 221,
   "verdict_counts": {
-    "INCOMPLETE_PRIORS": 189,
-    "PASS_CUBE": 17,
-    "FAIL_FIRE_STARVED_BUT_HAS_OR": 1,
+    "WARN_FIRE_STARVED": 28,
+    "FAIL_FIRE_STARVED_BUT_HAS_OR": 15,
+    "PASS_CUBE": 130,
+    "WARN_FIRE_STARVED_BUT_HAS_OR": 4,
+    "FAIL_FIRE_STARVED": 19,
     "NO_GATES_EXTRACTED": 5,
-    "FAIL_FIRE_STARVED": 5,
-    "WARN_FIRE_STARVED": 4
+    "INCOMPLETE_PRIORS": 20
   },
   "results": [
     {
@@ -19,12 +20,9 @@
         "gap_up_pct"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 720.72,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "gap_up_2pct",
-        "gap_up_pct"
-      ]
+      "fires_per_year_upper_bound": 18.02,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "orb_stocks_in_play_short",
@@ -32,16 +30,13 @@
         "gap_dn_2pct",
         "close_below_open",
         "vol_spike_2x",
-        "price_above_ema_200",
+        "below_ema_200",
         "gap_dn_pct"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 720.72,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "gap_dn_2pct",
-        "gap_dn_pct"
-      ]
+      "fires_per_year_upper_bound": 9.7,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "smc_bos_continuation",
@@ -51,17 +46,13 @@
         "rsi_14",
         "smc_bos_bullish",
         "price_above_ema_200",
-        "smc_bos_bearish"
+        "smc_bos_bearish",
+        "below_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 1441.44,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "force_index_breakout",
-        "rsi_14",
-        "smc_bos_bullish",
-        "smc_bos_bearish"
-      ]
+      "fires_per_year_upper_bound": 0.25,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "smc_choch_reversal",
@@ -72,14 +63,9 @@
         "smc_fvg_bearish_active"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_choch_bullish",
-        "smc_fvg_bullish_active",
-        "smc_choch_bearish",
-        "smc_fvg_bearish_active"
-      ]
+      "fires_per_year_upper_bound": 14.19,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "smc_order_block_bounce",
@@ -87,16 +73,13 @@
         "smc_ob_bullish_active",
         "rsi_14",
         "price_above_ema_200",
-        "smc_ob_bearish_active"
+        "smc_ob_bearish_active",
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_ob_bullish_active",
-        "rsi_14",
-        "smc_ob_bearish_active"
-      ]
+      "fires_per_year_upper_bound": 283.78,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_liquidity_sweep_reversal",
@@ -109,14 +92,9 @@
         "smc_bos_bearish"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 138.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_choch_bullish",
-        "smc_bos_bullish",
-        "smc_choch_bearish",
-        "smc_bos_bearish"
-      ]
+      "fires_per_year_upper_bound": 0.01,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "turtle_soup_long",
@@ -152,11 +130,9 @@
         "close_above_open"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1386.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_pivot"
-      ]
+      "fires_per_year_upper_bound": 277.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "judas_swing_short",
@@ -166,11 +142,9 @@
         "close_below_open"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1386.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_pivot"
-      ]
+      "fires_per_year_upper_bound": 277.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "mmbm_long",
@@ -178,11 +152,9 @@
         "po3_mmbm_setup"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "po3_mmbm_setup"
-      ]
+      "fires_per_year_upper_bound": 1108.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "mmsm_short",
@@ -190,11 +162,9 @@
         "po3_mmsm_setup"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "po3_mmsm_setup"
-      ]
+      "fires_per_year_upper_bound": 1108.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "week_opening_gap_fill_down",
@@ -202,11 +172,9 @@
         "week_open_gap_up_15pct"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "week_open_gap_up_15pct"
-      ]
+      "fires_per_year_upper_bound": 1663.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "week_opening_gap_fill_up",
@@ -214,11 +182,9 @@
         "week_open_gap_down_15pct"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "week_open_gap_down_15pct"
-      ]
+      "fires_per_year_upper_bound": 1663.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "pre_fomc_long_sleeve",
@@ -228,12 +194,9 @@
         "days_until_fomc"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pre_fomc_d1",
-        "days_until_fomc"
-      ]
+      "fires_per_year_upper_bound": 1441.44,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "pre_fomc_quality_momentum_long",
@@ -243,12 +206,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pre_fomc_d1",
-        "xs_momentum_top_decile"
-      ]
+      "fires_per_year_upper_bound": 144.14,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "buyback_8k_recent_long",
@@ -259,12 +219,9 @@
         "vol_spike_15x"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 3603.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "recent_8k_filed",
-        "days_since_8k"
-      ]
+      "fires_per_year_upper_bound": 180.18,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "insider_cluster_long",
@@ -274,11 +231,9 @@
         "insider_unique_buyers_30d"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1801.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "insider_unique_buyers_30d"
-      ]
+      "fires_per_year_upper_bound": 540.54,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "insider_cluster_with_director_long",
@@ -289,12 +244,9 @@
         "insider_unique_buyers_30d"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1801.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "insider_director_buyers_30d",
-        "insider_unique_buyers_30d"
-      ]
+      "fires_per_year_upper_bound": 54.05,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "xs_quality_top_quintile_long",
@@ -303,11 +255,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_quality_top_quintile"
-      ]
+      "fires_per_year_upper_bound": 7207.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "xs_momentum_quality_combined",
@@ -317,12 +267,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_momentum_top_decile",
-        "xs_quality_top_quintile"
-      ]
+      "fires_per_year_upper_bound": 720.72,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "pead_with_insider_confirmation_long",
@@ -345,26 +292,20 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_momentum_top_decile",
-        "xs_avoid_high_ivol",
-        "xs_avoid_high_max"
-      ]
+      "fires_per_year_upper_bound": 36.04,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "xs_momentum_bottom_decile_short",
       "gates": [
         "xs_momentum_bottom_decile",
-        "price_above_ema_200"
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_momentum_bottom_decile"
-      ]
+      "fires_per_year_upper_bound": 1940.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "xs_low_beta_long",
@@ -373,12 +314,9 @@
         "xs_avoid_high_ivol"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_low_beta_decile",
-        "xs_avoid_high_ivol"
-      ]
+      "fires_per_year_upper_bound": 554.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "xs_combined_momentum_low_ivol",
@@ -388,12 +326,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_momentum_top_decile",
-        "xs_ivol_decile"
-      ]
+      "fires_per_year_upper_bound": 360.36,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "po3_bullish",
@@ -402,24 +337,20 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "po3_bullish"
-      ]
+      "fires_per_year_upper_bound": 1801.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "po3_bearish",
       "gates": [
         "po3_bearish",
-        "price_above_ema_200"
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "po3_bearish"
-      ]
+      "fires_per_year_upper_bound": 970.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "po3_htf_aligned_long",
@@ -428,12 +359,9 @@
         "weekly_bias_bull"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "po3_bullish",
-        "weekly_bias_bull"
-      ]
+      "fires_per_year_upper_bound": 1524.6,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "po3_htf_aligned_short",
@@ -442,12 +370,9 @@
         "weekly_bias_bear"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "po3_bearish",
-        "weekly_bias_bear"
-      ]
+      "fires_per_year_upper_bound": 1247.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "htf_aligned_breakout_long",
@@ -457,11 +382,9 @@
         "htf_aligned_bull"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 2494.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "htf_aligned_bull"
-      ]
+      "fires_per_year_upper_bound": 997.92,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "htf_aligned_breakout_short",
@@ -471,11 +394,9 @@
         "htf_aligned_bear"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1940.4,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "htf_aligned_bear"
-      ]
+      "fires_per_year_upper_bound": 582.12,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "weekly_bias_pullback_long",
@@ -486,14 +407,9 @@
         "bullish_engulfing"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "weekly_bias_bull",
-        "rsi_14",
-        "hammer",
-        "bullish_engulfing"
-      ]
+      "fires_per_year_upper_bound": 36.59,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "weekly_bias_pullback_short",
@@ -504,14 +420,9 @@
         "bearish_engulfing"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "weekly_bias_bear",
-        "rsi_14",
-        "shooting_star",
-        "bearish_engulfing"
-      ]
+      "fires_per_year_upper_bound": 22.45,
+      "verdict": "WARN_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "monthly_bias_momentum_long",
@@ -521,12 +432,9 @@
         "above_prev_high"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 24948.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "monthly_bias_bull",
-        "monthly_momentum_pos"
-      ]
+      "fires_per_year_upper_bound": 7546.77,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_fvg_retest_long",
@@ -535,24 +443,20 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_fvg_retest_long_zone"
-      ]
+      "fires_per_year_upper_bound": 1801.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_fvg_retest_short",
       "gates": [
         "smc_fvg_retest_short_zone",
-        "price_above_ema_200"
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_fvg_retest_short_zone"
-      ]
+      "fires_per_year_upper_bound": 970.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_inverse_fvg",
@@ -564,26 +468,20 @@
         "force_index_breakout"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 1441.44,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_inverse_fvg_bullish",
-        "smc_inverse_fvg_bearish",
-        "force_index_breakout"
-      ]
+      "fires_per_year_upper_bound": 0.18,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "smc_breaker_block_short",
       "gates": [
         "smc_breaker_block_bearish",
-        "price_above_ema_200"
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_breaker_block_bearish"
-      ]
+      "fires_per_year_upper_bound": 970.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_breaker_block_long",
@@ -592,11 +490,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_breaker_block_bullish"
-      ]
+      "fires_per_year_upper_bound": 1801.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_mitigation_block_long",
@@ -606,27 +502,21 @@
         "rsi_14"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_mitigation_block_long",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 1801.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_mitigation_block_short",
       "gates": [
         "smc_mitigation_block_short",
-        "price_above_ema_200",
+        "below_ema_200",
         "rsi_14"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_mitigation_block_short",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 970.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_discount_long",
@@ -638,14 +528,9 @@
         "smc_dealing_range_pct"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_in_discount_zone",
-        "smc_bos_bullish",
-        "smc_choch_bullish",
-        "smc_dealing_range_pct"
-      ]
+      "fires_per_year_upper_bound": 43.24,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_premium_short",
@@ -653,18 +538,13 @@
         "smc_in_premium_zone",
         "smc_bos_bearish",
         "smc_choch_bearish",
-        "price_above_ema_200",
+        "below_ema_200",
         "smc_dealing_range_pct"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_in_premium_zone",
-        "smc_bos_bearish",
-        "smc_choch_bearish",
-        "smc_dealing_range_pct"
-      ]
+      "fires_per_year_upper_bound": 23.28,
+      "verdict": "WARN_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "smc_ote_long",
@@ -675,14 +555,9 @@
         "smc_retracement_pct"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_ote_long_zone",
-        "smc_bos_bullish",
-        "smc_choch_bullish",
-        "smc_retracement_pct"
-      ]
+      "fires_per_year_upper_bound": 11.09,
+      "verdict": "WARN_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "smc_ote_short",
@@ -693,14 +568,9 @@
         "smc_retracement_pct"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_ote_short_zone",
-        "smc_bos_bearish",
-        "smc_choch_bearish",
-        "smc_retracement_pct"
-      ]
+      "fires_per_year_upper_bound": 11.09,
+      "verdict": "WARN_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "smc_equal_highs_sweep_short",
@@ -709,12 +579,9 @@
         "smc_fvg_bearish_active"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_equal_highs_swept",
-        "smc_fvg_bearish_active"
-      ]
+      "fires_per_year_upper_bound": 554.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_equal_lows_sweep_long",
@@ -723,27 +590,22 @@
         "smc_fvg_bullish_active"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_equal_lows_swept",
-        "smc_fvg_bullish_active"
-      ]
+      "fires_per_year_upper_bound": 554.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "smc_bos_retest_entry",
       "gates": [
         "smc_bos_retest_long",
         "price_above_ema_200",
-        "smc_bos_retest_short"
+        "smc_bos_retest_short",
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "smc_bos_retest_long",
-        "smc_bos_retest_short"
-      ]
+      "fires_per_year_upper_bound": 11.35,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "pead_long",
@@ -754,12 +616,9 @@
         "earnings_announcement_return"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1663.2,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "earnings_eps_yoy_growth",
-        "earnings_announcement_return"
-      ]
+      "fires_per_year_upper_bound": 16.63,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "pead_short",
@@ -770,12 +629,9 @@
         "earnings_announcement_return"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1663.2,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "earnings_eps_yoy_growth",
-        "earnings_announcement_return"
-      ]
+      "fires_per_year_upper_bound": 16.63,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "pead_long_high_yoy_growth_only",
@@ -786,13 +642,9 @@
         "yoy_surprise_threshold_long"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 11088.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "yoy_surprise_high",
-        "earnings_eps_yoy_growth",
-        "yoy_surprise_threshold_long"
-      ]
+      "fires_per_year_upper_bound": 27.72,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "pead_short_negative_yoy_growth",
@@ -803,13 +655,9 @@
         "yoy_surprise_threshold_short"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 11088.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "yoy_surprise_negative",
-        "earnings_eps_yoy_growth",
-        "yoy_surprise_threshold_short"
-      ]
+      "fires_per_year_upper_bound": 27.72,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "squeeze_setup_long",
@@ -849,13 +697,9 @@
         "sc_13d_latest_percent_owned"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "sc_13d_filed_within_30d",
-        "sc_13d_latest_filer_identity",
-        "sc_13d_latest_percent_owned"
-      ]
+      "fires_per_year_upper_bound": 0.01,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "m_and_a_target_long",
@@ -874,12 +718,9 @@
         "rsi_14"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 2772.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pct_from_avwap_252low",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 1386.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "avwap_50_reclaim",
@@ -887,14 +728,13 @@
         "above_avwap_50low",
         "pct_from_avwap_50low",
         "macd_12_26_9_bullish",
-        "price_above_ema_200"
+        "price_above_ema_200",
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 9909.9,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pct_from_avwap_50low"
-      ]
+      "fires_per_year_upper_bound": 1734.23,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "avwap_20high_rejection_short",
@@ -904,39 +744,29 @@
         "shooting_star",
         "bearish_engulfing",
         "vol_spike_15x",
-        "price_above_ema_200"
+        "below_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 1081.08,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pct_from_avwap_20high",
-        "shooting_star",
-        "bearish_engulfing"
-      ]
+      "fires_per_year_upper_bound": 0.26,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "pivot_s1_bounce",
       "gates": [
+        "obv_bullish",
         "near_s1",
         "hammer",
         "pin_bar",
-        "obv_bullish",
         "near_r1",
         "shooting_star",
-        "bearish_engulfing"
+        "bearish_engulfing",
+        "obv_bearish"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_s1",
-        "hammer",
-        "pin_bar",
-        "near_r1",
-        "shooting_star",
-        "bearish_engulfing"
-      ]
+      "fires_per_year_upper_bound": 0.0,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "pivot_s2_bounce",
@@ -949,16 +779,9 @@
         "bearish_engulfing"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_s2",
-        "rsi_14",
-        "hammer",
-        "bullish_engulfing",
-        "near_r2",
-        "bearish_engulfing"
-      ]
+      "fires_per_year_upper_bound": 0.02,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "pivot_s3_capitulation",
@@ -968,52 +791,47 @@
         "vol_spike_2x"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 2217.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_s3",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 110.88,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "pivot_r1_breakout",
       "gates": [
         "above_avwap_252low",
         "above_avwap_50low",
+        "below_avwap_252low",
+        "below_avwap_50low",
         "above_r1",
         "vol_spike_15x",
         "macd_12_26_9_bullish",
-        "below_s1"
+        "below_s1",
+        "macd_12_26_9_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 762.3,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "above_r1",
-        "below_s1"
-      ]
+      "fires_per_year_upper_bound": 7.72,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "pivot_r2_continuation",
       "gates": [
         "above_avwap_252low",
         "above_avwap_50low",
+        "below_avwap_252low",
+        "below_avwap_50low",
         "above_r2",
         "adx_trending",
         "ema_50_200_bullish",
         "vol_spike_2x",
         "vol_spike_15x",
-        "below_s2"
+        "below_s2",
+        "ema_50_200_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55.44,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "above_r2",
-        "adx_trending",
-        "ema_50_200_bullish",
-        "below_s2"
-      ]
+      "fires_per_year_upper_bound": 0.04,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "cpr_narrow_bullish",
@@ -1026,31 +844,23 @@
         "below_cpr"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 18018.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "cpr_narrow",
-        "above_cpr",
-        "rsi_14",
-        "below_cpr"
-      ]
+      "fires_per_year_upper_bound": 891.89,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "camarilla_s3_bounce",
       "gates": [
+        "obv_bullish",
+        "obv_bearish",
         "near_cam_s3",
         "rsi_14",
-        "obv_bullish",
         "near_cam_r3"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_cam_s3",
-        "rsi_14",
-        "near_cam_r3"
-      ]
+      "fires_per_year_upper_bound": 137.21,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "camarilla_r3_breakout",
@@ -1060,12 +870,9 @@
         "below_cam_s3"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 2217.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "above_cam_r3",
-        "below_cam_s3"
-      ]
+      "fires_per_year_upper_bound": 49.9,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "prev_day_high_break",
@@ -1073,13 +880,14 @@
         "above_prev_high",
         "vol_spike_15x",
         "above_vwap",
-        "below_prev_low"
+        "below_prev_low",
+        "below_vwap"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 873.18,
+      "fires_per_year_upper_bound": 436.59,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "above_vwap"
+        "below_vwap"
       ]
     },
     {
@@ -1089,17 +897,14 @@
         "hammer",
         "cmf_positive",
         "near_prev_high",
-        "shooting_star"
+        "shooting_star",
+        "cmf_negative"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 1.46,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "near_prev_low",
-        "hammer",
-        "cmf_positive",
-        "near_prev_high",
-        "shooting_star"
+        "cmf_negative"
       ]
     },
     {
@@ -1109,12 +914,9 @@
         "macd_12_26_9_crossover_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "macd_12_26_9_crossover_up",
-        "macd_12_26_9_crossover_dn"
-      ]
+      "fires_per_year_upper_bound": 49.9,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "macd_fast_crossover",
@@ -1123,12 +925,9 @@
         "macd_8_21_5_crossover_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "macd_8_21_5_crossover_up",
-        "macd_8_21_5_crossover_dn"
-      ]
+      "fires_per_year_upper_bound": 88.7,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "hull_rsi",
@@ -1138,17 +937,16 @@
         "price_above_ema_200",
         "hull_bullish",
         "price_above_hull",
-        "rsi_9"
+        "rsi_9",
+        "hull_bearish",
+        "price_below_hull"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
+      "fires_per_year_upper_bound": 3270.27,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "adx",
-        "adx_trending",
-        "hull_bullish",
-        "price_above_hull",
-        "rsi_9"
+        "hull_bearish",
+        "price_below_hull"
       ]
     },
     {
@@ -1158,16 +956,14 @@
         "price_above_ema_200",
         "williams_r_oversold",
         "cmf_positive",
-        "williams_r"
+        "williams_r",
+        "cmf_negative"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
+      "fires_per_year_upper_bound": 1981.98,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "rsi_2",
-        "williams_r_oversold",
-        "cmf_positive",
-        "williams_r"
+        "cmf_negative"
       ]
     },
     {
@@ -1178,27 +974,22 @@
         "roc_turning_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 5544.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "roc_turning_up",
-        "roc_turning_dn"
-      ]
+      "fires_per_year_upper_bound": 13.86,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "awesome_oscillator",
       "gates": [
-        "ao_cross_up",
         "price_above_ema_20",
+        "below_ema_20",
+        "ao_cross_up",
         "ao_cross_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ao_cross_up",
-        "ao_cross_dn"
-      ]
+      "fires_per_year_upper_bound": 21.95,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "stochrsi_oversold",
@@ -1212,16 +1003,9 @@
         "stochrsi_cross_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "rsi_2",
-        "stochrsi_oversold",
-        "stochrsi_cross_up",
-        "rsi_14",
-        "stochrsi_overbought",
-        "stochrsi_cross_dn"
-      ]
+      "fires_per_year_upper_bound": 0.9,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "ppo_crossover",
@@ -1231,30 +1015,28 @@
         "ppo_crossover_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ppo_crossover_up",
-        "adx_trending",
-        "ppo_crossover_dn"
-      ]
+      "fires_per_year_upper_bound": 14.97,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "ultimate_oscillator",
       "gates": [
+        "price_above_sma_200",
+        "below_sma_200",
+        "uo",
         "rsi_2",
         "uo_oversold",
-        "price_above_sma_200",
-        "uo"
+        "close_above_open",
+        "uo_overbought",
+        "close_below_open"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 540.54,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "rsi_2",
-        "uo_oversold",
-        "price_above_sma_200",
-        "uo"
+        "below_sma_200",
+        "uo_overbought"
       ]
     },
     {
@@ -1264,27 +1046,23 @@
         "ema_50_200_death_cross"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ema_50_200_golden_cross",
-        "ema_50_200_death_cross"
-      ]
+      "fires_per_year_upper_bound": 5.54,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "golden_cross_9_21",
       "gates": [
         "ema_9_21_golden_cross",
         "price_above_sma_50",
-        "ema_9_21_death_cross"
+        "ema_9_21_death_cross",
+        "below_sma_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 12.2,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "ema_9_21_golden_cross",
-        "price_above_sma_50",
-        "ema_9_21_death_cross"
+        "below_sma_50"
       ]
     },
     {
@@ -1292,15 +1070,13 @@
       "gates": [
         "ema_20_50_golden_cross",
         "price_above_ema_200",
-        "ema_20_50_death_cross"
+        "ema_20_50_death_cross",
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ema_20_50_golden_cross",
-        "ema_20_50_death_cross"
-      ]
+      "fires_per_year_upper_bound": 2.84,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "parabolic_sar_flip",
@@ -1310,45 +1086,37 @@
         "psar_flip_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "psar_flip_up",
-        "adx_trending",
-        "psar_flip_dn"
-      ]
+      "fires_per_year_upper_bound": 26.61,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "tema_dema",
       "gates": [
         "tema_cross_up",
         "price_above_tema",
-        "tema_cross_dn"
+        "tema_cross_dn",
+        "price_below_tema"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 48.79,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "tema_cross_up",
-        "price_above_tema",
-        "tema_cross_dn"
+        "price_below_tema"
       ]
     },
     {
       "strategy": "ichimoku_tk_cross",
       "gates": [
-        "ichi_tk_cross_up",
         "ichi_below_cloud",
+        "ichi_tk_cross_up",
+        "ichi_above_cloud",
         "ichi_tk_cross_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ichi_tk_cross_up",
-        "ichi_below_cloud",
-        "ichi_tk_cross_dn"
-      ]
+      "fires_per_year_upper_bound": 14.64,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "ichimoku_cloud_breakout",
@@ -1362,30 +1130,23 @@
         "ichi_tk_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ichi_weekly_above_cloud",
-        "ichi_weekly_below_cloud",
-        "ichi_above_cloud",
-        "ichi_tk_bullish",
-        "adx_trending",
-        "ichi_below_cloud",
-        "ichi_tk_bearish"
-      ]
+      "fires_per_year_upper_bound": 112.07,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "adx_initiation",
       "gates": [
         "adx_cross_up",
-        "adx_di_bull"
+        "adx_di_bull",
+        "adx_di_bear"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 2772.0,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "adx_cross_up",
-        "adx_di_bull"
+        "adx_di_bull",
+        "adx_di_bear"
       ]
     },
     {
@@ -1393,14 +1154,15 @@
       "gates": [
         "supertrend_bullish",
         "macd_12_26_9_bullish",
-        "adx"
+        "adx",
+        "supertrend_bearish",
+        "macd_12_26_9_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
+      "fires_per_year_upper_bound": 7546.77,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "supertrend_bullish",
-        "adx"
+        "supertrend_bearish"
       ]
     },
     {
@@ -1409,15 +1171,14 @@
         "rsi_2",
         "rsi_14",
         "price_above_ema_200",
-        "price_above_sma_50"
+        "price_above_sma_50",
+        "below_sma_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
+      "fires_per_year_upper_bound": 19819.8,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "rsi_2",
-        "rsi_14",
-        "price_above_sma_50"
+        "below_sma_50"
       ]
     },
     {
@@ -1428,43 +1189,37 @@
         "rsi_9_rising"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "rsi_9_extreme_os",
-        "rsi_9_rising"
-      ]
+      "fires_per_year_upper_bound": 900.9,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "rsi21_slow",
       "gates": [
         "rsi_21",
-        "price_above_sma_50"
+        "price_above_sma_50",
+        "below_sma_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 30492.0,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "rsi_21",
-        "price_above_sma_50"
+        "below_sma_50"
       ]
     },
     {
       "strategy": "rsi_overbought_short",
       "gates": [
         "rsi_14",
-        "price_above_sma_50",
+        "below_sma_50",
         "bearish_engulfing",
         "rsi_14_rising"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 831.6,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "rsi_14",
-        "price_above_sma_50",
-        "bearish_engulfing",
-        "rsi_14_rising"
+        "below_sma_50"
       ]
     },
     {
@@ -1476,19 +1231,13 @@
         "obv_bullish",
         "mfi_overbought",
         "near_r1",
-        "near_r2"
+        "near_r2",
+        "obv_bearish"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "mfi_oversold",
-        "near_s1",
-        "near_s2",
-        "mfi_overbought",
-        "near_r1",
-        "near_r2"
-      ]
+      "fires_per_year_upper_bound": 0.01,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "cmf_flip",
@@ -1498,13 +1247,9 @@
         "cmf_cross_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "cmf_cross_up",
-        "rsi_14",
-        "cmf_cross_dn"
-      ]
+      "fires_per_year_upper_bound": 88.7,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "bollinger_lower",
@@ -1519,17 +1264,9 @@
         "bb_20_20_touch_upper"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "rsi_2",
-        "rsi_14",
-        "adx",
-        "vix_band_low",
-        "vix_band_high",
-        "bb_20_20_touch_lower",
-        "bb_20_20_touch_upper"
-      ]
+      "fires_per_year_upper_bound": 8.11,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "bollinger_tight",
@@ -1545,18 +1282,9 @@
         "bb_20_20_touch_upper"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "rsi_2",
-        "rsi_14",
-        "vix_band_low",
-        "vix_band_high",
-        "bb_20_15_touch_lower",
-        "bb_20_20_touch_lower",
-        "bb_20_15_touch_upper",
-        "bb_20_20_touch_upper"
-      ]
+      "fires_per_year_upper_bound": 0.08,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "bollinger_upper_short",
@@ -1566,13 +1294,9 @@
         "shooting_star"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "bb_20_20_touch_upper",
-        "rsi_14",
-        "shooting_star"
-      ]
+      "fires_per_year_upper_bound": 166.32,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "keltner_lower",
@@ -1581,36 +1305,28 @@
         "hammer",
         "obv_bullish",
         "kc_touch_upper",
-        "shooting_star"
+        "shooting_star",
+        "obv_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "kc_touch_lower",
-        "hammer",
-        "kc_touch_upper",
-        "shooting_star"
-      ]
+      "fires_per_year_upper_bound": 0.11,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "stoch_oversold",
       "gates": [
+        "price_above_ema_20",
+        "below_ema_20",
         "stoch_oversold",
         "stoch_bullish_cross",
-        "price_above_ema_20",
         "stoch_overbought",
         "stoch_bearish_cross"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "stoch_oversold",
-        "stoch_bullish_cross",
-        "stoch_overbought",
-        "stoch_bearish_cross"
-      ]
+      "fires_per_year_upper_bound": 0.34,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "squeeze_breakout",
@@ -1618,11 +1334,9 @@
         "squeeze_fire_up"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "squeeze_fire_up"
-      ]
+      "fires_per_year_upper_bound": 1663.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "volume_spike_breakout",
@@ -1652,12 +1366,9 @@
         "close_in_top_40pct_of_range"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 665.28,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "break_52w_high",
-        "sector_outperforming_spy"
-      ]
+      "fires_per_year_upper_bound": 6.65,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "52w_high_breakout_pullback_long",
@@ -1665,11 +1376,9 @@
         "near_52w_high_retest_long"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_52w_high_retest_long"
-      ]
+      "fires_per_year_upper_bound": 1108.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "52w_low_breakdown_pullback_short",
@@ -1677,11 +1386,9 @@
         "near_52w_low_retest_short"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_52w_low_retest_short"
-      ]
+      "fires_per_year_upper_bound": 1108.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "inside_bar_breakout",
@@ -1691,28 +1398,24 @@
         "above_vwap"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "inside_bar",
-        "adx_trending",
-        "above_vwap"
-      ]
+      "fires_per_year_upper_bound": 415.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "force_index_breakout",
       "gates": [
-        "force_index_cross_up",
         "price_above_ema_20",
-        "force_index_cross_dn"
+        "force_index_cross_up",
+        "close_above_open",
+        "force_index_cross_dn",
+        "below_ema_20",
+        "close_below_open"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "force_index_cross_up",
-        "force_index_cross_dn"
-      ]
+      "fires_per_year_upper_bound": 8.58,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "donchian_10_breakout",
@@ -1730,12 +1433,9 @@
         "dc10_strong_breakout_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 0.16,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "dc10_breakout_up_1pct",
-        "dc10_strong_breakout_up"
-      ]
+      "fires_per_year_upper_bound": 0.0,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "morning_star",
@@ -1743,17 +1443,13 @@
         "morning_star",
         "rsi_14",
         "ema_50_200_bullish",
-        "evening_star"
+        "evening_star",
+        "ema_50_200_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "morning_star",
-        "rsi_14",
-        "ema_50_200_bullish",
-        "evening_star"
-      ]
+      "fires_per_year_upper_bound": 1.37,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "bullish_engulfing_support",
@@ -1765,20 +1461,13 @@
         "obv_bullish",
         "bearish_engulfing",
         "near_r1",
-        "near_r2"
+        "near_r2",
+        "obv_bearish"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "bullish_engulfing",
-        "near_s1",
-        "near_s2",
-        "at_key_fib",
-        "bearish_engulfing",
-        "near_r1",
-        "near_r2"
-      ]
+      "fires_per_year_upper_bound": 0.0,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "doji_at_support",
@@ -1790,14 +1479,9 @@
         "vol_spike_15x"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 5544.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "doji",
-        "near_s1_wide",
-        "near_s2_wide",
-        "at_key_fib_wide"
-      ]
+      "fires_per_year_upper_bound": 4.99,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "doji_at_resistance_short",
@@ -1809,14 +1493,9 @@
         "vol_spike_15x"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 5544.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "doji",
-        "near_r1_wide",
-        "near_r2_wide",
-        "at_key_fib_wide"
-      ]
+      "fires_per_year_upper_bound": 4.99,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "three_white_soldiers",
@@ -1825,12 +1504,9 @@
         "rsi_14"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "three_white_soldiers",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 554.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "shooting_star_short",
@@ -1842,30 +1518,22 @@
         "rsi_14"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "shooting_star",
-        "near_r1",
-        "near_r2",
-        "bb_20_20_touch_upper",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 2.49,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "evening_star_short",
       "gates": [
         "evening_star",
         "rsi_14",
-        "price_above_sma_50"
+        "below_sma_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 554.4,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "evening_star",
-        "rsi_14",
-        "price_above_sma_50"
+        "below_sma_50"
       ]
     },
     {
@@ -1873,14 +1541,13 @@
       "gates": [
         "rsi_14",
         "vol_above_avg",
-        "price_above_ema_200"
+        "price_above_ema_200",
+        "below_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 18018.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 6306.3,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "macd_ichimoku",
@@ -1891,14 +1558,9 @@
         "ichi_below_cloud"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "macd_12_26_9_crossover_up",
-        "ichi_above_cloud",
-        "macd_12_26_9_crossover_dn",
-        "ichi_below_cloud"
-      ]
+      "fires_per_year_upper_bound": 8.23,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "bb_squeeze_volume",
@@ -1906,15 +1568,14 @@
         "squeeze_fire_up",
         "vol_spike_2x",
         "above_vwap",
-        "squeeze_fire_dn"
+        "squeeze_fire_dn",
+        "below_vwap"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 2217.6,
+      "fires_per_year_upper_bound": 1.0,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "squeeze_fire_up",
-        "above_vwap",
-        "squeeze_fire_dn"
+        "below_vwap"
       ]
     },
     {
@@ -1930,18 +1591,9 @@
         "bearish_engulfing"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "near_s1",
-        "near_s2",
-        "at_key_fib",
-        "hammer",
-        "bullish_engulfing",
-        "near_r1",
-        "near_r2",
-        "bearish_engulfing"
-      ]
+      "fires_per_year_upper_bound": 0.0,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "golden_cross_volume",
@@ -1951,12 +1603,9 @@
         "ema_50_200_death_cross"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 2217.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ema_50_200_golden_cross",
-        "ema_50_200_death_cross"
-      ]
+      "fires_per_year_upper_bound": 0.22,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "cpr_narrow_momentum",
@@ -1966,17 +1615,13 @@
         "above_cpr",
         "rsi_14",
         "macd_12_26_9_bullish",
-        "below_cpr"
+        "below_cpr",
+        "macd_12_26_9_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 19819.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "cpr_narrow",
-        "above_cpr",
-        "rsi_14",
-        "below_cpr"
-      ]
+      "fires_per_year_upper_bound": 441.49,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "camarilla_rsi_obv",
@@ -1985,16 +1630,15 @@
         "rsi_14",
         "obv_bullish",
         "cmf_positive",
-        "near_cam_r3"
+        "near_cam_r3",
+        "obv_bearish",
+        "cmf_negative"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
+      "fires_per_year_upper_bound": 75.47,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "near_cam_s3",
-        "rsi_14",
-        "cmf_positive",
-        "near_cam_r3"
+        "cmf_negative"
       ]
     },
     {
@@ -2003,16 +1647,14 @@
         "supertrend_bullish",
         "ichi_above_cloud",
         "adx_strong",
+        "supertrend_bearish",
         "ichi_below_cloud"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
+      "fires_per_year_upper_bound": 503.12,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "supertrend_bullish",
-        "ichi_above_cloud",
-        "adx_strong",
-        "ichi_below_cloud"
+        "supertrend_bearish"
       ]
     },
     {
@@ -2030,20 +1672,9 @@
         "near_cam_r3"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "williams_r_oversold",
-        "stoch_oversold",
-        "near_s1",
-        "near_s2",
-        "near_cam_s3",
-        "williams_r",
-        "stoch_overbought",
-        "near_r1",
-        "near_r2",
-        "near_cam_r3"
-      ]
+      "fires_per_year_upper_bound": 0.0,
+      "verdict": "FAIL_FIRE_STARVED_BUT_HAS_OR",
+      "missing_priors": []
     },
     {
       "strategy": "death_cross_50_200_volume",
@@ -2052,25 +1683,22 @@
         "vol_spike_2x"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 2217.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ema_50_200_death_cross"
-      ]
+      "fires_per_year_upper_bound": 22.18,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "supertrend_macd_short",
       "gates": [
-        "supertrend_bullish",
-        "macd_12_26_9_bullish",
+        "supertrend_bearish",
+        "macd_12_26_9_bearish",
         "adx"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
+      "fires_per_year_upper_bound": 24948.0,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "supertrend_bullish",
-        "adx"
+        "supertrend_bearish"
       ]
     },
     {
@@ -2081,13 +1709,9 @@
         "adx_trending"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "ichi_below_cloud",
-        "ichi_tk_cross_dn",
-        "adx_trending"
-      ]
+      "fires_per_year_upper_bound": 199.58,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "parabolic_sar_flip_short",
@@ -2096,12 +1720,9 @@
         "adx_trending"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "psar_flip_dn",
-        "adx_trending"
-      ]
+      "fires_per_year_upper_bound": 665.28,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "macd_crossover_short",
@@ -2109,26 +1730,23 @@
         "macd_12_26_9_crossover_dn"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "macd_12_26_9_crossover_dn"
-      ]
+      "fires_per_year_upper_bound": 1663.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "hull_rsi_short",
       "gates": [
-        "hull_bullish",
-        "price_above_hull",
+        "hull_bearish",
+        "price_below_hull",
         "rsi_9"
       ],
       "has_or_composite": false,
       "fires_per_year_upper_bound": 55440.0,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "hull_bullish",
-        "price_above_hull",
-        "rsi_9"
+        "hull_bearish",
+        "price_below_hull"
       ]
     },
     {
@@ -2139,13 +1757,9 @@
         "rsi_14"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "stochrsi_overbought",
-        "stochrsi_cross_dn",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 277.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "donchian_breakdown_short",
@@ -2171,25 +1785,22 @@
         "close_in_bottom_40pct_of_range"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 665.28,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "break_52w_low",
-        "sector_underperforming_spy"
-      ]
+      "fires_per_year_upper_bound": 6.65,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "prev_day_low_breakdown",
       "gates": [
         "below_prev_low",
         "vol_spike_15x",
-        "above_vwap"
+        "below_vwap"
       ],
       "has_or_composite": false,
       "fires_per_year_upper_bound": 1940.4,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "above_vwap"
+        "below_vwap"
       ]
     },
     {
@@ -2202,11 +1813,9 @@
         "close_in_top_40pct_of_range"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 609.84,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "dc10_breakout_up"
-      ]
+      "fires_per_year_upper_bound": 30.49,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "donchian_breakout_retest_long",
@@ -2227,16 +1836,14 @@
       "gates": [
         "near_cam_r3",
         "rsi_14",
-        "obv_bullish",
-        "cmf_positive"
+        "obv_bearish",
+        "cmf_negative"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
+      "fires_per_year_upper_bound": 2494.8,
       "verdict": "INCOMPLETE_PRIORS",
       "missing_priors": [
-        "near_cam_r3",
-        "rsi_14",
-        "cmf_positive"
+        "cmf_negative"
       ]
     },
     {
@@ -2245,16 +1852,12 @@
         "cpr_narrow",
         "below_cpr",
         "rsi_14",
-        "macd_12_26_9_bullish"
+        "macd_12_26_9_bearish"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "cpr_narrow",
-        "below_cpr",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 2245.32,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "dc20_break_retest",
@@ -2265,11 +1868,9 @@
         "support_break_retest"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 4.99,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "adx_trending"
-      ]
+      "fires_per_year_upper_bound": 1.5,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "r1_break_retest",
@@ -2289,14 +1890,9 @@
         "below_avwap_20high"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 96.05,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "r1_break_retest_long",
-        "above_r1",
-        "s1_break_retest_short",
-        "below_s1"
-      ]
+      "fires_per_year_upper_bound": 0.0,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "52wh_break_retest",
@@ -2310,11 +1906,9 @@
         "above_avwap_20low"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 90.09,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "year_high_break_retest_long"
-      ]
+      "fires_per_year_upper_bound": 0.9,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "52wl_break_retest_short",
@@ -2377,11 +1971,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "head_shoulders_bottom_detected"
-      ]
+      "fires_per_year_upper_bound": 180.18,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "double_bottom_long",
@@ -2390,11 +1982,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "double_bottom_detected"
-      ]
+      "fires_per_year_upper_bound": 360.36,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "cup_and_handle_long",
@@ -2406,12 +1996,9 @@
         "rsi_14"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 792.79,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "cup_handle_detected",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 3.96,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "flag_bull_long",
@@ -2431,11 +2018,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "triangle_ascending_detected"
-      ]
+      "fires_per_year_upper_bound": 720.72,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "donchian_breakdown_retest_short",
@@ -2479,12 +2064,9 @@
         "rsi_14"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 594.59,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "cup_handle_detected",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 2.97,
+      "verdict": "FAIL_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "flag_bull_retest_long",
@@ -2521,11 +2103,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1081.08,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "triangle_ascending_detected"
-      ]
+      "fires_per_year_upper_bound": 21.62,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_cluster_long",
@@ -2536,12 +2116,9 @@
         "institutional_increased"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 3603.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_new_positions",
-        "institutional_increased"
-      ]
+      "fires_per_year_upper_bound": 288.29,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_buy_momentum_long",
@@ -2559,14 +2136,12 @@
       "strategy": "institutional_distribution_short",
       "gates": [
         "institutional_negative",
-        "price_above_ema_50"
+        "below_ema_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_negative"
-      ]
+      "fires_per_year_upper_bound": 4989.6,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_oversold_long",
@@ -2577,10 +2152,8 @@
       ],
       "has_or_composite": false,
       "fires_per_year_upper_bound": 10810.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "rsi_14"
-      ]
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_breakout_confirmation_long",
@@ -2630,14 +2203,9 @@
         "prior_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_changed_recent",
-        "days_since_classification_change",
-        "new_sector",
-        "prior_sector"
-      ]
+      "fires_per_year_upper_bound": 720.72,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_to_tech_long",
@@ -2647,27 +2215,21 @@
         "new_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_change_to_tech",
-        "new_sector"
-      ]
+      "fires_per_year_upper_bound": 180.18,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_to_defensive_short",
       "gates": [
         "classification_change_to_defensive",
-        "price_above_ema_200",
+        "below_ema_200",
         "new_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_change_to_defensive",
-        "new_sector"
-      ]
+      "fires_per_year_upper_bound": 97.02,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_volume_long",
@@ -2679,13 +2241,9 @@
         "new_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1441.44,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_changed_recent",
-        "days_since_classification_change",
-        "new_sector"
-      ]
+      "fires_per_year_upper_bound": 28.83,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_momentum_long",
@@ -2695,28 +2253,22 @@
         "price_above_ema_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 16770.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_changed_recent"
-      ]
+      "fires_per_year_upper_bound": 335.41,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_from_tech_short",
       "gates": [
         "classification_change_from_tech",
-        "price_above_ema_200",
+        "below_ema_200",
         "prior_sector",
         "new_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_change_from_tech",
-        "prior_sector",
-        "new_sector"
-      ]
+      "fires_per_year_upper_bound": 97.02,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_breakout_long",
@@ -2728,13 +2280,9 @@
         "new_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1081.08,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_changed_recent",
-        "days_since_classification_change",
-        "new_sector"
-      ]
+      "fires_per_year_upper_bound": 21.62,
+      "verdict": "WARN_FIRE_STARVED",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_with_institutional_long",
@@ -2745,12 +2293,9 @@
         "new_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 10810.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_changed_recent",
-        "new_sector"
-      ]
+      "fires_per_year_upper_bound": 216.22,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_with_insider_long",
@@ -2761,12 +2306,9 @@
         "new_sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1801.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_changed_recent",
-        "new_sector"
-      ]
+      "fires_per_year_upper_bound": 36.04,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "classification_change_oversold_long",
@@ -2776,12 +2318,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "classification_changed_recent",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 720.72,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_persistent_holders_long",
@@ -2790,11 +2329,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_increased"
-      ]
+      "fires_per_year_upper_bound": 14414.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_strong_conviction_long",
@@ -2804,26 +2341,21 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_increased",
-        "institutional_new_positions"
-      ]
+      "fires_per_year_upper_bound": 2882.88,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_capitulation_short",
       "gates": [
         "institutional_negative",
         "vol_spike_2x",
-        "price_above_ema_50"
+        "below_ema_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1219.68,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_negative"
-      ]
+      "fires_per_year_upper_bound": 199.58,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_high_conviction_long",
@@ -2832,11 +2364,9 @@
         "price_above_ema_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 30492.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_new_positions"
-      ]
+      "fires_per_year_upper_bound": 6098.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_with_directors_long",
@@ -2846,11 +2376,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 10810.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "insider_director_buyers_30d"
-      ]
+      "fires_per_year_upper_bound": 1081.08,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_with_officers_long",
@@ -2860,11 +2388,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 10810.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "insider_officer_buyers_30d"
-      ]
+      "fires_per_year_upper_bound": 1081.08,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_persistence_momentum_long",
@@ -2874,11 +2400,9 @@
         "price_above_ema_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 16770.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_increased"
-      ]
+      "fires_per_year_upper_bound": 6708.24,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_persistence_breakout_long",
@@ -2888,11 +2412,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1081.08,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_increased"
-      ]
+      "fires_per_year_upper_bound": 432.43,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_persistence_volume_long",
@@ -2902,11 +2424,9 @@
         "price_above_ema_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1219.68,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_increased"
-      ]
+      "fires_per_year_upper_bound": 487.87,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_persistence_oversold_long",
@@ -2916,12 +2436,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_increased",
-        "rsi_14"
-      ]
+      "fires_per_year_upper_bound": 14414.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_recent_init_momentum_long",
@@ -2931,11 +2448,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 19819.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_new_positions"
-      ]
+      "fires_per_year_upper_bound": 3963.96,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_recent_init_volume_long",
@@ -2945,11 +2460,9 @@
         "price_above_ema_50"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1219.68,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_new_positions"
-      ]
+      "fires_per_year_upper_bound": 243.94,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_increased_with_directors_long",
@@ -2959,12 +2472,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_increased",
-        "insider_director_buyers_30d"
-      ]
+      "fires_per_year_upper_bound": 1441.44,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_multi_quarter_persistence_long",
@@ -2975,13 +2485,9 @@
         "total_active_holders"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_persistence_strong",
-        "persistent_holders_4q",
-        "total_active_holders"
-      ]
+      "fires_per_year_upper_bound": 2162.16,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "institutional_committed_growth_long",
@@ -2991,12 +2497,9 @@
         "committed_growth_holders"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "institutional_persistence_growing",
-        "committed_growth_holders"
-      ]
+      "fires_per_year_upper_bound": 1081.08,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "post_inclusion_drift_long",
@@ -3039,14 +2542,9 @@
         "pair_counterparty"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pair_count_active",
-        "pair_zscore_signed",
-        "pair_half_life",
-        "pair_counterparty"
-      ]
+      "fires_per_year_upper_bound": 27720.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "pairs_mean_reversion_short",
@@ -3057,14 +2555,9 @@
         "pair_counterparty"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pair_count_active",
-        "pair_zscore_signed",
-        "pair_half_life",
-        "pair_counterparty"
-      ]
+      "fires_per_year_upper_bound": 27720.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "news_sentiment_long",
@@ -3074,11 +2567,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 10810.8,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "news_sentiment_mean"
-      ]
+      "fires_per_year_upper_bound": 5405.4,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "news_sentiment_shift_long",
@@ -3120,10 +2611,8 @@
       ],
       "has_or_composite": false,
       "fires_per_year_upper_bound": 831.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pct_change_5d"
-      ]
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "news_momentum_short",
@@ -3154,10 +2643,8 @@
       ],
       "has_or_composite": false,
       "fires_per_year_upper_bound": 831.6,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "pct_change_5d"
-      ]
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "bollinger_tight_with_smart_money_long",
@@ -3167,11 +2654,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 18018.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "bb_squeeze"
-      ]
+      "fires_per_year_upper_bound": 900.9,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "mfi_oversold_with_smart_money_long",
@@ -3180,11 +2665,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "mfi_14_oversold"
-      ]
+      "fires_per_year_upper_bound": 1801.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "rsi_oversold_with_smart_money_long",
@@ -3193,11 +2676,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "rsi_14_oversold"
-      ]
+      "fires_per_year_upper_bound": 1801.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "52w_high_breakout_with_smart_money_long",
@@ -3232,11 +2713,9 @@
         "close_above_open"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 27720.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "squeeze_on_release"
-      ]
+      "fires_per_year_upper_bound": 831.6,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "xs_momentum_with_smart_money_long",
@@ -3245,11 +2724,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_momentum_top_decile"
-      ]
+      "fires_per_year_upper_bound": 3603.6,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "xs_low_beta_with_smart_money_long",
@@ -3258,11 +2735,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "xs_low_beta_top_quintile"
-      ]
+      "fires_per_year_upper_bound": 7207.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "donchian_breakout_with_smart_money_long",
@@ -3282,11 +2757,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": true,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "macd_bullish_cross"
-      ]
+      "fires_per_year_upper_bound": 1081.08,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "pead_with_smart_money_long",
@@ -3306,11 +2779,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "is_totm_window"
-      ]
+      "fires_per_year_upper_bound": 10810.8,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "pre_holiday_long",
@@ -3320,12 +2791,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "is_pre_holiday",
-        "dow"
-      ]
+      "fires_per_year_upper_bound": 1441.44,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "january_effect_small_cap_long",
@@ -3335,12 +2803,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "is_january",
-        "cap_band"
-      ]
+      "fires_per_year_upper_bound": 2990.99,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "halloween_seasonal_long",
@@ -3349,11 +2814,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "is_halloween_period"
-      ]
+      "fires_per_year_upper_bound": 18018.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "risk_off_bond_equity_short",
@@ -3361,11 +2824,9 @@
         "risk_off_regime_bond_signal"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "risk_off_regime_bond_signal"
-      ]
+      "fires_per_year_upper_bound": 11088.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "vix_backwardation_long",
@@ -3374,12 +2835,9 @@
         "xs_quality_decile"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "vix_term_backwardation",
-        "xs_quality_decile"
-      ]
+      "fires_per_year_upper_bound": 277.2,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "sector_rotation_defensive_long",
@@ -3388,12 +2846,9 @@
         "sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "defensive_leadership",
-        "sector"
-      ]
+      "fires_per_year_upper_bound": 16632.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "gold_silver_risk_off_long",
@@ -3402,12 +2857,9 @@
         "sector"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "risk_off_regime_gold_signal",
-        "sector"
-      ]
+      "fires_per_year_upper_bound": 11088.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "dxy_headwind_multinational_short",
@@ -3416,12 +2868,9 @@
         "foreign_rev_pct"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 55440.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "usd_strengthening",
-        "foreign_rev_pct"
-      ]
+      "fires_per_year_upper_bound": 27720.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "poc_magnet_long",
@@ -3431,12 +2880,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "vp_close_near_poc_pct",
-        "vp_close_above_poc"
-      ]
+      "fires_per_year_upper_bound": 9009.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "value_area_breakout_long",
@@ -3446,11 +2892,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 1441.44,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "vp_above_value_area"
-      ]
+      "fires_per_year_upper_bound": 576.58,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     },
     {
       "strategy": "naked_poc_retest_long",
@@ -3460,12 +2904,9 @@
         "price_above_ema_200"
       ],
       "has_or_composite": false,
-      "fires_per_year_upper_bound": 36036.0,
-      "verdict": "INCOMPLETE_PRIORS",
-      "missing_priors": [
-        "naked_poc_count",
-        "naked_poc_nearest_distance_pct"
-      ]
+      "fires_per_year_upper_bound": 18018.0,
+      "verdict": "PASS_CUBE",
+      "missing_priors": []
     }
   ]
 }
