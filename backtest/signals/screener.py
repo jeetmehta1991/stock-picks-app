@@ -945,12 +945,64 @@ def strat_inside_bar_breakout(s):
 
 
 def strat_force_index_breakout(s):
-    fl = (s.get("force_index_cross_up") and s.get("price_above_ema_20"))
-    fs = (s.get("force_index_cross_dn") and not s.get("price_above_ema_20"))
+    """Elder 1993 *Trading for a Living* Force Index zero-line cross with
+    EMA-20 trend filter + B589-family bullish/bearish bar gate.
+
+    Force Index (Elder) = (close.diff x volume) smoothed by 13-period
+    EMA. A zero-line cross UP indicates price-x-volume momentum has
+    turned positive (accumulation pressure); a cross DN indicates
+    distribution pressure. The EMA-20 trend filter ensures the cross
+    aligns with the prevailing trend direction.
+
+    Batch 626 (2026-06-08 owner-directed Stage 4 walk per CHECKLIST
+    #105 + B623 REMOVE_OK candidate review; C option approved):
+
+      F1 - silent-gap fix per `feedback_never_use_NOT_s_get_pattern`.
+        Pre-B626 SHORT side used `not s.get("price_above_ema_20")`
+        which auto-passed when the EMA-20 key was missing (None is
+        falsy; not None = True). Producer DOES emit price_above
+        _ema_20 + the symmetric below_ema_20 (B609 producer), so the
+        positive symmetric signal is wired.
+      F2 - docstring + Elder 1993 source citation added (pre-B626 the
+        strategy had zero docstring).
+      (a) - B589-family bullish/bearish bar gate: close_above_open
+        (LONG) / close_below_open (SHORT). Aligns this 2-gate strategy
+        with the family standardization for momentum-event entries.
+
+    Post-B626 3-gate set per direction:
+      LONG:  force_index_cross_up + price_above_ema_20 + close_above_open
+      SHORT: force_index_cross_dn + below_ema_20 + close_below_open
+
+    DEFERRED to R5 per B624 manifest M1: STRATEGY_REGIME_AFFINITY
+    entry `{bull, bear, crisis, neutral}` (all-4 regimes; effectively
+    no constraint) is a B623 REMOVE_OK candidate (REMOVE gains
+    +620.5pp PnL). Map removal pends R5 direction-aware confirmation.
+
+    Family-bug surfaced (CHECKLIST n; not actioned in this batch):
+    2 other strategies use the same `not s.get("price_above_ema_20")`
+    pattern - strat_awesome_oscillator + strat_stoch_oversold (SHORT
+    sides). Owner-directed follow-up batch to sweep both with the same
+    F1 swap.
+
+    Regime affinity per current map: all 4 regimes (deferred per
+    B624 manifest).
+    """
+    # B626 F1 + (a): positive symmetric signal + bullish-bar gate
+    fl = (s.get("force_index_cross_up")
+          and s.get("price_above_ema_20")
+          and s.get("close_above_open"))
+    fs = (s.get("force_index_cross_dn")
+          and s.get("below_ema_20")          # B626 F1 (B609 producer)
+          and s.get("close_below_open"))     # B626 (a)
     return _strat3(fl, fs, "breakout",
-        ["force_index_cross_up","price_above_ema_20"], ["force_index_cross_dn","price_below_ema_20"],
-        ["Force Index crossed above zero  -  pricexvolume momentum positive","Above EMA-20"],
-        ["Force Index crossed below zero  -  pricexvolume momentum negative","Below EMA-20"])
+        ["force_index_cross_up","price_above_ema_20","close_above_open"],
+        ["force_index_cross_dn","below_ema_20","close_below_open"],
+        ["Force Index crossed above zero - price-x-volume momentum positive (Elder 1993)",
+         "Above EMA-20 (trend filter)",
+         "Bullish bar - close above open (B589-family; B626 a)"],
+        ["Force Index crossed below zero - price-x-volume momentum negative (Elder 1993)",
+         "Below EMA-20 (trend filter; B626 F1 positive symmetric)",
+         "Bearish bar - close below open (B589-family; B626 a)"])
 
 
 def strat_donchian_10_breakout(s):
