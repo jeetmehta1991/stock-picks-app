@@ -148,11 +148,22 @@ def test_batch619_b607_flag_smoke():
     assert result["verdict"] == "PASS_CUBE"
 
 
-def test_batch619_b615_squeeze_event_only_fire_starved():
-    """Pin (9): B615 squeeze_setup_event_only_long (8-gate EVENT-only).
-    KEY VALIDATION: estimator immediately catches the fire-starvation
-    concern that B615's B-twin (L1c tightened to insider_cluster_active
-    alone) creates. ~2.5/yr expected vs > 30 cube threshold."""
+def test_batch619_b615_squeeze_event_only_fire_starved_LED_TO_B620_DELETION():
+    """Pin (9): B615 squeeze_setup_event_only_long (7-gate EVENT-only)
+    independence-product upper bound. This test is the historical
+    artifact of WHY the B-twin was deleted in B620.
+
+    Owner directed C (delete) on the B619 fire-count finding: the
+    estimator surfaced FAIL_FIRE_STARVED (~2.5 fires/yr universe-wide
+    upper bound, below min_trades=30/regime by an order of magnitude).
+    The A/B test of EVENT-only L1c can be answered offline post-cube
+    from strat_squeeze_setup_long's trade log filtered by
+    insider_cluster_active=True at fire bar - no separate registered
+    strategy needed.
+
+    Pin preserved as estimator-correctness test (the math still holds
+    even though the strategy is no longer registered); see B620 deletion
+    in screener.py for the strategy-side action."""
     result = estimate(gates=[
         "short_interest_pct>=0.20",
         "days_to_cover>=8",
@@ -163,12 +174,11 @@ def test_batch619_b615_squeeze_event_only_fire_starved():
         "close_in_top_40pct_of_range",
     ])
     assert result["verdict"] in ("FAIL_FIRE_STARVED", "WARN_FIRE_STARVED"), (
-        f"B615 squeeze EVENT-only B-twin should be fire-starved; got "
-        f"{result['fires_per_year_upper_bound']} fires/yr "
-        f"({result['verdict']}). If verdict is PASS_CUBE, PRIOR_RATES "
-        f"may be over-permissive for SI/DTC threshold gates."
+        f"Estimator must surface this 7-gate EVENT-only L1c conjunction "
+        f"as fire-starved (this is the math that drove the B620 deletion); "
+        f"got {result['fires_per_year_upper_bound']} fires/yr "
+        f"({result['verdict']})."
     )
-    # Concrete bound: should be substantially less than min_trades
     assert result["fires_per_year_upper_bound"] < 30
 
 

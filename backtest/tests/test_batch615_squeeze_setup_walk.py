@@ -71,93 +71,40 @@ def test_batch615_original_fires_with_event_only_l1c():
     assert out["fires"] is True and out["direction"] == "long"
 
 
-def test_batch615_btwin_fires_with_event_only_l1c():
-    """Pin (3): B-twin requires EVENT-only smart-money; insider_cluster
-    _active suffices."""
-    from backtest.signals.screener import strat_squeeze_setup_event_only_long
-    s = _full_l1ab_l2_l3()
-    s["insider_cluster_active"] = True
-    out = strat_squeeze_setup_event_only_long(s)
-    assert out["fires"] is True and out["direction"] == "long"
+# Pins (3)-(6) SUPERSEDED-by-deletion in Batch 620:
+# B619 fire-count estimator surfaced strat_squeeze_setup_event_only_long
+# as FAIL_FIRE_STARVED (~2.5 fires/yr universe-wide upper bound; below
+# min_trades=30/regime by an order of magnitude). Per CHECKLIST (k)
+# resolution + owner direction (C delete), B-twin DELETED in B620. The
+# A/B test of EVENT-only L1c can be answered offline post-cube from
+# strat_squeeze_setup_long's trade log filtered by insider_cluster
+# _active=True at fire bar - no separate registered strategy needed.
+# Pins (3)-(6) replaced with the deletion checks below.
 
 
-def test_batch615_btwin_does_not_fire_on_state_only_institutional_buy():
-    """Pin (4): KEY A/B isolation - 13F STATE alone does NOT fire B-twin
-    (would have fired the original via the OR composite)."""
-    from backtest.signals.screener import (
-        strat_squeeze_setup_long,
-        strat_squeeze_setup_event_only_long,
+def test_batch615_btwin_deleted_in_b620():
+    """Pin (3) SUPERSEDED by B620: B-twin DELETED (FAIL_FIRE_STARVED).
+    Strategy function + ALL_STRATEGIES entry must both be absent."""
+    from backtest.signals import screener
+    assert not hasattr(screener, "strat_squeeze_setup_event_only_long"), (
+        "B620 deletion: strat_squeeze_setup_event_only_long must be "
+        "removed from screener.py per B619 fire-count finding"
     )
-    s = _full_l1ab_l2_l3()
-    s["institutional_buy"] = True   # STATE half only
-    # Sanity: original fires
-    assert strat_squeeze_setup_long(s)["fires"] is True
-    # B-twin must NOT fire (dropped the STATE half from L1c)
-    assert strat_squeeze_setup_event_only_long(s)["fires"] is False, (
-        "B615 B-twin must drop the 13F institutional_buy STATE half; "
-        "must NOT fire when only STATE half is True"
+    assert "squeeze_setup_event_only_long" not in screener.ALL_STRATEGIES, (
+        "B620 deletion: B-twin registry entry must be removed"
     )
 
 
-def test_batch615_btwin_blocks_without_any_smart_money():
-    """Pin (5): no smart-money signal at all blocks B-twin."""
-    from backtest.signals.screener import strat_squeeze_setup_event_only_long
-    s = _full_l1ab_l2_l3()
-    # NO smart-money signal True
-    assert strat_squeeze_setup_event_only_long(s)["fires"] is False
-
-
-def test_batch615_btwin_fires_on_large_dollar_buy_event():
-    """Pin (6a): B-twin fires when large_dollar_buy EVENT is the L1c."""
-    from backtest.signals.screener import strat_squeeze_setup_event_only_long
-    s = _full_l1ab_l2_l3()
-    s["large_dollar_buy"] = True
-    assert strat_squeeze_setup_event_only_long(s)["fires"] is True
-
-
-def test_batch615_btwin_fires_on_cfo_buy_event():
-    """Pin (6b): B-twin fires when cfo_buy EVENT is the L1c."""
-    from backtest.signals.screener import strat_squeeze_setup_event_only_long
-    s = _full_l1ab_l2_l3()
-    s["cfo_buy"] = True
-    assert strat_squeeze_setup_event_only_long(s)["fires"] is True
-
-
-def test_batch615_btwin_requires_l1ab_si_dtc():
-    """Pin (6c): L1ab gates still required - SI < 20% blocks."""
-    from backtest.signals.screener import strat_squeeze_setup_event_only_long
-    s = _full_l1ab_l2_l3()
-    s["insider_cluster_active"] = True
-    s["short_interest_pct"] = 0.10   # below 0.20 floor
-    assert strat_squeeze_setup_event_only_long(s)["fires"] is False
-
-
-def test_batch615_btwin_requires_l2_catalyst():
-    """Pin (6d): L2 catalyst still required - no shift + no PEAD blocks."""
-    from backtest.signals.screener import strat_squeeze_setup_event_only_long
-    s = _full_l1ab_l2_l3()
-    s["insider_cluster_active"] = True
-    s["news_sentiment_shift"] = 0.0   # below 0.4 floor; no PEAD either
-    assert strat_squeeze_setup_event_only_long(s)["fires"] is False
-
-
-def test_batch615_btwin_requires_l3_confirmation():
-    """Pin (6e): L3 vol_spike_15x still required."""
-    from backtest.signals.screener import strat_squeeze_setup_event_only_long
-    s = _full_l1ab_l2_l3()
-    s["insider_cluster_active"] = True
-    s["vol_spike_15x"] = False
-    assert strat_squeeze_setup_event_only_long(s)["fires"] is False
-
-
-def test_batch615_both_registered_in_all_strategies():
-    """Pin (7): both A + B-twin in registry."""
+def test_batch615_original_strategy_preserved():
+    """Pin (4) SUPERSEDED by B620: the ORIGINAL strat_squeeze_setup_long
+    remains registered and active. The B620 deletion only removed the
+    B-twin; the OR-composite original is preserved and the EVENT-only
+    L1c A/B question is answerable offline post-cube."""
     from backtest.signals.screener import ALL_STRATEGIES
     assert "squeeze_setup_long" in ALL_STRATEGIES
-    assert "squeeze_setup_event_only_long" in ALL_STRATEGIES
 
 
-def test_batch615_all_strategies_count_222():
-    """Pin (8): 221 + 1 B-twin = 222."""
+def test_batch615_all_strategies_count_221_post_b620():
+    """Pin (8) updated for B620 deletion: 222 -> 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert len(ALL_STRATEGIES) == 221

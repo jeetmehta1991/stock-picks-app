@@ -1673,10 +1673,17 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       tightened to EVENT-only smart-money - drops 13F
     #       institutional_buy STATE half - for A/B vs broader OR
     #       composite. Net: +1 B-twin = +1; total 221 -> 222.)
-    assert len(ALL_STRATEGIES) == 222, (
+    #   221 after Batch 620 (B619 fire-count estimator FAIL_FIRE_STARVED
+    #       on squeeze_setup_event_only_long ~2.5 fires/yr universe-wide
+    #       upper bound; below min_trades=30/regime by ~10x. Per
+    #       CHECKLIST (k) resolution B-twin DELETED. A/B EVENT-only L1c
+    #       question answerable post-cube from squeeze_setup_long's
+    #       trade log filtered by insider_cluster_active=True at fire
+    #       bar. Net: -1 = 222 -> 221.)
+    assert len(ALL_STRATEGIES) == 221, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615 trajectory: "
-        f"ALL_STRATEGIES count must be 222 post-B615, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620 trajectory: "
+        f"ALL_STRATEGIES count must be 221 post-B620, got {len(ALL_STRATEGIES)}"
     )
 
 
