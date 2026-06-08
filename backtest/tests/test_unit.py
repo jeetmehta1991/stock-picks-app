@@ -6957,18 +6957,20 @@ def test_batch211_orb_long_requires_gap_volume_and_regime():
 
 
 def test_batch211_orb_short_symmetric():
-    """Batch 211: orb_stocks_in_play_short symmetric on gap-down."""
+    """Batch 211: orb_stocks_in_play_short symmetric on gap-down.
+    B630 sweep update: strategy swapped to positive symmetric
+    below_ema_200."""
     from backtest.signals.screener import strat_orb_stocks_in_play_short
     s = {
         "gap_dn_2pct": True, "gap_dn_pct": 3.5,
         "close_below_open": True,
         "vol_spike_2x": True,
-        "price_above_ema_200": False,  # bear regime
+        "below_ema_200": True,         # B630: bear regime (positive symmetric)
     }
     r = strat_orb_stocks_in_play_short(s)
     assert r["fires"] is True and r["direction"] == "short"
-    # Bull regime -> short must NOT fire
-    s["price_above_ema_200"] = True
+    # Bull regime (below_ema_200=False) -> short must NOT fire
+    s["below_ema_200"] = False
     assert strat_orb_stocks_in_play_short(s)["fires"] is False
 
 
@@ -8779,14 +8781,15 @@ def test_batch216_smc_equal_highs_sweep_short_confluence():
 
 def test_batch216_smc_bos_retest_handles_both_directions():
     """Batch 216: bos_retest_entry fires long on bos_retest_long +
-    regime gate; short symmetric."""
+    regime gate; short symmetric.
+    B630 sweep update: positive symmetric below_ema_200."""
     from backtest.signals.screener import strat_smc_bos_retest_entry
     s_long = {"smc_bos_retest_long": True, "smc_bos_retest_short": False,
               "price_above_ema_200": True}
     r = strat_smc_bos_retest_entry(s_long)
     assert r["fires"] is True and r["direction"] == "long"
     s_short = {"smc_bos_retest_long": False, "smc_bos_retest_short": True,
-               "price_above_ema_200": False}
+               "below_ema_200": True}            # B630: positive symmetric
     r2 = strat_smc_bos_retest_entry(s_short)
     assert r2["fires"] is True and r2["direction"] == "short"
 
@@ -8990,7 +8993,8 @@ def test_batch208_avwap_50_reclaim_requires_200ema_regime():
 
 def test_batch208_avwap_20high_rejection_short_requires_bear_regime():
     """Batch 208: avwap_20high_rejection_short requires below 200-EMA
-    (bear regime confirmation) + bearish reversal candle."""
+    (bear regime confirmation) + bearish reversal candle.
+    B630 sweep update: positive symmetric below_ema_200."""
     from backtest.signals.screener import strat_avwap_20high_rejection_short
     s = {
         "above_avwap_20high": False,
@@ -8998,13 +9002,13 @@ def test_batch208_avwap_20high_rejection_short_requires_bear_regime():
         "shooting_star": True,
         "bearish_engulfing": False,
         "vol_spike_15x": True,
-        "price_above_ema_200": False,
+        "below_ema_200": True,          # B630 positive symmetric
     }
     r = strat_avwap_20high_rejection_short(s)
     assert r["fires"] is True and r["direction"] == "short"
 
     # In bull regime -> NOT fires
-    s["price_above_ema_200"] = True
+    s["below_ema_200"] = False
     assert strat_avwap_20high_rejection_short(s)["fires"] is False
 
 

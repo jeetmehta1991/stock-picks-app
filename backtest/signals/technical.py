@@ -518,6 +518,12 @@ def compute_ema_sma(df: pd.DataFrame) -> dict:
         # which auto-passed when the key was missing.
         result[f"below_ema_{fast}"]               = close < efv
         result[f"below_ema_{slow}"]               = close < esv
+        # B630 F2 (2026-06-08 owner-directed mega-sweep): symmetric
+        # below_sma_{fast,slow} signals for the 4 strategies that
+        # previously used `not s.get("price_above_sma_{fast,slow}")`
+        # silent-gap pattern.
+        result[f"below_sma_{fast}"]               = close < sfv
+        result[f"below_sma_{slow}"]               = close < ssv
     return result
 
 
@@ -821,6 +827,10 @@ def compute_supertrend(df: pd.DataFrame, period: int = 7, mult: float = 3.0) -> 
     st_arr, bull_arr = _supertrend_inner_loop_numba(ub_arr, lb_arr, cl_arr)
     return {
         "supertrend_bullish":  bool(bull_arr[-1]),
+        # B630 F2 (2026-06-08 owner-directed mega-sweep): symmetric
+        # supertrend_bearish for the 3 strategies that previously used
+        # `not s.get("supertrend_bullish")` silent-gap pattern.
+        "supertrend_bearish":  not bool(bull_arr[-1]),
         "supertrend_value":    round(float(st_arr[-1]), 4),
         "supertrend_flip_up":  bool(bull_arr[-1]) and not bool(bull_arr[-2]),
         "supertrend_flip_dn":  not bool(bull_arr[-1]) and bool(bull_arr[-2]),

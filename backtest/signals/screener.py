@@ -223,9 +223,10 @@ def strat_pivot_r1_breakout(s):
         s.get("above_r1") and s.get("vol_spike_15x")
         and s.get("macd_12_26_9_bullish") and avwap_long_ok
     )
+    # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer)
     fs = (
         s.get("below_s1") and s.get("vol_spike_15x")
-        and (not s.get("macd_12_26_9_bullish")) and avwap_short_ok
+        and s.get("macd_12_26_9_bearish") and avwap_short_ok
     )
     return _strat3(fl, fs, "pivot",
         ["above_r1", "vol_spike_1.5x", "macd_bullish",
@@ -591,7 +592,8 @@ def strat_golden_cross_50_200(s):
 
 def strat_golden_cross_9_21(s):
     fl = (s.get("ema_9_21_golden_cross") and s.get("price_above_sma_50"))
-    fs = (s.get("ema_9_21_death_cross") and not s.get("price_above_sma_50"))
+    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
+    fs = (s.get("ema_9_21_death_cross") and s.get("below_sma_50"))
     return _strat3(fl, fs, "trend",
         ["ema_9_21_golden_cross","price_above_sma_50"], ["ema_9_21_death_cross","price_below_sma_50"],
         ["EMA-9 crossed above EMA-21  -  early trend bullish","Above 50 SMA confirms"],
@@ -600,7 +602,8 @@ def strat_golden_cross_9_21(s):
 
 def strat_golden_cross_20_50(s):
     fl = (s.get("ema_20_50_golden_cross") and s.get("price_above_ema_200"))
-    fs = (s.get("ema_20_50_death_cross") and not s.get("price_above_ema_200"))
+    # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
+    fs = (s.get("ema_20_50_death_cross") and s.get("below_ema_200"))
     return _strat3(fl, fs, "trend",
         ["ema_20_50_golden_cross","price_above_ema_200"], ["ema_20_50_death_cross","price_below_ema_200"],
         ["EMA-20 crossed above EMA-50  -  medium-term trend bullish","Above 200 EMA confirms"],
@@ -678,8 +681,10 @@ def strat_adx_initiation(s):
 
 
 def strat_supertrend_macd(s):
+    # B630 sweep: double F1 swap - supertrend_bullish -> supertrend_bearish
+    # + macd_12_26_9_bullish -> macd_12_26_9_bearish (both positive symmetric).
     fl = (s.get("supertrend_bullish") and s.get("macd_12_26_9_bullish") and s.get("adx", 0) > 20)
-    fs = (not s.get("supertrend_bullish") and not s.get("macd_12_26_9_bullish") and s.get("adx", 0) > 20)
+    fs = (s.get("supertrend_bearish") and s.get("macd_12_26_9_bearish") and s.get("adx", 0) > 20)
     return _strat3(fl, fs, "trend",
         ["supertrend_bullish","macd_bullish","adx>20"], ["supertrend_bearish","macd_bearish","adx>20"],
         ["Supertrend bullish","MACD positive","ADX strong  -  trend confirmed"],
@@ -707,9 +712,10 @@ def strat_rsi_oversold(s):
         and s.get("price_above_sma_50")
         and above_200
     )
+    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fs = (
         (rsi_2 > 95 or rsi_14 > 65)
-        and (not s.get("price_above_sma_50"))
+        and s.get("below_sma_50")
         and (not above_200)
     )
     return _strat3(fl, fs, "mean_reversion",
@@ -730,8 +736,9 @@ def strat_rsi9_extreme(s):
 
 
 def strat_rsi21_slow(s):
+    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fl = (s.get("rsi_21", 50) < 35 and s.get("price_above_sma_50"))
-    fs = (s.get("rsi_21", 50) > 65 and not s.get("price_above_sma_50"))
+    fs = (s.get("rsi_21", 50) > 65 and s.get("below_sma_50"))
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_21<35","price_above_sma_50"], ["rsi_21>65","price_below_sma_50"],
         [f"Slow RSI-21 oversold below 35","Above 50 SMA  -  uptrend context"],
@@ -739,8 +746,9 @@ def strat_rsi21_slow(s):
 
 
 def strat_rsi_overbought_short(s):
+    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fires = (s.get("rsi_14", 50) > 68 and
-             not s.get("price_above_sma_50") and
+             s.get("below_sma_50") and
              (s.get("bearish_engulfing") or s.get("rsi_14_rising") == False))
     return _strat(fires, "short", "mean_reversion",
         ["rsi_14>68","below_sma_50","bearish_signal"],
@@ -1353,9 +1361,10 @@ def strat_shooting_star_short(s):
 
 
 def strat_evening_star_short(s):
+    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fires = (s.get("evening_star") and
              s.get("rsi_14", 50) > 55 and
-             not s.get("price_above_sma_50"))
+             s.get("below_sma_50"))
     return _strat(fires, "short", "candle",
         ["evening_star","rsi_14>55","below_sma_50"],
         ["Three-bar evening star  -  bearish reversal pattern",
@@ -1375,7 +1384,8 @@ def strat_rsi_volume_200ema(s):
     that to zero. Above-average volume on the oversold day still confirms
     the move, without the 2x sledgehammer."""
     fl = (s.get("rsi_14", 50) < 35 and s.get("vol_above_avg") and s.get("price_above_ema_200"))
-    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and not s.get("price_above_ema_200"))
+    # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
+    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and s.get("below_ema_200"))
     return _strat3(fl, fs, "confluence",
         ["rsi_14<35","vol_above_avg","above_ema_200"], ["rsi_14>65","vol_above_avg","below_ema_200"],
         ["RSI oversold + volume above 20d avg + above 200 EMA  -  triple confluence bullish"],
@@ -1427,8 +1437,12 @@ def strat_cpr_narrow_momentum(s):
     above_200 = s.get("price_above_ema_200", False)
     fl = (s.get("cpr_narrow") and s.get("above_cpr") and s.get("rsi_14", 50) > 50
           and s.get("macd_12_26_9_bullish") and above_200)
+    # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer).
+    # The `not above_200` term uses a local variable assigned via .get
+    # with default=False -- semantically equivalent to below_ema_200,
+    # left as-is for readability.
     fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50
-          and not s.get("macd_12_26_9_bullish") and (not above_200))
+          and s.get("macd_12_26_9_bearish") and (not above_200))
     return _strat3(fl, fs, "confluence",
         ["cpr_narrow","above_cpr","rsi_14>50","macd_bullish","price_above_ema_200"],
         ["cpr_narrow","below_cpr","rsi_14<50","macd_bearish","price_below_ema_200"],
@@ -1453,8 +1467,9 @@ def strat_camarilla_rsi_obv(s):
 
 
 def strat_supertrend_ichimoku_adx(s):
+    # B630 sweep: positive symmetric supertrend_bearish (B630 producer)
     fl = (s.get("supertrend_bullish") and s.get("ichi_above_cloud") and s.get("adx_strong"))
-    fs = (not s.get("supertrend_bullish") and s.get("ichi_below_cloud") and s.get("adx_strong"))
+    fs = (s.get("supertrend_bearish") and s.get("ichi_below_cloud") and s.get("adx_strong"))
     return _strat3(fl, fs, "confluence",
         ["supertrend_bullish","ichi_above_cloud","adx_strong"], ["supertrend_bearish","ichi_below_cloud","adx_strong"],
         ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bullish"],
@@ -1486,8 +1501,10 @@ def strat_death_cross_50_200_volume(s):
 
 
 def strat_supertrend_macd_short(s):
-    fires = (not s.get("supertrend_bullish") and
-             not s.get("macd_12_26_9_bullish") and
+    # B630 sweep: double F1 - supertrend_bullish -> supertrend_bearish
+    # (B630 producer) + macd_12_26_9_bullish -> macd_12_26_9_bearish.
+    fires = (s.get("supertrend_bearish") and
+             s.get("macd_12_26_9_bearish") and
              s.get("adx", 0) > 20)
     return _strat(fires, "short", "trend",
         ["supertrend_bearish", "macd_bearish", "adx>20"],
@@ -1703,10 +1720,11 @@ def strat_camarilla_rsi_obv_short(s):
 
 
 def strat_cpr_narrow_momentum_short(s):
+    # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer)
     fires = (s.get("cpr_narrow") and
              s.get("below_cpr") and
              s.get("rsi_14", 50) < 50 and
-             not s.get("macd_12_26_9_bullish"))
+             s.get("macd_12_26_9_bearish"))
     return _strat(fires, "short", "confluence",
         ["cpr_narrow", "below_cpr", "rsi_14<50", "macd_bearish"],
         ["Narrow CPR  -  directional day expected",
@@ -2102,7 +2120,7 @@ def strat_orb_stocks_in_play_short(s):
         s.get("gap_dn_2pct", False)
         and s.get("close_below_open", False)
         and s.get("vol_spike_2x", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     gap = s.get("gap_dn_pct", 0.0)
     return _strat(fires, "short", "orb",
@@ -2302,7 +2320,7 @@ def strat_xs_momentum_bottom_decile_short(s):
     below-200-EMA regime gate."""
     fires = (
         s.get("xs_momentum_bottom_decile", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat(fires, "short", "factor",
         ["xs_momentum_bottom_decile", "price_below_ema_200"],
@@ -2372,7 +2390,7 @@ def strat_po3_bearish(s):
     """Batch 217: Symmetric bearish PO3 daily."""
     fires = (
         s.get("po3_bearish", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat(fires, "short", "po3",
         ["po3_bearish", "price_below_ema_200"],
@@ -2499,7 +2517,7 @@ def strat_smc_fvg_retest_short(s):
     """Batch 216: bearish FVG retest -> short entry. Symmetric to long."""
     fires = (
         s.get("smc_fvg_retest_short_zone", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat(fires, "short", "smc",
         ["smc_fvg_retest_short_zone", "price_below_ema_200"],
@@ -2549,7 +2567,7 @@ def strat_smc_breaker_block_short(s):
     Classic ICT 'breaker block' reversal setup."""
     fires = (
         s.get("smc_breaker_block_bearish", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat(fires, "short", "smc",
         ["smc_breaker_block_bearish", "price_below_ema_200"],
@@ -2591,7 +2609,7 @@ def strat_smc_mitigation_block_short(s):
     """Batch 216: Symmetric mitigation block short."""
     fires = (
         s.get("smc_mitigation_block_short", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
         and s.get("rsi_14", 50) > 50
     )
     return _strat(fires, "short", "smc",
@@ -2626,7 +2644,7 @@ def strat_smc_premium_short(s):
     fires = (
         s.get("smc_in_premium_zone", False)
         and (s.get("smc_bos_bearish", False) or s.get("smc_choch_bearish", False))
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     pct = s.get("smc_dealing_range_pct", 0.5)
     return _strat(fires, "short", "smc",
@@ -2702,7 +2720,7 @@ def strat_smc_bos_retest_entry(s):
     )
     fs = (
         s.get("smc_bos_retest_short", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat3(fl, fs, "smc",
         ["smc_bos_retest_long", "price_above_ema_200"],
@@ -2738,7 +2756,7 @@ def strat_smc_bos_continuation(s):
     )
     fs = (
         s.get("smc_bos_bearish", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
         and vol_confirms
         and rsi < 50
     )
@@ -2784,7 +2802,7 @@ def strat_smc_order_block_bounce(s):
     fs = (
         s.get("smc_ob_bearish_active", False)
         and s.get("rsi_14", 50) > 55
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat3(fl, fs, "smc",
         ["smc_ob_bullish_active", "rsi_14<45", "price_above_ema_200"],
@@ -3373,7 +3391,7 @@ def strat_avwap_50_reclaim(s):
         (not above_50)
         and abs(pct_from_50) < 1.5
         and (not macd_bull)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat3(fl, fs, "vwap",
         ["above_avwap_50low", "near_avwap_50low<1.5pct", "macd_bullish",
@@ -3399,7 +3417,7 @@ def strat_avwap_20high_rejection_short(s):
         and abs(pct_from_20h) < 1.0
         and (s.get("shooting_star") or s.get("bearish_engulfing"))
         and s.get("vol_spike_15x", False)
-        and (not s.get("price_above_ema_200", True))
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     return _strat(fires, "short", "vwap",
         ["below_avwap_20high", "near_avwap_20high<1pct",
@@ -3947,7 +3965,7 @@ def strat_classification_change_to_defensive_short(s):
     signal when both conditions align."""
     fires = (
         s.get("classification_change_to_defensive", False)
-        and not s.get("price_above_ema_200", True)
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     new_sec = s.get("new_sector", "?")
     return _strat(fires, "short", "classification_change",
@@ -4007,7 +4025,7 @@ def strat_classification_change_from_tech_short(s):
     in the 90d post-reclassification window)."""
     fires = (
         s.get("classification_change_from_tech", False)
-        and not s.get("price_above_ema_200", True)
+        and s.get("below_ema_200", False)  # B630 sweep
     )
     prior_sec = s.get("prior_sector", "?")
     new_sec = s.get("new_sector", "?")
