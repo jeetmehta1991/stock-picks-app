@@ -210,6 +210,8 @@ def compute_vwap(df: pd.DataFrame) -> dict:
         "vwap_lower_1":  round(vwap - std, 4),
         "vwap_lower_2":  round(vwap - 2*std, 4),
         "above_vwap":    close > vwap,
+        # B634 producer-additive: symmetric below_vwap
+        "below_vwap":    close < vwap,
         "pct_from_vwap": round((close - vwap) / vwap * 100, 3) if vwap else 0,
     }
     # Batch 205 (Pivot/CPR optimization 2026-05-17): Anchored VWAP per
@@ -504,6 +506,8 @@ def compute_ema_sma(df: pd.DataFrame) -> dict:
         sfp,ssp = _safe_float(sf.iloc[-2]),_safe_float(ss.iloc[-2])
         close   = _safe_float(df["close"].iloc[-1])
         result[f"ema_{fast}_{slow}_bullish"]      = efv > esv
+        # B634 producer-additive: symmetric ema_{fast}_{slow}_bearish
+        result[f"ema_{fast}_{slow}_bearish"]      = efv < esv
         result[f"ema_{fast}_{slow}_golden_cross"] = efv > esv and efp <= esp
         result[f"ema_{fast}_{slow}_death_cross"]  = efv < esv and efp >= esp
         result[f"sma_{fast}_{slow}_bullish"]      = sfv > ssv
@@ -545,7 +549,10 @@ def compute_dema_tema(df: pd.DataFrame, period: int = 20) -> dict:
         "tema_cross_up":   tv > dv and tp <= dp,
         "tema_cross_dn":   tv < dv and tp >= dp,
         "price_above_tema": close > tv,
+        # B634 producer-additive: symmetric price_below_tema/dema
+        "price_below_tema": close < tv,
         "price_above_dema": close > dv,
+        "price_below_dema": close < dv,
     }
 
 
@@ -580,6 +587,8 @@ def compute_adx(df: pd.DataFrame, period: int = 14) -> dict:
         "adx_trending":  adx_v > 25,
         "adx_strong":    adx_v > 40,
         "adx_di_bull":   dip > dim,
+        # B634 producer-additive: symmetric adx_di_bear
+        "adx_di_bear":   dip < dim,
         "adx_cross_up":  adx_v > 25 and padx <= 25,
     }
 
@@ -928,9 +937,14 @@ def compute_hull_ma(df: pd.DataFrame, period: int = 20) -> dict:
     return {
         "hull_ma":          round(v, 4),
         "hull_bullish":     v > pv,
+        # B634 producer-additive: symmetric hull_bearish + price_below_hull
+        # for SHORT-side strategies that previously used `not s.get(...)`
+        # silent-gap pattern.
+        "hull_bearish":     v < pv,
         "hull_flip_up":     v > pv and _safe_float(hull.iloc[-3] if len(hull) > 2 else v) >= pv,
         "hull_flip_dn":     v < pv and _safe_float(hull.iloc[-3] if len(hull) > 2 else v) <= pv,
         "price_above_hull": close > v,
+        "price_below_hull": close < v,
     }
 
 

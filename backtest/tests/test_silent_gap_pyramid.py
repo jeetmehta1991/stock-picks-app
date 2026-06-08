@@ -2629,17 +2629,18 @@ def test_batch333_institutional_strong_conviction_long_fires():
 
 def test_batch333_institutional_capitulation_short_fires():
     """Batch 333: capitulation_short needs institutional_negative AND
-    vol_spike_2x AND below 50-EMA."""
+    vol_spike_2x AND below 50-EMA.
+    B633 fixture-drift repair: swapped to positive symmetric below_ema_50."""
     from backtest.signals.screener import strat_institutional_capitulation_short
     s = {
         "institutional_negative": True,
         "vol_spike_2x": True,
-        "price_above_ema_50": False,
+        "below_ema_50": True,             # B633: positive symmetric
     }
     out = strat_institutional_capitulation_short(s)
     assert out["fires"] is True and out["direction"] == "short"
-    # Above 50 EMA: gated (no capitulation if trend still up)
-    s2 = dict(s); s2["price_above_ema_50"] = True
+    # Above 50 EMA (below_ema_50=False): gated
+    s2 = dict(s); s2["below_ema_50"] = False
     assert strat_institutional_capitulation_short(s2)["fires"] is False
 
 
@@ -2842,16 +2843,17 @@ def test_batch330_institutional_buy_momentum_long():
 
 def test_batch330_institutional_distribution_short():
     """Wave 3 (Batch 330): institutional_distribution_short fires on
-    13F=='negative' AND below 50-EMA (trend agrees)."""
+    13F=='negative' AND below 50-EMA (trend agrees).
+    B633 fixture-drift repair: swapped to positive symmetric below_ema_50."""
     from backtest.signals.screener import strat_institutional_distribution_short
     s = {
         "institutional_negative": True,
-        "price_above_ema_50": False,
+        "below_ema_50": True,           # B633: positive symmetric
     }
     out = strat_institutional_distribution_short(s)
     assert out["fires"] is True and out["direction"] == "short"
-    # Above 50 EMA: trend disagrees, gated off
-    s2 = dict(s); s2["price_above_ema_50"] = True
+    # Above 50 EMA (below_ema_50=False): gated
+    s2 = dict(s); s2["below_ema_50"] = False
     assert strat_institutional_distribution_short(s2)["fires"] is False
 
 
