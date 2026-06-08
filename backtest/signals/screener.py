@@ -218,7 +218,8 @@ def strat_pivot_r1_breakout(s):
     insufficient history) so backward-compat is preserved.
     """
     avwap_long_ok = s.get("above_avwap_252low", True) and s.get("above_avwap_50low", True)
-    avwap_short_ok = (not s.get("above_avwap_252low", False)) and (not s.get("above_avwap_50low", False))
+    # B633 sweep: positive symmetric below_avwap_252low/50low (B612 producers)
+    avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
     fl = (
         s.get("above_r1") and s.get("vol_spike_15x")
         and s.get("macd_12_26_9_bullish") and avwap_long_ok
@@ -248,16 +249,18 @@ def strat_pivot_r2_continuation(s):
     (stronger threshold than R1 since R2 is the secondary breakout) +
     EMA 50/200 trend confirmation."""
     avwap_long_ok = s.get("above_avwap_252low", True) and s.get("above_avwap_50low", True)
-    avwap_short_ok = (not s.get("above_avwap_252low", False)) and (not s.get("above_avwap_50low", False))
+    # B633 sweep: positive symmetric below_avwap_252low/50low (B612 producers)
+    avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
     # Stronger volume confirmation for R2 (2x ADV instead of 1.5x)
     fl = (
         s.get("above_r2") and s.get("adx_trending")
         and s.get("ema_50_200_bullish") and avwap_long_ok
         and s.get("vol_spike_2x", s.get("vol_spike_15x", False))
     )
+    # B634 sweep: positive symmetric ema_50_200_bearish (B634 producer)
     fs = (
         s.get("below_s2") and s.get("adx_trending")
-        and (not s.get("ema_50_200_bullish")) and avwap_short_ok
+        and s.get("ema_50_200_bearish") and avwap_short_ok
         and s.get("vol_spike_2x", s.get("vol_spike_15x", False))
     )
     return _strat3(fl, fs, "pivot",
@@ -364,7 +367,8 @@ def strat_camarilla_r3_breakout(s):
 
 def strat_prev_day_high_break(s):
     fl = (s.get("above_prev_high") and s.get("vol_spike_15x") and s.get("above_vwap"))
-    fs = (s.get("below_prev_low") and s.get("vol_spike_15x") and not s.get("above_vwap"))
+    # B634 sweep: positive symmetric below_vwap (B634 producer)
+    fs = (s.get("below_prev_low") and s.get("vol_spike_15x") and s.get("below_vwap"))
     return _strat3(fl, fs, "pivot",
         ["above_prev_high","vol_spike_1.5x","above_vwap"], ["below_prev_low","vol_spike_1.5x","below_vwap"],
         ["Price broke above previous day's high","Volume confirms participation","Above VWAP  -  buyers in control"],
@@ -426,8 +430,9 @@ def strat_hull_rsi(s):
         and s.get("rsi_9", 50) > 50 and adx_trend_ok
         and above_200
     )
+    # B634 sweep: positive symmetric hull_bearish + price_below_hull (B634 producers)
     fs = (
-        (not s.get("hull_bullish")) and (not s.get("price_above_hull"))
+        s.get("hull_bearish") and s.get("price_below_hull")
         and s.get("rsi_9", 50) < 50 and adx_trend_ok
         and (not above_200)
     )
@@ -659,8 +664,9 @@ def strat_parabolic_sar_flip(s):
 
 
 def strat_tema_dema(s):
+    # B634 sweep: positive symmetric price_below_tema (B634 producer)
     fl = (s.get("tema_cross_up") and s.get("price_above_tema"))
-    fs = (s.get("tema_cross_dn") and not s.get("price_above_tema"))
+    fs = (s.get("tema_cross_dn") and s.get("price_below_tema"))
     return _strat3(fl, fs, "trend",
         ["tema_cross_up","price_above_tema"], ["tema_cross_dn","price_below_tema"],
         ["TEMA crossed above DEMA  -  fast MA system bullish","Price above TEMA"],
@@ -668,7 +674,13 @@ def strat_tema_dema(s):
 
 
 def strat_ichimoku_tk_cross(s):
-    fl = (s.get("ichi_tk_cross_up") and not s.get("ichi_below_cloud"))
+    # B634 sweep: positive symmetric ichi_above_cloud (existing producer).
+    # Semantic note: pre-B634 `not s.get("ichi_below_cloud")` = "above OR
+    # in cloud"; post-B634 strict `ichi_above_cloud` = "strictly above
+    # cloud" (in-cloud no longer fires). Minor tightening matches the
+    # strategy's "TK cross + trend confirmation" intent - in-cloud is
+    # ambiguous/neutral, not confirming.
+    fl = (s.get("ichi_tk_cross_up") and s.get("ichi_above_cloud"))
     fs = (s.get("ichi_tk_cross_dn") and s.get("ichi_below_cloud"))
     return _strat3(fl, fs, "trend",
         ["ichi_tk_cross_up","not_below_cloud"], ["ichi_tk_cross_dn","ichi_below_cloud"],
@@ -711,8 +723,9 @@ def strat_ichimoku_cloud_breakout(s):
 
 
 def strat_adx_initiation(s):
+    # B634 sweep: positive symmetric adx_di_bear (B634 producer)
     fl = (s.get("adx_cross_up") and s.get("adx_di_bull"))
-    fs = (s.get("adx_cross_up") and not s.get("adx_di_bull"))
+    fs = (s.get("adx_cross_up") and s.get("adx_di_bear"))
     return _strat3(fl, fs, "trend",
         ["adx_cross_up","adx_di_bull"], ["adx_cross_up","adx_di_bear"],
         ["ADX crossed above 25  -  trend initiating","DI+ above DI-  -  bullish direction"],
@@ -1322,7 +1335,8 @@ def strat_volume_spike_breakout_retest(s):
 
 def strat_morning_star(s):
     fl = (s.get("morning_star") and s.get("rsi_14", 50) < 45 and s.get("ema_50_200_bullish"))
-    fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55 and not s.get("ema_50_200_bullish"))
+    # B634 sweep: positive symmetric ema_50_200_bearish (B634 producer)
+    fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55 and s.get("ema_50_200_bearish"))
     return _strat3(fl, fs, "candle",
         ["morning_star","rsi_14<45","ema_50_200_bullish"], ["evening_star","rsi_14>55","ema_50_200_bearish"],
         ["Three-bar morning star  -  bullish reversal","RSI not overbought","Above 50/200 EMA"],
@@ -1442,7 +1456,8 @@ def strat_macd_ichimoku(s):
 
 def strat_bb_squeeze_volume(s):
     fl = (s.get("squeeze_fire_up") and s.get("vol_spike_2x") and s.get("above_vwap"))
-    fs = (s.get("squeeze_fire_dn") and s.get("vol_spike_2x") and not s.get("above_vwap"))
+    # B634 sweep: positive symmetric below_vwap (B634 producer)
+    fs = (s.get("squeeze_fire_dn") and s.get("vol_spike_2x") and s.get("below_vwap"))
     return _strat3(fl, fs, "confluence",
         ["squeeze_fire_up","vol_spike_2x","above_vwap"], ["squeeze_fire_dn","vol_spike_2x","below_vwap"],
         ["BB squeeze releasing upward with 2x volume","Above VWAP  -  buyers in control"],
@@ -1584,8 +1599,9 @@ def strat_macd_crossover_short(s):
 
 
 def strat_hull_rsi_short(s):
-    fires = (not s.get("hull_bullish") and
-             not s.get("price_above_hull") and
+    # B634 sweep: positive symmetric hull_bearish + price_below_hull
+    fires = (s.get("hull_bearish") and
+             s.get("price_below_hull") and
              s.get("rsi_9", 50) < 50)
     return _strat(fires, "short", "momentum",
         ["hull_bearish", "price_below_hull", "rsi_9<50"],
@@ -1731,9 +1747,10 @@ def strat_52w_low_breakdown(s):
 
 
 def strat_prev_day_low_breakdown(s):
+    # B634 sweep: positive symmetric below_vwap (B634 producer)
     fires = (s.get("below_prev_low") and
              s.get("vol_spike_15x") and
-             not s.get("above_vwap"))
+             s.get("below_vwap"))
     return _strat(fires, "short", "breakout",
         ["below_prev_low", "vol_spike_1.5x", "below_vwap"],
         ["Price broke below previous day's low  -  failed to hold support",
@@ -3795,7 +3812,7 @@ def strat_institutional_distribution_short(s):
     price trend = continuation short setup."""
     fires = (
         s.get("institutional_negative", False)
-        and not s.get("price_above_ema_50", True)
+        and s.get("below_ema_50", False)  # B633 sweep
     )
     return _strat(fires, "short", "smart_money_13f",
         ["institutional_negative","price_below_ema_50"],
@@ -4368,7 +4385,7 @@ def strat_institutional_capitulation_short(s):
     fires = (
         s.get("institutional_negative", False)
         and s.get("vol_spike_2x", False)
-        and not s.get("price_above_ema_50", True)
+        and s.get("below_ema_50", False)  # B633 sweep
     )
     return _strat(fires, "short", "institutional_persistence",
         ["institutional_negative","vol_spike_2x","price_below_ema_50"],

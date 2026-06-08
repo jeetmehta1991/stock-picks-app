@@ -9157,11 +9157,14 @@ def test_batch206_ultimate_oscillator_connors_rsi2_path():
     oversold-family risk-adjusted but small sample. Connors path opens
     new entries without sacrificing the 200-SMA regime gate."""
     from backtest.signals.screener import strat_ultimate_oscillator
+    # B631 walk added close_above_open bullish-bar gate; B633 fixture
+    # repair extends the Connors-path fixture with the new gate.
     s = {
         "uo_oversold": False,
         "uo": 50.0,
         "rsi_2": 3.0,
         "price_above_sma_200": True,
+        "close_above_open": True,            # B631 gate
     }
     r = strat_ultimate_oscillator(s)
     assert r["fires"] is True and r["direction"] == "long"
