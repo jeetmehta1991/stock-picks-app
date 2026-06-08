@@ -371,12 +371,14 @@ def strat_prev_day_high_break(s):
 
 
 def strat_prev_day_low_bounce(s):
+    # B629 F1 cmf-family sweep: positive symmetric cmf_negative (B629 producer)
     fl = (s.get("near_prev_low") and s.get("hammer") and s.get("cmf_positive"))
-    fs = (s.get("near_prev_high") and s.get("shooting_star") and not s.get("cmf_positive"))
+    fs = (s.get("near_prev_high") and s.get("shooting_star") and s.get("cmf_negative"))
     return _strat3(fl, fs, "pivot",
-        ["near_prev_low","hammer","cmf_positive"], ["near_prev_high","shooting_star","cmf_negative"],
-        ["Price holding at previous day's low","Hammer  -  buyers defended the level","CMF positive"],
-        ["Price stalling at previous day's high","Shooting star  -  sellers rejected the level","CMF negative"])
+        ["near_prev_low","hammer","cmf_positive"],
+        ["near_prev_high","shooting_star","cmf_negative"],
+        ["Price holding at previous day's low","Hammer - buyers defended the level","CMF positive"],
+        ["Price stalling at previous day's high","Shooting star - sellers rejected the level","CMF negative (B629 F1)"])
 
 
 # -----------------------------------------------------------------------------
@@ -456,10 +458,11 @@ def strat_williams_r_oversold(s):
         and above_200
         and s.get("cmf_positive")
     )
+    # B629 F1 cmf-family sweep: positive symmetric cmf_negative
     fs = (
         (s.get("williams_r", 0) > -20 or (rsi_2 > 95))
         and (not above_200)
-        and (not s.get("cmf_positive"))
+        and s.get("cmf_negative")
     )
     return _strat3(fl, fs, "momentum",
         ["williams_r_oversold_or_rsi_2<5", "above_ema_200", "cmf_positive"],
@@ -1434,21 +1437,19 @@ def strat_cpr_narrow_momentum(s):
 
 
 def strat_camarilla_rsi_obv(s):
-    # B628 F1 family-sweep (partial): obv_bullish gate swapped to
-    # positive symmetric obv_bearish. The cmf_positive gate retains
-    # the `not s.get("cmf_positive")` silent-gap pattern - separate
-    # cmf-family follow-up batch needed (cmf_negative producer signal
-    # also needs adding to compute_volume; surfaced for owner approval).
+    # B628 F1: obv_bullish -> obv_bearish (positive symmetric).
+    # B629 F1 cmf-family sweep: cmf_positive -> cmf_negative
+    # (B629 producer signal). Both silent-gaps now closed.
     fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35
           and s.get("obv_bullish") and s.get("cmf_positive"))
     fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65
-          and s.get("obv_bearish")             # B628 F1
-          and not s.get("cmf_positive"))       # PENDING cmf-family sweep
+          and s.get("obv_bearish")
+          and s.get("cmf_negative"))
     return _strat3(fl, fs, "confluence",
         ["near_cam_s3","rsi_14<35","obv_bullish","cmf_positive"],
-        ["near_cam_r3","rsi_14>65","obv_bearish","not cmf_positive"],
+        ["near_cam_r3","rsi_14>65","obv_bearish","cmf_negative"],
         ["Camarilla S3 + RSI oversold + OBV rising + CMF positive - highest conviction long"],
-        ["Camarilla R3 + RSI overbought + OBV bearish (B628 F1) + CMF negative - highest conviction short"])
+        ["Camarilla R3 + RSI overbought + OBV bearish + CMF negative - highest conviction short (B628 F1 + B629 F1)"])
 
 
 def strat_supertrend_ichimoku_adx(s):
@@ -1687,18 +1688,18 @@ def strat_prev_day_low_breakdown(s):
 # --- Confluence shorts (2) ---
 
 def strat_camarilla_rsi_obv_short(s):
-    # B628 F1 family-sweep (partial): obv_bullish gate swapped to
-    # positive symmetric obv_bearish. cmf_positive gate retains the
-    # silent-gap pattern - separate cmf-family follow-up batch needed.
+    # B628 F1: obv_bullish -> obv_bearish (positive symmetric).
+    # B629 F1 cmf-family sweep: cmf_positive -> cmf_negative.
+    # Both silent-gaps now closed.
     fires = (s.get("near_cam_r3") and
              s.get("rsi_14", 50) > 65 and
-             s.get("obv_bearish") and             # B628 F1
-             not s.get("cmf_positive"))           # PENDING cmf-family sweep
+             s.get("obv_bearish") and
+             s.get("cmf_negative"))
     return _strat(fires, "short", "confluence",
-        ["near_cam_r3", "rsi_14>65", "obv_bearish", "not cmf_positive"],
+        ["near_cam_r3", "rsi_14>65", "obv_bearish", "cmf_negative"],
         ["Camarilla R3 - strongest institutional resistance",
          "RSI-14 overbought above 65",
-         "OBV bearish (B628 F1) + CMF negative - four systems confirming short"])
+         "OBV bearish + CMF negative - four systems confirming short (B628 F1 + B629 F1)"])
 
 
 def strat_cpr_narrow_momentum_short(s):
