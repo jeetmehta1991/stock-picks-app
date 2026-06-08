@@ -1680,10 +1680,16 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       question answerable post-cube from squeeze_setup_long's
     #       trade log filtered by insider_cluster_active=True at fire
     #       bar. Net: -1 = 222 -> 221.)
-    assert len(ALL_STRATEGIES) == 221, (
+    #   222 after Batch 636 (Stage 4 walk of strat_three_white_soldiers
+    #       per S4-WALK queue. Owner-directed Class 7 NEW wired same-turn
+    #       per feedback_wire_new_strategies_on_the_spot - strat_three
+    #       _black_crows_short symmetric bearish-reversal mirror (Nison
+    #       1991 canonical). Net: +1 = 221 -> 222.)
+    assert len(ALL_STRATEGIES) == 222, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620 trajectory: "
-        f"ALL_STRATEGIES count must be 221 post-B620, got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636 "
+        f"trajectory: ALL_STRATEGIES count must be 222 post-B636, "
+        f"got {len(ALL_STRATEGIES)}"
     )
 
 
