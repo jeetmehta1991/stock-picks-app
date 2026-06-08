@@ -1187,6 +1187,12 @@ def compute_volume(df: pd.DataFrame) -> dict:
     pcmf_v = _safe_float(cmf.iloc[-2])
     result["cmf"]          = round(cmf_v,4)
     result["cmf_positive"] = cmf_v > 0
+    # B629 F2 (2026-06-08 owner directive cmf-family sweep): symmetric
+    # cmf_negative signal so SHORT-side strategies can switch from
+    # `not s.get("cmf_positive")` (silent-gap fragile per
+    # feedback_never_use_NOT_s_get_pattern) to positive symmetric
+    # cmf_negative. Mirror of cmf_positive (CMF < 0 = distribution).
+    result["cmf_negative"] = cmf_v < 0
     result["cmf_cross_up"] = cmf_v > 0 and pcmf_v <= 0
     result["cmf_cross_dn"] = cmf_v < 0 and pcmf_v >= 0
 
