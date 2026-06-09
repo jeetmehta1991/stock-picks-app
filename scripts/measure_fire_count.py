@@ -151,11 +151,30 @@ class StrategyResult:
             verdict = "BORDERLINE"
         else:
             verdict = "PASS_CUBE"
-        # Universe projection: if the smoke used N tickers and the full
-        # T1a universe is ~220, project linearly. Caveat: smoke ticker
-        # sample may not be representative of full T1a.
+        # Universe projection: linear scale from N sampled tickers to the
+        # PIT-active T1a count at as_of (= calendar end). Owner directive
+        # 2026-06-09 post-external-AI critique: target ~503 active (T1a
+        # active subset PIT-eligible at as_of), NOT 614 all-time T1a or
+        # 220 hardcoded. The hardcoded-220 was a B641 bug -- understated
+        # projections by ~2.3x. Per critique #1: "is the universe 220 or
+        # 614? scale factor wrong either way."
+        #
+        # The active count is captured from the actual ticker load in
+        # `measure_strategies` (set as `self.n_tickers_full_t1a` on each
+        # result). If absent (legacy callers), fall back to 503 (B648
+        # owner-approved literal: T1a active at 2024-12-31 per CLAUDE.md
+        # canonical-fact F-002).
+        #
+        # CAVEAT (still): linear scaling assumes the sample is
+        # representative of the full universe. The default ticker-sample
+        # strategy `first` (alphabetical-ish) over-weights large-cap
+        # survivors; breakout/trend strategies (W6/W8) fire more on
+        # large-cap uptrending names than they would on
+        # small/distressed/delisted names. Use --ticker-sample-strategy
+        # `random` or `stratified` for less-biased samples, and
+        # `--max-tickers 0` (all) for the authoritative run.
         n_tickers_sampled = max(getattr(self, "n_tickers_sampled", 1), 1)
-        n_tickers_full_t1a = 220
+        n_tickers_full_t1a = max(getattr(self, "n_tickers_full_t1a", 503), 1)
         projection_scale = n_tickers_full_t1a / n_tickers_sampled
         projected_long_per_year = fires_long_per_year_universe * projection_scale
         projected_short_per_year = fires_short_per_year_universe * projection_scale
@@ -183,6 +202,8 @@ class StrategyResult:
             "projected_fires_per_calendar_year_short_full_t1a": round(projected_short_per_year, 1),
             "projected_fires_per_calendar_year_total_full_t1a": round(projected_total_per_year, 1),
             "projected_verdict_full_t1a": projected_verdict,
+            "projection_scale_factor": round(n_tickers_full_t1a / n_tickers_sampled, 2),
+            "n_tickers_full_t1a_used_for_projection": n_tickers_full_t1a,
             "fires_per_ticker_year_long": round(fires_long_per_ticker_year, 4),
             "fires_per_ticker_year_short": round(fires_short_per_ticker_year, 4),
             "first_fire_date": self.first_fire_date,
@@ -286,14 +307,47 @@ def measure_strategies(
     start: date = date(2020, 1, 1),
     end: date = date(2026, 5, 31),
     max_tickers: Optional[int] = None,
+    ticker_sample_strategy: str = "first",
+    random_seed: int = 42,
 ) -> dict:
-    """Measure fires for each named strategy across the T1a universe."""
+    """Measure fires for each named strategy across the T1a universe.
+
+    `ticker_sample_strategy` (B648 owner-directed post-critique):
+      "first" -- alphabetical-ish first N (legacy default; B641 used this;
+                 over-weights large-cap survivors -- per external-AI critique
+                 #1 the breakout/trend strategies fire much more on this
+                 subset than on a representative T1a sample)
+      "random" -- pseudo-random N tickers (more representative; seeded
+                 for reproducibility)
+      "stratified" -- TODO: when sector metadata loads correctly, stratify
+                 by sector. For B648 ships "random" as the closest
+                 representative option.
+      "all" -- skip sampling; use full PIT-active T1a (overnight run)
+    """
+    import random as _random
     from backtest.signals.screener import ALL_STRATEGIES
 
-    tickers = _load_t1a_tickers(end)
-    if max_tickers is not None:
-        tickers = tickers[:max_tickers]
-    logger.info("Universe: %d tickers from T1a (PIT as_of=%s)", len(tickers), end)
+    tickers_full = _load_t1a_tickers(end)
+    n_tickers_full_t1a = len(tickers_full)
+    logger.info(
+        "T1a PIT-active at as_of=%s: %d tickers (used as projection target)",
+        end, n_tickers_full_t1a,
+    )
+
+    if max_tickers is None or max_tickers == 0 or max_tickers >= n_tickers_full_t1a:
+        tickers = tickers_full
+    elif ticker_sample_strategy == "random" or ticker_sample_strategy == "stratified":
+        # Stratified falls back to random for B648; sector-stratified TODO
+        rng = _random.Random(random_seed)
+        tickers = sorted(rng.sample(tickers_full, max_tickers))
+        logger.info(
+            "Sample strategy: %s (seed=%d) -> %d tickers from %d-PIT-active",
+            ticker_sample_strategy, random_seed, len(tickers), n_tickers_full_t1a,
+        )
+    else:
+        # "first" (legacy default)
+        tickers = tickers_full[:max_tickers]
+        logger.info("Sample strategy: first %d (alphabetical-ish; LEGACY -- consider --ticker-sample-strategy random)", max_tickers)
 
     results: list[StrategyResult] = []
     cache_misses = 0
@@ -341,6 +395,7 @@ def measure_strategies(
         result = StrategyResult(strategy=strat_name)
         result.calendar_year_span = calendar_year_span
         result.n_tickers_sampled = tickers_evaluated
+        result.n_tickers_full_t1a = n_tickers_full_t1a  # B648 -- pass actual T1a active count
         all_gate_obs: dict[str, list[bool]] = defaultdict(list)
         per_strategy_fires: list[tuple[str, date, str]] = []
 
@@ -408,11 +463,22 @@ def measure_strategies(
     return {
         "as_of": end.isoformat(),
         "universe": "T1a_PIT_canonical",
-        "n_tickers": tickers_evaluated,
+        "n_tickers_sampled": tickers_evaluated,
+        "n_tickers_full_t1a_pit_active": n_tickers_full_t1a,
+        "projection_scale_factor": round(n_tickers_full_t1a / max(tickers_evaluated, 1), 2),
+        "ticker_sample_strategy": ticker_sample_strategy,
+        "ticker_sample_seed": random_seed if ticker_sample_strategy in ("random", "stratified") else None,
         "n_cache_misses": cache_misses,
         "date_range": {"start": start.isoformat(), "end": end.isoformat()},
         "n_bars_total": total_bars,
         "results": [r.to_dict() for r in results],
+        "non_representativeness_caveat": (
+            "20-large-cap-sample x single-regime-arc (2022 bear -> 2023-24 bull) linearly "
+            "scaled to T1a active. Breakout/trend strategies over-fire on this sample vs full universe; "
+            "knife-catch strategies under-fire vs full universe (delisted/distressed names absent). "
+            "Per external-AI critique 2026-06-09: 'specific verdict reversals are HYPOTHESES, not "
+            "results.' Authoritative numbers require full --max-tickers 0 run across multiple regimes."
+        ),
     }
 
 
@@ -475,7 +541,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--max-tickers", type=int, default=None,
-        help="Cap the universe at N tickers (for quick smoke runs)",
+        help="Cap the universe at N tickers (for quick smoke runs). Pass 0 or N >= full T1a active count to disable sampling.",
+    )
+    parser.add_argument(
+        "--ticker-sample-strategy", default="first",
+        choices=["first", "random", "stratified", "all"],
+        help="(B648) How to pick N tickers from T1a. 'first'=alphabetical-ish (LEGACY; over-weights large-cap survivors), 'random'=seeded random (representative), 'stratified'=sector-stratified (TODO falls back to random), 'all'=full universe. Default 'first' for backward-compat; prefer 'random' or 'all' for honest measurement.",
+    )
+    parser.add_argument(
+        "--random-seed", type=int, default=42,
+        help="(B648) Seed for random/stratified sampling. Default 42; change to test sensitivity.",
     )
     parser.add_argument(
         "--output", default=None,
@@ -511,6 +586,8 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     output = measure_strategies(
         strategy_names, start=start, end=end, max_tickers=args.max_tickers,
+        ticker_sample_strategy=args.ticker_sample_strategy,
+        random_seed=args.random_seed,
     )
 
     if args.output:
@@ -526,9 +603,11 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     # Print summary
     print(f"\n=== Fire-count measurement summary ({out_path}) ===")
-    print(f"Universe: {output['n_tickers']} tickers; {output['n_cache_misses']} cache misses")
-    print(f"Date range: {output['date_range']['start']} -> {output['date_range']['end']}")
+    print(f"Sample: {output['n_tickers_sampled']} tickers (strategy={output['ticker_sample_strategy']}, seed={output.get('ticker_sample_seed')})")
+    print(f"T1a PIT-active at as_of: {output['n_tickers_full_t1a_pit_active']} tickers; projection scale x{output['projection_scale_factor']}")
+    print(f"Cache misses: {output['n_cache_misses']}; date range: {output['date_range']['start']} -> {output['date_range']['end']}")
     print(f"Total bars: {output['n_bars_total']:,}")
+    print(f"\nCAVEAT: {output['non_representativeness_caveat']}\n")
     print(f"\n{'Strategy':<35} {'fires/yr (sample)':>18} {'projected_220':>15} {'verdict_220':<22} {'indep ratio':>14}")
     print("-" * 110)
     for r in output["results"]:
