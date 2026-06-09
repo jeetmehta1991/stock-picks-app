@@ -311,6 +311,77 @@ def strat_pivot_s3_capitulation(s):
          "Buys the TURN inside the window, not the FALL on capitulation day (B643 redesign)"])
 
 
+def strat_pivot_r3_blowoff_short(s):
+    """Floor-trader pivot R3 blowoff-top SHORT with REVERSAL CONFIRMATION
+    (Wyckoff Buying Climax + Upthrust-Test sequence).
+
+    Batch 645 (2026-06-09 Class 7 NEW wired per owner directive (a) from
+    B643 follow-on bundle question): symmetric mirror of B643-redesigned
+    strat_pivot_s3_capitulation. Two-gate structure decouples blowoff
+    DETECTION (5-bar window) from ENTRY (reversal-trigger today).
+
+    Per feedback_long_short_inverse_audit +
+    feedback_wire_new_strategies_on_the_spot.
+
+    Fires SHORT when ALL TWO:
+      (1) DETECTION: `recent_blowoff_at_r3` (producer
+          compute_blowoff_lookback in technical.py) = True when blowoff
+          conditions (near_r3 + rsi>70 + vol_spike_2x) were satisfied
+          on ANY of the last 5 bars (inclusive of today).
+      (2) ENTRY CONFIRMATION: a bearish-reversal trigger fires today --
+          `bearish_engulfing` (Nison two-bar reversal at top) OR
+          `shooting_star` (Nison single-bar reversal with dominant
+          upper wick) OR `below_prev_low` (key reversal bar -- today
+          closed below yesterday's low; B616 producer-additive symmetric
+          to above_prev_high).
+
+    Wyckoff Buying Climax + Upthrust-Test: the blowoff bar is the
+    Buying Climax (BC); the 5-day window captures Automatic Reaction
+    (AR) and Upthrust-Test where price re-tests the BC high on weaker
+    volume; bearish-reversal-confirmation bar inside the window
+    signals the Test failed -> bias to the Sign-of-Weakness (SoW)
+    decline. Shorting the failed Upthrust (with confirmation), not
+    the BC (without), is the canonical Wyckoff distribution-phase
+    play. Sells the TURN inside the window, not the SPIKE on
+    blowoff day.
+
+    STATUS POST-B645: EXPLORATORY (mirrors W5 marking). Pre-cube
+    measured fire rate (S5-FIRE-COUNT-MEASURED-RUN follow-on)
+    expected similar to W5 LONG side (~18/yr universe-wide, likely
+    FAIL_FIRE_STARVED). EXPECTANCY ASYMMETRY ACKNOWLEDGED per
+    feedback_structural_symmetry_not_economic_symmetry: equity
+    upward drift + squeeze risk on overbought shorts + borrow costs
+    structurally bias against SHORT. Owner-approved wire per
+    directive (a) with full understanding Stage 5 cube governs
+    deployment decision.
+
+    Regime affinity: no explicit STRATEGY_REGIME_AFFINITY entry; B291
+    direction-aware default applies -> SHORT fires in
+    {bear, crisis, neutral}. (LONG counterpart strat_pivot_s3
+    _capitulation has explicit {neutral, bear, crisis} entry; SHORT
+    mirror gets identical-ish effective regime via B291 default plus
+    `bear` substitution for `bull`.)
+
+    OPEN (deferred): per S4-SURVIVORSHIP-T1A-VERIFY ticket, mirror
+    of the W5 left-tail caveat -- SHORT side has its own structural
+    risks (squeezes that aren't in the survivor universe; merger
+    arbitrage that puts a floor on shorts of acquisition targets).
+    """
+    fires = (
+        s.get("recent_blowoff_at_r3")
+        and (
+            s.get("bearish_engulfing")
+            or s.get("shooting_star")
+            or s.get("below_prev_low")
+        )
+    )
+    return _strat(fires, "short", "pivot",
+        ["recent_blowoff_at_r3", "reversal_trigger"],
+        ["R3 blowoff event within last 5 bars (Wyckoff Buying Climax)",
+         "Reversal-confirmation today: bearish_engulfing / shooting_star / key reversal bar below prev low",
+         "Shorts the TURN inside the window, not the SPIKE on blowoff day (B645 Class 7 mirror of B643 W5)"])
+
+
 def strat_pivot_r1_breakout(s):
     """Pivot R1 breakout. Batch 205 (Pivot optimization 2026-05-17 owner-
     approved research review): stacked with Anchored VWAP gate (Brian
@@ -5616,10 +5687,16 @@ ALL_STRATEGIES = {
     "avwap_252_breakout":           strat_avwap_252_breakout,
     "avwap_50_reclaim":             strat_avwap_50_reclaim,
     "avwap_20high_rejection_short": strat_avwap_20high_rejection_short,
-    # Pivot (10)
+    # Pivot (11) -- B645 (2026-06-09) wired pivot_r3_blowoff_short as
+    # Class 7 NEW symmetric mirror of pivot_s3_capitulation (B643
+    # redesign) per owner directive (a) from B643+B644 follow-on +
+    # feedback_long_short_inverse_audit + feedback_wire_new_strategies
+    # _on_the_spot. Both LONG (capitulation) and SHORT (blowoff) marked
+    # EXPLORATORY pending Stage 5 cube validation.
     "pivot_s1_bounce":          strat_pivot_s1_bounce,
     "pivot_s2_bounce":          strat_pivot_s2_bounce,
     "pivot_s3_capitulation":    strat_pivot_s3_capitulation,
+    "pivot_r3_blowoff_short":   strat_pivot_r3_blowoff_short,
     "pivot_r1_breakout":        strat_pivot_r1_breakout,
     "pivot_r2_continuation":    strat_pivot_r2_continuation,
     "cpr_narrow_bullish":       strat_cpr_narrow_bullish,

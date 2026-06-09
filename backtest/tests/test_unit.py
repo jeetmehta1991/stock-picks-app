@@ -10293,8 +10293,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 620 (2026-06-08): B619 fire-count estimator surfaced strat_squeeze_setup_event_only_long as FAIL_FIRE_STARVED (~2.5 fires/yr universe-wide upper bound; below min_trades=30/regime by an order of magnitude). Per CHECKLIST (k) resolution "treat as exploratory or split", B-twin DELETED - the A/B test of EVENT-only L1c can be answered offline post-cube from strat_squeeze_setup_long's trade log filtered by insider_cluster_active=True at fire bar. 222 -> 221.
     #   Batch 636 (2026-06-08): Stage 4 walk of strat_three_white_soldiers per S4-WALK queue. Owner-directed Class 7 NEW wired same-turn per feedback_wire_new_strategies_on_the_spot - strat_three_black_crows_short symmetric bearish-reversal mirror (Nison 1991 canonical). 221 -> 222.
     #   Batch 639 (2026-06-09): Stage 4 walk of strat_morning_star option (a) per owner directive. F4 finding: strat_evening_star_short became strict subset of strat_morning_star SHORT after option-2 reconciliation (removed ema_50_200 trend gates from both directions); standalone deleted as redundant. 222 -> 221.
-    assert len(ALL_STRATEGIES) == 221, (
-        f"F-002 drift: ALL_STRATEGIES expected 221 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 645 (2026-06-09): Class 7 NEW strat_pivot_r3_blowoff_short wired as symmetric mirror of B643-redesigned strat_pivot_s3_capitulation per owner directive (a) from B643+B644 follow-on. New compute_blowoff_lookback producer; strategy marked EXPLORATORY pending Stage 5 cube validation. 221 -> 222.
+    assert len(ALL_STRATEGIES) == 222, (
+        f"F-002 drift: ALL_STRATEGIES expected 222 (CLAUDE.md / CANONICAL_FACTS); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10309,8 +10310,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 220, (
-        f"F-002 drift: active strategy count expected 220 (B639 deleted "
+    assert active == 221, (
+        f"F-002 drift: active strategy count expected 221 (B645 added "
+        f"strat_pivot_r3_blowoff_short Class 7 NEW mirror of W5 "
+        f"capitulation per B643+B644 follow-on owner directive (a); "
+        f"prior-batch context unchanged: B639 deleted "
         f"strat_evening_star_short as redundant with strat_morning_star "
         f"SHORT post option-2 reconciliation: 221 registered minus 1 "
         f"disabled); got {active}."

@@ -1,13 +1,13 @@
 {
-  "strategy_total": 221,
+  "strategy_total": 222,
   "deprecated_count": 0,
   "missing_producer_count": 1,
   "missing_producer_list": [
     "dxy_headwind_multinational_short"
   ],
-  "strategy_active": 220,
+  "strategy_active": 221,
   "exit_method_total": 26,
-  "cube_cells_active": 5720,
+  "cube_cells_active": 5746,
   "strategy_exit_override_count": 16,
   "agent_count_dec_057": 11,
   "regime_count": 4,

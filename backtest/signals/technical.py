@@ -235,6 +235,76 @@ def compute_capitulation_lookback(df: pd.DataFrame, lookback: int = 5) -> dict:
     }
 
 
+def compute_blowoff_lookback(df: pd.DataFrame, lookback: int = 5) -> dict:
+    """B645 (2026-06-09 owner-directed Class 7 NEW mirror wire-on
+    `pivot_r3_blowoff_short`): symmetric mirror of
+    compute_capitulation_lookback. Emits `recent_blowoff_at_r3` =
+    True when blowoff conditions (near_r3 + rsi>70 + vol_spike_2x)
+    were satisfied on ANY of the last `lookback` bars (inclusive).
+
+    Mirror structure of compute_capitulation_lookback per
+    feedback_long_short_inverse_audit + B644 W5-i exploratory
+    marking. Same Wyckoff-Buying-Climax+Upthrust-Test sequence
+    semantics, opposite direction.
+
+    Per-bar blowoff (vectorized; matches the symmetric Wyckoff
+    buying-climax conditions exactly):
+      near_r3 (0.3% proximity to pivot R3 computed from prev bar HLC)
+        AND rsi_14 (Wilder smoothing) > 70
+        AND volume / 20-bar avg >= 2.0
+
+    Default lookback=5 trading days (Wyckoff Distribution Phase B
+    timeframe; symmetric to capitulation's Accumulation Phase B).
+
+    EXPECTANCY ASYMMETRY ACKNOWLEDGED (per B640 external-AI audit
+    + feedback_structural_symmetry_not_economic_symmetry):
+    structurally this mirror is symmetric to capitulation, but
+    economic expectancy is NOT symmetric -- equity upward drift +
+    squeeze risk on overbought short-target names + borrow costs
+    all bias against the SHORT side. Owner-approved wire per
+    directive (a) with full understanding that Stage 5 cube
+    empirical validation governs whether this strategy + its
+    LONG counterpart (W5) earn their keep.
+
+    Returns {} when df has insufficient history (< 200 bars).
+    """
+    if df is None or len(df) < 200:
+        return {}
+    if not {"open", "high", "low", "close", "volume"}.issubset(df.columns):
+        return {}
+
+    # Per-bar pivot R3 (uses prev-bar H/L/C)
+    h_prev = df["high"].shift(1)
+    l_prev = df["low"].shift(1)
+    c_prev = df["close"].shift(1)
+    pivot = (h_prev + l_prev + c_prev) / 3
+    r3 = h_prev + 2 * (pivot - l_prev)
+    today_close = df["close"]
+    near_r3 = (today_close - r3).abs() / r3.abs().clip(lower=0.01) < 0.003
+
+    # RSI(14) per bar via Wilder smoothing
+    d = df["close"].diff()
+    g = d.clip(lower=0).ewm(alpha=1 / 14, adjust=False).mean()
+    ls = (-d.clip(upper=0)).ewm(alpha=1 / 14, adjust=False).mean()
+    rsi_14 = 100 - 100 / (1 + g / ls.replace(0, np.nan))
+    rsi_overbought = rsi_14 > 70
+
+    # Volume spike per bar
+    avg20 = df["volume"].rolling(20).mean()
+    vol_ratio = df["volume"] / avg20
+    vol_spike_2x = vol_ratio >= 2.0
+
+    # Joint blowoff per bar
+    blowoff_per_bar = near_r3.fillna(False) & rsi_overbought.fillna(False) & vol_spike_2x.fillna(False)
+
+    recent = bool(blowoff_per_bar.tail(lookback).any())
+
+    return {
+        "recent_blowoff_at_r3": recent,
+        "blowoff_lookback_window": lookback,
+    }
+
+
 def compute_fibonacci(df: pd.DataFrame, lookback: int = 50) -> dict:
     if len(df) < 10:
         return {}
@@ -1900,6 +1970,10 @@ def compute_all_signals(df: pd.DataFrame,
     # producer consumed by strat_pivot_s3_capitulation; emits
     # `recent_capitulation_at_s3` over a 5-bar window.
     signals.update(compute_capitulation_lookback(df))
+    # B645 (2026-06-09 Class 7 NEW mirror per owner directive (a)):
+    # symmetric blowoff-lookback producer consumed by
+    # strat_pivot_r3_blowoff_short.
+    signals.update(compute_blowoff_lookback(df))
     signals.update(compute_fibonacci(df))
     signals.update(compute_vwap(df))
     if "rsi" not in skip:

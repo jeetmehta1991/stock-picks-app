@@ -1690,10 +1690,17 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       _star_short became strict subset of strat_morning_star SHORT
     #       after option-2 reconciliation (removed ema_50_200 trend gates)
     #       -> standalone deleted. Net: -1 = 222 -> 221.)
-    assert len(ALL_STRATEGIES) == 221, (
+    #   222 after Batch 645 (Class 7 NEW strat_pivot_r3_blowoff_short
+    #       wired per owner directive (a) from B643+B644 W5 redesign
+    #       follow-on. Symmetric mirror of B643-redesigned strat_pivot
+    #       _s3_capitulation using compute_blowoff_lookback producer +
+    #       2-gate structure: recent_blowoff_at_r3 + bearish-reversal
+    #       trigger today. Marked EXPLORATORY pending Stage 5 cube
+    #       validation. Net: +1 = 221 -> 222.)
+    assert len(ALL_STRATEGIES) == 222, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636/639 "
-        f"trajectory: ALL_STRATEGIES count must be 221 post-B639, "
+        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636/639/645 "
+        f"trajectory: ALL_STRATEGIES count must be 222 post-B645, "
         f"got {len(ALL_STRATEGIES)}"
     )
 
