@@ -14,20 +14,26 @@
 
 ## Executive summary
 
+> **HONEST RE-FRAMING POST-EXTERNAL-AI 2ND CRITIQUE (2026-06-09).** The 2nd-wave external-AI review correctly pointed out that the original framing of this section overstated resolution status: "SHIPPED" was reading as "resolved" but actually means "changes merged"; several of the SHIPPED items are themselves awaiting validation (measurement / walk-forward / survivorship work that's queued). Distinction now drawn explicitly between CHANGES-MERGED and VALIDATED-RESOLUTIONS.
+
 | | Count |
 |---|---|
 | Reviewer findings raised | **24** (methodology 9 + market-structure 6 + per-strategy 7 + regime classifier 8 — note overlap) |
-| Findings with code/doc fix SHIPPED | **12** (W3/W4/W5/W8/W10 ships + B642 regime + 3 CHECKLIST extensions + measurement pass) |
+| Findings with code/doc CHANGES MERGED | **15** (W3/W4/W5/W5m/W8/W10 strategy changes + B642 regime cleanup + 3 CHECKLIST extensions + measurement pass tool + 3 B650/B651/B652 W5 follow-on per critique #3a/#3b/#5 + B648 tool scale-factor fix per critique #1) |
+| Of those, **fully VALIDATED**: | **~3** (W3 pin_bar fix — direct unit-test pin proves bearish pin no longer fires LONG; W10 R3→R4 rename — same-level conflict resolved by construction; CHECKLIST extensions r/s/Step 1.5 — methodology codifications that don't need validation) |
+| Of those, MERGED BUT VALIDATION QUEUED: | **~12** (M1 measurement tool: output not yet trustworthy on representative sample; R3 hysteresis: unvalidated curve-fit-to-history bet; W5 redesign: B650 vol gate added but full Wyckoff-Spring backtest still queued; W4 F3 regime delete: rests on R5 cube validation; W5m wired: cube can't yet evaluate squeeze tail + selection bias; etc) |
 | Findings QUEUED with explicit tickets | **17** new entries in `EXECUTION_QUEUE.md` (none dropped) |
-| Findings closed-by-design | **2** (regime classifier #6 latent redundancy auto-resolved by #2 cleanup; #7 W6 MACD STATE captured under (s)) |
-| Strategy code changes | **W3** (pin_bar fix), **W4** (regime delete), **W5** (option C redesign), **W5 mirror** (Class 7 NEW), **W8** (silent-gap fix), **W10** (R3→R4 rename); regime_filter.py engine cleanup (B642) |
+| Findings closed-by-design / fully | **R6 only** (regime classifier latent VIX redundancy auto-resolved by R2 cleanup). **M2** previously claimed "COVERED BY M1" but per 2nd critique #6, M2 status is now "instrument exists; over-count risk NOT retired" — no PASSES-on-over-count tested in current sample. **M7** correctly COVERED BY M6's CHECKLIST (s). |
+| Strategy code changes | **W3** (pin_bar fix), **W4** (regime delete), **W5** (option C redesign + B650 vol_below_avg + B651 regime expand), **W5 mirror** (Class 7 NEW + B652 stronger EXPLORATORY), **W8** (silent-gap fix), **W10** (R3→R4 rename); regime_filter.py engine cleanup (B642) |
 | New producers added | **bullish_pin_bar** / **bearish_pin_bar** (B641 W3) + **compute_capitulation_lookback** (B643 W5) + **compute_blowoff_lookback** (B645 W5 mirror) |
-| Tooling shipped | **`scripts/measure_fire_count.py`** — replaces independence-product projection with measured fires/year against actual 220-ticker history + pairwise gate-correlation matrix |
+| Tooling shipped | **`scripts/measure_fire_count.py`** — replaces independence-product projection with measured fires/year against T1a OHLCV. **B648 fixed the hardcoded-220 scale-factor bug** (was understating projections ~2.3x; now uses actual PIT-active T1a ~503 at as_of) + added `--ticker-sample-strategy {first,random,stratified,all}` option for representative sampling |
 | Methodology codifications | CHECKLIST **(r)** timeframe-mismatch (intraday-on-daily-bar reframe rule), **(s)** EVENT/STATE wired-to-finding, **Step 1.5** `_strat3` avoid-branch dead-code check restored |
-| Verdict reversals from measurement | **4 of 5** B640 FAIL_FIRE_STARVED labels were wrong; independence under-counted by 35× to 1200× on positively-correlated gate sets |
-| Commits this cycle (B641 → B645) | 7 commits, 14+ files, +3000/-100 lines |
+| Verdict reversals from measurement | **HYPOTHESES, not results.** B641 smoke showed 4 of 5 B640 FAIL_FIRE_STARVED labels appearing to reverse; per 2nd critique #1 these reversals are built on a 20-large-cap-survivor + single-regime-arc (2022-2024) sample that the doc itself flagged as non-representative. B648 fixed the scaling bug (×2.3 understatement); full-universe representative-sample run still queued. The "verdict reversed" claims are **demoted to PRELIMINARY measured / pending full-universe verification** until S5-FIRE-COUNT-MEASURED-RUN-FULL completes. |
+| Commits this cycle (B641 → B652) | 11 commits, ~20 files, +3500/-150 lines |
 
-**Bottom line for the reviewer:** every finding from your audit was either shipped, deferred with an explicit ticket, or codified as a methodology rule. Zero findings dropped. The fire-count independence-assumption critique was the most consequential — the measurement pass empirically validated your direction-of-bias claim (under-counts positively-correlated gate sets, over-counts exclusive gate sets) and reversed 4 of our 5 prior FAIL labels.
+**Bottom line for the reviewer (revised post-2nd-critique):** every finding from both audit waves was acknowledged, with code/doc CHANGES merged + tickets QUEUED for everything that requires future work. Zero findings dropped. But honestly: of the 15 "shipped" items, only ~3 are fully validated in the sense that you'd expect — the rest are improvements awaiting the measurement, walk-forward, and survivorship verification work which is itself queued. The original framing of "12 SHIPPED ≈ 12 RESOLVED" overstated; this revised matrix tracks CHANGES vs RESOLUTIONS distinctly.
+
+The fire-count independence-assumption critique was directionally validated by the measurement tool (independence does bias in the predicted directions), but the SPECIFIC verdict reversals on individual strategies need the full-universe run to be authoritative.
 
 ---
 
@@ -39,14 +45,14 @@
 
 | # | Finding | Status | Action | Where |
 |---|---|---|---|---|
-| **M1** | Fire-count independence-product is biased in both directions depending on gate-correlation sign | ✅ SHIPPED | Built `scripts/measure_fire_count.py` — vectorized measurement against 220-ticker T1a OHLCV + pairwise correlation matrix + projected-vs-measured ratio diagnostic | B641 (`a94f8bb02`) |
-| **M2** | Same model over-counts high-fire / exclusive-gate strategies (W10, W3 PASS labels) | ✅ COVERED BY M1 | Measurement validates both directions; verdict reversals documented per-strategy below | B641 |
+| **M1** | Fire-count independence-product is biased in both directions depending on gate-correlation sign | ⚠ **CHANGE MERGED, NOT YET VALIDATED** | Built `scripts/measure_fire_count.py` — vectorized measurement + pairwise correlation matrix + independence-ratio diagnostic. **B648 fixed the hardcoded-220 scale-factor bug** (was understating ~2.3×). **NOT YET trustworthy on representative sample** (20-large-cap-survivor + 2022-2024 single-regime); full-universe representative-sample run queued as `S5-FIRE-COUNT-MEASURED-RUN-FULL`. The methodology-takeaway interpretation was also **inverted in the first version** (claimed correlated-gates = well-designed) — corrected B649; redundancy-vs-confluence is now an explicit per-gate question, not auto-inferred from the ratio. | B641 + B648 + B649 |
+| **M2** | Same model over-counts high-fire / exclusive-gate strategies | ⚠ **INSTRUMENT EXISTS; RISK NOT RETIRED** | Per 2nd-critique #6: tool detects over-counting (W4/W9 over-counts visible in sample) but the case M2 worried about — a strategy that PASSES on an over-counted estimate and should FAIL — hasn't appeared in the 20-ticker sample because no such strategy exists in this slice. So the over-count detection is instrumented but its risk-retiring effect hasn't been demonstrated. Honest re-framing of original "COVERED BY M1." | B641 + B649 re-framing |
 | **M3** | W6 F1 + fire-count claims contradict (auto-pass AND fire-starved) | ✅ DEFERRED | W6 not in Tier 1 ship; measurement showed 917/yr (independence under-counted 500×); deferred to S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY | B641 |
 | **M4** | CHECKLIST (g) sequence-or-split applied inconsistently (deferred W7 but bundled W4/W6) | ✅ SHIPPED | W4 SPLIT into F3-only Tier 1 + F1/F2/RSI-mislabel queued as S4-W4-F1-PLUS-F2-PLUS-RSI-MISLABEL | B641 |
 | **M5** | W8 F1b vs W6/W7 default-True severity unification (same auto-pass class, different severity labels) | ✅ SHIPPED + QUEUED | W8 F1+F1b silent-gap fix shipped; W6/W7 LONG default-True unified queue as S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY | B641 |
 | **M6** | EVENT/STATE classification is decorative, not wired to a finding | ✅ SHIPPED | CHECKLIST (s) codified: F-timing-fragility finding now produced when ≤1 EVENT gate per direction AND docstring overclaims timing on STATE | B641 (CHECKLIST.md `(s)`) |
 | **M7** | W6 MACD STATE silently overclaims (specific instance of M6) | ✅ COVERED BY M6 | The CHECKLIST (s) rule catches this pattern; if W6 ships in a future batch, the audit will flag the MACD-bullish-as-STATE overclaim | B641 |
-| **M8** | W5 missing-inverse: economic-symmetry asserted via Wyckoff but expectancy-asymmetry not validated | ✅ ADDRESSED | W5 LONG redesigned (B643) + marked EXPLORATORY (B644); W5 SHORT mirror wired symmetrically (B645) WITH explicit expectancy-asymmetry acknowledgment per `feedback_structural_symmetry_not_economic_symmetry`; Stage 5 cube governs deployment | B643-B645 |
+| **M8** | W5 missing-inverse: economic-symmetry asserted via Wyckoff but expectancy-asymmetry not validated | ⚠ **CHANGES MERGED, COMPLETENESS PARTIAL** | W5 LONG redesigned (B643) + marked EXPLORATORY (B644); W5 SHORT mirror wired symmetrically (B645) WITH explicit expectancy-asymmetry acknowledgment per `feedback_structural_symmetry_not_economic_symmetry`. **Per 2nd-critique #3a:** initial B643 redesign was structurally correct but INCOMPLETE — `above_prev_high` in a sustained decline fires on dead-cat bounces; Wyckoff Spring requires LOW-volume Test bar. **B650 added `vol_below_avg` AND-required** on reversal-trigger (Bulkowski supply-absorption thesis). **Per 2nd-critique #3b:** original {neutral, bear, crisis} regime affinity was correct for pre-B643 same-day fire; post-B643 the strategy buys turn UP TO 5 days later, regime may have transitioned. **B651 expanded to {bull, neutral, bear, crisis}** all regimes. **Per 2nd-critique #5:** W5m wiring with "EXPLORATORY acknowledgment" wasn't enough — cube cannot evaluate the specific risk that makes W5m dangerous. **B652 added stronger DO-NOT-DEPLOY gate** keyed on M10 + S5-MULTIPLE-TESTING-CORRECTION shipping. | B643-B645 + B650-B652 |
 | **M9** | `_strat3` avoid-branch dead-code observation absent from all 10 walks (regression from B637 morning_star single-strategy walk) | ✅ SHIPPED | Step 1.5 sub-step restored to CHECKLIST #105 walk template | B641 (CHECKLIST.md Step 1.5) |
 
 ### B. Market-structure cross-cutting findings (C1-C6)
@@ -78,7 +84,7 @@
 |---|---|---|---|---|
 | **R1** | Market-regime sizes single-stock strategies — unstated beta assumption (SPY/VIX state used to gate 222 single-name strategies) | ⏸ QUEUED | `S5-REGIME-BETA-ASSUMPTION` ticket — name the assumption explicitly in CLAUDE.md + dashboards; design options for per-sector or per-name regime in R5+ scope | B641 queue |
 | **R2** | Bear ladder dead canonical line — Batch 288 SPY-only gate subsumed the canonical `VIX>=30 AND below-200EMA`; VIX no longer contributes to bear | ✅ SHIPPED | Dead canonical line removed from `classify_regime` + `classify_regime_with_hysteresis`; docstring honestly notes bear = SPY-below-200-EMA only | B642 (`013cc75b8`) |
-| **R3** | Hysteresis covers VIX but not SPY-vs-200-EMA (the dominant bear trigger post-B288); architecture guards the wrong variable | ✅ SHIPPED | Added `EMA_CROSS_HYSTERESIS_PCT = 2.0` + new `spy_pct_from_200ema` parameter on `classify_regime_with_hysteresis`. Asymmetric design: bear stays sticky until SPY >= +2% above 200-EMA (slow to exit risk-off); below-EMA still triggers bear immediately (fast risk-on→risk-off) | B642 (`013cc75b8`) + test_batch642 pins |
+| **R3** | Hysteresis covers VIX but not SPY-vs-200-EMA (the dominant bear trigger post-B288); architecture guards the wrong variable | ⚠ **CHANGE MERGED, UNVALIDATED DIRECTIONAL BET** | Added `EMA_CROSS_HYSTERESIS_PCT = 2.0` + new `spy_pct_from_200ema` parameter on `classify_regime_with_hysteresis`. Asymmetric design: bear stays sticky until SPY >= +2% above 200-EMA (slow to exit risk-off); below-EMA still triggers bear immediately (fast risk-on→risk-off). **Per 2nd-critique #4:** the asymmetry is a performance-relevant directional bet, NOT a robustness fix — spends more calendar time in bear, sizes longs to 0.5×, would have over-performed in 2022 + under-performed in March 2020 V-shaped recovery. The +2% threshold is hand-set with knowledge of history, adding curve-fit depth (separate from but compounding R8). **Honest re-framing:** asymmetric hysteresis is a tuning choice to validate walk-forward, not a robustness improvement. Walk-forward validation per `S5-REGIME-WALK-FORWARD-VALIDATION` (R8 ticket) determines whether sticky-bear beats symmetric OOS before this can be called a fix. | B642 (`013cc75b8`) + B649 re-framing |
 | **R4a** | AAII sentiment publication-vs-survey date PIT lookahead risk | ⏸ QUEUED | `S4-REGIME-AAII-PIT` ticket — pyramid test asserting bear_composite uses publication date, not survey date | B641 queue |
 | **R4b** | FRED T10Y2Y vintage revisions — FRED serves latest-vintage by default; backtest uses values as known TODAY not as known on bar date | ⏸ QUEUED | `S4-REGIME-FRED-VINTAGE` ticket — confirm policy in `backtest/data/macro.py`; consider switching to ALFRED (vintage-as-of) | B641 queue |
 | **R4c** | Sector-breadth eligibility is time-varying (≥200 bars per ETF; early backtest weaker classifier) | ⏸ QUEUED | `S4-REGIME-SECTOR-ELIGIBILITY-TIME-VARYING` ticket — document the time-varying-classifier window; pre/post-eligibility-threshold-date reporting | B641 queue |
@@ -87,13 +93,29 @@
 | **R7** | Hysteresis is opt-in via `use_hysteresis` flag — backtest/analytics may compute different regimes for the same day | ⏸ QUEUED | `S4-REGIME-HYSTERESIS-PARITY-TEST` ticket — audit all callsites; assert production paths use `use_hysteresis=True` consistently | B641 queue |
 | **R8** | Whole classifier is curve-fit to backtest history (Batches 288/292/317/388 each tuned to specific failures); is regime-gating OOS net-positive? | ⏸ QUEUED | `S5-REGIME-WALK-FORWARD-VALIDATION` ticket — freeze classifier as-of each historical date + measure forward regime-gating value | B641 queue |
 
-### Aggregate
+### E. Second-wave external-AI critique findings (2026-06-09, post-cycle review)
 
-- **24 findings raised by reviewer.**
-- **12 SHIPPED** (code or methodology change).
-- **17 queued tickets** in `EXECUTION_QUEUE.md` (some findings produced multiple tickets — e.g. R4 spawned three sub-tickets a/b/c).
-- **2 closed-by-design** (M2/M7 covered by ship of M1/M6 respectively; R6 auto-resolved by R2).
-- **0 findings dropped, deferred-silently, or claimed-irrelevant.**
+After the original review-cycle response (B641-B646), the reviewer ran a second-wave audit on the response itself. Seven new findings; all acknowledged in B648-B652 + B649 re-framing batch.
+
+| # | Finding | Status | Action | Where |
+|---|---|---|---|---|
+| **2C1** | Measurement is 20-large-cap-survivor + single-regime sample ×11 scaled (220 hardcode); universe count inconsistency 220 vs 614 | ✅ SHIPPED (B648) | Fixed hardcoded `n_tickers_full_t1a=220` → actual `_load_t1a_tickers(as_of)` count (~503 PIT-active per owner directive). Added `--ticker-sample-strategy {first,random,stratified,all}` for representative sampling. Output JSON carries explicit non-representativeness caveat. **Verdict reversals re-labeled as PRELIMINARY pending full-universe run.** | B648 (`850d3119e`) |
+| **2C2** | "Correlated gates → well-designed" framing is backwards (codified redundancy as quality) | ✅ SHIPPED (B649) | Inverted in "What the independence ratio is telling us" section — high ratio could mean either confluence OR redundancy; distinguishing requires per-gate "what does THIS screen out that others don't" question. Original (incorrect) framing preserved at end of section for historical reference. W8 cpr_narrow specifically re-characterized as redundancy (4 of 5 gates are uptrend proxies) not confluence. | B649 (this batch; doc-only) |
+| **2C3a** | W5 redesign incomplete — `above_prev_high` could fire on dead-cat bounce; needs Wyckoff-Spring LOW-volume condition | ✅ SHIPPED (B650) | Added `s.get("vol_below_avg")` AND-required on reversal-trigger bar (Bulkowski/Wyckoff supply-absorption thesis). New B650 test pin verifies all-3-reversal-triggers-True-without-vol_below_avg does NOT fire. | B650 (`c0746d6a5`) |
+| **2C3b** | W5 regime affinity stale post-B643 redesign — entry was correct for pre-redesign same-day fire; post-redesign strategy buys turn up to 5 days later when regime may have transitioned | ✅ SHIPPED (B651) | Expanded `STRATEGY_REGIME_AFFINITY['pivot_s3_capitulation']` from `{neutral, bear, crisis}` to `{bull, neutral, bear, crisis}` all regimes. | B651 (`c0746d6a5`) |
+| **2C4** | R3 EMA-cross hysteresis is asymmetric in dangerous direction (sticky-bear bet) — claimed as "robustness fix" but is actually unvalidated performance-relevant tuning | ✅ RE-FRAMED (B649) | Doc re-framing in R3 row above: from "✅ SHIPPED" to "⚠ CHANGE MERGED, UNVALIDATED DIRECTIONAL BET." Walk-forward validation per `S5-REGIME-WALK-FORWARD-VALIDATION` determines whether sticky-bear beats symmetric OOS before this can be called a fix. **Code unchanged** — the hysteresis stays in for now since reverting it would require another walk-forward validation cycle; framing is now honest. | B649 doc-only |
+| **2C5** | W5m wired with "EXPLORATORY acknowledgment" but cube cannot evaluate the specific risk (squeeze tail + cost-aware unmodeled per C6 + selection bias unmodeled per C2) | ✅ SHIPPED (B652) | Added explicit DO-NOT-DEPLOY gate in W5m docstring keyed on BOTH M10 (cost-aware cube) AND S5-MULTIPLE-TESTING-CORRECTION shipping. Strategy stays REGISTERED for dataflow/cube-replay coverage but must NOT be promoted to live trade routing until both pre-deployment gates land. | B652 (`c0746d6a5`) |
+| **2C6** | M2 "COVERED BY M1" is too quick — tool detects over-counts but the case M2 worried about (PASS on over-count, should FAIL) hasn't appeared in 20-ticker sample | ✅ RE-FRAMED (B649) | M2 status updated above from "COVERED BY M1" → "instrument exists; risk not retired." | B649 doc-only |
+| **2C7** | "SHIPPED" is doing heavy lifting for "changes merged"; ~3 of the 12 are actually validated, rest await measurement/walk-forward/survivorship | ✅ RE-FRAMED (B649) | Executive summary table reformatted with explicit CHANGES-MERGED vs VALIDATED-RESOLUTIONS decomposition. Honest scorecard: of 15+ changes merged, ~5 are fully validated; the rest are improvements awaiting queued validation work. | B649 doc-only |
+
+### Aggregate (revised)
+
+- **24 first-wave + 7 second-wave = 31 findings raised across both review waves.**
+- **18 CHANGES MERGED** (12 first-wave code/doc + 3 second-wave code-fix + 3 second-wave doc re-framings).
+- **17 queued tickets** in `EXECUTION_QUEUE.md` (first-wave); second-wave added cross-refs to existing tickets but no new ones (the queued work is what blocks the second-wave validation concerns from being retired).
+- **2 closed-by-design** (R6 auto-resolved by R2; M7 covered by M6's CHECKLIST (s)). **M2 status revised** from closed-by-design to "instrument exists; risk not retired."
+- **Of the 18 CHANGES MERGED, ~5 are fully validated; the rest await queued work** — honest distinction now drawn in the executive summary.
+- **0 findings dropped, deferred-silently, or claimed-irrelevant** across both review waves.
 
 ---
 
@@ -1590,17 +1612,43 @@ Run on 2026-06-09 ([`output_audit/fire_count_measured_2024-12-31.json`](output_a
 
 ## What the independence ratio is telling us
 
+> **CORRECTION POST-2ND-CRITIQUE (2026-06-09).** The original methodology takeaway in this section was inverted and would have systematically green-lit redundant gate-stacks. Replaced below; the original is preserved at the end for historical reference.
+
 The ratio = `independence_predicted_joint_prob / measured_joint_prob`.
 
-- **Ratio ≪ 1.0** (W1/W3/W6/W7/W8/W10): gates are **positively correlated** by construction. At the strategy's intended setup, multiple gates fire together — that's what the strategy is detecting. Examples:
-  - `cpr_narrow_bullish`: at a narrow-CPR day with established uptrend (above_200_ema), `above_cpr` + `rsi>50` + `above_avwap_50low` all co-occur because they're all measuring the same trending day from different angles. Independence treats them as separate coin flips; reality has them locked together.
-  - `pivot_r1_breakout`: at a real breakout, `above_r1` + `vol_spike_15x` + `macd_bullish` + `above_avwap_*` all fire together because they're co-symptoms of breakout. Independence under-estimates by 500×.
+- **Ratio ≪ 1.0** (W1/W3/W6/W7/W8/W10): gates are **positively correlated** by construction. At the strategy's intended setup, multiple gates fire together. Two distinct meanings the diagnostic CAN'T distinguish:
+  - **Confluence (well-designed)** — gates measure DIFFERENT failure modes but happen to co-occur at genuine setups (e.g., bullish_engulfing + at_support + obv_bullish each screens a distinct condition; their joint presence is a stronger signal). High measured correlation here is fine.
+  - **Redundancy (over-determined)** — gates measure the SAME underlying state from different angles. E.g., `cpr_narrow_bullish`'s LONG side: `above_cpr` + `rsi>50` + `above_avwap_50low` + `price_above_ema_200` are all proxies for "established uptrend" — one signal in four hats. Fire-count balloons (15,708/yr pre-B648 scaling fix, ~35,700/yr post-B648 = fires every third trading day per ticker) because the strategy is essentially a 1-gate strategy disguised as a 4-gate strategy.
 
-- **Ratio ≫ 1.0** (W2/W4/W5/W9): gates are **negatively correlated or extreme-rare**. The strategy requires events that almost never coincide:
-  - `pivot_s3_capitulation`: needs simultaneous near_s3 (0.3% proximity to deepest support — extreme price extension) + rsi<30 (canonical oversold) + vol_spike_2x (panic volume). In reality these DO co-occur on capitulation days, but capitulation days are extremely rare; the independence product over-estimates because it treats "near_s3" as an everyday signal at marginal rate ~0.005 when in fact when it's True the other gates are usually also True at the SAME bar — but the bar itself is rare. The 92× over-estimate reflects how rare those bars are vs the marginal rates suggest.
-  - `camarilla_s3_bounce`: similar — 0.3% proximity to a daily-recomputed level is rare independent of RSI.
+  **Distinguishing the two requires asking what each gate WOULD reject that the others don't.** If you can't articulate a distinct failure mode per gate, the gate is redundant — drop it. If each gate has a distinct contribution, the strategy is genuinely high-confluence and the fire-count is honest.
 
-The methodology takeaway: **gate correlation tells you whether the strategy's gates measure the same thing (correlated → strategy works) or different things (uncorrelated → strategy is asking for coincidence)**. Highly-correlated gate sets are usually well-designed; highly-uncorrelated ones are over-constrained.
+- **Ratio ≫ 1.0** (W2/W4/W5/W9): gates are **rare AND positively correlated AT setups but not at random times**. Independence over-estimates because the marginal-rate-product treats each gate as an everyday probability when in fact the strategy fires on a rare-event cluster. The 92× over-estimate on W5 capitulation reflects: independence implicit assumes capitulation conditions happen at independent rates, but in reality near_s3 + rsi<30 + vol_spike_2x co-fire only during the few days per year (or per decade) of market panic. **This isn't "gates ask for coincidence"** — it's "the genuine setup is rare." Correctly-designed strategies on rare events should have ratios well above 1.0.
+
+**The honest methodology takeaway (revised):**
+
+| Ratio | What it tells you | What you should ask |
+|---|---|---|
+| **Ratio ≪ 1.0** (independence under-counts) | Gates co-fire at the strategy's setup. Could be confluence OR redundancy. | "Does each gate screen out a distinct failure mode the others don't?" If no → DROP the redundant gates. If yes → genuine confluence. |
+| **Ratio ≈ 1.0** | Gates roughly independent at marginal rates. Either genuinely orthogonal confluence OR coincidence-fishing. | "Are the gates conditionally informative? Or is the strategy demanding multiple independent rare events simultaneously?" If the latter, fire-count will be near zero AND each fire will be noise. |
+| **Ratio ≫ 1.0** (independence over-counts) | Marginal-rate model treats common signals as everyday but the strategy fires only when the rare setup hits all gates simultaneously. | "Is the rare setup actually a meaningful market event (e.g., capitulation day) or just a rare coincidence?" The former is OK; the latter is curve-fit noise. |
+
+**Concrete inversions from the original (incorrect) framing:**
+
+- **W8 cpr_narrow_bullish — `Ratio = 0.028` (under-count 35×)**: The original framing said this was "well-designed" because gates positively correlate. The correct reading is the opposite — 4 of 5 W8 LONG gates measure "established uptrend" from different angles (above_cpr + rsi>50 + above_avwap + price_above_ema_200); they're REDUNDANT. The 35,700/yr fire rate (post-B648 scaling fix) = fires every third trading day per ticker = strategy is essentially "is there an uptrend right now?" wearing CPR-narrow precision as a disguise. **The W8 fire-count is consistent with over-determination, not high confluence.** Queue ticket `S4-W8-REDUNDANCY-AUDIT` would inspect which 2-3 gates contribute distinct information vs the others.
+
+- **W5 pivot_s3_capitulation — `Ratio = 92×` (over-count)**: The original framing said this was "asking for coincidence" because gates negatively correlate at random times. The correct reading is the opposite — capitulation days ARE rare AND ARE meaningful market events; the high ratio just means independence is the wrong probability model. W5 is correctly designed for a rare event.
+
+**This inversion has been backported to the [Reviewer findings response matrix](#reviewer-findings-response-matrix) — M1 status now notes the methodology takeaway was inverted in the first version and required correction.**
+
+---
+
+### Original (now-superseded) methodology takeaway
+
+> Preserved for historical reference. The text below is what the doc originally said before the 2nd-critique correction; reading it confirms the inversion described above.
+
+> *"The methodology takeaway: **gate correlation tells you whether the strategy's gates measure the same thing (correlated → strategy works) or different things (uncorrelated → strategy is asking for coincidence)**. Highly-correlated gate sets are usually well-designed; highly-uncorrelated ones are over-constrained."*
+
+This was wrong as a quality signal. High positive gate-correlation could mean either confluence OR redundancy; the diagnostic alone can't distinguish them. The correction above asks the right question explicitly per gate.
 
 ## Operational handling going forward
 
