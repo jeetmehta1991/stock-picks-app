@@ -77,13 +77,15 @@ def test_batch656_long_does_NOT_fire_with_only_rsi_9_no_other_gates():
 
 
 def test_batch656_short_fires_without_rsi_9():
-    """Pin (4)."""
+    """Pin (4). B659 update: SHORT side now uses positive symmetric
+    `below_ema_200` (was `(not above_200)` NOT-pattern silent-gap pre
+    -B659). Fixture extended."""
     from backtest.signals.screener import strat_hull_rsi
     s = {
         "hull_bearish": True,
         "price_below_hull": True,
         "adx": 25.0,
-        "price_above_ema_200": False,  # SHORT requires NOT above_200
+        "below_ema_200": True,  # B659: positive symmetric replaces `(not above_200)`
     }
     out = strat_hull_rsi(s)
     assert out["fires"] is True and out["direction"] == "short"

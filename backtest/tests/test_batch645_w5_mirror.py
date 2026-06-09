@@ -133,25 +133,38 @@ def test_batch645_recent_blowoff_false_normal_series():
 # =================== Strategy pins ===================
 
 def test_batch645_strategy_fires_with_bearish_engulfing():
-    """Pin (8)."""
+    """Pin (8). B659 update: added vol_below_avg AND-gate to W5m
+    (Wyckoff Upthrust-Test); fixture extended."""
     from backtest.signals.screener import strat_pivot_r3_blowoff_short
-    s = {"recent_blowoff_at_r3": True, "bearish_engulfing": True}
+    s = {
+        "recent_blowoff_at_r3": True,
+        "vol_below_avg": True,  # B659 W5m vol gate
+        "bearish_engulfing": True,
+    }
     out = strat_pivot_r3_blowoff_short(s)
     assert out["fires"] is True and out["direction"] == "short"
 
 
 def test_batch645_strategy_fires_with_shooting_star():
-    """Pin (9)."""
+    """Pin (9). B659 fixture update."""
     from backtest.signals.screener import strat_pivot_r3_blowoff_short
-    s = {"recent_blowoff_at_r3": True, "shooting_star": True}
+    s = {
+        "recent_blowoff_at_r3": True,
+        "vol_below_avg": True,  # B659 W5m vol gate
+        "shooting_star": True,
+    }
     out = strat_pivot_r3_blowoff_short(s)
     assert out["fires"] is True and out["direction"] == "short"
 
 
 def test_batch645_strategy_fires_with_below_prev_low():
-    """Pin (10)."""
+    """Pin (10). B659 fixture update."""
     from backtest.signals.screener import strat_pivot_r3_blowoff_short
-    s = {"recent_blowoff_at_r3": True, "below_prev_low": True}
+    s = {
+        "recent_blowoff_at_r3": True,
+        "vol_below_avg": True,  # B659 W5m vol gate
+        "below_prev_low": True,
+    }
     out = strat_pivot_r3_blowoff_short(s)
     assert out["fires"] is True and out["direction"] == "short"
 
