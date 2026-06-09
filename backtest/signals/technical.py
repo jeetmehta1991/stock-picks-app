@@ -991,6 +991,30 @@ def compute_supertrend(df: pd.DataFrame, period: int = 7, mult: float = 3.0) -> 
     lb_arr = lb.to_numpy(dtype=np.float64, na_value=0.0)
     cl_arr = df["close"].to_numpy(dtype=np.float64, na_value=0.0)
     st_arr, bull_arr = _supertrend_inner_loop_numba(ub_arr, lb_arr, cl_arr)
+    # B655 (2026-06-09 owner-directed T10 redundancy-audit option B per
+    # 2nd-wave external-AI critique #2 corrected methodology +
+    # feedback_no_rushing_per_strategy_tweak): producer-additive 5-bar
+    # lookback signals consumed by strat_supertrend_macd ONLY. Pre-B655
+    # T10 used `supertrend_bullish` (99.19% True on B648 random-30
+    # sample = NEAR-NO-OP filter that defeats the "trend-confirmed"
+    # thesis). The B643/B645 W5 redesign template applies here too:
+    # use the EVENT (flip) inside a multi-bar window so MACD + ADX
+    # confirmation has time to materialize within the window.
+    # `_long_5d` = True if supertrend_flip_up occurred on any of the
+    # last 5 bars (inclusive of today); mirror `_short_5d` for
+    # supertrend_flip_dn. Default lookback=5 trading days (matches
+    # B643 capitulation lookback). Other consumers of supertrend
+    # signals (`supertrend_bullish` / `_bearish` / `_flip_up` / `_flip_dn`)
+    # are unchanged per feedback_narrow_scope_blast_radius (B574-style
+    # producer-additive, not modifying existing signal definitions).
+    SUPERTREND_LOOKBACK = 5
+    flip_up_per_bar  = np.zeros_like(bull_arr, dtype=bool)
+    flip_dn_per_bar  = np.zeros_like(bull_arr, dtype=bool)
+    if len(bull_arr) > 1:
+        flip_up_per_bar[1:] = bull_arr[1:] & ~bull_arr[:-1]
+        flip_dn_per_bar[1:] = ~bull_arr[1:] & bull_arr[:-1]
+    flip_recent_long  = bool(flip_up_per_bar[-SUPERTREND_LOOKBACK:].any())
+    flip_recent_short = bool(flip_dn_per_bar[-SUPERTREND_LOOKBACK:].any())
     return {
         "supertrend_bullish":  bool(bull_arr[-1]),
         # B630 F2 (2026-06-08 owner-directed mega-sweep): symmetric
@@ -1000,6 +1024,10 @@ def compute_supertrend(df: pd.DataFrame, period: int = 7, mult: float = 3.0) -> 
         "supertrend_value":    round(float(st_arr[-1]), 4),
         "supertrend_flip_up":  bool(bull_arr[-1]) and not bool(bull_arr[-2]),
         "supertrend_flip_dn":  not bool(bull_arr[-1]) and bool(bull_arr[-2]),
+        # B655: B643-style lookback for strat_supertrend_macd
+        "supertrend_flip_recent_long_5d":  flip_recent_long,
+        "supertrend_flip_recent_short_5d": flip_recent_short,
+        "supertrend_lookback_window":      SUPERTREND_LOOKBACK,
     }
 
 

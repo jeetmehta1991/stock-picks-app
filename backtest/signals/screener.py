@@ -1062,14 +1062,72 @@ def strat_adx_initiation(s):
 
 
 def strat_supertrend_macd(s):
-    # B630 sweep: double F1 swap - supertrend_bullish -> supertrend_bearish
-    # + macd_12_26_9_bullish -> macd_12_26_9_bearish (both positive symmetric).
-    fl = (s.get("supertrend_bullish") and s.get("macd_12_26_9_bullish") and s.get("adx", 0) > 20)
-    fs = (s.get("supertrend_bearish") and s.get("macd_12_26_9_bearish") and s.get("adx", 0) > 20)
+    """Supertrend trend-confirmation + MACD momentum + ADX trend-strength,
+    with B655 redesign to EVENT-anchored signal (Olivier Seban Supertrend
+    + Appel MACD + Wilder ADX).
+
+    Batch 655 (2026-06-09 owner-directed T10 redundancy-audit option B
+    per 2nd-wave external-AI critique #2 + feedback_no_rushing_per
+    _strategy_tweak):
+
+    PRE-B655 BEHAVIOR: 3 STATE gates per direction (supertrend_bullish
+    + macd_12_26_9_bullish + adx > 20). B648 random-30 measurement
+    showed 32,913/yr universe-wide fires (~98 per ticker per year =
+    fires every 2.5 trading days). Per-gate marginal-rate audit:
+      * supertrend_bullish = 99.19% True (EXTREME NO-OP -- Supertrend
+        is a trailing trend indicator; once bullish, stays bullish
+        until a large pullback flips it; on the random-30 sample
+        covering 2022 bear + 2023-24 bull, the LONG-side filter was
+        nearly always-on).
+      * macd_12_26_9_bullish = 50.3% True (coin-flip STATE)
+      * adx > 20 = STATE trend-strength filter
+    Per CHECKLIST (s): 3 STATE gates, ZERO EVENT, so the strategy had
+    no bar-of-fire timing alpha -- effectively "MACD + ADX wearing
+    supertrend as 99%-True camouflage."
+
+    POST-B655 BEHAVIOR (B643/B645/B650 template applied): EVENT-anchored
+    via B655 producer-additive `supertrend_flip_recent_long_5d` /
+    `_short_5d` (B643-style 5-bar lookback window from the
+    supertrend_flip_up / _dn EVENT). Strategy fires LONG when ALL
+    THREE:
+      (1) supertrend_flip_recent_long_5d -- supertrend flipped bullish
+          on any of the last 5 bars (the EVENT-anchored window)
+      (2) macd_12_26_9_bullish -- MACD has confirmed momentum positive
+          within the window
+      (3) adx > 20 -- trend-strength filter unchanged
+    SHORT mirrors with flip_recent_short + macd_bearish + adx > 20.
+
+    Thesis: the supertrend flip is the bar-of-fire EVENT (genuine
+    timing alpha); the 5-bar window allows MACD/ADX confirmation to
+    materialize after the flip rather than requiring same-bar
+    confluence (which was too restrictive). Same lookback semantics
+    as B643 W5 capitulation + B645 W5m blowoff.
+
+    Other consumers of supertrend signals UNCHANGED per
+    feedback_narrow_scope_blast_radius (B574 precedent). New
+    `supertrend_flip_recent_*_5d` is producer-additive in
+    `compute_supertrend`.
+
+    Regime affinity: STRATEGY_REGIME_AFFINITY[supertrend_macd] entry
+    `{bull}` DEFERRED-R5 per existing S5-REGIME-AFFINITY-21-DEFERRED.
+    No B655 change (queue-blocked).
+    """
+    # B655: EVENT-anchored 5-bar lookback replaces all-STATE composite
+    fl = (s.get("supertrend_flip_recent_long_5d")
+          and s.get("macd_12_26_9_bullish")
+          and s.get("adx", 0) > 20)
+    fs = (s.get("supertrend_flip_recent_short_5d")
+          and s.get("macd_12_26_9_bearish")
+          and s.get("adx", 0) > 20)
     return _strat3(fl, fs, "trend",
-        ["supertrend_bullish","macd_bullish","adx>20"], ["supertrend_bearish","macd_bearish","adx>20"],
-        ["Supertrend bullish","MACD positive","ADX strong  -  trend confirmed"],
-        ["Supertrend bearish","MACD negative","ADX strong  -  downtrend confirmed"])
+        ["supertrend_flip_recent_long_5d","macd_bullish","adx>20"],
+        ["supertrend_flip_recent_short_5d","macd_bearish","adx>20"],
+        ["Supertrend flip-up within last 5 bars (B655 EVENT-anchored; pre-B655 used always-on supertrend_bullish)",
+         "MACD positive  -  momentum confirms within window",
+         "ADX > 20  -  trend strength confirmed"],
+        ["Supertrend flip-down within last 5 bars",
+         "MACD negative  -  momentum confirms within window",
+         "ADX > 20  -  trend strength confirmed"])
 
 
 # -----------------------------------------------------------------------------
