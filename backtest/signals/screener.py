@@ -411,6 +411,25 @@ def strat_pivot_r3_blowoff_short(s):
     mirror gets identical-ish effective regime via B291 default plus
     `bear` substitution for `bull`.)
 
+    Batch 659 (2026-06-09 owner-directed S4-W5M-SYMMETRIC-VOL-GATE
+    resolution per Wyckoff Distribution Upthrust-Test symmetry with
+    W5 LONG's B650 vol_below_avg gate):
+
+    Pre-B659 the SHORT side reversal-trigger lacked the volume-
+    condition that B650 added to W5 LONG. Wyckoff Buying Climax +
+    Upthrust-Test sequence symmetrically requires LOWER volume on
+    the failed-upthrust Test bar (supply-was-absorbed mirror of
+    demand-was-absorbed Spring volume condition). Without the
+    volume gate, `below_prev_low` during a sustained rally could
+    fire on counter-rally pullbacks on heavy buy-volume -- the
+    SHORT mirror of W5's pre-B650 dead-cat-bounce hole.
+
+    Fix: `s.get("vol_below_avg")` AND-required on the bar of fire
+    (B594 producer: today_volume / 20-bar_avg < 1.0). Strategy now
+    properly distinguishes a Wyckoff Upthrust-Test (low-volume
+    failed retest of BC high) from a continuation rally on heavy
+    accumulation volume.
+
     OPEN (deferred): per S4-SURVIVORSHIP-T1A-VERIFY ticket, mirror
     of the W5 left-tail caveat -- SHORT side has its own structural
     risks (squeezes that aren't in the survivor universe; merger
@@ -418,6 +437,7 @@ def strat_pivot_r3_blowoff_short(s):
     """
     fires = (
         s.get("recent_blowoff_at_r3")
+        and s.get("vol_below_avg")  # B659: Wyckoff Upthrust-Test -- LOW-volume failed-upthrust bar (mirrors B650 W5 Spring volume condition)
         and (
             s.get("bearish_engulfing")
             or s.get("shooting_star")
@@ -425,10 +445,11 @@ def strat_pivot_r3_blowoff_short(s):
         )
     )
     return _strat(fires, "short", "pivot",
-        ["recent_blowoff_at_r3", "reversal_trigger"],
+        ["recent_blowoff_at_r3", "vol_below_avg", "reversal_trigger"],
         ["R3 blowoff event within last 5 bars (Wyckoff Buying Climax)",
+         "LOW-volume failed-upthrust bar (B659 vol_below_avg = supply-absorbed mirror of B650 W5 Spring volume; Wyckoff Distribution Upthrust-Test)",
          "Reversal-confirmation today: bearish_engulfing / shooting_star / key reversal bar below prev low",
-         "Shorts the TURN inside the window, not the SPIKE on blowoff day (B645 Class 7 mirror of B643 W5)"])
+         "Shorts the TURN inside the window on Wyckoff Upthrust-Test volume, not the SPIKE on blowoff day (B645 + B659)"])
 
 
 def strat_pivot_r1_breakout(s):
@@ -439,10 +460,18 @@ def strat_pivot_r1_breakout(s):
     hold above AVWAP are markedly higher quality than R1 breaks in
     isolation.
 
-    AVWAP gate defaults to True when avwap signals are absent (e.g.
-    insufficient history) so backward-compat is preserved.
+    Batch 659 (2026-06-09 owner-directed S4-W6-W7-W8-LONG-DEFAULT-TRUE
+    -UNIFY resolution per 2nd-wave external-AI critique M5): LONG
+    AVWAP gates swapped from default-True (silent-gap auto-pass-on-
+    missing) to default-False (strict; symmetric with SHORT side
+    which has used default-False since B633). Same fix pattern as
+    B641 W8 F1+F1b + B657 T8 weekly Kumo. Strategy now properly
+    fails-safe to no-fire when AVWAP signals are absent rather than
+    auto-passing the gate.
     """
-    avwap_long_ok = s.get("above_avwap_252low", True) and s.get("above_avwap_50low", True)
+    # B659: symmetric default-False on BOTH directions (was asymmetric
+    # default-True LONG + default-False SHORT per pre-B659 hardcoded asymmetry).
+    avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)
     # B633 sweep: positive symmetric below_avwap_252low/50low (B612 producers)
     avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
     fl = (
@@ -472,8 +501,14 @@ def strat_pivot_r1_breakout(s):
 def strat_pivot_r2_continuation(s):
     """Pivot R2 trend-continuation. Batch 205: requires AVWAP + 2x volume
     (stronger threshold than R1 since R2 is the secondary breakout) +
-    EMA 50/200 trend confirmation."""
-    avwap_long_ok = s.get("above_avwap_252low", True) and s.get("above_avwap_50low", True)
+    EMA 50/200 trend confirmation.
+
+    Batch 659 (2026-06-09 owner-directed S4-W6-W7-W8-LONG-DEFAULT-TRUE
+    -UNIFY): LONG AVWAP defaults swapped True -> False symmetric with
+    SHORT side. Same fix as B641 W8 + B657 T8 + B659 W6 simultaneously.
+    """
+    # B659: symmetric default-False on BOTH directions
+    avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)
     # B633 sweep: positive symmetric below_avwap_252low/50low (B612 producers)
     avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
     # Stronger volume confirmation for R2 (2x ADV instead of 1.5x)
@@ -562,7 +597,11 @@ def strat_cpr_narrow_bullish(s):
     contribution).
     """
     # B641 F1+F1b: positive symmetric gates on SHORT side (no NOT patterns)
-    avwap_long_ok = s.get("above_avwap_50low", True)   # LATENT: default-True same class as W6/W7 (queued S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)
+    # B659 W8 portion of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY: LONG AVWAP
+    # default swapped True -> False symmetric with SHORT side. Strategy
+    # now properly fails-safe to no-fire when above_avwap_50low key is
+    # absent rather than auto-passing the gate.
+    avwap_long_ok = s.get("above_avwap_50low", False)   # B659: default-False symmetric with SHORT
     avwap_short_ok = s.get("below_avwap_50low", False)  # B641 F1: positive symmetric
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)           # B641 F1b: positive symmetric (B630 producer)
@@ -786,6 +825,12 @@ def strat_hull_rsi(s):
     """
     adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
     above_200 = s.get("price_above_ema_200", False)
+    # B659 S4-T3-NOT-ABOVE-200-EMA-PATTERN resolution: replace
+    # `(not above_200)` NOT-pattern silent-gap with positive symmetric
+    # `s.get("below_ema_200", False)` (B630 producer-additive). Same
+    # fix template as B641 W8 F1b (cpr_narrow_bullish SHORT-side
+    # `(not above_200)` -> `below_ema_200` positive symmetric).
+    below_200 = s.get("below_ema_200", False)
     # B656: dropped rsi_9>50/<50 (option C from T3 redundancy audit;
     # same accidentally-safe + near-no-op pattern as B654 W8 RSI drop).
     fl = (
@@ -797,7 +842,7 @@ def strat_hull_rsi(s):
     fs = (
         s.get("hull_bearish") and s.get("price_below_hull")
         and adx_trend_ok
-        and (not above_200)  # OPEN: NOT-pattern silent-gap; queued S4-T3-NOT-ABOVE-200-EMA-PATTERN
+        and below_200  # B659: was `(not above_200)` NOT-pattern silent-gap
     )
     return _strat3(fl, fs, "momentum",
         ["hull_bullish", "price_above_hull", "adx>20", "price_above_ema_200"],
