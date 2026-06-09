@@ -26,18 +26,28 @@
 
 ## Cluster current state
 
-| T# | Strategy | Direction | Category | Gate count | Regime affinity | B271 family-bug risk | Measured fires/yr (univ) |
-|---|---|---|---|---|---|---|---|
-| T1 | `macd_crossover` | dual | momentum | 1 per direction | none (B291 default) | ✅ clean | _measurement pending_ |
-| T2 | `macd_fast_crossover` | dual | momentum | 1 per direction | explicit `{bull}` | ⚠ B271 candidate — DEFERRED per R5 M1 | _measurement pending_ |
-| T3 | `hull_rsi` | dual | momentum | 5 per direction | none (B617 REMOVED) | ✅ clean (post-B617) | _measurement pending_ |
-| T4 | `parabolic_sar_flip` | dual | trend | 2 per direction | explicit `{bear}` | ⚠ B271 candidate — DEFERRED per R5 M1 | _measurement pending_ |
-| T5 | `parabolic_sar_flip_short` | SHORT (single) | trend | 2 | explicit `{bear, crisis, neutral}` (= B291 SHORT default) | ✅ N/A (single-direction) | _measurement pending_ |
-| T6 | `tema_dema` | dual | trend | 2 per direction | explicit `{bear}` | ⚠ B271 candidate — DEFERRED per R5 M1 | _measurement pending_ |
-| T7 | `ichimoku_tk_cross` | dual | trend | 2 per direction | none (B291 default) | ✅ clean | _measurement pending_ |
-| T8 | `ichimoku_cloud_breakout` | dual | trend | 4 per direction | none (B291 default) | ✅ clean | _measurement pending_ |
-| T9 | `adx_initiation` | dual | trend | 2 per direction | explicit `{bear}` | ⚠ B271 candidate — DEFERRED per R5 M1 | _measurement pending_ |
-| T10 | `supertrend_macd` | dual | trend | 3 per direction | explicit `{bull}` | ⚠ B271 candidate — DEFERRED per R5 M1 | _measurement pending_ |
+| T# | Strategy | Direction | Category | Gate count | Regime affinity | B271 risk | Measured fires/yr (univ) | Indep ratio | REDUNDANCY concern? |
+|---|---|---|---|---|---|---|---:|---:|---|
+| T1 | `macd_crossover` | dual | momentum | 1 per direction | none (B291 default) | ✅ clean | **8,506** PASS_CUBE | 0.019 | ⚠ Extreme fire rate — but it's a literal 1-gate strategy (MACD cross is one EVENT). Not redundant; just frequent. Maybe over-firing on noise. |
+| T2 | `macd_fast_crossover` | dual | momentum | 1 per direction | explicit `{bull}` | ⚠ B271 candidate — DEFERRED R5 M1 | **13,730** PASS_CUBE | 0.031 | Same as T1 — 1-gate; frequent crosses on faster periods (8/21/5). |
+| T3 | `hull_rsi` | dual | momentum | 5 per direction | none (B617 REMOVED) | ✅ clean (post-B617) | **23,898** PASS_CUBE | 0.059 | 🔴 **HIGH redundancy concern** — 5 STATE gates all measure "trend up alignment": hull_bullish + price_above_hull + rsi>50 + adx>20 + above_200_ema. Fires ~70/ticker/year. Same class as W8 cpr_narrow_bullish — gates are over-determined uptrend proxies. |
+| T4 | `parabolic_sar_flip` | dual | trend | 2 per direction | explicit `{bear}` | ⚠ B271 — DEFERRED R5 M1 | **3,635** PASS_CUBE | 0.023 | EVENT (flip) + STATE (adx_trending). 2-gate is reasonable; high rate driven by adx_trending being common. |
+| T5 | `parabolic_sar_flip_short` | SHORT (single) | trend | 2 | explicit `{bear, crisis, neutral}` (= B291 default) | ✅ N/A | **1,834** PASS_CUBE | 1.033 | Same gate set as T4 SHORT side — duplicate concern still applies (per T5 walk). Indep ratio ≈ 1.0 = gates roughly independent (rare). |
+| T6 | `tema_dema` | dual | trend | 2 per direction | explicit `{bear}` | ⚠ B271 — DEFERRED R5 M1 | **5,760** PASS_CUBE | 0.003 | EVENT (cross) + STATE (price vs TEMA). High rate driven by frequent TEMA/DEMA crosses on volatile names. |
+| T7 | `ichimoku_tk_cross` | dual | trend | 2 per direction | none (B291) | ✅ clean | **2,080** PASS_CUBE | 0.005 | EVENT (TK cross) + STATE (cloud position). Modest fire rate. |
+| T8 | `ichimoku_cloud_breakout` | dual | trend | 4 per direction | none (B291) | ✅ clean | **24,776** PASS_CUBE | 0.009 | 🔴 **HIGH redundancy concern** — 4 STATE gates all measure "above cloud structure": above_cloud + tk_bullish + adx_trending + weekly_above_cloud. Same class as W8 + T3. ~74/ticker/year. |
+| T9 | `adx_initiation` | dual | trend | 2 per direction | explicit `{bear}` | ⚠ B271 — DEFERRED R5 M1 | **1,611** PASS_CUBE | 0.249 | EVENT (adx_cross_up) + STATE (di_bull/bear). Modest fire rate. |
+| T10 | `supertrend_macd` | dual | trend | 3 per direction | explicit `{bull}` | ⚠ B271 — DEFERRED R5 M1 | **32,913** PASS_CUBE | 0.007 | 🔴 **EXTREME redundancy concern** — 3 STATE gates all measure "trend up + momentum up": supertrend_bullish + macd_bullish + adx>20. Fires ~98/ticker/year (every 2.5 trading days). Same class as W8. |
+
+**Source:** [`output_audit/fire_count_measured_b648_w5m_trend_random30.json`](output_audit/fire_count_measured_b648_w5m_trend_random30.json) — 30 random tickers (seed 42) × 2022-2024 × B648-corrected ×16.77 projection scale.
+
+**Per critique #2 corrected methodology (see [pivot cluster doc](STAGE_4_PIVOT_CLUSTER_WALKS.md#what-the-independence-ratio-is-telling-us)):** high fire rate + low independence ratio + all-STATE gates is the signature of REDUNDANCY (over-determination), NOT confluence. Three trend strategies in this cluster trigger that pattern: **T3 hull_rsi (23,898/yr), T8 ichimoku_cloud_breakout (24,776/yr), T10 supertrend_macd (32,913/yr)**. All three are essentially "established uptrend in N different forms" — same critique that applies to W8 cpr_narrow_bullish in pivot cluster.
+
+**Caveats per B649 framing (PRELIMINARY measured / pending full-universe verification):** 30 tickers across one regime arc; per critique #1 these numbers remain hypotheses pending `S5-FIRE-COUNT-MEASURED-RUN-FULL`. Trend strategies in particular over-fire on large-cap uptrending names in 2022-2024 — the magnitudes are likely OVER-stated for the full universe.
+
+**5 of 10 strategies carry single-direction regime affinity entries despite being dual.** This is the B271 family-bug pattern (mass-edit single-direction-era entries that cap both directions when strategy becomes dual). However, ALL 5 are **already deferred** under existing `S5-REGIME-AFFINITY-21-DEFERRED` (B624 manifest M1) — owner directive: no STRATEGY_REGIME_AFFINITY changes until R5 cube produces direction-aware per-(strategy, direction, regime) Sharpe data. So this cluster's B271 instances are queue-resolved already; the walks below confirm-and-note rather than propose fix.
+
+**No NEW B271 family-bug instances surfaced by this walk.**
 
 **5 of 10 strategies carry single-direction regime affinity entries despite being dual.** This is the B271 family-bug pattern (mass-edit single-direction-era entries that cap both directions when strategy becomes dual). However, ALL 5 are **already deferred** under existing `S5-REGIME-AFFINITY-21-DEFERRED` (B624 manifest M1) — owner directive: no STRATEGY_REGIME_AFFINITY changes until R5 cube produces direction-aware per-(strategy, direction, regime) Sharpe data. So this cluster's B271 instances are queue-resolved already; the walks below confirm-and-note rather than propose fix.
 
