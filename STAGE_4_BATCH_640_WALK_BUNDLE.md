@@ -1241,3 +1241,54 @@ The methodology takeaway: **gate correlation tells you whether the strategy's ga
 4. **Full universe + full date range** (~220 tickers × 6 years × 221 strategies) is a backgroundable batch run; queued as S5-FIRE-COUNT-MEASURED-RUN. The smoke above (20 tickers × 3 years) is a proof-of-concept; the full run gives confidence intervals.
 
 End of B641 addendum.
+
+---
+
+# B643 ADDENDUM — W5 redesign measurement result
+
+> **Why this addendum exists.** B643 shipped owner-directed option C — `strat_pivot_s3_capitulation` redesign decoupling capitulation DETECTION (`recent_capitulation_at_s3` over 5-bar window) from ENTRY (reversal-trigger today). The measurement pass was re-run against the same 20-ticker × 3-year sample to compare pre- vs post-redesign fire characteristics.
+
+## Result ([`output_audit/fire_count_measured_b643_w5_redesign.json`](output_audit/fire_count_measured_b643_w5_redesign.json))
+
+| Metric | Pre-B643 | Post-B643 | Δ |
+|---|---:|---:|---|
+| Gate count | 3 AND | 2 AND (one is a 5-bar lookback OR-composite) | — |
+| Fires/yr (20-ticker sample) | 1.33 | **1.67** | +25% |
+| Projected fires/yr (full T1a) | **14.7** | **18.3** | +25% |
+| Verdict at min_trades=30 | FAIL_FIRE_STARVED | **FAIL_FIRE_STARVED** (still) | unchanged |
+| Independence ratio | 92.0 (independence OVER-estimated 92×) | **0.149** (independence UNDER-estimates 7×) | sign-flipped |
+| Structural risk | KNIFE-CATCH (fires same bar as capitulation) | **TURN-CONFIRMED** (requires reversal-trigger inside window) | RESOLVED |
+
+## Interpretation
+
+**The redesign achieved its primary objective.** The pre-B643 strategy was structurally dangerous — three rare conditions (near_s3 + rsi<30 + vol_spike_2x) co-occurring on a single bar is the textbook definition of "the moment a stock is in panicked freefall." Pre-B643 fired LONG on that exact bar. Post-B643 the strategy waits for a reversal-confirmation candle inside the 5-bar Wyckoff Spring/Test window. The strategy now buys the turn, not the fall — the reviewer's exact framing.
+
+**The fire-count modestly improved but did not cross the threshold.** 14.7/yr → 18.3/yr is a 25% improvement because the 5-bar eligibility window allows entries that would have been missed by the same-bar-only firing pattern. But 18.3/yr is still below 30/yr min_trades.
+
+**The independence ratio sign flip is informative.** Pre-B643 gates were structurally rare-co-occurrence (extreme negative correlation at the marginal-rate level): near_s3 (0.005 prior) × rsi<30 (0.05 prior) × vol_spike_2x (0.10 prior) = 2.5e-5 independence-product, but the gates only co-occur on actual capitulation days which are extremely rare even compared to that joint. Independence over-estimated 92×.
+
+Post-B643, the eligibility window broadens the `recent_capitulation_at_s3` signal to a 5-bar lookback OR-composite, and the reversal-trigger is positively correlated with eligibility (a 5-day window after capitulation is *more likely* to contain a reversal-candle than a random 5-day window). Independence under-estimates 7×.
+
+## Options going forward
+
+W5 is now structurally correct but still fire-count-FAIL. Three paths:
+
+| Option | Description |
+|---|---|
+| **(W5-i) Keep as exploratory** | Accept 18.3/yr FAIL — strategy is correctly designed but rare. Mark exploratory in CLAUDE.md; future cube runs may show high-quality alpha even at low frequency (rare-but-strong signals can be valuable; min_trades=30 is a statistical-power floor, not a deployment gate). **No further code change.** |
+| **(W5-ii) Widen lookback window 5→10** | Edit `compute_capitulation_lookback(lookback=10)`. Doubles eligibility window; estimated fire-count ~30-35/yr (matches Wyckoff "Accumulation Phase B" timeframe). Trade-off: longer window includes Test/Re-test sequences but also weakens timing-alpha attribution to the original Selling Climax. |
+| **(W5-iii) Add more reversal triggers** | OR-disjunct extends to `bullish_engulfing OR hammer OR above_prev_high OR obv_diverge_bull OR rsi_14_rising`. Five triggers vs three. Likely fire-count ~28-35/yr. Trade-off: more confirmations include weaker signals (rsi_rising from 28→29 isn't the same as a hammer at S3). |
+| **(W5-iv) Combine (ii) + (iii)** | Both. Most aggressive loosening; estimated 45-60/yr. Probably crosses PASS_CUBE. |
+| **(W5-v) Delete entirely** | Strategy + Class 7 mirror — accept that capitulation-buying on daily bars in survivor universes is a poorly-supported edge. Reduces total count 221 → 220. |
+
+## Class 7 NEW `pivot_r3_blowoff_short` mirror
+
+Still DEFERRED pending W5 final disposition. Whatever option owner picks should mirror symmetrically — same lookback + same reversal-trigger logic on the SHORT side using R3 / RSI>70 / vol_spike_2x for detection + bearish_engulfing / shooting_star / below_prev_low for confirmation.
+
+## My recommendation
+
+**(W5-i) Keep as exploratory** is the principled call. The redesign closed the structural problem; fire-count is now the only remaining issue. Pre-cube loosening to reach min_trades=30 risks recreating the original problem (looser gates → less-confirmed signals → more knife-catches). The honest disposition: ship the correctness fix, acknowledge the strategy is rare, let Stage 5 cube empirically validate whether 18/yr fires actually produce alpha at sufficient power. If owner wants to chase the threshold, **(W5-ii)** is the safest loosening (lookback widening preserves trigger semantics).
+
+**Awaiting owner direction on W5 (i / ii / iii / iv / v) + Class 7 mirror wire question.**
+
+End of B643 addendum.

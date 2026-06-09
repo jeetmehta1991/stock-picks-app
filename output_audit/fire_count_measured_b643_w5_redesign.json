@@ -1,0 +1,45 @@
+{
+  "as_of": "2024-12-31",
+  "universe": "T1a_PIT_canonical",
+  "n_tickers": 20,
+  "n_cache_misses": 0,
+  "date_range": {
+    "start": "2022-01-01",
+    "end": "2024-12-31"
+  },
+  "n_bars_total": 25100,
+  "results": [
+    {
+      "strategy": "pivot_s3_capitulation",
+      "n_fires_long": 5,
+      "n_fires_short": 0,
+      "n_fires_avoid": 0,
+      "n_bars_evaluated": 13340,
+      "n_tickers_sampled": 20,
+      "ticker_year_span": 52.94,
+      "calendar_year_span": 3.0,
+      "measured_fires_per_calendar_year_long_sampled": 1.67,
+      "measured_fires_per_calendar_year_short_sampled": 0.0,
+      "measured_fires_per_calendar_year_total_sampled": 1.67,
+      "projected_fires_per_calendar_year_long_full_t1a": 18.3,
+      "projected_fires_per_calendar_year_short_full_t1a": 0.0,
+      "projected_fires_per_calendar_year_total_full_t1a": 18.3,
+      "projected_verdict_full_t1a": "FAIL_FIRE_STARVED",
+      "fires_per_ticker_year_long": 0.0945,
+      "fires_per_ticker_year_short": 0.0,
+      "first_fire_date": "2023-03-16",
+      "last_fire_date": "2023-06-02",
+      "verdict": "FAIL_FIRE_STARVED",
+      "gate_marginals": {
+        "bullish_engulfing": 0.0373,
+        "recent_capitulation_at_s3": 0.0015
+      },
+      "gate_pairwise_correlation": {
+        "bullish_engulfing x recent_capitulation_at_s3": 0.013
+      },
+      "independence_predicted_joint_prob": 5.6e-05,
+      "independence_predicted_vs_measured_ratio": 0.149,
+      "notes": "Evaluated in 2.7s; 20 tickers."
+    }
+  ]
+}
