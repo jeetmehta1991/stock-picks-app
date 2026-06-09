@@ -751,28 +751,62 @@ def strat_hull_rsi(s):
     regime - long-only mean-reversion catching falling knives. Symmetric
     short leg gets the inverse gate (not price_above_ema_200) so it
     only fires below 200-EMA. See PHASE_1A_BETA_STAGE_D_LOSER_CELL_AUDIT.md.
+
+    Batch 656 (2026-06-09 owner-directed T3 redundancy-audit option
+    A+C per 2nd-wave external-AI critique #2 corrected methodology):
+
+    AUDIT FINDING: unlike W8 (cpr_narrow 87% True NO-OP) and T10
+    (supertrend_bullish 99% True NO-OP), T3 hull_rsi has NO extreme
+    no-op gate -- all 5 gates are 38-53% True. The 28-fires/ticker/year
+    rate is honest CONFLUENCE (gates positively correlate AT the
+    strategy's intended setup: hull_bullish + price_above_hull
+    correlate +0.41 because both measure Hull-MA uptrend semantics
+    from different angles -- slope vs current position -- but they
+    screen distinct failure modes; not redundant).
+
+    Per critique #2 corrected methodology: T3 is honest STATE
+    composite, not redundancy-with-no-op-camouflage. Status quo
+    structure preserved (option A).
+
+    The ONE no-op-class concern: `rsi_9>50/<50` strict-inequality on
+    default-50 is the same accidentally-safe pattern that B654
+    closed for W8 RSI -- midpoint strict-inequality removes ~half
+    the sample but adds almost no information beyond what
+    hull_bullish + price_above_hull already encode. Per option C:
+    DROP both rsi_9 gates.
+
+    Post-B656 gate set (4 distinct gates per direction):
+      LONG:  hull_bullish + price_above_hull + adx>20 + price_above_ema_200
+      SHORT: hull_bearish + price_below_hull + adx>20 + below-200-EMA*
+    (*) SHORT side still uses `(not above_200)` NOT-pattern silent-
+        gap -- separate concern queued as
+        `S4-T3-NOT-ABOVE-200-EMA-PATTERN` (B656 surface for owner
+        decision). NOT auto-fixed here per CHECKLIST (g) sequence-
+        or-split.
     """
     adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
     above_200 = s.get("price_above_ema_200", False)
+    # B656: dropped rsi_9>50/<50 (option C from T3 redundancy audit;
+    # same accidentally-safe + near-no-op pattern as B654 W8 RSI drop).
     fl = (
         s.get("hull_bullish") and s.get("price_above_hull")
-        and s.get("rsi_9", 50) > 50 and adx_trend_ok
+        and adx_trend_ok
         and above_200
     )
     # B634 sweep: positive symmetric hull_bearish + price_below_hull (B634 producers)
     fs = (
         s.get("hull_bearish") and s.get("price_below_hull")
-        and s.get("rsi_9", 50) < 50 and adx_trend_ok
-        and (not above_200)
+        and adx_trend_ok
+        and (not above_200)  # OPEN: NOT-pattern silent-gap; queued S4-T3-NOT-ABOVE-200-EMA-PATTERN
     )
     return _strat3(fl, fs, "momentum",
-        ["hull_bullish", "price_above_hull", "rsi_9>50", "adx>20", "price_above_ema_200"],
-        ["hull_bearish", "price_below_hull", "rsi_9<50", "adx>20", "price_below_ema_200"],
+        ["hull_bullish", "price_above_hull", "adx>20", "price_above_ema_200"],
+        ["hull_bearish", "price_below_hull", "adx>20", "price_below_ema_200"],
         ["Hull MA rising - fast trend bullish", "Price above Hull",
-         "RSI-9 above midpoint", "ADX>20 confirms trend",
+         "ADX>20 confirms trend",
          "Above 200-EMA (bull regime gate, Batch 358)"],
         ["Hull MA falling - fast trend bearish", "Price below Hull",
-         "RSI-9 below midpoint", "ADX>20 confirms trend",
+         "ADX>20 confirms trend",
          "Below 200-EMA (bear regime gate, Batch 358)"])
 
 
