@@ -161,6 +161,80 @@ def compute_pivots(df: pd.DataFrame) -> dict:
     }
 
 
+def compute_capitulation_lookback(df: pd.DataFrame, lookback: int = 5) -> dict:
+    """B643 (2026-06-09 owner-directed W5 redesign option C per
+    feedback_no_rushing_per_strategy_tweak + B640 external-AI audit +
+    B641 fire-count measurement): producer-additive lookback signal
+    supporting the redesigned strat_pivot_s3_capitulation.
+
+    Pre-B643 strat_pivot_s3_capitulation fired LONG on the SAME bar
+    as the capitulation conditions (near_s3 + rsi<30 + vol_spike_2x) =
+    pure knife-catch by construction (price crashed + oversold + panic
+    volume + BUY). The B640 audit + B641 measured fire rate (14.7/yr
+    universe-wide -- FAIL_FIRE_STARVED) confirmed both the structural
+    danger AND the fire-starvation.
+
+    This producer decouples DETECTION from ENTRY by emitting
+    `recent_capitulation_at_s3` = True if a capitulation event
+    occurred on ANY of the last `lookback` bars (inclusive of today).
+    The strategy then gates entry on a separate REVERSAL-CONFIRMATION
+    trigger (bullish_engulfing OR hammer OR above_prev_high) firing
+    today -- so the strategy buys the TURN inside the eligibility
+    window, not the FALL on the capitulation day itself.
+
+    Capitulation per bar (vectorized; matches the pre-B643 same-bar
+    fire conditions exactly):
+      near_s3 (0.3% proximity to pivot S3 computed from prev bar HLC)
+        AND rsi_14 (Wilder smoothing) < 30
+        AND volume / 20-bar avg >= 2.0
+
+    Default lookback=5 trading days. Recent capitulation event is
+    True if ANY bar in [t-4, t-3, t-2, t-1, t] satisfied all three
+    conditions. Wider lookback (7-10) would catch slower reversals
+    but accept more false-eligibility days; tighter (2-3) reduces
+    fire count. 5 is the Wyckoff "spring + test" sequence horizon.
+
+    Returns {} when df has insufficient history (< 200 bars for
+    pivot calc + RSI warmup).
+    """
+    if df is None or len(df) < 200:
+        return {}
+    if not {"open", "high", "low", "close", "volume"}.issubset(df.columns):
+        return {}
+
+    # Per-bar pivot S3 (uses prev-bar H/L/C; today_close vs S3 is current-bar)
+    h_prev = df["high"].shift(1)
+    l_prev = df["low"].shift(1)
+    c_prev = df["close"].shift(1)
+    pivot = (h_prev + l_prev + c_prev) / 3
+    s3 = l_prev - 2 * (h_prev - pivot)
+    today_close = df["close"]
+    near_s3 = (today_close - s3).abs() / s3.abs().clip(lower=0.01) < 0.003
+
+    # RSI(14) per bar via Wilder smoothing (matches compute_rsi BUG-28 fix)
+    d = df["close"].diff()
+    g = d.clip(lower=0).ewm(alpha=1 / 14, adjust=False).mean()
+    ls = (-d.clip(upper=0)).ewm(alpha=1 / 14, adjust=False).mean()
+    rsi_14 = 100 - 100 / (1 + g / ls.replace(0, np.nan))
+    rsi_oversold = rsi_14 < 30
+
+    # Volume spike per bar (matches compute_volume:vol_spike_2x)
+    avg20 = df["volume"].rolling(20).mean()
+    vol_ratio = df["volume"] / avg20
+    vol_spike_2x = vol_ratio >= 2.0
+
+    # Joint capitulation per bar
+    capitulation_per_bar = near_s3.fillna(False) & rsi_oversold.fillna(False) & vol_spike_2x.fillna(False)
+
+    # Was capitulation True in any of the last `lookback` bars (inclusive)?
+    recent = bool(capitulation_per_bar.tail(lookback).any())
+
+    return {
+        "recent_capitulation_at_s3": recent,
+        "capitulation_lookback_window": lookback,
+    }
+
+
 def compute_fibonacci(df: pd.DataFrame, lookback: int = 50) -> dict:
     if len(df) < 10:
         return {}
@@ -1822,6 +1896,10 @@ def compute_all_signals(df: pd.DataFrame,
     skip = skip_indicators or set()
     signals = {}
     signals.update(compute_pivots(df))
+    # B643 (2026-06-09 W5 redesign option C): capitulation-lookback
+    # producer consumed by strat_pivot_s3_capitulation; emits
+    # `recent_capitulation_at_s3` over a 5-bar window.
+    signals.update(compute_capitulation_lookback(df))
     signals.update(compute_fibonacci(df))
     signals.update(compute_vwap(df))
     if "rsi" not in skip:

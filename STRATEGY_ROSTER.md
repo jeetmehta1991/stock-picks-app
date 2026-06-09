@@ -27,8 +27,8 @@
 ## Direction counts
 - **?**: 6
 - **avoid**: 1
-- **dual**: 62
-- **long**: 104
+- **dual**: 63
+- **long**: 103
 - **short**: 48
 
 ## Category counts
@@ -40,8 +40,8 @@
 - **confluence**: 12
 - **institutional_persistence**: 12
 - **mean_reversion**: 11
-- **pivot**: 11
 - **event_driven**: 10
+- **pivot**: 10
 - **classification_change**: 10
 - **chart_pattern**: 9
 - **ict**: 8
@@ -51,9 +51,9 @@
 - **factor**: 6
 - **cross_asset**: 5
 - **multi_timeframe**: 5
+- **?**: 5
 - **calendar**: 4
 - **po3**: 4
-- **?**: 4
 - **vwap**: 3
 - **smart_money_combo**: 3
 - **volume_profile**: 3
@@ -203,7 +203,7 @@
 | 136 | `pivot_r2_continuation` | N |  | QUIET | pivot | dual | - above_r2<br>- adx_trending<br>- today's 50-day EMA STRICTLY GREATER THAN today's 200-day EMA (golden-cross regime - bullish trend backdrop)<br>- today's volume >= 2.0x the 20-day average volume<br>- above_avwap_252low_and_50low | `fl = ( s.get("above_r2") and s.get("adx_trending") and s.get("ema_50_200_bullish") and avwap_long_ok and s.get("vol_spike_2x", s.get("vol_spike_15x", False)) ) <br> fs = ( s.get("below_s2") and s.get("adx_trending") and s.get("ema_50_200_bearish")...` | above_r2, adx_trending, ema_50_200_bullish, vol_spike_2x, above_avwap_252low_and_50low | (no affinity = all regimes) | active | 1 Awaiting (n_rows=1) |
 | 137 | `pivot_s1_bounce` | N |  | YES | pivot | dual | - today's close is within +/-0.30% of pivot point S1 (Standard pivot: S1 = 2P - H, where P = (prior_H + prior_L + prior_C)/3)<br>- OR hammer/bullish_pin_bar<br>- OR On-Balance Volume in uptrend: today's OBV > OBV from 5 bars ago (cumulative volume on up-days minus volume on down-days) | `fl = (s.get("near_s1") and (s.get("hammer") or s.get("bullish_pin_bar")) and s.get("obv_bullish")) <br> fs = (s.get("near_r1") and (s.get("shooting_star") or s.get("bearish_engulfing")) and s.get("obv_bearish"))` | near_s1, hammer/bullish_pin_bar, obv_bullish | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
 | 138 | `pivot_s2_bounce` | N |  | YES | pivot | dual | - today's close is within +/-0.30% of pivot point S2 (Standard: S2 = P - (prior_H - prior_L))<br>- OR rsi_14<40<br>- OR bullish_candle | `fl = (s.get("near_s2") and s.get("rsi_14", 50) < 40 and (s.get("hammer") or s.get("bullish_engulfing"))) <br> fs = (s.get("near_r2") and s.get("rsi_14", 50) > 60 and s.get("bearish_engulfing"))` | near_s2, rsi_14<40, bullish_candle | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |
-| 139 | `pivot_s3_capitulation` | N |  | YES | pivot | long | - today's close is within +/-0.30% of pivot point S3 (Standard: S3 = prior_L - 2*(prior_H - P))<br>- rsi_14<30<br>- today's volume >= 2.0x the 20-day average volume | `fires = (s.get("near_s3") and s.get("rsi_14", 50) < 30 and s.get("vol_spike_2x"))` | near_s3, rsi_14<30, vol_spike_2x | (no affinity = all regimes) | active | 4 Awaiting (n_rows=4) |
+| 139 | `pivot_s3_capitulation` | N |  | YES | ? | dual | - recent_capitulation_at_s3<br>- OR reversal_trigger | `fires = ( s.get("recent_capitulation_at_s3") and ( s.get("bullish_engulfing") or s.get("hammer") or s.get("above_prev_high") ) )` | recent_capitulation_at_s3, reversal_trigger | (no affinity = all regimes) | active | 4 Awaiting (n_rows=4) |
 | 140 | `po3_bearish` | N |  | YES | po3 | short | - po3_bearish<br>- price_below_ema_200 | `fires = ( s.get("po3_bearish", False) and s.get("below_ema_200", False)  # B630 sweep )` | po3_bearish, price_below_ema_200 | (no affinity = all regimes) | active | 5 Awaiting (n_rows=5) |
 | 141 | `po3_bullish` | N |  | YES | po3 | long | - po3_bullish<br>- today's close STRICTLY GREATER THAN the 200-day exponential moving average of close (long-term uptrend gate) | `fires = ( s.get("po3_bullish", False) and s.get("price_above_ema_200", True) )` | po3_bullish, price_above_ema_200 | (no affinity = all regimes) | active | 4 Awaiting (n_rows=4) |
 | 142 | `po3_htf_aligned_long` | N |  | YES | po3 | long | - po3_bullish<br>- weekly_bias_bull | `fires = ( s.get("po3_bullish", False) and s.get("weekly_bias_bull", False) )` | po3_bullish, weekly_bias_bull | (no affinity = all regimes) | active | 3 Awaiting (n_rows=3) |

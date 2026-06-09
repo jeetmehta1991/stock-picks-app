@@ -227,14 +227,76 @@ def strat_pivot_s2_bounce(s):
 
 
 def strat_pivot_s3_capitulation(s):
-    fires = (s.get("near_s3") and
-             s.get("rsi_14", 50) < 30 and
-             s.get("vol_spike_2x"))
+    """Floor-trader pivot S3 capitulation LONG with REVERSAL CONFIRMATION
+    (Wyckoff Selling Climax + Spring/Test sequence).
+
+    Batch 643 (2026-06-09 owner-directed W5 redesign option C per
+    B640 external-AI audit + B641 fire-count measurement
+    FAIL_FIRE_STARVED 14.7/yr universe-wide):
+
+    PRE-B643 BEHAVIOR (knife-catch by construction):
+      fires = near_s3 AND rsi<30 AND vol_spike_2x  -- fired SAME bar
+      as capitulation conditions. Translates to "price crashed +
+      oversold + panic volume = BUY". No element of the gate-set
+      asked whether the decline had stopped. The B640 audit + B641
+      measured fire rate confirmed both the structural danger AND
+      the fire-starvation.
+
+    POST-B643 BEHAVIOR (buy the turn, not the fall):
+      DECOUPLED into two parts:
+        (1) DETECTION: `recent_capitulation_at_s3` (new producer
+            `compute_capitulation_lookback` in technical.py) = True
+            when the pre-B643 conditions (near_s3 + rsi<30 +
+            vol_spike_2x) were satisfied on ANY of the last 5 bars
+            (inclusive of today). Emits a 5-day eligibility window
+            after a capitulation event.
+        (2) ENTRY CONFIRMATION: a reversal trigger fires today --
+            `bullish_engulfing` (Nison two-bar reversal) OR `hammer`
+            (Nison single-bar reversal with dominant lower wick) OR
+            `above_prev_high` (key reversal bar -- today closed above
+            yesterday's high, engulfs prior-day range).
+      Strategy fires LONG only when BOTH (1) AND (2) are True.
+
+    Wyckoff Selling Climax + Spring/Test sequence: the capitulation
+    bar is the Selling Climax (SC); the 5-day window after captures
+    the Automatic Rally (AR) and Spring/Test phase where price
+    re-tests the SC low on weaker volume; reversal-confirmation
+    bar inside the window signals the Test held -> bias to the
+    Sign-of-Strength (SoS) rally. Buying the Test (with
+    confirmation), not the SC (without), is the canonical
+    Wyckoff play.
+
+    Class 7 NEW mirror `strat_pivot_r3_blowoff_short` deferred
+    pending W5 redesign fire-count + edge validation per
+    measurement-pass workflow (S5-FIRE-COUNT-MEASURED-RUN).
+    Symmetric design will mirror this two-gate structure post-
+    validation.
+
+    Regime affinity: B617 family-audit KEPT `{neutral, bear, crisis}`
+    entry (no `_strat3` dual-direction conflict; LONG-only single-
+    direction strategy). Capitulation-buy fits down/crisis regimes
+    (no capitulation in bull).
+
+    OPEN (deferred): per S4-SURVIVORSHIP-T1A-VERIFY ticket, this
+    strategy's expectancy is left-tail-dominated -- backtest validity
+    depends on T1a PIT universe including delisted-during-window
+    names (falling knives that didn't bounce). Per DEC-477 T1a is
+    PIT-canonical with 111 historical-removed rows, but per-strategy
+    adversarial verification has not been run for W5.
+    """
+    fires = (
+        s.get("recent_capitulation_at_s3")
+        and (
+            s.get("bullish_engulfing")
+            or s.get("hammer")
+            or s.get("above_prev_high")
+        )
+    )
     return _strat(fires, "long", "pivot",
-        ["near_s3","rsi_14<30","vol_spike_2x"],
-        ["Price at S3  -  extreme capitulation level",
-         f"RSI-14 extremely oversold at {s.get('rsi_14',0):.1f}",
-         "Volume spike confirms panic selling  -  reversal likely"])
+        ["recent_capitulation_at_s3", "reversal_trigger"],
+        ["S3 capitulation event within last 5 bars (Wyckoff Selling Climax)",
+         "Reversal-confirmation today: bullish_engulfing / hammer / key reversal bar above prev high",
+         "Buys the TURN inside the window, not the FALL on capitulation day (B643 redesign)"])
 
 
 def strat_pivot_r1_breakout(s):
