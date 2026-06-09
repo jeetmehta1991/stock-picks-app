@@ -99,7 +99,12 @@ def test_batch636_short_regime_default_bear_crisis_neutral():
     ) is False
 
 
-def test_batch636_all_strategies_count_222():
-    """Pin (8): +1 Class 7 NEW; total 221 -> 222."""
+def test_batch636_three_black_crows_short_still_registered():
+    """Pin (8): three_black_crows_short remains registered after subsequent
+    batches. Total count assertion moved to drift-floor pyramid pins in
+    test_silent_gap_pyramid.py + test_unit.py (B639 dropped count 222 ->
+    221 by deleting strat_evening_star_short as redundant; B636's pin
+    intent is that the Class 7 NEW remains alive, not a count snapshot)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert "three_black_crows_short" in ALL_STRATEGIES
+    assert len(ALL_STRATEGIES) >= 220  # drift-floor

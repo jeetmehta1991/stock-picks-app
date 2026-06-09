@@ -308,7 +308,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "parabolic_sar_flip_short": {"bear", "crisis", "neutral"},
     "supertrend_macd_short":    {"bear", "crisis", "neutral"},
     "donchian_breakdown_short": {"bear", "crisis", "neutral"},
-    "evening_star_short":       {"bear", "crisis", "neutral"},
+    # evening_star_short entry DELETED Batch 639 (2026-06-09) - strategy
+    # deleted from screener.py same batch as redundant with
+    # strat_morning_star SHORT post option-2 reconciliation. Entry would
+    # become dangling.
     "shooting_star_short":      {"bear", "crisis", "neutral"},
     "camarilla_rsi_obv_short":  {"bear", "crisis", "neutral"},
     "cpr_narrow_momentum_short":{"bear", "crisis", "neutral"},
@@ -368,7 +371,15 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "institutional_buy_momentum_long": {"bull"},
     "institutional_cluster_long":      {"bear"},
     "macd_fast_crossover":             {"bull"},
-    "morning_star":                    {"bear"},
+    # morning_star entry DELETED Batch 639 (2026-06-09 owner-directed walk
+    # F3) - strategy is DUAL via _strat3 but explicit {bear} entry capped
+    # BOTH directions; LONG side (post-B639 option-2 reconciliation =
+    # morning_star + rsi<45) literally never fires under bear-only gate
+    # since Nison bottom reversal pattern doesn't form mid-bear-trend
+    # continuation. SHORT side over-restricted vs B291 default
+    # {bear,crisis,neutral}. Same family-bug pattern as B608/B609/B617
+    # B271 mass-edit dual entries. Now falls back to B291 direction-aware
+    # default (LONG -> {bull,neutral}; SHORT -> {bear,crisis,neutral}).
     "parabolic_sar_flip":              {"bear"},
     "ppo_crossover":                   {"bear"},
     "tema_dema":                       {"bear"},

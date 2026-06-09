@@ -1685,10 +1685,15 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       per feedback_wire_new_strategies_on_the_spot - strat_three
     #       _black_crows_short symmetric bearish-reversal mirror (Nison
     #       1991 canonical). Net: +1 = 221 -> 222.)
-    assert len(ALL_STRATEGIES) == 222, (
+    #   221 after Batch 639 (Stage 4 walk of strat_morning_star option (a)
+    #       per owner directive 2026-06-09. F4 finding: strat_evening
+    #       _star_short became strict subset of strat_morning_star SHORT
+    #       after option-2 reconciliation (removed ema_50_200 trend gates)
+    #       -> standalone deleted. Net: -1 = 222 -> 221.)
+    assert len(ALL_STRATEGIES) == 221, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636 "
-        f"trajectory: ALL_STRATEGIES count must be 222 post-B636, "
+        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636/639 "
+        f"trajectory: ALL_STRATEGIES count must be 221 post-B639, "
         f"got {len(ALL_STRATEGIES)}"
     )
 
@@ -3430,22 +3435,25 @@ def test_batch316a_deprecated_strategies_emptied():
     )
     # Verify the previously-deprecated names ARE in ALL_STRATEGIES so the
     # screener loop will actually pick them up.
+    # B639 (2026-06-09): evening_star_short REMOVED from this set - deleted
+    # in B639 walk option (a) as strictly redundant with strat_morning_star
+    # SHORT post option-2 reconciliation. Count drops 23 -> 22.
     previously_deprecated = {
         "golden_cross_50_200", "golden_cross_9_21", "golden_cross_20_50",
         "golden_cross_volume", "death_cross_50_200_volume",
         "awesome_oscillator", "ppo_crossover", "tema_dema",
         "force_index_breakout", "mfi_oversold",
         "parabolic_sar_flip", "parabolic_sar_flip_short",
-        "morning_star", "evening_star_short", "three_white_soldiers",
+        "morning_star", "three_white_soldiers",
         "doji_at_support", "bullish_engulfing_support", "shooting_star_short",
         "williams_stoch_dual",
         "macd_crossover", "macd_crossover_short",
         "camarilla_r3_breakout", "camarilla_s3_bounce",
     }
-    assert len(previously_deprecated) == 23, "Sanity: 23 previously-deprecated names"
+    assert len(previously_deprecated) == 22, "Sanity: 22 previously-deprecated names post-B639"
     still_registered = previously_deprecated & set(ALL_STRATEGIES.keys())
-    assert len(still_registered) == 23, (
-        f"All 23 previously-deprecated strategies must be registered in "
+    assert len(still_registered) == 22, (
+        f"All 22 previously-deprecated strategies must be registered in "
         f"ALL_STRATEGIES so the screener loop iterates them. Missing: "
         f"{sorted(previously_deprecated - still_registered)}"
     )

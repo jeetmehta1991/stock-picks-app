@@ -1334,13 +1334,40 @@ def strat_volume_spike_breakout_retest(s):
 # -----------------------------------------------------------------------------
 
 def strat_morning_star(s):
-    fl = (s.get("morning_star") and s.get("rsi_14", 50) < 45 and s.get("ema_50_200_bullish"))
-    # B634 sweep: positive symmetric ema_50_200_bearish (B634 producer)
-    fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55 and s.get("ema_50_200_bearish"))
+    """B639 (2026-06-09 owner-directed walk option 2 reconcile-to-reversal):
+    canonical Nison 1991 morning-star / evening-star three-bar reversal
+    pair per Nison _Japanese Candlestick Charting Techniques_ Sec 6.4-6.5.
+    Pre-B639 had ema_50_200_bullish (LONG) and ema_50_200_bearish (SHORT)
+    trend gates that filtered out exactly the regime Nison wrote the
+    pattern for - the morning star is a BOTTOM reversal pattern; requiring
+    a confirmed uptrend before it can fire encodes a continuation thesis
+    (buy-the-dip) under a reversal-pattern docstring. Owner walk option 2
+    removed the trend gates so the strategy fires on canonical Nison
+    turns: pattern + RSI-not-overbought/oversold band only.
+
+    Producer pair compute_candles in technical.py:1460-1475 (Nison strict
+    4-condition AND - bar -3 directional + bar -2 small body <30pct of
+    range + bar -1 directional + bar -1 close past bar -3 midpoint;
+    B559 OPT-C operator-precedence fix).
+
+    Same-walk siblings: strat_evening_star_short DELETED B639 as strictly
+    redundant after reconciliation (its post-B639 form would be a strict
+    subset of this strategy's SHORT side); STRATEGY_REGIME_AFFINITY
+    `morning_star: {bear}` entry deleted (F3 - LONG side could never
+    fire under it since LONG requires bullish setup conditions and bear
+    regime gates them out; SHORT side over-restricted vs B291 default).
+
+    Gates:
+      LONG  = morning_star AND rsi_14 < 45  (RSI band rejects fires
+              already deep in oversold blow-off territory).
+      SHORT = evening_star AND rsi_14 > 55  (mirror).
+    """
+    fl = (s.get("morning_star") and s.get("rsi_14", 50) < 45)
+    fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55)
     return _strat3(fl, fs, "candle",
-        ["morning_star","rsi_14<45","ema_50_200_bullish"], ["evening_star","rsi_14>55","ema_50_200_bearish"],
-        ["Three-bar morning star  -  bullish reversal","RSI not overbought","Above 50/200 EMA"],
-        ["Three-bar evening star  -  bearish reversal","RSI not oversold","Below 50/200 EMA"])
+        ["morning_star","rsi_14<45"], ["evening_star","rsi_14>55"],
+        ["Three-bar morning star  -  Nison bullish reversal (bottom call)","RSI not deep-oversold"],
+        ["Three-bar evening star  -  Nison bearish reversal (top call)","RSI not deep-overbought"])
 
 
 def strat_bullish_engulfing_support(s):
@@ -1466,16 +1493,15 @@ def strat_shooting_star_short(s):
          f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought at resistance"])
 
 
-def strat_evening_star_short(s):
-    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
-    fires = (s.get("evening_star") and
-             s.get("rsi_14", 50) > 55 and
-             s.get("below_sma_50"))
-    return _strat(fires, "short", "candle",
-        ["evening_star","rsi_14>55","below_sma_50"],
-        ["Three-bar evening star  -  bearish reversal pattern",
-         "Mirror of morning star: buyers exhausted, sellers take control",
-         "Below 50 SMA confirms downtrend context for the short"])
+# strat_evening_star_short DELETED Batch 639 (2026-06-09 owner-directed walk
+# of strat_morning_star option (a)). After B639 applied option 2 reconcile-
+# to-reversal to strat_morning_star (removed ema_50_200_bullish/bearish trend
+# gates), strat_evening_star_short's gate set (evening_star + rsi_14>55 +
+# below_sma_50) became a strict subset of strat_morning_star's SHORT side
+# (evening_star + rsi_14>55). Every fire of strat_evening_star_short was
+# also a fire of strat_morning_star SHORT -> cube double-counted. Deleted
+# per F4 finding from B637 walk. The standalone also carried the same
+# reversal-vs-continuation thesis mismatch the dual was reconciled out of.
 
 
 # -----------------------------------------------------------------------------
@@ -5475,7 +5501,8 @@ ALL_STRATEGIES = {
     # _on_the_spot. Nison canonical bearish reversal pattern.
     "three_black_crows_short":  strat_three_black_crows_short,
     "shooting_star_short":      strat_shooting_star_short,
-    "evening_star_short":       strat_evening_star_short,
+    # evening_star_short DELETED Batch 639 (2026-06-09) - strictly redundant
+    # with strat_morning_star SHORT post option-2 reconciliation.
     # Confluence (9)
     "rsi_volume_200ema":        strat_rsi_volume_200ema,
     "macd_ichimoku":            strat_macd_ichimoku,
