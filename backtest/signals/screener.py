@@ -1059,11 +1059,42 @@ def strat_ichimoku_cloud_breakout(s):
     Sharpe -1.00 - the second-worst strategy by Sharpe in the carrier
     set, indicating the daily-only Kumo is too permissive.
 
-    Weekly gate defaults to True when ichi_weekly_*_cloud signals absent
-    (insufficient daily history < 260 bars); backward-compat preserved.
+    Batch 657 (2026-06-09 owner-directed T8 redundancy-audit option E
+    per 2nd-wave external-AI critique #2 corrected methodology):
+
+    AUDIT FINDING (different from W8/T10 but same default-True
+    concern as W6/W7/W8 pivot cluster): T8 has NO extreme NO-OP gate
+    (all 4 marginals 38-51% True). The gate set is HONEST CONFLUENCE
+    -- Ichimoku measured from multiple angles (daily cloud / short-
+    term TK / multi-TF weekly cloud / trend-strength) where each
+    component screens a distinct failure mode. Per option A: status
+    quo on the 4-gate confluence structure.
+
+    BUT the weekly Kumo gate had a DEFAULT-TRUE silent-gap (same
+    auto-pass-on-missing class as W6/W7/W8 LONG AVWAP defaults
+    queued in S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY). Pre-B657:
+        weekly_long_ok = s.get("ichi_weekly_above_cloud", True)
+        weekly_short_ok = s.get("ichi_weekly_below_cloud", True)
+    When weekly Kumo signals were missing (early backtest history
+    with <260 daily bars insufficient for weekly resample), BOTH
+    directions auto-passed the gate -- backward-compat for early
+    history but a silent-gap that defeats the "multi-TF confirm"
+    thesis when it matters.
+
+    Per option D from the audit: fixed by swapping default True ->
+    False on BOTH directions. Strict semantics: require weekly Kumo
+    data emitted; lose fires in early backtest when data absent.
+
+    Net B657 changes:
+      A = status quo on confluence structure (4 distinct gates)
+      D = default-True -> default-False on both weekly Kumo gates
+          (closes T8 portion of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY;
+          W6/W7/W8 portions remain pending separate decisions)
     """
-    weekly_long_ok = s.get("ichi_weekly_above_cloud", True)
-    weekly_short_ok = s.get("ichi_weekly_below_cloud", True)
+    # B657 D: strict default-False on multi-TF weekly Kumo gates (was
+    # default-True silent-gap pre-B657).
+    weekly_long_ok = s.get("ichi_weekly_above_cloud", False)
+    weekly_short_ok = s.get("ichi_weekly_below_cloud", False)
     fl = (
         s.get("ichi_above_cloud") and s.get("ichi_tk_bullish")
         and s.get("adx_trending") and weekly_long_ok
