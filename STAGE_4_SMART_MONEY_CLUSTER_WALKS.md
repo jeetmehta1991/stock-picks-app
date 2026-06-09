@@ -153,13 +153,120 @@ Per `feedback_no_rushing_per_strategy_tweak`: surface options + WAIT for owner d
 
 ---
 
-## Walks (status: 0 / 41)
+## Walks (status: 2 / 41 — SM-1 + SM-2 closed by B663)
 
 > Each per-strategy walk follows the CHECKLIST #105 7-step format with sub-rules a-s applied where relevant. Each closes with options + my recommendation; owner direction WAITS per `feedback_no_rushing_per_strategy_tweak`. Walks added below as they complete.
 
-### Strategy 1: `strat_insider_cluster_long` — proposed first walk (status: SURFACED, AWAITING OWNER GREEN-LIGHT)
+### Strategy 1: `strat_insider_cluster_long` — ✅ WALKED B663 (FINAL STATUS POST-B663 below)
 
-> See [proposed walk block below](#proposed-walk-strat_insider_cluster_long-foundational-sm-1).
+### Strategy 2: `strat_insider_cluster_with_director_long` — ✅ WALKED B663 (same family-bug fix applied; FINAL STATUS POST-B663 below)
+
+---
+
+## FINAL STATUS POST-B663 — SM-1 + SM-2 closed
+
+> Owner directive 2026-06-09 (B662 first-walk surface + B663 pre-flight discovery): owner approved option (δ) "full screener sweep" after pre-flight grep revealed the SM-1 F1 finding was a 70-strategy family-bug pattern, not a narrow 1-strategy fix. B663 shipped the full family-bug sweep + closed SM-1 + SM-2 simultaneously since both received identical treatment.
+
+### What shipped (B663 — full screener-wide family-bug sweep)
+
+**F1 — `price_above_ema_200` default-True silent-gap (70 strategies):**
+- All 70 occurrences of `s.get("price_above_ema_200", True)` swapped to default-False across screener.py
+- Symmetric with B659 LONG default-True silent-gap unification policy (W6/W7/W8 AVWAP)
+- 4 strategies already used default-False; total post-B663 default-False count = 74
+
+**F1b — `(not above_200)` NOT-pattern silent-gap (7 strategies):**
+
+The 70-occurrence grep surfaced 5 local-var assignments + 2 additional cases where the local-var was already default-False but still used `(not above_200)` in SHORT branches. ALL 7 received positive-symmetric refactor per `feedback_never_use_NOT_s_get_pattern`:
+
+| Strategy | Line | Refactor |
+|---|---|---|
+| `strat_stochrsi_oversold` | ~941 | LONG `above_200` + SHORT `below_200 = s.get("below_ema_200", False)` |
+| `strat_rsi_oversold` | ~1258 | Same |
+| `strat_bollinger_lower` | ~1340 | Same |
+| `strat_bollinger_tight` | ~1379 | Same |
+| `strat_smc_inverse_fvg` | ~3180 | Same (also replaces `below_200 = not above_200` literal) |
+| `strat_williams_r_oversold` | ~869 | Was default-False local-var but still NOT-pattern SHORT — pre-flight surfaced |
+| `strat_cpr_narrow_momentum` | ~2074 | Was default-False local-var but still NOT-pattern SHORT — removed misleading "left as-is for readability" comment (the rationale was WRONG: default-False → `not False = True` → SHORT auto-passes) |
+
+**F3 — regime affinity audit (10 exclude-crisis entries) — NO DELETIONS, lineage-grep self-correction documented:**
+
+The SM-1 walk's original F3 finding proposed deleting the `insider_cluster_long` + `insider_cluster_with_director_long` exclude-crisis regime entries citing Cohen-Malloy-Pomorski 2012 (crisis is the alpha regime for insider buying).
+
+**Pre-flight grep of `regime_selector.py` lines 261-264 revealed:**
+
+```python
+# Event-driven + quality (Batch 222): insider clusters work across
+# all regimes (Cohen-Malloy-Pomorski 2012); quality factor long-
+# only in bull/neutral; PEAD+insider confirmation similarly long-bias.
+# Batch 263 Class C tightening: long-bias strategies should NOT fire
+# in crisis. Even strong smart-money signals (insider clusters) fail
+# in crisis regime (Phase 1A-alpha: 36 crisis trades at 22pct WR).
+"insider_cluster_long":                {"bull", "neutral", "bear"},
+"insider_cluster_with_director_long":  {"bull", "neutral", "bear"},
+```
+
+**The entries are INTENTIONAL B263 Phase 1A-alpha empirical overrides of the literature thesis** (36 crisis trades at 22% WR — far below the 55% WR passing-criterion floor; literature thesis explicitly overridden by our empirical data on T1a 2020-2024). The F3 finding was a CHECKLIST violation on my part: I cited the literature without grep'ing the lineage BEFORE proposing the delete.
+
+**Audit of all 10 exclude-crisis entries:**
+
+| Entry | Lineage | Status |
+|---|---|---|
+| `totm_long` / `pre_holiday_long` / `january_effect_small_cap_long` / `halloween_seasonal_long` | Calendar group header at lines 142-150: "Crisis NOT added per the original 'calendar premia presume risk-on' reasoning" | ✅ INTENTIONAL |
+| `xs_combined_momentum_low_ivol` | Factor group header at 252-254: "filter is self-gating" | ✅ INTENTIONAL |
+| `insider_cluster_long` | B263 lineage at 261-264 (above) | ✅ INTENTIONAL |
+| `insider_cluster_with_director_long` | Same B263 lineage | ✅ INTENTIONAL |
+| `pead_with_insider_confirmation_long` | Explicit per-line `# Batch 263: drop crisis` at 269 | ✅ INTENTIONAL |
+| `smc_inverse_fvg` | Explicit per-line `# Batch 263: drop crisis` at 296 | ✅ INTENTIONAL |
+| `smc_equal_lows_sweep_long` | SMC group header at 290-293 (B271 framework consistency) | ✅ INTENTIONAL |
+
+**Result: 0 regime entries deleted.** New memory note added: [`feedback_regime_selector_lineage_grep_before_delete.md`](memory) — codifies the lineage-grep-before-delete rule into walk methodology going forward.
+
+### Code reference
+
+- [screener.py strat_insider_cluster_long](backtest/signals/screener.py) — line ~2846: `s.get("price_above_ema_200", False)` (was True)
+- [screener.py strat_insider_cluster_with_director_long](backtest/signals/screener.py) — line ~2864: same fix
+- [regime_selector.py STRATEGY_REGIME_AFFINITY](backtest/engine/regime_selector.py) — lines 265-266: UNCHANGED (B263 intentional)
+
+### Test pins
+
+- [test_batch663_price_above_ema_200_family_sweep.py](backtest/tests/test_batch663_price_above_ema_200_family_sweep.py) — 14 pins:
+  - Pin 1: SM-1 insider_cluster_long blocked without ema_200 key (direct test)
+  - Pin 2: xs_momentum_top_decile blocked without ema_200 key (sample factor)
+  - Pin 3: xs_quality_top_quintile_long blocked without ema_200 key (sample 2-gate)
+  - Pin 4: pead_long blocked without ema_200 key (sample event-driven)
+  - Pin 5: SM-7 institutional_cluster_long blocked without ema_200 key (sample 13F sleeve)
+  - Pins 6-12: 7 NOT-pattern SHORT-side blocked without below_ema_200 isolation pins
+  - Pin 13: bundle assertion — 0 `s.get("price_above_ema_200", True)` remains
+  - Pin 14: bundle assertion — 0 `(not above_200)` patterns remain
+- [test_unit.py test_batch216_smc_inverse_fvg_handles_both_directions](backtest/tests/test_unit.py) — fixture updated to set `below_ema_200: True` explicitly (post-B663 positive-symmetric requirement)
+
+### Measured fires/yr (universe) — pre-B663
+
+- **SM-1 insider_cluster_long: ~30-60/yr** projected (Cohen-Malloy-Pomorski reports ~0.5-1% of stock-months exhibit a cluster; T1a 500 tickers × 12 months × 0.005-0.01)
+- **SM-2 insider_cluster_with_director_long: ~10-30/yr** projected (subset of SM-1 + director-isolation tightening)
+- Both BORDERLINE on min_trades=30/yr; cube empirically adjudicates. **PENDING B660 full-universe measurement for authoritative numbers.**
+
+### Measured fires/yr (universe) — post-B663
+
+- **Pending B660** — expected modest drop on tickers with insufficient 200-EMA history (where pre-B663 default-True path was auto-passing the regime gate). On tickers with full history, no behavior change.
+- The 70-strategy family-bug sweep also affects measurements for the 22-strategy 13F sleeve, the 4 calendar strategies, ~30 other strategies — B660 captures all post-sweep numbers in a single full-universe run.
+
+### Open items queued
+
+| Ticket | Description |
+|---|---|
+| `S5-INSIDER-CLUSTER-HOLD-DURATION-VALIDATION` | Cohen-Malloy-Pomorski 12-month-alpha thesis vs default 1× ATR trail exit; cube replay across hold durations |
+| `S4-INSIDER-PRODUCER-PARALLEL-AUDIT` | Two parallel insider producers (`compute_insider_cluster_signals` boolean in `insider_buying.py` + `data/smart_money.py:insider_signal` categorical) — which strategies consume which; cross-source consistency |
+| `S4-INSIDER-SCHEMA-PIN` | Quiver `live/insiders` schema-version assertion / pin |
+| ~~`S4-EVENT-DRIVEN-DEFAULT-TRUE-EMA-SWEEP`~~ | **CLOSED B663** — full screener-wide sweep applied; supersedes the originally-narrower-scope ticket |
+
+### Class 7 NEW question — deferred (was original Q3 from B662 surface)
+
+`strat_insider_cluster_concentrated_sell_short` (only-SHORT on `concentrated_sell` >50% holdings dumped per economic-symmetry test in Step 6) — **NOT wired in B663** because owner's "approve all recs" was interpreted conservatively; Q3 was a separate consideration not in my recommendation block. Still available for owner consideration; data-source-asymmetry check is satisfied (concentrated_sell is the only economically-defensible SHORT mirror of insider buying — generic cluster_sell is noise per `feedback_asymmetric_data_sources_break_mechanical_inverse`).
+
+### No regrets
+
+The B663 family-bug sweep was the right scope decision. Pre-flight grep revealed the original "narrow" SM-1 fix would have left 69 same-pattern silent-gaps + violated `feedback_family_bug_grep_before_one_liners`. The F3 self-correction also caught a CHECKLIST violation before it would have shipped — `feedback_regime_selector_lineage_grep_before_delete.md` memory note codifies the lesson for future walks. Net: SM-1 + SM-2 closed-out with stronger evidence base than a narrow walk would have produced.
 
 ---
 

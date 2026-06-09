@@ -8707,9 +8707,16 @@ def test_batch216_smc_inverse_fvg_handles_both_directions():
     r = strat_smc_inverse_fvg(s)
     assert r["fires"] is True and r["direction"] == "long"
     # Short: bearish IFVG + below 200 EMA + vol confirms -> fires
+    # B663 fixture update: SHORT now requires positive-symmetric
+    # `below_ema_200` (B630 producer) set explicitly per
+    # feedback_never_use_NOT_s_get_pattern. Pre-B663 the fixture relied
+    # on `(not above_200)` deriving True from `price_above_ema_200=False`;
+    # post-B663 the strategy reads `below_ema_200` directly which fails
+    # to True without the key set.
     s = {
         "smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": True,
-        "price_above_ema_200": False, "force_index_breakout": True,
+        "price_above_ema_200": False, "below_ema_200": True,
+        "force_index_breakout": True,
     }
     r = strat_smc_inverse_fvg(s)
     assert r["fires"] is True and r["direction"] == "short"

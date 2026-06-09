@@ -866,7 +866,9 @@ def strat_williams_r_oversold(s):
     default to prevent firing when key absent.
     """
     rsi_2 = s.get("rsi_2", 50)
+    # B663 family-bug sweep: positive symmetric below_ema_200 (B630 producer) replaces (not above_200) NOT-pattern silent-gap per feedback_never_use_NOT_s_get_pattern
     above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)
     fl = (
         (s.get("williams_r_oversold") or (rsi_2 < 5))
         and above_200
@@ -875,7 +877,7 @@ def strat_williams_r_oversold(s):
     # B629 F1 cmf-family sweep: positive symmetric cmf_negative
     fs = (
         (s.get("williams_r", 0) > -20 or (rsi_2 > 95))
-        and (not above_200)
+        and below_200
         and s.get("cmf_negative")
     )
     return _strat3(fl, fs, "momentum",
@@ -938,14 +940,16 @@ def strat_stochrsi_oversold(s):
     in downtrends (Phase 1A-beta showed -1.01 expected_value at 132
     trades, indicating the strategy fires inside bear/downtrend bias)."""
     rsi_2 = s.get("rsi_2", 50)
-    above_200 = s.get("price_above_ema_200", True)
+    # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer) per feedback_never_use_NOT_s_get_pattern
+    above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)
     fl = (
         s.get("stochrsi_oversold") and s.get("stochrsi_cross_up")
         and s.get("rsi_14", 50) < 55 and above_200
     )
     fs = (
         s.get("stochrsi_overbought") and s.get("stochrsi_cross_dn")
-        and s.get("rsi_14", 50) > 45 and (not above_200)
+        and s.get("rsi_14", 50) > 45 and below_200
     )
     return _strat3(fl, fs, "momentum",
         ["stochrsi_oversold", "stochrsi_cross_up", "rsi_14<55", "above_ema_200"],
@@ -1255,7 +1259,9 @@ def strat_rsi_oversold(s):
     extremes."""
     rsi_2 = s.get("rsi_2", 50)
     rsi_14 = s.get("rsi_14", 50)
-    above_200 = s.get("price_above_ema_200", True)
+    # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer)
+    above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)
     fl = (
         (rsi_2 < 5 or rsi_14 < 35)
         and s.get("price_above_sma_50")
@@ -1265,7 +1271,7 @@ def strat_rsi_oversold(s):
     fs = (
         (rsi_2 > 95 or rsi_14 > 65)
         and s.get("below_sma_50")
-        and (not above_200)
+        and below_200
     )
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_2<5_or_rsi_14<35", "price_above_sma_50", "price_above_ema_200"],
@@ -1337,7 +1343,9 @@ def strat_bollinger_lower(s):
     """
     rsi_2 = s.get("rsi_2", 50)
     rsi_14 = s.get("rsi_14", 50)
-    above_200 = s.get("price_above_ema_200", True)
+    # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer)
+    above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)
     adx_ok = s.get("adx", 30) < 30
     # VIX-conditional RSI threshold (defaults to 40 when no VIX context)
     if s.get("vix_band_low"):
@@ -1350,10 +1358,9 @@ def strat_bollinger_lower(s):
     # regime gate (price > 200-EMA) AND no strong trend.
     rsi_long_ok = (rsi_2 < 5) or (rsi_14 < rsi_thr_long)
     fl = (s.get("bb_20_20_touch_lower") and rsi_long_ok and above_200 and adx_ok)
-    # Short: opposite side; no regime gate flip required (still requires
-    # NOT above 200-EMA via the same boolean).
+    # Short: opposite side; positive-symmetric below_ema_200 (B663 from NOT-pattern).
     rsi_short_ok = (rsi_2 > 95) or (rsi_14 > rsi_thr_short)
-    fs = (s.get("bb_20_20_touch_upper") and rsi_short_ok and (not above_200) and adx_ok)
+    fs = (s.get("bb_20_20_touch_upper") and rsi_short_ok and below_200 and adx_ok)
     return _strat3(fl, fs, "mean_reversion",
         ["bb_20_20_touch_lower", f"rsi_2<5_or_rsi_14<{rsi_thr_long}",
          "price_above_ema_200", "adx<30"],
@@ -1376,7 +1383,9 @@ def strat_bollinger_tight(s):
     """
     rsi_2 = s.get("rsi_2", 50)
     rsi_14 = s.get("rsi_14", 50)
-    above_200 = s.get("price_above_ema_200", True)
+    # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer)
+    above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)
     # VIX-conditional threshold (slightly looser than bollinger_lower since
     # the 1.5sig band is more frequent)
     if s.get("vix_band_low"):
@@ -1395,7 +1404,7 @@ def strat_bollinger_tight(s):
     fs = (
         (s.get("bb_20_15_touch_upper") or s.get("bb_20_20_touch_upper"))
         and rsi_short_ok
-        and (not above_200)
+        and below_200
     )
     return _strat3(fl, fs, "mean_reversion",
         ["bb_touch_lower_tight", f"rsi_2<10_or_rsi_14<{rsi_thr_long}",
@@ -2064,15 +2073,14 @@ def strat_cpr_narrow_momentum(s):
     (cpr_narrow_momentum x atr_trail_1x) lost -355pp at WR 30.6% with
     no regime gate. Long now requires above_200_ema; short requires
     below_200_ema."""
+    # B663 family-bug sweep: positive symmetric below_ema_200 (B630 producer) replaces (not above_200) NOT-pattern silent-gap per feedback_never_use_NOT_s_get_pattern. Pre-B663 the "left as-is for readability" comment was incorrect: `not s.get(key, False)` returns True on missing key, which auto-PASSES SHORT -- exactly the silent-gap class the feedback memory warned against.
     above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)
     fl = (s.get("cpr_narrow") and s.get("above_cpr") and s.get("rsi_14", 50) > 50
           and s.get("macd_12_26_9_bullish") and above_200)
     # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer).
-    # The `not above_200` term uses a local variable assigned via .get
-    # with default=False -- semantically equivalent to below_ema_200,
-    # left as-is for readability.
     fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50
-          and s.get("macd_12_26_9_bearish") and (not above_200))
+          and s.get("macd_12_26_9_bearish") and below_200)
     return _strat3(fl, fs, "confluence",
         ["cpr_narrow","above_cpr","rsi_14>50","macd_bullish","price_above_ema_200"],
         ["cpr_narrow","below_cpr","rsi_14<50","macd_bearish","price_below_ema_200"],
@@ -2537,7 +2545,7 @@ def strat_52wl_break_retest_short(s):
     {bear, crisis, neutral}).
     """
     # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
-    # `not s.get("price_above_ema_200", True)` -> `below_ema_200`
+    # `not s.get("price_above_ema_200", False)` -> `below_ema_200`
     # (B609 producer) and `not s.get("above_avwap_20high", True)` ->
     # `below_avwap_20high` (B612 producer) for positive symmetric
     # signals per feedback_never_use_NOT_s_get_pattern. Behavior
@@ -2733,7 +2741,7 @@ def strat_orb_stocks_in_play_long(s):
         s.get("gap_up_2pct", False)
         and s.get("close_above_open", False)
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     gap = s.get("gap_up_pct", 0.0)
     return _strat(fires, "long", "orb",
@@ -2775,7 +2783,7 @@ def strat_pre_fomc_long_sleeve(s):
     """
     fires = (
         s.get("pre_fomc_d1", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     days = s.get("days_until_fomc", -1)
     return _strat(fires, "long", "event_driven",
@@ -2791,7 +2799,7 @@ def strat_pre_fomc_quality_momentum_long(s):
     fires = (
         s.get("pre_fomc_d1", False)
         and s.get("xs_momentum_top_decile", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "event_driven",
         ["pre_fomc_d1", "xs_momentum_top_decile", "price_above_ema_200"],
@@ -2822,7 +2830,7 @@ def strat_buyback_8k_recent_long(s):
     fires = (
         s.get("recent_8k_filed", False)
         and s.get("days_since_8k", -1) <= 5
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
         and s.get("vol_spike_15x", False)
     )
     return _strat(fires, "long", "event_driven",
@@ -2843,7 +2851,7 @@ def strat_insider_cluster_long(s):
     """
     fires = (
         s.get("insider_cluster_active", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n = s.get("insider_unique_buyers_30d", 0)
     return _strat(fires, "long", "event_driven",
@@ -2861,7 +2869,7 @@ def strat_insider_cluster_with_director_long(s):
     fires = (
         s.get("insider_cluster_active", False)
         and s.get("insider_director_buyers_30d", 0) >= 1
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n = s.get("insider_unique_buyers_30d", 0)
     n_dir = s.get("insider_director_buyers_30d", 0)
@@ -2879,7 +2887,7 @@ def strat_xs_quality_top_quintile_long(s):
     Sharpe 0.8-1.1 standalone; combined with momentum reaches 1.4."""
     fires = (
         s.get("xs_quality_top_quintile", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "factor",
         ["xs_quality_top_quintile", "price_above_ema_200"],
@@ -2895,7 +2903,7 @@ def strat_xs_momentum_quality_combined(s):
     fires = (
         s.get("xs_momentum_top_decile", False)
         and s.get("xs_quality_top_quintile", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "factor",
         ["xs_momentum_top_decile", "xs_quality_top_quintile",
@@ -2936,7 +2944,7 @@ def strat_xs_momentum_top_decile(s):
         s.get("xs_momentum_top_decile", False)
         and s.get("xs_avoid_high_ivol", True)
         and s.get("xs_avoid_high_max", True)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "factor",
         ["xs_momentum_top_decile", "xs_avoid_high_ivol",
@@ -2993,7 +3001,7 @@ def strat_xs_combined_momentum_low_ivol(s):
     fires = (
         s.get("xs_momentum_top_decile", False)
         and s.get("xs_ivol_decile", 5) <= 3   # bottom 30% IVOL = high quality
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "factor",
         ["xs_momentum_top_decile", "xs_ivol_decile<=3",
@@ -3010,7 +3018,7 @@ def strat_po3_bullish(s):
     pattern marking institutional accumulation after a stop hunt."""
     fires = (
         s.get("po3_bullish", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "po3",
         ["po3_bullish", "price_above_ema_200"],
@@ -3137,7 +3145,7 @@ def strat_smc_fvg_retest_long(s):
     canonical ICT continuation entries."""
     fires = (
         s.get("smc_fvg_retest_long_zone", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "smc",
         ["smc_fvg_retest_long_zone", "price_above_ema_200"],
@@ -3177,8 +3185,9 @@ def strat_smc_inverse_fvg(s):
     """
     fl_base = s.get("smc_inverse_fvg_bullish", False)
     fs_base = s.get("smc_inverse_fvg_bearish", False)
-    above_200 = s.get("price_above_ema_200", True)
-    below_200 = not above_200
+    # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer) replaces (not above_200)
+    above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)
     # Volume confirmation: vol_spike_2x (2x ADV) OR force_index_breakout
     # signals institutional follow-through on the role-flip
     vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_breakout", False)
@@ -3212,7 +3221,7 @@ def strat_smc_breaker_block_long(s):
     price now above top -> flips to support."""
     fires = (
         s.get("smc_breaker_block_bullish", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "smc",
         ["smc_breaker_block_bullish", "price_above_ema_200"],
@@ -3227,7 +3236,7 @@ def strat_smc_mitigation_block_long(s):
     with subsequent CHoCH/BOS confirmation."""
     fires = (
         s.get("smc_mitigation_block_long", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
         and s.get("rsi_14", 50) < 50
     )
     return _strat(fires, "long", "smc",
@@ -3260,7 +3269,7 @@ def strat_smc_discount_long(s):
     fires = (
         s.get("smc_in_discount_zone", False)
         and (s.get("smc_bos_bullish", False) or s.get("smc_choch_bullish", False))
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     pct = s.get("smc_dealing_range_pct", 0.5)
     return _strat(fires, "long", "smc",
@@ -3348,7 +3357,7 @@ def strat_smc_bos_retest_entry(s):
     to confirm-as-support before adding risk)."""
     fl = (
         s.get("smc_bos_retest_long", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fs = (
         s.get("smc_bos_retest_short", False)
@@ -3382,7 +3391,7 @@ def strat_smc_bos_continuation(s):
     rsi = s.get("rsi_14", 50)
     fl = (
         s.get("smc_bos_bullish", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
         and vol_confirms
         and rsi > 50
     )
@@ -3429,7 +3438,7 @@ def strat_smc_order_block_bounce(s):
     fl = (
         s.get("smc_ob_bullish_active", False)
         and s.get("rsi_14", 50) < 45  # pullback context
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fs = (
         s.get("smc_ob_bearish_active", False)
@@ -4016,7 +4025,7 @@ def strat_avwap_50_reclaim(s):
         above_50
         and abs(pct_from_50) < 1.5
         and macd_bull
-        and s.get("price_above_ema_200", True)  # require uptrend regime
+        and s.get("price_above_ema_200", False)  # require uptrend regime
     )
     # Short: just lost AVWAP-50 + MACD turning bearish
     fs = (
@@ -4070,7 +4079,7 @@ def strat_head_and_shoulders_bottom_long(s):
     """Batch 252: inverse H&S long entry (Edwards-Magee + Bulkowski 2005)."""
     fires = (
         s.get("head_shoulders_bottom_detected", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "chart_pattern",
         ["head_shoulders_bottom_detected", "price_above_ema_200"],
@@ -4083,7 +4092,7 @@ def strat_double_bottom_long(s):
     """Batch 252: double-bottom long entry."""
     fires = (
         s.get("double_bottom_detected", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "chart_pattern",
         ["double_bottom_detected", "price_above_ema_200"],
@@ -4104,7 +4113,7 @@ def strat_cup_and_handle_long(s):
     """
     fires = (
         s.get("cup_handle_detected", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
         and s.get("vol_spike_2x", False)
         and s.get("price_above_ema_50", True)
         and s.get("rsi_14", 50) < 70
@@ -4142,7 +4151,7 @@ def strat_flag_bull_long(s):
     """
     fires = (
         s.get("flag_bull_broke", False)         # B618: breakout-occurred gate
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "chart_pattern",
         ["flag_bull_broke", "price_above_ema_200"],
@@ -4155,7 +4164,7 @@ def strat_triangle_ascending_long(s):
     """Batch 252: ascending triangle long (flat top + rising lows)."""
     fires = (
         s.get("triangle_ascending_detected", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "chart_pattern",
         ["triangle_ascending_detected", "price_above_ema_200"],
@@ -4172,7 +4181,7 @@ def strat_cup_and_handle_retest_long(s):
     fires = (
         s.get("cup_handle_detected", False)
         and s.get("resistance_break_retest", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
         and s.get("price_above_ema_50", True)
         and s.get("rsi_14", 50) < 70
     )
@@ -4253,7 +4262,7 @@ def strat_flag_bull_retest_long(s):
     """
     fires = (
         s.get("flag_bull_break_retest_long", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
         and s.get("close_above_open", False)
         and s.get("vol_below_avg", False)
     )
@@ -4300,7 +4309,7 @@ def strat_flag_bear_retest_short(s):
       (SHORT -> {bear, crisis, neutral}).
     """
     # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
-    # `not s.get("price_above_ema_200", True)` -> `below_ema_200`
+    # `not s.get("price_above_ema_200", False)` -> `below_ema_200`
     # (B609 producer) for positive symmetric signal.
     fires = (
         s.get("flag_bear_break_retest_short", False)
@@ -4324,7 +4333,7 @@ def strat_triangle_ascending_retest_long(s):
     fires = (
         s.get("triangle_ascending_detected", False)
         and s.get("resistance_break_retest", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "chart_pattern",
         ["triangle_ascending_detected","resistance_break_retest","price_above_ema_200"],
@@ -4351,7 +4360,7 @@ def strat_institutional_cluster_long(s):
     falling-knife positions."""
     fires = (
         s.get("institutional_strong_buy", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     new_pos = s.get("institutional_new_positions", 0)
     incr = s.get("institutional_increased", 0)
@@ -4411,7 +4420,7 @@ def strat_institutional_oversold_long(s):
     fires = (
         s.get("institutional_buy", False)
         and s.get("rsi_14", 50) < 35
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "smart_money_13f",
         ["institutional_buy","rsi_14<35","price_above_ema_200"],
@@ -4490,7 +4499,7 @@ def strat_institutional_breakout_confirmation_long(s):
     fires = (
         s.get("institutional_buy", False)
         and s.get("resistance_break_retest", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
         and s.get("close_above_open", False)
         and s.get("vol_below_avg", False)
     )
@@ -4530,7 +4539,7 @@ def strat_institutional_insider_combo_long(s):
     fires = (
         s.get("institutional_buy", False)
         and s.get("insider_cluster_active", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "smart_money_combo",
         ["institutional_buy","insider_cluster_active","price_above_ema_200"],
@@ -4559,7 +4568,7 @@ def strat_classification_change_recent_long(s):
     deterioration."""
     fires = (
         s.get("classification_changed_recent", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     days = s.get("days_since_classification_change", 0)
     new_sec = s.get("new_sector", "?")
@@ -4579,7 +4588,7 @@ def strat_classification_change_to_tech_long(s):
     V/MA 2023 IT->Financials (NOT growth — gated off correctly)."""
     fires = (
         s.get("classification_change_to_tech", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     new_sec = s.get("new_sector", "?")
     return _strat(fires, "long", "classification_change",
@@ -4621,7 +4630,7 @@ def strat_classification_change_volume_long(s):
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     days = s.get("days_since_classification_change", 0)
     new_sec = s.get("new_sector", "?")
@@ -4675,7 +4684,7 @@ def strat_classification_change_breakout_long(s):
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("resistance_break_retest", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     days = s.get("days_since_classification_change", 0)
     new_sec = s.get("new_sector", "?")
@@ -4699,7 +4708,7 @@ def strat_classification_change_with_institutional_long(s):
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("institutional_buy", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     new_sec = s.get("new_sector", "?")
     return _strat(fires, "long", "classification_change",
@@ -4716,7 +4725,7 @@ def strat_classification_change_with_insider_long(s):
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("insider_cluster_active", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     new_sec = s.get("new_sector", "?")
     return _strat(fires, "long", "classification_change",
@@ -4735,7 +4744,7 @@ def strat_classification_change_oversold_long(s):
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("rsi_14", 50) < 35
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "classification_change",
         ["classification_changed_recent","rsi_14<35","price_above_ema_200"],
@@ -4751,7 +4760,7 @@ def strat_institutional_persistence_breakout_long(s):
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("resistance_break_retest", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased>=5","resistance_break_retest","price_above_ema_200"],
@@ -4785,7 +4794,7 @@ def strat_institutional_persistence_oversold_long(s):
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("rsi_14", 50) < 40
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased>=5","rsi_14<40","price_above_ema_200"],
@@ -4809,7 +4818,7 @@ def strat_institutional_recent_init_momentum_long(s):
     fires = (
         s.get("institutional_new_positions", 0) >= 2
         and s.get("macd_12_26_9_bullish", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n_new = s.get("institutional_new_positions", 0)
     return _strat(fires, "long", "institutional_persistence",
@@ -4850,7 +4859,7 @@ def strat_institutional_multi_quarter_persistence_long(s):
           AND price_above_ema_200 (regime gate)."""
     fires = (
         s.get("institutional_persistence_strong", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     p4q = s.get("persistent_holders_4q", 0)
     total = s.get("total_active_holders", 0)
@@ -4871,7 +4880,7 @@ def strat_institutional_committed_growth_long(s):
     Gate: committed_growth_holders >= 5 AND price_above_ema_200."""
     fires = (
         s.get("institutional_persistence_growing", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n_grow = s.get("committed_growth_holders", 0)
     return _strat(fires, "long", "institutional_persistence",
@@ -4891,7 +4900,7 @@ def strat_institutional_increased_with_directors_long(s):
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("insider_director_buyers_30d", 0) >= 1
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n_incr = s.get("institutional_increased", 0)
     n_dir = s.get("insider_director_buyers_30d", 0)
@@ -4922,7 +4931,7 @@ def strat_institutional_persistent_holders_long(s):
     same quarter = strong consensus. Yan-Zhang 2009 RFS."""
     fires = (
         s.get("institutional_increased", 0) >= 5
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n_incr = s.get("institutional_increased", 0)
     return _strat(fires, "long", "institutional_persistence",
@@ -4940,7 +4949,7 @@ def strat_institutional_strong_conviction_long(s):
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("institutional_new_positions", 0) >= 2
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n_new = s.get("institutional_new_positions", 0)
     n_incr = s.get("institutional_increased", 0)
@@ -5003,7 +5012,7 @@ def strat_institutional_with_directors_long(s):
     fires = (
         s.get("institutional_buy", False)
         and s.get("insider_director_buyers_30d", 0) >= 1
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n_dir = s.get("insider_director_buyers_30d", 0)
     return _strat(fires, "long", "smart_money_combo",
@@ -5022,7 +5031,7 @@ def strat_institutional_with_officers_long(s):
     fires = (
         s.get("institutional_buy", False)
         and s.get("insider_officer_buyers_30d", 0) >= 1
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     n_off = s.get("insider_officer_buyers_30d", 0)
     return _strat(fires, "long", "smart_money_combo",
@@ -5079,7 +5088,7 @@ def strat_poc_magnet_long(s):
     fires = (
         s.get("vp_close_near_poc_pct", 1.0) < 0.04
         and s.get("vp_close_above_poc", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     dist = s.get("vp_close_near_poc_pct", 0.0)
     return _strat(fires, "long", "volume_profile",
@@ -5095,7 +5104,7 @@ def strat_value_area_breakout_long(s):
     fires = (
         s.get("vp_above_value_area", False)
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "volume_profile",
         ["vp_above_value_area", "vol_spike_2x", "price_above_ema_200"],
@@ -5111,7 +5120,7 @@ def strat_naked_poc_retest_long(s):
     fires = (
         s.get("naked_poc_count", 0) > 0
         and s.get("naked_poc_nearest_distance_pct", 1.0) < 0.02
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "volume_profile",
         ["naked_poc_nearest_distance_pct<0.02", "price_above_ema_200"],
@@ -5143,7 +5152,7 @@ def _cached_cross_asset_signals(as_of_iso: str) -> dict:
 
 def strat_totm_long(s):
     """Batch 254: Ariel 1987 TOTM (last-4 + first-3 trading days)."""
-    fires = s.get("is_totm_window", False) and s.get("price_above_ema_200", True)
+    fires = s.get("is_totm_window", False) and s.get("price_above_ema_200", False)
     return _strat(fires, "long", "calendar",
         ["is_totm_window", "price_above_ema_200"],
         ["TOTM window (Ariel 1987: last-4 + first-3 trading days)",
@@ -5155,7 +5164,7 @@ def strat_pre_holiday_long(s):
     fires = (
         s.get("is_pre_holiday", False)
         and s.get("dow", 0) != 0  # not Monday
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "calendar",
         ["is_pre_holiday", "dow!=0", "price_above_ema_200"],
@@ -5169,7 +5178,7 @@ def strat_january_effect_small_cap_long(s):
     fires = (
         s.get("is_january", False)
         and s.get("cap_band", "") in ("micro", "small")
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "calendar",
         ["is_january", "cap_band in (micro,small)", "price_above_ema_200"],
@@ -5180,7 +5189,7 @@ def strat_january_effect_small_cap_long(s):
 
 def strat_halloween_seasonal_long(s):
     """Batch 254: Bouman-Jacobsen 2002 Halloween Indicator."""
-    fires = s.get("is_halloween_period", False) and s.get("price_above_ema_200", True)
+    fires = s.get("is_halloween_period", False) and s.get("price_above_ema_200", False)
     return _strat(fires, "long", "calendar",
         ["is_halloween_period", "price_above_ema_200"],
         ["Halloween period Nov-Apr (Bouman-Jacobsen 2002)",
@@ -5312,7 +5321,7 @@ def strat_news_sentiment_long(s):
     fires = (
         s.get("news_sentiment_mean", 0.0) > 0.5
         and s.get("news_article_count", 0) >= 3
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     sent = s.get("news_sentiment_mean", 0.0)
     return _strat(fires, "long", "news_sentiment",
@@ -5329,7 +5338,7 @@ def strat_news_sentiment_shift_long(s):
     fires = (
         s.get("news_sentiment_shift", 0.0) > 0.4
         and s.get("news_article_count", 0) >= 2
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     shift = s.get("news_sentiment_shift", 0.0)
     return _strat(fires, "long", "news_sentiment",
@@ -5608,7 +5617,7 @@ def strat_bollinger_tight_with_smart_money_long(s):
     base_fires = (
         s.get("bb_squeeze", False)
         and s.get("close_above_open", True)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
@@ -5623,7 +5632,7 @@ def strat_mfi_oversold_with_smart_money_long(s):
     a bounce; smart-money buy raises confidence the bounce is real."""
     base_fires = (
         s.get("mfi_14_oversold", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
@@ -5637,7 +5646,7 @@ def strat_rsi_oversold_with_smart_money_long(s):
     institutional / insider corroboration."""
     base_fires = (
         s.get("rsi_14_oversold", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
@@ -5748,7 +5757,7 @@ def strat_xs_momentum_with_smart_money_long(s):
     Titman 12-1 momentum with smart-money corroboration."""
     base_fires = (
         s.get("xs_momentum_top_decile", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
@@ -5763,7 +5772,7 @@ def strat_xs_low_beta_with_smart_money_long(s):
     + smart-money buy. Pairs the BAB anomaly with smart-money confirmation."""
     base_fires = (
         s.get("xs_low_beta_top_quintile", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
@@ -5792,7 +5801,7 @@ def strat_macd_bullish_with_smart_money_long(s):
     institutional/insider sponsor."""
     base_fires = (
         s.get("macd_bullish_cross", False)
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
