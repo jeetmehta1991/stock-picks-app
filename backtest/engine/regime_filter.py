@@ -174,10 +174,21 @@ def classify_regime(
     simultaneously). Stage C diagnostic: 100% of 2022 trades classified
     "neutral" despite the real bear, contributing -275pp aggregate loss.
 
-    New ladder (top-to-bottom):
+    Batch 642 (2026-06-09 owner-directed per B640 external-AI regime-classifier
+    audit finding #2): The canonical "VIX>=30 AND below-200EMA" line was
+    DEAD CODE post-B288. Any day satisfying it also satisfied the
+    SPY-only line below, so the canonical line never returned anything
+    the SPY-only line wouldn't have. Removed to surface honestly that
+    bear classification is now SPY-vs-200EMA only; VIX contributes only
+    to crisis (>=40) and bull (<20) thresholds. Without the cleanup,
+    casual readers + future editors believed VIX was still gating bear
+    when it wasn't.
+
+    Ladder post-B642 (top-to-bottom):
+      VIX missing                      -> unknown (fail-closed)
       VIX >= 40                        -> crisis
-      VIX >= 30 AND below-200EMA       -> bear (canonical)
       below-200EMA (any VIX)           -> bear (Batch 288 SPY-only gate)
+      bear_composite_score >= 2        -> bear (Batch 292 override)
       VIX < 20 AND above-200EMA        -> bull
       else                             -> neutral
     """
@@ -186,9 +197,11 @@ def classify_regime(
 
     if vix_value >= 40:
         return "crisis"
-    # Batch 288 SPY-only bear gate.
-    if vix_value >= 30 and spy_above_200ema is False:
-        return "bear"
+    # Batch 288 SPY-only bear gate. The pre-B642 ladder also had a
+    # "VIX>=30 AND below-200EMA" line above this one; per B642 audit
+    # finding #2, that line was dead code (any case it caught was also
+    # caught here) and was removed for clarity. VIX no longer
+    # contributes to bear classification (only to crisis and bull).
     if spy_above_200ema is False:
         return "bear"
     # Batch 292 (2026-05-21 owner-approved option 3): bear composite override.
@@ -231,12 +244,17 @@ def get_regime_context(
 
     spy_above = (spy_close > spy_ema200
                  if spy_close and spy_ema200 else None)
+    # Batch 642: signed % from 200-EMA for EMA-cross hysteresis band.
+    spy_pct_from_200ema: Optional[float] = None
+    if spy_close is not None and spy_ema200 is not None and spy_ema200 > 0:
+        spy_pct_from_200ema = (spy_close - spy_ema200) / spy_ema200 * 100.0
     # Use smoothed VIX if provided; else raw
     vix_for_classify = vix_smoothed if vix_smoothed is not None else vix_value
     if use_hysteresis:
         regime = classify_regime_with_hysteresis(
             vix_for_classify, spy_above, prev_regime,
-            bear_composite_score=bear_composite_score)
+            bear_composite_score=bear_composite_score,
+            spy_pct_from_200ema=spy_pct_from_200ema)
     else:
         regime = classify_regime(
             vix_for_classify, spy_above,
@@ -628,14 +646,18 @@ def compute_regime_transition_matrix(
     return matrix
 
 
+EMA_CROSS_HYSTERESIS_PCT = 2.0  # Batch 642: % above 200-EMA required to EXIT bear
+
+
 def classify_regime_with_hysteresis(
     vix_value: Optional[float],
     spy_above_200ema: Optional[bool],
     prev_regime: Optional[str] = None,
     hysteresis_buffer: float = 5.0,
     bear_composite_score: int = 0,
+    spy_pct_from_200ema: Optional[float] = None,
 ) -> str:
-    """Classify regime with hysteresis-buffer applied to VIX thresholds.
+    """Classify regime with hysteresis-buffer applied to VIX AND SPY-vs-200EMA.
 
     DEC-317 + DEC-388: prevents oscillation when VIX hovers near a threshold.
     Once in a regime, the VIX must move past threshold +/- buffer to switch.
@@ -648,12 +670,29 @@ def classify_regime_with_hysteresis(
       bear entry: VIX >= 30; exit: VIX < 25
       bull entry: VIX < 20; exit: VIX >= 25 (back to neutral)
 
+    Batch 642 (2026-06-09 owner-directed per B640 external-AI regime audit
+    finding #3): EMA-cross hysteresis band added. Pre-B642 the SPY-vs-
+    200-EMA condition was binary at every threshold pair, so SPY oscillating
+    +/-0.1% around its 200-EMA at range tops/bottoms flipped bear<->neutral
+    day-by-day even though VIX was smoothed via 5-day SMA + 5-point buffer.
+    The architecture was guarding VIX (the secondary input post-B288) while
+    leaving the dominant input (SPY-vs-EMA cross) unbuffered. Asymmetric
+    fix: SLOW to exit bear (require SPY decisively above 200-EMA --
+    +EMA_CROSS_HYSTERESIS_PCT = 2%), FAST to enter bear (any below-EMA
+    close triggers, since we don't want to delay risk-reduction). Caller
+    passes spy_pct_from_200ema = (spy_close - spy_ema200) / spy_ema200 * 100
+    (signed % from EMA); positive = SPY above EMA. When parameter is None
+    (legacy callers), behavior degrades gracefully to the pre-B642 binary
+    gate.
+
     Inputs:
       vix_value: smoothed VIX (use get_vix_smoothed); raw VIX also acceptable
         for callers that don't want smoothing
       spy_above_200ema: same as classify_regime
       prev_regime: previous day's regime (passed by engine); None first day
       hysteresis_buffer: VIX points (default 5)
+      spy_pct_from_200ema (B642): signed % from 200-EMA (e.g. +2.5 = SPY is
+        2.5% above 200-EMA). None for legacy callers.
 
     Returns: 'bull' | 'neutral' | 'bear' | 'crisis' | 'unknown'
     """
@@ -667,24 +706,31 @@ def classify_regime_with_hysteresis(
             return "crisis"
         # else fall through to lower thresholds
     if prev_regime == "bear":
-        # Stay in bear until VIX drops well below 30 OR SPY recovers above 200-EMA.
-        # Batch 288 expansion: SPY-below-200-EMA alone keeps us in bear regardless
-        # of VIX level (mirrors the classify_regime entry gate).
-        if vix_value >= 30 - hysteresis_buffer and spy_above_200ema is False:
-            return "bear"
+        # Stay in bear until SPY recovers DECISIVELY above 200-EMA.
+        # Batch 642: EMA-cross hysteresis band. Pre-B642 a single
+        # +0.01% close above the EMA exited bear; post-B642 requires
+        # SPY to close >= +EMA_CROSS_HYSTERESIS_PCT (default 2.0%)
+        # above its 200-EMA to confirm exit. Falls back to pre-B642
+        # binary gate when spy_pct_from_200ema is not provided.
         if spy_above_200ema is False:
             return "bear"
+        # SPY is now above 200-EMA -- check the hysteresis band
+        if spy_pct_from_200ema is not None:
+            if spy_pct_from_200ema < EMA_CROSS_HYSTERESIS_PCT:
+                # Above EMA but within +2% band -- not yet a decisive cross
+                return "bear"
+        # else legacy callers without spy_pct: pre-B642 behavior
     if prev_regime == "bull":
         # Stay in bull until VIX rises well above 20
         if vix_value < 20 + hysteresis_buffer and spy_above_200ema is True:
             return "bull"
 
-    # Standard entry thresholds (same as classify_regime)
+    # Standard entry thresholds (same as classify_regime post-B642 cleanup)
     if vix_value >= 40:
         return "crisis"
-    if vix_value >= 30 and spy_above_200ema is False:
-        return "bear"
-    # Batch 288: SPY-below-200-EMA alone triggers bear.
+    # Batch 642: removed dead canonical "VIX>=30 AND below-200EMA" line
+    # (was redundant with SPY-only gate below). VIX no longer contributes
+    # to bear classification (only to crisis and bull).
     if spy_above_200ema is False:
         return "bear"
     # Batch 292: bear composite override (mirror of classify_regime).
