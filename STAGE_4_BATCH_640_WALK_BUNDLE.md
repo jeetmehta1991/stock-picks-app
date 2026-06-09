@@ -14,6 +14,7 @@
 
 1. [How to read this document](#how-to-read-this-document)
 2. [Foundations — every term defined once](#foundations)
+   - Sub-section worth reading first if regimes are unfamiliar: **[How market regimes are classified — the full picture](#how-market-regimes-are-classified--the-full-picture)** (inputs, threshold ladder, bear composite override, hysteresis, what the regime *does* once classified, worked example)
 3. [The 7-step walk methodology](#the-7-step-walk-methodology)
 4. [Cross-strategy summary table](#cross-strategy-summary-table) — read this first if you're short on time
 5. Per-strategy walks
@@ -149,9 +150,122 @@ Defined in `compute_candle_signals` starting at [technical.py:1425](backtest/sig
 
 **Why all three pivot systems?** Each was independently developed and embedded in different communities. The cube (Stage 5) will empirically decide which produces better strategies — pre-cube we keep all three live.
 
+### How market regimes are classified — the full picture
+
+Every trading day, before any strategy is evaluated, the engine asks: **"what kind of market are we in today?"** The answer is one of five states: `bull`, `neutral`, `bear`, `crisis`, or `unknown`. This is the **regime classification**.
+
+The classifier lives in [`backtest/engine/regime_filter.py:classify_regime`](backtest/engine/regime_filter.py#L151). Position sizing, regime-affinity gates, and short-to-long conversion logic all read from its output. Get this wrong and every downstream decision is built on a bad foundation — which is why this section is long.
+
+#### Inputs to the classifier
+
+The classifier takes **two required inputs** + **one optional override**:
+
+| Input | Type | What it is | Source |
+|---|---|---|---|
+| `vix_value` | float (or None) | The CBOE VIX index ("fear index") — implied 30-day SPX volatility from option prices. ~12 = calm, ~20 = mildly elevated, ~30 = stressed, ~40+ = panic. | Pulled from cached OHLCV under `^VIX`; see `backtest/data/macro.py` |
+| `spy_above_200ema` | bool (or None) | True if today's SPY close > SPY's 200-period EMA. The 200-EMA is a classic long-term trend definition (commonly attributed to Stan Weinstein 1988 *Secrets for Profiting in Bull and Bear Markets*). | Computed at [`get_spy_ema200`](backtest/engine/regime_filter.py#L271) |
+| `bear_composite_score` | int 0-3 (default 0) | Optional 3-indicator override added Batch 292 to catch 2022-style "stealth bears" where VIX never hit 30 but the market was clearly in a bear. See "Bear composite override" below. | Computed at [`compute_bear_composite_score`](backtest/engine/regime_filter.py#L33) |
+
+#### The threshold ladder (the actual classification rule)
+
+The classifier checks conditions in this order and returns the FIRST match:
+
+```python
+if vix_value is None:                                return "unknown"   # fail-closed
+if vix_value >= 40:                                  return "crisis"
+if vix_value >= 30 and spy_above_200ema is False:    return "bear"      # canonical
+if spy_above_200ema is False:                        return "bear"      # Batch 288 SPY-only gate
+if bear_composite_score >= 2:                        return "bear"      # Batch 292 override
+if vix_value < 20 and spy_above_200ema is True:      return "bull"
+return "neutral"                                                        # everything else
+```
+
+In plain English, going from most-severe to least-severe:
+
+1. **`unknown`** — VIX data is missing (cache miss, data feed failure). Fail-closed: block ALL new entries, both long and short. Existing positions continue under their original stops. Added in BUG-225 / DEC-316 (Pass 51) to fix a silent default-to-`neutral` that let the system trade on missing data.
+2. **`crisis`** — VIX ≥ 40. Doesn't matter where SPY is; VIX above 40 is panic by itself (Mar 2020, Oct 2008, Aug 2024 etc).
+3. **`bear` (canonical)** — VIX ≥ 30 AND SPY < 200-EMA. Both gauges agreeing: high implied vol AND price below the long-term trend line.
+4. **`bear` (Batch 288 SPY-only gate)** — SPY < 200-EMA regardless of VIX. Added because all of 2022 had SPY decisively below 200-EMA while VIX rarely cleared 30 (the canonical bear gate), so the entire year mis-classified as `neutral`. The post-mortem ([config rationale](backtest/engine/regime_filter.py#L170-L175)) tied the misclassification to -275pp aggregate loss; the SPY-only override fixes the failure mode.
+5. **`bear` (Batch 292 composite override)** — bear_composite_score ≥ 2 (see next subsection). Forces bear even if SPY is above 200-EMA, to catch mid-bear rallies (Aug 2022) where SPY temporarily crossed back above 200-EMA but the broader bear thesis held.
+6. **`bull`** — VIX < 20 AND SPY > 200-EMA. Both gauges agree: low implied vol AND uptrend in force.
+7. **`neutral`** — anything else (VIX 20-30 with SPY above 200-EMA; or VIX < 20 with no SPY data; or any other mixed condition). Default "I don't know which side is favoured" state.
+
+#### Bear composite override (Batch 292) — 3 indicators, ≥2 fire = force bear
+
+Added because the VIX-only and SPY-only gates both missed 2022's grinding bear. The composite reads three OFFICIAL data sources and asks: "are at least 2 of 3 saying bear?"
+
+| # | Indicator | Threshold to fire | Data source | Academic reference |
+|---|---|---|---|---|
+| 1 | **Yield curve inversion** | `T10Y2Y < 0` (10-year Treasury yield below 2-year) | `data_prefetch/fred/observations/T10Y2Y.parquet` | Estrella-Hardouvelis 1991 *Journal of Finance* — canonical recession signal; has predicted every US recession since 1955 with no false positives |
+| 2 | **AAII bearish sentiment extreme** | `bearish ≥ 40%` (% of surveyed retail investors who are bearish on the next 6 months) | `data_prefetch/aaii/weekly_sentiment.parquet` | American Association of Individual Investors weekly sentiment survey since 1987 |
+| 3 | **Sector breadth deterioration** | ≥5 of 8 sector ETFs (XLK, XLF, XLE, XLV, XLI, XLU, XLP, XLY) below their 200-EMA, requires ≥5 ETFs to have ≥200 bars of history to be eligible | Polygon cache | Broad-market deterioration; standard market-breadth indicator |
+
+If any of the 3 inputs is missing (e.g. early in backtest history before AAII data starts), that indicator contributes 0 — it can't false-trigger. The score is the count of indicators firing (0-3). Threshold to override the SPY-only gate is `score ≥ 2`.
+
+The composite is computed once per day in `backtest/engine/regime_filter.py:compute_bear_composite_score` and passed into `classify_regime` as the `bear_composite_score` keyword argument.
+
+#### Hysteresis — preventing single-day regime flips
+
+The bare threshold ladder has a problem: if VIX prints 39.9 → 40.1 → 39.5 over three days, you'd flip neutral → crisis → neutral and disrupt all your sizing. Hysteresis solves this by widening the threshold in the direction of the previous regime, so to *change* regimes you need a decisive move, not a noise crossing.
+
+[`classify_regime_with_hysteresis`](backtest/engine/regime_filter.py#L631) (DEC-317 + DEC-388 Pass 53) applies a default 5-point VIX buffer:
+
+| Previous regime | Stays in regime if | Exits regime when |
+|---|---|---|
+| `crisis` | VIX ≥ 35 (i.e. 40 − buffer) | VIX < 35 |
+| `bear` | VIX ≥ 25 (i.e. 30 − buffer) AND SPY < 200-EMA, OR SPY < 200-EMA alone | both conditions fail |
+| `bull` | VIX < 25 (i.e. 20 + buffer) AND SPY > 200-EMA | either fails |
+
+A second smoothing also runs alongside: the VIX value fed to the classifier can be a 5-day SMA of raw VIX (`get_vix_smoothed`, DEC-388, default window=5), so single-day spikes are damped before hysteresis even applies.
+
+Hysteresis is opt-in via the `use_hysteresis` flag on [`get_regime_context`](backtest/engine/regime_filter.py#L206). The engine wires it on in production paths; one-shot helper calls (analytics, dashboards) can choose raw threshold behavior.
+
+#### What the regime DOES once classified — REGIME_FILTER
+
+Once the regime is known, downstream logic reads `REGIME_FILTER` ([`config.py:383`](backtest/config.py#L383)) to decide what happens:
+
+| Regime | Long size | Short size | Conversion allowed? | Notes |
+|---|---|---|---|---|
+| `bull` | `full` (1.00×) | `reduced` (0.50×) | ✅ yes | Favour longs; allow short-to-long conversion |
+| `neutral` | `full` (1.00×) | `full` (1.00×) | ❌ no | Both directions at normal size |
+| `bear` | `reduced` (0.50×) | `full` (1.00×) | ❌ no | Favour shorts; longs sized down |
+| `crisis` | `reduced` (0.50×) | `cautious` (0.25×) | ❌ no | Smaller positions both sides; **do NOT tighten stops** (causes whipsawing) |
+| `unknown` | `none` (0.00×) | `none` (0.00×) | ❌ no | Block all new entries; existing positions continue |
+
+`POSITION_SIZE_MULT` at [`config.py:412`](backtest/config.py#L412) defines those multipliers (1.0 / 0.5 / 0.25 / 0.0). They compose on top of confidence-tier sizing (EXCEPTIONAL/VERY HIGH/HIGH/MEDIUM-HIGH/MEDIUM/LOW from CLAUDE.md), so a `MEDIUM-HIGH` (1.5%) long in `bear` regime would size to 0.75% (1.5 × 0.5).
+
+#### Worked example — September 2008
+
+Suppose VIX prints 31.4 and SPY is 5% below its 200-EMA on 2008-09-15 (Lehman collapse). Walk through:
+
+1. `vix_value = 31.4`. Not None → skip `unknown`.
+2. `31.4 >= 40`? No → skip `crisis`.
+3. `31.4 >= 30 AND spy_above_200ema is False`? **Yes** → return `"bear"`.
+
+What if the same week VIX climbed to 41.2? Same SPY state.
+1. `vix_value = 41.2`. Not None → skip `unknown`.
+2. `41.2 >= 40`? **Yes** → return `"crisis"`.
+
+What if SPY recovered above 200-EMA after a relief rally but yield curve was inverted, AAII bearish at 50%, and 6 of 8 sectors below 200-EMA?
+1. `vix_value = 28.5`. Not None.
+2. `28.5 >= 40`? No.
+3. `28.5 >= 30 AND below 200-EMA`? No (SPY above now).
+4. `spy_above_200ema is False`? No.
+5. `bear_composite_score >= 2`? **Yes** (3 indicators firing = score 3) → return `"bear"`.
+
+This third case is the 2022 stealth bear that Batch 292 was designed to catch.
+
+#### Why this matters for the walks below
+
+When you see a strategy's STRATEGY_REGIME_AFFINITY entry like `{"bear"}`, it means: "this strategy is *only allowed to fire* on days when `classify_regime(...)` returned `bear`." It doesn't fire on days when the regime is bull, neutral, crisis, or unknown.
+
+This is **multiplicative** with the strategy's own gates. A LONG strategy could have all its internal signals fire (RSI low, pattern formed, OBV bullish) but still be blocked if today's regime isn't in the strategy's allowed set. That's the layer the **B271 family-bug** (next subsection) operates at — a regime-affinity entry that was correct for a single-direction strategy becomes wrong when the strategy is later converted to dual.
+
+---
+
 ### Regime affinity — `STRATEGY_REGIME_AFFINITY`
 
-Every day the engine classifies the market into one of four **regimes**: `bull`, `neutral`, `bear`, `crisis`. The dict `STRATEGY_REGIME_AFFINITY` in [`regime_selector.py`](backtest/engine/regime_selector.py) maps strategy name → set of regimes the strategy is *allowed* to fire in.
+The dict `STRATEGY_REGIME_AFFINITY` in [`regime_selector.py`](backtest/engine/regime_selector.py) maps strategy name → set of regimes the strategy is *allowed* to fire in. (For how those regimes themselves are classified, see the section just above.)
 
 - If a strategy has an explicit entry, it fires only in those regimes.
 - If a strategy has NO explicit entry, it falls back to **Batch 291 direction-aware default**: LONG strategies fire in `{bull, neutral}`; SHORT strategies fire in `{bear, crisis, neutral}`.
