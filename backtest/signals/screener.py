@@ -277,17 +277,42 @@ def strat_pivot_s3_capitulation(s):
     direction strategy). Capitulation-buy fits down/crisis regimes
     (no capitulation in bull).
 
-    STATUS POST-B643: EXPLORATORY (per owner directive W5-i 2026-06-09).
+    STATUS POST-B644: EXPLORATORY (per owner directive W5-i 2026-06-09).
     Measurement pass shipped same day produced 18.3/yr universe-wide
     fire rate -- BELOW min_trades=30 PASSING_CRITERIA threshold. Owner
     decision: ship the correctness fix; do NOT loosen gates pre-cube
     to chase the threshold. Stage 5 cube empirically validates whether
-    18/yr fires produce alpha at sufficient statistical power (rare-
-    but-strong signals can be valuable even below the n=30 power floor;
-    Bonferroni-corrected significance is a separate gate). If cube
-    shows positive expectancy + acceptable max-drawdown, the strategy
-    is kept low-frequency. If cube shows the fires are noise, mark
-    deprecated post-cube.
+    18/yr fires produce alpha at sufficient statistical power.
+
+    BATCH 650 (2026-06-09 owner-directed external-AI critique #3a fix):
+    Added `vol_below_avg` AND-required on the reversal-trigger bar.
+    Pre-B650 the reversal-trigger OR-disjunct (bullish_engulfing OR
+    hammer OR above_prev_high) caught the timing window but missed the
+    Bulkowski/Wyckoff Spring volume-condition: a successful Test of
+    the SC low requires LOWER volume on the test bar (supply-absorption
+    thesis). Without the volume gate, `above_prev_high` could fire on
+    dead-cat bounces during sustained declines -- the redesign REDUCED
+    knife-catch risk but didn't ELIMINATE it. Adding `vol_below_avg`
+    (B594 producer: `today_volume / 20-bar_avg < 1.0`) as AND-required
+    on the bar of fire closes the dead-cat-bounce hole. The strategy
+    now properly distinguishes a Wyckoff Spring (low-volume Test) from
+    a continuation bounce on heavy distribution volume.
+
+    BATCH 651 (2026-06-09 owner-directed external-AI critique #3b fix):
+    Regime affinity STRATEGY_REGIME_AFFINITY['pivot_s3_capitulation']
+    expanded from {neutral, bear, crisis} to {bull, neutral, bear,
+    crisis} (all regimes). The original 3-regime entry was correct for
+    "buy the crash day" pre-B643. Post-B643 the strategy buys the turn
+    UP TO 5 days later via the lookback window -- by which point the
+    regime classifier (especially post-B642 R3 sticky-bear hysteresis)
+    may still be reading bear/crisis even though the recovery is
+    underway, OR may have already transitioned to neutral/bull. Either
+    direction, blocking the LONG at the recovery moment is exactly
+    the failure mode the redesign was supposed to fix. Permissive
+    all-regimes entry preserves capitulation-LONG fires across the
+    transition window. Safe because the strategy is so selective
+    (~18-50/yr FAIL_FIRE_STARVED-to-borderline depending on scale)
+    that allowing all regimes doesn't materially expand risk.
 
     OPEN (deferred): per S4-SURVIVORSHIP-T1A-VERIFY ticket, this
     strategy's expectancy is left-tail-dominated -- backtest validity
@@ -298,6 +323,7 @@ def strat_pivot_s3_capitulation(s):
     """
     fires = (
         s.get("recent_capitulation_at_s3")
+        and s.get("vol_below_avg")  # B650: Wyckoff Spring -- LOW-volume Test bar
         and (
             s.get("bullish_engulfing")
             or s.get("hammer")
@@ -305,10 +331,11 @@ def strat_pivot_s3_capitulation(s):
         )
     )
     return _strat(fires, "long", "pivot",
-        ["recent_capitulation_at_s3", "reversal_trigger"],
+        ["recent_capitulation_at_s3", "vol_below_avg", "reversal_trigger"],
         ["S3 capitulation event within last 5 bars (Wyckoff Selling Climax)",
+         "LOW-volume Test bar (B650 vol_below_avg = supply-absorption per Bulkowski/Wyckoff Spring)",
          "Reversal-confirmation today: bullish_engulfing / hammer / key reversal bar above prev high",
-         "Buys the TURN inside the window, not the FALL on capitulation day (B643 redesign)"])
+         "Buys the TURN inside the window on Wyckoff Spring volume, not the FALL on capitulation day (B643 + B650 + B651)"])
 
 
 def strat_pivot_r3_blowoff_short(s):
@@ -345,15 +372,37 @@ def strat_pivot_r3_blowoff_short(s):
     play. Sells the TURN inside the window, not the SPIKE on
     blowoff day.
 
-    STATUS POST-B645: EXPLORATORY (mirrors W5 marking). Pre-cube
-    measured fire rate (S5-FIRE-COUNT-MEASURED-RUN follow-on)
-    expected similar to W5 LONG side (~18/yr universe-wide, likely
-    FAIL_FIRE_STARVED). EXPECTANCY ASYMMETRY ACKNOWLEDGED per
-    feedback_structural_symmetry_not_economic_symmetry: equity
-    upward drift + squeeze risk on overbought shorts + borrow costs
-    structurally bias against SHORT. Owner-approved wire per
-    directive (a) with full understanding Stage 5 cube governs
-    deployment decision.
+    STATUS POST-B652: EXPLORATORY -- STRONGER WARNING (per owner
+    directive 2026-06-09 post-external-AI critique #5).
+
+    PRE-DEPLOYMENT GATE: This strategy MUST NOT be deployed to live
+    trading until BOTH of the following land:
+      (1) M10 cost-aware cube — slippage haircut + borrow cost lookup
+          + gap-at-entry modelling (DEFERRED ticket; reviewer C6).
+          The W5m fat right-tail (squeeze risk on overbought
+          short-target names) is exactly the structural risk that
+          the current flat-bps slippage model cannot evaluate.
+      (2) S5-MULTIPLE-TESTING-CORRECTION (deflated Sharpe / Hansen
+          SPA / Benjamini-Hochberg FDR; reviewer C2). With 222
+          strategies on shared OHLCV features, the cube's PASS/FAIL
+          adjudication is selection-bias-contaminated by
+          construction. W5m's measured 7.3/yr universe-wide
+          (B645 small-sample; expected ~17/yr post-B648 scaling fix)
+          provides too few trades to overcome multiple-testing
+          haircut at any honest correction.
+
+    EXPECTANCY ASYMMETRY ACKNOWLEDGED per feedback_structural
+    _symmetry_not_economic_symmetry: equity upward drift + squeeze
+    risk on overbought shorts + borrow costs structurally bias
+    against SHORT. Owner-approved wire per directive (a) WITH FULL
+    UNDERSTANDING that the cube cannot yet evaluate the specific
+    risks that make this strategy dangerous (per reviewer #5: "W5m
+    is being parked in a cube that can't yet evaluate the specific
+    risk that makes it dangerous").
+
+    The strategy stays REGISTERED to preserve the dataflow + R5
+    cube replay coverage; it must NOT be promoted to live trade
+    routing until (1) + (2) above ship.
 
     Regime affinity: no explicit STRATEGY_REGIME_AFFINITY entry; B291
     direction-aware default applies -> SHORT fires in

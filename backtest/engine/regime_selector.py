@@ -197,7 +197,19 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # sequence-or-split, W4 F1 (add shooting_star to SHORT OR) + F2
     # (docstring) + RSI<40 mislabel correction queued separately
     # (S4-W4-F1-PLUS-F2-PLUS-RSI-MISLABEL) -- not bundled here.
-    "pivot_s3_capitulation":    {"neutral", "bear", "crisis"},
+    # B651 (2026-06-09 owner-directed external-AI critique #3b): expanded
+    # from {neutral, bear, crisis} to all regimes. Pre-B643 the entry was
+    # correct for "buy the crash day" (capitulation day only). Post-B643
+    # the strategy buys the turn UP TO 5 days later via the lookback
+    # window, by which point the regime classifier (especially post-B642
+    # sticky-bear hysteresis) may still be reading bear/crisis or may
+    # have transitioned to neutral/bull -- either way, blocking the
+    # capitulation-LONG at the recovery moment is exactly the failure
+    # mode the B643 redesign was supposed to fix. Permissive all-regimes
+    # entry preserves fires across the transition window; safe because
+    # the strategy is highly selective (FAIL_FIRE_STARVED to borderline
+    # rate post-B650 vol_below_avg AND-gate).
+    "pivot_s3_capitulation":    {"bull", "neutral", "bear", "crisis"},
     "prev_day_low_bounce":      {"neutral", "bear"},
     "camarilla_s3_bounce":      {"neutral", "bear", "crisis"},
     # Volume-flow: allow all (signal is regime-agnostic)

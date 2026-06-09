@@ -163,9 +163,11 @@ def test_batch643_recent_capitulation_false_on_normal_series():
 # =================== Strategy pins ===================
 
 def test_batch643_strategy_fires_with_bullish_engulfing():
-    """Pin (8): recent_capitulation + bullish_engulfing -> fires LONG."""
+    """Pin (8): recent_capitulation + bullish_engulfing + vol_below_avg
+    (B650) -> fires LONG."""
     from backtest.signals.screener import strat_pivot_s3_capitulation
-    s = {"recent_capitulation_at_s3": True, "bullish_engulfing": True}
+    s = {"recent_capitulation_at_s3": True, "vol_below_avg": True,
+         "bullish_engulfing": True}
     out = strat_pivot_s3_capitulation(s)
     assert out["fires"] is True and out["direction"] == "long"
 
@@ -173,7 +175,8 @@ def test_batch643_strategy_fires_with_bullish_engulfing():
 def test_batch643_strategy_fires_with_hammer():
     """Pin (9)."""
     from backtest.signals.screener import strat_pivot_s3_capitulation
-    s = {"recent_capitulation_at_s3": True, "hammer": True}
+    s = {"recent_capitulation_at_s3": True, "vol_below_avg": True,
+         "hammer": True}
     out = strat_pivot_s3_capitulation(s)
     assert out["fires"] is True and out["direction"] == "long"
 
@@ -181,9 +184,21 @@ def test_batch643_strategy_fires_with_hammer():
 def test_batch643_strategy_fires_with_above_prev_high():
     """Pin (10)."""
     from backtest.signals.screener import strat_pivot_s3_capitulation
-    s = {"recent_capitulation_at_s3": True, "above_prev_high": True}
+    s = {"recent_capitulation_at_s3": True, "vol_below_avg": True,
+         "above_prev_high": True}
     out = strat_pivot_s3_capitulation(s)
     assert out["fires"] is True and out["direction"] == "long"
+
+
+def test_batch650_strategy_blocked_without_vol_below_avg():
+    """B650: Wyckoff Spring requires LOW-volume Test bar. Without
+    vol_below_avg, the dead-cat-bounce on heavy distribution volume
+    is NOT a valid Spring -- strategy must NOT fire."""
+    from backtest.signals.screener import strat_pivot_s3_capitulation
+    s = {"recent_capitulation_at_s3": True, "bullish_engulfing": True,
+         "hammer": True, "above_prev_high": True}
+    # All reversal triggers True but vol_below_avg missing -> no fire
+    assert strat_pivot_s3_capitulation(s)["fires"] is False
 
 
 def test_batch643_strategy_blocked_without_reversal_trigger():
@@ -234,13 +249,18 @@ def test_batch643_strategy_registered_and_callable():
     assert callable(strat_pivot_s3_capitulation)
 
 
-def test_batch643_regime_affinity_unchanged():
-    """Pin (16): B617 kept this LONG-only entry; B643 doesn't touch it."""
+def test_batch651_regime_affinity_expanded_all_regimes():
+    """Pin (16): B651 expanded {neutral, bear, crisis} -> all regimes
+    to fix the regime-transition blocking issue (B643 redesign buys
+    the turn up to 5 days later -- regime may have transitioned by
+    then; permissive entry preserves fires across the transition)."""
     from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
-    assert STRATEGY_REGIME_AFFINITY.get("pivot_s3_capitulation") == {"neutral", "bear", "crisis"}
+    assert STRATEGY_REGIME_AFFINITY.get("pivot_s3_capitulation") == {
+        "bull", "neutral", "bear", "crisis",
+    }
 
 
-def test_batch643_total_strategy_count_unchanged():
-    """Pin (17): redesign is net-zero count change."""
+def test_batch643_total_strategy_count():
+    """Pin (17): B645 added W5 mirror -> 222."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 222
