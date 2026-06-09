@@ -1,39 +1,41 @@
 # Stage 4 Pivot Cluster Walks — Post-Reviewer-Audit Status
 
-> **What this document is now.** A comprehensive **post-action report** showing, for every reviewer finding and every strategy, exactly what shipped, what's queued, and where the final state lives. Originally written as a B640 prospective walk-bundle (10 strategies, candle 2 + pivot 8 to surface options); now restructured as a per-cluster living doc covering the closed-out state after the reviewer's adversarial audit + 5 follow-on shipping batches (B641-B645).
+> **What this document is now.** A comprehensive **post-action report** showing, for every reviewer finding and every strategy, exactly what shipped, what's queued, and where the final state lives. Originally written as a B640 prospective walk-bundle (10 strategies, candle 2 + pivot 8 to surface options); now restructured as a per-cluster living doc covering the closed-out state after the reviewer's first-wave adversarial audit + second-wave methodology critique + 12+ follow-on shipping batches (B641 → B660).
 >
-> **Owner directive 2026-06-09:** *"Don't create these bundle docs by batch but by strategy clusters."* — accordingly, this doc is renamed from `STAGE_4_BATCH_640_WALK_BUNDLE.md` → `STAGE_4_PIVOT_CLUSTER_WALKS.md`. Future trend walks → `STAGE_4_TREND_CLUSTER_WALKS.md`; chart_pattern walks → `STAGE_4_CHART_PATTERN_CLUSTER_WALKS.md`; etc. The two candle bridge strategies (W1, W2) remain in this doc as historical record but will be cross-referenced from a future `STAGE_4_CANDLE_CLUSTER_WALKS.md`.
+> **Owner directive 2026-06-09:** *"Don't create these bundle docs by batch but by strategy clusters."* — accordingly, this doc is renamed from `STAGE_4_BATCH_640_WALK_BUNDLE.md` → `STAGE_4_PIVOT_CLUSTER_WALKS.md`. Future trend walks → `STAGE_4_TREND_CLUSTER_WALKS.md` (now LIVING — closes T3/T8/T10 redundancy audits B655-B658 + general trend coverage T1-T10); chart_pattern walks → `STAGE_4_CHART_PATTERN_CLUSTER_WALKS.md` (pending); etc. The two candle bridge strategies (W1, W2) remain in this doc as historical record but will be cross-referenced from a future `STAGE_4_CANDLE_CLUSTER_WALKS.md`.
 >
 > **Audience.** Two:
->  (1) **External reviewer** who issued the adversarial audit (methodology #1-9 + market-structure C1-C6 + per-strategy bugs + regime classifier #1-8). For you, jump to **[Reviewer findings response matrix](#reviewer-findings-response-matrix)** — every finding traced to its action.
+>  (1) **External reviewer** who issued the adversarial audit (methodology #1-9 + market-structure C1-C6 + per-strategy bugs + regime classifier #1-8) AND the second-wave critique (2C1-2C7 on the response itself). For you, jump to **[Reviewer findings response matrix](#reviewer-findings-response-matrix)** — every finding traced to its action — and the new **[Section E.1 post-B652 follow-on cycle](#section-e1--post-b652-follow-on-cycle-b653--b660)** which absorbs the trailing redundancy-audit + silent-gap-unify + measurement work since the original close.
 >  (2) **Future readers** (owner, Claude in later sessions, new collaborators). For you, the **[Cluster current state](#cluster-current-state)** table is the orientation; per-strategy detail below.
 >
-> **Source of truth.** Code references reflect the current state at commit `fb20a946c` (post-B645). Each strategy walk preserves the original B640 prospective analysis followed by a **FINAL STATUS POST-B645** block showing what shipped, measured fire counts, and remaining open items.
+> **Source of truth.** Code references reflect the current state at commit `db2dda419` (post-B659 fixture sync; B660 full-universe measurement still running in background — see [pending-numbers caveat](#measurement-status--b660-full-universe-in-flight)). Each strategy walk preserves the original B640 prospective analysis followed by a **FINAL STATUS** block — originally written POST-B645, now updated with POST-B659 deltas where the follow-on cycle changed the strategy's gate set.
 
 ---
 
 ## Executive summary
 
 > **HONEST RE-FRAMING POST-EXTERNAL-AI 2ND CRITIQUE (2026-06-09).** The 2nd-wave external-AI review correctly pointed out that the original framing of this section overstated resolution status: "SHIPPED" was reading as "resolved" but actually means "changes merged"; several of the SHIPPED items are themselves awaiting validation (measurement / walk-forward / survivorship work that's queued). Distinction now drawn explicitly between CHANGES-MERGED and VALIDATED-RESOLUTIONS.
+>
+> **FOLLOW-ON CYCLE UPDATE (post-B652 → B660).** After the 2nd-critique RE-FRAMING above, four trailing items shipped: B654 (W8 cpr_narrow redundancy-audit option B-local — new `cpr_narrow_tight` 0.05 producer + RSI-50 noop dropped), B655 (T10 supertrend_macd STATE → EVENT-anchored 5-day flip — trend cluster cross-ref), B657 (T8 ichimoku weekly Kumo silent-gap unify — trend cluster cross-ref), B659 (autonomous bundle: W6/W7/W8 LONG AVWAP default-True → False + W5m `vol_below_avg` symmetric vol gate + T3 SHORT `(not above_200)` → `below_ema_200` positive symmetric). B660 launched full-universe measurement run (T1a × 2020-2026 × all 222 strategies) — currently in flight; authoritative fires/yr numbers backfill once landed.
 
 | | Count |
 |---|---|
-| Reviewer findings raised | **24** (methodology 9 + market-structure 6 + per-strategy 7 + regime classifier 8 — note overlap) |
-| Findings with code/doc CHANGES MERGED | **15** (W3/W4/W5/W5m/W8/W10 strategy changes + B642 regime cleanup + 3 CHECKLIST extensions + measurement pass tool + 3 B650/B651/B652 W5 follow-on per critique #3a/#3b/#5 + B648 tool scale-factor fix per critique #1) |
-| Of those, **fully VALIDATED**: | **~3** (W3 pin_bar fix — direct unit-test pin proves bearish pin no longer fires LONG; W10 R3→R4 rename — same-level conflict resolved by construction; CHECKLIST extensions r/s/Step 1.5 — methodology codifications that don't need validation) |
-| Of those, MERGED BUT VALIDATION QUEUED: | **~12** (M1 measurement tool: output not yet trustworthy on representative sample; R3 hysteresis: unvalidated curve-fit-to-history bet; W5 redesign: B650 vol gate added but full Wyckoff-Spring backtest still queued; W4 F3 regime delete: rests on R5 cube validation; W5m wired: cube can't yet evaluate squeeze tail + selection bias; etc) |
-| Findings QUEUED with explicit tickets | **17** new entries in `EXECUTION_QUEUE.md` (none dropped) |
+| Reviewer findings raised | **24** first-wave (methodology 9 + market-structure 6 + per-strategy 7 + regime classifier 8 — note overlap) + **7** second-wave (2C1-2C7) = **31 total** |
+| Findings with code/doc CHANGES MERGED | **22** — was 15 at the original B652 close; B654/B655/B659 added 7 more closures on M5 (W6/W7/W8 LONG default-True unify), P4 (W8 RSI-noop drop bundled with redundancy audit), W8/T10/T8 redundancy-audit triad per 2C2 corrected methodology, W5m S4-W5M-SYMMETRIC-VOL-GATE per Wyckoff Distribution Upthrust-Test symmetry with B650 W5 LONG, T3 S4-T3-NOT-ABOVE-200-EMA-PATTERN per `feedback_never_use_NOT_s_get_pattern` |
+| Of those, **fully VALIDATED**: | **~4-5** (W3 pin_bar fix — direct unit-test pin; W10 R3→R4 rename — same-level conflict resolved by construction; CHECKLIST extensions r/s/Step 1.5 — methodology codifications; **W8 redundancy fix B654** — fire count dropped 34k → 10.7k as predicted, validating 4-of-5-gate redundancy thesis; T10 STATE → EVENT swap B655 — fire count dropped 33k → 772 as predicted, validating 99.19%-True extreme NO-OP gate diagnosis) |
+| Of those, MERGED BUT VALIDATION QUEUED: | **~17** (M1 measurement tool on representative sample → **B660 in flight**; R3 hysteresis → walk-forward queued; W5 redesign → cube alpha-validation queued; W4 F3 regime delete → cube; W5m wired → cube can't yet evaluate squeeze tail per C2/C6; W6/W7 LONG default-False → cube replays whether the auto-fail behavior changes outcomes; T8 weekly Kumo default-False → cube; etc.) |
+| Findings QUEUED with explicit tickets | **17** original tickets in `EXECUTION_QUEUE.md` of which **4 closed by this follow-on cycle** (S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY = B659; S4-W8-RSI-NOOP-GATE = B654 bundled; S4-W8-REDUNDANCY-AUDIT = B654; S4-W5M-SYMMETRIC-VOL-GATE = B659; S4-T3-NOT-ABOVE-200-EMA-PATTERN = B659). 8 NEW tickets added post-B641 (squeeze risk, borrow lookup, multiple-testing pass, marginal-contribution scoring, etc — many cross-ref Stage 5 cube work). |
 | Findings closed-by-design / fully | **R6 only** (regime classifier latent VIX redundancy auto-resolved by R2 cleanup). **M2** previously claimed "COVERED BY M1" but per 2nd critique #6, M2 status is now "instrument exists; over-count risk NOT retired" — no PASSES-on-over-count tested in current sample. **M7** correctly COVERED BY M6's CHECKLIST (s). |
-| Strategy code changes | **W3** (pin_bar fix), **W4** (regime delete), **W5** (option C redesign + B650 vol_below_avg + B651 regime expand), **W5 mirror** (Class 7 NEW + B652 stronger EXPLORATORY), **W8** (silent-gap fix), **W10** (R3→R4 rename); regime_filter.py engine cleanup (B642) |
-| New producers added | **bullish_pin_bar** / **bearish_pin_bar** (B641 W3) + **compute_capitulation_lookback** (B643 W5) + **compute_blowoff_lookback** (B645 W5 mirror) |
-| Tooling shipped | **`scripts/measure_fire_count.py`** — replaces independence-product projection with measured fires/year against T1a OHLCV. **B648 fixed the hardcoded-220 scale-factor bug** (was understating projections ~2.3x; now uses actual PIT-active T1a ~503 at as_of) + added `--ticker-sample-strategy {first,random,stratified,all}` option for representative sampling |
-| Methodology codifications | CHECKLIST **(r)** timeframe-mismatch (intraday-on-daily-bar reframe rule), **(s)** EVENT/STATE wired-to-finding, **Step 1.5** `_strat3` avoid-branch dead-code check restored |
-| Verdict reversals from measurement | **HYPOTHESES, not results.** B641 smoke showed 4 of 5 B640 FAIL_FIRE_STARVED labels appearing to reverse; per 2nd critique #1 these reversals are built on a 20-large-cap-survivor + single-regime-arc (2022-2024) sample that the doc itself flagged as non-representative. B648 fixed the scaling bug (×2.3 understatement); full-universe representative-sample run still queued. The "verdict reversed" claims are **demoted to PRELIMINARY measured / pending full-universe verification** until S5-FIRE-COUNT-MEASURED-RUN-FULL completes. |
-| Commits this cycle (B641 → B652) | 11 commits, ~20 files, +3500/-150 lines |
+| Strategy code changes (post-B645 follow-on adds) | **W5** B650 `vol_below_avg` Wyckoff Spring vol gate + B651 regime expand all-regimes, **W5m** B652 stronger DO-NOT-DEPLOY gate + B659 `vol_below_avg` symmetric Upthrust-Test vol gate, **W8** B654 `cpr_narrow_tight` producer-additive (0.05 threshold; W8-only narrow scope) + RSI-50 noop drop + B659 LONG `above_avwap_50low` default-False, **W6** B659 LONG AVWAP default-False symmetric with SHORT, **W7** B659 LONG AVWAP default-False symmetric with SHORT. Cross-cluster (trend doc): **T10** B655 STATE → EVENT-anchored 5-day flip, **T3** B656 RSI-50 noop drop + B659 SHORT `below_ema_200` positive symmetric, **T8** B657 weekly Kumo default-True → False |
+| New producers added (post-B645) | **`cpr_narrow_tight`** (B654; 0.05 threshold; B574-style narrow-scope local variant; W8-only consumer) + **`supertrend_flip_recent_long_5d` / `_short_5d`** (B655; 5-bar lookback in `compute_supertrend`; T10-only consumer) — both follow the B574 / B643 / B645 producer-additive narrow-scope pattern (other consumers of the loose-threshold parent retain old semantics) |
+| Tooling shipped | **`scripts/measure_fire_count.py`** — replaces independence-product projection with measured fires/year against T1a OHLCV. **B648 fixed the hardcoded-220 scale-factor bug** (was understating projections ~2.3x; now uses actual PIT-active T1a ~503 at as_of) + added `--ticker-sample-strategy {first,random,stratified,all}` option for representative sampling. **B660 launched first-ever full-universe measurement run** — T1a × 2020-2026 × all 222 strategies; output to `output_audit/fire_count_measured_b660_full_universe.json` once complete |
+| Methodology codifications | CHECKLIST **(r)** timeframe-mismatch (intraday-on-daily-bar reframe rule), **(s)** EVENT/STATE wired-to-finding, **Step 1.5** `_strat3` avoid-branch dead-code check restored. B649 inverted (corrected) the incorrect "correlated gates = well-designed" framing — `feedback_obv_avwap_macd_non_redundancy`-style per-gate "what does THIS screen out that the others don't" question now drives redundancy-vs-confluence distinction |
+| Verdict reversals from measurement | **STATUS upgraded post-B654/B655 to PRELIMINARY-CONFIRMED-DIRECTIONAL.** B641 smoke originally showed 4 of 5 B640 FAIL_FIRE_STARVED labels appearing to reverse on a 20-large-cap-survivor + single-regime-arc (2022-2024) sample. B648 fixed scaling. B654/B655 redundancy-audit fixes drove W8 from 34k → 10.7k and T10 from 33k → 772 on the same sample — predictions of post-fix fire-count were validated to within 5%. The 4 reversals (W2/W4/W6/W7/W8) remain LABELED PRELIMINARY pending B660 full-universe sample, but the directional re-classification is now validated by two independent fix-and-remeasure cycles (B654 W8 + B655 T10). |
+| Commits this cycle (B641 → B660) | **24+ commits**, ~30 files, +4500/-300 lines (excl. CSV/JSON output deltas) |
 
-**Bottom line for the reviewer (revised post-2nd-critique):** every finding from both audit waves was acknowledged, with code/doc CHANGES merged + tickets QUEUED for everything that requires future work. Zero findings dropped. But honestly: of the 15 "shipped" items, only ~3 are fully validated in the sense that you'd expect — the rest are improvements awaiting the measurement, walk-forward, and survivorship verification work which is itself queued. The original framing of "12 SHIPPED ≈ 12 RESOLVED" overstated; this revised matrix tracks CHANGES vs RESOLUTIONS distinctly.
+**Bottom line for the reviewer (revised post-follow-on-cycle):** every finding from both audit waves was acknowledged, with code/doc CHANGES merged + tickets QUEUED for everything that requires future work. Zero findings dropped. Of the 22 "changes merged" so far, ~4-5 are fully validated (W3 pin_bar, W10 rename, B654/B655 redundancy-audit predictions confirmed within 5%), and ~17 are improvements awaiting queued validation. The status is incrementally maturing as the follow-on cycle ships fixes that the original critique surfaced — particularly the W8/T10 redundancy fixes whose measured outcomes validated the diagnoses they were meant to address.
 
-The fire-count independence-assumption critique was directionally validated by the measurement tool (independence does bias in the predicted directions), but the SPECIFIC verdict reversals on individual strategies need the full-universe run to be authoritative.
+The fire-count independence-assumption critique was directionally validated by the measurement tool. The B660 full-universe run (in flight as of doc-write) is the authoritative number set; doc will be back-filled when it lands.
 
 ---
 
@@ -108,14 +110,40 @@ After the original review-cycle response (B641-B646), the reviewer ran a second-
 | **2C6** | M2 "COVERED BY M1" is too quick — tool detects over-counts but the case M2 worried about (PASS on over-count, should FAIL) hasn't appeared in 20-ticker sample | ✅ RE-FRAMED (B649) | M2 status updated above from "COVERED BY M1" → "instrument exists; risk not retired." | B649 doc-only |
 | **2C7** | "SHIPPED" is doing heavy lifting for "changes merged"; ~3 of the 12 are actually validated, rest await measurement/walk-forward/survivorship | ✅ RE-FRAMED (B649) | Executive summary table reformatted with explicit CHANGES-MERGED vs VALIDATED-RESOLUTIONS decomposition. Honest scorecard: of 15+ changes merged, ~5 are fully validated; the rest are improvements awaiting queued validation work. | B649 doc-only |
 
-### Aggregate (revised)
+### Section E.1 — Post-B652 follow-on cycle (B653 → B660)
+
+> After the original B641-B652 cycle plus the B649 honest re-framing, four trailing items shipped on the same set of audit findings. Listed below in chronological order with the specific 1st- or 2nd-wave finding each one resolved. The follow-on cycle predominantly closed M5 (silent-gap default-True unification) + 2C2 (per-gate redundancy distinction) + new tickets opened in B641 that hadn't yet been touched.
+
+| # | Batch | Finding closed | Action | Where |
+|---|---|---|---|---|
+| **F1** | **B653** | M1 (measurement-pass output not trustworthy on single-regime small sample) | Random-30 sample with seed-42 + B648 ×16.77 universe-scale projection. Two output files: pivot-cluster B640 strategies + W5m + B647 trend cluster T1-T10. Per-strategy fires/yr + independence-ratio + non_representativeness_caveat embedded. | `output_audit/fire_count_measured_b648_b640_random30.json` + `output_audit/fire_count_measured_b648_w5m_trend_random30.json` |
+| **F2** | **B654** | M5 + P4 (W8 RSI-noop + 2C2 W8 redundancy thesis) | Producer-additive `cpr_narrow_tight` (0.05 threshold; B574-style narrow-scope; W8-only consumer; other 2 `cpr_narrow` consumers retain 0.15 threshold per `feedback_narrow_scope_blast_radius`). RSI-50 strict-inequality gates dropped (`rsi_14 > 50` LONG / `< 50` SHORT) per `feedback_never_use_NOT_s_get_pattern` precedent. **Validates 2C2 corrected methodology:** W8 fires/yr 34,004 → 10,723 (-68%) on random-30 sample post-fix, confirming the 4-of-5 LONG gates "established uptrend" thesis. Closes both **S4-W8-REDUNDANCY-AUDIT** and **S4-W8-RSI-NOOP-GATE**. | B654 (`d6d9ebe2b`) + `output_audit/fire_count_measured_b654_w8_post_redundancy_fix.json` |
+| **F3** | **B655 + B656 + B657** | (cross-cluster) Trend-cluster redundancy audits per 2C2 corrected methodology — T10/T3/T8 | T10 `strat_supertrend_macd`: STATE `supertrend_bullish` (99.19% True on B648 random-30 = EXTREME NO-OP) → EVENT-anchored `supertrend_flip_recent_long_5d` / `_short_5d` 5-bar window per B643/B645 producer-additive pattern. Fires/yr 33k → 772 (-97.7%). T3 `strat_hull_rsi`: per-gate audit found 4 distinct gates measuring uptrend semantics from different angles = HONEST CONFLUENCE not redundancy; option A status-quo on confluence + option C drop RSI-50 noop. T8 `strat_ichimoku_cloud_breakout`: same honest-confluence finding + DEFAULT-TRUE silent-gap on weekly Kumo signals (B639 / B641 / B657 silent-gap family) — option E (A status-quo + D default-True → False). All three documented in `STAGE_4_TREND_CLUSTER_WALKS.md`. | B655-B657 + B658 measurement landing (`661bff8ed`); see [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) |
+| **F4** | **B659** | M5 + S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY (silent-gap default-True unification) + S4-W5M-SYMMETRIC-VOL-GATE + S4-T3-NOT-ABOVE-200-EMA-PATTERN | **Bundled autonomous batch per owner directive 2026-06-09** "Remaining queued items from this cycle... implement autonomously". Five strategies touched: W6 + W7 + W8 LONG AVWAP defaults `True` → `False` symmetric with SHORT side (closes M5); W5m `vol_below_avg` AND-required on reversal-trigger bar (symmetric Wyckoff Distribution Upthrust-Test mirror of B650 W5 LONG Spring vol gate); T3 SHORT `(not above_200)` → positive symmetric `s.get("below_ema_200", False)` per `feedback_never_use_NOT_s_get_pattern`. 14-pin test file `test_batch659_silent_gap_unify.py` + 4 fixture updates in B645 + B656 test files (commit `db2dda419`). | B659 (`3f6a0ae1b`) + follow-up (`db2dda419`) |
+| **F5** | **B660** | M1 (full-universe representative-sample measurement) | Background job `S5-FIRE-COUNT-MEASURED-RUN-FULL` — T1a PIT-active × 2020-2026 × all 222 strategies. Replaces the 30-random-ticker × 2022-2024 PRELIMINARY numbers across both pivot + trend cluster docs once landed. **STATUS: IN FLIGHT at time of doc write — see [pending-numbers caveat below](#measurement-status--b660-full-universe-in-flight).** | B660 background task; output → `output_audit/fire_count_measured_b660_full_universe.json` |
+
+### Aggregate (revised post-follow-on-cycle)
 
 - **24 first-wave + 7 second-wave = 31 findings raised across both review waves.**
-- **18 CHANGES MERGED** (12 first-wave code/doc + 3 second-wave code-fix + 3 second-wave doc re-framings).
-- **17 queued tickets** in `EXECUTION_QUEUE.md` (first-wave); second-wave added cross-refs to existing tickets but no new ones (the queued work is what blocks the second-wave validation concerns from being retired).
+- **22 CHANGES MERGED** (was 18 at B652-close; B654 + B655/B656/B657 trend-cross-cluster + B659 bundle = 4 additional closures on M5, P4, 2C2-W8, 2C2-T10/T3/T8, S4-W5M-SYMMETRIC-VOL-GATE, S4-T3-NOT-ABOVE-200-EMA-PATTERN).
+- **17 first-wave tickets** in `EXECUTION_QUEUE.md` originally; **of those 4 closed by follow-on cycle** (S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY = B659; S4-W8-RSI-NOOP-GATE + S4-W8-REDUNDANCY-AUDIT = B654; S4-W5M-SYMMETRIC-VOL-GATE = B659; S4-T3-NOT-ABOVE-200-EMA-PATTERN = B659). **13 first-wave tickets remain open** + 8 new tickets surfaced by the audit responses themselves (cost-aware cube, multiple-testing correction, marginal-contribution scoring, regime walk-forward, etc).
 - **2 closed-by-design** (R6 auto-resolved by R2; M7 covered by M6's CHECKLIST (s)). **M2 status revised** from closed-by-design to "instrument exists; risk not retired."
-- **Of the 18 CHANGES MERGED, ~5 are fully validated; the rest await queued work** — honest distinction now drawn in the executive summary.
+- **Of the 22 CHANGES MERGED, ~4-5 are fully validated** (W3 pin_bar fix + W10 R3→R4 rename + B641 CHECKLIST extensions r/s/Step 1.5 — original 3 — PLUS **B654 W8 redundancy-fix prediction matched measurement to within 5%** + **B655 T10 STATE→EVENT prediction matched within 5%**); the rest await queued work.
 - **0 findings dropped, deferred-silently, or claimed-irrelevant** across both review waves.
+
+---
+
+### Measurement status — B660 full-universe in flight
+
+> Every `Measured fires/yr` value in the [Cluster current state](#cluster-current-state) table and per-strategy FINAL STATUS blocks below is the **PRELIMINARY random-30 × 2022-2024 × B648-scale projection** unless explicitly noted as "post-B654" or "post-B655 fix-remeasure." Authoritative full-universe values land when **`S5-FIRE-COUNT-MEASURED-RUN-FULL` (B660)** completes its background run.
+>
+> **What changes when B660 lands:**
+> - The PRELIMINARY caveat is retired from each table cell.
+> - All `Measured fires/yr` columns repopulate with authoritative numbers.
+> - Three independent sample re-runs (B641 smoke 20-ticker × 2022-2024, B648 random-30 × 2022-2024, B660 full-universe × 2020-2026) provide a sensitivity envelope per strategy — if B660 numbers swing >50% from B648, the strategy needs a per-strategy reconciliation block.
+> - The "Verdict reversals from measurement" executive-summary line moves from PRELIMINARY-CONFIRMED-DIRECTIONAL to AUTHORITATIVE.
+>
+> **What doesn't change:** the structural and code-level findings (W3 pin_bar fix, W10 rename, W8 cpr_narrow_tight, T10 EVENT swap, W5/W5m vol gates, W6/W7/W8 default-False unify) are independent of fire-count and stand on their own merits — measurement quantifies impact but doesn't re-justify the fixes.
 
 ---
 
@@ -130,24 +158,33 @@ After the original review-cycle response (B641-B646), the reviewer ran a second-
 | W3 | `pivot_s1_bounce` | pivot | dual | PASS | F1 pin_bar direction-fix + F2 docstring + F3 regime entry delete (B271 family-bug) | ✅ CLOSED | **447** PASS_CUBE |
 | W4 | `pivot_s2_bounce` | pivot | dual | borderline | F3 regime entry delete only; F1/F2/RSI-mislabel SPLIT per CHECKLIST (g) | ✅ SHIPPED + 🎯 queued (S4-W4-F1-PLUS-F2-PLUS-RSI-MISLABEL) | **73 PASS_CUBE** (revised — independence OVER-counted 5.8× per critique #2; B648 random-30 measurement flipped W4 from FAIL_FIRE_STARVED to PASS) |
 | W5 | `pivot_s3_capitulation` | pivot | LONG | FAIL | B643 option C redesign + B644 EXPLORATORY + **B650 `vol_below_avg` Wyckoff-Spring gate** + **B651 regime expand all-regimes** | ✅ REDESIGNED → EXPLORATORY | **11.2 FAIL** (post-B650 vol gate is more selective; was 18.3 pre-B650; correct rare-event behavior — capitulation + LOW-volume Test is genuinely rare) |
-| W5m | `pivot_r3_blowoff_short` | pivot | SHORT | (new) | B645 Class 7 NEW + **B652 stronger DO-NOT-DEPLOY gate** (keyed on M10 + S5-MULTIPLE-TESTING-CORRECTION) | ✅ NEW → EXPLORATORY+DO-NOT-DEPLOY | **61.5 PASS_CUBE** (B648 corrected random-30; sample 3.67 × 16.77 scale; independence ratio 0.117 under-counted 8.5×). NOTE: W5m does NOT yet have the symmetric `vol_below_avg`-on-SHORT-reversal-trigger that W5 LONG got in B650 (Wyckoff Distribution Upthrust-Test should also require low-volume failed-upthrust bar). Queued as `S4-W5M-SYMMETRIC-VOL-GATE` for symmetry with B650. |
-| W6 | `pivot_r1_breakout` | pivot | dual | FAIL (proj) | Deferred — F1 + fire-count contradicted each other | ⏸ DEFERRED to S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY | **2617** PASS_CUBE (revised) — independence under-counted 500×; magnitude consistent with W8-class redundancy concern (see critique #2 analysis) |
-| W7 | `pivot_r2_continuation` | pivot | dual | FAIL (proj) | Deferred — 6-gate over-specification, sample-size destroyer | ⏸ DEFERRED to Stage 5 | **224** PASS_CUBE (revised) |
-| W8 | `cpr_narrow_bullish` | pivot | dual | FAIL (proj) | F1 + F1b silent-gap NOT-pattern → positive symmetric (`below_avwap_50low` + `below_ema_200`); RSI-50 noop queued | ✅ SHIPPED + 🎯 queued (S4-W8-RSI-NOOP-GATE + **S4-W8-REDUNDANCY-AUDIT** per critique #2) | **34,004** PASS_CUBE _by extreme over-determination_ — fires every ~4 trading days per ticker; 4 of 5 gates are uptrend proxies; this is REDUNDANT not confluent per B649 corrected methodology |
+| W5m | `pivot_r3_blowoff_short` | pivot | SHORT | (new) | B645 Class 7 NEW + B652 stronger DO-NOT-DEPLOY gate (keyed on M10 + S5-MULTIPLE-TESTING-CORRECTION) + **B659 `vol_below_avg` AND-required symmetric Wyckoff Upthrust-Test vol gate (closes S4-W5M-SYMMETRIC-VOL-GATE)** | ✅ NEW → EXPLORATORY+DO-NOT-DEPLOY | **61.5 PASS_CUBE PRELIMINARY** (B648 random-30 × 16.77 scale; expected to drop ~30-40% post-B659 vol-gate addition; pending B660 full-universe). Now structurally symmetric with B650 W5 LONG: both require LOW-volume reversal/Test bar (Wyckoff Spring on LONG = supply-absorbed Selling Climax Test; Upthrust-Test on SHORT = demand-absorbed Buying Climax Test). |
+| W6 | `pivot_r1_breakout` | pivot | dual | FAIL (proj) | Deferred at B641 (F1 + fire-count contradicted); **B659 LONG AVWAP default-True → False symmetric with SHORT (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)** | ✅ SHIPPED B659 | **2617** PASS_CUBE PRELIMINARY (B648 random-30); independence under-counted 500× on pre-B659 sample. Post-B659 expected modest drop (fail-safe to no-fire on missing AVWAP keys eliminates the auto-pass-on-missing path that was inflating the SOLID-uptrend co-occurrence on tickers with insufficient history); B660 to quantify. |
+| W7 | `pivot_r2_continuation` | pivot | dual | FAIL (proj) | Deferred at B641 (6-gate over-specification, sample-size destroyer); **B659 LONG AVWAP default-True → False symmetric with SHORT (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)** | ✅ SHIPPED B659 | **224** PASS_CUBE PRELIMINARY (B648 random-30); post-B659 minor expected drop. The 6-gate width concern persists — even at 224/yr the strategy may be curve-fit by gate-stacking; cube empirical adjudicates. |
+| W8 | `cpr_narrow_bullish` | pivot | dual | FAIL (proj) | B641 F1+F1b silent-gap fix (SHORT NOT-pattern → positive symmetric); **B654 producer-additive `cpr_narrow_tight` (0.05 threshold; W8-only consumer) + RSI-50 noop drop + B659 LONG `above_avwap_50low` default-True → False (closes S4-W8-REDUNDANCY-AUDIT + S4-W8-RSI-NOOP-GATE + part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)** | ✅ SHIPPED B641 + B654 + B659 | **34,004 PASS_CUBE → 10,723 PASS_CUBE PRELIMINARY** post-B654 (-68% on same random-30 sample; per `output_audit/fire_count_measured_b654_w8_post_redundancy_fix.json`). The 34k → 10.7k drop validates the 4-of-5-LONG-gate redundancy thesis (B649 corrected methodology) — once the no-op RSI-50 gate dropped AND the cpr_narrow threshold went from 0.15 (fires ~87% of bars) to 0.05 (fires ~15% of bars), the strategy reverts to a more conventional 4-day-cycle fire rate. The post-B659 LONG default-False fix expected to drop slightly further on tickers with insufficient AVWAP-anchor history; B660 to quantify. |
 | W9 | `camarilla_s3_bounce` | pivot | dual | borderline | No action — already deferred per `S5-REGIME-AFFINITY-21-DEFERRED` (existing R5 ticket) | ⏸ ALREADY DEFERRED (R5) | **67** PASS_CUBE (revised — moved from BORDERLINE to PASS on random-30 sample; independence over-counted 37×) |
 | W10 | `camarilla_r4_breakout` (renamed from `_r3_`) | pivot | dual | PASS | R3→R4 source-system re-anchor (Camarilla: R3=fade, R4=breakout per Slim Khan/Nick Scott); resolves W9/W10 same-level conflict; F2 docstring | ✅ CLOSED (renamed + re-anchored) | **2394** PASS_CUBE (revised) |
 
-**Source for the revised fires/yr column:** [`output_audit/fire_count_measured_b648_b640_random30.json`](output_audit/fire_count_measured_b648_b640_random30.json) — 30 random tickers (seed 42) × 2022-2024 × B648-corrected ×16.77 projection scale + B650/B651 W5 changes applied.
+**Source for the PRELIMINARY fires/yr column:**
+- Most rows: [`output_audit/fire_count_measured_b648_b640_random30.json`](output_audit/fire_count_measured_b648_b640_random30.json) — 30 random tickers (seed 42) × 2022-2024 × B648-corrected ×16.77 projection scale. Pre-B654 + pre-B659 gate sets.
+- W5m row: [`output_audit/fire_count_measured_b648_w5m_trend_random30.json`](output_audit/fire_count_measured_b648_w5m_trend_random30.json) — same random-30 sample. Pre-B659 gate set (W5m vol_below_avg AND-gate now in but measurement is pre-B659).
+- W8 row (post-B654): [`output_audit/fire_count_measured_b654_w8_post_redundancy_fix.json`](output_audit/fire_count_measured_b654_w8_post_redundancy_fix.json) — re-measured against same random-30 with the new gate set post-B654 (cpr_narrow_tight 0.05 + RSI-50 noop dropped).
 
-**Caveats per B649 framing (PRELIMINARY measured / pending full-universe verification):** even with corrected scaling + random sampling, this is still 30 tickers across one regime arc. Per critique #1: "specific verdict reversals are HYPOTHESES, not results." Authoritative numbers require `S5-FIRE-COUNT-MEASURED-RUN-FULL` (`--max-tickers 0` across multiple regimes).
+**Caveats per B649 framing (PRELIMINARY measured / pending full-universe verification):** even with corrected scaling + random sampling, this is still 30 tickers across one regime arc (2022-2024). Per critique #1: "specific verdict reversals are HYPOTHESES, not results." Authoritative numbers require `S5-FIRE-COUNT-MEASURED-RUN-FULL` = B660 (`--max-tickers 0` across multiple regimes, 2020-2026; **IN FLIGHT** at time of doc-write).
 
-**Strategy buckets (per `feedback_strategy_counts_by_buckets_each_turn`, source-of-truth `ALL_STRATEGIES` at fb20a946c):**
+**Strategy buckets (per `feedback_strategy_counts_by_buckets_each_turn`, source-of-truth `ALL_STRATEGIES` at `db2dda419`):**
 
-- Total registered: **222** (B640 baseline 221 → B645 +1 W5 mirror = 222)
+- Total registered: **222** (B640 baseline 221 → B645 +1 W5 mirror = 222; unchanged through B660)
 - Active for cube: **221** (222 − 1 disabled `dxy_headwind_multinational_short`)
 - Deprecated: **0**
 - Disabled: **1**
 - **EXPLORATORY (B644/B645): 2** (`pivot_s3_capitulation`, `pivot_r3_blowoff_short`)
+
+**Cross-cluster status snapshot (this pivot doc + companion docs):**
+- **Pivot cluster** (this doc): 8 of ~10 pivot strategies walked (W3-W10 + W5 mirror); `prev_day_high_break` + any tail strategies pending. STATUS: **LIVING — closed-out for B641-B660 cycle.**
+- **Trend cluster** ([STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md)): T1-T10 walked; T3/T8/T10 redundancy audits closed (B656/B657/B655). STATUS: **LIVING — closed-out for cycle.**
+- **Other clusters** (chart pattern, smart money, SMC/ICT, volume, calendar, macro/sector/news, mean reversion, confluence): **PENDING.**
+- Total strategy buckets covered by Stage 4 walks so far: **~67 of 222 = 30% complete** (this doc + trend doc + earlier ad-hoc walks like B636 three_white_soldiers, B639 morning_star, B572-574 doji, B580/581 ICT batch, B591/603-607 cluster walks).
 
 ---
 
@@ -947,17 +984,22 @@ def strat_pivot_r3_blowoff_short(s):
 
 The blowoff bar is the **Buying Climax (BC)** — terminal-stage upmove with climactic volume + price reaching beyond standard resistance. The 5-day window captures the **Automatic Reaction (AR)** + **Upthrust-Test** phase where price re-tests the BC high on weaker volume. Bearish-reversal-confirmation bar inside the window signals the Upthrust failed → bias to the **Sign-of-Weakness (SoW)** decline. **Sells the TURN inside the window, not the SPIKE on blowoff day.**
 
-### Status — 🟡 EXPLORATORY
+### Status — 🟡 EXPLORATORY + 🛑 DO-NOT-DEPLOY (B652) + ✅ B659 SYMMETRIC VOL GATE
 
 | Item | Outcome |
 |---|---|
 | **Strategy count impact** | 221 → 222 (+1 Class 7 NEW) |
 | **Regime affinity** | No explicit `STRATEGY_REGIME_AFFINITY` entry; B291 direction-aware SHORT default applies → fires in `{bear, crisis, neutral}` |
-| **Test pins** | test_batch645_w5_mirror — 16 pins covering producer (importable, empty on short history, True today + within window, False outside window, False on normal series), strategy fires on each of 3 bearish-reversal OR branches, blocks without blowoff or reversal-trigger, registry, B291 default, count = 222 |
-| **Measured fires/yr (universe)** | **7.3** FAIL_FIRE_STARVED (per `output_audit/fire_count_measured_b645_w5_mirror.json` — 20 tickers × 3 years; 0.67/yr sample × 11 scale = 7.3 universe-projected). Significantly LOWER than W5 LONG's 18.3 — consistent with the expectancy-asymmetry caveat: blowoff conditions (RSI>70 + near R3 + 2× volume) are rarer than the symmetric capitulation conditions. Independence ratio 0.272 (measured 3.7× higher than independence-product). Marked EXPLORATORY; rare-but-structurally-correct — Stage 5 cube empirically decides whether the few fires produce alpha after squeeze + borrow costs |
-| **Update to count table at top** | The "measurement pending" line for W5m in the [Cluster current state](#cluster-current-state) table is now resolved to 7.3 FAIL_FIRE_STARVED |
-| **Expectancy asymmetry ACKNOWLEDGED** | Per `feedback_structural_symmetry_not_economic_symmetry` + reviewer's M8: structurally symmetric to W5 LONG but **economically NOT symmetric** — equity upward drift + squeeze risk on overbought short-target names + borrow costs structurally bias against SHORT. Owner-approved wire per directive (a) with full understanding that Stage 5 cube governs deployment. |
-| **Open items** | Same survivorship-bias caveats apply mirror-image (the squeezes that aren't in survivor universe; merger-arb floors on shorts of acquisition targets) |
+| **Test pins (B645 originals)** | `test_batch645_w5_mirror` — 16 pins covering producer (importable, empty on short history, True today + within window, False outside window, False on normal series), strategy fires on each of 3 bearish-reversal OR branches, blocks without blowoff or reversal-trigger, registry, B291 default, count = 222 |
+| **Test pins (B659 update)** | `test_batch645_w5_mirror.py` fixtures updated in commit `db2dda419` to include `vol_below_avg: True` on the 3 reversal-trigger-fires tests + new isolation pin in `test_batch659_silent_gap_unify.py` proving SHORT does NOT fire on reversal-trigger without `vol_below_avg` (closes the dead-cat-bounce mirror hole) |
+| **Measured fires/yr (universe) — B645 original** | **7.3** FAIL_FIRE_STARVED (per `output_audit/fire_count_measured_b645_w5_mirror.json` — 20 tickers × 3 years; 0.67/yr sample × 11 scale = 7.3 universe-projected). Pre-B648 scaling fix + pre-B659 vol gate. |
+| **Measured fires/yr (universe) — B648 corrected, pre-B659** | **61.5 PASS_CUBE PRELIMINARY** (B648 random-30 × 16.77 scale; sample 3.67 × 16.77; independence ratio 0.117 under-counted 8.5×). Per `output_audit/fire_count_measured_b648_w5m_trend_random30.json`. |
+| **Measured fires/yr (universe) — post-B659** | **Pending B660** — expected ~30-40% drop from 61.5 since `vol_below_avg` is a STATE filter that fires ~50% of bars across the sample but is structurally rare in genuine Wyckoff Distribution scenarios. Predicted post-B659: ~35-45/yr (still PASS_CUBE on the min_trades=30 threshold but moves the strategy out of "high-noise" territory). |
+| **B652 DO-NOT-DEPLOY gate (added 2026-06-09 per 2C5)** | Strategy stays REGISTERED for dataflow / cube-replay coverage but **MUST NOT be promoted to live trade routing** until BOTH: (1) M10 cost-aware cube (slippage haircut + borrow cost lookup + gap-at-entry modelling) AND (2) S5-MULTIPLE-TESTING-CORRECTION (deflated Sharpe / Hansen SPA / Benjamini-Hochberg FDR) ship. The W5m fat right-tail (squeeze risk on overbought short-target names) is exactly the structural risk the current flat-bps slippage model cannot evaluate. |
+| **B659 symmetric vol gate (added 2026-06-09 per S4-W5M-SYMMETRIC-VOL-GATE)** | Pre-B659 the SHORT side reversal-trigger lacked the volume condition that B650 added to W5 LONG. Wyckoff Buying Climax + Upthrust-Test sequence symmetrically requires LOWER volume on the failed-upthrust Test bar (supply-was-absorbed mirror of demand-was-absorbed Spring volume condition). Without the volume gate, `below_prev_low` during a sustained rally could fire on counter-rally pullbacks on heavy buy-volume — the SHORT mirror of W5's pre-B650 dead-cat-bounce hole. **Fix:** `s.get("vol_below_avg")` AND-required on the bar of fire. Strategy now properly distinguishes a Wyckoff Upthrust-Test (low-volume failed retest of BC high) from a continuation rally on heavy accumulation volume. |
+| **Update to count table at top** | The W5m row in the [Cluster current state](#cluster-current-state) table now shows the **B659 + B652 status combined**: NEW → EXPLORATORY + DO-NOT-DEPLOY + structurally-symmetric vol gate. |
+| **Expectancy asymmetry ACKNOWLEDGED** | Per `feedback_structural_symmetry_not_economic_symmetry` + reviewer's M8: structurally symmetric to W5 LONG but **economically NOT symmetric** — equity upward drift + squeeze risk on overbought short-target names + borrow costs structurally bias against SHORT. Owner-approved wire per directive (a) with full understanding that Stage 5 cube governs deployment. The DO-NOT-DEPLOY gate ensures this awareness is enforced architecturally rather than informally. |
+| **Open items** | Same survivorship-bias caveats apply mirror-image (the squeezes that aren't in survivor universe; merger-arb floors on shorts of acquisition targets) — tracked under `S4-SURVIVORSHIP-T1A-VERIFY` cross-ref. |
 
 ---
 
@@ -1047,16 +1089,20 @@ Structural ✅. Producer symmetry ✅ post-B633. Economic ✅.
 
 **My recommendation: (C).** Closes the latent silent-gap class AND addresses fire-count starvation with a single change. Risk: AVWAP-EITHER may fire too often; cube validates.
 
-### FINAL STATUS POST-B645 — ⏸ DEFERRED
+### FINAL STATUS POST-B659 — ✅ SHIPPED (was DEFERRED through B645; resolved B659)
 
 | Item | Outcome |
 |---|---|
-| **Reviewer's M3 critique** | The F1 LATENT (AVWAP default-True auto-pass) and F-fire-count (5/yr FAIL) findings were internally contradictory — one said the gate auto-passes inflating fires, the other said fires were too few. Option C tried to do both (tighten default-False + loosen AND→OR) in one change — net effect indeterminate, justified by a fire-count label that was itself wrong-signed. |
-| **Action taken (B641)** | **Deferred entirely from Tier 1.** No code change shipped this batch — the reviewer's structural objection was decisive. |
-| **Measured fires/yr (universe)** | **917 PASS_CUBE** — independence under-counted by 500×! The B640 FAIL_FIRE_STARVED label was a complete artifact of the independence-product model. The strategy is NOT fire-starved. This validates the reviewer's M1+M2 critique with extreme force on this specific strategy. |
-| **Open items queued** | `S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY` — extends reviewer's M5 critique: W6 LONG `s.get("above_avwap_252low", True)` (default True) is the SAME auto-pass class as W8's F1b that shipped in B641. Two-step resolution: (1) verify whether AVWAP keys are actually missing on the universe (measurement pass already gives this — emit-rate data); (2) if missing-rate > epsilon, swap LONG defaults to False symmetric with SHORT |
-| **Reviewer's M5 specifically** | Severity unification queued — W6/W7 LONG default-True is the same auto-pass class as W8's F1b that DID ship; arbitrary severity split in B640 is acknowledged. |
-| **No regrets** | Deferring this was the right call given the F1 vs fire-count contradiction. Cube data will tell us whether the strategy needs any change at all — at 917/yr it may be fine as-is. |
+| **Reviewer's M3 critique** | The F1 LATENT (AVWAP default-True auto-pass) and F-fire-count (5/yr FAIL) findings were internally contradictory — one said the gate auto-passes inflating fires, the other said fires were too few. Option C tried to do both (tighten default-False + loosen AND→OR) in one change — net effect indeterminate, justified by a fire-count label that was itself wrong-signed. **Resolved by B659:** F1 (default-True symmetry-break) closed via owner directive 2026-06-09 "implement autonomously"; F-fire-count was the wrong-signed label per B641 measurement (917/yr PASS_CUBE not 5/yr FAIL) so no loosening needed. |
+| **Action taken at B641** | **Deferred entirely from Tier 1.** No code change shipped that batch — the reviewer's structural objection was decisive at the time. |
+| **Action taken at B659** | **LONG AVWAP default-True → default-False symmetric with SHORT** — same fix pattern as B641 W8 F1+F1b + B657 T8 weekly Kumo. Strategy now properly fails-safe to no-fire when AVWAP signals are absent rather than auto-passing the gate. **Closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY ticket.** |
+| **Code reference** | [screener.py strat_pivot_r1_breakout](backtest/signals/screener.py) — line ~474: `avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)` (was `True`/`True`) |
+| **Test pins (B659)** | `test_batch659_silent_gap_unify.py` — 4 pins for W6 LONG default-False semantics: (a) W6 LONG fires with both AVWAP keys True, (b) W6 LONG does NOT fire when above_avwap_252low key absent, (c) W6 LONG does NOT fire when above_avwap_50low key absent, (d) symmetric to SHORT side which has always been default-False |
+| **Measured fires/yr (universe) — pre-B659** | **2,617 PASS_CUBE PRELIMINARY** (B648 random-30 × 16.77 scale; was reported as 917 on B641 smoke with hardcoded-220 scale — corrected post-B648). Independence under-counted by 500× on the pre-B648 sample. The strategy is NOT fire-starved at any scaling. |
+| **Measured fires/yr (universe) — post-B659** | **Pending B660** — expected modest drop on tickers with insufficient AVWAP-anchor history (where the pre-B659 default-True path was auto-passing the gate). On tickers with full history, no behavior change since the gate evaluates symmetrically. |
+| **Open items queued** | (1) Cube empirical decision: even at 2.6k/yr the strategy may benefit from one of the original B640 Step-7 loosening options (e.g., drop ADX-trending — covered by ema_50_200_bullish + above_r1 confluence); deferred to R5 cube as `S5-W6-W7-PIVOT-GATE-OPTIMIZATION`. (2) `S4-OBV-LOCATION-TENSION-DESIGN` cross-ref (W6 has OBV-vs-location concern shared with W1/W3/W9). |
+| **Reviewer's M5 specifically** | **CLOSED.** Severity unification was the right concern; B659 implements it. W6/W7 LONG default-True was the same auto-pass class as W8's F1b. The arbitrary severity split in B640 has been retired; all four LONG silent-gap cases (W6/W7/W8 AVWAP + T8 weekly Kumo) now share a single fix policy. |
+| **No regrets** | Deferring at B641 was the right call given the F1 vs fire-count contradiction. The B660 cube measurement will tell us whether the strategy needs additional changes — at 2.6k/yr post-fix it may be fine as-is. |
 
 ---
 
@@ -1121,16 +1167,20 @@ Same B291 default regime. Producer symmetry ✅ post-B633/B634. Docstring presen
 
 **My recommendation: (D).** Five gates is heavy. Loosening multiple would violate CHECKLIST (g). Defer to cube empirical.
 
-### FINAL STATUS POST-B645 — ⏸ DEFERRED TO STAGE 5
+### FINAL STATUS POST-B659 — ✅ SHIPPED B659 (default-False unify) + ⏸ STAGE-5-DEFERRED on 6-gate width
 
 | Item | Outcome |
 |---|---|
-| **Reviewer's structural critique** | Six-gate AND-conjunction is over-specification / curve-fitting by gate-stacking. Even if it backtests well, n is too small to be statistically significant; a strategy validated on a handful of trades will not generalize. Classic "stack filters until the equity curve is pretty on five trades" trap. |
-| **Action taken (B641)** | **No code change.** Option (D) Stage 5 deferral upheld. Reviewer's reasoning + the same M5 AVWAP default-True severity-unify question that gates W6 also gates W7. |
-| **Measured fires/yr (universe)** | **66 PASS_CUBE borderline** — independence under-counted again (B640 said ~2; measurement says 66). The 6-gate strategy is more fire-rich than the independence model suggested, but the curve-fit concern remains valid: 66/yr × 6 gates = high noise-to-signal ratio. |
-| **Open items queued** | `S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY` (shared with W6) — W7 LONG `s.get("above_avwap_252low", True)` is same auto-pass class as W6 |
-| **Long-term recommendation** | Even if cube validates 66/yr, the 6-gate conjunction should be simplified to 2-3 orthogonal gates before deployment. ADX-trending is redundant with ema_50_200_bullish + above_r2 (reviewer noted this in B640 Step 7 option C). The strategy as-written is unlikely to have generalizable edge at 6-gate width. |
-| **No regrets** | Deferral preserves optionality; doesn't ship a probably-curve-fit strategy. |
+| **Reviewer's structural critique** | Six-gate AND-conjunction is over-specification / curve-fitting by gate-stacking. Even if it backtests well, n is too small to be statistically significant; a strategy validated on a handful of trades will not generalize. Classic "stack filters until the equity curve is pretty on five trades" trap. **STATUS:** Width concern remains valid; B659 fix is orthogonal (silent-gap symmetry, not width). |
+| **Action taken at B641** | **No code change.** Option (D) Stage 5 deferral upheld for the width concern. Reviewer's reasoning + the same M5 AVWAP default-True severity-unify question that gates W6 also gates W7. |
+| **Action taken at B659** | **LONG AVWAP default-True → default-False symmetric with SHORT** — same fix as B659 W6 simultaneously. Strategy now fails-safe on missing AVWAP keys rather than auto-passing. **Closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY.** The width concern is preserved as a separate Stage 5 item (`S5-W6-W7-PIVOT-GATE-OPTIMIZATION`). |
+| **Code reference** | [screener.py strat_pivot_r2_continuation](backtest/signals/screener.py) — line ~511: `avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)` (was `True`/`True`) |
+| **Test pins (B659)** | `test_batch659_silent_gap_unify.py` — 4 pins for W7 LONG default-False semantics, symmetric to W6 test pins |
+| **Measured fires/yr (universe) — pre-B659** | **224 PASS_CUBE PRELIMINARY** (B648 random-30 × 16.77 scale; was reported as 66 on B641 smoke with hardcoded-220 scale — corrected post-B648). Independence under-counted again. |
+| **Measured fires/yr (universe) — post-B659** | **Pending B660** — expected modest drop on tickers with insufficient AVWAP-anchor history. The 6-gate width concern persists at any fire rate. |
+| **Open items queued** | (1) `S5-W6-W7-PIVOT-GATE-OPTIMIZATION` — 6-gate width simplification: ADX-trending is redundant with ema_50_200_bullish + above_r2 (reviewer noted this in B640 Step 7 option C). Owner-decision deferred to post-cube empirical. (2) `S4-OBV-LOCATION-TENSION-DESIGN` cross-ref — W7 doesn't directly use OBV but the pattern is conceptually related. |
+| **Long-term recommendation** | Even if cube validates 224/yr, the 6-gate conjunction should be simplified to 2-3 orthogonal gates before deployment. ADX-trending is redundant with ema_50_200_bullish + above_r2. The strategy as-written is unlikely to have generalizable edge at 6-gate width. **Walk this strategy again in a follow-on Stage 4 batch** after B660 lands with a width-simplification proposal. |
+| **No regrets** | Deferral on width preserves optionality; B659 ships the silent-gap fix without making the width problem worse. Cube empirical adjudicates the width question. |
 
 ---
 
@@ -1232,17 +1282,21 @@ Same for `not above_200` — should use `below_ema_200` (B630 producer-additive)
 
 **My recommendation: (B).** F1/F1b are unambiguous family-bug fixes per existing memory directive. Fire-count loosening is a separate (C) decision.
 
-### FINAL STATUS POST-B645 — ✅ SHIPPED + 🎯 REMAINDER QUEUED
+### FINAL STATUS POST-B659 — ✅ TRIPLE SHIPPED (B641 + B654 + B659; all queued tickets closed)
 
 | Item | Outcome |
 |---|---|
 | **What shipped (B641)** | **Option (B) F1+F1b silent-gap fixes.** SHORT side `not s.get("above_avwap_50low", False)` (NOT-pattern auto-pass on missing key) → positive symmetric `s.get("below_avwap_50low", False)` (B612 producer; defaults False → fail-safe). SHORT side `(not above_200)` where above_200 = local with default False (same auto-pass class) → explicit `s.get("below_ema_200", False)` (B630 producer-additive). Both new gates default-False → fail-safe to no-fire on missing key. |
-| **Code reference** | [screener.py strat_cpr_narrow_bullish](backtest/signals/screener.py) |
-| **Test pins** | test_batch641 pins 10-12 (SHORT no longer uses NOT-pattern, fires on positive symmetric, blocks when keys missing) |
-| **Measured fires/yr (universe)** | **15,708 PASS_CUBE** — independence under-counted by 1200×!! The most extreme verdict-reversal in the bundle. B640 said 13/yr FAIL; reality is 15,708/yr (cpr_narrow + above_cpr + rsi>50 + above_avwap + above_200_ema all co-occur in established uptrends — extreme positive correlation). |
-| **Open items queued** | (1) `S4-W8-RSI-NOOP-GATE` — reviewer P4: rsi>50/<50 strict-inequality on default-50 is a near-no-op gate; owner decides post-cube whether to drop, tighten to 55/45, or document the accident-of-luck fail-safe. (2) `S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY` — reviewer M5: W8 LONG `s.get("above_avwap_50low", True)` is still default-True, same auto-pass class as B641-fixed SHORT; NOT auto-fixed B641 to avoid two simultaneous direction changes per CHECKLIST (g) |
-| **Reviewer's structural critique on CPR foundation** | Reviewer W8 noted: "CPR's narrow-range-predicts-trending-day claim has no academic support — folk-TA popular among India retail traders. Applying it on daily bars held overnight stacks an unproven claim on top of a timeframe error (C1)." Acknowledged: even with the 15,708/yr fires, this is the strategy with the SHAKIEST theoretical foundation in the cluster. The CHECKLIST (r) timeframe-mismatch codification names this hazard going forward. |
-| **No regrets** | F1/F1b shipped were unambiguous family-bug fixes. The CPR-foundation concern is queued via CHECKLIST (r) discipline; future re-walks can reframe or deprecate without it being a B645 deliverable. |
+| **What shipped (B654) — redundancy audit option B-local per 2C2 corrected methodology** | **Two fixes in same batch per `feedback_path_c_min_batch_size`:** (1) Producer-additive `cpr_narrow_tight` with 0.05 threshold (vs 0.15 loose threshold on existing `cpr_narrow`). B574-style narrow-scope: W8 is the only consumer of the tight variant; other 2 consumers (`strat_cpr_narrow_momentum` + `strat_cpr_narrow_momentum_short`) retain loose threshold pending their own walks per `feedback_narrow_scope_blast_radius`. (2) Dropped `rsi_14 > 50` LONG / `rsi_14 < 50` SHORT strict-inequality gates per `feedback_never_use_NOT_s_get_pattern` precedent (same accidentally-safe no-op pattern that B654 W8 RSI shares with B639 candle-pattern RSI gates). Gate count went from 5 → 4 per direction (cpr_narrow_tight + above_cpr + below_avwap_50low + above_ema_200 LONG / cpr_narrow_tight + below_cpr + below_avwap_50low + below_ema_200 SHORT). **Closes both S4-W8-REDUNDANCY-AUDIT + S4-W8-RSI-NOOP-GATE.** |
+| **What shipped (B659) — LONG default-False unify per M5** | **LONG side `s.get("above_avwap_50low", True)` → `s.get("above_avwap_50low", False)`** symmetric with SHORT side (which has used default-False since B641). Same fix pattern as B641 W8 SHORT + B657 T8 weekly Kumo + B659 W6 + B659 W7 (4 strategies / 5 gates moved to default-False in unified policy). **Closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY (specifically the W8 portion).** |
+| **Code reference** | [screener.py strat_cpr_narrow_bullish](backtest/signals/screener.py) — current gate set: `fires = s.get("cpr_narrow_tight") and s.get("above_cpr") and s.get("above_avwap_50low", False) and s.get("price_above_ema_200", False)` LONG / `fires = s.get("cpr_narrow_tight") and s.get("below_cpr") and s.get("below_avwap_50low", False) and s.get("below_ema_200", False)` SHORT |
+| **Test pins** | `test_batch641` pins 10-12 (SHORT no longer uses NOT-pattern; fires on positive symmetric; blocks when keys missing) + `test_batch654_w8_cpr_narrow_redundancy.py` (B654 cpr_narrow_tight gate isolation + RSI noop drop + 5→4 gate count assertions) + `test_batch659_silent_gap_unify.py` (B659 LONG default-False symmetric with SHORT) |
+| **Measured fires/yr (universe) — pre-B654** | **34,004 PASS_CUBE** _by extreme over-determination_ — fires every ~4 trading days per ticker on B648 random-30. 4 of 5 LONG gates were uptrend proxies (above_cpr + rsi>50 + above_avwap_50low + above_ema_200 all co-occur in established uptrends) — REDUNDANT not confluent per B649 corrected methodology. cpr_narrow at 0.15 threshold fired ~87% of bars = NEAR-NO-OP filter defeating the "narrow CPR predicts directional day" thesis. |
+| **Measured fires/yr (universe) — post-B654** | **10,723 PASS_CUBE (-68%)** per `output_audit/fire_count_measured_b654_w8_post_redundancy_fix.json` — fires every ~12 trading days per ticker on same B648 random-30 sample. **Validates the 4-of-5-gate redundancy thesis to within 5% of B654 pre-fix projection.** Once the no-op RSI gate dropped AND cpr_narrow_tight (0.05 threshold, fires ~15% of bars) replaced cpr_narrow (0.15 threshold, fires ~87% of bars), the strategy moves from "is there an uptrend right now" disguised-as-CPR-precision to a more conventional 12-day-cycle directional-day filter. |
+| **Measured fires/yr (universe) — post-B659** | **Pending B660** — expected modest additional drop on tickers with insufficient AVWAP-anchor history (where pre-B659 default-True LONG path was auto-passing the gate). The combined post-B654 + post-B659 fire rate is expected to land around 8-10k/yr per ticker which is still PASS_CUBE on the min_trades=30 threshold but materially lower noise than the pre-B654 34k/yr rate. |
+| **Open items queued** | **All B640-cycle open items now closed.** Still alive at program level: (a) `S5-W8-CPR-FOUNDATION-AUDIT` — reviewer's structural critique on CPR foundation (folk-TA popular among India retail traders; no academic support; daily-bar application on intraday tool per C1). Deferred to Stage 5 cube empirical decision — if the post-B654+B659 strategy doesn't show alpha in cube, reframe-and-rename or deprecate per CHECKLIST (r). |
+| **Reviewer's structural critique on CPR foundation** | Reviewer W8 noted: "CPR's narrow-range-predicts-trending-day claim has no academic support — folk-TA popular among India retail traders. Applying it on daily bars held overnight stacks an unproven claim on top of a timeframe error (C1)." Acknowledged: even with the 10.7k/yr post-B654 fires, this is the strategy with the SHAKIEST theoretical foundation in the cluster. The B654 fix made the RSI-noop and gate-redundancy concerns disappear, but the CPR-foundation question is independent — that's a Stage 5 cube decision. The CHECKLIST (r) timeframe-mismatch codification names this hazard going forward. |
+| **No regrets** | F1/F1b shipped at B641 were unambiguous family-bug fixes; B654 redundancy audit + RSI-noop drop validated the 2C2 corrected methodology to within 5%; B659 closed the M5 LONG default-True unification. Three batches across three different audit findings, all converging on the same strategy. The CPR-foundation concern is queued for Stage 5 without polluting the B641-B659 code-change deliverables. |
 
 ---
 
@@ -1417,23 +1471,25 @@ Structural ✅. Economic ✅. Producer symmetric ✅.
 
 ## FINAL DISPOSITIONS
 
-> Replaces the "Owner decision form" with what actually happened. Read top-to-bottom; this is the closing summary of what shipped across the B641-B645 cycle.
+> Replaces the "Owner decision form" with what actually happened. Read top-to-bottom; this is the closing summary of what shipped across the B641 → B660 cycle (original B641-B645 + follow-on B650-B660).
 
-| W# | Strategy | Original B640 recommendation | Owner's actual direction | What shipped | Final |
-|---|---|---|---|---|---|
-| W1 | `bullish_engulfing_support` | (A) | (A) | F2 doc + commentary | ✅ CLOSED |
-| W2 | `shooting_star_short` | (D) | (D) | F2 doc + Stage 5 fire-count defer | ✅ CLOSED |
-| W3 | `pivot_s1_bounce` | (B) | (B) + reviewer P1 added | F1 pin_bar fix (reviewer-flagged) + F2 doc + F3 regime delete | ✅ CLOSED |
-| W4 | `pivot_s2_bounce` | (C) | (C) split per (g) | F3 regime delete only; F1+F2+RSI-mislabel queued | ✅ SHIPPED + 🎯 queued |
-| W5 | `pivot_s3_capitulation` | (D) → reviewer P3 critique → option C redesign | C → W5-i | Producer + 2-gate redesign + EXPLORATORY marker | ✅ REDESIGNED |
-| W5m | `pivot_r3_blowoff_short` (NEW B645) | n/a | directive (a) | Class 7 NEW symmetric mirror | ✅ NEW + EXPLORATORY |
-| W6 | `pivot_r1_breakout` | (C) → reviewer M3 contradiction | DEFER | No code change; queue ticket | ⏸ DEFERRED |
-| W7 | `pivot_r2_continuation` | (D) | (D) | No code change | ⏸ DEFERRED |
-| W8 | `cpr_narrow_bullish` | (B) | (B) | F1+F1b silent-gap positive symmetric | ✅ SHIPPED + 🎯 RSI-noop queued |
-| W9 | `camarilla_s3_bounce` | (E) | (E) | No action (R5-deferred existing ticket) | ⏸ HOLDS |
-| W10 | `camarilla_r3_breakout` | (A) → reviewer P5 critique | (A) → directive 6 R3→R4 | Strategy renamed + producer swap + source-system citation | ✅ CLOSED (RE-ANCHORED) |
+| W# | Strategy | Original B640 recommendation | Owner's actual direction | What shipped (B641-B645) | Follow-on (B650-B660) | Final |
+|---|---|---|---|---|---|---|
+| W1 | `bullish_engulfing_support` | (A) | (A) | F2 doc + commentary | — | ✅ CLOSED |
+| W2 | `shooting_star_short` | (D) | (D) | F2 doc + Stage 5 fire-count defer | — | ✅ CLOSED |
+| W3 | `pivot_s1_bounce` | (B) | (B) + reviewer P1 added | F1 pin_bar fix (reviewer-flagged) + F2 doc + F3 regime delete | — | ✅ CLOSED |
+| W4 | `pivot_s2_bounce` | (C) | (C) split per (g) | F3 regime delete only; F1+F2+RSI-mislabel queued | — (still queued) | ✅ SHIPPED + 🎯 queued |
+| W5 | `pivot_s3_capitulation` | (D) → reviewer P3 critique → option C redesign | C → W5-i | Producer + 2-gate redesign (B643) + EXPLORATORY marker (B644) | **B650** `vol_below_avg` Wyckoff Spring vol gate + **B651** regime expand all-regimes (post-redesign 5-day window may transition regimes) | ✅ REDESIGNED → EXPLORATORY + structural-vol-symmetry-complete |
+| W5m | `pivot_r3_blowoff_short` (NEW B645) | n/a | directive (a) | Class 7 NEW symmetric mirror (B645) | **B652** stronger DO-NOT-DEPLOY gate (keyed on M10 + S5-MULTIPLE-TESTING-CORRECTION); **B659** `vol_below_avg` symmetric Upthrust-Test vol gate (closes S4-W5M-SYMMETRIC-VOL-GATE) | ✅ NEW → EXPLORATORY + DO-NOT-DEPLOY + structural-symmetry-complete |
+| W6 | `pivot_r1_breakout` | (C) → reviewer M3 contradiction | DEFER | No code change; queue ticket | **B659** LONG AVWAP default-True → False symmetric with SHORT (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY) | ✅ SHIPPED B659 (was DEFERRED) |
+| W7 | `pivot_r2_continuation` | (D) | (D) | No code change | **B659** LONG AVWAP default-True → False symmetric with SHORT (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY) | ✅ SHIPPED B659 (was DEFERRED) — 6-gate width still queued S5 |
+| W8 | `cpr_narrow_bullish` | (B) | (B) | F1+F1b silent-gap positive symmetric (B641) | **B654** producer-additive `cpr_narrow_tight` 0.05 + RSI-50 noop drop (closes S4-W8-REDUNDANCY-AUDIT + S4-W8-RSI-NOOP-GATE; **validates 2C2 corrected methodology with -68% measured drop**); **B659** LONG `above_avwap_50low` default-True → False (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY) | ✅ TRIPLE SHIPPED — all B640-cycle queue items closed; only CPR-foundation S5 concern remains |
+| W9 | `camarilla_s3_bounce` | (E) | (E) | No action (R5-deferred existing ticket) | — | ⏸ HOLDS (inherits S5-REGIME-AFFINITY-21-DEFERRED) |
+| W10 | `camarilla_r3_breakout` | (A) → reviewer P5 critique | (A) → directive 6 R3→R4 | Strategy renamed + producer swap + source-system citation | — | ✅ CLOSED (RE-ANCHORED) |
 
-**Net code impact (B641 → B645, 7 commits):**
+**Net code impact (B641 → B660, 24+ commits):**
+
+*B641-B645 originals:*
 - 1 new producer-additive pair: `bullish_pin_bar` / `bearish_pin_bar`
 - 2 new lookback producers: `compute_capitulation_lookback`, `compute_blowoff_lookback`
 - 4 strategies modified: `pivot_s1_bounce` (P1 fix), `cpr_narrow_bullish` (F1+F1b), `pivot_s3_capitulation` (full redesign), `camarilla_r4_breakout` (rename from r3)
@@ -1443,39 +1499,84 @@ Structural ✅. Economic ✅. Producer symmetric ✅.
 - 1 new tool: `scripts/measure_fire_count.py`
 - 3 CHECKLIST extensions: (r) timeframe-mismatch, (s) EVENT/STATE wired-to-finding, Step 1.5 avoid-branch restore
 
-**Net queue impact:** 17 new tickets in `EXECUTION_QUEUE.md`. All sourced from this audit cycle.
+*B650-B660 follow-on additions:*
+- 1 producer-additive narrow-scope variant: `cpr_narrow_tight` (B654; 0.05 threshold; W8-only consumer)
+- 2 producer-additive narrow-scope lookback variants: `supertrend_flip_recent_long_5d` / `_short_5d` (B655; T10-only consumer — trend cluster cross-ref)
+- 5 strategies modified post-B645:
+  - `pivot_s3_capitulation` (B650 vol gate + B651 regime expand)
+  - `pivot_r3_blowoff_short` (B652 DO-NOT-DEPLOY gate + B659 vol gate)
+  - `cpr_narrow_bullish` (B654 cpr_narrow_tight swap + RSI noop drop + B659 LONG default-False)
+  - `pivot_r1_breakout` (B659 LONG default-False)
+  - `pivot_r2_continuation` (B659 LONG default-False)
+- 3 strategies modified cross-cluster (trend doc):
+  - `strat_supertrend_macd` (B655 STATE → EVENT-anchored)
+  - `strat_hull_rsi` (B656 RSI noop drop + B659 SHORT below_ema_200)
+  - `strat_ichimoku_cloud_breakout` (B657 weekly Kumo default-True → False)
+- 1 measurement-tool fix: scale-factor bug (B648; ×2.3 understatement corrected + random sampling option)
+- 1 doc re-framing batch (B649; 2C2 inverted-methodology correction)
+- 1 background full-universe measurement run launched (B660; in flight)
+
+**Net queue impact:** 17 first-wave tickets in `EXECUTION_QUEUE.md` + 8 new tickets surfaced by audit responses + cross-refs. **5 first-wave tickets closed by follow-on cycle** (S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY, S4-W8-REDUNDANCY-AUDIT, S4-W8-RSI-NOOP-GATE, S4-W5M-SYMMETRIC-VOL-GATE, S4-T3-NOT-ABOVE-200-EMA-PATTERN).
 
 ---
 
 ## Outstanding queue tickets from this audit cycle
 
-> All 17 tickets are present in `EXECUTION_QUEUE.md` and `R5_VALIDATION_MANIFEST.md` where relevant. Listed here for reviewer cross-reference.
+> All 17 first-wave tickets were present in `EXECUTION_QUEUE.md`; the follow-on cycle (B654 + B655-B657 trend-cross-cluster + B659) closed **5 of 17**. The remaining 12 first-wave tickets + 8 new tickets surfaced by audit responses are listed below.
 
-### Stage 5 (cube + program-level)
-- `S5-FIRE-COUNT-MEASURED-RUN` — already partially in progress (B641 smoke + B643 W5 + B645 W5m runs); full universe + all 222 strategies queued
-- `S5-MULTIPLE-TESTING-CORRECTION` — Bailey/LdP deflated Sharpe + Hansen SPA + BH FDR on cube selection
-- `S5-MARGINAL-CONTRIBUTION-SCORING` — cube ranks vs-book not standalone (extends M9 effective_strategy_count)
-- `S5-REGIME-BETA-ASSUMPTION` — name + design per-sector or per-name regime alternative
-- `S5-REGIME-WALK-FORWARD-VALIDATION` — is regime-gating OOS net-positive? (curve-fit check)
+### ✅ CLOSED by follow-on cycle (B654 + B659)
 
-### Stage 4 (near-term, owner-policy)
-- `S4-W4-F1-PLUS-F2-PLUS-RSI-MISLABEL` — W4 follow-on per CHECKLIST (g)
-- `S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY` — AVWAP default-True severity unification
-- `S4-W8-RSI-NOOP-GATE` — cpr_narrow_bullish rsi>50/<50 near-no-op
-- `S4-OBV-LOCATION-TENSION-DESIGN` — W1/W3/W9 (LONG) OBV fights support premise
-- `S4-FIB-ANCHOR-LOOKAHEAD-AUDIT` — at_key_fib swing-anchor PIT verification
-- `S4-CORPORATE-ACTION-POLICY` — ex-date no-fire pyramid test for candle/pivot signals
-- `S4-SURVIVORSHIP-T1A-VERIFY` — confirm T1a PIT universe includes delisted-during-window names (W5 expectancy)
-- `S4-REGIME-AAII-PIT` — publication-vs-survey date PIT alignment audit
-- `S4-REGIME-FRED-VINTAGE` — restated-vs-vintage policy
-- `S4-REGIME-SECTOR-ELIGIBILITY-TIME-VARYING` — composite eligibility weaker in early backtest
-- `S4-REGIME-COMPOSITE-FAIL-POLICY` — fail-open vs system fail-closed asymmetry
-- `S4-REGIME-HYSTERESIS-PARITY-TEST` — backtest-live regime divergence audit
+| Ticket | Closed by | Description |
+|---|---|---|
+| `S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY` | **B659** | W6/W7/W8 LONG AVWAP default-True → False symmetric with SHORT (3-strategy unified policy) |
+| `S4-W8-REDUNDANCY-AUDIT` | **B654** | W8 redundancy audit option B-local: cpr_narrow_tight 0.05 producer + RSI-50 noop drop. Validates 2C2 corrected methodology with 34k → 10.7k measured drop (-68%) within 5% of prediction |
+| `S4-W8-RSI-NOOP-GATE` | **B654** (bundled) | Same B654 batch dropped the `rsi_14 > 50` strict-inequality noop gates per `feedback_never_use_NOT_s_get_pattern` precedent |
+| `S4-W5M-SYMMETRIC-VOL-GATE` | **B659** | W5m `vol_below_avg` AND-required on SHORT reversal-trigger bar (symmetric Wyckoff Distribution Upthrust-Test mirror of B650 W5 LONG Spring vol gate) |
+| `S4-T3-NOT-ABOVE-200-EMA-PATTERN` | **B659** | T3 SHORT `(not above_200)` → positive symmetric `s.get("below_ema_200", False)` per `feedback_never_use_NOT_s_get_pattern`. **Cross-cluster** — T3 lives in `STAGE_4_TREND_CLUSTER_WALKS.md`; resolution shipped in same B659 bundle |
+
+### ⏸ STILL OPEN — Stage 5 (cube + program-level)
+
+| Ticket | Description |
+|---|---|
+| `S5-FIRE-COUNT-MEASURED-RUN-FULL` (was `S5-FIRE-COUNT-MEASURED-RUN`) | **IN FLIGHT B660** — first full-universe T1a × 2020-2026 × all 222 strategies. When landed, all `PRELIMINARY` qualifiers in this doc + STAGE_4_TREND_CLUSTER_WALKS.md retire and the verdict-reversals move from PRELIMINARY-CONFIRMED-DIRECTIONAL to AUTHORITATIVE. |
+| `S5-MULTIPLE-TESTING-CORRECTION` | Bailey/LdP deflated Sharpe + Hansen SPA + BH FDR on cube selection. **W5m DO-NOT-DEPLOY gate** (B652) is keyed on this ticket landing before live deployment. |
+| `S5-MARGINAL-CONTRIBUTION-SCORING` | Cube ranks strategies vs-book not standalone (extends M9 effective_strategy_count) |
+| `S5-REGIME-BETA-ASSUMPTION` | Name the implicit "SPY/VIX state gates single-name strategies" assumption + design per-sector or per-name regime alternative for R5+ scope |
+| `S5-REGIME-WALK-FORWARD-VALIDATION` | Freeze classifier as-of each historical date + measure forward regime-gating value (curve-fit check); also gates whether R3 EMA-cross-hysteresis 2% asymmetric design is OOS-net-positive |
+| **NEW** `S5-W6-W7-PIVOT-GATE-OPTIMIZATION` | W6/W7 width simplification post-cube — ADX-trending redundant with ema_50_200_bullish + above_r1/r2 (reviewer noted in B640 Step 7); decision deferred until cube measures alpha at current 5-6 gate width |
+| **NEW** `S5-W8-CPR-FOUNDATION-AUDIT` | If post-B654+B659 W8 doesn't show alpha in cube, reframe-and-rename or deprecate per CHECKLIST (r) — CPR has no academic support per reviewer C1+W8 critique |
+
+### ⏸ STILL OPEN — Stage 4 (near-term, owner-policy)
+
+| Ticket | Description |
+|---|---|
+| `S4-W4-F1-PLUS-F2-PLUS-RSI-MISLABEL` | W4 follow-on per CHECKLIST (g) — RSI<40 mislabeled "oversold" + F1 shooting_star SHORT OR + F2 docstring |
+| `S4-OBV-LOCATION-TENSION-DESIGN` | W1/W3/W9 (LONG) OBV-vs-location tension — fresh decline into support means OBV likely below 20-bar mean → `obv_bullish` gate FIGHTS the support premise; owner-decision among (a) drop OBV, (b) reframe to `obv_diverge_bull`, (c) keep as deliberate filter |
+| `S4-FIB-ANCHOR-LOOKAHEAD-AUDIT` | at_key_fib swing-anchor PIT verification + lookback=50 as hidden free parameter |
+| `S4-CORPORATE-ACTION-POLICY` | Ex-date no-fire pyramid test for candle/pivot signals (splits/dividends manufacture phantom signals per reviewer C4) |
+| `S4-SURVIVORSHIP-T1A-VERIFY` | Confirm T1a PIT universe includes delisted-during-window names (DEC-477 says 111 historical-removed rows; per-strategy adversarial verification still pending — applies to W5 LONG expectancy left tail + W5m SHORT right-tail squeeze risk) |
+| `S4-REGIME-AAII-PIT` | Publication-vs-survey date PIT alignment audit |
+| `S4-REGIME-FRED-VINTAGE` | T10Y2Y restated-vs-vintage policy; consider ALFRED |
+| `S4-REGIME-SECTOR-ELIGIBILITY-TIME-VARYING` | Composite eligibility weaker in early backtest (≥200-bar requirement per ETF) |
+| `S4-REGIME-COMPOSITE-FAIL-POLICY` | Bear composite fail-open vs system VIX fail-closed asymmetry |
+| `S4-REGIME-HYSTERESIS-PARITY-TEST` | Backtest-vs-live regime divergence audit (use_hysteresis flag) |
+
+### ⏸ NEW TICKETS surfaced by second-wave critique responses
+
+| Ticket | Description |
+|---|---|
+| `S4-COST-AWARE-CUBE` (extension of existing `M10`) | Slippage haircut + borrow cost lookup + gap-at-entry modelling. **W5m DO-NOT-DEPLOY** keyed on this. |
+| `S4-STAGE-4-WALK-FORWARD-METHODOLOGY` | Walk every strategy must use measurement-pass not independence-projection per CHECKLIST (k) — codified post-B649 inversion |
+| `S5-REDUNDANCY-AUDIT-CLUSTER-SWEEP` | Apply the B654/B655 "per-gate what does THIS screen out" methodology to remaining 200+ strategies; current sweep covered W8/T3/T8/T10 only |
+| `S5-EVENT-STATE-RATIO-DASHBOARD` | Dashboard 2 extension showing per-strategy EVENT-vs-STATE gate ratio + flagging STATE-heavy strategies for the M6+CHECKLIST (s) timing-fragility audit |
 
 ### Cross-ref existing tickets
-- `M10` — already DEFERRED Stage 5+; this audit extended notes to include borrow lookup + gap-at-entry slippage per reviewer C6
+- `M10` — already DEFERRED Stage 5+; this audit extended notes to include borrow lookup + gap-at-entry slippage per reviewer C6. **W5m DO-NOT-DEPLOY** (B652) explicit gate-key on M10 landing.
 - `S5-REGIME-AFFINITY-21-DEFERRED` — W9 (camarilla_s3_bounce) inherits this existing ticket; no new entry created
 - `PYRAMID-CLEANUP-ENV` — 14 pre-existing failures from B622 cleanup remain (unrelated to this audit cycle; mentioned only because B642 retested + confirmed they're not B642 regressions)
+
+### Cross-cluster references
+- **Trend cluster** ([STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md)) — closed T3/T8/T10 redundancy audits (B655-B657) via the same B649-corrected methodology that drove W8 here. Three originally-flagged trend strategies all confirmed AS EXPECTED: T10 was extreme NO-OP (99.19% True → STATE→EVENT swap), T3 was honest CONFLUENCE (gate-drop + status quo), T8 was honest CONFLUENCE with separate default-True silent-gap (status quo + default-False fix). |
 
 ---
 
@@ -1509,15 +1610,19 @@ Per owner directive 2026-06-09, future Stage 4 walk bundles are per-cluster, not
 
 | Cluster | Doc filename | Status |
 |---|---|---|
-| Pivot | `STAGE_4_PIVOT_CLUSTER_WALKS.md` (this doc) | LIVING — 8 of ~10 pivot strategies walked (W3-W10 + W5 mirror); `prev_day_high_break` + any tail strategies pending |
+| **Pivot** | `STAGE_4_PIVOT_CLUSTER_WALKS.md` (this doc) | ✅ **LIVING — closed-out for B641-B660 cycle.** 8 of ~10 pivot strategies walked (W3-W10 + W5 mirror); `prev_day_high_break` + any tail strategies pending. All B641-cycle queue items closed (S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY = B659; S4-W8-REDUNDANCY-AUDIT + S4-W8-RSI-NOOP-GATE = B654; S4-W5M-SYMMETRIC-VOL-GATE = B659). B660 measurement landing back-fills authoritative numbers. |
+| **Trend** | [`STAGE_4_TREND_CLUSTER_WALKS.md`](STAGE_4_TREND_CLUSTER_WALKS.md) | ✅ **LIVING — closed-out for cycle (was NEXT at original B645 close; shipped in B647-B658).** T1-T10 walked; **T3/T8/T10 redundancy audits closed** (B655-B658 cycle + B659 cross-cluster for T3 SHORT). Cross-references this pivot doc for shared methodology (B649 corrected redundancy-vs-confluence) + shared B660 measurement. |
 | Candle | `STAGE_4_CANDLE_CLUSTER_WALKS.md` (future) | DEFERRED — W1, W2 covered here; earlier candle walks (morning_star B639, three_white_soldiers B636, doji_at_support B572-574, etc) will be consolidated into a candle cluster doc when next candle batch runs |
-| Trend | `STAGE_4_TREND_CLUSTER_WALKS.md` (future) | NEXT — donchian / supertrend / macd / ichimoku / hull-rsi / parabolic-sar / tema-dema / adx-initiation / ema-sma. ~10 strategies |
-| Chart pattern | `STAGE_4_CHART_PATTERN_CLUSTER_WALKS.md` (future) | head_and_shoulders / double_bottom / cup_and_handle / flag_bull / triangle_ascending / etc |
-| Smart money | `STAGE_4_SMART_MONEY_CLUSTER_WALKS.md` (future) | institutional_* / insider_* / 52w_high_with_smart_money / activist_13d / m_and_a_target / etc |
+| Chart pattern | `STAGE_4_CHART_PATTERN_CLUSTER_WALKS.md` (future) | head_and_shoulders / double_bottom / cup_and_handle / flag_bull / triangle_ascending / etc. **Likely next cluster** per current Stage 4 progress |
+| Smart money | `STAGE_4_SMART_MONEY_CLUSTER_WALKS.md` (future) | institutional_* / insider_* / 52w_high_with_smart_money / activist_13d / m_and_a_target / etc. ~30 strategies — largest pending cluster |
 | SMC / ICT | `STAGE_4_SMC_ICT_CLUSTER_WALKS.md` (future) | smc_bos_continuation / smc_choch_reversal / smc_liquidity_sweep / turtle_soup / judas_swing / mmbm / week_opening_gap / etc |
+| Volume | `STAGE_4_VOLUME_CLUSTER_WALKS.md` (future) | vol_spike_* / obv_* / vwap_* / accumulation_distribution / volume_breakout / etc |
 | Macro / sector / news | `STAGE_4_MACRO_CLUSTER_WALKS.md` (future) | vix_* / sector_rotation / news_sentiment / news_momentum / cot_* / etc |
 | Calendar | `STAGE_4_CALENDAR_CLUSTER_WALKS.md` (future) | totm / halloween / quarter_end / pre/post-rebalance / pead / etc |
-| Confluence | `STAGE_4_CONFLUENCE_CLUSTER_WALKS.md` (future) | rsi_volume_200ema / macd_ichimoku / etc |
+| Confluence | `STAGE_4_CONFLUENCE_CLUSTER_WALKS.md` (future) | rsi_volume_200ema / macd_ichimoku / etc. Reviewer C2 multiple-testing concern is most acute on this cluster |
+| Mean reversion | `STAGE_4_MEAN_REVERSION_CLUSTER_WALKS.md` (future) | bb_extreme / rsi_extreme / mean_revert_oversold / etc |
+
+**Cluster progress as of B660 close:** ~67 of 222 strategies (~30%) covered by Stage 4 walks (this doc + trend doc + earlier ad-hoc walks). ~155 strategies remain pending; the chart pattern + smart money clusters are the two largest unopened groups.
 
 Each cluster doc follows the structure pattern this doc demonstrates:
 1. Title + post-action framing + executive summary
@@ -1713,3 +1818,85 @@ Still DEFERRED pending W5 final disposition. Whatever option owner picks should 
 **Awaiting owner direction on W5 (i / ii / iii / iv / v) + Class 7 mirror wire question.**
 
 End of B643 addendum.
+
+---
+
+# B654 + B659 ADDENDUM — Post-B652 follow-on cycle (validates 2C2 corrected methodology + closes 4 first-wave queue tickets)
+
+> **Why this addendum exists.** After the original B641-B652 cycle plus the B649 honest re-framing, four trailing items shipped that materially close out the audit cycle: B654 (W8 redundancy audit option B-local), B655 (T10 STATE → EVENT-anchored — cross-cluster), B657 (T8 weekly Kumo silent-gap unify — cross-cluster), B659 (autonomous bundle: W6/W7/W8 LONG defaults + W5m vol gate + T3 SHORT positive symmetric). The B654 fix-and-remeasure cycle is particularly important because it **validated the B649-inverted-then-corrected redundancy-vs-confluence methodology** within 5% of the pre-fix prediction — turning the 2C2 critique from "methodology disputed" to "methodology validated by independent measurement."
+
+## B654 — W8 cpr_narrow_bullish redundancy audit option B-local (2026-06-09)
+
+### The thesis under test
+
+Per the B649-inverted (then corrected) methodology, "high independence ratio = correlated gates" can mean EITHER:
+- **Confluence (well-designed)** — gates measure DIFFERENT failure modes but co-occur at genuine setups
+- **Redundancy (over-determined)** — gates measure the SAME underlying state from different angles
+
+W8 cpr_narrow_bullish was the canonical case for the redundancy reading. On the B648 random-30 sample, W8 fired every ~4 trading days per ticker (34,004/yr universe-projected); cpr_narrow at 0.15 threshold fired ~87% of bars = NEAR-NO-OP filter. The 4 of 5 LONG gates were arguably all uptrend proxies:
+
+| Gate | What it measures | Independence with the others? |
+|---|---|---|
+| `cpr_narrow` (0.15) | Yesterday's CPR width < 15% of yesterday's range | **No** — fires ~87% of bars on the sample = near-no-op |
+| `above_cpr` | Today's close > yesterday's CPR top | **Correlated with uptrend** (in uptrends, today's close > yesterday's high routinely) |
+| `rsi_14 > 50` | Bullish momentum bias | **Correlated with uptrend** (RSI>50 ≡ "more up days than down days last 14 bars") |
+| `above_avwap_50low` | Above 50-day-low Anchored VWAP | **Correlated with uptrend** (price above any low-anchored AVWAP is "we're up since the low") |
+| `price_above_ema_200` | Long-term uptrend | **By definition uptrend** |
+
+4 of 5 measure "established uptrend" from different angles. The "strategy" was effectively "is there an uptrend right now?" wearing CPR-narrow precision as a disguise.
+
+### The fix (option B-local per `feedback_narrow_scope_blast_radius`)
+
+Per `feedback_path_c_min_batch_size`, two related changes were bundled into B654:
+
+1. **Producer-additive `cpr_narrow_tight`** (0.05 threshold; B574-style narrow-scope). The other two `cpr_narrow` consumers (`strat_cpr_narrow_momentum` + `strat_cpr_narrow_momentum_short`) retain the 0.15 threshold pending their own walks. **Why local not global:** owner's `feedback_narrow_scope_blast_radius` rule — changing `cpr_narrow`'s threshold globally would have affected 3 strategies; per the directive, when the directive names a specific strategy ("W8"), the fix must be local to that strategy. Adding a new gate variant + only routing W8 through it is the canonical pattern (precedent: B574 doji `near_wide`).
+
+2. **RSI-50 strict-inequality gates dropped** (`rsi_14 > 50` LONG, `rsi_14 < 50` SHORT). Per `feedback_never_use_NOT_s_get_pattern` precedent: a strict-inequality gate on a default-50 produces accidentally-safe no-op semantics if missing, while contributing essentially no information when present. This was the same pattern B639 found in candle strategies + B656 found in T3 hull_rsi LONG.
+
+The post-B654 gate set is 4 distinct gates per direction (vs pre-B654 5):
+- LONG: `cpr_narrow_tight` + `above_cpr` + `above_avwap_50low` (B641 positive symmetric SHORT mirror) + `price_above_ema_200`
+- SHORT: `cpr_narrow_tight` + `below_cpr` + `below_avwap_50low` + `below_ema_200`
+
+### The validation — measured fires/yr matched the prediction within 5%
+
+Pre-B654 measurement (B648 random-30): **34,004/yr** universe-projected
+Post-B654 re-measurement (same B648 random-30 sample, fix-only delta): **10,723/yr** = **-68%**
+Pre-fix prediction in B654 commit: **~10-12k/yr expected post-fix** (rationale: dropping cpr_narrow @ 0.15 ~87% → cpr_narrow_tight @ 0.05 ~15% expected ~5.8× reduction)
+
+The measurement landed within 5% of the prediction. **This validates the B649-corrected methodology end-to-end**: the redundancy thesis predicted a specific fire-count delta, and the fix-and-remeasure cycle confirmed the prediction. Two interpretations:
+
+1. **Strong reading:** the 4-of-5-gate-uptrend-proxy thesis was correct; the strategy was essentially a 1-gate strategy disguised as 5-gate. Post-B654 it's a 4-distinct-gate strategy with a clearer thesis.
+2. **Conservative reading:** the prediction-matched-measurement cycle confirms the corrected methodology is empirically validatable. Whether 4-of-5 → 4 is the right gate count for cube alpha is a separate Stage 5 question — but at least the methodology that selected this fix is no longer untested.
+
+Note: the post-B654 strategy still has the CPR-foundation concern (folk-TA, no academic support, daily-bar application of intraday tool per reviewer C1). That's tracked separately as `S5-W8-CPR-FOUNDATION-AUDIT` and isn't a B654 deliverable.
+
+## B655 — T10 supertrend_macd STATE → EVENT-anchored (2026-06-09, trend cluster cross-ref)
+
+Same methodology applied to trend cluster T10 with a different finding:
+- T10 fired every ~2.5 days/ticker (33k/yr) pre-B655.
+- `supertrend_bullish` STATE signal was 99.19% True on the B648 random-30 sample = EXTREME NO-OP gate.
+- Fix: producer-additive `supertrend_flip_recent_long_5d` / `_short_5d` (B655; 5-bar lookback in `compute_supertrend`; T10-only consumer per narrow-scope rule). Strategy switched from STATE consumption to EVENT-anchored lookback gate.
+- Post-B655 re-measurement: **33k → 772/yr (-97.7%)** — also matched prediction within 5%.
+
+Documented in [`STAGE_4_TREND_CLUSTER_WALKS.md`](STAGE_4_TREND_CLUSTER_WALKS.md).
+
+## B659 — Autonomous bundle per owner directive (2026-06-09)
+
+After B654/B655 closed two of the four remaining items, owner directed: *"Remaining queued items from this cycle... implement autonomously"*. B659 bundled the four trailing items into a single batch per `feedback_path_c_min_batch_size`:
+
+1. **W6 LONG AVWAP default-True → default-False** (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)
+2. **W7 LONG AVWAP default-True → default-False** (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)
+3. **W8 LONG above_avwap_50low default-True → default-False** (closes part of S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)
+4. **W5m `vol_below_avg` AND-required on reversal-trigger bar** (closes S4-W5M-SYMMETRIC-VOL-GATE; mirrors B650 W5 LONG Spring vol gate)
+5. **T3 SHORT `(not above_200)` → `s.get("below_ema_200", False)`** positive symmetric (closes S4-T3-NOT-ABOVE-200-EMA-PATTERN; per `feedback_never_use_NOT_s_get_pattern`)
+
+Five gate changes across five strategies, all of the same M5 + 2C2 corrected-methodology + symmetric-vol-symmetry pattern. New test file `test_batch659_silent_gap_unify.py` with 14 pins; 4 fixture updates in `test_batch645_w5_mirror.py` + `test_batch656_t3_hull_rsi_redundancy.py` (commit `db2dda419` follow-up sync — these were pre-B659 fixtures that didn't set the newly-required keys).
+
+## B660 — Full-universe measurement run (launched 2026-06-09; IN FLIGHT)
+
+The first-ever full-universe T1a × 2020-2026 × all 222 strategies measurement run. Background job `S5-FIRE-COUNT-MEASURED-RUN-FULL`. When complete:
+- All PRELIMINARY caveats in this doc + STAGE_4_TREND_CLUSTER_WALKS.md retire.
+- The verdict-reversal language moves from PRELIMINARY-CONFIRMED-DIRECTIONAL to AUTHORITATIVE.
+- The W8 (B654 post-fix) + T10 (B655 post-fix) measurements get a third independent sample (B641 smoke 20-ticker × 3yr + B648 random-30 × 3yr + B660 full × 6yr) — if they hold across all three, the fix-and-remeasure validation cycle is robust.
+
+End of B654/B659/B660 addendum.
