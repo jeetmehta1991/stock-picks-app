@@ -3448,7 +3448,10 @@ def test_batch316a_deprecated_strategies_emptied():
         "doji_at_support", "bullish_engulfing_support", "shooting_star_short",
         "williams_stoch_dual",
         "macd_crossover", "macd_crossover_short",
-        "camarilla_r3_breakout", "camarilla_s3_bounce",
+        # B641 W10 (2026-06-09): camarilla_r3_breakout renamed to
+        # camarilla_r4_breakout per Camarilla source-system re-anchor
+        # (R3 = fade level per Slim Khan / Nick Scott; R4 = breakout).
+        "camarilla_r4_breakout", "camarilla_s3_bounce",
     }
     assert len(previously_deprecated) == 22, "Sanity: 22 previously-deprecated names post-B639"
     still_registered = previously_deprecated & set(ALL_STRATEGIES.keys())

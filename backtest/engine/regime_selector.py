@@ -185,11 +185,21 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "prev_day_high_break":      {"bear"},  # B617 KEPT: B418 cube override; direction-disagg validation pending
     "52w_high_breakout":        {"bull", "neutral"},  # LONG-only (no _strat3 short side)
     # Counter-trend bounces: allow neutral/bear (oversold bounces)
-    "pivot_s2_bounce":          {"neutral", "bear"},
+    # B641 W3 (2026-06-09 owner-directed Tier 1 via external-AI audit
+    # of B640 walk bundle): pivot_s1_bounce {neutral, bear} entry
+    # DELETED -- B271 mass-edit single-direction-era family-bug. Strategy
+    # is DUAL via _strat3; entry capped BOTH directions. LONG mis-regimed
+    # (bull excluded despite valid buy-the-dip-in-uptrend reading); SHORT
+    # mis-regimed (should be {bear, crisis, neutral} per B291 default).
+    # Same fix pattern as B608/B609/B617/B639.
+    # B641 W4 (2026-06-09): pivot_s2_bounce {neutral, bear} entry
+    # DELETED for same B271 family-bug reason. Per CHECKLIST (g)
+    # sequence-or-split, W4 F1 (add shooting_star to SHORT OR) + F2
+    # (docstring) + RSI<40 mislabel correction queued separately
+    # (S4-W4-F1-PLUS-F2-PLUS-RSI-MISLABEL) -- not bundled here.
     "pivot_s3_capitulation":    {"neutral", "bear", "crisis"},
     "prev_day_low_bounce":      {"neutral", "bear"},
     "camarilla_s3_bounce":      {"neutral", "bear", "crisis"},
-    "pivot_s1_bounce":          {"neutral", "bear"},
     # Volume-flow: allow all (signal is regime-agnostic)
     "cmf_flip":                 {"bear", "neutral"},  # Batch 418 cube override (was {bull, neutral, bear, crisis}; bull negative + 0 crisis trades)
     "force_index_breakout":     {"bull", "neutral", "bear", "crisis"},

@@ -1438,10 +1438,25 @@ def compute_candles(df: pd.DataFrame) -> dict:
         result["hammer"]        = lwk>2*body and uwk<body and body>0
         result["shooting_star"] = uwk>2*body and lwk<body and body>0
         result["pin_bar"]       = max(uwk,lwk) > 0.66*rng
+        # B641 W3 F1 (2026-06-09 owner-directed external-AI critique on
+        # B640 walk bundle): direction-aware pin-bar variants. The legacy
+        # pin_bar = max(uwk, lwk) > 0.66*rng is direction-AGNOSTIC -- it
+        # fires for bars dominated by EITHER an upper wick (bearish
+        # rejection from above) or a lower wick (bullish rejection from
+        # below). strat_pivot_s1_bounce LONG was consuming `pin_bar`
+        # which meant a bearish-upper-wick pin at support could trigger
+        # a LONG entry -- directional contamination. Producer-additive
+        # symmetric pair allows consumers to gate by direction:
+        #   bullish_pin_bar: dominant lower wick (>0.66 of range)
+        #   bearish_pin_bar: dominant upper wick (>0.66 of range)
+        # pin_bar retained for back-compat.
+        result["bullish_pin_bar"] = lwk > 0.66*rng
+        result["bearish_pin_bar"] = uwk > 0.66*rng
         result["marubozu_bull"] = bull and uwk<body*0.05 and lwk<body*0.05
         result["marubozu_bear"] = not bull and uwk<body*0.05 and lwk<body*0.05
     else:
         result["hammer"] = result["shooting_star"] = result["pin_bar"] = False
+        result["bullish_pin_bar"] = result["bearish_pin_bar"] = False
         result["marubozu_bull"] = result["marubozu_bear"] = False
 
     # -- Two-bar patterns --

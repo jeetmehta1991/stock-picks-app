@@ -173,16 +173,47 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
 # -----------------------------------------------------------------------------
 
 def strat_pivot_s1_bounce(s):
-    # B628 F1 family-sweep: `not s.get("obv_bullish")` -> positive
-    # symmetric `obv_bearish` (B617 producer). See B628 commit for
-    # the bundled 7-strategy sweep rationale per CHECKLIST #105 (n).
-    fl = (s.get("near_s1") and (s.get("hammer") or s.get("pin_bar")) and s.get("obv_bullish"))
+    """Floor-trader pivot S1 support bounce / R1 resistance rejection
+    with single-bar candle confirmation + OBV flow.
+
+    Fires LONG when ALL THREE: (a) price within 0.3% of pivot S1
+    (computed from yesterday's H/L/C); (b) `hammer` OR `bullish_pin
+    _bar` formed today; (c) OBV above its 20-bar mean (accumulation).
+    SHORT mirror: near_r1 + (shooting_star OR bearish_engulfing) +
+    obv_bearish.
+
+    Batch 628 (2026-06-08): F1 family-sweep -> positive symmetric
+    `obv_bearish` per feedback_never_use_NOT_s_get_pattern.
+
+    Batch 641 (2026-06-09 owner-directed Tier 1 ship via external-AI
+    audit of B640 walk bundle):
+      F1 - pin_bar direction-contamination fix. Pre-B641 LONG OR-disjunct
+        was `hammer OR pin_bar`. The `pin_bar` producer is direction-
+        AGNOSTIC (max(uwk,lwk) > 0.66*rng) - a bar with a dominant
+        upper wick (bearish rejection from above) satisfied it, so a
+        bearish pin AT SUPPORT could trigger a LONG entry. Fix:
+        producer-additive `bullish_pin_bar` / `bearish_pin_bar`
+        emitted by compute_candle_signals; LONG side switches to
+        `bullish_pin_bar` (dominant lower wick = bullish rejection
+        from below). SHORT side already used directionally-clean
+        shooting_star + bearish_engulfing; no swap needed.
+      F2 - docstring added.
+      F3 - STRATEGY_REGIME_AFFINITY['pivot_s1_bounce'] {neutral, bear}
+        entry DELETED -- B271 mass-edit single-direction-era family-
+        bug. Now falls back to B291 direction-aware default.
+
+    OPEN: external-AI audit also surfaced OBV-vs-location tension
+    (fresh decline into support means OBV likely below 20-bar mean,
+    so obv_bullish gate fights the support premise). Queued as
+    S4-OBV-LOCATION-TENSION-DESIGN; not auto-fixed B641.
+    """
+    fl = (s.get("near_s1") and (s.get("hammer") or s.get("bullish_pin_bar")) and s.get("obv_bullish"))
     fs = (s.get("near_r1") and (s.get("shooting_star") or s.get("bearish_engulfing"))
           and s.get("obv_bearish"))
     return _strat3(fl, fs, "pivot",
-        ["near_s1","hammer/pin_bar","obv_bullish"],
-        ["near_r1","shooting_star","obv_bearish"],
-        ["Price at S1 pivot support","Hammer or pin bar confirming buyers","OBV rising - accumulation"],
+        ["near_s1","hammer/bullish_pin_bar","obv_bullish"],
+        ["near_r1","shooting_star/bearish_engulfing","obv_bearish"],
+        ["Price at S1 pivot support","Hammer or bullish pin bar confirming buyers (B641 F1: direction-aware)","OBV rising - accumulation"],
         ["Price at R1 pivot resistance","Shooting star or bearish engulfing rejecting highs","OBV falling - distribution (B628 F1)"])
 
 
@@ -289,10 +320,34 @@ def strat_cpr_narrow_bullish(s):
     bull regime - the strategy fired LONG into anti-regime cells because
     no regime gate. Long now requires above_200_ema; short requires
     below_200_ema (canonical regime alignment).
+
+    Batch 641 (2026-06-09 owner-directed Tier 1 ship via external-AI
+    audit of B640 walk bundle):
+      F1 - SHORT side AVWAP gate `not s.get("above_avwap_50low", False)`
+        was a NOT-pattern silent-gap: missing key returns False, then
+        `not False = True` AUTO-PASSED the gate. Replaced with positive
+        symmetric `s.get("below_avwap_50low", False)` (B612 producer)
+        which defaults False -> fail-safe to no-fire on missing key.
+      F1b - SHORT side regime gate `(not above_200)` where above_200 was
+        a local with default False: same auto-pass on missing key.
+        Replaced with explicit `s.get("below_ema_200", False)` (B630
+        producer-additive symmetric to price_above_ema_200).
+
+    OPEN: external-AI audit surfaced (a) rsi>50/<50 strict-inequality
+    on default-50 makes this gate accidentally fail-safe but is a near-
+    no-op information-wise (removes half the sample, adds little signal
+    -- queued as S4-W8-RSI-NOOP-GATE); (b) the LONG side still uses
+    `s.get("above_avwap_50low", True)` (default-True) which is the same
+    auto-pass class as the pre-B641 SHORT side. Severity-unification
+    with W6/W7 LONG default-True queued as S4-W6-W7-W8-LONG-DEFAULT-
+    TRUE-UNIFY (NOT auto-fixed B641 to avoid two simultaneous direction
+    changes per CHECKLIST (g)).
     """
-    avwap_long_ok = s.get("above_avwap_50low", True)
-    avwap_short_ok = not s.get("above_avwap_50low", False)
+    # B641 F1+F1b: positive symmetric gates on SHORT side (no NOT patterns)
+    avwap_long_ok = s.get("above_avwap_50low", True)   # LATENT: default-True same class as W6/W7 (queued S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)
+    avwap_short_ok = s.get("below_avwap_50low", False)  # B641 F1: positive symmetric
     above_200 = s.get("price_above_ema_200", False)
+    below_200 = s.get("below_ema_200", False)           # B641 F1b: positive symmetric (B630 producer)
     fl = (
         s.get("cpr_narrow") and s.get("above_cpr")
         and s.get("rsi_14", 50) > 50 and avwap_long_ok
@@ -301,15 +356,17 @@ def strat_cpr_narrow_bullish(s):
     fs = (
         s.get("cpr_narrow") and s.get("below_cpr")
         and s.get("rsi_14", 50) < 50 and avwap_short_ok
-        and (not above_200)
+        and below_200
     )
     return _strat3(fl, fs, "pivot",
-        ["cpr_narrow", "above_cpr", "rsi_14>50", "above_avwap_50low"],
-        ["cpr_narrow", "below_cpr", "rsi_14<50", "below_avwap_50low"],
+        ["cpr_narrow", "above_cpr", "rsi_14>50", "above_avwap_50low", "price_above_ema_200"],
+        ["cpr_narrow", "below_cpr", "rsi_14<50", "below_avwap_50low", "below_ema_200"],
         ["Narrow CPR - directional day likely", "Above CPR - bullish daily bias",
-         "RSI above 50", "Above Anchored VWAP (50d low) - institutional reference"],
+         "RSI above 50", "Above Anchored VWAP (50d low) - institutional reference",
+         "Above 200 EMA - long-term uptrend regime"],
         ["Narrow CPR - directional day likely", "Below CPR - bearish daily bias",
-         "RSI below 50", "Below Anchored VWAP (50d low) - distribution"])
+         "RSI below 50", "Below Anchored VWAP (50d low) - distribution (B641 F1 positive symmetric)",
+         "Below 200 EMA - long-term downtrend regime (B641 F1b positive symmetric)"])
 
 
 def strat_camarilla_s3_bounce(s):
@@ -356,13 +413,62 @@ def strat_camarilla_s3_bounce(s):
          "OBV confirming distribution (B628 F1 positive symmetric)"])
 
 
-def strat_camarilla_r3_breakout(s):
-    fl = (s.get("above_cam_r3") and s.get("vol_spike_2x"))
-    fs = (s.get("below_cam_s3") and s.get("vol_spike_2x"))
+def strat_camarilla_r4_breakout(s):
+    """Camarilla R4 breakout / S4 breakdown with volume confirmation.
+
+    Batch 641 (2026-06-09 owner-directed Tier 1 ship via external-AI
+    audit of B640 walk bundle W10):
+      F1 RENAME + RE-ANCHOR -- pre-B641 this strategy was
+      `strat_camarilla_r3_breakout` firing on `above_cam_r3` /
+      `below_cam_s3`. That is a SOURCE-SYSTEM CONTRADICTION: in
+      Camarilla theory (Slim Khan / Nick Scott), R3/S3 are the
+      reversal/fade levels (price reaching them is expected to
+      mean-revert into yesterday's value area); R4/S4 are the
+      breakout levels. Firing LONG above R3 directly contradicts
+      the system this strategy is named after, and creates a
+      same-level opposite-direction conflict with
+      strat_camarilla_s3_bounce (W9): a single bar at R3 with a
+      volume spike could fire W9 SHORT and W10 LONG simultaneously
+      -- portfolio-level contradiction that nets to noise and
+      double costs. B641 re-anchors to R4/S4 (the canonical
+      breakout levels): producer signals `above_cam_r4` /
+      `below_cam_s4` already emitted by compute_pivots
+      (technical.py:134-135 -- BUG-09 RESOLVED-IMPLEMENTED Pass 53
+      symmetric pair). Strategy function renamed from
+      `strat_camarilla_r3_breakout` -> `strat_camarilla_r4
+      _breakout`; registry key renamed `camarilla_r3_breakout` ->
+      `camarilla_r4_breakout`; W9 (camarilla_s3_bounce) keeps R3/S3
+      proximity (correct fade-level usage).
+      F2 - docstring added with Camarilla source citation + B641
+      rename record.
+
+    Fires LONG when BOTH: (a) today's close > Camarilla R4 (the
+    deepest standard resistance; canonical breakout threshold); (b)
+    volume >= 2x 20-day average (institutional buying confirmation).
+    SHORT mirror: close < Camarilla S4 + vol_spike_2x.
+
+    Distinct from strat_camarilla_s3_bounce (W9) which trades
+    MEAN-REVERSION AT R3/S3 (proximity + RSI extreme + OBV flow);
+    this strategy trades BREAKOUT BEYOND R4/S4 with volume. The
+    two strategies now operate at non-overlapping price levels
+    consistent with Camarilla's design: R3=fade, R4=breakout.
+
+    Fire-count projection (independent-product UB): WIDE 2-gate
+    strategy. Per external-AI critique, the independent-product
+    estimate over-counts when gates are correlated -- measured
+    fire rate pending fire-count measurement pass (S5-FIRE-COUNT
+    -MEASURED-RUN, B641 follow-on).
+
+    Camarilla source: Slim Khan / Nick Scott. Levels computed at
+    C +/- Range*1.1/{12, 6, 4, 2} from yesterday's H/L/C; R4/S4
+    are the outermost levels (Range*1.1/2 from C).
+    """
+    fl = (s.get("above_cam_r4") and s.get("vol_spike_2x"))
+    fs = (s.get("below_cam_s4") and s.get("vol_spike_2x"))
     return _strat3(fl, fs, "pivot",
-        ["above_cam_r3","vol_spike_2x"], ["below_cam_s3","vol_spike_2x"],
-        ["Price broke above Camarilla R3  -  breakout mode","Volume 2x confirms institutional buying"],
-        ["Price broke below Camarilla S3  -  breakdown mode","Volume 2x confirms institutional selling"])
+        ["above_cam_r4","vol_spike_2x"], ["below_cam_s4","vol_spike_2x"],
+        ["Price broke above Camarilla R4  -  breakout level (Slim Khan / Nick Scott; B641 re-anchored from R3 misuse)","Volume 2x confirms institutional buying"],
+        ["Price broke below Camarilla S4  -  breakdown level","Volume 2x confirms institutional selling"])
 
 
 def strat_prev_day_high_break(s):
@@ -5444,7 +5550,11 @@ ALL_STRATEGIES = {
     "pivot_r2_continuation":    strat_pivot_r2_continuation,
     "cpr_narrow_bullish":       strat_cpr_narrow_bullish,
     "camarilla_s3_bounce":      strat_camarilla_s3_bounce,
-    "camarilla_r3_breakout":    strat_camarilla_r3_breakout,
+    # B641 W10 (2026-06-09): renamed from camarilla_r3_breakout to
+    # camarilla_r4_breakout per external-AI audit Camarilla source-system
+    # critique. R3 is the fade level (W9 strat_camarilla_s3_bounce uses
+    # it correctly); R4 is the breakout level per Slim Khan / Nick Scott.
+    "camarilla_r4_breakout":    strat_camarilla_r4_breakout,
     "prev_day_high_break":      strat_prev_day_high_break,
     "prev_day_low_bounce":      strat_prev_day_low_bounce,
     # Momentum (9)

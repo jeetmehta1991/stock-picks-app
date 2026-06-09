@@ -1141,3 +1141,103 @@ W1=A W2=D W3=B W4=C W5=D W6=C W7=D W8=B W9=E W10=A
 I'll then ship as B640 batch — one commit per Tier (T1 first since unambiguous, then T2 docs, then T3 judgment items, T4 skipped).
 
 End-of-bundle. Awaiting decisions.
+
+---
+
+# B641 ADDENDUM — Fire-count measurement pass (built 2026-06-09)
+
+> **Why this addendum exists.** The B640 walk bundle above used a fire-count *projection* model — an independent product of marginal gate probabilities. An adversarial review correctly identified that this model is biased in BOTH directions depending on gate-correlation sign: it UNDER-estimates fire rates when gates positively correlate (gates that co-occur by construction at the same setup), and OVER-estimates when gates are negatively correlated or mutually exclusive. Five of the 10 B640 recommendations depended on this number. **The fire-count measurement pass below replaces the projection with measured fires/year against the actual 220-ticker history.** Owner directive 2026-06-09 #1.
+
+## The tool — [`scripts/measure_fire_count.py`](scripts/measure_fire_count.py)
+
+A standalone CLI that:
+1. Loads the T1a PIT universe ([`Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv`](Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv), 614 tickers including 111 delisted-during-window per DEC-477).
+2. Loads Polygon OHLCV daily parquets ([`data_prefetch/polygon/ohlcv_daily/<TICKER>.parquet`](data_prefetch/polygon/ohlcv_daily/)).
+3. **Precomputes signals** at every bar for every ticker exactly ONCE (the key optimization — `compute_all_signals(df_sliced_to_bar)` was the bottleneck; calling it per-strategy was O(n_strategies × n_tickers × n_bars), now O(n_tickers × n_bars)).
+4. **Evaluates each named strategy** against the precomputed signals — every bar, every direction.
+5. **Emits per-strategy results:**
+   - `n_fires_long`, `n_fires_short`, `n_fires_avoid` — raw counts.
+   - `measured_fires_per_calendar_year_total_sampled` — total fires across the sampled tickers divided by calendar-year span.
+   - `projected_fires_per_calendar_year_total_full_t1a` — linearly scaled to the full 220-ticker T1a universe (caveat: assumes sample is representative).
+   - `projected_verdict_full_t1a` — `PASS_CUBE` (≥60/yr), `BORDERLINE` (30-60/yr), `FAIL_FIRE_STARVED` (<30/yr). Threshold matches the cube's `min_trades=30` from `PASSING_CRITERIA`.
+   - `gate_marginals` — observed marginal probability of each gate firing alone.
+   - `gate_pairwise_correlation` — Pearson r between every pair of gates the strategy reads (boolean vectors). **This is the diagnostic that explains WHY the independence assumption was wrong on this strategy.**
+   - `independence_predicted_joint_prob` — product of marginals (what the old estimator assumed).
+   - `independence_predicted_vs_measured_ratio` — predicted/measured. **Ratio ≈ 1.0 means independence held. >1.0 means independence OVER-estimated (gates exclusive). <1.0 means independence UNDER-estimated (gates positively correlated).**
+
+### CLI
+
+```sh
+# 10 B640 strategies, default date range
+python scripts/measure_fire_count.py --b640
+
+# Explicit strategies
+python scripts/measure_fire_count.py --strategies pivot_r1_breakout cpr_narrow_bullish
+
+# Fast smoke (cap ticker count)
+python scripts/measure_fire_count.py --b640 --max-tickers 20 --start 2022-01-01 --end 2024-12-31
+
+# Full universe across all 222 strategies (long-running ~hours)
+python scripts/measure_fire_count.py --all
+```
+
+## Smoke run results — 20 T1a tickers × 2022-2024 (3 years)
+
+Run on 2026-06-09 ([`output_audit/fire_count_measured_2024-12-31.json`](output_audit/fire_count_measured_2024-12-31.json)):
+
+| Strategy | Measured fires/yr (20-ticker sample) | Projected fires/yr (× 11 to full T1a) | Projected verdict | Independence ratio | Bias direction |
+|---|---:|---:|---|---:|---|
+| `bullish_engulfing_support` | 30.69 | **337.6** | PASS_CUBE | **0.001** | UNDER-est by 1000× |
+| `shooting_star_short` | 12.68 | **139.4** | PASS_CUBE | 2.092 | OVER-est by 2× |
+| `pivot_s1_bounce` | 20.01 | **220.2** | PASS_CUBE | **0.002** | UNDER-est by 500× |
+| `pivot_s2_bounce` | 2.00 | **22.0** | **FAIL_FIRE_STARVED** | 9.853 | OVER-est by 10× |
+| `pivot_s3_capitulation` | 1.33 | **14.7** | **FAIL_FIRE_STARVED** | **92.0** | OVER-est by 92× |
+| `pivot_r1_breakout` | 83.39 | **917.3** | PASS_CUBE | **0.002** | UNDER-est by 500× |
+| `pivot_r2_continuation` | 6.00 | **66.0** | PASS_CUBE | 0.0 | UNDER-est (predicted ~0) |
+| `cpr_narrow_bullish` | 1,427.98 | **15,707.8** | PASS_CUBE | 0.028 | UNDER-est by 35× |
+| `camarilla_s3_bounce` | 4.00 | **44.0** | BORDERLINE | 31.745 | OVER-est by 32× |
+| `camarilla_r4_breakout` | 90.06 | **990.7** | PASS_CUBE | 0.075 | UNDER-est by 13× |
+
+## Reconciliation with B640's projected verdicts
+
+| Strategy | B640 projection | B640 verdict | **B641 measured (projected)** | **B641 verdict** | Status |
+|---|---:|---|---:|---|---|
+| W1 `bullish_engulfing_support` | ~83/yr | PASS | **337.6** | PASS | Both agree direction; measurement higher |
+| **W2** `shooting_star_short` | ~25-66/yr | **FAIL** | **139.4** | **PASS** | **B640 verdict REVERSED** — was guess; measured is well above 30 |
+| W3 `pivot_s1_bounce` | ~92/yr | PASS | **220.2** | PASS | Agree; measured 2.4× higher |
+| **W4** `pivot_s2_bounce` | ~28/yr | BORDERLINE-FAIL | **22.0** | **FAIL** | Confirmed FAIL; measured very close to projection |
+| **W5** `pivot_s3_capitulation` | ~14/yr | **FAIL** | **14.7** | **FAIL** | Confirmed FAIL — only B640 FAIL where projection landed right |
+| **W6** `pivot_r1_breakout` | ~5/yr | **FAIL** | **917.3** | **PASS** | **B640 verdict REVERSED** — independence under-counted by 500× |
+| **W7** `pivot_r2_continuation` | ~2/yr | **FAIL** | **66.0** | **PASS** (borderline) | **B640 verdict REVERSED** — independence under-counted |
+| **W8** `cpr_narrow_bullish` | ~13/yr | **FAIL** | **15,707.8** | **PASS** | **B640 verdict REVERSED** — by 1200× |
+| W9 `camarilla_s3_bounce` | ~30/yr | borderline PASS | **44.0** | BORDERLINE | Agree borderline; measured slightly higher |
+| W10 `camarilla_r4_breakout` | ~166/yr (on R3 misuse) | PASS | **990.7** | PASS | Agree; W10 is now correctly anchored to R4 post-B641 rename |
+
+**4 of the 5 B640 FAIL_FIRE_STARVED labels were wrong** (W2, W6, W7, W8). The B641 measured numbers reclassify them all as PASS_CUBE. The B640 recommendations that depended on those labels (loosen / defer based on insufficient fires) would have been the wrong actions — they were attempting to fix non-problems.
+
+**Only W5 (capitulation) confirms as genuinely fire-starved** (15/yr). This is the strategy the adversarial reviewer warned about for an entirely different reason (no reversal confirmation + survivorship bias) — the fire count just happens to also be too low. Owner directive #5 is for a redesign next turn, which is the correct call independent of fire count.
+
+**W4 (pivot_s2_bounce) confirms borderline FAIL at 22/yr** — the projection landed close to the measurement. Pre-B641 it was a 3-gate AND on rsi<40 + bullish-engulfing/hammer + near_s2; the gates are mildly positively correlated (oversold-at-deep-support is a co-occurring setup) but the near_s2 proximity threshold is the rate-limiting gate. Confirmed FAIL.
+
+## What the independence ratio is telling us
+
+The ratio = `independence_predicted_joint_prob / measured_joint_prob`.
+
+- **Ratio ≪ 1.0** (W1/W3/W6/W7/W8/W10): gates are **positively correlated** by construction. At the strategy's intended setup, multiple gates fire together — that's what the strategy is detecting. Examples:
+  - `cpr_narrow_bullish`: at a narrow-CPR day with established uptrend (above_200_ema), `above_cpr` + `rsi>50` + `above_avwap_50low` all co-occur because they're all measuring the same trending day from different angles. Independence treats them as separate coin flips; reality has them locked together.
+  - `pivot_r1_breakout`: at a real breakout, `above_r1` + `vol_spike_15x` + `macd_bullish` + `above_avwap_*` all fire together because they're co-symptoms of breakout. Independence under-estimates by 500×.
+
+- **Ratio ≫ 1.0** (W2/W4/W5/W9): gates are **negatively correlated or extreme-rare**. The strategy requires events that almost never coincide:
+  - `pivot_s3_capitulation`: needs simultaneous near_s3 (0.3% proximity to deepest support — extreme price extension) + rsi<30 (canonical oversold) + vol_spike_2x (panic volume). In reality these DO co-occur on capitulation days, but capitulation days are extremely rare; the independence product over-estimates because it treats "near_s3" as an everyday signal at marginal rate ~0.005 when in fact when it's True the other gates are usually also True at the SAME bar — but the bar itself is rare. The 92× over-estimate reflects how rare those bars are vs the marginal rates suggest.
+  - `camarilla_s3_bounce`: similar — 0.3% proximity to a daily-recomputed level is rare independent of RSI.
+
+The methodology takeaway: **gate correlation tells you whether the strategy's gates measure the same thing (correlated → strategy works) or different things (uncorrelated → strategy is asking for coincidence)**. Highly-correlated gate sets are usually well-designed; highly-uncorrelated ones are over-constrained.
+
+## Operational handling going forward
+
+1. **Every future walk uses the measurement pass, not the independence product.** Estimator stays in repo as a quick screen but its verdict labels are no longer authoritative; CHECKLIST (k) updated to require a measured run before a fire-count finding ships.
+2. **B641 retro-corrects B640 verdicts** for W2/W6/W7/W8 — those FAIL_FIRE_STARVED labels are wrong; the loosen/defer recommendations they drove are mooted. Their underlying design questions (B271 affinity / AVWAP default asymmetry / NOT-pattern silent-gap / OBV-vs-location) remain valid and are queued separately.
+3. **W5 reversal-confirmation redesign** (owner directive #5, next turn) proceeds independent of fire count — the strategy is structurally a knife-catch + 14.7/yr is also too few.
+4. **Full universe + full date range** (~220 tickers × 6 years × 221 strategies) is a backgroundable batch run; queued as S5-FIRE-COUNT-MEASURED-RUN. The smoke above (20 tickers × 3 years) is a proof-of-concept; the full run gives confidence intervals.
+
+End of B641 addendum.

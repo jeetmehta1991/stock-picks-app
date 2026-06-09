@@ -962,7 +962,8 @@ STRATEGIES_BYPASS_EVENT_SUPPRESSION: set[str] = {
 #     williams_stoch_dual.
 #   - Plain MACD crossover (Hudson-Atanasova-Urquhart 2022 IRFA null):
 #     macd_crossover, macd_crossover_short.
-#   - Camarilla R3/S3 plain heuristic (Marshall-Cahan 2008): camarilla_r3_breakout,
+#   - Camarilla R3/S3 plain heuristic (Marshall-Cahan 2008): camarilla_r4_breakout
+#     (B641 W10 renamed from camarilla_r3_breakout per source-system re-anchor),
 #     camarilla_s3_bounce.
 DEPRECATED_STRATEGIES: set[str] = set()
 
