@@ -85,6 +85,17 @@ def compute_pivots(df: pd.DataFrame) -> dict:
     cpr_bottom = P
     cpr_width  = abs(cpr_top - cpr_bottom)
     cpr_narrow = (cpr_width < rng * 0.15) if rng > 0 else False
+    # B654 (2026-06-09 owner-directed W8 redundancy-audit option B-local):
+    # narrow B574-style variant for strat_cpr_narrow_bullish ONLY.
+    # Pre-B654 W8 used cpr_narrow at 0.15 threshold which fires 87.3% of bars
+    # (per B648 random-30 measurement) -- a near-no-op filter that defeats
+    # the "narrow CPR predicts directional day" thesis. Tightening to 0.05
+    # restores the "narrow" semantics. Per feedback_narrow_scope_blast
+    # _radius: applied as producer-additive (cpr_narrow stays unchanged
+    # at 0.15 for the other two consumers, strat_cpr_narrow_momentum
+    # and strat_cpr_narrow_momentum_short, which retain their B574-era
+    # walk-time-decided loose threshold pending their own re-walks).
+    cpr_narrow_tight = (cpr_width < rng * 0.05) if rng > 0 else False
 
     # -- Camarilla --
     cr4 = C + rng*1.1/2;  cr3 = C + rng*1.1/4
@@ -104,6 +115,8 @@ def compute_pivots(df: pd.DataFrame) -> dict:
         # CPR
         "cpr_top": round(cpr_top,4), "cpr_bottom": round(cpr_bottom,4),
         "cpr_width": round(cpr_width,4), "cpr_narrow": cpr_narrow,
+        # B654: producer-additive tight variant consumed by W8 only
+        "cpr_narrow_tight": cpr_narrow_tight,
         # Camarilla
         "cam_r4": round(cr4,4), "cam_r3": round(cr3,4),
         "cam_r2": round(cr2,4), "cam_r1": round(cr1,4),

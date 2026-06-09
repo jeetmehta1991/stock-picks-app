@@ -9277,11 +9277,16 @@ def test_batch205_cpr_narrow_bullish_avwap_gate():
     """Batch 205: cpr_narrow_bullish requires above_avwap_50low for long.
 
     Batch 358 update: long also requires price_above_ema_200 (bear-block
-    per cell-audit Bucket B). Fixture extended."""
+    per cell-audit Bucket B). Fixture extended.
+
+    Batch 654 update (W8 redundancy-audit option B-local): switched
+    `cpr_narrow` -> `cpr_narrow_tight` (0.05 threshold local variant)
+    + dropped no-op rsi_14 gate. Fixture updated to use cpr_narrow_tight
+    and omit rsi_14."""
     from backtest.signals.screener import strat_cpr_narrow_bullish
     s = {
-        "cpr_narrow": True, "above_cpr": True, "below_cpr": False,
-        "rsi_14": 55, "above_avwap_50low": False,
+        "cpr_narrow_tight": True, "above_cpr": True, "below_cpr": False,
+        "above_avwap_50low": False,
         "price_above_ema_200": True,  # Batch 358 gate satisfied
     }
     r = strat_cpr_narrow_bullish(s)

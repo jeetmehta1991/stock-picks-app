@@ -187,10 +187,11 @@ def test_batch641_w8_short_no_not_pattern():
 
 
 def test_batch641_w8_short_fires_with_positive_symmetric():
-    """Pin (11)."""
+    """Pin (11) -- B654 updated: cpr_narrow -> cpr_narrow_tight; rsi
+    gate dropped per S4-W8-RSI-NOOP-GATE closure."""
     from backtest.signals.screener import strat_cpr_narrow_bullish
     s = {
-        "cpr_narrow": True, "below_cpr": True, "rsi_14": 40,
+        "cpr_narrow_tight": True, "below_cpr": True,
         "below_avwap_50low": True, "below_ema_200": True,
     }
     out = strat_cpr_narrow_bullish(s)
@@ -198,11 +199,75 @@ def test_batch641_w8_short_fires_with_positive_symmetric():
 
 
 def test_batch641_w8_short_blocked_when_keys_missing():
-    """Pin (12): both new positive gates default-False -> fail-safe."""
+    """Pin (12) -- B654 updated: both new positive gates default-False -> fail-safe."""
     from backtest.signals.screener import strat_cpr_narrow_bullish
-    s = {"cpr_narrow": True, "below_cpr": True, "rsi_14": 40}
+    s = {"cpr_narrow_tight": True, "below_cpr": True}
     # no below_avwap_50low, no below_ema_200 -- must NOT auto-pass
     assert strat_cpr_narrow_bullish(s)["fires"] is False
+
+
+def test_batch654_w8_uses_cpr_narrow_tight_not_loose():
+    """B654: W8 now requires cpr_narrow_tight (0.05 threshold local
+    variant), NOT cpr_narrow (0.15 loose variant which fires 87% of
+    bars per B648 random-30 measurement). Verifying the loose signal
+    alone doesn't fire W8 even when other gates are True."""
+    from backtest.signals.screener import strat_cpr_narrow_bullish
+    s = {
+        "cpr_narrow": True,         # loose 0.15 -- pre-B654 trigger
+        # NO cpr_narrow_tight       # missing -> default False
+        "above_cpr": True,
+        "above_avwap_50low": True,
+        "price_above_ema_200": True,
+    }
+    # Pre-B654 this would have fired LONG; post-B654 must NOT fire
+    # because the strategy now requires the tighter signal.
+    assert strat_cpr_narrow_bullish(s)["fires"] is False, (
+        "B654 regression: W8 still consumes loose cpr_narrow"
+    )
+
+
+def test_batch654_w8_long_fires_on_cpr_narrow_tight():
+    """B654 LONG path with tight CPR + all other gates."""
+    from backtest.signals.screener import strat_cpr_narrow_bullish
+    s = {
+        "cpr_narrow_tight": True,
+        "above_cpr": True,
+        "above_avwap_50low": True,
+        "price_above_ema_200": True,
+    }
+    out = strat_cpr_narrow_bullish(s)
+    assert out["fires"] is True and out["direction"] == "long"
+
+
+def test_batch654_w8_no_longer_uses_rsi_gate():
+    """B654: rsi_14>50/<50 dropped per S4-W8-RSI-NOOP-GATE closure
+    (rsi midpoint on default-50 was a no-op). Verify by firing with
+    rsi_14=50 (boundary value pre-B654 would have failed both >50 and
+    <50 strict checks); post-B654 the strategy doesn't read rsi so the
+    fire-state depends only on the other gates."""
+    from backtest.signals.screener import strat_cpr_narrow_bullish
+    s = {
+        "cpr_narrow_tight": True, "above_cpr": True,
+        "above_avwap_50low": True, "price_above_ema_200": True,
+        "rsi_14": 50,  # boundary value
+    }
+    # Must fire LONG -- rsi_14=50 doesn't block since the gate is gone
+    out = strat_cpr_narrow_bullish(s)
+    assert out["fires"] is True
+    # Also verify the strategy executable code no longer reads rsi_14.
+    # We check for the actual gate-read patterns (`s.get("rsi_14"...)`),
+    # not the string "rsi_14" alone, because comments + docstring may
+    # reference rsi_14 historically.
+    import inspect
+    src = inspect.getsource(strat_cpr_narrow_bullish)
+    parts = src.split('"""')
+    body = "".join(parts[2:]) if len(parts) >= 3 else src
+    # Strip comment lines (lines whose first non-whitespace is `#`)
+    code_lines = [ln for ln in body.splitlines() if not ln.strip().startswith("#")]
+    code = "\n".join(code_lines)
+    assert 's.get("rsi_14"' not in code, (
+        "B654 regression: rsi_14 gate-read still in W8 executable code"
+    )
 
 
 # =================== W10 R3 -> R4 rename ===================
@@ -315,7 +380,9 @@ def test_batch641_execution_queue_13_new_tickets():
 
 # =================== Strategy count unchanged ===================
 
-def test_batch641_all_strategies_count_221_unchanged():
-    """W10 rename is net-zero count change; no Class 7 NEW wired this batch."""
+def test_batch641_all_strategies_count_now_222_post_b645():
+    """W10 rename was net-zero count change in B641; B645 wired W5
+    mirror Class 7 NEW so count is 222 post-B645+. B654 (W8 redundancy
+    fix) is also net-zero count change."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 222

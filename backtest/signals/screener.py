@@ -527,39 +527,68 @@ def strat_cpr_narrow_bullish(s):
         Replaced with explicit `s.get("below_ema_200", False)` (B630
         producer-additive symmetric to price_above_ema_200).
 
-    OPEN: external-AI audit surfaced (a) rsi>50/<50 strict-inequality
-    on default-50 makes this gate accidentally fail-safe but is a near-
-    no-op information-wise (removes half the sample, adds little signal
-    -- queued as S4-W8-RSI-NOOP-GATE); (b) the LONG side still uses
-    `s.get("above_avwap_50low", True)` (default-True) which is the same
-    auto-pass class as the pre-B641 SHORT side. Severity-unification
-    with W6/W7 LONG default-True queued as S4-W6-W7-W8-LONG-DEFAULT-
-    TRUE-UNIFY (NOT auto-fixed B641 to avoid two simultaneous direction
-    changes per CHECKLIST (g)).
+    Batch 654 (2026-06-09 owner-directed W8 redundancy-audit option
+    B-local per 2nd-wave external-AI critique #2 corrected methodology):
+
+    PRE-B654 the strategy had 5 STATE-mostly gates per direction. B648
+    random-30 measurement showed 34,000/yr universe-wide fires (~48
+    per ticker per year, i.e. firing every ~5 trading days). Per-gate
+    marginal-rate audit revealed:
+      * cpr_narrow at 0.15-threshold = 87.3% True (NEAR-NO-OP filter)
+      * rsi_14>50/<50 strict-inequality on default-50 = ~50% True (near
+        no-op; already queued S4-W8-RSI-NOOP-GATE)
+      * Effective strategy was ~"any uptrending day" (3 distinct gates:
+        above_cpr + above_avwap_50low + price_above_ema_200) with two
+        no-op gates providing false-precision camouflage.
+
+    B654 FIX (option B-local per feedback_narrow_scope_blast_radius):
+      - NEW producer `cpr_narrow_tight` in compute_pivots
+        (`cpr_width < rng * 0.05`; B574-style local variant) -- W8
+        ONLY switches to consume the tighter signal. The two other
+        consumers `strat_cpr_narrow_momentum` and `strat_cpr_narrow
+        _momentum_short` retain their existing 0.15 threshold pending
+        their own walks.
+      - Dropped rsi_14>50/<50 from both directions (closes
+        S4-W8-RSI-NOOP-GATE; rsi midpoint is a no-op).
+      - Post-B654 gate set: 3 distinct gates per direction.
+        LONG:  cpr_narrow_tight + above_cpr + above_avwap_50low + price_above_ema_200
+        SHORT: cpr_narrow_tight + below_cpr + below_avwap_50low + below_ema_200
+      - Strategy is now properly "narrow CPR setup + above-pivot directional + uptrend regime" -- the docstring matches the implementation honestly.
+
+    OPEN (unchanged): the LONG side `above_avwap_50low` still defaults
+    True (S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY queued); fire-count
+    measurement re-run pending (expected ~10-15k/yr post-B654 down
+    from 34k/yr; threshold-tightening should remove the no-op
+    contribution).
     """
     # B641 F1+F1b: positive symmetric gates on SHORT side (no NOT patterns)
     avwap_long_ok = s.get("above_avwap_50low", True)   # LATENT: default-True same class as W6/W7 (queued S4-W6-W7-W8-LONG-DEFAULT-TRUE-UNIFY)
     avwap_short_ok = s.get("below_avwap_50low", False)  # B641 F1: positive symmetric
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)           # B641 F1b: positive symmetric (B630 producer)
+    # B654: switched cpr_narrow -> cpr_narrow_tight (0.05 threshold;
+    # local variant only consumed by this strategy) + dropped no-op
+    # rsi_14>50/<50 strict-inequality gates per S4-W8-RSI-NOOP-GATE.
     fl = (
-        s.get("cpr_narrow") and s.get("above_cpr")
-        and s.get("rsi_14", 50) > 50 and avwap_long_ok
+        s.get("cpr_narrow_tight") and s.get("above_cpr")
+        and avwap_long_ok
         and above_200
     )
     fs = (
-        s.get("cpr_narrow") and s.get("below_cpr")
-        and s.get("rsi_14", 50) < 50 and avwap_short_ok
+        s.get("cpr_narrow_tight") and s.get("below_cpr")
+        and avwap_short_ok
         and below_200
     )
     return _strat3(fl, fs, "pivot",
-        ["cpr_narrow", "above_cpr", "rsi_14>50", "above_avwap_50low", "price_above_ema_200"],
-        ["cpr_narrow", "below_cpr", "rsi_14<50", "below_avwap_50low", "below_ema_200"],
-        ["Narrow CPR - directional day likely", "Above CPR - bullish daily bias",
-         "RSI above 50", "Above Anchored VWAP (50d low) - institutional reference",
+        ["cpr_narrow_tight", "above_cpr", "above_avwap_50low", "price_above_ema_200"],
+        ["cpr_narrow_tight", "below_cpr", "below_avwap_50low", "below_ema_200"],
+        ["Narrow CPR (0.05 tight; B654 redundancy-fix) - directional day likely",
+         "Above CPR - bullish daily bias",
+         "Above Anchored VWAP (50d low) - institutional reference",
          "Above 200 EMA - long-term uptrend regime"],
-        ["Narrow CPR - directional day likely", "Below CPR - bearish daily bias",
-         "RSI below 50", "Below Anchored VWAP (50d low) - distribution (B641 F1 positive symmetric)",
+        ["Narrow CPR (0.05 tight; B654 redundancy-fix) - directional day likely",
+         "Below CPR - bearish daily bias",
+         "Below Anchored VWAP (50d low) - distribution (B641 F1 positive symmetric)",
          "Below 200 EMA - long-term downtrend regime (B641 F1b positive symmetric)"])
 
 
