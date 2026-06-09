@@ -277,6 +277,18 @@ def strat_pivot_s3_capitulation(s):
     direction strategy). Capitulation-buy fits down/crisis regimes
     (no capitulation in bull).
 
+    STATUS POST-B643: EXPLORATORY (per owner directive W5-i 2026-06-09).
+    Measurement pass shipped same day produced 18.3/yr universe-wide
+    fire rate -- BELOW min_trades=30 PASSING_CRITERIA threshold. Owner
+    decision: ship the correctness fix; do NOT loosen gates pre-cube
+    to chase the threshold. Stage 5 cube empirically validates whether
+    18/yr fires produce alpha at sufficient statistical power (rare-
+    but-strong signals can be valuable even below the n=30 power floor;
+    Bonferroni-corrected significance is a separate gate). If cube
+    shows positive expectancy + acceptable max-drawdown, the strategy
+    is kept low-frequency. If cube shows the fires are noise, mark
+    deprecated post-cube.
+
     OPEN (deferred): per S4-SURVIVORSHIP-T1A-VERIFY ticket, this
     strategy's expectancy is left-tail-dominated -- backtest validity
     depends on T1a PIT universe including delisted-during-window
