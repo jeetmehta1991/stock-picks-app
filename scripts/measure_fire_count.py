@@ -373,13 +373,40 @@ def measure_strategies(
     # PRECOMPUTE signals across all (ticker, bar) ONCE; reuse across all strategies.
     # This is the key speedup: compute_all_signals is expensive (~50ms/call) and
     # was previously called n_strategies times per (ticker, bar). Now called once.
+    # B665 follow-up post-B660-crash-triage: added per-ticker progress logging
+    # (every 25 tickers) + per-ticker try/except for crash-diagnosis traceback.
+    # Pre-fix the loop ran silently for 503 tickers x ~1200 bars; a crash mid-
+    # loop produced 4 hours of silence with no error indication. Per-25 progress
+    # logs let the operator see whether the run is alive, and the try/except
+    # surfaces the ticker that crashes if any single-ticker compute fails.
     t_pre = time.time()
     signals_cache: dict[str, list[tuple[date, dict]]] = {}
+    n_tickers_total = len(ohlcv_cache)
+    n_done = 0
     for ticker, df in ohlcv_cache.items():
-        signals_cache[ticker] = _precompute_signals_for_ticker(df, ticker, start, end)
+        try:
+            signals_cache[ticker] = _precompute_signals_for_ticker(df, ticker, start, end)
+        except Exception as exc:
+            import traceback
+            logger.error(
+                "Signal precompute CRASHED on ticker=%s (after %d of %d done; %.1fs elapsed); traceback below; continuing with empty signals for this ticker",
+                ticker, n_done, n_tickers_total, time.time() - t_pre,
+            )
+            logger.error("Traceback:\n%s", traceback.format_exc())
+            signals_cache[ticker] = []
+        n_done += 1
+        if n_done % 25 == 0 or n_done == n_tickers_total:
+            elapsed = time.time() - t_pre
+            rate = n_done / elapsed if elapsed > 0 else 0
+            eta_sec = (n_tickers_total - n_done) / rate if rate > 0 else 0
+            logger.info(
+                "Signal precompute progress: %d / %d tickers done (%.1f%%); %.1fs elapsed; %.2f tickers/sec; ETA %.0fs",
+                n_done, n_tickers_total, 100.0 * n_done / n_tickers_total,
+                elapsed, rate, eta_sec,
+            )
     n_signal_evals = sum(len(v) for v in signals_cache.values())
     logger.info(
-        "Signal precompute: %d total (ticker, bar) signal-dicts cached (%.1fs)",
+        "Signal precompute COMPLETE: %d total (ticker, bar) signal-dicts cached (%.1fs)",
         n_signal_evals, time.time() - t_pre,
     )
 
