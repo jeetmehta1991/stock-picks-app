@@ -4389,21 +4389,66 @@ def strat_institutional_buy_momentum_long(s):
          "Above 50 EMA (intermediate trend gate)"])
 
 
-def strat_institutional_distribution_short(s):
-    """Wave 3 (Batch 330): institutional distribution short.
-    13F shows institutional_signal=='negative' (decreased > increased)
-    AND price below 50-EMA (trend agrees with distribution). Sias 2004
-    JFE: institutional herding extends to selling; combined with bearish
-    price trend = continuation short setup."""
-    fires = (
-        s.get("institutional_negative", False)
-        and s.get("below_ema_50", False)  # B633 sweep
-    )
-    return _strat(fires, "short", "smart_money_13f",
-        ["institutional_negative","price_below_ema_50"],
-        ["13F institutional distribution (decreased > increased)",
-         "Sias 2004 JFE - institutional selling herds",
-         "Below 50 EMA - trend agrees"])
+# SM-9 strat_institutional_distribution_short DELETED Batch 670 (2026-06-10
+# owner-approved per STAGE_4_SMART_MONEY_CLUSTER_WALKS.md B669 cluster-walk
+# critique reviewer F2 + Pattern C STRENGTHENED disposition).
+#
+# DELETION RATIONALE:
+#   - 13F is SEC long-only by rule (Cohen-Frazzini-Malloy 2008 RFS documents
+#     long-side institutional accumulation; NO analog for trimming-as-bear-
+#     signal)
+#   - `institutional_negative` (decreased > increased) means institutions
+#     trimmed LONGS for rebalancing/redemption/tax-loss/profit-taking,
+#     NOT that smart money is short
+#   - 13F is quarterly STATE with DEC-325 45-day filing lag = eligibility
+#     filter, NOT bar-of-fire timing signal
+#   - The empirical engine (Stage-D cube) is structurally BLIND to the
+#     falseness because survivorship gap (C5, still open) + cost-borrow
+#     gap (C6, still open) mask the cases that would expose it
+#   - `project_no_apriori_strategy_pruning` was misapplied here per
+#     reviewer F2: the prior is a regulatory fact (13F SEC long-only)
+#     not a guess; the no-pruning rule's purpose is to prevent premature
+#     deletion on weak priors
+#
+# PRECEDENT: B611 deletion of strat_institutional_breakdown_confirmation_short
+# established the same data-source-asymmetry deletion criterion on a
+# structurally identical strategy. B669 reviewer F2 argued the B611
+# precedent applies; owner approved deletion in B670.
+#
+# REPLACEMENT: Class 7 NEW strat_simple_below_ema_50_short below preserves
+# the only gate that was actually doing discriminative work (below_ema_50)
+# without the 13F-trim-disguise. Registered in `momentum_trend` category;
+# does NOT belong to smart money cluster.
+#
+# CITATION RETRACTION: the Sias 2004 + Lo-Wang 2000 citations in the
+# deleted SM-9 docstring were citation-overreach (Pattern F7 honesty
+# class) - those papers document realized-trading institutional herding
+# with observable seller motive, NOT 13F position-delta filings. The
+# Class 7 NEW replacement below does NOT carry those citations.
+
+
+def strat_simple_below_ema_50_short(s):
+    """Batch 670 (2026-06-10) Class 7 NEW: clean SHORT replacement for
+    deleted SM-9 strat_institutional_distribution_short per owner-
+    approved cluster-walk critique disposition.
+
+    Fires SHORT when:
+      below_ema_50 (trend agreement; only gate that was actually doing
+                    discriminative work in deleted SM-9)
+
+    Registered in `momentum_trend` category; does NOT belong to smart
+    money cluster (no smart-money data dependency). Pure-technical SHORT
+    that honestly describes its thesis: trend continuation when price is
+    below the 50-EMA.
+
+    Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
+    No regime entry needed; trend-following SHORT naturally fits the
+    direction-aware default.
+    """
+    fires = s.get("below_ema_50", False)
+    return _strat(fires, "short", "momentum_trend",
+        ["below_ema_50"],
+        ["Price below 50 EMA -- trend continuation SHORT"])
 
 
 # Wave 3 13F Batch 331 (2026-05-25): 4 additional 13F-driven strategies
@@ -4961,54 +5006,63 @@ def strat_institutional_strong_conviction_long(s):
          "Above 200 EMA (regime gate)"])
 
 
-def strat_institutional_capitulation_short(s):
-    """Wave 3 (Batch 333): institutional distribution + volume spike
-    (capitulation signature).
+# SM-23 strat_institutional_capitulation_short DELETED Batch 670 (2026-06-10
+# owner-approved per STAGE_4_SMART_MONEY_CLUSTER_WALKS.md B669 cluster-walk
+# critique reviewer F2 + F3 + Pattern C STRENGTHENED disposition).
+#
+# DELETION RATIONALE (same as SM-9 deletion above):
+#   - Same Pattern C data-source-asymmetry as SM-9 (13F SEC long-only by
+#     rule; institutional_negative != bear conviction)
+#   - Same B611 deletion precedent applies
+#   - Same cube-blindness argument (C5 survivorship + C6 cost-borrow
+#     still open; cube can't detect the falseness)
+#   - Additionally per reviewer F3: SM-23 had a NAME-vs-THESIS
+#     contradiction (name "capitulation_short" implies contrarian-
+#     bottom; implementation is momentum-continuation SHORT). B669
+#     docstring fix added THESIS-vs-NAME DISAMBIGUATION block; B670
+#     deletion supersedes that fix and renders the rename question moot.
+#
+# REPLACEMENT: Class 7 NEW strat_vol_spike_2x_below_ema_50_short below
+# preserves the actual tape-capitulation signal (vol_spike_2x +
+# below_ema_50) that was doing real discriminative work in deleted
+# SM-23, without the 13F-trim noise that Pattern C identified as
+# economically false. Registered in `momentum_trend` category; does NOT
+# belong to smart money cluster.
+#
+# CITATION RETRACTION: same Sias 2004 + Lo-Wang 2000 citation-overreach
+# (Pattern F7 honesty class) as deleted SM-9; not carried forward to
+# the Class 7 NEW replacement.
 
-    THESIS-vs-NAME DISAMBIGUATION (B669 owner-directed external-AI
-    critique #3 walk fix 2026-06-10): the name "capitulation_short" is
-    misleading because "capitulation" usually implies BOTTOM-FORMING
-    (contrarian-buy). This strategy is the OPPOSITE: MOMENTUM-
-    CONTINUATION SHORT that sells INTO the wash-out. Reading order:
-      - 13F institutional_negative = quarterly STATE; institutions
-        have been net-trimming this name (rebalancing, tax-loss,
-        redemptions per B611 lesson + Pattern C data-source asymmetry)
-      - vol_spike_2x = retail tape participating today
-      - below_ema_50 = the trend is already down
-    Combined thesis: institutions trimming + retail dumping + downtrend
-    = sell-the-wash-out continuation play. NOT a contrarian bottom.
 
-    Per `feedback_local_changes_default_global_needs_approval`: rename
-    to `strat_institutional_distribution_with_volume_short` (clearer
-    momentum-continuation framing) is a separate B-N decision requiring
-    explicit owner approval (renames cascade through tests, dashboards,
-    cube outputs); current B669 ship is docstring honesty only.
+def strat_vol_spike_2x_below_ema_50_short(s):
+    """Batch 670 (2026-06-10) Class 7 NEW: clean SHORT replacement for
+    deleted SM-23 strat_institutional_capitulation_short per owner-
+    approved cluster-walk critique disposition.
 
-    Sias 2004 + Lo-Wang 2000: institutional selling under elevated
-    retail volume = price discovery on the way down. Distinct from
-    Batch 330's institutional_distribution_short by adding the
-    volume-confirmation gate.
+    Fires SHORT when ALL TWO:
+      vol_spike_2x  (volume >= 2x 20-day average; EVENT - today's
+                     volume confirming retail tape participation)
+      below_ema_50  (trend agreement; STATE - price below 50-EMA
+                     confirms downtrend continuation context)
 
-    Pattern C data-source-asymmetry caveat (B669 cluster walk per
-    feedback_asymmetric_data_sources_break_mechanical_inverse + B611
-    precedent): 13F is SEC long-only by rule; `institutional_negative`
-    represents trimming (rebalancing/tax/redemption dominated), NOT
-    bear conviction. The B611 deletion precedent on
-    strat_institutional_breakdown_confirmation_short established this
-    structurally identical pattern as economically false. SM-9 + SM-23
-    (this strategy) deletion question is the open item under
-    `S4-B664-PATTERN-C-SHORT-DATA-SOURCE-ASYMMETRY-CAVEAT` per the
-    cluster walk; owner decision required."""
+    Thesis: tape-capitulation continuation SHORT - retail dumping into
+    downtrend = sell-the-wash-out trade. Honest 2-gate framing of what
+    deleted SM-23's vol_spike + below_ema_50 gates were actually doing
+    (the 13F-trim gate was Pattern C noise per cluster-walk Step 7).
+
+    Registered in `momentum_trend` category; does NOT belong to smart
+    money cluster (no smart-money data dependency).
+
+    Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
+    """
     fires = (
-        s.get("institutional_negative", False)
-        and s.get("vol_spike_2x", False)
-        and s.get("below_ema_50", False)  # B633 sweep
+        s.get("vol_spike_2x", False)
+        and s.get("below_ema_50", False)
     )
-    return _strat(fires, "short", "institutional_persistence",
-        ["institutional_negative","vol_spike_2x","price_below_ema_50"],
-        ["13F institutional distribution (decreased > increased)",
-         "Volume 2x ADV - retail tape participating in distribution",
-         "Below 50 EMA - capitulation signature"])
+    return _strat(fires, "short", "momentum_trend",
+        ["vol_spike_2x", "below_ema_50"],
+        ["Volume 2x 20-day average -- retail tape participating in dump",
+         "Price below 50 EMA -- downtrend continuation context"])
 
 
 # Wave 3 Batch 336 (2026-05-25): 3 more 13F + 1 more persistence strategies
@@ -6128,7 +6182,10 @@ ALL_STRATEGIES = {
     # increased to per-ticker signals dict.
     "institutional_cluster_long":        strat_institutional_cluster_long,
     "institutional_buy_momentum_long":   strat_institutional_buy_momentum_long,
-    "institutional_distribution_short":  strat_institutional_distribution_short,
+    # SM-9 strat_institutional_distribution_short DELETED Batch 670 per cluster-
+    # walk reviewer F2 + Pattern C deletion disposition. Replaced by Class 7 NEW
+    # strat_simple_below_ema_50_short registered below in momentum_trend section.
+    "simple_below_ema_50_short":         strat_simple_below_ema_50_short,
     # Wave 3 Batch 331 (2026-05-25): 4 more 13F-driven strategies combining
     # the producer signal with complementary entry triggers (RSI oversold,
     # break-retest, insider co-confirmation, volume spike).
@@ -6163,7 +6220,11 @@ ALL_STRATEGIES = {
     # precompute queued as Batch 333b.
     "institutional_persistent_holders_long":  strat_institutional_persistent_holders_long,
     "institutional_strong_conviction_long":   strat_institutional_strong_conviction_long,
-    "institutional_capitulation_short":       strat_institutional_capitulation_short,
+    # SM-23 strat_institutional_capitulation_short DELETED Batch 670 per
+    # cluster-walk reviewer F2 + F3 + Pattern C deletion disposition. Replaced
+    # by Class 7 NEW strat_vol_spike_2x_below_ema_50_short registered below in
+    # momentum_trend section.
+    "vol_spike_2x_below_ema_50_short":        strat_vol_spike_2x_below_ema_50_short,
     # Wave 3 Batch 336 (2026-05-25 Path C): 3 more 13F + 1 more persistence,
     # completing 13F at 10/10. Combines Batch 330 producer with director /
     # officer insider keys (Batch 222 insider_buying producer).

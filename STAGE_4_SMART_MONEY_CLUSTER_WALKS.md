@@ -10,6 +10,8 @@
 
 > **B669 status banner (2026-06-10, owner-directed COMPREHENSIVE expansion):** owner-directed OVERRIDE of B665 foundational re-prioritization commitment per *"The md doc is not comprehensive. I want steps 1 to 7 thoroughly documented for each strategy individually along with bugs gaps and recommendations. implement it after incorporating the below feedback."* This batch expands all 39 SM-3 through SM-41 walks to full pivot-doc-template density (7 steps each + Findings tables + Options + Recommendation per CHECKLIST #105), incorporates 7 reviewer findings as a new [Reviewer findings response matrix](#reviewer-findings-response-matrix-2026-06-10-cluster-walk-critique), and applies one immediate code fix (SM-23 docstring honesty per Finding #3). The override notes are recorded here transparently; foundational sequence still applies to subsequent batches (B670+ awaits B660 land + C2/C5 follow-on).
 
+> **B670 status banner (2026-06-10, owner-approved 4 Round-1 decisions on B669-pending items):** SM-9 + SM-23 DELETED per Pattern C STRENGTHENED disposition (reviewer F2 + F3); 2 Class 7 NEW clean replacements registered in `momentum_trend` category (NOT smart money cluster). SM-5 routing verification reveals SM-5 IS an orphan emitter (engine drops avoid output per backtest.py:1457-1466); wiring requires NEW architecture (Round 2 owner-direction needed on scope). **Net strategy count: 222 → 222 (-2 deletions + 2 Class 7 NEW = net 0).** Smart money cluster: 41 → 39 (Class 7 NEW replacements register in momentum_trend, not smart money). B670 pyramid: 858/858 green. Round 2 questions queued: SM-5 NEW wiring scope (post-orphan finding) + SM-5 DTC threshold + Pattern F gate sequencing + low-fire combo EXPLORATORY sequencing.
+
 ## Reviewer findings response matrix (2026-06-10 cluster-walk critique)
 
 > Adversarial review of the original B664 cluster walk produced 7 findings. Each is tracked here with status + action; per-strategy walks below cite which findings apply.
@@ -1005,6 +1007,47 @@ Avoid-direction strategies don't have inverse mirrors by design (they BLOCK acti
 - `S4-SM5-DTC-THRESHOLD-CALIBRATION-AGAINST-EMPIRICAL-SQUEEZE-CASES` — calibrate against GME/AMC/MSTR/BBBY historical DTC values
 - `S4-SM5-AVOID-DIRECTION-ENGINE-ROUTING-VERIFICATION` — confirm whether engine currently routes avoid output as pre-fire gate or whether it's an orphan emitter (clarifies F-architectural-disconnect)
 
+### B670 routing verification result (per Q4 owner-approved "Verify routing first, propose scope after")
+
+> **VERDICT: SM-5 IS an orphan emitter.** Reviewer F5's architectural-disconnect concern is empirically confirmed by engine source-read.
+
+**Source evidence:** [backtest/engine/backtest.py:1457-1466](backtest/engine/backtest.py#L1457-L1466):
+
+```python
+# Skip avoid direction - conflicting signals, log as skipped
+# BUG-04 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+# avoid direction no longer falls into triggered_short bucket
+if direction == "avoid":
+    self.skipped_trades.append({
+        "ticker": ticker, "date": as_of,
+        "strategy": strat_entry["strategy"],
+        "reason": "avoid_conflicting_signals",
+    })
+    continue
+```
+
+When SM-5 fires with direction="avoid", the engine logs the trade to `skipped_trades.append(...)` with reason `"avoid_conflicting_signals"` and `continue`s past the trade-execution path. **The avoid signal is NEVER consulted by other SHORT strategies.** It is literally dropped on the floor.
+
+**Distinction from "AVOID TIER" concept (different mechanism):** [backtest.py:1766-1772](backtest/engine/backtest.py#L1766-L1772):
+
+```python
+if tier == "AVOID":
+    self.skipped_trades.append({
+        "ticker": ticker, "date": as_of,
+        "strategy": strat_entry["strategy"],
+        "reason": f"avoid_tier_{direction}_blocked_batch190",
+    })
+    continue
+```
+
+The uppercase "AVOID" TIER refers to a separate position-tier classification mechanism (Batch 190): when the tier-aware risk system classifies a candidate as "AVOID" tier (different from SM-5's avoid direction), the trade is blocked. This was implemented because Phase 1A baseline empirically showed 88 AVOID-short trades averaging -2.79% PnL. The two mechanisms (avoid DIRECTION from SM-5 and AVOID TIER from the position-sizing system) are DIFFERENT concepts; the existence of the AVOID TIER block does NOT mean SM-5's avoid direction is consulted.
+
+**B670 wiring proposal (deferred to Round 2 owner direction):** since SM-5 is genuinely an orphan emitter, the wiring scope question is now a NEW-ARCHITECTURE question, not an enhancement question. The 3 wiring scope options from Q4 (W5m only / cluster-scope / global SHORTs) all require the same NEW infrastructure (a pre-fire gate that consults SM-5's avoid output before executing any SHORT strategy on the ticker). The infrastructure decision (whether to build the consult-gate at the per-ticker per-bar layer, the strategy-class-aware layer, or the portfolio-tier layer) is the actual question. Surfacing in Round 2.
+
+**Updated queue ticket status:**
+- `S4-SM5-AVOID-DIRECTION-ENGINE-ROUTING-VERIFICATION` — ✅ **RESOLVED-B670** (verdict: orphan emitter; routing absent)
+- `S4-SM5-BORROW-GUARD-WIRING-INTO-SHORT-STRATEGIES` — status changed from "engine-level architecture batch" to **PENDING_ROUND_2_OWNER_DECISION** on infrastructure layer + scope
+
 ---
 
 ## SM-6. `strat_pead_with_insider_confirmation_long` (PEAD-insider cross-cluster, walked)
@@ -1272,9 +1315,21 @@ Mirror of SM-7 + SM-8 but SHORT side. The mirror is mechanically convenient but 
 
 **My B669 recommendation: (c) DELETE.** Reviewer F2 argument is correct: the B611 precedent applies; the "defer to empirical" assumption is structurally false because the cube is blind to the falseness; `project_no_apriori_strategy_pruning` is being misapplied because the prior is a regulatory fact not a guess. Surfacing for owner direction.
 
-**Awaiting owner direction on SM-9:**
-1. **Disposition:** (a) status quo / (b) docstring caveat only / **(c) RECOMMENDED B669** DELETE per B611 precedent / (d) (c) + clean below-EMA-50 SHORT replacement / (e) EXPLORATORY marker
-2. **B611 precedent reconciliation:** is reviewer F2 correct that the B611 deletion precedent applies here, OR is there a distinction between SM-9 and `strat_institutional_breakdown_confirmation_short` that justifies different dispositions?
+### FINAL STATUS POST-B670 — ✅ DELETED + Class 7 NEW REPLACEMENT
+
+> Owner approved B670 option (d) = "DELETE + Class 7 NEW clean replacement" on 2026-06-10 via AskUserQuestion Round 1.
+
+| Item | Outcome |
+|---|---|
+| **Disposition** | DELETED per Pattern C + B611 precedent. Function `strat_institutional_distribution_short` removed from screener.py; registry key removed from `ALL_STRATEGIES`. Per `project_no_apriori_strategy_pruning` override: owner explicitly approved deletion because the prior is a regulatory fact (13F SEC long-only by rule) not a guess. |
+| **Code reference** | [screener.py line ~4392](backtest/signals/screener.py) — replaced with DELETION RATIONALE comment block citing B611 precedent + reviewer F2 critique + citation retraction (Sias 2004 + Lo-Wang 2000 were citation-overreach Pattern F7 honesty class) |
+| **Class 7 NEW replacement** | `strat_simple_below_ema_50_short` registered in `momentum_trend` category (NOT smart_money_13f or smart_money cluster). Single-gate: fires SHORT when `below_ema_50 = True`. Honest 1-gate framing of the actual discriminative signal that deleted SM-9's 2-gate structure was using; the `institutional_negative` gate was Pattern C noise per the walk. |
+| **Regime affinity** | No explicit entry → B291 SHORT default `{bear, crisis, neutral}` applies; trend-following SHORT naturally fits |
+| **Strategy count impact** | 222 → 221 (deletion) → 222 (Class 7 NEW addition). Smart money cluster: 41 → 39 (Class 7 NEW does NOT register in smart money). |
+| **Test pins** | `test_batch670_sm9_sm23_deletion_and_replacement.py` pins (1)-(2)-(5)-(6)-(9)-(10)-(11)-(12)-(15)-(16) — deletions + replacement + registry invariants + fire-logic + regime affinity. 16/16 green; 858/858 full pyramid. |
+| **B611 precedent reconciliation** | B611 deletion of structurally identical `strat_institutional_breakdown_confirmation_short` established the same data-source-asymmetry deletion criterion; B670 deletion extends the precedent to SM-9 (which was not in B611 scope at the time). No structural distinction justifies different dispositions; reviewer F2 argument confirmed. |
+| **Citation retraction** | Sias 2004 JFE + Lo-Wang 2000 RFS citations in deleted SM-9 docstring were stretched to lend authority to a structurally-false thesis (Pattern F7 honesty class — same pattern as SM-10's CMP 2012 mis-citation). Class 7 NEW replacement does NOT carry these citations. |
+| **No regrets** | The reviewer F2 critique was decisive. The "defer to Stage D" disposition was misapplying `project_no_apriori_strategy_pruning` — the cube is structurally blind to the falseness (C5 + C6 still open). B611 deletion precedent on a structurally identical strategy was already on record. Owner override of no-pruning rule recorded transparently in commit message + this doc + the B611 precedent comment block in screener.py. |
 
 ---
 
@@ -1852,6 +1907,23 @@ Mirror of SM-22 (`institutional_strong_conviction_long`) but SHORT side. Per Pat
 1. **Disposition:** (a) status quo / (b) docstring caveat / **(c) RECOMMENDED B669** DELETE per B611 precedent / (d) (c) + Class 7 NEW chart-pattern replacement / (e) rename only / (f) EXPLORATORY marker
 2. **B669 docstring fix shipped** (THESIS-vs-NAME DISAMBIGUATION block); confirm no further docstring action needed
 3. **Rename question** (separate B-N decision regardless of (c) outcome): rename to `strat_institutional_distribution_with_volume_short` per W10 R3→R4 precedent? Or keep current name?
+
+### FINAL STATUS POST-B670 — ✅ DELETED + Class 7 NEW REPLACEMENT (rename Q moot)
+
+> Owner approved B670 option (d) = "Delete + Class 7 NEW replacement" on 2026-06-10 via AskUserQuestion Round 1. Rename question (Q3) resolved as N/A (deleted strategy can't be renamed).
+
+| Item | Outcome |
+|---|---|
+| **Disposition** | DELETED per Pattern C + B611 precedent + F3 NAME-vs-THESIS resolved by deletion. Same logic as SM-9 deletion above. Per `project_no_apriori_strategy_pruning` override: owner explicitly approved. |
+| **Code reference** | [screener.py line ~5009](backtest/signals/screener.py) — replaced with DELETION RATIONALE comment block citing B611 + reviewer F2 + F3 + Pattern C analysis + citation retraction |
+| **Class 7 NEW replacement** | `strat_vol_spike_2x_below_ema_50_short` registered in `momentum_trend` category (NOT smart_money_13f). 2-gate AND: fires SHORT when `vol_spike_2x = True AND below_ema_50 = True`. Honest 2-gate framing of the actual tape-capitulation continuation signal that deleted SM-23's 3-gate structure was using; the `institutional_negative` gate was Pattern C noise per the walk. |
+| **Regime affinity** | No explicit entry → B291 SHORT default `{bear, crisis, neutral}` applies |
+| **Strategy count impact** | 222 → 221 (deletion) → 222 (Class 7 NEW addition). Smart money cluster: 41 → 39 (after both SM-9 + SM-23 deletions; Class 7 NEW additions register in momentum_trend). |
+| **Test pins** | `test_batch670_sm9_sm23_deletion_and_replacement.py` pins (3)-(4)-(7)-(8)-(13)-(14) plus shared registry invariant + regime pins. 16/16 green. |
+| **F3 NAME-vs-THESIS resolved by deletion** | B669 docstring fix (THESIS-vs-NAME DISAMBIGUATION block) is now moot — strategy deleted. Class 7 NEW replacement has an honest name (`vol_spike_2x_below_ema_50_short` accurately describes the gates) and an honest thesis (tape-capitulation continuation SHORT). The rename question (Q3 deferred conditional in Round 1) is resolved as N/A. |
+| **Citation retraction** | Same Sias 2004 + Lo-Wang 2000 citation-overreach as SM-9; not carried to Class 7 NEW. |
+| **Cross-cluster note** | Per Pattern H + Class 7 NEW location: the new `vol_spike_2x_below_ema_50_short` belongs to the `momentum_trend` category and is not part of the smart money cluster. If a future Stage 4 walk covers the momentum/chart-pattern cluster, this strategy should appear there for owner re-walk per CHECKLIST #105. |
+| **No regrets** | Same as SM-9: reviewer F2 critique decisive; B611 precedent applies; F3 NAME-vs-THESIS contradiction additionally cleared by deletion; Class 7 NEW preserves the actual signal without the Pattern C noise. |
 
 ---
 
