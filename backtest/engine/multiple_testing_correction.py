@@ -39,12 +39,24 @@ import numpy as np
 
 # Strategies marked EXPLORATORY / DO-NOT-DEPLOY are excluded from the
 # multiple-testing family-size N per owner Decision 4. Per B644 + B652
-# the current EXPLORATORY set is W5 (pivot_s3_capitulation) and W5m
+# the original EXPLORATORY set was W5 (pivot_s3_capitulation) and W5m
 # (pivot_r3_blowoff_short). New EXPLORATORY entries must be added here
 # explicitly at the time the marker is added to the strategy.
+#
+# Batch 685 (2026-06-10 owner-approved per B683 self-critique CP-1):
+# added cup_and_handle_long per Bulkowski 2005 published frequency data
+# (~5-15/yr on T1a universe expected; below min_trades=30 per regime).
+# B660 fire-count run early-finding (visible 2026-06-10 17:00 in
+# TaskOutput) CONFIRMED 0 fires/yr universe-wide pre-deletion. Marker
+# preserves the strategy for cube-replay coverage while excluding from
+# selection budget per W5/W5m precedent + project_no_apriori_strategy
+# _pruning rule. If post-cube data improves under different parameters
+# (looser gate set, different EMA windows), the EXPLORATORY marker
+# can be re-evaluated.
 EXPLORATORY_STRATEGIES = frozenset({
     "pivot_s3_capitulation",
     "pivot_r3_blowoff_short",
+    "cup_and_handle_long",  # B685 owner-approved per B683 self-critique CP-1
 })
 
 

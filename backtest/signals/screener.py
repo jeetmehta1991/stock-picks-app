@@ -1925,6 +1925,37 @@ def strat_bullish_engulfing_support(s):
         ["Bearish engulfing at resistance - two systems confirming","OBV falling (B628 F1)"])
 
 
+def strat_hammer_at_support_long(s):
+    """Batch 685 (2026-06-10 owner-approved Class 7 NEW) per
+    feedback_long_short_inverse_audit + B683 self-critique CC-4
+    missing-inverse audit. Symmetric mirror of CC-4
+    strat_shooting_star_short.
+
+    Hammer at support is the canonical 1-bar bullish reversal pattern
+    per Nison 1991 *Japanese Candlestick Charting Techniques* -
+    small body with long lower wick at support level shows sellers
+    exhausted + buyers stepping in. Symmetric to shooting_star (small
+    body + long upper wick at resistance).
+
+    Producer: technical.py:1623 `hammer = lwk>2*body and uwk<body and
+    body>0` (Nison canonical hammer definition; already emitted +
+    consumed by W3/W5 pivot strategies as confluence-gate; no producer
+    change needed).
+
+    3-gate structure symmetric with CC-4 (mirror with hammer + support +
+    RSI oversold replacing shooting_star + resistance + RSI overbought):
+    """
+    fires = (s.get("hammer") and
+             (s.get("near_s1") or s.get("near_s2") or
+              s.get("bb_20_20_touch_lower")) and
+             s.get("rsi_14", 50) < 35)
+    return _strat(fires, "long", "candle",
+        ["hammer","at_support","rsi_14<35"],
+        ["Hammer at support level - bullish reversal",
+         "Long lower wick shows buyers rejecting lower prices",
+         f"RSI-14 at {s.get('rsi_14',0):.1f} - oversold at support"])
+
+
 def strat_doji_at_support(s):
     # B574 (2026-06-04 owner-directed narrow-scope per
     # feedback_narrow_scope_blast_radius): consumes `_wide` flag
@@ -4157,6 +4188,36 @@ def strat_head_and_shoulders_bottom_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+def strat_head_and_shoulders_top_short(s):
+    """Batch 685 (2026-06-10 owner-approved Class 7 NEW) per
+    feedback_long_short_inverse_audit + B683 self-critique B678 CC-B
+    missing-inverse audit. Mirror of strat_head_and_shoulders_bottom_long.
+
+    Head-and-shoulders TOP is the canonical bearish reversal pattern per
+    Edwards-Magee 1948 *Technical Analysis of Stock Trends* + Bulkowski
+    2005 *Encyclopedia of Chart Patterns* (~74% measured WR on neckline-
+    confirmed breakdowns per Bulkowski published stats; mirror reliability
+    to the H&S bottom long counterpart). 3 peaks with middle (head) highest;
+    shoulders roughly symmetric; price breaks down through neckline.
+
+    Producer signal head_shoulders_top_detected from
+    chart_patterns.compute_head_and_shoulders (line 83-113); pre-existing
+    + already PIT-disciplined.
+
+    Symmetric 2-gate structure with CP-3 (mirror of bottom-long).
+    B671 borrow-trap gate applies (SHORT-direction via _strat).
+    """
+    fires = (
+        s.get("head_shoulders_top_detected", False)
+        and s.get("below_ema_200", False)  # B630 producer-additive (positive symmetric)
+    )
+    return _strat(fires, "short", "chart_pattern",
+        ["head_shoulders_top_detected", "price_below_ema_200"],
+        ["Head-and-shoulders top pattern detected (3 peaks; middle = head)",
+         "Edwards-Magee 1948 / Bulkowski 2005 canonical bearish reversal",
+         "Below 200 EMA (bear regime)"])
+
+
 def strat_double_bottom_long(s):
     """Batch 252: double-bottom long entry."""
     fires = (
@@ -4184,7 +4245,7 @@ def strat_cup_and_handle_long(s):
         s.get("cup_handle_detected", False)
         and s.get("price_above_ema_200", False)
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
         and s.get("rsi_14", 50) < 70
     )
     return _strat(fires, "long", "chart_pattern",
@@ -4242,23 +4303,62 @@ def strat_triangle_ascending_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+def strat_triangle_descending_short(s):
+    """Batch 685 (2026-06-10 owner-approved Class 7 NEW) per
+    feedback_long_short_inverse_audit + B683 self-critique B678 CC-B
+    missing-inverse audit. Mirror of strat_triangle_ascending_long.
+
+    Descending triangle is the documented bearish continuation pattern
+    per Edwards-Magee 1948 + Bulkowski 2005 (~64% measured WR on
+    confirmed breakdowns; symmetric reliability to ascending counterpart).
+    Flat support + descending highs; price breaks down through flat support.
+
+    Producer signal triangle_descending_detected from
+    chart_patterns.compute_triangle_patterns (line 308-317); pre-existing.
+
+    Symmetric 2-gate structure with CP-7 (mirror of ascending-long).
+    B671 borrow-trap gate applies (SHORT-direction via _strat).
+    """
+    fires = (
+        s.get("triangle_descending_detected", False)
+        and s.get("below_ema_200", False)  # B630 producer-additive
+    )
+    return _strat(fires, "short", "chart_pattern",
+        ["triangle_descending_detected", "price_below_ema_200"],
+        ["Descending triangle (flat support + falling highs)",
+         "Bulkowski 2005: breakdown direction follows trend ~64%",
+         "Below 200 EMA (bear regime)"])
+
+
 def strat_cup_and_handle_retest_long(s):
-    """BUG-111 (Batch 329): retest variant of cup_and_handle_long.
-    Cup-and-handle pattern + post-break retest of the neckline (proxied
-    via resistance_break_retest from DC20). O'Neil 1988 + Bulkowski 2005:
-    the handle retest is the canonical low-risk entry for CANSLIM cup."""
+    """BUG-111 (Batch 329) ORIGINAL: retest variant of cup_and_handle_long.
+
+    Batch 685 (2026-06-10 owner-approved per B683 self-critique CP-9):
+    REPLACED `resistance_break_retest` (DC20-anchored proxy; explicitly
+    acknowledged as proxy in docstring) with `cup_handle_neckline_break
+    _retest_long` (B685 NEW producer in chart_patterns.compute_cup_handle
+    _neckline_break_retest_signals) -- now anchored on the SPECIFIC
+    cup_handle_breakout_level (handle high). Same B607-pattern fix as
+    B607 (flag) + B605 (52w) + B606 (R1) lineage.
+
+    Also Pattern A WAVE 2 sweep B685: swapped `price_above_ema_50`
+    default-True -> default-False (silent-gap closure).
+
+    O'Neil 1988 + Bulkowski 2005: the handle retest is the canonical
+    low-risk entry for CANSLIM cup.
+    """
     fires = (
         s.get("cup_handle_detected", False)
-        and s.get("resistance_break_retest", False)
+        and s.get("cup_handle_neckline_break_retest_long", False)  # B685: replaces resistance_break_retest
         and s.get("price_above_ema_200", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)  # B685 Pattern A WAVE 2: default-True -> False
         and s.get("rsi_14", 50) < 70
     )
     return _strat(fires, "long", "chart_pattern",
-        ["cup_handle_detected","resistance_break_retest",
+        ["cup_handle_detected","cup_handle_neckline_break_retest_long",
          "price_above_ema_200","price_above_ema_50","rsi_14<70"],
         ["Cup-and-handle pattern detected (O'Neil 1988)",
-         "Post-break retest entry (lower fakeout risk than naked break)",
+         "Post-break retest of SPECIFIC handle high / neckline (B685 producer fix)",
          "Above 200 + 50 EMA (dual trend gate)",
          "RSI not overbought"])
 
@@ -4396,17 +4496,26 @@ def strat_flag_bear_retest_short(s):
 
 
 def strat_triangle_ascending_retest_long(s):
-    """BUG-111 (Batch 329): retest variant of triangle_ascending_long.
+    """BUG-111 (Batch 329) ORIGINAL: retest variant of triangle_ascending_long.
+
+    Batch 685 (2026-06-10 owner-approved per B683 self-critique CP-8
+    DESIGN BUG CANDIDATE): REPLACED `resistance_break_retest` (DC20-
+    anchored - bug class) with `triangle_apex_break_retest_long` (B685
+    NEW producer in chart_patterns.compute_triangle_apex_break_retest
+    _signals) -- now anchored on the SPECIFIC triangle_resistance_level
+    (flat top of ascending triangle = apex). Same B607-pattern fix as
+    B607 (flag) + B605 (52w) + B606 (R1) lineage.
+
     Ascending triangle + post-break retest of the flat-top resistance.
     Bulkowski 2005: triangle apex breakout retest is the canonical entry."""
     fires = (
         s.get("triangle_ascending_detected", False)
-        and s.get("resistance_break_retest", False)
+        and s.get("triangle_apex_break_retest_long", False)  # B685: replaces resistance_break_retest
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "chart_pattern",
-        ["triangle_ascending_detected","resistance_break_retest","price_above_ema_200"],
-        ["Ascending triangle + post-break retest of flat resistance",
+        ["triangle_ascending_detected","triangle_apex_break_retest_long","price_above_ema_200"],
+        ["Ascending triangle + post-break retest of SPECIFIC apex resistance (B685 producer fix)",
          "Bulkowski 2005: retest entry filter ~70% win on confirmed breaks",
          "Above 200 EMA (regime gate)"])
 
@@ -4449,7 +4558,7 @@ def strat_institutional_buy_momentum_long(s):
     fires = (
         s.get("institutional_buy", False)
         and s.get("macd_12_26_9_bullish", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
     )
     return _strat(fires, "long", "smart_money_13f",
         ["institutional_buy","macd_12_26_9_bullish","price_above_ema_50"],
@@ -4763,7 +4872,7 @@ def strat_classification_change_momentum_long(s):
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("macd_12_26_9_bullish", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
     )
     return _strat(fires, "long", "classification_change",
         ["classification_changed_recent","macd_12_26_9_bullish","price_above_ema_50"],
@@ -4890,7 +4999,7 @@ def strat_institutional_persistence_volume_long(s):
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased>=5","vol_spike_2x","price_above_ema_50"],
@@ -4950,7 +5059,7 @@ def strat_institutional_recent_init_volume_long(s):
     fires = (
         s.get("institutional_new_positions", 0) >= 2
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
     )
     n_new = s.get("institutional_new_positions", 0)
     return _strat(fires, "long", "institutional_persistence",
@@ -5148,7 +5257,7 @@ def strat_institutional_high_conviction_long(s):
     institutional initiations before they fully appear in trend metrics."""
     fires = (
         s.get("institutional_new_positions", 0) >= 3
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
     )
     n_new = s.get("institutional_new_positions", 0)
     return _strat(fires, "long", "smart_money_13f",
@@ -5205,7 +5314,7 @@ def strat_institutional_persistence_momentum_long(s):
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("macd_12_26_9_bullish", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased>=5","macd_12_26_9_bullish","price_above_ema_50"],
@@ -5224,7 +5333,7 @@ def strat_institutional_volume_confirmation_long(s):
     fires = (
         s.get("institutional_buy", False)
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_50", True)
+        and s.get("price_above_ema_50", False)
     )
     return _strat(fires, "long", "smart_money_13f",
         ["institutional_buy","vol_spike_2x","price_above_ema_50"],
@@ -6177,6 +6286,10 @@ ALL_STRATEGIES = {
     "shooting_star_short":      strat_shooting_star_short,
     # evening_star_short DELETED Batch 639 (2026-06-09) - strictly redundant
     # with strat_morning_star SHORT post option-2 reconciliation.
+    # Batch 685 (2026-06-10 owner-approved Class 7 NEW per B683 self-critique
+    # missing-inverse audit): hammer at support is canonical Nison 1991
+    # 1-bar bullish reversal mirror to shooting_star_short.
+    "hammer_at_support_long":   strat_hammer_at_support_long,
     # Confluence (9)
     "rsi_volume_200ema":        strat_rsi_volume_200ema,
     "macd_ichimoku":            strat_macd_ichimoku,
@@ -6233,6 +6346,10 @@ ALL_STRATEGIES = {
     "cup_and_handle_long":              strat_cup_and_handle_long,
     "flag_bull_long":                   strat_flag_bull_long,
     "triangle_ascending_long":          strat_triangle_ascending_long,
+    # Batch 685 (2026-06-10 owner-approved Class 7 NEW per B683 self-critique
+    # missing-inverse audit): Edwards-Magee 1948 + Bulkowski 2005 SHORT mirrors.
+    "head_and_shoulders_top_short":     strat_head_and_shoulders_top_short,
+    "triangle_descending_short":        strat_triangle_descending_short,
     # BUG-111 retest variants (Batch 329 2026-05-25 owner-approved option b):
     # 6 explicit _retest variants for breakouts that previously fired only
     # on the initial break. Reuses resistance_break_retest / support_break_retest

@@ -357,6 +357,14 @@ def compute_all_chart_patterns(df: pd.DataFrame) -> dict:
         out.update(compute_flag_break_retest_signals(df))  # B607 F1
     except Exception:
         pass
+    try:
+        out.update(compute_triangle_apex_break_retest_signals(df))  # B685 (CP-8 fix)
+    except Exception:
+        pass
+    try:
+        out.update(compute_cup_handle_neckline_break_retest_signals(df))  # B685 (CP-9 fix)
+    except Exception:
+        pass
     return out
 
 
@@ -534,4 +542,151 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
             out["flag_bear_broke"] = True
             break
 
+    return out
+
+
+def compute_triangle_apex_break_retest_signals(df: 'pd.DataFrame') -> dict:
+    """Batch 685 (2026-06-10 owner-approved B607-pattern producer fix per
+    B683 self-critique CP-8 DESIGN BUG CANDIDATE).
+
+    Pre-B685: strat_triangle_ascending_retest_long consumed
+    `resistance_break_retest` (DC20-anchored) instead of triangle-apex-
+    anchored retest. Same name-vs-implementation bug class as B605 fixed
+    for 52wh_break_retest and B607 fixed for flag_bull_retest_long.
+
+    Fix: detect retest of the SPECIFIC triangle_resistance_level (the
+    flat top of an ascending triangle) that was set when the triangle
+    completed K bars ago. Runs detect_triangle on a HISTORICAL slice
+    ending K bars ago (K in [3..12]) to find a triangle that completed
+    in the recent past, then checks the break -> retest -> hold
+    sequence against that historical triangle's apex level.
+
+    PIT discipline: the detection slice `df.iloc[:n - K]` STRICTLY
+    excludes bars [n-K, n], so triangle_resistance_level is computed
+    over a window entirely BEFORE the breakout/retest window. No
+    contamination of the level by the breakout bar's own high.
+
+    Emits (LOCAL signals):
+      - triangle_apex_break_retest_long: ascending triangle completed
+        K bars ago; at least one close in (n-K, n-1) exceeded
+        triangle_resistance_level (break); at least one subsequent
+        bar's LOW touched within 1.5*ATR(14) of resistance level
+        (retest); today's close >= resistance_level (still above).
+
+    No SHORT mirror in this producer yet -- descending triangle
+    Class 7 NEW strat_triangle_descending_short (also B685) fires on
+    base detection without retest variant; future producer extension
+    could add triangle_apex_break_retest_short symmetric to LONG.
+
+    Defensive: emits False on insufficient history (< 45 bars: ATR 14
+    + triangle detection 30 + at least 3 for lag) and on detect_triangle
+    errors.
+    """
+    import numpy as np
+    out = {"triangle_apex_break_retest_long": False}
+    if df is None or len(df) < 45:
+        return out
+    n = len(df)
+    close_arr = df["close"].values
+    high_arr  = df["high"].values
+    low_arr   = df["low"].values
+    tr1 = high_arr[1:] - low_arr[1:]
+    tr2 = np.abs(high_arr[1:] - close_arr[:-1])
+    tr3 = np.abs(low_arr[1:] - close_arr[:-1])
+    tr_arr = np.maximum(np.maximum(tr1, tr2), tr3)
+    atr = float(np.mean(tr_arr[-14:])) if len(tr_arr) >= 14 else float(np.mean(tr_arr))
+    if atr <= 0:
+        atr = close_arr[-1] * 0.01
+    tolerance = 1.5 * atr
+    for K in range(3, 13):
+        if K >= n - 30:
+            break
+        df_at_K = df.iloc[:n - K]
+        try:
+            tri = detect_triangle(df_at_K)
+        except Exception:
+            continue
+        if not tri.get("triangle_ascending_detected"):
+            continue
+        resistance_level = tri.get("triangle_resistance_level")
+        if resistance_level is None or resistance_level <= 0:
+            continue
+        broke = any(close_arr[i] > resistance_level for i in range(n - K, n - 1))
+        if not broke:
+            continue
+        retested = any(low_arr[i] <= resistance_level + tolerance for i in range(n - K + 1, n))
+        if not retested:
+            continue
+        if close_arr[-1] >= resistance_level:
+            out["triangle_apex_break_retest_long"] = True
+            break
+    return out
+
+
+def compute_cup_handle_neckline_break_retest_signals(df: 'pd.DataFrame') -> dict:
+    """Batch 685 (2026-06-10 owner-approved B607-pattern producer fix per
+    B683 self-critique CP-9 docstring-honest-proxy upgrade).
+
+    Pre-B685: strat_cup_and_handle_retest_long consumed
+    `resistance_break_retest` (DC20-anchored) as an explicit PROXY for
+    the actual cup-and-handle neckline (handle high). Docstring honestly
+    acknowledged "proxied via resistance_break_retest from DC20" but the
+    proxy was unprincipled.
+
+    Fix: detect retest of the SPECIFIC cup_handle_breakout_level (the
+    handle high = neckline) that was set when the cup-and-handle pattern
+    completed K bars ago. Same B607-pattern PIT-disciplined historical
+    slice as compute_flag_break_retest_signals.
+
+    Emits (LOCAL signals):
+      - cup_handle_neckline_break_retest_long: cup-and-handle completed
+        K bars ago (K in 3..12); at least one close in (n-K, n-1)
+        exceeded cup_handle_breakout_level (break); at least one
+        subsequent bar's LOW touched within 1.5*ATR(14) of breakout
+        level (retest); today's close >= breakout_level.
+
+    No SHORT mirror (inverted cup-and-handle producer + strategy
+    deferred per B685 scope).
+
+    Defensive: emits False on insufficient history (< 75 bars: cup
+    needs 60-day lookback + ATR 14 + lag).
+    """
+    import numpy as np
+    out = {"cup_handle_neckline_break_retest_long": False}
+    if df is None or len(df) < 75:
+        return out
+    n = len(df)
+    close_arr = df["close"].values
+    high_arr  = df["high"].values
+    low_arr   = df["low"].values
+    tr1 = high_arr[1:] - low_arr[1:]
+    tr2 = np.abs(high_arr[1:] - close_arr[:-1])
+    tr3 = np.abs(low_arr[1:] - close_arr[:-1])
+    tr_arr = np.maximum(np.maximum(tr1, tr2), tr3)
+    atr = float(np.mean(tr_arr[-14:])) if len(tr_arr) >= 14 else float(np.mean(tr_arr))
+    if atr <= 0:
+        atr = close_arr[-1] * 0.01
+    tolerance = 1.5 * atr
+    for K in range(3, 13):
+        if K >= n - 60:
+            break
+        df_at_K = df.iloc[:n - K]
+        try:
+            cup = detect_cup_and_handle(df_at_K)
+        except Exception:
+            continue
+        if not cup.get("cup_handle_detected"):
+            continue
+        breakout_level = cup.get("cup_handle_breakout_level")
+        if breakout_level is None or breakout_level <= 0:
+            continue
+        broke = any(close_arr[i] > breakout_level for i in range(n - K, n - 1))
+        if not broke:
+            continue
+        retested = any(low_arr[i] <= breakout_level + tolerance for i in range(n - K + 1, n))
+        if not retested:
+            continue
+        if close_arr[-1] >= breakout_level:
+            out["cup_handle_neckline_break_retest_long"] = True
+            break
     return out

@@ -10300,8 +10300,17 @@ def test_batch373_e1_doc_count_pin_against_code():
     #     - EV-7 buyback_8k_recent_long (population-mixing; SM-4 feasibility carry)
     #   Plus BR-8 strat_dc20_break_retest swap vol_spike_15x -> vol_below_avg (Bulkowski alignment;
     #   no count change). 222 -> 218.
-    assert len(ALL_STRATEGIES) == 218, (
-        f"F-002 drift: ALL_STRATEGIES expected 218 post-B682 deletions; "
+    #   Batch 685 (2026-06-10): owner-approved Class 7 NEW additions per B683 self-critique
+    #   missing-inverse audit. +3 strategies:
+    #     - strat_head_and_shoulders_top_short (Edwards-Magee 1948 + Bulkowski 2005 mirror of CP-3)
+    #     - strat_triangle_descending_short (Bulkowski 2005 mirror of CP-7)
+    #     - strat_hammer_at_support_long (Nison 1991 mirror of CC-4)
+    #   Plus producer-side fixes (triangle_apex + cup_handle_neckline B607-pattern producers;
+    #   re-wires CP-8 + CP-9 to consume new signals; no count change). Pattern A WAVE 2 sweep
+    #   on price_above_ema_50 default-True -> False across 8 strategies (no count change).
+    #   CP-1 cup_and_handle_long added to EXPLORATORY_STRATEGIES (no count change). 218 -> 221.
+    assert len(ALL_STRATEGIES) == 221, (
+        f"F-002 drift: ALL_STRATEGIES expected 221 post-B685 additions; "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10316,11 +10325,12 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 217, (
-        f"F-002 drift: active strategy count expected 217 (218 registered "
-        f"minus 1 disabled dxy_headwind_multinational_short); B682 "
-        f"owner-approved deletions per B680 self-critique took 222 -> 218 "
-        f"(BR-15 + EV-3 + EV-4 + EV-7); got {active}."
+    assert active == 220, (
+        f"F-002 drift: active strategy count expected 220 (221 registered "
+        f"minus 1 disabled dxy_headwind_multinational_short); B685 "
+        f"owner-approved Class 7 NEW additions per B683 self-critique took "
+        f"218 -> 221 (+H&S top short + triangle descending short + hammer "
+        f"at support long); got {active}."
     )
 
     # F-004 exit method count
