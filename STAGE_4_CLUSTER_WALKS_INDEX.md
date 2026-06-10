@@ -155,3 +155,49 @@ Per `feedback_no_rushing_per_strategy_tweak` + `project_no_apriori_strategy_prun
 ---
 
 **Final note:** until ALL 5 unreviewed cluster docs receive your review feedback (Phase 2), Iteration 2 (Phase 3) cannot be executed cleanly — the iteration depends on review findings to know what to improve. The 5 docs are READY for review per the format established here.
+
+---
+
+## B680 Self-Critique Iteration 2 Update (2026-06-10)
+
+> Owner directive 2026-06-10: *"Just update all docs"* — proceed with Iteration 2 self-critique in lieu of waiting for external reviewer. All 5 unreviewed cluster docs received a "B680 Self-Critique Iteration 2 — Cross-Cutting Feasibility Findings" section with CC-A through CC-G severity-ordered findings + per-strategy reframings + queue ticket surfacing.
+
+### B680 cross-cluster findings summary
+
+| Cluster | Doc | CC findings (severity-ordered) | NEW queue tickets | Pre-cube actions surfaced |
+|---|---|---|---|---|
+| **SMC** | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | CC-A 91-bar entry lag HIGH; CC-B B262 fix gates cluster HIGH; CC-C Quantum Algo statistically meaningless HIGH; CC-D effective N≈7 HIGH; CC-E FVG-OB correlation tighter than admitted MED-HIGH; CC-F microstructure literature partial defense INFO; CC-G EMA-proposal methodology conflict MEDIUM | 7 NEW (Quantum Algo retract; FVG-OB pre-cube; microstructure nuance; EMA methodology conflict; PIT pin pre-cube; B262 cluster-critical; SMC-17 Pattern I flagship) | SMC-3 cube re-validation elevation; PIT pin pre-cube |
+| **ICT** | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | CC-A po3_bullish dead CRITICAL (blocking); CC-B Pattern R 6-strategy pre-cube HIGH; CC-C crowding decay MEDIUM; CC-D Pattern S explicit-gate MEDIUM; CC-E vendor SPOF cube-distinguishability MED-HIGH; CC-F effective N≈4 HIGH; CC-G missing-EMA pre-cube MED-HIGH | 6 NEW + 1 CRITICAL BLOCKING (po3 producer verification) | po3 verification PRE-cube; Pattern R docstrings pre-cube; EMA proposal pre-cube |
+| **Breakout** | [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) | CC-A BR-8 thesis-bug CONFIRMED HIGH (pre-cube fix); CC-B BR-15 0.01/yr deletion per B620 precedent HIGH (pre-cube delete); CC-C Pattern N effective N≈8 not 13 HIGH; CC-D CC1 asymmetric gap-cost MED-HIGH; CC-E forensic-fix cube budget MEDIUM; CC-F Pattern O parameter space MEDIUM; CC-G Pattern U internal collinearity MEDIUM | 7 NEW | BR-8 fix-or-rename pre-cube; BR-15 delete pre-cube; BR-5 near_52w_high drop pre-cube |
+| **Event-driven** | [STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md) | CC-A CC1 quantitative haircut HIGH; CC-B EV-7 SM-4 contamination HIGH; CC-C EV-3/EV-4 deterministic-subset reskin MED-HIGH; CC-D pre-FOMC calendar PIT MEDIUM; CC-E effective N≈4 HIGH; CC-F cross-cluster registry MEDIUM; CC-G PEAD threshold calibration LOW-MED | 5 NEW | EV-3/EV-4 deprecate pre-cube; EV-7 delete-or-fix pre-cube; CC1 haircut in docstrings; pre-FOMC PIT pin |
+| **Chart+Candle** | [STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md](STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md) | CC-A 10 compact walks re-expand MED-HIGH; CC-B 2 missing-inverse owner-approval MED-HIGH; CC-C CHECKLIST (q) pyramid pin MED-HIGH; CC-D bullish-reversal-at-support Pattern N flagship MEDIUM; CC-E Bulkowski fire-frequency haircut MEDIUM; CC-F CP-6 B621 WARN MEDIUM; CC-G Bulkowski cross-cluster Y/V consolidation MEDIUM | 6 NEW | Compact walks re-expand; missing-inverse owner-approval gate; CHECKLIST (q) pin pre-cube; Pattern G pre-cube EXPLORATORY |
+
+### Cumulative B680 totals
+
+- **31 NEW EXECUTION_QUEUE tickets** across 5 cluster docs
+- **1 CRITICAL BLOCKING ticket** (ICT po3 producer verification)
+- **6 HIGH-severity pre-cube actions surfaced** (BR-8 fix-or-rename, BR-15 delete, ICT po3 verify, EV-7 delete-or-fix, EV-3/EV-4 deprecate, EV-7 8-K fix)
+- **2 owner-approval gates surfaced** (Chart+Candle Class 7 NEW additions; pre-cube deletion candidates)
+- **5 docstring honesty fixes pre-cube** (ICT Pattern R + EV CC1 quantitative haircut + CP missing-inverse caveats + SMC Pattern M citation retract + BR-5 gate drop)
+
+### Owner decisions needed (B680 surfaces)
+
+| Decision | Cluster | Pre-cube urgency |
+|---|---|---|
+| BR-8 fix-or-rename + BR-15 delete per B620 precedent | Breakout | HIGH (pre-cube) |
+| ICT po3_bullish/po3_bearish producer verification (may be silently dead) | ICT | CRITICAL (blocking) |
+| EV-3/EV-4 deprecate as Pattern N reskin + EV-7 delete-or-8K-Item-parse | Event-driven | HIGH (pre-cube) |
+| Class 7 NEW additions: head_and_shoulders_top_short + triangle_descending_short | Chart+Candle | MEDIUM (owner approval gate) |
+| Cluster-wide EMA-gate proposal SMC (6 strategies) + ICT (10 strategies) | SMC + ICT | MEDIUM (pre-cube preferred) |
+| ICT Pattern R + SMC Quantum Algo citation + EV CC1 docstring honesty | ICT + SMC + Event-driven | LOW (pure docstring; can ship anytime) |
+| Re-expand 10 Chart+Candle compact walks to full template | Chart+Candle | MEDIUM (matches B669/B672 smart-money precedent) |
+
+### Status post-B680
+
+All 5 previously-unreviewed cluster docs now have:
+- ✅ Original B673-B678 walks at full template density (where shipped)
+- ✅ B679 format alignment (cross-cluster snapshot + index reference)
+- ✅ B679 Iteration 2 review-solicitation guide
+- ✅ **B680 self-critique Iteration 2** (cross-cutting feasibility findings + per-strategy reframings + queue tickets)
+
+External reviewer feedback can still augment + override the self-critique; B680 is best-effort adversarial pass NOT a substitute for the external review that smart-money cluster received.

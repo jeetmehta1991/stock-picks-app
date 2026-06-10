@@ -424,6 +424,50 @@ EXISTING tickets cross-referenced:
 
 ---
 
+## B680 Self-Critique Iteration 2 — Cross-Cutting Feasibility Findings
+
+> **Status (B680 self-critique iteration 2026-06-10):** owner directive *"Just update all docs"* — proceed with adversarial self-critique in lieu of external reviewer pass.
+
+### Cross-cutting feasibility findings (Claude self-critique 2026-06-10)
+
+| # | Finding | Verification | Severity | Status |
+|---|---|---|---|---|
+| **CC-A** | **B678 compact-walk format for 10 NEW strategies under-delivers vs pivot-doc template standard set by smart-money B672 and SMC B673.** Walks for CC-2/CC-4/CC-5/CC-6 + CP-1/CP-2/CP-3/CP-4/CP-5/CP-7/CP-8/CP-9 are 5-15 lines each with "Step 2-7 compact" instead of full per-step coverage. **The owner explicitly directed earlier in this session ("the md doc is not comprehensive") when smart-money cluster had compact walks. Same critique applies here.** The compact format was justified for "6 of 16 already received B-batch individual walks" but applies to the OTHER 10 strategies too where compact-walk is just compression. **Should re-expand the 10 compact walks to full template density before Iteration 2 ships.** | ✅ Visible in B678 doc body | **MEDIUM-HIGH** | NEW — `S4-CP-COMPACT-WALK-REEXPAND-TO-FULL-TEMPLATE` |
+| **CC-B** | **2 missing-inverse Class 7 NEW candidates (head_and_shoulders_top_short, triangle_descending_short) are CONFIRMED gaps documented in chart-pattern literature — they're not optional additions.** Edwards-Magee 1948 + Bulkowski 2005 EXPLICITLY document head-and-shoulders TOP (bearish reversal) + descending triangle (bearish continuation) as equally-valid mirror patterns. Their omission from the registry is a `feedback_long_short_inverse_audit` rule violation that the walks identified but didn't action. **Per `project_no_apriori_strategy_pruning`: additions are permitted; per `feedback_local_changes_default_global_needs_approval`: strategy registration needs explicit owner approval; this is the missing approval gate.** Should ship Class 7 NEW addition batch with owner approval pre-cube to avoid leaving the SHORT-side coverage gap unaddressed. | ✅ Verified from chart-pattern literature | **MEDIUM-HIGH** | NEW — `S4-CP-MISSING-INVERSE-MIRRORS-CLASS-7-NEW-ADDITION-OWNER-APPROVAL-REQUIRED` |
+| **CC-C** | **CHECKLIST (q) candle-pattern next-bar-open PIT rule was CODIFIED B639 but has NOT been verified across all 16 cluster strategies.** Walk noted "Verified by engine convention" but no test pins the convention to each strategy. **If any one of the 16 inadvertently consumes a same-bar-close-derived signal in same-bar fires logic, the cluster has subtle lookahead.** Examples to verify: CC-4 (shooting_star_short) reads `shooting_star` boolean — does the producer emit at end-of-day close (= same bar) or with 1-bar lag? CC-5 (bullish_engulfing_support) reads `bullish_engulfing` (2-bar pattern) — at which bar does the producer emit True? **Pre-cube pyramid test pinning the (q) rule across all 16 is the cheapest possible validation.** | Producer convention assumed but not test-pinned | **MEDIUM-HIGH** | NEW — `S4-CP-CHECKLIST-Q-PYRAMID-TEST-PIN-ALL-16` |
+| **CC-D** | **Pattern N intra-cluster ablation candidates are UNDER-explored** — the walk noted 16 strategies on 12 primitives but didn't surface the strongest correlation pairs. Specifically: CC-1 (morning_star) is a 3-bar bullish reversal pattern; CC-5 (bullish_engulfing_support) is a 2-bar bullish reversal; CC-6 (doji_at_support) is a 1-bar indecision at support. **All three fire near support after declines = highly-correlated fire events with cross-pattern redundancy.** Cube ablation should compare CC-1 vs CC-5 vs CC-6 directly + against pivot-cluster W1 (which already consumes bullish_engulfing). | Mechanical from pattern definitions | MEDIUM | NEW — `S4-CP-BULLISH-REVERSAL-AT-SUPPORT-CC1-CC5-CC6-W1-CROSS-ABLATION` |
+| **CC-E** | **Pattern G fire-starve risks affect 4-5 strategies but the walk's projections may be OPTIMISTIC.** CP-1 (cup_and_handle): ~20-50/yr universe-wide projected; cup-and-handle in pristine form is RARE in screened lists — Bulkowski 2005 reports ~50 valid cup-and-handles per year in O'Neil's CANSLIM universe of several thousand stocks. Our T1a 503 may produce ~5-15/yr. CP-3 (head_and_shoulders_bottom): ~5-20/yr projected; Bulkowski reports H&S bottom is RARE; ~3-10/yr realistic. **3 strategies likely FAIL `min_trades=30` per regime — Pattern G EXPLORATORY decision should be pre-cube candidates not deferrals.** | Bulkowski 2005 published frequency data | MEDIUM | NEW — `S4-CP-FIRE-STARVE-PRE-CUBE-EXPLORATORY-CANDIDATES` |
+| **CC-F** | **CP-6 (`strat_flag_bear_retest_short`) is on the B621 estimator WARN list (15.77/yr) — borderline FAIL min_trades=30 per regime.** Walk noted this but disposition deferred. Combined with CP-3 (head_and_shoulders_bottom) ~5-20/yr + CP-1 (cup_and_handle) ~20-50/yr, the cluster has 3-4 borderline Pattern G cases that should be jointly addressed pre-cube. | B621 estimator | MEDIUM | Cross-ref existing `S5-FIRE-COUNT-CANDIDATES` |
+| **CC-G** | **Pattern Y retest absorption (CP-5/6/8/9) has cluster-internal Pattern N overlap with breakout cluster's BR-5/6/12/13 (Bulkowski variants).** Walk noted Pattern Y carry from breakout but didn't surface the cross-cluster overlap. **Bulkowski retest absorption pattern in chart_pattern cluster is the SAME signal class as Bulkowski retest absorption in breakout cluster** — just with different anchor primitives (chart-pattern level vs breakout level). Pattern N cross-cluster ablation should bridge clusters. | Mechanical from cross-cluster comparison | MEDIUM | NEW — `S4-CP-BR-PATTERN-Y-V-CROSS-CLUSTER-BULKOWSKI-CONSOLIDATION` |
+
+### Per-strategy reframings (Claude self-critique)
+
+| Strategy | Walk disposition | Self-critique reframing | Action |
+|---|---|---|---|
+| **CP-1 + CP-2 + CP-3** Pattern G borderline | RECOMMENDED post-B660 EXPLORATORY | **Bulkowski-published frequency data argues PRE-cube EXPLORATORY** — measured fire counts on professional screening universes are well below our projections. | Pre-cube EXPLORATORY |
+| **CC-1/CC-5/CC-6** bullish reversal at support | RECOMMENDED status-quo | **Cross-strategy + cross-cluster fire correlation likely HIGH — these 3 + W1 pivot all fire near support after declines.** Pattern N flagship intra-cluster ablation. | Cube Pattern N flagship |
+| **All 10 NEW compact walks** | Walked compact | **Re-expand to full pivot-doc template per CC-A.** Owner's prior directive applied. | Re-expand pre-Iteration-2-ship |
+| **Class 7 NEW candidates** head_and_shoulders_top_short + triangle_descending_short | RECOMMENDED but no owner-approval gate | **Surface Class 7 NEW addition owner-approval request explicitly.** | Owner-approval gate |
+
+### Net effect on B678 walk dispositions
+
+- **10 compact walks** should be RE-EXPANDED to full template (matches smart-money B669 → B672 pattern after owner's "not comprehensive" critique)
+- **2 missing-inverse Class 7 NEW** owner-approval gate ELEVATED to immediate action
+- **CHECKLIST (q) PIT rule** pyramid test ELEVATED to pre-cube ship-required
+- **Pattern G fire-starve** CP-1/CP-2/CP-3 moved from "post-B660" to "pre-cube EXPLORATORY candidates" per Bulkowski published frequencies
+- **Cross-cluster Pattern Y/V Bulkowski** consolidation NEW concern
+
+### Queue tickets surfaced by self-critique (B680)
+
+- `S4-CP-COMPACT-WALK-REEXPAND-TO-FULL-TEMPLATE` (MEDIUM-HIGH; CC-A)
+- `S4-CP-MISSING-INVERSE-MIRRORS-CLASS-7-NEW-ADDITION-OWNER-APPROVAL-REQUIRED` (MEDIUM-HIGH; CC-B)
+- `S4-CP-CHECKLIST-Q-PYRAMID-TEST-PIN-ALL-16` (MEDIUM-HIGH; CC-C)
+- `S4-CP-BULLISH-REVERSAL-AT-SUPPORT-CC1-CC5-CC6-W1-CROSS-ABLATION` (MEDIUM; CC-D)
+- `S4-CP-FIRE-STARVE-PRE-CUBE-EXPLORATORY-CANDIDATES` (MEDIUM; CC-E)
+- `S4-CP-BR-PATTERN-Y-V-CROSS-CLUSTER-BULKOWSKI-CONSOLIDATION` (MEDIUM; CC-G)
+
+---
+
 ## B679 Iteration 2 Preparation — Review Solicitation Guide
 
 > **Status (post-B679 format alignment):** READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2.

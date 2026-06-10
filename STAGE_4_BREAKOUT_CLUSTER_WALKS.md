@@ -987,6 +987,51 @@ EXISTING tickets cross-referenced:
 
 **Cumulative B676: 19 of 19 walks fully expanded. CLUSTER WALK COMPLETE.**
 
+## B680 Self-Critique Iteration 2 — Cross-Cutting Feasibility Findings
+
+> **Status (B680 self-critique iteration 2026-06-10):** owner directive *"Just update all docs"* — proceed with adversarial self-critique in lieu of external reviewer pass.
+
+### Cross-cutting feasibility findings (Claude self-critique 2026-06-10)
+
+| # | Finding | Verification | Severity | Status |
+|---|---|---|---|---|
+| **CC-A** | **BR-8 thesis-bug is a CONFIRMED design contradiction that the walk identified but didn't escalate appropriately.** `strat_dc20_break_retest` consumes `vol_spike_15x` (HIGHER volume) on what its name calls "retest" — but Bulkowski 2005 (the cluster's anchor citation for retest patterns) explicitly states retests form on LOWER volume than the initial break (supply absorption thesis). **The strategy is either (a) named wrong and is actually a "continuation" strategy, or (b) coded wrong and should use `vol_below_avg`.** Either is fixable; the walk surfaced both options but deferred. **This is a 100%-confidence design bug** — not "may be an issue" — and should ship a fix or rename pre-cube to avoid contaminating cube data with a strategy whose thesis-implementation mismatch will produce uninterpretable results. | ✅ Verified by reading Bulkowski 2005 reference + strategy code | **HIGH (confirmed bug)** | NEW — `S4-BR-8-THESIS-BUG-IMMEDIATE-FIX-OR-RENAME` BLOCKING |
+| **CC-B** | **BR-15 `strat_volume_spike_breakout_retest` at 0.01/yr B621 estimator is essentially a ZERO-FIRE strategy that consumes cube budget + multi-testing budget for nothing.** 0.01/yr universe-wide projection = 1 fire every 100 years across 503 names. **Even allowing 100× under-estimate (estimator-to-actual ratio), this is ~1 fire/yr — below `min_trades=30` per regime by 1.5 orders of magnitude.** The strategy CANNOT be statistically validated by ANY cube replay; its registration consumes correction budget; per B620 squeeze_setup_event_only_long precedent (DELETED for FAIL_FIRE_STARVED at 2.5 fires/yr), BR-15 is an immediate DELETION candidate per `project_no_apriori_strategy_pruning` explicit owner override on confirmed empirical failure. **Walk noted this but deferred to "EXPLORATORY or DELETE post-B660"; B620 precedent argues delete pre-B660 since the B621 estimator's accuracy has been validated within ±10% on multiple strategies.** | ✅ B621 estimator + B620 precedent | **HIGH** | NEW — `S4-BR-15-DELETION-PER-B620-PRECEDENT-PRE-B660` |
+| **CC-C** | **Pattern N intra-family sub-cluster collinearity is WORSE than the walk admitted: Donchian family is 6 strategies on 1 underlying primitive (DC10/DC20 break-up/down).** BR-9 (donchian_10_breakout) + BR-10 (donchian_breakout_long) + BR-11 (donchian_breakdown_short) + BR-12 (donchian_breakout_retest_long) + BR-13 (donchian_breakdown_retest_short) + cross-cluster SM-39 (donchian_breakout_with_smart_money_long) = **6 strategies on ONE primitive class with the only differentiation being gate-count + slack-tolerance (0.2% vs 1%) + retest variant.** Walk noted "effective N ≈ 13" for the cluster overall but Donchian sub-family alone is 6 → effective N ≈ 2 (continuation + retest in each direction). The cluster's actual effective N is closer to 8 not 13 once Donchian + 52w + retest sub-families are properly collapsed. | Mechanical from gate-set inspection | HIGH | NEW — extend existing `S4-BR-CLUSTER-PATTERN-N-FLAGSHIP-CUBE-ABLATIONS` |
+| **CC-D** | **CC1 next-open-after-gap is LESS BENIGN than the walk framed it.** Walk said breakout gaps are "in continuation direction therefore less damaging" — but 52w-high breakouts gap UP, engine enters next-open at UP price, and breakout-FAILURE patterns (false breakouts) typically reverse hard. **For the WIN cases the engine pays the gap but profits; for the LOSE cases the engine pays the gap AND eats the reversal.** Asymmetric: gap-cost is paid every trade; gap-benefit only on wins. **Net realized return is materially lower than backtest assumption of close-to-close.** This is a systematic bias the cube cannot eliminate without intraday data + actual gap statistics. Should ship gap-haircut sensitivity flag pre-cube. | Mechanical from engine entry mechanism | MEDIUM-HIGH | NEW — `S4-BR-CC1-ASYMMETRIC-GAP-COST-HAIRCUT` |
+| **CC-E** | **Pattern T forensic-fix density is a cluster-positive note but creates a HIDDEN cube-validation debt.** 12+ batches of forensic fixes (B582 through B663) — none have been validated under post-B660 full-universe cube replay. **The cluster's "cleanest discipline in roster" framing is actually "cleanest fix log; no validation."** Each forensic fix was made on observed empirical evidence at the time but the cumulative post-fix design may have over-fit to observed failures + lost the natural diversity that captures unobserved failures. **Re-validation queue size: ~12 batches × ~2-3 strategies per batch = 25-35 strategy-fix-validation cells, on top of the standard 19-strategy × 26-exit cube grid.** This is a non-trivial cube budget allocation. | Mechanical from forensic-fix lineage | MEDIUM | NEW — `S4-BR-PATTERN-T-CUBE-REVALIDATION-BUDGET-ALLOCATION` |
+| **CC-F** | **Pattern O ~10 hardcoded thresholds collectively constitute a SUBSTANTIAL hidden free-parameter space.** vol_spike_15x / vol_spike_17x / ATR coefficients (0.5x / 1.5x) / retest tolerances (0.5% / 1% / 3%) / 40% close-strength / breakout_3_candles_old / 99/101 pullback ratios. **At 10 parameters with ~3 plausible values each = 59,049 configuration variants.** Even sampling 1% of this space = 590 configurations × cube cells = unfeasible. **The cluster's "calibrated" thresholds are owner-picks or empirical-observation choices; treating them as fixed in cube validation OVERSTATES the cluster's robustness — any single threshold deviation could flip the cube verdict.** | Mechanical from parameter inventory | MEDIUM | NEW — `S4-BR-PATTERN-O-FREE-PARAMETER-SPACE-DOCUMENT-SCOPE-LIMITATION` |
+| **CC-G** | **Pattern U 5-gate post-B589 family signature creates HIDDEN inverse-correlation traps.** 8 strategies (BR-1/3/5/9/10/11/12/13) all consume `close_above_open` (LONG) or `close_below_open` (SHORT) + `close_in_top_40pct_of_range` / `close_in_bottom_40pct_of_range`. **These two gates are MECHANICALLY correlated** — `close_in_top_40pct` strongly implies `close_above_open` (a strong close in top-40% almost always means bullish bar). Including both is double-counting bullishness intensity. **Pattern U "canonical template" is a methodological habit but has internal collinearity that inflates apparent confluence.** Cube ablation should remove one or the other and measure the marginal contribution; likely shows the second gate is near-no-op. | Mechanical from candle anatomy | MEDIUM | NEW — `S4-BR-PATTERN-U-INTERNAL-COLLINEARITY-CLOSE-ABOVE-OPEN-VS-TOP-40-PCT` |
+
+### Per-strategy reframings (Claude self-critique)
+
+| Strategy | Walk disposition | Self-critique reframing | Action |
+|---|---|---|---|
+| **BR-8** `strat_dc20_break_retest` | RECOMMENDED (d) — cube settles + thesis clarification | **CONFIRMED design bug.** Pre-cube fix required: rename to "continuation" OR swap vol gate to `vol_below_avg`. Owner decision. | Pre-cube fix |
+| **BR-15** `strat_volume_spike_breakout_retest` | RECOMMENDED — EXPLORATORY or DELETE post-B660 | **Pre-cube DELETE per B620 precedent.** Estimator confidence is high enough; B620 precedent established at 2.5/yr (BR-15 is at 0.01/yr — 250× worse case). | Pre-cube DELETE owner-decision |
+| **BR-5** `strat_52wh_break_retest` | RECOMMENDED (d) — cube settles redundancy | **Internal-redundancy concern (near_52w_high + year_high_break_retest_long) is mechanical not empirical.** year_high_break_retest_long REQUIRES today's close >= year_high; near_52w_high requires close >= 98% of year_high. The intersection is near-tautological. **DROP near_52w_high pre-cube; it's adding zero information.** | Pre-cube gate-drop |
+| **BR-9** `strat_donchian_10_breakout` | RECOMMENDED (c) — flagship Donchian-family ablation | **6-gate AND with B591 + B592 forensic-additions; Pattern G fire-starve risk acute.** Projected ~15-40/yr per direction is best-case under independence assumption; with realistic correlation, likely 5-15/yr per direction. Pre-cube fire-count projection candidate for EXPLORATORY route. | Pre-cube fire-count projection |
+
+### Net effect on B676 walk dispositions
+
+- **BR-8 thesis-bug + BR-15 deletion** PROMOTED to pre-cube actions (not post-B660 deferrals)
+- **Pattern N effective-N estimate** REVISED DOWN from 13 to ~8 (Donchian + 52w + retest sub-families more collapsed than walk admitted)
+- **CC1 gap-haircut** asymmetric in lose-cases not just win-cases
+- **Pattern U canonical template** internal-collinearity NEW concern (close_above_open + close_in_top_40pct overlap)
+- **Pattern T forensic-fix cube re-validation** budget allocation NEW concern
+
+### Queue tickets surfaced by self-critique (B680)
+
+- `S4-BR-8-THESIS-BUG-IMMEDIATE-FIX-OR-RENAME` (HIGH; CC-A; pre-cube)
+- `S4-BR-15-DELETION-PER-B620-PRECEDENT-PRE-B660` (HIGH; CC-B; pre-cube)
+- `S4-BR-CC1-ASYMMETRIC-GAP-COST-HAIRCUT` (MEDIUM-HIGH; CC-D)
+- `S4-BR-PATTERN-T-CUBE-REVALIDATION-BUDGET-ALLOCATION` (MEDIUM; CC-E)
+- `S4-BR-PATTERN-O-FREE-PARAMETER-SPACE-DOCUMENT-SCOPE-LIMITATION` (MEDIUM; CC-F)
+- `S4-BR-PATTERN-U-INTERNAL-COLLINEARITY-CLOSE-ABOVE-OPEN-VS-TOP-40-PCT` (MEDIUM; CC-G)
+- `S4-BR-5-NEAR-52W-HIGH-GATE-DROP-PRE-CUBE` (per-strategy reframing)
+
+---
+
 ## B679 Iteration 2 Preparation — Review Solicitation Guide
 
 > **Status (post-B679 format alignment):** READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2. The smart-money cluster doc received 2 review rounds (B669 + B673 → B674); this breakout cluster doc is READY FOR YOUR 2ND-WAVE FEASIBILITY CRITIQUE.

@@ -915,6 +915,51 @@ EXISTING tickets cross-referenced:
 
 **Cumulative B675: 12 of 12 walks fully expanded. CLUSTER WALK COMPLETE.**
 
+## B680 Self-Critique Iteration 2 — Cross-Cutting Feasibility Findings
+
+> **Status (B680 self-critique iteration 2026-06-10):** owner directive *"Just update all docs"* — proceed with adversarial self-critique in lieu of external reviewer pass.
+
+### Cross-cutting feasibility findings (Claude self-critique 2026-06-10)
+
+| # | Finding | Verification | Severity | Status |
+|---|---|---|---|---|
+| **CC-A** | **`po3_bullish` / `po3_bearish` signal source MAY BE SILENTLY DEAD — this is the cluster's GATE concern, not a footnote.** Walk Step 5 identified that `compute_po3_signals()` at [ict_producers.py:46-93](backtest/signals/ict_producers.py#L46-L93) emits `po3_mmbm_setup` + `po3_mmsm_setup` + `po3_accumulation_active` + `po3_manipulation_sweep_*` — BUT NOT `po3_bullish` / `po3_bearish` directly. Yet ICT-1 (`strat_po3_bullish`) + ICT-2 + ICT-3 + ICT-4 ALL consume `s.get("po3_bullish", False)`. **If no producer emits this signal name, the strategies are SILENTLY ZERO-FIRE STRATEGIES.** 4 of 12 strategies (33% of cluster) may not have fired ONCE in any Phase 1A or Stage D run. The walk identified this concern but didn't immediately verify; **this must be verified BEFORE any cube replay or fire-count measurement is trusted for this cluster.** | ✅ Confirmed via grep of producer source | **CRITICAL** | NEW — `S4-ICT-PO3-SIGNAL-PRODUCER-VERIFICATION-IMMEDIATE` BLOCKING ticket |
+| **CC-B** | **Pattern R "institutional flow" framing is the cluster's MOST PERVASIVE overclaim — affects 6 of 12 strategies — and is a direct analog of the smart-money Pattern B that the external reviewer flagged.** ICT-5 `strat_mmbm_long` docstring: *"market makers accumulate at the range low, manipulate price down to trigger retail stops + accumulate cheap liquidity, then distribute upward."* Producer (`compute_po3_signals`) checks: `accum_range_pct <= 0.05` + `today_low < range_low` + `today_close > range_low` + `today_close > today_open`. **ZERO flow signal. ZERO market-maker positioning data. Just candle structure.** The same overclaim pattern that smart-money cluster's Pattern B fix targeted (13F state implying bar-of-fire conviction) applies HERE to PO3 candle structure implying institutional flow. **Walks identified this as Pattern R but the docstring fixes are deferred to post-B660; they should ship pre-cube to avoid the cube producing data labeled with the false thesis.** | ✅ Verified via producer source-read | **HIGH** | NEW — `S4-ICT-PATTERN-R-DOCSTRING-PRE-CUBE-FIX-REQUIRED` |
+| **CC-C** | **Pattern Q "no peer-review" is technically TRUE but understates the cluster's literature relationship.** Walk noted 10 of 12 strategies lack peer-reviewed citation (only Turtle Soup has Raschke 1996). But the underlying patterns (Power-of-3 accumulation/manipulation/distribution; Judas Swing; Market Maker Buy Model) trace to Inner Circle Trader's YouTube methodology + Twitter discourse from ~2010-2024. **This is a "YouTube-era trading framework" — popular among retail traders + arbitrage-exposed.** Crowding decay (CC6 from smart-money B673) applies STRONGLY: retail-popular patterns get arbitraged faster than academic anomalies. Cube replay magnitudes will likely be much smaller than the strategies' implementations imply they "should be." | ICT methodology provenance is observable; crowding hypothesis is testable post-cube | MEDIUM | NEW — `S4-ICT-CROWDING-DECAY-MAGNITUDE-HAIRCUT` |
+| **CC-D** | **Pattern S single-gate strategy shells (ICT-5/6/11/12) violate the same "behavior invisible at call site" anti-pattern the entire review series has fought.** A reader auditing ICT-5 sees `fires = bool(s.get("po3_mmbm_setup", False))` — they CANNOT see that `po3_mmbm_setup` encodes a 4-condition AND with hardcoded `accum_window=5` + `tight_range_threshold=0.05` parameters. This is the same disease the B673 external reviewer flagged on the inspect.currentframe SM-5 gate ("a strategy's output no longer follows from its own code"). **Same anti-pattern + LOWER stakes (no risk control involvement) but architecturally consistent.** Should refactor to explicit-gate composition pre-cube. | ✅ Code inspection | MEDIUM | NEW — `S4-ICT-PATTERN-S-EXPLICIT-GATE-REFACTOR` |
+| **CC-E** | **Cross-cluster Pattern P with SMC creates COMPOUND vendor-library failure surface.** 4 of 12 ICT strategies (Turtle Soup + Judas Swing) consume `smc_liquidity_swept_*` from SMC's joshyattridge/smartmoneyconcepts vendored library. If that library import fails, FOUR ICT strategies + EIGHTEEN SMC strategies = 22 strategies degrade to no-fire simultaneously. **B458 silent-failure logging is wired but the failure MODE looks identical to "no opportunity" in cube outputs.** A 6-hour cube run could produce zero fires from 22 strategies and only the silent_failure log would distinguish "library failed" from "no signals available" — log inspection is NOT in the standard cube post-processing workflow. | ✅ Confirmed via smc_ict.py:39-48 import block | MEDIUM-HIGH | NEW — `S4-ICT-SMC-VENDORED-LIBRARY-CUBE-OUTPUT-DISTINGUISHABILITY` |
+| **CC-F** | **Effective hypothesis count ≈ 4, not 12** — the cluster massively inflates multi-testing budget. PO3 family (ICT-1/2/3/4) all consume `po3_bullish`/`po3_bearish`; MMBM/MMSM (ICT-5/6) consume `po3_mmbm_setup`/`po3_mmsm_setup` — but these are PO3-phase-3 outputs, structurally dependent on the same accumulation primitive; Turtle Soup + Judas Swing (ICT-7/8/9/10) share `smc_liquidity_swept_*`; Week-Opening Gap (ICT-11/12) is the only structurally-independent sub-family. **Net effective N ≈ 4 (PO3 family + Turtle/Judas family + Week-Open family + Raschke-vs-ICT-pure variant)** when 12 are registered. C2 correction inflates the haircut on every other strategy in the program by the difference. | Inherent to cluster structure | HIGH | NEW — extend existing `S4-B673-CC7-EFFECTIVE-HYPOTHESIS-COUNT-WITHIN-CLUSTER` |
+| **CC-G** | **10 of 12 strategies lacking EMA-200 trend filter is structurally analogous to SMC's missing-trend-filter concern, but here the substitution is WORSE: PO3/MMBM/MMSM strategies have NO trend proxy at all** — they fire on candle-structure alone in any regime. ICT-3/4 use weekly_bias substitute (defensible); ICT-7/8/9/10 use bar-of-fire bullish/bearish-bar (one-bar trend signal, fragile); ICT-5/6/11/12 use NOTHING (single-gate-shell consumes producer flag with no regime context). **MMBM/MMSM firing in a bear regime is "buy because price swept the range low + closed bullish" — same setup is documented FAILURE mode in markdown trends (Raschke + Connors *Street Smarts* explicitly warn against Turtle Soup in strong downtrends, which ICT-7's docstring fails to caveat).** Cluster-wide EMA-gate proposal must SHIP pre-cube; the cluster cannot be trusted to fire in regime-appropriate conditions otherwise. | Mechanical from strategy code + Raschke 1996 reference | MEDIUM-HIGH | NEW — `S4-ICT-CLUSTER-WIDE-EMA-PROPOSAL-PRE-CUBE-REQUIRED` |
+
+### Per-strategy reframings (Claude self-critique)
+
+| Strategy | Walk disposition | Self-critique reframing | Action |
+|---|---|---|---|
+| **ICT-1 + ICT-2 + ICT-3 + ICT-4** | RECOMMENDED (b) — producer verification first | **BLOCKING CONCERN.** If signal is silently dead (CC-A), these 4 strategies have been producing zero fires + consuming zero cube budget + producing zero alpha contribution. They've been registered for ~3-4 weeks (B217 wiring). **Pre-cube IMMEDIATE verification required;** if dead, route to (i) deletion candidate OR (ii) re-wiring to `po3_mmbm_setup`/`po3_mmsm_setup` (with name clarification). | Immediate verification ticket — pre-B660 |
+| **ICT-5 + ICT-6** MMBM/MMSM | RECOMMENDED (f) — Pattern R reframe + EMA + EXPLORATORY | **Strongest CC-B case in cluster.** Walk noted "STRONGEST Pattern R case" but disposition is deferred. Should ship docstring-honesty fix in same B680 batch as the walk-doc update. **No code change to FIRES logic; pure docstring honesty.** | Ship pre-cube docstring fix |
+| **ICT-7 + ICT-8** Turtle Soup | RECOMMENDED (d) — status quo + Pattern N cross-cluster ablation | **Raschke 1996 caveat MISSING from docstring.** Original Raschke pattern explicitly fails in strong downtrends; our implementation has no trend filter. Should add docstring caveat. | Docstring caveat add |
+| **ICT-11 + ICT-12** Week-Opening Gap | RECOMMENDED (f) — Pattern Q empirical | **Statistical claim "gaps tend to fill" needs cube validation BEFORE strategy continues to fire.** No published academic backing for the 1.5% threshold; cube can validate empirically against T1a 6-year history easily. | Pre-cube empirical test |
+
+### Net effect on B675 walk dispositions
+
+- **ICT-1/2/3/4 producer verification** PROMOTED to BLOCKING + pre-B660-required
+- **Pattern R docstring fixes (ICT-5/6 + other 4)** ship in B680 — no code change, pure honesty
+- **Pattern S explicit-gate refactor** ELEVATED to architectural-concern (parallel to inspect.currentframe SM-5 case)
+- **Cross-cluster Pattern P with SMC** EXTENDED to include cube-output-distinguishability concern
+- **Cluster-wide EMA proposal** ELEVATED to pre-cube-required (especially for MMBM/MMSM)
+- **Effective hypothesis count** EXTENDED — ICT contributes ~8 phantom hypothesis-test slots to family-wise correction
+
+### Queue tickets surfaced by self-critique (B680)
+
+- `S4-ICT-PO3-SIGNAL-PRODUCER-VERIFICATION-IMMEDIATE` (CRITICAL; CC-A; blocking)
+- `S4-ICT-PATTERN-R-DOCSTRING-PRE-CUBE-FIX-REQUIRED` (HIGH; CC-B; pure docstring)
+- `S4-ICT-CROWDING-DECAY-MAGNITUDE-HAIRCUT` (MEDIUM; CC-C)
+- `S4-ICT-PATTERN-S-EXPLICIT-GATE-REFACTOR` (MEDIUM; CC-D; architectural)
+- `S4-ICT-SMC-VENDORED-LIBRARY-CUBE-OUTPUT-DISTINGUISHABILITY` (MEDIUM-HIGH; CC-E)
+- `S4-ICT-CLUSTER-WIDE-EMA-PROPOSAL-PRE-CUBE-REQUIRED` (MEDIUM-HIGH; CC-G)
+
+---
+
 ## B679 Iteration 2 Preparation — Review Solicitation Guide
 
 > **Status (post-B679 format alignment):** READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2. The smart-money cluster doc received 2 review rounds (B669 + B673 → B674 incorporation with 12 NEW EXECUTION_QUEUE tickets); this ICT cluster doc is at the same maturity stage as smart-money was post-B669 — READY FOR YOUR 2ND-WAVE FEASIBILITY CRITIQUE.

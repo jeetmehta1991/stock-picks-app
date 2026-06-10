@@ -551,6 +551,49 @@ EXISTING tickets cross-referenced:
 
 **Cumulative B677: 10 of 10 strategies covered. CLUSTER WALK COMPLETE.**
 
+## B680 Self-Critique Iteration 2 — Cross-Cutting Feasibility Findings
+
+> **Status (B680 self-critique iteration 2026-06-10):** owner directive *"Just update all docs"* — proceed with adversarial self-critique in lieu of external reviewer pass.
+
+### Cross-cutting feasibility findings (Claude self-critique 2026-06-10)
+
+| # | Finding | Verification | Severity | Status |
+|---|---|---|---|---|
+| **CC-A** | **CC1 gap-haircut is the cluster's DOMINANT structural concern + the walk acknowledged it but didn't quantify the magnitude.** Bernard-Thomas 1989 PEAD cumulative abnormal return is +1-3% over 60 days for top-decile-surprise; **earnings-day gap alone is typically 5-15%.** Engine entry after the gap captures the 60-day drift (~+1-3% expected) NOT the announcement move. **Realized PEAD strategy return per cube replay will be ~30-60% of the cited CAR magnitude after gap-haircut.** Walks framed CC1 as "documentation-only haircut" — but this should be a quantitative haircut applied to the strategy's expected-value reporting + thesis caveat. Without it, the strategies' "documented +1-3% alpha" framing IS the magnitude overclaim that B673 CC6 fix targeted for smart-money cluster. Same Pattern B-class overclaim at the cited-magnitude level. | Bernard-Thomas 1989 magnitude + typical earnings-gap statistics; quantitative inference | **HIGH** | NEW — `S4-EV-CC1-QUANTITATIVE-GAP-HAIRCUT-REPORTING` |
+| **CC-B** | **EV-7 8-K population-mixing is a CONFIRMED design defect inherited from SM-4 feasibility failure** that the walk identified but didn't ESCALATE to immediate action. Strategy fires on ANY 8-K type — including Item 1.01 M&A target (which B673 reviewer flagged as feasibility failure SM-4). **EV-7 is silently capturing the same M&A target population that SM-4 was reclassified for.** Walk noted "F-population-mixing HIGH" but disposition is "deferred 8-K text parsing OR deprecate pending cube." **Should ship deletion or 8-K Item parsing pre-cube to avoid contaminating cube data with the same uncapturable M&A target population.** | ✅ EV-7 fires on `recent_8k_filed` which includes Item 1.01; cross-ref B673 SM-4 disposition | **HIGH** | NEW — `S4-EV-7-PRE-CUBE-DELETE-OR-8K-ITEM-PARSING-REQUIRED` |
+| **CC-C** | **Pattern W PEAD strict-subset (EV-3 ⊂ EV-1; EV-4 ⊂ EV-2) is more fundamental than the walk admitted — it's a CONFIRMED registry inflation, not a "cube settles" question.** EV-3 fires only when `yoy_surprise_high` (yoy >= +5%) — this is a strict subset of EV-1's `pead_positive_surprise` (yoy > 0 AND ann_ret > +2%) on the YoY-axis (EV-1's announcement-return gate doesn't help; the YoY-axis is monotone). **Cube will produce EV-3 fires as a deterministic subset of EV-1 fires; per-trade Sharpe will be near-identical by construction.** Pattern W is a Pattern N reskin disguised as a "stricter sub-population" — same Pattern E class as the smart-money confluence wraps where bullet text reframe was insufficient and Pattern F audit was required. **Should reframe EV-3/EV-4 as "tighter-threshold variants of EV-1/EV-2" + deprecate per cube replay; deletion candidate per `project_no_apriori_strategy_pruning` override.** | Mechanical from gate sets | MEDIUM-HIGH | NEW — `S4-EV-3-EV-4-RESKIN-DEPRECATE-PER-CUBE` |
+| **CC-D** | **EV-5 + EV-6 pre-FOMC strategies depend on calendar-feed accuracy — but the producer's calendar feed integrity is unaudited.** `pre_fomc_d1` signal source not surfaced in walk; presumably some FOMC calendar in producer. **What feed? What lag? What revisions?** FOMC dates are SCHEDULED but the Fed has historically moved meeting dates (rarely, but it happens) + emergency meetings exist. Walk's "scheduled event = no entry-side gap" framing assumes calendar correctness. **No PIT audit of the pre-FOMC calendar producer.** Subtle lookahead risk if the producer was populated retroactively from final calendar (including any moved meetings re-anchored to actual dates). | Producer source not surfaced in walk; needs investigation | MEDIUM | NEW — `S4-EV-PRE-FOMC-CALENDAR-PIT-AUDIT` |
+| **CC-E** | **Effective hypothesis count ≈ 4, not 10.** PEAD family is 4 variants (EV-1/EV-2/EV-3/EV-4) on 2 underlying primitives (positive_surprise + negative_surprise); Pre-FOMC is 2 on 1 primitive; 8-K is 1; Insider is 2 on 1 primitive (cross-walked). **Effective N ≈ 4 distinct signal classes** — the cluster is 2.5× over-registered relative to its underlying signal diversity. C2 correction haircut inflated proportionally. | Inherent to cluster structure | HIGH | NEW — extend existing CC7 ticket |
+| **CC-F** | **Cross-cluster Pattern X with smart-money creates governance debt** — 3 of 10 strategies are dual-membership (SM-1 + SM-2 + SM-6 walked in smart-money cluster doc). Cross-references add `S4-CROSS-CLUSTER-REGISTRY-DEDUP-NOMENCLATURE` debt at every walk doc update. Without a STRATEGY_REGISTRY canonical source-of-truth, per-cluster docs drift apart on dispositions for shared strategies. | Mechanical from cross-cluster membership | MEDIUM | NEW — extend existing `S4-CROSS-CLUSTER-REGISTRY-DEDUP-NOMENCLATURE` |
+| **CC-G** | **`pead_positive_surprise` composite threshold (yoy > 0 AND ann_ret > +2%) is arbitrary** — yoy > 0 is mechanical (any positive growth); ann_ret > +2% is the canonical announcement-effect threshold per Foster-Olsen-Shevlin but the cluster's other gates (`yoy_surprise_high = yoy >= +5%`) suggest tighter calibration is plausible. **Pattern O hardcoded; sensitivity untested.** | ✅ Verified from producer | LOW-MEDIUM | NEW — `S4-EV-PEAD-COMPOSITE-THRESHOLD-CALIBRATION` |
+
+### Per-strategy reframings (Claude self-critique)
+
+| Strategy | Walk disposition | Self-critique reframing | Action |
+|---|---|---|---|
+| **EV-3 + EV-4** PEAD strict-subset variants | RECOMMENDED (d) — cube settles whether sub-population earns registry slot | **Reskin DETERMINISTIC SUBSET; cube will show near-identical per-trade Sharpe by construction.** Strong DELETION candidate per CC-C; cube can validate the deletion claim. | Pre-cube DELETION candidate |
+| **EV-7** 8-K buyback proxy | RECOMMENDED (d) — cube validates proxy | **CC-B carry — should DELETE or implement 8-K Item parsing pre-cube to avoid M&A target contamination.** | Pre-cube DELETE-OR-FIX |
+| **EV-1 + EV-2** PEAD long/short | RECOMMENDED (d) — CC1 haircut + 4-variant ablation | **Quantitative CC1 haircut should ship in docstring pre-cube.** Reframe expected magnitude as "60-day drift component only (~+1-3%), NOT announcement-day move (~+5-15%)." | Pre-cube docstring honesty |
+| **EV-5 + EV-6** pre-FOMC | RECOMMENDED (a) + (b) — well-anchored cluster-positive | **Calendar PIT integrity should be verified pre-cube** (CC-D). Otherwise this is the cluster's cleanest strategy pair. | Pre-cube calendar PIT pin |
+
+### Net effect on B677 walk dispositions
+
+- **EV-3 + EV-4 deletion** ELEVATED to pre-cube candidate per Pattern W deterministic-subset finding
+- **EV-7 deletion or fix** ELEVATED to pre-cube per SM-4 contamination carry-forward
+- **CC1 gap-haircut** ELEVATED from documentation-only to quantitative reporting requirement
+- **Pre-FOMC calendar PIT integrity** NEW audit
+- **Effective hypothesis count** EXTENDED — event-driven contributes ~6 phantom hypothesis-test slots
+
+### Queue tickets surfaced by self-critique (B680)
+
+- `S4-EV-CC1-QUANTITATIVE-GAP-HAIRCUT-REPORTING` (HIGH; CC-A)
+- `S4-EV-7-PRE-CUBE-DELETE-OR-8K-ITEM-PARSING-REQUIRED` (HIGH; CC-B)
+- `S4-EV-3-EV-4-RESKIN-DEPRECATE-PER-CUBE` (MEDIUM-HIGH; CC-C)
+- `S4-EV-PRE-FOMC-CALENDAR-PIT-AUDIT` (MEDIUM; CC-D)
+- `S4-EV-PEAD-COMPOSITE-THRESHOLD-CALIBRATION` (LOW-MEDIUM; CC-G)
+
+---
+
 ## B679 Iteration 2 Preparation — Review Solicitation Guide
 
 > **Status (post-B679 format alignment):** READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2.
