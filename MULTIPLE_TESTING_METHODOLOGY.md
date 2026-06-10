@@ -1,6 +1,31 @@
 # Multiple-Testing Correction Methodology — Stage-D Cube Selection Policy
 
-**Status:** DRAFT — Batch 666 (2026-06-09 owner-approved foundational re-prioritization commitment per B665 critique #9 + #7). This document is the policy draft, NOT the implementation. The corresponding `multiple_testing_correction.py` module ships in a separate batch once policy decisions in this document are owner-approved.
+**Status:** APPROVED B667 (2026-06-09 owner-approved all 6 decisions). Implementation module `backtest/engine/multiple_testing_correction.py` ships in B667 with 19 unit + integration test pins (test_batch667_multiple_testing_correction.py). The Stage-D cube selection step integration ships in B668 (separate batch since it requires cube-replay infrastructure changes).
+
+**Originally:** DRAFT — Batch 666 (2026-06-09 owner-approved foundational re-prioritization commitment per B665 critique #9 + #7).
+
+**B667 outcome — owner-approved decisions:**
+
+| # | Question | Approved decision |
+|---|---|---|
+| 1 | Which correction(s)? | **COMPOSE** (deflated-Sharpe Bailey-LdP + Hansen SPA + BH-FDR sanity check) |
+| 2 | Family-size N? | **219 deployable** (excludes EXPLORATORY via `cube_eligible_for_multiple_testing` flag) |
+| 3 | Per-regime vs overall? | **Both, independently corrected** |
+| 4 | EXPLORATORY treatment? | **Exclude from family-size count, keep in cube scoring** (W5 + W5m return False from `cube_eligible_for_multiple_testing`) |
+| 5 | Per-direction scope? | **Per-direction families** (LONG + SHORT corrected separately) |
+| 6 | C2 + R8 sequencing? | **Separately, R8 second** |
+
+**B667 implementation surfaces all 6 decisions in code:**
+- Decision 1 → `cube_select_with_multiple_testing()` orchestrator calls all 3 correction functions
+- Decision 2 + 4 → `EXPLORATORY_STRATEGIES` constant + `cube_eligible_for_multiple_testing()` lookup; family-size N is computed per group as deployable-count
+- Decision 3 + 5 → `cube_select_with_multiple_testing()` groups inputs by `(direction, regime)` before applying correction
+- Decision 6 → walk-forward integration deferred; no R8-specific code in B667
+
+**B668 (next batch) will:**
+- Wire `cube_select_with_multiple_testing()` into the Stage-D cube replay path
+- Re-run cube with corrected selection
+- Update STAGE_4_PIVOT_CLUSTER_WALKS.md + STAGE_4_SMART_MONEY_CLUSTER_WALKS.md per-strategy FINAL STATUS blocks with multiple-testing-aware Sharpe ratios
+- Surface the discrepancy report (pre vs post correction; SPA vs BH-FDR disagreements)
 
 **Source:** External-AI 2nd-wave critique C2 (Pass 53 B641 audit) + 2nd-wave-redux critique #7 (Pass 53 B665) + queue tickets `S5-MULTIPLE-TESTING-CORRECTION` + `S5-DO-NOT-DEPLOY-MULTIPLE-TESTING-RECONCILIATION`.
 

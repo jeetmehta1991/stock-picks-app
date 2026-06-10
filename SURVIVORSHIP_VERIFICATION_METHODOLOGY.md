@@ -1,6 +1,23 @@
 # Survivorship Verification Methodology — W5 LONG + W5m SHORT Adversarial Test
 
-**Status:** DRAFT — Batch 666 (2026-06-09 owner-approved foundational re-prioritization commitment per B665 critique #9 + critique C5). This document is the methodology + harness scaffold; the empirical verdict ships once owner approves the harness design + grants approval to run.
+**Status:** APPROVED B667 (2026-06-09 owner-approved all 4 decisions). Harness scaffold `scripts/measure_survivorship_sensitivity.py` ships in B666 + ready-to-execute post-B660. Per Decision 1 (approved), the harness EXECUTION is deferred until B660 (full-universe representative-sample measurement) lands.
+
+**Originally:** DRAFT — Batch 666 (2026-06-09 owner-approved foundational re-prioritization commitment per B665 critique #9 + critique C5).
+
+**B667 outcome — owner-approved decisions:**
+
+| # | Question | Approved decision |
+|---|---|---|
+| 1 | Run harness now or wait for B660 first? | **Wait for B660 first** (foundational sequence integrity) |
+| 2 | Sensitivity thresholds? | **0.5pp / 2pp** (robust / moderate / high) |
+| 3 | Cross-strategy sweep scoping? | **Separate batch** (W5 + W5m first; cluster-wide follows post-cube empirical) |
+| 4 | Action on high-sensitivity verdict? | **Confirm DO-NOT-DEPLOY + flag for deletion in post-cube batch** (no auto-delete per `project_no_apriori_strategy_pruning`) |
+
+**Execution sequence (B667 owner-approved):**
+1. B660 lands → re-populate all per-strategy fire counts with full-universe representative numbers (in flight)
+2. B669 (next data-batch after B660 lands) executes the survivorship harness against W5 + W5m using the post-B660 fire counts; reports per-strategy survivorship sensitivity verdict against 0.5pp / 2pp thresholds
+3. If W5 or W5m show high sensitivity (≥2pp inflation): confirm DO-NOT-DEPLOY architecturally + flag for owner-decision in a post-cube batch
+4. B670+ (later sequence) extends the survivorship sweep cluster-wide per Decision 3
 
 **Source:** External-AI 2nd-wave critique C5 (Pass 53 B641 audit): *"Survivorship bias lethal to W5 + deep-dip longs (left tail deleted from survivor universe)"* + queue ticket `S5-SURVIVORSHIP-T1A-VERIFY`.
 
