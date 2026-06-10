@@ -841,9 +841,9 @@ Per `feedback_asymmetric_data_sources_break_mechanical_inverse`: 13D is **struct
 
 ---
 
-## SM-4. `strat_m_and_a_target_long` (foundational, B664 candidate)
+## SM-4. `strat_m_and_a_target_long` (foundational P17c sleeve, B664 candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B664 candidate). Single-gate event-driven on 8-K Item 1.01.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B664 candidate Pattern D). Single-gate event-driven on 8-K Item 1.01 (material definitive agreement disclosure). Structural mirror of SM-3 activist_13d_long (same producer infrastructure; same stale-lineage Pattern D issue; same regime affinity profile).
 
 ### Step 1 — Read the code
 
@@ -851,53 +851,114 @@ Per `feedback_asymmetric_data_sources_break_mechanical_inverse`: 13D is **struct
 
 ```python
 def strat_m_and_a_target_long(s):
-    """Batch 522 (P17c SCAFFOLD). Long fires when 8-K Item 1.01 (material
-    definitive agreement) landed in the last 30 days. Academic: Pawliczek-
-    Skinner 2018 RAS +2-3pp 10-day CAR..."""
+    """Batch 522 (2026-05-31, P17c SCAFFOLD per EXECUTION_QUEUE).
+
+    Long fires when 8-K Item 1.01 (material definitive agreement)
+    landed in the last 30 days. Trigger boolean is
+    `8k_item_1_01_filed_within_30d` from `compute_sec_edgar_signals`.
+
+    Academic backing: Pawliczek-Skinner 2018 *Review of Accounting
+    Studies* -- Items 1.01 + 2.02 predict short-term returns
+    (~2-3pp 10-day CAR). Item 1.01 is frequently the FIRST public
+    disclosure that a company is being acquired or signed a major
+    partnership; stock often gaps 10-30% on the next bar.
+
+    NOT REGISTERED in ALL_STRATEGIES in Batch 522 -- ships SCAFFOLD-only
+    pending P17a scoped extraction completion + owner approval for
+    ALL_STRATEGIES wire-in.
+    """
     fires = bool(s.get("8k_item_1_01_filed_within_30d", False))
+    return _strat(fires, "long", "sec_edgar_sleeve",
+        ["8k_item_1_01_filed_within_30d"],
+        ["8-K Item 1.01 (material definitive agreement) filed <=30d ago",
+         "Often first public disclosure of M&A or major partnership",
+         "Pawliczek-Skinner 2018 +2-3pp 10-day CAR"])
 ```
 
-**Single-gate strategy.** Only `8k_item_1_01_filed_within_30d`. Identical structural pattern to SM-3.
+**Single-gate strategy.** Only `8k_item_1_01_filed_within_30d`. Identical structural pattern to SM-3 (`strat_activist_13d_long`): single SEC EDGAR event boolean → fires LONG.
+
+**LONG fires when:**
+
+| Gate | Meaning |
+|---|---|
+| `8k_item_1_01_filed_within_30d` | An 8-K filing tagged Item 1.01 (material definitive agreement) landed within the last 30 calendar days |
 
 ### Step 2 — Classify
 
-- Category: `sec_edgar_sleeve` (P17c); single LONG
-- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
-- Last touched: B531 (wire-in; docstring still says "NOT REGISTERED" — STALE)
+- Category: `sec_edgar_sleeve` (P17c sleeve, registered alongside P17b SM-3 activist_13d_long)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default `{bull, neutral}` (excludes bear + crisis)
+- Last touched: B531 (wire-in to `ALL_STRATEGIES` + producer activation in `screen_instrument`; docstring "NOT REGISTERED" is **STALE** by 2 batches per reviewer F-Pattern D)
 
 ### Step 3 — Producer source-read + temporality
 
-**Producer:** `compute_sec_edgar_signals` → `eight_k_item_filed_within_days(item_code="1.01", lookback_days=30)`.
+**Producer:** `compute_sec_edgar_signals` in [sec_edgar_extractor.py:301](backtest/signals/sec_edgar_extractor.py#L301) → calls `eight_k_item_filed_within_days(item_code="1.01", lookback_days=30)`.
 
-**Temporality:** **EVENT-class** ✅. 8-K filings have 4-business-day requirement (SEC rule). Item 1.01 = material definitive agreement disclosure = often FIRST public M&A disclosure. Pawliczek-Skinner's +2-3pp 10-day CAR centers around the filing.
+**Input:** SEC EDGAR-decoded parquet at `data_prefetch/sec_edgar/8_K/<TICKER>.parquet` (B458 silent-failure-friendly load via `_load_decoded`).
+
+**Logic:** `filing_date > (as_of - 30d) AND filing_date <= as_of AND item_codes contains "1.01"` → returns `8k_item_1_01_filed_within_30d: True/False`.
+
+**Temporality:** **EVENT-class** ✅. 8-K filings have a 4-business-day filing requirement (SEC rule per Form 8-K General Instructions B); Item 1.01 disclosure of material definitive agreement is bar-of-fire EVENT signal. Pawliczek-Skinner's +2-3pp 10-day CAR centers around the filing event. Per CHECKLIST (s) EVENT-classification: docstring's "filed <= 30 days ago" claim is consistent with EVENT temporality (the filing event triggered the 30-day rolling window). ✅ No timing overclaim.
+
+**Cross-reference: producer wired into screen_instrument at B531** per the same lineage as SM-3 — same wire-in commit; same wire-in source-of-truth at screener.py:6758.
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
-| "Pawliczek-Skinner 2018 RAS +2-3pp 10-day CAR" | ✅ Real paper, real result |
-| "Often first public disclosure of M&A" | ✅ Material definitive agreement disclosure |
-| "NOT REGISTERED" | ⚠ **STALE** — B531 wired in |
+| "Pawliczek-Skinner 2018 *Review of Accounting Studies* +2-3pp 10-day CAR" | ✅ Real paper, real result. Specifically "The 8-K Disclosure Choice and Earnings Quality" documents post-filing CAR on material-definitive-agreement disclosures. |
+| "Item 1.01 = material definitive agreement (MDA)" | ✅ Accurate per SEC Form 8-K Item 1.01 specification |
+| "Often FIRST public disclosure of M&A" | ✅ For target-side disclosures, this is the canonical pattern (acquirer announces deal → target files 8-K Item 1.01 within 4 business days) |
+| "Stock often gaps 10-30% on next bar" | ✅ Empirical heuristic; consistent with M&A premium literature (Bradley-Desai-Kim 1988 *JFE* documents +30% average target-side premium) |
+| "NOT REGISTERED in ALL_STRATEGIES in Batch 522" | ⚠ **STALE** — B531 wired in (Pattern D per reviewer cluster-walk; same lineage gap as SM-3) |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
-No active investigations.
+No active investigations on `m_and_a_target` / `8k_item_1_01_filed`. **Cross-reference shared infrastructure with SM-3:** both depend on `compute_sec_edgar_signals` + `_load_decoded("8_K", ...)`; any future schema-pin or PIT-audit ticket on the SEC EDGAR path applies to both.
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
-8-K Item 1.01 is filed for both acquirer + target. The +2-3pp CAR is on the TARGET side (the company being acquired gaps up on the announcement). Acquirer side often gaps DOWN (deal premium dilutes acquirer). A symmetric SHORT mirror `strat_m_and_a_acquirer_short` would need separation of target vs acquirer signal — currently the producer doesn't distinguish. **Class 7 NEW candidate but requires producer enhancement.** Surface for owner consideration.
+**Per `feedback_asymmetric_data_sources_break_mechanical_inverse` analysis of 8-K Item 1.01 structure:**
+
+8-K Item 1.01 is filed by **BOTH** acquirer AND target on a typical M&A deal — both companies have a material definitive agreement to disclose. But the **forward returns are ASYMMETRIC**:
+- **Target-side**: Pawliczek-Skinner +2-3pp 10-day CAR; Bradley-Desai-Kim ~30% premium on announcement day
+- **Acquirer-side**: typically gaps DOWN on the announcement (deal premium dilutes acquirer EPS; market often skeptical of synergies)
+
+**Current producer limitation:** `eight_k_item_filed_within_days` does NOT distinguish target-side filings from acquirer-side filings. The boolean fires on EITHER party's 8-K. So the strategy as-written is a noisy LONG that mixes:
+- True positive: target-side filings (the +2-3pp CAR alpha source)
+- False positive: acquirer-side filings (which historically gap DOWN; LONG bet is wrong-sided)
+
+**Class 7 NEW SHORT candidate (acquirer side):** `strat_m_and_a_acquirer_short` would short the acquirer on its own 8-K Item 1.01 filing. **REQUIRES PRODUCER ENHANCEMENT** to distinguish target vs acquirer (likely via Form 8-K acquirer-self-flag or via cross-reference with the target's filing). Queued as `S5-SM4-ACQUIRER-SIDE-SHORT-CLASS-7-NEW` per B664 cluster-walk surfacing.
+
+**Economic-symmetry post-producer-enhancement:** if producer distinguishes target vs acquirer, the SHORT mirror IS economically defensible (target+acquirer asymmetric returns are a structural feature of M&A deals, not a data-source artifact). UNLIKE the SM-9/SM-23 13F asymmetry case, this Class 7 NEW SHORT is not Pattern C — both directions are economically real; the implementation just requires producer disambiguation.
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F2 STALE** | "NOT REGISTERED" lineage stale; B531 wired in | LOW |
-| F3 | Same as SM-3 — B291 default; no lineage; defer | INFO |
-| F-temporality | EVENT ✅ | — |
-| F-data-source-asymmetry | Producer doesn't distinguish acquirer vs target — Class 7 NEW SHORT possible IF producer extended | INFO |
-| F-fire-count | ~50-150/yr universe-wide projection (8-K Item 1.01 fires more often than 13D); PASS on min_trades=30 | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F2 STALE Pattern D** | "NOT REGISTERED in ALL_STRATEGIES in Batch 522" claim in docstring is stale by 2 batches (B531 wired in + producer activation in screen_instrument). Reviewer Pattern D cluster-walk finding. | LOW | Pattern D / reviewer F6 (cross-cluster) |
+| F3 regime | No `STRATEGY_REGIME_AFFINITY` entry → B291 LONG default `{bull, neutral}`. M&A target returns are mostly regime-agnostic (deals happen across regimes); B291 default may be over-restrictive (deals in bear/crisis still gap up). Per B663 lesson: ambiguous → defer to post-cube empirical. No lineage means no documented prior decision; B291 default applies until empirical override. | INFO | B663 lineage-grep discipline |
+| F-temporality | EVENT-class ✅ no overclaim per CHECKLIST (s) | — | F7 |
+| F-data-source-asymmetry | Producer doesn't distinguish acquirer vs target; mixes alpha source (target) with adverse signal (acquirer); Class 7 NEW acquirer-SHORT requires producer enhancement | MEDIUM (Pattern D-adjacent) | F2-class (data-source structural) |
+| F-fire-count | 8-K Item 1.01 fires more often than 13D filings (more deals than 5%-ownership-crossings); projected ~50-150/yr universe-wide; PASS on min_trades=30 floor. Note: fire count includes BOTH target + acquirer disclosures, so true target-only fire rate is ~half (~25-75/yr); still PASS but borderline. | INFO | F4-adjacent (low-fire-combo) |
+| F-confluence (single-gate) | Single-gate is unusual for cluster strategies; could be tightened with 8-K Item 1.01 + price-near-acquisition-rumor-spike confluence — but per B620 precedent on EVENT-only strategies, owner-decision required pre-cube. | INFO | — |
 
-**B664 candidate option (recommended):** F2 docstring update only.
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo — no changes |
+| **(b) F2 docstring lineage fix only** (RECOMMENDED) — replace "NOT REGISTERED in Batch 522" claim with current B531 lineage. Zero behavior change. Mechanical fix. Same as B664 candidate Pattern D disposition. |
+| (c) (b) + add explicit `STRATEGY_REGIME_AFFINITY['m_and_a_target_long']: {bull, neutral, bear, crisis}` (all-regimes) per "deals happen across regimes" thesis. Behavior change: enables bear/crisis fires that B291 default currently blocks. Risk: no empirical evidence either way pre-cube. |
+| (d) (b) + Class 7 NEW `strat_m_and_a_acquirer_short` candidate flagged for separate producer-enhancement batch. Surface as `S5-SM4-ACQUIRER-SIDE-SHORT-CLASS-7-NEW` queue ticket. |
+| (e) Stage 5 deferral — defer everything |
+
+**My recommendation: (b) F2 docstring fix only + (d) Class 7 NEW queue ticket (already opened).** Same pattern as SM-3: docstring stale-lineage is unambiguous; behavior-change F3 deferred to post-cube; Class 7 NEW acquirer-SHORT requires producer enhancement (separate batch).
+
+**Awaiting owner direction on SM-4:**
+1. **F2 lineage fix:** approve mechanical fix
+2. **F3 regime affinity:** defer to post-cube empirical / explicit override / no change
+3. **Class 7 NEW acquirer-SHORT:** confirm queue ticket scope or drop the question
 
 ---
 
@@ -1098,55 +1159,107 @@ Transparently documented in `_strat()` and `_strat3()` docstrings; owner can ove
 ```python
 def strat_pead_with_insider_confirmation_long(s):
     """Batch 222: PEAD positive surprise + concurrent insider buying
-    cluster = high-conviction post-earnings drift."""
+    cluster = high-conviction post-earnings drift. Insider activity is
+    independent confirmation that the earnings move is fundamental
+    rather than noise."""
     fires = (
         s.get("within_pead_window", False)
         and s.get("pead_positive_surprise", False)
         and s.get("insider_cluster_active", False)
     )
+    return _strat(fires, "long", "event_driven",
+        ["within_pead_window", "pead_positive_surprise",
+         "insider_cluster_active"],
+        ["Within PEAD drift window (<=60d post-earnings)",
+         "PEAD positive earnings surprise (Bernard-Thomas 1989 drift)",
+         "Insider cluster active (>=2 insiders buying open-market 30d)"])
 ```
 
-**3-gate strategy:** within_pead_window + pead_positive_surprise + insider_cluster_active.
+**3-gate strategy:** all three required (AND-conjunction).
+
+**LONG fires when ALL THREE:**
+
+| Gate | Meaning |
+|---|---|
+| `within_pead_window` | Within ~60 days of last earnings announcement (Bernard-Thomas PEAD window) |
+| `pead_positive_surprise` | Earnings surprise was positive (actual EPS > consensus estimate) |
+| `insider_cluster_active` | ≥2 unique insiders open-market-bought in last 30 days (same SM-1 producer signal) |
 
 ### Step 2 — Classify
 
-- Category: `event_driven`; single LONG
-- STRATEGY_REGIME_AFFINITY: explicit `{"bull", "neutral", "bear"}` (B263 lineage — drop crisis; same empirical Phase 1A-alpha override class as SM-1/SM-2)
+- Category: `event_driven` (PEAD + insider events compose)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: explicit `{"bull", "neutral", "bear"}` (B263 Class C tightening — "drop crisis"; same Phase 1A-alpha empirical Class as SM-1 + SM-2; documented per-line lineage at regime_selector.py:269)
 - Last touched: B222
+- **Cross-cluster membership (Pattern H per reviewer F6):** PRIMARY = PEAD cluster; OVERLAY = smart money (insider component). SM-6 appears in both per-cluster docs; counts ONCE in `ALL_STRATEGIES` for C2 multi-testing purposes.
 
 ### Step 3 — Producer source-read + temporality
 
-- `within_pead_window` / `pead_positive_surprise`: from PEAD producer (post-earnings-announcement drift window detection)
-- `insider_cluster_active`: from SM-1's producer (`compute_insider_cluster_signals`)
+**Producers (two distinct):**
 
-**Temporality:** Both producers are EVENT-class. PEAD window centers on earnings announcement event; insider cluster captures 30-day rolling Form-4 events. ✅
+1. **PEAD detection** (`within_pead_window` + `pead_positive_surprise`): from PEAD producer in [backtest/signals/pead.py](backtest/signals/pead.py). Detects whether today is within the canonical Bernard-Thomas 1989 60-day post-earnings-drift window AND whether the most recent earnings surprise exceeded consensus expectations.
+2. **Insider cluster** (`insider_cluster_active`): SM-1's producer `compute_insider_cluster_signals` in [insider_buying.py](backtest/signals/insider_buying.py). Same 30-day rolling Form-4 EVENT detection as SM-1.
+
+**Temporality classification per CHECKLIST (s):**
+
+| Signal | Temporality | Timing alpha viable? |
+|---|---|---|
+| `within_pead_window` | EVENT (60-day rolling window after earnings event) | ✅ |
+| `pead_positive_surprise` | EVENT (surprise classified at announcement) | ✅ |
+| `insider_cluster_active` | EVENT-like (30-day rolling Form-4; ~2-day filing lag) | ✅ |
+
+**All three are EVENT-class** — 3 EVENT gates per direction. No Pattern B STATE-as-EVENT overclaim concern. The strategy is genuinely event-composite (NOT STATE-disguised-as-event). ✅
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
-| "Insider activity is independent confirmation that the earnings move is fundamental rather than noise" | ✅ Reasonable thesis; Cohen-Malloy-Pomorski 2012 + PEAD literature compose |
+| "PEAD positive surprise + concurrent insider buying cluster = high-conviction post-earnings drift" | ✅ Reasonable composite thesis |
+| "Insider activity is independent confirmation that the earnings move is fundamental rather than noise" | ✅ Defensible — Cohen-Malloy-Pomorski 2012 documents insider trading information content + PEAD literature (Bernard-Thomas 1989) documents drift; independent information channels |
+| Citation set | ⚠ Docstring is brief; doesn't explicitly cite Bernard-Thomas 1989 or CMP 2012. Strengthening citations would mirror SM-1's quality |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
-No active investigations.
+No active investigations on `pead_with_insider`. **Cross-references:**
+- Inherits SM-1's insider-producer open items (parallel-producer audit `S4-INSIDER-PRODUCER-PARALLEL-AUDIT`; schema-pin `S4-INSIDER-SCHEMA-PIN`)
+- PEAD cluster walks (future `STAGE_4_PEAD_CLUSTER_WALKS.md`) will cover the PEAD-side producer audit
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
-PEAD has symmetric LONG/SHORT (positive/negative surprise) but the insider-confirmation half is asymmetric per data source. A mechanical `strat_pead_with_insider_sell_confirmation_short` would face the same data-source-asymmetry issue as the candidate `strat_insider_cluster_short` raised in SM-1 Step 6.
+**PEAD-side symmetry:** PEAD has structurally symmetric LONG/SHORT — Bernard-Thomas documents both positive-surprise drift (LONG) AND negative-surprise drift (SHORT) with comparable magnitudes. A `strat_pead_negative_surprise_short` exists separately (see PEAD cluster) as the symmetric mirror.
+
+**Insider-side asymmetry:** A mechanical `strat_pead_with_insider_sell_confirmation_short` would face the same Pattern C data-source-asymmetry issue raised in SM-1 Step 6 — insider OPEN-MARKET SALES are dominated by diversification/tax/lockup noise per CMP 2012; the SHORT mirror is economically suspect.
+
+**Composite SHORT design:** the honest SHORT mirror would use PEAD negative surprise + insider `concentrated_sell` (>50% holdings dumped, NOT generic cluster_sell). Same economic-defensibility argument as the original `S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW` queued ticket from B662 SM-1 walk; queued but no separate ticket for the PEAD-confluence variant.
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| F1 | No `price_above_ema_200` gate at all — not affected by B663 sweep | ✅ |
-| F2 | Docstring accurate; minimal | ✅ |
-| F3 | B263 lineage at line 269 — INTENTIONAL exclude-crisis | RESOLVED-AS-DECIDED |
-| F-temporality | EVENT ✅ | — |
-| F-data-source-asymmetry | SHORT mirror requires PEAD-symmetric insider half; producer asymmetric → SHORT economically suspect | INFO |
-| F-fire-count | PEAD window × insider cluster co-occurrence is rare; projected ~10-25/yr; **FAIL on min_trades=30** likely | MEDIUM |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| F1 | No `price_above_ema_200` gate at all — not affected by B663 sweep ✅ | — | — |
+| F2 | Docstring accurate but minimal; could strengthen with explicit Bernard-Thomas 1989 + CMP 2012 citations matching SM-1 quality | LOW (cosmetic) | — |
+| F3 | B263 lineage at line 269 of regime_selector.py — `{bull, neutral, bear}` (drop crisis) is INTENTIONAL Phase 1A-alpha empirical override; same Class as SM-1 + SM-2 | RESOLVED-AS-DECIDED | B663 lineage discipline |
+| F-temporality | All 3 gates EVENT-class; no Pattern B overclaim ✅ | — | F7 cluster-positive |
+| F-data-source-asymmetry | SHORT mirror requires concentrated_sell variant; mechanical insider_sell mirror Pattern C-suspect | INFO | F2 (cross-ref `S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW`) |
+| **F-fire-count Pattern G candidate** | PEAD window × positive surprise × insider cluster co-occurrence is RARE; projected ~10-25/yr universe-wide; **FAIL on min_trades=30 per regime LIKELY**. Reviewer F4 explicitly flagged this for EXPLORATORY-candidate review. | MEDIUM | F4 (Pattern G) |
+| F-cross-cluster Pattern H | Cross-cluster member with PEAD cluster (PRIMARY=PEAD; OVERLAY=smart money) | INFO | F6 (Pattern H) |
 
-**B664 candidate option (recommended):** No code change. Surface fire-count concern as queued `S5-SM6-PEAD-INSIDER-FIRE-COUNT-MEASUREMENT` for B660 follow-up.
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo — no changes |
+| **(b) RECOMMENDED B669** — no code change; surface fire-count concern as queued `S5-SM6-PEAD-INSIDER-FIRE-COUNT-MEASUREMENT` for post-B660 follow-up + Pattern G EXPLORATORY-candidate review |
+| (c) (b) + docstring strengthening with Bernard-Thomas 1989 + CMP 2012 citations |
+| (d) (b) + Class 7 NEW `strat_pead_with_concentrated_sell_short` PEAD-symmetric SHORT mirror with economic-defensibility test passed (concentrated_sell variant, not generic cluster_sell). Requires owner approval per Class 7 NEW directive. |
+| (e) Stage 5 deferral |
+
+**My recommendation: (b) — no code action this batch.** Per `project_no_apriori_strategy_pruning`, the EXPLORATORY-flag decision waits for B660 measured fires/yr. The fire-count concern is a Pattern G surface; the docstring is functional. Per Q8 deferral (B671 owner-approved post-B660 sequencing), low-fire-combo review ships post-B660.
+
+**Awaiting owner direction on SM-6:**
+1. **Pattern G EXPLORATORY-candidate review:** confirm post-B660 sequencing
+2. **Docstring strengthening:** approve / defer / drop
+3. **Class 7 NEW PEAD-concentrated-sell SHORT:** wire as Class 7 NEW / queue / drop
 
 ---
 
@@ -1161,53 +1274,98 @@ PEAD has symmetric LONG/SHORT (positive/negative surprise) but the insider-confi
 ```python
 def strat_institutional_cluster_long(s):
     """Wave 3 (Batch 330): institutional cluster-buy long.
-    13F shows new_positions >= 3 OR (new_pos >= 1 AND increased >= 2)...
-    Cohen-Frazzini-Malloy 2008 RFS: cluster-buys forecast ~1-month alpha."""
+    13F shows new_positions >= 3 OR (new_pos >= 1 AND increased >= 2) in
+    the most recent quarter (Cohen-Frazzini-Malloy 2008 RFS: cluster-buys
+    forecast ~1-month alpha). Gated by 200-EMA regime to avoid catching
+    falling-knife positions."""
     fires = (
         s.get("institutional_strong_buy", False)
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_strong_buy","price_above_ema_200"],
+        [f"13F cluster: {new_pos} new positions + {incr} increased",
+         "Cohen-Frazzini-Malloy 2008 - cluster-buys forecast 1-mo alpha",
+         "Above 200 EMA (regime gate)"])
 ```
 
-**2-gate strategy:** institutional_strong_buy + 200-EMA.
+**2-gate LONG strategy.** Foundational 13F sleeve — many subsequent strategies (SM-13 through SM-22, SM-24-28) compose variants on this base.
+
+**LONG fires when BOTH:**
+
+| Gate | Meaning |
+|---|---|
+| `institutional_strong_buy` | 13F-derived: new_positions ≥ 3 OR (new_pos ≥ 1 AND increased ≥ 2) in most-recent quarter |
+| `price_above_ema_200` | Long-term uptrend; B663 family-sweep fixed default to False (fail-safe) |
 
 ### Step 2 — Classify
 
-- Category: `smart_money_13f`; single LONG
-- STRATEGY_REGIME_AFFINITY: `{"bear"}` (B418 cube override — bear=+0.16 Sharpe documented at line 367)
-- Last touched: B663 (default-True fix applied as part of family sweep)
+- Category: `smart_money_13f` (foundational; many later strategies layer on this base)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: explicit `{"bear"}` (B418 cube override — bear=+0.16 Sharpe documented at regime_selector.py:367)
+- Last touched: B663 (`price_above_ema_200` default-True → False as part of family sweep)
 
 ### Step 3 — Producer source-read + temporality
 
-**Producer:** `compute_persistence_signals` in `institutional_persistence_consumer.py` + 13F producer at `screen_instrument` injecting `institutional_strong_buy`, `institutional_buy`, `institutional_negative`, etc.
+**Producer pipeline:**
+1. **13F bulk feed** at `backtest/data/smart_money.py` `live/sec13f` Quiver Trader endpoint → `data_prefetch/quiver/sec13f/global.parquet`
+2. **13F injection** at `screen_instrument` reads bulk + filters by ticker + classifies into `institutional_strong_buy` / `institutional_buy` / `institutional_negative` / `institutional_new_positions` / `institutional_increased` counts
+3. **DEC-325 45-day publication lag** enforced — `as_of` filter restricts to filings whose `publication_date <= as_of - 45 calendar days` (PIT-correct; institutions have 45 days post-quarter-end to file)
 
-**Temporality:** **STATE-class** ⚠ — 13F filings are QUARTERLY with DEC-325 45-day publication lag. `institutional_strong_buy` is effectively constant ~90 days at a time. **NOT a bar-of-fire timing signal.** Per B611 lesson: docstring claim "cluster-buys forecast 1-month alpha" implies EVENT timing alpha that the producer cannot supply on the bar of fire.
+**Per CHECKLIST (s) EVENT/STATE classification:**
+
+| Signal | Temporality | Timing alpha viable? |
+|---|---|---|
+| `institutional_strong_buy` | **STATE** — quarterly filings, 45-day publication lag; constant ~90 days at a time | **NO timing alpha at fire bar** per B611 lesson |
+| `price_above_ema_200` | STATE — slow-moving trend gate | NO bar-of-fire timing alpha but valid eligibility filter |
+
+**0 EVENT gates per direction** → Pattern B candidate. Docstring's "cluster-buys forecast 1-month alpha" implies a timing horizon that the QUARTERLY-cadence STATE signal structurally cannot supply.
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
-| "Cohen-Frazzini-Malloy 2008 RFS - cluster-buys forecast 1-mo alpha" | ⚠ Real paper but the alpha is long-horizon factor-tilt; bar-of-fire timing claim **STATE-as-EVENT overclaim** per B611 |
-| "Gated by 200-EMA regime to avoid catching falling-knife" | ✅ accurate |
+| "Cohen-Frazzini-Malloy 2008 RFS - cluster-buys forecast 1-mo alpha" | ⚠ **Pattern B STATE-as-EVENT overclaim** — CFM 2008 documents long-horizon factor-tilt (institutional ownership predicts forward returns over horizons that don't depend on bar-of-fire timing). The "1-month alpha" framing implies bar-of-fire timing that the 90-day-constant STATE signal cannot provide per B611 lesson. |
+| "Gated by 200-EMA regime to avoid catching falling-knife" | ✅ accurate — 200-EMA filter is a real long-trend gate |
+| "Cluster-buys forecast" | ⚠ "forecast" implies timing prediction; honest framing per B611 = "eligibility filter / factor-tilt" |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
-No active investigations on the strategy. B611 set the precedent for the docstring honesty reframe class.
+No active investigations on SM-7 directly. B611 set the precedent for the docstring honesty reframe template; SM-7 is the canonical Pattern B candidate.
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
-13F is SEC long-only. `strat_institutional_cluster_short` would have no data source. SM-9 + SM-23 use `institutional_negative` (trimming) as SHORT proxy but that's economically suspect per B611 precedent — see SM-9 walk.
+**13F is SEC long-only by rule** (Securities Act §13(f)). `strat_institutional_cluster_short` would have no data source for institutional short positions; mechanical mirror not possible. ✅ structural — same Pattern C structural property as the rest of the sleeve.
+
+SM-9 + SM-23 use `institutional_negative` (trimming) as SHORT proxy but B611 + B669 reviewer F2 established this is **economically false** (13F-trim ≠ bear conviction; rebalancing/tax/redemption dominated). B670 DELETED both SM-9 + SM-23.
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event** | Docstring "cluster-buys forecast 1-mo alpha" implies bar-of-fire timing; producer is quarterly STATE per B611 lesson. **Pattern B family-bug candidate** (~22 institutional sleeve strategies share this overclaim) | MEDIUM |
-| F1 | `price_above_ema_200` default-True fixed B663 | ✅ SHIPPED B663 |
-| F3 | B418 cube override `{bear}` — documented INTENTIONAL | RESOLVED-AS-DECIDED |
-| F-fire-count | 13F cluster-buy events are uncommon; projected ~40-100/yr per direction; PASS on min_trades=30 | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B** | Docstring "cluster-buys forecast 1-mo alpha" implies bar-of-fire timing; producer is quarterly STATE per B611 lesson. **Pattern B family-bug candidate** (canonical example for the 20-strategy sweep). Pattern B disposition RE-FRAMED per reviewer F1 (Pattern F gates Pattern B sweep) — docstring fix ships only after marginal-contribution test surfaces whether the 13F gate carries distinct information. | MEDIUM | F1 (Pattern F gates Pattern B) |
+| **F-marginal-contribution Pattern F audit candidate** | Per reviewer F1: if 13F is correctly relabeled as 90-day-constant eligibility filter, this strategy's actual edge lives in the `price_above_ema_200` gate (which is STATE-trend; not unique to this strategy). Risk: strategy reduces to "established uptrend with 13F-eligibility filter" — Pattern F audit will quantify whether 13F adds marginal information. | HIGH | F1 (Pattern F) |
+| F1 default-True silent-gap | `price_above_ema_200` default-True FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F3 regime affinity | B418 cube override `{bear}` — documented INTENTIONAL with bear=+0.16 Sharpe at regime_selector.py:367 | RESOLVED-AS-DECIDED | B663 lineage discipline |
+| F-fire-count | 13F cluster-buy events are uncommon; projected ~40-100/yr per direction; PASS on min_trades=30 PRELIMINARY pending B660 | INFO | — |
+| F-data-source-asymmetry | 13F long-only ✅ no mechanical SHORT mirror; no Pattern C concern for SM-7 itself | — | — |
 
-**B664 candidate option (recommended):** Docstring honesty reframe — drop "cluster-buys forecast 1-month alpha" timing claim; replace with B611-style "13F-eligibility filter (factor-tilt, not bar-of-fire timing); alpha attribution belongs to 200-EMA regime gate."
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo — no changes |
+| (b) Pattern B docstring reframe immediately — drop "cluster-buys forecast 1-month alpha" timing claim; replace with "13F-eligibility filter (factor-tilt, not bar-of-fire timing); alpha attribution belongs to 200-EMA regime gate." **Per reviewer F1: NOT RECOMMENDED pre-Pattern-F audit** — would make docstring accurately describe a near-no-op gate without resolving whether the strategy should exist. |
+| **(c) RECOMMENDED B669 — gate Pattern B on Pattern F audit** — defer docstring reframe until Pattern F marginal-contribution test surfaces whether 13F gate carries distinct information. If Pattern F shows marginal contribution < 0.10 Sharpe vs strategy without 13F gate, the disposition becomes DELETE not REWORD. |
+| (d) (c) + EXPLORATORY marker pending Pattern F resolution |
+| (e) Stage 5 deferral — defer everything to post-cube |
+
+**My recommendation: (c) — gate Pattern B disposition on Pattern F audit per reviewer F1.** This is the corrected disposition that B669 reviewer F2/F1 critique established. Per `S5-13F-SLEEVE-MARGINAL-CONTRIBUTION-TEST` ticket: Pattern F runs post-B660 + post-cube; Pattern B docstring sweep deferred behind it.
+
+**Awaiting owner direction on SM-7:**
+1. **Pattern F sequencing:** confirm Q7 owner-approved post-B660 sequencing
+2. **Pattern B disposition gated on Pattern F:** approve gating rule
+3. **Post-Pattern-F disposition options surfaced** (Pattern F result determines: docstring reframe / DELETE / EXPLORATORY marker)
 
 ---
 
@@ -1222,34 +1380,62 @@ No active investigations on the strategy. B611 set the precedent for the docstri
 ```python
 def strat_institutional_buy_momentum_long(s):
     """Wave 3 (Batch 330): institutional buy + price momentum.
-    Looser 13F signal combined with MACD + 50-EMA. Yan-Zhang 2009 RFS..."""
+    Looser 13F signal (any buy/strong_buy) combined with price momentum
+    confirmation (MACD bullish + above 50-EMA). Yan-Zhang 2009 RFS:
+    short-horizon institutional persistence + price trend agreement
+    filters out one-off institutional buys at tops."""
     fires = (
         s.get("institutional_buy", False)
         and s.get("macd_12_26_9_bullish", False)
         and s.get("price_above_ema_50", True)  # ⚠ Pattern A family-bug
     )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_buy","macd_12_26_9_bullish","price_above_ema_50"],
+        ["13F new/increased institutional positions",
+         "MACD bullish - price momentum agrees with institutional flow",
+         "Above 50 EMA (intermediate trend gate)"])
 ```
 
-**3-gate strategy:** institutional_buy + MACD bullish + 50-EMA (default-True silent-gap).
+**3-gate LONG strategy.** Looser 13F variant than SM-7 (uses `institutional_buy` instead of stricter `institutional_strong_buy`); composes with MACD + 50-EMA trend.
+
+**LONG fires when ALL THREE:**
+
+| Gate | Meaning |
+|---|---|
+| `institutional_buy` | 13F-derived (looser than SM-7): new_pos ≥ 1 OR increased ≥ 2 |
+| `macd_12_26_9_bullish` | MACD histogram > 0 (momentum confirmation) |
+| `price_above_ema_50` | Intermediate trend (50-EMA); ⚠ **default-True Pattern A silent-gap** (Pattern A family-bug HELD; see Pattern A section) |
 
 ### Step 2 — Classify
 
 - Category: `smart_money_13f`; single LONG
-- STRATEGY_REGIME_AFFINITY: `{"bull"}` (B418 cube override — bull=+0.12 Sharpe at line 366)
+- STRATEGY_REGIME_AFFINITY: explicit `{"bull"}` (B418 cube override — bull=+0.12 Sharpe at regime_selector.py:366)
 - Last touched: B330
 
 ### Step 3 — Producer source-read + temporality
 
-Same producer as SM-7 (13F). `institutional_buy` STATE quarterly. MACD bullish is STATE-ish (momentum hist > 0). `price_above_ema_50` is STATE.
+**Producers:**
+- 13F producer (same as SM-7) → `institutional_buy` STATE
+- MACD producer in `technical.py` → `macd_12_26_9_bullish` STATE-ish (`hist > 0`)
+- 50-EMA producer in `technical.py` → `price_above_ema_50` STATE
 
-**Temporality:** All 3 gates are STATE. Per CHECKLIST (s): if ≤1 EVENT gate per direction AND docstring overclaims timing on STATE → F-timing-fragility HIGH. Here: 0 EVENT gates + docstring implies smart-money flow timing → Pattern B overclaim candidate.
+**Per CHECKLIST (s) EVENT/STATE classification:**
+
+| Signal | Temporality | Timing alpha viable? |
+|---|---|---|
+| `institutional_buy` | STATE (quarterly + 45-day lag; constant 90d at a time) | NO |
+| `macd_12_26_9_bullish` | STATE-ish (`hist > 0` is a state that can persist weeks) | NO at bar-of-fire timing precision |
+| `price_above_ema_50` | STATE (slow-moving trend gate) | NO |
+
+**0 EVENT gates per direction** → Pattern B candidate. Docstring's "MACD bullish - price momentum agrees with institutional flow" implies timing-alpha-via-flow-confirmation that the all-STATE composite cannot supply on the bar of fire.
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
 | "Yan-Zhang 2009 RFS: short-horizon institutional persistence + price trend agreement" | ⚠ Real paper; but "short-horizon" in Yan-Zhang means ~1 quarter, NOT bar-of-fire. Same STATE-as-EVENT class as SM-7 |
-| "Filters out one-off institutional buys at tops" | ✅ MACD bullish + 50-EMA do filter trend disagreement |
+| "Filters out one-off institutional buys at tops" | ✅ MACD bullish + 50-EMA do filter trend disagreement on the eligibility side |
+| "Smart money flow" framing | ⚠ "flow" implies timing — Pattern B overclaim per B611 lesson |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
@@ -1257,18 +1443,33 @@ No active investigations.
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
-13F long-only; mechanical mirror false. Per B611 precedent — see Pattern C in cross-strategy section.
+13F long-only; mechanical mirror would be economically false per Pattern C precedent. No SHORT mirror candidate.
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F1 Pattern A** | `s.get("price_above_ema_50", True)` default-True silent-gap | MEDIUM (B664 candidate) |
-| **F-state-as-event Pattern B** | All 3 gates STATE; docstring implies timing alpha | MEDIUM (B664 candidate) |
-| F3 | B418 `{bull}` cube override | RESOLVED-AS-DECIDED |
-| F-fire-count | Looser 13F gate × MACD bullish → projected ~100-300/yr; PASS | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F1 Pattern A** | `s.get("price_above_ema_50", True)` default-True silent-gap | MEDIUM (Pattern A family-bug HELD per B664 candidate) | F1-class (B663 sibling) |
+| **F-state-as-event Pattern B** | All 3 gates STATE; docstring "smart-money flow" implies timing alpha | MEDIUM | F1 (Pattern F gates B) |
+| **F-marginal-contribution Pattern F** | Per reviewer F1: if 13F is correctly relabeled as 90-day-constant eligibility filter, strategy reduces to MACD-bullish-trend-confirmed momentum LONG with 13F-eligibility. The 13F gate may be near-no-op marginal contribution. | HIGH | F1 (Pattern F) |
+| F3 regime affinity | B418 `{bull}` cube override — documented INTENTIONAL with bull=+0.12 Sharpe | RESOLVED-AS-DECIDED | B663 lineage discipline |
+| F-fire-count | Looser 13F gate × MACD bullish → projected ~100-300/yr; PASS PRELIMINARY pending B660 | INFO | — |
 
-**B664 candidate option (recommended):** F1 + Pattern B docstring reframe bundled.
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) F1 Pattern A swap alone (default-True → False) — would be local to SM-8 + cluster-sweep candidate; per Pattern A B664 HELD disposition, sweep ships after B660 |
+| (c) F1 + Pattern B docstring reframe bundled (ORIGINAL B664 recommendation; per reviewer F1 REJECTED pre-Pattern-F audit) |
+| **(d) RECOMMENDED B669 — gate F1 + Pattern B disposition on Pattern F audit** + cluster sweep; same logic as SM-7 (c) |
+| (e) Stage 5 deferral |
+
+**My recommendation: (d) — gate F1 + Pattern B on Pattern F audit.** Same logic as SM-7 — pre-test docstring fix would make docs accurately describe near-no-op gates without resolving whether strategy should exist.
+
+**Awaiting owner direction on SM-8:**
+1. Pattern A + Pattern B + Pattern F gating: confirm post-B660 sequence
+2. Confirm B418 regime override stays untouched per B663 lineage-grep discipline
 
 ---
 
