@@ -3877,176 +3877,569 @@ Same as SM-32 with RSI instead of MFI. RSI-oversold is the canonical Wilder 1978
 
 ---
 
-## SM-36. `strat_squeeze_breakout_with_smart_money_long` (confluence wrap)
+## SM-36. `strat_squeeze_breakout_with_smart_money_long` (confluence wrap, walked — Pattern E candidate + TTM-squeeze-EVENT structure)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672j full expansion). 3-gate LONG sleeve combining TTM squeeze-release EVENT + bullish bar + `_has_smart_money_buy` UNION. Pattern E candidate; bundled with SM-31/SM-32/SM-33/SM-37..SM-41 for B613-template bullet-text reframe. Also residual Pattern A on `close_above_open` default-True (same family as SM-31/SM-39).
 
 ### Step 1 — Read the code
 
-[screener.py:5741-5752](backtest/signals/screener.py#L5741-L5752):
+[screener.py:5909-5920](backtest/signals/screener.py#L5909-L5920):
 
 ```python
 def strat_squeeze_breakout_with_smart_money_long(s):
+    """Squeeze breakout + smart-money buy. Volatility-contraction trade
+    with institutional sponsor."""
     base_fires = (
         s.get("squeeze_on_release", False)
-        and s.get("close_above_open", True)
+        and s.get("close_above_open", True)  # ⚠ Pattern A default-True
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["squeeze_on_release", "close_above_open", "smart_money_buy"],
+        ["TTM squeeze releasing", "Bullish candle",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** TTM-squeeze-release variant of confluence wrap family.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-E** | Same bullet text overclaim | LOW |
-| F-fire-count | TTM squeeze × smart-money rare; ~10-30/yr; borderline | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern E reframe.
+| Gate | Meaning |
+|---|---|
+| `squeeze_on_release` | TTM squeeze indicator firing the "release" trigger (Bollinger inside Keltner state ended; expansion EVENT) |
+| `close_above_open` | Bullish bar — ⚠ Pattern A default-True silent-gap (same family as SM-31/SM-39) |
+| `_has_smart_money_buy(s)` | UNION helper |
+
+### Step 2 — Classify
+
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: original B313 (no B663 trigger because no `price_above_ema_*` gate)
+
+### Step 3 — Producer source-read + temporality
+
+- `squeeze_on_release` is a genuine EVENT signal — the "release" trigger fires the day the Bollinger band exits the Keltner channel (Carter 2008 TTM Squeeze methodology). 1-day lag at most.
+- `close_above_open` EVENT-shaped boundary (today's bar) — default-True silent-gap
+- `_has_smart_money_buy(s)` UNION (variable per branch)
+
+**EVENT/STATE composition:** **1-2 EVENT + 0-1 STATE depending on UNION branch.** This is the most genuinely EVENT-anchored wrap in the SM-31..SM-41 family because BOTH base gates are EVENT-shaped (squeeze-release and bullish bar). When the UNION's EVENT branch is also True → 3 EVENT gates.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Volatility-contraction trade with institutional sponsor" | ⚠ Pattern E "sponsor" framing; same UNION-as-confluence concern |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 reframe queue
+- Also Pattern A `close_above_open` family sweep ticket
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- No SHORT mirror — same reasoning as SM-31..SM-33
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| **F1 Pattern A `close_above_open`** | Same separate WAVE 3 sweep candidate as SM-31/SM-39 | LOW | (separate sweep) |
+| F-fire-count | TTM squeeze release × smart-money UNION rare; projected ~10-30/yr universe-wide; borderline | INFO | F4 |
+| F-marginal-contribution Pattern F | Branch-stratified cube replay (same as SM-31..SM-33) | MEDIUM | F1 |
+
+**Options:** Same as SM-31/SM-32/SM-33 — bundle into 9-wrap B-N batch.
+
+**My recommendation: (d) bundled.**
+
+**Awaiting owner direction on SM-36:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Bundle confirmation across 9 wraps + Pattern A `close_above_open` separate sweep
 
 ---
 
-## SM-37. `strat_xs_momentum_with_smart_money_long` (confluence wrap)
+## SM-37. `strat_xs_momentum_with_smart_money_long` (confluence wrap, walked — XS-MOMENTUM + Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672j full expansion). 3-gate LONG sleeve combining cross-sectional momentum top-decile + 200-EMA + UNION helper. Cross-sectional (XS) momentum = Jegadeesh-Titman 1993/2001 12-1 momentum factor. Pattern E candidate; bundled.
 
 ### Step 1 — Read the code
 
-[screener.py:5755-5767](backtest/signals/screener.py#L5755-L5767):
+[screener.py:5923-5935](backtest/signals/screener.py#L5923-L5935):
 
 ```python
 def strat_xs_momentum_with_smart_money_long(s):
-    """Jegadeesh-Titman 12-1 momentum with smart-money corroboration."""
+    """Cross-sectional momentum (top-decile) + smart-money buy. Jegadeesh-
+    Titman 12-1 momentum with smart-money corroboration."""
     base_fires = (
         s.get("xs_momentum_top_decile", False)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["xs_momentum_top_decile", "price_above_ema_200",
+         "smart_money_buy"],
+        ["XS momentum top decile", "Above 200 EMA",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** XS-momentum variant — universe-relative (not absolute) momentum ranking.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-E** | Same | LOW |
-| F-fire-count | Top-decile momentum cross smart-money → ~30-70/yr | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern E reframe.
+| Gate | Meaning |
+|---|---|
+| `xs_momentum_top_decile` | Today's cross-sectional momentum rank in top 10% of universe (Jegadeesh-Titman 12-1) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
+| `_has_smart_money_buy(s)` | UNION helper |
+
+### Step 2 — Classify
+
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+- `xs_momentum_top_decile` is computed cross-sectionally at bar-of-fire using the Jegadeesh-Titman 12-1 (12-month lookback skipping last month) momentum factor; per CHECKLIST (s), this is STATE-derived (12-month factor exposure) but the top-decile ranking IS bar-of-fire-evaluable
+- `price_above_ema_200` STATE
+- `_has_smart_money_buy(s)` UNION
+
+**EVENT/STATE composition:** **0-1 EVENT depending on UNION branch.** When UNION's EVENT branch active → 1 EVENT + 2 STATE; STATE-only branch → 3 STATE. Pattern B-adjacent but factor-momentum is a documented STATE-based alpha source.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Jegadeesh-Titman 12-1 momentum" | ✅ Correctly attributed — JT 1993 JF + 2001 JF documents the 12-1 momentum factor on US equities. Top-decile is the canonical factor implementation. |
+| "with smart-money corroboration" | ⚠ **Pattern E** — same UNION-as-confluence concern; "corroboration" overclaims |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 reframe queue
+- Cross-sectional factor confluence with SM-38 (low-beta) ablation candidate at cube replay
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- XS momentum has a SHORT side in literature (bottom-decile = momentum-loser SHORT)
+- But combining with smart-money (long-biased) data sources makes the SHORT mirror Pattern C asymmetric
+- No SHORT mirror registered; correctly so per data-source-asymmetry rule
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| F-fire-count | Top-decile XS-momentum × smart-money UNION → projected ~30-70/yr universe-wide; PASS likely | INFO | F4 |
+| F-marginal-contribution Pattern F | Branch-stratified cube replay + XS-factor ablation (SM-37 vs SM-38 vs bare XS-momentum) | MEDIUM | F1 |
+
+**Options:** Same as SM-31/SM-36 — bundle.
+
+**My recommendation: (d) bundled.**
+
+**Awaiting owner direction on SM-37:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Pattern F XS-factor ablation scope (SM-37 + SM-38)
 
 ---
 
-## SM-38. `strat_xs_low_beta_with_smart_money_long` (confluence wrap)
+## SM-38. `strat_xs_low_beta_with_smart_money_long` (confluence wrap, walked — XS-LOW-BETA + Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672j full expansion). 3-gate LONG sleeve combining cross-sectional low-beta (top quintile) + 200-EMA + UNION helper. Frazzini-Pedersen 2014 betting-against-beta (BAB) anomaly. Pattern E candidate; bundled with SM-31..SM-41 reframe.
 
 ### Step 1 — Read the code
 
-[screener.py:5770-5782](backtest/signals/screener.py#L5770-L5782):
+[screener.py:5938-5950](backtest/signals/screener.py#L5938-L5950):
 
 ```python
 def strat_xs_low_beta_with_smart_money_long(s):
-    """Cross-sectional low-beta (Frazzini-Pedersen 2014 BAB) + smart-money buy."""
+    """Cross-sectional low-beta (Frazzini-Pedersen 2014 betting-against-beta)
+    + smart-money buy. Pairs the BAB anomaly with smart-money confirmation."""
     base_fires = (
         s.get("xs_low_beta_top_quintile", False)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["xs_low_beta_top_quintile", "price_above_ema_200",
+         "smart_money_buy"],
+        ["XS low-beta top quintile", "Above 200 EMA",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** BAB factor variant — universe-relative beta ranking (top quintile = LOW-beta exposure).
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-E** | Same | LOW |
-| F-fire-count | Top-quintile BAB cross smart-money → ~40-90/yr | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern E reframe.
+| Gate | Meaning |
+|---|---|
+| `xs_low_beta_top_quintile` | Today's cross-sectional beta rank in TOP 20% of universe = LOWEST 20% beta exposure (Frazzini-Pedersen 2014 BAB) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
+| `_has_smart_money_buy(s)` | UNION helper |
+
+### Step 2 — Classify
+
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+- `xs_low_beta_top_quintile` is computed cross-sectionally at bar-of-fire using BAB methodology (52-week rolling beta to market; rank universe; top-quintile flag). STATE-derived (52-week factor exposure) with bar-of-fire-evaluable ranking
+- `price_above_ema_200` STATE
+- `_has_smart_money_buy(s)` UNION
+
+**EVENT/STATE composition:** **0-1 EVENT depending on UNION branch.** Pattern B-adjacent; same factor-momentum analysis as SM-37.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Frazzini-Pedersen 2014 betting-against-beta" | ✅ Correctly attributed — FP 2014 JFE establishes the BAB anomaly (low-beta stocks earn risk-adjusted alpha). Top-quintile is the canonical low-beta implementation. |
+| "Pairs the BAB anomaly with smart-money confirmation" | ⚠ **Pattern E** — same UNION-as-confluence concern |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 reframe queue
+- XS-factor ablation candidate at cube replay (SM-37 vs SM-38 vs bare XS variants)
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- BAB has a documented HIGH-beta SHORT side in factor literature (Frazzini-Pedersen 2014 long-LowBeta short-HighBeta portfolio is the canonical BAB factor)
+- But combining with smart-money asymmetric data source → mechanical SHORT mirror would be Pattern C
+- No SHORT mirror registered
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| F-fire-count | Top-quintile BAB × smart-money UNION → projected ~40-90/yr universe-wide; PASS likely (most fires of any wrap in the family) | INFO | F4 |
+| F-marginal-contribution Pattern F | Branch-stratified cube replay + XS-factor ablation (SM-37 + SM-38) | MEDIUM | F1 |
+
+**Options:** Same — bundle.
+
+**My recommendation: (d) bundled.**
+
+**Awaiting owner direction on SM-38:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Pattern F XS-factor ablation scope confirmation
 
 ---
 
-## SM-39. `strat_donchian_breakout_with_smart_money_long` (confluence wrap)
+## SM-39. `strat_donchian_breakout_with_smart_money_long` (confluence wrap, walked — DONCHIAN-EVENT + Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672j full expansion). 3-gate LONG sleeve combining Donchian-20 breakout EVENT + bullish bar + UNION helper. Pattern E candidate; same Pattern A residual on `close_above_open` as SM-31/SM-36. Cross-cluster with B591 Donchian cluster (donchian_breakout_long / donchian_breakout_retest_long).
 
 ### Step 1 — Read the code
 
-[screener.py:5785-5796](backtest/signals/screener.py#L5785-L5796):
+[screener.py:5953-5964](backtest/signals/screener.py#L5953-L5964):
 
 ```python
 def strat_donchian_breakout_with_smart_money_long(s):
+    """Donchian 20 breakout + smart-money buy. Classic trend-following
+    entry; smart-money confirms the breakout has fundamental backing."""
     base_fires = (
         s.get("dc20_breakout_up", False)
-        and s.get("close_above_open", True)
+        and s.get("close_above_open", True)  # ⚠ Pattern A default-True
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["dc20_breakout_up", "close_above_open", "smart_money_buy"],
+        ["Donchian-20 breakout up", "Bullish candle",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** Donchian-breakout variant; cross-cluster with B591 Donchian Stage 4 cluster.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-E** | Same | LOW |
-| F-fire-count | Donchian breakout × smart-money → ~20-50/yr | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern E reframe.
+| Gate | Meaning |
+|---|---|
+| `dc20_breakout_up` | EVENT: today's close breaks above trailing 20-bar Donchian high (classic Donchian-20 breakout) |
+| `close_above_open` | Bullish bar — ⚠ Pattern A default-True silent-gap |
+| `_has_smart_money_buy(s)` | UNION helper |
+
+### Step 2 — Classify
+
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: original B313 (no B663 trigger)
+
+### Step 3 — Producer source-read + temporality
+
+- `dc20_breakout_up` is a genuine EVENT — today's close > trailing 20-bar high. 0-day lag.
+- `close_above_open` EVENT-shaped boundary (default-True silent-gap)
+- `_has_smart_money_buy(s)` UNION
+
+**EVENT/STATE composition:** **1-2 EVENT depending on UNION branch.** Genuinely EVENT-anchored base; SM-39 + SM-36 + SM-40 are the EVENT-heaviest wraps in the family.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Classic trend-following entry" | ✅ Donchian-20 breakout is canonical Turtle Trader trend-following entry (Faith 2007 / Eckhardt-Dennis Turtle program) |
+| "smart-money confirms the breakout has fundamental backing" | ⚠ **Pattern E** — "confirms" implies confluence; UNION helper is not confluence |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 reframe queue
+- Cross-cluster Pattern H dedup candidate with B591 Donchian Stage 4 cluster — should appear in donchian-cluster walk doc for owner re-walk
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- Donchian-down-breakdown SHORT mirror exists in B591 cluster (`strat_donchian_breakdown_short` + `strat_donchian_breakdown_retest_short`)
+- But combining with smart-money asymmetric data → Pattern C; no SHORT-mirror sleeve registered
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| **F1 Pattern A `close_above_open`** | Same separate WAVE 3 sweep candidate as SM-31/SM-36 | LOW | (separate sweep) |
+| **F-Pattern-H cross-cluster** | SM-39 cross-cluster with B591 Donchian cluster; surfaces in both walk docs | INFO | F-cross-cluster |
+| F-fire-count | Donchian-20 breakout × smart-money UNION → projected ~20-50/yr universe-wide; PASS likely | INFO | F4 |
+| F-marginal-contribution Pattern F | Branch-stratified cube replay + cross-cluster overlap with bare `strat_donchian_breakout_long` | MEDIUM | F1 |
+
+**Options:** Same — bundle (with Pattern H cross-cluster note for the donchian walk doc).
+
+**My recommendation: (d) bundled.**
+
+**Awaiting owner direction on SM-39:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Pattern H cross-cluster propagation to donchian walk doc
+3. Pattern A `close_above_open` separate sweep
 
 ---
 
-## SM-40. `strat_macd_bullish_with_smart_money_long` (confluence wrap)
+## SM-40. `strat_macd_bullish_with_smart_money_long` (confluence wrap, walked — MACD-CROSS-EVENT + Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672j full expansion). 3-gate LONG sleeve combining MACD bullish cross EVENT + 200-EMA + UNION helper. **Distinct from SM-27 (`institutional_persistence_momentum_long`)** which uses MACD-STATE (bullish, not crossed) — SM-40 uses MACD-CROSS-EVENT which IS a bar-of-fire trigger. Pattern E candidate; bundled.
 
 ### Step 1 — Read the code
 
-[screener.py:5799-5810](backtest/signals/screener.py#L5799-L5810):
+[screener.py:5967-5978](backtest/signals/screener.py#L5967-L5978):
 
 ```python
 def strat_macd_bullish_with_smart_money_long(s):
+    """MACD bullish cross + smart-money buy. Momentum-onset signal with
+    institutional/insider sponsor."""
     base_fires = (
         s.get("macd_bullish_cross", False)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["macd_bullish_cross", "price_above_ema_200", "smart_money_buy"],
+        ["MACD bullish cross", "Above 200 EMA",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** MACD-cross variant — EVENT-anchored momentum-onset.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-E** | Same | LOW |
-| F-fire-count | MACD bullish cross × smart-money → ~30-70/yr | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern E reframe.
+| Gate | Meaning |
+|---|---|
+| `macd_bullish_cross` | EVENT: today's MACD line crossed ABOVE signal line (momentum-onset trigger; distinct from STATE `macd_12_26_9_bullish`) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
+| `_has_smart_money_buy(s)` | UNION helper |
+
+### Step 2 — Classify
+
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+- `macd_bullish_cross` is a GENUINE EVENT — today's bar registers MACD line crossing above signal line. 0-day lag. Distinct from `macd_12_26_9_bullish` STATE used by SM-27.
+- `price_above_ema_200` STATE
+- `_has_smart_money_buy(s)` UNION
+
+**EVENT/STATE composition:** **1-2 EVENT depending on UNION branch.** EVENT-anchored base; same EVENT-heaviness as SM-36/SM-39.
+
+**Cross-reference SM-27 vs SM-40:** SM-27 uses MACD-STATE (`macd_12_26_9_bullish`) which is a regime-flavored gate; SM-40 uses MACD-EVENT (`macd_bullish_cross`) which is a bar-of-fire trigger. These are DIFFERENT signal types. The SM-27 Pattern B concern doesn't carry to SM-40.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Momentum-onset signal" | ✅ MACD bullish cross IS a momentum-onset EVENT (Appel 1979 MACD methodology); correctly framed |
+| "with institutional/insider sponsor" | ⚠ **Pattern E** — UNION-as-sponsor framing |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 reframe queue
+- Companion ablation candidate: SM-27 (MACD-STATE) vs SM-40 (MACD-EVENT) at cube replay — settles whether MACD-cross-EVENT outperforms MACD-bullish-STATE as the timing trigger
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- MACD bearish cross exists in literature; SHORT mirror `strat_macd_bearish_with_smart_money_short` would be Pattern C
+- No SHORT mirror registered
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| F-fire-count | MACD bullish cross × smart-money UNION → projected ~30-70/yr universe-wide; PASS likely | INFO | F4 |
+| F-marginal-contribution Pattern F | Branch-stratified cube replay + SM-27 vs SM-40 MACD-STATE-vs-EVENT ablation | MEDIUM | F1 |
+| F-cross-reference SM-27 | Distinct signal types (STATE vs EVENT); not Pattern H overlap, but informative companion ablation | INFO | F-cross-cluster |
+
+**Options:** Same — bundle.
+
+**My recommendation: (d) bundled.**
+
+**Awaiting owner direction on SM-40:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Pattern F SM-27-vs-SM-40 MACD ablation candidate (post-cube)
 
 ---
 
-## SM-41. `strat_pead_with_smart_money_long` (confluence wrap, cross-cluster with PEAD)
+## SM-41. `strat_pead_with_smart_money_long` (confluence wrap, walked — PEAD CROSS-CLUSTER + Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate. Cross-cluster with PEAD.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672j full expansion). 3-gate LONG sleeve combining PEAD window EVENT + positive earnings surprise EVENT + UNION helper. **Cross-cluster with PEAD cluster** + **direct overlap candidate with SM-6** (`strat_pead_with_insider_confirmation_long` — uses narrower insider_cluster only, not the broader UNION). SM-41 vs SM-6 overlap-audit ticket queued. Pattern E candidate; bundled.
 
 ### Step 1 — Read the code
 
-[screener.py:5813-5827](backtest/signals/screener.py#L5813-L5827):
+[screener.py:5981-5995](backtest/signals/screener.py#L5981-L5995):
 
 ```python
 def strat_pead_with_smart_money_long(s):
-    """Variant of strat_pead_with_insider_confirmation_long (SM-6) that
-    uses the broader smart-money composite rather than insider_cluster alone."""
+    """PEAD (post-earnings-announcement drift) + smart-money composite
+    buy. Variant of strat_pead_with_insider_confirmation_long that uses
+    the broader smart-money composite (insider + institutional + CFO +
+    large-dollar) rather than insider_cluster alone."""
     base_fires = (
         s.get("within_pead_window", False)
         and s.get("pead_positive_surprise", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["within_pead_window", "pead_positive_surprise",
+         "smart_money_buy"],
+        ["Within PEAD window", "Positive earnings surprise",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** PEAD-anchored variant — Bernard-Thomas 1989 post-earnings-announcement drift. Cross-cluster with PEAD cluster + direct overlap with SM-6.
 
-| # | Finding | Severity |
+**LONG fires when ALL THREE:**
+
+| Gate | Meaning |
+|---|---|
+| `within_pead_window` | EVENT-window: within N days post-earnings-announcement (per PEAD producer) |
+| `pead_positive_surprise` | EVENT: positive earnings surprise at the announcement |
+| `_has_smart_money_buy(s)` | UNION helper |
+
+### Step 2 — Classify
+
+- Category: `smart_money_sleeve` (but cross-cluster — PEAD core sits in the earnings cluster)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: original B313 (no B663 trigger)
+
+### Step 3 — Producer source-read + temporality
+
+- `within_pead_window` and `pead_positive_surprise` are both produced by the PEAD producer at announcement time + window-decay logic. Both are EVENT-shaped — `pead_positive_surprise` is the announcement EVENT; `within_pead_window` is the window-active EVENT-decay state (technically STATE but bar-of-fire-evaluable as EVENT-window).
+- `_has_smart_money_buy(s)` UNION
+
+**EVENT/STATE composition:** **2 EVENT base gates + 0-1 EVENT from UNION → 2-3 EVENT gates total + 0-1 STATE.** This is the MOST EVENT-anchored wrap in the SM-31..SM-41 family — all base gates are EVENT-shaped.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "PEAD (post-earnings-announcement drift)" | ✅ Bernard-Thomas 1989 JF + Ball-Brown 1968 documents PEAD; correctly attributed |
+| "Variant of strat_pead_with_insider_confirmation_long that uses the broader smart-money composite (insider + institutional + CFO + large-dollar) rather than insider_cluster alone" | ✅ Correctly characterizes the SM-41 vs SM-6 relationship — narrower (insider) vs broader (UNION). This is an EXPLICIT A/B variant pair |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 reframe queue
+- **Queue ticket `S5-SM41-VS-SM6-OVERLAP-AUDIT`** — SM-41 and SM-6 are explicit A/B variants; cube empirically adjudicates whether broader UNION dilutes (more fires, lower per-trade alpha) or amplifies (more conviction overall) SM-6's edge. Critical Pattern F ablation candidate.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- PEAD negative-surprise SHORT mirror exists in literature (Bernard-Thomas 1989 also documents downside PEAD)
+- But combining with smart-money asymmetric → Pattern C; no SHORT mirror registered
+- SM-6 (insider-only) has direct overlap with SM-41 (UNION); no SHORT mirror in either
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| **F-Pattern-H cross-cluster** | SM-41 cross-cluster with PEAD cluster; needs to appear in PEAD walk doc | INFO | F-cross-cluster |
+| **F-SM41-vs-SM6-overlap** | Explicit A/B pair; broader UNION vs narrower insider-only; cube adjudicates. Queue `S5-SM41-VS-SM6-OVERLAP-AUDIT` ticket | MEDIUM | F1 |
+| F-fire-count | PEAD window × positive surprise × smart-money UNION → projected ~25-60/yr universe-wide; modest PASS likely | INFO | F4 |
+| F-marginal-contribution Pattern F | SM-41 vs SM-6 ablation is the cleanest test in the cluster for "UNION dilution vs amplification" | HIGH | F1 |
+
+**Options:** Same — bundle + add ticket.
+
+**My recommendation: (d) bundled + queue S5-SM41-VS-SM6-OVERLAP-AUDIT.**
+
+**Awaiting owner direction on SM-41:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Pattern H cross-cluster propagation to PEAD walk doc
+3. S5-SM41-VS-SM6-OVERLAP-AUDIT ticket open confirmation
+4. SM-41 vs SM-6 cube ablation priority (could be Pattern F flagship test)
+
+---
+
+## B672 COMPREHENSIVE WALK EXPANSION — COMPLETE
+
+> All 41 smart-money cluster strategies (SM-1 through SM-41) now have full pivot-doc-template per-walk coverage:
+>
+> - **SM-1, SM-2** — B663 closed (default-True ema_200 silent-gap family fix)
+> - **SM-3** — B672 expanded
+> - **SM-4, SM-6, SM-7, SM-8** — B672a expanded
+> - **SM-5** — B670 deleted-then-replaced rationale (centralized gate in `_strat`/`_strat3`)
+> - **SM-9, SM-23** — B670 DELETED + Class 7 NEW replacements
+> - **SM-10** — B672b expanded (citation-error F7)
+> - **SM-11** — B611 cross-ref (regulatory long-only data fact)
+> - **SM-12** — B672c expanded (cross-source canonical #1)
+> - **SM-13, SM-14** — B672d expanded
+> - **SM-15..SM-19** — B672e expanded
+> - **SM-20..SM-22** — B672f expanded
+> - **SM-24..SM-28** — B672g expanded (cross-source canonicals #2 + #3)
+> - **SM-29, SM-30** — B672h expanded (classification overlays; SM-30 best-in-class)
+> - **SM-31..SM-35** — B672i expanded (Pattern E confluence wraps; SM-34/SM-35 B613-closed reference templates)
+> - **SM-36..SM-41** — B672j expanded (Pattern E confluence wraps + SM-41 cross-cluster with PEAD)
+
+**Total fully-expanded: 41 of 41.**
+
+### Bundled disposition recommendations summary
+
+| Pattern | Strategies | Disposition |
 |---|---|---|
-| **F-pattern-E** | Same bullet text overclaim | LOW |
-| F-redundancy-vs-SM6 | SM-41 differs from SM-6 in using the broader UNION (insider OR 13F) vs SM-6's narrower (insider only). Cube empirically adjudicates whether broader UNION dilutes or amplifies SM-6's edge | INFO |
-| F-fire-count | PEAD window × smart-money UNION → ~25-60/yr | INFO |
+| **A (silent-gap default-True)** | SM-1, SM-2 (200-EMA — B663 closed) + SM-24, SM-27, SM-28 (50-EMA — WAVE 2 sweep candidate) + SM-31, SM-36, SM-39 (`close_above_open` — separate WAVE 3 sweep candidate) | WAVE 2 (50-EMA) + WAVE 3 (close_above_open) family sweeps proceed independently |
+| **B (STATE-as-EVENT)** | SM-7, SM-10, SM-13, SM-21, SM-22, SM-24, SM-27 (full Pattern B); SM-25, SM-26, SM-28 (partial; cross-source canonical structure correct) | Docstring reframe + post-cube marginal-contribution test |
+| **C (data-source-asymmetry SHORT)** | SM-9, SM-23 (DELETED B670); SM-11 (regulatory ref) | CLOSED |
+| **D (stale lineage)** | SM-1, SM-2 — B663 confirmed lineage closure | CLOSED |
+| **E (UNION-as-confluence)** | SM-31, SM-32, SM-33, SM-36, SM-37, SM-38, SM-39, SM-40, SM-41 (9 wraps) | Bundled bullet-text reframe per B613 template (RECOMMENDED B-N batch) |
+| **F (marginal-contribution)** | All Pattern B + cross-source canonicals + UNION wraps | Branch-stratified + bundled cube ablations gated on post-B660 + post-cube |
+| **G (low-fire-combo EXPLORATORY)** | SM-6, SM-12, SM-20, SM-25, SM-26, SM-30 | Post-B660 measurement decides EXPLORATORY marker (per W5/W5m precedent) |
+| **H (cross-cluster Pattern)** | SM-29, SM-30 (classification cluster); SM-39 (donchian cluster); SM-41 (PEAD cluster) | Propagate to respective walk docs |
 
-**B664 candidate:** Pattern E reframe + queue ticket `S5-SM41-VS-SM6-OVERLAP-AUDIT` for cube comparison.
+### Queue tickets surfaced
+
+- `S5-SM30-FIRE-COUNT-MEASUREMENT` — confirm <5-15/yr → EXPLORATORY marker
+- `S5-SM41-VS-SM6-OVERLAP-AUDIT` — UNION vs insider-only A/B
+- Pattern A WAVE 2 (50-EMA defaults) family sweep candidate
+- Pattern A WAVE 3 (`close_above_open` defaults) family sweep candidate
+- Pattern B docstring reframe bundle (7+ strategies)
+- Pattern E bullet-text reframe bundle (9 wraps per B613 template)
 
 ---
 
