@@ -1807,9 +1807,9 @@ A mechanical `strat_institutional_insider_combo_short` would be economically fal
 
 ---
 
-## SM-13. `strat_institutional_persistence_breakout_long` (persistence variant, walked)
+## SM-13. `strat_institutional_persistence_breakout_long` (persistence variant, walked — SM-11 template family)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate Pattern B candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672d full expansion). 3-gate Pattern B candidate sharing SM-11 honest-template structure (institutional eligibility + Bulkowski retest timing).
 
 ### Step 1 — Read the code
 
@@ -1825,30 +1825,92 @@ def strat_institutional_persistence_breakout_long(s):
         and s.get("resistance_break_retest", False)
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","resistance_break_retest","price_above_ema_200"],
+        ["5+ institutional funds grew position this quarter",
+         "Post-break retest entry with institutional sponsorship",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 2-6 (compact)
+**3-gate LONG strategy.** Persistence-threshold variant of SM-11 template (SM-11 uses `institutional_buy` looser; SM-13 uses `institutional_increased >= 5` stricter — multi-fund consensus).
 
-- Category: `institutional_persistence`; LONG single
-- No regime entry → B291 default
-- Producer: same 13F STATE + Bulkowski retest EVENT
-- Temporality: 1 EVENT (retest) + 2 STATE → similar to SM-11 + SM-12
+**LONG fires when ALL THREE:**
+
+| Gate | Meaning |
+|---|---|
+| `institutional_increased >= 5` | 5+ institutional funds grew their position THIS quarter (multi-fund consensus, stricter than SM-7/SM-8/SM-11's `institutional_buy`) |
+| `resistance_break_retest` | Bulkowski 2005 post-break retest pattern (EVENT — bar-of-fire) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed default-False |
+
+### Step 2 — Classify
+
+- Category: `institutional_persistence` (distinct from SM-7's `smart_money_13f`; persistence-cluster sub-naming)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default `{bull, neutral}` (no documented lineage)
 - Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+**Producers (3-source composition):**
+1. **13F producer** → `institutional_increased` count of funds (same producer as SM-7 + SM-8 + SM-10; QUARTERLY STATE; 45-day publication lag per DEC-325)
+2. **Bulkowski retest producer** → `resistance_break_retest` (EVENT — bar-of-fire detects post-breakout retest pattern; same as SM-11)
+3. **Technical** → `price_above_ema_200` STATE
+
+**Per CHECKLIST (s) EVENT/STATE classification — MIXED:**
+
+| Signal | Temporality | Timing alpha viable? |
+|---|---|---|
+| `institutional_increased >= 5` | **STATE** (90-day constant) | NO |
+| `resistance_break_retest` | **EVENT** (bar-of-fire retest pattern) | YES |
+| `price_above_ema_200` | STATE (trend gate) | NO |
+
+**1 EVENT gate + 2 STATE gates** — same structure as SM-11. Per B611 honest framing template: alpha attribution = Bulkowski retest TIMING + 13F eligibility + trend filter (NOT "institutional-sponsored" timing).
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "5+ funds growing position + technical breakout retest = institutional-sponsored breakout" | ⚠ **Pattern B STATE-as-EVENT overclaim** — "sponsored" implies bar-of-fire institutional conviction; the 13F-increased STATE is 90-day-constant and gives no bar-of-fire signal per B611 lesson. The Bulkowski retest IS the timing component. |
+| "Sias 2004 herding" | ✅ Real paper; herding result documented but applies to realized trading not 13F position deltas |
+| "Bulkowski retest" | ✅ Real source; Bulkowski 2005 *Encyclopedia of Chart Patterns* documents post-break retest pattern |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations. Cross-reference: SM-11 is canonical B611 template for this Pattern B fix.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only by SEC rule; no mechanical SHORT mirror possible. ✅
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | "Institutional-sponsored breakout" implies sponsor TIMING; same B611 lesson — 13F-state-as-event overclaim | MEDIUM |
-| F-fire-count | `institutional_increased >= 5` × retest is rare; projected ~20-50/yr; borderline | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B** | "Institutional-sponsored breakout" implies sponsor TIMING; same B611 lesson as SM-11. SM-11 already received B611 reframe; SM-13 needs symmetric docstring fix. | MEDIUM | F1 (gates on Pattern F) |
+| **F-marginal-contribution Pattern F** | If 13F is 90-day-constant eligibility filter, strategy reduces to Bulkowski retest in uptrend with 13F-eligibility. SM-13 ≈ SM-11 with stricter 13F threshold (5+ vs ≥1). Marginal contribution test should compare against SM-11 + against generic Bulkowski-retest-in-uptrend. | HIGH | F1 (Pattern F) |
+| F1 default-True silent-gap | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F3 regime affinity | No regime entry; B291 default; no lineage; defer | INFO | B663 |
+| F-fire-count | `institutional_increased >= 5` × retest is rare; projected ~20-50/yr; borderline | INFO | F4-adjacent |
 
-**B664 candidate option (recommended):** Pattern B docstring reframe symmetric with SM-11 — "institutional eligibility filter (factor-tilt) + Bulkowski retest (timing)".
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern B docstring reframe immediately (SM-11 template) — "institutional eligibility filter (factor-tilt) + Bulkowski retest (timing)". Per reviewer F1: NOT RECOMMENDED pre-Pattern-F audit. |
+| **(c) RECOMMENDED B672d — gate Pattern B + Pattern F dispositions on post-B660 sequence** (same logic as SM-7/SM-10/SM-12) |
+| (d) Stage 5 deferral |
+
+**My recommendation: (c).** Same logic as SM-7. Pattern B disposition gated on Pattern F audit; both ship post-B660.
+
+**Awaiting owner direction on SM-13:**
+1. Confirm Pattern B/F sequencing post-B660 (consistent with cluster-wide disposition)
 
 ---
 
-## SM-14. `strat_institutional_persistence_volume_long` (persistence variant, walked)
+## SM-14. `strat_institutional_persistence_volume_long` (persistence variant, walked — **Pattern A + Pattern B**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate. **Pattern A `price_above_ema_50` default-True candidate** + Pattern B candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672d full expansion). 3-gate Pattern A `price_above_ema_50` default-True candidate + Pattern B STATE-as-EVENT candidate.
 
 ### Step 1 — Read the code
 
@@ -1856,31 +1918,93 @@ def strat_institutional_persistence_breakout_long(s):
 
 ```python
 def strat_institutional_persistence_volume_long(s):
-    """Wave 3 (Batch 337): institutional persistence + volume spike.
-    5+ funds growing + retail tape participating = broad-market price
+    """Wave 3 (Batch 337): institutional persistence + volume spike. 5+
+    funds growing + retail tape participating = broad-market price
     discovery on the institutional position."""
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("vol_spike_2x", False)
         and s.get("price_above_ema_50", True)  # ⚠ Pattern A
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","vol_spike_2x","price_above_ema_50"],
+        ["5+ institutional funds grew position",
+         "Volume 2x ADV - retail tape participating",
+         "Above 50 EMA (intermediate trend)"])
 ```
 
-### Step 2-6 (compact)
+**3-gate LONG strategy.** Persistence-threshold variant combining 13F persistence with volume confirmation + 50-EMA intermediate trend.
 
-- `institutional_persistence`; LONG single; B291 default
+**LONG fires when ALL THREE:**
+
+| Gate | Meaning |
+|---|---|
+| `institutional_increased >= 5` | 5+ institutional funds grew position THIS quarter (multi-fund consensus same as SM-13) |
+| `vol_spike_2x` | Volume ≥ 2× 20-day average (EVENT — today's volume) |
+| `price_above_ema_50` | Intermediate trend (50-EMA); ⚠ **default-True Pattern A silent-gap** (same family-bug as SM-8/17/24/27/28) |
+
+### Step 2 — Classify
+
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default `{bull, neutral}` (no documented lineage)
 - Last touched: B337
-- Temporality: 1 EVENT (vol spike) + 2 STATE → Pattern B candidate
+
+### Step 3 — Producer source-read + temporality
+
+**Producers:**
+1. 13F producer → `institutional_increased` count (STATE quarterly + 45-day lag)
+2. Volume producer → `vol_spike_2x` (EVENT — bar-of-fire today's volume vs 20d avg)
+3. EMA-50 producer → `price_above_ema_50` (STATE trend gate; ⚠ Pattern A default-True)
+
+**Per CHECKLIST (s) EVENT/STATE classification — MIXED:**
+
+| Signal | Temporality | Timing alpha viable? |
+|---|---|---|
+| `institutional_increased >= 5` | STATE (90-day constant) | NO |
+| `vol_spike_2x` | **EVENT** (today's volume) | YES |
+| `price_above_ema_50` | STATE | NO |
+
+**1 EVENT + 2 STATE.** Same composition as SM-13 (Bulkowski retest variant) but vol_spike instead of retest as the EVENT.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "5+ funds growing + retail tape participating = broad-market price discovery" | ⚠ Pattern B overclaim — "broad-market price discovery on the institutional position" implies 13F is the timing driver; structurally STATE per B611 lesson. Honest framing: vol_spike is the timing component (EVENT); 13F + 50-EMA are eligibility filters. |
+| "Retail tape participating" | ✅ Real signal: vol_spike_2x = today's volume confirms retail-scale participation, not just smart-money private positioning |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations. Cross-references: Pattern A family-bug shared with SM-8/17/24/27/28 (HELD per B664 candidate Pattern A); Pattern B family-bug shared with all 13F sleeve variants.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only by SEC rule; no mechanical SHORT mirror possible. ✅
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F1 Pattern A** | `price_above_ema_50` default-True silent-gap | MEDIUM (B664 candidate) |
-| **F-state-as-event Pattern B** | "Retail tape participating" + "broad-market price discovery" implies STATE 13F provides timing-EVENT-like sponsorship | MEDIUM |
-| F-fire-count | Co-occurrence of 13F persistence + vol_spike on same bar is rare; projected ~30-60/yr | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F1 Pattern A** | `s.get("price_above_ema_50", True)` default-True silent-gap | MEDIUM (B664 candidate Pattern A; HELD) | F1-class (B663 sibling) |
+| **F-state-as-event Pattern B** | "Broad-market price discovery on the institutional position" implies STATE 13F provides timing-EVENT-like sponsorship | MEDIUM | F1 (Pattern F gates B) |
+| **F-marginal-contribution Pattern F** | If 13F is 90-day-constant eligibility filter, strategy reduces to vol_spike+50-EMA momentum LONG with 13F-eligibility | HIGH | F1 (Pattern F) |
+| F-fire-count | Co-occurrence of 13F persistence + vol_spike on same bar is rare; projected ~30-60/yr; PASS borderline PRELIMINARY pending B660 | INFO | — |
 
-**B664 candidate option (recommended):** F1 + Pattern B docstring reframe bundled.
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) F1 Pattern A swap (5.0 → False default) — local fix; cluster sweep candidate |
+| (c) F1 + Pattern B docstring reframe bundled (B664 candidate) — gated on Pattern F per reviewer F1 |
+| **(d) RECOMMENDED — gate Pattern A + Pattern B + Pattern F on post-B660 sequence**; same logic as SM-7/SM-8 |
+| (e) Stage 5 deferral |
+
+**My recommendation: (d) — Pattern A/B/F all gated on post-B660.**
+
+**Awaiting owner direction on SM-14:**
+1. Confirm Pattern A/B/F post-B660 sequencing
 
 ---
 
