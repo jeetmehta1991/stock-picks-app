@@ -2490,18 +2490,43 @@ def strat_institutional_increased_with_directors_long(s):
 
 ### Step 7
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | "Triple validation" implies 3 independent edges; in reality 2 of 3 are STATE | MEDIUM |
-| F-fire-count | Multi-event co-occurrence → ~10-25/yr; borderline / FAIL on min_trades=30 | MEDIUM |
+**Expanded findings (B672f):** SM-20 is one of the 4 cross-source 13F + Form 4 combos reviewer specifically called out as "where mis-attribution hides" (alongside SM-12 + SM-25 + SM-26).
 
-**B664 candidate option:** Pattern B docstring reframe — "1 EVENT (director EVENT) + 2 STATE; alpha attribution: director EVENT supplies timing".
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-temporality-misattribution** | "Triple validation: existing funds growing, new funds entering, AND board-level insider conviction" conflates EVENT timing (director EVENT) with STATE eligibility (13F STATE quarterly + 200-EMA STATE); same F-temporality concern as SM-12 | MEDIUM | F (reviewer cross-source) |
+| **F-state-as-event Pattern B** | All-13F-derived "validation" overclaim; only director gate is bar-of-fire EVENT | MEDIUM | F1 |
+| **F-marginal-contribution Pattern F** | Strategy ≈ SM-1 (insider_cluster + 200-EMA) with director-isolation + 13F-eligibility filter. Marginal contribution of 13F gate likely small. Pattern F audit candidate. | HIGH | F1 |
+| **F-fire-count Pattern G (reviewer F4 explicit)** | Multi-event co-occurrence → ~10-25/yr; **FAIL likely**; reviewer F4 explicit EXPLORATORY-candidate post-B660 | MEDIUM | F4 (Pattern G) |
+| F-inaccuracy | "(implicit via cluster signal)" claim that `institutional_increased` implies new-funds-entering is inaccurate; the new-funds signal is separate (`institutional_new_positions`) | LOW | F2 |
+| F1 default-True | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F-citation | Akbas-Jiang-Koch 2024 RFS director-premium cited correctly ✅ | — | — |
+
+**Step 6 — Missing-inverse + economic-symmetry:** Both data sources SHORT-asymmetric (13F long-only + insider sales noise-dominated). No mechanical SHORT mirror.
+
+**Step 5 — OPEN_INVESTIGATIONS grep:** No active investigations. Cross-references: same reviewer F-temporality + F-Pattern-G concerns as SM-12.
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Narrow docstring edit — "triple validation" → "1 EVENT (director) + 2 STATE composition; alpha attribution: director EVENT supplies timing"; remove "(implicit via cluster signal)" inaccuracy |
+| **(c) RECOMMENDED B672f** — (b) + gate Pattern B/F/G dispositions on post-B660 sequence (same as SM-12 cross-source canonical) |
+| (d) Stage 5 deferral |
+
+**My recommendation: (c).** Same disposition as SM-12 + SM-25 + SM-26 (cross-source family).
+
+**Awaiting owner direction on SM-20:**
+1. Narrow docstring edit (composition + inaccuracy fix) — approve / defer
+2. Pattern G EXPLORATORY-candidate post-B660 sequencing
+3. Pattern F audit post-B660 sequencing
 
 ---
 
-## SM-21. `strat_institutional_persistent_holders_long` (333 single-quarter proxy, walked)
+## SM-21. `strat_institutional_persistent_holders_long` (333 single-quarter proxy, walked — Pattern B + highest-Pattern-F risk)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate; Pattern B candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672f full expansion). 2-gate; single-quarter proxy variant; **HIGHEST Pattern F risk in the cluster** — only 2 gates means if 13F gate is near-no-op, the strategy reduces to bare `price_above_ema_200 LONG` (the standalone trend filter).
 
 ### Step 1 — Read the code
 
@@ -2517,20 +2542,87 @@ def strat_institutional_persistent_holders_long(s):
     )
 ```
 
-### Step 7
+### Step 1 — Read the code
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | Single-quarter proxy is STATE-as-EVENT class (NOT the same as SM-18's 4q precompute). Docstring still cites Yan-Zhang's multi-quarter result | MEDIUM |
-| F-fire-count | Projected ~50-100/yr | INFO |
+[screener.py:4927-4941](backtest/signals/screener.py#L4927-L4941):
 
-**B664 candidate:** Pattern B reframe.
+```python
+def strat_institutional_persistent_holders_long(s):
+    """Wave 3 (Batch 333): high count of institutional position increases
+    (current quarter) + bullish regime. Proxy for persistence:
+    institutional_increased >= 5 means at least 5 funds grew their position
+    same quarter = strong consensus. Yan-Zhang 2009 RFS."""
+    fires = (
+        s.get("institutional_increased", 0) >= 5
+        and s.get("price_above_ema_200", False)
+    )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","price_above_ema_200"],
+        [f"{n_incr} institutional funds grew position this quarter",
+         "Yan-Zhang 2009 RFS - cross-fund consensus = persistence proxy",
+         "Above 200 EMA (regime gate)"])
+```
+
+**2-gate LONG strategy** — bare 13F-persistence-proxy + 200-EMA. The MINIMAL 13F sleeve composition.
+
+### Step 2 — Classify
+
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+Same 13F producer as SM-7-17. `institutional_increased` STATE quarterly. **0 EVENT gates per direction.**
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Yan-Zhang 2009 RFS - cross-fund consensus = persistence proxy" | ⚠ **Citation-stretch class** — Yan-Zhang 2009 documents MULTI-QUARTER persistence (4+ consecutive quarters), NOT single-quarter consensus. The "proxy" framing acknowledges this but the citation is stretched. SM-18 + SM-19 are the canonical Yan-Zhang strategies (4q precompute); SM-21 is a same-quarter cross-fund consensus that uses Yan-Zhang's name without Yan-Zhang's methodology. |
+| "Proxy for persistence" | ✅ Honest acknowledgment that this is a proxy not the canonical multi-quarter result |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only. ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B** | Single-quarter proxy is STATE-as-EVENT class (NOT the same as SM-18's 4q precompute genuine STATE); docstring cites Yan-Zhang's multi-quarter result | MEDIUM | F1 |
+| **F-marginal-contribution Pattern F (HIGHEST risk in cluster)** | Only 2 gates — if 13F gate is 90-day-constant near-no-op, strategy reduces to bare `price_above_ema_200 LONG` (the standalone uptrend trend filter). **No other gate carries the load.** Pattern F audit will likely show near-zero marginal contribution. | **HIGH (highest in cluster)** | F1 (Pattern F) |
+| F-citation-stretch | Yan-Zhang 2009 result is multi-quarter; SM-21 is single-quarter proxy. Honest docstring acknowledgment partial; not equivalent to SM-18/19. | LOW-MEDIUM | F7-class |
+| F1 default-True silent-gap | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F-fire-count | Projected ~50-100/yr; PASS PRELIMINARY pending B660 | INFO | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern B docstring reframe — gated on Pattern F per reviewer F1 |
+| **(c) RECOMMENDED B672f — gate Pattern B + Pattern F on post-B660 + flag SM-21 as HIGHEST-PRIORITY Pattern F candidate** (smallest gate set; most exposed to "reduces to standalone trend filter" outcome) |
+| (d) DELETE candidate if Pattern F shows marginal contribution near zero (would override `project_no_apriori_strategy_pruning`; explicit owner approval required) |
+| (e) Stage 5 deferral |
+
+**My recommendation: (c) — flag as highest-priority Pattern F audit target.** If the Pattern F audit shows the 13F gate adds < 0.10 Sharpe vs bare 200-EMA LONG, SM-21 is the cleanest deletion candidate in the cluster (most reducible).
+
+**Awaiting owner direction on SM-21:**
+1. Confirm Pattern B/F post-B660 sequencing
+2. Confirm SM-21 flag as highest-priority Pattern F target
+3. Confirm DELETE (d) is on the table if Pattern F shows near-zero marginal contribution
 
 ---
 
-## SM-22. `strat_institutional_strong_conviction_long` (333 variant, walked)
+## SM-22. `strat_institutional_strong_conviction_long` (333 variant, walked — Pattern B + 0 EVENT gates)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate Pattern B candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672f full expansion). 3-gate dual-13F-threshold strategy (existing-holder GROWTH + new-money ENTRY); 0 EVENT gates → Pattern B candidate.
 
 ### Step 1 — Read the code
 
@@ -2538,21 +2630,81 @@ def strat_institutional_persistent_holders_long(s):
 
 ```python
 def strat_institutional_strong_conviction_long(s):
+    """Wave 3 (Batch 333): fresh capital (new positions) + existing-holder
+    growth (increased) simultaneously. Distinct conviction signature -
+    both new entrants AND existing holders agree. Frazzini-Lamont 2008
+    notes new-money + position-growth = institutional consensus."""
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("institutional_new_positions", 0) >= 2
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","institutional_new_positions>=2",
+         "price_above_ema_200"],
+        [f"{n_new} new + {n_incr} grew institutional positions",
+         "Fresh capital agrees with existing-holder conviction",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 7
+**3-gate LONG strategy.** Dual 13F-threshold composition — requires BOTH growing positions (`increased >= 5`) AND new entrants (`new_positions >= 2`) on the same quarter.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | "Fresh capital agrees with existing-holder conviction" implies bar-of-fire timing on STATE quarterly signal. Frazzini-Lamont 2008 is factor-tilt, not bar-of-fire | MEDIUM |
-| F-fire-count | Dual-13F threshold rare; ~20-40/yr; borderline | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern B reframe.
+| Gate | Meaning |
+|---|---|
+| `institutional_increased >= 5` | 5+ funds grew position THIS quarter |
+| `institutional_new_positions >= 2` | 2+ funds initiated new position THIS quarter |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
+
+### Step 2 — Classify
+
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+Both 13F counts from same producer. ALL gates STATE quarterly. **0 EVENT gates per direction.** Pattern B per CHECKLIST (s).
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Frazzini-Lamont 2008 notes new-money + position-growth = institutional consensus" | ⚠ **Pattern B + citation-applicability** — Frazzini-Lamont 2008 documents institutional holding dynamics + forward-return predictability over long horizons. The "consensus" framing implies bar-of-fire conviction; structurally STATE per B611. Citation correctly attributed but result applies to factor-tilt, not bar-of-fire timing. |
+| "Fresh capital agrees with existing-holder conviction" | ⚠ Same Pattern B class — implies bar-of-fire conviction event |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only. ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B** | 0 EVENT gates; "fresh capital agrees with existing-holder conviction" implies bar-of-fire timing on quarterly STATE | MEDIUM | F1 |
+| **F-marginal-contribution Pattern F** | Dual-13F threshold rare; if 13F STATE is near-no-op, strategy reduces to "bull market" via 200-EMA. Same Pattern F risk class as SM-21 but with stricter co-occurrence requirement (lower fire count). | HIGH | F1 |
+| F-fire-count | Dual-13F threshold rare; projected ~20-40/yr; borderline / FAIL on min_trades=30 possible | INFO | F4-adjacent |
+| F1 default-True | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern B docstring reframe — gated on Pattern F per reviewer F1 |
+| **(c) RECOMMENDED — gate Pattern B/F on post-B660** |
+| (d) Stage 5 deferral |
+
+**My recommendation: (c).** Same logic as SM-7/SM-10/SM-13.
+
+**Awaiting owner direction on SM-22:**
+1. Confirm Pattern B/F post-B660 sequencing
 
 ---
 
