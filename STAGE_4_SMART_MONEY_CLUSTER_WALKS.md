@@ -3561,126 +3561,319 @@ def strat_classification_change_with_insider_long(s):
 
 ---
 
-## SM-31. `strat_bollinger_tight_with_smart_money_long` (confluence wrap)
+## SM-31. `strat_bollinger_tight_with_smart_money_long` (confluence wrap, walked — Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate (bullet text not yet B613-reframed).
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672h full expansion). 4-gate LONG sleeve wrap combining Bollinger squeeze + bullish bar + 200-EMA + `_has_smart_money_buy` UNION helper. **Pattern E candidate** — the bullet text "Smart-money buy confirmation" implies bar-of-fire confluence, but per B613 the helper is a UNION ELIGIBILITY FILTER (EVENT-or-STATE) not a confluence signal. SM-34 + SM-35 already received B613 honesty reframe; SM-31 has not. Also a residual Pattern A concern on `close_above_open` default-True (separate from the B663 sweep family).
 
 ### Step 1 — Read the code
 
-[screener.py:5613-5627](backtest/signals/screener.py#L5613-L5627):
+[screener.py:5781-5795](backtest/signals/screener.py#L5781-L5795):
 
 ```python
 def strat_bollinger_tight_with_smart_money_long(s):
+    """Bollinger-tight squeeze + smart-money confirmation. Sleeve variant
+    of bollinger_tight base; smart-money signal validates the squeeze
+    is fundamentally backed rather than technical-only."""
     base_fires = (
         s.get("bb_squeeze", False)
-        and s.get("close_above_open", True)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("close_above_open", True)  # ⚠ Pattern A default-True
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["bb_squeeze", "close_above_open", "price_above_ema_200",
+         "smart_money_buy"],
+        ["Bollinger band squeeze tight", "Above 200 EMA",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E bullet text
 ```
 
-### Step 2-6 (compact)
+**4-gate LONG sleeve wrap.** Base strategy is `bollinger_tight + close_above_open + 200-EMA`; the sleeve appends `_has_smart_money_buy` as a UNION eligibility filter.
 
-- Base strategy: bollinger_tight squeeze + bullish bar + 200-EMA
-- Smart-money wrap: + `_has_smart_money_buy` UNION
-- Bullet text: "Smart-money buy confirmation" — Pattern E candidate
+**LONG fires when ALL FOUR:**
 
-### Step 7
+| Gate | Meaning |
+|---|---|
+| `bb_squeeze` | Bollinger band width below 25th percentile (squeeze STATE; technical compression) |
+| `close_above_open` | Today's bullish bar — ⚠ Pattern A default-True silent-gap (separate family from B663 ema-200 sweep) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
+| `_has_smart_money_buy(s)` | UNION (insider_cluster_active OR cfo_buy OR large_dollar_buy OR institutional_strong_buy OR institutional_buy) — see B613 helper docstring |
 
-| # | Finding | Severity |
-|---|---|---|
-| **F1** | `close_above_open` default-True silent-gap (similar family as B663 but different signal). LOW priority because `close_above_open` is universally emitted by candle producer | LOW |
-| **F-pattern-E** | Bullet text overclaims confluence; B613 honesty reframe needed | LOW |
-| F-fire-count | Squeeze × smart-money rare; ~10-25/yr; borderline | INFO |
+### Step 2 — Classify
 
-**B664 candidate:** Pattern E bullet text reframe.
+- Category: `smart_money_sleeve` (NOT smart_money_13f or smart_money_combo — this is a SLEEVE variant of a technical-base strategy)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663 (Pattern A WAVE 1 on 200-EMA default-True → False)
+
+### Step 3 — Producer source-read + temporality
+
+- `bb_squeeze` STATE — Bollinger band-width percentile computed in [technical.py](backtest/signals/technical.py); rolling 252-day percentile, STATE-flavored regime gate
+- `close_above_open` is technically EVENT-shaped (today's bar) but ⚠ default-True silent-gap means missing data auto-passes
+- `price_above_ema_200` STATE
+- `_has_smart_money_buy(s)` is the UNION helper — when only the STATE half is True (13F STATE without insider EVENT), the wrap reduces to "bollinger_squeeze + bullish_bar + 200-EMA + 13F-sponsored-name" with NO bar-of-fire conviction. When the EVENT half is True, the wrap is genuinely EVENT-anchored.
+
+**EVENT/STATE composition:** **Variable** — depending on which OR-branch of the UNION fires:
+- EVENT branch active (insider_cluster / cfo_buy / large_dollar_buy True): 1 EVENT gate + 3 STATE gates → cross-source canonical structure
+- STATE-only branch active (only institutional_buy or institutional_strong_buy True): 0 EVENT gates + 4 STATE gates → Pattern B class
+- Per CHECKLIST (s) + B613 helper analysis: alpha attribution differs by branch. Bullet text doesn't distinguish.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Sleeve variant of bollinger_tight base; smart-money signal validates the squeeze is fundamentally backed rather than technical-only" | ⚠ **Pattern E framing** — "validates" implies confluence; UNION helper is OR-aggregate not AND-confluence. Same class as SM-34 pre-B613 reframe. |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — should be reframed per B613 template: "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a" |
+| Implicit thesis "smart-money + technical-squeeze = high-conviction trigger" | ⚠ STATE-only branch case is NOT a high-conviction trigger; it's bollinger_tight + 13F-sponsored eligibility filter |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- B613 honesty-reframe pattern queued for the 9 remaining confluence wraps (SM-31 + SM-32 + SM-33 + SM-36 + SM-37 + SM-38 + SM-39 + SM-40 + SM-41)
+- Pattern A `close_above_open` default-True is a separate family from B663 ema-200 sweep — could surface as its own WAVE 3 family sweep
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- No SHORT mirror. Per `feedback_asymmetric_data_sources_break_mechanical_inverse` + B613 `_has_smart_money_sell` DELETION precedent: the smart-money SELL helper was deleted because 4 of 5 components were never emitted; the surviving signal didn't supply bear conviction
+- Mechanical SHORT mirror (`strat_bollinger_tight_with_smart_money_short` using a deleted SELL helper) was correctly NOT registered
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Bullet text "Smart-money buy confirmation" overclaims confluence; B613 honesty reframe template applies | LOW-MEDIUM | F1 / Pattern E (cross-cluster) |
+| **F1 Pattern A `close_above_open`** | Separate from B663 200-EMA WAVE 1 sweep; `close_above_open` default-True silent-gap. LOW priority because `close_above_open` is near-universally emitted by candle producer (silent-gap risk is low) | LOW | (separate WAVE 3 sweep candidate) |
+| F-fire-count | Squeeze × smart-money UNION rare; projected ~10-25/yr universe-wide; borderline | INFO | F4 |
+| F-marginal-contribution Pattern F | Within-strategy EVENT-branch vs STATE-only-branch ablation possible at cube replay; would settle whether STATE-only-branch fires are economically distinct | MEDIUM | F1 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) B613 honesty-reframe bullet text — change "Smart-money buy confirmation" to "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a"; same template as SM-34 |
+| (c) (b) + branch-stratified cube replay surfacing EVENT-branch vs STATE-only-branch verdict per (strategy × exit) cell |
+| **(d) RECOMMENDED — (b) immediately + (c) post-cube. (b) is a pure docstring honesty reframe with zero risk; (c) requires cube-replay infrastructure to support stratification by `_has_smart_money_buy` active-branch** |
+| (e) Pattern A `close_above_open` family sweep (separate from B663) — defer pending broader silent-gap audit |
+
+**My recommendation: (d).** Bundle SM-31 + SM-32 + SM-33 + SM-36 + SM-37 + SM-38 + SM-39 + SM-40 + SM-41 (9 wraps) into a single B-N bullet-text reframe batch per B613 template.
+
+**Awaiting owner direction on SM-31:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (d) bundled across 9 wraps
+2. Pattern F branch-stratified cube replay scope confirmation (post-B660)
+3. Pattern A `close_above_open` family sweep separate decision
 
 ---
 
-## SM-32. `strat_mfi_oversold_with_smart_money_long` (confluence wrap)
+## SM-32. `strat_mfi_oversold_with_smart_money_long` (confluence wrap, walked — Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672h full expansion). 3-gate LONG sleeve wrap combining MFI oversold + 200-EMA + `_has_smart_money_buy` UNION. Same Pattern E concern as SM-31; bundled disposition recommended.
 
 ### Step 1 — Read the code
 
-[screener.py:5630-5641](backtest/signals/screener.py#L5630-L5641):
+[screener.py:5798-5809](backtest/signals/screener.py#L5798-L5809):
 
 ```python
 def strat_mfi_oversold_with_smart_money_long(s):
+    """MFI oversold + smart-money buy. Money-flow oversold often precedes
+    a bounce; smart-money buy raises confidence the bounce is real."""
     base_fires = (
         s.get("mfi_14_oversold", False)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["mfi_14_oversold", "price_above_ema_200", "smart_money_buy"],
+        ["MFI(14) oversold", "Above 200 EMA",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E bullet text
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** Base strategy is `mfi_14_oversold + 200-EMA`; the sleeve appends `_has_smart_money_buy` as a UNION eligibility filter.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-E** | Bullet text "Smart-money buy confirmation" implies confluence; UNION helper is not confluence | LOW |
-| F-fire-count | ~15-40/yr; borderline | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern E reframe.
+| Gate | Meaning |
+|---|---|
+| `mfi_14_oversold` | Money Flow Index 14-period below oversold threshold (mean-reversion EVENT-shaped) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
+| `_has_smart_money_buy(s)` | UNION helper (see SM-31 walk) |
+
+### Step 2 — Classify
+
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+- `mfi_14_oversold` is technically EVENT-shaped (today's oversold state from rolling 14-bar MFI calc); per CHECKLIST (s) classify as STATE-derived EVENT-trigger boundary case
+- `price_above_ema_200` STATE
+- `_has_smart_money_buy(s)` UNION helper (variable EVENT/STATE per branch — see SM-31 walk)
+
+**EVENT/STATE composition:** Variable depending on UNION branch active — same as SM-31. The MFI-oversold gate is genuinely EVENT-shaped (today's oversold trigger) so the EVENT-branch case is 2 EVENT + 1 STATE; the STATE-only branch case is 1 EVENT + 2 STATE.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Money-flow oversold often precedes a bounce" | ✅ Defensible at the technical-signal level; well-known mean-reversion behavior |
+| "smart-money buy raises confidence the bounce is real" | ⚠ **Pattern E** — same as SM-31; the UNION-as-confluence framing |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe with SM-31 et al. |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 honesty-reframe queue as SM-31
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- No SHORT mirror — same data-source-asymmetry reasoning as SM-31
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim as SM-31; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| F-fire-count | MFI-oversold + smart-money UNION → projected ~15-40/yr universe-wide; borderline | INFO | F4 |
+| F-marginal-contribution Pattern F | Branch-stratified cube replay applies (same as SM-31) | MEDIUM | F1 |
+
+**Options:** Same as SM-31 — bundle into 9-wrap B-N batch.
+
+**My recommendation: (d) bundled with SM-31 + others.**
+
+**Awaiting owner direction on SM-32:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Same Pattern F branch-stratified cube replay scope confirmation
 
 ---
 
-## SM-33. `strat_rsi_oversold_with_smart_money_long` (confluence wrap)
+## SM-33. `strat_rsi_oversold_with_smart_money_long` (confluence wrap, walked — Pattern E candidate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern E candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672h full expansion). 3-gate LONG sleeve wrap; RSI-oversold variant of SM-32 (MFI-oversold). Same Pattern E disposition; bundled.
 
 ### Step 1 — Read the code
 
-[screener.py:5644-5655](backtest/signals/screener.py#L5644-L5655):
+[screener.py:5812-5823](backtest/signals/screener.py#L5812-L5823):
 
 ```python
 def strat_rsi_oversold_with_smart_money_long(s):
+    """RSI oversold + smart-money buy. Classic mean-reversion entry with
+    institutional / insider corroboration."""
     base_fires = (
         s.get("rsi_14_oversold", False)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    return _strat(fires, "long", "smart_money_sleeve",
+        ["rsi_14_oversold", "price_above_ema_200", "smart_money_buy"],
+        ["RSI(14) oversold", "Above 200 EMA",
+         "Smart-money buy confirmation"])  # ⚠ Pattern E bullet text
 ```
 
-### Step 7
+**3-gate LONG sleeve wrap.** Structurally identical to SM-32 with `rsi_14_oversold` replacing `mfi_14_oversold`.
 
-Same family as SM-32; RSI instead of MFI.
+**LONG fires when ALL THREE:** (analogous to SM-32; rsi_14_oversold replaces mfi_14_oversold)
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-E** | Same bullet text overclaim | LOW |
-| F-fire-count | ~20-50/yr | INFO |
+### Step 2 — Classify
 
-**B664 candidate:** Pattern E reframe.
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+Same as SM-32 with RSI instead of MFI. RSI-oversold is the canonical Wilder 1978 mean-reversion trigger; same EVENT-shaped boundary-case classification.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Classic mean-reversion entry with institutional / insider corroboration" | ⚠ **Pattern E** — "corroboration" implies confluence; UNION helper is not confluence |
+| Bullet "Smart-money buy confirmation" | ⚠ **Pattern E** — bundled bullet-text reframe |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Same B613 queue as SM-31/SM-32
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- No SHORT mirror — same reasoning as SM-31/SM-32
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-E UNION-as-confluence** | Same bullet text overclaim; bundle reframe | LOW-MEDIUM | F1 / Pattern E |
+| F-fire-count | RSI-oversold + smart-money UNION → projected ~20-50/yr universe-wide; modest PASS likely | INFO | F4 |
+| F-marginal-contribution Pattern F | Branch-stratified cube replay applies (same as SM-31/SM-32); also relevant for RSI-vs-MFI dose-response (SM-32 vs SM-33) | MEDIUM | F1 |
+| F-RSI-vs-MFI ablation candidate | Companion ablation: RSI captures price-momentum; MFI captures price-volume momentum. Cube replay surfaces which mean-reversion trigger is more informative | LOW-MEDIUM | F1 |
+
+**Options:** Same as SM-31/SM-32 — bundle into 9-wrap B-N batch.
+
+**My recommendation: (d) bundled with SM-31 + SM-32 + others.**
+
+**Awaiting owner direction on SM-33:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled
+2. Pattern F RSI-vs-MFI dose-response cube ablation candidate (SM-32 vs SM-33)
 
 ---
 
-## SM-34. `strat_52w_high_breakout_with_smart_money_long` (B613-walked)
+## SM-34. `strat_52w_high_breakout_with_smart_money_long` (B613-walked, REFERENCE TEMPLATE for Pattern E reframe)
 
-> **Status:** ✅ ALREADY WALKED B613. Docstring already honestly reframed per B613 F1+F2a+a (EVENT vs STATE bullet text + close_in_top_40pct gate added).
+> **Status:** ✅ ALREADY WALKED + REFRAMED B613 (2026-06-07). Docstring honestly reframed per B613 F1+F2a+a (EVENT vs STATE bullet text + close_in_top_40pct gate added). This walk is the CANONICAL Pattern E fix template — bullet text "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a" replaces the original overclaiming "Smart-money buy confirmation." George-Hwang 2004 JF 52-week-high anomaly cited correctly for the price-momentum mechanism. Lineage: B588 → B589 → B613.
 
-### Step 1 — Read the code
+### Step 1 — Read the code (post-B613)
 
-[screener.py:5658-5697](backtest/signals/screener.py#L5658-L5697): 5-gate LONG with B613 honest framing.
+[screener.py:5826-5866](backtest/signals/screener.py#L5826-L5866): 5-gate LONG with B613 honest framing (52w-high breakout EVENT + bullish close-bar EVENT + 200-EMA + close_in_top_40pct + UNION smart-money).
+
+### Step 2-6 (compact — post-B613)
+
+- Category: `smart_money_sleeve` (52w-high variant)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- EVENT/STATE composition: 2 genuine EVENT gates (52w-breakout + close-bar bullish) + STATE gates; B613 reframe acknowledges the UNION helper's variable EVENT/STATE behavior
+
+### Step 7 — Findings + options (post-B613 CLOSED)
+
+| # | Finding | Severity | Disposition |
+|---|---|---|---|
+| **F1 Pattern E reframe shipped B613** | Bullet text "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a" | ✅ SHIPPED B613 | — |
+| **F2a `close_in_top_40pct` gate added B613** | Additional close-strength filter to reduce false 52w-high breakouts | ✅ SHIPPED B613 | — |
+| F-fire-count | Cube replay will surface empirical verdict per (strategy × exit) cell | INFO | post-cube |
 
 ### FINAL STATUS POST-B613 — ✅ CLOSED
 
-The B613 reframe is the canonical Pattern E fix template:
-- Bullet text "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a"
-- George-Hwang 2004 JF 52-week-high anomaly cited correctly for price-momentum
-- Lineage: B588 → B589 → B613
-
-**No further B664 action.**
+**No further B664 action required.** This walk is the REFERENCE TEMPLATE for the SM-31/SM-32/SM-33/SM-36/SM-37/SM-38/SM-39/SM-40/SM-41 Pattern E reframe.
 
 ---
 
-## SM-35. `strat_52w_high_breakout_with_smart_money_vol_below_long` (B613 B-twin)
+## SM-35. `strat_52w_high_breakout_with_smart_money_vol_below_long` (B613 B-twin, B613-walked)
 
-> **Status:** ✅ ALREADY WALKED B613. B-twin A/B-test variant of SM-34 (vol_below_avg instead of vol_spike_12x; Bulkowski 2005 retest absorption thesis).
+> **Status:** ✅ ALREADY WALKED B613 (2026-06-07). B-twin A/B-test variant of SM-34 (`vol_below_avg` instead of `vol_spike_12x`; Bulkowski 2005 retest absorption thesis). Same B613 honesty framing as SM-34. Cube replay will surface empirical verdict per (strategy × exit) cell to settle vol-spike vs vol-quiet 52w-high breakout dose-response.
+
+### Step 1 — Read the code (post-B613)
+
+[screener.py:5868-...](backtest/signals/screener.py#L5868): 5-gate LONG B-twin of SM-34 with `vol_below_avg` substituted for `vol_spike_12x`.
+
+### Step 2-6 (compact — post-B613)
+
+- Category: `smart_money_sleeve`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Same B613 honesty framing as SM-34
+- Thesis variant: Bulkowski 2005 retest-absorption — quiet-volume 52w-high breakouts represent "absorbed selling pressure" (no panic supply), historically higher continuation probability than spike-volume 52w-high breakouts
+
+### Step 7 — Findings + options (post-B613 CLOSED)
+
+| # | Finding | Severity | Disposition |
+|---|---|---|---|
+| **F1 Pattern E reframe shipped B613** | Same as SM-34 | ✅ SHIPPED B613 | — |
+| **F2a `close_in_top_40pct` gate added B613** | Same as SM-34 | ✅ SHIPPED B613 | — |
+| **F-vol-spike-vs-vol-quiet ablation** | Cube replay SM-34 (vol_spike) vs SM-35 (vol_below_avg) settles which volume signature gives better 52w-high breakout continuation | MEDIUM | post-cube |
+| F-fire-count | vol_below_avg is more common than vol_spike → SM-35 should fire more than SM-34. Cube verdict per (strategy × exit) | INFO | post-cube |
 
 ### FINAL STATUS POST-B613 — ✅ CLOSED
 
-Same B613 framing as SM-34. Cube replay will surface empirical verdict per (strategy × exit) cell.
+**No further B664 action required.** Cube replay completes the empirical disposition.
 
 ---
 
