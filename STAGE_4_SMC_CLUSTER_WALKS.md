@@ -775,25 +775,834 @@ def strat_smc_mitigation_block_short(s):
 
 ---
 
-### SMC-8 through SMC-18 — AWAITING B673b+ EXPANSION
+### SMC-8. `strat_smc_discount_long` (Batch 216, dealing-range family, walked B673b)
 
-> **Status:** ⏳ COMPACT WALKS BELOW; FULL PIVOT-DOC TEMPLATE EXPANSION QUEUED FOR B673b-c (follow-on commits). Per `feedback_no_rushing_per_strategy_tweak` + the B672 multi-commit precedent: ship doc infrastructure + first 7 walks at full template density in B673; expand remaining 11 walks (SMC-8 through SMC-18) across 2-3 follow-on commits.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate LONG; ICT premium/discount filter — "buy low" inside dealing range.
 
-#### Compact summary table for follow-on expansion (Sub-clusters C, D, E, F)
+#### Step 1 — Read the code
 
-| SMC # | Function | Primary findings to expand | Key cross-references |
+[screener.py:3330-3346](backtest/signals/screener.py#L3330-L3346):
+
+```python
+def strat_smc_discount_long(s):
+    """Batch 216: Premium/Discount filter - long only when price is in
+    DISCOUNT zone (below 50% of recent dealing range) AND there is
+    bullish structure (BOS bullish OR CHoCH bullish). ICT discipline:
+    'buy low, sell high' inside the dealing range. Mitigates against
+    chasing tops in an uptrend."""
+    fires = (
+        s.get("smc_in_discount_zone", False)
+        and (s.get("smc_bos_bullish", False) or s.get("smc_choch_bullish", False))
+        and s.get("price_above_ema_200", False)
+    )
+```
+
+**3-gate LONG.** Combines dealing-range price-location with structural-confirmation OR-disjunct with EMA-200 regime.
+
+| Gate | Meaning |
+|---|---|
+| `smc_in_discount_zone` | EVENT-shaped boundary: close in BOTTOM 50% of 50-bar dealing range (dealing_range_pct < 0.5) |
+| (`smc_bos_bullish` OR `smc_choch_bullish`) | OR-disjunct: bullish BOS event within 90-bar recency OR bullish CHOCH event within 90-bar recency |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
+
+#### Step 2 — Classify
+
+- Category: `smc`; LONG; B291 default; last touched B663
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_in_discount_zone` at [smc_ict.py:406-418](backtest/signals/smc_ict.py#L406-L418) — `pct = (close - lo) / (hi - lo)` over trailing 50 bars; `pct < 0.5` → True
+- `smc_bos_bullish` / `smc_choch_bullish` via `_most_recent_event_within(..., event_recency_bars=90)` — recency-windowed events (Pattern I applies)
+- `price_above_ema_200` STATE
+- EVENT/STATE: 1 EVENT-shaped (zone) + 1 recency-windowed-EVENT (BOS or CHOCH) + 1 STATE
+
+**Pattern K LOOKAHEAD CONCERN:** `dealing_range_lookback=50` selects the high/low anchors over the trailing 50 bars. Identical lookahead-vector class as `compute_fibonacci` per `S4-FIB-ANCHOR-LOOKAHEAD-AUDIT`. Producer correctly slices `ohlc.tail(50)` from a pre-filtered (engine-side `as_of`-sliced) DataFrame, but no explicit test pins this.
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Premium/Discount filter ... ICT discipline 'buy low, sell high'" | ⚠ Pattern M — canonical ICT methodology; no peer-reviewed validation |
+| "Mitigates against chasing tops in an uptrend" | ✅ Mechanically true — discount zone gate by construction prevents top-chasing; defensible |
+| Implicit "BOS or CHOCH provides structural backing" | ⚠ **Pattern I** — 90-bar recency means the "structural backing" event could be up to 4 months stale by the time the discount-zone bar fires |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- **`S4-SMC-PATTERN-K-PIT-AUDIT`** (NEW B673) — `dealing_range_lookback=50` PIT verification; producer most likely correct but no explicit test
+- Cross-ref `S4-FIB-ANCHOR-LOOKAHEAD-AUDIT` (active) — same lookahead-vector class
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Inverse EXISTS — SMC-9 `strat_smc_premium_short`
+- Economic symmetry: ✅ price-action
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
 |---|---|---|---|
-| **SMC-8** | `strat_smc_discount_long` | Pattern K dealing_range lookahead-vector + Pattern N internal multi-test + EMA-200 gate | S4-FIB-ANCHOR-LOOKAHEAD-AUDIT |
-| **SMC-9** | `strat_smc_premium_short` | Same Pattern K + symmetric mirror; B671 borrow-trap | Same |
-| **SMC-10** | `strat_smc_ote_long` | NO EMA gate (relies on BOS/CHOCH confluence for trend); Pattern I + Pattern J + Fib-zone 62-79% retracement free parameter | S4-FIB-ANCHOR-LOOKAHEAD-AUDIT cross-ref (OTE uses retracements primitive) |
-| **SMC-11** | `strat_smc_ote_short` | Symmetric mirror SMC-10; B671 borrow-trap | Same |
-| **SMC-12** | `strat_smc_equal_highs_sweep_short` | Equal-highs sweep + bearish FVG confluence; B390 producer fix; Pattern G low-fire-combo + Pattern O liquidity_range_pct=0.01 hardcoded; NO EMA gate | S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660 |
-| **SMC-13** | `strat_smc_equal_lows_sweep_long` | Symmetric mirror SMC-12 | Same |
-| **SMC-14** | `strat_smc_bos_retest_entry` (dual) | DUAL; Pattern O tol=0.005 (0.5%) BOS retest hardcoded near-test; B556 producer fix; Pattern I (BOS recency 90-bar) | Pattern O config-parameterization ticket candidate |
-| **SMC-15** | `strat_smc_bos_continuation` (dual) | DUAL; B278 forensic-fix precedent (added vol_confirms + RSI direction); EMA-200; Pattern I + Pattern N | B278 precedent vs B262 precedent (both forensic-add-gate fixes) |
-| **SMC-16** | `strat_smc_choch_reversal` (dual) | DUAL; CHOCH + FVG-active confluence; NO EMA gate; Pattern I + Pattern J | — |
-| **SMC-17** | `strat_smc_order_block_bounce` (dual) | DUAL; OB-active + RSI<45 LONG / >55 SHORT (asymmetric thresholds vs SMC-6/7 50/50); EMA-200; Pattern I consumed via `smc_ob_*_active` STATE | S5-RSI-DEFAULT-50-FAMILY (45/55 thresholds; not on default-50 boundary) |
-| **SMC-18** | `strat_smc_liquidity_sweep_reversal` (dual) | DUAL; liquidity_swept_* + CHOCH OR BOS confluence; NO EMA gate; Pattern I + Pattern J + Pattern N (combinatorial overlap with SMC-12/13 sweeps) | Cross-strategy overlap with SMC-12/13 + SMC-16 |
+| **F-pattern-K lookahead** | dealing_range_lookback=50 needs PIT pin (symmetric with FIB-ANCHOR) | LOW-MEDIUM | Pattern K |
+| **F-pattern-I 90-bar BOS/CHOCH recency** | Structural-backing event can be stale by up to 4 months; freshness gate (vol_confirms) would mitigate per B278/B262 precedent | MEDIUM | Pattern I |
+| **F-pattern-J BOS/CHOCH overlap** | OR-disjunct with BOS or CHOCH primitives; SMC-8 shares structural primitives with SMC-14/15 (BOS) + SMC-16 (CHOCH) | MEDIUM | Pattern J |
+| F-pattern-A | `price_above_ema_200` ✅ | ✅ SHIPPED B663 | — |
+| F-fire-count | Discount zone is common (~50% of bars); BOS/CHOCH co-occurrence reduces; projected ~40-100/yr universe-wide; PASS likely | INFO | F4 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Add `vol_confirms` (vol_spike_2x OR force_index_breakout) freshness gate per B262/B278 precedent — mitigates Pattern I stale-event concern |
+| (c) Tighten dealing-range threshold to 0.4 (deep discount) — would reduce fire count, may improve signal quality |
+| (d) Tighten BOS/CHOCH recency window from 90 → 30 bars (Pattern O config sweep candidate) |
+| **(e) RECOMMENDED — (a) + queue PIT pin per Pattern K + cube-replay Pattern I sensitivity sweep on event_recency_bars. (b) freshness gate is a candidate Class 2 if cube shows status quo fires-many-but-low-WR.** |
+
+**My recommendation: (e).** No code change pre-cube; queue 2 tickets (PIT pin + recency sensitivity) for post-B660 adjudication.
+
+**Awaiting owner direction on SMC-8:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (e)
+2. PIT pin scope — bundle SMC-8 + SMC-9 + cross-ref `S4-FIB-ANCHOR-LOOKAHEAD-AUDIT` into a single pyramid-test batch?
+3. event_recency_bars sensitivity sweep scope (Pattern O config-parameterization)
+
+---
+
+### SMC-9. `strat_smc_premium_short` (Batch 216, dealing-range family, walked B673b)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate SHORT; symmetric mirror of SMC-8.
+
+#### Step 1 — Read the code
+
+[screener.py:3349-3362](backtest/signals/screener.py#L3349-L3362):
+
+```python
+def strat_smc_premium_short(s):
+    """Batch 216: Premium short - symmetric inverse of discount long.
+    Price in top 50% of dealing range + bearish structure."""
+    fires = (
+        s.get("smc_in_premium_zone", False)
+        and (s.get("smc_bos_bearish", False) or s.get("smc_choch_bearish", False))
+        and s.get("below_ema_200", False)  # B630 sweep
+    )
+```
+
+**3-gate SHORT.** Symmetric mirror of SMC-8.
+
+#### Step 2-7 (compact — symmetric with SMC-8)
+
+- Category `smc`; SHORT; B291 default; last touched B630/B663
+- Producer: same dealing_range_lookback=50 (Pattern K applies)
+- 1 EVENT-shaped (premium zone) + 1 recency-windowed (BOS bearish or CHOCH bearish) + 1 STATE
+- **B671 centralized DTC>8 borrow-trap gate applies**
+- Same Pattern I + Pattern J + Pattern K concerns as SMC-8
+- Fire-count: premium zone less common in upward-drift equity than discount zone; projected ~25-70/yr universe-wide
+
+**Options:** same as SMC-8; bundled. **My recommendation: (e) bundled with SMC-8.**
+
+**Awaiting owner direction on SMC-9:** bundled with SMC-8.
+
+---
+
+### SMC-10. `strat_smc_ote_long` (Batch 216, OTE family, walked B673b)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate LONG; **NO EMA TREND FILTER** — relies on BOS/CHOCH structural-confluence as trend proxy. Optimal Trade Entry = Fib 62-79% retracement zone (ICT canonical "sweet spot").
+
+#### Step 1 — Read the code
+
+[screener.py:3365-3377](backtest/signals/screener.py#L3365-L3377):
+
+```python
+def strat_smc_ote_long(s):
+    """Batch 216: Optimal Trade Entry long - Fibonacci 62-79%
+    retracement zone after bullish CHoCH/BOS. ICT canonical 'sweet
+    spot' for high-conviction trend continuation entries."""
+    fires = (
+        s.get("smc_ote_long_zone", False)
+        and (s.get("smc_bos_bullish", False) or s.get("smc_choch_bullish", False))
+    )
+```
+
+**2-gate LONG.** Most heavily-trusted "ICT sweet spot" pattern in the cluster; no explicit trend filter (relies on structural-event OR-disjunct).
+
+| Gate | Meaning |
+|---|---|
+| `smc_ote_long_zone` | EVENT-shaped boundary: current retracement % in 62-79% range AND direction > 0 (bullish leg context) |
+| (`smc_bos_bullish` OR `smc_choch_bullish`) | OR-disjunct: structural backdrop |
+
+#### Step 2 — Classify
+
+- Category: `smc`; LONG; B291 default; last touched B216
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_ote_long_zone` at [smc_ict.py:382-401](backtest/signals/smc_ict.py#L382-L401) — uses `_smc.retracements(ohlc, swings)` library primitive; reads last row's `Direction` (>0 = bullish leg) and `CurrentRetracement%`; True when `62 <= pct <= 79 AND direction > 0`
+- Lag: 0-day point-in-time check
+- BOS/CHOCH via 90-bar recency window (Pattern I applies)
+- EVENT/STATE: 1 EVENT-shaped (OTE zone) + 1 recency-windowed-EVENT (BOS or CHOCH)
+
+**Lookahead concern (Pattern K-adjacent):** `retracements` primitive reads from `_smc.swing_highs_lows(ohlc, swing_length=20)` — swing identification is point-in-time but depends on PIT-correct `ohlc` slicing.
+
+**NO EMA REGIME GATE.** Departure from SMC-1/2/4/5/6/7/8/9/14/15/17 pattern. Justification: BOS/CHOCH OR-disjunct serves as structural trend proxy. **But** 90-bar recency means the "structural backdrop" can be 4 months stale — by which time absolute trend (EMA-200) may have flipped.
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Optimal Trade Entry ... ICT canonical 'sweet spot' for high-conviction trend continuation entries" | ⚠ **Pattern M** — canonical per ICT YouTube methodology; no peer-reviewed validation. The "high-conviction" framing is overclaim per CHECKLIST (s) docstring honesty discipline. |
+| Implicit "BOS/CHOCH confluence substitutes for EMA trend filter" | ⚠ **Pattern I + missing-trend-filter** — 90-bar-old BOS/CHOCH does NOT confirm CURRENT trend regime. The strategy could fire in a trend-flipped regime when the structural event is stale |
+| "Fibonacci 62-79% retracement zone" | ✅ Implementation matches; 62-79% is the Murray/canonical OTE range per ICT methodology |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Cross-ref `S4-FIB-ANCHOR-LOOKAHEAD-AUDIT` (active) — OTE uses `_smc.retracements()` which internally uses swing-anchors; same lookahead-vector class
+- No active investigations specific to SMC-10
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Inverse EXISTS — SMC-11 `strat_smc_ote_short`
+- Economic symmetry: ✅ price-action
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-missing-trend-filter** | No EMA-200 gate; BOS/CHOCH 90-bar recency may not reflect CURRENT trend; trade fires in flipped-trend regime when structural event is stale | HIGH | F1-trend |
+| **F-pattern-I 90-bar staleness** | Same Pattern I as SMC-8 | MEDIUM | Pattern I |
+| **F-pattern-M "high-conviction" overclaim** | ICT docstring framing not supported by peer-reviewed evidence | MEDIUM | Pattern M |
+| **F-pattern-J retracements-primitive overlap** | OTE uses retracements primitive which uses swing_highs_lows; overlaps with BOS/CHOCH primitives | MEDIUM | Pattern J |
+| F-fire-count | OTE zone (62-79% Fib retracement) AND BOS/CHOCH co-occurrence narrow; projected ~20-50/yr universe-wide; borderline FAIL min_trades=30 per regime | MEDIUM | F4 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Add EMA-200 trend gate (`price_above_ema_200` LONG) — would catch the stale-BOS/CHOCH case where absolute trend has flipped. Symmetric with how most other SMC strategies handle the no-EMA case (SMC-12/13/16/18 also lack EMA gate; same critique applies; cluster-wide pattern reframe candidate) |
+| (c) Tighten BOS/CHOCH recency to 30 bars (Pattern O config sweep) |
+| (d) Add `vol_confirms` (vol_spike_2x OR force_index_breakout) freshness gate per B262/B278 precedent |
+| (e) Cube replay branch-stratified (with/without EMA gate; with/without recency tighten) |
+| **(f) RECOMMENDED — (b) + (e). The no-EMA-gate pattern is a CLUSTER-WIDE concern (SMC-10, SMC-11, SMC-12, SMC-13, SMC-16, SMC-18 all share it); proposing EMA-200 addition as a cluster-wide reframe candidate alongside cube validation is the consistent design choice. Pre-cube no code change; B673b-d remaining walks surface the same finding so the disposition can bundle.** |
+
+**My recommendation: (f).**
+
+**Awaiting owner direction on SMC-10:**
+1. (a)/(b)/(c)/(d)/(e)/(f) — recommendation (f)
+2. Whether to surface CLUSTER-WIDE EMA-gate proposal as a separate B-N batch (SMC-10/11/12/13/16/18 bundled)
+3. Pattern O `event_recency_bars` config-parameterization scope
+
+---
+
+### SMC-11. `strat_smc_ote_short` (Batch 216, OTE family, walked B673b)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate SHORT; symmetric mirror of SMC-10.
+
+#### Step 1 — Read the code
+
+[screener.py:3380-3390](backtest/signals/screener.py#L3380-L3390):
+
+```python
+def strat_smc_ote_short(s):
+    """Batch 216: Symmetric OTE short."""
+    fires = (
+        s.get("smc_ote_short_zone", False)
+        and (s.get("smc_bos_bearish", False) or s.get("smc_choch_bearish", False))
+    )
+```
+
+**2-gate SHORT.** Symmetric mirror of SMC-10.
+
+#### Step 2-7 (compact — symmetric with SMC-10)
+
+- Category `smc`; SHORT; B291 default; last touched B216
+- Same NO-EMA-GATE issue as SMC-10
+- Same Pattern I + Pattern J + Pattern M concerns
+- **B671 centralized DTC>8 borrow-trap gate applies**
+- Fire-count: ~15-40/yr universe-wide (bearish OTE less common than bullish in upward-drift equity); borderline FAIL min_trades=30
+
+**Options:** same as SMC-10; bundled. **My recommendation: (f) bundled with SMC-10.**
+
+**Awaiting owner direction on SMC-11:** bundled with SMC-10.
+
+---
+
+### SMC-12. `strat_smc_equal_highs_sweep_short` (Batch 216, liquidity-sweep family, walked B673c)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate SHORT; **NO EMA GATE**; classic ICT stop-hunt-then-reverse pattern. Pattern G low-fire-combo candidate per `S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660`.
+
+#### Step 1 — Read the code
+
+[screener.py:3393-3404](backtest/signals/screener.py#L3393-L3404):
+
+```python
+def strat_smc_equal_highs_sweep_short(s):
+    """Batch 216: Equal-highs cluster swept (taking out stops above
+    cluster) + bearish FVG below = high-conviction reversal short.
+    Classic ICT stop-hunt-then-reverse pattern."""
+    fires = (
+        s.get("smc_equal_highs_swept", False)
+        and s.get("smc_fvg_bearish_active", False)
+    )
+```
+
+**2-gate SHORT.** Liquidity-sweep + FVG-confluence; no EMA trend filter.
+
+| Gate | Meaning |
+|---|---|
+| `smc_equal_highs_swept` | EVENT-shaped: equal-highs cluster was swept (Swept flag set; producer recency 50-bar; per B390 producer fix) |
+| `smc_fvg_bearish_active` | STATE: any bearish FVG active in last 5 bars |
+
+#### Step 2 — Classify
+
+- Category: `smc`; SHORT; B291 default; last touched B390 (producer fix); no strategy-level changes since B216
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_equal_highs_swept` at [smc_ict.py:344-379](backtest/signals/smc_ict.py#L344-L379) — B390 producer fix: filter liquidity events to non-zero THEN tail(20) THEN check `Swept` flag (bar-index float; non-null = swept) AND `(current_idx - swept_val) <= 50` recency. Pre-B390 the strategy fired 0/1542 ticker-days on AAPL sample.
+- `smc_fvg_bearish_active` at [smc_ict.py:157-159](backtest/signals/smc_ict.py#L157-L159) — `(recent == -1).any()` over `fvg_lookback=5` tail
+- Lag: 0-day point-in-time on sweep event; FVG_active 0-5 bar tail
+- EVENT/STATE: 1 recency-windowed EVENT (sweep within 50 bars) + 1 short-window STATE (FVG within 5 bars)
+
+**Pattern O hardcoded:** `liquidity_range_pct=0.01` (1%) tolerance for equal-level cluster identification at [smc_ict.py:79](backtest/signals/smc_ict.py#L79). Hardcoded in producer; not config-driven; no empirical basis cited.
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Equal-highs cluster swept + bearish FVG below = high-conviction reversal short" | ⚠ **Pattern M** — canonical per ICT YouTube methodology; no peer-reviewed validation |
+| "Classic ICT stop-hunt-then-reverse pattern" | ⚠ Same Pattern M; "high-conviction" framing is overclaim per docstring honesty discipline |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- B390 producer fix is current state; no successor bug
+- Cross-ref `S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660` — SMC-12 candidate for the existing low-fire-combo list per fire-count concern
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Inverse EXISTS — SMC-13 `strat_smc_equal_lows_sweep_long`
+- Economic symmetry: ✅ price-action
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-missing-trend-filter** | No EMA-200 gate; same as SMC-10/11/16/18 | HIGH | F1-trend |
+| **F-low-fire-combo** | Equal-highs sweep + bearish FVG co-occurrence is RARE; B390 fix established producer correctness but fire-count projection ~5-20/yr universe-wide; HIGH RISK FAIL min_trades=30 per regime | HIGH | F4 + Pattern G |
+| **F-pattern-O hardcoded** | `liquidity_range_pct=0.01` and 50-bar recency on Swept hardcoded; should be config-driven | MEDIUM | Pattern O |
+| **F-pattern-J FVG overlap** | Bearish FVG active overlaps with SMC-2 FVG retest short + SMC-3 inverse FVG | MEDIUM | Pattern J |
+| F-pattern-A | NO EMA gate — N/A | ✅ N/A | — |
+| **F-borrow-cost** | B671 centralized DTC>8 gate applies | LOW | F5 carryover |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Add `below_ema_200` regime gate (per cluster-wide CLUSTER-WIDE EMA proposal) |
+| (c) Loosen — drop the FVG-active confluence; pure liquidity-sweep SHORT |
+| (d) EXPLORATORY marker pre-cube — analogous to W5/W5m; exclude from selection budget while keeping registered for cube-replay coverage |
+| (e) Loosen Pattern O — increase `liquidity_range_pct` from 1% → 2% to raise equal-cluster detection rate (would raise fires; producer-side change) |
+| **(f) RECOMMENDED — (a) + queue (d) EXPLORATORY marker decision for post-B660 measurement. SMC-12 is a clean Pattern G candidate per low-fire projection. Cube replay settles whether to keep as standalone or fold under (b) cluster-wide EMA proposal.** |
+
+**My recommendation: (f).**
+
+**Awaiting owner direction on SMC-12:**
+1. (a)/(b)/(c)/(d)/(e)/(f) — recommendation (f)
+2. Add SMC-12 to existing `S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660` ticket as candidate
+3. Pattern O `liquidity_range_pct` config-parameterization scope
+
+---
+
+### SMC-13. `strat_smc_equal_lows_sweep_long` (Batch 216, liquidity-sweep family, walked B673c)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate LONG; symmetric mirror of SMC-12.
+
+#### Step 1 — Read the code
+
+[screener.py:3407-3417](backtest/signals/screener.py#L3407-L3417):
+
+```python
+def strat_smc_equal_lows_sweep_long(s):
+    """Batch 216: Equal-lows cluster swept + bullish FVG above =
+    high-conviction reversal long."""
+    fires = (
+        s.get("smc_equal_lows_swept", False)
+        and s.get("smc_fvg_bullish_active", False)
+    )
+```
+
+**2-gate LONG.** Symmetric mirror of SMC-12.
+
+#### Step 2-7 (compact — symmetric with SMC-12)
+
+- Category `smc`; LONG; B291 default
+- Same producer source (B390 fix); same Pattern O hardcoded constants
+- Same missing-trend-filter + low-fire-combo + Pattern J + Pattern M concerns
+- Fire-count: equal-lows sweeps slightly more common than equal-highs in upward-drift equity (selling-climax pattern); projected ~10-30/yr universe-wide; still HIGH RISK FAIL min_trades=30 per regime
+
+**Options:** same as SMC-12; bundled. **My recommendation: (f) bundled with SMC-12.**
+
+**Awaiting owner direction on SMC-13:** bundled with SMC-12.
+
+---
+
+### SMC-14. `strat_smc_bos_retest_entry` (Batch 216, structural family, walked B673c — DUAL)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate dual; ICT "allow the broken level to confirm-as-support before adding risk" discipline.
+
+#### Step 1 — Read the code
+
+[screener.py:3420-3439](backtest/signals/screener.py#L3420-L3439):
+
+```python
+def strat_smc_bos_retest_entry(s):
+    """Batch 216: BOS retest - price returns to within 0.5pct of a
+    recently-broken structure level. Empirically higher hit rate than
+    naive BOS continuation per ICT discipline (allow the broken level
+    to confirm-as-support before adding risk)."""
+    fl = (
+        s.get("smc_bos_retest_long", False)
+        and s.get("price_above_ema_200", False)
+    )
+    fs = (
+        s.get("smc_bos_retest_short", False)
+        and s.get("below_ema_200", False)
+    )
+```
+
+**2-gate dual strategy.** Most explicit "wait-for-retest" SMC pattern.
+
+| Direction | Gate 1 | Gate 2 |
+|---|---|---|
+| LONG | `smc_bos_retest_long` | `price_above_ema_200` |
+| SHORT | `smc_bos_retest_short` | `below_ema_200` |
+
+#### Step 2 — Classify
+
+- Category: `smc`; dual via `_strat3`; B291 default; last touched B556 (producer filter-then-tail fix)
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_bos_retest_long` / `_short` at [smc_ict.py:299-326](backtest/signals/smc_ict.py#L299-L326) — B556 producer fix: filter `bos_events` to non-zero THEN tail(20) THEN check `abs(close - Level) / Level < 0.005` (0.5% near-test); iterate last 20 actual BOS events
+- Lag: 0-day point-in-time near-test
+- EVENT/STATE: 1 EVENT-shaped near-test + 1 STATE
+- **Pattern O hardcoded `tol = 0.005` (0.5%)** at [smc_ict.py:310](backtest/signals/smc_ict.py#L310) — narrow tolerance; if loosened to 1% or 2%, fire-rate would materially increase
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Empirically higher hit rate than naive BOS continuation per ICT discipline" | ⚠ **Pattern M overclaim** — "empirically higher" framing implies validation; no peer-reviewed evidence cited. ICT methodology argues this internally; cube-replay against SMC-15 (BOS continuation) is the only adjudication |
+| "allow the broken level to confirm-as-support before adding risk" | ✅ Defensible — retest waiting reduces breakout-failure exposure (classic price-action discipline beyond ICT) |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- B556 producer fix current state
+- Cross-ref `S4-SMC-PATTERN-O-CONFIG-PARAMETERIZATION` (NEW B673) — `tol = 0.005` config-driven candidate
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Already dual
+- Economic symmetry: ✅ price-action
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-O hardcoded tolerance** | `tol = 0.005` (0.5%) — narrow; sensitivity to 0.5% vs 1% vs 2% unknown; cube-replay-eligible | MEDIUM | Pattern O |
+| **F-pattern-M empirical overclaim** | "higher hit rate" framing not validated; cube vs SMC-15 settles | MEDIUM | Pattern M |
+| **F-pattern-J BOS overlap with SMC-15** | SMC-14 + SMC-15 both consume `smc_bos_*`; marginal contribution audit | MEDIUM | Pattern J |
+| F-pattern-A | EMA-200 ✅ | ✅ SHIPPED B663 | — |
+| F-fire-count | Narrow 0.5% near-test + BOS event co-occurrence; projected ~20-50/yr universe-wide per direction; borderline | MEDIUM | F4 |
+| F-borrow-cost | B671 SHORT-side DTC>8 gate applies | LOW | F5 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Loosen `tol = 0.005` → `0.01` (1%) at producer — raises fires + reduces miss-rate; risk: false-retest noise |
+| (c) Cube-replay Pattern O sensitivity sweep (0.5% / 1% / 2%) post-B660 |
+| (d) Branch-stratified cube replay SMC-14 vs SMC-15 (BOS-retest vs BOS-continuation) — settles "higher hit rate" claim |
+| **(e) RECOMMENDED — (c) + (d). No pre-cube code change; cube settles both Pattern O sensitivity AND Pattern M empirical claim simultaneously.** |
+
+**My recommendation: (e).**
+
+**Awaiting owner direction on SMC-14:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (e)
+2. Bundle SMC-14 + SMC-15 cube ablation as Pattern J flagship test for the SMC cluster (symmetric with SM-41 vs SM-6 for smart-money cluster)
+3. Pattern O `tol` config-parameterization scope
+
+---
+
+### SMC-15. `strat_smc_bos_continuation` (Batch 210 + B278 forensic-fixed, structural family, walked B673c — DUAL)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. **B278 FORENSIC-FIXED CASE** — pre-B278 Tier 2 v2 showed 13 trades / 15.4% WR / -6.60% mean / -86 pp due to stale-90-bar BOS events. B278 added `vol_confirms` + RSI-direction-aligned gates symmetric with B262 SMC-3 fix.
+
+#### Step 1 — Read the code
+
+[screener.py:3442-3477](backtest/signals/screener.py#L3442-L3477):
+
+```python
+def strat_smc_bos_continuation(s):
+    """Batch 210 ... Batch 278 (Tier 2 gate tightening 2026-05-20 owner-approved option B):
+    Stage B v2 showed 13 trades / 15.4% WR / -6.60% mean / -86 pp. Root
+    cause: Batch 273's event_recency_bars=90 means BOS signal stays True
+    for up to 90 bars, so entries fire on stale structural breaks where
+    trend may have already reversed. Added: vol_confirms (vol_spike_2x OR
+    force_index_breakout) + momentum confirm (RSI direction-aligned) to
+    require institutional follow-through on the BOS bar.
+    """
+    vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_breakout", False)
+    rsi = s.get("rsi_14", 50)
+    fl = (
+        s.get("smc_bos_bullish", False)
+        and s.get("price_above_ema_200", False)
+        and vol_confirms
+        and rsi > 50
+    )
+    fs = (
+        s.get("smc_bos_bearish", False)
+        and s.get("below_ema_200", False)
+        and vol_confirms
+        and rsi < 50
+    )
+```
+
+**4-gate dual strategy.** Most heavily-gated SMC strategy post-B278 fix (4 gates per direction, same gate density as SMC-3 after its B262 fix).
+
+| Direction | Gates |
+|---|---|
+| LONG | `smc_bos_bullish` + `price_above_ema_200` + `vol_confirms` + `rsi_14 > 50` |
+| SHORT | `smc_bos_bearish` + `below_ema_200` + `vol_confirms` + `rsi_14 < 50` |
+
+#### Step 2 — Classify
+
+- Category: `smc`; dual; B291 default; last touched B278 (forensic fix); B630/B663 verified
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_bos_bullish` / `_bearish` via 90-bar recency window (Pattern I)
+- `vol_spike_2x` + `force_index_breakout` are bar-of-fire EVENTs
+- `rsi_14` STATE (today's RSI)
+- EVENT/STATE: 1 recency-windowed EVENT (BOS) + 1 EVENT (vol_confirms OR) + 2 STATE (EMA + RSI)
+- **F-rsi-default-50 hazard** per `S5-RSI-DEFAULT-50-FAMILY` — `rsi > 50` (LONG) / `rsi < 50` (SHORT) with default=50 means missing-data fails the gate (50 > 50 is False; 50 < 50 is False). Fail-safe ✅. Strict-inequality on default-value-AT-threshold = family member.
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Stage B v2 showed 13 trades / 15.4% WR / -6.60% mean / -86 pp" | ✅ **B278 forensic confirmed empirically** in Stage B v2 backtest. Fix is evidence-based |
+| "Batch 273's event_recency_bars=90 means BOS signal stays True for up to 90 bars" | ✅ Mechanically correct per producer code |
+| "vol_confirms + momentum confirm require institutional follow-through on the BOS bar" | ✅ Defensible — addresses the stale-event problem directly |
+| Implicit "post-B278 fix the strategy is sound" | ⚠ **Pattern M** — B278 fixed the empirical disaster but post-fix design has not been re-validated against full-universe cube (same as SMC-3 B262); pre-B660 the fix is plausible but unproven |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- B278 forensic precedent IS the active concern (symmetric with B262 SMC-3); post-B660 cube replay must surface whether the post-fix design is empirically sound
+- Cross-ref `S5-RSI-DEFAULT-50-FAMILY` — SMC-15 family member
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Already dual; both directions fire under B278 fix
+- Economic symmetry: ✅ price-action
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-B278 fix re-validation** | Same class as SMC-3 B262 — gate-add fix needs full-universe cube replay validation | HIGH | F1 |
+| **F-rsi-default-50 family hazard** | Strict-inequality on default-50 boundary; B654 W8 precedent may apply post-cube | MEDIUM | S5-RSI-DEFAULT-50-FAMILY |
+| **F-pattern-I 90-bar BOS recency** | Even post-B278 fix, the BOS event could be up to 90 bars old at fire bar; the 4-gate vol+momentum confluence partially mitigates but doesn't eliminate | MEDIUM | Pattern I |
+| **F-pattern-J BOS overlap with SMC-14** | SMC-15 vs SMC-14 — BOS-continuation vs BOS-retest on same primitive | MEDIUM | Pattern J |
+| F-pattern-A | EMA-200 ✅ | ✅ SHIPPED B663 | — |
+| F-fire-count | Quadruple-AND gates reduce fires; post-B278 projected ~25-60/yr universe-wide per direction; borderline | MEDIUM | F4 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo (post-B278-fix) |
+| (b) Tighten BOS recency from 90 → 30 bars (producer-side; Pattern O config sweep candidate) — would address Pattern I more directly than the B278 vol_confirms workaround |
+| (c) Drop RSI gate per B654 W8 precedent (S5-RSI-DEFAULT-50-FAMILY resolution option a) — would raise fires |
+| (d) Cube-replay re-validation of B278 fix on full T1a universe |
+| **(e) RECOMMENDED — (d) + (b) post-cube. B278 fix is the gold standard for SMC-strategy disposition; cube validates whether fix landed. Pattern O recency-tighten is the upstream fix that B278 papers-over with vol_confirms — cube-evaluate both designs.** |
+
+**My recommendation: (e).**
+
+**Awaiting owner direction on SMC-15:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (e)
+2. Pattern O `event_recency_bars` config-parameterization priority
+3. Whether B278 forensic precedent should be cited cluster-wide alongside B262 as canonical gate-add disposition pattern
+
+---
+
+### SMC-16. `strat_smc_choch_reversal` (Batch 210, structural family, walked B673d — DUAL)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate dual; **NO EMA TREND FILTER** — CHOCH + FVG-active confluence only.
+
+#### Step 1 — Read the code
+
+[screener.py:3480-3498](backtest/signals/screener.py#L3480-L3498):
+
+```python
+def strat_smc_choch_reversal(s):
+    """Batch 210: Change of Character reversal. CHoCH marks the FIRST
+    structural shift opposing the prior trend; high-conviction reversal
+    setup per ICT/SMC discipline. Pairs with FVG-aligned entry."""
+    fl = (
+        s.get("smc_choch_bullish", False)
+        and s.get("smc_fvg_bullish_active", False)
+    )
+    fs = (
+        s.get("smc_choch_bearish", False)
+        and s.get("smc_fvg_bearish_active", False)
+    )
+```
+
+**2-gate dual.** CHOCH + FVG-confluence; no EMA gate.
+
+#### Step 2 — Classify
+
+- Category: `smc`; dual; B291 default; last touched B210/B273 (90-bar recency)
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_choch_bullish` / `_bearish` via 90-bar recency (Pattern I)
+- `smc_fvg_bullish_active` / `_bearish_active` over 5-bar tail (`fvg_lookback=5`)
+- EVENT/STATE: 2 recency-windowed events (CHOCH 90-bar + FVG 5-bar tail)
+- **NO EMA REGIME GATE** — same cluster-wide concern as SMC-10/11/12/13/18
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "CHoCH marks the FIRST structural shift opposing the prior trend" | ✅ Implementation matches ICT canon |
+| "high-conviction reversal setup per ICT/SMC discipline" | ⚠ **Pattern M overclaim** — "high-conviction" framing not peer-reviewed; cube-replay is only adjudication |
+| Implicit "FVG confluence substitutes for EMA trend filter" | ⚠ Same missing-trend-filter concern as SMC-10/11/12/13/18 |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations specific to SMC-16
+- Cross-ref CLUSTER-WIDE EMA-gate proposal (Pattern carried from SMC-10)
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Already dual
+- Economic symmetry: ✅ price-action; CHOCH is a defined reversal event in both directions
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-missing-trend-filter** | No EMA-200 gate; cluster-wide pattern (SMC-10/11/12/13/16/18) | HIGH | F1-trend |
+| **F-pattern-I 90-bar CHOCH staleness** | A 4-month-old CHOCH is materially less reliable than a fresh one; vol-confirmation gate would mitigate per B262/B278 precedent | MEDIUM | Pattern I |
+| **F-pattern-J CHOCH + FVG overlap** | CHOCH + FVG-active confluence with SMC-3 + SMC-10 + SMC-11 + SMC-18 (all consume CHOCH or FVG primitives) | MEDIUM | Pattern J |
+| **F-pattern-M "high-conviction" overclaim** | ICT framing not peer-reviewed | MEDIUM | Pattern M |
+| F-fire-count | CHOCH + FVG co-occurrence narrow; projected ~15-40/yr per direction; borderline FAIL min_trades=30 per regime | MEDIUM | F4 |
+| F-borrow-cost | B671 SHORT-side DTC>8 gate applies | LOW | F5 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Add EMA-200 trend gate per CLUSTER-WIDE proposal (bundled with SMC-10/11/12/13/18) |
+| (c) Add `vol_confirms` freshness gate per B262/B278 precedent |
+| (d) Cube-replay branch-stratified Pattern J (CHOCH-FVG overlap with SMC-3/SMC-10/SMC-11/SMC-18) |
+| **(e) RECOMMENDED — (b) + (d) bundled with cluster-wide EMA proposal. SMC-16 is one of 6 no-EMA-gate SMC strategies; bundled B-N batch is the consistent design choice.** |
+
+**My recommendation: (e).**
+
+**Awaiting owner direction on SMC-16:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (e)
+2. Bundle SMC-10 + SMC-11 + SMC-12 + SMC-13 + SMC-16 + SMC-18 cluster-wide EMA proposal as single B-N batch
+3. Pattern J flagship cube ablation (SMC-3 + SMC-10 + SMC-11 + SMC-16 + SMC-18 all consume CHOCH or FVG)
+
+---
+
+### SMC-17. `strat_smc_order_block_bounce` (Batch 210, structural family, walked B673d — DUAL)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate dual; OB-active + RSI confirmation + EMA-200. **Asymmetric RSI thresholds** (45 LONG / 55 SHORT) — escapes `S5-RSI-DEFAULT-50-FAMILY` hazard.
+
+#### Step 1 — Read the code
+
+[screener.py:3501-3522](backtest/signals/screener.py#L3501-L3522):
+
+```python
+def strat_smc_order_block_bounce(s):
+    """Batch 210: Order block bounce. Bullish OB = last opposing
+    (bearish) candle before an impulse up; price returning to this zone
+    acts as institutional support. Symmetric for bearish OB."""
+    fl = (
+        s.get("smc_ob_bullish_active", False)
+        and s.get("rsi_14", 50) < 45  # pullback context
+        and s.get("price_above_ema_200", False)
+    )
+    fs = (
+        s.get("smc_ob_bearish_active", False)
+        and s.get("rsi_14", 50) > 55
+        and s.get("below_ema_200", False)
+    )
+```
+
+**3-gate dual.** OB-active recency-windowed + asymmetric RSI + EMA-200.
+
+| Direction | Gates |
+|---|---|
+| LONG | `smc_ob_bullish_active` + `rsi_14 < 45` + `price_above_ema_200` |
+| SHORT | `smc_ob_bearish_active` + `rsi_14 > 55` + `below_ema_200` |
+
+#### Step 2 — Classify
+
+- Category: `smc`; dual; B291 default; last touched B273/B556
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_ob_bullish_active` / `_bearish_active` via 90-bar recency on OB primitive (Pattern I directly applies — this is the strategy that MOST consumes the recency-windowed STATE)
+- `rsi_14` STATE
+- EVENT/STATE: 1 recency-windowed (OB 90-bar) + 2 STATE
+
+**Asymmetric RSI thresholds (45 / 55) ESCAPE S5-RSI-DEFAULT-50-FAMILY hazard:**
+- LONG `rsi_14 < 45`: default-50 → False (50 < 45 is False) → fail-safe ✅
+- SHORT `rsi_14 > 55`: default-50 → False (50 > 55 is False) → fail-safe ✅
+- Both thresholds OUTSIDE the default-50 value → strict-inequality safety ✅
+- Bands are tighter than canonical Wilder oversold/overbought 30/70 but defensible as "pullback context" per docstring
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Bullish OB = last opposing (bearish) candle before an impulse up" | ✅ Implementation matches ICT/SMC canon |
+| "price returning to this zone acts as institutional support" | ⚠ **Pattern M** — canonical per ICT methodology; no peer-reviewed validation. Defensible at the structural-mechanic level (institutional zones DO act as support/resistance in price-action methodology generally — beyond ICT) |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations specific to SMC-17
+- ESCAPES `S5-RSI-DEFAULT-50-FAMILY` (asymmetric thresholds well clear of default-50)
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Already dual
+- Economic symmetry: ✅ price-action
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-I DIRECT 90-bar OB STATE** | SMC-17 is the strategy that MOST consumes the recency-windowed STATE (`smc_ob_*_active` directly); staleness exposure highest in cluster | HIGH | Pattern I |
+| **F-pattern-J OB-family overlap** | SMC-17 + SMC-4/SMC-5 (breaker_block) + SMC-6/SMC-7 (mitigation_block) all consume OB primitive at different stages; marginal contribution audit | MEDIUM | Pattern J |
+| **F-asymmetric RSI thresholds — POSITIVE NOTE** | 45/55 thresholds escape S5-RSI-DEFAULT-50 family hazard ✅; pullback context defensible | INFO / ✅ POSITIVE | F-rsi |
+| **F-pattern-M "institutional support" framing** | Defensible at structural-mechanic level; not as overclaim-heavy as "high-conviction" framing | LOW | Pattern M |
+| F-pattern-A | EMA-200 LONG ✅ + below_ema_200 SHORT ✅ | ✅ SHIPPED B663 + B630 | — |
+| F-fire-count | OB-active 90-bar STATE is common; RSI band + EMA narrows; projected ~30-80/yr per direction; PASS likely | INFO | F4 |
+| F-borrow-cost | B671 SHORT-side DTC>8 gate applies | LOW | F5 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Tighten BOS-active recency window from 90 → 30 bars (Pattern O config sweep) — would address direct Pattern I exposure |
+| (c) Add `vol_confirms` freshness gate per B262/B278 precedent |
+| (d) Cube-replay Pattern J ablation (SMC-17 vs SMC-4/SMC-5/SMC-6/SMC-7) — settles OB-family marginal contribution |
+| **(e) RECOMMENDED — (a) + (b) post-cube + (d) flagship OB-family ablation. SMC-17's direct 90-bar STATE consumption makes it the cleanest specimen for Pattern I sensitivity test. (b) is the cluster-wide producer-side fix; (d) is the Pattern J adjudication.** |
+
+**My recommendation: (e).**
+
+**Awaiting owner direction on SMC-17:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (e)
+2. Pattern I 90-bar `event_recency_bars` sensitivity sweep priority
+3. OB-family Pattern J flagship cube ablation (SMC-4 + SMC-5 + SMC-6 + SMC-7 + SMC-17)
+
+---
+
+### SMC-18. `strat_smc_liquidity_sweep_reversal` (Batch 210, liquidity-sweep family, walked B673d — DUAL)
+
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate dual; **NO EMA TREND FILTER**; liquidity-sweep + CHOCH-or-BOS confluence. Pattern N internal multi-test concern (combinatorial overlap with SMC-12/SMC-13 sweeps + SMC-16 CHOCH + SMC-14/SMC-15 BOS).
+
+#### Step 1 — Read the code
+
+[screener.py:3524-3543](backtest/signals/screener.py#L3524-L3543):
+
+```python
+def strat_smc_liquidity_sweep_reversal(s):
+    """Batch 210: Liquidity sweep reversal. Price sweeps a cluster of
+    equal highs/lows (taking out stops), then reverses. Classic ICT
+    'stop hunt' pattern. Pairs with CHoCH for additional reversal
+    confirmation."""
+    fl = (
+        s.get("smc_liquidity_swept_dn", False)  # lows swept -> bullish reversal
+        and (s.get("smc_choch_bullish", False) or s.get("smc_bos_bullish", False))
+    )
+    fs = (
+        s.get("smc_liquidity_swept_up", False)
+        and (s.get("smc_choch_bearish", False) or s.get("smc_bos_bearish", False))
+    )
+```
+
+**2-gate dual.** Liquidity-sweep + CHOCH-OR-BOS structural confluence; no EMA gate.
+
+| Direction | Gates |
+|---|---|
+| LONG | `smc_liquidity_swept_dn` (lows swept) + (`smc_choch_bullish` OR `smc_bos_bullish`) |
+| SHORT | `smc_liquidity_swept_up` (highs swept) + (`smc_choch_bearish` OR `smc_bos_bearish`) |
+
+#### Step 2 — Classify
+
+- Category: `smc`; dual; B291 default; last touched B273 (recency fix) / B390 (liquidity producer fix)
+
+#### Step 3 — Producer source-read + temporality
+
+- `smc_liquidity_swept_dn` / `_up` via 90-bar recency on liquidity primitive (Pattern I — sweep event windowed)
+- `smc_choch_*` and `smc_bos_*` via 90-bar recency (Pattern I)
+- EVENT/STATE: 3 recency-windowed events (sweep 90-bar + CHOCH 90-bar OR BOS 90-bar) + 0 STATE
+- **NO EMA REGIME GATE** — cluster-wide concern
+
+#### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Price sweeps a cluster of equal highs/lows (taking out stops), then reverses" | ✅ Mechanically matches; defensible at price-action level beyond ICT |
+| "Classic ICT 'stop hunt' pattern" | ⚠ **Pattern M** — canonical per ICT YouTube methodology; no peer-reviewed validation |
+| "Pairs with CHoCH for additional reversal confirmation" | ⚠ Pattern N — CHOCH-OR-BOS confluence overlaps with SMC-16 (CHOCH+FVG) + SMC-14/15 (BOS); marginal contribution unknown pre-cube |
+
+#### Step 5 — OPEN_INVESTIGATIONS grep
+
+- Cross-ref `S4-SMC-CLUSTER-PATTERN-N-INTRA-CLUSTER-COLLINEARITY` (NEW B673) — SMC-18 is the cluster's MOST overlap-heavy strategy (liquidity + CHOCH + BOS = 3 of 7 primitives)
+- B390 producer fix is current state
+
+#### Step 6 — Missing-inverse + economic-symmetry
+
+- ✅ Already dual
+- Economic symmetry: ✅ price-action; both upside + downside stop-hunts are valid
+
+#### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-missing-trend-filter** | No EMA-200 gate; cluster-wide pattern | HIGH | F1-trend |
+| **F-pattern-I TRIPLE 90-bar exposure** | Liquidity sweep + CHOCH OR BOS — ALL THREE primitives use 90-bar recency; SMC-18 has the highest staleness exposure in the cluster | HIGH | Pattern I |
+| **F-pattern-N MAXIMUM OVERLAP** | SMC-18 consumes liquidity + CHOCH + BOS primitives — 3 of 7 primitives → cluster's most overlap-heavy strategy | HIGH | Pattern N |
+| **F-pattern-J cross-strategy overlap** | SMC-18 + SMC-12/13 (liquidity sweeps) + SMC-16 (CHOCH+FVG) + SMC-14/15 (BOS) — quad-strategy overlap | HIGH | Pattern J |
+| **F-pattern-M ICT framing** | Stop-hunt mechanic defensible at price-action level | LOW-MEDIUM | Pattern M |
+| F-fire-count | Liquidity-sweep + CHOCH/BOS triple-event recency-windowed; projected ~25-60/yr per direction; modest PASS likely | INFO | F4 |
+| F-borrow-cost | B671 SHORT-side DTC>8 gate applies | LOW | F5 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Add EMA-200 trend gate per CLUSTER-WIDE proposal |
+| (c) Add `vol_confirms` freshness gate per B262/B278 precedent |
+| (d) Pattern I recency tighten (90 → 30 bars on producer) — most direct staleness fix |
+| (e) Cube-replay branch-stratified Pattern N + Pattern J ablation — SMC-18 vs SMC-12/13 vs SMC-16 vs SMC-14/15 |
+| **(f) RECOMMENDED — (b) + (e). SMC-18 is the cluster's flagship Pattern N specimen; cube ablation against the 5 overlapping strategies is the highest-leverage SMC cluster test. EMA gate addition is the cluster-wide proposal. Pre-cube no producer change; post-cube the recency tighten (d) is the cleanest Pattern I fix if cube shows staleness damage.** |
+
+**My recommendation: (f).**
+
+**Awaiting owner direction on SMC-18:**
+1. (a)/(b)/(c)/(d)/(e)/(f) — recommendation (f)
+2. SMC-18 as Pattern N + Pattern J flagship ablation specimen — confirm scope
+3. Cluster-wide EMA proposal bundle priority
 
 ---
 
@@ -831,10 +1640,52 @@ def strat_smc_mitigation_block_short(s):
 |---|---|
 | Doc infrastructure (header + adaptations + inventory + patterns + state table) | ✅ B673 |
 | Per-strategy walks SMC-1 + SMC-2 + SMC-3 + SMC-4 + SMC-5 + SMC-6 + SMC-7 (7 walks at full template density) | ✅ B673 |
-| Per-strategy walks SMC-8 + SMC-9 + SMC-10 + SMC-11 (sub-clusters C + D) | ⏳ B673b |
-| Per-strategy walks SMC-12 + SMC-13 + SMC-14 (sub-cluster E lead-in + structural F lead-in) | ⏳ B673c |
-| Per-strategy walks SMC-15 + SMC-16 + SMC-17 + SMC-18 (sub-cluster F completion) | ⏳ B673d |
+| Per-strategy walks SMC-8 + SMC-9 + SMC-10 + SMC-11 (sub-clusters C + D) | ✅ B673b |
+| Per-strategy walks SMC-12 + SMC-13 + SMC-14 (sub-cluster E + structural F lead-in) | ✅ B673c |
+| Per-strategy walks SMC-15 + SMC-16 + SMC-17 + SMC-18 (sub-cluster F completion) | ✅ B673d |
 | External reviewer pass | ⏳ post-walk-completion |
 | Cluster-wide post-walk findings synthesis | ⏳ post-reviewer |
 
-**Cumulative B673: 7 of 18 walks fully expanded; remaining 11 queued for B673b-d follow-on commits.**
+**Cumulative B673: 18 of 18 walks fully expanded. CLUSTER WALK COMPLETE.**
+
+## B673 cluster walk completion wrap-up
+
+> All 18 SMC pure price-action cluster strategies now have full pivot-doc-template per-walk coverage:
+>
+> - **Sub-cluster A — FVG family (3):** SMC-1 ✅ + SMC-2 ✅ + SMC-3 ✅ (B262 forensic-fixed)
+> - **Sub-cluster B — OB family (4):** SMC-4 ✅ + SMC-5 ✅ + SMC-6 ✅ + SMC-7 ✅
+> - **Sub-cluster C — dealing range (2):** SMC-8 ✅ + SMC-9 ✅ (Pattern K lookahead)
+> - **Sub-cluster D — OTE family (2):** SMC-10 ✅ + SMC-11 ✅ (no EMA gate)
+> - **Sub-cluster E — liquidity sweep (3):** SMC-12 ✅ + SMC-13 ✅ + SMC-18 ✅
+> - **Sub-cluster F — BOS/CHOCH structural (4):** SMC-14 ✅ + SMC-15 ✅ (B278 forensic-fixed) + SMC-16 ✅ + SMC-17 ✅
+>
+> **Total fully-expanded: 18 of 18.**
+
+### Bundled disposition recommendations summary
+
+| Pattern | Strategies | Disposition |
+|---|---|---|
+| **A (default-True silent-gap)** | All 18 (12 EMA-consumers) | ✅ B663/B630 sweep verified clean for all consumers |
+| **I (90-bar recency staleness)** | SMC-3 (B262 vol_confirms mitigates), SMC-4/5 (filter-then-tail direct), SMC-6/7 (filter-then-tail direct), SMC-8/9 (90-bar BOS/CHOCH), SMC-10/11 (90-bar BOS/CHOCH), SMC-12/13/18 (90-bar sweep + CHOCH/BOS), SMC-14 (BOS Level near-test), SMC-15 (B278 vol_confirms mitigates), SMC-16 (90-bar CHOCH), SMC-17 (DIRECT 90-bar OB STATE) | Cube replay sensitivity sweep on `event_recency_bars=90` post-B660; Pattern O config-parameterization for empirical sensitivity test |
+| **J (primitive overlap)** | All 18; flagship ablations: SMC-1/2 vs SMC-6/7 vs SMC-17 (FVG vs OB) + SMC-14 vs SMC-15 (BOS-retest vs BOS-continuation) + SMC-3 vs SMC-10/11 vs SMC-16 vs SMC-18 (CHOCH+FVG vs OTE vs CHOCH+FVG vs liquidity-sweep) | Cube replay marginal-contribution scoring per `S5-MARGINAL-CONTRIBUTION-SCORING` C3 |
+| **K (dealing_range lookahead)** | SMC-8 + SMC-9 | PIT pin queued symmetric with `S4-FIB-ANCHOR-LOOKAHEAD-AUDIT` |
+| **L (vendored library SPOF)** | All 18 | Monitor B458 silent-failure logging; library version pin |
+| **M (Quantum Algo unaudited)** | All 18 | Cube replay against T1a 503 names + multi-testing correction (B667+B668 already shipped) is the only adjudication |
+| **N (intra-cluster collinearity)** | 24 cells on 7 primitives; SMC-18 is max-overlap specimen (3 of 7 primitives) | Cube ablation post-B660 |
+| **O (hardcoded tolerances)** | event_recency_bars=90 (12 strategies); dealing_range_lookback=50 (SMC-8/9); tol=0.005 (SMC-14); liquidity_range_pct=0.01 (SMC-12/13) | Config-parameterization for sensitivity sweep |
+| **Missing-trend-filter (cluster-wide)** | SMC-10, SMC-11, SMC-12, SMC-13, SMC-16, SMC-18 (6 of 18) | CLUSTER-WIDE EMA-gate addition proposal as bundled B-N batch |
+| **B262/B278 forensic-fix re-validation** | SMC-3 + SMC-15 | Post-B660 cube replay validates whether gate-add fixes landed empirically |
+| **RSI-default-50 family** | SMC-6 + SMC-7 (strict-inequality on default-50 boundary) | Cross-ref existing `S5-RSI-DEFAULT-50-FAMILY` ticket; B654 W8 precedent (drop gate) candidate post-cube |
+
+### Queue tickets surfaced (recap)
+
+- `S4-SMC-CLUSTER-PATTERN-J-CUBE-ABLATION` (NEW B673)
+- `S4-SMC-CLUSTER-PATTERN-N-INTRA-CLUSTER-COLLINEARITY` (NEW B673)
+- `S4-SMC-PATTERN-K-PIT-AUDIT` (NEW B673)
+- `S4-SMC-PATTERN-O-CONFIG-PARAMETERIZATION` (NEW B673)
+- `S4-SMC-B262-FIX-CUBE-REVALIDATION` (NEW B673; extend to SMC-15 B278 fix)
+- `S4-SMC-PATTERN-M-QUANTUM-ALGO-AUDIT` (NEW B673)
+- `S4-SMC-CLUSTER-WIDE-EMA-GATE-PROPOSAL` (NEW B673d — 6 strategies bundled)
+- `S5-RSI-DEFAULT-50-FAMILY` (EXISTING; SMC-6 + SMC-7 family members)
+- `S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660` (EXISTING; SMC-12 + SMC-13 candidates)
+- `S5-MARGINAL-CONTRIBUTION-SCORING` (EXISTING; SMC = 2nd-highest application)
