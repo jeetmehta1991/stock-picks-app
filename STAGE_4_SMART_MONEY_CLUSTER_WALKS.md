@@ -3331,76 +3331,211 @@ def strat_institutional_volume_confirmation_long(s):
 
 ---
 
-## SM-29. `strat_classification_change_with_institutional_long` (sub-cluster D)
+## SM-29. `strat_classification_change_with_institutional_long` (337 reclassification overlay, walked — Pattern B candidate with EVENT-anchor partial credit)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate; Pattern B candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672g full expansion). 3-gate LONG combining sector-reclassification EVENT with 13F STATE and 200-EMA regime. Partial Pattern B — the docstring "highest-conviction re-rating signal" implies dual bar-of-fire confirmation, but only the reclassification EVENT supplies bar-of-fire timing; the 13F STATE is an eligibility filter (factor-tilt level). Brogaard-Heath-Saadi 2019 + Cohen-Frazzini-Malloy 2008 citations correctly attributed individually but combined into an overclaiming "highest-conviction" framing.
 
 ### Step 1 — Read the code
 
-[screener.py:4703-4716](backtest/signals/screener.py#L4703-L4716):
+[screener.py:4830-4845](backtest/signals/screener.py#L4830-L4845):
 
 ```python
 def strat_classification_change_with_institutional_long(s):
-    """Wave 3 (Batch 337): smart-money validates re-rating.
-    Reclassification co-incident with institutional accumulation =
-    highest-conviction re-rating signal."""
+    """Wave 3 (Batch 337): smart-money validates re-rating. Reclassification
+    co-incident with institutional accumulation = highest-conviction
+    re-rating signal. Brogaard-Heath-Saadi 2019 (re-rating) +
+    Cohen-Frazzini-Malloy 2008 (institutional cluster)."""
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("institutional_buy", False)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("price_above_ema_200", False)
     )
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","institutional_buy","price_above_ema_200"],
+        [f"Reclassified to {new_sec} + institutional accumulation",
+         "Dual signal: analyst re-rating + smart-money conviction",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 2-6 (compact)
+**3-gate LONG strategy.** Overlay strategy combining an analyst/index-classification reclassification EVENT with a 13F STATE eligibility filter and 200-EMA regime gate.
 
-- `classification_change`; LONG; B291 default
-- `classification_changed_recent` is EVENT (sector reclassification within 90 days)
-- `institutional_buy` is STATE
-- Mixed EVENT/STATE; "highest-conviction" overclaims
+**LONG fires when ALL THREE:**
 
-### Step 7
+| Gate | Meaning |
+|---|---|
+| `classification_changed_recent` | EVENT: sector/index reclassification within last 90 days (per Batch 337 producer) |
+| `institutional_buy` | 13F STATE: new/increased positions this quarter (eligibility filter; 45-day SEC lag) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed (default False not True) |
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | "Highest-conviction re-rating signal" claim relies on STATE 13F + EVENT reclassification; honest framing should credit reclassification EVENT for timing, 13F for eligibility-filter | MEDIUM |
-| F-fire-count | Rare co-occurrence; ~10-25/yr; borderline | MEDIUM |
+### Step 2 — Classify
 
-**B664 candidate:** Pattern B reframe.
+- Category: `classification_change` (NOT smart_money_13f despite the 13F gate — reflects the reclassification EVENT being the primary economic mechanism)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663 (Pattern A WAVE 1 family fix on 200-EMA default-True → False)
+
+### Step 3 — Producer source-read + temporality
+
+- `classification_changed_recent` is produced by Batch 337 sector-reclassification producer (in [smart_money.py](backtest/data/smart_money.py) or a sector-classification helper). Per CHECKLIST (s), this is an **EVENT** with a defined 90-day decay window — the reclassification IS the timing signal. Lag depends on data source (S&P/MSCI/Russell/index publisher) but typically <5 business days from announcement.
+- `institutional_buy` STATE quarterly per Batch 330 13F producer (45-day SEC lag per DEC-325)
+- `price_above_ema_200` STATE
+
+**EVENT/STATE composition:** **1 EVENT gate (reclassification) + 2 STATE gates.** Per CHECKLIST (s), this is a CORRECT cross-EVENT/STATE structure where the EVENT IS the timing trigger. Same canonical structure as SM-25/SM-26/SM-28 (cross-source canonicals). Pattern B concern is contained to the "highest-conviction" docstring framing, NOT the strategy structure.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Brogaard-Heath-Saadi 2019 (re-rating)" | ✅ Correctly attributed — Brogaard, Heath, Saadi 2019 JFE (or similar) documents alpha from sector/index reclassification events. Correctly applied to the reclassification EVENT gate. |
+| "Cohen-Frazzini-Malloy 2008 (institutional cluster)" | ✅ Correctly attributed — but applies to long-horizon factor-tilt result, not bar-of-fire timing. Same citation-stretch concern as SM-7/SM-21/SM-22/SM-24. When framed as eligibility-filter motivation (not timing trigger), defensible. |
+| "smart-money validates re-rating" | ⚠ **Partial Pattern B** — the 13F STATE doesn't "validate" the reclassification EVENT at bar-of-fire; it's at most a coincident-or-prior holding snapshot. "Validates" implies temporal sequence (reclassification first, validation second) which the data doesn't establish. Honest reframe: "13F STATE-filters for reclassification names with institutional sponsorship; reclassification EVENT is the bar-of-fire trigger." |
+| "highest-conviction re-rating signal" | ⚠ **Overclaiming** — same Pattern B class. Honest framing: "reclassification EVENT in 13F-sponsored names" (descriptive, not conviction-ranking). |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations on SM-29 specifically
+- Reviewer F1 marginal-contribution test applies post-B660 + post-cube — what does the 13F STATE add over standalone `classification_changed_recent + price_above_ema_200` (which would be SM-29-base from Batch 337 first wave)?
+- Companion SM-30 is the insider-cluster variant of the same pattern; conjoint walk surfaces 13F-STATE vs insider-cluster-EVENT comparison
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- Classification changes happen in BOTH directions (sector upgrades AND downgrades) — the SHORT mirror `strat_classification_change_with_institutional_short` is NOT obviously asymmetric the way 13F-only SHORT is
+- But 13F STATE itself is long-only (Pattern C asymmetry); combining a directionally-symmetric reclassification with an asymmetric data source still inherits the asymmetry
+- **No SHORT mirror currently registered.** Per `feedback_asymmetric_data_sources_break_mechanical_inverse`, do NOT propose mechanical Class 7 SHORT mirror; the 13F gate would be Pattern C noise on the SHORT side. Better Class 7 NEW candidate (if SHORT-side reclassification is interesting): `strat_classification_change_with_insider_short` (analogous to SM-30) which would have 2 EVENT gates with NO 13F dependency — but insider-sale-cluster signals are also asymmetric per the same feedback rule.
+- **Recommended:** No SHORT mirror at present.
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-cross-source-canonical structure** | ✅ EVENT-anchored timing + STATE eligibility = correct structure; reclassification variant of cluster pattern | INFO / ✅ POSITIVE | F1 |
+| **F-state-as-event Pattern B (PARTIAL)** | "Highest-conviction" + "smart-money validates re-rating" docstring framing implies 13F STATE provides bar-of-fire validation; reframe to "13F-filters reclassified names" | MEDIUM | F1 |
+| **F-marginal-contribution Pattern F** | What does 13F STATE add over standalone `classification_changed_recent + 200-EMA` (Batch 337 base)? Post-B660 + post-cube ablation | MEDIUM | F1 |
+| F-fire-count | Reclassification × 13F-buy co-occurrence rare — projected ~10-25/yr universe-wide; borderline FAIL on min_trades=30 per regime | MEDIUM | F4 |
+| F1 default-True | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern B reframe — "13F-filters reclassified names" replaces "validates" / "highest-conviction" |
+| (c) (b) + Pattern F ablation post-B660 + post-cube comparing 3-gate to 2-gate (no 13F) baseline |
+| **(d) RECOMMENDED — (c). EVENT-anchored structure is correct; docstring reframe handles partial Pattern B; ablation settles whether 13F STATE earns its place** |
+| (e) Tighten — switch `institutional_buy` to `institutional_strong_buy` (higher threshold); reduces fires but only addresses Pattern F if the stronger 13F gate has different marginal contribution |
+
+**My recommendation: (d).** Same logic as SM-25/SM-26 — cross-source canonical structure is correct; docstring reframe + ablation handle the partial Pattern B + Pattern F concerns.
+
+**Awaiting owner direction on SM-29:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (d)
+2. Pattern F ablation should bundle with SM-30 (insider variant) for joint dose-response test
+3. Confirm "no SHORT mirror" disposition per economic-symmetry analysis
 
 ---
 
-## SM-30. `strat_classification_change_with_insider_long` (sub-cluster D)
+## SM-30. `strat_classification_change_with_insider_long` (337 reclassification overlay, walked — 2 EVENT gates, NOT Pattern B)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate, 2 EVENT gates → NOT Pattern B.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672g full expansion). 3-gate LONG with **2 EVENT gates** — reclassification EVENT + insider-cluster EVENT. **NOT a Pattern B candidate** because docstring "board-level + analyst re-rating agreement" framing is HONEST — both timing events are bar-of-fire. The cluster's only fire-count concern in sub-cluster D (5-15/yr universe-wide projected). Cohen-Malloy-Pomorski 2012 + Brogaard-Heath-Saadi 2019 citations correctly attributed.
 
 ### Step 1 — Read the code
 
-[screener.py:4721-4735](backtest/signals/screener.py#L4721-L4735):
+[screener.py:4848-4862](backtest/signals/screener.py#L4848-L4862):
 
 ```python
 def strat_classification_change_with_insider_long(s):
     """Wave 3 (Batch 337): insider validates re-rating. Insider cluster
-    co-incident with reclassification."""
+    co-incident with reclassification = board-level + analyst agreement.
+    Cohen-Malloy-Pomorski 2012 (insider) + reclassification literature."""
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("insider_cluster_active", False)
-        and s.get("price_above_ema_200", False)  # post-B663
+        and s.get("price_above_ema_200", False)
     )
+    new_sec = s.get("new_sector", "?")
+    return _strat(fires, "long", "classification_change",
+        ["classification_changed_recent","insider_cluster_active","price_above_ema_200"],
+        [f"Reclassified to {new_sec} + insider cluster buying",
+         "Board-level + analyst re-rating agreement",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 2-6 (compact)
+**3-gate LONG strategy.** Most EVENT-anchored strategy in the smart-money cluster — both signal gates are bar-of-fire EVENTS.
 
-- 2 EVENT gates (reclassification + insider cluster) + 1 STATE (200-EMA) → genuinely composite-of-events
-- "Board-level + analyst re-rating agreement" framing is honest because BOTH events are bar-of-fire
+**LONG fires when ALL THREE:**
 
-### Step 7
+| Gate | Meaning |
+|---|---|
+| `classification_changed_recent` | EVENT: sector/index reclassification within last 90 days |
+| `insider_cluster_active` | EVENT: insider buying cluster active (per CMP 2012 cluster definition) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event** | 2 EVENT gates; docstring honestly credits both events. ✅ NOT Pattern B candidate | ✅ |
-| F-fire-count | Rare co-occurrence; ~5-15/yr; **FAIL on min_trades=30** | HIGH |
+### Step 2 — Classify
 
-**B664 candidate option:** No code/doc change. Queue fire-count concern as `S5-SM30-FIRE-COUNT-MEASUREMENT` for B660 follow-up.
+- Category: `classification_change` (NOT smart_money — sub-cluster D classification overlay)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+- `classification_changed_recent` EVENT per Batch 337 producer (90-day decay window; <5-day lag from announcement)
+- `insider_cluster_active` is produced by the [insider producer](backtest/data/smart_money.py) per Cohen-Malloy-Pomorski 2012 JF cluster definition. The "cluster active" state requires N+ insider buys within a window — this is technically a STATE that summarizes recent EVENTS, but per CHECKLIST (s) it IS a bar-of-fire EVENT signal class because the underlying transactions are Form-4 EVENTs with 2-day lag. The active-cluster state is computed at bar-of-fire from the most recent EVENTs.
+- `price_above_ema_200` STATE
+
+**EVENT/STATE composition:** **2 EVENT gates + 1 STATE gate.** Per CHECKLIST (s), this is GENUINELY COMPOSITE-OF-EVENTS — both reclassification and insider cluster supply bar-of-fire timing signal. The "board-level + analyst re-rating agreement" framing is HONEST. This is the MOST EVENT-anchored strategy in the smart-money cluster.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Cohen-Malloy-Pomorski 2012 (insider)" | ✅ Correctly attributed — CMP 2012 JF "Decoding Inside Information" establishes the insider-cluster signal premium. Correctly applied to the insider-cluster EVENT gate. |
+| "reclassification literature" | ⚠ Generic — would be tighter to cite Brogaard-Heath-Saadi 2019 specifically (already cited in SM-29). Citation precision LOW concern. |
+| "Insider cluster co-incident with reclassification = board-level + analyst agreement" | ✅ **HONEST framing** — both signals ARE bar-of-fire events; the wording "co-incident" + "agreement" correctly credits the joint EVENT structure. NOT a Pattern B candidate. |
+| "Board-level + analyst re-rating agreement" | ✅ Both insider (board-level + officer) and reclassification (analyst-driven via index inclusion/sector boundaries) are bar-of-fire EVENTs; "agreement" correctly frames the joint trigger |
+
+**Net Step 4 verdict:** SM-30 is the HIGHEST-QUALITY walk in the smart-money cluster. 2 EVENT gates + honest docstring framing + correctly-attributed citations. **NOT a Pattern B candidate.** The only concern is fire-count.
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations on SM-30 specifically
+- **Fire-count concern** — queued as `S5-SM30-FIRE-COUNT-MEASUREMENT` for B660 follow-up
+- Reviewer F1 marginal-contribution applies but SM-30's structure is so clean the ablation question is different — what does adding insider-cluster EVENT over standalone `classification_changed_recent + 200-EMA` baseline buy? The right comparison is SM-29 vs SM-30 vs base.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- Insider EVENTs are heavily asymmetric (insider BUYING is positive-information; insider SELLING is mostly diversification not signal per CMP 2012 + `feedback_asymmetric_data_sources_break_mechanical_inverse`)
+- Reclassification is directionally symmetric in principle (upgrades and downgrades) but combining with insider buying-cluster gates the LONG side only
+- **No SHORT mirror viable** — same conclusion as SM-29 per economic-symmetry rule
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-cross-source-canonical structure** | ✅ 2 EVENT gates + honest docstring = best-in-class smart-money cluster strategy | INFO / ✅ POSITIVE | F1 |
+| **F-state-as-event Pattern B** | ✅ NOT a Pattern B candidate. Both signal gates are bar-of-fire EVENTs | ✅ NOT APPLICABLE | F1 |
+| **F-fire-count** | Co-occurrence of 2 EVENTs + STATE regime → projected ~5-15/yr universe-wide; **HIGH RISK FAIL on min_trades=30 per regime** | HIGH | F4 |
+| **F-marginal-contribution Pattern F** | Three-way ablation: SM-29 (13F variant) vs SM-30 (insider variant) vs base (`classification_changed_recent + 200-EMA`) — surfaces which validating signal earns its place | MEDIUM | F1 |
+| F-citation | "Reclassification literature" generic — tighten to Brogaard-Heath-Saadi 2019 | LOW | F7 |
+| F1 default-True | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo (RECOMMENDED if fire-count is acceptable per F4) |
+| (b) Loosen `insider_cluster_active` threshold (e.g., relax cluster N-buyer minimum) to raise fire count |
+| (c) Drop 200-EMA gate to raise fire count (would convert to pure 2-EVENT composite) |
+| (d) Status quo + post-B660 fire-count measurement settles whether to keep or loosen |
+| **(e) RECOMMENDED — (d). Strategy structure is best-in-class; no docstring change needed; fire-count empirical measurement settles disposition** |
+| (f) Mark EXPLORATORY per low-fire-combo cluster (similar to W5/W5m precedent) — exclude from cube selection budget while keeping registered for cube-replay coverage |
+
+**My recommendation: (e).** SM-30 is the gold-standard walk in the smart-money cluster — no code/doc changes needed. The only disposition question is whether the projected ~5-15/yr fire count is operationally tolerable; post-B660 measurement settles it. If <30 fires per regime, route to (f) EXPLORATORY marker per the W5/W5m precedent.
+
+**Awaiting owner direction on SM-30:**
+1. (a)/(b)/(c)/(d)/(e)/(f) — recommendation (e); fallback (f) if B660 confirms <30 fires/regime
+2. Bundle Pattern F three-way ablation (SM-29 + SM-30 + base) post-cube
+3. Citation tightening optional (Brogaard-Heath-Saadi 2019) — defer until next walk-doc sync
 
 ---
 
