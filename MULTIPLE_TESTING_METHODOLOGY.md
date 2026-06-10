@@ -21,11 +21,21 @@
 - Decision 3 + 5 → `cube_select_with_multiple_testing()` groups inputs by `(direction, regime)` before applying correction
 - Decision 6 → walk-forward integration deferred; no R8-specific code in B667
 
-**B668 (next batch) will:**
-- Wire `cube_select_with_multiple_testing()` into the Stage-D cube replay path
-- Re-run cube with corrected selection
-- Update STAGE_4_PIVOT_CLUSTER_WALKS.md + STAGE_4_SMART_MONEY_CLUSTER_WALKS.md per-strategy FINAL STATUS blocks with multiple-testing-aware Sharpe ratios
-- Surface the discrepancy report (pre vs post correction; SPA vs BH-FDR disagreements)
+**B668 SHIPPED (2026-06-09 owner-approved "Wire now"):** cube replay path integration via parallel artifact pattern.
+
+- New module `backtest/results/cube_compose_verdict.py` wraps `cube_select_with_multiple_testing()` for trade-log aggregation
+- `backtest/results/writer.py` emits `cube_compose_verdict.csv` alongside the existing DEC-578 `verdict_cube.csv`
+- Architecture: **PARALLEL artifact** — does NOT replace 7-gate Gate 2 (Bonferroni) or Gate 3 (DSR); reviewer + cube tooling can A/B compare
+- Per cell output columns: `strategy, direction, regime, sharpe_raw, n_trades, deflated_sharpe, deflated_sharpe_pvalue, spa_pvalue, bh_fdr_significant, passes_compose`
+- Discrepancy diagnostic: writer log reports `discrepancy (BH vs COMPOSE) = N` count where BH-FDR significance disagrees with COMPOSE PASS verdict
+- Test pyramid: 9 B668 cycle pins (test_batch668_cube_compose_integration.py) + 19 B667 + 842 unit+integration = 870/870 green
+- Critical pin: test_batch668_exploratory_does_not_inflate_deployable_family_size verifies Decision 4 (W5+W5m in trade log don't change deployable strategies' deflated Sharpe in the writer-output path)
+
+**Replacing the 7-gate Gate 2 + Gate 3 with COMPOSE** is a future B-N decision per `feedback_local_changes_default_global_needs_approval` (would touch load-bearing 7-gate path used by ~5 test files); not done in B668.
+
+**B669+ next steps:**
+- B669 — execute survivorship harness against W5 + W5m post-B660 land (per Decision 1 sequencing)
+- B670+ — once Stage-D cube re-runs with the new `cube_compose_verdict.csv` artifact, update STAGE_4_PIVOT_CLUSTER_WALKS.md + STAGE_4_SMART_MONEY_CLUSTER_WALKS.md per-strategy FINAL STATUS blocks with multiple-testing-aware Sharpe ratios + discrepancy report
 
 **Source:** External-AI 2nd-wave critique C2 (Pass 53 B641 audit) + 2nd-wave-redux critique #7 (Pass 53 B665) + queue tickets `S5-MULTIPLE-TESTING-CORRECTION` + `S5-DO-NOT-DEPLOY-MULTIPLE-TESTING-RECONCILIATION`.
 

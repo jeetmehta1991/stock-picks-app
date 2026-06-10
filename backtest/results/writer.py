@@ -277,6 +277,39 @@ def write_all_outputs(
         except Exception as exc:
             logger.warning("DEC-578 verdict_cube.csv emission failed: %s", exc)
 
+        # B668 (2026-06-09 owner-approved per MULTIPLE_TESTING_METHODOLOGY.md
+        # 6 decisions) -- COMPOSE multi-testing correction layer. Emits
+        # cube_compose_verdict.csv alongside the DEC-578 verdict_cube.csv;
+        # adds Bailey-LdP deflated Sharpe + Hansen SPA + BH-FDR sanity
+        # check per cell. EXPLORATORY strategies (W5 + W5m) appear in the
+        # output but DO NOT raise the family-size N for deployable
+        # strategies (Decision 4). Architecture: PARALLEL artifact; does
+        # NOT replace 7-gate Gate 2 (Bonferroni) or Gate 3 (DSR). A future
+        # batch will surface the A/B comparison verdict.
+        try:
+            from backtest.results.cube_compose_verdict import (
+                emit_cube_compose_verdict_csv,
+            )
+            if df_trades is not None and not df_trades.empty:
+                summary = emit_cube_compose_verdict_csv(
+                    df_trades,
+                    output_path=output_dir / "cube_compose_verdict.csv",
+                    pnl_col="pnl_pct",
+                    # Lighter bootstrap default in writer path; cube tooling
+                    # can re-run with higher iters via direct module call
+                    spa_bootstrap_iters=200,
+                )
+                if summary.get("written"):
+                    logger.info(
+                        "Wrote cube_compose_verdict.csv  -  %d cells | "
+                        "COMPOSE PASS=%d | BH-FDR significant=%d | "
+                        "discrepancy (BH vs COMPOSE)=%d (B668 owner-approved C2)",
+                        summary["n_cells"], summary["n_passes"],
+                        summary["n_bh_significant"], summary["discrepancy_count"],
+                    )
+        except Exception as exc:
+            logger.warning("B668 cube_compose_verdict.csv emission failed: %s", exc)
+
         logger.info("Wrote exit_by_<dim>.csv (1D marginals) for %d dims + "
                     "multi-dim cube + sweet-spots + pairwise dominance",
                     len(CONTEXT_COLUMN_NAMES))
