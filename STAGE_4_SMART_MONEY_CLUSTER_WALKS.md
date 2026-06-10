@@ -2008,9 +2008,9 @@ No active investigations. Cross-references: Pattern A family-bug shared with SM-
 
 ---
 
-## SM-15. `strat_institutional_persistence_oversold_long` (persistence variant, walked)
+## SM-15. `strat_institutional_persistence_oversold_long` (persistence variant, walked — Pattern B + 0-EVENT)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern B candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672e full expansion). 3-gate persistence-threshold variant; same Pattern B family as SM-10. All-STATE composition → 0 EVENT gates → F-timing-fragility candidate.
 
 ### Step 1 — Read the code
 
@@ -2018,33 +2018,86 @@ No active investigations. Cross-references: Pattern A family-bug shared with SM-
 
 ```python
 def strat_institutional_persistence_oversold_long(s):
-    """Wave 3 (Batch 337): institutional persistence + oversold mean-rev."""
+    """Wave 3 (Batch 337): institutional persistence + oversold mean-rev.
+    Combines persistent institutional accumulation with RSI<40 counter-
+    trend entry. Distinct from Batch 331 institutional_oversold_long by
+    requiring multi-fund persistence (increased>=5), not just any
+    institutional_buy."""
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("rsi_14", 50) < 40
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","rsi_14<40","price_above_ema_200"],
+        ["5+ institutional funds grew position (persistence)",
+         "RSI<40 oversold (counter-trend mean-rev)",
+         "Above 200 EMA (filter falling-knife)"])
 ```
 
-### Step 2-6 (compact)
+**3-gate LONG strategy.** Stricter-threshold variant of SM-10 — uses `institutional_increased >= 5` (multi-fund persistence) instead of looser `institutional_buy`.
 
-- Same family as SM-10 + SM-13
-- 3 STATE gates (13F + RSI + 200-EMA) → 0 EVENT; Pattern B candidate
+**LONG fires when ALL THREE:**
 
-### Step 7
+| Gate | Meaning |
+|---|---|
+| `institutional_increased >= 5` | Multi-fund persistence (same threshold as SM-13/14) |
+| `rsi_14 < 40` | Counter-trend mean-rev entry (looser than SM-10's < 35) |
+| `price_above_ema_200` | Long-term uptrend regime; B663-fixed |
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | Same as SM-10; alpha credit should go to RSI mean-rev, not 13F | MEDIUM |
-| F-fire-count | Rare co-occurrence; projected ~20-40/yr; borderline | INFO |
+### Step 2 — Classify
 
-**B664 candidate option:** Pattern B docstring reframe.
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+Same 13F + RSI + 200-EMA producers as SM-10. **0 EVENT gates per direction** (RSI<40 is STATE-ish — can persist 5-10 bars; trend gates are STATE; 13F is STATE). Pattern B + F-timing-fragility candidate per CHECKLIST (s).
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Combines persistent institutional accumulation with RSI<40 counter-trend entry" | ⚠ Pattern B class — "accumulation" implies bar-of-fire institutional EVENT; structurally STATE per B611 |
+| "Distinct from Batch 331 institutional_oversold_long by requiring multi-fund persistence" | ✅ Accurate (SM-15 = stricter threshold variant of SM-10) |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations. Cross-references: same Pattern B family as SM-10 (which additionally has citation-error per reviewer F7).
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only; no mechanical SHORT mirror. ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B** | Same as SM-10; alpha credit belongs to RSI mean-rev, not 13F | MEDIUM | F1 (gates on F) |
+| **F-marginal-contribution Pattern F** | If 13F is 90-day-constant eligibility filter, strategy reduces to RSI<40 mean-rev + uptrend. Pattern F audit candidate. | HIGH | F1 |
+| F-fire-count | Rare co-occurrence; projected ~20-40/yr; borderline | INFO | F4-adjacent |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern B docstring reframe — gated on Pattern F per reviewer F1 |
+| **(c) RECOMMENDED — gate Pattern B/F on post-B660** |
+| (d) Stage 5 deferral |
+
+**My recommendation: (c).** Same logic as SM-7/SM-10/SM-13/SM-14.
+
+**Awaiting owner direction on SM-15:**
+1. Confirm Pattern B/F post-B660 sequencing
 
 ---
 
-## SM-16. `strat_institutional_recent_init_momentum_long` (persistence variant, walked)
+## SM-16. `strat_institutional_recent_init_momentum_long` (persistence variant, walked — Pattern B + DEC-325 timing-claim violation)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate Pattern B candidate.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672e full expansion). 3-gate variant; smaller-cluster threshold (≥2) than SM-7's `institutional_strong_buy`. Docstring's "market has NOT yet priced in" claim directly contradicts the DEC-325 45-day publication-lag fact — Pattern B's most explicit instance in the cluster.
 
 ### Step 1 — Read the code
 
@@ -2053,34 +2106,85 @@ def strat_institutional_persistence_oversold_long(s):
 ```python
 def strat_institutional_recent_init_momentum_long(s):
     """Wave 3 (Batch 338): early institutional initiation + price momentum.
-    new_positions >= 2 + MACD bullish + EMA200 regime. Targets institutional
-    initiations that the market has NOT yet priced in."""
+    new_positions >= 2 (smaller cluster than Batch 330) + MACD bullish +
+    EMA200 regime. Targets institutional initiations that the market has
+    NOT yet priced in - momentum agreement filters for sustained moves."""
     fires = (
         s.get("institutional_new_positions", 0) >= 2
         and s.get("macd_12_26_9_bullish", False)
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_new_positions>=2","macd_12_26_9_bullish","price_above_ema_200"],
+        [f"{n_new} institutional funds initiated new positions this quarter",
+         "MACD bullish - price momentum agrees with smart-money flow",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 2-6 (compact)
+**3-gate LONG strategy.** Looser 13F cluster (new_positions ≥ 2 vs SM-7's ≥ 3) + MACD bullish + 200-EMA.
 
-- Smaller-cluster (≥2) variant of SM-7
-- Same Pattern B framing class
+**LONG fires when ALL THREE:**
 
-### Step 7
+| Gate | Meaning |
+|---|---|
+| `institutional_new_positions >= 2` | At least 2 institutional funds initiated NEW positions this quarter |
+| `macd_12_26_9_bullish` | MACD histogram > 0 (momentum confirmation) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | "Market has NOT yet priced in" implies the 13F filing is the timing signal; per B611, 13F has 45-day filing lag — the market has had 45 days to price it in by the time the strategy sees it | MEDIUM |
-| F-fire-count | Looser cluster threshold than SM-7 → ~60-150/yr | INFO |
+### Step 2 — Classify
 
-**B664 candidate:** Pattern B docstring reframe.
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+13F producer → `institutional_new_positions` count; STATE quarterly + 45-day lag. MACD STATE-ish. 200-EMA STATE. **0 EVENT gates per direction.** All-STATE composite → Pattern B.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Market has NOT yet priced in" | ⚠ **Pattern B explicit violation per DEC-325 lag fact** — 13F filings are public for ~45 days by the time the strategy sees them (DEC-325 publication-lag enforcement). The market HAS had 45 days to price in the institutional positioning. The "not yet priced in" claim is structurally false for 13F-based signals. |
+| "Targets institutional initiations" | ⚠ Same overclaim — "initiations" implies bar-of-fire event; 13F filings document POSITIONS from a quarter ago |
+| "Momentum agreement filters for sustained moves" | ✅ MACD + 200-EMA composition is reasonable |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only; no SHORT mirror. ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B (DEC-325 explicit violation)** | "Market has NOT yet priced in" docstring claim directly contradicts the 45-day publication-lag fact. Most explicit Pattern B instance in the cluster. | MEDIUM-HIGH | F1 (Pattern B) |
+| **F-marginal-contribution Pattern F** | If 13F is 90-day-constant eligibility filter, strategy reduces to MACD-bullish momentum LONG with 13F-eligibility | HIGH | F1 (Pattern F) |
+| F-fire-count | Looser cluster threshold than SM-7 (new_positions ≥ 2 vs ≥ 3) → projected ~60-150/yr; PASS PRELIMINARY pending B660 | INFO | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) **RECOMMENDED B672e** — when Pattern B sweep ships post-Pattern-F audit, SM-16 docstring fix is HIGH-priority example: replace "Market has NOT yet priced in" with "13F filings are quarterly STATE with 45-day publication lag (DEC-325); the market has already had ~45 days to price in the position; strategy is a 13F-eligibility filter + MACD momentum entry per B611 honest template" |
+| (c) Gate Pattern B/F on post-B660 sequence (cluster-wide default) |
+| (d) Stage 5 deferral |
+
+**My recommendation: (c) per cluster-wide sequencing — but flag SM-16 as highest-priority Pattern B example when the sweep ships, due to explicit DEC-325 timing-claim violation.**
+
+**Awaiting owner direction on SM-16:**
+1. Confirm Pattern B/F post-B660 sequencing with SM-16 flagged as priority example
 
 ---
 
-## SM-17. `strat_institutional_recent_init_volume_long` (persistence variant, walked)
+## SM-17. `strat_institutional_recent_init_volume_long` (persistence variant, walked — **Pattern A + Pattern B**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. **Pattern A** + Pattern B.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672e full expansion). 3-gate variant; Pattern A `price_above_ema_50` default-True (same family-bug as SM-8/14/24/27/28) + Pattern B all-STATE.
 
 ### Step 1 — Read the code
 
@@ -2088,28 +2192,89 @@ def strat_institutional_recent_init_momentum_long(s):
 
 ```python
 def strat_institutional_recent_init_volume_long(s):
+    """Wave 3 (Batch 338): early initiation + retail volume confirmation.
+    Same threshold as recent_init_momentum_long but trades volume gate for
+    intermediate-trend gate. Lo-Wang 2000: volume confirms institutional
+    sponsorship is broad-market not just smart-money private positioning."""
     fires = (
         s.get("institutional_new_positions", 0) >= 2
         and s.get("vol_spike_2x", False)
         and s.get("price_above_ema_50", True)  # ⚠ Pattern A
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_new_positions>=2","vol_spike_2x","price_above_ema_50"],
+        [f"{n_new} institutional funds initiated new positions this quarter",
+         "Volume 2x ADV - retail tape participating",
+         "Above 50 EMA (intermediate trend gate)"])
 ```
 
-### Step 7
+**3-gate LONG strategy.** SM-16 sibling — same 13F threshold (new_positions ≥ 2) but vol_spike + 50-EMA instead of MACD + 200-EMA.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F1 Pattern A** | `price_above_ema_50` default-True silent-gap | MEDIUM |
-| **F-state-as-event Pattern B** | Same as SM-16 + SM-14 | MEDIUM |
-| F-fire-count | Volume + 13F co-occurrence → ~30-60/yr | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** F1 + Pattern B reframe bundled.
+| Gate | Meaning |
+|---|---|
+| `institutional_new_positions >= 2` | Same 13F threshold as SM-16 |
+| `vol_spike_2x` | EVENT (today's volume ≥ 2× 20d avg) |
+| `price_above_ema_50` | Intermediate trend; ⚠ default-True Pattern A silent-gap |
+
+### Step 2 — Classify
+
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B338
+
+### Step 3 — Producer source-read + temporality
+
+Same 13F producer as SM-16. Volume producer = EVENT (bar-of-fire). EMA-50 = STATE.
+
+**1 EVENT gate + 2 STATE gates.** Vol_spike EVENT supplies bar-of-fire timing; 13F + 50-EMA are eligibility filters.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Lo-Wang 2000: volume confirms institutional sponsorship is broad-market" | ⚠ Lo-Wang's volume-as-information result is about realized trading + return predictability, NOT about confirming 13F sponsorship; citation-stretch class similar to SM-9/SM-23 |
+| "Same threshold as recent_init_momentum_long but trades volume gate for intermediate-trend gate" | ✅ Accurate — variant pair with SM-16 |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations. Cross-references: Pattern A family-bug shared with SM-8/14/24/27/28; Pattern B family-bug shared cluster-wide.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only; no SHORT mirror. ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F1 Pattern A** | `price_above_ema_50` default-True silent-gap | MEDIUM | F1 (B663 sibling) |
+| **F-state-as-event Pattern B** | "Volume confirms institutional sponsorship" implies 13F is timing driver; structurally STATE | MEDIUM | F1 |
+| F-citation-stretch | Lo-Wang 2000 stretched to lend authority to 13F-sponsorship claim | LOW-MEDIUM | F7 |
+| **F-marginal-contribution Pattern F** | Strategy reduces to vol_spike + 50-EMA with 13F-eligibility; Pattern F audit candidate | HIGH | F1 (Pattern F) |
+| F-fire-count | Vol_spike × 13F co-occurrence → projected ~30-60/yr | INFO | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) F1 Pattern A swap; cluster-sweep candidate per Pattern A B664 HELD |
+| **(c) RECOMMENDED — gate Pattern A + Pattern B + Pattern F on post-B660** |
+| (d) Stage 5 deferral |
+
+**My recommendation: (c).** Same logic as SM-14 (Pattern A sibling).
+
+**Awaiting owner direction on SM-17:**
+1. Confirm Pattern A/B/F post-B660 sequencing
 
 ---
 
-## SM-18. `strat_institutional_multi_quarter_persistence_long` (333b precompute consumer, walked)
+## SM-18. `strat_institutional_multi_quarter_persistence_long` (333b precompute consumer, walked — **GENUINE STATE; NOT Pattern B**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate. **Genuinely persistent STATE** (4-quarter precompute) — Pattern B context different.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672e full expansion). 2-gate. **EXEMPT from Pattern B family-bug** — 4-quarter precompute is genuinely STATE-class persistence; docstring honestly credits Yan-Zhang factor-tilt without bar-of-fire timing overclaim. **EXEMPT from Pattern F audit** — the 13F gate IS the alpha source (long-horizon persistence is the actual edge, not eligibility filter for other gates).
 
 ### Step 1 — Read the code
 
@@ -2119,34 +2284,98 @@ def strat_institutional_recent_init_volume_long(s):
 def strat_institutional_multi_quarter_persistence_long(s):
     """Batch 344 (333b consumer) 2026-05-25: TRUE multi-quarter persistence
     strategy reading the offline precompute via institutional_persistence_consumer.
+
     Distinct from Batch 333 single-quarter proxies: requires institutional
-    holders that have HELD POSITION across >=4 consecutive quarters."""
+    holders that have HELD POSITION across >=4 consecutive quarters. This
+    is the canonical Yan-Zhang 2009 RFS "persistence" definition (not just
+    same-quarter cross-fund consensus).
+
+    Gate: persistent_holders_4q >= 10 (strong cross-fund persistence)
+          AND price_above_ema_200 (regime gate)."""
     fires = (
         s.get("institutional_persistence_strong", False)
         and s.get("price_above_ema_200", False)
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["persistent_holders_4q>=10", "price_above_ema_200"],
+        [f"{p4q}/{total} funds held position 4+ consecutive quarters",
+         "Yan-Zhang 2009 RFS multi-quarter persistence (NOT single-quarter)",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 2-6 (compact)
+**2-gate LONG strategy.** Multi-quarter persistence via offline precompute (different producer from single-quarter SM-7-17 variants).
 
-- Reads `compute_persistence_signals` 333b precompute (multi-quarter)
-- 4-quarter persistence is a more genuine STATE — funds holding through 4 reporting cycles is actual persistence, not bar-of-fire timing
-- Yan-Zhang 2009 RFS cited for "multi-quarter persistence" thesis
+**LONG fires when BOTH:**
 
-### Step 7
+| Gate | Meaning |
+|---|---|
+| `institutional_persistence_strong` | 10+ funds held position across 4+ consecutive quarters (multi-quarter persistence precompute per Batch 333b) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
 
-| # | Finding | Severity |
+### Step 2 — Classify
+
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+**Producer (DIFFERENT from SM-7-17 variants):** `compute_persistence_signals` in [institutional_persistence_consumer.py:77](backtest/signals/institutional_persistence_consumer.py#L77) — reads OFFLINE PRECOMPUTE of 4-quarter holdings data; emits `institutional_persistence_strong` when persistent_holders_4q ≥ 10.
+
+**Per CHECKLIST (s) EVENT/STATE classification:**
+
+| Signal | Temporality | Pattern B applicability |
 |---|---|---|
-| **F-state-as-event Pattern B** | Genuinely STATE (4q precompute). Docstring DOES NOT overclaim timing — credits Yan-Zhang factor-tilt. ✅ **NOT a Pattern B candidate** | ✅ |
-| F-fire-count | 4-quarter persistence is rare; projected ~20-40/yr | INFO |
+| `institutional_persistence_strong` | **GENUINE STATE** (multi-quarter persistence is intrinsically state-class; the 4-quarter holding pattern IS the alpha source per Yan-Zhang) | **EXEMPT** — STATE is the alpha, not a disguised-EVENT overclaim |
+| `price_above_ema_200` | STATE trend gate | — |
 
-**B664 candidate option (recommended):** No change. Docstring is honest about STATE attribution.
+**Key distinction from single-quarter 13F variants:** SM-7-17 use SM-7's 13F producer which emits SINGLE-quarter snapshots; the Pattern B concern is that single-quarter STATE is mis-attributed as EVENT timing. SM-18 uses the MULTI-quarter precompute where STATE-class persistence IS the documented alpha (Yan-Zhang 2009). No misattribution; honest framing.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Yan-Zhang 2009 RFS multi-quarter persistence" | ✅ Real paper; Yan-Zhang documents that institutional holdings persistence over 4+ quarters predicts forward returns at multi-month horizons. **Correctly cited** for the 4-quarter precompute strategy. |
+| "Distinct from Batch 333 single-quarter proxies: requires institutional holders that have HELD POSITION across >=4 consecutive quarters" | ✅ Accurate methodological distinction; the docstring honestly differentiates from single-quarter variants |
+| "Canonical Yan-Zhang 2009 RFS persistence definition (not just same-quarter cross-fund consensus)" | ✅ Honest framing acknowledging the methodological precision |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations on SM-18. Cross-reference: this is the canonical example of how a 13F-based strategy SHOULD honestly frame STATE-class alpha; serves as positive template for the Pattern B reframe other strategies need.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only by SEC rule; no mechanical SHORT mirror. Additionally: multi-quarter persistence is intrinsically a LONG-side concept (institutions persistently HOLDING is bullish; institutions persistently SELLING isn't economically symmetric per CFM 2008 long-side accumulation thesis). ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B** | **EXEMPT** — 4q precompute is genuinely STATE; docstring honestly credits Yan-Zhang factor-tilt without bar-of-fire timing overclaim. ✅ Positive cluster-template example. | ✅ EXEMPT | F7 cluster-positive |
+| **F-marginal-contribution Pattern F** | **EXEMPT** — 13F-persistence IS the alpha source (long-horizon multi-quarter holding pattern documented by Yan-Zhang). Strategy doesn't reduce to "non-13F gates with 13F-eligibility filter"; the 4-quarter persistence is intrinsic edge. | ✅ EXEMPT | F7 cluster-positive |
+| F1 default-True silent-gap | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F3 regime affinity | No regime entry; B291 default applies; no documented lineage | INFO | B663 |
+| F-fire-count | 4-quarter persistence with 10+ funds is rare; projected ~20-40/yr; borderline PRELIMINARY pending B660 | INFO | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| **(a) RECOMMENDED — No change** (SM-18 is the cluster's positive template for honest STATE-attribution) |
+| (b) Cosmetic citation strengthening |
+| (c) Stage 5 deferral |
+
+**My recommendation: (a) No change.** SM-18 is the canonical example of how 13F-based strategies SHOULD frame their alpha (genuine STATE, honest Yan-Zhang citation, no bar-of-fire overclaim). The B664 candidate Pattern B sweep references SM-18 + SM-19 as EXEMPT entries — these strategies should NOT be modified by the sweep; they're the template for what the sweep should produce.
+
+**Awaiting owner direction on SM-18:**
+1. Confirm no change needed (cluster-positive template status)
 
 ---
 
-## SM-19. `strat_institutional_committed_growth_long` (333b consumer, walked)
+## SM-19. `strat_institutional_committed_growth_long` (333b consumer, walked — **GENUINE STATE; NOT Pattern B**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 2-gate; same Yan-Zhang-class STATE honesty as SM-18.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672e full expansion). 2-gate sibling of SM-18 (multi-quarter precompute family). **EXEMPT from Pattern B + Pattern F** — same genuine-STATE rationale; Frazzini-Lamont 2008 multi-quarter growth thesis correctly cited.
 
 ### Step 1 — Read the code
 
@@ -2154,27 +2383,83 @@ def strat_institutional_multi_quarter_persistence_long(s):
 
 ```python
 def strat_institutional_committed_growth_long(s):
-    """Batch 344: institutional funds GROWING their position over 4+
-    quarters (>10% over 4 quarters from precompute), not just same-
-    quarter increased count."""
+    """Batch 344 (333b consumer) 2026-05-25: institutional funds GROWING
+    their position over 4+ quarters. Distinct from Batch 333's
+    institutional_increased proxy by requiring multi-quarter share growth
+    (>10% over 4 quarters from precompute), not just same-quarter
+    increased count.
+
+    Gate: committed_growth_holders >= 5 AND price_above_ema_200."""
     fires = (
         s.get("institutional_persistence_growing", False)
         and s.get("price_above_ema_200", False)
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["committed_growth_holders>=5", "price_above_ema_200"],
+        [f"{n_grow} funds grew position over 4+ quarters (>10% growth)",
+         "Frazzini-Lamont 2008 institutional consensus + share growth",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 2-6 (compact)
+**2-gate LONG strategy.** Sibling of SM-18 — same 4-quarter precompute infrastructure but tracks GROWING positions (>10% increase over 4 quarters) rather than HOLDING positions.
 
-Same family as SM-18 — 4-quarter precompute consumer; genuinely STATE.
+**LONG fires when BOTH:**
 
-### Step 7
+| Gate | Meaning |
+|---|---|
+| `institutional_persistence_growing` | 5+ funds grew position by >10% over 4+ consecutive quarters |
+| `price_above_ema_200` | Long-term uptrend regime; B663-fixed |
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | Frazzini-Lamont 2008 + 4q precompute = genuine STATE; docstring honest. ✅ NOT Pattern B candidate | ✅ |
-| F-fire-count | Projected ~20-50/yr | INFO |
+### Step 2 — Classify
 
-**B664 candidate option:** No change.
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+Same `compute_persistence_signals` precompute as SM-18 but emits `institutional_persistence_growing` (committed-growth signal) instead of `institutional_persistence_strong` (held-position signal).
+
+**Genuine STATE** — multi-quarter growth pattern is intrinsically state-class per Frazzini-Lamont 2008 institutional-consensus thesis. EXEMPT from Pattern B + Pattern F same as SM-18.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Frazzini-Lamont 2008 institutional consensus + share growth" | ✅ Real paper; Frazzini-Lamont documents institutional holding dynamics + forward-return implications. Correctly applied to multi-quarter growth pattern. |
+| "Distinct from Batch 333's institutional_increased proxy by requiring multi-quarter share growth" | ✅ Accurate methodological distinction (same honesty pattern as SM-18) |
+| ">10% growth over 4 quarters" | ✅ Specific quantitative threshold documented in precompute |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+No active investigations.
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only; multi-quarter growth is intrinsically LONG-side. No SHORT mirror. ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-state-as-event Pattern B** | **EXEMPT** — genuine STATE; Frazzini-Lamont 2008 correctly cited | ✅ EXEMPT | F7 cluster-positive |
+| **F-marginal-contribution Pattern F** | **EXEMPT** — committed-growth precompute IS the alpha; not a 13F-eligibility-filter overlay | ✅ EXEMPT | F7 cluster-positive |
+| F1 default-True silent-gap | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F3 regime affinity | No regime entry; B291 default; no lineage | INFO | B663 |
+| F-fire-count | Projected ~20-50/yr; PASS borderline PRELIMINARY pending B660 | INFO | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| **(a) RECOMMENDED — No change** (same cluster-positive template status as SM-18) |
+| (b) Stage 5 deferral |
+
+**My recommendation: (a) No change.** SM-19 + SM-18 are the cluster's two positive templates for honest STATE-attribution; both EXEMPT from B664 Pattern B/F sweeps.
+
+**Awaiting owner direction on SM-19:**
+1. Confirm no change needed
 
 ---
 
