@@ -146,14 +146,33 @@ def test_batch503_owner_tunable_thresholds(monkeypatch):
 # Sleeve strategies NOT yet registered in ALL_STRATEGIES
 # ---------------------------------------------------------------------------
 
-def test_batch503_sleeve_strategies_registered_post_batch507():
-    """Batch 503 originally pinned sleeves NOT in ALL_STRATEGIES (awaiting
-    owner approval). Batch 507 (2026-05-31, owner directive M6 Path-2
-    registration) flipped this -- both sleeves are now REGISTERED."""
+def test_batch682_deletion_pead_yoy_sleeves_no_longer_registered():
+    """Batch 682 (2026-06-10 owner-approved) DELETION VERIFICATION:
+    pead_long_high_yoy_growth_only + pead_short_negative_yoy_growth
+    were REGISTERED B507 then DELETED B682 per B680 self-critique CC-C
+    Pattern W deterministic-subset finding.
+
+    These strategies were a STRICT SUBSET of pead_long/pead_short on the
+    YoY-growth axis; cube replay would produce near-identical per-trade
+    Sharpe by construction. Per `project_no_apriori_strategy_pruning`
+    explicit owner override on deterministic-subset evidence.
+
+    Pre-B682 (B503 + B507 test): assertion was IN ALL_STRATEGIES.
+    Post-B682 (this test): assertion is NOT IN ALL_STRATEGIES.
+
+    YoY-surprise PRODUCER tests above (compute_yoy_surprise +
+    yoy_surprise_high + yoy_surprise_negative + threshold tuning) all
+    REMAIN valid because the producer signals are still used by future
+    work (if owner wants YoY-threshold parameter variant on EV-1/EV-2).
+    """
     from backtest.signals.screener import ALL_STRATEGIES
-    assert "pead_long_high_yoy_growth_only" in ALL_STRATEGIES, (
-        "Batch 507 must register pead_long_high_yoy_growth_only"
+    assert "pead_long_high_yoy_growth_only" not in ALL_STRATEGIES, (
+        "B682 deletion: pead_long_high_yoy_growth_only must be REMOVED"
     )
-    assert "pead_short_negative_yoy_growth" in ALL_STRATEGIES, (
-        "Batch 507 must register pead_short_negative_yoy_growth"
+    assert "pead_short_negative_yoy_growth" not in ALL_STRATEGIES, (
+        "B682 deletion: pead_short_negative_yoy_growth must be REMOVED"
     )
+    # Strategy function deletion verification
+    import backtest.signals.screener as screener
+    assert not hasattr(screener, "strat_pead_long_high_yoy_growth_only")
+    assert not hasattr(screener, "strat_pead_short_negative_yoy_growth")

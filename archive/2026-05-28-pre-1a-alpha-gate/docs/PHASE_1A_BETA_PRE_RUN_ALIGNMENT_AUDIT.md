@@ -10,19 +10,19 @@
 
 | Fact | Live value | Source |
 |---|---|---|
-| `strategy_total` | 222 | code/trade-log |
+| `strategy_total` | 218 | code/trade-log |
 | `deprecated_count` | 0 | code/trade-log |
 | `missing_producer_count` | 1 | code/trade-log |
 | `missing_producer_list` | ['dxy_headwind_multinational_short'] | code/trade-log |
-| `strategy_active` | 221 | code/trade-log |
+| `strategy_active` | 217 | code/trade-log |
 | `exit_method_total` | 26 | code/trade-log |
-| `cube_cells_active` | 5746 | code/trade-log |
+| `cube_cells_active` | 5642 | code/trade-log |
 | `strategy_exit_override_count` | 16 | code/trade-log |
 | `agent_count_dec_057` | 11 | code/trade-log |
 | `regime_count` | 4 | code/trade-log |
 | `phase_1a_beta_actual_wall_hours` | 10.5 | code/trade-log |
 | `phase_1a_beta_pool_speedup_target` | 4-8x | code/trade-log |
-| `tests_collected` | 4015 | code/trade-log |
+| `tests_collected` | 4231 | code/trade-log |
 
 ## 2. Drift summary by document
 
@@ -48,23 +48,23 @@ Drifts split: ACTIVE_CLAIM (forward-looking doc citing stale count) vs HISTORICA
 
 | Line | Key | Stated | Live | Snippet |
 |---:|---|---:|---:|---|
-| 82 | `strategy_count` | 60 | 222 | `**Phase 1A (Complete):** We ran all 60 strategies on a small universe of 67 instruments to make sure the pipeline works ` |
-| 90 | `strategy_count` | 60 | 222 | `#### What the 60 Strategies Are` |
-| 519 | `strategy_count` | 60 | 222 | `Every one of the 60 strategies in Phase 1B evaluates a single stock in isolation. The only market-level input currently ` |
-| 531 | `strategy_count` | 60 | 222 | `**What's missing today:** All 60 strategies apply identically regardless of whether a stock's sector ETF is in an uptren` |
-| 663 | `strategy_count` | 60 | 222 | `**Why this matters:** Every one of the current 60 strategies can fire during any regime. None of them explicitly time re` |
-| 984 | `strategy_count` | 60 | 222 | `3. PROJECT_PLAN strategy count corrected from "60 strategies" to actual count (BUG-66) — auto-generated from `ALL_STRATE` |
+| 82 | `strategy_count` | 60 | 218 | `**Phase 1A (Complete):** We ran all 60 strategies on a small universe of 67 instruments to make sure the pipeline works ` |
+| 90 | `strategy_count` | 60 | 218 | `#### What the 60 Strategies Are` |
+| 519 | `strategy_count` | 60 | 218 | `Every one of the 60 strategies in Phase 1B evaluates a single stock in isolation. The only market-level input currently ` |
+| 531 | `strategy_count` | 60 | 218 | `**What's missing today:** All 60 strategies apply identically regardless of whether a stock's sector ETF is in an uptren` |
+| 663 | `strategy_count` | 60 | 218 | `**Why this matters:** Every one of the current 60 strategies can fire during any regime. None of them explicitly time re` |
+| 984 | `strategy_count` | 60 | 218 | `3. PROJECT_PLAN strategy count corrected from "60 strategies" to actual count (BUG-66) — auto-generated from `ALL_STRATE` |
 | 1048 | `agent_count` | 6 | 11 | `**Cost estimate:** ~$0.50 (≈100 candidate days × 6 agents × ~$0.001 per call)` |
 | 1094 | `agent_count` | 6 | 11 | `- ~1000 trading days × 5 tickers × 6 agents × $0.0001/call = ~$3` |
 | 1330 | `agent_count` | 6 | 11 | `- ~1000 days × 5 tickers × 6 agents × $0.001/Sonnet call = ~$30` |
-| 1474 | `strategy_count` | 60 | 222 | `Determine which of 60 strategies, across which market regimes, using which exit method, produce statistically valid trad` |
-| 1522 | `strategy_count` | 60 | 222 | `\| 9 \| Minimum trades \| ≥ 500 \| Statistical validity across 60 strategies \|` |
-| 1599 | `strategy_count` | 60 | 222 | `## 5. Strategy Universe — 60 Strategies, 7 Categories` |
-| 1611 | `strategy_count` | 60 | 222 | `**Short strategy gap:** Only 5 of 60 strategies are short. In bull markets these rarely fire. Phase 1B will validate whi` |
+| 1474 | `strategy_count` | 60 | 218 | `Determine which of 60 strategies, across which market regimes, using which exit method, produce statistically valid trad` |
+| 1522 | `strategy_count` | 60 | 218 | `\| 9 \| Minimum trades \| ≥ 500 \| Statistical validity across 60 strategies \|` |
+| 1599 | `strategy_count` | 60 | 218 | `## 5. Strategy Universe — 60 Strategies, 7 Categories` |
+| 1611 | `strategy_count` | 60 | 218 | `**Short strategy gap:** Only 5 of 60 strategies are short. In bull markets these rarely fire. Phase 1B will validate whi` |
 | 1623 | `exit_method_count` | 12 | 26 | `**12 exit methods tested simultaneously** via composite score (40% ROI + 30% profit factor + 30% lowest drawdown):` |
 | 1844 | `agent_count` | 6 | 11 | `**Phase 1B cost calculation:** 509 instruments × ~8 candidates/day average × 782 days × $0.00035/Haiku call × 6 agents =` |
-| 1977 | `strategy_count` | 60 | 222 | `\| `backtest_results.csv` \| All 60 strategies ranked by all 10 metrics with confidence intervals \|` |
-| 2019 | `strategy_count` | 60 | 222 | `## 18. All 60 Strategies — Plain English` |
+| 1977 | `strategy_count` | 60 | 218 | `\| `backtest_results.csv` \| All 60 strategies ranked by all 10 metrics with confidence intervals \|` |
+| 2019 | `strategy_count` | 60 | 218 | `## 18. All 60 Strategies — Plain English` |
 
 ## 4. HISTORICAL_NARRATIVE drifts (context-only, no action needed)
 

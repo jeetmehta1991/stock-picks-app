@@ -110,7 +110,9 @@ def test_batch621_or_composite_strategies_get_demoted_verdict():
 # back-fill); accept superset.
 EXPECTED_REAL_FAIL = {
     # Pre-B635 set (well-known fire-starved walked strategies):
-    "volume_spike_breakout_retest",
+    # B682 (2026-06-10): "volume_spike_breakout_retest" DELETED per B620
+    # precedent + B680 self-critique CC-B (0.01/yr WORST FAIL in roster);
+    # removed from expected set.
     "volume_spike_breakout",
     "break_retest_confluence",
     "52wl_break_retest_short",

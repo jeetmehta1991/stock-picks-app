@@ -1611,7 +1611,9 @@ def test_batch329_bug111_six_retest_variants_registered():
     expected_new = [
         "donchian_breakout_retest_long",
         "donchian_breakdown_retest_short",
-        "volume_spike_breakout_retest",
+        # B682 (2026-06-10): volume_spike_breakout_retest DELETED per B620
+        # precedent + B680 self-critique CC-B (0.01/yr B621 FAIL_FIRE);
+        # removed from expected-new set.
         "cup_and_handle_retest_long",
         "flag_bull_retest_long",
         "triangle_ascending_retest_long",
@@ -1713,7 +1715,8 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     from backtest.signals.screener import (
         strat_donchian_breakout_retest_long,
         strat_donchian_breakdown_retest_short,
-        strat_volume_spike_breakout_retest,
+        # B682 (2026-06-10): strat_volume_spike_breakout_retest DELETED per
+        # B620 precedent + B680 self-critique CC-B (0.01/yr B621 FAIL_FIRE).
         strat_cup_and_handle_retest_long,
         strat_flag_bull_retest_long,
         strat_triangle_ascending_retest_long,
@@ -1745,20 +1748,9 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     out = strat_donchian_breakdown_retest_short(s)
     assert out["fires"] is True and out["direction"] == "short"
 
-    # volume_spike_breakout_retest LONG + SHORT (B600-walked: now consumes
-    # dc20_*_break_retest_strong + above_avwap_20low/20high + bullish/bearish
-    # bar + top/bottom 40pct of range)
-    s = {"dc20_resistance_break_retest_strong": True, "vol_spike_2x": True,
-         "above_avwap_20low": True,
-         "close_above_open": True, "close_in_top_40pct_of_range": True}
-    out = strat_volume_spike_breakout_retest(s)
-    assert out["fires"] is True and out["direction"] == "long"
-    # B612 refactor: positive below_avwap_20high replaces NOT above_avwap_20high
-    s = {"dc20_support_break_retest_strong": True, "vol_spike_2x": True,
-         "below_avwap_20high": True,
-         "close_below_open": True, "close_in_bottom_40pct_of_range": True}
-    out = strat_volume_spike_breakout_retest(s)
-    assert out["fires"] is True and out["direction"] == "short"
+    # volume_spike_breakout_retest LONG + SHORT -- DELETED B682
+    # (2026-06-10 owner-approved per B620 precedent + B680 self-critique
+    # CC-B 0.01/yr B621 FAIL_FIRE_STARVED). Removed from this test.
 
     # cup_and_handle_retest_long
     s = {"cup_handle_detected": True, "resistance_break_retest": True,

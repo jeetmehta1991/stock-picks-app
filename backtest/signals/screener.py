@@ -444,7 +444,7 @@ def strat_pivot_r3_blowoff_short(s):
 
     PRE-DEPLOYMENT GATE: This strategy MUST NOT be deployed to live
     trading until BOTH of the following land:
-      (1) M10 cost-aware cube — slippage haircut + borrow cost lookup
+      (1) M10 cost-aware cube -- slippage haircut + borrow cost lookup
           + gap-at-entry modelling (DEFERRED ticket; reviewer C6).
           The W5m fat right-tail (squeeze risk on overbought
           short-target names) is exactly the structural risk that
@@ -1842,64 +1842,34 @@ def strat_donchian_breakdown_retest_short(s):
          "Strong close (bottom 40pct of range)"])
 
 
-def strat_volume_spike_breakout_retest(s):
-    """BUG-111 (Batch 329): retest variant of volume_spike_breakout.
-    Retest entry with 2x volume + VWAP regime gate.
-
-    Batch 600 (2026-06-05 owner-directed Stage 4 walk):
-      (a) Added bullish-bar + strong-close gates: close_above_open +
-          close_in_top_40pct_of_range (LONG); mirrors for SHORT.
-      (c) Replaced standard resistance_break_retest / support_break
-          _retest with B594 LOCAL strong variants
-          dc20_resistance_break_retest_strong / dc20_support_break
-          _retest_strong (original break bar must clear level by
-          >= 0.5*ATR(14)). No new producer code - signals already exist.
-      (d) Replaced cumulative-since-history above_vwap with Brian Shannon
-          (2022) anchored VWAP (same swap as B597/B598 for the
-          non-retest parent volume_spike_breakout):
-            LONG : above_avwap_20low (above AVWAP from recent 20-day
-                   swing low - 20d upleg intact)
-            SHORT: NOT above_avwap_20high (below AVWAP from recent
-                   20-day swing high - 20d rally given back)
-      (e) Regime affinity: rely on Batch 291 direction-aware default
-          (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
-          Strategy NOT in STRATEGY_REGIME_AFFINITY map.
-
-    SKIPPED (b): vol_spike_2x retained as the DELIBERATE differentiator
-    vs the donchian retest pair (which uses vol_below_avg per Bulkowski
-    supply-absorption thesis). This strategy carries the alternative
-    "high-conviction 2x-volume retest" thesis - both retest playbooks
-    coexist post-B600 without convergence.
-
-    Batch 602 (2026-06-05 owner directive "undo. keep it at DC20
-    itself"): B602 Option B SMC BOS+OTE redesign WAS APPLIED then
-    REVERTED in-flight. Strategy stays on the B600 DC20-anchored
-    gate set. Donchian-touching footprint remains 22 (10pct).
-    """
-    fl = (s.get("dc20_resistance_break_retest_strong")
-          and s.get("vol_spike_2x")
-          and s.get("above_avwap_20low")
-          and s.get("close_above_open")
-          and s.get("close_in_top_40pct_of_range"))
-    # B612 refactor: NOT s.get(above_avwap_20high) (no default) -> positive below_avwap_20high.
-    fs = (s.get("dc20_support_break_retest_strong")
-          and s.get("vol_spike_2x")
-          and s.get("below_avwap_20high")
-          and s.get("close_below_open")
-          and s.get("close_in_bottom_40pct_of_range"))
-    return _strat3(fl, fs, "breakout",
-        ["dc20_resistance_break_retest_strong","vol_spike_2x","above_avwap_20low","close_above_open","close_in_top_40pct_of_range"],
-        ["dc20_support_break_retest_strong","vol_spike_2x","below_avwap_20high","close_below_open","close_in_bottom_40pct_of_range"],
-        ["Post-break retest of 20-day Donchian high (strong break: >=0.5*ATR clearance)",
-         "Volume 2x confirms institutional accumulation on retest",
-         "Above 20-day swing-low AVWAP (Brian Shannon 2022) - 20d upleg intact",
-         "Bullish bar (close above open)",
-         "Strong close (top 40pct of range)"],
-        ["Post-break retest of 20-day Donchian low (strong break: >=0.5*ATR clearance)",
-         "Volume 2x confirms institutional distribution on retest",
-         "Below 20-day swing-high AVWAP - 20d rally given back",
-         "Bearish bar (close below open)",
-         "Strong close (bottom 40pct of range)"])
+# -----------------------------------------------------------------------------
+# strat_volume_spike_breakout_retest DELETED Batch 682 (2026-06-10 owner-approved)
+# -----------------------------------------------------------------------------
+# DELETION RATIONALE per B680 self-critique CC-B + owner approval 2026-06-10:
+#
+# B621 fire-count estimator: 0.01/yr universe-wide projected (HIGHEST RISK
+# FAIL_FIRE_STARVED in entire 222-strategy roster). Even allowing 100x
+# under-estimate (estimator-to-actual ratio), realized fire count ~1/yr --
+# below `min_trades=30` per regime by 1.5 orders of magnitude. The strategy
+# CANNOT be statistically validated by ANY cube replay; registration consumes
+# correction budget for zero return.
+#
+# Per B620 squeeze_setup_event_only_long DELETION precedent (FAIL_FIRE_STARVED
+# at 2.5 fires/yr, owner-approved): BR-15 is 250x worse case (0.01/yr vs
+# 2.5/yr). The precedent argues for deletion before B660 cube wastes effort
+# on a zero-fire strategy.
+#
+# Per `project_no_apriori_strategy_pruning` explicit owner override on
+# confirmed empirical failure: owner approved deletion 2026-06-10 in
+# response to B680 self-critique recommendation.
+#
+# Post-B600 design (5-gate dual with dc20_strong_break_retest + vol_spike_2x
+# + AVWAP + bullish/bearish bar + close-strength) preserved in git history
+# at commit `<this-batch-parent>` for any future re-introduction with looser
+# gates.
+#
+# No downstream code references; ALL_STRATEGIES registry entry also removed.
+# -----------------------------------------------------------------------------
 
 
 # -----------------------------------------------------------------------------
@@ -2447,14 +2417,36 @@ def strat_cpr_narrow_momentum_short(s):
 # -----------------------------------------------------------------------------
 
 def strat_dc20_break_retest(s):
-    """BUG-111: DC20 break-and-retest -- breakout above 20-day channel confirmed by retest hold."""
-    fl = (s.get("resistance_break_retest") and s.get("vol_spike_15x") and s.get("adx_trending"))
-    fs = (s.get("support_break_retest") and s.get("vol_spike_15x") and s.get("adx_trending"))
+    """BUG-111: DC20 break-and-retest -- breakout above 20-day channel confirmed by retest hold.
+
+    Batch 682 (2026-06-10 owner-approved thesis-implementation alignment per
+    B680 self-critique CC-A): swapped `vol_spike_15x` -> `vol_below_avg` on
+    BOTH directions. Pre-B682 the strategy gated on HIGH volume at the
+    retest bar -- which contradicts Bulkowski 2005 *Encyclopedia of Chart
+    Patterns* retest absorption thesis: retests form on LOWER volume than
+    the initial breakout bar (supply has been absorbed; sellers are
+    exhausted; the retest is a low-conviction probe). High-volume retests
+    are not retests in the Bulkowski sense -- they are either (a) initial
+    breakouts mis-classified or (b) failed retests with renewed selling
+    pressure. The B682 swap aligns strategy logic with cited methodology.
+
+    Cross-cluster note: this aligns BR-8 (`strat_dc20_break_retest`) with
+    the Bulkowski thesis consistently applied across BR-2/BR-4 (52w
+    pullback) + BR-5/BR-6 (52w break-retest) + BR-7 (break_retest_volume)
+    + BR-12/BR-13 (donchian break-retest) -- all of which use vol_below_avg
+    per Bulkowski. Pre-B682 BR-8 was the ODD ONE OUT in the breakout
+    cluster's retest-family.
+
+    LONG: resistance_break_retest + vol_below_avg + adx_trending
+    SHORT: support_break_retest + vol_below_avg + adx_trending
+    """
+    fl = (s.get("resistance_break_retest") and s.get("vol_below_avg") and s.get("adx_trending"))
+    fs = (s.get("support_break_retest") and s.get("vol_below_avg") and s.get("adx_trending"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest", "vol_spike_15x", "adx_trending"],
-        ["support_break_retest", "vol_spike_15x", "adx_trending"],
-        "DC20 break-and-retest: channel high broken, retested as support, ADX trending",
-        "DC20 breakdown-and-retest: channel low broken, retested as resistance, ADX trending")
+        ["resistance_break_retest", "vol_below_avg", "adx_trending"],
+        ["support_break_retest", "vol_below_avg", "adx_trending"],
+        "DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending",
+        "DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending")
 
 
 def strat_r1_break_retest(s):
@@ -2875,37 +2867,40 @@ def strat_pre_fomc_quality_momentum_long(s):
          "Above 200 EMA - regime gate"])
 
 
-def strat_buyback_8k_recent_long(s):
-    """Batch 224: Generic 8-K filing in last 5 days as a corporate-event
-    proximity signal. NOT a true buyback-only filter (requires 8-K item-
-    level text parsing to isolate Item 8.01 Other Events / Item 7.01
-    Reg FD); this is a placeholder/proxy. Manconi-Peyer-Vermaelen 2019
-    JFQA documented 4pct/yr abnormal return on filtered buybacks; the
-    8-K proxy captures a broader corporate-event population.
-
-    True buyback parsing deferred to a future batch with 8-K text
-    extraction (likely PyMuPDF + regex on Item 8.01 text). For now
-    this strategy fires on RECENT 8-K + bullish context as a generic
-    event-driven long.
-    """
-    # Batch 385 Gate 4 opt (owner-approved 2026-05-26 per Batch 380 BINDING
-    # clause analysis): days_since_8k loosened 3 -> 5. Empirical: 86/86 fires
-    # in Phase 1A-beta single-batch had days_since_8k right at boundary
-    # (min=3.0). Lopez-Lira-Tang 2023 documents 5-day post-8K reaction
-    # window. Loosening admits more candidates inside the empirical
-    # event-reaction envelope while preserving "recent 8-K" semantics.
-    fires = (
-        s.get("recent_8k_filed", False)
-        and s.get("days_since_8k", -1) <= 5
-        and s.get("price_above_ema_200", False)
-        and s.get("vol_spike_15x", False)
-    )
-    return _strat(fires, "long", "event_driven",
-        ["recent_8k_filed", "days_since_8k<=5", "price_above_ema_200",
-         "vol_spike_1.5x"],
-        ["Recent 8-K filed (last 5 days; Lopez-Lira-Tang 2023 window) - corporate event proxy",
-         "Above 200 EMA - bullish backdrop",
-         "Volume 1.5x ADV(20) - market reacting to event"])
+# -----------------------------------------------------------------------------
+# strat_buyback_8k_recent_long DELETED Batch 682 (2026-06-10 owner-approved)
+# -----------------------------------------------------------------------------
+# DELETION RATIONALE per B680 self-critique CC-B + owner approval 2026-06-10:
+#
+# F-population-mixing CONFIRMED defect: strategy fired on ANY 8-K type
+# (Items 1.01-9.01) without item-level text parsing -- mixing M&A target
+# (Item 1.01; B673 reviewer flagged as feasibility failure SM-4), buyback
+# (Item 8.01), Reg FD (Item 7.01), officer change (Item 5.02), Reg G
+# (Item 7.01). The original docstring acknowledged this as "placeholder/
+# proxy" with "true buyback parsing deferred to a future batch with 8-K
+# text extraction" -- but the proxy population includes the SM-4
+# M&A-target population that the B673 external reviewer flagged as
+# feasibility-failure (uncapturable via next-day-open after announcement
+# gap).
+#
+# Per `feedback_audit_recommendations_against_existing_directives` + B673
+# SM-4 reviewer disposition: continuing to fire EV-7 on M&A target 8-K
+# Item 1.01 filings reproduces the feasibility-failure SM-4 was
+# reclassified for. Pre-cube deletion avoids contaminating cube data
+# with the same uncapturable population.
+#
+# B660 early-finding (visible at 17:47:07 on 2026-06-10): EV-7 actual
+# fire count = 0 long / 0 short / 0 avoid universe-wide across 6 years
+# x 503 tickers -- empirical confirmation that even the broad 8-K-any-
+# type proxy doesn't fire in the engine's gating context (or the producer
+# signal `recent_8k_filed` may itself be dead -- separate audit).
+#
+# Future work: if buyback alpha matters, ship a NEW strategy with proper
+# 8-K Item 8.01 text parsing per Manconi-Peyer-Vermaelen 2019 JFQA
+# specification -- different from the deleted-as-proxy EV-7.
+#
+# No downstream code references; ALL_STRATEGIES registry entry also removed.
+# -----------------------------------------------------------------------------
 
 
 def strat_insider_cluster_long(s):
@@ -3766,53 +3761,45 @@ def strat_pead_short(s):
          "Bernard-Thomas 60-day drift continuation (negative)"])
 
 
-def strat_pead_long_high_yoy_growth_only(s):
-    """Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go).
-    PEAD long restricted to high YoY-growth surprise cells.
-
-    Entry filter: yoy_surprise_high (yoy_growth >= +5%) AND
-    within_pead_window. Surrogate for analyst-surprise definition per
-    M6 Path-2 owner decision -- ships YoY-growth sleeve in lieu of
-    paid Finnhub re-prefetch (Path-1).
-
-    Academic backing: Bernard-Thomas 1989 PEAD + Foster-Olsen-Shevlin
-    1984 "Earnings Releases, Anomalies, and the Behavior of Security
-    Returns" -- bottom-decile / top-decile YoY EPS growth exhibits the
-    same 60-day drift pattern as analyst-surprise.
-    """
-    fires = (
-        s.get("within_pead_window", False)
-        and s.get("yoy_surprise_high", False)
-    )
-    yoy = s.get("earnings_eps_yoy_growth", 0.0)
-    thr = s.get("yoy_surprise_threshold_long", 0.05)
-    return _strat(fires, "long", "event_driven",
-        ["within_pead_window", "yoy_surprise_high",
-         f"earnings_eps_yoy_growth>={thr*100:.0f}pct"],
-        [f"Within PEAD drift window (<=60d post-earnings)",
-         f"YoY EPS growth: {yoy*100:.1f}% (>= {thr*100:.0f}% threshold)",
-         "M6 Path-2: YoY-growth surprise sleeve (Batch 507)"])
-
-
-def strat_pead_short_negative_yoy_growth(s):
-    """Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go).
-    PEAD short restricted to negative YoY-growth surprise cells.
-
-    Entry filter: yoy_surprise_negative (yoy_growth <= -5%) AND
-    within_pead_window. Symmetric short side of the YoY-growth sleeve.
-    """
-    fires = (
-        s.get("within_pead_window", False)
-        and s.get("yoy_surprise_negative", False)
-    )
-    yoy = s.get("earnings_eps_yoy_growth", 0.0)
-    thr = s.get("yoy_surprise_threshold_short", -0.05)
-    return _strat(fires, "short", "event_driven",
-        ["within_pead_window", "yoy_surprise_negative",
-         f"earnings_eps_yoy_growth<={thr*100:.0f}pct"],
-        [f"Within PEAD drift window (<=60d post-earnings)",
-         f"YoY EPS growth: {yoy*100:.1f}% (<= {thr*100:.0f}% threshold)",
-         "M6 Path-2: YoY-growth surprise sleeve short (Batch 507)"])
+# -----------------------------------------------------------------------------
+# strat_pead_long_high_yoy_growth_only + strat_pead_short_negative_yoy_growth
+# DELETED Batch 682 (2026-06-10 owner-approved)
+# -----------------------------------------------------------------------------
+# DELETION RATIONALE per B680 self-critique CC-C + owner approval 2026-06-10:
+#
+# Pattern W (NEW for event-driven cluster B677 self-critique): EV-3 and
+# EV-4 are DETERMINISTIC STRICT SUBSETS of EV-1 (`strat_pead_long`) and
+# EV-2 (`strat_pead_short`) respectively on the YoY-growth axis:
+#
+#   EV-1 fires when: within_pead_window AND pead_positive_surprise
+#                    (yoy_growth > 0 AND announcement_return > +2%)
+#   EV-3 fires when: within_pead_window AND yoy_surprise_high
+#                    (yoy_growth >= +5%)
+#
+# Every YoY >= 5% case is ALSO yoy > 0; EV-3's fires are a subset of
+# EV-1's fires (on the YoY axis alone; EV-1's ann_ret > +2% gate adds
+# a narrowing axis EV-3 lacks, but the YoY-axis subset relationship
+# holds). Cube replay would produce near-identical per-trade Sharpe
+# by construction.
+#
+# Per `project_no_apriori_strategy_pruning` explicit owner override on
+# Pattern W deterministic-subset evidence (mechanical not empirical):
+# owner approved deletion 2026-06-10 in response to B680 self-critique
+# recommendation. Pattern W reskin pattern = Pattern N reskin in
+# specific deterministic-subset form.
+#
+# B507 M6 Path-2 sleeve rationale: shipped YoY-growth proxy in lieu of
+# paid Finnhub analyst-surprise re-prefetch. The methodology was sound
+# but the implementation as separate registry entries (vs as a parameter
+# variant of EV-1/EV-2) was structurally redundant.
+#
+# Future work: if YoY-growth-specific PEAD validation is needed, ship as
+# a CONFIGURATION variant (yoy_threshold_strict parameter on EV-1/EV-2)
+# rather than separate registry slots -- cube can sensitivity-sweep without
+# inflating family-wise correction budget.
+#
+# No downstream code references; ALL_STRATEGIES registry entries also removed.
+# -----------------------------------------------------------------------------
 
 
 def strat_squeeze_setup_long(s):
@@ -4712,7 +4699,7 @@ def strat_classification_change_to_tech_long(s):
     Communication Services, Health Care). Chen-Chen 2010: moves into
     high-multiple sectors trigger sustained re-rating. Examples in our
     sector_history.csv: META/GOOGL 2018 IT->Comms (Comms is growth);
-    V/MA 2023 IT->Financials (NOT growth — gated off correctly)."""
+    V/MA 2023 IT->Financials (NOT growth -- gated off correctly)."""
     fires = (
         s.get("classification_change_to_tech", False)
         and s.get("price_above_ema_200", False)
@@ -6045,10 +6032,11 @@ ALL_STRATEGIES = {
     "mmsm_short":                   strat_mmsm_short,
     "week_opening_gap_fill_down":   strat_week_opening_gap_fill_down,
     "week_opening_gap_fill_up":     strat_week_opening_gap_fill_up,
-    # Pre-FOMC + 8-K event-driven (3 - Batch 224 2026-05-18 owner-approved)
+    # Pre-FOMC + 8-K event-driven (2 - Batch 224 2026-05-18 owner-approved;
+    # buyback_8k_recent_long DELETED Batch 682 per B680 self-critique CC-B
+    # population-mixing + B660 zero-fire confirmation)
     "pre_fomc_long_sleeve":                strat_pre_fomc_long_sleeve,
     "pre_fomc_quality_momentum_long":      strat_pre_fomc_quality_momentum_long,
-    "buyback_8k_recent_long":              strat_buyback_8k_recent_long,
     # Event-driven + quality factor (5 - Batch 222 2026-05-18 owner-approved)
     "insider_cluster_long":                strat_insider_cluster_long,
     "insider_cluster_with_director_long":  strat_insider_cluster_with_director_long,
@@ -6088,9 +6076,11 @@ ALL_STRATEGIES = {
     # PEAD family (2 - Batch 209 2026-05-17 owner-approved research review)
     "pead_long":                    strat_pead_long,
     "pead_short":                   strat_pead_short,
-    # Batch 507 (2026-05-31, M6 Path-2 sleeves registered per owner go):
-    "pead_long_high_yoy_growth_only":   strat_pead_long_high_yoy_growth_only,
-    "pead_short_negative_yoy_growth":   strat_pead_short_negative_yoy_growth,
+    # Batch 507 (2026-05-31, M6 Path-2 sleeves registered per owner go) -
+    # pead_long_high_yoy_growth_only + pead_short_negative_yoy_growth
+    # DELETED Batch 682 per B680 self-critique CC-C Pattern W
+    # deterministic-subset finding. If YoY-threshold variant needed,
+    # implement as parameter on EV-1/EV-2 not separate registry slot.
     # Batch 519 (2026-05-31, P15 sleeves registered per owner directive):
     "squeeze_setup_long":               strat_squeeze_setup_long,
     # Batch 615 -> Batch 620: B-twin strat_squeeze_setup_event_only_long
@@ -6252,7 +6242,8 @@ ALL_STRATEGIES = {
     # + donchian_breakdown_retest_short).
     # Batch 592 restored donchian_breakdown_retest_short:
     "donchian_breakdown_retest_short":  strat_donchian_breakdown_retest_short,
-    "volume_spike_breakout_retest":     strat_volume_spike_breakout_retest,
+    # volume_spike_breakout_retest DELETED Batch 682 per B620 precedent +
+    # B680 self-critique CC-B (0.01/yr B621 estimator FAIL_FIRE_STARVED).
     "cup_and_handle_retest_long":       strat_cup_and_handle_retest_long,
     "flag_bull_retest_long":            strat_flag_bull_retest_long,
     # Batch 607 (2026-06-07) Class 7 NEW symmetric inverse per F1 walk:

@@ -7929,18 +7929,25 @@ def test_batch226_ci_exit_count_assertion_updated():
 def test_batch224_pre_fomc_strategies_registered():
     """Batch 224 (pre-FOMC + buybacks 2026-05-18 owner-approved):
     3 new event-driven strategies registered + 3 entries in
-    STRATEGIES_BYPASS_EVENT_SUPPRESSION."""
+    STRATEGIES_BYPASS_EVENT_SUPPRESSION.
+
+    Post-B682 (2026-06-10 owner-approved deletion per B680 self-critique
+    CC-B): buyback_8k_recent_long DELETED for 8-K population-mixing +
+    SM-4 feasibility-failure carry. Pre-FOMC pair retained."""
     from backtest.signals.screener import ALL_STRATEGIES
     from backtest.config import STRATEGIES_BYPASS_EVENT_SUPPRESSION
     for name in (
         "pre_fomc_long_sleeve",
         "pre_fomc_quality_momentum_long",
-        "buyback_8k_recent_long",
     ):
         assert name in ALL_STRATEGIES, f"Batch 224: {name} must be registered"
         assert name in STRATEGIES_BYPASS_EVENT_SUPPRESSION, (
             f"Batch 224: {name} must bypass event suppression"
         )
+    # B682 deletion verification: buyback_8k_recent_long REMOVED
+    assert "buyback_8k_recent_long" not in ALL_STRATEGIES, (
+        "B682 deletion: buyback_8k_recent_long must be REMOVED from registry"
+    )
 
 
 def test_batch224_pre_fomc_long_sleeve_fires_on_d1():
@@ -7977,24 +7984,19 @@ def test_batch224_pre_fomc_quality_momentum_long():
     assert strat_pre_fomc_quality_momentum_long(s)["fires"] is False
 
 
-def test_batch224_buyback_8k_recent_long():
-    """Batch 224: 8-K filed last 5 days + 200-EMA + 1.5x volume.
-    Generic event-driven proxy for buyback / M&A / guidance change.
-    Batch 385 (2026-05-26 surgical threshold change): days_since_8k loosened
-    3 -> 5 per PHASE_1A_BETA_STATUS.md "What still applies in cube eval" +
-    empirical 86/86 fires-at-boundary observation. Test threshold updated
-    here in Batch 412 (test-drift cleanup bundled with vectorized exit ship)."""
-    from backtest.signals.screener import strat_buyback_8k_recent_long
-    s = {
-        "recent_8k_filed": True,
-        "days_since_8k": 2,
-        "price_above_ema_200": True,
-        "vol_spike_15x": True,
-    }
-    assert strat_buyback_8k_recent_long(s)["fires"] is True
-    # >5 days since 8-K -> no fire (post-Batch-385 threshold)
-    s["days_since_8k"] = 7
-    assert strat_buyback_8k_recent_long(s)["fires"] is False
+def test_batch224_buyback_8k_recent_long_DELETED_B682():
+    """Batch 224 buyback_8k_recent_long DELETED B682 per B680 self-critique
+    CC-B (8-K population-mixing — fires on ANY 8-K type including M&A
+    target Item 1.01 which B673 reviewer flagged as feasibility failure
+    SM-4). Original Batch 224 + Batch 385 + Batch 412 walk lineage
+    preserved in commit history.
+    """
+    import backtest.signals.screener as screener
+    assert not hasattr(screener, "strat_buyback_8k_recent_long"), (
+        "B682 deletion: strat_buyback_8k_recent_long must be REMOVED"
+    )
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert "buyback_8k_recent_long" not in ALL_STRATEGIES
 
 
 def test_batch224_event_suppression_bypass_wired():
@@ -9774,27 +9776,12 @@ def test_batch386_max_cands_auto_raised_200_for_phase_1a_beta():
     assert "[Batch 386]" in src, "Batch 386 banner missing"
 
 
-def test_batch385_buyback_8k_recent_long_days_loosened_3_to_5():
-    """Batch 385 Gate 4 opt (owner-approved 2026-05-26 per Batch 380):
-    days_since_8k threshold loosened 3 -> 5 days based on Lopez-Lira-Tang
-    2023 5-day post-8K reaction window. Empirical Phase 1A-beta evidence:
-    all 86 fires had days_since_8k right at the 3-day boundary."""
-    from backtest.signals.screener import strat_buyback_8k_recent_long
-    # Day 4 should now fire (was blocked pre-Batch-385)
-    sig_day4 = {
-        "recent_8k_filed":     True,
-        "days_since_8k":       4,
-        "price_above_ema_200": True,
-        "vol_spike_15x":       True,
-    }
-    result = strat_buyback_8k_recent_long(sig_day4)
-    assert result["fires"] is True, "Day 4 should fire post-Batch-385 (was 3, now 5)"
-    # Day 5 still fires
-    sig_day5 = {**sig_day4, "days_since_8k": 5}
-    assert strat_buyback_8k_recent_long(sig_day5)["fires"] is True
-    # Day 6 still blocked (boundary still applies)
-    sig_day6 = {**sig_day4, "days_since_8k": 6}
-    assert strat_buyback_8k_recent_long(sig_day6)["fires"] is False
+def test_batch385_buyback_8k_recent_long_days_loosened_3_to_5_DELETED_B682():
+    """Batch 385 days_since_8k loosen test SUPERSEDED by B682 deletion of
+    strat_buyback_8k_recent_long. See test_batch224_buyback_8k_recent_
+    long_DELETED_B682 above for deletion rationale."""
+    import backtest.signals.screener as screener
+    assert not hasattr(screener, "strat_buyback_8k_recent_long")
 
 
 def test_batch384_no_regime_affinity_and_no_event_suppression_bypass_gates():
@@ -10306,8 +10293,15 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   Batch 636 (2026-06-08): Stage 4 walk of strat_three_white_soldiers per S4-WALK queue. Owner-directed Class 7 NEW wired same-turn per feedback_wire_new_strategies_on_the_spot - strat_three_black_crows_short symmetric bearish-reversal mirror (Nison 1991 canonical). 221 -> 222.
     #   Batch 639 (2026-06-09): Stage 4 walk of strat_morning_star option (a) per owner directive. F4 finding: strat_evening_star_short became strict subset of strat_morning_star SHORT after option-2 reconciliation (removed ema_50_200 trend gates from both directions); standalone deleted as redundant. 222 -> 221.
     #   Batch 645 (2026-06-09): Class 7 NEW strat_pivot_r3_blowoff_short wired as symmetric mirror of B643-redesigned strat_pivot_s3_capitulation per owner directive (a) from B643+B644 follow-on. New compute_blowoff_lookback producer; strategy marked EXPLORATORY pending Stage 5 cube validation. 221 -> 222.
-    assert len(ALL_STRATEGIES) == 222, (
-        f"F-002 drift: ALL_STRATEGIES expected 222 (CLAUDE.md / CANONICAL_FACTS); "
+    #   Batch 682 (2026-06-10): owner-approved deletions per B680 self-critique. -4 strategies:
+    #     - BR-15 volume_spike_breakout_retest (B620 precedent; B621 0.01/yr WORST FAIL_FIRE)
+    #     - EV-3 pead_long_high_yoy_growth_only (Pattern W deterministic-subset of EV-1)
+    #     - EV-4 pead_short_negative_yoy_growth (Pattern W deterministic-subset of EV-2)
+    #     - EV-7 buyback_8k_recent_long (population-mixing; SM-4 feasibility carry)
+    #   Plus BR-8 strat_dc20_break_retest swap vol_spike_15x -> vol_below_avg (Bulkowski alignment;
+    #   no count change). 222 -> 218.
+    assert len(ALL_STRATEGIES) == 218, (
+        f"F-002 drift: ALL_STRATEGIES expected 218 post-B682 deletions; "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10322,14 +10316,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 221, (
-        f"F-002 drift: active strategy count expected 221 (B645 added "
-        f"strat_pivot_r3_blowoff_short Class 7 NEW mirror of W5 "
-        f"capitulation per B643+B644 follow-on owner directive (a); "
-        f"prior-batch context unchanged: B639 deleted "
-        f"strat_evening_star_short as redundant with strat_morning_star "
-        f"SHORT post option-2 reconciliation: 221 registered minus 1 "
-        f"disabled); got {active}."
+    assert active == 217, (
+        f"F-002 drift: active strategy count expected 217 (218 registered "
+        f"minus 1 disabled dxy_headwind_multinational_short); B682 "
+        f"owner-approved deletions per B680 self-critique took 222 -> 218 "
+        f"(BR-15 + EV-3 + EV-4 + EV-7); got {active}."
     )
 
     # F-004 exit method count

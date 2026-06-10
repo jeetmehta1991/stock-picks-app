@@ -243,35 +243,44 @@ def test_batch612_volume_spike_breakout_short_silent_gap_closed():
     assert strat_volume_spike_breakout(s)["fires"] is False
 
 
-def test_batch612_volume_spike_breakout_retest_short_fires():
-    """Pin (12)."""
-    from backtest.signals.screener import strat_volume_spike_breakout_retest
-    s = {
-        "dc20_support_break_retest_strong": True,
-        "vol_spike_2x": True,
-        "below_avwap_20high": True,
-        "close_below_open": True,
-        "close_in_bottom_40pct_of_range": True,
-    }
-    out = strat_volume_spike_breakout_retest(s)
-    assert out["fires"] is True and out["direction"] == "short"
+def test_batch612_volume_spike_breakout_retest_short_DELETED_B682():
+    """Pin (12) SUPERSEDED by B682 deletion of strat_volume_spike_breakout_
+    retest per B620 precedent + B680 self-critique CC-B (0.01/yr B621
+    FAIL_FIRE_STARVED).
+
+    Original B612 pin (12) tested that the B612 F2 silent-gap fix on
+    below_avwap_20high (the SHORT-side AVWAP gate) wired correctly into
+    strat_volume_spike_breakout_retest. The strategy was deleted B682
+    so the silent-gap-closed assertion is moot at the strategy level —
+    but the B612 producer-side fix (below_avwap_20high emit) REMAINS
+    valid and is still used by other consumers (volume_spike_breakout
+    SHORT, r1_break_retest SHORT, 52wl_break_retest_short).
+
+    Test converted to DELETION VERIFICATION per B670 precedent.
+    """
+    import backtest.signals.screener as screener
+    assert not hasattr(screener, "strat_volume_spike_breakout_retest"), (
+        "B682 deletion: strat_volume_spike_breakout_retest must be REMOVED"
+    )
 
 
-def test_batch612_volume_spike_breakout_retest_short_silent_gap_closed():
-    """Pin (12b)."""
-    from backtest.signals.screener import strat_volume_spike_breakout_retest
-    s = {
-        "dc20_support_break_retest_strong": True,
-        "vol_spike_2x": True,
-        # below_avwap_20high ABSENT
-        "close_below_open": True,
-        "close_in_bottom_40pct_of_range": True,
-    }
-    assert strat_volume_spike_breakout_retest(s)["fires"] is False
+def test_batch612_volume_spike_breakout_retest_short_silent_gap_closed_DELETED_B682():
+    """Pin (12b) SUPERSEDED — see test_batch612_volume_spike_breakout_
+    retest_short_DELETED_B682 above. Strategy deleted; silent-gap-closed
+    assertion is moot at the strategy level.
+    """
+    import backtest.signals.screener as screener
+    assert not hasattr(screener, "strat_volume_spike_breakout_retest")
 
 
-def test_batch612_all_strategies_count_unchanged_at_221():
-    """Pin (13): B612 is pure refactor + producer-additive; no
-    add/delete strategies."""
+def test_batch612_all_strategies_count_post_b682_at_218():
+    """Pin (13) post-B682 update: B612 was pure refactor + producer-
+    additive (no add/delete); count was 221 at B612.
+
+    Post-B682 (2026-06-10 owner-approved deletions per B680 self-critique):
+    222 -> 218 (-4 strategies: BR-15 volume_spike_breakout_retest +
+    EV-3 pead_long_high_yoy_growth_only + EV-4 pead_short_negative_yoy_growth
+    + EV-7 buyback_8k_recent_long). Count assertion updated to 218.
+    """
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 218
