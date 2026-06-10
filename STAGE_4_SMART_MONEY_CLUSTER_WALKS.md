@@ -1571,9 +1571,9 @@ Mirror of SM-7 + SM-8 but SHORT side. The mirror is mechanically convenient but 
 
 ---
 
-## SM-10. `strat_institutional_oversold_long` (13F sleeve, walked)
+## SM-10. `strat_institutional_oversold_long` (13F sleeve, walked — **CITATION-ERROR Pattern F7 + Pattern B**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate LONG with B611 STATE-as-EVENT class.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B669 expanded). 3-gate LONG with B611 STATE-as-EVENT class AND citation-error finding (reviewer F7 honesty class — cites CMP 2012 insider paper for a 13F strategy).
 
 ### Step 1 — Read the code
 
@@ -1584,50 +1584,87 @@ def strat_institutional_oversold_long(s):
     """Wave 3 (Batch 331): institutional buy + RSI oversold mean-rev.
     Cohen-Malloy-Pomorski 2012 JF combined with Bondt-Thaler 1985 JF
     overreaction: institutional accumulation during oversold pullback
-    is the classic Schwed 'cash on the sidelines' setup."""
+    is the classic Schwed 'cash on the sidelines' setup. Distinct from
+    Batch 330's momentum variant - this is the COUNTER-TREND entry."""
     fires = (
         s.get("institutional_buy", False)
         and s.get("rsi_14", 50) < 35
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_buy","rsi_14<35","price_above_ema_200"],
+        ["13F new/increased institutional positions",
+         "RSI<35 oversold (counter-trend mean-rev entry)",
+         "Above 200 EMA (regime gate - filter out falling-knife)"])
 ```
 
-**3-gate LONG:** institutional_buy + RSI<35 + 200-EMA.
+**3-gate LONG strategy.** Counter-trend mean-rev variant of SM-7's foundational cluster.
+
+**LONG fires when ALL THREE:**
+
+| Gate | Meaning |
+|---|---|
+| `institutional_buy` | 13F looser-cluster: new_pos ≥ 1 OR increased ≥ 2 (same as SM-8) |
+| `rsi_14 < 35` | Counter-trend oversold mean-rev entry |
+| `price_above_ema_200` | Long-term uptrend (filter out falling-knife per docstring) |
 
 ### Step 2 — Classify
 
-- `smart_money_13f`; single LONG
-- No regime entry → B291 default `{bull, neutral}`
-- Last touched: B663
+- Category: `smart_money_13f`; single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default `{bull, neutral}` (no documented lineage per B663 grep-discipline)
+- Last touched: B663 (200-EMA default-True → False family sweep)
 
 ### Step 3 — Producer source-read + temporality
 
-13F STATE (institutional_buy) + RSI STATE (oversold) + STATE trend gate. **0 EVENT gates → Pattern B candidate.**
+- `institutional_buy`: same 13F producer as SM-7/SM-8; QUARTERLY STATE with 45-day publication lag
+- `rsi_14`: RSI producer in `technical.py`; STATE-ish (oversold reading can persist multiple bars)
+- `price_above_ema_200`: STATE trend gate
+
+**0 EVENT gates per direction** → Pattern B candidate. The "counter-trend mean-rev entry" docstring framing implies the RSI<35 reading is a timing signal — but RSI<35 is STATE-ish (can persist 5-10 bars in a sustained decline). Per CHECKLIST (s): docstring overclaims timing on STATE → Pattern B.
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
-| "Cohen-Malloy-Pomorski 2012 + Bondt-Thaler 1985 overreaction" | ⚠ Real papers but CMP 2012 is INSIDER buying (not 13F). The 13F claim here borrows CMP authority but the data source is wrong. Pattern B + Pattern citation-error |
-| "Schwed 'cash on the sidelines' setup" | ⚠ Informal lit; not academic. RSI<35 + 13F-buy is a co-occurrence not a tested setup |
+| "Cohen-Malloy-Pomorski 2012 JF" cited for institutional accumulation thesis | ❌ **CITATION ERROR per reviewer F7** — CMP 2012 "Decoding Inside Information" is the **INSIDER** trading paper (Form 4 cluster-buys); applying its authority to a 13F strategy is misappropriating the academic basis. The correct citation for 13F-side institutional accumulation alpha is Cohen-Frazzini-Malloy 2008 RFS (different paper, different result). |
+| "Bondt-Thaler 1985 JF overreaction" | ✅ Real paper; documents long-horizon mean-reversion in cross-sectional returns. Applies to the RSI<35 mean-rev half but NOT to the 13F half. |
+| "Schwed 'cash on the sidelines' setup" | ⚠ Informal trader lit; not academic basis. The combination of RSI<35 + 13F-buy is a co-occurrence framing, not a tested setup. |
+| "Counter-trend entry distinct from Batch 330 momentum variant" | ✅ Accurate — SM-7 + SM-8 are momentum-aligned; SM-10 is mean-rev. |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
-No active investigations.
+No active investigations on SM-10. Cross-reference: same 13F producer concerns inherited from SM-7.
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
-13F long-only.
+13F long-only by SEC rule; no mechanical SHORT mirror possible. ✅
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-citation-error** | Docstring cites Cohen-Malloy-Pomorski 2012 (insider paper) for a 13F strategy. The CMP 2012 result does not apply to 13F | MEDIUM |
-| **F-state-as-event Pattern B** | 0 EVENT gates; docstring implies timing setup | MEDIUM |
-| F-fire-count | ~40-80/yr projected | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-citation-error Pattern F7** | Docstring cites CMP 2012 (insider paper) for a 13F strategy. CMP 2012 result does not apply to 13F data source. Reviewer F7 explicitly flagged SM-10 + SM-12 as canonical citation-error class. | **MEDIUM** | F7 |
+| **F-state-as-event Pattern B** | 0 EVENT gates per direction; docstring's "counter-trend entry" framing implies timing alpha on STATE-ish RSI signal | MEDIUM | F1 (Pattern F gates B) |
+| **F-marginal-contribution Pattern F** | If 13F gate is 90-day-constant eligibility filter, strategy reduces to "RSI<35 mean-rev in uptrend with 13F-eligibility." Pattern F audit candidate. | HIGH | F1 (Pattern F) |
+| F1 | `price_above_ema_200` default-True FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F3 | No regime affinity entry; B291 default applies; no documented lineage; defer per B663 discipline | INFO | B663 |
+| F-fire-count | ~40-80/yr projected (rare co-occurrence of 13F-buy + RSI<35 + uptrend); PASS PRELIMINARY pending B660 | INFO | — |
 
-**B664 candidate option (recommended):** Docstring reframe — drop "CMP 2012" citation (wrong paper for 13F); replace "Schwed cash on sidelines" with "13F eligibility filter + RSI oversold mean-reversion entry; alpha attribution belongs to RSI mean-rev, not 13F timing."
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Citation correction only — drop CMP 2012; replace with CFM 2008 (correct 13F paper). Mechanical fix; zero behavior change. |
+| (c) (b) + Pattern B docstring reframe ("13F eligibility filter + RSI mean-rev entry; alpha attribution belongs to RSI not 13F"). Per reviewer F1: gates on Pattern F audit. |
+| **(d) RECOMMENDED B669** — (b) + gate Pattern B disposition on Pattern F audit per reviewer F1. Citation correction ships immediately (unambiguous F7 honesty fix); Pattern B + Pattern F sequenced post-B660. |
+| (e) Stage 5 deferral |
+
+**My recommendation: (d) — citation correction immediate + Pattern B/F deferred to post-B660.** Citation error is unambiguous F7 finding; should ship without waiting for Pattern F.
+
+**Awaiting owner direction on SM-10:**
+1. Citation correction (CMP 2012 → CFM 2008): approve immediate fix
+2. Pattern B / Pattern F gating: confirm post-B660 sequence
 
 ---
 
