@@ -646,7 +646,16 @@ def compute_regime_transition_matrix(
     return matrix
 
 
-EMA_CROSS_HYSTERESIS_PCT = 2.0  # Batch 642: % above 200-EMA required to EXIT bear
+# Batch 642 introduced EMA_CROSS_HYSTERESIS_PCT = 2.0 as an asymmetric
+# sticky-bear directional bet. Batch 665 (2026-06-09 2nd-wave-redux critique
+# #8 owner-approved revert): unvalidated curve-fit-to-2022 directional bet
+# defaults OFF in pre-deployment systems. Setting 0.0% restores symmetric
+# binary EMA-cross behavior (any close above 200-EMA exits bear). If
+# S5-REGIME-WALK-FORWARD-VALIDATION shows asymmetric sticky-bear earns
+# its keep OOS, the asymmetry returns with documented empirical support.
+# Until then: symmetric is the unbiased baseline for the eventual walk-
+# forward comparison.
+EMA_CROSS_HYSTERESIS_PCT = 0.0
 
 
 def classify_regime_with_hysteresis(

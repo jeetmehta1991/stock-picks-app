@@ -1,5 +1,13 @@
 # Stage 4 Smart Money Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B665 status banner (2026-06-09, owner-approved):** the B664 candidate proposal below is **HELD pending B665 ship** + B660 full-universe measurement landing. Owner accepted the 2nd-wave-redux critique on STAGE_4_PIVOT_CLUSTER_WALKS.md — same framing-discipline corrections apply preemptively to this doc:
+> - **All `fires/yr` projection ranges in per-strategy walks are PENDING B660** — they are diagnostic-only estimates from independence-product math (NOT measured); the same representativeness flaw the pivot doc has applies here
+> - **No "PASS_CUBE" / "FAIL" labels** appear in this doc yet (intentional — projection ranges only) but if any are added pre-B660, they will be retracted under the same B665 discipline
+> - **Pattern B docstring sweep** (the largest B664 candidate item) is HELD because applying it pre-B665 would replicate the "CHANGES MERGED reads as VALIDATED" conflation 2C7 + B665 #1 corrected on the pivot doc
+> - **Per `S5-DO-NOT-DEPLOY-MULTIPLE-TESTING-RECONCILIATION` ticket opened in B665:** the smart money cluster's confluence wraps (SM-31 through SM-41) interact with the C2 correction in the same self-referential way W5m does — registered wraps that never produce alpha still consume multiple-testing budget. This is a B664 candidate consideration to surface explicitly when B664 finally ships post-B665.
+>
+> **Foundational re-prioritization commitment (owner-approved B665):** the next batch is NOT B664. It is B660 (measurement landing) + C2 methodology draft + C5 survivorship verification. After those land, B664 re-applies the same corrected framing standards from the start.
+
 > **What this document is.** A LIVING per-cluster Stage 4 walk doc covering the smart money strategy cluster (~39 strategies — the largest pending cluster as of the post-B660 close of pivot + trend clusters). Each strategy receives a 7-step deep-dive walk per CHECKLIST #105 with options surfaced and WAITING for owner direction per `feedback_no_rushing_per_strategy_tweak`.
 >
 > **Owner directive 2026-06-09 (this batch start):** *"smart money largest pending start"* — begin the smart money cluster walks.
