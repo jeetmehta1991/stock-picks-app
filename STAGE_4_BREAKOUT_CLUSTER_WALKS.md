@@ -987,19 +987,37 @@ EXISTING tickets cross-referenced:
 
 **Cumulative B676: 19 of 19 walks fully expanded. CLUSTER WALK COMPLETE.**
 
-### Cross-cluster status snapshot (post-B676)
+## B679 Iteration 2 Preparation — Review Solicitation Guide
 
-| Cluster | Doc | Status | Strategy count |
-|---|---|---|---|
-| Pivot | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | ✅ Complete | ~10 |
-| Trend | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | ✅ Complete | ~12 |
-| Smart Money (data-source) | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | ✅ Complete + B674 reviewer-critique | 41 (post-B670: 39 + 2 Class 7 NEW in momentum_trend) |
-| SMC (pure price-action) | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | ✅ Complete | 18 |
-| ICT (pure price-action) | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | ✅ Complete | 12 |
-| **Breakout** | **[STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) (THIS DOC)** | **✅ Complete (B676)** | **19** |
-| Event-driven | — | ⏳ Pending | ~10 |
-| Chart pattern | — | ⏳ Pending (many individually walked B636/B639/B641) | ~9 |
-| Candle | — | ⏳ Pending (individually walked) | ~5 |
-| Classification change | — | Partially covered in smart-money sub-cluster D | ~10 |
+> **Status (post-B679 format alignment):** READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2. The smart-money cluster doc received 2 review rounds (B669 + B673 → B674); this breakout cluster doc is READY FOR YOUR 2ND-WAVE FEASIBILITY CRITIQUE.
+>
+> **Recommended review structure (parallel to B673 smart-money review):**
+>
+> | Review axis | What to look for in Breakout | Smart-money parallel |
+> |---|---|---|
+> | **CC-A: Engine entry feasibility** | Breakout strategies gap in CONTINUATION direction (less damaging than SM-4 mean-reversion case); engine pays the gap but trade benefits if continuation persists. Capturable fraction higher than M&A target but not unity | CC1 (partial; in-direction) |
+> | **CC-B: Forensic-fix density** | 19 batches of forensic fixes (B582 through B663). Post-fix designs need cube re-validation symmetric with B262/B278 from smart-money | Pattern T NEW; symmetric with B262/B278 |
+> | **CC-C: Citation discipline** | 15 of 19 strategies have LEGITIMATE peer-reviewed anchors (George-Hwang 2004 JF + Bulkowski 2005 + Faith 2007 + Elder 1993 + Lo-Wang 2000). Pattern M / Q applies only to 4 (BR-17/18/19 + BR-8 thesis-bug). Cluster-positive | Pattern M / Q narrow application |
+> | **CC-D: BR-8 thesis-bug** | `vol_spike_15x` on "retest" pattern contradicts Bulkowski retest-on-lower-volume thesis. Either rename strategy OR swap to `vol_below_avg`. Owner decision pending | Per-strategy reframing |
+> | **CC-E: BR-15 Pattern G severity** | B621 estimator projects 0.01/yr universe-wide — WORST in entire roster. EXPLORATORY-or-DELETE decision per B620 squeeze_setup_event_only_long precedent | Pattern G / W5m precedent |
+> | **CC-F: Intra-family Pattern N** | 19 strategies on 13 primitives → effective N ≈ 13. Donchian-family 5 on 3 + 52w-family 4 on 2 + retest-family 4 on 2. Three flagship sub-family cube ablations | CC7 effective N |
+> | **CC-G: Pattern O hardcoded** | ~10 free parameters (vol_spike thresholds, ATR coefficients, retest tolerances, 40% close-strength). Cube sensitivity sweep candidates | Pattern O carry |
+>
+> Provide feedback in B673-style severity-ranked critique; B679 will incorporate as B679-incorporation batch.
 
-**Total Stage 4 walks: 6 cluster docs complete; ~112 of ~222 strategies have per-cluster CHECKLIST #105 7-step walks.** Remaining clusters: event-driven (10) + chart_pattern (9) + candle (5) + classification (covered partially) = ~24 strategies pending cluster-walk coverage (excluding classification-change which is partially in smart-money sub-cluster D).
+---
+
+### Cross-cluster status snapshot (post-B679 — index at [STAGE_4_CLUSTER_WALKS_INDEX.md](STAGE_4_CLUSTER_WALKS_INDEX.md))
+
+8 cluster docs / ~138 strategies covered. Review status:
+
+| Cluster | Doc | Strategies | Owner review | Iteration 2 ready |
+|---|---|---|---|---|
+| Pivot | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | ~10 | ✅ 2 rounds | (already iterated) |
+| Trend | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | ~12 | ✅ Companion | (already iterated) |
+| Smart Money | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | 41 | ✅ 2 rounds (B669 + B673 → B674) | (already iterated) |
+| SMC | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | 18 | ❌ AWAITING | READY |
+| ICT | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | 12 | ❌ AWAITING | READY |
+| **Breakout (THIS DOC)** | **[STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md)** | **19** | **❌ AWAITING** | **READY** |
+| Event-driven | [STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md) | 10 | ❌ AWAITING | READY |
+| Chart+Candle | [STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md](STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md) | 16 | ❌ AWAITING | READY |

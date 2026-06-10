@@ -551,18 +551,36 @@ EXISTING tickets cross-referenced:
 
 **Cumulative B677: 10 of 10 strategies covered. CLUSTER WALK COMPLETE.**
 
-### Cross-cluster status snapshot (post-B677)
+## B679 Iteration 2 Preparation — Review Solicitation Guide
 
-| Cluster | Doc | Status | Strategy count |
-|---|---|---|---|
-| Pivot | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | ✅ Complete | ~10 |
-| Trend | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | ✅ Complete | ~12 |
-| Smart Money | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | ✅ Complete + B674 reviewer-critique | 41 |
-| SMC | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | ✅ Complete | 18 |
-| ICT | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | ✅ Complete | 12 |
-| Breakout | [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) | ✅ Complete | 19 |
-| **Event-driven** | **[STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md) (THIS DOC)** | **✅ Complete (B677)** | **10** (7 NEW + 3 cross-ref) |
-| Chart pattern | — | ⏳ Pending | ~9 |
-| Candle | — | ⏳ Pending | ~5 |
+> **Status (post-B679 format alignment):** READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2.
+>
+> **Recommended review structure (parallel to B673 smart-money review):**
+>
+> | Review axis | What to look for in Event-driven | Smart-money parallel |
+> |---|---|---|
+> | **CC-A: Engine entry feasibility — most acute here** | PEAD (4 strategies) + 8-K (1) carry HIGH gap-haircut concern; earnings announce gaps 5-20%, engine misses; pre-FOMC (2) low entry-risk because event scheduled | CC1 (HIGHEST in cluster) |
+> | **CC-B: Citation discipline** | ALL 10 strategies have LEGITIMATE peer-reviewed anchors (Bernard-Thomas 1989 JoAR + Lucca-Moench 2015 JF + CMP 2012 + Foster-Olsen-Shevlin 1984 + Manconi-Peyer-Vermaelen 2019 + Lopez-Lira-Tang 2023 + Lakonishok-Lee 2001 + others). Pattern Q does NOT apply. Cluster-positive | Pattern M / Q exception |
+> | **CC-C: PEAD strict-subset Pattern W** | EV-3 (high-yoy) and EV-4 (negative-yoy) are STRICT-SUBSETS of EV-1 and EV-2 on YoY-axis. Cube settles whether sub-population earns separate registry slot OR is Pattern N reskin | Pattern W NEW |
+> | **CC-D: EV-7 8-K population-mixing** | Strategy fires on ANY 8-K type — mixes M&A target (SM-4 feasibility failure inheritance) + buyback + Reg FD + officer change. Different economic populations | F-population-mixing carry from B673 SM-4 |
+> | **CC-E: Effective hypothesis count** | 10 strategies on 5 primitives (within_pead_window + earnings-surprise variants + recent_8k_filed + pre_fomc_d1 + insider_cluster_active) → effective N ≈ 5 | CC7 |
+> | **CC-F: Cross-cluster registry** | SM-1 + SM-2 + SM-6 cross-cluster with smart-money cluster; SM-41 cross-cluster with smart-money sleeve. PEAD-family flagship Pattern N ablation spans both clusters | Pattern H |
+>
+> Provide feedback in B673-style severity-ranked critique; B679 will incorporate as B679-incorporation batch.
 
-**Total Stage 4 walks: 7 cluster docs complete; ~119 of ~222 strategies covered with CHECKLIST #105 7-step walks. Remaining clusters: chart_pattern (9) + candle (5) = ~14 strategies pending.**
+---
+
+### Cross-cluster status snapshot (post-B679 — index at [STAGE_4_CLUSTER_WALKS_INDEX.md](STAGE_4_CLUSTER_WALKS_INDEX.md))
+
+8 cluster docs / ~138 strategies covered. Review status:
+
+| Cluster | Doc | Strategies | Owner review | Iteration 2 ready |
+|---|---|---|---|---|
+| Pivot | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | ~10 | ✅ 2 rounds | (already iterated) |
+| Trend | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | ~12 | ✅ Companion | (already iterated) |
+| Smart Money | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | 41 | ✅ 2 rounds (B669 + B673 → B674) | (already iterated) |
+| SMC | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | 18 | ❌ AWAITING | READY |
+| ICT | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | 12 | ❌ AWAITING | READY |
+| Breakout | [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) | 19 | ❌ AWAITING | READY |
+| **Event-driven (THIS DOC)** | **[STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md)** | **10** | **❌ AWAITING** | **READY** |
+| Chart+Candle | [STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md](STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md) | 16 | ❌ AWAITING | READY |

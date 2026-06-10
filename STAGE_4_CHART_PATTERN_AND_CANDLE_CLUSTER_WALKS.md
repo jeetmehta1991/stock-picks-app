@@ -424,24 +424,41 @@ EXISTING tickets cross-referenced:
 
 ---
 
-## FINAL CROSS-CLUSTER STATUS SNAPSHOT (post-B678 — ALL STAGE 4 CLUSTER WALKS COMPLETE)
+## B679 Iteration 2 Preparation — Review Solicitation Guide
 
-| Cluster | Doc | Status | Strategy count |
-|---|---|---|---|
-| Pivot | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | ✅ Complete | ~10 |
-| Trend | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | ✅ Complete | ~12 |
-| Smart Money | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | ✅ Complete + B674 reviewer-critique | 41 |
-| SMC | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | ✅ Complete | 18 |
-| ICT | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | ✅ Complete | 12 |
-| Breakout | [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) | ✅ Complete | 19 |
-| Event-driven | [STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md) | ✅ Complete | 10 (7 NEW + 3 cross-ref) |
-| **Chart pattern + Candle** | **[STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md](STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md) (THIS DOC)** | **✅ Complete (B678)** | **16** |
+> **Status (post-B679 format alignment):** READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2.
+>
+> **Recommended review structure (parallel to B673 smart-money review):**
+>
+> | Review axis | What to look for in Chart-pattern + Candle | Smart-money parallel |
+> |---|---|---|
+> | **CC-A: Citation discipline** | ALL 16 strategies have LEGITIMATE peer-reviewed anchors (Nison 1991 + Bulkowski 2005 + Edwards-Magee 1948 + O'Neil 1988 CANSLIM). Pattern Q does NOT apply. Cluster-positive | Pattern M / Q exception |
+> | **CC-B: CHECKLIST (q) PIT rule (B639 F6 codified)** | Candle patterns complete at end-of-day; engine MUST enter NEXT-BAR-OPEN. Verify engine convention `entry_bar = signal_bar + 1` applies to all 16 | New rule from B639 walk |
+> | **CC-C: Heavy prior-walk coverage** | 6 of 16 already received B-batch CHECKLIST #105 walks (B572 + B607 + B636 + B639); 10 NEW walks in B678 are compact-style. Pattern T forensic discipline is cluster's strength | Pattern T cluster-positive |
+> | **CC-D: Missing-inverse Class 7 NEW candidates** | head_and_shoulders_top_short (CP-3 inverse MISSING per Edwards-Magee 1948 documents top pattern equally) + triangle_descending_short (CP-7 inverse MISSING per Bulkowski). Per `feedback_long_short_inverse_audit` | Class 7 NEW addition pattern |
+> | **CC-E: Pattern Y retest absorption (carried from breakout)** | CP-5 + CP-6 + CP-8 + CP-9 (4 retest variants) — Bulkowski 2005 thesis legitimate. Cube ablation against base patterns settles whether retest variants earn separate registry slots | Pattern V breakout cluster |
+> | **CC-F: Effective hypothesis count** | 16 strategies on ~12 primitives → effective N ≈ 12. Moderate cluster | CC7 |
+> | **CC-G: Pattern G fire-starve** | CP-3 (5-20/yr) + CP-1 (20-50/yr) + CP-2 (15-40/yr) borderline FAIL min_trades=30 per regime; CP-6 on B621 WARN list (15.77/yr) | Pattern G |
+>
+> Provide feedback in B673-style severity-ranked critique; B679 will incorporate as B679-incorporation batch.
+
+---
+
+## Cross-cluster status snapshot (post-B679 — index at [STAGE_4_CLUSTER_WALKS_INDEX.md](STAGE_4_CLUSTER_WALKS_INDEX.md))
+
+8 cluster docs / ~138 strategies covered. Review status:
+
+| Cluster | Doc | Strategies | Owner review | Iteration 2 ready |
+|---|---|---|---|---|
+| Pivot | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | ~10 | ✅ 2 rounds | (already iterated) |
+| Trend | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | ~12 | ✅ Companion | (already iterated) |
+| Smart Money | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | 41 | ✅ 2 rounds (B669 + B673 → B674) | (already iterated) |
+| SMC | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | 18 | ❌ AWAITING | READY |
+| ICT | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | 12 | ❌ AWAITING | READY |
+| Breakout | [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) | 19 | ❌ AWAITING | READY |
+| Event-driven | [STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md) | 10 | ❌ AWAITING | READY |
+| **Chart+Candle (THIS DOC)** | **[STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md](STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md)** | **16** | **❌ AWAITING** | **READY** |
 
 **Total Stage 4 walks: 8 cluster docs complete; ~138 strategies covered with CHECKLIST #105 7-step walks across ~222 total registry (some strategies belong to multiple clusters and are walked once).**
 
 **Remaining strategy categories NOT in cluster walks:** smart_money_sleeve (10 — walked as part of smart-money B673), smart_money_13f (7 — same), institutional_persistence (12 — same), classification_change (10 — partially walked sub-cluster D), multi_timeframe (5), cross_asset (5), factor (6), confluence (2), mean_reversion (3), momentum (3), news_sentiment (6), volume_profile (3), pairs (2), orb (2), vwap (1), pivot (1 unwalked beyond pivot cluster) ≈ 78 additional strategy slots not in cluster walks.
-
-**Per `feedback_strategy_counts_by_buckets_each_turn` (owner directive 2026-06-05):** strategy count buckets =
-- 8 walked clusters covering ~138 unique strategies
-- ~78 remaining strategies in smaller categories (multi_timeframe, factor, mean_reversion, cross_asset, momentum, etc.) — not yet cluster-walked
-- ALL_STRATEGIES total = 222 per `len(ALL_STRATEGIES)`; remaining categories may warrant a 9th cluster walk doc OR individual walks per CHECKLIST #105.

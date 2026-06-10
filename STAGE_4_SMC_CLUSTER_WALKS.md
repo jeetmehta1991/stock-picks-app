@@ -1689,3 +1689,39 @@ def strat_smc_liquidity_sweep_reversal(s):
 - `S5-RSI-DEFAULT-50-FAMILY` (EXISTING; SMC-6 + SMC-7 family members)
 - `S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660` (EXISTING; SMC-12 + SMC-13 candidates)
 - `S5-MARGINAL-CONTRIBUTION-SCORING` (EXISTING; SMC = 2nd-highest application)
+
+---
+
+## B679 Iteration 2 Preparation — Review Solicitation Guide
+
+> **Status (post-B679 format alignment):** this doc is READY FOR EXTERNAL REVIEWER + OWNER FEEDBACK on Iteration 2. The smart-money cluster doc received 2 review rounds and was substantially improved by each (B669 cluster-walk critique → 7 findings → B669 docstring fix + Pattern F + B670 deletions; B673 cross-cutting feasibility CC1-CC7 → B674 incorporation with 12 NEW EXECUTION_QUEUE tickets). The SMC cluster doc is at the same maturity stage as smart-money was post-B669 — READY FOR YOUR 2ND-WAVE FEASIBILITY CRITIQUE.
+>
+> **Recommended review structure (parallel to B673 smart-money review):**
+>
+> | Review axis | What to look for in SMC | Smart-money parallel (B673 CC-class) |
+> |---|---|---|
+> | **CC-A: Engine entry mechanism feasibility** | Daily-bar next-open after `event_recency_bars=90` staleness; SMC primitives detect 20-80 bars late then can fire up to 90 bars later — total lag could be 4-5 months. What's the capturable fraction of any "institutional re-entry" alpha when the engine enters next-bar-open after a multi-month-old signal? | CC1 (M&A target gap) |
+> | **CC-B: Vendored library / producer integrity** | joshyattridge/smartmoneyconcepts library has no peer-review; multiple producer-side fixes (B273/B390/B555/B556) suggest known bug rate; what's the SMC equivalent of Quiver PIT integrity audit? | CC4 (Quiver PIT) |
+> | **CC-C: ICT methodology academic standing** | Quantum Algo Mar 2026 cited as collective methodology evidence is unaudited 10-asset / 2,600-trade / 26-month sample — sample size is severely under-powered for 18-strategy backtest; the methodology has NO peer-reviewed publications. Magnitude overclaim analog to CC6 | CC6 (pre-crowding magnitude decay) |
+> | **CC-D: Effective hypothesis count** | 18 strategies on 7 primitives (FVG / OB / BOS / CHOCH / liquidity / dealing-range / OTE-retracement) — effective N ≈ 7 not 18. C2 multi-testing correction must treat reskins as near-duplicates | CC7 (effective N ≈ 4) |
+> | **CC-E: Per-strategy feasibility reframings** | SMC-3 inverse_fvg post-B262-fix has NOT been re-validated under full-universe cube; the original disaster (95% aggregate loss) means the fix is empirically critical; SMC-8/9 dealing_range_lookback=50 PIT integrity unverified; SMC-12/13 equal_*_swept rare-event fire-count concern (Pattern G) | SM-4 / SM-5 / SM-18+19 reframings |
+> | **CC-F: Cross-cluster registry concerns** | 4 of 12 ICT strategies (Turtle Soup + Judas Swing) cross-cluster-consume SMC primitives — Pattern L SPOF + Pattern I 90-bar staleness transmit. Pattern N cross-cluster ablation should include both clusters | Pattern H carry from smart-money |
+>
+> Provide feedback in the format of B673 review (severity-ranked) and B679 will incorporate as B679-incorporation batch symmetric with B674 smart-money pattern. Status fields to update post-review: "Reviewer findings response matrix" + add "B679 Cross-Cutting Feasibility Findings (External Reviewer 2nd-Wave)" section.
+
+---
+
+## Cross-cluster status snapshot (post-B679 — index at [STAGE_4_CLUSTER_WALKS_INDEX.md](STAGE_4_CLUSTER_WALKS_INDEX.md))
+
+8 cluster docs / ~138 strategies covered across the cluster-walk initiative. Review status:
+
+| Cluster | Strategies | Owner review | Iteration 2 ready |
+|---|---|---|---|
+| Pivot | ~10 | ✅ 2 rounds | (already iterated) |
+| Trend | ~12 | ✅ Companion | (already iterated) |
+| Smart-money | 41 | ✅ 2 rounds (B669 + B673 → B674) | (already iterated) |
+| **SMC** | **18** | **❌ AWAITING — this doc** | **READY for B673 2nd-wave-style critique** |
+| ICT | 12 | ❌ AWAITING | READY |
+| Breakout | 19 | ❌ AWAITING | READY |
+| Event-driven | 10 | ❌ AWAITING | READY |
+| Chart+Candle | 16 | ❌ AWAITING | READY |
