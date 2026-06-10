@@ -8,7 +8,34 @@
 >
 > **Foundational re-prioritization commitment (owner-approved B665):** the next batch is NOT B664. It is B660 (measurement landing) + C2 methodology draft + C5 survivorship verification. After those land, B664 re-applies the same corrected framing standards from the start.
 
-> **What this document is.** A LIVING per-cluster Stage 4 walk doc covering the smart money strategy cluster (~39 strategies — the largest pending cluster as of the post-B660 close of pivot + trend clusters). Each strategy receives a 7-step deep-dive walk per CHECKLIST #105 with options surfaced and WAITING for owner direction per `feedback_no_rushing_per_strategy_tweak`.
+> **B669 status banner (2026-06-10, owner-directed COMPREHENSIVE expansion):** owner-directed OVERRIDE of B665 foundational re-prioritization commitment per *"The md doc is not comprehensive. I want steps 1 to 7 thoroughly documented for each strategy individually along with bugs gaps and recommendations. implement it after incorporating the below feedback."* This batch expands all 39 SM-3 through SM-41 walks to full pivot-doc-template density (7 steps each + Findings tables + Options + Recommendation per CHECKLIST #105), incorporates 7 reviewer findings as a new [Reviewer findings response matrix](#reviewer-findings-response-matrix-2026-06-10-cluster-walk-critique), and applies one immediate code fix (SM-23 docstring honesty per Finding #3). The override notes are recorded here transparently; foundational sequence still applies to subsequent batches (B670+ awaits B660 land + C2/C5 follow-on).
+
+## Reviewer findings response matrix (2026-06-10 cluster-walk critique)
+
+> Adversarial review of the original B664 cluster walk produced 7 findings. Each is tracked here with status + action; per-strategy walks below cite which findings apply.
+
+| # | Finding | Severity | Status | Action |
+|---|---|---|---|---|
+| **F1** | "Pattern B docstring sweep" treats 20 13F overclaims as wording issue, but the 13F gate is near-constant 90d (eligibility filter, not timing) so the strategies' actual edge lives in the OTHER gate — the sleeve may be 20 lightly-reskinned versions of a few underlying technical strategies. Should run the `feedback_obv_avwap_macd_non_redundancy` "what does THIS gate screen out" test on the 13F sleeve (not just the confluence wraps where the doc already applied it). If 13F is near-constant, the right disposition for many is deprecate, not reword. | HIGH | **NEW Pattern F surfaced** (`13F-SLEEVE-MARGINAL-CONTRIBUTION-AUDIT`). Cube replay + marginal-contribution test required pre-disposition; queued + cross-ref `S5-MARGINAL-CONTRIBUTION-SCORING` C3 ticket. The B664 candidate "Pattern B docstring sweep on 20 strategies" is RE-FRAMED: the sweep ships only after marginal-contribution test surfaces which 13F gates carry distinct information. Pre-test, the docstring honesty fix would make the docs accurately describe near-no-op gates — honest, but evidence the strategies shouldn't exist as separate registered entries. | NEW Pattern F + RE-FRAMED Pattern B disposition |
+| **F2** | SM-9 / SM-23 SHORT disposition ("docstring caveat, defer deletion to Stage D") is inconsistent with cited B611 precedent (which DELETED `strat_institutional_breakdown_confirmation_short` for the same data-source-asymmetry reason). The "defer to empirical" assumption is wrong: a 13F-trim short will backtest fine in survivor universes over 2020-2026 (squeeze + delisting + cost gaps mask the falseness); deferring to a stage that's structurally blind is misapplying `project_no_apriori_strategy_pruning` to a case where the prior is a regulatory fact, not a guess. | HIGH | **Pattern C STRENGTHENED**: deletion option (c) elevated to RECOMMENDED for SM-9 + SM-23 with explicit B611-precedent reconciliation. `project_no_apriori_strategy_pruning` continues to gate the actual deletion (requires explicit owner approval), but the cluster-walk recommendation is now (c) DELETE rather than (b) docstring caveat. Surfacing for owner direction. | Pattern C disposition re-framed; owner direction needed |
+| **F3** | SM-23 has direction-vs-name contradiction. Name "capitulation_short" implies CONTRARIAN-BOTTOM but implementation is MOMENTUM-CONTINUATION SHORT (sell into wash-out). Filed under softer Pattern C "data-source asymmetry" but it's actually an F1 thesis-vs-implementation bug in the doc's own taxonomy. | MEDIUM | **B669 docstring honesty fix shipped** in [screener.py:strat_institutional_capitulation_short](backtest/signals/screener.py): added explicit THESIS-vs-NAME DISAMBIGUATION block clarifying the strategy is MOMENTUM-CONTINUATION SHORT not contrarian-bottom. Rename to `strat_institutional_distribution_with_volume_short` surfaced as separate B-N owner-decision (renames cascade through tests + dashboards per `feedback_local_changes_default_global_needs_approval`). | ✅ SHIPPED B669 |
+| **F4** | SM-12 (and SM-6 + SM-20 + SM-25 + SM-30) fire-count projections "FAIL on min_trades=30 likely" — but disposition is just docstring reframe. Per cluster methodology adaptation #4, "the cube cannot statistically validate the strategy regardless of design quality" — so reframing a strategy the cube can't evaluate is rearranging text. Should be EXPLORATORY-flagged like W5/W5m so they're not silently counted as live validatable strategies. | MEDIUM | **NEW per-strategy EXPLORATORY-flag candidates**: SM-6, SM-12, SM-20, SM-25, SM-30 added to per-strategy walks with EXPLORATORY-candidate status pending B660 measured fires/yr. Per `project_no_apriori_strategy_pruning`: do NOT auto-flag without measurement; queued as `S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660` for post-B660 owner-review batch. | Queued + per-walk flags surfaced |
+| **F5** | SM-5 borrow trap is the cluster's most valuable strategy — direct partial implementation of the C6 cost/borrow guard that W5m DO-NOT-DEPLOY + every other short strategy is waiting on. Yet it's a single hard-coded threshold (`dtc > 5.0`, "heuristic") walked in 60 lines + given INFO-tagged calibration ticket while 22 near-redundant 13F strategies get full walks. Two issues: (a) `dtc > 5` is loose (many squeeze names run DTC 8-20); (b) SM-5 should be WIRED to W5m + every short strategy to consult its avoid output, not standalone | HIGH | **TWO new queue tickets opened**: (1) `S4-SM5-BORROW-GUARD-WIRING-INTO-SHORT-STRATEGIES` — engine-level architecture to route SM-5's avoid output as a pre-fire gate for every SHORT strategy (W5m + SM-9 + SM-23 + every confluence-wrap-SHORT); (2) `S4-SM5-DTC-THRESHOLD-CALIBRATION-AGAINST-EMPIRICAL-SQUEEZE-CASES` — calibrate threshold against empirical squeeze cases (GME 2021, AMC 2021, MSTR 2021, BBBY pre-collapse) where DTC was 8-20. Both queued; B669 doc-only surfacing per `feedback_local_changes_default_global_needs_approval` (engine wiring is global change requiring explicit owner approval). | Queued; engine wiring deferred to dedicated batch |
+| **F6** | "39 → 41" count wobble + cross-cluster double-counting (SM-6 + SM-41 also belong to PEAD cluster) is a governance smell. Breaks multiple-testing correction (C2) downstream: if PEAD-with-insider counts in both clusters, it's one strategy consuming two slots in the hypothesis count OR it's double-counted in the family-wise error budget. | MEDIUM | **NEW queue ticket**: `S4-CROSS-CLUSTER-REGISTRY-DEDUP` — establish single source-of-truth global strategy registry keyed on function name, NOT per-cluster tallies that overlap. The C2 correction (`backtest/engine/multiple_testing_correction.py`) already uses `ALL_STRATEGIES` keys as the family-size source-of-truth, so the C2 path is dedup-safe; the per-cluster docs need the cross-references explicit. Action: clarify in each per-cluster walk's scope inventory which strategies have cross-cluster membership. SM-6 + SM-41 flags added below. | Queued + per-walk cross-cluster flags |
+| **F7** | Cluster-positive: temporality + asymmetry + citation discipline now genuinely upstream (walk-#1 critique fully internalized). Citation-error class catch (SM-10 cites CMP 2012 insider paper for a 13F strategy) was caught independently — review process working as designed. | INFO | **No action needed** — captured in [Methodology adaptations](#methodology-adaptations-for-smart-money-cluster) section as the cluster's core discipline. SM-11 B611 reframe is the canonical template. | Cluster-positive credit acknowledged |
+
+**Net effect on B664 candidate dispositions:**
+
+- **Pattern A (ema_50 family sweep)**: unchanged (still HELD per B665 commitment)
+- **Pattern B (STATE-as-EVENT docstring sweep on 20 strategies)**: RE-FRAMED. Sweep ships only after marginal-contribution test surfaces which gates carry distinct information. Pre-test docstring fixes would make docs accurately describe near-no-op gates (honest, but argument for deprecation not reword).
+- **Pattern C (SM-9 / SM-23 disposition)**: STRENGTHENED. Option (c) DELETE now RECOMMENDED with B611-precedent reconciliation; owner direction needed.
+- **Pattern D (SM-3 / SM-4 stale lineage)**: unchanged (mechanical informational fix)
+- **Pattern E (9 confluence wrap bullet reframe)**: unchanged (cite B613 template)
+- **NEW Pattern F (13F sleeve marginal-contribution audit)**: highest-leverage action; gates Pattern B disposition
+
+---
+
+> **What this document is.** A LIVING per-cluster Stage 4 walk doc covering the smart money strategy cluster (41 strategies — the largest pending cluster as of the post-B660 close of pivot + trend clusters). Each strategy receives a 7-step deep-dive walk per CHECKLIST #105 with options surfaced and WAITING for owner direction per `feedback_no_rushing_per_strategy_tweak`.
 >
 > **Owner directive 2026-06-09 (this batch start):** *"smart money largest pending start"* — begin the smart money cluster walks.
 >
@@ -247,6 +274,83 @@ Per B663 self-correction, every regime affinity entry was grep'd for lineage BEF
 | No explicit entry → B291 SHORT default `{bear, crisis, neutral}` | 2 SHORT | SM-9 + SM-23 | **DO NOT CHANGE — B291 default applies** |
 
 **F3 result: 0 regime entry changes.** Same discipline as B663 self-correction (lineage-grep-before-delete) per [`feedback_regime_selector_lineage_grep_before_delete`](memory).
+
+### Pattern F — 13F sleeve marginal-contribution audit (NEW B669 per reviewer F1; HIGH severity)
+
+> **Reviewer F1 (B669 cluster-walk critique):** "Pattern B treats 20 overclaims as wording, but if 13F is correctly relabeled as a 90-day-constant eligibility filter, then for most of these strategies the 13F gate is doing almost no discriminating work at the bar of fire — it's on for an entire quarter. The strategy's actual edge, if any, lives entirely in its OTHER gate. The honest question isn't 'how do we word the docstring' — it's 'does the 13F gate add any marginal information over the base technical signal, or is the sleeve really 22 lightly-reskinned versions of a few underlying technical strategies?'"
+
+**Pattern F audit candidates** (22 of the 13F sleeve where the 13F gate may be near-no-op marginal contribution; per-gate "what does THIS screen out that the others don't" test per `feedback_obv_avwap_macd_non_redundancy`):
+
+| SM-# | Strategy | Non-13F base signal | Marginal-contribution hypothesis |
+|---|---|---|---|
+| SM-7 | `institutional_cluster_long` | `price_above_ema_200` | Strategy reduces to "established uptrend with 13F-eligibility" — 13F gate may be near-no-op |
+| SM-8 | `institutional_buy_momentum_long` | `macd_bullish + price_above_ema_50` | Strategy reduces to a MACD-trend-confirmed momentum LONG with 13F-eligibility filter |
+| SM-9 | `institutional_distribution_short` | `below_ema_50` | Strategy reduces to `simple_below_ema_50_short` with 13F-eligibility (see SM-9 walk Step 7) |
+| SM-10 | `institutional_oversold_long` | `rsi_14 < 35 + price_above_ema_200` | Strategy reduces to RSI-oversold-in-uptrend with 13F-eligibility (see SM-10 walk citation-error note) |
+| SM-11 | `institutional_breakout_confirmation_long` | `resistance_break_retest + price_above_ema_200 + close_above_open + vol_below_avg` | **Already B611-walked**: docstring honestly states alpha attribution belongs to Bulkowski retest + trend filter, NOT 13F. Canonical Pattern F template. |
+| SM-12 | `institutional_insider_combo_long` | `insider_cluster_active + price_above_ema_200` | Has 1 EVENT gate (insider); 13F may be eligibility-only. **Pattern G also applies (low fire count).** |
+| SM-13 | `institutional_persistence_breakout_long` | `resistance_break_retest + price_above_ema_200` | Same template as SM-11; 13F-persistence (`institutional_increased >= 5`) is eligibility filter |
+| SM-14 | `institutional_persistence_volume_long` | `vol_spike_2x + price_above_ema_50` | Strategy reduces to vol-spike-in-trend with 13F-eligibility |
+| SM-15 | `institutional_persistence_oversold_long` | `rsi_14 < 40 + price_above_ema_200` | Same SM-10 family; 13F-eligibility filter |
+| SM-16 | `institutional_recent_init_momentum_long` | `macd_bullish + price_above_ema_200` | Same SM-8 family |
+| SM-17 | `institutional_recent_init_volume_long` | `vol_spike_2x + price_above_ema_50` | Same SM-14 family |
+| SM-18 | `institutional_multi_quarter_persistence_long` | `price_above_ema_200` | 4-quarter precompute is GENUINE STATE (not Pattern B); 13F-persistence is the actual signal here. **EXEMPT from Pattern F** |
+| SM-19 | `institutional_committed_growth_long` | `price_above_ema_200` | Same SM-18 family — 4q precompute genuine STATE. **EXEMPT from Pattern F** |
+| SM-20 | `institutional_increased_with_directors_long` | `insider_director_buyers_30d >= 1 + price_above_ema_200` | Has 1 EVENT gate (director EVENT); 13F-persistence may be eligibility-only. **Pattern G also applies (low fire count).** |
+| SM-21 | `institutional_persistent_holders_long` | `price_above_ema_200` | Single-quarter proxy — only 13F-persistence as discriminative signal. Highest Pattern F risk: if 13F-persistence is 90-day constant, strategy reduces to `simple_above_ema_200_long` |
+| SM-22 | `institutional_strong_conviction_long` | `price_above_ema_200` | Dual 13F-threshold + trend filter. Same Pattern F risk as SM-21 |
+| SM-23 | `institutional_capitulation_short` | `vol_spike_2x + below_ema_50` | Has 1 EVENT gate (vol_spike); 13F-trim adds noise per Pattern C (see SM-23 walk Step 7) |
+| SM-24 | `institutional_high_conviction_long` | `price_above_ema_50` | Pure 13F cluster + trend; high Pattern F risk |
+| SM-25 | `institutional_with_directors_long` | `insider_director_buyers_30d >= 1 + price_above_ema_200` | Same SM-20 family. **Pattern G also applies (low fire count).** |
+| SM-26 | `institutional_with_officers_long` | `insider_officer_buyers_30d >= 1 + price_above_ema_200` | Same SM-25 family |
+| SM-27 | `institutional_persistence_momentum_long` | `macd_bullish + price_above_ema_50` | Same SM-8 family |
+| SM-28 | `institutional_volume_confirmation_long` | `vol_spike_2x + price_above_ema_50` | Same SM-14 family |
+| SM-29 | `classification_change_with_institutional_long` | `classification_changed_recent + price_above_ema_200` | 1 EVENT (reclassification) + 1 STATE (200-EMA); 13F may be eligibility-only |
+
+**Audit methodology (queued as `S5-13F-SLEEVE-MARGINAL-CONTRIBUTION-TEST` per reviewer F1):**
+1. Cube replay each 13F strategy + measure per-cell Sharpe with 13F gate ON vs OFF
+2. Per-strategy marginal contribution = `Sharpe[full] - Sharpe[13F-removed]`
+3. If marginal contribution < 0.10 (heuristic; tune against B660 + cube data), the 13F gate is doing near-no work; strategy should be replaced with the cleaner non-13F version
+4. **Cross-ref `S5-MARGINAL-CONTRIBUTION-SCORING` C3 ticket** — the per-strategy marginal-contribution test is the foundational tool C3 was supposed to provide; this is the first cluster-scoped application
+
+**B669 disposition for Pattern F:** Pattern B docstring sweep is RE-FRAMED — it ships only AFTER Pattern F audit surfaces which 13F gates carry distinct information. Pre-test docstring fixes would make the docs accurately describe near-no-op gates (honest, but evidence the strategies shouldn't exist as separate registered entries).
+
+### Pattern G — Low-fire-count combo EXPLORATORY-candidate review (NEW B669 per reviewer F4; MEDIUM severity)
+
+> **Reviewer F4 (B669 cluster-walk critique):** "SM-12 fire-count projection (~10-30/yr, FAIL on min_trades=30 likely) contradicts the docstring-reframe disposition. Per cluster methodology adaptation #4, 'the cube cannot statistically validate the strategy regardless of design quality' — so reframing its docstring is rearranging text on a strategy the cube can't evaluate. At minimum the fire-starved combo strategies should be flagged EXPLORATORY (like W5/W5m) so they're not silently counted as live validatable strategies."
+
+**Pattern G candidates** (strategies with projected fires/yr ~10-30 likely BELOW min_trades=30 statistical floor):
+
+| SM-# | Strategy | Projected fires/yr | Pattern G action |
+|---|---|---|---|
+| SM-6 | `pead_with_insider_confirmation_long` | ~10-25 | EXPLORATORY-candidate (PEAD × insider rare co-occurrence) |
+| SM-12 | `institutional_insider_combo_long` | ~10-30 | EXPLORATORY-candidate (13F × insider rare co-occurrence) |
+| SM-20 | `institutional_increased_with_directors_long` | ~10-25 | EXPLORATORY-candidate (persistence × director rare co-occurrence) |
+| SM-25 | `institutional_with_directors_long` | ~10-25 | EXPLORATORY-candidate (13F × director rare co-occurrence) |
+| SM-30 | `classification_change_with_insider_long` | ~5-15 | EXPLORATORY-candidate (reclassification × insider very rare co-occurrence) |
+
+**B669 disposition for Pattern G:** Do NOT auto-flag EXPLORATORY pre-B660 per `project_no_apriori_strategy_pruning` (projections may be wrong). Queued as `S4-LOW-FIRE-COMBO-EXPLORATORY-REVIEW-POST-B660` for post-B660 owner-review batch. **If B660 confirms < 30 fires/yr per regime, add to `EXPLORATORY_STRATEGIES` constant in `backtest/engine/multiple_testing_correction.py` per Decision 4 (excludes from family-size N while keeping cube-replay coverage).**
+
+### Pattern H — Cross-cluster registry dedup (NEW B669 per reviewer F6; MEDIUM severity)
+
+> **Reviewer F6 (B669 cluster-walk critique):** "The '39 → 41' count wobble and the cross-cluster double-counting are a governance smell. SM-6 and SM-41 explicitly belong to the PEAD cluster too. This breaks multiple-testing correction (C2) downstream: if PEAD-with-insider is counted in both clusters, it's one strategy consuming two slots in the hypothesis count, or it's double-counted in the family-wise error budget."
+
+**Cross-cluster membership flags** (strategies belonging to MORE than one Stage 4 cluster):
+
+| SM-# | Strategy | Smart Money cluster | PEAD cluster | Other clusters |
+|---|---|---|---|---|
+| SM-6 | `pead_with_insider_confirmation_long` | ✅ (insider component) | ✅ (PEAD core) | — |
+| SM-29 | `classification_change_with_institutional_long` | ✅ (13F overlay) | — | ✅ Classification change cluster |
+| SM-30 | `classification_change_with_insider_long` | ✅ (insider overlay) | — | ✅ Classification change cluster |
+| SM-41 | `pead_with_smart_money_long` | ✅ (smart-money UNION) | ✅ (PEAD core) | — |
+
+**B669 disposition for Pattern H:**
+
+1. **C2 path is already dedup-safe** — `backtest/engine/multiple_testing_correction.py` uses `ALL_STRATEGIES` keys as the family-size source-of-truth (NOT per-cluster doc tallies). Each strategy counts ONCE in the multi-testing correction regardless of how many cluster docs mention it.
+2. **Per-cluster docs need explicit cross-cluster flags** to prevent owner / reviewer confusion + accidentally double-counting when reading across docs
+3. **NEW queue ticket** `S4-CROSS-CLUSTER-REGISTRY-DEDUP-NOMENCLATURE` — establish a single source-of-truth strategy registry document (or canonical column in STRATEGY_ROSTER.md) listing each strategy's PRIMARY cluster + ALL clusters it appears in. Per-cluster docs reference the registry rather than re-declaring counts.
+
+**Strategy-count discipline (per `feedback_strategy_counts_by_buckets_each_turn`):** the cluster tally of "41" reflects strategies that have a smart-money-component in their gate set, regardless of primary cluster assignment. The cross-cluster flags above clarify which 4 of the 41 are PRIMARILY assigned to other clusters (with smart-money as an overlay).
 
 ---
 
@@ -793,9 +897,9 @@ No active investigations.
 
 ---
 
-## SM-5. `strat_short_borrow_trap_avoid` (foundational, walked)
+## SM-5. `strat_short_borrow_trap_avoid` (foundational, walked — **cluster's most valuable strategy per reviewer F5**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Avoid-direction strategy (blocks SHORT entries on hard-to-borrow names).
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B669 expanded per reviewer F5). Avoid-direction strategy (blocks SHORT entries on hard-to-borrow names). **Reviewer F5 explicitly highlights this as "the most valuable thing in the cluster" + "the only strategy directly addressing the squeeze-tail risk that C6 + W5m DO-NOT-DEPLOY gate are waiting on"** — yet under-resourced relative to 22 near-redundant 13F strategies.
 
 ### Step 1 — Read the code
 
@@ -803,53 +907,103 @@ No active investigations.
 
 ```python
 def strat_short_borrow_trap_avoid(s):
-    """Batch 519 (P15 sleeve). Avoid-side gate for short strategies when
-    borrow is tight. Fires `avoid` when days_to_cover > 5..."""
+    """Batch 519 (2026-05-31, P15 sleeve per owner directive).
+    Avoid-side gate for short strategies when borrow is tight.
+
+    Fires `avoid` direction when days_to_cover > 5 -- meaning it would
+    take >5 trading days of typical volume to cover the open short
+    interest. Hard-to-borrow names carry asymmetric upside risk: when
+    they DO move against shorts, the squeeze is rapid (FINRA Reg SHO).
+    Per CHECKLIST risk-management convention, an 'avoid' strategy
+    blocks SHORT entries on the ticker for the bar -- works the same
+    way as Batch 190 crisis-long-exclusion list, but per-bar instead
+    of by-ticker.
+
+    Academic backing: Cohen-Diether-Malloy 2007 -- shorted names with
+    high DTC have higher subsequent positive returns (the 'borrow
+    constraint' premium).
+    """
     dtc = s.get("days_to_cover", 0.0) or 0.0
     fires = dtc > 5.0
-    return _strat(fires, "avoid", "smart_money_sleeve", ...)
+    return _strat(fires, "avoid", "smart_money_sleeve",
+        ["days_to_cover>5"],
+        [f"Days-to-cover {dtc:.1f} (>5 threshold)",
+         "Hard-to-borrow -> squeeze risk asymmetric vs upside expectancy",
+         "Cohen-Diether-Malloy 2007 borrow-constraint premium"])
 ```
 
-**Single-gate strategy.** Threshold-based on `days_to_cover` continuous variable.
+**Single-gate strategy.** Threshold-based on `days_to_cover` continuous variable. Returns direction = `"avoid"` (unique among the cluster — not LONG, not SHORT, but a directional BLOCK).
 
 ### Step 2 — Classify
 
-- Category: `smart_money_sleeve`; direction = **avoid** (unique — neither LONG nor SHORT)
-- STRATEGY_REGIME_AFFINITY: NO ENTRY (avoid-direction not regime-gated by design)
+- Category: `smart_money_sleeve`; direction = **avoid** (unique — neither LONG nor SHORT; designed to BLOCK other SHORT entries on the ticker for the bar per Batch 190 crisis-long-exclusion-list precedent)
+- STRATEGY_REGIME_AFFINITY: NO ENTRY (avoid-direction not regime-gated by design — borrow-risk is a risk-management primitive applied across all regimes)
 - Last touched: B519
 
 ### Step 3 — Producer source-read + temporality
 
-**Producer:** `compute_short_interest_signals` (Quiver short interest feed). Emits `days_to_cover` derived from `short_interest / avg_daily_volume`.
+**Producer:** `compute_short_interest_signals` in `backtest/signals/` (Quiver Quantitative short interest feed via `data_prefetch/quiver/shortinterest/`). Emits `days_to_cover` derived as `short_interest_shares / avg_daily_volume_20d`. Refer to `backtest/data/smart_money.py` short interest section for the precise calculation path.
 
-**Temporality:** **STATE-class** — short interest reports semi-monthly (FINRA Reg SHO; T+1 reporting delay). `days_to_cover` is computed from the most-recent SI snapshot. Effectively constant 14d at a time.
+**Temporality:** **STATE-class** — short interest reports semi-monthly (FINRA Reg SHO; T+1 reporting delay; reports cover the 15th of each month + month-end). `days_to_cover` is computed from the most-recent SI snapshot. Effectively constant 14d at a time.
+
+**EVENT/STATE rationale for avoid-direction:** unlike LONG/SHORT strategies where STATE-as-EVENT overclaim is the Pattern B failure mode, avoid-direction is INTRINSICALLY STATE-friendly — the purpose IS to apply a blanket block on hard-to-borrow names regardless of bar-of-fire timing. The STATE classification is CORRECT for this strategy's purpose; no Pattern B concern applies.
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
-| "Cohen-Diether-Malloy 2007 borrow-constraint premium" | ✅ Real paper documents short squeeze asymmetry on high-DTC names |
-| Threshold 5.0 DTC | Standard heuristic; not paper-cited specifically. Could be calibrated against B660 measurement once landed |
+| "Cohen-Diether-Malloy 2007 borrow-constraint premium" | ✅ Real paper (CDM 2007, *Journal of Finance*); documents short squeeze asymmetry on high-DTC names + the positive forward return premium on hard-to-borrow names that institutional shorts have to pay-up to maintain |
+| "FINRA Reg SHO" | ✅ Real regulatory framework; semi-monthly SI reporting requirement is correct |
+| Threshold 5.0 DTC | ⚠ **Standard heuristic; NOT paper-cited specifically**. Per reviewer F5: "fairly loose gate (many squeeze names run DTC 8-20), so it may pass through exactly the dangerous names" |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
-No active investigations.
+No active investigations on SM-5 directly. **Cross-reference open tickets:**
+- `S4-COST-BORROW-MODELING` (C6 from B640 audit, still open) — SM-5 is the partial implementation of C6's borrow-cost guard
+- `W5m DO-NOT-DEPLOY gate` (B652) — keyed on M10 cost-aware cube; SM-5 already provides the borrow-cost primitive that M10 needs
+- `S4-B664-PATTERN-C-SHORT-DATA-SOURCE-ASYMMETRY-CAVEAT` — every SHORT in the cluster (SM-9 + SM-23) should consult SM-5
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
 Avoid-direction strategies don't have inverse mirrors by design (they BLOCK actions, not propose them). ✅
 
+**Important asymmetry observation per reviewer F5:** SM-5 is the ONLY strategy in the cluster that addresses SHORT-side data-source structural risk via a positive primitive (rather than via a docstring caveat or DO-NOT-DEPLOY gate). This makes SM-5 architecturally valuable beyond its standalone use:
+- It can serve as a PRE-FIRE GATE for every SHORT strategy in the engine
+- It's a partial implementation of C6 (cost/borrow modeling) — the open foundational gap that the W5m DO-NOT-DEPLOY architecture is waiting on
+- It's currently STANDALONE; no other SHORT strategy is wired to consult its avoid output
+
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| F1 | No silent-gap (single-gate continuous threshold; default 0.0 fail-safe) | ✅ |
-| F2 | Docstring accurate; cites real paper | ✅ |
-| F-temporality | STATE-class (semi-monthly SI updates) — but avoid-direction is intrinsically STATE-friendly (we want a BLANKET BLOCK on hard-to-borrow names, not a bar-of-fire EVENT) | ✅ |
-| F-threshold-arbitrary | `dtc > 5.0` is heuristic — could be optimized via B660 + cube empirical | INFO (queued: `S5-SM5-DTC-THRESHOLD-CALIBRATION`) |
-| F-fire-count | Avoid strategies don't have fires/yr in the same sense; instead they block SHORT entries on N tickers/day | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| F1 | No silent-gap (single-gate continuous threshold; default 0.0 fail-safe). ✅ | — | — |
+| F2 | Docstring accurate; cites real paper (CDM 2007 + FINRA Reg SHO). ✅ | — | — |
+| F-temporality | STATE-class (semi-monthly SI updates) — but avoid-direction is intrinsically STATE-friendly. ✅ NOT a Pattern B candidate. | — | — |
+| **F-threshold-calibration-bug per reviewer F5** | `dtc > 5.0` is the heuristic threshold. Reviewer notes: "fairly loose gate (many squeeze names run DTC 8-20), so it may pass through exactly the dangerous names." Examples: GME pre-Jan-2021 had DTC ~5-7 (within the gate's "tight" zone but borderline); MSTR mid-2021 had DTC ~8-12; BBBY pre-collapse had DTC ~6-10. **A loose threshold lets dangerous-but-borderline squeeze names through.** | **HIGH** | F5 |
+| **F-architectural-disconnect per reviewer F5** | SM-5 is the cluster's only borrow-risk primitive; W5m DO-NOT-DEPLOY + every SHORT strategy in the engine SHOULD consult its output BUT currently nothing does. The "avoid" direction is interpreted by the engine as a per-ticker per-bar block per Batch 190 precedent, but the actual wiring requires every SHORT strategy to check SM-5 at fire time. **Verification needed:** does the current engine route SM-5's `avoid` output as a pre-fire gate for SHORT strategies, OR is it just an isolated emitter that doesn't actually block anything? Per reviewer: SM-5 is "an orphan 'avoid' emitter" — suggesting the wiring is incomplete. | **HIGH** | F5 |
+| F-fire-count | Avoid strategies don't have fires/yr in the same sense; instead they count tickers blocked per day. B660 measurement should report SM-5 separately as "tickers-blocked-per-day" metric, not fires/yr | INFO | — |
 
-**B664 candidate option (recommended):** No code change. Add queue ticket `S5-SM5-DTC-THRESHOLD-CALIBRATION` for post-cube threshold optimization.
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo — no changes (defer F-threshold + F-architectural-disconnect to Stage 5) |
+| (b) F-threshold-calibration only — empirically calibrate DTC threshold against known squeeze cases (GME 2021, AMC 2021, MSTR 2021, BBBY pre-collapse). Owner-decision on whether to tighten to 8.0 or use a band (DTC > 4 = soft-block + DTC > 10 = hard-block) |
+| **(c) RECOMMENDED — (b) + architectural verification + wiring proposal** — verify current engine routing of SM-5 avoid output to SHORT strategies; if absent, propose engine-level wiring batch where SM-5's output becomes a mandatory pre-fire gate for every SHORT strategy (SM-9 + SM-23 + W5m + every confluence-wrap-SHORT). Per `feedback_local_changes_default_global_needs_approval`: engine wiring is global scope requiring explicit owner approval. SURFACE as separate B-N decision. |
+| (d) (c) + Class 7 NEW `strat_short_borrow_extreme_avoid` — a HARDER block at DTC > 10 (extreme squeeze risk) that signals additional position-size cap on SHORT entries (not just full block). Surfaces a granular borrow-risk-tiering system |
+| (e) Stage 5 deferral — defer all changes to post-cube + post-B660 |
+
+**My recommendation: (c) verify + propose wiring (engine architecture batch).** Per reviewer F5: SM-5 is the cluster's most valuable strategy AND it's been under-resourced relative to 22 near-redundant 13F sleeve strategies. The C6 cost/borrow gap is the foundational risk-management item the W5m architecture has been waiting on; SM-5 provides the primitive. Wiring it into every SHORT strategy is the highest-leverage single risk-management improvement available pre-cube.
+
+**Awaiting owner direction:**
+1. **SM-5 disposition:** (a) status quo / (b) threshold calibration only / **(c) RECOMMENDED** verify + propose wiring / (d) (c) + Class 7 NEW granular tier / (e) Stage 5 deferral
+2. **Engine wiring scope** (if (c) approved): SM-5 wired to (i) W5m only / (ii) W5m + SM-9 + SM-23 (cluster scope) / (iii) every registered SHORT strategy (global scope; cascading effect on cube outputs)
+3. **Threshold value** (if (b) or (c) approved): 5.0 (status quo) / 8.0 (tighter) / 4.0 + 10.0 band / empirical post-B660 / other
+
+**New queue tickets surfaced from this walk:**
+- `S4-SM5-BORROW-GUARD-WIRING-INTO-SHORT-STRATEGIES` — engine-level architecture batch
+- `S4-SM5-DTC-THRESHOLD-CALIBRATION-AGAINST-EMPIRICAL-SQUEEZE-CASES` — calibrate against GME/AMC/MSTR/BBBY historical DTC values
+- `S4-SM5-AVOID-DIRECTION-ENGINE-ROUTING-VERIFICATION` — confirm whether engine currently routes avoid output as pre-fire gate or whether it's an orphan emitter (clarifies F-architectural-disconnect)
 
 ---
 
@@ -1038,9 +1192,9 @@ No active investigations.
 
 ---
 
-## SM-9. `strat_institutional_distribution_short` (13F sleeve, walked — DATA-SOURCE-ASYMMETRY)
+## SM-9. `strat_institutional_distribution_short` (13F sleeve, walked — **DATA-SOURCE-ASYMMETRY; reviewer F2 deletion candidate**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. Pattern C candidate — fires on `institutional_negative` which per B611 lesson is NOT bear conviction (13F long-only; trimming = rebalancing/tax/redemption).
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B669 expanded per reviewer F2). Pattern C candidate — fires on `institutional_negative` which per B611 lesson is NOT bear conviction (13F long-only by SEC rule; trimming = rebalancing/tax/redemption-dominated). **Per reviewer F2 (B669):** the original B664 disposition "(b) docstring caveat, defer deletion to Stage D" was inconsistent with the cited B611 precedent (which DELETED structurally identical `strat_institutional_breakdown_confirmation_short`) AND the "defer to empirical" assumption is wrong (a 13F-trim short backtests fine in survivor universes 2020-2026 because survivorship + cost gaps mask the falseness). Pattern C disposition RE-FRAMED: option (c) DELETE elevated to RECOMMENDED.
 
 ### Step 1 — Read the code
 
@@ -1050,14 +1204,21 @@ No active investigations.
 def strat_institutional_distribution_short(s):
     """Wave 3 (Batch 330): institutional distribution short.
     13F shows institutional_signal=='negative' (decreased > increased)
-    AND price below 50-EMA..."""
+    AND price below 50-EMA (trend agrees with distribution). Sias 2004
+    JFE: institutional herding extends to selling; combined with bearish
+    price trend = continuation short setup."""
     fires = (
         s.get("institutional_negative", False)
         and s.get("below_ema_50", False)  # B633 sweep
     )
+    return _strat(fires, "short", "smart_money_13f",
+        ["institutional_negative","price_below_ema_50"],
+        ["13F institutional distribution (decreased > increased)",
+         "Sias 2004 JFE - institutional selling herds",
+         "Below 50 EMA - trend agrees"])
 ```
 
-**2-gate SHORT strategy:** institutional_negative + below_50_EMA.
+**2-gate SHORT strategy:** `institutional_negative` (13F quarterly STATE) + `below_ema_50` (STATE trend gate). 0 EVENT gates → Pattern B candidate AND Pattern C candidate AND F-timing-fragility per CHECKLIST (s).
 
 ### Step 2 — Classify
 
@@ -1067,34 +1228,53 @@ def strat_institutional_distribution_short(s):
 
 ### Step 3 — Producer source-read + temporality
 
-Same 13F producer. `institutional_negative` = (decreased > increased) which is quarterly STATE.
+**Producer:** same 13F producer infrastructure as SM-7/SM-8 (13F bulk feed in `backtest/data/smart_money.py`). `institutional_negative` = (decreased > increased) computed from `live/sec13f` Quiver bulk feed. Quarterly STATE with DEC-325 45-day publication lag.
 
-**Temporality:** STATE per B611 — institutional flow on 90-day cadence.
+**Temporality:** STATE per B611 — institutional flow on 90-day cadence. `institutional_negative` is constant for ~90 days at a time between filings. **0 EVENT gates** in this strategy; both `institutional_negative` (90-day STATE) and `below_ema_50` (rolling-window STATE) are slow eligibility filters. No bar-of-fire timing signal at all.
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
-| "Sias 2004 JFE: institutional herding extends to selling" | ⚠ Real paper but the herding-on-selling result is documented for ALL types of institutional sales, not just 13F trimming. **B611 lesson:** 13F TRIMMING is NOT smart-money short conviction — it's rebalancing/tax-loss/redemption noise dominated. Pattern C economic-symmetry failure. |
-| "Sias 2004 + Lo-Wang 2000 = continuation short setup" | ⚠ Same Pattern C overclaim |
+| "Sias 2004 JFE: institutional herding extends to selling" | ⚠ **CITATION OVERREACH per reviewer F7 class** — Sias 2004 documents herding behavior in institutional selling (the herding result is real) BUT the herding-on-selling result applies to ALL institutional sales (block trades, secondary offerings, fund redemption-driven sales) where the seller's identity + motive are observable. **13F TRIMMING is NOT identified-seller-motive selling**: it's a quarterly position-level delta that mixes rebalancing + tax-loss + redemption + active conviction. Sias 2004 does not justify treating 13F trim as smart-money bear conviction. |
+| "Sias 2004 + Lo-Wang 2000 = continuation short setup" | ⚠ Same Pattern C overclaim. Lo-Wang 2000's volume-as-information result is about realized trading activity, not 13F filings. Both citations are stretched to lend academic authority to a structurally-false thesis. |
+| Below 50 EMA | ✅ This is a real trend filter and the only gate doing actual discriminative work post-Pattern-C critique |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
-B611 deleted `strat_institutional_breakdown_confirmation_short` for the same Pattern C reason — SM-9 should be reviewed against that precedent.
+- **B611 precedent (CRITICAL):** `strat_institutional_breakdown_confirmation_short` DELETED Batch 611 (2026-06-07) for structurally identical reason. From the deletion comment at screener.py:4516-4530: *"13F reports LONG positions of >$100M managers only; ZERO short-side data. `institutional_negative` (decreased > increased) means institutions trimmed LONGS - rebalancing, redemptions, tax-loss, profit-taking - NOT that smart money is short. The 'Bulkowski breakdown-retest with smart-money distribution' thesis was economically false. Plus the staleness flaw (13F is a quarterly background state, not a timing signal) made the short leg far noisier than the long without any compensating academic grounding (Cohen-Frazzini-Malloy 2008 is documented for long-side institutional ACCUMULATION; no analog for trimming-as-bear-signal). Strategy removed."*
+- **Why SM-9 wasn't deleted in B611:** B611 was scoped to the `breakout_confirmation` family walk (one strategy + its mirror); SM-9 wasn't in scope at the time and the precedent wasn't extended.
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
-Mirror of SM-7/SM-8 but SHORT side. The mirror is mechanically convenient but **economically false** per `feedback_asymmetric_data_sources_break_mechanical_inverse`. 13F-trim != bear conviction.
+Mirror of SM-7 + SM-8 but SHORT side. The mirror is mechanically convenient but **economically false** per `feedback_asymmetric_data_sources_break_mechanical_inverse`. 13F-trim != bear conviction. **B611 precedent reconciliation (B669 reviewer F2):** if the B611 deletion correctly applied the data-source-asymmetry rule, the same rule applies here. The doc cannot cite B611 as authority for the principle while also rejecting B611's disposition; that's the inconsistency reviewer F2 identifies.
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-C-data-source-asymmetry** | `institutional_negative` does NOT supply bear conviction (B611 precedent). Strategy is mechanically symmetric to LONG sleeves but economically suspect | HIGH |
-| F-state-as-event | All gates STATE; same Pattern B overclaim | MEDIUM |
-| F-fire-count | 13F trimming events on stocks already below 50-EMA → projected ~30-80/yr | INFO |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-pattern-C-data-source-asymmetry** | `institutional_negative` does NOT supply bear conviction (B611 precedent + Cohen-Frazzini-Malloy 2008 explicitly applies to long-side accumulation, not trimming-as-bear-signal). Strategy is mechanically symmetric to LONG sleeves but economically false. | HIGH | F2 |
+| **F-citation-overreach** | Sias 2004 + Lo-Wang 2000 citations stretched to lend authority to a structurally-false thesis. Same F7 honesty-class finding as SM-10 (CMP 2012 cited for 13F strategy). | MEDIUM | F7 |
+| F-state-as-event Pattern B | All gates STATE; 0 EVENT gates per direction → F-timing-fragility HIGH per CHECKLIST (s); docstring implies the institutional-distribution event provides timing alpha which is structurally false | HIGH | F1 |
+| **F-empirical-engine-blindness** per reviewer F2 | The "defer to Stage D empirical" assumption is wrong: a 13F-trim short backtests FINE in survivor universes 2020-2026 because (a) trimmed names that DID drift down provide positive samples; (b) the survivorship gap (C5, still open) excludes the squeeze/delisting cases that would expose falseness; (c) the cost/borrow gap (C6, still open) doesn't model the live deployment risk. **The cube is structurally BLIND to this strategy's falseness.** | HIGH | F2 |
+| F-fire-count | 13F trimming events on stocks already below 50-EMA → projected ~30-80/yr | INFO | — |
+| F-marginal-contribution per reviewer F1 | If `institutional_negative` is a 90-day-constant STATE and `below_ema_50` is the only discriminative gate, the strategy reduces to a `simple_below_ema_50_short` filtered by 13F-trim-eligibility. Marginal contribution over a generic below-EMA-50 SHORT is likely near-zero. **Pattern F audit candidate.** | MEDIUM | F1 |
 
-**B664 candidate option:** (b) docstring caveat acknowledging Pattern C data-source asymmetry; (c) DELETE per B611 precedent (would override `project_no_apriori_strategy_pruning` — needs explicit owner approval). RECOMMEND (b) — surface the issue for transparent reading without overriding the no-pruning rule.
+**Options (B669 RE-FRAMED per reviewer F2):**
+
+| Option | Description |
+|---|---|
+| (a) Status quo — no changes |
+| (b) Docstring caveat only — surface Pattern C asymmetry; defer deletion to Stage D (ORIGINAL B664 RECOMMENDATION; per reviewer F2 this is misapplying `project_no_apriori_strategy_pruning` to a case where the prior is a regulatory fact not a guess) |
+| **(c) RECOMMENDED B669 — DELETE per B611 precedent**, with explicit owner approval per `project_no_apriori_strategy_pruning` override. Reviewer F2 argument: the no-pruning rule's purpose is to prevent premature deletion on weak priors; SM-9's prior (13F SEC long-only by rule) is a regulatory fact, not a guess. The cube is structurally blind to the falseness. B611 already established the precedent on a structurally identical strategy. |
+| (d) (c) + retain `simple_below_ema_50_short` as an honest LONG-cluster replacement (if the marginal contribution test surfaces that 99% of SM-9's edge comes from the below-EMA-50 gate, the honest disposition is to register a clean below-EMA-50 SHORT and delete the 13F-disguised version) |
+| (e) Stage 5 deferral with EXPLORATORY marker — keep SM-9 registered but exclude from cube selection budget (analogous to W5m DO-NOT-DEPLOY architecture; resolves the cube-blindness concern by removing the empirical decision from the cube path) |
+
+**My B669 recommendation: (c) DELETE.** Reviewer F2 argument is correct: the B611 precedent applies; the "defer to empirical" assumption is structurally false because the cube is blind to the falseness; `project_no_apriori_strategy_pruning` is being misapplied because the prior is a regulatory fact not a guess. Surfacing for owner direction.
+
+**Awaiting owner direction on SM-9:**
+1. **Disposition:** (a) status quo / (b) docstring caveat only / **(c) RECOMMENDED B669** DELETE per B611 precedent / (d) (c) + clean below-EMA-50 SHORT replacement / (e) EXPLORATORY marker
+2. **B611 precedent reconciliation:** is reviewer F2 correct that the B611 deletion precedent applies here, OR is there a distinction between SM-9 and `strat_institutional_breakdown_confirmation_short` that justifies different dispositions?
 
 ---
 
@@ -1584,18 +1764,26 @@ def strat_institutional_strong_conviction_long(s):
 
 ---
 
-## SM-23. `strat_institutional_capitulation_short` (333 variant, walked — DATA-SOURCE-ASYMMETRY)
+## SM-23. `strat_institutional_capitulation_short` (333 variant, walked — **DATA-SOURCE-ASYMMETRY + NAME-vs-THESIS BUG**)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. **Pattern C candidate** — same B611 data-source-asymmetry issue as SM-9.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B669 expanded per reviewer F2 + F3). **Pattern C candidate** — same B611 data-source-asymmetry issue as SM-9. **Per reviewer F3 (B669):** the strategy has a NAME-vs-THESIS contradiction — name "capitulation_short" implies CONTRARIAN-BOTTOM (would be a LONG fade-the-wash-out) but implementation is MOMENTUM-CONTINUATION SHORT (sell INTO the wash-out). The B669 docstring fix shipped in [screener.py:strat_institutional_capitulation_short](backtest/signals/screener.py) added explicit THESIS-vs-NAME DISAMBIGUATION block. **Rename surfaced as separate B-N decision** per `feedback_local_changes_default_global_needs_approval`.
 
-### Step 1 — Read the code
+### Step 1 — Read the code (post-B669 docstring fix)
 
-[screener.py:4964-4979](backtest/signals/screener.py#L4964-L4979):
+[screener.py:4964-5012](backtest/signals/screener.py#L4964-L5012):
 
 ```python
 def strat_institutional_capitulation_short(s):
     """Wave 3 (Batch 333): institutional distribution + volume spike
-    (capitulation signature). Sias 2004 + Lo-Wang 2000."""
+    (capitulation signature).
+
+    THESIS-vs-NAME DISAMBIGUATION (B669 owner-directed external-AI
+    critique #3 walk fix 2026-06-10): the name "capitulation_short" is
+    misleading because "capitulation" usually implies BOTTOM-FORMING
+    (contrarian-buy). This strategy is the OPPOSITE: MOMENTUM-
+    CONTINUATION SHORT that sells INTO the wash-out.
+    ...
+    """
     fires = (
         s.get("institutional_negative", False)
         and s.get("vol_spike_2x", False)
@@ -1603,20 +1791,67 @@ def strat_institutional_capitulation_short(s):
     )
 ```
 
-### Step 2-6 (compact)
+**3-gate SHORT strategy:** `institutional_negative` (13F quarterly STATE) + `vol_spike_2x` (today EVENT) + `below_ema_50` (STATE trend gate). 1 EVENT gate + 2 STATE gates.
 
-- 3-gate SHORT. Same `institutional_negative` core as SM-9
-- B611 lesson applies: 13F trimming != bear conviction
-- vol_spike + below_50_EMA may compose with the trimming signal differently than SM-9 — vol spike on the way down is canonical capitulation. **But the 13F gate adds noise per Pattern C.**
+### Step 2 — Classify
 
-### Step 7
+- Category: `institutional_persistence`; single SHORT
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 SHORT default `{bear, crisis, neutral}`
+- Last touched: B669 (docstring honesty THESIS-vs-NAME DISAMBIGUATION block)
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-pattern-C-data-source-asymmetry** | `institutional_negative` quarterly STATE doesn't supply bear conviction (B611 precedent); the vol_spike + below_50_EMA pair DOES supply real capitulation timing. The 13F gate is the weak link | HIGH |
-| F-fire-count | Co-occurrence of all 3 → projected ~10-30/yr; FAIL likely | MEDIUM |
+### Step 3 — Producer source-read + temporality
 
-**B664 candidate option (recommended):** (b) docstring caveat per Pattern C — acknowledge that the `institutional_negative` gate adds noise from rebalancing/redemptions; if cube shows alpha attribution is dominated by vol_spike + below_50_EMA, consider deprecating the 13F gate. Defer deletion question to Stage D empirical.
+Same 13F producer as SM-7 / SM-8 / SM-9. `institutional_negative` is 90-day STATE; `vol_spike_2x` is bar-of-fire EVENT (today's volume); `below_ema_50` is STATE.
+
+**EVENT/STATE composition (post-B669 disambiguation):** the 1 EVENT gate (`vol_spike_2x`) is the actual timing signal; the 2 STATE gates are eligibility filters. Per the corrected thesis (MOMENTUM-CONTINUATION SHORT), today's volume-spike on a downtrending name with quarterly 13F-trimming = "the wash-out is happening NOW, with retail tape participating." This is internally consistent with the implementation BUT the original name "capitulation" suggested the opposite trade.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification (post-B669 docstring fix) |
+|---|---|
+| **Original docstring "capitulation signature"** | ⚠ **F3 NAME-vs-THESIS BUG identified by reviewer F3** — fixed via THESIS-vs-NAME DISAMBIGUATION block in B669; docstring now explicitly states MOMENTUM-CONTINUATION SHORT, not contrarian-bottom |
+| Sias 2004 JFE + Lo-Wang 2000 | ⚠ Same CITATION-OVERREACH as SM-9 — Sias 2004's institutional-herding-on-selling result requires observable seller identity + motive; 13F trim doesn't supply that. Lo-Wang volume-as-information is about realized trading not 13F filings |
+| Vol spike 2x | ✅ This is a real EVENT signal and the actual timing component |
+| Below 50 EMA | ✅ Real trend filter |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- **B611 precedent (same as SM-9):** structurally identical to deleted `strat_institutional_breakdown_confirmation_short`; the 13F gate is the weak link
+- **B669 docstring fix shipped** — THESIS-vs-NAME DISAMBIGUATION block resolves the F3 mismatch but the underlying Pattern C concern persists
+- **Rename surfaced as separate B-N decision** — current name `strat_institutional_capitulation_short` could be renamed to `strat_institutional_distribution_with_volume_short` (clearer momentum-continuation framing) per the W10 R3→R4 rename precedent in pivot cluster. Per `feedback_local_changes_default_global_needs_approval`: rename = global scope requiring explicit owner approval
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+Mirror of SM-22 (`institutional_strong_conviction_long`) but SHORT side. Per Pattern C: 13F is SEC long-only by rule; `institutional_negative` doesn't supply bear conviction even when composed with vol_spike + below_50_EMA. **Compare to SM-9 (2-gate version) — SM-23 adds a vol_spike EVENT gate which IS real signal but the 13F gate continues to add asymmetric noise.**
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F1 NAME-vs-THESIS** | "capitulation_short" name implies contrarian-bottom but implementation is momentum-continuation; B669 docstring fix shipped; rename surfaced as separate B-N decision | MEDIUM → ✅ docstring SHIPPED B669 | F3 |
+| **F-pattern-C-data-source-asymmetry** | `institutional_negative` quarterly STATE doesn't supply bear conviction (B611 precedent applies same as SM-9); vol_spike + below_50_EMA pair DOES supply real capitulation timing; the 13F gate is the weak link | HIGH | F2 |
+| F-citation-overreach | Same Sias 2004 + Lo-Wang 2000 stretch as SM-9 | MEDIUM | F7 |
+| F-empirical-engine-blindness | Same critique #2 cube-blindness as SM-9 | HIGH | F2 |
+| F-marginal-contribution per reviewer F1 | If the alpha attribution is dominated by vol_spike + below_50_EMA, the 13F gate is near-no-op. **Strategy could be replaced by a clean `vol_spike_2x_below_ema_50_short` without the 13F-trim noise.** Pattern F audit candidate. | MEDIUM | F1 |
+| F-fire-count | Co-occurrence of all 3 → projected ~10-30/yr; FAIL likely | MEDIUM | F4 |
+
+**Options (B669 RE-FRAMED per reviewer F2 + F3):**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Docstring caveat only (ORIGINAL B664 RECOMMENDATION; per reviewer F2 this is misapplying no-pruning rule) |
+| **(c) RECOMMENDED B669 — DELETE per B611 precedent** + replace with clean `strat_vol_spike_2x_below_ema_50_short` (if owner wants to keep the underlying tape-capitulation trade). Same logic as SM-9 (c). |
+| (d) (c) + the new replacement gets a Class 7 NEW wire-up in the chart-pattern or momentum cluster (not smart money) — moves the actual signal away from the smart-money sleeve where its 13F-disguise belongs |
+| (e) Rename only (does NOT resolve Pattern C concern but does resolve F3 name-thesis mismatch) — rename to `strat_institutional_distribution_with_volume_short`. Per W10 R3→R4 precedent this is acceptable scope but doesn't address the underlying economic-falseness concern |
+| (f) EXPLORATORY marker (analogous to W5m) — exclude from cube selection budget while keeping registered for cube-replay coverage. Resolves the empirical-blindness concern without overriding no-pruning rule. |
+
+**My B669 recommendation: (c) DELETE + (d) Class 7 NEW replacement.** Same logic as SM-9 (c). The cube cannot empirically validate this strategy because of survivorship + cost-borrow gaps; the B611 precedent applies; the rename (e) is cosmetic. If owner wants the underlying tape-capitulation SHORT trade to exist, register it cleanly in the chart-pattern or momentum cluster without the 13F-disguise.
+
+**Awaiting owner direction on SM-23:**
+1. **Disposition:** (a) status quo / (b) docstring caveat / **(c) RECOMMENDED B669** DELETE per B611 precedent / (d) (c) + Class 7 NEW chart-pattern replacement / (e) rename only / (f) EXPLORATORY marker
+2. **B669 docstring fix shipped** (THESIS-vs-NAME DISAMBIGUATION block); confirm no further docstring action needed
+3. **Rename question** (separate B-N decision regardless of (c) outcome): rename to `strat_institutional_distribution_with_volume_short` per W10 R3→R4 precedent? Or keep current name?
 
 ---
 

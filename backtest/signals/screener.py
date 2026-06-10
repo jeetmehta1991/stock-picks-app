@@ -4963,10 +4963,42 @@ def strat_institutional_strong_conviction_long(s):
 
 def strat_institutional_capitulation_short(s):
     """Wave 3 (Batch 333): institutional distribution + volume spike
-    (capitulation signature). Sias 2004 + Lo-Wang 2000: institutional
-    selling under elevated retail volume = price discovery on the way
-    down. Distinct from Batch 330's institutional_distribution_short
-    by adding the volume-confirmation gate."""
+    (capitulation signature).
+
+    THESIS-vs-NAME DISAMBIGUATION (B669 owner-directed external-AI
+    critique #3 walk fix 2026-06-10): the name "capitulation_short" is
+    misleading because "capitulation" usually implies BOTTOM-FORMING
+    (contrarian-buy). This strategy is the OPPOSITE: MOMENTUM-
+    CONTINUATION SHORT that sells INTO the wash-out. Reading order:
+      - 13F institutional_negative = quarterly STATE; institutions
+        have been net-trimming this name (rebalancing, tax-loss,
+        redemptions per B611 lesson + Pattern C data-source asymmetry)
+      - vol_spike_2x = retail tape participating today
+      - below_ema_50 = the trend is already down
+    Combined thesis: institutions trimming + retail dumping + downtrend
+    = sell-the-wash-out continuation play. NOT a contrarian bottom.
+
+    Per `feedback_local_changes_default_global_needs_approval`: rename
+    to `strat_institutional_distribution_with_volume_short` (clearer
+    momentum-continuation framing) is a separate B-N decision requiring
+    explicit owner approval (renames cascade through tests, dashboards,
+    cube outputs); current B669 ship is docstring honesty only.
+
+    Sias 2004 + Lo-Wang 2000: institutional selling under elevated
+    retail volume = price discovery on the way down. Distinct from
+    Batch 330's institutional_distribution_short by adding the
+    volume-confirmation gate.
+
+    Pattern C data-source-asymmetry caveat (B669 cluster walk per
+    feedback_asymmetric_data_sources_break_mechanical_inverse + B611
+    precedent): 13F is SEC long-only by rule; `institutional_negative`
+    represents trimming (rebalancing/tax/redemption dominated), NOT
+    bear conviction. The B611 deletion precedent on
+    strat_institutional_breakdown_confirmation_short established this
+    structurally identical pattern as economically false. SM-9 + SM-23
+    (this strategy) deletion question is the open item under
+    `S4-B664-PATTERN-C-SHORT-DATA-SOURCE-ASYMMETRY-CAVEAT` per the
+    cluster walk; owner decision required."""
     fires = (
         s.get("institutional_negative", False)
         and s.get("vol_spike_2x", False)
