@@ -14,7 +14,7 @@
 > |---|---|---|
 > | **#1 (CRITICAL)** | "Honest confluence" verdict on T3 + T8 rests on positive gate correlation (+0.41) that actually signals REDUNDANCY. The discriminator was missing an outcome-axis. | ✅ FIXED B687 — new diagnostic module + validation harness 15/15 PASS |
 > | **#2 (HIGH)** | Trend cluster fire rates are absurd on their face. Multi-gate strategies (T3 23k/yr, T8 24k/yr) fire MORE than single-EVENT MACD (T1 8.5k/yr) — only possible if multi-gate STATE composites are near-always-on. Sitting in table labeled PENDING-B660 (B687 retracted from PASS_CUBE). | ✅ Acknowledged — all PENDING-B660 (B687 retracted from PASS_CUBE) → PENDING-B660 demotion |
-> | **#3 (MEDIUM-HIGH)** | MACD `crossover_up` definition mismatch — producer at [technical.py:558](backtest/signals/technical.py#L558) computes `mh > 0 and pmh <= 0` (HISTOGRAM sign change = signal-line cross) BUT T1/T2 docstrings describe "MACD crossed above zero" (centerline cross). Two different signals; signal-line cross is far more frequent (matches T1's high fire rate). | ✅ VERIFIED B687 — see Finding #3 details below |
+> | **#3 (MEDIUM-HIGH)** | MACD `crossover_up` definition mismatch — producer at [technical.py:558](backtest/signals/technical.py#L558) computes `mh > 0 and pmh <= 0` (HISTOGRAM sign change = signal-line cross) BUT T1/T2 docstrings describe "MACD crossed above zero" (centerline cross). Two different signals; signal-line cross is far more frequent (matches T1's high fire rate). | ✅ FIXED B688 — T1/T2 bullets in [screener.py:828-851](backtest/signals/screener.py#L828-L851) + T1/T2 walk sections below rewritten to "signal-line cross (histogram sign change)". Code unchanged; pure docstring honesty fix per `feedback_walk_step3_must_read_producer_source` |
 > | **#4 (MEDIUM)** | T1-T10 are largely the same trade. Trend-following EVENT cluster has ~2-3 distinct signal classes (MA-cross, SAR/Supertrend flip, ADX-init) reskinned as 10 strategies. C2 multi-testing correction + C3 marginal-contribution must treat them as near-duplicate hypotheses. | NEW ticket queued (Pattern N intra-cluster) |
 > | **#5 (MEDIUM)** | T5 `strat_parabolic_sar_flip_short` has IDENTICAL gate set (psar_flip_dn + adx_trending) to T4's SHORT branch via `_strat3`. **T5 is a literal duplicate of T4's SHORT.** Independence ratio anomaly (T5 = 1.033 vs cluster 0.003-0.25) is a measurement inconsistency to chase, not a virtue. | ✅ VERIFIED B687 — DELETE candidate per `feedback_local_changes_default_global_needs_approval` owner approval required |
 > | **#6 (cluster-positive)** | Pivot v2 self-stated inverted-prioritization problem + committed to foundational rebuild before more cluster walks. | ✅ Best critique absorption in series |
@@ -124,20 +124,22 @@ T8 `ichimoku_cloud_breakout` has `weekly_long_ok = s.get("ichi_weekly_above_clou
 
 ```python
 def strat_macd_crossover(s):
+    # B688 docstring honesty fix: producer fires on HISTOGRAM sign change
+    # = MACD-line-vs-signal-line cross, NOT MACD-line-vs-zero (centerline) cross.
     fl = s.get("macd_12_26_9_crossover_up")
     fs = s.get("macd_12_26_9_crossover_dn")
     return _strat3(fl, fs, "momentum",
         ["macd_12_26_9_crossover_up"], ["macd_12_26_9_crossover_dn"],
-        ["MACD 12/26/9 crossed above zero  -  momentum turning positive"],
-        ["MACD 12/26/9 crossed below zero  -  momentum turning negative"])
+        ["MACD 12/26/9 signal-line cross up (histogram sign change)  -  MACD line crossed above signal line, momentum accelerating bullish"],
+        ["MACD 12/26/9 signal-line cross down (histogram sign change)  -  MACD line crossed below signal line, momentum accelerating bearish"])
 ```
 
 | Gate | Meaning | Threshold |
 |---|---|---|
-| **LONG** `macd_12_26_9_crossover_up` | MACD histogram crossed FROM <=0 TO >0 today — momentum turning positive | Boolean EVENT |
-| **SHORT** `macd_12_26_9_crossover_dn` | MACD histogram crossed FROM >=0 TO <0 today — momentum turning negative | Boolean EVENT |
+| **LONG** `macd_12_26_9_crossover_up` | MACD histogram crossed FROM <=0 TO >0 (= MACD line crossed ABOVE signal line) — **signal-line cross**, NOT centerline cross | Boolean EVENT |
+| **SHORT** `macd_12_26_9_crossover_dn` | MACD histogram crossed FROM >=0 TO <0 (= MACD line crossed BELOW signal line) — **signal-line cross**, NOT centerline cross | Boolean EVENT |
 
-**Pure 1-gate strategy. The simplest in the cluster.**
+**Pure 1-gate strategy. The simplest in the cluster.** Note: signal-line cross is far more frequent than centerline cross (consistent with T1's high fire rate at 8,506/yr per Finding #2).
 
 #### Step 2 — Classify
 - Category: `momentum` (per source declaration; trend-adjacent)
@@ -146,10 +148,10 @@ def strat_macd_crossover(s):
 - Last touched: original implementation
 
 #### Step 3 — Producer source + temporality
-- `macd_12_26_9_crossover_up` / `_dn` at [technical.py:368-394](backtest/signals/technical.py#L368-L394). Cross-event = current hist sign-change from prior bar. **EVENT** signal.
+- `macd_12_26_9_crossover_up` / `_dn` at [technical.py:525-559](backtest/signals/technical.py#L525-L559). Producer: `crossover_up = mh > 0 and pmh <= 0` where `mh = ml - ms` (histogram = MACD line - signal line). Fires when histogram sign-changes from <=0 to >0, equivalent to MACD line crossing ABOVE signal line. **This is the SIGNAL-LINE CROSS, not the CENTERLINE CROSS (MACD line crosses zero).** Cross-event = current hist sign-change from prior bar. **EVENT** signal.
 
-#### Step 4 — Doc-vs-thesis
-Context bullets accurate. "Momentum turning positive/negative" matches what the gate detects. ✅
+#### Step 4 — Doc-vs-thesis (B688 fix)
+Pre-B688 context bullets described "MACD crossed above zero — momentum turning positive" which is the CENTERLINE cross semantic. Producer is actually the SIGNAL-LINE cross. Fixed B688 — bullets now read "signal-line cross (histogram sign change)" + "momentum accelerating" (signal-line cross indicates ACCELERATION of existing momentum, not the INITIATION of positive/negative territory that centerline cross signals). The two signals fire at different frequencies + different points in the trend cycle — getting the description right matters for understanding what the cube empirically validates. ✅ FIXED B688.
 
 #### Step 5 — OPEN_INVESTIGATIONS
 No matches.
@@ -187,25 +189,27 @@ No matches.
 
 ```python
 def strat_macd_fast_crossover(s):
+    # B688 docstring honesty fix (same as T1): signal-line cross via
+    # histogram sign change, NOT centerline cross.
     fl = s.get("macd_8_21_5_crossover_up")
     fs = s.get("macd_8_21_5_crossover_dn")
     return _strat3(fl, fs, "momentum",
         ["macd_8_21_5_crossover_up"], ["macd_8_21_5_crossover_dn"],
-        ["Fast MACD 8/21/5 crossed above zero  -  early momentum shift bullish"],
-        ["Fast MACD 8/21/5 crossed below zero  -  early momentum shift bearish"])
+        ["Fast MACD 8/21/5 signal-line cross up (histogram sign change)  -  faster-period MACD line crossed above signal line, early momentum acceleration bullish"],
+        ["Fast MACD 8/21/5 signal-line cross down (histogram sign change)  -  faster-period MACD line crossed below signal line, early momentum acceleration bearish"])
 ```
 
-Identical structure to T1 but uses MACD(8,21,5) instead of (12,26,9). Faster periods = earlier crossover = more signals + more noise.
+Identical structure to T1 but uses MACD(8,21,5) instead of (12,26,9). Faster periods = earlier signal-line cross = more signals + more noise. **Signal type: same as T1 (signal-line cross), just on faster MACD parameters.**
 
 #### Step 2 — Classify
 - STRATEGY_REGIME_AFFINITY: **explicit `{"bull"}`** entry — DEFERRED per R5 manifest M1 (B617 KEPT as `# B418 cube override; direction-disagg validation pending`)
 - Dual + single-direction-era entry = B271 family-bug PATTERN but **already on M1 deferred queue**
 
 #### Step 3 — Producer source + temporality
-- `macd_8_21_5_crossover_up` / `_dn` at [technical.py:368-394](backtest/signals/technical.py#L368-L394). Same compute path as T1 but with fast=8 slow=21 sig=5. **EVENT** signal.
+- `macd_8_21_5_crossover_up` / `_dn` at [technical.py:525-559](backtest/signals/technical.py#L525-L559). Same compute path as T1 but with fast=8 slow=21 sig=5. Producer fires on histogram sign change = **signal-line cross**, NOT centerline cross (see T1 Step 3 for full producer-vs-docstring analysis). **EVENT** signal.
 
-#### Step 4 — Doc-vs-thesis
-Context bullets accurate; "early momentum shift" honestly describes the faster-period nature.
+#### Step 4 — Doc-vs-thesis (B688 fix)
+Pre-B688 bullet read "Fast MACD 8/21/5 crossed above zero — early momentum shift bullish" — same CENTERLINE-vs-SIGNAL-LINE error as T1. Fixed B688 — bullets now read "signal-line cross up (histogram sign change)" + "early momentum acceleration". "Early" framing preserved (faster periods produce earlier signal-line crosses than T1's 12/26/9). ✅ FIXED B688.
 
 #### Step 5 — OPEN_INVESTIGATIONS
 No matches.

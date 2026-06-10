@@ -826,21 +826,32 @@ def strat_prev_day_low_bounce(s):
 # -----------------------------------------------------------------------------
 
 def strat_macd_crossover(s):
+    # B688 (2026-06-10 docstring honesty fix per B687 reviewer Finding #3
+    # closure ticket S4-B687-T1-T2-MACD-DEFINITION-DOCSTRING-FIX):
+    # producer `macd_12_26_9_crossover_up` at technical.py:558 computes
+    # `mh > 0 and pmh <= 0` where mh = histogram = MACD_line - signal_line,
+    # so the signal fires when the histogram changes sign, which is the
+    # signal-line cross (MACD line crosses above/below the signal line),
+    # NOT the centerline cross (MACD line crosses zero). Pre-B688 bullets
+    # mis-described it with centerline-cross semantics. Code unchanged;
+    # this is a pure docstring honesty fix.
     fl = s.get("macd_12_26_9_crossover_up")
     fs = s.get("macd_12_26_9_crossover_dn")
     return _strat3(fl, fs, "momentum",
         ["macd_12_26_9_crossover_up"], ["macd_12_26_9_crossover_dn"],
-        ["MACD 12/26/9 crossed above zero  -  momentum turning positive"],
-        ["MACD 12/26/9 crossed below zero  -  momentum turning negative"])
+        ["MACD 12/26/9 signal-line cross up (histogram sign change)  -  MACD line crossed above signal line, momentum accelerating bullish"],
+        ["MACD 12/26/9 signal-line cross down (histogram sign change)  -  MACD line crossed below signal line, momentum accelerating bearish"])
 
 
 def strat_macd_fast_crossover(s):
+    # B688 docstring honesty fix (see strat_macd_crossover B688 comment):
+    # signal-line cross via histogram sign change, NOT centerline cross.
     fl = s.get("macd_8_21_5_crossover_up")
     fs = s.get("macd_8_21_5_crossover_dn")
     return _strat3(fl, fs, "momentum",
         ["macd_8_21_5_crossover_up"], ["macd_8_21_5_crossover_dn"],
-        ["Fast MACD 8/21/5 crossed above zero  -  early momentum shift bullish"],
-        ["Fast MACD 8/21/5 crossed below zero  -  early momentum shift bearish"])
+        ["Fast MACD 8/21/5 signal-line cross up (histogram sign change)  -  faster-period MACD line crossed above signal line, early momentum acceleration bullish"],
+        ["Fast MACD 8/21/5 signal-line cross down (histogram sign change)  -  faster-period MACD line crossed below signal line, early momentum acceleration bearish"])
 
 
 def strat_hull_rsi(s):
