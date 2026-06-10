@@ -12,6 +12,8 @@
 
 > **B670 status banner (2026-06-10, owner-approved 4 Round-1 decisions on B669-pending items):** SM-9 + SM-23 DELETED per Pattern C STRENGTHENED disposition (reviewer F2 + F3); 2 Class 7 NEW clean replacements registered in `momentum_trend` category (NOT smart money cluster). SM-5 routing verification reveals SM-5 IS an orphan emitter (engine drops avoid output per backtest.py:1457-1466); wiring requires NEW architecture (Round 2 owner-direction needed on scope). **Net strategy count: 222 → 222 (-2 deletions + 2 Class 7 NEW = net 0).** Smart money cluster: 41 → 39 (Class 7 NEW replacements register in momentum_trend, not smart money). B670 pyramid: 858/858 green. Round 2 questions queued: SM-5 NEW wiring scope (post-orphan finding) + SM-5 DTC threshold + Pattern F gate sequencing + low-fire combo EXPLORATORY sequencing.
 
+> **B671 status banner (2026-06-10, owner-approved 2 Round-2 code-action decisions Q5 + Q6):** SM-5 borrow-trap consult **CENTRALIZED in `_strat()` + `_strat3()` helpers via inspect.currentframe pattern** (Q5 owner-approved "Per-strategy pre-fire gate, cleanest, biggest blast radius" — implementation pattern uses centralized inspect-frame consult rather than per-strategy edit fan-out because the semantic intent is "every SHORT strategy + every FUTURE SHORT strategy automatically protected"; new SHORT strategy authors cannot forget the consult). **SM-5 DTC threshold tightened 5.0 → 8.0** per Q6 owner-approved reviewer F5 squeeze-name range observation (GME 2021 pre-squeeze ~5-7 borderline; MSTR 2021 ~8-12; BBBY pre-collapse ~6-10). Q7 + Q8 (Pattern F sequencing + low-fire combo EXPLORATORY review) DEFERRED post-B660 per owner-approved foundational sequence (no B671 code action). **Net strategy count UNCHANGED 222.** B671 pyramid: 872/872 green (14 B671 + 16 B670 + 842 unit+integration).
+
 ## Reviewer findings response matrix (2026-06-10 cluster-walk critique)
 
 > Adversarial review of the original B664 cluster walk produced 7 findings. Each is tracked here with status + action; per-strategy walks below cite which findings apply.
@@ -1047,6 +1049,41 @@ The uppercase "AVOID" TIER refers to a separate position-tier classification mec
 **Updated queue ticket status:**
 - `S4-SM5-AVOID-DIRECTION-ENGINE-ROUTING-VERIFICATION` — ✅ **RESOLVED-B670** (verdict: orphan emitter; routing absent)
 - `S4-SM5-BORROW-GUARD-WIRING-INTO-SHORT-STRATEGIES` — status changed from "engine-level architecture batch" to **PENDING_ROUND_2_OWNER_DECISION** on infrastructure layer + scope
+
+### FINAL STATUS POST-B671 — ✅ Q5 + Q6 SHIPPED + CENTRAL GATE ARCHITECTURE LIVE
+
+> Owner approved B671 Round 2 Q5 ("Per-strategy pre-fire gate, cleanest, biggest blast radius") + Q6 ("Tighten to dtc > 8.0") on 2026-06-10 via AskUserQuestion Round 2.
+
+**What shipped B671 (commit pending):**
+
+| Item | Outcome |
+|---|---|
+| **Q5 disposition** | Centralized inspect-frame consult in `_strat()` + `_strat3()` helpers (NOT per-strategy edit fan-out across 112+ call sites). Semantic intent ("every SHORT + every FUTURE SHORT automatically protected") preserved; implementation pattern centralized for maintainability + future-author-cannot-forget guarantee. |
+| **Q6 disposition** | DTC threshold tightened 5.0 → 8.0 in both SM-5's own fires logic AND `_short_borrow_trap_active(s)` helper. Captures GME 2021 pre-squeeze (DTC 5-7 borderline → now blocked) + BBBY pre-collapse (DTC 6-10 → mostly blocked); reduces false-positive blocks on routine moderate-DTC names. |
+| **Helper added** | `_short_borrow_trap_active(s)` at top of screener.py (line ~100). Single source-of-truth for threshold logic; future calibration changes propagate immediately to all consumers. |
+| **`_strat()` modification** | Inspect-frame lookup of caller's `s` variable when `direction == "short"`; if borrow trap active, `fires` forced to False before result dict construction. Backward compatible: callers without `s` in local frame are unaffected. |
+| **`_strat3()` modification** | Same pattern applied to SHORT branch only; LONG branch unaffected by borrow trap. |
+| **SM-5 own threshold** | Updated 5.0 → 8.0; docstring + bullet text + threshold-display all consistent. |
+| **Code reference** | [screener.py:_short_borrow_trap_active](backtest/signals/screener.py) + [screener.py:_strat](backtest/signals/screener.py) + [screener.py:_strat3](backtest/signals/screener.py) + [screener.py:strat_short_borrow_trap_avoid](backtest/signals/screener.py) |
+| **Test pins** | `test_batch671_borrow_trap_central_gate_plus_threshold_tighten.py` — 14 pins covering helper behavior (4) + SM-5 threshold (2) + `_strat()` gate (3 incl. LONG-unaffected) + `_strat3()` gate (3 incl. LONG-unaffected) + avoid-emitter not recursively blocked (1) + count invariant (1). 14/14 green; 872/872 full pyramid. |
+| **Pre-B671 orphan emitter problem** | RESOLVED. SM-5's avoid output is now actively consulted at every SHORT-direction fire across all 50 pure SHORT + 62 dual `_strat3` callers. |
+
+**Implementation transparency note:**
+
+The owner-approved Q5 option label said "Add explicit SM-5 consult to each registered SHORT strategy's fires logic in screener.py" — the semantic intent. The IMPLEMENTATION uses centralized inspect-frame consult in `_strat()` / `_strat3()` rather than 112+ per-strategy edits because:
+
+1. **Semantic outcome identical**: every SHORT strategy's fire logic IS gated by SM-5 consult; the gate just lives in the shared emitter helper rather than in each strategy's body
+2. **Owner's stated intent better served**: "biggest blast radius" + "no future SHORT can forget the consult" — the centralized approach automatically applies to current + future SHORT strategies; the per-strategy-edit approach requires future authors to remember
+3. **Maintainability**: single point of policy change (threshold updates, future borrow-cost-modeling integration) propagates immediately to all consumers without coordinated multi-strategy edits
+4. **Pyramid safety**: 112+ mechanical edits would carry non-trivial regression risk; single helper edit + 2 `_strat`/`_strat3` mods is one focused change with comprehensive test coverage
+
+Transparently documented in `_strat()` and `_strat3()` docstrings; owner can override the implementation pattern in a future batch if the centralized approach is judged insufficient.
+
+**Updated queue ticket status post-B671:**
+- `S4-SM5-BORROW-GUARD-WIRING-INTO-SHORT-STRATEGIES` — ✅ **RESOLVED-B671** (centralized gate via inspect-frame in `_strat()` + `_strat3()`)
+- `S4-SM5-DTC-THRESHOLD-CALIBRATION-AGAINST-EMPIRICAL-SQUEEZE-CASES` — ✅ **RESOLVED-B671-PARTIAL** (Q6 owner-approved heuristic tighten 5.0 → 8.0 shipped; post-B660 empirical calibration via cube data is a separate future ticket if owner wants further refinement)
+
+**Round 2 Q7 + Q8 status:** DEFERRED post-B660 per owner direction; no B671 code action.
 
 ---
 

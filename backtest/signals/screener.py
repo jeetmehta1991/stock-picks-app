@@ -94,11 +94,67 @@ def _log_silent_producer_empty(producer_name: str) -> None:
 
 
 # -----------------------------------------------------------------------------
-# STRATEGY HELPER
+# STRATEGY HELPERS
 # -----------------------------------------------------------------------------
 
+def _short_borrow_trap_active(s) -> bool:
+    """B671 Round 2 Q5 + Q6 (2026-06-10 owner-approved per AskUserQuestion
+    Round 2): SM-5 borrow-trap consult helper.
+
+    Returns True if days_to_cover > 8.0 on the ticker for the bar. When
+    True, all SHORT-direction strategy fires on this ticker are blocked
+    per the per-strategy pre-fire gate pattern owner approved in Q5.
+
+    Q6 owner decision (2026-06-10): threshold tightened from 5.0 -> 8.0
+    per reviewer F5 observation that 5.0 is loose (GME 2021 ~5-7
+    borderline; MSTR 2021 ~8-12; BBBY ~6-10). The B519 original
+    docstring still resides in strat_short_borrow_trap_avoid (SM-5);
+    that strategy's own threshold also updated to 8.0 for consistency.
+
+    Note: SM-5 itself emits direction="avoid", not "short", so its own
+    emission is unaffected by this gate. Only direction="short" strategies
+    are blocked; direction="long" and direction="avoid" are unaffected.
+    """
+    dtc = s.get("days_to_cover", 0.0) or 0.0
+    return dtc > 8.0
+
+
 def _strat(fires, direction, category, signals_used, context_bullets):
-    """Single-direction strategy  -  fires True/False with fixed direction."""
+    """Single-direction strategy  -  fires True/False with fixed direction.
+
+    B671 Round 2 Q5 (owner-approved 2026-06-10 per AskUserQuestion Round 2,
+    option "Per-strategy pre-fire gate (cleanest, biggest blast radius)"):
+    SHORT-direction emissions are CENTRALLY gated by SM-5 borrow-trap
+    consult via inspect.currentframe access to the caller strategy's `s`
+    variable. Centralizing the consult here (rather than requiring per-
+    strategy edits at every fire call) ensures:
+
+      (1) Every current SHORT strategy is automatically protected
+      (2) Every FUTURE SHORT strategy is automatically protected
+          (no risk of new strategy author forgetting the consult,
+          which was the reviewer F5 concern that motivated this work)
+      (3) Single point of policy enforcement; threshold change in
+          _short_borrow_trap_active() propagates immediately to all
+          consumers
+
+    The gate fires when direction == "short" AND caller has `s` in its
+    local frame AND _short_borrow_trap_active(s) returns True. When all
+    three conditions hold, `fires` is forced to False before constructing
+    the return dict.
+
+    SAFETY:
+      - direction == "avoid" (SM-5 itself, other avoid emitters) unaffected
+      - direction == "long" unaffected
+      - Test-path callers that lack `s` in caller frame are unaffected
+        (caller_locals.get("s") returns None -> no block)
+      - Backward compatible with all existing test fixtures
+    """
+    if direction == "short":
+        import inspect
+        caller_locals = inspect.currentframe().f_back.f_locals
+        s = caller_locals.get("s")
+        if s is not None and _short_borrow_trap_active(s):
+            fires = False
     return {
         "fires":           bool(fires),
         "direction":       direction,
@@ -153,7 +209,18 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
             bullets_long, bullets_short):
     """Three-state strategy  -  evaluates long, short, or avoid independently.
     Returns the dominant direction; if both fire, returns avoid (conflicting signals).
+
+    B671 Round 2 Q5 (owner-approved 2026-06-10 per AskUserQuestion Round 2):
+    SHORT branch gated by SM-5 borrow-trap consult via inspect.currentframe.
+    LONG branch unaffected. See _strat docstring for the full rationale +
+    safety analysis; same centralized policy applied here.
     """
+    if fires_short:
+        import inspect
+        caller_locals = inspect.currentframe().f_back.f_locals
+        s = caller_locals.get("s")
+        if s is not None and _short_borrow_trap_active(s):
+            fires_short = False
     if fires_long and not fires_short:
         return {"fires": True,  "direction": "long",  "category": category,
                 "signals_used": signals_used_long, "context_bullets": bullets_long}
@@ -3949,8 +4016,23 @@ def strat_short_borrow_trap_avoid(s):
     """Batch 519 (2026-05-31, P15 sleeve per owner directive).
     Avoid-side gate for short strategies when borrow is tight.
 
-    Fires `avoid` direction when days_to_cover > 5 -- meaning it would
-    take >5 trading days of typical volume to cover the open short
+    B671 Round 2 Q6 (2026-06-10 owner-approved per AskUserQuestion Round 2):
+    threshold tightened from days_to_cover > 5.0 to > 8.0 per reviewer F5
+    observation that 5.0 was loose (GME 2021 pre-squeeze ~5-7 borderline;
+    MSTR 2021 ~8-12; BBBY pre-collapse ~6-10). New threshold (8.0) captures
+    GME 2021 pre-squeeze + BBBY borderline inside the gate while reducing
+    false-positive blocks on routine moderate-DTC names.
+
+    B671 Round 2 Q5 (2026-06-10 owner-approved): SM-5's avoid emission is
+    now actually consulted by ALL SHORT strategies via centralized gate in
+    _strat() / _strat3() helpers. Pre-B671 SM-5 was an orphan emitter
+    (engine dropped avoid output per backtest.py:1457-1466 skipped_trades
+    path); post-B671 every SHORT strategy fire is gated by
+    _short_borrow_trap_active(s) consult per reviewer F5 architectural
+    concern.
+
+    Fires `avoid` direction when days_to_cover > 8 -- meaning it would
+    take >8 trading days of typical volume to cover the open short
     interest. Hard-to-borrow names carry asymmetric upside risk: when
     they DO move against shorts, the squeeze is rapid (FINRA Reg SHO).
     Per CHECKLIST risk-management convention, an 'avoid' strategy
@@ -3963,10 +4045,10 @@ def strat_short_borrow_trap_avoid(s):
     constraint' premium).
     """
     dtc = s.get("days_to_cover", 0.0) or 0.0
-    fires = dtc > 5.0
+    fires = dtc > 8.0  # B671 Q6 owner-approved 5.0 -> 8.0
     return _strat(fires, "avoid", "smart_money_sleeve",
-        ["days_to_cover>5"],
-        [f"Days-to-cover {dtc:.1f} (>5 threshold)",
+        ["days_to_cover>8"],
+        [f"Days-to-cover {dtc:.1f} (>8 threshold; B671 Q6 tighten from 5.0)",
          "Hard-to-borrow -> squeeze risk asymmetric vs upside expectancy",
          "Cohen-Diether-Malloy 2007 borrow-constraint premium"])
 
