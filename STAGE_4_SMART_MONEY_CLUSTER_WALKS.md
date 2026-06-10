@@ -2816,159 +2816,518 @@ Mirror of SM-22 (`institutional_strong_conviction_long`) but SHORT side. Per Pat
 
 ---
 
-## SM-24. `strat_institutional_high_conviction_long` (336 pure cluster, walked)
+## SM-24. `strat_institutional_high_conviction_long` (336 pure cluster, walked — Pattern A + Pattern B + cluster-loose-regime)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. **Pattern A** + Pattern B.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672f full expansion). 2-gate LONG; pure new-positions signal with intentionally LOOSER regime (50-EMA vs 200-EMA) to catch "early institutional initiations before they fully appear in trend metrics" per docstring. Pattern A silent-gap on 50-EMA + Pattern B (0 EVENT gates) + Cohen-Frazzini-Malloy 2008 citation correctly attributed to long-horizon factor result but framed as bar-of-fire signal.
 
 ### Step 1 — Read the code
 
-[screener.py:4988-5003](backtest/signals/screener.py#L4988-L5003):
+[screener.py:5156-5171](backtest/signals/screener.py#L5156-L5171):
 
 ```python
 def strat_institutional_high_conviction_long(s):
     """Wave 3 (Batch 336): pure new-positions signal with looser regime.
     institutional_new_positions >= 3 alone is the canonical Cohen-Frazzini-
-    Malloy 2008 RFS cluster signal."""
+    Malloy 2008 RFS cluster signal. Distinct from Batch 330's cluster_long
+    by using a LOOSER regime gate (50-EMA vs 200-EMA), capturing early
+    institutional initiations before they fully appear in trend metrics."""
     fires = (
         s.get("institutional_new_positions", 0) >= 3
-        and s.get("price_above_ema_50", True)  # ⚠ Pattern A
+        and s.get("price_above_ema_50", True)  # ⚠ Pattern A default-True silent-gap
     )
+    n_new = s.get("institutional_new_positions", 0)
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_new_positions>=3","price_above_ema_50"],
+        [f"{n_new} institutional funds initiated new positions this quarter",
+         "Cohen-Frazzini-Malloy 2008 RFS - pure cluster signal",
+         "Above 50 EMA (looser regime to catch early initiation)"])
 ```
 
-### Step 7
+**2-gate LONG strategy.** Loosest regime member of the Wave 3 13F family — only requires 50-EMA (intermediate trend) instead of 200-EMA (long-term trend). The threshold is the ONLY 13F gate; threshold-based pure cluster signal.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F1 Pattern A** | `price_above_ema_50` default-True silent-gap | MEDIUM |
-| **F-state-as-event Pattern B** | "Canonical CFM 2008 cluster signal" implies bar-of-fire timing; CFM 2008 documents long-horizon factor-tilt | MEDIUM |
-| F-fire-count | new_positions >= 3 threshold rare; ~40-80/yr | INFO |
+**LONG fires when BOTH:**
 
-**B664 candidate:** F1 + Pattern B reframe.
+| Gate | Meaning |
+|---|---|
+| `institutional_new_positions >= 3` | 3+ funds initiated new position THIS quarter (cluster threshold per CFM 2008) |
+| `price_above_ema_50` | Intermediate uptrend (looser than 200-EMA used by SM-25/26/27/28) — ⚠ Pattern A default-True silent-gap |
+
+### Step 2 — Classify
+
+- Category: `smart_money_13f` (NOT institutional_persistence; this is a pure cluster trigger, not a multi-quarter persistence proxy)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: Batch 336 (2026-05-25 — original Wave 3 wiring)
+
+### Step 3 — Producer source-read + temporality
+
+- `institutional_new_positions` (count of funds initiating new position this quarter) is produced by [smart_money.py](backtest/data/smart_money.py) Batch 330 13F producer. Per DEC-325, 13F filings have a **45-day SEC publication lag** — by the time a "new position" appears in the producer's output, it could be up to 135 days old (45-day reporting lag + up to 90-day quarter window before filing). Same temporality issue as SM-7/SM-10/SM-13/SM-21/SM-22.
+- `price_above_ema_50` is STATE (derived from today's price vs 50-period EMA).
+
+**EVENT/STATE composition:** 0 EVENT gates per direction. Per CHECKLIST (s) signal-temporality classification, this is Pattern B per `feedback_signal_temporality_event_vs_state` — slow background states (quarterly 13F + STATE EMA trend) don't provide timing alpha at bar of fire. The "early initiation" framing in the docstring is INTERNALLY CONSISTENT (looser regime catches earlier signals) but doesn't escape Pattern B (the looser regime is still STATE, and the trigger signal is still STATE quarterly).
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Cohen-Frazzini-Malloy 2008 RFS - pure cluster signal" | ⚠ **Pattern B + citation-applicability** — CFM 2008 (Cohen, Frazzini, Malloy 2008 RFS "The Small World of Investing: Board Connections and Mutual Fund Returns") documents long-horizon (quarterly to multi-quarter) alpha from institutional cluster behavior. The "pure cluster signal" framing is correctly attributed to CFM 2008's published result BUT applies that result to BAR-OF-FIRE timing which CFM 2008 doesn't establish. Per B611 + reviewer F7 citation-overreach pattern: research result documents factor-tilt alpha; strategy implementation implies bar-of-fire timing alpha. Class same as SM-7/SM-10/SM-13/SM-21/SM-22. |
+| "LOOSER regime gate (50-EMA vs 200-EMA), capturing early institutional initiations before they fully appear in trend metrics" | ⚠ **Internal-consistency note:** the looser regime is mechanically true (50-EMA is more responsive than 200-EMA) BUT "early initiation" wording contradicts the 45-day publication lag — by the time the 13F filing surfaces the cluster, the 50-EMA has already responded to whatever fund activity drove the new positions. Looser regime doesn't escape the lag. |
+| "pure cluster signal" | The threshold `>= 3` IS the literature-standard cluster threshold per CFM 2008. ✅ Threshold value defensible; framing of when-it-applies is Pattern B |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations on SM-24 specifically
+- B663 family-bug applies (Pattern A on `price_above_ema_50`); WAVE 1 (200-EMA defaults) shipped B663; WAVE 2 (50-EMA defaults) queued
+- Reviewer F1 marginal-contribution test applies — if the 50-EMA filter near-no-ops on T1a in bull years (price > 50-EMA is ~75-85% of bars), the strategy reduces to "≥3 new institutional positions" which is the canonical CFM 2008 cluster signal alone
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only by SEC rule (Securities Act §13(f)). No SHORT mirror; Pattern C asymmetry per `feedback_asymmetric_data_sources_break_mechanical_inverse`. ✅
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F1 Pattern A** | `price_above_ema_50` default-True silent-gap; WAVE 2 family-bug eligible | MEDIUM | (post-B663 WAVE 2 sweep) |
+| **F-state-as-event Pattern B** | 0 EVENT gates; "early initiation" framing contradicts 45-day publication lag; CFM 2008 citation is long-horizon result framed as bar-of-fire timing | MEDIUM | F1 |
+| **F-marginal-contribution Pattern F** | If 50-EMA near-no-op on T1a bull-year sample, strategy reduces to bare "≥3 new positions" cluster signal. Post-B660 fire-count + post-cube marginal-contribution test required. | HIGH | F1 |
+| F-fire-count | `institutional_new_positions >= 3` threshold rare; projected ~40-80/yr universe-wide | INFO | F4-adjacent |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern A fix only (default-True → False on 50-EMA) — bundled into WAVE 2 family sweep |
+| (c) Pattern A + Pattern B docstring reframe (gated on Pattern F per reviewer F1) |
+| **(d) RECOMMENDED — gate Pattern B on post-B660 + post-cube marginal-contribution per reviewer F1; (b) WAVE 2 family fix proceeds immediately** |
+| (e) Stage 5 deferral |
+
+**My recommendation: (d).** Same logic as SM-21/SM-22 (Pattern B reframe gated on cube validation) but Pattern A WAVE 2 family fix can proceed without Pattern F validation (it's a pure silent-gap fix).
+
+**Awaiting owner direction on SM-24:**
+1. Pattern A WAVE 2 family sweep timing (proceed independently or wait for B660 to complete?)
+2. Pattern B reframe sequencing (post-B660 + post-cube per reviewer F1)
+3. Confirm CFM 2008 citation retention with reframe vs full retraction
 
 ---
 
-## SM-25. `strat_institutional_with_directors_long` (336 + director combo, walked)
+## SM-25. `strat_institutional_with_directors_long` (336 + director combo, walked — CROSS-SOURCE CANONICAL #2)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate mixed STATE/EVENT.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672f full expansion). 3-gate mixed STATE/EVENT LONG. **Per reviewer F1 (B669):** this is a CROSS-SOURCE CANONICAL strategy alongside SM-12 + SM-20 + SM-26 — the only family in the cluster that combines 13F STATE with insider-trading EVENT signal where the EVENT gate IS the actual timing trigger. Akbas-Jiang-Koch 2024 RFS director-premium citation correctly attributed to insider-trading research (NOT 13F factor research). Partial Pattern B — the docstring "dual board-level + fund-manager confirmation" overstates because the 13F STATE doesn't supply bar-of-fire confirmation (only the director EVENT does), but the strategy has the canonical EVENT-anchored structure the cluster needs.
 
 ### Step 1 — Read the code
 
-[screener.py:5006-5023](backtest/signals/screener.py#L5006-L5023):
+[screener.py:5174-5191](backtest/signals/screener.py#L5174-L5191):
 
 ```python
 def strat_institutional_with_directors_long(s):
     """Wave 3 (Batch 336): institutional + director-level insider buying.
-    Akbas-Jiang-Koch 2024 RFS - director-level signal premium."""
+    Director purchases are higher-information signal than officer/10pct-
+    owner trades (Akbas-Jiang-Koch 2024 RFS). When combined with
+    institutional accumulation, dual board-level + fund-manager
+    confirmation = strongest smart-money agreement signature."""
     fires = (
         s.get("institutional_buy", False)
         and s.get("insider_director_buyers_30d", 0) >= 1
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    n_dir = s.get("insider_director_buyers_30d", 0)
+    return _strat(fires, "long", "smart_money_combo",
+        ["institutional_buy","insider_director_buyers_30d>=1","price_above_ema_200"],
+        ["13F institutional new/increased positions",
+         f"{n_dir} director(s) buying open-market in 30d",
+         "Akbas-Jiang-Koch 2024 RFS - director-level signal premium",
+         "Above 200 EMA (regime gate)"])
 ```
 
-### Step 7
+**3-gate LONG strategy.** Cross-source canonical combining 13F (slow STATE) + director-level insider EVENT (timing trigger) + EMA trend regime.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | "Dual board-level + fund-manager confirmation" overstates — 13F is STATE, only director is EVENT | MEDIUM |
-| F-fire-count | ~10-25/yr; FAIL likely | MEDIUM |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** Pattern B reframe.
+| Gate | Meaning |
+|---|---|
+| `institutional_buy` | 13F STATE: new/increased positions this quarter (eligibility filter) |
+| `insider_director_buyers_30d >= 1` | EVENT: 1+ director open-market buy filed via Form 4 within last 30 days (timing trigger) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed (default False not True) |
+
+### Step 2 — Classify
+
+- Category: `smart_money_combo` (cross-source — combines 13F sleeve + insider sleeve)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663 (Pattern A WAVE 1 family fix on 200-EMA default-True → False)
+
+### Step 3 — Producer source-read + temporality
+
+- `institutional_buy` STATE quarterly per Batch 330 producer (45-day SEC lag per DEC-325) — same temporality as SM-7/SM-10/SM-13/SM-21/SM-22/SM-24
+- `insider_director_buyers_30d` is COUNT of director Form-4 open-market buys in trailing 30-day window. Per Batch 222 insider producer with **2-day Form-4 filing rule** (Section 16(a)) — this is a near-real-time EVENT signal with at most 2-day lag from the actual transaction. Director-level signal premium per Akbas-Jiang-Koch 2024 RFS is established on insider-trading data (NOT 13F factor research)
+- `price_above_ema_200` STATE
+
+**EVENT/STATE composition:** **1 EVENT gate (director buys 30d) + 2 STATE gates.** The 1 EVENT gate IS the bar-of-fire timing signal per CHECKLIST (s). This is the CORRECT cross-source structure — STATE filter + EVENT trigger. The docstring "dual confirmation" framing is the partial Pattern B issue (the 13F STATE is eligibility-not-confirmation), not the strategy structure itself.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Akbas-Jiang-Koch 2024 RFS - director-level signal premium" | ✅ Correctly attributed — Akbas, Jiang, Koch 2024 RFS "The Value of Independent Directors: Evidence from Insider Trading" establishes that director-level Form-4 buying has higher information content than officer-level or 10%-owner-level. This is INSIDER-TRADING research applied to an insider-trading EVENT gate. NOT a citation-overreach class. |
+| "dual board-level + fund-manager confirmation = strongest smart-money agreement signature" | ⚠ **Partial Pattern B** — the 13F STATE doesn't provide BAR-OF-FIRE confirmation (only the director EVENT does); the 13F adds eligibility-filter alpha (factor-tilt) not timing alpha. Honest reframe: "director EVENT triggers timing; 13F STATE filters for institutional-sponsored names; agreement at sponsorship level, not timing level." |
+| "Director purchases are higher-information signal than officer/10pct-owner trades" | ✅ Correctly attributed and applied. This is the foundation gate semantic. |
+
+**Net Step 4 verdict:** This is a HIGHER-QUALITY walk than the 13F-only Pattern B family (SM-21/SM-22/SM-24/SM-27). The citation matches the EVENT gate's mechanism; the strategy has the canonical cross-source structure. The Pattern B concern is contained to the "dual confirmation" framing in the human-readable docstring, not the strategy logic.
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations on SM-25 specifically
+- Reviewer F1 marginal-contribution test applies post-B660 + post-cube — what does the 13F STATE gate add over standalone director-EVENT + 200-EMA?
+- Companion strategy SM-26 is officer-level variant; conjoint walk surfaces dose-response (director vs officer information premium)
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- 13F long-only by SEC rule + insider-buying long-only (insider SALES are mostly diversification not signal per `feedback_asymmetric_data_sources_break_mechanical_inverse`)
+- **Double-asymmetric** — both data sources structurally LONG-biased; no SHORT mirror viable
+- Pattern C does NOT apply (not proposing a mechanical mirror; explicitly acknowledging asymmetry)
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-cross-source-canonical structure** | ✅ EVENT-anchored timing + STATE eligibility = correct structure; cluster anchor candidate alongside SM-12/SM-20/SM-26 | INFO / ✅ POSITIVE | F1 |
+| **F-state-as-event Pattern B (partial)** | "Dual confirmation" framing in docstring overstates — 13F STATE is eligibility-not-bar-of-fire-confirmation; reframe as "EVENT trigger + STATE eligibility filter" | LOW-MEDIUM | F1 |
+| **F-marginal-contribution Pattern F** | What does 13F STATE add over standalone director-EVENT + 200-EMA? Post-B660 + post-cube ablation test | MEDIUM | F1 |
+| F-fire-count | Director buys are rare (~1-2/week universe-wide); co-occurrence with `institutional_buy` STATE further reduces; projected ~10-25/yr; **borderline FAIL on min_trades=30 per regime** | MEDIUM | F4 |
+| F1 default-True | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Docstring honesty reframe — "EVENT trigger + STATE eligibility filter" replaces "dual confirmation"; preserve Akbas-Jiang-Koch citation; preserve all gates |
+| (c) (b) + Pattern F marginal-contribution test gated on post-B660 + post-cube |
+| **(d) RECOMMENDED — (c). Cross-source canonical structure is correct; docstring is the only issue; ablation test settles whether 13F STATE earns its place in the gate stack** |
+| (e) Tighten threshold (`insider_director_buyers_30d >= 2`) — would reduce fire count further; not recommended pre-cube |
+
+**My recommendation: (d).** Strategy structure is correct (cross-source canonical); docstring reframe + post-cube ablation handle the partial Pattern B + Pattern F concerns.
+
+**Awaiting owner direction on SM-25:**
+1. (a)/(b)/(c)/(d) — recommendation (d)
+2. Pattern F ablation post-B660 + post-cube sequencing confirmation
+3. Whether to bundle SM-25 + SM-26 docstring reframes (same family)
 
 ---
 
-## SM-26. `strat_institutional_with_officers_long` (336 + officer combo, walked)
+## SM-26. `strat_institutional_with_officers_long` (336 + officer combo, walked — CROSS-SOURCE CANONICAL #3)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. 3-gate mixed STATE/EVENT.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672f full expansion). 3-gate mixed STATE/EVENT LONG. Companion to SM-25 (director variant) with officer-level EVENT instead. **Per reviewer F1 (B669):** this is a CROSS-SOURCE CANONICAL strategy alongside SM-12 + SM-20 + SM-25 — the only family in the cluster that combines 13F STATE with insider-trading EVENT signal where the EVENT gate IS the actual timing trigger. Officer-level information premium is lower than director-level per Akbas-Jiang-Koch 2024 RFS but still meaningfully above 10%-owner level. Partial Pattern B same class as SM-25.
 
 ### Step 1 — Read the code
 
-[screener.py:5026-5042](backtest/signals/screener.py#L5026-L5042):
+[screener.py:5194-5210](backtest/signals/screener.py#L5194-L5210):
 
 ```python
 def strat_institutional_with_officers_long(s):
     """Wave 3 (Batch 336): institutional + officer-level insider buying.
     Officers are CEO/CFO/COO buying their own company's stock - direct
-    competence and conviction signal."""
+    competence and conviction signal. Lower information value than
+    directors but still meaningfully higher than 10pct-owner trades."""
     fires = (
         s.get("institutional_buy", False)
         and s.get("insider_officer_buyers_30d", 0) >= 1
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    n_off = s.get("insider_officer_buyers_30d", 0)
+    return _strat(fires, "long", "smart_money_combo",
+        ["institutional_buy","insider_officer_buyers_30d>=1","price_above_ema_200"],
+        ["13F institutional new/increased positions",
+         f"{n_off} officer(s) buying open-market in 30d",
+         "Direct competence + conviction signal",
+         "Above 200 EMA"])
 ```
 
-### Step 7
+**3-gate LONG strategy.** Cross-source canonical structurally identical to SM-25 with the EVENT gate switched from director to officer.
 
-Same family as SM-25; officer EVENT instead of director EVENT.
+**LONG fires when ALL THREE:**
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | Same as SM-25 | MEDIUM |
-| F-fire-count | ~15-35/yr; borderline | INFO |
+| Gate | Meaning |
+|---|---|
+| `institutional_buy` | 13F STATE: new/increased positions this quarter (eligibility filter) |
+| `insider_officer_buyers_30d >= 1` | EVENT: 1+ officer (CEO/CFO/COO/etc.) open-market buy filed via Form 4 within last 30 days (timing trigger) |
+| `price_above_ema_200` | Long-term uptrend; B663-fixed |
 
-**B664 candidate:** Pattern B reframe.
+### Step 2 — Classify
+
+- Category: `smart_money_combo` (cross-source — same category as SM-25)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: B663
+
+### Step 3 — Producer source-read + temporality
+
+- `institutional_buy` STATE quarterly per Batch 330 producer (45-day SEC lag per DEC-325)
+- `insider_officer_buyers_30d` per Batch 222 insider producer (2-day Form-4 filing rule); EVENT signal with at most 2-day lag from transaction
+- `price_above_ema_200` STATE
+
+**EVENT/STATE composition:** **1 EVENT gate (officer buys 30d) + 2 STATE gates.** Same cross-source canonical structure as SM-25. The officer-EVENT IS the bar-of-fire timing signal per CHECKLIST (s).
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Officers are CEO/CFO/COO buying their own company's stock - direct competence and conviction signal" | ✅ Correctly attributed — the SEMANTIC mechanism (named executives at the firm have direct, current, material non-public-knowledge-adjacent information) is universally accepted in the insider-trading literature. |
+| "Lower information value than directors but still meaningfully higher than 10pct-owner trades" | ✅ Correctly stated — Akbas-Jiang-Koch 2024 RFS + Cohen-Malloy-Pomorski 2012 JF independently document a director > officer > 10pct-owner information hierarchy. The strategy ranks correctly. |
+| Implicit "13F + officer buying" thesis | ⚠ **Partial Pattern B same as SM-25** — same reframe applies: "EVENT trigger + STATE eligibility filter" replaces implied "dual confirmation." |
+| No explicit "dual confirmation" wording in docstring (unlike SM-25) | ✅ — SM-26's docstring is HONEST about the EVENT gate being the primary signal; the partial Pattern B is weaker here than SM-25 |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations on SM-26 specifically
+- Reviewer F1 marginal-contribution test applies post-B660 + post-cube — what does 13F STATE add over standalone officer-EVENT + 200-EMA?
+- **Conjoint walk with SM-25** surfaces dose-response (director vs officer information premium) — same regime, same 13F STATE, different EVENT gate quality
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- Double-asymmetric same as SM-25 (13F long-only + insider buying long-only)
+- No SHORT mirror viable per `feedback_asymmetric_data_sources_break_mechanical_inverse`
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-cross-source-canonical structure** | ✅ Same correct structure as SM-25 | INFO / ✅ POSITIVE | F1 |
+| **F-state-as-event Pattern B (weaker partial)** | Implicit "dual confirmation" thesis same class as SM-25 but docstring wording is more honest (no "strongest smart-money agreement signature" phrasing) | LOW | F1 |
+| **F-marginal-contribution Pattern F** | What does 13F STATE add over standalone officer-EVENT + 200-EMA? Same ablation test as SM-25 | MEDIUM | F1 |
+| F-fire-count | Officer buys somewhat more common than director buys (more named officers per firm than independent directors) → projected ~15-35/yr universe-wide; borderline | INFO | F4 |
+| F1 default-True | `price_above_ema_200` FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern B reframe — explicit "EVENT trigger + STATE eligibility filter" docstring addition (lighter touch than SM-25 because SM-26 docstring is already mostly honest) |
+| (c) (b) + Pattern F ablation test gated on post-B660 + post-cube |
+| **(d) RECOMMENDED — (c) bundled with SM-25 reframe + ablation** |
+| (e) Tighten threshold (`insider_officer_buyers_30d >= 2`) — would reduce fire count; not recommended pre-cube |
+
+**My recommendation: (d) bundled with SM-25.** SM-25 + SM-26 share the cross-source canonical structure + the partial Pattern B framing concern; bundle the reframe + ablation as one decision since their decision-criteria are coupled.
+
+**Awaiting owner direction on SM-26:**
+1. (a)/(b)/(c)/(d) — recommendation (d) bundled with SM-25
+2. Pattern F ablation should compare SM-25 + SM-26 jointly to settle officer-vs-director dose-response
+3. Whether to retain BOTH SM-25 + SM-26 if cube shows tight overlap (could collapse to single `OR` strategy with `insider_director_or_officer_buyers_30d` aggregator)
 
 ---
 
-## SM-27. `strat_institutional_persistence_momentum_long` (336 variant, walked)
+## SM-27. `strat_institutional_persistence_momentum_long` (336 variant, walked — Pattern A + Pattern B + MACD-as-momentum-overlay)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. **Pattern A** + Pattern B.
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672f full expansion). 3-gate LONG combining 13F persistence proxy (`institutional_increased >= 5`) with MACD momentum overlay and 50-EMA regime. All 3 gates STATE (MACD is derived from price but does not classify as bar-of-fire EVENT). Pattern A silent-gap on 50-EMA + Pattern B (0 EVENT gates). Docstring framing "momentum confirms institutional conviction" implies STATE 13F provides bar-of-fire timing signal which it doesn't (45-day publication lag).
 
 ### Step 1 — Read the code
 
-[screener.py:5045-5059](backtest/signals/screener.py#L5045-L5059):
+[screener.py:5213-5227](backtest/signals/screener.py#L5213-L5227):
 
 ```python
 def strat_institutional_persistence_momentum_long(s):
+    """Wave 3 (Batch 336): high institutional increased + MACD momentum +
+    50-EMA trend. Single-quarter persistence proxy (per Batch 333) combined
+    with price-trend confirmation. Distinct from Batch 333's persistent_holders
+    by requiring MACD bullish (momentum confluence, not just regime gate)."""
     fires = (
         s.get("institutional_increased", 0) >= 5
         and s.get("macd_12_26_9_bullish", False)
-        and s.get("price_above_ema_50", True)  # ⚠ Pattern A
+        and s.get("price_above_ema_50", True)  # ⚠ Pattern A default-True silent-gap
     )
+    return _strat(fires, "long", "institutional_persistence",
+        ["institutional_increased>=5","macd_12_26_9_bullish","price_above_ema_50"],
+        ["5+ institutional funds grew position this quarter",
+         "MACD bullish - momentum confirms institutional conviction",
+         "Above 50 EMA (intermediate trend)"])
 ```
 
-### Step 7
+**3-gate LONG strategy.** Combines 13F persistence proxy with momentum confluence (MACD) and trend regime (50-EMA).
 
-| # | Finding | Severity |
-|---|---|---|
-| **F1 Pattern A** | `price_above_ema_50` default-True | MEDIUM |
-| **F-state-as-event Pattern B** | 0 EVENT gates; docstring "momentum confirms institutional conviction" implies STATE 13F provides bar-of-fire signal | MEDIUM |
-| F-fire-count | Projected ~40-90/yr | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate:** F1 + Pattern B reframe.
+| Gate | Meaning |
+|---|---|
+| `institutional_increased >= 5` | 5+ funds grew position THIS quarter (persistence proxy per Batch 333) |
+| `macd_12_26_9_bullish` | MACD line above signal line (STATE momentum overlay) |
+| `price_above_ema_50` | Intermediate uptrend — ⚠ Pattern A default-True silent-gap |
+
+### Step 2 — Classify
+
+- Category: `institutional_persistence`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: Batch 336 (2026-05-25 — original Wave 3 wiring)
+
+### Step 3 — Producer source-read + temporality
+
+- `institutional_increased` STATE quarterly per Batch 330 producer (45-day SEC lag per DEC-325)
+- `macd_12_26_9_bullish` is computed from price (`MACD line > signal line`) in [technical.py](backtest/signals/technical.py). Per CHECKLIST (s) signal-temporality classification, MACD is a **STATE** signal — it describes the current momentum regime, NOT a bar-of-fire EVENT like MACD-crossover-today. Strategy uses the bullish-state form, not the crossover-event form.
+- `price_above_ema_50` STATE
+
+**EVENT/STATE composition:** **0 EVENT gates per direction.** All 3 gates are STATE. Per CHECKLIST (s), this is Pattern B. The "momentum confirms institutional conviction" framing in the docstring implies the MACD STATE provides bar-of-fire confirmation but MACD as a STATE signal merely says "momentum regime is currently bullish" — not "a momentum event just occurred."
+
+**Note:** The docstring claims "MACD bullish (momentum confluence, not just regime gate)" — the MACD STATE IS a momentum-flavored regime gate. The wording "not just regime gate" is technically wrong; MACD-state IS a regime-flavored gate. A true momentum EVENT would be MACD-crossover-today or MACD-histogram-rising-N-bars.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Single-quarter persistence proxy (per Batch 333) combined with price-trend confirmation" | ⚠ **Pattern B same as SM-21/SM-22** — 13F quarterly STATE is not "persistence" in any bar-of-fire sense; it's an institutional-snapshot count. Batch 333 self-acknowledges "TRUE multi-quarter persistence requires precompute over 4+ quarters; that's queued as Batch 333b. This batch ships single-quarter persistence proxies." So docstring is partial-honest (proxy framing) but still applied as STATE-as-EVENT |
+| "MACD bullish - momentum confirms institutional conviction" | ⚠ **Pattern B + claim-not-substantiated** — STATE 13F + STATE MACD = two STATE gates aligned; "momentum confirms" implies temporal sequence (institutional first, momentum confirms after) which the data doesn't establish. Honest reframe: "both gates STATE simultaneously bullish; aligned-conviction filter" |
+| "Distinct from Batch 333's persistent_holders by requiring MACD bullish (momentum confluence, not just regime gate)" | ⚠ **Wording note** — MACD-state IS a regime gate per CHECKLIST (s). The differentiation from SM-21 (`institutional_persistent_holders_long`) is correct (different gate composition) but the framing of MACD as "momentum confluence not regime" is semantically wrong; MACD-state IS a momentum-flavored regime gate. |
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations on SM-27 specifically
+- B663 family-bug applies (Pattern A on `price_above_ema_50`); WAVE 2 family fix queued
+- Reviewer F1 marginal-contribution test applies post-B660 + post-cube — does adding STATE MACD over SM-21's (`institutional_increased + price_above_ema_200`) gate stack add empirical alpha? If MACD-bullish is ~50-60% True on T1a, the additional gate may add 0 alpha (it's another mild correlation filter on the same momentum factor)
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+13F long-only by SEC rule. ✅ Pattern C asymmetry per `feedback_asymmetric_data_sources_break_mechanical_inverse`.
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F1 Pattern A** | `price_above_ema_50` default-True silent-gap; WAVE 2 family-bug eligible | MEDIUM | (post-B663 WAVE 2 sweep) |
+| **F-state-as-event Pattern B** | 0 EVENT gates; "momentum confirms institutional conviction" implies temporal sequence not supported by data | MEDIUM | F1 |
+| **F-marginal-contribution Pattern F** | Does STATE MACD add empirical alpha over SM-21's bare `institutional_increased + EMA` stack? If MACD-state correlates with 50-EMA-above (likely), gate is near-no-op. Post-B660 + post-cube ablation required | HIGH | F1 |
+| F-wording | "momentum confluence not regime gate" docstring is semantically wrong; MACD-state IS a momentum-flavored regime gate per CHECKLIST (s) | LOW | F1 |
+| F-fire-count | Projected ~40-90/yr universe-wide; PASS likely if MACD-state filter is loose enough | INFO | F4-adjacent |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern A fix only (WAVE 2 family sweep) |
+| (c) (b) + Pattern B reframe — honest "STATE 13F + STATE MACD + STATE EMA" framing |
+| (d) (c) + Pattern F ablation post-B660 + post-cube |
+| **(e) RECOMMENDED — (d). Pattern A WAVE 2 proceeds independently; Pattern B + Pattern F bundle gated on cube** |
+| (f) Tighten by switching MACD-state to MACD-cross EVENT (`macd_12_26_9_crossed_above_signal_today`) — would convert to mixed STATE/EVENT and resolve Pattern B at structural level. But the cross EVENT might be too narrow (rare); fire-count drops materially. |
+
+**My recommendation: (e).** Same logic as SM-21 — Pattern A WAVE 2 family fix can proceed independently; Pattern B + Pattern F bundle waits for cube. (f) tightening to MACD-cross is a Stage 5 option worth pre-cube fire-count measurement but not pre-cube wiring.
+
+**Awaiting owner direction on SM-27:**
+1. (a)/(b)/(c)/(d)/(e)/(f) — recommendation (e)
+2. Whether to fire-count measure (f) MACD-cross variant pre-cube as a candidate
+3. Pattern A WAVE 2 family sweep timing
 
 ---
 
-## SM-28. `strat_institutional_volume_confirmation_long` (331 variant, walked — partial-honest)
+## SM-28. `strat_institutional_volume_confirmation_long` (331 variant, walked — Pattern A + partial-honest Pattern B + 1 EVENT gate)
 
-> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION. **Pattern A** + partial Pattern B (docstring already acknowledges 45-day lag).
+> **Status:** ⏳ WALKED + AWAITING OWNER DIRECTION (B672f full expansion). 3-gate LONG with EVENT-anchored timing. Docstring is the MOST honest in the 13F family — explicitly acknowledges "stale 13F filings (45-day reporting lag)" and frames volume spike as confirming-the-now-active. Pattern A silent-gap on 50-EMA persists; partial-honest Pattern B; 1 EVENT gate (vol_spike_2x) makes this structurally similar to SM-23 (Pattern C deleted SHORT mirror but LONG-side has the same canonical structure).
 
 ### Step 1 — Read the code
 
-[screener.py:5062-5078](backtest/signals/screener.py#L5062-L5078):
+[screener.py:5230-5246](backtest/signals/screener.py#L5230-L5246):
 
 ```python
 def strat_institutional_volume_confirmation_long(s):
     """Wave 3 (Batch 331): institutional buy + retail volume confirmation.
     Per Sias 2004 JFE institutional herding + Lo-Wang 2000 RFS volume-as-
-    information... Reduces false-positive risk on stale 13F filings
-    (45-day reporting lag)."""
+    information: retail tape volume confirming institutional accumulation
+    suggests the price discovery is broadly recognized, not just
+    smart-money positioning. Reduces false-positive risk on stale 13F
+    filings (45-day reporting lag)."""
     fires = (
         s.get("institutional_buy", False)
         and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_50", True)  # ⚠ Pattern A
+        and s.get("price_above_ema_50", True)  # ⚠ Pattern A default-True silent-gap
     )
+    return _strat(fires, "long", "smart_money_13f",
+        ["institutional_buy","vol_spike_2x","price_above_ema_50"],
+        ["13F institutional new/increased positions",
+         "Volume 2x ADV(20) - retail tape confirming",
+         "Above 50 EMA (intermediate trend agrees)"])
 ```
 
-### Step 7
+**3-gate LONG strategy.** EVENT-anchored timing via volume spike; STATE-filtered by 13F + EMA.
 
-| # | Finding | Severity |
-|---|---|---|
-| **F1 Pattern A** | `price_above_ema_50` default-True | MEDIUM |
-| **F-state-as-event Pattern B partial** | Docstring DOES acknowledge "stale 13F filings (45-day reporting lag)" — partial credit. But still implies the volume gate "confirms institutional sponsorship at bar-of-fire" | LOW |
-| F-fire-count | Volume × 13F co-occurrence → ~50-100/yr; PASS | INFO |
+**LONG fires when ALL THREE:**
 
-**B664 candidate option:** F1 only; minor docstring polish on Pattern B (already partially honest).
+| Gate | Meaning |
+|---|---|
+| `institutional_buy` | 13F STATE: new/increased positions this quarter (eligibility filter; 45-day SEC lag) |
+| `vol_spike_2x` | EVENT: today's volume >= 2x trailing 20-bar average (bar-of-fire timing trigger) |
+| `price_above_ema_50` | Intermediate uptrend — ⚠ Pattern A default-True silent-gap |
+
+### Step 2 — Classify
+
+- Category: `smart_money_13f`
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default
+- Last touched: Batch 331 (2026-05-25 — original Wave 3 wiring)
+
+### Step 3 — Producer source-read + temporality
+
+- `institutional_buy` STATE quarterly per Batch 330 producer (45-day SEC lag per DEC-325)
+- `vol_spike_2x` is computed from today's volume vs trailing 20-bar mean in [technical.py](backtest/signals/technical.py). Per CHECKLIST (s) classification, this is a true **EVENT** signal — bar-of-fire condition, not a STATE regime. Lag <1 bar (intraday volume data published at session close).
+- `price_above_ema_50` STATE
+
+**EVENT/STATE composition:** **1 EVENT gate (vol_spike_2x) + 2 STATE gates.** Per CHECKLIST (s) classification, this is a CORRECT cross-EVENT/STATE structure where the EVENT IS the timing trigger. Structurally similar to SM-25/SM-26 (cross-source canonicals) except the EVENT gate is volume-on-tape rather than insider-form-4.
+
+**Companion to deleted SM-23:** SM-23 (`institutional_capitulation_short`) had the SHORT mirror of this structure — `institutional_negative + vol_spike_2x + below_ema_50`. B670 deleted SM-23 per Pattern C (13F SEC long-only by rule + B611 deletion precedent) and registered Class 7 NEW `strat_vol_spike_2x_below_ema_50_short` in `momentum_trend` category. SM-28 LONG is NOT subject to Pattern C (13F data IS long-only by design; LONG-side use is correctly aligned with data semantics). If SM-28 fails empirically, the analogous Class 7 NEW would be `strat_vol_spike_2x_above_ema_50_long` (i.e., drop the 13F gate) — but that's not currently registered, and the marginal-contribution test would settle whether the 13F gate is earning its place.
+
+### Step 4 — Doc-vs-thesis
+
+| Claim | Verification |
+|---|---|
+| "Per Sias 2004 JFE institutional herding" | ⚠ Same citation-stretch as SM-7/SM-9/SM-23 — Sias 2004 documents institutional herding behavior with longer-horizon factor-tilt result; bar-of-fire framing not supported. But this strategy uses Sias 2004 to motivate the 13F gate as an eligibility-filter (not bar-of-fire trigger), which is more defensible than SM-9's bar-of-fire framing |
+| "Lo-Wang 2000 RFS volume-as-information" | ✅ Lo-Wang 2000 RFS "Trading Volume: Definitions, Data Analysis, and Implications of Portfolio Theory" establishes volume as information. Correctly attributed to the `vol_spike_2x` EVENT gate. |
+| "retail tape volume confirming institutional accumulation suggests the price discovery is broadly recognized" | ⚠ **Partial-honest framing** — the wording "confirming" implies the volume gate VALIDATES the 13F gate at bar-of-fire, which is structurally true (the EVENT IS the timing signal). This is the BEST docstring in the SM cluster Pattern-B-eligible family. |
+| **"Reduces false-positive risk on stale 13F filings (45-day reporting lag)"** | ✅ **EXPLICITLY ACKNOWLEDGES THE LAG.** Only strategy in the entire 13F family that does this. The "stale 13F filings" wording is exactly the honest framing the reviewer F1 + F2 + B611 deletion precedent called for. Partial Pattern B credit. |
+
+**Net Step 4 verdict:** SM-28 is the HIGHEST-QUALITY 13F-family strategy in the cluster. Docstring acknowledges the lag; structure has 1 EVENT gate doing the timing work; Lo-Wang 2000 citation correctly applied. The only material issue is Pattern A silent-gap on the 50-EMA gate.
+
+### Step 5 — OPEN_INVESTIGATIONS grep
+
+- No active investigations on SM-28 specifically
+- B663 family-bug applies (Pattern A on `price_above_ema_50`); WAVE 2 family fix queued
+- Reviewer F1 marginal-contribution test applies post-B660 + post-cube — what does 13F STATE add over standalone `vol_spike_2x + price_above_ema_50`? This is the most important ablation in the cluster because SM-28 has the cleanest structure for the test.
+- Companion to deleted SM-23 SHORT mirror — SM-28 is the LONG-side equivalent that DIDN'T need deletion because data semantics align
+
+### Step 6 — Missing-inverse + economic-symmetry
+
+- 13F long-only by SEC rule
+- LONG side aligns with data semantics (Pattern C does NOT apply to SM-28 LONG)
+- The deleted SM-23 SHORT mirror was Pattern C; B670 Class 7 NEW `strat_vol_spike_2x_below_ema_50_short` (without 13F gate) covers the SHORT side honestly
+- **Recommended follow-up:** Consider registering Class 7 NEW `strat_vol_spike_2x_above_ema_50_long` (without 13F gate) as the LONG-side counterpart of B670's SHORT Class 7 NEW — this would also serve as the empirical baseline for Pattern F ablation against SM-28's 3-gate. Post-B660 + post-cube decision.
+
+### Step 7 — Findings + options
+
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F1 Pattern A** | `price_above_ema_50` default-True silent-gap; WAVE 2 family-bug eligible | MEDIUM | (post-B663 WAVE 2 sweep) |
+| **F-state-as-event Pattern B (PARTIAL-HONEST)** | Docstring explicitly acknowledges 45-day lag — only strategy in the 13F family that does this. Best-in-class. Minor polish would tighten "confirming institutional accumulation" → "confirming the 45-day-old institutional snapshot is still active" | LOW | F1 |
+| **F-marginal-contribution Pattern F** | Most important ablation in the cluster — does 13F STATE add empirical alpha over standalone `vol_spike_2x + EMA`? Post-B660 + post-cube test; SM-28 is the cleanest specimen for the F1 reviewer test | HIGH | F1 |
+| **F-cross-source-canonical structure** | ✅ EVENT-anchored timing + STATE eligibility = correct structure; volume-on-tape variant of SM-25/SM-26 cross-source canonical pattern | INFO / ✅ POSITIVE | F1 |
+| F-fire-count | Volume × 13F co-occurrence → ~50-100/yr universe-wide; PASS likely | INFO | F4-adjacent |
+| F-citation | Sias 2004 stretch (same as SM-7/SM-23) but used as eligibility-not-trigger motivation; defensible. Lo-Wang 2000 correctly applied to vol_spike_2x | INFO | F7 |
+
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern A fix only (WAVE 2 family sweep) |
+| (c) (b) + minor docstring polish — "confirming the 45-day-old institutional snapshot is still active" replaces "confirming institutional accumulation" |
+| (d) (c) + Pattern F ablation post-B660 + post-cube + register Class 7 NEW `strat_vol_spike_2x_above_ema_50_long` (no-13F baseline) for the ablation |
+| **(e) RECOMMENDED — (d). SM-28 is the cleanest specimen for the F1 marginal-contribution test; bundling Class 7 NEW LONG baseline registration enables the test directly** |
+
+**My recommendation: (e).** SM-28 is the right strategy to anchor the F1 marginal-contribution ablation because (i) it has the cleanest cross-EVENT/STATE structure, (ii) its docstring is the most honest about the lag, (iii) the SHORT-side baseline (B670 Class 7 NEW `strat_vol_spike_2x_below_ema_50_short`) already exists; the symmetric LONG-side baseline would close the test design.
+
+**Awaiting owner direction on SM-28:**
+1. (a)/(b)/(c)/(d)/(e) — recommendation (e)
+2. Whether to register Class 7 NEW `strat_vol_spike_2x_above_ema_50_long` as F1 ablation baseline (would bring strategy count 222 → 223; symmetric with B670's SHORT addition)
+3. Pattern A WAVE 2 family sweep timing
+4. Confirm Sias 2004 citation retention as eligibility-motivation (vs full retraction)
 
 ---
 
