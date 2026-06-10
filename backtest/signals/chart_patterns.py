@@ -228,6 +228,78 @@ def detect_cup_and_handle(
     }
 
 
+def detect_inverted_cup_and_handle(
+    df: pd.DataFrame,
+    lookback: int = 120,
+    cup_height_min: float = 0.10,
+    cup_height_max: float = 0.35,
+    handle_pct_max: float = 0.15,
+) -> dict:
+    """Inverted cup-and-handle detector (Batch 686 2026-06-10 owner-approved
+    per B683 self-critique CP-1 missing-inverse audit + B685 deferred work
+    now scoped).
+
+    Bearish mirror of detect_cup_and_handle per Bulkowski 2005 *Encyclopedia
+    of Chart Patterns* (sometimes called 'rounded top with handle' or
+    'dump and pop'). Symmetric methodology to the bullish cup-and-handle:
+
+    Inverted Cup: inverted-U (∩) shape; price rises from a rim LOW to a
+    cup PEAK in the middle, then falls back to a right rim LOW (~same
+    level as left rim low). 10-35% cup height (peak above rim).
+    Inverted Handle: shallow upward bounce after right rim, bounce <15%.
+    Entry: SHORT on breakdown below handle low with volume confirmation.
+
+    Daily-bar approximation: requires ~120 days of history for inverted
+    cup formation. Handle is the most recent 5-20 days post-rim.
+
+    Symmetric to detect_cup_and_handle by:
+    - left_rim_low (min of lows in first 25% of window) replaces left_rim (max of highs)
+    - right_rim_low (min of lows in last 25%) replaces right_rim
+    - cup_high (max of close in middle 50%) replaces cup_low (min of close)
+    - rim_low = min of two rim lows replaces rim = max of two rim highs
+    - cup_height = (cup_high - rim_low) / rim_low replaces cup_depth
+    - handle_bounce = (handle_high - handle_low) / handle_low replaces handle_pullback
+    - breakdown_level = handle_low replaces breakout_level = handle_high
+
+    Emits:
+      inverted_cup_handle_detected:        bool
+      inverted_cup_handle_rim_low:         float (the horizontal rim at bottom of ∩)
+      inverted_cup_handle_height_pct:      float (peak above rim, as pct of rim)
+      inverted_cup_handle_breakdown_level: float (handle low; SHORT-entry trigger)
+    """
+    if df is None or len(df) < lookback:
+        return {}
+    win = df.tail(lookback)
+    close = win["close"]
+    low = win["low"]
+    n = len(win)
+    left_rim_end = n // 4
+    right_rim_start = (3 * n) // 4
+    mid_start, mid_end = left_rim_end, right_rim_start
+    left_rim_low = float(low.iloc[:left_rim_end].min())
+    right_rim_low = float(low.iloc[right_rim_start:].min())
+    cup_high = float(close.iloc[mid_start:mid_end].max())
+    rim_low = min(left_rim_low, right_rim_low)
+    if rim_low <= 0:
+        return {}
+    cup_height = (cup_high - rim_low) / rim_low
+    rim_diff = abs(left_rim_low - right_rim_low) / rim_low
+    if not (cup_height_min <= cup_height <= cup_height_max and rim_diff < 0.05):
+        return {"inverted_cup_handle_detected": False}
+    # Handle: post-rim consolidation (last 5-20 days; small upward bounce)
+    handle_window = win.tail(20)
+    handle_high = float(handle_window["high"].max())
+    handle_low = float(handle_window["low"].min())
+    handle_bounce = (handle_high - handle_low) / handle_low if handle_low > 0 else 1.0
+    handle_detected = handle_bounce < handle_pct_max
+    return {
+        "inverted_cup_handle_detected":        handle_detected,
+        "inverted_cup_handle_rim_low":         round(rim_low, 4),
+        "inverted_cup_handle_height_pct":      round(cup_height, 4),
+        "inverted_cup_handle_breakdown_level": round(handle_low, 4),
+    }
+
+
 def detect_flag(
     df: pd.DataFrame,
     flagpole_lookback: int = 20,
@@ -343,6 +415,10 @@ def compute_all_chart_patterns(df: pd.DataFrame) -> dict:
         pass
     try:
         out.update(detect_cup_and_handle(df))
+    except Exception:
+        pass
+    try:
+        out.update(detect_inverted_cup_and_handle(df))  # B686 Class 7 NEW
     except Exception:
         pass
     try:

@@ -10309,8 +10309,13 @@ def test_batch373_e1_doc_count_pin_against_code():
     #   re-wires CP-8 + CP-9 to consume new signals; no count change). Pattern A WAVE 2 sweep
     #   on price_above_ema_50 default-True -> False across 8 strategies (no count change).
     #   CP-1 cup_and_handle_long added to EXPLORATORY_STRATEGIES (no count change). 218 -> 221.
-    assert len(ALL_STRATEGIES) == 221, (
-        f"F-002 drift: ALL_STRATEGIES expected 221 post-B685 additions; "
+    #   Batch 686 (2026-06-10): inverted cup-and-handle Class 7 NEW (deferred from B685; scoped +
+    #   executed per owner directive 'execute now'). +1 strategy:
+    #     - strat_inverted_cup_and_handle_short (Bulkowski 2005 'rounded top with handle' /
+    #       'dump and pop' mirror of CP-1; B686 NEW producer detect_inverted_cup_and_handle
+    #       in chart_patterns.py). 221 -> 222.
+    assert len(ALL_STRATEGIES) == 222, (
+        f"F-002 drift: ALL_STRATEGIES expected 222 post-B686 inverted-cup addition; "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10325,12 +10330,12 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 220, (
-        f"F-002 drift: active strategy count expected 220 (221 registered "
-        f"minus 1 disabled dxy_headwind_multinational_short); B685 "
-        f"owner-approved Class 7 NEW additions per B683 self-critique took "
-        f"218 -> 221 (+H&S top short + triangle descending short + hammer "
-        f"at support long); got {active}."
+    assert active == 221, (
+        f"F-002 drift: active strategy count expected 221 (222 registered "
+        f"minus 1 disabled dxy_headwind_multinational_short); B686 "
+        f"owner-approved inverted cup-and-handle Class 7 NEW per B683 "
+        f"self-critique CP-1 missing-inverse (deferred from B685; scoped + "
+        f"executed B686) took 221 -> 222; got {active}."
     )
 
     # F-004 exit method count

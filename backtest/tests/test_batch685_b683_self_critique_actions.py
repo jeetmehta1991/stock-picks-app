@@ -267,12 +267,18 @@ def test_batch685_cup_and_handle_long_in_exploratory_strategies():
 
 # ============ Strategy count attestation (1 pin) ============
 
-def test_batch685_all_strategies_count_221():
-    """Pin (19): ALL_STRATEGIES total count == 221 post-B685.
-    Was 218 post-B682; +3 Class 7 NEW (head_and_shoulders_top_short +
-    triangle_descending_short + hammer_at_support_long) = 221."""
+def test_batch685_all_strategies_count_at_least_221():
+    """Pin (19): ALL_STRATEGIES total count >= 221 post-B685.
+    Was 218 post-B682; +3 B685 Class 7 NEW (head_and_shoulders_top_short +
+    triangle_descending_short + hammer_at_support_long) = 221.
+
+    Loosened to >= 221 (vs == 221) to tolerate downstream Class 7 NEW
+    additions post-B685 (e.g., B686 inverted_cup_and_handle_short took
+    221 -> 222). The canonical exact count is asserted in test_unit.py
+    test_batch357_doc_count_drift_strategies + per-batch tests
+    (test_batch686_all_strategies_count_222)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221, (
-        f"B685 strategy count drift: expected 221 post-additions; "
+    assert len(ALL_STRATEGIES) >= 221, (
+        f"B685 strategy count drift: expected >=221 post-B685 additions; "
         f"got {len(ALL_STRATEGIES)}"
     )

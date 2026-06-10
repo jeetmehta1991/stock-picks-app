@@ -4230,6 +4230,59 @@ def strat_double_bottom_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+def strat_inverted_cup_and_handle_short(s):
+    """Batch 686 (2026-06-10 owner-approved Class 7 NEW per B683 self-
+    critique CP-1 missing-inverse audit; deferred from B685 pending
+    producer-side methodology work; now scoped + executed B686).
+
+    Bearish mirror of strat_cup_and_handle_long. Inverted cup-and-handle
+    per Bulkowski 2005 *Encyclopedia of Chart Patterns* (sometimes
+    called 'rounded top with handle' or 'dump and pop'). Symmetric to
+    O'Neil CANSLIM cup-and-handle bullish setup but inverted topology.
+
+    Producer signal inverted_cup_handle_detected from B686 NEW
+    detect_inverted_cup_and_handle in chart_patterns.py:179+.
+
+    Symmetric gate structure with CP-1 cup_and_handle_long (B685
+    Pattern A WAVE 2 swept; post-fix design):
+      - inverted_cup_handle_detected (pattern)
+      - below_ema_200 (bearish trend; B630 producer-additive)
+      - vol_spike_2x (B278 forensic-fix volume confirmation -
+        symmetric to LONG cup-and-handle B278 gate)
+      - below_ema_50 (B630 producer-additive intermediate trend)
+      - rsi_14 > 30 (not already oversold; symmetric to CP-1's
+        rsi_14 < 70 not overbought)
+
+    B671 borrow-trap gate applies (SHORT-direction via _strat).
+
+    Per `feedback_structural_symmetry_not_economic_symmetry` (owner
+    correction 2026-06-07 B617): structural symmetry to CP-1 does NOT
+    imply economic symmetry. Equity upward drift bias + bear-pattern
+    arbitrage + borrow costs all bias against the SHORT side. Cube
+    replay will validate per-cell Sharpe; do NOT assume inherited
+    win-rate from CP-1.
+
+    EXPLORATORY-candidate post-B660: same Pattern G fire-starve risk
+    class as CP-1 (Bulkowski 2005 published frequencies for cup-and-
+    handle patterns indicate ~5-15/yr per universe; inverted variant
+    likely similar or rarer in upward-drift equity).
+    """
+    fires = (
+        s.get("inverted_cup_handle_detected", False)
+        and s.get("below_ema_200", False)  # B630 producer-additive
+        and s.get("vol_spike_2x", False)
+        and s.get("below_ema_50", False)  # B630 producer-additive (symmetric to CP-1 ema_50 gate)
+        and s.get("rsi_14", 50) > 30
+    )
+    return _strat(fires, "short", "chart_pattern",
+        ["inverted_cup_handle_detected", "below_ema_200",
+         "vol_spike_2x", "below_ema_50", "rsi_14>30"],
+        ["Inverted cup-and-handle pattern detected (Bulkowski 2005 rounded top with handle)",
+         "Bearish breakdown + 2x volume confirmation (symmetric to CP-1 B278 fix)",
+         "Below 200 + 50 EMA (dual trend gate)",
+         "RSI not oversold (avoid late-stage entries; symmetric to CP-1 not-overbought)"])
+
+
 def strat_cup_and_handle_long(s):
     """Batch 252: O'Neil CANSLIM cup-and-handle long.
 
@@ -6350,6 +6403,12 @@ ALL_STRATEGIES = {
     # missing-inverse audit): Edwards-Magee 1948 + Bulkowski 2005 SHORT mirrors.
     "head_and_shoulders_top_short":     strat_head_and_shoulders_top_short,
     "triangle_descending_short":        strat_triangle_descending_short,
+    # Batch 686 (2026-06-10 owner-approved Class 7 NEW; deferred from B685
+    # pending inverted-cup producer methodology work; scoped + executed B686):
+    # Bulkowski 2005 inverted cup-and-handle (rounded top with handle) bearish
+    # mirror of CP-1 strat_cup_and_handle_long. Producer detect_inverted_cup
+    # _and_handle in chart_patterns.py.
+    "inverted_cup_and_handle_short":    strat_inverted_cup_and_handle_short,
     # BUG-111 retest variants (Batch 329 2026-05-25 owner-approved option b):
     # 6 explicit _retest variants for breakouts that previously fired only
     # on the initial break. Reuses resistance_break_retest / support_break_retest
