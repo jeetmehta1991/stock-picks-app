@@ -1702,55 +1702,108 @@ def strat_institutional_insider_combo_long(s):
     """Wave 3 (Batch 331): dual smart-money confirmation (13F + insiders).
     Cohen-Malloy-Pomorski 2012 JF (insiders) + Cohen-Frazzini-Malloy 2008
     RFS (institutions) - when BOTH sources accumulate simultaneously, the
-    edge is multiplicative not additive."""
+    edge is multiplicative not additive (independent information channels).
+    Stronger conviction than either alone."""
     fires = (
         s.get("institutional_buy", False)
         and s.get("insider_cluster_active", False)
         and s.get("price_above_ema_200", False)  # post-B663
     )
+    return _strat(fires, "long", "smart_money_combo",
+        ["institutional_buy","insider_cluster_active","price_above_ema_200"],
+        ["13F institutional new/increased positions",
+         "Insider cluster active (>=2 insiders buying open-market 30d)",
+         "Dual smart-money sources agree (multiplicative edge)",
+         "Above 200 EMA (regime gate)"])
 ```
 
-**3-gate LONG:** 13F state + insider EVENT + 200-EMA.
+**3-gate LONG strategy — the canonical CROSS-SOURCE example reviewer specifically called out as "where mis-attribution hides" in the F4 (low-fire-combo) + Pattern B framings.**
+
+**LONG fires when ALL THREE:**
+
+| Gate | Meaning |
+|---|---|
+| `institutional_buy` | 13F-derived looser cluster (same producer as SM-8); STATE quarterly with 45-day publication lag |
+| `insider_cluster_active` | ≥2 unique insiders open-market-bought in last 30 days; EVENT-like (Form 4 2-day filing lag); same producer as SM-1 |
+| `price_above_ema_200` | Long-term uptrend regime gate; B663-fixed to default-False |
 
 ### Step 2 — Classify
 
-- `smart_money_combo`; single LONG
-- No regime entry → B291 default
-- Last touched: B663
+- Category: `smart_money_combo` (distinct from pure `smart_money_13f` — combines two data sources)
+- Direction: single LONG
+- STRATEGY_REGIME_AFFINITY: NO ENTRY → B291 LONG default `{bull, neutral}` (no documented lineage)
+- Last touched: B663 (200-EMA family sweep)
 
 ### Step 3 — Producer source-read + temporality
 
-- `institutional_buy`: 13F STATE
-- `insider_cluster_active`: SM-1 producer EVENT (Form 4 2-day lag)
-- `price_above_ema_200`: STATE
+**Cross-source producer composition:**
+1. **13F producer** → `institutional_buy` (same as SM-7/SM-8/SM-10; QUARTERLY STATE; 45-day publication lag per DEC-325)
+2. **Form 4 insider producer** → `insider_cluster_active` (same as SM-1; rolling 30-day window over Form 4 filings; ~2-day filing lag)
+3. **Technical producer** → `price_above_ema_200` (STATE trend gate)
 
-**Temporality:** 1 EVENT gate + 2 STATE gates → docstring claim "multiplicative edge" is over-strong. The EVENT gate (insider) supplies bar-of-fire timing; the 13F gate is eligibility filter (factor-tilt). Edge is composition not multiplication.
+**Per CHECKLIST (s) EVENT/STATE classification — MIXED temporality (reviewer F-specific concern):**
+
+| Signal | Temporality | Timing alpha viable? |
+|---|---|---|
+| `institutional_buy` | **STATE** (90-day constant) | NO bar-of-fire timing |
+| `insider_cluster_active` | **EVENT** (30-day rolling Form 4; recent insider buys) | YES — the cluster_active EVENT supplies bar-of-fire timing alpha |
+| `price_above_ema_200` | STATE (trend gate) | NO bar-of-fire |
+
+**1 EVENT gate + 2 STATE gates.** Honest framing per B611 + B669 reviewer F-temporality: the EVENT gate (insider cluster) supplies bar-of-fire timing; the 13F gate is eligibility filter (factor-tilt); the 200-EMA is a regime gate. Edge attribution is COMPOSITION (1 timing + 2 eligibility), NOT MULTIPLICATION of two timing edges.
+
+**Reviewer F-specific note:** SM-12 is one of the 4 cross-source strategies the reviewer called out (SM-12 + SM-20 + SM-25 + SM-26) as "where mis-attribution hides — those mix a STATE and an EVENT signal." The docstring's "multiplicative edge" claim is exactly the mis-attribution risk.
 
 ### Step 4 — Doc-vs-thesis
 
 | Claim | Verification |
 |---|---|
-| "Cohen-Malloy-Pomorski 2012 + Cohen-Frazzini-Malloy 2008" | ✅ Both real; correctly distinguish insider vs institutional |
-| "Multiplicative not additive edge" | ⚠ Implies the two independent edges compound geometrically; this is a strong claim without empirical support. Pattern B family — re-frame as "EVENT timing + STATE eligibility composition" |
-| "Independent information channels" | ✅ Correct technical claim (insider Form 4 ≠ 13F filings) |
+| "Cohen-Malloy-Pomorski 2012 JF (insiders)" | ✅ Real paper, real result; correctly applied to the insider_cluster_active half |
+| "Cohen-Frazzini-Malloy 2008 RFS (institutions)" | ✅ Real paper, real result; correctly applied to the institutional_buy half (factor-tilt) |
+| "When BOTH sources accumulate simultaneously, the edge is multiplicative not additive" | ⚠ **Pattern B + reviewer F-temporality overclaim** — "multiplicative" implies two independent timing edges compound geometrically. In reality: 1 timing EVENT + 1 STATE eligibility = COMPOSITION (timing × eligibility-filter), not (timing × timing). Honest framing per B611 lesson. |
+| "Independent information channels" | ✅ Correct technical claim — insider Form 4 ≠ 13F filings (different data sources, different filers, different regulatory regimes) |
+| "Stronger conviction than either alone" | ⚠ Empirically untested pre-cube; the "multiplicative" framing implies a stronger claim than the data supports |
 
 ### Step 5 — OPEN_INVESTIGATIONS grep
 
-No active investigations.
+No active investigations on SM-12. Cross-references:
+- Inherits SM-1's insider-producer concerns (parallel-producer audit + schema-pin)
+- Inherits SM-7's 13F-producer concerns (Pattern B + Pattern F)
 
 ### Step 6 — Missing-inverse + economic-symmetry
 
-Same as SM-1 + SM-7 — both component data sources are asymmetric on SHORT side.
+Per `feedback_asymmetric_data_sources_break_mechanical_inverse`: both component data sources are SHORT-asymmetric:
+- 13F is SEC long-only by rule (per SM-7 + Pattern C analysis)
+- Insider Form 4 PURCHASES vs SALES: purchases are open-market money (strong); sales are diversification/tax/lockup-dominated (per SM-1 Step 6 economic-symmetry test)
+
+A mechanical `strat_institutional_insider_combo_short` would be economically false on BOTH sources — same logic as SM-9/SM-23 deletion precedent. No SHORT mirror proposal.
 
 ### Step 7 — Findings + options
 
-| # | Finding | Severity |
-|---|---|---|
-| **F-state-as-event Pattern B** | "Multiplicative edge" claim over-strong; one of two sources is STATE | MEDIUM |
-| F1 | Post-B663 ✅ | — |
-| F-fire-count | Co-occurrence of 13F + insider cluster → rare → projected ~10-30/yr; **FAIL on min_trades=30** likely | MEDIUM |
+| # | Finding | Severity | Reviewer cross-ref |
+|---|---|---|---|
+| **F-temporality-misattribution** | Docstring's "multiplicative edge" claim conflates EVENT timing with STATE eligibility; reviewer specifically called this out as "where mis-attribution hides" in cross-source strategies | MEDIUM | F (reviewer specific) |
+| **F-state-as-event Pattern B** | "Smart-money confirmation" framing implies 13F provides timing alpha; structurally false per B611 | MEDIUM | F1 (Pattern F gates Pattern B) |
+| **F-marginal-contribution Pattern F** | If 13F is 90-day-constant eligibility filter, strategy's actual edge lives in insider EVENT + 200-EMA. SM-12 reduces to SM-1 (insider_cluster + 200-EMA) filtered by 13F-eligibility. Marginal contribution of 13F gate over SM-1 = likely small. **Pattern F audit candidate.** | HIGH | F1 (Pattern F) |
+| **F-fire-count Pattern G** | Co-occurrence of 13F state + insider cluster EVENT is RARE; projected ~10-30/yr universe-wide; **FAIL on min_trades=30 per regime LIKELY**. Reviewer F4 explicitly flagged SM-12 for Pattern G EXPLORATORY-candidate review post-B660. | MEDIUM | F4 (Pattern G) |
+| F1 default-True silent-gap | `price_above_ema_200` default-True FIXED B663 ✅ | ✅ SHIPPED B663 | — |
+| F3 regime affinity | No regime entry; B291 default; no documented lineage; defer per B663 discipline | INFO | B663 |
 
-**B664 candidate option (recommended):** Pattern B docstring reframe — "EVENT (insider) + STATE (13F) composition; alpha attribution: insider EVENT supplies bar-of-fire timing; 13F supplies eligibility filter (factor-tilt). Edge attributable to composition not multiplication."
+**Options:**
+
+| Option | Description |
+|---|---|
+| (a) Status quo |
+| (b) Pattern B docstring reframe — "EVENT (insider) + STATE (13F) composition; alpha attribution: insider EVENT supplies bar-of-fire timing; 13F supplies eligibility filter (factor-tilt); edge attributable to COMPOSITION not MULTIPLICATION." Per reviewer F1: gates on Pattern F audit. |
+| **(c) RECOMMENDED B669 — gate Pattern B + Pattern F + Pattern G dispositions on post-B660 sequence**. Mark EXPLORATORY-candidate per reviewer F4 if B660 confirms < 30 fires/yr per regime; defer Pattern B docstring reframe until Pattern F audit surfaces marginal-contribution result. |
+| (d) (c) + immediate "multiplicative" → "composition" docstring narrow-edit (cosmetic; doesn't change behavior; resolves reviewer F-temporality-misattribution concern without waiting for Pattern F) |
+| (e) Stage 5 deferral |
+
+**My recommendation: (d) — narrow docstring edit + post-B660 Pattern B/F/G sequencing.** The "multiplicative" → "composition" wording fix is unambiguous + addresses the reviewer's specific F-temporality concern; Pattern B/F/G dispositions wait for B660 + cube data.
+
+**Awaiting owner direction on SM-12:**
+1. Narrow docstring edit (multiplicative → composition): approve immediate cosmetic fix
+2. Pattern G EXPLORATORY-candidate review: confirm post-B660 sequencing
+3. Pattern F audit: confirm post-B660 + post-cube sequencing
 
 ---
 
