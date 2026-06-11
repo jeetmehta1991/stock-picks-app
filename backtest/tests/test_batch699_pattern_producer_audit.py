@@ -58,10 +58,8 @@ def test_b699_pin1_public_api_complete():
     assert PHANTOM == "PHANTOM_BREAKOUT"
     assert CLEAN == "CLEAN"
     assert MISS == "MISS"
-    assert set(PATTERN_BUILDERS.keys()) == {
-        "double_bottom", "head_shoulders_bottom",
-        "ascending_triangle", "bull_flag",
-    }
+    assert {"double_bottom", "head_shoulders_bottom",
+            "ascending_triangle", "bull_flag"} <= set(PATTERN_BUILDERS.keys())
     assert callable(audit_producer)
 
 

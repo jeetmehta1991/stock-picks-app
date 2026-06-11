@@ -1,5 +1,21 @@
 # Stage 4 Event-Driven Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B702 STATUS BANNER (2026-06-11) — ADVERSARIAL REVIEW OF EXTERNAL REVIEWER'S PROPOSAL — NOT TRUST-BLIND.** Owner directive: *"Dont trust blindly. Do another review of the suggestions and provide your own adverserial feedback against current status. Then provide an implementation plan."*. Output: [STAGE_4_EVENT_DRIVEN_CLUSTER_B702_ADVERSARIAL_REVIEW.md](STAGE_4_EVENT_DRIVEN_CLUSTER_B702_ADVERSARIAL_REVIEW.md). **Headline B702 verdicts** (source-verified against `pead.py`, `screener.py:_process_day`, `data_prefetch/polygon/financials/*.parquet`):
+>
+> - **H1 (announcement-date re-anchor)**: LARGELY REFUTED — Polygon `filing_date` is SEC EDGAR submission, immutable. Reviewer's hazard targets Finnhub-like calendars; `finnhub` NOT imported by any `backtest/signals/*.py` module.
+> - **H2 (value restatement)**: WRONG LAYER — hazard lives at prefetch boundary, not producer. Polygon cache schema has no restatement history; producer cannot peek at value it doesn't know.
+> - **H3 (same-bar gap contamination)**: STRUCTURALLY REFUTED — `backtest.py:824` pre-slices `df[df.index.date <= as_of]`; `pead.py:248` guard `pos + 1 < len(ohlcv_df)` prevents same-day post-close fire; next-bar-open execution adds buffer.
+> - **EV-3 deletion (B682)**: REVIEWER PARTIALLY CORRECT — `screener.py:3873-3876` deletion comment explicitly acknowledges asymmetry ("EV-1's ann_ret > +2% gate adds a narrowing axis EV-3 lacks"). Subset-on-YoY-axis ≠ subset-of-fire-events. Empirical correlation measurement needed to decide stand-vs-revert.
+> - **SUE replacement**: tier-3 deferred (infra cost not priced — Polygon doesn't carry consensus EPS).
+> - **Gap-conditioning**: confronting test BEFORE refactor (literature mixed; not evidence-backed).
+> - **Pre-FOMC refactor**: 2-step confronting gate BEFORE refactor — verify SPY-level Lucca-Moench survives 2020-2026; verify single-stock beta-decile exceeds SPX-level.
+> - **Phase-0 producer audit**: ENDORSED for regression-guard + audit-trail value (lower hit-rate expected vs reviewer assertion).
+> - **Cross-cluster Pattern N (effective hypothesis count)**: ENDORSED IN FULL; already queued as `S5-MULTIPLE-TESTING-CORRECTION`.
+>
+> **Implementation plan: 16 tickets across Phase -1 (source-read gate), Phase 0 (harness), Phase 1 (confronting tests), Phase 2 (conditional refactors), Phase 3 (tier-3 deferred), Phase 4 (already-queued).** Top-priority ticket: `S4-B702-EV-3-DELETION-EMPIRICAL-VERIFY`. **Blocker**: 2 reviewer-provided tool files (`earnings_feed_pit_audit.py` + `validate_earnings_feed_pit_audit.py`) not in current context — owner re-paste needed.
+>
+> ---
+>
 > **B693 BANNER ADDENDUM (2026-06-11) — selective-reading correction + earnings blackout reviewer recommendation.** External reviewer caught the B691 selective-reading problem (favorable LOCKED, unfavorable PENDING-RERUN-or-B690 without positive test). **Each event-driven strategy's zero now requires the positive diagnostic** via [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py). Plus a cross-cluster recommendation the reviewer surfaced specifically for this cluster's adjacent neighbors (BR-1, BR-14, BR-15, BR-19): **earnings/event-window blackout filter** on volume-triggered breakouts is one of the highest-value win-rate adds — it removes coinflip earnings-day "breakouts" and gap-reversal tails. The event-driven cluster's PEAD strategies sit on the OTHER side of this divide (they're INTENTIONALLY trading the earnings window), so the recommendation doesn't apply HERE but the cluster owns the data (Finnhub earnings cache) that the breakout cluster needs to implement the blackout. Queued: `S4-B693-EARNINGS-BLACKOUT-FOR-BREAKOUT-CLUSTER-USING-EVENT-DRIVEN-CACHE`.
 >
 > ---
