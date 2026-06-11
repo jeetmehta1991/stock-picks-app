@@ -254,18 +254,179 @@ def _load_ohlcv(ticker: str) -> Optional[pd.DataFrame]:
     return df
 
 
+# ---------------------------------------------------------------------------
+# B689 (2026-06-11): TIER 1 + TIER 3 producer wire-in per B660 self-critique.
+# Pre-B689 the precompute loop called only `compute_all_signals` from
+# technical.py. Strategies whose entry depends on non-technical producers
+# (chart_patterns, smc_ict, ict_producers, multi_timeframe, volume_profile,
+# cross_asset, calendar_effects, macro_events, cot_positioning) were
+# structurally guaranteed 0 fires/yr -- 103 of 146 FAIL_FIRE_STARVED
+# verdicts in B660 were false negatives caused by this harness gap.
+#
+# B689 extends the precompute to:
+#   TIER 1 (per-bar df-only; no cache deps): chart_patterns + smc_ict +
+#     ict_producers + multi_timeframe + volume_profile
+#   TIER 3 (per-as_of global; cached once per unique date across all
+#     tickers): cross_asset + calendar_effects + pre_fomc + cot_combined
+#
+# DEFERRED to B690 (Tier 2): per-(ticker, as_of) cache-read producers
+# (insider, institutional, short_interest, sec_edgar, news_sentiment,
+# pead, search_volume, congressional_*, recent_8k). Those require
+# per-ticker parquet pre-load architecture; out of B689 scope.
+# Cross-sectional is similarly deferred (needs ohlcv_dict of ALL tickers).
+# ---------------------------------------------------------------------------
+
+# Default COT series injected as TIER 3 signals. Series chosen for breadth
+# (equity, fx, commodity, rates). All exist in data_prefetch/cftc/ per
+# B689 cache audit. Owner can extend via --cot-series CLI flag.
+DEFAULT_COT_SERIES = (
+    "cot_emini_sp500",
+    "cot_emini_nasdaq100",
+    "cot_dxy_dollar_idx",
+    "cot_gold",
+    "cot_wti_crude",
+    "cot_vix_futures",
+    "cot_treasury_10y",
+)
+
+
+def _compute_tier3_signals_for_as_of(
+    as_of: date,
+    cot_series: tuple[str, ...] = DEFAULT_COT_SERIES,
+) -> dict:
+    """B689: TIER 3 per-as_of global signals (one call per unique bar_date,
+    shared across all tickers). Produces a flat dict combining:
+      cross_asset.compute_cross_asset_signals(as_of)
+      calendar_effects.compute_calendar_signals(as_of)
+      macro_events.compute_pre_fomc_signals(as_of)
+      cot_positioning.compute_cot_series_signals(series, as_of) for each
+        series in `cot_series` (default: 7 series covering equity/fx/comm/rates)
+
+    Each producer is wrapped in try/except so a single failure (e.g.,
+    missing CFTC parquet) silently degrades to empty rather than killing
+    the whole precompute loop. Failures are logged at DEBUG.
+    """
+    out: dict = {}
+    try:
+        from backtest.signals.cross_asset import compute_cross_asset_signals
+        out.update(compute_cross_asset_signals(as_of))
+    except Exception as exc:
+        logger.debug("cross_asset failed at %s: %s", as_of, exc)
+    try:
+        from backtest.signals.calendar_effects import compute_calendar_signals
+        out.update(compute_calendar_signals(as_of))
+    except Exception as exc:
+        logger.debug("calendar_effects failed at %s: %s", as_of, exc)
+    try:
+        from backtest.signals.macro_events import compute_pre_fomc_signals
+        out.update(compute_pre_fomc_signals(as_of))
+    except Exception as exc:
+        logger.debug("pre_fomc failed at %s: %s", as_of, exc)
+    try:
+        from backtest.signals.cot_positioning import compute_cot_series_signals
+        for series in cot_series:
+            try:
+                out.update(compute_cot_series_signals(series, as_of))
+            except Exception as exc:
+                logger.debug("cot %s failed at %s: %s", series, as_of, exc)
+    except Exception as exc:
+        logger.debug("cot import failed: %s", exc)
+    return out
+
+
+def _compute_tier1_signals_for_bar(sub_df: pd.DataFrame, ticker: str) -> dict:
+    """B689: TIER 1 per-bar df-only signals (chart_patterns + smc + ict +
+    multi_timeframe + volume_profile). All take only the OHLCV slice;
+    no external cache reads. Each producer wrapped in try/except so a
+    single failure degrades silently rather than killing the precompute.
+
+    Key-collision policy: technical.py signals are computed FIRST (the
+    caller passes those in via the outer dict); TIER 1 outputs added
+    SECOND. If a producer emits a key that overlaps technical.py, the
+    TIER 1 value wins (this is intentional -- TIER 1 producers are more
+    specific, e.g., `weekly_bias_bull` vs none in technical.py).
+    """
+    out: dict = {}
+    # chart_patterns: cup_and_handle / head_and_shoulders / triangles /
+    # flags / wedges / double-tops/bottoms / + 3 B685 new producers for
+    # retest variants.
+    try:
+        from backtest.signals.chart_patterns import (
+            compute_all_chart_patterns,
+        )
+        out.update(compute_all_chart_patterns(sub_df))
+    except Exception as exc:
+        logger.debug("chart_patterns failed for %s: %s", ticker, exc)
+    # smc_ict: SMC primitives (BOS/CHoCH, FVG, order_block, liquidity_swept,
+    # premium/discount, mitigation_block, equal_highs/lows, OTE, inverse_FVG).
+    # Owns ~ 30 keys feeding all 18 SMC strategies + ICT-7/8/9/10 (Turtle
+    # Soup + Judas Swing) sub-features.
+    try:
+        from backtest.signals.smc_ict import compute_smc_signals
+        out.update(compute_smc_signals(sub_df, ticker=ticker))
+    except Exception as exc:
+        logger.debug("smc_ict failed for %s: %s", ticker, exc)
+    # ict_producers (B581): po3_mmbm_setup + po3_mmsm_setup (PO3 plural)
+    # + week_opening_gap signals (ICT-11/12).
+    try:
+        from backtest.signals.ict_producers import (
+            compute_po3_signals,
+            compute_week_opening_gap_signals,
+        )
+        out.update(compute_po3_signals(sub_df))
+        out.update(compute_week_opening_gap_signals(sub_df))
+    except Exception as exc:
+        logger.debug("ict_producers failed for %s: %s", ticker, exc)
+    # multi_timeframe: weekly_bias_bull/_bear, monthly_bias_bull/_bear,
+    # htf_aligned_bull/_bear/_disagreement, po3_bullish/_bearish (singular
+    # PO3 from multi_timeframe.py is distinct from ict_producers.py's
+    # plural setups -- both naming conventions live per B675 audit).
+    try:
+        from backtest.signals.multi_timeframe import (
+            compute_weekly_bias, compute_monthly_bias,
+            compute_htf_alignment, compute_po3_signal,
+        )
+        weekly = compute_weekly_bias(sub_df)
+        monthly = compute_monthly_bias(sub_df)
+        out.update(weekly)
+        out.update(monthly)
+        out.update(compute_htf_alignment(weekly, monthly))
+        out.update(compute_po3_signal(sub_df))
+    except Exception as exc:
+        logger.debug("multi_timeframe failed for %s: %s", ticker, exc)
+    # volume_profile: poc_magnet / value_area_high|low / naked_poc / etc.
+    try:
+        from backtest.signals.volume_profile import compute_volume_profile
+        out.update(compute_volume_profile(sub_df))
+    except Exception as exc:
+        logger.debug("volume_profile failed for %s: %s", ticker, exc)
+    return out
+
+
 def _precompute_signals_for_ticker(
     df: pd.DataFrame, ticker: str, start: date, end: date,
+    as_of_cache: Optional[dict] = None,
+    enable_extended_signals: bool = True,
+    cot_series: tuple[str, ...] = DEFAULT_COT_SERIES,
 ) -> list[tuple[date, dict]]:
     """Compute signals for every bar in [start, end] for one ticker.
 
     Returned once; reused across all strategies that evaluate this
     ticker. Single biggest speedup vs the naive per-strategy loop.
+
+    B689: extended to merge TIER 1 (df-only) + TIER 3 (per-as_of global)
+    producer outputs into the per-bar signals dict. `as_of_cache` is a
+    dict[date, dict] mapping bar_date -> TIER 3 signals (lazily filled
+    on cache miss; shared across all tickers in the run). If
+    `enable_extended_signals` is False, behavior reverts to pre-B689
+    (compute_all_signals only) for diffing.
     """
     from backtest.signals.technical import compute_all_signals
     out: list[tuple[date, dict]] = []
     if len(df) < 250:
         return out
+    if as_of_cache is None:
+        as_of_cache = {}
     for i in range(250, len(df)):
         bar_date = df.index[i].date()
         if bar_date < start or bar_date > end:
@@ -278,6 +439,14 @@ def _precompute_signals_for_ticker(
             continue
         if not signals:
             continue
+        if enable_extended_signals:
+            # B689 TIER 1 merge (df-only producers; ~10 modules)
+            tier1 = _compute_tier1_signals_for_bar(sub_df, ticker)
+            signals.update(tier1)
+            # B689 TIER 3 merge (per-as_of global; cached across tickers)
+            if bar_date not in as_of_cache:
+                as_of_cache[bar_date] = _compute_tier3_signals_for_as_of(bar_date, cot_series)
+            signals.update(as_of_cache[bar_date])
         out.append((bar_date, signals))
     return out
 
@@ -309,6 +478,8 @@ def measure_strategies(
     max_tickers: Optional[int] = None,
     ticker_sample_strategy: str = "first",
     random_seed: int = 42,
+    enable_extended_signals: bool = True,
+    cot_series: tuple[str, ...] = DEFAULT_COT_SERIES,
 ) -> dict:
     """Measure fires for each named strategy across the T1a universe.
 
@@ -381,11 +552,30 @@ def measure_strategies(
     # surfaces the ticker that crashes if any single-ticker compute fails.
     t_pre = time.time()
     signals_cache: dict[str, list[tuple[date, dict]]] = {}
+    # B689: shared per-as_of cache for TIER 3 signals (cross_asset +
+    # calendar + pre_fomc + cot). Filled lazily on cache-miss inside
+    # _precompute_signals_for_ticker; reused across all subsequent
+    # tickers. Net effect: TIER 3 producers run once per unique bar_date
+    # in the run, not 503-times-per-bar.
+    tier3_as_of_cache: dict[date, dict] = {}
+    if enable_extended_signals:
+        logger.info(
+            "B689 extended signals ENABLED: TIER 1 (chart_patterns + smc + ict + multi_timeframe + volume_profile) "
+            "+ TIER 3 (cross_asset + calendar + pre_fomc + %d cot series) wired into precompute path",
+            len(cot_series),
+        )
+    else:
+        logger.info("B689 extended signals DISABLED (pre-B689 behavior; technical.py producers only)")
     n_tickers_total = len(ohlcv_cache)
     n_done = 0
     for ticker, df in ohlcv_cache.items():
         try:
-            signals_cache[ticker] = _precompute_signals_for_ticker(df, ticker, start, end)
+            signals_cache[ticker] = _precompute_signals_for_ticker(
+                df, ticker, start, end,
+                as_of_cache=tier3_as_of_cache,
+                enable_extended_signals=enable_extended_signals,
+                cot_series=cot_series,
+            )
         except Exception as exc:
             import traceback
             logger.error(
@@ -584,6 +774,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Output JSON path (default: output_audit/fire_count_measured_<DATE>.json)",
     )
     parser.add_argument(
+        "--no-extended-signals", action="store_true",
+        help="(B689) DISABLE TIER 1 + TIER 3 producer wire-in (chart_patterns, smc_ict, ict_producers, multi_timeframe, volume_profile, cross_asset, calendar_effects, pre_fomc, cot). Reverts to pre-B689 behavior (technical.py producers only). Use for diff vs the B660 baseline run.",
+    )
+    parser.add_argument(
+        "--cot-series", nargs="+", default=list(DEFAULT_COT_SERIES),
+        help=f"(B689) COT series to inject. Default: {list(DEFAULT_COT_SERIES)}. Must match filenames in data_prefetch/cftc/ (without .parquet).",
+    )
+    parser.add_argument(
         "--verbose", action="store_true",
         help="Verbose logging",
     )
@@ -615,6 +813,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         strategy_names, start=start, end=end, max_tickers=args.max_tickers,
         ticker_sample_strategy=args.ticker_sample_strategy,
         random_seed=args.random_seed,
+        enable_extended_signals=not args.no_extended_signals,
+        cot_series=tuple(args.cot_series),
     )
 
     if args.output:
