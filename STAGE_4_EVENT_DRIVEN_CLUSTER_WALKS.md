@@ -1,5 +1,9 @@
 # Stage 4 Event-Driven Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B693 BANNER ADDENDUM (2026-06-11) — selective-reading correction + earnings blackout reviewer recommendation.** External reviewer caught the B691 selective-reading problem (favorable LOCKED, unfavorable PENDING-RERUN-or-B690 without positive test). **Each event-driven strategy's zero now requires the positive diagnostic** via [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py). Plus a cross-cluster recommendation the reviewer surfaced specifically for this cluster's adjacent neighbors (BR-1, BR-14, BR-15, BR-19): **earnings/event-window blackout filter** on volume-triggered breakouts is one of the highest-value win-rate adds — it removes coinflip earnings-day "breakouts" and gap-reversal tails. The event-driven cluster's PEAD strategies sit on the OTHER side of this divide (they're INTENTIONALLY trading the earnings window), so the recommendation doesn't apply HERE but the cluster owns the data (Finnhub earnings cache) that the breakout cluster needs to implement the blackout. Queued: `S4-B693-EARNINGS-BLACKOUT-FOR-BREAKOUT-CLUSTER-USING-EVENT-DRIVEN-CACHE`.
+>
+> ---
+>
 > **B691 STATUS BANNER (2026-06-11) — SPLIT VERDICT: pre_fomc subset pending-B689-rerun / news+pead+8K subset pending-B690.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) showing **12 of 12 event-driven strategies = 0 fires (100% FAIL_FIRE_STARVED).** **This is a measurement harness gap, NOT real verdicts.** Two-tier resolution:
 >
 > **B689 RE-RUN UN-BLOCKS (~2026-06-12 12:30):**

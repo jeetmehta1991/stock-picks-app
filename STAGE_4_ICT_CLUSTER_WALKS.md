@@ -1,5 +1,9 @@
 # Stage 4 ICT (Inner Circle Trader) Pure Price-Action Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B693 BANNER ADDENDUM (2026-06-11) — selective-reading correction + Pattern Q intensifies.** External reviewer of [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) caught the B691 selective-reading methodology problem (favorable LOCKED, unfavorable PENDING-RERUN). **Each ICT strategy's zero now requires the positive two-part test via [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py).** Plus a cluster-specific addendum: Pattern Q (10 of 12 ICT strategies have NO peer-reviewed methodology citation) **intensifies the bar** post-rerun. If the rerun shows ICT strategies still fire near zero AFTER producer wire-in, the disposition cannot fall back to "needs more data" — Pattern Q says there's no methodology foundation to defer to. A cube PASS_CUBE on an ICT strategy is necessary but not sufficient; an ICT strategy that doesn't fire post-rerun + has no peer-reviewed anchor is a candidate for deprecation, not patience.
+>
+> ---
+>
 > **B691 STATUS BANNER (2026-06-11) — 🔴 FALSE-NEGATIVE — PENDING-B689-RERUN.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) showing **14 of 14 ICT strategies = 0 fires (100% FAIL_FIRE_STARVED).** **This is a measurement harness gap, NOT real verdicts.** The producers feeding ICT strategies were NOT invoked in the pre-B689 precompute path:
 > - `multi_timeframe.compute_po3_signal(df)` (singular PO3 feeding ICT-1 + ICT-2 `po3_bullish/_bearish` gates)
 > - `multi_timeframe.compute_weekly_bias(df)` + `compute_monthly_bias(df)` (ICT-3 + ICT-4 weekly bias pullback gates)

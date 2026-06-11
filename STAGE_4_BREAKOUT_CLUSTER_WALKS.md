@@ -1,5 +1,74 @@
 # Stage 4 Breakout Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B693 STATUS BANNER (2026-06-11) — EXTERNAL REVIEW INCORPORATED + TRIGGER-FOLLOW-THROUGH TOOL SHIPPED.** An external adversarial review of this doc surfaced 7 cluster-level findings + a per-strategy trigger-optimization sheet + 6 anti-fakeout parameters + a working diagnostic tool (`scripts/trigger_followthrough.py` validated all-3-checks PASS on synthetic ground truth). Reviewer's framing principle, applied across the cluster: **"a measured zero must be diagnosed, not assumed"** — the B691 banner's blanket "false negative pending re-run" disposition of all 6 FAIL_FIRE_STARVED is a one-directional reading of the evidence (favorable measurements LOCKED, unfavorable PENDING). Distinguishing harness-gap zeros from empty-conjunction zeros requires a positive test, now scaffolded at [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py). The cluster's central trigger-quality concerns are now operational rather than rhetorical.
+>
+> **7 reviewer findings (severity-ordered):**
+>
+> | # | Finding | B693 disposition |
+> |---|---|---|
+> | **#1 (CRITICAL)** | BR-1 flagship measured **0 fires** in B660, doc still rates "PASS likely" 300 lines later, contradictions unreconciled. Most likely cause: same-bar 5-way AND of `break_52w_high + vol_spike_17x + sector_outperforming_spy + close_above_open + close_in_top_40pct` is structurally empty — not a harness gap. | ✅ DIAGNOSTIC TOOL SHIPPED: [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py) distinguishes "signal absent from dict" (harness gap) from "signals present but AND is empty" (empty conjunction) per reviewer's two-part test. **OWNER ACTION: ticket `S4-B693-BR-1-ZERO-DIAGNOSIS` queued for resolution before any re-run conclusion.** |
+> | **#2 (CRITICAL methodology)** | "False negative" is being used as an unfalsifiable escape hatch — every favorable B660 number (24 PASS) is LOCKED, every unfavorable number (6 FAIL) is PENDING-RERUN. The same selective-reading pattern shipped in 5 cluster docs in B691. When favorable data is trusted and unfavorable data is provisional pending a fix, measurement can no longer disconfirm. | ✅ DISPOSITION CHANGE: each "false negative" claim now requires a positive test before being labeled. NEW METHODOLOGY: (a) confirm gate signal literally absent from dict (not just zero-fire), (b) confirm with signal present, other gates leave non-empty surviving set. Applies cluster-wide. **Amending B691 banners on chart-pattern/SMC/ICT/event-driven docs to reflect this** (B691 banner shipped a one-directional reading; B693 corrects). |
+> | **#3 (HIGH)** | BR-7 (`break_retest_volume`) measured 41,868 LONG + 25,015 SHORT; BR-8 (`dc20_break_retest`) measured 38,554 + 23,672. The 25k SHORT counts match the silent-gap bug signature from the original W2/W3 walks. | ✅ VERIFIED B693 via [`scripts/verify_silent_gap_fix.py`](scripts/verify_silent_gap_fix.py): post-B617 4-gate SHORT uses positive `s.get(...)` AND-chained ([screener.py:2730-2733](backtest/signals/screener.py#L2730-L2733)) with NO `not s.get(...)` patterns. Missing keys → None → falsy → AND fails. **NO SILENT-GAP post-B617.** 25k SHORT fires are REAL fires. **REDUNDANCY concern (BR-7 = BR-8 = Donchian = 52w-retest variants firing on the same trade) is the real explanation; queued as `S4-B693-BR-7-BR-8-REDUNDANCY-VS-DONCHIAN`.** |
+> | **#4 (HIGH)** | Pattern N's "effective hypothesis count ≈ 13" is computed by counting distinct primitives (syntactic) when it should be measured via pairwise outcome correlation / marginal contribution from the B660 return panel. The 13 count is probably HIGHER than the real effective N because cross-primitive correlation in a breakout cluster (everything fires on the same up-moves) is large. | Queued: `S4-B693-PATTERN-N-OUTCOME-CORRELATION-NOT-PRIMITIVE-COUNT` — replace primitive-counting with outcome-correlation matrix using post-B668 cube return panel. The B687 conditional-information diagnostic plugs in directly. |
+> | **#5 (MEDIUM)** | CC1 (continuation gap) reasoning is half-right: the gap IS in the trade's direction, but that means you enter at a worse price on every winning breakout — systematic haircut on exactly the winners. The doc dismisses this as "LOW-MEDIUM"; for momentum-continuation strategies the post-breakout-gap fill is often the largest determinant of edge survival. | Queued: `S4-B693-CC1-GAP-HAIRCUT-MEASURE-DETECTION-VS-NEXT-OPEN` — compare detection-close fill vs next-open fill on B660 winners; quantify the haircut. |
+> | **#6 (MEDIUM)** | The 52w family's "sector ETF substitute" framing for `sector_outperforming_spy` is wrong: it's a sector relative-strength filter, not a trend filter. A stock making a 52-week high IS in an uptrend (EMA-gate redundant); meanwhile the sector gate vetoes good breakouts for sector-rotation reasons unrelated to the stock. **Probable culprit for BR-1's zero fires.** | Queued: `S4-B693-52W-SECTOR-ETF-REFRAME-AND-AB-TEST` — reframe + conditional_add_test on `sector_outperforming_spy` to determine if it earns its slot. |
+> | **#7 (cluster-positive)** | Real citations (George-Hwang 2004 JF, Bulkowski 2005, Turtle), B660 actually landed (vs SMC/ICT speculative), redundancy self-flagged as flagship, forensic-fix density real. Best-anchored cluster in the series. | ✅ Preserved in framing |
+>
+> **6 anti-fakeout parameters (reviewer's framework — most are missing from the cluster):**
+>
+> 1. **Break-clearance margin** (ATR-scaled, ~0.3-0.5×ATR, swept) — present only on B594/B596 "strong variants"; should be on EVERY breakout/breakdown. Most general anti-fakeout filter; separates real break from one-tick poke. → Queued cluster-wide: `S4-B693-CLUSTER-CLEARANCE-ATR-SWEEP`.
+> 2. **Close location within bar** (tighten from 40% → top 25-30%, swept) — currently arbitrary 40%, probably too loose. High-information, low-cost. → Queued: `S4-B693-CLOSE-LOCATION-25-30PCT-SWEEP`.
+> 3. **Volume confirmation — right comparison** — breakouts need EXPANSION (RVOL z ≥ threshold), retests need CONTRACTION (retest-bar < 0.7× breakout-bar). Cluster sometimes uses wrong one. → Queued: `S4-B693-VOLUME-COMPARISON-CORRECTNESS-AUDIT`.
+> 4. **Immediate-reclaim filter** (one-bar confirmation, sweep N=1-2 bars) — MOSTLY MISSING. Cleanest fakeout tell: break happens then price reclaims the level within 1-2 bars. Highest value on SHORTS specifically (snapback/stop-run dynamic). → Queued: `S4-B693-IMMEDIATE-RECLAIM-FILTER-ADD-TEST`.
+> 5. **Pre-breakout compression** (volatility-contraction ratio OR BB-width-inside-Keltner percentile, swept) — **MISSING EVERYWHERE except BR-19**; reviewer's "most likely to raise conditional follow-through." BR-19 squeeze is the in-house compression template to generalize. → Queued: `S4-B693-CLUSTER-PRE-BREAK-COMPRESSION-ADD-TEST`.
+> 6. **Extension filter** (cap distance-from-anchor: close within X×ATR of 20-EMA, or RSI not >75) — MISSING. Targets exhaustion-breakout fakeout (distinct from compression: compression looks at the base, extension at how far price has already run). → Queued: `S4-B693-CLUSTER-EXTENSION-FILTER-ADD-TEST`.
+>
+> **Per-strategy trigger-optimization (reviewer's consolidated sheet):**
+>
+> | Strategy | Re-tune | Add | Specific values | Queued ticket |
+> |---|---|---|---|---|
+> | **BR-1** 52w_high_breakout (flagship; zero fires) | vol_spike_17x → RVOL z; close_top_40pct → top-25-30% | ±1-bar confirmation window OR 3-of-4 score; break-clearance margin; pre-break compression; immediate-reclaim; conditional_add_test on sector_outperforming_spy | window=1-2; close top 25-30%; clearance 0.3-0.5×ATR | `S4-B693-BR-1-ZERO-DIAGNOSIS-+-CONJUNCTION-LOOSEN` |
+> | **BR-2/4/5/6/12/13** retest family | Retest tolerance 1.5×ATR → 0.5-0.75×ATR; vol_below_avg → <0.7× breakout-bar volume | Reclaim-bar trigger (fire on bounce not touch); freshness window N bars | tolerance 0.5-0.75×ATR; dry-up <0.7×; freshness N=5-15 swept | `S4-B693-RETEST-FAMILY-RECLAIM-BAR-TIGHTEN-FRESHNESS` |
+> | **BR-3/11/18 + BR-6/13 shorts** | Apply B594/B596 strong-break ATR clearance to ALL shorts (not just some) | Immediate-reclaim filter (highest value here); confirmation-bar | clearance 0.5×ATR symmetric to longs | `S4-B693-SHORT-BREAKDOWNS-CLEARANCE-+-RECLAIM` |
+> | **BR-7/BR-8** 40k-fire pair | Retest tolerance hard-tighten; OBV switch to `obv_bullish` (20-bar baseline; **producer already emits; strategy ignores per B617 post-fix code**) OR retest-bar-specific volume; verify silent-gap is fixed (✅ done B693 — clean post-B617) | Clearance margin + reclaim confirmation + compression | retest-bar volume not 5-bar; OBV from 20-bar baseline | `S4-B693-BR-7-BR-8-RE-ANCHOR-+-REDUNDANCY-ABLATION` |
+> | **BR-9/10/12** Donchian | Test raw channel-break vs post-B589 5-gate overlay (overlay may be DELAYING the trigger past the breakout moment); sweep channel period DC10 vs DC20 (currently fixed by lineage) | Replace lagging MACD-STATE gate with clearance margin (doesn't lag) | DC10-DC20 sweep; raw-vs-5-gate follow-through diff | `S4-B693-DONCHIAN-RAW-VS-OVERLAY-+-CHANNEL-PERIOD` |
+> | **BR-14/BR-15** volume-spike | vol_spike_15x → RVOL z-score | Close-location + clearance + earnings blackout (single biggest false-spike source); AVWAP-reclaim trigger for BR-15 | RVOL z ≥ 2.0 swept; blackout ±2 bars | `S4-B693-VOL-SPIKE-RVOL-Z-+-AVWAP-RECLAIM` |
+> | **BR-16** force_index | Repurpose as confirmation gate on BR-1/BR-10, not standalone | conditional_add_test on force-index cross given a real breakout already fired | — | `S4-B693-BR-16-FOLD-INTO-CONFIRMATION` |
+> | **BR-17** inside_bar | Gate to continuation context (inside bars within/after trend leg or at base-edge, not random); replace ADX proxy with base-tightness | — | continuation context only | `S4-B693-BR-17-CONTINUATION-CONTEXT-+-BASE-TIGHTNESS` |
+> | **BR-19** squeeze | Sweep squeeze-tightness threshold; confirm fires on release bar (EVENT) not squeeze state (STATE) | — | BB-width-inside-Keltner percentile sweep | `S4-B693-BR-19-RELEASE-ANCHOR-CONFIRM` |
+>
+> **Reviewer's 7-item refined priority order** (entry-only, by follow-through-impact / unit effort):
+>
+> 1. **BR-1 conjunction fix** (±1-bar / 3-of-4) — rescues the flagship from zero
+> 2. **BR-7/BR-8 re-anchor + silent-gap re-verify (✅ done B693, clean) + retest-bar volume**
+> 3. **Retest family reclaim-bar trigger** (BR-2/4/5/6/12/13) — touch→bounce
+> 4. **Cluster-wide RVOL z-score + ATR-scaled clearance margin**
+> 5. **Add compression + reclaim-confirmation via `conditional_add_test`** — the two highest-value missing anti-fakeout parameters
+> 6. **Donchian raw-vs-5-gate timing test** — subtractive optimization
+> 7. **Earnings blackout on all volume-triggered strategies** — coinflip removal
+>
+> **4 optimization discipline principles (apply to every sweep above):**
+> 1. **Optimize on conditional follow-through, not returns** (exit-free path metric).
+> 2. **Sweep coarse grid, pick the plateau center, not the peak** — a value best at exactly 0.47 and bad at 0.4/0.5 is noise; a value good across 0.3-0.5 is real.
+> 3. **Hold out time** — tune 2020-2022, validate persistence on 2023-2025. A fakeout filter that only works in-sample isn't a fakeout filter.
+> 4. **Add a parameter only if `conditional_add_test` shows it lifts follow-through GIVEN existing gates already pass** — stops you stacking redundant anti-fakeout gates that just shrink fires for no conditional gain. (This is the B687 gate-redundancy diagnostic in follow-through units.)
+>
+> **Tool framing — three complementary diagnostics (all shipped):**
+>
+> | Tool | Axis | Question | Status |
+> |---|---|---|---|
+> | [`backtest/engine/conditional_information_gate_diagnostic.py`](backtest/engine/conditional_information_gate_diagnostic.py) (B687) | Outcome conditional on OTHER gates | Does this gate add CONDITIONAL information about the outcome given the others? | Module + 15-pin validation; awaits cube replay (B668) |
+> | [`scripts/trigger_followthrough.py`](scripts/trigger_followthrough.py) (B693) | Outcome conditional on the trigger firing | Did the move materialize (target-first) or invalidate (stop-first) over N bars? | Module + validation harness all-3-checks PASS on synthetic ground truth |
+> | [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py) + [`scripts/verify_silent_gap_fix.py`](scripts/verify_silent_gap_fix.py) (B693) | Did the strategy have any chance to fire | Is the zero a harness gap, an empty conjunction, or an auto-passing gate? | Scaffolds; methodology validated on BR-7 (clean post-B617) |
+>
+> **Reviewer's tool-trustworthiness story (worth preserving):** the first validation harness run FAILED. The synthetic-market constructor I (claude) reproduced had a bug — the quality-driven drift didn't actually persist over the 12-bar horizon, so the barrier race saw noise. The tool correctly reported "no edge" rather than flattering bad data. The reviewer (and now I) fixed the synthetic, not the tool. A diagnostic that refuses to flatter is the only kind worth shipping; this one has that discipline.
+>
+> **One caveat the reviewer explicitly stated:** the trigger-follow-through tool's target/stop/horizon defaults (2×ATR / 1×ATR / 10 bars) are themselves choices. A trigger can look well- or poorly-timed depending on them. Sweep them per strategy, OR report follow-through across 2-3 horizon settings so a parameter isn't declared good only because it suits one barrier geometry. Queued: `S4-B693-FOLLOWTHROUGH-HORIZON-PER-STRATEGY-OR-MULTI`.
+>
+> **Closing caveat:** tuning each strategy in isolation to the same follow-through boundary will make them MORE correlated, not less (Pattern N concern intensifies). The per-strategy tuning above must be followed by a book-level distinctness pass: which tuned-survivors still pick up distinct opportunities? Otherwise you get 19 well-timed versions of about 4 trades. Queued: `S4-B693-BOOK-LEVEL-DISTINCTNESS-POST-TUNING`.
+>
+> ---
+>
 > **B691 STATUS BANNER (2026-06-11) — MOSTLY TRUSTWORTHY ✅ / `htf_aligned_*` subset PENDING-B689-RERUN.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) showing **24 PASS_CUBE / 6 FAIL_FIRE_STARVED for the 30-strategy breakout cluster** (broader than the original 19 in this doc — includes 52w_high/low, donchian, bollinger, dc20, value_area, break_retest variants registered as `breakout` category). Most strategies in this cluster use only `technical.py` producers (compute_donchian / compute_bollinger / compute_break_retest_signals / compute_52w_break_retest_signals / compute_pivot_break_retest_signals) — those B660 numbers are TRUSTWORTHY and the B689 re-run will NOT change them.
 >
 > **TRUSTWORTHY subset (sample of 24 PASS_CUBE):**

@@ -1,5 +1,9 @@
 # Stage 4 Chart Pattern + Candle Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B693 BANNER ADDENDUM (2026-06-11) — selective-reading correction.** B691 (this doc and 4 others shipped that batch) labeled the 9/9 chart-pattern FAIL as "🔴 FALSE-NEGATIVE — PENDING-B689-RERUN." External reviewer of [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) caught the methodology problem: **"false negative" used without a positive test is an unfalsifiable escape hatch**. The favorable B660 measurement (5 candle PASS) was labeled LOCKED, unfavorable (9 chart-pattern FAIL) was labeled PENDING-RERUN — a one-directional reading. A measured zero must be DIAGNOSED, not assumed. Each chart-pattern strategy's zero now requires the positive two-part test (signal-key present in dict + relaxed-conjunction count > 0) before the re-run conclusion is accepted. Diagnostic tool scaffolded at [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py); will run post-B689-rerun on each chart-pattern strategy to confirm "harness gap" vs "empty conjunction" before any verdict shift. The PENDING-B689-RERUN label below stays but is now provisional on that diagnostic, not a free pass.
+>
+> ---
+>
 > **B691 STATUS BANNER (2026-06-11) — SPLIT VERDICT: candle ✅ TRUSTWORTHY / chart-pattern 🔴 FALSE-NEGATIVE-PENDING-RERUN-B689.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json). The two clusters bundled in this doc have DIFFERENT trust statuses:
 >
 > **CANDLE cluster (8 strategies) — ✅ TRUSTWORTHY:** all candle gates use only `technical.compute_candles` + companion technical producers. B660 numbers stand. The B689 re-run will NOT change these.
