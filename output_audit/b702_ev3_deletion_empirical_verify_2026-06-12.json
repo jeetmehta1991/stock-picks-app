@@ -1,0 +1,62 @@
+{
+  "batch": "B702-EV-3-DELETION-EMPIRICAL-VERIFY",
+  "computed_at": "2026-06-11T18:41:59.201887",
+  "params": {
+    "yoy_surprise_high_threshold": 0.05,
+    "pead_positive_surprise_yoy_threshold": 0.0,
+    "pead_positive_surprise_ann_return_threshold": 0.02,
+    "sample_stride_bdays": 5,
+    "date_range": {
+      "start": "2020-01-01",
+      "end": "2026-05-31"
+    },
+    "n_tickers_target": 30,
+    "n_tickers_with_data": 30
+  },
+  "tickers_used": [
+    "A",
+    "AAPL",
+    "ABBV",
+    "ABNB",
+    "ABT",
+    "ACGL",
+    "ACN",
+    "ADBE",
+    "ADI",
+    "ADM",
+    "ADP",
+    "ADSK",
+    "AEE",
+    "AEP",
+    "AES",
+    "AFL",
+    "AIG",
+    "AIZ",
+    "AJG",
+    "AKAM",
+    "ALB",
+    "ALGN",
+    "ALL",
+    "ALLE",
+    "AMAT",
+    "AMCR",
+    "AMD",
+    "AME",
+    "AMGN",
+    "AMP"
+  ],
+  "metrics": {
+    "n_bars_within_pead_window": 3501,
+    "n_bars_yoy_surprise_high": 2093,
+    "n_bars_pead_positive_surprise": 707,
+    "n_bars_both_true": 627,
+    "n_bars_only_yoy_high": 1466,
+    "n_bars_only_pead_positive": 80,
+    "n_bars_neither": 1328,
+    "phi_correlation": 0.2965,
+    "pct_yoy_high_in_pead_pos": 0.2996,
+    "pct_pead_pos_in_yoy_high": 0.8868
+  },
+  "verdict": "REVERT_B682",
+  "verdict_message": "phi < 0.70 (phi=0.297) -> EV-3 captures a materially distinct population from EV-1. Recommend revert: re-register strat_pead_long_high_yoy_growth_only + strat_pead_short_negative_yoy_growth in screener.py + ALL_STRATEGIES. Strategy roster count 218 -> 220."
+}
