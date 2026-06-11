@@ -1624,27 +1624,58 @@ def strat_volume_spike_breakout(s):
 
 
 def strat_52w_high_breakout(s):
-    """Batch 589 (2026-06-04 owner directive '52w_high_breakout previous
-    strategies - add close above open and close within 40% of day high'):
-      - B586: vol_spike_2x -> vol_spike_17x; added sector_outperforming_spy
-      - B589: added close_above_open + close_in_top_40pct_of_range
-    Producer signals: break_52w_high (B582 fix), vol_spike_17x (B586),
-    sector_outperforming_spy (B586), close_above_open (existing),
-    close_in_top_40pct_of_range (B589).
+    """Batch 697 (2026-06-11 owner-approved per b693_sweeps_report.md
+    sweep validation): TWO changes incorporated from the B693 external
+    reviewer's recommendations + sweep evidence on local OHLCV cache:
+
+      (1) `sector_outperforming_spy` gate DROPPED. Sweep verdict:
+          REJECT_REDUNDANT (drops fires ~8% with -0.6pp follow-through
+          lift on the test window). Reviewer Finding #6: sector_outperforming
+          _spy is a sector relative-strength filter, NOT a trend filter,
+          and vetoes good individual breakouts for sector-rotation reasons
+          unrelated to the stock's own breakout quality.
+
+      (2) Same-bar 4-way AND LOOSENED to 'REQUIRE break_52w_high AND
+          score-of-2-of-3 on (vol_spike_17x, close_above_open,
+          close_in_top_40pct_of_range)'. B693 Sweep 1 evidence: the
+          original 4-AND fires 0.9 times per ticker-year (essentially
+          empty across 30 T1a tickers x 5 years), while the score-based
+          version fires 13.9 times per ticker-year = 15.9x more fires.
+          Confirms reviewer Finding #1: the same-bar AND is structurally
+          empty by construction; loosening rescues the strategy from the
+          B660 measured ZERO.
+
+    Net effect: ~16x more fires while maintaining quality (2 of 3
+    confirmations ensure the breakout is real). Anti-fakeout parameters
+    (break-clearance margin, immediate-reclaim filter) are DEFERRED to
+    B698 -- they require new producer signals and are queued under
+    S4-B693-CLUSTER-CLEARANCE-ATR-SWEEP + S4-B693-IMMEDIATE-RECLAIM-FILTER
+    -ADD-TEST.
+
+    Prior lineage:
+      B582: break_52w_high (producer fix)
+      B586: vol_spike_2x -> vol_spike_17x; added sector_outperforming_spy
+      B589: added close_above_open + close_in_top_40pct_of_range
     """
-    fires = (s.get("break_52w_high")
-             and s.get("vol_spike_17x")
-             and s.get("sector_outperforming_spy")
-             and s.get("close_above_open")
-             and s.get("close_in_top_40pct_of_range"))
+    # B697: REQUIRE the breakout EVENT (can't have a 52w-high breakout
+    # strategy without the breakout). Then score 2-of-3 on confirmations.
+    if not s.get("break_52w_high"):
+        return _strat(False, "long", "breakout",
+            ["break_52w_high"],
+            ["52-week high break required (EVENT trigger; B697 score-of-N relaxes confirmations not the event)"])
+    confirmations = [
+        bool(s.get("vol_spike_17x")),
+        bool(s.get("close_above_open")),
+        bool(s.get("close_in_top_40pct_of_range")),
+    ]
+    n_confirm = sum(confirmations)
+    fires = n_confirm >= 2
     return _strat(fires, "long", "breakout",
-        ["break_52w_high", "vol_spike_17x", "sector_outperforming_spy",
-         "close_above_open", "close_in_top_40pct_of_range"],
+        ["break_52w_high", "vol_spike_17x", "close_above_open",
+         "close_in_top_40pct_of_range"],
         [f"Price broke 52-week high at ${s.get('year_high',0):.2f}",
          "George-Hwang 2004 JF - new highs attract buyers",
-         "Volume >1.7x confirms institutional conviction",
-         "Sector ETF outperforming SPY 20d - trade strong sectors only",
-         "Bullish bar with close in top 40% of range - strong-close signal (B589)"])
+         f"B697 score-of-2-of-3 confirmations met: vol_spike_17x={confirmations[0]}, close_above_open={confirmations[1]}, close_top_40pct={confirmations[2]} (n_confirm={n_confirm}/3)"])
 
 
 def strat_52w_high_breakout_pullback_long(s):
