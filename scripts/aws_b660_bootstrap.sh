@@ -64,6 +64,20 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+# B696 (2026-06-11) fix: install vendored smartmoneyconcepts library. Without
+# this, the smc_ict producer silently fails with ModuleNotFoundError, and
+# all 18 SMC strategies + ICT-7/8/9/10 (Turtle Soup + Judas Swing) emit
+# zero fires regardless of underlying signal. This was discovered during the
+# B695 smoke run -- exactly what the smoke gate exists to catch per
+# CHECKLIST #13. The requirements.txt header documents the manual install
+# step but the B395 bootstrap (which this script was adapted from) didn't
+# include it because B395 ran run_phase1a which doesn't gate on SMC signals.
+if [ -d vendored/smartmoneyconcepts ]; then
+    echo "[$(date)] Installing vendored smartmoneyconcepts library..."
+    pip install -e vendored/smartmoneyconcepts/
+else
+    echo "[$(date)] WARNING: vendored/smartmoneyconcepts/ not present -- SMC producer will silent-fail" >&2
+fi
 echo "[$(date)] python: $(python --version)"
 
 # Phase 4: pull prefetch data from S3 (instance IAM role grants read access)
