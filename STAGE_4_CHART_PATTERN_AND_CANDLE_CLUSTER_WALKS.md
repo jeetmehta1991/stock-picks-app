@@ -1,5 +1,32 @@
 # Stage 4 Chart Pattern + Candle Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B699 STATUS BANNER (2026-06-11) — EXTERNAL REVIEW INCORPORATED + PHASE-0 PRODUCER AUDIT EXECUTED.** External reviewer's adversarial review delivered the **architectural finding that dominates the cluster** that neither the walks nor the self-critique surfaced: chart-pattern detection has two failure modes the rest of the methodology can't catch.
+>
+> **Two hazards** (defined by the reviewer):
+> | Hazard | What it is | Why it matters |
+> |---|---|---|
+> | **#1 REPAINT / SWING LOOKAHEAD** | Producer flags pattern at bar t using bars after t to confirm the swing (centered window / argrelextrema). | The pattern was only knowable at t+k. CHECKLIST-q + fire-count + follow-through tools cannot catch this — it's INSIDE the producer. Every backtest built on it is lookahead-contaminated. |
+> | **#2 PHANTOM-BREAKOUT** | Producer fires on pattern SHAPE completion, not on the confirming BREAKOUT. | B618 fixed this for CP-4 (flag_bull_detected was firing while price was still inside the flag). Reviewer's strong prior: same bug exists in CP-2/CP-3/CP-7 (double_bottom, H&S, triangle). |
+>
+> **Reviewer-provided tools shipped this batch:**
+> - [`scripts/pattern_producer_audit.py`](scripts/pattern_producer_audit.py): black-box behavioral probe with 4 ground-truth builders (double_bottom, H&S bottom, ascending triangle, bull flag). Classifies producer first-flag bar vs landmark bars (complete / confirmable / breakout) → REPAINT / PHANTOM / CLEAN / MISS.
+> - [`scripts/validate_pattern_producer_audit.py`](scripts/validate_pattern_producer_audit.py): validation harness. 3/3 PASS on synthetic ground-truth (clean producer → CLEAN, centered-window repaint → REPAINT caught 2 bars early, shape-only fire → PHANTOM caught 6 bars before breakout). Tool earned trust by failing first on incidental-equal-lows fixture, then passing after fixture fix.
+>
+> **B699 AUDIT RESULTS — applied to `compute_all_chart_patterns` from [backtest/signals/chart_patterns.py](backtest/signals/chart_patterns.py):**
+>
+> | Pattern key | Reviewer's prior | Actual audit verdict | Action |
+> |---|---|---|---|
+> | `double_bottom_detected` (CP-2) | PHANTOM expected | ✅ **CLEAN** (fires bar 59 = breakout bar) | **REVIEWER WAS WRONG.** No phantom-breakout bug. Producer IS PIT-honest. |
+> | `flag_bull_detected` (CP-4) | CLEAN expected (B618 fix) | ✅ **CLEAN** (fires bar 50, breakout bar 43) | B618 fix VERIFIED working in production code. |
+> | `head_shoulders_bottom_detected` (CP-3) | PHANTOM expected | 🟡 **MISS** — never fires on textbook synthetic | **NEW finding:** detection so strict it doesn't fire even on idealized pattern. Possible REAL fire-starvation (CP-1 framing applied), not harness gap. Owner decides: loosen detection or accept exploratory status. |
+> | `triangle_ascending_detected` (CP-7) | PHANTOM expected | 🟡 **MISS** — never fires on textbook synthetic | Same as CP-3. |
+>
+> **Critical revision of reviewer's Part 1:** the reviewer's claim that "CP-2/CP-3/CP-7 very likely have the same phantom-breakout defect B618 just fixed for CP-4" is **NOT borne out by the actual audit on the production producer**. CP-2 fires AT the breakout bar — it's clean. CP-3 + CP-7 don't fire at all on textbook synthetic — which is a DIFFERENT issue (over-strict detection, possible real fire-starvation). The B699 producer audit overrides the reviewer's prior on this specific point. The architectural concern was right; the specific bug locations are different.
+>
+> **Reviewer's other findings (Parts 2-4) remain VALID and queued:** per-strategy trigger optimization (candle cluster CC-1 through CC-7 + chart-pattern cluster CP-1/4/5 fixable now, CP-2 fixable now since it's clean, CP-3/7 awaiting MISS resolution); adversarial review of doc's own suggestions (CC-A deprioritized, missing-inverse additions deferred, RSI-default-50 elevated cluster-wide, redundancy diagnostic runnable now on candle cluster); 6-phase implementation plan. **All queued under new tickets S4-B699-*** in [EXECUTION_QUEUE.md](EXECUTION_QUEUE.md).
+>
+> ---
+>
 > **B693 BANNER ADDENDUM (2026-06-11) — selective-reading correction.** B691 (this doc and 4 others shipped that batch) labeled the 9/9 chart-pattern FAIL as "🔴 FALSE-NEGATIVE — PENDING-B689-RERUN." External reviewer of [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) caught the methodology problem: **"false negative" used without a positive test is an unfalsifiable escape hatch**. The favorable B660 measurement (5 candle PASS) was labeled LOCKED, unfavorable (9 chart-pattern FAIL) was labeled PENDING-RERUN — a one-directional reading. A measured zero must be DIAGNOSED, not assumed. Each chart-pattern strategy's zero now requires the positive two-part test (signal-key present in dict + relaxed-conjunction count > 0) before the re-run conclusion is accepted. Diagnostic tool scaffolded at [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py); will run post-B689-rerun on each chart-pattern strategy to confirm "harness gap" vs "empty conjunction" before any verdict shift. The PENDING-B689-RERUN label below stays but is now provisional on that diagnostic, not a free pass.
 >
 > ---
