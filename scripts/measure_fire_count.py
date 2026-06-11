@@ -85,6 +85,43 @@ import pandas as pd
 
 logger = logging.getLogger("measure_fire_count")
 
+
+# B692 (2026-06-11): force flushed stdout for the progress logs so a
+# long-running run (16-25h) emits per-25-ticker progress in real time
+# when stdout is redirected to a file (e.g., background task / cron).
+# Without this, Python block-buffers stdout-redirected-to-file in
+# ~4-8KB chunks; each progress log is ~150 chars, so progress stays
+# invisible for hundreds of tickers -- defeating the early-abort
+# discipline from feedback_monitor_intermediate_counts.md.
+#
+# Two layers (belt + braces):
+#   (1) sys.stdout.reconfigure(line_buffering=True) -- forces line-
+#       buffered mode on the underlying TextIOWrapper (Python 3.7+).
+#   (2) FlushingStreamHandler -- explicit handler subclass that calls
+#       self.flush() after every emit; survives the case where stdout
+#       gets swapped out or wrapped by a layer that ignores (1).
+class FlushingStreamHandler(logging.StreamHandler):
+    """B692: logging handler that flushes after every emit. Used by
+    main() instead of the default StreamHandler so progress logs
+    appear in real time when stdout is redirected to a file."""
+    def emit(self, record):
+        super().emit(record)
+        try:
+            self.flush()
+        except Exception:
+            pass
+
+
+def _force_line_buffered_stdout() -> None:
+    """B692: try to switch stdout to line-buffered mode (Python 3.7+).
+    Silently no-ops if the runtime doesn't support reconfigure (e.g.,
+    stdout is not a TextIOWrapper because something replaced it)."""
+    import io
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+    except (AttributeError, io.UnsupportedOperation, ValueError):
+        pass
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OHLCV_DIR = REPO_ROOT / "data_prefetch" / "polygon" / "ohlcv_daily"
 T1A_PATH = REPO_ROOT / "Backtesting universe" / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
@@ -790,9 +827,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
 def main(argv: Optional[list[str]] = None) -> int:
     args = _build_arg_parser().parse_args(argv)
+    # B692 (2026-06-11): force flushed stdout BEFORE logger init so
+    # the first banner lines + every per-25-ticker progress log appear
+    # in real time when stdout is redirected to a file (overnight run).
+    _force_line_buffered_stdout()
     logging.basicConfig(
         level=logging.INFO if not args.verbose else logging.DEBUG,
         format="%(asctime)s %(levelname)s %(message)s",
+        handlers=[FlushingStreamHandler()],
+        force=True,
     )
 
     if args.b640:
