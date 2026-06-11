@@ -1,5 +1,29 @@
 # Stage 4 Chart Pattern + Candle Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B691 STATUS BANNER (2026-06-11) — SPLIT VERDICT: candle ✅ TRUSTWORTHY / chart-pattern 🔴 FALSE-NEGATIVE-PENDING-RERUN-B689.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json). The two clusters bundled in this doc have DIFFERENT trust statuses:
+>
+> **CANDLE cluster (8 strategies) — ✅ TRUSTWORTHY:** all candle gates use only `technical.compute_candles` + companion technical producers. B660 numbers stand. The B689 re-run will NOT change these.
+> | Strategy | LONG | SHORT | Verdict |
+> |---|---:|---:|---|
+> | bullish_engulfing_support | 254 | 274 | ✅ PASS |
+> | shooting_star_short | 0 | 204 | ✅ PASS |
+> | three_white_soldiers | 2,616 | 0 | ✅ PASS |
+> | three_black_crows_short | 0 | 2,464 | ✅ PASS |
+> | doji_at_resistance_short | 0 | 210 | ✅ PASS |
+> | morning_star_long (carry-forward from pre-B639 walks) | — | — | (verify in re-run output; structurally TRUSTWORTHY) |
+> | hammer_at_support_long (B685 Class 7 NEW) | — | — | (need re-run; small fire-count uncertain) |
+> | pin_bar_reversal_long (carry-forward B641) | — | — | (verify in re-run; structurally TRUSTWORTHY) |
+>
+> **CHART-PATTERN cluster (9 strategies) — 🔴 FALSE-NEGATIVE — PENDING-B689-RERUN:** all 9 chart-pattern strategies showed `0 fires` in B660. **This is a harness gap, NOT a real verdict.** The `chart_patterns.compute_all_chart_patterns(df)` producer (which emits `cup_handle_detected`, `head_shoulders_top_detected`, `triangle_*_detected`, `flag_*_detected`, `double_top_detected`, `double_bottom_detected`, plus 3 B685 new producers for retest variants) was NOT invoked in the pre-B689 precompute path. **B689 (commit `8e8c258dd`) shipped the wire-in;** the in-flight re-run (task `bzja19ugq`, ETA ~2026-06-12 12:30) will produce real numbers for:
+> - `strat_cup_and_handle_long` (CP-1, EXPLORATORY marker per B685)
+> - `strat_inverted_cup_and_handle_short` (B686 Class 7 NEW)
+> - `strat_head_and_shoulders_top_short` (B685 Class 7 NEW)
+> - `strat_triangle_ascending_long`, `strat_triangle_descending_short` (B685 Class 7 NEW)
+> - `strat_flag_bull_long`, `strat_flag_bear_retest_short`
+> - `strat_double_bottom_long`, `strat_double_top_short`
+>
+> All `PENDING-B660` and "verdict unknown" labels for the chart-pattern subset are now **PENDING-B660-RERUN-B689** until ~2026-06-12 12:30.
+>
 > **B678 status banner (2026-06-10, owner-directed autonomous continuation — FINAL CLUSTER DOC):** EIGHTH per-cluster Stage 4 walk doc + completes the cluster-walk coverage initiative. Owner directive *"continue autonomously"* after B677 event-driven walk. **Two clusters combined in this doc** (chart_pattern + candle) because both are small (9 + 7 = 16 total) and share the price-action-only methodological lineage from Bulkowski 2005 + Nison 1991 (Japanese Candlestick Charting Techniques).
 >
 > **Scope:** 16 strategies — 9 in `chart_pattern` (cup_and_handle / flag / triangle / head_and_shoulders / double_bottom) + 7 in `candle` (bullish_engulfing / doji / morning_star / shooting_star / three_white_soldiers / three_black_crows).

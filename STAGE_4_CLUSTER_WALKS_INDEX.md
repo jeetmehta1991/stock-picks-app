@@ -1,5 +1,33 @@
 # Stage 4 Cluster Walks — Master Index
 
+> **B691 STATUS BANNER (2026-06-11) — B660 complete + harness gap discovered + B689 shipped + re-run in flight.** The full-universe B660 fire-count measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) (503-ticker T1a × 6.41 cal yrs × 616,040 bars; 222 strategies measured). Headline: 76 PASS_CUBE / 146 FAIL_FIRE_STARVED. Audit of the per-bar `gate_marginals` dicts found that ~103 of the 146 FAIL_FIRE_STARVED verdicts are **FALSE NEGATIVES caused by a measurement harness gap**: pre-B689 `scripts/measure_fire_count.py:_precompute_signals_for_ticker` invoked only `compute_all_signals` from `technical.py`. Strategies whose entry gates on non-technical producer signals (chart_patterns, smc_ict, ict_producers, multi_timeframe, volume_profile, cross_asset, calendar_effects, COT, pre_fomc, smart_money, sec_edgar, news_sentiment, pead, cross_sectional, etc.) had their gate signals absent from the precompute dict → 0 fires structurally guaranteed regardless of underlying data. **B689 (2026-06-11 commit `8e8c258dd`):** measure_fire_count.py extended with TIER 1 (per-bar df-only) + TIER 3 (per-as_of global) producer wire-in; 13/13 pin tests PASS; smoke confirmed +132 keys per bar AAPL Jun-Aug 2024 with previously-0-firing `smc_fvg_retest_long` + `po3_bullish` now firing. **B660 re-run kicked off [09:30:39 2026-06-11 background task `bzja19ugq`]** with B689 extended signals ENABLED; ETA ~2026-06-12 09:30-12:30 (~24h wall-clock; signal precompute ~doubles to 14-16h).
+>
+> **Per-cluster B660 verdict trust level (this batch's headline):**
+>
+> | Cluster | B660 verdict | Trust status | Action |
+> |---|---|---|---|
+> | **Trend** (T1-T10 + 3 short variants) | 13/13 PASS_CUBE | ✅ TRUSTWORTHY — 100% technical.py producers | Use B660 numbers as final |
+> | **Candle** (8 strategies) | 5/5 measured PASS_CUBE | ✅ TRUSTWORTHY — 100% technical.py producers | Use B660 numbers as final |
+> | **Pivot** (13 strategies) | 8 PASS / 5 FAIL | ✅ TRUSTWORTHY — 100% technical.compute_pivots producer | Use B660 numbers as final; 5 FAIL_FIRE_STARVED are real (camarilla_rsi_obv, pivot_r3_blowoff_short, pivot_s2_bounce, pivot_s3_capitulation) |
+> | **Breakout** (30 strategies) | 24 PASS / 6 FAIL | ⚠ MOSTLY TRUSTWORTHY — most strategies technical; `htf_aligned_*` (2) gate on multi_timeframe (now wired in B689 re-run) | Use B660 numbers EXCEPT htf_aligned_* which await re-run |
+> | **Chart-pattern** (9 strategies) | 9/9 FAIL | 🔴 FALSE-NEGATIVE — chart_patterns producer absent from B660 precompute | RESOLVES post-B689 re-run |
+> | **SMC** (18 strategies) | 18/18 FAIL | 🔴 FALSE-NEGATIVE — smc_ict producer absent | RESOLVES post-B689 re-run |
+> | **ICT** (14 strategies) | 14/14 FAIL | 🔴 FALSE-NEGATIVE — po3 + ict_producers + multi_timeframe absent | RESOLVES post-B689 re-run |
+> | **Smart-money** (44 strategies) | 44/44 FAIL | 🔴 FALSE-NEGATIVE TIER 2 — insider/institutional/13F/SEC EDGAR producers require per-(ticker, as_of) cache reads | Waits for **B690** TIER 2 harness extension (planned next batch) |
+> | **Event-driven** (12 strategies) | 12/12 FAIL | 🔴 FALSE-NEGATIVE (mostly TIER 2) — news_sentiment / sec_edgar / pead / yoy_surprise / recent_8k require TIER 2; some pre_fomc resolve post-B689 re-run | Mostly waits for B690; pre_fomc subset resolves post-re-run |
+> | **Cross-sectional** (6 strategies) | 6/6 FAIL | 🔴 FALSE-NEGATIVE TIER 2 — `cross_sectional.compute_cross_sectional_features` needs full OHLCV dict + as_of refactor | Waits for B690 |
+>
+> **B687 reviewer methodology fix STILL active:** the conditional-information gate diagnostic ([backtest/engine/conditional_information_gate_diagnostic.py](backtest/engine/conditional_information_gate_diagnostic.py)) shipped B687 (commit `da83c74d0`) + scaffold (commit `62a0a3ef7`) replaces the pre-B687 gate-correlation diagnostic that incorrectly cleared T3 + T8 + W8 as "honest confluence" on +0.41 correlation (which signals REDUNDANCY, not confluence). T3 + T8 + W8 "honest confluence" verdicts remain REOPENED pending cube data emission per `S4-B687-T3-T8-W8-REOPENED-PENDING-NEW-DIAGNOSTIC`. B688 (commit `c78dc9f29`) shipped the related T1/T2 MACD docstring honesty fix (signal-line cross, not centerline).
+>
+> **What's locked vs what's pending:**
+> - 🔒 **LOCKED post-B660 (no change expected from re-run):** trend cluster (13 PASS), candle cluster (5 measured PASS), pivot cluster (8 PASS / 5 real FAIL)
+> - ⏳ **PENDING-B689-RERUN (will resolve ~2026-06-12 12:30):** chart-pattern (9), SMC (18), ICT (14), breakout htf_aligned subset (2), event-driven pre_fomc subset (~3)
+> - 🚧 **PENDING-B690 (next planned batch):** smart-money (44), event-driven non-pre_fomc (~9), cross-sectional (6) = 59 strategies
+>
+> **Source of truth for this banner:** B660 output [output_audit/fire_count_measured_b660_full_universe.json](output_audit/fire_count_measured_b660_full_universe.json) + per-strategy gate_marginals dict audit + smoke verification of B689 wire-in.
+
+---
+
 > **B679 status banner (2026-06-10):** master index doc consolidating all 8 cluster walk docs into a single navigation + review-status tracker. Owner directive *"Update all cluster docs with the latest format and we will do 1 more iteration"* — this doc is the SHIPS-FIRST piece of that update so the navigation surface is clean before per-doc format alignment + Iteration 2 walks begin.
 >
 > **Total Stage 4 coverage as of B678:** 8 cluster docs / ~138 unique strategies / ~13,000 lines of walk documentation across 222 total registry slots (`len(ALL_STRATEGIES) = 222`).

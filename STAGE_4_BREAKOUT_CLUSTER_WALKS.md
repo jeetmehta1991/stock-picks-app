@@ -1,5 +1,35 @@
 # Stage 4 Breakout Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B691 STATUS BANNER (2026-06-11) — MOSTLY TRUSTWORTHY ✅ / `htf_aligned_*` subset PENDING-B689-RERUN.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) showing **24 PASS_CUBE / 6 FAIL_FIRE_STARVED for the 30-strategy breakout cluster** (broader than the original 19 in this doc — includes 52w_high/low, donchian, bollinger, dc20, value_area, break_retest variants registered as `breakout` category). Most strategies in this cluster use only `technical.py` producers (compute_donchian / compute_bollinger / compute_break_retest_signals / compute_52w_break_retest_signals / compute_pivot_break_retest_signals) — those B660 numbers are TRUSTWORTHY and the B689 re-run will NOT change them.
+>
+> **TRUSTWORTHY subset (sample of 24 PASS_CUBE):**
+> | Strategy | LONG | SHORT | Verdict |
+> |---|---:|---:|---|
+> | 52w_high_breakout_pullback_long | 8,132 | 0 | ✅ PASS |
+> | 52w_low_breakdown_pullback_short | 0 | 3,989 | ✅ PASS |
+> | 52wh_break_retest | 6,790 | 0 | ✅ PASS |
+> | 52wl_break_retest_short | 0 | 1,315 | ✅ PASS |
+> | break_retest_confluence | 38,554 | 23,672 | ✅ PASS (very high — investigate redundancy in cube) |
+> | break_retest_volume | 41,868 | 25,015 | ✅ PASS |
+> | bollinger_lower | 7,018 | 5,675 | ✅ PASS |
+> | bollinger_tight | 23,850 | 19,269 | ✅ PASS |
+> | bollinger_upper_short | 0 | 477 | ✅ PASS |
+> | volume_spike_breakout | 1,820 | 0 | ✅ PASS |
+> | volume_spike_breakout_retest | 359 | 0 | ✅ PASS |
+> | squeeze_breakout | 1,820 | 0 | ✅ PASS |
+>
+> **PENDING-B689-RERUN subset (6 FAIL_FIRE_STARVED → ~2 are FALSE NEGATIVES):**
+> | Strategy | B660 LONG | B660 SHORT | Likely status post-rerun |
+> |---|---:|---:|---|
+> | htf_aligned_breakout_long | 0 | 0 | 🔴 FALSE-NEGATIVE — needs `multi_timeframe.compute_htf_alignment` (TIER 1, wired B689) |
+> | htf_aligned_breakout_short | 0 | 0 | 🔴 FALSE-NEGATIVE — same |
+> | 52w_high_breakout | 0 | 0 | ⚠ Mixed — may resolve in re-run if blocked on different harness gap; review |
+> | 52w_low_breakdown | 0 | 0 | ⚠ Mixed — same as above |
+> | classification_change_breakout_long | 0 | 0 | 🔴 FALSE-NEGATIVE TIER 2 (B690) — needs `index_rebalance` producer (deferred) |
+> | squeeze_setup_long | 0 | 0 | 🔴 FALSE-NEGATIVE TIER 2 (B690) — needs `short_interest` producer for SI gate |
+>
+> All `PENDING B660` labels for the `htf_aligned_*` pair are now **PENDING-B660-RERUN-B689** (resolves ~2026-06-12 12:30). `classification_change_breakout_long` + `squeeze_setup_long` are **PENDING-B690** (TIER 2 wait). The 24 PASS_CUBE rows are LOCKED.
+>
 > **B676 status banner (2026-06-10, owner-directed autonomous continuation):** SIXTH per-cluster Stage 4 walk doc. Owner directive *"continue autonomously"* after B675 ICT cluster walk. Cluster contains **19 strategies** in `breakout` category — the LARGEST remaining unwalked cluster. Many have prior batch-level walks (B582/B586/B587/B589/B590/B591/B594/B595/B596/B598/B605/B608/B612/B626/B654) that collectively constitute "implementation" walks but NOT the systematic CHECKLIST #105 7-step methodology per-strategy. This doc IS that systematic walk.
 >
 > **Source of truth.** Code references reflect current state at commit `cba27db74` (post-B675 ICT walk).

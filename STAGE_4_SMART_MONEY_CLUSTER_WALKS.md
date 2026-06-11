@@ -1,5 +1,19 @@
 # Stage 4 Smart Money Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B691 STATUS BANNER (2026-06-11) — 🚧 FALSE-NEGATIVE — PENDING-B690 (NOT resolved by B689 re-run).** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) showing **44 of 44 smart-money strategies = 0 fires (100% FAIL_FIRE_STARVED).** **This is a measurement harness gap, NOT real verdicts** — but UNLIKE the SMC / ICT / chart-pattern clusters, the smart-money cluster's producer wire-in **WAS NOT INCLUDED IN B689's TIER 1+3 extension** and **WILL NOT RESOLVE IN THE IN-FLIGHT RE-RUN** (task `bzja19ugq`, ETA ~2026-06-12 12:30).
+>
+> **WHY DEFERRED:** smart-money producers (insider_buying, institutional_persistence_consumer, smart_money.py, sec_edgar_extractor, congressional_alt_data 6-function subset, news_sentiment, pead, yoy_surprise, search_volume, index_rebalance, macro_recent_8k) all use `(ticker, as_of)` signatures with internal parquet reads. Naive wire-in would balloon runtime ~66h (vs B660's 18.5h) per the [B689 producer × data-source audit](EXECUTION_QUEUE.md). Needs per-ticker parquet pre-load + per-bar date slice architecture (~300-500 LOC refactor + producer signature additions). Targeted for **B690**.
+>
+> **Verification of producer absence in B660:** spot-check of `insider_cluster_long` gate_marginals dict shows only `price_above_ema_200: 0.5731` — the required `insider_cluster_active` gate is ABSENT from the marginals entirely (not present-at-False). Same pattern across all 44 cluster strategies. Pre-flight reading of `scripts/measure_fire_count.py` (line 265 pre-B689) confirms the harness invoked only `compute_all_signals` from `technical.py`; no `smart_money.py` / `insider_buying.py` / `institutional_persistence_consumer.py` / etc. imports.
+>
+> **What does NOT change in this batch:** all SM-1 through SM-44 walks' B665 #1 framing-discipline (no false PASS_CUBE labels in projection ranges) + B673 CC1-CC7 cross-cutting feasibility findings + per-strategy reframings (SM-4 8-K Item 1.01 population-mixing, SM-5 short-borrow-trap gate, SM-18/19 13F sleeves) remain VALID regardless of fire-count revision. Pattern Q (no peer-reviewed citation for retail-sentiment overlays) + Pattern N (smart-money confluence wraps SM-31 through SM-41 multiple-testing budget consumption) findings remain queue-active.
+>
+> **Two-stage unblock sequence:**
+> 1. **B689 re-run completes ~2026-06-12 12:30** — chart-pattern / SMC / ICT / breakout htf_aligned move from 100% FAIL to real fire counts. Smart-money STAYS at 0.
+> 2. **B690 ships (TIER 2 harness extension)** — smart-money + event-driven (mostly) + cross-sectional un-block. Triggers a SECOND B660 re-run to populate measured numbers across the remaining 59 strategies. Estimated wall-clock: 20-35h.
+>
+> **All `PENDING B660` and "100% FAIL_FIRE_STARVED" labels in this doc are now PENDING-B690.** No premature deletions or "deprecate" recommendations on smart-money strategies until B690 lands and the cube produces honest verdicts.
+>
 > **B665 status banner (2026-06-09, owner-approved):** the B664 candidate proposal below is **HELD pending B665 ship** + B660 full-universe measurement landing. Owner accepted the 2nd-wave-redux critique on STAGE_4_PIVOT_CLUSTER_WALKS.md — same framing-discipline corrections apply preemptively to this doc:
 > - **All `fires/yr` projection ranges in per-strategy walks are PENDING B660** — they are diagnostic-only estimates from independence-product math (NOT measured); the same representativeness flaw the pivot doc has applies here
 > - **No "PASS_CUBE" / "FAIL" labels** appear in this doc yet (intentional — projection ranges only) but if any are added pre-B660, they will be retracted under the same B665 discipline

@@ -1,5 +1,27 @@
 # Stage 4 Pivot Cluster Walks — Post-Reviewer-Audit Status
 
+> **B691 STATUS BANNER (2026-06-11) — B660 measured pivot cluster TRUSTWORTHY ✅, B689 re-run will NOT change these numbers.** B660 full-universe fire-count measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json). **Pivot cluster verdict: 8 PASS_CUBE / 5 FAIL_FIRE_STARVED (real, not harness-gap).** All pivot gates use only `technical.compute_pivots` + companion technical producers; not affected by the harness gap. Measured values (LONG / SHORT fires/yr; verdicts in CAPS):
+>
+> | W# | Strategy | LONG | SHORT | Verdict |
+> |---|---|---:|---:|---|
+> | W1 | bullish_engulfing_support (candle) | 254 | 274 | ✅ PASS |
+> | W2 | shooting_star_short (candle) | 0 | 204 | ✅ PASS |
+> | W3 | pivot_s1_bounce | 255 | 111 | ✅ PASS |
+> | W4 | pivot_s2_bounce | 28 | 0 | 🔴 **FAIL_FIRE_STARVED (real)** — gate-stack rare-event combination |
+> | W5 | pivot_s3_capitulation | 2 | 0 | 🔴 **FAIL_FIRE_STARVED (real, EXPLORATORY per B652)** — Wyckoff Spring/Test sequence; cube cannot statistically validate; rare-but-strong per `feedback_walk_step5` |
+> | W5m | pivot_r3_blowoff_short (B645 mirror) | 0 | 4.5 | 🔴 **FAIL_FIRE_STARVED (real, EXPLORATORY)** — symmetric inverse of W5; same rare-event caveat |
+> | W6 | pivot_r1_breakout | 1,363 | 292 | ✅ PASS |
+> | W7 | pivot_r2_continuation | 134 | 12 | ✅ PASS |
+> | W8 | cpr_narrow_bullish (post-B654) | 5,817 | 1,971 | ✅ PASS (verdict REOPENED per B687 — see trend doc Finding #1) |
+> | W8a | cpr_narrow_momentum | 12,530 | 8,460 | ✅ PASS |
+> | W8b | cpr_narrow_momentum_short | 0 | 13,902 | ✅ PASS |
+> | W9 | camarilla_s3_bounce | 17 | 49 | ✅ PASS |
+> | W9b | camarilla_rsi_obv | 4 | 14 | 🔴 **FAIL_FIRE_STARVED (real)** — 4-gate stack with `rsi` + `obv` confluence; ~18/yr universe-wide |
+> | W9c | camarilla_rsi_obv_short | 0 | 14 | 🔴 **FAIL_FIRE_STARVED (real)** — symmetric inverse of W9b |
+> | W10 | camarilla_r4_breakout (post-B641 R3→R4 rename) | 764 | 891 | ✅ PASS |
+>
+> **All previous `PENDING-B660` labels in this doc are now RESOLVED.** Pre-B660 estimates (e.g. W5 ~18.3/yr B643 estimator) overshot the measured 2/yr by ~9×; consistent with the `feedback_minimum_fire_count_gate_before_cube` lesson that pre-cube estimators are upper-bounds. W5 + W5m + W4 + W9b + W9c FAIL_FIRE_STARVED are REAL (not harness-gap); per `feedback_walk_step5` rare-but-strong signals can carry as EXPLORATORY pending Stage 5 cube empirical adjudication.
+>
 > **What this document is now.** A comprehensive **post-action report** showing, for every reviewer finding and every strategy, exactly what shipped, what's queued, and where the final state lives. Originally written as a B640 prospective walk-bundle (10 strategies, candle 2 + pivot 8 to surface options); now restructured as a per-cluster living doc covering the closed-out state after the reviewer's first-wave adversarial audit + second-wave methodology critique + 12+ follow-on shipping batches (B641 → B660).
 >
 > **Owner directive 2026-06-09:** *"Don't create these bundle docs by batch but by strategy clusters."* — accordingly, this doc is renamed from `STAGE_4_BATCH_640_WALK_BUNDLE.md` → `STAGE_4_PIVOT_CLUSTER_WALKS.md`. Future trend walks → `STAGE_4_TREND_CLUSTER_WALKS.md` (now LIVING — closes T3/T8/T10 redundancy audits B655-B658 + general trend coverage T1-T10); chart_pattern walks → `STAGE_4_CHART_PATTERN_CLUSTER_WALKS.md` (pending); etc. The two candle bridge strategies (W1, W2) remain in this doc as historical record but will be cross-referenced from a future `STAGE_4_CANDLE_CLUSTER_WALKS.md`.

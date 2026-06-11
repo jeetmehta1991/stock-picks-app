@@ -1,5 +1,18 @@
 # Stage 4 ICT (Inner Circle Trader) Pure Price-Action Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B691 STATUS BANNER (2026-06-11) — 🔴 FALSE-NEGATIVE — PENDING-B689-RERUN.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) showing **14 of 14 ICT strategies = 0 fires (100% FAIL_FIRE_STARVED).** **This is a measurement harness gap, NOT real verdicts.** The producers feeding ICT strategies were NOT invoked in the pre-B689 precompute path:
+> - `multi_timeframe.compute_po3_signal(df)` (singular PO3 feeding ICT-1 + ICT-2 `po3_bullish/_bearish` gates)
+> - `multi_timeframe.compute_weekly_bias(df)` + `compute_monthly_bias(df)` (ICT-3 + ICT-4 weekly bias pullback gates)
+> - `ict_producers.compute_po3_signals(df)` (plural PO3 feeding ICT-5 `mmbm_long` + ICT-6 `mmsm_short` via `po3_mmbm_setup` + `po3_mmsm_setup`)
+> - `ict_producers.compute_week_opening_gap_signals(df)` (ICT-11 + ICT-12 `week_open_gap_up_15pct` + `week_open_gap_down_15pct`)
+> - `smc_ict.compute_smc_signals(df, ticker)` for the `smc_liquidity_swept_*` primitives consumed by ICT-7 + ICT-8 Turtle Soup + ICT-9 + ICT-10 Judas Swing (cross-cluster Pattern N share with SMC cluster)
+>
+> **B689 (commit `8e8c258dd`) shipped all 4 producer wire-ins above** — smoke test confirmed `po3_bullish` fires 5× on AAPL Jun-Aug 2024 (vs B660's 0). The in-flight re-run (task `bzja19ugq`, started 09:30:39 2026-06-11, ETA ~2026-06-12 12:30) will produce trustworthy fire counts for all 14 ICT strategies including PO3 plural (mmbm/mmsm) + week-opening-gap + Turtle Soup + Judas Swing.
+>
+> **What does NOT change in this batch:** the ICT walks' Pattern P (cross-cluster signal-sharing with SMC) + Pattern Q (no peer-reviewed methodology citation for 10 of 12 ICT strategies — Turtle Soup ICT-7/8 the only exceptions per Raschke-Connors *Street Smarts* 1996) + Pattern R (PO3 candle-structure ≠ institutional flow per `feedback_signal_temporality_event_vs_state`) + Pattern S (single-gate strategy shells: ICT-5/6/11/12 hardcoded-params-invisible-at-call-site) findings remain VALID regardless of fire-count revision. Pattern Q + R caveats still apply post-re-run: a cube PASS_CUBE label does NOT validate the underlying ICT methodology; only that the gate fires enough for statistical sampling.
+>
+> **B687 ticket `S4-ICT-CLUSTER-PATTERN-N-CROSS-CLUSTER-CUBE-ABLATION-WITH-SMC`** (7 strategies on `smc_liquidity_swept_*` primitives = ICT-7 + ICT-8 + ICT-9 + ICT-10 + SMC-12 + SMC-13 + SMC-18) remains the cross-cluster flagship ablation — applies once re-run + cube replay both land.
+>
 > **B675 status banner (2026-06-10, owner-directed autonomous continuation):** owner directive *"continue autonomously"* after B674 SMC cluster walk + B673 external reviewer critique incorporation. This is the FIFTH per-cluster Stage 4 walk doc following pivot + trend + smart-money + SMC cluster precedents. The ICT cluster is the natural sister to SMC pure price-action (both methodologies originate from Michael J. Huddleston / Inner Circle Trader; SMC = umbrella; ICT = specific patterns).
 >
 > **Scope:** 12 strategies across 2 categories (`ict` 8 + `po3` 4). All wired B580-B581 inline-spec per `feedback_layer_2d_ict_inline_specification` (owner-approved 2026-06-04) + B217 PO3 batch. **No prior Stage 4 walks** on any of these per CHECKLIST #105 7-step methodology. Producer code at [backtest/signals/ict_producers.py](backtest/signals/ict_producers.py) (po3/mmbm/mmsm/week-opening-gap) + [backtest/signals/smc_ict.py](backtest/signals/smc_ict.py) (liquidity_swept_* consumed by Turtle Soup + Judas Swing) + [backtest/signals/technical.py](backtest/signals/technical.py) (near_pivot, close_above/below_open, above/below_prev_low/high).

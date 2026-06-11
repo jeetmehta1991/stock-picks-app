@@ -1,5 +1,25 @@
 # Stage 4 Event-Driven Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B691 STATUS BANNER (2026-06-11) — SPLIT VERDICT: pre_fomc subset pending-B689-rerun / news+pead+8K subset pending-B690.** B660 measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) showing **12 of 12 event-driven strategies = 0 fires (100% FAIL_FIRE_STARVED).** **This is a measurement harness gap, NOT real verdicts.** Two-tier resolution:
+>
+> **B689 RE-RUN UN-BLOCKS (~2026-06-12 12:30):**
+> - Pre-FOMC strategies — `macro_events.compute_pre_fomc_signals(as_of)` is TIER 3 (per-as_of global), wired in B689. Pre-FOMC fire counts will appear in the re-run.
+> - VIX backwardation / totm / halloween_seasonal / pre_holiday — `cross_asset.compute_cross_asset_signals(as_of)` + `calendar_effects.compute_calendar_signals(as_of)` both TIER 3, wired in B689.
+>
+> **B690 UN-BLOCKS (waits for TIER 2 harness extension):**
+> - 4 PEAD variants — `pead.compute_pead_signals(ticker, ohlcv, as_of)` + `earnings_surprise_yoy.compute_yoy_surprise_signal(ticker, ohlcv, as_of)` — TIER 2 (per-(ticker, as_of) cache reads on Finnhub earnings cache)
+> - `buyback_8k_recent_long` — `macro_events.compute_recent_8k_signal(ticker, as_of)` + SEC EDGAR decoded — TIER 2 (per-ticker SEC parquet read)
+> - `news_momentum_long/short`, `news_reversal_long` — `news_sentiment.compute_news_sentiment_signals(ticker, as_of)` — TIER 2 (Polygon news cache)
+> - `m_and_a_target_long`, `activist_13d_long` — `sec_edgar_extractor.compute_sec_edgar_signals(ticker, as_of)` — TIER 2 (SEC EDGAR decoded)
+>
+> The 3 cross-cluster references to smart-money strategies (SM-1 `insider_cluster_long`, SM-2 `insider_cluster_with_director_long`, SM-6 `pead_with_insider_confirmation_long`) remain blocked on B690 per [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) status.
+>
+> **What does NOT change in this batch:** the event-driven walks' Pattern W (PEAD strict-subset narrowing — EV-3 + EV-4 already DELETED B682) + CC1 PEAD next-open-after-gap concern + Pattern M (LEGITIMATE peer-reviewed citations — Bernard-Thomas 1989 JoAR, Lucca-Moench 2015 JF, Foster-Olsen-Shevlin 1984) findings remain VALID regardless of fire-count revision.
+>
+> **All `PENDING B660` labels in this doc are now split:**
+> - Pre-FOMC + cross-asset + calendar subset → **PENDING-B660-RERUN-B689** (resolves ~2026-06-12 12:30)
+> - News + PEAD + 8-K + SEC-EDGAR subset → **PENDING-B690**
+>
 > **B677 status banner (2026-06-10, owner-directed autonomous continuation):** SEVENTH per-cluster Stage 4 walk doc. Owner directive *"continue autonomously"* after B676 breakout cluster walk.
 >
 > **Scope:** 10 strategies in `event_driven` category. **Cross-cluster note:** 3 of 10 strategies (`strat_insider_cluster_long` = SM-1, `strat_insider_cluster_with_director_long` = SM-2, `strat_pead_with_insider_confirmation_long` = SM-6) were ALREADY WALKED in the smart-money cluster doc per CHECKLIST #105 7-step methodology. This doc therefore covers 10 strategies but the 3 cross-cluster references compactly cite the smart-money walk + add event-driven-specific findings. **NEW walks: 7 strategies** (`strat_buyback_8k_recent_long` + 4 PEAD variants + 2 pre-FOMC variants).

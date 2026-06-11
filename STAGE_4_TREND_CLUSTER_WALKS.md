@@ -1,5 +1,25 @@
 # Stage 4 Trend Cluster Walks — living doc
 
+> **B691 STATUS BANNER (2026-06-11) — B660 measured trend cluster TRUSTWORTHY ✅, B689 re-run will NOT change these numbers.** B660 full-universe fire-count measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) (503-ticker T1a × 6.41 cal yrs × 616,040 bars). **Trend cluster verdict: 13/13 PASS_CUBE** — all gates use only `technical.py` producers (compute_macd / compute_hull_ma / compute_parabolic_sar / compute_ichimoku / compute_supertrend / compute_adx / compute_dema_tema), so the B660 numbers are NOT affected by the harness gap [discussed in the master index](STAGE_4_CLUSTER_WALKS_INDEX.md). The B660 re-run currently in flight (task `bzja19ugq`, started 09:30:39 2026-06-11) with B689 extended-signals will produce IDENTICAL fire counts for this cluster. Measured values:
+>
+> | T# | Strategy | LONG fires/yr | SHORT fires/yr | Verdict |
+> |---|---|---:|---:|---|
+> | T1 | macd_crossover | 3,006 | 2,997 | ✅ PASS_CUBE |
+> | T2 | macd_fast_crossover | 4,647 | 4,652 | ✅ PASS_CUBE |
+> | T3 | hull_rsi | 10,831 | 7,044 | ✅ PASS_CUBE (verdict REOPENED per B687 — see Finding #1) |
+> | T4 | parabolic_sar_flip | 1,311 | 1,339 | ✅ PASS_CUBE |
+> | T5 | parabolic_sar_flip_short | 0 | 1,339 | ✅ PASS_CUBE (DELETE candidate per B687 Finding #5) |
+> | T6 | tema_dema | 2,049 | 2,026 | ✅ PASS_CUBE |
+> | T7 | ichimoku_tk_cross | 819 | 677 | ✅ PASS_CUBE |
+> | T8 | ichimoku_cloud_breakout | 11,352 | 5,251 | ✅ PASS_CUBE (verdict REOPENED per B687 — see Finding #1) |
+> | T9 | adx_initiation | 709 | 818 | ✅ PASS_CUBE |
+> | T10 | supertrend_macd | 72 | 888 | ✅ PASS_CUBE (post-B655 fix; LONG side honest 72/yr) |
+> | T1-short | macd_crossover_short | 0 | 2,997 | ✅ PASS_CUBE |
+> | T6 SHORT | hull_rsi_short | 0 | 20,327 | ✅ PASS_CUBE |
+> | T10 SHORT | supertrend_macd_short | 0 | 736 | ✅ PASS_CUBE |
+>
+> **All previous `PENDING-B660` labels in this doc are now RESOLVED.** The verdicts for T3 + T8 + (post-fix W8 — see pivot doc) remain REOPENED per the B687 reviewer methodology fix (line below); the fire counts themselves are settled.
+>
 > **B687 STATUS BANNER (2026-06-10 external reviewer critique INCORPORATED — methodology error caught + fixed):** the reviewer's 3rd-pass critique on this doc surfaced a **methodology error** in the T3 + T8 + (post-fix-W8) "honest confluence" verdicts. The redundancy diagnostic in B655/B656/B657 used per-gate True-rate + pairwise correlation; **neither looks at the OUTCOME**. T10 (99.19%-True supertrend_bullish) was correctly caught (per-gate True-rate did its job) — but T3 + T8 cleared as "honest confluence" on a **+0.41 gate correlation that actually signals REDUNDANCY**, not confluence. Genuine confluence requires gates with low/negative correlation (orthogonal failure-mode screens). Plus the doc's own Step 7 "deeper question" admits T3 fires on EVERY bar that meets the 5 conditions (always-on STATE composite).
 >
 > **B687 fix (this batch):** new diagnostic module [`backtest/engine/conditional_information_gate_diagnostic.py`](backtest/engine/conditional_information_gate_diagnostic.py) that uses conditional information about the OUTCOME given the OTHER gates — the missing axis. Validated against labeled synthetic cases (test_batch687 — 15/15 pass): T10-like → NO_OP_CAMOUFLAGE (existing catch reproduced); T3-like → **JOINT_REDUNDANT (caught where pre-B687 method clears)**; genuine confluence → CONFLUENCE (no false alarm). Decisive separation: redundant gates score ~0.4-1.4σ on conditional outcome spread; genuine gates score 9-22σ. **All 3 prior "honest confluence" verdicts (T3 + T8 + post-fix W8) are now PENDING the new diagnostic running on cube data** post-B660 + post-survivorship + post-cost-aware cube (depends on C5/C6 same as fire counts).
