@@ -1,5 +1,9 @@
 # Stage 4 Pivot Cluster Walks — Post-Reviewer-Audit Status
 
+> **B710 STATUS BANNER (2026-06-12) — 4TH-PASS ADVERSARIAL REVIEW: source-verified every reviewer-cited fire count against B660 to ±0.1% accuracy.** Output: [STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md](STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md). **HIGHEST-LEVERAGE FINDING (REVIEWER 100% CORRECT)**: the fire-count verdict logic has a floor (≥30/yr) but **NO CEILING**. W8/W8a/W8b firing 5.8k/12.5k/13.9k per year = **25-28 fires per name per year** = state-flag, not signal. The B654 W8 partial fix dropped W8 only; W8a/W8b were untouched and now fire 2-2.4× more than pre-fix W8. **Reviewer's other source-verified findings**: W8a/W8b should also be REOPENED on same logic as W8; C1 timeframe finding (intraday pivots on daily bars) STILL UNADDRESSED after 4 cycles — CHECKLIST(r) codified but never applied; dual-wrapper dead-side audit needed (W4 0 SHORT, W7 12 SHORT measured = unvalidated short-side branches); PASS_CUBE label semantics overstate ("✅ PASS" reads as validated; only means "fires enough to measure"). **Per-strategy entry-tuning endorsed** for W1/W3/W6/W7/W9/W10 — consistent application of patterns already validated in B697/B698/B650/B654/B656. 15 B710 tickets queued across 6 phases. Top priority: `S4-B710-FIRE-COUNT-CEILING-VERDICT-LOGIC` (few lines, immediate effect on reclassification).
+>
+> ---
+>
 > **B691 STATUS BANNER (2026-06-11) — B660 measured pivot cluster TRUSTWORTHY ✅, B689 re-run will NOT change these numbers.** B660 full-universe fire-count measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json). **Pivot cluster verdict: 8 PASS_CUBE / 5 FAIL_FIRE_STARVED (real, not harness-gap).** All pivot gates use only `technical.compute_pivots` + companion technical producers; not affected by the harness gap. Measured values (LONG / SHORT fires/yr; verdicts in CAPS):
 >
 > | W# | Strategy | LONG | SHORT | Verdict |
