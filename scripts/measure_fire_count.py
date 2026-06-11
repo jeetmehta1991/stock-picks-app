@@ -440,6 +440,59 @@ def _compute_tier1_signals_for_bar(sub_df: pd.DataFrame, ticker: str) -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# B694 (2026-06-11): multiprocessing harness for the per-ticker precompute loop.
+# Per-ticker precompute is the bottleneck (~5.5 min/ticker on a single core
+# with B689 TIER 1 + TIER 3 wired). The work is embarrassingly parallel
+# across tickers; this patch parallelizes via multiprocessing.Pool.
+#
+# Key design:
+#  (1) Pre-compute TIER 3 panel (cross_asset + calendar + pre_fomc + cot) ONCE
+#      across all business days in [start, end] in the main process before
+#      spawning workers. Pass as a frozen dict to each worker. Saves the
+#      per-worker TIER 3 recompute that would otherwise waste ~4 min x N_workers
+#      of CPU time.
+#  (2) Each worker receives (ticker, df, start, end, enable_extended,
+#      cot_series, tier3_panel) and returns (ticker, list[(bar_date,
+#      signals_dict)]). Workers are stateless; no shared mutation.
+#  (3) Top-level function `_worker_precompute_ticker` so it's picklable for
+#      multiprocessing.Pool (closures and locals can't be pickled).
+#  (4) Backward-compatible: --n-workers 1 (default) preserves pre-B694
+#      single-threaded behavior exactly.
+# ---------------------------------------------------------------------------
+
+
+def _precompute_tier3_panel(
+    start: date, end: date, cot_series: tuple[str, ...]
+) -> dict[date, dict]:
+    """B694: precompute TIER 3 per-as_of signals once across all business days
+    in [start, end]. Returns dict[date, dict] mapping bar_date -> TIER 3
+    signal dict. Designed to be pickled and shared across multiprocessing
+    workers (no per-worker TIER 3 recompute)."""
+    bar_dates = pd.date_range(start, end, freq="B").date
+    panel = {}
+    for d in bar_dates:
+        panel[d] = _compute_tier3_signals_for_as_of(d, cot_series)
+    return panel
+
+
+def _worker_precompute_ticker(args: tuple) -> tuple[str, list]:
+    """B694: top-level multiprocessing worker. Computes per-bar signals for
+    one ticker. Returns (ticker, signals_by_bar list). Picklable.
+
+    Args tuple: (ticker, df, start, end, enable_extended_signals, cot_series,
+                 tier3_panel).
+    """
+    ticker, df, start, end, enable_extended, cot_series, tier3_panel = args
+    sigs = _precompute_signals_for_ticker(
+        df, ticker, start, end,
+        as_of_cache=tier3_panel,
+        enable_extended_signals=enable_extended,
+        cot_series=cot_series,
+    )
+    return ticker, sigs
+
+
 def _precompute_signals_for_ticker(
     df: pd.DataFrame, ticker: str, start: date, end: date,
     as_of_cache: Optional[dict] = None,
@@ -517,6 +570,8 @@ def measure_strategies(
     random_seed: int = 42,
     enable_extended_signals: bool = True,
     cot_series: tuple[str, ...] = DEFAULT_COT_SERIES,
+    n_workers: int = 1,
+    ticker_subset: Optional[list[str]] = None,
 ) -> dict:
     """Measure fires for each named strategy across the T1a universe.
 
@@ -542,7 +597,20 @@ def measure_strategies(
         end, n_tickers_full_t1a,
     )
 
-    if max_tickers is None or max_tickers == 0 or max_tickers >= n_tickers_full_t1a:
+    # B694: --ticker-subset overrides sampling entirely. Used for AWS sharding
+    # where each instance gets a predetermined subset of the universe (no
+    # randomness needed; the splits.json file determined membership upfront).
+    if ticker_subset:
+        # Intersect with the PIT-active universe for safety (skip any subset
+        # tickers that aren't PIT-active at as_of)
+        pit_set = set(tickers_full)
+        tickers = [t for t in ticker_subset if t in pit_set]
+        n_dropped = len(ticker_subset) - len(tickers)
+        logger.info(
+            "B694 ticker-subset mode: %d tickers requested, %d PIT-active retained, %d dropped (not in T1a as_of=%s)",
+            len(ticker_subset), len(tickers), n_dropped, end,
+        )
+    elif max_tickers is None or max_tickers == 0 or max_tickers >= n_tickers_full_t1a:
         tickers = tickers_full
     elif ticker_sample_strategy == "random" or ticker_sample_strategy == "stratified":
         # Stratified falls back to random for B648; sector-stratified TODO
@@ -594,7 +662,6 @@ def measure_strategies(
     # _precompute_signals_for_ticker; reused across all subsequent
     # tickers. Net effect: TIER 3 producers run once per unique bar_date
     # in the run, not 503-times-per-bar.
-    tier3_as_of_cache: dict[date, dict] = {}
     if enable_extended_signals:
         logger.info(
             "B689 extended signals ENABLED: TIER 1 (chart_patterns + smc + ict + multi_timeframe + volume_profile) "
@@ -604,33 +671,79 @@ def measure_strategies(
     else:
         logger.info("B689 extended signals DISABLED (pre-B689 behavior; technical.py producers only)")
     n_tickers_total = len(ohlcv_cache)
-    n_done = 0
-    for ticker, df in ohlcv_cache.items():
-        try:
-            signals_cache[ticker] = _precompute_signals_for_ticker(
-                df, ticker, start, end,
-                as_of_cache=tier3_as_of_cache,
-                enable_extended_signals=enable_extended_signals,
-                cot_series=cot_series,
-            )
-        except Exception as exc:
-            import traceback
-            logger.error(
-                "Signal precompute CRASHED on ticker=%s (after %d of %d done; %.1fs elapsed); traceback below; continuing with empty signals for this ticker",
-                ticker, n_done, n_tickers_total, time.time() - t_pre,
-            )
-            logger.error("Traceback:\n%s", traceback.format_exc())
-            signals_cache[ticker] = []
-        n_done += 1
-        if n_done % 25 == 0 or n_done == n_tickers_total:
-            elapsed = time.time() - t_pre
-            rate = n_done / elapsed if elapsed > 0 else 0
-            eta_sec = (n_tickers_total - n_done) / rate if rate > 0 else 0
-            logger.info(
-                "Signal precompute progress: %d / %d tickers done (%.1f%%); %.1fs elapsed; %.2f tickers/sec; ETA %.0fs",
-                n_done, n_tickers_total, 100.0 * n_done / n_tickers_total,
-                elapsed, rate, eta_sec,
-            )
+
+    # B694: pre-compute TIER 3 panel ONCE before spawning workers. With
+    # n_workers > 1, each worker process would otherwise recompute the same
+    # ~1640 bar-dates of cross_asset + calendar + cot + pre_fomc signals
+    # (wasting ~4 min x n_workers of CPU). Pre-build once, pass to workers
+    # as a read-only frozen dict.
+    if enable_extended_signals:
+        t_tier3 = time.time()
+        tier3_panel = _precompute_tier3_panel(start, end, cot_series)
+        logger.info(
+            "B694 TIER 3 panel pre-built: %d business-day signal dicts (%.1fs)",
+            len(tier3_panel), time.time() - t_tier3,
+        )
+    else:
+        tier3_panel = {}
+
+    # B694: multiprocessing branch when n_workers > 1. Single-threaded branch
+    # preserved as the default + the fallback for diff-vs-baseline runs.
+    if n_workers > 1:
+        from multiprocessing import Pool
+        logger.info(
+            "B694 multiprocessing ENABLED: spawning %d worker processes for per-ticker precompute",
+            n_workers,
+        )
+        # Build per-ticker arg tuples. ohlcv df is picklable; tier3_panel is
+        # picklable (plain nested dict).
+        worker_args = [
+            (ticker, df, start, end, enable_extended_signals, cot_series, tier3_panel)
+            for ticker, df in ohlcv_cache.items()
+        ]
+        n_done = 0
+        with Pool(processes=n_workers) as pool:
+            for ticker, sigs in pool.imap_unordered(_worker_precompute_ticker, worker_args):
+                signals_cache[ticker] = sigs
+                n_done += 1
+                if n_done % 25 == 0 or n_done == n_tickers_total:
+                    elapsed = time.time() - t_pre
+                    rate = n_done / elapsed if elapsed > 0 else 0
+                    eta_sec = (n_tickers_total - n_done) / rate if rate > 0 else 0
+                    logger.info(
+                        "Signal precompute progress (mp x%d): %d / %d tickers done (%.1f%%); %.1fs elapsed; %.2f tickers/sec; ETA %.0fs",
+                        n_workers, n_done, n_tickers_total,
+                        100.0 * n_done / n_tickers_total, elapsed, rate, eta_sec,
+                    )
+    else:
+        # Pre-B694 single-threaded branch (default; backward-compatible)
+        n_done = 0
+        for ticker, df in ohlcv_cache.items():
+            try:
+                signals_cache[ticker] = _precompute_signals_for_ticker(
+                    df, ticker, start, end,
+                    as_of_cache=tier3_panel,
+                    enable_extended_signals=enable_extended_signals,
+                    cot_series=cot_series,
+                )
+            except Exception as exc:
+                import traceback
+                logger.error(
+                    "Signal precompute CRASHED on ticker=%s (after %d of %d done; %.1fs elapsed); traceback below; continuing with empty signals for this ticker",
+                    ticker, n_done, n_tickers_total, time.time() - t_pre,
+                )
+                logger.error("Traceback:\n%s", traceback.format_exc())
+                signals_cache[ticker] = []
+            n_done += 1
+            if n_done % 25 == 0 or n_done == n_tickers_total:
+                elapsed = time.time() - t_pre
+                rate = n_done / elapsed if elapsed > 0 else 0
+                eta_sec = (n_tickers_total - n_done) / rate if rate > 0 else 0
+                logger.info(
+                    "Signal precompute progress: %d / %d tickers done (%.1f%%); %.1fs elapsed; %.2f tickers/sec; ETA %.0fs",
+                    n_done, n_tickers_total, 100.0 * n_done / n_tickers_total,
+                    elapsed, rate, eta_sec,
+                )
     n_signal_evals = sum(len(v) for v in signals_cache.values())
     logger.info(
         "Signal precompute COMPLETE: %d total (ticker, bar) signal-dicts cached (%.1fs)",
@@ -819,6 +932,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help=f"(B689) COT series to inject. Default: {list(DEFAULT_COT_SERIES)}. Must match filenames in data_prefetch/cftc/ (without .parquet).",
     )
     parser.add_argument(
+        "--n-workers", type=int, default=1,
+        help="(B694) Number of multiprocessing worker processes for per-ticker precompute. Default 1 = single-threaded (pre-B694 behavior). On a 16-core machine try --n-workers 14 (leave 2 cores for OS/IO). Linear speedup expected; TIER 3 panel is pre-computed once in the main process before workers spawn.",
+    )
+    parser.add_argument(
+        "--ticker-subset", nargs="+", default=None,
+        help="(B694) Explicit ticker list for sharded runs (e.g. AWS instances). Overrides --max-tickers and --ticker-sample-strategy. Each ticker is intersected with the PIT-active T1a universe at as_of (--end); subset members not PIT-active are dropped.",
+    )
+    parser.add_argument(
+        "--ticker-subset-file", default=None,
+        help="(B694) Path to a text file containing one ticker per line. Alternative to --ticker-subset for large subsets that exceed shell arg length.",
+    )
+    parser.add_argument(
         "--verbose", action="store_true",
         help="Verbose logging",
     )
@@ -852,12 +977,29 @@ def main(argv: Optional[list[str]] = None) -> int:
     start = date.fromisoformat(args.start)
     end = date.fromisoformat(args.end)
 
+    # B694: resolve ticker subset (CLI list or file)
+    ticker_subset = None
+    if args.ticker_subset:
+        ticker_subset = [t.strip().upper() for t in args.ticker_subset if t.strip()]
+    elif args.ticker_subset_file:
+        subset_path = Path(args.ticker_subset_file)
+        if not subset_path.exists():
+            print(f"--ticker-subset-file not found: {subset_path}", file=sys.stderr)
+            return 2
+        ticker_subset = [
+            line.strip().upper() for line in subset_path.read_text().splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        ]
+        logger.info("Loaded %d tickers from %s", len(ticker_subset), subset_path)
+
     output = measure_strategies(
         strategy_names, start=start, end=end, max_tickers=args.max_tickers,
         ticker_sample_strategy=args.ticker_sample_strategy,
         random_seed=args.random_seed,
         enable_extended_signals=not args.no_extended_signals,
         cot_series=tuple(args.cot_series),
+        n_workers=args.n_workers,
+        ticker_subset=ticker_subset,
     )
 
     if args.output:
