@@ -10314,8 +10314,13 @@ def test_batch373_e1_doc_count_pin_against_code():
     #     - strat_inverted_cup_and_handle_short (Bulkowski 2005 'rounded top with handle' /
     #       'dump and pop' mirror of CP-1; B686 NEW producer detect_inverted_cup_and_handle
     #       in chart_patterns.py). 221 -> 222.
-    assert len(ALL_STRATEGIES) == 222, (
-        f"F-002 drift: ALL_STRATEGIES expected 222 post-B686 inverted-cup addition; "
+    #     - B709 (2026-06-12 EMPIRICAL-RESTORE per B702 adversarial review verdict):
+    #       restored strat_pead_long_high_yoy_growth_only + strat_pead_short_negative_yoy_growth
+    #       (phi correlation = 0.297 on 29 T1a tickers 2020-2026; 70% of EV-3 fires are
+    #       a distinct population EV-1 misses entirely; B682 deletion empirically wrong).
+    #       222 -> 224.
+    assert len(ALL_STRATEGIES) == 224, (
+        f"F-002 drift: ALL_STRATEGIES expected 224 post-B709 EV-3+EV-4 restore; "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10330,12 +10335,12 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 221, (
-        f"F-002 drift: active strategy count expected 221 (222 registered "
-        f"minus 1 disabled dxy_headwind_multinational_short); B686 "
-        f"owner-approved inverted cup-and-handle Class 7 NEW per B683 "
-        f"self-critique CP-1 missing-inverse (deferred from B685; scoped + "
-        f"executed B686) took 221 -> 222; got {active}."
+    assert active == 223, (
+        f"F-002 drift: active strategy count expected 223 (224 registered "
+        f"minus 1 disabled dxy_headwind_multinational_short); B709 EMPIRICAL-"
+        f"RESTORE per B702 adversarial review verdict (phi=0.297; B682 "
+        f"deletion of EV-3 + EV-4 empirically wrong) took 221 -> 223; "
+        f"got {active}."
     )
 
     # F-004 exit method count

@@ -3857,43 +3857,105 @@ def strat_pead_short(s):
 
 # -----------------------------------------------------------------------------
 # strat_pead_long_high_yoy_growth_only + strat_pead_short_negative_yoy_growth
-# DELETED Batch 682 (2026-06-10 owner-approved)
+# RESTORED Batch 709 (2026-06-12 owner-approved EMPIRICAL-RESTORE)
 # -----------------------------------------------------------------------------
-# DELETION RATIONALE per B680 self-critique CC-C + owner approval 2026-06-10:
+# B709 EMPIRICAL-RESTORE rationale (supersedes B682 deletion):
 #
-# Pattern W (NEW for event-driven cluster B677 self-critique): EV-3 and
-# EV-4 are DETERMINISTIC STRICT SUBSETS of EV-1 (`strat_pead_long`) and
-# EV-2 (`strat_pead_short`) respectively on the YoY-growth axis:
+# B702 adversarial review of external reviewer's event-driven cluster proposal
+# flagged the B682 deletion rationale as logically incomplete. The B682
+# comment had acknowledged "EV-1's ann_ret > +2% gate adds a narrowing axis
+# EV-3 lacks, but the YoY-axis subset relationship holds" -- which is true
+# for YoY VALUES but does NOT establish that EV-3's FIRE EVENTS are a subset
+# of EV-1's FIRE EVENTS.
 #
-#   EV-1 fires when: within_pead_window AND pead_positive_surprise
-#                    (yoy_growth > 0 AND announcement_return > +2%)
-#   EV-3 fires when: within_pead_window AND yoy_surprise_high
-#                    (yoy_growth >= +5%)
+# B709 (2026-06-12) ran the empirical verify on 29 T1a alphabetical tickers
+# 2020-2026 with 5-day-stride probes (scripts/run_b702_ev3_deletion_empirical
+# _verify.py) and measured the Phi correlation:
 #
-# Every YoY >= 5% case is ALSO yoy > 0; EV-3's fires are a subset of
-# EV-1's fires (on the YoY axis alone; EV-1's ann_ret > +2% gate adds
-# a narrowing axis EV-3 lacks, but the YoY-axis subset relationship
-# holds). Cube replay would produce near-identical per-trade Sharpe
-# by construction.
+#   PHI CORRELATION = 0.297 (well below the 0.70 revert threshold)
 #
-# Per `project_no_apriori_strategy_pruning` explicit owner override on
-# Pattern W deterministic-subset evidence (mechanical not empirical):
-# owner approved deletion 2026-06-10 in response to B680 self-critique
-# recommendation. Pattern W reskin pattern = Pattern N reskin in
-# specific deterministic-subset form.
+#   Numbers (3,501 in-window probes total):
+#     EV-3 fires (yoy >= +5%):                                  2,093
+#     EV-1 fires (yoy > 0 AND ann_ret > +2%):                     707
+#     BOTH fire:                                                  627
+#     ONLY EV-3 fires (high YoY, weak announcement reaction):   1,466
+#     ONLY EV-1 fires:                                             80
 #
-# B507 M6 Path-2 sleeve rationale: shipped YoY-growth proxy in lieu of
-# paid Finnhub analyst-surprise re-prefetch. The methodology was sound
-# but the implementation as separate registry entries (vs as a parameter
-# variant of EV-1/EV-2) was structurally redundant.
+#   ASYMMETRY INVERTED from B682's claim:
+#     89% of EV-1 fires also fire EV-3   (EV-1 closer to subset of EV-3)
+#     30% of EV-3 fires also fire EV-1   (EV-3 is NOT a subset of EV-1)
+#     70% of EV-3 fires are a population EV-1 misses entirely
 #
-# Future work: if YoY-growth-specific PEAD validation is needed, ship as
-# a CONFIGURATION variant (yoy_threshold_strict parameter on EV-1/EV-2)
-# rather than separate registry slots -- cube can sensitivity-sweep without
-# inflating family-wise correction budget.
+# The two strategies capture fundamentally different theses:
+#   - EV-1 = "post-confirmation drift" (drift conditional on market
+#            recognizing the surprise at announcement)
+#   - EV-3 = "fundamental momentum" (high-YoY firms drift regardless of
+#            announcement-day reaction; Foster-Olsen-Shevlin 1984 +
+#            Bernard-Thomas 1989 PEAD)
 #
-# No downstream code references; ALL_STRATEGIES registry entries also removed.
+# Full empirical result:
+#   output_audit/b702_ev3_deletion_empirical_verify_2026-06-12.json
+#
+# Owner approved revert 2026-06-12 in response to B709 verdict.
 # -----------------------------------------------------------------------------
+
+
+def strat_pead_long_high_yoy_growth_only(s):
+    """Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go);
+    DELETED B682 (2026-06-10); RESTORED B709 (2026-06-12 EMPIRICAL-RESTORE
+    per phi=0.297 verdict -- see comment block above).
+
+    PEAD long restricted to high YoY-growth surprise cells.
+
+    Entry filter: yoy_surprise_high (yoy_growth >= +5%) AND
+    within_pead_window. Surrogate for analyst-surprise definition per
+    M6 Path-2 owner decision -- ships YoY-growth sleeve in lieu of
+    paid Finnhub re-prefetch (Path-1).
+
+    Academic backing: Bernard-Thomas 1989 PEAD + Foster-Olsen-Shevlin
+    1984 "Earnings Releases, Anomalies, and the Behavior of Security
+    Returns" -- bottom-decile / top-decile YoY EPS growth exhibits the
+    same 60-day drift pattern as analyst-surprise.
+
+    B709 empirical justification: 70% of fires are a population EV-1
+    (strat_pead_long) misses entirely. "Fundamental momentum" thesis
+    distinct from EV-1's "post-confirmation drift" thesis.
+    """
+    fires = (
+        s.get("within_pead_window", False)
+        and s.get("yoy_surprise_high", False)
+    )
+    yoy = s.get("earnings_eps_yoy_growth", 0.0)
+    thr = s.get("yoy_surprise_threshold_long", 0.05)
+    return _strat(fires, "long", "event_driven",
+        ["within_pead_window", "yoy_surprise_high",
+         f"earnings_eps_yoy_growth>={thr*100:.0f}pct"],
+        [f"Within PEAD drift window (<=60d post-earnings)",
+         f"YoY EPS growth: {yoy*100:.1f}% (>= {thr*100:.0f}% threshold)",
+         "M6 Path-2: YoY-growth surprise sleeve (Batch 507 / B709 restore)"])
+
+
+def strat_pead_short_negative_yoy_growth(s):
+    """Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go);
+    DELETED B682; RESTORED B709 EMPIRICAL-RESTORE.
+
+    PEAD short restricted to negative YoY-growth surprise cells.
+
+    Entry filter: yoy_surprise_negative (yoy_growth <= -5%) AND
+    within_pead_window. Symmetric short side of the YoY-growth sleeve.
+    """
+    fires = (
+        s.get("within_pead_window", False)
+        and s.get("yoy_surprise_negative", False)
+    )
+    yoy = s.get("earnings_eps_yoy_growth", 0.0)
+    thr = s.get("yoy_surprise_threshold_short", -0.05)
+    return _strat(fires, "short", "event_driven",
+        ["within_pead_window", "yoy_surprise_negative",
+         f"earnings_eps_yoy_growth<={thr*100:.0f}pct"],
+        [f"Within PEAD drift window (<=60d post-earnings)",
+         f"YoY EPS growth: {yoy*100:.1f}% (<= {thr*100:.0f}% threshold)",
+         "M6 Path-2: YoY-growth surprise sleeve short (Batch 507 / B709 restore)"])
 
 
 def strat_squeeze_setup_long(s):
@@ -6301,11 +6363,14 @@ ALL_STRATEGIES = {
     # PEAD family (2 - Batch 209 2026-05-17 owner-approved research review)
     "pead_long":                    strat_pead_long,
     "pead_short":                   strat_pead_short,
-    # Batch 507 (2026-05-31, M6 Path-2 sleeves registered per owner go) -
-    # pead_long_high_yoy_growth_only + pead_short_negative_yoy_growth
-    # DELETED Batch 682 per B680 self-critique CC-C Pattern W
-    # deterministic-subset finding. If YoY-threshold variant needed,
-    # implement as parameter on EV-1/EV-2 not separate registry slot.
+    # Batch 507 (2026-05-31, M6 Path-2 sleeves registered per owner go);
+    # DELETED Batch 682; RESTORED Batch 709 (2026-06-12 EMPIRICAL-RESTORE
+    # per phi=0.297 verdict from scripts/run_b702_ev3_deletion_empirical_
+    # verify.py -- 70% of EV-3 fires are a distinct population EV-1 misses;
+    # see screener.py:3858+ B709 EMPIRICAL-RESTORE comment block + result
+    # at output_audit/b702_ev3_deletion_empirical_verify_2026-06-12.json).
+    "pead_long_high_yoy_growth_only":   strat_pead_long_high_yoy_growth_only,
+    "pead_short_negative_yoy_growth":   strat_pead_short_negative_yoy_growth,
     # Batch 519 (2026-05-31, P15 sleeves registered per owner directive):
     "squeeze_setup_long":               strat_squeeze_setup_long,
     # Batch 615 -> Batch 620: B-twin strat_squeeze_setup_event_only_long
