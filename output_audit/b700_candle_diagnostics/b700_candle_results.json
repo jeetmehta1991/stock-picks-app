@@ -1,0 +1,59 @@
+{
+  "diagnostic_1": {
+    "n_tickers": 30,
+    "fire_counts_total": {
+      "morning_star": 437,
+      "bullish_engulfing": 170,
+      "doji_at_support": 134
+    },
+    "pair_overlap": {
+      "morning_star x bullish_engulfing": {
+        "avg_jaccard": 0.01,
+        "total_intersection": 6,
+        "total_union": 601,
+        "n_tickers": 30
+      },
+      "morning_star x doji_at_support": {
+        "avg_jaccard": 0.0,
+        "total_intersection": 0,
+        "total_union": 571,
+        "n_tickers": 30
+      },
+      "bullish_engulfing x doji_at_support": {
+        "avg_jaccard": 0.0,
+        "total_intersection": 0,
+        "total_union": 304,
+        "n_tickers": 30
+      }
+    }
+  },
+  "diagnostic_2": {
+    "morning_star": {
+      "base_ft": 0.3636,
+      "with_ft": null,
+      "base_n": 572,
+      "with_n": 0,
+      "kept_frac": 0.0,
+      "verdict": "DEFER",
+      "note": "n=0 too few"
+    },
+    "bullish_engulfing": {
+      "base_ft": 0.3636,
+      "with_ft": null,
+      "base_n": 572,
+      "with_n": 0,
+      "kept_frac": 0.0,
+      "verdict": "DEFER",
+      "note": "n=0 too few"
+    },
+    "doji_at_support": {
+      "base_ft": 0.3636,
+      "with_ft": 0.2258,
+      "base_n": 572,
+      "with_n": 31,
+      "kept_frac": 0.0542,
+      "verdict": "REJECT_HARMFUL",
+      "note": "pattern LOWERS FT 0.364->0.226"
+    }
+  }
+}
