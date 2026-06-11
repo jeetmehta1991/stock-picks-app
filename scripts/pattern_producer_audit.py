@@ -252,11 +252,211 @@ def build_bull_flag(swing_confirm_k: int = 2, pad: int = 25) -> Landmark:
     return Landmark("bull_flag", _series_from_bars(bars), last_flag_i, confirmable_i, breakout_i)
 
 
+# ----------------------------------------------------------------------------
+# B700 (2026-06-11): 6 additional builders per external reviewer's "the same
+# pattern extends to cup-and-handle and the short mirrors by adding builders
+# with their known landmark bars."
+# ----------------------------------------------------------------------------
+
+def build_cup_and_handle(swing_confirm_k: int = 3, pad: int = 25) -> Landmark:
+    """Cup (U-shape) + Handle (small pullback) + breakout above cup rim.
+    complete   = last handle bar
+    confirmable= last_handle_bar + k
+    breakout   = close above cup rim."""
+    bars = []
+    px = 100.0
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.4, px - 0.4, px + 0.1)); px += 0.1
+    rim = px
+    # left side of cup: descending
+    while px > rim - 8.0:
+        nxt = px - 0.6
+        bars.append(_bar(px, px + 0.1, nxt - 0.1, nxt)); px = nxt
+    cup_low = px
+    # bottom of cup: flat-ish
+    for _ in range(6):
+        bars.append(_bar(px, px + 0.3, px - 0.3, px)); px += 0.0
+    # right side of cup: ascending back to rim
+    while px < rim - 0.5:
+        nxt = px + 0.6
+        bars.append(_bar(px, nxt + 0.1, px - 0.1, nxt)); px = nxt
+    # handle: small pullback (1-3% of rim)
+    for _ in range(5):
+        bars.append(_bar(px, px + 0.2, px - 0.5, px - 0.4)); px -= 0.4
+    last_handle_i = len(bars) - 1
+    confirmable_i = last_handle_i + swing_confirm_k
+    while px < rim:
+        nxt = px + 0.5
+        bars.append(_bar(px, nxt + 0.1, px - 0.1, nxt)); px = nxt
+    breakout_i = len(bars)
+    bars.append(_bar(px, rim + 1.5, px - 0.1, rim + 1.2)); px = rim + 1.2
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.9, px - 0.4, px + 0.5)); px += 0.5
+    return Landmark("cup_and_handle", _series_from_bars(bars),
+                    last_handle_i, confirmable_i, breakout_i)
+
+
+def build_double_top(swing_confirm_k: int = 3, pad: int = 30) -> Landmark:
+    """M-shape: high1, pullback, high2 (==high1), break below neckline.
+    Mirror of double_bottom for SHORT side."""
+    bars = []
+    px = 100.0
+    for _ in range(pad):
+        nxt = px + 0.6
+        bars.append(_bar(px, nxt + 0.1, px - 0.2, nxt)); px = nxt
+    high1_i = len(bars)
+    high1 = px + 0.1
+    bars.append(_bar(px, high1, px - 0.05, high1 - 0.05)); px = high1 - 0.05
+    neckline = high1 - 8.0
+    for _ in range(9):
+        nxt = px - 1.0
+        bars.append(_bar(px, px + 0.1, nxt - 0.1, nxt)); px = nxt
+    while px < high1 - 1.0:
+        nxt = px + 0.9
+        bars.append(_bar(px, nxt + 0.1, px - 0.1, nxt)); px = nxt
+    high2_i = len(bars)
+    bars.append(_bar(px, high1, px - 0.05, high1 - 0.05)); px = high1 - 0.05
+    confirmable_i = high2_i + swing_confirm_k
+    while px > neckline + 0.5:
+        nxt = px - 0.9
+        bars.append(_bar(px, px + 0.1, nxt - 0.1, nxt)); px = nxt
+    breakout_i = len(bars)
+    bars.append(_bar(px, px + 0.1, neckline - 1.5, neckline - 1.2)); px = neckline - 1.2
+    for _ in range(pad):
+        nxt = px - 0.6
+        bars.append(_bar(px, px + 0.2, nxt - 0.1, nxt)); px = nxt
+    return Landmark("double_top", _series_from_bars(bars), high2_i, confirmable_i, breakout_i)
+
+
+def build_head_shoulders_top(swing_confirm_k: int = 3, pad: int = 25) -> Landmark:
+    """H&S top: left shoulder + head (highest) + right shoulder, neckline break DOWN.
+    Mirror of inverse H&S."""
+    bars = []
+    px = 100.0
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.7, px - 0.3, px + 0.5)); px += 0.5
+    neckline = px - 6.0
+    def peak(height):
+        nonlocal px
+        target = neckline + height
+        while px < target:
+            bars.append(_bar(px, px + 1.0, px - 0.2, px + 0.8)); px += 0.8
+        pi = len(bars) - 1
+        while px > neckline + 0.2:
+            bars.append(_bar(px, px + 0.2, px - 1.0, px - 0.8)); px -= 0.8
+        return pi
+    peak(4.0)       # left shoulder
+    peak(7.0)       # head
+    rs_i = peak(4.0)  # right shoulder
+    confirmable_i = rs_i + swing_confirm_k
+    while px > neckline:
+        bars.append(_bar(px, px + 0.2, px - 1.0, px - 0.8)); px -= 0.8
+    breakout_i = len(bars)
+    bars.append(_bar(px, px + 0.1, neckline - 1.5, neckline - 1.2)); px = neckline - 1.2
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.4, px - 0.9, px - 0.5)); px -= 0.5
+    return Landmark("head_shoulders_top", _series_from_bars(bars), rs_i, confirmable_i, breakout_i)
+
+
+def build_descending_triangle(swing_confirm_k: int = 3, pad: int = 25) -> Landmark:
+    """Flat bottom (support) + lower highs; breakdown below the flat support."""
+    bars = []
+    px = 100.0
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.5, px - 0.5, px - 0.2)); px -= 0.2
+    support = px - 5.0
+    high = px
+    last_high_i = len(bars)
+    for k in range(3):
+        while px > support + 0.2:
+            bars.append(_bar(px, px + 0.2, px - 1.0, px - 0.8)); px -= 0.8
+        bars.append(_bar(px, px + 0.1, support, support + 0.3)); px = support + 0.3
+        high = high - 1.2
+        while px < high:
+            bars.append(_bar(px, px + 0.9, px - 0.2, px + 0.7)); px += 0.7
+        last_high_i = len(bars) - 1
+    confirmable_i = last_high_i + swing_confirm_k
+    while px > support:
+        bars.append(_bar(px, px + 0.2, px - 1.0, px - 0.8)); px -= 0.8
+    breakout_i = len(bars)
+    bars.append(_bar(px, px + 0.1, support - 1.6, support - 1.3)); px = support - 1.3
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.4, px - 0.9, px - 0.5)); px -= 0.5
+    return Landmark("descending_triangle", _series_from_bars(bars), last_high_i, confirmable_i, breakout_i)
+
+
+def build_bear_flag(swing_confirm_k: int = 2, pad: int = 25) -> Landmark:
+    """Pole down, tight flag (slight bounce), breakdown below flag low."""
+    bars = []
+    px = 100.0
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.4, px - 0.4, px - 0.1)); px -= 0.1
+    # pole down
+    for _ in range(8):
+        bars.append(_bar(px, px + 0.2, px - 2.2, px - 2.0)); px -= 2.0
+    flag_low = px
+    # flag: small upward drift
+    for _ in range(6):
+        bars.append(_bar(px, px + 0.6, px - 0.3, px + 0.4)); px += 0.4
+    last_flag_i = len(bars) - 1
+    confirmable_i = last_flag_i + swing_confirm_k
+    while px > flag_low:
+        bars.append(_bar(px, px + 0.2, px - 1.0, px - 0.8)); px -= 0.8
+    breakout_i = len(bars)
+    bars.append(_bar(px, px + 0.1, flag_low - 1.5, flag_low - 1.2)); px = flag_low - 1.2
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.4, px - 0.9, px - 0.5)); px -= 0.5
+    return Landmark("bear_flag", _series_from_bars(bars), last_flag_i, confirmable_i, breakout_i)
+
+
+def build_inverted_cup_and_handle(swing_confirm_k: int = 3, pad: int = 25) -> Landmark:
+    """Inverted U + small upward handle + breakdown below cup rim (low).
+    Mirror of cup_and_handle for SHORT side."""
+    bars = []
+    px = 100.0
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.4, px - 0.4, px - 0.1)); px -= 0.1
+    rim = px
+    # left side of inverted cup: ascending
+    while px < rim + 8.0:
+        nxt = px + 0.6
+        bars.append(_bar(px, nxt + 0.1, px - 0.1, nxt)); px = nxt
+    # top of inverted cup: flat
+    for _ in range(6):
+        bars.append(_bar(px, px + 0.3, px - 0.3, px)); px += 0.0
+    # right side: descending back to rim
+    while px > rim + 0.5:
+        nxt = px - 0.6
+        bars.append(_bar(px, px + 0.1, nxt - 0.1, nxt)); px = nxt
+    # handle: small upward bounce
+    for _ in range(5):
+        bars.append(_bar(px, px + 0.5, px - 0.2, px + 0.4)); px += 0.4
+    last_handle_i = len(bars) - 1
+    confirmable_i = last_handle_i + swing_confirm_k
+    while px > rim:
+        nxt = px - 0.5
+        bars.append(_bar(px, px + 0.1, nxt - 0.1, nxt)); px = nxt
+    breakout_i = len(bars)
+    bars.append(_bar(px, px + 0.1, rim - 1.5, rim - 1.2)); px = rim - 1.2
+    for _ in range(pad):
+        bars.append(_bar(px, px + 0.4, px - 0.9, px - 0.5)); px -= 0.5
+    return Landmark("inverted_cup_and_handle", _series_from_bars(bars),
+                    last_handle_i, confirmable_i, breakout_i)
+
+
 PATTERN_BUILDERS: dict[str, Callable[..., Landmark]] = {
+    # Original 4 (B699)
     "double_bottom": build_double_bottom,
     "head_shoulders_bottom": build_head_shoulders_bottom,
     "ascending_triangle": build_ascending_triangle,
     "bull_flag": build_bull_flag,
+    # B700 additions: long-side cup + 5 short mirrors / inverses
+    "cup_and_handle": build_cup_and_handle,
+    "double_top": build_double_top,
+    "head_shoulders_top": build_head_shoulders_top,
+    "descending_triangle": build_descending_triangle,
+    "bear_flag": build_bear_flag,
+    "inverted_cup_and_handle": build_inverted_cup_and_handle,
 }
 
 
