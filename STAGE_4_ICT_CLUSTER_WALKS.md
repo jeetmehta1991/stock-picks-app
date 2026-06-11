@@ -1,5 +1,19 @@
 # Stage 4 ICT (Inner Circle Trader) Pure Price-Action Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B705 STATUS BANNER (2026-06-11) — ADVERSARIAL REVIEW OF EXTERNAL REVIEWER'S ICT PROPOSAL — NOT TRUST-BLIND.** Owner-pattern from B702: source-verify each claim before accepting. Output: [STAGE_4_ICT_CLUSTER_B705_ADVERSARIAL_REVIEW.md](STAGE_4_ICT_CLUSTER_B705_ADVERSARIAL_REVIEW.md). **Headline B705 verdicts (source-verified against `multi_timeframe.py`, `ict_producers.py`, `smc_ict.py`, `screener.py`):**
+>
+> - **HIGHEST-LEVERAGE FINDING (REVIEWER 100% CORRECT)**: Turtle Soup inherits SMC's `event_recency_bars=90` ([smc_ict.py:81](backtest/signals/smc_ict.py#L81)) — fires on sweeps up to 4 months stale. Raschke 1996 stop-run reversal needs 1-5 bar recency. Wire Turtle-Soup-specific tight-recency signal; don't change SMC default.
+> - **PO3 detection IS single-bar reversal** ([multi_timeframe.py:244-253](backtest/signals/multi_timeframe.py#L244)): `sweep_below AND close > open AND close_position > 0.66`. "Accumulation/Manipulation/Distribution" framing is in the docstring only, not the detection. Reviewer's mythology-vs-substance critique CORRECT.
+> - **MMBM is PO3 with a 5-bar tight-range pre-condition** ([ict_producers.py:79](backtest/signals/ict_producers.py#L79)): adds `accum_range_pct ≤ 0.05`. Different sweep anchor than PO3 singular (5-bar low vs prior-day low). Likely strict SUBSET candidate (Pattern W) — testable via fire-overlap.
+> - **PO3 producer-name collision (CC-A) = SCARE NOT BUG**: `compute_po3_signal` (singular) and `compute_po3_signals` (plural) emit DISJOINT key sets and wire to non-overlapping consumers. Runtime OK. Class-wide audit recommendation has merit; specific PO3 case = NOT-A-BUG.
+> - **Cluster has no empirical foundation**: doc's own Pattern Q already states 10 of 12 strategies have no peer-reviewed citation. Reviewer's escalation to "consolidation discipline, not cube-deferral" is sharper version of doc's caveat.
+> - **Week-opening-gap-fill missing 3 conditioning gates** ([ict_producers.py:96-155](backtest/signals/ict_producers.py#L96)): no upper bound, no earnings filter, no trend context. Reviewer 100% correct; gated behind confronting tests per B701 discipline.
+> - **Pattern R docstring fix (CC-B)** is pre-cube-blocking per reviewer's "rhetorical cover" rationale (sharper than doc's "honesty hygiene" framing).
+>
+> **Implementation plan: 16 tickets across 6 phases.** Top priority: `S4-B705-ICT-TURTLE-SOUP-RECENCY-FIX` + `S4-B705-ICT-PATTERN-R-DOCSTRING-FIX` (both pre-cube). Followed by subset-tests on PO3-HTF + Judas Swing (runnable now). Consolidation N is empirical (redundancy diagnostic post-recency-fix), not pre-emptive.
+>
+> ---
+>
 > **B693 BANNER ADDENDUM (2026-06-11) — selective-reading correction + Pattern Q intensifies.** External reviewer of [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) caught the B691 selective-reading methodology problem (favorable LOCKED, unfavorable PENDING-RERUN). **Each ICT strategy's zero now requires the positive two-part test via [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py).** Plus a cluster-specific addendum: Pattern Q (10 of 12 ICT strategies have NO peer-reviewed methodology citation) **intensifies the bar** post-rerun. If the rerun shows ICT strategies still fire near zero AFTER producer wire-in, the disposition cannot fall back to "needs more data" — Pattern Q says there's no methodology foundation to defer to. A cube PASS_CUBE on an ICT strategy is necessary but not sufficient; an ICT strategy that doesn't fire post-rerun + has no peer-reviewed anchor is a candidate for deprecation, not patience.
 >
 > ---
