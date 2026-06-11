@@ -1456,6 +1456,68 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["near_52w_low"]    = _safe_float(c.iloc[-1]) <= year_low*1.02
     result["break_52w_low"]   = _safe_float(c.iloc[-1]) <  year_low   # strict per spec
     result["year_low"]        = round(year_low,4)
+
+    # B698 (2026-06-11 owner-approved per b693_sweeps_report.md sweeps 3 +
+    # 6 anti-fakeout parameters #1 + #4): two new signals to be wired into
+    # strat_52w_high_breakout per B698 follow-on. Both computed using
+    # already-loaded df + the 252-day prior window above.
+    #
+    # (a) break_52w_high_clearance_atr_05: True when today's close clears
+    #     the prior 252-day high by >= 0.5 x ATR(14). Per B693 sweep 3:
+    #     test FT 0.358 vs base 0.313 (+4.5pp OOS lift) on n=134 trades.
+    #     Reviewer anti-fakeout #1: separates real break from one-tick poke.
+    #
+    # (b) break_52w_high_confirmed_today: True when YESTERDAY's bar broke
+    #     the 52w high AND today's close still > yesterday's prior_252_max
+    #     (i.e. the breakout level held one bar). Per B693 sweep 6:
+    #     test FT 0.375 vs base 0.311 (+6.4pp OOS lift, keeps 75% of fires).
+    #     Reviewer anti-fakeout #4: cleanest fakeout tell (immediate reclaim
+    #     within 1-2 bars).
+    #
+    # ATR(14) Wilder computed inline using the df['high'], df['low'],
+    # df['close'] columns; matches the wilder_atr() implementation in
+    # scripts/trigger_followthrough.py (the diagnostic tool used in the
+    # sweep). PIT-safe: uses only data <= today's bar.
+    atr_period = 14
+    if len(df) > atr_period + 1:
+        h_arr = h.to_numpy(float); l_arr = l.to_numpy(float); c_arr = c.to_numpy(float)
+        prev_c = np.concatenate([[c_arr[0]], c_arr[:-1]])
+        tr = np.maximum(h_arr - l_arr, np.maximum(np.abs(h_arr - prev_c), np.abs(l_arr - prev_c)))
+        # Seed with simple mean of first `atr_period` TR values; then Wilder smoothing.
+        atr_seed = float(tr[1:atr_period + 1].mean())
+        atr_val = atr_seed
+        alpha = 1.0 / atr_period
+        for i in range(atr_period + 1, tr.size):
+            atr_val = (1 - alpha) * atr_val + alpha * tr[i]
+    else:
+        atr_val = float("nan")
+    result["atr_14"] = round(atr_val, 4) if np.isfinite(atr_val) else None
+    # (a) clearance margin
+    if np.isfinite(atr_val) and atr_val > 0:
+        result["break_52w_high_clearance_atr_05"] = (
+            _safe_float(c.iloc[-1]) > year_high + 0.5 * atr_val
+        )
+    else:
+        result["break_52w_high_clearance_atr_05"] = False
+
+    # (b) immediate-reclaim confirmation (next-bar holds)
+    # Yesterday's break vs the 252-day high computed EXCLUDING yesterday
+    # (and excluding today). Equivalently: max of df.iloc[:-2]["high"]
+    # over the trailing lookback window. PIT-safe.
+    if len(df) >= 3 + atr_period:
+        prior_excl_yest = df.iloc[:-2]
+        lb_y = min(252, len(prior_excl_yest))
+        if lb_y > 0:
+            year_high_yest = float(prior_excl_yest["high"].tail(lb_y).max())
+            yesterday_close = float(c.iloc[-2])
+            today_close = float(c.iloc[-1])
+            yest_broke = yesterday_close > year_high_yest
+            today_holds = today_close > year_high_yest
+            result["break_52w_high_confirmed_today"] = yest_broke and today_holds
+        else:
+            result["break_52w_high_confirmed_today"] = False
+    else:
+        result["break_52w_high_confirmed_today"] = False
     # B589 (2026-06-04 owner directive 52w_high_breakout_with_smart_money_long
     # walk: "near_52w_high - make it 95% of prev 52 week high").
     # Wider tolerance variants for smart-money sleeves. ADDITIVE - the

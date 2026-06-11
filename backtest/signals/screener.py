@@ -1663,19 +1663,40 @@ def strat_52w_high_breakout(s):
         return _strat(False, "long", "breakout",
             ["break_52w_high"],
             ["52-week high break required (EVENT trigger; B697 score-of-N relaxes confirmations not the event)"])
+
+    # B698 (2026-06-11 owner-approved per b693_sweeps_report.md):
+    # ADD anti-fakeout filters in score-of-N form so the strategy doesn't
+    # become a hard 5-AND again (which would re-empty the conjunction).
+    #
+    # Two NEW producer signals from technical.py compute_volume:
+    #   - break_52w_high_clearance_atr_05: close > prior_252_max + 0.5*ATR
+    #     (anti-fakeout #1; B693 sweep 3: +4.5pp OOS lift at 0.5-0.8x ATR)
+    #   - break_52w_high_confirmed_today: yesterday broke AND today holds
+    #     (anti-fakeout #4; B693 sweep 6: +6.4pp OOS lift, keeps 75% fires)
+    #
+    # B698 design: REQUIRE break + score-of-2-of-5 (instead of B697's
+    # 2-of-3). The 2 anti-fakeout signals are added to the same score pool
+    # as the 3 original confirmations. This keeps the strategy from
+    # collapsing to an empty AND while still letting the highest-FT
+    # anti-fakeout signals contribute. Owner can tighten to a higher score
+    # threshold post-cube validation if conditional follow-through
+    # supports it.
     confirmations = [
         bool(s.get("vol_spike_17x")),
         bool(s.get("close_above_open")),
         bool(s.get("close_in_top_40pct_of_range")),
+        bool(s.get("break_52w_high_clearance_atr_05")),       # B698 anti-fakeout #1
+        bool(s.get("break_52w_high_confirmed_today")),         # B698 anti-fakeout #4
     ]
     n_confirm = sum(confirmations)
     fires = n_confirm >= 2
     return _strat(fires, "long", "breakout",
         ["break_52w_high", "vol_spike_17x", "close_above_open",
-         "close_in_top_40pct_of_range"],
+         "close_in_top_40pct_of_range",
+         "break_52w_high_clearance_atr_05", "break_52w_high_confirmed_today"],
         [f"Price broke 52-week high at ${s.get('year_high',0):.2f}",
          "George-Hwang 2004 JF - new highs attract buyers",
-         f"B697 score-of-2-of-3 confirmations met: vol_spike_17x={confirmations[0]}, close_above_open={confirmations[1]}, close_top_40pct={confirmations[2]} (n_confirm={n_confirm}/3)"])
+         f"B697 + B698 score-of-2-of-5 met: vol={confirmations[0]} above_open={confirmations[1]} top_40={confirmations[2]} clearance_atr05={confirmations[3]} reclaim_held={confirmations[4]} (n_confirm={n_confirm}/5)"])
 
 
 def strat_52w_high_breakout_pullback_long(s):
