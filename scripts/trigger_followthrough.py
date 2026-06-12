@@ -177,7 +177,9 @@ class SweepResult:
     chosen_test_ft: float = float("nan")
     chosen_test_n: int = 0
     plateau: tuple = ()
-    is_overfit: bool = False
+    is_overfit: bool = False     # legacy: chosen fails to beat base OOS
+    reject_overfit: bool = False  # B734: |train_FT - test_FT| > overfit_threshold AT CHOSEN VALUE
+    overfit_gap: float = float("nan")  # B734: chosen.train_ft - chosen.test_ft (signed)
     note: str = ""
 
 
@@ -198,6 +200,7 @@ def sweep_threshold(
     min_n: int = 30,                     # min resolved trades to trust a grid point
     min_keep_frac: float = 0.05,         # a filter keeping <5% of base triggers is too lossy to trust
     plateau_tol: float = 0.02,           # grid points within this of the train best are "on the plateau"
+    overfit_threshold: float = 0.10,     # B734: |train_ft - test_ft| > this at chosen -> REJECT_OVERFIT
 ) -> SweepResult:
     """
     For each grid value v: trigger_v = base_trigger AND gate_for_value(v).
@@ -250,12 +253,22 @@ def sweep_threshold(
     res.chosen_test_ft = chosen.test_ft
     res.chosen_test_n = chosen.test_n
 
-    # overfit check: does the chosen point still beat base OUT of sample?
+    # B734: gap-magnitude overfit gauge at the CHOSEN value (not the train_best).
+    if np.isfinite(chosen.train_ft) and np.isfinite(chosen.test_ft):
+        res.overfit_gap = float(chosen.train_ft - chosen.test_ft)
+        if abs(res.overfit_gap) > overfit_threshold:
+            res.reject_overfit = True
+
+    # legacy is_overfit: does the chosen point still beat base OUT of sample?
     test_best = max(valid, key=lambda p: (p.test_ft if np.isfinite(p.test_ft) else -1))
     if not np.isfinite(chosen.test_ft) or chosen.test_ft <= base_te:
         res.is_overfit = True
         res.note = (f"train picks {chosen.value:.3g} (train FT {chosen.train_ft:.3f}) but it does NOT "
                     f"beat base out-of-sample (test FT {chosen.test_ft:.3f} vs base {base_te:.3f}) -> overfit; reject")
+    elif res.reject_overfit:
+        res.note = (f"chosen {chosen.value:.3g} train FT {chosen.train_ft:.3f} vs test FT {chosen.test_ft:.3f} "
+                    f"(gap {res.overfit_gap:+.3f} exceeds overfit_threshold {overfit_threshold:.3f}) "
+                    f"-> REJECT_OVERFIT; train-test edge does not persist")
     elif abs(test_best.value - chosen.value) > (res.plateau[1] - res.plateau[0] + 1e-9):
         res.note = (f"train optimum {chosen.value:.3g} and test optimum {test_best.value:.3g} disagree beyond the "
                     f"plateau width -> weak/unstable; treat as directional only")
@@ -263,7 +276,7 @@ def sweep_threshold(
         lift = chosen.test_ft - base_te
         res.note = (f"chosen {chosen.value:.3g} (plateau {res.plateau[0]:.3g}-{res.plateau[1]:.3g}); "
                     f"out-of-sample follow-through {chosen.test_ft:.3f} vs base {base_te:.3f} (+{lift:.3f}) "
-                    f"on n={chosen.test_n}")
+                    f"on n={chosen.test_n}; overfit gap {res.overfit_gap:+.3f}")
     return res
 
 
@@ -284,6 +297,10 @@ class AddTestResult:
     kept_frac: float
     verdict: str
     note: str = ""
+    # B734: optional train-window mirrors for overfit detection. NaN if no train_mask supplied.
+    base_ft_train: float = float("nan")
+    with_ft_train: float = float("nan")
+    overfit_gap: float = float("nan")     # (with_ft_train - with_ft) at the candidate gate
 
 
 def conditional_add_test(
@@ -293,6 +310,7 @@ def conditional_add_test(
     direction: int,
     test_mask: np.ndarray,
     *,
+    train_mask: np.ndarray | None = None,  # B734: enable REJECT_OVERFIT verdict
     new_param: str = "new_gate",
     target_mult: float = 2.0,
     stop_mult: float = 1.0,
@@ -300,26 +318,71 @@ def conditional_add_test(
     atr_period: int = 14,
     min_n: int = 30,
     min_lift: float = 0.03,              # require >=3pp out-of-sample follow-through lift
+    overfit_threshold: float = 0.10,     # B734: |train_ft - test_ft| > this on `with` -> REJECT_OVERFIT
 ) -> AddTestResult:
-    def ft(trig):
-        return follow_through_rate(ohlc, trig & test_mask, direction,
+    def ft(trig, mask):
+        return follow_through_rate(ohlc, trig & mask, direction,
                                    target_mult=target_mult, stop_mult=stop_mult,
                                    horizon=horizon, atr_period=atr_period)
-    base_ft, base_n, _ = ft(existing_trigger)
-    with_ft, with_n, _ = ft(existing_trigger & new_gate)
+    base_ft, base_n, _ = ft(existing_trigger, test_mask)
+    with_ft, with_n, _ = ft(existing_trigger & new_gate, test_mask)
     kept = (with_n / base_n) if base_n else 0.0
+
+    base_ft_train = float("nan")
+    with_ft_train = float("nan")
+    gap = float("nan")
+    if train_mask is not None:
+        base_ft_train, _, _ = ft(existing_trigger, train_mask)
+        with_ft_train, _, _ = ft(existing_trigger & new_gate, train_mask)
+        if np.isfinite(with_ft_train) and np.isfinite(with_ft):
+            gap = float(with_ft_train - with_ft)
 
     if with_n < min_n:
         verdict, note = "DEFER", f"too few surviving trades (n={with_n}) to judge the add"
     elif not np.isfinite(with_ft) or not np.isfinite(base_ft):
         verdict, note = "DEFER", "follow-through unestimable"
+    elif np.isfinite(gap) and abs(gap) > overfit_threshold and (with_ft - base_ft) < min_lift:
+        # B734: train says ADD but OOS gap exceeds threshold -> reject as curve-fit
+        verdict, note = "REJECT_OVERFIT", (
+            f"train FT {with_ft_train:.3f} vs test FT {with_ft:.3f} (gap {gap:+.3f} > overfit_threshold "
+            f"{overfit_threshold:.3f}); test lift {with_ft-base_ft:+.3f} < min_lift {min_lift:.3f} -> curve-fit"
+        )
     elif (with_ft - base_ft) >= min_lift:
         verdict, note = "ADD", f"lifts follow-through {base_ft:.3f}->{with_ft:.3f} (+{with_ft-base_ft:.3f}) keeping {kept:.0%} of trades"
     elif (with_ft - base_ft) <= -min_lift:
         verdict, note = "REJECT_HARMFUL", f"LOWERS follow-through {base_ft:.3f}->{with_ft:.3f}"
     else:
         verdict, note = "REJECT_REDUNDANT", f"no follow-through lift ({base_ft:.3f}->{with_ft:.3f}) -> just shrinks fires"
-    return AddTestResult(new_param, base_ft, with_ft, base_n, with_n, kept, verdict, note)
+    return AddTestResult(new_param, base_ft, with_ft, base_n, with_n, kept, verdict, note,
+                         base_ft_train=base_ft_train, with_ft_train=with_ft_train, overfit_gap=gap)
+
+
+# ----------------------------------------------------------------------------
+# B734: time-cutoff mask helper. Caller passes a dates Series + two cutoffs;
+# returns a (train_mask, test_mask) tuple that is by construction disjoint and
+# in time order. Used by sweep_threshold + conditional_add_test to encode the
+# "train through X, test from Y" discipline directly from owner-supplied dates.
+# ----------------------------------------------------------------------------
+def make_time_masks_from_cutoffs(
+    dates: pd.Series | pd.DatetimeIndex,
+    train_through: str | pd.Timestamp,
+    test_from: str | pd.Timestamp,
+) -> tuple[np.ndarray, np.ndarray]:
+    """train_mask = dates <= train_through; test_mask = dates >= test_from.
+
+    Raises if the two windows overlap (train_through >= test_from).
+    """
+    train_through = pd.Timestamp(train_through)
+    test_from = pd.Timestamp(test_from)
+    if train_through >= test_from:
+        raise ValueError(
+            f"train/test windows overlap: train_through={train_through.date()} "
+            f"must be strictly before test_from={test_from.date()}"
+        )
+    dates_idx = pd.to_datetime(pd.Series(dates).reset_index(drop=True))
+    train_mask = (dates_idx <= train_through).to_numpy()
+    test_mask = (dates_idx >= test_from).to_numpy()
+    return train_mask, test_mask
 
 
 def format_sweep(res: SweepResult) -> str:
@@ -332,5 +395,7 @@ def format_sweep(res: SweepResult) -> str:
         L.append(f"  {p.value:>8.3g}{tr:>10}{te:>9}{p.train_n:>7}{p.test_n:>7}{mark}")
     L.append(f"  => {res.note}")
     if res.is_overfit:
-        L.append("  !! OVERFIT FLAG: do not ship this threshold")
+        L.append("  !! OVERFIT FLAG (legacy: chosen does not beat base OOS): do not ship this threshold")
+    if res.reject_overfit:
+        L.append(f"  !! REJECT_OVERFIT (B734: train-test gap {res.overfit_gap:+.3f} at chosen): do not ship this threshold")
     return "\n".join(L)
