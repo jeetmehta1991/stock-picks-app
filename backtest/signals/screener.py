@@ -4515,15 +4515,41 @@ def strat_head_and_shoulders_top_short(s):
 
 
 def strat_double_bottom_long(s):
-    """Batch 252: double-bottom long entry."""
+    """Batch 252: double-bottom long entry.
+
+    Batch 730 (2026-06-12 owner-approved per "approve all" of B726
+    Decision 1; addresses queued S4-B700-CP-2-DOUBLE-BOTTOM-NECKLINE
+    -CLEARANCE-+-SYMMETRY-SWEEP reviewer-spec): B660 measured 7,510/yr
+    LONG = state-flag rate above B710 5K ceiling. Per B700 reviewer
+    CP-2 Phase-3 recommendations:
+
+    (1) Strong-close confirmation (close_in_top_40pct_of_range) -- B710
+        W1 anti-fakeout pattern; separates real neckline-break-hold
+        from weak-bounce-failure.
+    (2) Volume confirmation (vol_spike_15x) -- Bulkowski 2005 stats
+        on double-bottom WR are conditional on breakout-bar volume
+        confirmation per reviewer quote: "Bulkowski's stats are
+        conditional on it."
+
+    Reviewer's other recommendations (ATR-clearance margin sweep +
+    second-bottom symmetry tolerance parameter) require chart_patterns
+    .py producer-side work; deferred to a separate batch per
+    `feedback_no_rushing_per_strategy_tweak`. This B730 ships the 2
+    consumer-side gates that can be added without producer change.
+    """
     fires = (
         s.get("double_bottom_detected", False)
         and s.get("price_above_ema_200", False)
+        and s.get("close_in_top_40pct_of_range", False)  # B730 anti-fakeout strong-close
+        and s.get("vol_spike_15x", False)  # B730 Bulkowski volume confirmation
     )
     return _strat(fires, "long", "chart_pattern",
-        ["double_bottom_detected", "price_above_ema_200"],
+        ["double_bottom_detected", "price_above_ema_200",
+         "close_in_top_40pct_of_range", "vol_spike_15x"],
         ["Double-bottom pattern detected (2 lows at same level + trough)",
-         "Above 200 EMA (regime gate)"])
+         "Above 200 EMA (regime gate)",
+         "Close in top 40% of range (B730 strong-close anti-fakeout)",
+         "Vol spike >=1.5x avg (B730 Bulkowski neckline-break volume confirmation)"])
 
 
 def strat_inverted_cup_and_handle_short(s):
