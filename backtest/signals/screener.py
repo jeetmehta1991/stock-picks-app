@@ -3407,16 +3407,27 @@ def strat_weekly_bias_pullback_short(s):
 
 def strat_monthly_bias_momentum_long(s):
     """Batch 217: Monthly bull bias + positive 6-month momentum + daily
-    breakout = swing-trade long with structural multi-TF backing."""
+    breakout = swing-trade long with structural multi-TF backing.
+
+    Batch 727 (2026-06-12 owner-approved per "approve all" of B726
+    Decision 1): tightened above_prev_high -> above_prev_high_clearance
+    _atr_05 per B710 W6 anti-fakeout pattern + S4-B717 ceiling routing.
+    B660 post-B689 measured this strategy firing 10,507/yr LONG = state
+    flag (above_prev_high True on ~30% of bars; joint with monthly
+    bias gates fires constantly). ATR-scaled clearance margin
+    (close > prev_high + 0.5*ATR(14)) separates real breaks from
+    one-tick pokes. B698 BR-1 anti-fakeout reviewer pattern applied
+    here. Producer-additive: bare above_prev_high consumers unchanged.
+    """
     fires = (
         s.get("monthly_bias_bull", False)
         and s.get("monthly_momentum_pos", False)
-        and s.get("above_prev_high", False)
+        and s.get("above_prev_high_clearance_atr_05", False)
     )
     return _strat(fires, "long", "multi_timeframe",
-        ["monthly_bias_bull", "monthly_momentum_pos", "above_prev_high"],
+        ["monthly_bias_bull", "monthly_momentum_pos", "above_prev_high_clearance_atr_05"],
         ["Monthly bias bullish + positive 6-month momentum",
-         "Daily breakout above previous high",
+         "Daily close exceeds prev high by >= 0.5*ATR(14) (B727 anti-fakeout)",
          "Triple-TF structural confluence"])
 
 

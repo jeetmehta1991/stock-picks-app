@@ -1594,6 +1594,39 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["near_52w_high_95pct"] = _safe_float(c.iloc[-1]) >= year_high*0.95
     result["near_52w_low_105pct"] = _safe_float(c.iloc[-1]) <= year_low*1.05
 
+    # B727 (2026-06-12 owner-approved per "approve all"): ATR-scaled
+    # clearance margin for above_prev_high gate -- anti-fakeout pattern
+    # from B698 BR-1 reviewer recommendation extended per S4-B717 ceiling
+    # routing. monthly_bias_momentum_long measured 10,507/yr LONG; the
+    # bare above_prev_high gate fires on any 1-tick poke above
+    # yesterday's high (~30% of bars), making the joint with monthly
+    # bias gates a state-flag at 10K rate. above_prev_high_clearance_
+    # atr_05: True when today's close > prev_day_high + 0.5*ATR(14).
+    # Separates real break from one-tick poke. PIT-safe: uses only data
+    # <= today's bar. Other consumers of bare above_prev_high unchanged
+    # per `feedback_narrow_scope_blast_radius`.
+    if len(df) >= 3 and np.isfinite(atr_val) and atr_val > 0:
+        prev_high = _safe_float(h.iloc[-2])
+        today_close = _safe_float(c.iloc[-1])
+        if prev_high is not None and today_close is not None:
+            result["above_prev_high_clearance_atr_05"] = (
+                today_close > prev_high + 0.5 * atr_val
+            )
+            # Symmetric for short side (B634 sweep convention)
+            prev_low = _safe_float(l.iloc[-2])
+            if prev_low is not None:
+                result["below_prev_low_clearance_atr_05"] = (
+                    today_close < prev_low - 0.5 * atr_val
+                )
+            else:
+                result["below_prev_low_clearance_atr_05"] = False
+        else:
+            result["above_prev_high_clearance_atr_05"] = False
+            result["below_prev_low_clearance_atr_05"] = False
+    else:
+        result["above_prev_high_clearance_atr_05"] = False
+        result["below_prev_low_clearance_atr_05"] = False
+
     # B590 (2026-06-04 owner-directed pullback redesign + clarification
     # round 2 + false-breakout filters): use a SINGLE INTERNALLY-CONSISTENT
     # 30-bar window for BOTH (a) breakout detection AND (b) year_high
