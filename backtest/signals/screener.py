@@ -4472,7 +4472,17 @@ def strat_avwap_20high_rejection_short(s):
 # Chart patterns (DEC-355-362 / Batch 242) - 5 strategies
 # ---------------------------------------------------------------------------
 def strat_head_and_shoulders_bottom_long(s):
-    """Batch 252: inverse H&S long entry (Edwards-Magee + Bulkowski 2005)."""
+    """Batch 252: inverse H&S long entry (Edwards-Magee + Bulkowski 2005).
+
+    STATUS POST-B732: EXPLORATORY -- DO NOT DEPLOY (owner-approved
+    2026-06-12 per Decision 2 Group C #11). B699 audit verdict: MISS on
+    textbook synthetic geometry (detection too strict OR real fire-
+    starvation). Bulkowski 2005 cites ~5-15/yr per ticker = sub-min_trades
+    by design. EXPLORATORY classification (B652 W5m / B722 po3 precedent):
+    cube measures + records; no production deployment regardless of
+    cube verdict. Same disposition as CP-1 cup_and_handle_long. Resolves
+    `S4-B699-CHART-PATTERN-CP-3-CP-7-MISS-RESOLUTION` for CP-3.
+    """
     fires = (
         s.get("head_shoulders_bottom_detected", False)
         and s.get("price_above_ema_200", False)
@@ -4481,7 +4491,8 @@ def strat_head_and_shoulders_bottom_long(s):
         ["head_shoulders_bottom_detected", "price_above_ema_200"],
         ["Inverse head-and-shoulders pattern detected",
          "Edwards-Magee 1948 / Bulkowski 2005 canonical reversal",
-         "Above 200 EMA (regime gate)"])
+         "Above 200 EMA (regime gate)",
+         "[EXPLORATORY B732 -- do not deploy regardless of cube verdict]"])
 
 
 def strat_head_and_shoulders_top_short(s):
@@ -4693,6 +4704,12 @@ def strat_triangle_descending_short(s):
 
     Symmetric 2-gate structure with CP-7 (mirror of ascending-long).
     B671 borrow-trap gate applies (SHORT-direction via _strat).
+
+    STATUS POST-B732: EXPLORATORY -- DO NOT DEPLOY (owner-approved
+    2026-06-12 per Decision 2 Group C #12). B699 audit verdict: MISS
+    on textbook synthetic geometry (parallels CP-3 H&S bottom +
+    CP-1 cup_and_handle long EXPLORATORY framing). Resolves
+    `S4-B699-CHART-PATTERN-CP-3-CP-7-MISS-RESOLUTION` for CP-7.
     """
     fires = (
         s.get("triangle_descending_detected", False)
