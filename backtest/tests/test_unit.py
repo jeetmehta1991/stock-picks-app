@@ -9072,9 +9072,14 @@ def test_batch207_ichimoku_cloud_breakout_requires_weekly_kumo():
     trades indicating daily-only Kumo is too permissive (catches
     counter-trend false breakouts)."""
     from backtest.signals.screener import strat_ichimoku_cloud_breakout
-    # Daily above cloud + tk_bullish + adx_trending BUT weekly below cloud
+    # Batch 725 update: strat_ichimoku_cloud_breakout converted STATE
+    # (ichi_above_cloud) -> EVENT (ichi_above_cloud_break_recent_5d) per
+    # B655/B721/B722 precedents + S4-B717 ceiling routing. Fixture updated
+    # to use event-anchored signal.
+    # Daily JUST broke above cloud + tk_bullish + adx_trending BUT weekly below cloud
     s = {
-        "ichi_above_cloud": True, "ichi_below_cloud": False,
+        "ichi_above_cloud_break_recent_5d": True,  # B725 EVENT signal
+        "ichi_below_cloud_break_recent_5d": False,
         "ichi_tk_bullish": True, "ichi_tk_bearish": False,
         "adx_trending": True,
         "ichi_weekly_above_cloud": False,  # weekly disagrees

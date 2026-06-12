@@ -885,6 +885,28 @@ def compute_ichimoku(df: pd.DataFrame) -> dict:
         "ichi_tk_cross_dn": t < k and pt >= pk,
         "ichi_cloud_thick": abs(sa-sb) > abs(sa)*0.01 if sa else False,
     }
+    # B725 (2026-06-12 owner-approved per "continue autonomously"):
+    # B655/B721/B722 STATE -> EVENT pattern applied to Ichimoku cloud
+    # breakout. B660 measured strat_ichimoku_cloud_breakout firing
+    # 11K LONG + 5K SHORT per year = state-flag rate despite B657 "honest
+    # confluence" audit. Add freshness lookback: ichi_above_cloud_break
+    # _recent_5d True only when close[t] > cloud[t] AND close was at-least
+    # -once <= cloud within last 5 bars. Symmetric for below_cloud.
+    try:
+        if len(df) >= 60:
+            closes_recent = df["close"].iloc[-6:-1].astype(float)
+            sa_recent = senkou_a.iloc[-6:-1].astype(float)
+            sb_recent = senkou_b.iloc[-6:-1].astype(float)
+            # was_below_cloud at any point in last 5 bars
+            cloud_upper_recent = sa_recent.combine(sb_recent, max)
+            cloud_lower_recent = sa_recent.combine(sb_recent, min)
+            was_below_cloud = (closes_recent <= cloud_upper_recent).any()
+            was_above_cloud = (closes_recent >= cloud_lower_recent).any()
+            out["ichi_above_cloud_break_recent_5d"] = bool(above_cloud and was_below_cloud)
+            out["ichi_below_cloud_break_recent_5d"] = bool(below_cloud and was_above_cloud)
+    except (ValueError, TypeError, IndexError):
+        # fail-safe: don't emit signal on malformed data
+        pass
     # Batch 207 (Ichimoku optimization 2026-05-17): multi-timeframe Kumo
     # gate per Linda Raschke. Resample daily -> weekly to compute the
     # weekly Ichimoku cloud position; use as regime filter for daily

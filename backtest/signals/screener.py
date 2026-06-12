@@ -1260,23 +1260,34 @@ def strat_ichimoku_cloud_breakout(s):
     # default-True silent-gap pre-B657).
     weekly_long_ok = s.get("ichi_weekly_above_cloud", False)
     weekly_short_ok = s.get("ichi_weekly_below_cloud", False)
+    # B725 (2026-06-12 owner-approved per "continue autonomously"):
+    # STATE -> EVENT conversion per B655 T10 + B721 below_ema_50 + B722
+    # hull_rsi precedents + S4-B717 ceiling routing. B660 measured 11K
+    # LONG + 5K SHORT/yr despite B657 "honest confluence" audit -- B710
+    # reviewer rejected B657's defense (state flags fire too often to be
+    # selective even when each gate is informative). Replaced daily cloud
+    # STATE (ichi_above_cloud / ichi_below_cloud) with EVENT-anchored
+    # variants (ichi_above_cloud_break_recent_5d / ichi_below_cloud_
+    # break_recent_5d). Other 3 confluence gates (tk_bullish, adx_
+    # trending, weekly Kumo) retained as confirmation. Expected B655
+    # precedent: ~95% reduction.
     fl = (
-        s.get("ichi_above_cloud") and s.get("ichi_tk_bullish")
+        s.get("ichi_above_cloud_break_recent_5d") and s.get("ichi_tk_bullish")
         and s.get("adx_trending") and weekly_long_ok
     )
     fs = (
-        s.get("ichi_below_cloud") and s.get("ichi_tk_bearish")
+        s.get("ichi_below_cloud_break_recent_5d") and s.get("ichi_tk_bearish")
         and s.get("adx_trending") and weekly_short_ok
     )
     return _strat3(fl, fs, "trend",
-        ["ichi_above_cloud", "ichi_tk_bullish", "adx_trending",
+        ["ichi_above_cloud_break_recent_5d", "ichi_tk_bullish", "adx_trending",
          "ichi_weekly_above_cloud"],
-        ["ichi_below_cloud", "ichi_tk_bearish", "adx_trending",
+        ["ichi_below_cloud_break_recent_5d", "ichi_tk_bearish", "adx_trending",
          "ichi_weekly_below_cloud"],
-        ["Price above Ichimoku Cloud (daily) - full bullish structure",
+        ["Price JUST broke above Ichimoku Cloud (within last 5 bars; B725 EVENT)",
          "Tenkan above Kijun", "ADX confirms",
          "Weekly Kumo also above cloud (multi-TF regime confirm)"],
-        ["Price below Ichimoku Cloud (daily) - full bearish structure",
+        ["Price JUST broke below Ichimoku Cloud (within last 5 bars; B725 EVENT)",
          "Tenkan below Kijun", "ADX confirms",
          "Weekly Kumo also below cloud (multi-TF regime confirm)"])
 
