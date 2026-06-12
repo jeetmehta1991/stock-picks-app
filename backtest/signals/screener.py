@@ -2305,12 +2305,24 @@ def strat_supertrend_ichimoku_adx(s):
 
 
 def strat_williams_stoch_dual(s):
-    fl = (s.get("williams_r_oversold") and s.get("stoch_oversold") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3")))
-    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_overbought") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3")))
+    """Williams %R + Stochastic dual at pivot.
+
+    Batch 729 (2026-06-12 owner-approved per "approve all" of B726 Decision
+    1): STATE -> EVENT-anchored per B655 T10 + B721 + B722 precedents +
+    S4-B717 ceiling routing. B660 measured 4,091 LONG + 6,587 SHORT/yr;
+    SHORT above 5K ceiling, LONG borderline. Pre-B729: stoch_oversold /
+    stoch_overbought are STATE conditions (~20% of bars). Post-B729:
+    stoch_bullish_cross / stoch_bearish_cross are EVENT signals (single
+    bar of K crossing D). Same B655 pattern; symmetric application.
+    Williams %R gate retained (already constrains to oversold/overbought
+    state). Pivot proximity gate retained.
+    """
+    fl = (s.get("williams_r_oversold") and s.get("stoch_bullish_cross") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3")))
+    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3")))
     return _strat3(fl, fs, "confluence",
-        ["williams_r_oversold","stoch_oversold","at_pivot_support"], ["williams_r_overbought","stoch_overbought","at_pivot_resistance"],
-        ["Williams %R + Stochastic both oversold at pivot support  -  high conviction long"],
-        ["Williams %R + Stochastic both overbought at pivot resistance  -  high conviction short"])
+        ["williams_r_oversold","stoch_bullish_cross","at_pivot_support"], ["williams_r_overbought","stoch_bearish_cross","at_pivot_resistance"],
+        ["Williams %R oversold + Stochastic BULLISH CROSS at pivot support (B729 EVENT) - high conviction long"],
+        ["Williams %R overbought + Stochastic BEARISH CROSS at pivot resistance (B729 EVENT) - high conviction short"])
 
 
 # -----------------------------------------------------------------------------
