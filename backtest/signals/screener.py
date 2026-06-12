@@ -539,9 +539,9 @@ def strat_pivot_r3_blowoff_short(s):
             or s.get("shooting_star")
             or s.get("below_prev_low")
         )
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "pivot",
-        ["recent_blowoff_at_r3", "vol_below_avg", "reversal_trigger"],
+        ["recent_blowoff_at_r3", "vol_below_avg", "reversal_trigger", "borrow_ok"],
         ["R3 blowoff event within last 5 bars (Wyckoff Buying Climax)",
          "LOW-volume failed-upthrust bar (B659 vol_below_avg = supply-absorbed mirror of B650 W5 Spring volume; Wyckoff Distribution Upthrust-Test)",
          "Reversal-confirmation today: bearish_engulfing / shooting_star / key reversal bar below prev low",
@@ -1431,9 +1431,9 @@ def strat_rsi_overbought_short(s):
     # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fires = (s.get("rsi_14", 50) > 68 and
              s.get("below_sma_50") and
-             (s.get("bearish_engulfing") or s.get("rsi_14_rising") == False))
+             (s.get("bearish_engulfing") or s.get("rsi_14_rising") == False) and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "mean_reversion",
-        ["rsi_14>68","below_sma_50","bearish_signal"],
+        ["rsi_14>68","below_sma_50","bearish_signal", "borrow_ok"],
         [f"RSI-14 overbought at {s.get('rsi_14',0):.1f}  -  above 68",
          "Below 50 SMA  -  selling rally in downtrend",
          "Bearish momentum confirms sellers taking control"])
@@ -1549,9 +1549,9 @@ def strat_bollinger_tight(s):
 def strat_bollinger_upper_short(s):
     fires = (s.get("bb_20_20_touch_upper") and
              s.get("rsi_14", 50) > 70 and
-             s.get("shooting_star"))
+             s.get("shooting_star") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "mean_reversion",
-        ["bb_20_20_touch_upper","rsi_14>70","shooting_star"],
+        ["bb_20_20_touch_upper","rsi_14>70","shooting_star", "borrow_ok"],
         [f"Price at upper Bollinger Band (20,2)  -  overbought extreme",
          f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought above 70",
          "Shooting star candle  -  sellers rejecting the high"])
@@ -1772,9 +1772,9 @@ def strat_52w_low_breakdown_pullback_short(s):
     per feedback_long_short_inverse_audit. Stock broke prior_year_low
     in last 10 days; retests it as resistance with low-volume
     rejection + bearish bar."""
-    fires = s.get("near_52w_low_retest_short", False)
+    fires = s.get("near_52w_low_retest_short", False) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "breakout",
-        ["near_52w_low_retest_short"],
+        ["near_52w_low_retest_short", "borrow_ok"],
         ["52-week low RETEST short (mirror of pullback long)",
          "Prior 252d low broken in last 10 days; price now retesting as resistance",
          "Low-volume retest + bearish close = rejection of bounce-back",
@@ -1944,9 +1944,9 @@ def strat_donchian_breakdown_retest_short(s):
              and s.get("vol_below_avg")
              and s.get("macd_12_26_9_bearish")
              and s.get("close_below_open")
-             and s.get("close_in_bottom_40pct_of_range"))
+             and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "breakout",
-        ["dc20_support_break_retest_strong","vol_below_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
+        ["dc20_support_break_retest_strong","vol_below_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range", "borrow_ok"],
         ["Post-break retest of broken Donchian support (strong break: >=0.5*ATR clearance)",
          "Volume below 20d avg (Bulkowski retest thesis)",
          "MACD bearish - trend agrees",
@@ -2096,9 +2096,9 @@ def strat_doji_at_resistance_short(s):
     """
     fires = (s.get("doji") and
              (s.get("near_r1_wide") or s.get("near_r2_wide") or s.get("at_key_fib_wide")) and
-             s.get("vol_spike_15x"))
+             s.get("vol_spike_15x") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "candle",
-        ["doji","at_resistance_wide_1.5pct","vol_spike_1.5x"],
+        ["doji","at_resistance_wide_1.5pct","vol_spike_1.5x", "borrow_ok"],
         ["Doji candle at resistance  -  indecision after upmove",
          "Buyers and sellers equally matched at overhead level",
          "Volume spike confirms the level is being contested"])
@@ -2159,9 +2159,9 @@ def strat_three_black_crows_short(s):
       (SHORT -> {bear, crisis, neutral}).
     """
     fires = (s.get("three_black_crows") and
-             s.get("rsi_14", 50) > 40)
+             s.get("rsi_14", 50) > 40 and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "candle",
-        ["three_black_crows","rsi_14>40"],
+        ["three_black_crows","rsi_14>40", "borrow_ok"],
         ["Three consecutive bearish candles each closing near their low",
          "Strong reversal signal - sustained selling pressure over 3 days (Nison 1991)",
          "RSI above 40 - room to fall, not entering oversold"])
@@ -2171,9 +2171,9 @@ def strat_shooting_star_short(s):
     fires = (s.get("shooting_star") and
              (s.get("near_r1") or s.get("near_r2") or
               s.get("bb_20_20_touch_upper")) and
-             s.get("rsi_14", 50) > 65)
+             s.get("rsi_14", 50) > 65 and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "candle",
-        ["shooting_star","at_resistance","rsi_14>65"],
+        ["shooting_star","at_resistance","rsi_14>65", "borrow_ok"],
         ["Shooting star at resistance level  -  bearish reversal",
          "Long upper wick shows sellers rejecting higher prices",
          f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought at resistance"])
@@ -2332,9 +2332,9 @@ def strat_williams_stoch_dual(s):
 # --- Trend-following shorts (4) ---
 
 def strat_death_cross_50_200_volume(s):
-    fires = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x"))
+    fires = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "trend",
-        ["ema_50_200_death_cross", "vol_spike_2x"],
+        ["ema_50_200_death_cross", "vol_spike_2x", "borrow_ok"],
         ["EMA-50 crossed below EMA-200  -  death cross",
          "Volume 2x confirms institutional selling on the cross",
          "Structural shift to bearish  -  strong follow-through expected"])
@@ -2345,9 +2345,9 @@ def strat_supertrend_macd_short(s):
     # (B630 producer) + macd_12_26_9_bullish -> macd_12_26_9_bearish.
     fires = (s.get("supertrend_bearish") and
              s.get("macd_12_26_9_bearish") and
-             s.get("adx", 0) > 20)
+             s.get("adx", 0) > 20 and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "trend",
-        ["supertrend_bearish", "macd_bearish", "adx>20"],
+        ["supertrend_bearish", "macd_bearish", "adx>20", "borrow_ok"],
         ["Supertrend indicator bearish  -  trend confirmed downward",
          "MACD histogram negative  -  momentum aligned bearish",
          "ADX above 20  -  trend has real strength, not a sideways drift"])
@@ -2356,18 +2356,18 @@ def strat_supertrend_macd_short(s):
 def strat_ichimoku_cloud_breakdown(s):
     fires = (s.get("ichi_below_cloud") and
              s.get("ichi_tk_cross_dn") and
-             s.get("adx_trending"))
+             s.get("adx_trending") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "trend",
-        ["ichi_below_cloud", "ichi_tk_cross_dn", "adx_trending"],
+        ["ichi_below_cloud", "ichi_tk_cross_dn", "adx_trending", "borrow_ok"],
         ["Price broke below Ichimoku Cloud  -  full bearish structure",
          "Tenkan crossed below Kijun  -  short-term momentum confirming",
          "ADX trending  -  downtrend has strength"])
 
 
 def strat_parabolic_sar_flip_short(s):
-    fires = (s.get("psar_flip_dn") and s.get("adx_trending"))
+    fires = (s.get("psar_flip_dn") and s.get("adx_trending")) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "trend",
-        ["psar_flip_dn", "adx_trending"],
+        ["psar_flip_dn", "adx_trending", "borrow_ok"],
         ["Parabolic SAR flipped above price  -  trend reversed downward",
          "Clean unambiguous signal  -  SAR is now resistance",
          "ADX trending  -  reversal has follow-through potential"])
@@ -2376,9 +2376,9 @@ def strat_parabolic_sar_flip_short(s):
 # --- Momentum shorts (3) ---
 
 def strat_macd_crossover_short(s):
-    fires = s.get("macd_12_26_9_crossover_dn")
+    fires = s.get("macd_12_26_9_crossover_dn") and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "momentum",
-        ["macd_12_26_9_crossover_dn"],
+        ["macd_12_26_9_crossover_dn", "borrow_ok"],
         ["MACD 12/26/9 histogram crossed below zero",
          "Momentum turned negative  -  trend shift to downside",
          "High-probability momentum entry  -  catching the shift early"])
@@ -2415,9 +2415,9 @@ def strat_macd_crossover_short(s):
 def strat_stochrsi_overbought_short(s):
     fires = (s.get("stochrsi_overbought") and
              s.get("stochrsi_cross_dn") and
-             s.get("rsi_14", 50) > 45)
+             s.get("rsi_14", 50) > 45 and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "momentum",
-        ["stochrsi_overbought", "stochrsi_cross_dn", "rsi_14>45"],
+        ["stochrsi_overbought", "stochrsi_cross_dn", "rsi_14>45", "borrow_ok"],
         ["StochRSI above 80  -  momentum exhausted at overbought",
          "K crossed below D  -  momentum turning down",
          "RSI-14 not oversold  -  room to fall"])
@@ -2452,9 +2452,9 @@ def strat_donchian_breakdown_short(s):
              and s.get("vol_spike_15x")
              and s.get("macd_12_26_9_bearish")
              and s.get("close_below_open")
-             and s.get("close_in_bottom_40pct_of_range"))
+             and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "breakout",
-        ["dc10_breakout_dn","vol_spike_15x","macd_bearish","close_below_open","close_in_bottom_40pct_of_range"],
+        ["dc10_breakout_dn","vol_spike_15x","macd_bearish","close_below_open","close_in_bottom_40pct_of_range", "borrow_ok"],
         ["Price broke 10-day Donchian low - downside breakout",
          "Volume 1.5x confirms institutional selling pressure",
          "MACD negative - momentum confirms the breakdown",
@@ -2539,9 +2539,9 @@ def strat_52w_low_breakdown(s):
              and s.get("vol_spike_17x")
              and s.get("sector_underperforming_spy")
              and s.get("close_below_open")
-             and s.get("close_in_bottom_40pct_of_range"))
+             and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "breakout",
-        ["break_52w_low", "vol_spike_17x", "sector_underperforming_spy"],
+        ["break_52w_low", "vol_spike_17x", "sector_underperforming_spy", "borrow_ok"],
         [f"Price broke 52-week low  -  serious capitulation signal",
          "Volume >1.7x confirms institutional distribution (George-Hwang 2004 JF mirror)",
          "Sector ETF underperforming SPY 20d  -  sell weak sectors only",
@@ -2552,9 +2552,9 @@ def strat_prev_day_low_breakdown(s):
     # B634 sweep: positive symmetric below_vwap (B634 producer)
     fires = (s.get("below_prev_low") and
              s.get("vol_spike_15x") and
-             s.get("below_vwap"))
+             s.get("below_vwap") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "breakout",
-        ["below_prev_low", "vol_spike_1.5x", "below_vwap"],
+        ["below_prev_low", "vol_spike_1.5x", "below_vwap", "borrow_ok"],
         ["Price broke below previous day's low  -  failed to hold support",
          "Volume confirms sellers in control",
          "Below VWAP  -  intraday sellers dominating"])
@@ -2569,9 +2569,9 @@ def strat_camarilla_rsi_obv_short(s):
     fires = (s.get("near_cam_r3") and
              s.get("rsi_14", 50) > 65 and
              s.get("obv_bearish") and
-             s.get("cmf_negative"))
+             s.get("cmf_negative") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "confluence",
-        ["near_cam_r3", "rsi_14>65", "obv_bearish", "cmf_negative"],
+        ["near_cam_r3", "rsi_14>65", "obv_bearish", "cmf_negative", "borrow_ok"],
         ["Camarilla R3 - strongest institutional resistance",
          "RSI-14 overbought above 65",
          "OBV bearish + CMF negative - four systems confirming short (B628 F1 + B629 F1)"])
@@ -2591,9 +2591,9 @@ def strat_cpr_narrow_momentum_short(s):
     fires = (s.get("cpr_narrow_tight") and
              s.get("below_cpr") and
              s.get("rsi_14", 50) < 50 and
-             s.get("macd_12_26_9_bearish"))
+             s.get("macd_12_26_9_bearish") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "confluence",
-        ["cpr_narrow_tight", "below_cpr", "rsi_14<50", "macd_bearish"],
+        ["cpr_narrow_tight", "below_cpr", "rsi_14<50", "macd_bearish", "borrow_ok"],
         ["Narrow-tight CPR  -  rare directional day expected",
          "Price below CPR  -  bearish professional bias",
          "RSI<50 and MACD bearish  -  four signals confirming bearish day"])
@@ -2814,12 +2814,12 @@ def strat_52wl_break_retest_short(s):
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")
           and s.get("vol_below_avg")
-          and s.get("below_avwap_20high", False))
+          and s.get("below_avwap_20high", False) and not _short_borrow_trap_active(s))
     return _strat(fs, "short", "breakout",
         ["year_low_break_retest_short", "near_52w_low",
          "below_ema_200", "close_below_open",
          "close_in_bottom_40pct_of_range", "vol_below_avg",
-         "below_avwap_20high"],
+         "below_avwap_20high", "borrow_ok"],
         ["52-week low broken 2-8 bars ago + retested within 1.5*ATR + still below",
          "Today's close within 2% of 52-week low",
          "Below 200-day EMA (bearish trend filter)",
@@ -3032,10 +3032,10 @@ def strat_orb_stocks_in_play_short(s):
         and s.get("close_below_open", False)
         and s.get("vol_spike_2x", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     gap = s.get("gap_dn_pct", 0.0)
     return _strat(fires, "short", "orb",
-        ["gap_dn_pct>2", "close_below_open", "vol_spike_2x", "price_below_ema_200"],
+        ["gap_dn_pct>2", "close_below_open", "vol_spike_2x", "price_below_ema_200", "borrow_ok"],
         [f"Gap down -{gap:.1f}% - in-play catalyst",
          "Close below open - intraday momentum negative",
          "Volume 2x ADV(20) - institutional participation",
@@ -3251,9 +3251,9 @@ def strat_xs_momentum_bottom_decile_short(s):
     fires = (
         s.get("xs_momentum_bottom_decile", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "factor",
-        ["xs_momentum_bottom_decile", "price_below_ema_200"],
+        ["xs_momentum_bottom_decile", "price_below_ema_200", "borrow_ok"],
         ["Cross-sectional 12-1 momentum bottom decile",
          "Below 200 EMA (bear regime)"])
 
@@ -3353,9 +3353,9 @@ def strat_po3_bearish(s):
     fires = (
         s.get("po3_bearish", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "po3",
-        ["po3_bearish", "price_below_ema_200"],
+        ["po3_bearish", "price_below_ema_200", "borrow_ok"],
         ["Bearish PO3 daily candle: sweep above prior high + close lower third",
          "Below 200 EMA (bear regime)",
          "[EXPLORATORY B722 -- do not deploy regardless of cube verdict]"])
@@ -3417,9 +3417,9 @@ def strat_htf_aligned_breakout_short(s):
         s.get("below_prev_low", False)
         and s.get("vol_spike_15x", False)
         and s.get("htf_aligned_bear", False)
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "multi_timeframe",
-        ["below_prev_low", "vol_spike_1.5x", "htf_aligned_bear"],
+        ["below_prev_low", "vol_spike_1.5x", "htf_aligned_bear", "borrow_ok"],
         ["Price broke below previous day's low",
          "Volume 1.5x ADV(20) - institutional participation",
          "Weekly + Monthly bias both bearish - HTF aligned"])
@@ -3447,9 +3447,9 @@ def strat_weekly_bias_pullback_short(s):
         s.get("weekly_bias_bear", False)
         and s.get("rsi_14", 50) > 60
         and (s.get("shooting_star") or s.get("bearish_engulfing"))
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "multi_timeframe",
-        ["weekly_bias_bear", "rsi_14>60", "bearish_reversal_candle"],
+        ["weekly_bias_bear", "rsi_14>60", "bearish_reversal_candle", "borrow_ok"],
         ["Weekly bias bearish - trade WITH weekly trend",
          "Daily RSI>60 - overbought rally",
          "Bearish reversal candle (shooting star or engulfing)"])
@@ -3501,9 +3501,9 @@ def strat_smc_fvg_retest_short(s):
     fires = (
         s.get("smc_fvg_retest_short_zone", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
-        ["smc_fvg_retest_short_zone", "price_below_ema_200"],
+        ["smc_fvg_retest_short_zone", "price_below_ema_200", "borrow_ok"],
         ["Price inside unmitigated bearish Fair Value Gap zone",
          "Below 200 EMA (bear regime)"])
 
