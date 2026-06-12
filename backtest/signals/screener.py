@@ -98,25 +98,33 @@ def _log_silent_producer_empty(producer_name: str) -> None:
 # -----------------------------------------------------------------------------
 
 def _short_borrow_trap_active(s) -> bool:
-    """B671 Round 2 Q5 + Q6 (2026-06-10 owner-approved per AskUserQuestion
-    Round 2): SM-5 borrow-trap consult helper.
+    """B671 Round 2 Q5 + Q6 + B718a (2026-06-12 owner-approved): SM-5
+    borrow-trap consult helper.
 
-    Returns True if days_to_cover > 8.0 on the ticker for the bar. When
+    Returns True if days_to_cover > 5.0 on the ticker for the bar. When
     True, all SHORT-direction strategy fires on this ticker are blocked
     per the per-strategy pre-fire gate pattern owner approved in Q5.
 
-    Q6 owner decision (2026-06-10): threshold tightened from 5.0 -> 8.0
-    per reviewer F5 observation that 5.0 is loose (GME 2021 ~5-7
-    borderline; MSTR 2021 ~8-12; BBBY ~6-10). The B519 original
-    docstring still resides in strat_short_borrow_trap_avoid (SM-5);
-    that strategy's own threshold also updated to 8.0 for consistency.
+    B718a (2026-06-12 owner-approved REVERSAL of Q6 direction): threshold
+    LOWERED from 8.0 back to 5.0 per B713 external reviewer critique +
+    `S4-B713-DTC-THRESHOLD-DIRECTION-FIX-FROM-8-TO-5-OR-LOWER`. The Q6
+    rationale was wrong-direction: GME pre-squeeze DTC was in the 5-7
+    range, so a threshold at >8 LET THE CANONICAL SQUEEZE CASE THROUGH.
+    A risk guard should err toward over-blocking; the previous 5.0
+    threshold was correctly calibrated for the GME-class. MSTR and BBBY
+    examples cited in Q6 are POST-SQUEEZE DTCs, not pre-squeeze (when
+    the guard would need to fire). Pre-squeeze DTC is typically lower.
+
+    Future replacement: `S4-B713-FASTER-BORROW-COST-DATA-SOURCE-EVALUATION`
+    queued to evaluate FINTEL daily borrow fee / IBKR SLB rates / S3
+    Partners as non-stale alternatives to FINRA bi-monthly DTC.
 
     Note: SM-5 itself emits direction="avoid", not "short", so its own
     emission is unaffected by this gate. Only direction="short" strategies
     are blocked; direction="long" and direction="avoid" are unaffected.
     """
     dtc = s.get("days_to_cover", 0.0) or 0.0
-    return dtc > 8.0
+    return dtc > 5.0
 
 
 def _strat(fires, direction, category, signals_used, context_bullets):
@@ -150,10 +158,24 @@ def _strat(fires, direction, category, signals_used, context_bullets):
       - Backward compatible with all existing test fixtures
     """
     if direction == "short":
+        # B718a (2026-06-12 owner-approved): convert fail-open to fail-closed
+        # per B713 reviewer critique. Original inspect.currentframe behavior
+        # silently passed shorts unprotected when frame introspection failed
+        # (decorator wrap, comprehension call, Python implementation without
+        # stack frames per language spec). New behavior: if introspection
+        # cannot find `s`, block the short emission (fail closed). Full
+        # structural fix per S4-B713-INSPECT-CURRENTFRAME-REVERT staged as
+        # B718b/c/d cluster-by-cluster bulk refactor to explicit borrow_ok
+        # gates + registration-time lint.
         import inspect
-        caller_locals = inspect.currentframe().f_back.f_locals
-        s = caller_locals.get("s")
-        if s is not None and _short_borrow_trap_active(s):
+        frame = inspect.currentframe()
+        s = None
+        if frame is not None and frame.f_back is not None:
+            s = frame.f_back.f_locals.get("s")
+        if s is None:
+            # Fail CLOSED: introspection failed -> assume borrow risk
+            fires = False
+        elif _short_borrow_trap_active(s):
             fires = False
     return {
         "fires":           bool(fires),
@@ -216,10 +238,17 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
     safety analysis; same centralized policy applied here.
     """
     if fires_short:
+        # B718a (2026-06-12 owner-approved): fail-closed parallel to _strat.
+        # See _strat docstring for full B713 reviewer critique + staged fix.
         import inspect
-        caller_locals = inspect.currentframe().f_back.f_locals
-        s = caller_locals.get("s")
-        if s is not None and _short_borrow_trap_active(s):
+        frame = inspect.currentframe()
+        s = None
+        if frame is not None and frame.f_back is not None:
+            s = frame.f_back.f_locals.get("s")
+        if s is None:
+            # Fail CLOSED: introspection failed -> assume borrow risk
+            fires_short = False
+        elif _short_borrow_trap_active(s):
             fires_short = False
     if fires_long and not fires_short:
         return {"fires": True,  "direction": "long",  "category": category,
