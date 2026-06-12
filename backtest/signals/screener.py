@@ -2618,13 +2618,21 @@ def strat_dc20_break_retest(s):
     LONG: resistance_break_retest + vol_below_avg + adx_trending
     SHORT: support_break_retest + vol_below_avg + adx_trending
     """
-    fl = (s.get("resistance_break_retest") and s.get("vol_below_avg") and s.get("adx_trending"))
-    fs = (s.get("support_break_retest") and s.get("vol_below_avg") and s.get("adx_trending"))
+    # B728 (2026-06-12 owner-approved per "approve all" of B726 Decision 1):
+    # B710 W1 strong-close anti-fakeout pattern added per S4-B717 ceiling
+    # routing. B660 measured 6,379/yr LONG + 3,880/yr SHORT = state-flag rate
+    # LONG. Bare retest-bar acceptance allowed any close to qualify; strong-
+    # close gate (close_in_top_40pct_of_range for LONG; close_in_bottom_40pct
+    # _of_range for SHORT) separates real-retest-hold from weak-bounce-failure.
+    fl = (s.get("resistance_break_retest") and s.get("vol_below_avg")
+          and s.get("adx_trending") and s.get("close_in_top_40pct_of_range"))
+    fs = (s.get("support_break_retest") and s.get("vol_below_avg")
+          and s.get("adx_trending") and s.get("close_in_bottom_40pct_of_range"))
     return _strat3(fl, fs, "breakout",
-        ["resistance_break_retest", "vol_below_avg", "adx_trending"],
-        ["support_break_retest", "vol_below_avg", "adx_trending"],
-        "DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending",
-        "DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending")
+        ["resistance_break_retest", "vol_below_avg", "adx_trending", "close_in_top_40pct_of_range"],
+        ["support_break_retest", "vol_below_avg", "adx_trending", "close_in_bottom_40pct_of_range"],
+        "DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)",
+        "DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)")
 
 
 def strat_r1_break_retest(s):
@@ -2859,24 +2867,31 @@ def strat_break_retest_volume(s):
     Lineage of prior walk batches preserved (B320 / B608 / B617 history
     in code commit log).
     """
+    # B728 (2026-06-12 owner-approved per "approve all" of B726 Decision 1):
+    # B710 W1 strong-close anti-fakeout pattern added per S4-B717 ceiling
+    # routing. B660 measured 6,532/yr LONG + 3,902/yr SHORT = state-flag
+    # rate LONG. The close_above_open gate is weak (~50% True); strong-close
+    # (close in top 40% of range) separates real-retest-hold from weak-bounce.
     fl = (s.get("resistance_break_retest")
           and s.get("obv_bullish")           # B617: switched from obv_rising
           and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range")  # B728 strong-close
           and s.get("vol_below_avg"))
     fs = (s.get("support_break_retest")
           and s.get("obv_bearish")           # B617: switched from obv_falling
           and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range")  # B728 strong-close
           and s.get("vol_below_avg"))
     return _strat3(fl, fs, "breakout",
         ["resistance_break_retest", "obv_bullish", "close_above_open",
-         "vol_below_avg"],
+         "close_in_top_40pct_of_range", "vol_below_avg"],
         ["support_break_retest", "obv_bearish", "close_below_open",
-         "vol_below_avg"],
+         "close_in_bottom_40pct_of_range", "vol_below_avg"],
         ["Break-and-retest + OBV above 20-bar MA: institutional accumulation flow (B617 cleaner baseline)",
-         "Bullish bar (close above open)",
+         "Bullish bar (close above open) AND close in top 40% of range (B728 strong-close)",
          "Volume below 20d avg (Bulkowski retest characteristic)"],
         ["Breakdown-and-retest + OBV below 20-bar MA: institutional distribution flow (B617 symmetric)",
-         "Bearish bar (close below open)",
+         "Bearish bar (close below open) AND close in bottom 40% of range (B728 strong-close)",
          "Volume below 20d avg (Bulkowski retest characteristic)"])
 
 
@@ -2921,30 +2936,37 @@ def strat_break_retest_confluence(s):
              below_ema_20 (explicit) + below_ema_50 (explicit) +
              close_below_open + vol_below_avg
     """
+    # B728 (2026-06-12 owner-approved per "approve all" of B726 Decision 1):
+    # B710 W1 strong-close anti-fakeout pattern added per S4-B717 ceiling
+    # routing. B660 measured 6,015/yr LONG + 3,693/yr SHORT = state-flag rate
+    # LONG. Adds close_in_top_40pct_of_range (LONG) / close_in_bottom_40pct
+    # _of_range (SHORT) for strong-close confirmation.
     fl = (s.get("resistance_break_retest")
           and s.get("macd_12_26_9_bullish")
           and s.get("price_above_ema_20")
           and s.get("price_above_ema_50")
           and s.get("close_above_open")
+          and s.get("close_in_top_40pct_of_range")  # B728 strong-close
           and s.get("vol_below_avg"))
     fs = (s.get("support_break_retest")
           and s.get("macd_12_26_9_bearish")
           and s.get("below_ema_20")
           and s.get("below_ema_50")
           and s.get("close_below_open")
+          and s.get("close_in_bottom_40pct_of_range")  # B728 strong-close
           and s.get("vol_below_avg"))
     return _strat3(fl, fs, "confluence",
         ["resistance_break_retest", "macd_12_26_9_bullish",
          "price_above_ema_20", "price_above_ema_50",
-         "close_above_open", "vol_below_avg"],
+         "close_above_open", "close_in_top_40pct_of_range", "vol_below_avg"],
         ["support_break_retest", "macd_12_26_9_bearish",
          "below_ema_20", "below_ema_50",
-         "close_below_open", "vol_below_avg"],
+         "close_below_open", "close_in_bottom_40pct_of_range", "vol_below_avg"],
         ["Break-and-retest confluence: MACD + dual EMA confirms breakout continuation",
-         "Bullish bar (close above open)",
+         "Bullish bar AND close in top 40% of range (B728 strong-close)",
          "Volume below 20d avg (Bulkowski retest characteristic)"],
         ["Breakdown-and-retest confluence: MACD + dual EMA (explicit bearish signals post-B609 F2)",
-         "Bearish bar (close below open)",
+         "Bearish bar AND close in bottom 40% of range (B728 strong-close)",
          "Volume below 20d avg (Bulkowski retest characteristic)"])
 
 
