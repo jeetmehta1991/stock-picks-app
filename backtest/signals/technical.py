@@ -679,6 +679,36 @@ def compute_ema_sma(df: pd.DataFrame) -> dict:
         # which auto-passed when the key was missing.
         result[f"below_ema_{fast}"]               = close < efv
         result[f"below_ema_{slow}"]               = close < esv
+        # B721 (2026-06-12 owner-approved per "continue autonomously"):
+        # B655 T10 STATE -> EVENT-anchored 5-day lookback pattern applied
+        # to below_ema_N. Single-gate STATE strategies (e.g.
+        # strat_simple_below_ema_50_short at 34K/yr SHORT = state filter)
+        # need a freshness gate to fire on the BREAK, not on the
+        # CONTINUED-BELOW. This producer-additive signal is True only when
+        # close[t] is below ema_N[t] AND close was at-least-once above
+        # ema_N within the last 5 bars (excluding today). Catches the
+        # fresh cross-down without firing every bar of the down-trend.
+        # Narrow scope per `feedback_narrow_scope_blast_radius`: only
+        # B721+ consumers receive the new signal; existing `below_ema_N`
+        # consumers unchanged.
+        if len(df) >= slow + 7:
+            # Look back 5 bars (indices -2 to -6) to see if close was
+            # above the corresponding ema_N at any point
+            try:
+                closes_recent = df["close"].iloc[-6:-1].astype(float)
+                ef_recent = ef.iloc[-6:-1].astype(float)
+                es_recent = es.iloc[-6:-1].astype(float)
+                was_above_fast = (closes_recent > ef_recent).any()
+                was_above_slow = (closes_recent > es_recent).any()
+                result[f"below_ema_{fast}_break_recent_5d"] = bool(
+                    result[f"below_ema_{fast}"] and was_above_fast
+                )
+                result[f"below_ema_{slow}_break_recent_5d"] = bool(
+                    result[f"below_ema_{slow}"] and was_above_slow
+                )
+            except (ValueError, TypeError, IndexError):
+                # fail-safe: don't emit signal on malformed data
+                pass
         # B630 F2 (2026-06-08 owner-directed mega-sweep): symmetric
         # below_sma_{fast,slow} signals for the 4 strategies that
         # previously used `not s.get("price_above_sma_{fast,slow}")`

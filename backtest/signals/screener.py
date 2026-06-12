@@ -4868,23 +4868,38 @@ def strat_simple_below_ema_50_short(s):
     deleted SM-9 strat_institutional_distribution_short per owner-
     approved cluster-walk critique disposition.
 
+    Batch 721 (2026-06-12 owner-approved per "continue autonomously"):
+    STATE -> EVENT-anchored conversion per B655 T10 supertrend precedent
+    + S4-B717-CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES routing.
+    B660 post-B689 measurement showed this strategy firing 34,378/yr SHORT
+    = 68/name/yr = every ~4 days per name = state filter, not strategy.
+    Single-gate STATE strategies are exactly what B655 was built to
+    address.
+
     Fires SHORT when:
-      below_ema_50 (trend agreement; only gate that was actually doing
-                    discriminative work in deleted SM-9)
+      below_ema_50_break_recent_5d (close < ema_50 today AND close was
+                                    at-least-once above ema_50 within
+                                    last 5 bars; B721 producer-additive
+                                    signal; freshness lookback per B655
+                                    + B643/B645 precedents)
+
+    Pre-B721: fired on `below_ema_50` STATE (true ~30-40% of bars in any
+    market). Post-B721: fires only on the BREAK-DOWN within last 5 bars.
+    Expected fire-rate reduction per B655 precedent: ~95% (T10 supertrend
+    went from 33K -> 772/yr post-conversion).
 
     Registered in `momentum_trend` category; does NOT belong to smart
     money cluster (no smart-money data dependency). Pure-technical SHORT
-    that honestly describes its thesis: trend continuation when price is
-    below the 50-EMA.
+    that honestly describes its thesis: trend continuation when price has
+    JUST broken below the 50-EMA.
 
     Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
-    No regime entry needed; trend-following SHORT naturally fits the
-    direction-aware default.
     """
-    fires = s.get("below_ema_50", False)
+    fires = s.get("below_ema_50_break_recent_5d", False)
     return _strat(fires, "short", "momentum_trend",
-        ["below_ema_50"],
-        ["Price below 50 EMA -- trend continuation SHORT"])
+        ["below_ema_50_break_recent_5d"],
+        ["Price JUST broke below 50 EMA (within last 5 bars)",
+         "Trend-change SHORT entry (B721 EVENT-anchored conversion)"])
 
 
 # Wave 3 13F Batch 331 (2026-05-25): 4 additional 13F-driven strategies
