@@ -1,5 +1,25 @@
 # Stage 4 Pivot Cluster Walks — Post-Reviewer-Audit Status
 
+> **B731 STATUS BANNER (2026-06-12) — C1 TIMEFRAME OWNER-DECISION RESOLVED: HONEST REFRAME (NOT INTRADAY) APPROVED FOR ALL 3 PIVOT FAMILIES.** Owner-approved 2026-06-12 per Decision 2 Group A (B726 → all-recs approval). Closes 4-cycle deferral on the cluster's largest structural debt per B710 reviewer Phase 2.
+>
+> **REFRAME APPLIES TO ALL 3 FAMILIES:**
+> 1. **Floor-trader pivot family** (~7 strategies: W3 pivot_s1_bounce, W4 pivot_s2_bounce, W5 pivot_s3_capitulation, W5m pivot_r3_blowoff_short, W6 pivot_r1_breakout, W7 pivot_r2_continuation, strat_pivot_fib_confluence)
+> 2. **Camarilla family** (~4 strategies: W9 camarilla_s3_bounce, W9b/W9c camarilla_rsi_obv long/short, W10 camarilla_r4_breakout)
+> 3. **CPR family** (~3 strategies: W8 cpr_narrow_bullish, W8a cpr_narrow_momentum, W8b cpr_narrow_momentum_short)
+>
+> **REFRAME RULE PER B710 REVIEWER PHASE 2 (verbatim):** *"honestly reframe and rename as a daily momentum/range signal and drop the pivot-precision language."* These 14 strategies remain in production but are honestly framed as:
+>   - "daily-bar derived support/resistance" (not intraday pivot)
+>   - Signal lifetime: 1 trading day (recomputed daily from yesterday's H/L/C)
+>   - The strategy's edge thesis, if any, is the DAILY-BAR MOMENTUM/RANGE interpretation of the level, not the canonical intraday pivot semantics from Floor Trader Bulletin / Slim Khan / Nick Stott (Camarilla) / Steidlmayer (CPR)
+>
+> **Intraday-bars alternative formally REJECTED** per Decision 2 Group A approval: Polygon Aggregates Advanced tier (~+$200/month) infrastructure cost is not justified pre-cube empirical validation; reframe addresses the doc-honesty problem at zero cost.
+>
+> **PER-STRATEGY DOCSTRING UPDATES** deferred to B731b walk batch (14 docstring edits) per `feedback_no_rushing_per_strategy_tweak` -- the structural framing decision lands here; per-strategy walks can apply the reframe text individually as part of normal post-cube cluster work.
+>
+> **RESOLVES:** `S4-B710-PIVOT-FAMILY-INTRADAY-VS-REFRAME-DECISION` -> RESOLVED-B731 (HONEST-REFRAME branch); also retires `CHECKLIST (r) timeframe-mismatch reframe rule` codified-but-unapplied status (B710 Pattern I).
+>
+> ---
+>
 > **B717 STATUS BANNER (2026-06-12) — FIRE-COUNT CEILING SWEEP EXECUTED ON B660 POST-B689 DATA. B710 reviewer's "fires too often to be selective" CLAIM EMPIRICALLY VINDICATED.** Classifier shipped (`scripts/fire_count_ceiling_classify.py`); ran on `output_audit/fire_count_measured_b660_post_b689_extended.json` with 5K/yr/direction ceiling. **VERDICT: 21 TOO_FREQUENT_FAIL + 5 BORDERLINE = 26 strategies across 8+ clusters.** B710 W8/W8a/W8b CONFIRMED: cpr_narrow_momentum (12.5K L + 8.5K S), cpr_narrow_momentum_short (14K SHORT), cpr_narrow_bullish (5.8K LONG). Other pivot cluster catches: r1_break_retest (4.8K L BORDERLINE), williams_stoch_dual (6.6K S + 4K L). Next: S4-B717-CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES routes each flagged strategy to Phase-1 redundancy diagnostic + B654-style narrow-scope producer fix.
 >
 > ---
