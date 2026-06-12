@@ -1,0 +1,2524 @@
+{
+  "batch": "B716-FIRE-COUNT-CEILING-CLASSIFICATION",
+  "input_file": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_count_measured_b660_post_b689_extended.json",
+  "params": {
+    "ceiling_per_year_per_direction": 5000.0,
+    "borderline_per_year_per_direction": 4000.0,
+    "window_years": 6.41,
+    "starved_threshold_per_year": 30
+  },
+  "summary": {
+    "n_strategies_total": 224,
+    "n_too_freq_fail": 21,
+    "n_too_freq_borderline": 5,
+    "n_measured_ok": 102,
+    "n_fire_starved": 15,
+    "n_both_zero": 81
+  },
+  "too_frequent_fail": [
+    {
+      "strategy": "simple_below_ema_50_short",
+      "long_total": 0,
+      "short_total": 220363,
+      "long_per_year": 0.0,
+      "short_per_year": 34378.0,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "long_total": 143695,
+      "short_total": 0,
+      "long_per_year": 22417.3,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "long_total": 80342,
+      "short_total": 54243,
+      "long_per_year": 12533.9,
+      "short_per_year": 8462.2,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "hull_rsi_short",
+      "long_total": 0,
+      "short_total": 130336,
+      "long_per_year": 0.0,
+      "short_per_year": 20333.2,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "hull_rsi",
+      "long_total": 69451,
+      "short_total": 45168,
+      "long_per_year": 10834.8,
+      "short_per_year": 7046.5,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "long_total": 106640,
+      "short_total": 0,
+      "long_per_year": 16636.5,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "ichimoku_cloud_breakout",
+      "long_total": 72788,
+      "short_total": 33670,
+      "long_per_year": 11355.4,
+      "short_per_year": 5252.7,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "totm_long",
+      "long_total": 94544,
+      "short_total": 0,
+      "long_per_year": 14749.5,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "risk_off_bond_equity_short",
+      "long_total": 0,
+      "short_total": 90926,
+      "long_per_year": 0.0,
+      "short_per_year": 14185.0,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "cpr_narrow_momentum_short",
+      "long_total": 0,
+      "short_total": 89138,
+      "long_per_year": 0.0,
+      "short_per_year": 13906.1,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "poc_magnet_long",
+      "long_total": 72654,
+      "short_total": 0,
+      "long_per_year": 11334.5,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "long_total": 26222,
+      "short_total": 42223,
+      "long_per_year": 4090.8,
+      "short_per_year": 6587.1,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "monthly_bias_momentum_long",
+      "long_total": 67351,
+      "short_total": 0,
+      "long_per_year": 10507.2,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "break_retest_volume",
+      "long_total": 41868,
+      "short_total": 25015,
+      "long_per_year": 6531.7,
+      "short_per_year": 3902.5,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "long_total": 40891,
+      "short_total": 24871,
+      "long_per_year": 6379.3,
+      "short_per_year": 3880.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "break_retest_confluence",
+      "long_total": 38554,
+      "short_total": 23672,
+      "long_per_year": 6014.7,
+      "short_per_year": 3693.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "long_total": 0,
+      "short_total": 58053,
+      "long_per_year": 0.0,
+      "short_per_year": 9056.6,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "long_total": 12486,
+      "short_total": 42396,
+      "long_per_year": 1947.9,
+      "short_per_year": 6614.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "long_total": 37297,
+      "short_total": 12641,
+      "long_per_year": 5818.6,
+      "short_per_year": 1972.1,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "double_bottom_long",
+      "long_total": 48139,
+      "short_total": 0,
+      "long_per_year": 7510.0,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "po3_bullish",
+      "long_total": 35591,
+      "short_total": 0,
+      "long_per_year": 5552.4,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    }
+  ],
+  "too_frequent_borderline": [
+    {
+      "strategy": "macd_fast_crossover",
+      "long_total": 29798,
+      "short_total": 29830,
+      "long_per_year": 4648.7,
+      "short_per_year": 4653.7,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "TOO_FREQUENT_BORDERLINE",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "r1_break_retest",
+      "long_total": 30486,
+      "short_total": 21304,
+      "long_per_year": 4756.0,
+      "short_per_year": 3323.6,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "stochrsi_overbought_short",
+      "long_total": 0,
+      "short_total": 31570,
+      "long_per_year": 0.0,
+      "short_per_year": 4925.1,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_BORDERLINE",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "po3_htf_aligned_long",
+      "long_total": 31550,
+      "short_total": 0,
+      "long_per_year": 4922.0,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "po3_bearish",
+      "long_total": 0,
+      "short_total": 26130,
+      "long_per_year": 0.0,
+      "short_per_year": 4076.4,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_BORDERLINE",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    }
+  ],
+  "all_classifications": [
+    {
+      "strategy": "52w_high_breakout",
+      "long_total": 11497,
+      "short_total": 0,
+      "long_per_year": 1793.6,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "long_total": 8132,
+      "short_total": 0,
+      "long_per_year": 1268.6,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "52w_low_breakdown_pullback_short",
+      "long_total": 0,
+      "short_total": 3989,
+      "long_per_year": 0.0,
+      "short_per_year": 622.3,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "52wh_break_retest",
+      "long_total": 6790,
+      "short_total": 0,
+      "long_per_year": 1059.3,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "long_total": 0,
+      "short_total": 1315,
+      "long_per_year": 0.0,
+      "short_per_year": 205.1,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "activist_13d_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "adx_initiation",
+      "long_total": 4547,
+      "short_total": 5243,
+      "long_per_year": 709.4,
+      "short_per_year": 817.9,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "long_total": 0,
+      "short_total": 140,
+      "long_per_year": 0.0,
+      "short_per_year": 21.8,
+      "long_class": "ZERO",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "long_total": 4037,
+      "short_total": 4095,
+      "long_per_year": 629.8,
+      "short_per_year": 638.8,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "long_total": 12486,
+      "short_total": 42396,
+      "long_per_year": 1947.9,
+      "short_per_year": 6614.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "long_total": 9846,
+      "short_total": 9555,
+      "long_per_year": 1536.0,
+      "short_per_year": 1490.6,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "long_total": 417,
+      "short_total": 450,
+      "long_per_year": 65.1,
+      "short_per_year": 70.2,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "bollinger_lower",
+      "long_total": 7018,
+      "short_total": 5675,
+      "long_per_year": 1094.9,
+      "short_per_year": 885.3,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "bollinger_tight",
+      "long_total": 23850,
+      "short_total": 19269,
+      "long_per_year": 3720.7,
+      "short_per_year": 3006.1,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "bollinger_upper_short",
+      "long_total": 0,
+      "short_total": 477,
+      "long_per_year": 0.0,
+      "short_per_year": 74.4,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "break_retest_confluence",
+      "long_total": 38554,
+      "short_total": 23672,
+      "long_per_year": 6014.7,
+      "short_per_year": 3693.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "break_retest_volume",
+      "long_total": 41868,
+      "short_total": 25015,
+      "long_per_year": 6531.7,
+      "short_per_year": 3902.5,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "bullish_engulfing_support",
+      "long_total": 1626,
+      "short_total": 1757,
+      "long_per_year": 253.7,
+      "short_per_year": 274.1,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "long_total": 4897,
+      "short_total": 5711,
+      "long_per_year": 764.0,
+      "short_per_year": 891.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "camarilla_rsi_obv",
+      "long_total": 28,
+      "short_total": 93,
+      "long_per_year": 4.4,
+      "short_per_year": 14.5,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "camarilla_rsi_obv_short",
+      "long_total": 0,
+      "short_total": 93,
+      "long_per_year": 0.0,
+      "short_per_year": 14.5,
+      "long_class": "ZERO",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "long_total": 111,
+      "short_total": 312,
+      "long_per_year": 17.3,
+      "short_per_year": 48.7,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "classification_change_breakout_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_from_tech_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_momentum_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_oversold_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_to_defensive_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_to_tech_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_volume_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_with_insider_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "classification_change_with_institutional_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "cmf_flip",
+      "long_total": 10299,
+      "short_total": 9907,
+      "long_per_year": 1606.7,
+      "short_per_year": 1545.6,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "long_total": 37297,
+      "short_total": 12641,
+      "long_per_year": 5818.6,
+      "short_per_year": 1972.1,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "long_total": 80342,
+      "short_total": 54243,
+      "long_per_year": 12533.9,
+      "short_per_year": 8462.2,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "cpr_narrow_momentum_short",
+      "long_total": 0,
+      "short_total": 89138,
+      "long_per_year": 0.0,
+      "short_per_year": 13906.1,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "long_total": 988,
+      "short_total": 0,
+      "long_per_year": 154.1,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "long_total": 10165,
+      "short_total": 0,
+      "long_per_year": 1585.8,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "long_total": 40891,
+      "short_total": 24871,
+      "long_per_year": 6379.3,
+      "short_per_year": 3880.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "death_cross_50_200_volume",
+      "long_total": 0,
+      "short_total": 87,
+      "long_per_year": 0.0,
+      "short_per_year": 13.6,
+      "long_class": "ZERO",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "long_total": 0,
+      "short_total": 1347,
+      "long_per_year": 0.0,
+      "short_per_year": 210.1,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "doji_at_support",
+      "long_total": 1375,
+      "short_total": 0,
+      "long_per_year": 214.5,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "donchian_10_breakout",
+      "long_total": 10355,
+      "short_total": 9400,
+      "long_per_year": 1615.4,
+      "short_per_year": 1466.5,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "donchian_breakdown_retest_short",
+      "long_total": 0,
+      "short_total": 12612,
+      "long_per_year": 0.0,
+      "short_per_year": 1967.6,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "donchian_breakdown_short",
+      "long_total": 0,
+      "short_total": 7147,
+      "long_per_year": 0.0,
+      "short_per_year": 1115.0,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "long_total": 6160,
+      "short_total": 0,
+      "long_per_year": 961.0,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "donchian_breakout_retest_long",
+      "long_total": 21732,
+      "short_total": 0,
+      "long_per_year": 3390.3,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "donchian_breakout_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "double_bottom_long",
+      "long_total": 48139,
+      "short_total": 0,
+      "long_per_year": 7510.0,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "dxy_headwind_multinational_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "long_total": 0,
+      "short_total": 583,
+      "long_per_year": 0.0,
+      "short_per_year": 91.0,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "flag_bull_long",
+      "long_total": 6350,
+      "short_total": 0,
+      "long_per_year": 990.6,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "long_total": 2659,
+      "short_total": 0,
+      "long_per_year": 414.8,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "force_index_breakout",
+      "long_total": 23904,
+      "short_total": 22029,
+      "long_per_year": 3729.2,
+      "short_per_year": 3436.7,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "long_total": 3424,
+      "short_total": 2940,
+      "long_per_year": 534.2,
+      "short_per_year": 458.7,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "long_total": 1644,
+      "short_total": 1588,
+      "long_per_year": 256.5,
+      "short_per_year": 247.7,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "long_total": 8241,
+      "short_total": 8014,
+      "long_per_year": 1285.6,
+      "short_per_year": 1250.2,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "golden_cross_volume",
+      "long_total": 61,
+      "short_total": 87,
+      "long_per_year": 9.5,
+      "short_per_year": 13.6,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "long_total": 143695,
+      "short_total": 0,
+      "long_per_year": 22417.3,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "long_total": 794,
+      "short_total": 0,
+      "long_per_year": 123.9,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "head_and_shoulders_bottom_long",
+      "long_total": 9465,
+      "short_total": 0,
+      "long_per_year": 1476.6,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "head_and_shoulders_top_short",
+      "long_total": 0,
+      "short_total": 8291,
+      "long_per_year": 0.0,
+      "short_per_year": 1293.4,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "long_total": 8741,
+      "short_total": 0,
+      "long_per_year": 1363.7,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "htf_aligned_breakout_short",
+      "long_total": 0,
+      "short_total": 8056,
+      "long_per_year": 0.0,
+      "short_per_year": 1256.8,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "hull_rsi",
+      "long_total": 69451,
+      "short_total": 45168,
+      "long_per_year": 10834.8,
+      "short_per_year": 7046.5,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "hull_rsi_short",
+      "long_total": 0,
+      "short_total": 130336,
+      "long_per_year": 0.0,
+      "short_per_year": 20333.2,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "ichimoku_cloud_breakdown",
+      "long_total": 0,
+      "short_total": 737,
+      "long_per_year": 0.0,
+      "short_per_year": 115.0,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "ichimoku_cloud_breakout",
+      "long_total": 72788,
+      "short_total": 33670,
+      "long_per_year": 11355.4,
+      "short_per_year": 5252.7,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "long_total": 5254,
+      "short_total": 4343,
+      "long_per_year": 819.7,
+      "short_per_year": 677.5,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "inside_bar_breakout",
+      "long_total": 14721,
+      "short_total": 0,
+      "long_per_year": 2296.6,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_buy_momentum_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_cluster_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_committed_growth_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_high_conviction_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_insider_combo_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_persistence_breakout_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_persistence_momentum_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_persistence_volume_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_persistent_holders_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_volume_confirmation_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_with_directors_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "institutional_with_officers_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "inverted_cup_and_handle_short",
+      "long_total": 0,
+      "short_total": 793,
+      "long_per_year": 0.0,
+      "short_per_year": 123.7,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "judas_swing_long",
+      "long_total": 739,
+      "short_total": 0,
+      "long_per_year": 115.3,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "judas_swing_short",
+      "long_total": 0,
+      "short_total": 741,
+      "long_per_year": 0.0,
+      "short_per_year": 115.6,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "keltner_lower",
+      "long_total": 49,
+      "short_total": 66,
+      "long_per_year": 7.6,
+      "short_per_year": 10.3,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "macd_crossover",
+      "long_total": 19273,
+      "short_total": 19220,
+      "long_per_year": 3006.7,
+      "short_per_year": 2998.4,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "macd_crossover_short",
+      "long_total": 0,
+      "short_total": 19220,
+      "long_per_year": 0.0,
+      "short_per_year": 2998.4,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "long_total": 29798,
+      "short_total": 29830,
+      "long_per_year": 4648.7,
+      "short_per_year": 4653.7,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "TOO_FREQUENT_BORDERLINE",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "macd_ichimoku",
+      "long_total": 8927,
+      "short_total": 6809,
+      "long_per_year": 1392.7,
+      "short_per_year": 1062.2,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "mfi_oversold",
+      "long_total": 24,
+      "short_total": 25,
+      "long_per_year": 3.7,
+      "short_per_year": 3.9,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "mfi_oversold_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "mmbm_long",
+      "long_total": 13842,
+      "short_total": 0,
+      "long_per_year": 2159.4,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "mmsm_short",
+      "long_total": 0,
+      "short_total": 17391,
+      "long_per_year": 0.0,
+      "short_per_year": 2713.1,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "monthly_bias_momentum_long",
+      "long_total": 67351,
+      "short_total": 0,
+      "long_per_year": 10507.2,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "morning_star",
+      "long_total": 5210,
+      "short_total": 6755,
+      "long_per_year": 812.8,
+      "short_per_year": 1053.8,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "news_momentum_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "news_momentum_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "news_reversal_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "news_reversal_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "news_sentiment_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "news_sentiment_shift_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "long_total": 1179,
+      "short_total": 0,
+      "long_per_year": 183.9,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "orb_stocks_in_play_short",
+      "long_total": 0,
+      "short_total": 1213,
+      "long_per_year": 0.0,
+      "short_per_year": 189.2,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pairs_mean_reversion_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "long_total": 8404,
+      "short_total": 8585,
+      "long_per_year": 1311.1,
+      "short_per_year": 1339.3,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "parabolic_sar_flip_short",
+      "long_total": 0,
+      "short_total": 8585,
+      "long_per_year": 0.0,
+      "short_per_year": 1339.3,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pead_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pead_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pead_short_negative_yoy_growth",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pivot_fib_confluence",
+      "long_total": 586,
+      "short_total": 2,
+      "long_per_year": 91.4,
+      "short_per_year": 0.3,
+      "long_class": "MEASURED_OK",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pivot_r1_breakout",
+      "long_total": 8740,
+      "short_total": 1875,
+      "long_per_year": 1363.5,
+      "short_per_year": 292.5,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pivot_r2_continuation",
+      "long_total": 859,
+      "short_total": 77,
+      "long_per_year": 134.0,
+      "short_per_year": 12.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pivot_r3_blowoff_short",
+      "long_total": 0,
+      "short_total": 29,
+      "long_per_year": 0.0,
+      "short_per_year": 4.5,
+      "long_class": "ZERO",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "long_total": 1633,
+      "short_total": 712,
+      "long_per_year": 254.8,
+      "short_per_year": 111.1,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "long_total": 181,
+      "short_total": 1,
+      "long_per_year": 28.2,
+      "short_per_year": 0.2,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "pivot_s3_capitulation",
+      "long_total": 15,
+      "short_total": 0,
+      "long_per_year": 2.3,
+      "short_per_year": 0.0,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "ZERO",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "po3_bearish",
+      "long_total": 0,
+      "short_total": 26130,
+      "long_per_year": 0.0,
+      "short_per_year": 4076.4,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_BORDERLINE",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "po3_bullish",
+      "long_total": 35591,
+      "short_total": 0,
+      "long_per_year": 5552.4,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "po3_htf_aligned_long",
+      "long_total": 31550,
+      "short_total": 0,
+      "long_per_year": 4922.0,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "po3_htf_aligned_short",
+      "long_total": 0,
+      "short_total": 24454,
+      "long_per_year": 0.0,
+      "short_per_year": 3815.0,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "poc_magnet_long",
+      "long_total": 72654,
+      "short_total": 0,
+      "long_per_year": 11334.5,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "post_inclusion_reversal_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "ppo_crossover",
+      "long_total": 6719,
+      "short_total": 7106,
+      "long_per_year": 1048.2,
+      "short_per_year": 1108.6,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pre_fomc_long_sleeve",
+      "long_total": 8954,
+      "short_total": 0,
+      "long_per_year": 1396.9,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pre_fomc_quality_momentum_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "pre_holiday_long",
+      "long_total": 11178,
+      "short_total": 0,
+      "long_per_year": 1743.8,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "prev_day_high_break",
+      "long_total": 9633,
+      "short_total": 7815,
+      "long_per_year": 1502.8,
+      "short_per_year": 1219.2,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "long_total": 1884,
+      "short_total": 1316,
+      "long_per_year": 293.9,
+      "short_per_year": 205.3,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "prev_day_low_breakdown",
+      "long_total": 0,
+      "short_total": 7815,
+      "long_per_year": 0.0,
+      "short_per_year": 1219.2,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "r1_break_retest",
+      "long_total": 30486,
+      "short_total": 21304,
+      "long_per_year": 4756.0,
+      "short_per_year": 3323.6,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "MEASURED_OK",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "risk_off_bond_equity_short",
+      "long_total": 0,
+      "short_total": 90926,
+      "long_per_year": 0.0,
+      "short_per_year": 14185.0,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "roc_burst",
+      "long_total": 3294,
+      "short_total": 4116,
+      "long_per_year": 513.9,
+      "short_per_year": 642.1,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "rsi21_slow",
+      "long_total": 11,
+      "short_total": 0,
+      "long_per_year": 1.7,
+      "short_per_year": 0.0,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "ZERO",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "rsi9_extreme",
+      "long_total": 33,
+      "short_total": 0,
+      "long_per_year": 5.1,
+      "short_per_year": 0.0,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "ZERO",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "rsi_oversold",
+      "long_total": 4627,
+      "short_total": 3940,
+      "long_per_year": 721.8,
+      "short_per_year": 614.7,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "rsi_volume_200ema",
+      "long_total": 2922,
+      "short_total": 1971,
+      "long_per_year": 455.9,
+      "short_per_year": 307.5,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "shooting_star_short",
+      "long_total": 0,
+      "short_total": 1309,
+      "long_per_year": 0.0,
+      "short_per_year": 204.2,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "simple_below_ema_50_short",
+      "long_total": 0,
+      "short_total": 220363,
+      "long_per_year": 0.0,
+      "short_per_year": 34378.0,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "long_total": 1652,
+      "short_total": 1490,
+      "long_per_year": 257.7,
+      "short_per_year": 232.4,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "long_total": 17186,
+      "short_total": 12452,
+      "long_per_year": 2681.1,
+      "short_per_year": 1942.6,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "long_total": 106640,
+      "short_total": 0,
+      "long_per_year": 16636.5,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "long_total": 0,
+      "short_total": 58053,
+      "long_per_year": 0.0,
+      "short_per_year": 9056.6,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "long_total": 11746,
+      "short_total": 9740,
+      "long_per_year": 1832.4,
+      "short_per_year": 1519.5,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_discount_long",
+      "long_total": 10945,
+      "short_total": 0,
+      "long_per_year": 1707.5,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "long_total": 0,
+      "short_total": 6758,
+      "long_per_year": 0.0,
+      "short_per_year": 1054.3,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "long_total": 6849,
+      "short_total": 0,
+      "long_per_year": 1068.5,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "long_total": 9803,
+      "short_total": 0,
+      "long_per_year": 1529.3,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "long_total": 0,
+      "short_total": 8012,
+      "long_per_year": 0.0,
+      "short_per_year": 1249.9,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "long_total": 8392,
+      "short_total": 7152,
+      "long_per_year": 1309.2,
+      "short_per_year": 1115.8,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "long_total": 4475,
+      "short_total": 3428,
+      "long_per_year": 698.1,
+      "short_per_year": 534.8,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "long_total": 1317,
+      "short_total": 0,
+      "long_per_year": 205.5,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "long_total": 0,
+      "short_total": 952,
+      "long_per_year": 0.0,
+      "short_per_year": 148.5,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "long_total": 19342,
+      "short_total": 17050,
+      "long_per_year": 3017.5,
+      "short_per_year": 2659.9,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_ote_long",
+      "long_total": 4715,
+      "short_total": 0,
+      "long_per_year": 735.6,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_ote_short",
+      "long_total": 0,
+      "short_total": 4540,
+      "long_per_year": 0.0,
+      "short_per_year": 708.3,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "smc_premium_short",
+      "long_total": 0,
+      "short_total": 8432,
+      "long_per_year": 0.0,
+      "short_per_year": 1315.4,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "long_total": 11668,
+      "short_total": 0,
+      "long_per_year": 1820.3,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "squeeze_breakout_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "squeeze_setup_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "stoch_oversold",
+      "long_total": 308,
+      "short_total": 411,
+      "long_per_year": 48.0,
+      "short_per_year": 64.1,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "stochrsi_overbought_short",
+      "long_total": 0,
+      "short_total": 31570,
+      "long_per_year": 0.0,
+      "short_per_year": 4925.1,
+      "long_class": "ZERO",
+      "short_class": "TOO_FREQUENT_BORDERLINE",
+      "overall": "TOO_FREQUENT_BORDERLINE"
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "long_total": 12354,
+      "short_total": 9786,
+      "long_per_year": 1927.3,
+      "short_per_year": 1526.7,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "supertrend_ichimoku_adx",
+      "long_total": 21578,
+      "short_total": 403,
+      "long_per_year": 3366.3,
+      "short_per_year": 62.9,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "supertrend_macd",
+      "long_total": 462,
+      "short_total": 5692,
+      "long_per_year": 72.1,
+      "short_per_year": 888.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "supertrend_macd_short",
+      "long_total": 0,
+      "short_total": 4719,
+      "long_per_year": 0.0,
+      "short_per_year": 736.2,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "tema_dema",
+      "long_total": 13136,
+      "short_total": 12990,
+      "long_per_year": 2049.3,
+      "short_per_year": 2026.5,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "three_black_crows_short",
+      "long_total": 0,
+      "short_total": 15798,
+      "long_per_year": 0.0,
+      "short_per_year": 2464.6,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "long_total": 16776,
+      "short_total": 0,
+      "long_per_year": 2617.2,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "totm_long",
+      "long_total": 94544,
+      "short_total": 0,
+      "long_per_year": 14749.5,
+      "short_per_year": 0.0,
+      "long_class": "TOO_FREQUENT_FAIL",
+      "short_class": "ZERO",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "long_total": 52,
+      "short_total": 0,
+      "long_per_year": 8.1,
+      "short_per_year": 0.0,
+      "long_class": "FAIL_FIRE_STARVED",
+      "short_class": "ZERO",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "triangle_descending_short",
+      "long_total": 0,
+      "short_total": 80,
+      "long_per_year": 0.0,
+      "short_per_year": 12.5,
+      "long_class": "ZERO",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "long_total": 4109,
+      "short_total": 0,
+      "long_per_year": 641.0,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "turtle_soup_short",
+      "long_total": 0,
+      "short_total": 3757,
+      "long_per_year": 0.0,
+      "short_per_year": 586.1,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "ultimate_oscillator",
+      "long_total": 1683,
+      "short_total": 1382,
+      "long_per_year": 262.6,
+      "short_per_year": 215.6,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "value_area_breakout_long",
+      "long_total": 4122,
+      "short_total": 0,
+      "long_per_year": 643.1,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "vix_backwardation_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "vol_spike_2x_below_ema_50_short",
+      "long_total": 0,
+      "short_total": 8416,
+      "long_per_year": 0.0,
+      "short_per_year": 1312.9,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "long_total": 5619,
+      "short_total": 6054,
+      "long_per_year": 876.6,
+      "short_per_year": 944.5,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "week_opening_gap_fill_down",
+      "long_total": 0,
+      "short_total": 4987,
+      "long_per_year": 0.0,
+      "short_per_year": 778.0,
+      "long_class": "ZERO",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "week_opening_gap_fill_up",
+      "long_total": 5548,
+      "short_total": 0,
+      "long_per_year": 865.5,
+      "short_per_year": 0.0,
+      "long_class": "MEASURED_OK",
+      "short_class": "ZERO",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "long_total": 0,
+      "short_total": 2,
+      "long_per_year": 0.0,
+      "short_per_year": 0.3,
+      "long_class": "ZERO",
+      "short_class": "FAIL_FIRE_STARVED",
+      "overall": "FAIL_FIRE_STARVED"
+    },
+    {
+      "strategy": "williams_r_oversold",
+      "long_total": 14668,
+      "short_total": 10113,
+      "long_per_year": 2288.3,
+      "short_per_year": 1577.7,
+      "long_class": "MEASURED_OK",
+      "short_class": "MEASURED_OK",
+      "overall": "MEASURED_OK"
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "long_total": 26222,
+      "short_total": 42223,
+      "long_per_year": 4090.8,
+      "short_per_year": 6587.1,
+      "long_class": "TOO_FREQUENT_BORDERLINE",
+      "short_class": "TOO_FREQUENT_FAIL",
+      "overall": "TOO_FREQUENT_FAIL"
+    },
+    {
+      "strategy": "xs_combined_momentum_low_ivol",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "xs_momentum_bottom_decile_short",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "xs_momentum_quality_combined",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    },
+    {
+      "strategy": "xs_quality_top_quintile_long",
+      "long_total": 0,
+      "short_total": 0,
+      "long_per_year": 0.0,
+      "short_per_year": 0.0,
+      "long_class": "ZERO",
+      "short_class": "ZERO",
+      "overall": "BOTH_ZERO"
+    }
+  ]
+}

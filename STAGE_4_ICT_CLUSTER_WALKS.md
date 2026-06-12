@@ -1,5 +1,9 @@
 # Stage 4 ICT (Inner Circle Trader) Pure Price-Action Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B717 STATUS BANNER (2026-06-12) — B660 POST-B689 MEASURED DATA LANDED; ICT "NO MEASURED DATA" FRAMING SUPERSEDED.** PO3 family now has measured fires (`output_audit/fire_count_measured_b660_post_b689_extended.json`): po3_bullish 5,552/yr (TOO_FREQUENT_FAIL per B710 5K ceiling), po3_bearish 4,076/yr (BORDERLINE), po3_htf_aligned_long 4,924/yr (BORDERLINE). Other ICT strategies still 0 fires (still need B690 for SM-cluster-specific producers; ICT-PO3 producers were wired by B689). **B705 "no measured data" Pattern Q framing applies only to non-PO3 ICT strategies now.** Reviewer's "PO3 strategies are mythology + single-bar reversal" critique now testable against measured data: at 5,500/yr LONG = ~11 fires/name/yr, PO3 fires roughly every 5 trading weeks per name — borderline-state-flag rate, consistent with "single-bar candle structure fires constantly" interpretation. Resolve via S4-B717-CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES Phase-1 narrow-scope producer fix.
+>
+> ---
+>
 > **B705 STATUS BANNER (2026-06-11) — ADVERSARIAL REVIEW OF EXTERNAL REVIEWER'S ICT PROPOSAL — NOT TRUST-BLIND.** Owner-pattern from B702: source-verify each claim before accepting. Output: [STAGE_4_ICT_CLUSTER_B705_ADVERSARIAL_REVIEW.md](STAGE_4_ICT_CLUSTER_B705_ADVERSARIAL_REVIEW.md). **Headline B705 verdicts (source-verified against `multi_timeframe.py`, `ict_producers.py`, `smc_ict.py`, `screener.py`):**
 >
 > - **HIGHEST-LEVERAGE FINDING (REVIEWER 100% CORRECT)**: Turtle Soup inherits SMC's `event_recency_bars=90` ([smc_ict.py:81](backtest/signals/smc_ict.py#L81)) — fires on sweeps up to 4 months stale. Raschke 1996 stop-run reversal needs 1-5 bar recency. Wire Turtle-Soup-specific tight-recency signal; don't change SMC default.
