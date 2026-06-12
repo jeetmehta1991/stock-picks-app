@@ -241,15 +241,36 @@ def compute_po3_signal(df: pd.DataFrame) -> dict:
     sweep_tol = 0.001  # 0.1% tolerance on sweep below/above prior
     sweep_below = t_low <= p_low * (1 + sweep_tol)
     sweep_above = t_high >= p_high * (1 - sweep_tol)
+    # B720 (2026-06-12 owner-approved per "continue autonomously"): tightened
+    # close_position thresholds per S4-B717-CEILING-FLAGGED-REDUNDANCY-
+    # DIAGNOSTIC-26-STRATEGIES. B660 post-B689 measurement showed:
+    #   po3_bullish:           5,553/yr LONG  (TOO_FREQUENT_FAIL @ 5K ceiling)
+    #   po3_bearish:           4,076/yr SHORT (BORDERLINE)
+    #   po3_htf_aligned_long:  4,924/yr LONG  (BORDERLINE)
+    #
+    # Tightening pattern from B710 W1 strong-close + B697 BR-1 anti-fakeout:
+    #   LONG:  0.66 -> 0.75 (close in upper 25% of range, not upper 34%)
+    #   SHORT: 0.33 -> 0.25 (close in lower 25% of range, not lower 33%)
+    #
+    # Direct producer change permitted per `feedback_narrow_scope_blast_radius`:
+    # po3_bullish/po3_bearish have ONLY 4 consumers (ICT-1/2/3/4 strategies);
+    # no other producers/strategies depend on these signals. Narrow-scope
+    # parallel-variant pattern (B654/B718 cpr_narrow_tight) not needed here.
+    #
+    # Note: per B705 + B719 reviewers' Pattern Q + Pattern M findings, PO3
+    # family has no peer-reviewed support; high fire rate combined with
+    # no-prior-edge means these are TIER-3 EXPLORATORY (queued as
+    # S4-B720-ICT-PO3-FAMILY-PATTERN-F-DEPRECATE-DECISION). This tightening
+    # addresses the FIRE RATE only, not the EDGE QUESTION.
     po3_bull = bool(
         sweep_below
         and t_close > t_open
-        and close_position > 0.66
+        and close_position > 0.75
     )
     po3_bear = bool(
         sweep_above
         and t_close < t_open
-        and close_position < 0.33
+        and close_position < 0.25
     )
     return {
         "po3_bullish":                  po3_bull,
