@@ -8506,19 +8506,28 @@ def test_batch218_kept_strategies_not_accidentally_deprecated():
 
 
 def test_batch217_po3_multi_tf_strategies_registered():
-    """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved): 9 new
-    strategies registered (2 PO3 + 2 PO3+HTF + 2 HTF-aligned breakout
-    + 2 weekly-bias pullback + 1 monthly-bias momentum)."""
+    """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved): originally 9
+    new strategies registered. Batch 722 (2026-06-12 owner-approved per
+    HYBRID Pattern F rec): po3_htf_aligned_long + po3_htf_aligned_short
+    DELETED as strict deterministic subsets of po3_bullish + po3_bearish
+    on weekly_bias axis. Post-B722 expected: 7 strategies (2 PO3 -- now
+    EXPLORATORY -- + 2 HTF-aligned breakout + 2 weekly-bias pullback +
+    1 monthly-bias momentum). Also assert the two DELETED entries are
+    NOT registered."""
     from backtest.signals.screener import ALL_STRATEGIES
     new_names = [
         "po3_bullish", "po3_bearish",
-        "po3_htf_aligned_long", "po3_htf_aligned_short",
         "htf_aligned_breakout_long", "htf_aligned_breakout_short",
         "weekly_bias_pullback_long", "weekly_bias_pullback_short",
         "monthly_bias_momentum_long",
     ]
     for name in new_names:
         assert name in ALL_STRATEGIES, f"Batch 217: {name} must be registered"
+    # B722 deletions:
+    for deleted in ["po3_htf_aligned_long", "po3_htf_aligned_short"]:
+        assert deleted not in ALL_STRATEGIES, (
+            f"Batch 722 DELETED: {deleted} must NOT be registered"
+        )
 
 
 def test_batch217_compute_po3_signal_detects_bullish():
@@ -9089,17 +9098,24 @@ def test_batch207_hull_rsi_requires_adx_gt_20():
     false-signal rate in half (cited SSRN replications).
 
     Batch 358 update: hull_rsi long also requires price_above_ema_200
-    (bear-block per cell-audit Bucket B). Fixture extended with the
-    200-EMA gate so the test still validates the Batch 207 ADX path."""
+    (bear-block per cell-audit Bucket B).
+
+    Batch 722 update (2026-06-12 owner-approved STATE->EVENT conversion
+    per B655 T10 + B721 below_ema_50 precedents): the regime gate is now
+    `price_above_ema_200_break_recent_5d` (EVENT-anchored) instead of
+    `price_above_ema_200` (STATE). Fixture updated to provide the new
+    event-anchored signal so the test still validates the Batch 207 ADX
+    path."""
     from backtest.signals.screener import strat_hull_rsi
-    # Hull bullish, price above hull, RSI>50, above 200-EMA - but ADX=15 (chop)
+    # Hull bullish, price above hull, RSI>50, regime event fresh - but ADX=15 (chop)
     s = {
         "hull_bullish": True,
         "price_above_hull": True,
         "rsi_9": 60.0,
         "adx": 15.0,           # below 20
         "adx_trending": False,
-        "price_above_ema_200": True,  # Batch 358 gate satisfied
+        # B722: replaced price_above_ema_200 (STATE) with EVENT-anchored variant
+        "price_above_ema_200_break_recent_5d": True,
     }
     r = strat_hull_rsi(s)
     assert not r["fires"] or r["direction"] != "long", (
@@ -10319,8 +10335,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     #       (phi correlation = 0.297 on 29 T1a tickers 2020-2026; 70% of EV-3 fires are
     #       a distinct population EV-1 misses entirely; B682 deletion empirically wrong).
     #       222 -> 224.
-    assert len(ALL_STRATEGIES) == 224, (
-        f"F-002 drift: ALL_STRATEGIES expected 224 post-B709 EV-3+EV-4 restore; "
+    assert len(ALL_STRATEGIES) == 221, (
+        f"F-002 drift: ALL_STRATEGIES expected 221 post-B722 deletions + EXPLORATORY "
+        f"(hull_rsi_short Pattern W + 2 po3_htf_aligned Pattern F = -3); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10335,12 +10352,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 223, (
-        f"F-002 drift: active strategy count expected 223 (224 registered "
-        f"minus 1 disabled dxy_headwind_multinational_short); B709 EMPIRICAL-"
-        f"RESTORE per B702 adversarial review verdict (phi=0.297; B682 "
-        f"deletion of EV-3 + EV-4 empirically wrong) took 221 -> 223; "
-        f"got {active}."
+    assert active == 220, (
+        f"F-002 drift: active strategy count expected 220 (221 registered "
+        f"minus 1 disabled dxy_headwind_multinational_short); B722 deletions "
+        f"+ EXPLORATORY took 223 -> 220; got {active}."
     )
 
     # F-004 exit method count

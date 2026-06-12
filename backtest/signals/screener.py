@@ -931,29 +931,38 @@ def strat_hull_rsi(s):
         or-split.
     """
     adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
-    above_200 = s.get("price_above_ema_200", False)
-    # B659 S4-T3-NOT-ABOVE-200-EMA-PATTERN resolution: replace
-    # `(not above_200)` NOT-pattern silent-gap with positive symmetric
-    # `s.get("below_ema_200", False)` (B630 producer-additive). Same
-    # fix template as B641 W8 F1b (cpr_narrow_bullish SHORT-side
-    # `(not above_200)` -> `below_ema_200` positive symmetric).
-    below_200 = s.get("below_ema_200", False)
+    # B722 (2026-06-12 owner-approved STATE->EVENT conversion per B655 T10
+    # + B721 below_ema_50 precedents): replaced STATE gates
+    # (price_above_ema_200 / below_ema_200) with EVENT-anchored
+    # break_recent_5d variants. B660 post-B689 measured this strategy
+    # firing 11K LONG + 7K SHORT per year = 28/name/yr = state flag despite
+    # B656 audit calling it "honest confluence not redundancy". B710
+    # reviewer rejected B656's defense: state flags fire too often to be
+    # selective even when each gate is independently informative. B722
+    # converts to fire only when regime change (price_above_ema_200 -> True
+    # OR below_ema_200 -> True) JUST happened within last 5 bars. Other
+    # confluence gates (hull_bullish + price_above_hull + adx>20) retained
+    # as confirmation. Expected B655 precedent: ~95% reduction (T10
+    # supertrend went 33K -> 772/yr post-conversion; same profile expected
+    # here).
+    above_200_fresh = s.get("price_above_ema_200_break_recent_5d", False)
+    below_200_fresh = s.get("below_ema_200_break_recent_5d", False)
     # B656: dropped rsi_9>50/<50 (option C from T3 redundancy audit;
     # same accidentally-safe + near-no-op pattern as B654 W8 RSI drop).
     fl = (
         s.get("hull_bullish") and s.get("price_above_hull")
         and adx_trend_ok
-        and above_200
+        and above_200_fresh  # B722 EVENT-anchored
     )
     # B634 sweep: positive symmetric hull_bearish + price_below_hull (B634 producers)
     fs = (
         s.get("hull_bearish") and s.get("price_below_hull")
         and adx_trend_ok
-        and below_200  # B659: was `(not above_200)` NOT-pattern silent-gap
+        and below_200_fresh  # B722 EVENT-anchored
     )
     return _strat3(fl, fs, "momentum",
-        ["hull_bullish", "price_above_hull", "adx>20", "price_above_ema_200"],
-        ["hull_bearish", "price_below_hull", "adx>20", "price_below_ema_200"],
+        ["hull_bullish", "price_above_hull", "adx>20", "price_above_ema_200_break_recent_5d"],
+        ["hull_bearish", "price_below_hull", "adx>20", "below_ema_200_break_recent_5d"],
         ["Hull MA rising - fast trend bullish", "Price above Hull",
          "ADX>20 confirms trend",
          "Above 200-EMA (bull regime gate, Batch 358)"],
@@ -2352,48 +2361,32 @@ def strat_macd_crossover_short(s):
          "High-probability momentum entry  -  catching the shift early"])
 
 
-def strat_hull_rsi_short(s):
-    """B634 sweep: positive symmetric hull_bearish + price_below_hull.
-
-    B718 (2026-06-12 owner-approved per "approve all" of S4-B717-
-    CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES): tightened gates
-    symmetrically to match strat_hull_rsi SHORT branch (post-B656 B358
-    B207 hardening). B660 post-B689 measurement showed this strategy
-    firing 20,333/yr SHORT = state-flag rate above B710 5K ceiling.
-
-    Changes:
-      (1) DROP rsi_9<50 -- B656 finding: midpoint strict-inequality on
-          default-50 is accidentally-safe + near-no-op pattern (removes
-          ~half the sample but adds almost no information beyond what
-          hull_bearish + price_below_hull already encode).
-      (2) ADD adx>20 trend confirmation -- B207 finding: Hull alone
-          whipsaws in choppy markets; ADX trend confirmation cuts
-          false-signal rate in half (SSRN replications cited in B207).
-      (3) ADD below_ema_200 regime gate -- B358 cell-audit pattern;
-          short leg must fire only below 200-EMA.
-
-    PATTERN W FINDING (B718 surface to owner): post-tightening,
-    strat_hull_rsi_short fires on IDENTICAL gates to strat_hull_rsi's
-    SHORT branch. The two strategies become Pattern W deterministic
-    duplicates. Queued for owner deletion-decision in
-    `S4-B718-HULL-RSI-SHORT-DELETION-DECISION-VS-DUAL`.
-    Until owner decision, both strategies fire on the same setups;
-    fire-count reduction is the immediate goal.
-    """
-    adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
-    below_200 = s.get("below_ema_200", False)
-    fires = (
-        s.get("hull_bearish")
-        and s.get("price_below_hull")
-        and adx_trend_ok
-        and below_200
-    )
-    return _strat(fires, "short", "momentum",
-        ["hull_bearish", "price_below_hull", "adx>20", "price_below_ema_200"],
-        ["Hull MA falling  -  fast trend confirmed bearish",
-         "Price below Hull MA  -  momentum aligned downward",
-         "ADX>20 confirms trend (Batch 207)",
-         "Below 200-EMA (bear regime gate, Batch 358 mirror)"])
+# -----------------------------------------------------------------------------
+# strat_hull_rsi_short DELETED Batch 722 (2026-06-12 owner-approved)
+# -----------------------------------------------------------------------------
+# DELETION RATIONALE per B718 PATTERN W FINDING:
+#
+# Post-B718 tightening (B656 drop rsi_9 + B358 add EMA + B207 add ADX), this
+# strategy fires on IDENTICAL Boolean gates to strat_hull_rsi's SHORT branch:
+#   hull_bearish AND price_below_hull AND adx>20 AND below_ema_200
+#
+# Pattern W deterministic duplicate. 100% fire-event overlap; populations
+# CANNOT differ. Different from B709 EV-3 case (where gates were DIFFERENT
+# and empirical population differed) -- here the Boolean expression is
+# literally the same, so cube would produce identical trade logs.
+#
+# Per B682 precedent (Pattern W deletion of duplicate strategies) + owner
+# approval 2026-06-12 of explanation that the deletion has LOW risk because:
+# (1) cube cannot distinguish identical strategies; (2) multiple-testing
+# Bonferroni denominator inflates with no information gain; (3) strat_hull
+# _rsi SHORT branch still carries the data attribution.
+#
+# strat_hull_rsi (dual) retained; B722 also applied STATE->EVENT conversion
+# to it per separate owner approval (S4-B718-HULL-RSI-DUAL-STATE-TO-EVENT
+# -CONVERSION).
+#
+# ALL_STRATEGIES registry entry also removed (line 6586 below).
+# -----------------------------------------------------------------------------
 
 
 def strat_stochrsi_overbought_short(s):
@@ -3250,8 +3243,34 @@ def strat_xs_combined_momentum_low_ivol(s):
 def strat_po3_bullish(s):
     """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved). Power of 3
     bullish daily candle: open near top, manipulation sweeps below
-    prior-day low, distribution closes in upper third of range. ICT
-    pattern marking institutional accumulation after a stop hunt."""
+    prior-day low, distribution closes in upper third of range.
+
+    STATUS POST-B722: EXPLORATORY -- DO NOT DEPLOY TO PRODUCTION (owner
+    -approved 2026-06-12 per HYBRID Pattern F rec on S4-B720-ICT-PO3
+    -FAMILY-PATTERN-F-DEPRECATE-DECISION).
+
+    Rationale per B705 + B719 reviewers Pattern Q + Pattern M:
+    * No peer-reviewed support for PO3 framework
+    * Detection stripped of mythology is single-bar sweep-and-strong-close
+      candle pattern; same mechanism class as Turtle Soup / W1 bullish
+      engulfing without distinct alpha thesis
+    * 61% Quantum-Algo backtest treated as anti-evidence (over-parameterized
+      selection signature), not baseline
+
+    EXPLORATORY classification (B652 W5m precedent):
+    * Strategy fires + cube measures (preserve mechanism test)
+    * NOT promoted to live deployment regardless of cube verdict
+    * Stage 5 cube data only; ablation against W1/Turtle Soup primitive
+
+    B720 tightening (close_position 0.66->0.75) reduces noise but does not
+    establish edge. B722 EXPLORATORY marker prevents the seductive 5K fire
+    rate from creating misleading "this should deploy" signal.
+
+    Original docstring framing of "institutional accumulation after a stop
+    hunt" preserved here for historical record but REMOVED from
+    context_bullets per B705 Pattern R docstring-honesty discipline (in
+    flight per S4-B705-ICT-PATTERN-R-DOCSTRING-FIX).
+    """
     fires = (
         s.get("po3_bullish", False)
         and s.get("price_above_ema_200", False)
@@ -3259,11 +3278,17 @@ def strat_po3_bullish(s):
     return _strat(fires, "long", "po3",
         ["po3_bullish", "price_above_ema_200"],
         ["Bullish PO3 daily candle: sweep below prior low + close upper third",
-         "Above 200 EMA (regime gate)"])
+         "Above 200 EMA (regime gate)",
+         "[EXPLORATORY B722 -- do not deploy regardless of cube verdict]"])
 
 
 def strat_po3_bearish(s):
-    """Batch 217: Symmetric bearish PO3 daily."""
+    """Batch 217: Symmetric bearish PO3 daily.
+
+    STATUS POST-B722: EXPLORATORY -- DO NOT DEPLOY TO PRODUCTION (owner
+    -approved 2026-06-12 per HYBRID Pattern F rec). See strat_po3_bullish
+    docstring for full rationale. Same B652 W5m precedent applied.
+    """
     fires = (
         s.get("po3_bearish", False)
         and s.get("below_ema_200", False)  # B630 sweep
@@ -3271,32 +3296,42 @@ def strat_po3_bearish(s):
     return _strat(fires, "short", "po3",
         ["po3_bearish", "price_below_ema_200"],
         ["Bearish PO3 daily candle: sweep above prior high + close lower third",
-         "Below 200 EMA (bear regime)"])
+         "Below 200 EMA (bear regime)",
+         "[EXPLORATORY B722 -- do not deploy regardless of cube verdict]"])
 
 
-def strat_po3_htf_aligned_long(s):
-    """Batch 217: PO3 bullish + weekly bias bullish - high-conviction
-    long with higher-timeframe directional alignment."""
-    fires = (
-        s.get("po3_bullish", False)
-        and s.get("weekly_bias_bull", False)
-    )
-    return _strat(fires, "long", "po3",
-        ["po3_bullish", "weekly_bias_bull"],
-        ["Bullish PO3 daily candle",
-         "Weekly bias bullish - higher-TF alignment"])
-
-
-def strat_po3_htf_aligned_short(s):
-    """Batch 217: Symmetric for bearish PO3 with weekly bear bias."""
-    fires = (
-        s.get("po3_bearish", False)
-        and s.get("weekly_bias_bear", False)
-    )
-    return _strat(fires, "short", "po3",
-        ["po3_bearish", "weekly_bias_bear"],
-        ["Bearish PO3 daily candle",
-         "Weekly bias bearish - higher-TF alignment"])
+# -----------------------------------------------------------------------------
+# strat_po3_htf_aligned_long + strat_po3_htf_aligned_short DELETED Batch 722
+# (2026-06-12 owner-approved per HYBRID Pattern F rec)
+# -----------------------------------------------------------------------------
+# DELETION RATIONALE per S4-B720-ICT-PO3-FAMILY-PATTERN-F-DEPRECATE-DECISION:
+#
+# Both HTF variants are strict deterministic subsets of po3_bullish/po3_bearish
+# on the weekly_bias axis:
+#   strat_po3_htf_aligned_long  = po3_bullish AND weekly_bias_bull
+#   strat_po3_htf_aligned_short = po3_bearish AND weekly_bias_bear
+#
+# Per B714 Pattern F framework HYBRID rec (CONSOLIDATE-VARIANTS):
+# (1) Delete HTF wrappers (this batch)
+# (2) Mark remaining po3_bullish + po3_bearish as EXPLORATORY (this batch)
+#
+# Rationale per B705 + B719 reviewers Pattern Q + Pattern M findings:
+# PO3 has NO peer-reviewed support; mythology framing of detection logic.
+# B720 close_position tightening (0.66->0.75) addresses fire rate but not
+# the underlying no-prior-edge concern. HYBRID approach (consolidate +
+# EXPLORATORY mark) reduces hypothesis count from 4 to 2 while preserving
+# cube mechanism test.
+#
+# If HTF-bias variant is needed empirically post-cube, ship as parameter on
+# strat_po3_bullish/bearish (`require_htf_bias=True/False`) rather than
+# separate registry slots.
+#
+# Same B682 EV-3 + B709 hull_rsi_short Pattern W precedent applied to PO3.
+# Net roster impact: -2 strategies (224 - 2 from this deletion + further -1
+# from hull_rsi_short deletion above = 221 total post-B722).
+#
+# ALL_STRATEGIES registry entries also removed (lines 6429-6430).
+# -----------------------------------------------------------------------------
 
 
 def strat_htf_aligned_breakout_long(s):
@@ -6431,10 +6466,12 @@ ALL_STRATEGIES = {
     "xs_low_beta_long":                 strat_xs_low_beta_long,
     "xs_combined_momentum_low_ivol":    strat_xs_combined_momentum_low_ivol,
     # PO3 + multi-TF (9 - Batch 217 2026-05-18 owner-approved)
+    # po3_bullish + po3_bearish: marked EXPLORATORY B722 per HYBRID Pattern F
+    # rec; do NOT deploy to production; cube empirical adjudication only.
+    # po3_htf_aligned_long + po3_htf_aligned_short DELETED B722 per Pattern W
+    # deterministic-subset finding (strict subsets on weekly_bias axis).
     "po3_bullish":                  strat_po3_bullish,
     "po3_bearish":                  strat_po3_bearish,
-    "po3_htf_aligned_long":         strat_po3_htf_aligned_long,
-    "po3_htf_aligned_short":        strat_po3_htf_aligned_short,
     "htf_aligned_breakout_long":    strat_htf_aligned_breakout_long,
     "htf_aligned_breakout_short":   strat_htf_aligned_breakout_short,
     "weekly_bias_pullback_long":    strat_weekly_bias_pullback_long,
@@ -6581,9 +6618,10 @@ ALL_STRATEGIES = {
     "supertrend_macd_short":        strat_supertrend_macd_short,
     "ichimoku_cloud_breakdown":     strat_ichimoku_cloud_breakdown,
     "parabolic_sar_flip_short":     strat_parabolic_sar_flip_short,
-    # Dedicated shorts  -  Momentum (3)
+    # Dedicated shorts  -  Momentum (2; was 3, hull_rsi_short DELETED B722 per
+    # B718 Pattern W deterministic-duplicate finding; see deletion comment
+    # block at strat_hull_rsi_short site)
     "macd_crossover_short":         strat_macd_crossover_short,
-    "hull_rsi_short":               strat_hull_rsi_short,
     "stochrsi_overbought_short":    strat_stochrsi_overbought_short,
     # Dedicated shorts  -  Breakdown (3) - Batch 592 restored donchian_breakdown_short
     "donchian_breakdown_short":     strat_donchian_breakdown_short,

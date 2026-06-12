@@ -693,11 +693,18 @@ def compute_ema_sma(df: pd.DataFrame) -> dict:
         # consumers unchanged.
         if len(df) >= slow + 7:
             # Look back 5 bars (indices -2 to -6) to see if close was
-            # above the corresponding ema_N at any point
+            # on the OPPOSITE side of the corresponding ema_N at any point.
+            # B722 (2026-06-12 owner-approved per rec) extends B721 with
+            # the SYMMETRIC LONG-side event signal price_above_ema_N
+            # _break_recent_5d. Used by B722 strat_hull_rsi STATE->EVENT
+            # conversion (LONG branch consumes price_above_ema_200_break
+            # _recent_5d; SHORT branch already consumes below_ema_200
+            # _break_recent_5d from B721).
             try:
                 closes_recent = df["close"].iloc[-6:-1].astype(float)
                 ef_recent = ef.iloc[-6:-1].astype(float)
                 es_recent = es.iloc[-6:-1].astype(float)
+                # SHORT-side event (B721)
                 was_above_fast = (closes_recent > ef_recent).any()
                 was_above_slow = (closes_recent > es_recent).any()
                 result[f"below_ema_{fast}_break_recent_5d"] = bool(
@@ -705,6 +712,15 @@ def compute_ema_sma(df: pd.DataFrame) -> dict:
                 )
                 result[f"below_ema_{slow}_break_recent_5d"] = bool(
                     result[f"below_ema_{slow}"] and was_above_slow
+                )
+                # LONG-side event (B722 symmetric)
+                was_below_fast = (closes_recent < ef_recent).any()
+                was_below_slow = (closes_recent < es_recent).any()
+                result[f"price_above_ema_{fast}_break_recent_5d"] = bool(
+                    result[f"price_above_ema_{fast}"] and was_below_fast
+                )
+                result[f"price_above_ema_{slow}_break_recent_5d"] = bool(
+                    result[f"price_above_ema_{slow}"] and was_below_slow
                 )
             except (ValueError, TypeError, IndexError):
                 # fail-safe: don't emit signal on malformed data
