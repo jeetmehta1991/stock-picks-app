@@ -2232,20 +2232,30 @@ def strat_cpr_narrow_momentum(s):
     200-EMA regime gate per direction. Cell audit
     (cpr_narrow_momentum x atr_trail_1x) lost -355pp at WR 30.6% with
     no regime gate. Long now requires above_200_ema; short requires
-    below_200_ema."""
-    # B663 family-bug sweep: positive symmetric below_ema_200 (B630 producer) replaces (not above_200) NOT-pattern silent-gap per feedback_never_use_NOT_s_get_pattern. Pre-B663 the "left as-is for readability" comment was incorrect: `not s.get(key, False)` returns True on missing key, which auto-PASSES SHORT -- exactly the silent-gap class the feedback memory warned against.
+    below_200_ema.
+
+    B718 (2026-06-12 owner-approved per "approve all" of S4-B717-
+    CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES): switched
+    cpr_narrow -> cpr_narrow_tight (0.05 threshold; B654 producer)
+    per B710 reviewer fire-count-ceiling finding. B660 post-B689
+    measurement showed this strategy firing 12,534/yr LONG + 8,463/yr
+    SHORT = ~21K total/yr = state-flag rate above B710 5K/yr ceiling.
+    Same B654 narrow-scope fix applied to W8 (strat_cpr_narrow_bullish)
+    extended here per B654 precedent + reviewer's "fires too often to
+    be selective" verdict. Other consumers of `cpr_narrow` 0.15
+    unchanged per feedback_narrow_scope_blast_radius.
+    """
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)
-    fl = (s.get("cpr_narrow") and s.get("above_cpr") and s.get("rsi_14", 50) > 50
+    fl = (s.get("cpr_narrow_tight") and s.get("above_cpr") and s.get("rsi_14", 50) > 50
           and s.get("macd_12_26_9_bullish") and above_200)
-    # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer).
-    fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50
+    fs = (s.get("cpr_narrow_tight") and s.get("below_cpr") and s.get("rsi_14", 50) < 50
           and s.get("macd_12_26_9_bearish") and below_200)
     return _strat3(fl, fs, "confluence",
-        ["cpr_narrow","above_cpr","rsi_14>50","macd_bullish","price_above_ema_200"],
-        ["cpr_narrow","below_cpr","rsi_14<50","macd_bearish","price_below_ema_200"],
-        ["Narrow CPR + above CPR + RSI>50 + MACD bullish + above 200-EMA - five-signal bullish day"],
-        ["Narrow CPR + below CPR + RSI<50 + MACD bearish + below 200-EMA - five-signal bearish day"])
+        ["cpr_narrow_tight","above_cpr","rsi_14>50","macd_bullish","price_above_ema_200"],
+        ["cpr_narrow_tight","below_cpr","rsi_14<50","macd_bearish","price_below_ema_200"],
+        ["Narrow-tight CPR + above CPR + RSI>50 + MACD bullish + above 200-EMA - five-signal bullish day"],
+        ["Narrow-tight CPR + below CPR + RSI<50 + MACD bearish + below 200-EMA - five-signal bearish day"])
 
 
 def strat_camarilla_rsi_obv(s):
@@ -2520,14 +2530,23 @@ def strat_camarilla_rsi_obv_short(s):
 
 
 def strat_cpr_narrow_momentum_short(s):
+    """B718 (2026-06-12 owner-approved per "approve all" of S4-B717-
+    CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES): switched
+    cpr_narrow -> cpr_narrow_tight (0.05 threshold; B654 producer) per
+    B710 reviewer fire-count-ceiling finding. B660 post-B689 measurement
+    showed this strategy firing 13,906/yr SHORT = state-flag rate above
+    B710 5K/yr ceiling. Same B654 W8 + B718 W8a precedent applied here
+    (W8b); other consumers of `cpr_narrow` 0.15 unchanged per
+    feedback_narrow_scope_blast_radius.
+    """
     # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer)
-    fires = (s.get("cpr_narrow") and
+    fires = (s.get("cpr_narrow_tight") and
              s.get("below_cpr") and
              s.get("rsi_14", 50) < 50 and
              s.get("macd_12_26_9_bearish"))
     return _strat(fires, "short", "confluence",
-        ["cpr_narrow", "below_cpr", "rsi_14<50", "macd_bearish"],
-        ["Narrow CPR  -  directional day expected",
+        ["cpr_narrow_tight", "below_cpr", "rsi_14<50", "macd_bearish"],
+        ["Narrow-tight CPR  -  rare directional day expected",
          "Price below CPR  -  bearish professional bias",
          "RSI<50 and MACD bearish  -  four signals confirming bearish day"])
 
