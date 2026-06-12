@@ -1,5 +1,23 @@
 # Stage 4 SMC (Smart Money Concepts) Pure Price-Action Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B719 STATUS BANNER (2026-06-12) — 6TH ADVERSARIAL REVIEW + LINE-BY-LINE METHOD APPLIED PROSPECTIVELY.** Output: [STAGE_4_SMC_CLUSTER_B719_ADVERSARIAL_REVIEW.md](STAGE_4_SMC_CLUSTER_B719_ADVERSARIAL_REVIEW.md). First cluster review where I applied `feedback_line_by_line_ticket_extraction_before_synthesis` (memory rule codified B715 after owner correction) PROSPECTIVELY -- extracted 18 actionable reviewer sentences to discrete tickets BEFORE writing the synthesis doc. **Four reviewer claims source-verified at line-number level**: `event_recency_bars=90` ([smc_ict.py:81](backtest/signals/smc_ict.py#L81)), `liquidity_range_pct=0.01` ([smc_ict.py:79](backtest/signals/smc_ict.py#L79)), `dealing_range_lookback=50` + `ohlc.tail(50)` ([smc_ict.py:80, 407-414](backtest/signals/smc_ict.py#L80)), B555 OPT-C SMC panel-cache layer exists with EXPLICITLY DOCUMENTED PIT-risk caveat ([smc_panel_cache.py:24-30](backtest/signals/smc_panel_cache.py)).
+>
+> **THREE HEADLINE FINDINGS (re-ranked per reviewer; doc currently treats as mid-priority among 7 patterns):**
+>
+> **(1) Pattern I detection lag = existence-of-edge problem, not staleness tradeoff.** 11 of 18 strategies are entry-timing-bound by the library's swing-confirmation 20-80 bar detection lag + 90-bar recency window. Entry timing is 20-170 bars after the structural event by construction. No parameter sweep fixes this. These strategies should be RECLASSIFIED AS POSITIONAL, not entry-timed (queued).
+>
+> **(2) Pattern K dealing-range lookahead = most likely fake-edge vector.** smc_panel_cache.py explicitly documents *"The library's OB function has forward-mutating state... When precomputed on the full series, an OB at bar 100 may show different final state than when computed on a truncated slice at bar 300"*. Cache is opt-in pending B554 parity test resolution. **Producer-audit harness (B699/B700 template) MUST be run on the dealing-range path and B555 panel-cache layer.**
+>
+> **(3) Pattern M 61% Quantum-Algo backtest = anti-evidence, not weak evidence.** 61% WR on 2,600 trades across 90 cells by the library author on 10 cherry-pickable assets is textbook over-parameterization signature. Honest prior is ~50% coinflip minus costs. **"DO NOT OPTIMIZE FROM THIS BASELINE" caveat queued.**
+>
+> **The one genuinely-optimizable sub-cluster**: SMC-12/13/18 liquidity-sweep family -- stop-run/failed-breakout effect with real microstructure mechanism. Same as ICT Turtle Soup. Highest-value tuning change: tight 1-5 bar recency for SMC-18 (parallel to B705 ICT Turtle Soup fix; should ship TOGETHER as single producer-additive batch). Flagship cross-cluster action: consolidate SMC-12/13/18 + ICT-7/8/9/10 to single liquidity-sweep-reversal family.
+>
+> **Architectural new finding**: vendored-library SPOF (Pattern L) needs loud-failure sentinel test -- the one ticket this cluster surfaces that prior tools don't cover. Engine-startup test asserts smartmoneyconcepts library imports + key functions present; fails pyramid loudly. Cheap fix.
+>
+> **18 B719 tickets queued across 6 phases.** Top priority: `S4-B719-SMC-PRODUCER-AUDIT-DEALING-RANGE-PATH-PIT-CHECK` (PHASE-0 fake-edge gate).
+>
+> ---
+>
 > **B693 BANNER ADDENDUM (2026-06-11) — selective-reading correction.** External reviewer of [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) caught a methodology problem in B691's blanket "false negative" labels: when favorable B660 numbers are LOCKED and unfavorable ones are PENDING-RERUN without a positive test, measurement can no longer disconfirm. **Each SMC strategy's zero now requires the positive two-part test** ((a) confirm gate signal literally absent from precompute signals dict, (b) confirm with signal present, other gates leave non-empty surviving set). Diagnostic tool: [`scripts/diagnose_zero_fires.py`](scripts/diagnose_zero_fires.py). The PENDING-B689-RERUN label below stays but is now provisional on that diagnostic. SMC's case is the strongest for harness-gap explanation (smc_ict producer literally absent from pre-B689 precompute, verified by source-read at [scripts/measure_fire_count.py:265 pre-B689](scripts/measure_fire_count.py#L265)) — but "strongest case" still requires the positive test, not assumption.
 >
 > ---
