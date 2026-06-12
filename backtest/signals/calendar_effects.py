@@ -163,6 +163,15 @@ def compute_calendar_signals(as_of: date) -> dict:
     out["trading_days_left_in_month"] = tdl
     # TOTM window: last 4 trading days of month OR first 3 of next month
     out["is_totm_window"] = bool((tdl <= 4) or (tdm <= 3))
+    # B723 (2026-06-12 owner-approved per "continue autonomously"):
+    # B655 T10 / B721 below_ema_50 / B722 hull_rsi STATE -> EVENT pattern
+    # applied to calendar windows. is_totm_window_first_day fires only on
+    # the BAR ENTERING the TOTM window (tdl == 4 = first day of last-4
+    # phase; tdm == 1 = first day of new-month-first-3 phase). Catches
+    # the Ariel 1987 turn-of-month effect at the EVENT bar, not every bar
+    # within the 7-day window. Expected fire-rate reduction per B655
+    # precedent: ~85% (window has 7 days; first-day-only = 1/7).
+    out["is_totm_window_first_day"] = bool((tdl == 4) or (tdm == 1))
     out["is_january"] = (as_of.month == 1)
     # Pre-holiday: next CALENDAR day (after weekend gap) is a US market
     # holiday. _next_business_day skips holidays by design and would
@@ -176,4 +185,13 @@ def compute_calendar_signals(as_of: date) -> dict:
     # Halloween / Sell-in-May
     out["is_halloween_period"] = as_of.month in (11, 12, 1, 2, 3, 4)
     out["is_summer_period"] = as_of.month in (5, 6, 7, 8, 9, 10)
+    # B723 (2026-06-12 owner-approved): Halloween STATE -> EVENT.
+    # is_halloween_period_first_day fires only on the first trading day of
+    # November (transition Oct -> Nov; Bouman-Jacobsen 2002 entry signal).
+    # Detected as (month == 11) AND (tdm == 1 = first trading day of month).
+    # Catches the canonical "buy in November" entry without firing every
+    # bar of the 6-month Nov-Apr period. Expected reduction per B655
+    # precedent: ~99% (period has ~126 trading days; first-day-only =
+    # 1/126).
+    out["is_halloween_period_first_day"] = bool(as_of.month == 11 and tdm == 1)
     return out

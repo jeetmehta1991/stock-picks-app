@@ -5723,11 +5723,21 @@ def _cached_cross_asset_signals(as_of_iso: str) -> dict:
 
 
 def strat_totm_long(s):
-    """Batch 254: Ariel 1987 TOTM (last-4 + first-3 trading days)."""
-    fires = s.get("is_totm_window", False) and s.get("price_above_ema_200", False)
+    """Batch 254: Ariel 1987 TOTM (last-4 + first-3 trading days).
+
+    Batch 723 (2026-06-12 owner-approved per "continue autonomously"):
+    STATE -> EVENT conversion per B655 T10 + B721 below_ema_50 + B722
+    hull_rsi precedents + S4-B717 ceiling routing. B660 post-B689
+    measured 14,750/yr LONG = 29/name/yr = state filter (fires every
+    bar within 7-day TOTM window). Pre-B723: is_totm_window True every
+    bar in window. Post-B723: is_totm_window_first_day True only on
+    BAR ENTERING window. Catches Ariel 1987 turn-of-month effect at
+    EVENT bar.
+    """
+    fires = s.get("is_totm_window_first_day", False) and s.get("price_above_ema_200", False)
     return _strat(fires, "long", "calendar",
-        ["is_totm_window", "price_above_ema_200"],
-        ["TOTM window (Ariel 1987: last-4 + first-3 trading days)",
+        ["is_totm_window_first_day", "price_above_ema_200"],
+        ["TOTM window FIRST DAY (Ariel 1987 entry day)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -5760,11 +5770,22 @@ def strat_january_effect_small_cap_long(s):
 
 
 def strat_halloween_seasonal_long(s):
-    """Batch 254: Bouman-Jacobsen 2002 Halloween Indicator."""
-    fires = s.get("is_halloween_period", False) and s.get("price_above_ema_200", False)
+    """Batch 254: Bouman-Jacobsen 2002 Halloween Indicator.
+
+    Batch 723 (2026-06-12 owner-approved per "continue autonomously"):
+    STATE -> EVENT conversion per B655/B721/B722 precedents +
+    S4-B717 ceiling routing. B660 post-B689 measured 22,417/yr LONG =
+    45/name/yr = state filter (fires every bar of 6-month Nov-Apr
+    period). Pre-B723: is_halloween_period True every bar Nov-Apr.
+    Post-B723: is_halloween_period_first_day True only on FIRST trading
+    day of November (transition Oct->Nov). Catches Bouman-Jacobsen 2002
+    canonical "buy in November" entry without firing every bar of the
+    6-month period.
+    """
+    fires = s.get("is_halloween_period_first_day", False) and s.get("price_above_ema_200", False)
     return _strat(fires, "long", "calendar",
-        ["is_halloween_period", "price_above_ema_200"],
-        ["Halloween period Nov-Apr (Bouman-Jacobsen 2002)",
+        ["is_halloween_period_first_day", "price_above_ema_200"],
+        ["Halloween period FIRST TRADING DAY of Nov (Bouman-Jacobsen 2002 entry)",
          "Above 200 EMA (regime gate)"])
 
 
