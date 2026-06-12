@@ -3051,6 +3051,14 @@ def strat_pre_fomc_long_sleeve(s):
     Reverses Batch 191 FOMC suppression for the LONG sleeve via
     STRATEGIES_BYPASS_EVENT_SUPPRESSION (config.py). Long entry on the
     pre-FOMC day (d-1) when broad bullish context holds.
+
+    EXPLORATORY -- DO NOT DEPLOY (B738 2026-06-12 owner-approved per
+    B737 Decision 4 B1 verdict FAIL).
+    Lucca-Moench +50bp/yr alpha empirically dead in our 2022-2026 sample
+    window: SPY mean pre-FOMC return +5.7bp; one-sided p=0.401 on n=35
+    FOMC dates. Mueller-Tahbaz-Salehi 2017 weakening hypothesis empirically
+    confirmed. B652 W5m + B722 po3 precedent: cube measures and records
+    but no production deployment regardless of cube verdict.
     """
     fires = (
         s.get("pre_fomc_d1", False)
@@ -3066,7 +3074,15 @@ def strat_pre_fomc_long_sleeve(s):
 def strat_pre_fomc_quality_momentum_long(s):
     """Batch 224: Higher-conviction pre-FOMC variant - require top-decile
     cross-sectional momentum (Goyal-Jegadeesh 2024) on top of pre-FOMC
-    timing. Combines macro-event drift with quality-momentum selection."""
+    timing. Combines macro-event drift with quality-momentum selection.
+
+    EXPLORATORY -- DO NOT DEPLOY (B738 2026-06-12 owner-approved per
+    B737 Decision 4 B1 verdict FAIL).
+    The pre-FOMC timing component is empirically dead (see
+    strat_pre_fomc_long_sleeve docstring). Quality-momentum selection
+    alone may still have edge but is not tested here. B652 W5m + B722
+    po3 precedent: cube measures + records; no production deployment.
+    """
     fires = (
         s.get("pre_fomc_d1", False)
         and s.get("xs_momentum_top_decile", False)
@@ -3961,24 +3977,44 @@ def strat_week_opening_gap_fill_down(s):
     drifts DOWN to fill the gap. Fade the gap up.
 
     Producer: compute_week_opening_gap_signals() in ict_producers.py.
+
+    B738 (2026-06-12) Decision 4 C2 ADD wiring: require NO earnings in
+    last 2 trading days. B737 confronting test verdict ADD (+3.3pp test
+    FT lift on n=118; train gap -5.0pp = OOS BETTER than train). Bernard-
+    Thomas 1989 PEAD-continuation: earnings-day gaps are repricings, not
+    mean-reversions; fading them fights documented post-earnings drift.
+    Default 999 (no earnings data) treats as not-recent (gate passes).
     """
-    fires = bool(s.get("week_open_gap_up_15pct", False))
+    fires = (
+        bool(s.get("week_open_gap_up_15pct", False))
+        and s.get("days_since_last_earnings", 999) > 2
+    )
     return _strat(fires, "short", "ict",
-        ["is_week_open", "week_open_gap_up_15pct"],
+        ["is_week_open", "week_open_gap_up_15pct", "days_since_last_earnings>2"],
         ["Week Opening Gap Fill - fade upside gap (ICT Sunday gap proxy)",
          "Monday opened with gap up >= 1.5pct vs prior Friday close",
+         "No earnings in last 2 trading days (B738 PEAD-continuation guard)",
          "Statistical bias: gaps tend to fill on the week-open bar"])
 
 
 def strat_week_opening_gap_fill_up(s):
     """Mirror of strat_week_opening_gap_fill_down. When Monday opens
     with a gap DOWN >= 1.5pct, price often drifts UP to fill. Fade
-    the gap down."""
-    fires = bool(s.get("week_open_gap_down_15pct", False))
+    the gap down.
+
+    B738 (2026-06-12) Decision 4 C2 ADD wiring: symmetric earnings-
+    recency gate (mirrors short-side); see strat_week_opening_gap_fill_down
+    docstring for empirical rationale.
+    """
+    fires = (
+        bool(s.get("week_open_gap_down_15pct", False))
+        and s.get("days_since_last_earnings", 999) > 2
+    )
     return _strat(fires, "long", "ict",
-        ["is_week_open", "week_open_gap_down_15pct"],
+        ["is_week_open", "week_open_gap_down_15pct", "days_since_last_earnings>2"],
         ["Week Opening Gap Fill - fade downside gap (ICT Sunday gap proxy)",
          "Monday opened with gap down >= 1.5pct vs prior Friday close",
+         "No earnings in last 2 trading days (B738 PEAD-continuation guard)",
          "Statistical bias: gaps tend to fill on the week-open bar"])
 
 
