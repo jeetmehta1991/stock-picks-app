@@ -1487,12 +1487,12 @@ def strat_bollinger_lower(s):
     fl = (s.get("bb_20_20_touch_lower") and rsi_long_ok and above_200 and adx_ok)
     # Short: opposite side; positive-symmetric below_ema_200 (B663 from NOT-pattern).
     rsi_short_ok = (rsi_2 > 95) or (rsi_14 > rsi_thr_short)
-    fs = (s.get("bb_20_20_touch_upper") and rsi_short_ok and below_200 and adx_ok)
+    fs = (s.get("bb_20_20_touch_upper") and rsi_short_ok and below_200 and adx_ok) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
         ["bb_20_20_touch_lower", f"rsi_2<5_or_rsi_14<{rsi_thr_long}",
          "price_above_ema_200", "adx<30"],
         ["bb_20_20_touch_upper", f"rsi_2>95_or_rsi_14>{rsi_thr_short}",
-         "price_below_ema_200", "adx<30"],
+         "price_below_ema_200", "adx<30", "borrow_ok"],
         [f"Price at lower Bollinger Band - statistically extreme low",
          f"RSI(2)<5 Connors extreme OR RSI(14)<{rsi_thr_long}",
          "Price above 200-EMA (regime gate)", "No strong trend"],
@@ -1532,12 +1532,12 @@ def strat_bollinger_tight(s):
         (s.get("bb_20_15_touch_upper") or s.get("bb_20_20_touch_upper"))
         and rsi_short_ok
         and below_200
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
         ["bb_touch_lower_tight", f"rsi_2<10_or_rsi_14<{rsi_thr_long}",
          "price_above_ema_200"],
         ["bb_touch_upper_tight", f"rsi_2>90_or_rsi_14>{rsi_thr_short}",
-         "price_below_ema_200"],
+         "price_below_ema_200", "borrow_ok"],
         ["Price at tight lower Bollinger Band - extreme low",
          f"RSI(2)<10 OR RSI(14)<{rsi_thr_long}",
          "Price above 200-EMA (regime gate)"],
@@ -1560,10 +1560,10 @@ def strat_bollinger_upper_short(s):
 def strat_keltner_lower(s):
     # B628 F1 family-sweep: positive symmetric obv_bearish.
     fl = (s.get("kc_touch_lower") and s.get("hammer") and s.get("obv_bullish"))
-    fs = (s.get("kc_touch_upper") and s.get("shooting_star") and s.get("obv_bearish"))
+    fs = (s.get("kc_touch_upper") and s.get("shooting_star") and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
         ["kc_touch_lower","hammer","obv_bullish"],
-        ["kc_touch_upper","shooting_star","obv_bearish"],
+        ["kc_touch_upper","shooting_star","obv_bearish", "borrow_ok"],
         ["Price at lower Keltner Channel","Hammer confirms buyers","OBV rising"],
         ["Price at upper Keltner Channel","Shooting star confirms sellers","OBV falling (B628 F1)"])
 
@@ -1594,10 +1594,10 @@ def strat_stoch_oversold(s):
     # B627 F1: positive symmetric (B609 producer)
     fs = (s.get("stoch_overbought")
           and s.get("stoch_bearish_cross")
-          and s.get("below_ema_20"))
+          and s.get("below_ema_20") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
         ["stoch_oversold","stoch_bullish_cross","price_above_ema_20"],
-        ["stoch_overbought","stoch_bearish_cross","below_ema_20"],
+        ["stoch_overbought","stoch_bearish_cross","below_ema_20", "borrow_ok"],
         ["Stochastic oversold below 20",
          "K crossed above D - turning bullish",
          "Above EMA-20 (trend filter)"],
@@ -1656,10 +1656,10 @@ def strat_volume_spike_breakout(s):
           and s.get("vol_spike_15x")
           and s.get("below_avwap_20high")
           and s.get("close_below_open")
-          and s.get("close_in_bottom_40pct_of_range"))
+          and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "breakout",
         ["dc20_breakout_up","vol_spike_15x","above_avwap_20low","close_above_open","close_in_top_40pct_of_range"],
-        ["dc20_breakout_dn","vol_spike_15x","below_avwap_20high","close_below_open","close_in_bottom_40pct_of_range"],
+        ["dc20_breakout_dn","vol_spike_15x","below_avwap_20high","close_below_open","close_in_bottom_40pct_of_range", "borrow_ok"],
         ["Price broke above 20-day Donchian high",
          "Volume 1.5x confirms institutional buying",
          "Above 20-day swing-low AVWAP (Brian Shannon 2022) - 20d upleg intact",
@@ -1841,10 +1841,10 @@ def strat_force_index_breakout(s):
           and s.get("close_above_open"))
     fs = (s.get("force_index_cross_dn")
           and s.get("below_ema_20")          # B626 F1 (B609 producer)
-          and s.get("close_below_open"))     # B626 (a)
+          and s.get("close_below_open") and not _short_borrow_trap_active(s))     # B626 (a)
     return _strat3(fl, fs, "breakout",
         ["force_index_cross_up","price_above_ema_20","close_above_open"],
-        ["force_index_cross_dn","below_ema_20","close_below_open"],
+        ["force_index_cross_dn","below_ema_20","close_below_open", "borrow_ok"],
         ["Force Index crossed above zero - price-x-volume momentum positive (Elder 1993)",
          "Above EMA-20 (trend filter)",
          "Bullish bar - close above open (B589-family; B626 a)"],
@@ -1886,10 +1886,10 @@ def strat_donchian_10_breakout(s):
           and s.get("macd_12_26_9_bearish")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")
-          and s.get("dc10_strong_breakout_dn"))
+          and s.get("dc10_strong_breakout_dn") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "breakout",
         ["dc10_breakout_up_1pct","vol_above_avg","macd_bullish","close_above_open","close_in_top_40pct_of_range","dc10_strong_breakout_up"],
-        ["dc10_breakout_dn_1pct","vol_above_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range","dc10_strong_breakout_dn"],
+        ["dc10_breakout_dn_1pct","vol_above_avg","macd_bearish","close_below_open","close_in_bottom_40pct_of_range","dc10_strong_breakout_dn", "borrow_ok"],
         ["Price broke 10-day Donchian high (1pct tolerance)","Volume above 20d avg confirms","MACD positive","Bullish bar (close above open)","Strong close (top 40pct of range)","Strong breakout (close >= prior_high + 0.5*ATR14)"],
         ["Price broke 10-day Donchian low (1pct tolerance)","Volume above 20d avg confirms","MACD negative","Bearish bar (close below open)","Strong close (bottom 40pct of range)","Strong breakdown (close <= prior_low - 0.5*ATR14)"])
 
@@ -2018,9 +2018,9 @@ def strat_morning_star(s):
       SHORT = evening_star AND rsi_14 > 55  (mirror).
     """
     fl = (s.get("morning_star") and s.get("rsi_14", 50) < 45)
-    fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55)
+    fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "candle",
-        ["morning_star","rsi_14<45"], ["evening_star","rsi_14>55"],
+        ["morning_star","rsi_14<45"], ["evening_star","rsi_14>55", "borrow_ok"],
         ["Three-bar morning star  -  Nison bullish reversal (bottom call)","RSI not deep-oversold"],
         ["Three-bar evening star  -  Nison bearish reversal (top call)","RSI not deep-overbought"])
 
@@ -2029,10 +2029,10 @@ def strat_bullish_engulfing_support(s):
     # B628 F1 family-sweep: positive symmetric obv_bearish.
     fl = (s.get("bullish_engulfing") and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
     fs = (s.get("bearish_engulfing") and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
-          and s.get("obv_bearish"))
+          and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "candle",
         ["bullish_engulfing","at_support","obv_bullish"],
-        ["bearish_engulfing","at_resistance","obv_bearish"],
+        ["bearish_engulfing","at_resistance","obv_bearish", "borrow_ok"],
         ["Bullish engulfing at support - two systems confirming","OBV rising"],
         ["Bearish engulfing at resistance - two systems confirming","OBV falling (B628 F1)"])
 
@@ -2203,18 +2203,18 @@ def strat_rsi_volume_200ema(s):
     the move, without the 2x sledgehammer."""
     fl = (s.get("rsi_14", 50) < 35 and s.get("vol_above_avg") and s.get("price_above_ema_200"))
     # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
-    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and s.get("below_ema_200"))
+    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and s.get("below_ema_200")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["rsi_14<35","vol_above_avg","above_ema_200"], ["rsi_14>65","vol_above_avg","below_ema_200"],
+        ["rsi_14<35","vol_above_avg","above_ema_200"], ["rsi_14>65","vol_above_avg","below_ema_200", "borrow_ok"],
         ["RSI oversold + volume above 20d avg + above 200 EMA  -  triple confluence bullish"],
         ["RSI overbought + volume above 20d avg + below 200 EMA  -  triple confluence bearish"])
 
 
 def strat_macd_ichimoku(s):
     fl = (s.get("macd_12_26_9_crossover_up") and s.get("ichi_above_cloud"))
-    fs = (s.get("macd_12_26_9_crossover_dn") and s.get("ichi_below_cloud"))
+    fs = (s.get("macd_12_26_9_crossover_dn") and s.get("ichi_below_cloud")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["macd_crossover_up","ichi_above_cloud"], ["macd_crossover_dn","ichi_below_cloud"],
+        ["macd_crossover_up","ichi_above_cloud"], ["macd_crossover_dn","ichi_below_cloud", "borrow_ok"],
         ["MACD crossover up + above cloud  -  two systems bullish simultaneously"],
         ["MACD crossover down + below cloud  -  two systems bearish simultaneously"])
 
@@ -2222,27 +2222,27 @@ def strat_macd_ichimoku(s):
 def strat_bb_squeeze_volume(s):
     fl = (s.get("squeeze_fire_up") and s.get("vol_spike_2x") and s.get("above_vwap"))
     # B634 sweep: positive symmetric below_vwap (B634 producer)
-    fs = (s.get("squeeze_fire_dn") and s.get("vol_spike_2x") and s.get("below_vwap"))
+    fs = (s.get("squeeze_fire_dn") and s.get("vol_spike_2x") and s.get("below_vwap")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["squeeze_fire_up","vol_spike_2x","above_vwap"], ["squeeze_fire_dn","vol_spike_2x","below_vwap"],
+        ["squeeze_fire_up","vol_spike_2x","above_vwap"], ["squeeze_fire_dn","vol_spike_2x","below_vwap", "borrow_ok"],
         ["BB squeeze releasing upward with 2x volume","Above VWAP  -  buyers in control"],
         ["BB squeeze releasing downward with 2x volume","Below VWAP  -  sellers in control"])
 
 
 def strat_pivot_fib_confluence(s):
     fl = ((s.get("near_s1") or s.get("near_s2")) and s.get("at_key_fib") and (s.get("hammer") or s.get("bullish_engulfing")))
-    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and s.get("bearish_engulfing"))
+    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and s.get("bearish_engulfing")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["at_pivot_support","at_key_fib","bullish_candle"], ["at_pivot_resistance","at_key_fib","bearish_engulfing"],
+        ["at_pivot_support","at_key_fib","bullish_candle"], ["at_pivot_resistance","at_key_fib","bearish_engulfing", "borrow_ok"],
         ["Pivot support + Fibonacci + bullish candle  -  two systems at same level bullish"],
         ["Pivot resistance + Fibonacci + bearish engulfing  -  two systems at same level bearish"])
 
 
 def strat_golden_cross_volume(s):
     fl = (s.get("ema_50_200_golden_cross") and s.get("vol_spike_2x"))
-    fs = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x"))
+    fs = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["ema_50_200_golden_cross","vol_spike_2x"], ["ema_50_200_death_cross","vol_spike_2x"],
+        ["ema_50_200_golden_cross","vol_spike_2x"], ["ema_50_200_death_cross","vol_spike_2x", "borrow_ok"],
         ["Golden cross with 2x volume  -  institutional confirmation of bullish shift"],
         ["Death cross with 2x volume  -  institutional confirmation of bearish shift"])
 
@@ -2270,10 +2270,10 @@ def strat_cpr_narrow_momentum(s):
     fl = (s.get("cpr_narrow_tight") and s.get("above_cpr") and s.get("rsi_14", 50) > 50
           and s.get("macd_12_26_9_bullish") and above_200)
     fs = (s.get("cpr_narrow_tight") and s.get("below_cpr") and s.get("rsi_14", 50) < 50
-          and s.get("macd_12_26_9_bearish") and below_200)
+          and s.get("macd_12_26_9_bearish") and below_200 and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "confluence",
         ["cpr_narrow_tight","above_cpr","rsi_14>50","macd_bullish","price_above_ema_200"],
-        ["cpr_narrow_tight","below_cpr","rsi_14<50","macd_bearish","price_below_ema_200"],
+        ["cpr_narrow_tight","below_cpr","rsi_14<50","macd_bearish","price_below_ema_200", "borrow_ok"],
         ["Narrow-tight CPR + above CPR + RSI>50 + MACD bullish + above 200-EMA - five-signal bullish day"],
         ["Narrow-tight CPR + below CPR + RSI<50 + MACD bearish + below 200-EMA - five-signal bearish day"])
 
@@ -2286,10 +2286,10 @@ def strat_camarilla_rsi_obv(s):
           and s.get("obv_bullish") and s.get("cmf_positive"))
     fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65
           and s.get("obv_bearish")
-          and s.get("cmf_negative"))
+          and s.get("cmf_negative") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "confluence",
         ["near_cam_s3","rsi_14<35","obv_bullish","cmf_positive"],
-        ["near_cam_r3","rsi_14>65","obv_bearish","cmf_negative"],
+        ["near_cam_r3","rsi_14>65","obv_bearish","cmf_negative", "borrow_ok"],
         ["Camarilla S3 + RSI oversold + OBV rising + CMF positive - highest conviction long"],
         ["Camarilla R3 + RSI overbought + OBV bearish + CMF negative - highest conviction short (B628 F1 + B629 F1)"])
 
@@ -2297,9 +2297,9 @@ def strat_camarilla_rsi_obv(s):
 def strat_supertrend_ichimoku_adx(s):
     # B630 sweep: positive symmetric supertrend_bearish (B630 producer)
     fl = (s.get("supertrend_bullish") and s.get("ichi_above_cloud") and s.get("adx_strong"))
-    fs = (s.get("supertrend_bearish") and s.get("ichi_below_cloud") and s.get("adx_strong"))
+    fs = (s.get("supertrend_bearish") and s.get("ichi_below_cloud") and s.get("adx_strong")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["supertrend_bullish","ichi_above_cloud","adx_strong"], ["supertrend_bearish","ichi_below_cloud","adx_strong"],
+        ["supertrend_bullish","ichi_above_cloud","adx_strong"], ["supertrend_bearish","ichi_below_cloud","adx_strong", "borrow_ok"],
         ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bullish"],
         ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bearish"])
 
@@ -2318,9 +2318,9 @@ def strat_williams_stoch_dual(s):
     state). Pivot proximity gate retained.
     """
     fl = (s.get("williams_r_oversold") and s.get("stoch_bullish_cross") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3")))
-    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3")))
+    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3"))) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["williams_r_oversold","stoch_bullish_cross","at_pivot_support"], ["williams_r_overbought","stoch_bearish_cross","at_pivot_resistance"],
+        ["williams_r_oversold","stoch_bullish_cross","at_pivot_support"], ["williams_r_overbought","stoch_bearish_cross","at_pivot_resistance", "borrow_ok"],
         ["Williams %R oversold + Stochastic BULLISH CROSS at pivot support (B729 EVENT) - high conviction long"],
         ["Williams %R overbought + Stochastic BEARISH CROSS at pivot resistance (B729 EVENT) - high conviction short"])
 
@@ -2639,10 +2639,10 @@ def strat_dc20_break_retest(s):
     fl = (s.get("resistance_break_retest") and s.get("vol_below_avg")
           and s.get("adx_trending") and s.get("close_in_top_40pct_of_range"))
     fs = (s.get("support_break_retest") and s.get("vol_below_avg")
-          and s.get("adx_trending") and s.get("close_in_bottom_40pct_of_range"))
+          and s.get("adx_trending") and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "breakout",
         ["resistance_break_retest", "vol_below_avg", "adx_trending", "close_in_top_40pct_of_range"],
-        ["support_break_retest", "vol_below_avg", "adx_trending", "close_in_bottom_40pct_of_range"],
+        ["support_break_retest", "vol_below_avg", "adx_trending", "close_in_bottom_40pct_of_range", "borrow_ok"],
         "DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)",
         "DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)")
 
@@ -2706,14 +2706,14 @@ def strat_r1_break_retest(s):
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")
           and s.get("vol_below_avg")
-          and s.get("below_avwap_20high"))
+          and s.get("below_avwap_20high") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["r1_break_retest_long", "above_r1", "macd_12_26_9_bullish",
          "close_above_open", "close_in_top_40pct_of_range",
          "vol_below_avg", "above_avwap_20low"],
         ["s1_break_retest_short", "below_s1", "macd_12_26_9_bearish",
          "close_below_open", "close_in_bottom_40pct_of_range",
-         "vol_below_avg", "below_avwap_20high"],
+         "vol_below_avg", "below_avwap_20high", "borrow_ok"],
         ["R1 broken 2-8 bars ago + retested within 1.5*ATR + still above (anchored on the SPECIFIC R1 at the break-bar)",
          "Today's close above today's R1 (intraday position)",
          "MACD positive (momentum)",
@@ -2893,12 +2893,12 @@ def strat_break_retest_volume(s):
           and s.get("obv_bearish")           # B617: switched from obv_falling
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")  # B728 strong-close
-          and s.get("vol_below_avg"))
+          and s.get("vol_below_avg") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "breakout",
         ["resistance_break_retest", "obv_bullish", "close_above_open",
          "close_in_top_40pct_of_range", "vol_below_avg"],
         ["support_break_retest", "obv_bearish", "close_below_open",
-         "close_in_bottom_40pct_of_range", "vol_below_avg"],
+         "close_in_bottom_40pct_of_range", "vol_below_avg", "borrow_ok"],
         ["Break-and-retest + OBV above 20-bar MA: institutional accumulation flow (B617 cleaner baseline)",
          "Bullish bar (close above open) AND close in top 40% of range (B728 strong-close)",
          "Volume below 20d avg (Bulkowski retest characteristic)"],
@@ -2966,14 +2966,14 @@ def strat_break_retest_confluence(s):
           and s.get("below_ema_50")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")  # B728 strong-close
-          and s.get("vol_below_avg"))
+          and s.get("vol_below_avg") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "confluence",
         ["resistance_break_retest", "macd_12_26_9_bullish",
          "price_above_ema_20", "price_above_ema_50",
          "close_above_open", "close_in_top_40pct_of_range", "vol_below_avg"],
         ["support_break_retest", "macd_12_26_9_bearish",
          "below_ema_20", "below_ema_50",
-         "close_below_open", "close_in_bottom_40pct_of_range", "vol_below_avg"],
+         "close_below_open", "close_in_bottom_40pct_of_range", "vol_below_avg", "borrow_ok"],
         ["Break-and-retest confluence: MACD + dual EMA confirms breakout continuation",
          "Bullish bar AND close in top 40% of range (B728 strong-close)",
          "Volume below 20d avg (Bulkowski retest characteristic)"],
@@ -3535,10 +3535,10 @@ def strat_smc_inverse_fvg(s):
     # signals institutional follow-through on the role-flip
     vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_breakout", False)
     fl = fl_base and above_200 and vol_confirms
-    fs = fs_base and below_200 and vol_confirms
+    fs = fs_base and below_200 and vol_confirms and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "smc",
         ["smc_inverse_fvg_bullish", "price_above_ema_200", "vol_confirms"],
-        ["smc_inverse_fvg_bearish", "price_below_ema_200", "vol_confirms"],
+        ["smc_inverse_fvg_bearish", "price_below_ema_200", "vol_confirms", "borrow_ok"],
         ["Inverse FVG bullish + 200-EMA gate + volume confirms",
          "ICT IFVG role-flip with institutional follow-through"],
         ["Inverse FVG bearish + 200-EMA gate + volume confirms",
@@ -3705,10 +3705,10 @@ def strat_smc_bos_retest_entry(s):
     fs = (
         s.get("smc_bos_retest_short", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
         ["smc_bos_retest_long", "price_above_ema_200"],
-        ["smc_bos_retest_short", "price_below_ema_200"],
+        ["smc_bos_retest_short", "price_below_ema_200", "borrow_ok"],
         ["Price retesting broken structure level (BOS bullish)",
          "Above 200 EMA (regime gate)"],
         ["Price retesting broken structure level (BOS bearish)",
@@ -3743,10 +3743,10 @@ def strat_smc_bos_continuation(s):
         and s.get("below_ema_200", False)  # B630 sweep
         and vol_confirms
         and rsi < 50
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
         ["smc_bos_bullish", "price_above_ema_200", "vol_confirms", "rsi_14>50"],
-        ["smc_bos_bearish", "price_below_ema_200", "vol_confirms", "rsi_14<50"],
+        ["smc_bos_bearish", "price_below_ema_200", "vol_confirms", "rsi_14<50", "borrow_ok"],
         ["Break of Structure (continuation) up + volume + momentum confirms",
          "Above 200 EMA (regime gate)"],
         ["Break of Structure (continuation) down + volume + momentum confirms",
@@ -3764,10 +3764,10 @@ def strat_smc_choch_reversal(s):
     fs = (
         s.get("smc_choch_bearish", False)
         and s.get("smc_fvg_bearish_active", False)
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
         ["smc_choch_bullish", "smc_fvg_bullish_active"],
-        ["smc_choch_bearish", "smc_fvg_bearish_active"],
+        ["smc_choch_bearish", "smc_fvg_bearish_active", "borrow_ok"],
         ["Change of Character bullish (reversal)",
          "Bullish Fair Value Gap active - confluence"],
         ["Change of Character bearish (reversal)",
@@ -3787,10 +3787,10 @@ def strat_smc_order_block_bounce(s):
         s.get("smc_ob_bearish_active", False)
         and s.get("rsi_14", 50) > 55
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
         ["smc_ob_bullish_active", "rsi_14<45", "price_above_ema_200"],
-        ["smc_ob_bearish_active", "rsi_14>55", "price_below_ema_200"],
+        ["smc_ob_bearish_active", "rsi_14>55", "price_below_ema_200", "borrow_ok"],
         ["Bullish Order Block active - institutional support zone",
          "RSI pullback context", "Above 200 EMA"],
         ["Bearish Order Block active - institutional resistance zone",
@@ -3809,10 +3809,10 @@ def strat_smc_liquidity_sweep_reversal(s):
     fs = (
         s.get("smc_liquidity_swept_up", False)
         and (s.get("smc_choch_bearish", False) or s.get("smc_bos_bearish", False))
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
         ["smc_liquidity_swept_dn", "smc_choch_or_bos_bullish"],
-        ["smc_liquidity_swept_up", "smc_choch_or_bos_bearish"],
+        ["smc_liquidity_swept_up", "smc_choch_or_bos_bearish", "borrow_ok"],
         ["Liquidity sweep down (stops taken below low cluster)",
          "Followed by bullish CHoCH/BOS - reversal confirmed"],
         ["Liquidity sweep up (stops taken above high cluster)",
@@ -4432,10 +4432,10 @@ def strat_avwap_252_breakout(s):
         and abs(pct_from_252) < 2.0
         and vol_ok
         and rsi_14 > 30
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "vwap",
         ["above_avwap_252low", "near_avwap_252low<2pct", "vol_spike_1.5x", "rsi_14<70"],
-        ["below_avwap_252low", "near_avwap_252low<2pct", "vol_spike_1.5x", "rsi_14>30"],
+        ["below_avwap_252low", "near_avwap_252low<2pct", "vol_spike_1.5x", "rsi_14>30", "borrow_ok"],
         ["Price reclaimed Anchored VWAP from 252d low - institutional accumulation",
          "Close to AVWAP inflection (within 2%)", "Volume 1.5x ADV(20)",
          "RSI not extreme overbought"],
@@ -4465,12 +4465,12 @@ def strat_avwap_50_reclaim(s):
         and abs(pct_from_50) < 1.5
         and (not macd_bull)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "vwap",
         ["above_avwap_50low", "near_avwap_50low<1.5pct", "macd_bullish",
          "price_above_ema_200"],
         ["below_avwap_50low", "near_avwap_50low<1.5pct", "macd_bearish",
-         "price_below_ema_200"],
+         "price_below_ema_200", "borrow_ok"],
         ["Price reclaimed Anchored VWAP from 50d low - recent leg accumulation",
          "Within 1.5% of AVWAP inflection", "MACD bullish",
          "Above 200 EMA (regime gate)"],
