@@ -9,6 +9,12 @@
 
 ---
 
+> **B716 cross-link banner (2026-06-12):** Post-B689 B660 re-run measured **0 fires for all 38 SM-cluster-related strategies** — exactly as this review predicted ("B660 was a total harness miss; won't resolve until B690's 300-500 LOC harness refactor"). B689 wired in ICT / SMC / chart-pattern / calendar producers but NOT SM-specific producers (13F, insider, congressional, Quiver). **B713 ticket inventory below remains accurate; B690 producer wireup remains blocking.** Result: `output_audit/fire_count_measured_b660_post_b689_extended.json`. See `S4-B716-SM-CLUSTER-B690-STILL-REQUIRED-B713-PREDICTION-CONFIRMED` in `EXECUTION_QUEUE.md`.
+>
+> **B739 Decision 5 banner (2026-06-13):** Owner approved full Cat 1-6 sequence per Decision 5 walkthrough. Critical path: **B718b/c/d staged refactor (116 short strategies → explicit `borrow_ok`)** → B736 borrow-gate lint enabled → **B690 producer wireup** (300-500 LOC) → **B690b AWS measurement run** (~$10) → B693 zero-fire diagnostic → **Pattern F audits** (13F + confluence wraps + congressional + SMC Pattern J in parallel) → B714 routing framework decides delete/consolidate/retain per strategy → docstring sweep on survivors → **SM-1/SM-2 tuning** (gate satisfied: Pattern F + OOS-watchdog B734 both available) → B713 borrow-cost source replacement + PRE-B671 short re-run → B693 SM-cluster effective-N → C2 correction. 22 of 24 Decision 5 tickets are `APPROVED-IN-SEQUENCE`; the other 2 (Cat 7) ship as B739.
+
+---
+
 ## 1. Source-verification of 4 highest-impact reviewer claims
 
 ### Claim 1: `inspect.currentframe` borrow guard is LIVE and FAILS OPEN
