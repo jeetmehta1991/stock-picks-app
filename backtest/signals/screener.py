@@ -2353,15 +2353,47 @@ def strat_macd_crossover_short(s):
 
 
 def strat_hull_rsi_short(s):
-    # B634 sweep: positive symmetric hull_bearish + price_below_hull
-    fires = (s.get("hull_bearish") and
-             s.get("price_below_hull") and
-             s.get("rsi_9", 50) < 50)
+    """B634 sweep: positive symmetric hull_bearish + price_below_hull.
+
+    B718 (2026-06-12 owner-approved per "approve all" of S4-B717-
+    CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES): tightened gates
+    symmetrically to match strat_hull_rsi SHORT branch (post-B656 B358
+    B207 hardening). B660 post-B689 measurement showed this strategy
+    firing 20,333/yr SHORT = state-flag rate above B710 5K ceiling.
+
+    Changes:
+      (1) DROP rsi_9<50 -- B656 finding: midpoint strict-inequality on
+          default-50 is accidentally-safe + near-no-op pattern (removes
+          ~half the sample but adds almost no information beyond what
+          hull_bearish + price_below_hull already encode).
+      (2) ADD adx>20 trend confirmation -- B207 finding: Hull alone
+          whipsaws in choppy markets; ADX trend confirmation cuts
+          false-signal rate in half (SSRN replications cited in B207).
+      (3) ADD below_ema_200 regime gate -- B358 cell-audit pattern;
+          short leg must fire only below 200-EMA.
+
+    PATTERN W FINDING (B718 surface to owner): post-tightening,
+    strat_hull_rsi_short fires on IDENTICAL gates to strat_hull_rsi's
+    SHORT branch. The two strategies become Pattern W deterministic
+    duplicates. Queued for owner deletion-decision in
+    `S4-B718-HULL-RSI-SHORT-DELETION-DECISION-VS-DUAL`.
+    Until owner decision, both strategies fire on the same setups;
+    fire-count reduction is the immediate goal.
+    """
+    adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
+    below_200 = s.get("below_ema_200", False)
+    fires = (
+        s.get("hull_bearish")
+        and s.get("price_below_hull")
+        and adx_trend_ok
+        and below_200
+    )
     return _strat(fires, "short", "momentum",
-        ["hull_bearish", "price_below_hull", "rsi_9<50"],
+        ["hull_bearish", "price_below_hull", "adx>20", "price_below_ema_200"],
         ["Hull MA falling  -  fast trend confirmed bearish",
          "Price below Hull MA  -  momentum aligned downward",
-         "RSI-9 below 50  -  below midpoint, no upside momentum"])
+         "ADX>20 confirms trend (Batch 207)",
+         "Below 200-EMA (bear regime gate, Batch 358 mirror)"])
 
 
 def strat_stochrsi_overbought_short(s):
