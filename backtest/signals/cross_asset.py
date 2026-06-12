@@ -159,6 +159,16 @@ def _ratio_trend_signal(
         "pct_change":    round(float(pct_change), 4),
         "trend_up":      pct_change > 0.02,
         "trend_down":    pct_change < -0.02,
+        # B724 (2026-06-12 owner-approved per "continue autonomously"):
+        # B654 narrow-scope tighten precedent (cpr_narrow 0.15 -> cpr_narrow
+        # _tight 0.05) applied to ratio-trend threshold. risk_off_bond
+        # _equity_short measured 14,185/yr SHORT = state-flag rate above
+        # B710 5K ceiling. Loose 2% threshold means trend_up True ~30-40%
+        # of bars in any sustained regime. Narrow-scope strong variant
+        # (>5%) is True only in materially-rising-bonds environments;
+        # other consumers of bare trend_up/trend_down unchanged.
+        "trend_up_strong":      pct_change > 0.05,
+        "trend_down_strong":    pct_change < -0.05,
     }
 
 
@@ -175,6 +185,9 @@ def compute_bond_equity_signals(as_of: date, window: int = 20) -> dict:
         "bond_equity_20d_pct_change":   res["pct_change"],
         "risk_off_regime_bond_signal":  res["trend_up"],
         "risk_on_regime_bond_signal":   res["trend_down"],
+        # B724: narrow-scope strong variants (>5% vs 2%) for ceiling-fix.
+        "risk_off_regime_bond_signal_strong": res["trend_up_strong"],
+        "risk_on_regime_bond_signal_strong":  res["trend_down_strong"],
     }
 
 

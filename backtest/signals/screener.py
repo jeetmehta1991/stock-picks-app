@@ -5655,10 +5655,19 @@ def strat_institutional_volume_confirmation_long(s):
 # ---------------------------------------------------------------------------
 def strat_poc_magnet_long(s):
     """Batch 255: POC magnet long. Steidlmayer 1985 Market Profile.
-    Entry: close within 4% of POC + bullish bias + 200-EMA.
-    Batch 314 Cat-3 A loosen: 2% -> 4% (owner-approved 2026-05-24)."""
+    Entry: close within X% of POC + bullish bias + 200-EMA.
+
+    Batch 314 Cat-3 A loosen: 2% -> 4% (owner-approved 2026-05-24).
+    Batch 724 REVERSAL of B314 loosen (2026-06-12 owner-approved per
+    "continue autonomously"): tightened back to 2% per S4-B717 ceiling
+    routing. B660 measured 11,334/yr LONG = state-flag rate at the 4%
+    threshold. B314's "loosen" was made before the ceiling-finding work;
+    B710 reviewer's "fires too often to be selective" verdict applies.
+    Direct threshold-revert is simpler than narrow-scope parallel
+    variant since the strategy is the only consumer at this threshold.
+    """
     fires = (
-        s.get("vp_close_near_poc_pct", 1.0) < 0.04
+        s.get("vp_close_near_poc_pct", 1.0) < 0.02  # B724: 0.04 -> 0.02
         and s.get("vp_close_above_poc", False)
         and s.get("price_above_ema_200", False)
     )
@@ -5794,11 +5803,21 @@ def strat_halloween_seasonal_long(s):
 # ---------------------------------------------------------------------------
 def strat_risk_off_bond_equity_short(s):
     """Batch 254: short equity when TLT/SPY rising (risk-off bond flight).
-    Asness 2003 Fed Model / Connolly-Stivers-Sun 2005."""
-    fires = s.get("risk_off_regime_bond_signal", False)
+    Asness 2003 Fed Model / Connolly-Stivers-Sun 2005.
+
+    Batch 724 (2026-06-12 owner-approved per "continue autonomously"):
+    B654 narrow-scope tighten per S4-B717 ceiling routing. B660 measured
+    14,185/yr SHORT = state-flag rate. Switched from loose
+    risk_off_regime_bond_signal (>2% 20d ratio change) to strict
+    risk_off_regime_bond_signal_strong (>5%). Captures only the
+    materially-rising-bonds environments (true risk-off flight), not
+    every mild trend bias. Other consumers of bare signal unchanged
+    per `feedback_narrow_scope_blast_radius`.
+    """
+    fires = s.get("risk_off_regime_bond_signal_strong", False)
     return _strat(fires, "short", "cross_asset",
-        ["risk_off_regime_bond_signal"],
-        ["TLT/SPY ratio rising (bond flight = risk-off)",
+        ["risk_off_regime_bond_signal_strong"],
+        ["TLT/SPY ratio rising STRONG (>5% 20d; B724 narrow-scope tighten)",
          "Asness 2003 / Connolly-Stivers-Sun 2005"])
 
 
