@@ -305,19 +305,19 @@ def strat_pivot_s1_bounce(s):
     """
     fl = (s.get("near_s1") and (s.get("hammer") or s.get("bullish_pin_bar")) and s.get("obv_bullish"))
     fs = (s.get("near_r1") and (s.get("shooting_star") or s.get("bearish_engulfing"))
-          and s.get("obv_bearish"))
+          and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["near_s1","hammer/bullish_pin_bar","obv_bullish"],
-        ["near_r1","shooting_star/bearish_engulfing","obv_bearish"],
+        ["near_r1","shooting_star/bearish_engulfing","obv_bearish", "borrow_ok"],
         ["Price at S1 pivot support","Hammer or bullish pin bar confirming buyers (B641 F1: direction-aware)","OBV rising - accumulation"],
         ["Price at R1 pivot resistance","Shooting star or bearish engulfing rejecting highs","OBV falling - distribution (B628 F1)"])
 
 
 def strat_pivot_s2_bounce(s):
     fl = (s.get("near_s2") and s.get("rsi_14", 50) < 40 and (s.get("hammer") or s.get("bullish_engulfing")))
-    fs = (s.get("near_r2") and s.get("rsi_14", 50) > 60 and s.get("bearish_engulfing"))
+    fs = (s.get("near_r2") and s.get("rsi_14", 50) > 60 and s.get("bearish_engulfing")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
-        ["near_s2","rsi_14<40","bullish_candle"], ["near_r2","rsi_14>60","bearish_engulfing"],
+        ["near_s2","rsi_14<40","bullish_candle"], ["near_r2","rsi_14>60","bearish_engulfing", "borrow_ok"],
         [f"Price at S2 deep support","RSI-14 oversold","Bullish candle confirms buyers"],
         [f"Price at R2 strong resistance","RSI-14 overbought","Bearish engulfing confirms sellers"])
 
@@ -578,12 +578,12 @@ def strat_pivot_r1_breakout(s):
     fs = (
         s.get("below_s1") and s.get("vol_spike_15x")
         and s.get("macd_12_26_9_bearish") and avwap_short_ok
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["above_r1", "vol_spike_1.5x", "macd_bullish",
          "above_avwap_252low", "above_avwap_50low"],
         ["below_s1", "vol_spike_1.5x", "macd_bearish",
-         "below_avwap_252low", "below_avwap_50low"],
+         "below_avwap_252low", "below_avwap_50low", "borrow_ok"],
         ["Price broke above R1 resistance",
          "Volume 1.5x ADV(20) - institutional buying",
          "MACD positive",
@@ -618,12 +618,12 @@ def strat_pivot_r2_continuation(s):
         s.get("below_s2") and s.get("adx_trending")
         and s.get("ema_50_200_bearish") and avwap_short_ok
         and s.get("vol_spike_2x", s.get("vol_spike_15x", False))
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["above_r2", "adx_trending", "ema_50_200_bullish",
          "vol_spike_2x", "above_avwap_252low_and_50low"],
         ["below_s2", "adx_trending", "ema_50_200_bearish",
-         "vol_spike_2x", "below_avwap_252low_and_50low"],
+         "vol_spike_2x", "below_avwap_252low_and_50low", "borrow_ok"],
         ["Price above R2 - strong trend continuation",
          "ADX confirms trend", "Above 50/200 EMA",
          "Volume 2x ADV - heavy participation",
@@ -713,10 +713,10 @@ def strat_cpr_narrow_bullish(s):
         s.get("cpr_narrow_tight") and s.get("below_cpr")
         and avwap_short_ok
         and below_200
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["cpr_narrow_tight", "above_cpr", "above_avwap_50low", "price_above_ema_200"],
-        ["cpr_narrow_tight", "below_cpr", "below_avwap_50low", "below_ema_200"],
+        ["cpr_narrow_tight", "below_cpr", "below_avwap_50low", "below_ema_200", "borrow_ok"],
         ["Narrow CPR (0.05 tight; B654 redundancy-fix) - directional day likely",
          "Above CPR - bullish daily bias",
          "Above Anchored VWAP (50d low) - institutional reference",
@@ -759,10 +759,10 @@ def strat_camarilla_s3_bounce(s):
     """
     # B628 F1: positive symmetric (B617 producer)
     fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35 and s.get("obv_bullish"))
-    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and s.get("obv_bearish"))
+    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
         ["near_cam_s3","rsi_14<35","obv_bullish"],
-        ["near_cam_r3","rsi_14>65","obv_bearish"],
+        ["near_cam_r3","rsi_14>65","obv_bearish", "borrow_ok"],
         ["Price at Camarilla S3 - primary support (Slim Khan / Nick Scott)",
          "RSI oversold (<35)",
          "OBV confirming accumulation (above 20-bar MA)"],
@@ -822,9 +822,9 @@ def strat_camarilla_r4_breakout(s):
     are the outermost levels (Range*1.1/2 from C).
     """
     fl = (s.get("above_cam_r4") and s.get("vol_spike_2x"))
-    fs = (s.get("below_cam_s4") and s.get("vol_spike_2x"))
+    fs = (s.get("below_cam_s4") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
-        ["above_cam_r4","vol_spike_2x"], ["below_cam_s4","vol_spike_2x"],
+        ["above_cam_r4","vol_spike_2x"], ["below_cam_s4","vol_spike_2x", "borrow_ok"],
         ["Price broke above Camarilla R4  -  breakout level (Slim Khan / Nick Scott; B641 re-anchored from R3 misuse)","Volume 2x confirms institutional buying"],
         ["Price broke below Camarilla S4  -  breakdown level","Volume 2x confirms institutional selling"])
 
@@ -832,9 +832,9 @@ def strat_camarilla_r4_breakout(s):
 def strat_prev_day_high_break(s):
     fl = (s.get("above_prev_high") and s.get("vol_spike_15x") and s.get("above_vwap"))
     # B634 sweep: positive symmetric below_vwap (B634 producer)
-    fs = (s.get("below_prev_low") and s.get("vol_spike_15x") and s.get("below_vwap"))
+    fs = (s.get("below_prev_low") and s.get("vol_spike_15x") and s.get("below_vwap")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
-        ["above_prev_high","vol_spike_1.5x","above_vwap"], ["below_prev_low","vol_spike_1.5x","below_vwap"],
+        ["above_prev_high","vol_spike_1.5x","above_vwap"], ["below_prev_low","vol_spike_1.5x","below_vwap", "borrow_ok"],
         ["Price broke above previous day's high","Volume confirms participation","Above VWAP  -  buyers in control"],
         ["Price broke below previous day's low","Volume confirms participation","Below VWAP  -  sellers in control"])
 
@@ -842,10 +842,10 @@ def strat_prev_day_high_break(s):
 def strat_prev_day_low_bounce(s):
     # B629 F1 cmf-family sweep: positive symmetric cmf_negative (B629 producer)
     fl = (s.get("near_prev_low") and s.get("hammer") and s.get("cmf_positive"))
-    fs = (s.get("near_prev_high") and s.get("shooting_star") and s.get("cmf_negative"))
+    fs = (s.get("near_prev_high") and s.get("shooting_star") and s.get("cmf_negative")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
         ["near_prev_low","hammer","cmf_positive"],
-        ["near_prev_high","shooting_star","cmf_negative"],
+        ["near_prev_high","shooting_star","cmf_negative", "borrow_ok"],
         ["Price holding at previous day's low","Hammer - buyers defended the level","CMF positive"],
         ["Price stalling at previous day's high","Shooting star - sellers rejected the level","CMF negative (B629 F1)"])
 
@@ -865,9 +865,9 @@ def strat_macd_crossover(s):
     # mis-described it with centerline-cross semantics. Code unchanged;
     # this is a pure docstring honesty fix.
     fl = s.get("macd_12_26_9_crossover_up")
-    fs = s.get("macd_12_26_9_crossover_dn")
+    fs = s.get("macd_12_26_9_crossover_dn") and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "momentum",
-        ["macd_12_26_9_crossover_up"], ["macd_12_26_9_crossover_dn"],
+        ["macd_12_26_9_crossover_up"], ["macd_12_26_9_crossover_dn", "borrow_ok"],
         ["MACD 12/26/9 signal-line cross up (histogram sign change)  -  MACD line crossed above signal line, momentum accelerating bullish"],
         ["MACD 12/26/9 signal-line cross down (histogram sign change)  -  MACD line crossed below signal line, momentum accelerating bearish"])
 
@@ -876,9 +876,9 @@ def strat_macd_fast_crossover(s):
     # B688 docstring honesty fix (see strat_macd_crossover B688 comment):
     # signal-line cross via histogram sign change, NOT centerline cross.
     fl = s.get("macd_8_21_5_crossover_up")
-    fs = s.get("macd_8_21_5_crossover_dn")
+    fs = s.get("macd_8_21_5_crossover_dn") and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "momentum",
-        ["macd_8_21_5_crossover_up"], ["macd_8_21_5_crossover_dn"],
+        ["macd_8_21_5_crossover_up"], ["macd_8_21_5_crossover_dn", "borrow_ok"],
         ["Fast MACD 8/21/5 signal-line cross up (histogram sign change)  -  faster-period MACD line crossed above signal line, early momentum acceleration bullish"],
         ["Fast MACD 8/21/5 signal-line cross down (histogram sign change)  -  faster-period MACD line crossed below signal line, early momentum acceleration bearish"])
 
@@ -959,10 +959,10 @@ def strat_hull_rsi(s):
         s.get("hull_bearish") and s.get("price_below_hull")
         and adx_trend_ok
         and below_200_fresh  # B722 EVENT-anchored
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "momentum",
         ["hull_bullish", "price_above_hull", "adx>20", "price_above_ema_200_break_recent_5d"],
-        ["hull_bearish", "price_below_hull", "adx>20", "below_ema_200_break_recent_5d"],
+        ["hull_bearish", "price_below_hull", "adx>20", "below_ema_200_break_recent_5d", "borrow_ok"],
         ["Hull MA rising - fast trend bullish", "Price above Hull",
          "ADX>20 confirms trend",
          "Above 200-EMA (bull regime gate, Batch 358)"],
@@ -995,10 +995,10 @@ def strat_williams_r_oversold(s):
         (s.get("williams_r", 0) > -20 or (rsi_2 > 95))
         and below_200
         and s.get("cmf_negative")
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "momentum",
         ["williams_r_oversold_or_rsi_2<5", "above_ema_200", "cmf_positive"],
-        ["williams_r_overbought_or_rsi_2>95", "below_ema_200", "cmf_negative"],
+        ["williams_r_overbought_or_rsi_2>95", "below_ema_200", "cmf_negative", "borrow_ok"],
         ["Williams %R oversold OR Connors RSI(2)<5 (short-window extreme)",
          "Above 200 EMA (regime gate)", "CMF positive"],
         ["Williams %R overbought OR RSI(2)>95",
@@ -1007,9 +1007,9 @@ def strat_williams_r_oversold(s):
 
 def strat_roc_burst(s):
     fl = (s.get("roc_turning_up") and s.get("vol_spike_15x"))
-    fs = (s.get("roc_turning_dn") and s.get("vol_spike_15x"))
+    fs = (s.get("roc_turning_dn") and s.get("vol_spike_15x")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "momentum",
-        ["roc_turning_up","vol_spike_1.5x"], ["roc_turning_dn","vol_spike_1.5x"],
+        ["roc_turning_up","vol_spike_1.5x"], ["roc_turning_dn","vol_spike_1.5x", "borrow_ok"],
         ["ROC-12 flipped positive  -  early momentum shift up","Volume confirms"],
         ["ROC-12 flipped negative  -  early momentum shift down","Volume confirms"])
 
@@ -1039,10 +1039,10 @@ def strat_awesome_oscillator(s):
     """
     fl = (s.get("ao_cross_up") and s.get("price_above_ema_20"))
     # B627 F1: positive symmetric (B609 producer)
-    fs = (s.get("ao_cross_dn") and s.get("below_ema_20"))
+    fs = (s.get("ao_cross_dn") and s.get("below_ema_20")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "momentum",
         ["ao_cross_up","price_above_ema_20"],
-        ["ao_cross_dn","below_ema_20"],
+        ["ao_cross_dn","below_ema_20", "borrow_ok"],
         ["Awesome Oscillator crossed above zero - momentum positive",
          "Above EMA-20 (trend filter)"],
         ["Awesome Oscillator crossed below zero - momentum negative",
@@ -1066,10 +1066,10 @@ def strat_stochrsi_oversold(s):
     fs = (
         s.get("stochrsi_overbought") and s.get("stochrsi_cross_dn")
         and s.get("rsi_14", 50) > 45 and below_200
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "momentum",
         ["stochrsi_oversold", "stochrsi_cross_up", "rsi_14<55", "above_ema_200"],
-        ["stochrsi_overbought", "stochrsi_cross_dn", "rsi_14>45", "below_ema_200"],
+        ["stochrsi_overbought", "stochrsi_cross_dn", "rsi_14>45", "below_ema_200", "borrow_ok"],
         ["StochRSI oversold - below 20", "K crossed above D - momentum turning up",
          "RSI not overbought", "Above 200 EMA (regime gate)"],
         ["StochRSI overbought - above 80", "K crossed below D - momentum turning down",
@@ -1078,9 +1078,9 @@ def strat_stochrsi_oversold(s):
 
 def strat_ppo_crossover(s):
     fl = (s.get("ppo_crossover_up") and s.get("adx_trending"))
-    fs = (s.get("ppo_crossover_dn") and s.get("adx_trending"))
+    fs = (s.get("ppo_crossover_dn") and s.get("adx_trending")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "momentum",
-        ["ppo_crossover_up","adx_trending"], ["ppo_crossover_dn","adx_trending"],
+        ["ppo_crossover_up","adx_trending"], ["ppo_crossover_dn","adx_trending", "borrow_ok"],
         ["PPO crossed above signal  -  momentum bullish","ADX confirms trend"],
         ["PPO crossed below signal  -  momentum bearish","ADX confirms trend"])
 
@@ -1137,10 +1137,10 @@ def strat_ultimate_oscillator(s):
         (s.get("uo_overbought") or (rsi_2 > 95))
         and s.get("below_sma_200")
         and s.get("close_below_open")
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "momentum",
         ["uo_oversold_or_rsi_2<5", "price_above_sma_200", "close_above_open"],
-        ["uo_overbought_or_rsi_2>95", "below_sma_200", "close_below_open"],
+        ["uo_overbought_or_rsi_2>95", "below_sma_200", "close_below_open", "borrow_ok"],
         ["Ultimate Oscillator below 30 OR Connors RSI(2)<5",
          "Above 200 SMA (regime gate)",
          "Bullish bar - close above open (B631 a B589-family)"],
@@ -1155,9 +1155,9 @@ def strat_ultimate_oscillator(s):
 
 def strat_golden_cross_50_200(s):
     fl = s.get("ema_50_200_golden_cross")
-    fs = s.get("ema_50_200_death_cross")
+    fs = s.get("ema_50_200_death_cross") and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "trend",
-        ["ema_50_200_golden_cross"], ["ema_50_200_death_cross"],
+        ["ema_50_200_golden_cross"], ["ema_50_200_death_cross", "borrow_ok"],
         ["EMA-50 crossed above EMA-200  -  golden cross  -  structural shift bullish"],
         ["EMA-50 crossed below EMA-200  -  death cross  -  structural shift bearish"])
 
@@ -1165,9 +1165,9 @@ def strat_golden_cross_50_200(s):
 def strat_golden_cross_9_21(s):
     fl = (s.get("ema_9_21_golden_cross") and s.get("price_above_sma_50"))
     # B630 sweep: positive symmetric below_sma_50 (B630 producer)
-    fs = (s.get("ema_9_21_death_cross") and s.get("below_sma_50"))
+    fs = (s.get("ema_9_21_death_cross") and s.get("below_sma_50")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "trend",
-        ["ema_9_21_golden_cross","price_above_sma_50"], ["ema_9_21_death_cross","price_below_sma_50"],
+        ["ema_9_21_golden_cross","price_above_sma_50"], ["ema_9_21_death_cross","price_below_sma_50", "borrow_ok"],
         ["EMA-9 crossed above EMA-21  -  early trend bullish","Above 50 SMA confirms"],
         ["EMA-9 crossed below EMA-21  -  early trend bearish","Below 50 SMA confirms"])
 
@@ -1175,18 +1175,18 @@ def strat_golden_cross_9_21(s):
 def strat_golden_cross_20_50(s):
     fl = (s.get("ema_20_50_golden_cross") and s.get("price_above_ema_200"))
     # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
-    fs = (s.get("ema_20_50_death_cross") and s.get("below_ema_200"))
+    fs = (s.get("ema_20_50_death_cross") and s.get("below_ema_200")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "trend",
-        ["ema_20_50_golden_cross","price_above_ema_200"], ["ema_20_50_death_cross","price_below_ema_200"],
+        ["ema_20_50_golden_cross","price_above_ema_200"], ["ema_20_50_death_cross","price_below_ema_200", "borrow_ok"],
         ["EMA-20 crossed above EMA-50  -  medium-term trend bullish","Above 200 EMA confirms"],
         ["EMA-20 crossed below EMA-50  -  medium-term trend bearish","Below 200 EMA confirms"])
 
 
 def strat_parabolic_sar_flip(s):
     fl = (s.get("psar_flip_up") and s.get("adx_trending"))
-    fs = (s.get("psar_flip_dn") and s.get("adx_trending"))
+    fs = (s.get("psar_flip_dn") and s.get("adx_trending")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "trend",
-        ["psar_flip_up","adx_trending"], ["psar_flip_dn","adx_trending"],
+        ["psar_flip_up","adx_trending"], ["psar_flip_dn","adx_trending", "borrow_ok"],
         ["Parabolic SAR flipped below price  -  trend reversal up","ADX confirms trend strength"],
         ["Parabolic SAR flipped above price  -  trend reversal down","ADX confirms trend strength"])
 
@@ -1194,9 +1194,9 @@ def strat_parabolic_sar_flip(s):
 def strat_tema_dema(s):
     # B634 sweep: positive symmetric price_below_tema (B634 producer)
     fl = (s.get("tema_cross_up") and s.get("price_above_tema"))
-    fs = (s.get("tema_cross_dn") and s.get("price_below_tema"))
+    fs = (s.get("tema_cross_dn") and s.get("price_below_tema")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "trend",
-        ["tema_cross_up","price_above_tema"], ["tema_cross_dn","price_below_tema"],
+        ["tema_cross_up","price_above_tema"], ["tema_cross_dn","price_below_tema", "borrow_ok"],
         ["TEMA crossed above DEMA  -  fast MA system bullish","Price above TEMA"],
         ["TEMA crossed below DEMA  -  fast MA system bearish","Price below TEMA"])
 
@@ -1209,9 +1209,9 @@ def strat_ichimoku_tk_cross(s):
     # strategy's "TK cross + trend confirmation" intent - in-cloud is
     # ambiguous/neutral, not confirming.
     fl = (s.get("ichi_tk_cross_up") and s.get("ichi_above_cloud"))
-    fs = (s.get("ichi_tk_cross_dn") and s.get("ichi_below_cloud"))
+    fs = (s.get("ichi_tk_cross_dn") and s.get("ichi_below_cloud")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "trend",
-        ["ichi_tk_cross_up","not_below_cloud"], ["ichi_tk_cross_dn","ichi_below_cloud"],
+        ["ichi_tk_cross_up","not_below_cloud"], ["ichi_tk_cross_dn","ichi_below_cloud", "borrow_ok"],
         ["Ichimoku Tenkan crossed above Kijun  -  TK cross bullish","Not below cloud"],
         ["Ichimoku Tenkan crossed below Kijun  -  TK cross bearish","Below cloud confirms downtrend"])
 
@@ -1278,12 +1278,12 @@ def strat_ichimoku_cloud_breakout(s):
     fs = (
         s.get("ichi_below_cloud_break_recent_5d") and s.get("ichi_tk_bearish")
         and s.get("adx_trending") and weekly_short_ok
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "trend",
         ["ichi_above_cloud_break_recent_5d", "ichi_tk_bullish", "adx_trending",
          "ichi_weekly_above_cloud"],
         ["ichi_below_cloud_break_recent_5d", "ichi_tk_bearish", "adx_trending",
-         "ichi_weekly_below_cloud"],
+         "ichi_weekly_below_cloud", "borrow_ok"],
         ["Price JUST broke above Ichimoku Cloud (within last 5 bars; B725 EVENT)",
          "Tenkan above Kijun", "ADX confirms",
          "Weekly Kumo also above cloud (multi-TF regime confirm)"],
@@ -1295,9 +1295,9 @@ def strat_ichimoku_cloud_breakout(s):
 def strat_adx_initiation(s):
     # B634 sweep: positive symmetric adx_di_bear (B634 producer)
     fl = (s.get("adx_cross_up") and s.get("adx_di_bull"))
-    fs = (s.get("adx_cross_up") and s.get("adx_di_bear"))
+    fs = (s.get("adx_cross_up") and s.get("adx_di_bear")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "trend",
-        ["adx_cross_up","adx_di_bull"], ["adx_cross_up","adx_di_bear"],
+        ["adx_cross_up","adx_di_bull"], ["adx_cross_up","adx_di_bear", "borrow_ok"],
         ["ADX crossed above 25  -  trend initiating","DI+ above DI-  -  bullish direction"],
         ["ADX crossed above 25  -  trend initiating","DI- above DI+  -  bearish direction"])
 
@@ -1359,10 +1359,10 @@ def strat_supertrend_macd(s):
           and s.get("adx", 0) > 20)
     fs = (s.get("supertrend_flip_recent_short_5d")
           and s.get("macd_12_26_9_bearish")
-          and s.get("adx", 0) > 20)
+          and s.get("adx", 0) > 20 and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "trend",
         ["supertrend_flip_recent_long_5d","macd_bullish","adx>20"],
-        ["supertrend_flip_recent_short_5d","macd_bearish","adx>20"],
+        ["supertrend_flip_recent_short_5d","macd_bearish","adx>20", "borrow_ok"],
         ["Supertrend flip-up within last 5 bars (B655 EVENT-anchored; pre-B655 used always-on supertrend_bullish)",
          "MACD positive  -  momentum confirms within window",
          "ADX > 20  -  trend strength confirmed"],
@@ -1399,10 +1399,10 @@ def strat_rsi_oversold(s):
         (rsi_2 > 95 or rsi_14 > 65)
         and s.get("below_sma_50")
         and below_200
-    )
+     and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_2<5_or_rsi_14<35", "price_above_sma_50", "price_above_ema_200"],
-        ["rsi_2>95_or_rsi_14>65", "price_below_sma_50", "price_below_ema_200"],
+        ["rsi_2>95_or_rsi_14>65", "price_below_sma_50", "price_below_ema_200", "borrow_ok"],
         ["Connors RSI(2)<5 OR RSI(14)<35", "Above 50 SMA - buying dip",
          "Above 200 EMA (regime gate)"],
         ["RSI(2)>95 OR RSI(14)>65", "Below 50 SMA - selling rally",
@@ -1420,9 +1420,9 @@ def strat_rsi9_extreme(s):
 def strat_rsi21_slow(s):
     # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fl = (s.get("rsi_21", 50) < 35 and s.get("price_above_sma_50"))
-    fs = (s.get("rsi_21", 50) > 65 and s.get("below_sma_50"))
+    fs = (s.get("rsi_21", 50) > 65 and s.get("below_sma_50")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
-        ["rsi_21<35","price_above_sma_50"], ["rsi_21>65","price_below_sma_50"],
+        ["rsi_21<35","price_above_sma_50"], ["rsi_21>65","price_below_sma_50", "borrow_ok"],
         [f"Slow RSI-21 oversold below 35","Above 50 SMA  -  uptrend context"],
         [f"Slow RSI-21 overbought above 65","Below 50 SMA  -  downtrend context"])
 
@@ -1443,19 +1443,19 @@ def strat_mfi_oversold(s):
     # B628 F1 family-sweep: positive symmetric obv_bearish.
     fl = (s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
     fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2"))
-          and s.get("obv_bearish"))
+          and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
         ["mfi_oversold","at_support","obv_bullish"],
-        ["mfi_overbought","at_resistance","obv_bearish"],
+        ["mfi_overbought","at_resistance","obv_bearish", "borrow_ok"],
         ["MFI oversold - volume-weighted RSI below 20","At pivot support","OBV rising"],
         ["MFI overbought - volume-weighted RSI above 80","At pivot resistance","OBV falling (B628 F1)"])
 
 
 def strat_cmf_flip(s):
     fl = (s.get("cmf_cross_up") and s.get("rsi_14", 50) < 50)
-    fs = (s.get("cmf_cross_dn") and s.get("rsi_14", 50) > 50)
+    fs = (s.get("cmf_cross_dn") and s.get("rsi_14", 50) > 50) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
-        ["cmf_cross_up","rsi_14<50"], ["cmf_cross_dn","rsi_14>50"],
+        ["cmf_cross_up","rsi_14<50"], ["cmf_cross_dn","rsi_14>50", "borrow_ok"],
         ["CMF crossed above zero  -  money flow turned positive","RSI below 50"],
         ["CMF crossed below zero  -  money flow turned negative","RSI above 50"])
 
