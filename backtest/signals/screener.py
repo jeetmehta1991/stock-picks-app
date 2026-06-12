@@ -3552,9 +3552,9 @@ def strat_smc_breaker_block_short(s):
     fires = (
         s.get("smc_breaker_block_bearish", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
-        ["smc_breaker_block_bearish", "price_below_ema_200"],
+        ["smc_breaker_block_bearish", "price_below_ema_200", "borrow_ok"],
         ["Bullish Order Block mitigated + price below - role flipped to resistance",
          "Below 200 EMA (bear regime)"])
 
@@ -3595,9 +3595,9 @@ def strat_smc_mitigation_block_short(s):
         s.get("smc_mitigation_block_short", False)
         and s.get("below_ema_200", False)  # B630 sweep
         and s.get("rsi_14", 50) > 50
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
-        ["smc_mitigation_block_short", "price_below_ema_200", "rsi_14>50"],
+        ["smc_mitigation_block_short", "price_below_ema_200", "rsi_14>50", "borrow_ok"],
         ["Price inside bearish Order Block zone - mitigation underway",
          "Below 200 EMA (bear regime)",
          "RSI rally context (not oversold)"])
@@ -3629,10 +3629,10 @@ def strat_smc_premium_short(s):
         s.get("smc_in_premium_zone", False)
         and (s.get("smc_bos_bearish", False) or s.get("smc_choch_bearish", False))
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     pct = s.get("smc_dealing_range_pct", 0.5)
     return _strat(fires, "short", "smc",
-        ["smc_in_premium_zone", "smc_bos_or_choch_bearish", "price_below_ema_200"],
+        ["smc_in_premium_zone", "smc_bos_or_choch_bearish", "price_below_ema_200", "borrow_ok"],
         [f"Price at {pct*100:.0f}% of dealing range - premium zone",
          "Bearish BOS or CHoCH - structural resistance",
          "Below 200 EMA (bear regime)"])
@@ -3658,10 +3658,10 @@ def strat_smc_ote_short(s):
     fires = (
         s.get("smc_ote_short_zone", False)
         and (s.get("smc_bos_bearish", False) or s.get("smc_choch_bearish", False))
-    )
+     and not _short_borrow_trap_active(s))
     pct = s.get("smc_retracement_pct", 0.0)
     return _strat(fires, "short", "smc",
-        ["smc_ote_short_zone", "smc_bos_or_choch_bearish"],
+        ["smc_ote_short_zone", "smc_bos_or_choch_bearish", "borrow_ok"],
         [f"OTE zone: {pct:.0f}% retracement (62-79% Fib)",
          "Bearish BOS/CHoCH - structural backdrop"])
 
@@ -3673,9 +3673,9 @@ def strat_smc_equal_highs_sweep_short(s):
     fires = (
         s.get("smc_equal_highs_swept", False)
         and s.get("smc_fvg_bearish_active", False)
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
-        ["smc_equal_highs_swept", "smc_fvg_bearish_active"],
+        ["smc_equal_highs_swept", "smc_fvg_bearish_active", "borrow_ok"],
         ["Equal-highs cluster swept - buy-side liquidity taken",
          "Bearish FVG active below - reversal confluence"])
 
@@ -3878,9 +3878,9 @@ def strat_turtle_soup_short(s):
         s.get("smc_liquidity_swept_up", False)
         and s.get("below_prev_high", False)     # B616: closed back BELOW prior-day-high
         and s.get("close_below_open", False)    # bearish reversal bar
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "ict",
-        ["smc_liquidity_swept_up", "below_prev_high", "close_below_open"],
+        ["smc_liquidity_swept_up", "below_prev_high", "close_below_open", "borrow_ok"],
         ["Turtle Soup short (Raschke Street Smarts 1996)",
          "Upside liquidity swept - retail stops taken above resistance",
          "Price reversed back BELOW prior-day-high - stop-hunt failed",
@@ -3923,9 +3923,9 @@ def strat_judas_swing_short(s):
         s.get("smc_liquidity_swept_up", False)
         and s.get("near_pivot", False)
         and s.get("close_below_open", False)
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "ict",
-        ["smc_liquidity_swept_up", "near_pivot", "close_below_open"],
+        ["smc_liquidity_swept_up", "near_pivot", "close_below_open", "borrow_ok"],
         ["Judas Swing short (ICT manipulation reversal)",
          "Upside liquidity swept - retail stops taken above range high",
          "Price returned deep to pivot midpoint - institutional reversal",
@@ -3960,9 +3960,9 @@ def strat_mmbm_long(s):
 def strat_mmsm_short(s):
     """Mirror of strat_mmbm_long. Market Maker Sell Model - bearish PO3.
     Sweep up to take stops above range high, then distribute downward."""
-    fires = bool(s.get("po3_mmsm_setup", False))
+    fires = bool(s.get("po3_mmsm_setup", False)) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "ict",
-        ["po3_mmsm_setup"],
+        ["po3_mmsm_setup", "borrow_ok"],
         ["MMSM Market Maker Sell Model (ICT PO3 bearish cycle)",
          "Phase 1 ACCUMULATION: tight range over last N bars",
          "Phase 2 MANIPULATION: sweep above accumulation high (stops taken)",
@@ -3988,9 +3988,9 @@ def strat_week_opening_gap_fill_down(s):
     fires = (
         bool(s.get("week_open_gap_up_15pct", False))
         and s.get("days_since_last_earnings", 999) > 2
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "ict",
-        ["is_week_open", "week_open_gap_up_15pct", "days_since_last_earnings>2"],
+        ["is_week_open", "week_open_gap_up_15pct", "days_since_last_earnings>2", "borrow_ok"],
         ["Week Opening Gap Fill - fade upside gap (ICT Sunday gap proxy)",
          "Monday opened with gap up >= 1.5pct vs prior Friday close",
          "No earnings in last 2 trading days (B738 PEAD-continuation guard)",
@@ -4050,12 +4050,12 @@ def strat_pead_short(s):
     fires = (
         s.get("within_pead_window", False)
         and s.get("pead_negative_surprise", False)
-    )
+     and not _short_borrow_trap_active(s))
     yoy = s.get("earnings_eps_yoy_growth", 0.0)
     ann = s.get("earnings_announcement_return", 0.0)
     return _strat(fires, "short", "event_driven",
         ["within_pead_window", "pead_negative_surprise",
-         "earnings_eps_yoy_growth<0", "announcement_return<-2pct"],
+         "earnings_eps_yoy_growth<0", "announcement_return<-2pct", "borrow_ok"],
         [f"Within PEAD drift window (<=60d post-earnings)",
          f"YoY EPS growth: {yoy*100:.1f}% (negative)",
          f"Announcement-day return: {ann*100:.1f}% (<-2% surprise)",
@@ -4154,12 +4154,12 @@ def strat_pead_short_negative_yoy_growth(s):
     fires = (
         s.get("within_pead_window", False)
         and s.get("yoy_surprise_negative", False)
-    )
+     and not _short_borrow_trap_active(s))
     yoy = s.get("earnings_eps_yoy_growth", 0.0)
     thr = s.get("yoy_surprise_threshold_short", -0.05)
     return _strat(fires, "short", "event_driven",
         ["within_pead_window", "yoy_surprise_negative",
-         f"earnings_eps_yoy_growth<={thr*100:.0f}pct"],
+         f"earnings_eps_yoy_growth<={thr*100:.0f}pct", "borrow_ok"],
         [f"Within PEAD drift window (<=60d post-earnings)",
          f"YoY EPS growth: {yoy*100:.1f}% (<= {thr*100:.0f}% threshold)",
          "M6 Path-2: YoY-growth surprise sleeve short (Batch 507 / B709 restore)"])
@@ -4491,11 +4491,11 @@ def strat_avwap_20high_rejection_short(s):
         and (s.get("shooting_star") or s.get("bearish_engulfing"))
         and s.get("vol_spike_15x", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "vwap",
         ["below_avwap_20high", "near_avwap_20high<1pct",
          "shooting_star_or_bearish_engulfing", "vol_spike_1.5x",
-         "price_below_ema_200"],
+         "price_below_ema_200", "borrow_ok"],
         ["Price tested Anchored VWAP from 20d high and rejected",
          "Within 1% of AVWAP inflection",
          "Bearish reversal candle confirms sellers",
@@ -4553,9 +4553,9 @@ def strat_head_and_shoulders_top_short(s):
     fires = (
         s.get("head_shoulders_top_detected", False)
         and s.get("below_ema_200", False)  # B630 producer-additive (positive symmetric)
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "chart_pattern",
-        ["head_shoulders_top_detected", "price_below_ema_200"],
+        ["head_shoulders_top_detected", "price_below_ema_200", "borrow_ok"],
         ["Head-and-shoulders top pattern detected (3 peaks; middle = head)",
          "Edwards-Magee 1948 / Bulkowski 2005 canonical bearish reversal",
          "Below 200 EMA (bear regime)"])
@@ -4642,10 +4642,10 @@ def strat_inverted_cup_and_handle_short(s):
         and s.get("vol_spike_2x", False)
         and s.get("below_ema_50", False)  # B630 producer-additive (symmetric to CP-1 ema_50 gate)
         and s.get("rsi_14", 50) > 30
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "chart_pattern",
         ["inverted_cup_handle_detected", "below_ema_200",
-         "vol_spike_2x", "below_ema_50", "rsi_14>30"],
+         "vol_spike_2x", "below_ema_50", "rsi_14>30", "borrow_ok"],
         ["Inverted cup-and-handle pattern detected (Bulkowski 2005 rounded top with handle)",
          "Bearish breakdown + 2x volume confirmation (symmetric to CP-1 B278 fix)",
          "Below 200 + 50 EMA (dual trend gate)",
@@ -4750,9 +4750,9 @@ def strat_triangle_descending_short(s):
     fires = (
         s.get("triangle_descending_detected", False)
         and s.get("below_ema_200", False)  # B630 producer-additive
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "chart_pattern",
-        ["triangle_descending_detected", "price_below_ema_200"],
+        ["triangle_descending_detected", "price_below_ema_200", "borrow_ok"],
         ["Descending triangle (flat support + falling highs)",
          "Bulkowski 2005: breakdown direction follows trend ~64%",
          "Below 200 EMA (bear regime)"])
@@ -4913,10 +4913,10 @@ def strat_flag_bear_retest_short(s):
         and s.get("below_ema_200", False)
         and s.get("close_below_open", False)
         and s.get("vol_below_avg", False)
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "chart_pattern",
         ["flag_bear_break_retest_short","below_ema_200",
-         "close_below_open","vol_below_avg"],
+         "close_below_open","vol_below_avg", "borrow_ok"],
         ["Bear flag broken + retested at SPECIFIC flag_bear_breakdown_level",
          "Below 200 EMA (bearish trend filter)",
          "Bearish bar (close below open)",
@@ -5065,9 +5065,9 @@ def strat_simple_below_ema_50_short(s):
 
     Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
     """
-    fires = s.get("below_ema_50_break_recent_5d", False)
+    fires = s.get("below_ema_50_break_recent_5d", False) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "momentum_trend",
-        ["below_ema_50_break_recent_5d"],
+        ["below_ema_50_break_recent_5d", "borrow_ok"],
         ["Price JUST broke below 50 EMA (within last 5 bars)",
          "Trend-change SHORT entry (B721 EVENT-anchored conversion)"])
 
@@ -5273,10 +5273,10 @@ def strat_classification_change_to_defensive_short(s):
     fires = (
         s.get("classification_change_to_defensive", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     new_sec = s.get("new_sector", "?")
     return _strat(fires, "short", "classification_change",
-        ["classification_change_to_defensive","price_below_ema_200"],
+        ["classification_change_to_defensive","price_below_ema_200", "borrow_ok"],
         [f"Reclassified INTO defensive sector ({new_sec})",
          "Re-rating into low-multiple sector",
          "Below 200 EMA - trend agrees with defensive re-rating"])
@@ -5333,11 +5333,11 @@ def strat_classification_change_from_tech_short(s):
     fires = (
         s.get("classification_change_from_tech", False)
         and s.get("below_ema_200", False)  # B630 sweep
-    )
+     and not _short_borrow_trap_active(s))
     prior_sec = s.get("prior_sector", "?")
     new_sec = s.get("new_sector", "?")
     return _strat(fires, "short", "classification_change",
-        ["classification_change_from_tech","price_below_ema_200"],
+        ["classification_change_from_tech","price_below_ema_200", "borrow_ok"],
         [f"Reclassified OUT of growth ({prior_sec} -> {new_sec})",
          "Inverse re-rating signal (Chen-Chen 2010 mirror)",
          "Below 200 EMA - trend agrees with downward re-rating"])
@@ -5679,9 +5679,9 @@ def strat_vol_spike_2x_below_ema_50_short(s):
     fires = (
         s.get("vol_spike_2x", False)
         and s.get("below_ema_50", False)
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "momentum_trend",
-        ["vol_spike_2x", "below_ema_50"],
+        ["vol_spike_2x", "below_ema_50", "borrow_ok"],
         ["Volume 2x 20-day average -- retail tape participating in dump",
          "Price below 50 EMA -- downtrend continuation context"])
 
@@ -5949,9 +5949,9 @@ def strat_risk_off_bond_equity_short(s):
     every mild trend bias. Other consumers of bare signal unchanged
     per `feedback_narrow_scope_blast_radius`.
     """
-    fires = s.get("risk_off_regime_bond_signal_strong", False)
+    fires = s.get("risk_off_regime_bond_signal_strong", False) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "cross_asset",
-        ["risk_off_regime_bond_signal_strong"],
+        ["risk_off_regime_bond_signal_strong", "borrow_ok"],
         ["TLT/SPY ratio rising STRONG (>5% 20d; B724 narrow-scope tighten)",
          "Asness 2003 / Connolly-Stivers-Sun 2005"])
 
@@ -6001,9 +6001,9 @@ def strat_dxy_headwind_multinational_short(s):
     fires = (
         s.get("usd_strengthening", False)
         and s.get("foreign_rev_pct", 0.0) > 40.0
-    )
+     and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "cross_asset",
-        ["usd_strengthening", "foreign_rev_pct>40"],
+        ["usd_strengthening", "foreign_rev_pct>40", "borrow_ok"],
         ["DXY strengthening 20d > 2% (multinational headwind)",
          f"Foreign rev {s.get('foreign_rev_pct', 0):.0f}% (translation risk)"])
 
@@ -6035,11 +6035,11 @@ def strat_pairs_mean_reversion_short(s):
         s.get("pair_count_active", 0) > 0
         and s.get("pair_zscore_signed", 0.0) > 2.0
         and s.get("pair_half_life", 0.0) >= 5
-    )
+     and not _short_borrow_trap_active(s))
     z = s.get("pair_zscore_signed", 0.0)
     peer = s.get("pair_counterparty", "")
     return _strat(fires, "short", "pairs",
-        ["pair_zscore_signed>2", "pair_half_life>=5", "pair_count_active>0"],
+        ["pair_zscore_signed>2", "pair_half_life>=5", "pair_count_active>0", "borrow_ok"],
         [f"Pair z={z:.2f} vs {peer} (overpriced)",
          f"Half-life {s.get('pair_half_life', 0):.1f}d",
          "Cointegrated relationship validated at T5b precompute"])
@@ -6182,14 +6182,14 @@ def strat_news_momentum_short(s):
         and s.get("close_in_bottom_40pct_of_range", False)
         and s.get("vol_above_avg", False)
         and s.get("below_avwap_20high", False)
-    )
+     and not _short_borrow_trap_active(s))
     sent = s.get("news_sentiment_5d", 0.0)
     vz   = s.get("news_volume_zscore_5d", 0.0)
     return _strat(fires, "short", "news_sentiment",
         ["news_sentiment_5d<=-0.5", "news_volume_zscore_5d>=1.5",
          "dc20_breakout_dn", "close_below_open",
          "close_in_bottom_40pct_of_range", "vol_above_avg",
-         "below_avwap_20high"],
+         "below_avwap_20high", "borrow_ok"],
         [f"5d recency-weighted sentiment {sent:.2f} (bearish)",
          f"News volume z-score {vz:.2f} (unusual coverage)",
          "Donchian-20 breakdown (price confirms negative news)",
@@ -6235,14 +6235,14 @@ def strat_news_reversal_short(s):
         and s.get("news_sentiment_shift", 0.0) < -0.2  # B614 (b): tone turning
         and s.get("close_below_open", False)     # B614 (a): EVENT bar gate
         and s.get("close_in_bottom_40pct_of_range", False)  # B614 (a)
-    )
+     and not _short_borrow_trap_active(s))
     sent = s.get("news_sentiment_5d", 0.0)
     pct  = s.get("pct_change_5d", 0.0)
     shift = s.get("news_sentiment_shift", 0.0)
     return _strat(fires, "short", "news_sentiment",
         ["news_sentiment_5d>=0.5", "pct_change_5d>0.10",
          "news_count_5d>=3", "news_sentiment_shift<-0.2",
-         "close_below_open", "close_in_bottom_40pct_of_range"],
+         "close_below_open", "close_in_bottom_40pct_of_range", "borrow_ok"],
         [f"5d sentiment {sent:.2f} (bullish; B614 d loosened to >=+0.5)",
          f"Price up {pct*100:.1f} pct in 5d (large positive move)",
          "Coverage threshold met (>=3 articles in 5d; B614 c window-consistent)",
