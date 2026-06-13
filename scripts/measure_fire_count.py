@@ -259,8 +259,15 @@ class StrategyResult:
 
 
 def _load_t1a_tickers(as_of: date | None = None) -> list[str]:
-    """Load T1a universe; PIT-filter if as_of provided. Skips `#` header
-    comment lines per T1a B++ CSV convention."""
+    """Load T1a universe; PIT-filter at a SINGLE as_of if provided.
+
+    NOTE: when used to seed the measurement universe (line ~593) at the END
+    date of the window, this LOSES the 111 historical-removed names because
+    they are not PIT-active at the end date. See `_load_t1a_tickers_union_over_window`
+    for the window-spanning loader that B748a (2026-06-13) introduced as the
+    correct production caller. This single-as_of loader is retained for tests
+    and per-snapshot probes.
+    """
     df = pd.read_csv(T1A_PATH, comment="#")
     if as_of is not None:
         added = pd.to_datetime(df["added_date"], errors="coerce").dt.date
@@ -268,6 +275,34 @@ def _load_t1a_tickers(as_of: date | None = None) -> list[str]:
         mask = ((added.isna()) | (added <= as_of)) & ((removed.isna()) | (removed > as_of))
         df = df[mask]
     return df["Symbol"].astype(str).str.upper().unique().tolist()
+
+
+def _load_t1a_tickers_union_over_window(start: date, end: date) -> list[str]:
+    """B748a (2026-06-13) -- PIT-correct universe loader for the measurement
+    harness. Returns the UNION of all T1a tickers that were PIT-active at
+    ANY point in [start, end].
+
+    Per B747 finding: the prior `_load_t1a_tickers(end)` call silently
+    excluded the 111 historical-removed names (those with `removed_date`
+    between start and end). The fix is to include any ticker whose active
+    window overlaps the measurement window.
+
+    Inclusion rule (window overlap):
+      (added_date IS NULL OR added_date <= end)        # added before window close
+      AND (removed_date IS NULL OR removed_date > start)   # not yet removed at window open
+
+    OHLCV-driven per-bar PIT is then enforced implicitly: a delisted ticker's
+    parquet ends at its removal date, so the per-bar loop naturally stops
+    computing signals past that point.
+
+    Returns alphabetically-sorted ticker list (deterministic for sharding).
+    """
+    df = pd.read_csv(T1A_PATH, comment="#")
+    added = pd.to_datetime(df["added_date"], errors="coerce").dt.date
+    removed = pd.to_datetime(df["removed_date"], errors="coerce").dt.date
+    mask = ((added.isna()) | (added <= end)) & ((removed.isna()) | (removed > start))
+    df = df[mask]
+    return sorted(df["Symbol"].astype(str).str.upper().unique().tolist())
 
 
 def _load_ohlcv(ticker: str) -> Optional[pd.DataFrame]:
@@ -590,11 +625,21 @@ def measure_strategies(
     import random as _random
     from backtest.signals.screener import ALL_STRATEGIES
 
-    tickers_full = _load_t1a_tickers(end)
+    # B748a (2026-06-13) PIT-discipline fix per S4-B747 finding: switch from
+    # END-snapshot universe to WINDOW-UNION universe. The prior call
+    # `_load_t1a_tickers(end)` silently excluded the 111 historical-removed
+    # names (those with removed_date between start and end); ~55K (ticker,
+    # bar) cells were silently excluded over the 2020-2026 window. The
+    # window-union loader includes any ticker whose active window overlaps
+    # [start, end]. Per-bar PIT is then enforced implicitly by OHLCV
+    # parquet truncation at the removal date. 8 of 111 historical-removed
+    # names still lack OHLCV (AGN, CXO, ETFC, NBL, RTN, TIF, VAR, WCG --
+    # all M&A absorbed; owner-decided 2026-06-13 to accept as known gap).
+    tickers_full = _load_t1a_tickers_union_over_window(start, end)
     n_tickers_full_t1a = len(tickers_full)
     logger.info(
-        "T1a PIT-active at as_of=%s: %d tickers (used as projection target)",
-        end, n_tickers_full_t1a,
+        "T1a window-union [%s, %s]: %d tickers (B748a PIT-correct; includes historical-removed)",
+        start, end, n_tickers_full_t1a,
     )
 
     # B694: --ticker-subset overrides sampling entirely. Used for AWS sharding

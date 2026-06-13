@@ -48,20 +48,13 @@ Tickers with truncated OHLCV (last bar before removal date):
 
 | Consumer | Pattern | Verdict | Note |
 |---|---|---|---|
-| `scripts/measure_fire_count.py` | PIT_AT_END_DATE | **PIT_INCORRECT** | Universe loaded with PIT filter at END date only. Historical-removed names excluded; END-snapshot survivor bias. |
+| `scripts/measure_fire_count.py` | PIT_WINDOW_UNION | **PIT_CORRECT** | Window-union universe loader (B748a fix); historical-removed names included; per-bar PIT enforced via OHLCV truncation. |
 | `backtest/engine/backtest.py` | PIT_PER_YEAR | **PIT_CORRECT** | Per-year PIT intersection via get_sp500_constituents_pit; survivor bias mitigated. |
 | `backtest/run_phase1a.py` | NO_PIT | **PARTIAL** | No PIT pattern detected; manual review required. |
 
 ## Headline finding
 
-**1 consumer(s) load the universe with PIT filter applied at END date instead of per-bar.** This silently excludes the 111 historical-removed tickers from every measurement, introducing END-snapshot survivor bias.
-
-**Estimated (ticker, bar) cells silently excluded by measure_fire_count.py over the 2020-01-01 -> 2026-05-31 window: ~55,779**
-
-Bias direction:
-- Fires/year/strategy is computed from `n_fires_long / calendar_year_span`; excluded ticker-bars => lower numerator => UNDER-estimates fire rate.
-- But the per-strategy WR / Sharpe / ROI verdicts derived from the cube REPLAY (Stage 5) inherit the same survivorship in the OPPOSITE direction: the strategies that delisted ARE the failing ones, so OVER-estimates per-strategy WR (the classic survivor-bias direction).
-- Net: fire-counts under-bias; WR/Sharpe over-bias. Both inherit the same fix.
+**All audited consumers respect the PIT universe.** Survivor bias not introduced by universe-load logic; verify other vectors (e.g., delisted-ticker OHLCV ends BEFORE removal date is a data-quality issue, not a survivor-bias issue).
 
 ## Owner action items
 

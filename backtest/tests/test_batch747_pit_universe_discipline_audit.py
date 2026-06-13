@@ -73,21 +73,22 @@ def test_b747_pin2_ohlcv_missing_names_snapshot():
 # -------------------------------------------------------------------------
 # Headline finding: per-consumer PIT discipline
 # -------------------------------------------------------------------------
-def test_b747_pin3_measure_fire_count_is_pit_incorrect():
-    """The headline finding: measure_fire_count.py applies the PIT filter at
-    the END date instead of per-bar, silently excluding the 111 historical-
-    removed names. This pin LOCKS the finding -- if measure_fire_count.py is
-    later fixed (per-bar PIT), this pin must be updated AND the upstream
-    queue ticket re-disposed.
+def test_b747_pin3_measure_fire_count_is_pit_correct_post_b748a():
+    """B748a (2026-06-13) FIXED the headline finding: measure_fire_count.py
+    now uses `_load_t1a_tickers_union_over_window(start, end)` and the 111
+    historical-removed names are included in the universe. Per-bar PIT is
+    enforced implicitly by OHLCV parquet truncation at the removal date.
+
+    This pin LOCKS the POST-B748a state. If verdict ever regresses to
+    PIT_INCORRECT, the fix was reverted -- surface immediately.
     """
     rep = audit_pit_discipline()
     mfc = next((c for c in rep.consumers if c.consumer == "scripts/measure_fire_count.py"), None)
     assert mfc is not None
-    assert mfc.verdict == "PIT_INCORRECT", (
-        f"measure_fire_count.py verdict changed: {mfc.verdict}. "
-        f"If FIXED (now PIT_CORRECT), update pin + close S4-B747 dispositions."
+    assert mfc.verdict == "PIT_CORRECT", (
+        f"measure_fire_count.py verdict regressed to {mfc.verdict}; B748a fix was reverted"
     )
-    assert mfc.universe_load_pattern == "PIT_AT_END_DATE"
+    assert mfc.universe_load_pattern == "PIT_WINDOW_UNION"
 
 
 def test_b747_pin4_backtest_engine_is_pit_correct():
@@ -101,15 +102,19 @@ def test_b747_pin4_backtest_engine_is_pit_correct():
     assert eng.verdict == "PIT_CORRECT"
 
 
-def test_b747_pin5_excluded_ticker_bars_estimate_is_substantial():
-    """The bias is non-trivial: ~55K (ticker, bar) cells are silently excluded
-    by measure_fire_count.py over the 2020-2026 window. Pin asserts the
-    estimate is at least 30K -- the precise number depends on OHLCV bar count
-    per delisted ticker (drift acceptable; magnitude lock-in is the point).
+def test_b747_pin5_pre_b748a_excluded_ticker_bars_magnitude_historical():
+    """HISTORICAL RECORD pin: the magnitude of bias the pre-B748a
+    measure_fire_count.py introduced was ~55K (ticker, bar) cells silently
+    excluded. The estimator is unchanged by B748a (still computes the
+    counterfactual "what would have been excluded if PIT-at-end were used"),
+    so this number is preserved as a magnitude record.
+
+    If this drops below 30K, either OHLCV coverage shrank or the estimator
+    is broken.
     """
     rep = audit_pit_discipline()
     assert rep.estimated_excluded_ticker_bars >= 30_000, (
-        f"estimated excluded ticker-bars dropped to {rep.estimated_excluded_ticker_bars}; "
+        f"estimated counterfactual excluded ticker-bars dropped to {rep.estimated_excluded_ticker_bars}; "
         f"either coverage shrank or estimator is broken"
     )
 

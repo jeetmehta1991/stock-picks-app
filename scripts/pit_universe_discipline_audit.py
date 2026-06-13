@@ -148,6 +148,25 @@ def _classify_consumer(filename: str, code: str) -> ConsumerAuditRow:
       - No PIT references at all
         -> NO_PIT
     """
+    # B748a (2026-06-13) recognize window-union loader as PIT_CORRECT. Check
+    # this BEFORE the END-date heuristic so the new fix isn't mis-classified
+    # by a comment that still contains `_load_t1a_tickers(end)`.
+    if "_load_t1a_tickers_union_over_window" in code:
+        # Verify the symbol is actually CALLED (not only defined or commented)
+        # by stripping triple-quoted docstrings + line comments.
+        import re as _re
+        stripped = _re.sub(r'"""[\s\S]*?"""', '', code)
+        stripped = _re.sub(r"'''[\s\S]*?'''", '', stripped)
+        stripped = "\n".join(
+            line.split("#", 1)[0] for line in stripped.splitlines()
+        )
+        if "_load_t1a_tickers_union_over_window(" in stripped:
+            return ConsumerAuditRow(
+                consumer=filename,
+                universe_load_pattern="PIT_WINDOW_UNION",
+                verdict="PIT_CORRECT",
+                note="Window-union universe loader (B748a fix); historical-removed names included; per-bar PIT enforced via OHLCV truncation.",
+            )
     if "get_sp500_constituents_pit" in code and ("check_dates" in code or "annual" in code or "for year" in code):
         return ConsumerAuditRow(
             consumer=filename,
@@ -156,12 +175,20 @@ def _classify_consumer(filename: str, code: str) -> ConsumerAuditRow:
             note="Per-year PIT intersection via get_sp500_constituents_pit; survivor bias mitigated.",
         )
     if "_load_t1a_tickers(end" in code or "_load_t1a_tickers(args.end" in code:
-        return ConsumerAuditRow(
-            consumer=filename,
-            universe_load_pattern="PIT_AT_END_DATE",
-            verdict="PIT_INCORRECT",
-            note="Universe loaded with PIT filter at END date only. Historical-removed names excluded; END-snapshot survivor bias.",
+        # Make sure this isn't matched only in a comment / docstring
+        import re as _re
+        stripped = _re.sub(r'"""[\s\S]*?"""', '', code)
+        stripped = _re.sub(r"'''[\s\S]*?'''", '', stripped)
+        stripped = "\n".join(
+            line.split("#", 1)[0] for line in stripped.splitlines()
         )
+        if "_load_t1a_tickers(end" in stripped or "_load_t1a_tickers(args.end" in stripped:
+            return ConsumerAuditRow(
+                consumer=filename,
+                universe_load_pattern="PIT_AT_END_DATE",
+                verdict="PIT_INCORRECT",
+                note="Universe loaded with PIT filter at END date only. Historical-removed names excluded; END-snapshot survivor bias.",
+            )
     if "get_t1a_pit_active" in code or "get_sp500_constituents_pit" in code:
         return ConsumerAuditRow(
             consumer=filename,

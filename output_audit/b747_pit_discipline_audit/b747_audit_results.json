@@ -17,9 +17,9 @@
   "consumers": [
     {
       "consumer": "scripts/measure_fire_count.py",
-      "pattern": "PIT_AT_END_DATE",
-      "verdict": "PIT_INCORRECT",
-      "note": "Universe loaded with PIT filter at END date only. Historical-removed names excluded; END-snapshot survivor bias."
+      "pattern": "PIT_WINDOW_UNION",
+      "verdict": "PIT_CORRECT",
+      "note": "Window-union universe loader (B748a fix); historical-removed names included; per-bar PIT enforced via OHLCV truncation."
     },
     {
       "consumer": "backtest/engine/backtest.py",
