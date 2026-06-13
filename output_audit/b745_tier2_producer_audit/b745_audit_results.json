@@ -1,0 +1,526 @@
+{
+  "probe_ticker": "AAPL",
+  "as_of": "2024-06-28",
+  "rows": [
+    {
+      "producer": "compute_insider_cluster_signals",
+      "module": "insider_buying",
+      "cache_var": "_INSIDERS_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/insiders/global.parquet",
+      "data_exists": true,
+      "data_row_count": 1000000,
+      "data_unique_tickers": 7275,
+      "smoke_emits_non_empty": false,
+      "smoke_signal_keys": [],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "insider_cluster_active",
+        "insider_director_buyers_30d",
+        "insider_officer_buyers_30d",
+        "insider_total_shares_bought_30d",
+        "insider_unique_buyers_30d"
+      ],
+      "consuming_strategies": [
+        "strat_classification_change_with_insider_long",
+        "strat_insider_cluster_long",
+        "strat_insider_cluster_with_director_long",
+        "strat_institutional_increased_with_directors_long",
+        "strat_institutional_insider_combo_long",
+        "strat_institutional_with_directors_long",
+        "strat_institutional_with_officers_long",
+        "strat_news_reversal_long",
+        "strat_pead_with_insider_confirmation_long",
+        "strat_squeeze_setup_long"
+      ],
+      "notes": ""
+    },
+    {
+      "producer": "compute_persistence_signals",
+      "module": "institutional_persistence_consumer",
+      "cache_var": "_CACHE",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/sec13fchanges",
+      "data_exists": true,
+      "data_row_count": 500000,
+      "data_unique_tickers": 1,
+      "smoke_emits_non_empty": false,
+      "smoke_signal_keys": [],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "avg_position_age_quarters",
+        "committed_growth_holders",
+        "institutional_persistence_3q",
+        "institutional_persistence_5q",
+        "institutional_persistence_growing",
+        "institutional_persistence_strong",
+        "persistent_holders_4q",
+        "persistent_holders_8q",
+        "total_active_holders"
+      ],
+      "consuming_strategies": [
+        "strat_institutional_committed_growth_long",
+        "strat_institutional_multi_quarter_persistence_long"
+      ],
+      "notes": ""
+    },
+    {
+      "producer": "compute_short_interest_signals",
+      "module": "short_interest",
+      "cache_var": "_SI_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/finra/short_interest",
+      "data_exists": true,
+      "data_row_count": 3830,
+      "data_unique_tickers": 1926,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "days_to_cover",
+        "short_interest_observations",
+        "short_interest_settlement_date"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "days_to_cover",
+        "short_interest_observations",
+        "short_interest_pct",
+        "short_interest_settlement_date"
+      ],
+      "consuming_strategies": [
+        "strat_short_borrow_trap_avoid",
+        "strat_squeeze_setup_long"
+      ],
+      "notes": ""
+    },
+    {
+      "producer": "compute_sec_edgar_signals",
+      "module": "sec_edgar_extractor",
+      "cache_var": "_DECODED_DF_CACHE",
+      "cache_mechanism": "module_dict",
+      "path_classification": "D",
+      "data_path": "data_prefetch/sec_edgar",
+      "data_exists": true,
+      "data_row_count": 0,
+      "data_unique_tickers": 0,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "8k_item_1_01_filed_within_30d",
+        "8k_item_5_02_filed_within_7d"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "sec_edgar_8k_recent"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_news_sentiment_signals",
+      "module": "news_sentiment",
+      "cache_var": "_NEWS_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/quivernews",
+      "data_exists": true,
+      "data_row_count": 1500,
+      "data_unique_tickers": 1,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "news_article_count",
+        "news_bearish_pct",
+        "news_bullish_pct",
+        "news_count_5d",
+        "news_count_7d",
+        "news_prior_article_count",
+        "news_sentiment_30d",
+        "news_sentiment_5d"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "news_article_count",
+        "news_bearish_pct",
+        "news_bullish_pct",
+        "news_count_5d",
+        "news_count_7d",
+        "news_prior_article_count",
+        "news_sentiment_30d",
+        "news_sentiment_5d",
+        "news_sentiment_mean",
+        "news_sentiment_score",
+        "news_sentiment_score_1d",
+        "news_sentiment_score_7d",
+        "news_sentiment_shift",
+        "news_uses_polygon_score",
+        "news_volume_zscore_5d"
+      ],
+      "consuming_strategies": [
+        "strat_news_momentum_long",
+        "strat_news_momentum_short",
+        "strat_news_reversal_long",
+        "strat_news_reversal_short",
+        "strat_news_sentiment_long",
+        "strat_news_sentiment_shift_long",
+        "strat_squeeze_setup_long"
+      ],
+      "notes": ""
+    },
+    {
+      "producer": "compute_pead_signals",
+      "module": "pead",
+      "cache_var": "load_quarterly_eps",
+      "cache_mechanism": "lru_cache",
+      "path_classification": "A",
+      "data_path": "data_prefetch/polygon/financials",
+      "data_exists": true,
+      "data_row_count": 2876,
+      "data_unique_tickers": 1937,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "days_since_last_earnings",
+        "earnings_announcement_return",
+        "earnings_eps_yoy_growth",
+        "pead_negative_surprise",
+        "pead_positive_surprise",
+        "within_pead_window"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "days_since_last_earnings",
+        "earnings_announcement_return",
+        "earnings_eps_yoy_growth",
+        "pead_negative_surprise",
+        "pead_positive_surprise",
+        "within_pead_window"
+      ],
+      "consuming_strategies": [
+        "strat_pead_long",
+        "strat_pead_long_high_yoy_growth_only",
+        "strat_pead_short",
+        "strat_pead_short_negative_yoy_growth",
+        "strat_pead_with_insider_confirmation_long",
+        "strat_pead_with_smart_money_long",
+        "strat_squeeze_setup_long",
+        "strat_week_opening_gap_fill_down",
+        "strat_week_opening_gap_fill_up"
+      ],
+      "notes": ""
+    },
+    {
+      "producer": "compute_yoy_surprise_signal",
+      "module": "earnings_surprise_yoy",
+      "cache_var": "",
+      "cache_mechanism": "none",
+      "path_classification": "B",
+      "data_path": "data_prefetch/polygon/financials",
+      "data_exists": true,
+      "data_row_count": 2876,
+      "data_unique_tickers": 1937,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "days_since_last_earnings",
+        "earnings_eps_yoy_growth",
+        "within_pead_window",
+        "yoy_surprise_high",
+        "yoy_surprise_negative",
+        "yoy_surprise_threshold_long",
+        "yoy_surprise_threshold_short"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "category",
+        "days_since_last_earnings",
+        "direction",
+        "earnings_eps_yoy_growth",
+        "entry_filter",
+        "pead_long_high_yoy_growth_only",
+        "pead_short_negative_yoy_growth",
+        "rationale",
+        "within_pead_window",
+        "yoy_surprise_high",
+        "yoy_surprise_negative",
+        "yoy_surprise_threshold_long",
+        "yoy_surprise_threshold_short"
+      ],
+      "consuming_strategies": [
+        "strat_pead_long",
+        "strat_pead_long_high_yoy_growth_only",
+        "strat_pead_short",
+        "strat_pead_short_negative_yoy_growth",
+        "strat_pead_with_insider_confirmation_long",
+        "strat_pead_with_smart_money_long",
+        "strat_pre_rebalance_long",
+        "strat_squeeze_setup_long",
+        "strat_week_opening_gap_fill_down",
+        "strat_week_opening_gap_fill_up"
+      ],
+      "notes": ""
+    },
+    {
+      "producer": "compute_search_volume_signals",
+      "module": "search_volume",
+      "cache_var": "_PYTRENDS_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/pytrends",
+      "data_exists": true,
+      "data_row_count": 13100,
+      "data_unique_tickers": 1417,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "search_volume_index_recent",
+        "search_volume_observations",
+        "search_volume_zscore_30d"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "search_volume_index_recent",
+        "search_volume_observations",
+        "search_volume_spike",
+        "search_volume_zscore_30d"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_index_rebalance_signals",
+      "module": "index_rebalance",
+      "cache_var": "",
+      "cache_mechanism": "none",
+      "path_classification": "B",
+      "data_path": "Backtesting universe/index_rebalance_events.parquet",
+      "data_exists": false,
+      "data_row_count": 0,
+      "data_unique_tickers": 0,
+      "smoke_emits_non_empty": false,
+      "smoke_signal_keys": [],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "days_since_deletion",
+        "days_since_inclusion",
+        "days_to_rebalance",
+        "in_reversal_window",
+        "index_rebalance_window",
+        "last_event_type",
+        "within_post_deletion_window",
+        "within_post_inclusion_window",
+        "within_pre_rebalance_window"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_recent_8k_signal",
+      "module": "macro_events",
+      "cache_var": "",
+      "cache_mechanism": "none",
+      "path_classification": "B",
+      "data_path": "data_prefetch/sec_edgar",
+      "data_exists": true,
+      "data_row_count": 0,
+      "data_unique_tickers": 0,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "days_since_8k",
+        "recent_8k_filed"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "days_since_8k",
+        "recent_8k_filed"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_housetrading_signals",
+      "module": "congressional_alt_data",
+      "cache_var": "_HOUSETRADING_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/housetrading",
+      "data_exists": true,
+      "data_row_count": 1276,
+      "data_unique_tickers": 1937,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "house_buy_count_90d",
+        "house_cluster_buy",
+        "house_cluster_sell",
+        "house_net_buy_90d",
+        "house_sell_count_90d"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "congressional_buyer_recent",
+        "house_buy_count_90d",
+        "house_cluster_buy",
+        "house_cluster_sell",
+        "house_net_buy_90d",
+        "house_sell_count_90d",
+        "housetrading_recent"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_gov_contracts_signals",
+      "module": "congressional_alt_data",
+      "cache_var": "_GOV_CONTRACTS_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/gov_contracts",
+      "data_exists": true,
+      "data_row_count": 905,
+      "data_unique_tickers": 1941,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "gov_contracts_4q_sum",
+        "gov_contracts_last_qtr_amount",
+        "gov_contracts_qoq_growth"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "gov_contracts_4q_sum",
+        "gov_contracts_last_qtr_amount",
+        "gov_contracts_qoq_growth",
+        "gov_contracts_recent"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_lobbying_signals",
+      "module": "congressional_alt_data",
+      "cache_var": "_LOBBYING_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/lobbying",
+      "data_exists": true,
+      "data_row_count": 2371,
+      "data_unique_tickers": 1941,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "lobbying_amount_1y",
+        "lobbying_amount_q",
+        "lobbying_amount_yoy"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "lobbying_amount_1y",
+        "lobbying_amount_q",
+        "lobbying_amount_yoy",
+        "lobbying_recent"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_patentmomentum_signals",
+      "module": "congressional_alt_data",
+      "cache_var": "_PATENT_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/patentmomentum/global.parquet",
+      "data_exists": true,
+      "data_row_count": 5830800,
+      "data_unique_tickers": 1595,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "patent_momentum_90d_avg",
+        "patent_momentum_above_avg",
+        "patent_momentum_recent"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "patent_momentum_90d_avg",
+        "patent_momentum_above_avg",
+        "patent_momentum_recent"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_offexchange_signals",
+      "module": "congressional_alt_data",
+      "cache_var": "_OFFEXCHANGE_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/offexchange",
+      "data_exists": true,
+      "data_row_count": 132704,
+      "data_unique_tickers": 1851,
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "dpi_30d_avg",
+        "dpi_elevated",
+        "dpi_recent",
+        "otc_short_ratio_recent",
+        "otc_volume_recent"
+      ],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "dpi_30d_avg",
+        "dpi_elevated",
+        "dpi_recent",
+        "otc_short_ratio_recent",
+        "otc_volume_recent"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_corporatedonors_signals",
+      "module": "congressional_alt_data",
+      "cache_var": "_DONORS_BY_TICKER",
+      "cache_mechanism": "module_dict",
+      "path_classification": "A",
+      "data_path": "data_prefetch/quiver/corporatedonors/global.parquet",
+      "data_exists": true,
+      "data_row_count": 25000,
+      "data_unique_tickers": 432,
+      "smoke_emits_non_empty": false,
+      "smoke_signal_keys": [],
+      "smoke_error": "",
+      "consumed_signal_keys": [
+        "corp_donations_1y",
+        "corp_donations_count_1y",
+        "corp_donations_unique_pacs",
+        "corporate_donor_aligned",
+        "corporate_donors_recent"
+      ],
+      "consuming_strategies": [],
+      "notes": ""
+    },
+    {
+      "producer": "compute_cross_sectional_features",
+      "module": "cross_sectional",
+      "cache_var": "_FINANCIALS_BY_TICKER",
+      "cache_mechanism": "needs_ohlcv_dict",
+      "path_classification": "C",
+      "data_path": "data_prefetch/polygon/financials",
+      "data_exists": true,
+      "data_row_count": 2876,
+      "data_unique_tickers": 1937,
+      "smoke_emits_non_empty": false,
+      "smoke_signal_keys": [],
+      "smoke_error": "exception: AttributeError: 'str' object has no attribute 'items'",
+      "consumed_signal_keys": [
+        "xs_momentum_bottom_decile",
+        "xs_momentum_top_decile"
+      ],
+      "consuming_strategies": [
+        "strat_pre_fomc_quality_momentum_long",
+        "strat_pre_rebalance_long",
+        "strat_xs_combined_momentum_low_ivol",
+        "strat_xs_momentum_bottom_decile_short",
+        "strat_xs_momentum_quality_combined",
+        "strat_xs_momentum_top_decile",
+        "strat_xs_momentum_with_smart_money_long"
+      ],
+      "notes": ""
+    }
+  ]
+}
