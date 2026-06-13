@@ -1,0 +1,329 @@
+{
+  "checklist_items_applied": [
+    "#44(a)",
+    "#44(b)",
+    "#44(c)",
+    "#11",
+    "#15",
+    "#43",
+    "#46",
+    "#47",
+    "#76(2)",
+    "#76(3)"
+  ],
+  "n_producers": 16,
+  "n_flagged": 9,
+  "results": [
+    {
+      "producer": "compute_insider_cluster_signals",
+      "path": "data_prefetch/quiver/insiders/global.parquet",
+      "kind": "single_parquet",
+      "stats": {
+        "present": true,
+        "n_rows": 1000000,
+        "n_unique_tickers": 7275,
+        "t1a_coverage_pct": 99.0,
+        "date_range": [
+          "2002-02-24",
+          "2026-05-05"
+        ],
+        "null_rate": 0.0,
+        "ticker_col": "Ticker",
+        "date_col": "Date"
+      },
+      "issue_flags": []
+    },
+    {
+      "producer": "compute_persistence_signals",
+      "path": "data_prefetch/quiver/sec13fchanges",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1,
+        "t1a_coverage_pct": 0.0,
+        "date_range": [
+          null,
+          null
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.0
+      },
+      "issue_flags": [
+        "LOW_T1A_COVERAGE_0.0pct"
+      ]
+    },
+    {
+      "producer": "compute_short_interest_signals",
+      "path": "data_prefetch/finra/short_interest",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1926,
+        "t1a_coverage_pct": 99.6,
+        "date_range": [
+          "2021-06-15",
+          "2026-04-30"
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.0
+      },
+      "issue_flags": [
+        "LATE_START_first=2021-06-15"
+      ]
+    },
+    {
+      "producer": "compute_sec_edgar_signals_SC13D",
+      "path": "data_prefetch/sec_edgar/SC_13D",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1715,
+        "t1a_coverage_pct": 100.0,
+        "date_range": [
+          "1995-01-10",
+          "2023-05-09"
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.0
+      },
+      "issue_flags": [
+        "STALE_DATA_last=2023-05-09"
+      ]
+    },
+    {
+      "producer": "compute_sec_edgar_signals_8K",
+      "path": "data_prefetch/sec_edgar/8_K",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1716,
+        "t1a_coverage_pct": 100.0,
+        "date_range": [
+          "2011-04-07",
+          "2026-05-07"
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.0
+      },
+      "issue_flags": []
+    },
+    {
+      "producer": "compute_news_sentiment_signals",
+      "path": "data_prefetch/quiver/quivernews",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1,
+        "t1a_coverage_pct": 0.0,
+        "date_range": [
+          null,
+          null
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.0
+      },
+      "issue_flags": [
+        "LOW_T1A_COVERAGE_0.0pct"
+      ]
+    },
+    {
+      "producer": "compute_pead_signals",
+      "path": "data_prefetch/polygon/financials",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1937,
+        "t1a_coverage_pct": 100.0,
+        "date_range": [
+          "2009-07-22",
+          "2026-05-01"
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.207
+      },
+      "issue_flags": [
+        "HIGH_NULL_RATE_0.207"
+      ]
+    },
+    {
+      "producer": "compute_search_volume_signals",
+      "path": "data_prefetch/pytrends",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1417,
+        "t1a_coverage_pct": 76.3,
+        "date_range": [
+          null,
+          null
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.0
+      },
+      "issue_flags": []
+    },
+    {
+      "producer": "compute_index_rebalance_signals",
+      "path": "data_prefetch/derived/index_rebalance_events.parquet",
+      "kind": "single_parquet",
+      "stats": {
+        "present": true,
+        "n_rows": 357,
+        "n_unique_tickers": 271,
+        "t1a_coverage_pct": 23.5,
+        "date_range": [
+          "2020-01-28",
+          "2026-04-20"
+        ],
+        "null_rate": 0.0,
+        "ticker_col": "ticker",
+        "date_col": "event_date"
+      },
+      "issue_flags": [
+        "LOW_T1A_COVERAGE_23.5pct"
+      ]
+    },
+    {
+      "producer": "compute_housetrading_signals",
+      "path": "data_prefetch/quiver/housetrading",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1937,
+        "t1a_coverage_pct": 99.6,
+        "date_range": [
+          "2017-04-04",
+          "2026-04-08"
+        ],
+        "schema_consistent": false,
+        "schemas_seen": 2,
+        "null_rate": 0.0
+      },
+      "issue_flags": []
+    },
+    {
+      "producer": "compute_gov_contracts_signals",
+      "path": "data_prefetch/quiver/gov_contracts",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1941,
+        "t1a_coverage_pct": 99.6,
+        "date_range": [
+          null,
+          null
+        ],
+        "schema_consistent": false,
+        "schemas_seen": 2,
+        "null_rate": 0.0
+      },
+      "issue_flags": []
+    },
+    {
+      "producer": "compute_lobbying_signals",
+      "path": "data_prefetch/quiver/lobbying",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1941,
+        "t1a_coverage_pct": 99.6,
+        "date_range": [
+          "2020-01-03",
+          "2026-03-24"
+        ],
+        "schema_consistent": false,
+        "schemas_seen": 2,
+        "null_rate": 0.0
+      },
+      "issue_flags": []
+    },
+    {
+      "producer": "compute_patentmomentum_signals",
+      "path": "data_prefetch/quiver/patentmomentum/global.parquet",
+      "kind": "single_parquet",
+      "stats": {
+        "present": true,
+        "n_rows": 5830800,
+        "n_unique_tickers": 1595,
+        "t1a_coverage_pct": 52.9,
+        "date_range": [
+          "2013-02-01",
+          "2022-01-01"
+        ],
+        "null_rate": 0.0,
+        "ticker_col": "ticker",
+        "date_col": "date"
+      },
+      "issue_flags": [
+        "STALE_DATA_last=2022-01-01"
+      ]
+    },
+    {
+      "producer": "compute_offexchange_signals",
+      "path": "data_prefetch/quiver/offexchange",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1851,
+        "t1a_coverage_pct": 99.4,
+        "date_range": [
+          "2010-01-04",
+          "2026-05-05"
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.0
+      },
+      "issue_flags": []
+    },
+    {
+      "producer": "compute_corporatedonors_signals",
+      "path": "data_prefetch/quiver/corporatedonors/global.parquet",
+      "kind": "single_parquet",
+      "stats": {
+        "present": true,
+        "n_rows": 25000,
+        "n_unique_tickers": 432,
+        "t1a_coverage_pct": 41.7,
+        "date_range": [
+          "2025-06-10",
+          "2026-03-31"
+        ],
+        "null_rate": 0.0,
+        "ticker_col": "Ticker",
+        "date_col": "TransactionDate"
+      },
+      "issue_flags": [
+        "LOW_T1A_COVERAGE_41.7pct",
+        "LATE_START_first=2025-06-10"
+      ]
+    },
+    {
+      "producer": "compute_cross_sectional_features",
+      "path": "data_prefetch/polygon/financials",
+      "kind": "per_ticker_subdir",
+      "stats": {
+        "present": true,
+        "n_files": 1937,
+        "t1a_coverage_pct": 100.0,
+        "date_range": [
+          "2009-07-22",
+          "2026-05-01"
+        ],
+        "schema_consistent": true,
+        "schemas_seen": 1,
+        "null_rate": 0.207
+      },
+      "issue_flags": [
+        "HIGH_NULL_RATE_0.207"
+      ]
+    }
+  ]
+}

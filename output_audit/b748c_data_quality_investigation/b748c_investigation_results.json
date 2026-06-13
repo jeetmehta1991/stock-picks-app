@@ -1,0 +1,409 @@
+{
+  "checklist_items_applied": [
+    "#44(a)",
+    "#44(b)",
+    "#44(c)",
+    "#11",
+    "#15",
+    "#43",
+    "#46",
+    "#76(2)",
+    "#76(3)"
+  ],
+  "sec_edgar": {
+    "producer": "compute_sec_edgar_signals",
+    "path_base": "data_prefetch\\sec_edgar",
+    "path_exists": true,
+    "form_type_coverage": {
+      "SC_13D": {
+        "present": true,
+        "n_files": 1715,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "PHM",
+            "n_filings": 31,
+            "first": "2008-02-08",
+            "last": "2020-01-29"
+          }
+        ]
+      },
+      "SC_13D_A": {
+        "present": true,
+        "n_files": 1691,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "PHM",
+            "n_filings": 25,
+            "first": "2011-08-31",
+            "last": "2020-01-29"
+          }
+        ]
+      },
+      "SC_13G": {
+        "present": true,
+        "n_files": 1722,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "YUM",
+            "n_filings": 14,
+            "first": "2016-02-09",
+            "last": "2024-10-15"
+          },
+          {
+            "ticker": "PKG",
+            "n_filings": 8,
+            "first": "2013-02-13",
+            "last": "2024-01-29"
+          },
+          {
+            "ticker": "PHM",
+            "n_filings": 8,
+            "first": "2012-02-14",
+            "last": "2024-10-16"
+          }
+        ]
+      },
+      "SC_13G_A": {
+        "present": true,
+        "n_files": 1691,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "YUM",
+            "n_filings": 29,
+            "first": "2016-02-11",
+            "last": "2024-11-14"
+          },
+          {
+            "ticker": "PKG",
+            "n_filings": 42,
+            "first": "2012-10-10",
+            "last": "2024-10-18"
+          },
+          {
+            "ticker": "PHM",
+            "n_filings": 37,
+            "first": "2011-08-10",
+            "last": "2024-03-07"
+          }
+        ]
+      },
+      "8_K": {
+        "present": true,
+        "n_files": 1716,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "YUM",
+            "n_filings": 123,
+            "first": "2016-03-08",
+            "last": "2026-04-29"
+          },
+          {
+            "ticker": "PKG",
+            "n_filings": 133,
+            "first": "2012-04-18",
+            "last": "2026-04-23"
+          },
+          {
+            "ticker": "PHM",
+            "n_filings": 149,
+            "first": "2011-07-06",
+            "last": "2026-05-01"
+          }
+        ]
+      },
+      "10_K": {
+        "present": true,
+        "n_files": 1691,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "YUM",
+            "n_filings": 11,
+            "first": "2016-02-16",
+            "last": "2026-02-20"
+          },
+          {
+            "ticker": "PKG",
+            "n_filings": 14,
+            "first": "2013-02-28",
+            "last": "2026-02-26"
+          },
+          {
+            "ticker": "PHM",
+            "n_filings": 15,
+            "first": "2012-02-09",
+            "last": "2026-02-04"
+          }
+        ]
+      },
+      "10_Q": {
+        "present": true,
+        "n_files": 1691,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "YUM",
+            "n_filings": 31,
+            "first": "2016-04-26",
+            "last": "2026-05-06"
+          },
+          {
+            "ticker": "PKG",
+            "n_filings": 42,
+            "first": "2012-05-08",
+            "last": "2025-11-06"
+          },
+          {
+            "ticker": "PHM",
+            "n_filings": 45,
+            "first": "2011-08-01",
+            "last": "2026-04-23"
+          }
+        ]
+      },
+      "DEF_14A": {
+        "present": true,
+        "n_files": 1691,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "YUM",
+            "n_filings": 11,
+            "first": "2016-04-08",
+            "last": "2026-04-03"
+          },
+          {
+            "ticker": "PKG",
+            "n_filings": 15,
+            "first": "2012-03-23",
+            "last": "2026-03-27"
+          },
+          {
+            "ticker": "PHM",
+            "n_filings": 15,
+            "first": "2012-04-03",
+            "last": "2026-03-13"
+          }
+        ]
+      },
+      "S_1": {
+        "present": true,
+        "n_files": 1691,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": []
+      },
+      "S_1_A": {
+        "present": true,
+        "n_files": 1691,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": []
+      },
+      "4": {
+        "present": true,
+        "n_files": 1718,
+        "t1a_active_coverage": "503/503",
+        "t1a_coverage_pct": 100.0,
+        "date_range_samples": [
+          {
+            "ticker": "YUM",
+            "n_filings": 615,
+            "first": "2016-02-08",
+            "last": "2026-05-01"
+          },
+          {
+            "ticker": "PKG",
+            "n_filings": 579,
+            "first": "2012-02-23",
+            "last": "2026-03-31"
+          },
+          {
+            "ticker": "PHM",
+            "n_filings": 535,
+            "first": "2011-06-01",
+            "last": "2026-05-01"
+          }
+        ]
+      }
+    },
+    "runtime_probes": [
+      {
+        "ticker": "AAPL",
+        "as_of": "2024-06-28",
+        "result": {
+          "8k_item_1_01_filed_within_30d": false,
+          "8k_item_5_02_filed_within_7d": false
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "TSLA",
+        "as_of": "2024-01-15",
+        "result": {
+          "8k_item_1_01_filed_within_30d": false,
+          "8k_item_5_02_filed_within_7d": false,
+          "sc_13g_filed_within_30d": false
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "MSFT",
+        "as_of": "2023-05-01",
+        "result": {
+          "8k_item_1_01_filed_within_30d": false,
+          "8k_item_5_02_filed_within_7d": false,
+          "sc_13g_filed_within_30d": false
+        },
+        "non_empty": true
+      }
+    ],
+    "verdict": "PRODUCER_EMITS_KEYS_BUT_VALUES_NONE_FIRING"
+  },
+  "index_rebalance": {
+    "producer": "compute_index_rebalance_signals",
+    "path": "data_prefetch\\derived\\index_rebalance_events.parquet",
+    "path_exists": true,
+    "n_rows": 357,
+    "schema_ok": true,
+    "missing_cols": [],
+    "date_range": {
+      "earliest": "2020-01-28",
+      "latest": "2026-04-20"
+    },
+    "event_type_breakdown": {
+      "s&p_drop": 111,
+      "s&p_add": 109,
+      "ndx_drop": 60,
+      "ndx_add": 58,
+      "russell_add": 17,
+      "russell_drop": 2
+    },
+    "runtime_probes": [
+      {
+        "ticker": "AAL",
+        "event_type": "ndx_drop",
+        "event_date": "2020-04-20",
+        "probe_date": "2020-05-04",
+        "result": {
+          "last_event_type": "ndx_drop",
+          "days_since_deletion": 14,
+          "within_post_deletion_window": true,
+          "days_to_rebalance": 1603,
+          "within_pre_rebalance_window": false
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "AAL",
+        "event_type": "s&p_drop",
+        "event_date": "2024-09-23",
+        "probe_date": "2024-10-07",
+        "result": {
+          "last_event_type": "s&p_drop",
+          "days_since_deletion": 14,
+          "within_post_deletion_window": true
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "AAP",
+        "event_type": "s&p_drop",
+        "event_date": "2023-08-25",
+        "probe_date": "2023-09-08",
+        "result": {
+          "last_event_type": "s&p_drop",
+          "days_since_deletion": 14,
+          "within_post_deletion_window": true
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "ABMD",
+        "event_type": "s&p_drop",
+        "event_date": "2022-12-22",
+        "probe_date": "2023-01-05",
+        "result": {
+          "last_event_type": "s&p_drop",
+          "days_since_deletion": 14,
+          "within_post_deletion_window": true
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "ABNB",
+        "event_type": "ndx_add",
+        "event_date": "2021-12-20",
+        "probe_date": "2022-01-03",
+        "result": {
+          "last_event_type": "ndx_add",
+          "days_since_inclusion": 14,
+          "within_post_inclusion_window": true,
+          "in_reversal_window": false,
+          "days_to_rebalance": 623,
+          "within_pre_rebalance_window": false
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "ABNB",
+        "event_type": "s&p_add",
+        "event_date": "2023-09-18",
+        "probe_date": "2023-10-02",
+        "result": {
+          "last_event_type": "s&p_add",
+          "days_since_inclusion": 14,
+          "within_post_inclusion_window": true,
+          "in_reversal_window": false
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "ACGL",
+        "event_type": "s&p_add",
+        "event_date": "2022-11-01",
+        "probe_date": "2022-11-15",
+        "result": {
+          "last_event_type": "s&p_add",
+          "days_since_inclusion": 14,
+          "within_post_inclusion_window": true,
+          "in_reversal_window": false
+        },
+        "non_empty": true
+      },
+      {
+        "ticker": "ADS",
+        "event_type": "s&p_drop",
+        "event_date": "2020-06-22",
+        "probe_date": "2020-07-06",
+        "result": {
+          "last_event_type": "s&p_drop",
+          "days_since_deletion": 14,
+          "within_post_deletion_window": true
+        },
+        "non_empty": true
+      }
+    ],
+    "verdict": "DATA_PRESENT_AND_PRODUCER_WORKS"
+  },
+  "recent_8k": {
+    "producer": "compute_recent_8k_signal",
+    "status": "DELETED_in_B748b",
+    "data_8k_n_files": 1716,
+    "live_code_consumers_post_b748b": [],
+    "verdict": "DELETE_CORRECT"
+  }
+}

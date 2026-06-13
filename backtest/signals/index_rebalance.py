@@ -150,14 +150,18 @@ def strat_post_inclusion_drift_long(s: dict) -> dict:
     """DEC-370 #1: ride the post-S&P-500-inclusion drift (T+0..T+45).
     Shleifer 1986 / Lynch-Mendenhall 1997 / Petajisto 2011.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved per
-    B747 finding + B745 finding-grade audit).
-    `compute_index_rebalance_signals` reads from
-    `Backtesting universe/index_rebalance_events.parquet` which
-    currently has 0 rows. The strategy CANNOT FIRE until the parquet
-    is populated (separate ticket: S&P 500 add/drop events parquet
-    backfill from S&P DJI press releases). B652 W5m + B722 po3 +
-    B738 FOMC precedent.
+    Data state (B748c 2026-06-13 owner-approved walk-back of B748b):
+    `data_prefetch/derived/index_rebalance_events.parquet` has 357
+    events spanning 2020-01-28 -> 2026-04-20 (S&P + NDX + Russell add/
+    drop with announce_date + effective_date). Producer fires correctly
+    -- runtime probe on ABNB NDX-add 2022-01-15 verified post_inclusion
+    window emission. B748b's EXPLORATORY tag was based on FALSE
+    PREMISE -- B745 audit looked at wrong path (`Backtesting universe/
+    index_rebalance_events.parquet` instead of actual `data_prefetch/
+    derived/index_rebalance_events.parquet`).
+    Coverage note: T1a-active coverage 23.5% is expected (currently-
+    active T1a names mostly were always in S&P/NDX and never had
+    add/drop events; this is correct, not a data gap).
     """
     fires = (
         s.get("within_post_inclusion_window", False)
@@ -176,9 +180,8 @@ def strat_post_inclusion_reversal_short(s: dict) -> dict:
     """DEC-370 #1b: fade the inclusion pop reversal (T+60..T+120).
     Beneish-Whaley 1996 documents partial reversal post-inclusion.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved).
-    Same data-source-empty situation as strat_post_inclusion_drift_long;
-    see that docstring for full migration precedent + ticket reference.
+    Data state (B748c 2026-06-13 walk-back of B748b): same correct-data
+    situation as strat_post_inclusion_drift_long; see that docstring.
     """
     fires = (
         s.get("in_reversal_window", False)
@@ -196,8 +199,9 @@ def strat_post_deletion_drift_short(s: dict) -> dict:
     """DEC-370 #2: short post-deletion drift (T+0..T+30).
     Chen-Noronha-Singal 2004 RFS.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved).
-    Same data-source-empty situation as strat_post_inclusion_drift_long.
+    Data state (B748c walk-back): runtime probe on AAL post-S&P-drop
+    2024-10-07 emits `days_since_deletion=14, within_post_deletion
+    _window=True`. Producer fires correctly.
     """
     fires = (
         s.get("within_post_deletion_window", False)
@@ -217,8 +221,9 @@ def strat_pre_rebalance_long(s: dict) -> dict:
     Cai-Houge 2008: index-fund front-running creates ~3-5% lift in
     T-10..T-0 window. Requires announce_date already known.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved).
-    Same data-source-empty situation as strat_post_inclusion_drift_long.
+    Data state (B748c walk-back): events parquet has announce_date
+    populated; producer fires correctly with `within_pre_rebalance
+    _window` + `days_to_rebalance` emission verified at runtime probe.
     """
     fires = (
         s.get("within_pre_rebalance_window", False)

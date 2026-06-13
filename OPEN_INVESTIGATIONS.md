@@ -877,3 +877,22 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   - (B) Document the max-open-positions=10 cap's interaction with universe size. Consider tier-aware scaling (e.g., cap=20 at full universe) for Phase 1A-β.
   - (C) Add a "rejection-reason concentration" metric to detect when one gate dominates abnormally.
 - **Joint:** DEC-070 portfolio-level exit logic (the 10-cap origin); DEC-348 event suppression windows; CLAUDE.md "Max candidates/day: 10".
+
+
+## INV-054 — TIER 2 producer data-quality gaps surfaced by B748c extended audit (2026-06-13)
+- **Observed:** B748c extended investigation per CHECKLIST #44(b) + #106 codified this turn surfaced 5 producer-level data-quality findings B745 missed:
+  - **`compute_persistence_signals`**: 500K rows BUT date range 2026-04-24 → 2026-05-05 (12 days). Cannot compute 4-quarter persistence. 2 consuming strategies EXPLORATORY in B748c.
+  - **`compute_news_sentiment_signals`**: Producer expects per-ticker parquets; cache only has `global.parquet` with no Ticker column. 7 strategies cannot fire per-ticker; EXPLORATORY.
+  - **`compute_patentmomentum_signals`**: STALE -- ends 2022-01-01 (4+ years). 0 strategies consume it (no EXPLORATORY needed).
+  - **`compute_corporatedonors_signals`**: Date range 2025-06-10 → 2026-03-31 (9.5 months). 0 strategies consume it.
+  - **`compute_sec_edgar_signals` SC_13D branch**: Max filing date 2024-12-16 -- 17 months stale. `strat_activist_13d_long` revived with explicit caveat.
+- **Test framework:**
+  - `scripts/b748c_data_quality_investigation.py` (3-producer detailed probe)
+  - `scripts/b748c_extended_data_quality.py` (all 16 TIER 2; flag distribution)
+  - `output_audit/b748c_data_quality_investigation/` + `output_audit/b748c_extended_data_quality/`
+- **Recommended action:**
+  - (A) Queue data-acquisition tickets: PERSISTENCE-BACKFILL, QUIVER-NEWS-PER-TICKER-CONVERT, SC13D-INCREMENTAL-REFRESH, P17A-8K-ITEM-CODE-EXTRACTION
+  - (B) Extend `scripts/audit_tier2_producer_caches.py` per CHECKLIST #106(a)-(g)
+  - (C) Close the 2 B748b-queued backfill tickets (sec_edgar + index_rebalance) as RESOLVED-DATA-ALREADY-EXISTS
+- **Joint:** CHECKLIST #106 codified this turn; `feedback_data_consumption_audit_must_apply_checklist_44b` memory entry; B748c walk-back commit
+- **Status:** OPEN -- 4 producer-data backfill tickets pending owner approval; 10 strategies EXPLORATORY until backfills land.

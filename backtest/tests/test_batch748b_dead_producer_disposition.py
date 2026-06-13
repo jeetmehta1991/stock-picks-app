@@ -24,51 +24,53 @@ import importlib
 # EXPLORATORY tagging on 6 strategies
 # ---------------------------------------------------------------------------
 EXPLORATORY_STRATEGIES_B748B = [
-    # sec_edgar consumers (2)
-    "strat_activist_13d_long",
+    # POST-B748c (2026-06-13): of the original 6 B748b EXPLORATORY tags,
+    # 5 were REVIVED because the dispositions were based on FALSE
+    # premise (B745 audit had wrong data-paths; data was actually present).
+    # Only `strat_m_and_a_target_long` retains EXPLORATORY -- the 8_K
+    # parquet has no `item_codes` column so Item 1.01 detection genuinely
+    # fails. The other 5 -- strat_activist_13d_long + 4 index_rebalance --
+    # now have REAL fire behavior verified by B748c runtime probe.
     "strat_m_and_a_target_long",
-    # index_rebalance consumers (4)
-    "strat_post_inclusion_drift_long",
-    "strat_post_inclusion_reversal_short",
-    "strat_post_deletion_drift_short",
-    "strat_pre_rebalance_long",
 ]
 
 
-def test_b748b_pin1_six_strategies_marked_exploratory():
-    """Every B748b-tagged strategy must declare EXPLORATORY + DO NOT DEPLOY
-    in its docstring.
+def test_b748b_pin1_post_b748c_only_m_and_a_target_remains_exploratory():
+    """Post B748c walk-back: 5 of 6 original B748b tags were FALSE
+    (data was actually present; B745 audit had wrong paths). Only
+    strat_m_and_a_target_long retains EXPLORATORY -- the 8_K parquet
+    has no `item_codes` column so Item 1.01 detection cannot fire
+    until P17a extraction lands.
+    """
+    from backtest.signals.screener import strat_m_and_a_target_long
+    doc = strat_m_and_a_target_long.__doc__ or ""
+    assert "EXPLORATORY" in doc and "DO NOT DEPLOY" in doc, (
+        "strat_m_and_a_target_long must retain EXPLORATORY + DO NOT DEPLOY post-B748c"
+    )
+
+
+def test_b748b_pin2_b748c_revived_strategies_lack_exploratory_marker():
+    """The 5 strategies REVIVED in B748c must NOT carry EXPLORATORY markers
+    anymore. Lock the walk-back so regression brings the bug back.
     """
     from backtest.signals import screener as scr
     from backtest.signals import index_rebalance as ir
-    sources = {
+    revived = {
         "strat_activist_13d_long":              scr,
-        "strat_m_and_a_target_long":            scr,
         "strat_post_inclusion_drift_long":      ir,
         "strat_post_inclusion_reversal_short":  ir,
         "strat_post_deletion_drift_short":      ir,
         "strat_pre_rebalance_long":             ir,
     }
-    missing: list[str] = []
-    for name, mod in sources.items():
-        fn = getattr(mod, name, None)
-        assert fn is not None, f"{name} not found in {mod.__name__}"
+    still_tagged = []
+    for name, mod in revived.items():
+        fn = getattr(mod, name)
         doc = fn.__doc__ or ""
-        if "EXPLORATORY" not in doc or "DO NOT DEPLOY" not in doc:
-            missing.append(name)
-    assert not missing, f"missing EXPLORATORY + DO NOT DEPLOY markers on: {missing}"
-
-
-def test_b748b_pin2_all_six_still_in_all_strategies():
-    """EXPLORATORY != deletion -- all 6 strategies remain in ALL_STRATEGIES."""
-    from backtest.signals.screener import ALL_STRATEGIES
-    missing = []
-    for name in EXPLORATORY_STRATEGIES_B748B:
-        # Strip leading "strat_" because ALL_STRATEGIES keys omit it
-        key = name[len("strat_"):]
-        if key not in ALL_STRATEGIES:
-            missing.append(name)
-    assert not missing, f"EXPLORATORY-tagged strategies missing from ALL_STRATEGIES: {missing}"
+        if "EXPLORATORY -- DO NOT DEPLOY" in doc:
+            still_tagged.append(name)
+    assert not still_tagged, (
+        f"B748c walk-back regressed: {still_tagged} still have EXPLORATORY -- DO NOT DEPLOY markers"
+    )
 
 
 # ---------------------------------------------------------------------------
