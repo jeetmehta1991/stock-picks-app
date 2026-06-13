@@ -1,0 +1,1038 @@
+{
+  "t1a_total": 614,
+  "t1a_active": 503,
+  "t1a_historical_removed": 111,
+  "ohlcv_present_for_removed": 103,
+  "ohlcv_missing_for_removed": [
+    "AGN",
+    "CXO",
+    "ETFC",
+    "NBL",
+    "RTN",
+    "TIF",
+    "VAR",
+    "WCG"
+  ],
+  "estimated_excluded_ticker_bars": 55779,
+  "consumers": [
+    {
+      "consumer": "scripts/measure_fire_count.py",
+      "pattern": "PIT_AT_END_DATE",
+      "verdict": "PIT_INCORRECT",
+      "note": "Universe loaded with PIT filter at END date only. Historical-removed names excluded; END-snapshot survivor bias."
+    },
+    {
+      "consumer": "backtest/engine/backtest.py",
+      "pattern": "PIT_PER_YEAR",
+      "verdict": "PIT_CORRECT",
+      "note": "Per-year PIT intersection via get_sp500_constituents_pit; survivor bias mitigated."
+    },
+    {
+      "consumer": "backtest/run_phase1a.py",
+      "pattern": "NO_PIT",
+      "verdict": "PARTIAL",
+      "note": "No PIT pattern detected; manual review required."
+    }
+  ],
+  "historical_tickers": [
+    {
+      "symbol": "AAL",
+      "removed_date": "2024-09-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "AAP",
+      "removed_date": "2023-08-25",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ABMD",
+      "removed_date": "2022-12-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 409,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-12-21",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ADS",
+      "removed_date": "2020-06-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 227,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-04-01",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "AGN",
+      "removed_date": "2020-05-12",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "AIV",
+      "removed_date": "2020-12-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ALK",
+      "removed_date": "2023-12-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ALXN",
+      "removed_date": "2021-07-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 49,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2021-07-20",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "AMTM",
+      "removed_date": "2024-12-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 403,
+      "ohlcv_first_bar": "2024-09-30",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ANSS",
+      "removed_date": "2025-07-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1050,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-07-16",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "ARNC",
+      "removed_date": "2020-04-01",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 572,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2023-08-17",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ATVI",
+      "removed_date": "2023-10-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 611,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2023-10-12",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "BBWI",
+      "removed_date": "2024-10-01",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1197,
+      "ohlcv_first_bar": "2021-08-03",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "BIO",
+      "removed_date": "2024-09-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "BWA",
+      "removed_date": "2025-03-24",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "CE",
+      "removed_date": "2025-03-24",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "CERN",
+      "removed_date": "2022-06-08",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 272,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-06-07",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "CMA",
+      "removed_date": "2024-06-24",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1187,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-01-30",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "COTY",
+      "removed_date": "2020-09-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "CPRI",
+      "removed_date": "2020-05-12",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "CTLT",
+      "removed_date": "2024-12-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 908,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2024-12-17",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "CTXS",
+      "removed_date": "2022-10-03",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 351,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-09-29",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "CXO",
+      "removed_date": "2021-01-21",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "CZR",
+      "removed_date": "2025-09-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "DAY",
+      "removed_date": "2026-02-09",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 503,
+      "ohlcv_first_bar": "2024-02-01",
+      "ohlcv_last_bar": "2026-02-03",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "DFS",
+      "removed_date": "2025-05-19",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1010,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-05-16",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "DISCA",
+      "removed_date": "2022-04-11",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 232,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-04-08",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "DISCK",
+      "removed_date": "2022-04-11",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 232,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-04-08",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "DISH",
+      "removed_date": "2023-06-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 665,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2023-12-29",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "DRE",
+      "removed_date": "2022-10-03",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 352,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-09-30",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "DXC",
+      "removed_date": "2023-10-03",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "EMN",
+      "removed_date": "2025-11-04",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ENPH",
+      "removed_date": "2025-09-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ETFC",
+      "removed_date": "2020-10-07",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "ETSY",
+      "removed_date": "2024-09-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "FBHS",
+      "removed_date": "2022-12-19",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 404,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-12-14",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "FLIR",
+      "removed_date": "2021-05-14",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 3,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2021-05-13",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "FLS",
+      "removed_date": "2021-03-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "FMC",
+      "removed_date": "2025-03-24",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "FRC",
+      "removed_date": "2023-05-04",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 496,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2023-04-28",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "FTI",
+      "removed_date": "2021-02-12",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "GPS",
+      "removed_date": "2022-02-03",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 826,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2024-08-21",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "HBI",
+      "removed_date": "2021-12-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1145,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-11-28",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "HES",
+      "removed_date": "2025-07-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1051,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-07-17",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "HFC",
+      "removed_date": "2021-06-04",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 213,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-03-14",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "HOG",
+      "removed_date": "2020-06-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "HOLX",
+      "removed_date": "2026-04-09",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1231,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-04-06",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "HP",
+      "removed_date": "2020-05-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "HRB",
+      "removed_date": "2020-09-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ILMN",
+      "removed_date": "2024-06-24",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "INFO",
+      "removed_date": "2022-03-02",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 597,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "IPG",
+      "removed_date": "2025-11-28",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1144,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-11-26",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "IPGP",
+      "removed_date": "2022-06-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "JNPR",
+      "removed_date": "2025-07-09",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1040,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-07-01",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "JWN",
+      "removed_date": "2020-06-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1012,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-05-20",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "K",
+      "removed_date": "2025-12-11",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1153,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-12-10",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "KMX",
+      "removed_date": "2025-10-31",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "KSS",
+      "removed_date": "2020-09-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "KSU",
+      "removed_date": "2021-12-14",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 151,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2021-12-13",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "LEG",
+      "removed_date": "2021-12-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "LKQ",
+      "removed_date": "2025-12-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "LNC",
+      "removed_date": "2023-09-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "LUMN",
+      "removed_date": "2023-03-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "LW",
+      "removed_date": "2026-03-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "M",
+      "removed_date": "2020-04-06",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "MBC",
+      "removed_date": "2022-12-19",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 851,
+      "ohlcv_first_bar": "2022-12-15",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "MHK",
+      "removed_date": "2025-12-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "MKTX",
+      "removed_date": "2025-09-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "MOH",
+      "removed_date": "2026-03-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "MRO",
+      "removed_date": "2024-11-26",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 891,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2024-11-21",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "MTCH",
+      "removed_date": "2026-03-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "MXIM",
+      "removed_date": "2021-08-30",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 75,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2021-08-25",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "NBL",
+      "removed_date": "2020-10-12",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "NLSN",
+      "removed_date": "2022-10-12",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 359,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-10-11",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "NOV",
+      "removed_date": "2021-09-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "NWL",
+      "removed_date": "2023-09-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "OGN",
+      "removed_date": "2023-10-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1239,
+      "ohlcv_first_bar": "2021-06-03",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "PAYC",
+      "removed_date": "2026-03-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "PBCT",
+      "removed_date": "2022-04-04",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 227,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-04-01",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "PENN",
+      "removed_date": "2022-09-19",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "PRGO",
+      "removed_date": "2021-09-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "PVH",
+      "removed_date": "2022-09-19",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "PXD",
+      "removed_date": "2024-05-08",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 750,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2024-05-02",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "QRVO",
+      "removed_date": "2024-12-23",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "RHI",
+      "removed_date": "2024-06-24",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "RTN",
+      "removed_date": "2020-04-06",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "SBNY",
+      "removed_date": "2023-03-15",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1225,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "SEDG",
+      "removed_date": "2023-12-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "SEE",
+      "removed_date": "2023-12-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1233,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-04-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "SIVB",
+      "removed_date": "2023-03-15",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 461,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2023-03-09",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "SLG",
+      "removed_date": "2021-03-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "SOLS",
+      "removed_date": "2025-12-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 476,
+      "ohlcv_first_bar": "2021-12-31",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "TFX",
+      "removed_date": "2025-03-24",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "TIF",
+      "removed_date": "2021-01-07",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "TWTR",
+      "removed_date": "2022-11-01",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 371,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-10-27",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "UA",
+      "removed_date": "2022-06-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "UAA",
+      "removed_date": "2022-06-21",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "UNM",
+      "removed_date": "2021-09-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "VAR",
+      "removed_date": "2021-04-20",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "VFC",
+      "removed_date": "2024-04-03",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "VNO",
+      "removed_date": "2023-01-05",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "VNT",
+      "removed_date": "2021-03-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "WBA",
+      "removed_date": "2025-08-28",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1080,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2025-08-27",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "WCG",
+      "removed_date": "2020-01-28",
+      "ohlcv_exists": false,
+      "ohlcv_n_bars": 0,
+      "ohlcv_first_bar": null,
+      "ohlcv_last_bar": null,
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "WHR",
+      "removed_date": "2024-03-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "WU",
+      "removed_date": "2021-12-20",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "XEC",
+      "removed_date": "2020-03-02",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 100,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2021-09-30",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "XLNX",
+      "removed_date": "2022-02-15",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 193,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2022-02-11",
+      "coverage_through_removal": false
+    },
+    {
+      "symbol": "XRAY",
+      "removed_date": "2024-04-03",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "XRX",
+      "removed_date": "2021-03-22",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    },
+    {
+      "symbol": "ZION",
+      "removed_date": "2024-03-18",
+      "ohlcv_exists": true,
+      "ohlcv_n_bars": 1255,
+      "ohlcv_first_bar": "2021-05-11",
+      "ohlcv_last_bar": "2026-05-08",
+      "coverage_through_removal": true
+    }
+  ]
+}
