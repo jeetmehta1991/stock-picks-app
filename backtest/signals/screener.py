@@ -4133,15 +4133,15 @@ def strat_pead_short_negative_yoy_growth(s):
 
 
 def strat_squeeze_setup_long(s):
-    """EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13 owner-approved).
-    Layer 2 catalyst leg `news_sentiment_shift > 0.4` requires news_sentiment
-    producer which is dead (per-ticker parquet files absent; see
-    strat_news_sentiment_long docstring). L2 degrades to PEAD-only OR
-    branch. Cube/Pattern F verdict applies to PEAD-only architecture, NOT
-    the documented news+PEAD composite. Tag until news data backfills.
+    """Batch 615 (2026-06-07 owner-directed F1 docstring reframe per
+    feedback_13f_state_signal_staleness B611 staleness playbook).
 
-    Batch 615 (2026-06-07 owner-directed F1 docstring reframe per
-    feedback_13f_state_signal_staleness B611 staleness playbook):
+    L2 news_sentiment_shift catalyst leg (B748d 2026-06-14 walk-back):
+    Producer reads from `data_prefetch/polygon/news/`; verified at
+    strat_news_sentiment_long. L2 OR branch (news shift OR PEAD) both
+    work; the B748c-claimed news-dead situation was a path-discovery
+    bug in B745.
+
 
     The L1 layer is a POSITIONING ELIGIBILITY FILTER (slow STATE
     signals), NOT bar-of-fire conviction:
@@ -4332,13 +4332,15 @@ def strat_m_and_a_target_long(s):
     disclosure that a company is being acquired or signed a major
     partnership; stock often gaps 10-30% on the next bar.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved per
-    B747 finding + B745 finding-grade audit).
-    Same data-source-empty situation as strat_activist_13d_long:
-    `compute_sec_edgar_signals` reads from `data_prefetch/sec_edgar/`
-    which has 0 rows. Cannot fire until Polygon SEC EDGAR backfill
-    ships. See strat_activist_13d_long docstring for migration
-    precedent + queue ticket reference.
+    Data state (B748d 2026-06-14 walk-back of B748b+B748c FALSE tags):
+    Producer reads from `data_prefetch/sec_edgar_decoded/` (NOT raw
+    `data_prefetch/sec_edgar/` that B745+B748c assumed). Decoded cache
+    has 1543 per-ticker 8_K parquets with the `item_codes` column
+    populated. Runtime probe verified 3/3 KNOWN Item 1.01 events fire:
+    AAL 2026-03-09 (mid-window), AA 2026-05-04 (near-current), A
+    2024-09-09 (mid-window). The B748b+B748c EXPLORATORY rationale was
+    based on path-discovery bug in B745 audit (now fixed B748d per
+    CHECKLIST #106). Producer + data work end-to-end.
     """
     fires = bool(s.get("8k_item_1_01_filed_within_30d", False))
     return _strat(fires, "long", "sec_edgar_sleeve",
@@ -5510,17 +5512,15 @@ def strat_institutional_multi_quarter_persistence_long(s):
     Gate: persistent_holders_4q >= 10 (strong cross-fund persistence)
           AND price_above_ema_200 (regime gate).
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13 owner-approved per
-    B748c extended data-quality investigation).
-    `compute_persistence_signals` reads from `data_prefetch/quiver/
-    sec13fchanges/global.parquet` which has 500K rows BUT date range
-    of only 2026-04-24 -> 2026-05-05 (TWELVE DAYS). Cannot compute
-    4-quarter persistence with 12 days of history; the
-    `persistent_holders_4q` signal is structurally undefined.
-    Strategy fires only on stale snapshot. Pattern F / cube cannot
-    produce a meaningful verdict until prefetch backfills 4+ quarters
-    of 13F-changes history (separate ticket S4-B748c-FOLLOWUP-
-    PERSISTENCE-BACKFILL).
+    Data state (B748d 2026-06-14 walk-back of B748c FALSE tag):
+    Producer reads from `data_prefetch/derived/institutional_persistence
+    _t1a/<YYYY-MM-DD>.parquet` (NOT `quiver/sec13fchanges/` that B748c
+    assumed). 5 annual snapshot parquets exist (2022 -> 2026) with
+    pre-computed `persistent_holders_4q` + `committed_growth_holders`
+    columns. Runtime probe: AAL persistent_holders_4q=396 (strong=True);
+    A=13 (strong=True); ABNB=7 (neither). Producer fires correctly on
+    470 of 503 T1a tickers (the snapshot covers a T1a-stable subset;
+    coverage gap on the other 33 is expected, not a producer bug).
     """
     fires = (
         s.get("institutional_persistence_strong", False)
@@ -5544,10 +5544,10 @@ def strat_institutional_committed_growth_long(s):
 
     Gate: committed_growth_holders >= 5 AND price_above_ema_200.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13 owner-approved).
-    Same persistence 12-day-window data-state issue as
+    Data state (B748d 2026-06-14 walk-back of B748c FALSE tag):
+    Same correct-data situation as
     strat_institutional_multi_quarter_persistence_long; see that
-    docstring for full rationale + queued backfill ticket.
+    docstring for empirical evidence.
     """
     fires = (
         s.get("institutional_persistence_growing", False)
@@ -6070,16 +6070,16 @@ def strat_news_sentiment_long(s):
     (stronger consensus is still core to thesis). To be validated in
     Stage D Hetzner re-run before any Phase 1A-beta deployment.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13 owner-approved per
-    B748c extended data-quality investigation).
-    Producer `compute_news_sentiment_signals` expects per-ticker
-    parquets at `data_prefetch/quiver/quivernews/<TICKER>.parquet`;
-    cache directory only contains `global.parquet` (1500 rows of
-    ticker-less headlines with cols [url, time, headline, category,
-    summary, image] -- NO Ticker column). Producer file-lookup misses
-    on every ticker -> empty dict -> `news_*` keys never populate ->
-    strategy cannot fire. Backfill ticket S4-B748c-FOLLOWUP-QUIVER-
-    NEWS-PER-TICKER-CONVERT pending.
+    Data state (B748d 2026-06-14 walk-back of B748c FALSE tag):
+    Producer reads from `data_prefetch/polygon/news/<TICKER>.parquet`
+    (NOT `quiver/quivernews/` that B748c assumed). 1927 per-ticker
+    parquets exist with schema [ticker, id, published_utc, title,
+    description, article_url, ..., sentiment]. Runtime probe AAPL
+    2024-06-28 returns 13 keys with real values: news_sentiment_mean
+    +0.27, news_article_count 94, news_volume_zscore_5d 1.69. Data
+    spans 2021-04-09 -> 2026-05-08 (5 years). Producer + data work
+    end-to-end. B748c EXPLORATORY tag was based on path-discovery bug
+    in B745 audit (now fixed B748d per CHECKLIST #106).
     """
     fires = (
         s.get("news_sentiment_mean", 0.0) > 0.5
@@ -6099,9 +6099,9 @@ def strat_news_sentiment_shift_long(s):
     """Batch 253: sentiment-shift long (delta detector). +0.4 shift vs
     prior 7d + 200-EMA. Captures news-driven momentum onset.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13). Same news_sentiment
-    per-ticker data issue as strat_news_sentiment_long; see that
-    docstring for full rationale + backfill ticket.
+    Data state (B748d 2026-06-14 walk-back of B748c FALSE tag):
+    Same correct-data situation as strat_news_sentiment_long; producer
+    reads from `data_prefetch/polygon/news/`; works end-to-end.
     """
     fires = (
         s.get("news_sentiment_shift", 0.0) > 0.4
@@ -6121,9 +6121,8 @@ def strat_news_momentum_long(s):
     5-day recency-weighted sentiment AND unusual news volume AND a 20-day
     Donchian breakout. Captures "news-confirmed breakout" entries.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13). Same news_sentiment
-    per-ticker data issue as strat_news_sentiment_long; see that
-    docstring for full rationale.
+    Data state (B748d 2026-06-14 walk-back): same correct-data situation
+    as strat_news_sentiment_long; producer reads from polygon/news/.
 
     Source: Tetlock 2007 RFS news-tone return predictability +
     Da-Engelberg-Gao 2011 RFS news-attention predicts attention-induced
@@ -6179,8 +6178,8 @@ def strat_news_momentum_short(s):
     """Batch 603 (2026-06-05 owner-directed Class 7 NEW): symmetric
     inverse of news_momentum_long. Negative-news-confirmed breakdown.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13). Same news_sentiment
-    per-ticker data issue as strat_news_sentiment_long.
+    Data state (B748d 2026-06-14 walk-back): same correct-data situation
+    as strat_news_sentiment_long; producer reads from polygon/news/.
 
     Mirror of news_momentum_long. Fires when 5-day recency-weighted
     sentiment is STRONGLY NEGATIVE, unusual news volume confirms
@@ -6232,8 +6231,8 @@ def strat_news_reversal_short(s):
     #105 a-j + feedback_sequence_or_split_when_stacking_changes attribution
     tradeoff explicitly accepted by owner): a+b+c+d applied.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13). Same news_sentiment
-    per-ticker data issue as strat_news_sentiment_long.
+    Data state (B748d 2026-06-14 walk-back): same correct-data situation
+    as strat_news_sentiment_long; producer reads from polygon/news/.
 
     Lineage:
       - B467 (P10) ORIGINAL: news-overreaction fade short. Sentiment >= +0.7
@@ -6286,8 +6285,8 @@ def strat_news_reversal_long(s):
     #105 a-j + feedback_sequence_or_split_when_stacking_changes attribution
     tradeoff explicitly accepted by owner): a+b+c+d applied.
 
-    EXPLORATORY -- DO NOT DEPLOY (B748c 2026-06-13). Same news_sentiment
-    per-ticker data issue as strat_news_sentiment_long.
+    Data state (B748d 2026-06-14 walk-back): same correct-data situation
+    as strat_news_sentiment_long; producer reads from polygon/news/.
 
     Lineage:
       - B603 (Class 7 NEW): symmetric inverse of news_reversal_short. -0.7

@@ -21,7 +21,7 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
 | 1 | `compute_insider_cluster_signals` | `insider_buying` | module_dict | **A** | 1,000,000 | 7,275 | NO | (empty) |  |
 | 2 | `compute_persistence_signals` | `institutional_persistence_consumer` | module_dict | **A** | 500,000 | 1 | NO | (empty) |  |
 | 3 | `compute_short_interest_signals` | `short_interest` | module_dict | **A** | 3,830 | 1,926 | YES | days_to_cover, short_interest_observations, short_interest_settlement_date |  |
-| 4 | `compute_sec_edgar_signals` | `sec_edgar_extractor` | module_dict | **D** | 0 | 0 | YES | 8k_item_1_01_filed_within_30d, 8k_item_5_02_filed_within_7d |  |
+| 4 | `compute_sec_edgar_signals` | `sec_edgar_extractor` | module_dict | **A** | 451 | 18,708 | YES | 8k_item_1_01_filed_within_30d, 8k_item_5_02_filed_within_7d |  |
 | 5 | `compute_news_sentiment_signals` | `news_sentiment` | module_dict | **A** | 1,500 | 1 | YES | news_article_count, news_bearish_pct, news_bullish_pct |  |
 | 6 | `compute_pead_signals` | `pead` | lru_cache | **A** | 2,876 | 1,937 | YES | days_since_last_earnings, earnings_announcement_return, earnings_eps_yoy_growth |  |
 | 7 | `compute_yoy_surprise_signal` | `earnings_surprise_yoy` | none | **B** | 2,876 | 1,937 | YES | days_since_last_earnings, earnings_eps_yoy_growth, within_pead_window |  |
@@ -37,7 +37,7 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
 
 ## Path classification summary
 
-### PATH A -- existing module-level cache; call as-is in measure_fire_count.py  (12 producers)
+### PATH A -- existing module-level cache; call as-is in measure_fire_count.py  (13 producers)
 
 - **`compute_insider_cluster_signals`** (insider_buying)
     - data: `data_prefetch/quiver/insiders/global.parquet` -- rows=1,000,000, tickers=7,275
@@ -51,6 +51,9 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
     - data: `data_prefetch/finra/short_interest` -- rows=3,830, tickers=1,926
     - smoke: emits=True, error=none
     - consumed by 2 strategy(s): strat_short_borrow_trap_avoid, strat_squeeze_setup_long
+- **`compute_sec_edgar_signals`** (sec_edgar_extractor)
+    - data: `data_prefetch/sec_edgar` -- rows=451, tickers=18,708
+    - smoke: emits=True, error=none
 - **`compute_news_sentiment_signals`** (news_sentiment)
     - data: `data_prefetch/quiver/quivernews` -- rows=1,500, tickers=1
     - smoke: emits=True, error=none
@@ -90,6 +93,7 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
 - **`compute_index_rebalance_signals`** (index_rebalance)
     - data: `Backtesting universe/index_rebalance_events.parquet` -- rows=0, tickers=0
     - smoke: emits=False, error=none
+    - consumed by 4 strategy(s): strat_post_deletion_drift_short, strat_post_inclusion_drift_long, strat_post_inclusion_reversal_short, strat_pre_rebalance_long
 
 ### PATH C -- needs ohlcv_dict or full-universe data  (1 producers)
 
@@ -98,18 +102,9 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
     - smoke: emits=True, error=none
     - consumed by 7 strategy(s): strat_pre_fomc_quality_momentum_long, strat_pre_rebalance_long, strat_xs_combined_momentum_low_ivol, strat_xs_momentum_bottom_decile_short, strat_xs_momentum_quality_combined, strat_xs_momentum_top_decile...
 
-### PATH D -- data missing/sparse/broken; consuming strategies may be effectively dead  (1 producers)
+### PATH D -- data missing/sparse/broken; consuming strategies may be effectively dead  (0 producers)
 
-- **`compute_sec_edgar_signals`** (sec_edgar_extractor)
-    - data: `data_prefetch/sec_edgar` -- rows=0, tickers=0
-    - smoke: emits=True, error=none
-
-## DEAD-STRATEGY FINDING
-
-Path D producers' consuming strategies have been firing on the OTHER gates only -- the distinguishing signal has been `{}`. This is the same orphan-emitter class as SM-5 + SMC vendored-library SPOF. Each is a Pattern F input (delete-vs-revive decision), not engineering housekeeping.
-
-### `compute_sec_edgar_signals` -- 0 possibly-dead strategy(s)
-
+_(none)_
 
 ---
 

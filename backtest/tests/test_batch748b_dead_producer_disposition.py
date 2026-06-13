@@ -24,28 +24,25 @@ import importlib
 # EXPLORATORY tagging on 6 strategies
 # ---------------------------------------------------------------------------
 EXPLORATORY_STRATEGIES_B748B = [
-    # POST-B748c (2026-06-13): of the original 6 B748b EXPLORATORY tags,
-    # 5 were REVIVED because the dispositions were based on FALSE
-    # premise (B745 audit had wrong data-paths; data was actually present).
-    # Only `strat_m_and_a_target_long` retains EXPLORATORY -- the 8_K
-    # parquet has no `item_codes` column so Item 1.01 detection genuinely
-    # fails. The other 5 -- strat_activist_13d_long + 4 index_rebalance --
-    # now have REAL fire behavior verified by B748c runtime probe.
-    "strat_m_and_a_target_long",
+    # POST-B748d (2026-06-14): ALL 6 original B748b EXPLORATORY tags
+    # are now removed. B748d audit-script-fix surfaced path-drift on
+    # sec_edgar (registry: `data_prefetch/sec_edgar`; actual:
+    # `data_prefetch/sec_edgar_decoded`); decoded cache has item_codes
+    # populated + producer fires 3/3 on KNOWN Item 1.01 events.
+    # Net B748B EXPLORATORY: 0.
 ]
 
 
-def test_b748b_pin1_post_b748c_only_m_and_a_target_remains_exploratory():
-    """Post B748c walk-back: 5 of 6 original B748b tags were FALSE
-    (data was actually present; B745 audit had wrong paths). Only
-    strat_m_and_a_target_long retains EXPLORATORY -- the 8_K parquet
-    has no `item_codes` column so Item 1.01 detection cannot fire
-    until P17a extraction lands.
+def test_b748b_pin1_post_b748d_zero_b748b_originals_remain_exploratory():
+    """Post B748d walk-back: all 6 original B748b EXPLORATORY tags
+    proven FALSE. The previously-retained `strat_m_and_a_target_long`
+    was also revived after B748d audit-script-fix surfaced the
+    sec_edgar_decoded cache (which has item_codes populated).
     """
     from backtest.signals.screener import strat_m_and_a_target_long
     doc = strat_m_and_a_target_long.__doc__ or ""
-    assert "EXPLORATORY" in doc and "DO NOT DEPLOY" in doc, (
-        "strat_m_and_a_target_long must retain EXPLORATORY + DO NOT DEPLOY post-B748c"
+    assert "EXPLORATORY -- DO NOT DEPLOY" not in doc, (
+        "strat_m_and_a_target_long should have been REVIVED in B748d; doc still contains EXPLORATORY"
     )
 
 

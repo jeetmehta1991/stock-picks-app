@@ -89,13 +89,19 @@ def test_b748c_pin1_revived_strategies_in_all_strategies_and_not_exploratory():
     )
 
 
-def test_b748c_pin2_nine_new_strategies_carry_exploratory_markers():
-    """The 9 NEW EXPLORATORY strategies must declare EXPLORATORY + DO NOT
-    DEPLOY in their docstrings.
+def test_b748c_pin2_nine_originally_tagged_strategies_now_revived_post_b748d():
+    """B748d (2026-06-14) walked back ALL 9 B748c-NEW EXPLORATORY tags
+    after audit-script-fix surfaced 4 PATH DRIFT findings:
+      - persistence reads `derived/institutional_persistence_t1a/`
+      - news_sentiment reads `polygon/news/`
+      - sec_edgar reads `sec_edgar_decoded/`
+      - index_rebalance reads `derived/index_rebalance_events.parquet`
+    All B748c-tagged strategies have working data + producers; tags were
+    FALSE per CHECKLIST #44(b) when B748c audit-script bugs were corrected.
     """
     from backtest.signals.screener import ALL_STRATEGIES
     from backtest.signals import screener as scr
-    missing_marker: list[str] = []
+    still_tagged: list[str] = []
     missing_registry: list[str] = []
     for name in NEW_EXPLORATORY_STRATEGIES_B748C:
         key = name[len("strat_"):]
@@ -107,10 +113,12 @@ def test_b748c_pin2_nine_new_strategies_carry_exploratory_markers():
             missing_registry.append(name)
             continue
         doc = fn.__doc__ or ""
-        if "EXPLORATORY" not in doc or "DO NOT DEPLOY" not in doc:
-            missing_marker.append(name)
+        if "EXPLORATORY -- DO NOT DEPLOY" in doc:
+            still_tagged.append(name)
     assert not missing_registry, f"missing from registry: {missing_registry}"
-    assert not missing_marker, f"missing EXPLORATORY+DO NOT DEPLOY: {missing_marker}"
+    assert not still_tagged, (
+        f"B748d walk-back regressed: {still_tagged} still carry EXPLORATORY"
+    )
 
 
 def test_b748c_pin3_strategy_count_unchanged_at_221():
@@ -130,48 +138,51 @@ def test_b748c_pin4_strat_activist_13d_long_has_stale_data_caveat():
     )
 
 
-def test_b748c_pin5_strat_m_and_a_target_long_explicitly_pins_item_codes_gap():
-    """strat_m_and_a_target_long EXPLORATORY rationale must point to the
-    real blocker: missing item_codes column on 8_K parquets.
+def test_b748c_pin5_strat_m_and_a_target_long_revived_in_b748d():
+    """B748d 2026-06-14: strat_m_and_a_target_long was REVIVED. The
+    `item_codes` column DOES exist in the decoded cache at
+    `data_prefetch/sec_edgar_decoded/8_K/<TICKER>.parquet`. B748c
+    pointed at the wrong cache path.
     """
     from backtest.signals.screener import strat_m_and_a_target_long
     doc = strat_m_and_a_target_long.__doc__ or ""
-    assert "EXPLORATORY" in doc and "DO NOT DEPLOY" in doc
+    assert "EXPLORATORY -- DO NOT DEPLOY" not in doc
 
 
-def test_b748c_pin6_news_sentiment_strategies_reference_per_ticker_data_gap():
-    """At least one news strategy's docstring must explain the per-ticker
-    data gap so the EXPLORATORY status is self-documenting.
+def test_b748c_pin6_news_sentiment_strategies_revived_with_b748d_caveat():
+    """B748d walk-back: news strategies revived because polygon/news/
+    per-ticker data was discovered (B748c assumed wrong path).
     """
     from backtest.signals.screener import strat_news_sentiment_long
     doc = strat_news_sentiment_long.__doc__ or ""
-    assert "per-ticker" in doc or "global.parquet" in doc or "Ticker column" in doc, (
-        "strat_news_sentiment_long must explain the per-ticker quivernews gap"
+    assert "polygon/news" in doc or "polygon\\news" in doc or "B748d" in doc, (
+        "news sentiment docstring must reference the post-B748d discovered path"
     )
 
 
-def test_b748c_pin7_persistence_strategies_reference_12d_window():
-    """At least one persistence strategy must document the 12-day window
-    blocker so a future reader understands why EXPLORATORY.
+def test_b748c_pin7_persistence_strategies_revived_with_b748d_caveat():
+    """B748d walk-back: persistence strategies revived because the
+    `derived/institutional_persistence_t1a/` snapshots have 4Q persistence
+    columns populated.
     """
     from backtest.signals.screener import strat_institutional_multi_quarter_persistence_long
     doc = strat_institutional_multi_quarter_persistence_long.__doc__ or ""
-    assert ("12" in doc and ("day" in doc.lower() or "twelve" in doc.lower())) or "TWELVE DAYS" in doc, (
-        "persistence strategy must document the 12-day window data gap"
+    assert ("institutional_persistence_t1a" in doc or "B748d" in doc), (
+        "persistence docstring must reference the B748d-discovered path"
     )
 
 
-def test_b748c_pin8_total_exploratory_post_b748c_is_10():
-    """Audit lock: 10 strategies should carry EXPLORATORY + DO NOT DEPLOY
-    post-B748c (1 carryover + 9 new).
+def test_b748c_pin8_total_b748c_originals_exploratory_post_b748d_is_zero():
+    """B748d walk-back: 0 of the 10 B748b+B748c-originally-EXPLORATORY
+    strategies remain tagged. ALL of them were FALSE positives caused
+    by B745+B748c audit-script path-discovery bugs.
 
-    Drift here means a new EXPLORATORY tag was added or one was removed
-    without going through the same investigation discipline.
+    Drift = a strategy here re-acquires EXPLORATORY without owner-approved
+    re-disposition (which would be unexpected since B748d verified the
+    data state empirically).
     """
-    expected = {
-        # carryover from B748b (data state unchanged)
+    b748_originals = {
         "strat_m_and_a_target_long",
-        # new B748c
         "strat_institutional_committed_growth_long",
         "strat_institutional_multi_quarter_persistence_long",
         "strat_news_momentum_long",
@@ -182,17 +193,14 @@ def test_b748c_pin8_total_exploratory_post_b748c_is_10():
         "strat_news_sentiment_shift_long",
         "strat_squeeze_setup_long",
     }
-    # Add the earlier EXPLORATORY-tagged strategies from prior batches
-    # (B722 po3 + B738 FOMC + B732 CP-3/CP-7 + B652 W5m + others). We are
-    # only locking the B748c-relevant set here; the global EXPLORATORY count
-    # may legitimately be higher due to those.
     from backtest.signals import screener as scr
-    actual_tagged = set()
-    for name in expected:
+    still_tagged = set()
+    for name in b748_originals:
         fn = getattr(scr, name, None)
         if fn is not None:
             doc = fn.__doc__ or ""
-            if "EXPLORATORY" in doc and "DO NOT DEPLOY" in doc:
-                actual_tagged.add(name)
-    missing = expected - actual_tagged
-    assert not missing, f"expected EXPLORATORY post-B748c but not tagged: {missing}"
+            if "EXPLORATORY -- DO NOT DEPLOY" in doc:
+                still_tagged.add(name)
+    assert not still_tagged, (
+        f"B748d walk-back regressed: {still_tagged} should NOT have EXPLORATORY post-B748d"
+    )

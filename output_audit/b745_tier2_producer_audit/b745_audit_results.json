@@ -34,6 +34,48 @@
         "strat_pead_with_insider_confirmation_long",
         "strat_squeeze_setup_long"
       ],
+      "producer_source_path": "data_prefetch\\quiver\\insiders\\global.parquet",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2002-02-24",
+        "last_date": "2026-05-05",
+        "covers_window_start": true,
+        "covers_window_end": false,
+        "gap_days_at_start": -6520,
+        "gap_days_at_end": 26,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "Name",
+          "Shares",
+          "isDirector",
+          "isOfficer"
+        ],
+        "actual_cols": [
+          "AcquiredDisposedCode",
+          "Date",
+          "Name",
+          "PricePerShare",
+          "Shares",
+          "SharesOwnedFollowing",
+          "Ticker",
+          "TransactionCode",
+          "directOrIndirectOwnership",
+          "fileDate",
+          "isDirector",
+          "isOfficer",
+          "isOther",
+          "isTenPercentOwner",
+          "officerTitle",
+          "uploaded"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [],
       "notes": ""
     },
     {
@@ -64,6 +106,29 @@
         "strat_institutional_committed_growth_long",
         "strat_institutional_multi_quarter_persistence_long"
       ],
+      "producer_source_path": "data_prefetch\\derived\\institutional_persistence_t1a",
+      "temporal_coverage": {
+        "present": true,
+        "no_date_col": true
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [],
+        "actual_cols": [
+          "avg_position_age_quarters",
+          "committed_growth_holders",
+          "formation_end",
+          "persistent_holders_4q",
+          "persistent_holders_8q",
+          "ticker",
+          "total_active_holders"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "REGISTRY_PATH_DRIFT_registry=data_prefetch/quiver/sec13fchanges_actual=data_prefetch\\derived\\institutional_persistence_t1a"
+      ],
       "notes": ""
     },
     {
@@ -93,6 +158,33 @@
         "strat_short_borrow_trap_avoid",
         "strat_squeeze_setup_long"
       ],
+      "producer_source_path": "data_prefetch\\finra\\short_interest",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2021-06-15",
+        "last_date": "2026-04-30",
+        "covers_window_start": false,
+        "covers_window_end": false,
+        "gap_days_at_start": 531,
+        "gap_days_at_end": 31,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [],
+        "actual_cols": [
+          "avg_daily_volume",
+          "settlement_date",
+          "shares_outstanding",
+          "short_interest"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "LATE_START_first=2021-06-15"
+      ],
       "notes": ""
     },
     {
@@ -100,11 +192,11 @@
       "module": "sec_edgar_extractor",
       "cache_var": "_DECODED_DF_CACHE",
       "cache_mechanism": "module_dict",
-      "path_classification": "D",
+      "path_classification": "A",
       "data_path": "data_prefetch/sec_edgar",
       "data_exists": true,
-      "data_row_count": 0,
-      "data_unique_tickers": 0,
+      "data_row_count": 451,
+      "data_unique_tickers": 18708,
       "smoke_emits_non_empty": true,
       "smoke_signal_keys": [
         "8k_item_1_01_filed_within_30d",
@@ -115,6 +207,37 @@
         "sec_edgar_8k_recent"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\sec_edgar_decoded",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2020-01-06",
+        "last_date": "2026-05-07",
+        "covers_window_start": false,
+        "covers_window_end": false,
+        "gap_days_at_start": 5,
+        "gap_days_at_end": 24,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [],
+        "actual_cols": [
+          "accession_number",
+          "decoded_status",
+          "filing_date",
+          "item_codes",
+          "primary_doc",
+          "ticker",
+          "url"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "LATE_START_first=2020-01-06",
+        "REGISTRY_PATH_DRIFT_registry=data_prefetch/sec_edgar_actual=data_prefetch\\sec_edgar_decoded"
+      ],
       "notes": ""
     },
     {
@@ -165,6 +288,40 @@
         "strat_news_sentiment_shift_long",
         "strat_squeeze_setup_long"
       ],
+      "producer_source_path": "data_prefetch\\polygon\\news",
+      "temporal_coverage": {
+        "present": true,
+        "no_date_col": true
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "published_date"
+        ],
+        "actual_cols": [
+          "all_tickers",
+          "amp_url",
+          "article_url",
+          "description",
+          "id",
+          "insights_json",
+          "published_utc",
+          "publisher_homepage_url",
+          "publisher_name",
+          "sentiment",
+          "sentiment_reasoning",
+          "ticker",
+          "title"
+        ],
+        "missing_cols": [
+          "published_date"
+        ],
+        "contract_satisfied": false
+      },
+      "issue_flags": [
+        "SCHEMA_MISSING_COLS=['published_date']",
+        "REGISTRY_PATH_DRIFT_registry=data_prefetch/quiver/quivernews_actual=data_prefetch\\polygon\\news"
+      ],
       "notes": ""
     },
     {
@@ -206,6 +363,38 @@
         "strat_week_opening_gap_fill_down",
         "strat_week_opening_gap_fill_up"
       ],
+      "producer_source_path": "data_prefetch\\polygon\\financials",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2009-07-23",
+        "last_date": "2026-04-23",
+        "covers_window_start": true,
+        "covers_window_end": false,
+        "gap_days_at_start": -3814,
+        "gap_days_at_end": 38,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [],
+        "actual_cols": [
+          "cik",
+          "company_name",
+          "end_date",
+          "filing_date",
+          "financials_json",
+          "fiscal_period",
+          "fiscal_year",
+          "period_of_report_date",
+          "source_filing_url",
+          "start_date",
+          "ticker"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [],
       "notes": ""
     },
     {
@@ -256,6 +445,38 @@
         "strat_week_opening_gap_fill_down",
         "strat_week_opening_gap_fill_up"
       ],
+      "producer_source_path": "",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2009-07-23",
+        "last_date": "2026-04-23",
+        "covers_window_start": true,
+        "covers_window_end": false,
+        "gap_days_at_start": -3814,
+        "gap_days_at_end": 38,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [],
+        "actual_cols": [
+          "cik",
+          "company_name",
+          "end_date",
+          "filing_date",
+          "financials_json",
+          "fiscal_period",
+          "fiscal_year",
+          "period_of_report_date",
+          "source_filing_url",
+          "start_date",
+          "ticker"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [],
       "notes": ""
     },
     {
@@ -282,6 +503,36 @@
         "search_volume_zscore_30d"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\pytrends",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2021-05-02",
+        "last_date": "2026-05-03",
+        "covers_window_start": false,
+        "covers_window_end": false,
+        "gap_days_at_start": 487,
+        "gap_days_at_end": 28,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "date",
+          "search_volume_index"
+        ],
+        "actual_cols": [
+          "date",
+          "query_label",
+          "search_volume_index",
+          "ticker"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "LATE_START_first=2021-05-02"
+      ],
       "notes": ""
     },
     {
@@ -308,7 +559,41 @@
         "within_post_inclusion_window",
         "within_pre_rebalance_window"
       ],
-      "consuming_strategies": [],
+      "consuming_strategies": [
+        "strat_post_deletion_drift_short",
+        "strat_post_inclusion_drift_long",
+        "strat_post_inclusion_reversal_short",
+        "strat_pre_rebalance_long"
+      ],
+      "producer_source_path": "data_prefetch\\derived\\index_rebalance_events.parquet",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2020-01-28",
+        "last_date": "2026-04-20",
+        "covers_window_start": false,
+        "covers_window_end": false,
+        "gap_days_at_start": 27,
+        "gap_days_at_end": 41,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [],
+        "actual_cols": [
+          "announce_date",
+          "effective_date",
+          "event_date",
+          "event_type",
+          "ticker"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "LATE_START_first=2020-01-28",
+        "REGISTRY_PATH_DRIFT_registry=Backtesting universe/index_rebalance_events.parquet_actual=data_prefetch\\derived\\index_rebalance_events.parquet"
+      ],
       "notes": ""
     },
     {
@@ -340,6 +625,38 @@
         "housetrading_recent"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\quiver\\housetrading",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2017-07-17",
+        "last_date": "2026-04-01",
+        "covers_window_start": true,
+        "covers_window_end": false,
+        "gap_days_at_start": -898,
+        "gap_days_at_end": 60,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "Date",
+          "Transaction"
+        ],
+        "actual_cols": [
+          "Amount",
+          "BioGuideID",
+          "Date",
+          "Range",
+          "Representative",
+          "Ticker",
+          "Transaction",
+          "last_modified"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [],
       "notes": ""
     },
     {
@@ -366,6 +683,28 @@
         "gov_contracts_recent"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\quiver\\gov_contracts",
+      "temporal_coverage": {
+        "present": true,
+        "no_date_col": true
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "Amount",
+          "Qtr",
+          "Year"
+        ],
+        "actual_cols": [
+          "Amount",
+          "Qtr",
+          "Ticker",
+          "Year"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [],
       "notes": ""
     },
     {
@@ -392,6 +731,40 @@
         "lobbying_recent"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\quiver\\lobbying",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2020-01-14",
+        "last_date": "2026-02-24",
+        "covers_window_start": false,
+        "covers_window_end": false,
+        "gap_days_at_start": 13,
+        "gap_days_at_end": 96,
+        "is_stale": true,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "Amount",
+          "Date"
+        ],
+        "actual_cols": [
+          "Amount",
+          "Client",
+          "Date",
+          "Issue",
+          "Registrant",
+          "Specific_Issue",
+          "Ticker"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "STALE_last=2026-02-24_96d_to_window_end",
+        "LATE_START_first=2020-01-14"
+      ],
       "notes": ""
     },
     {
@@ -417,6 +790,35 @@
         "patent_momentum_recent"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\quiver\\patentmomentum\\global.parquet",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2013-02-01",
+        "last_date": "2022-01-01",
+        "covers_window_start": true,
+        "covers_window_end": false,
+        "gap_days_at_start": -2525,
+        "gap_days_at_end": 1611,
+        "is_stale": true,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "date",
+          "momentum"
+        ],
+        "actual_cols": [
+          "date",
+          "momentum",
+          "ticker"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "STALE_last=2022-01-01_1611d_to_window_end"
+      ],
       "notes": ""
     },
     {
@@ -446,6 +848,37 @@
         "otc_volume_recent"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\quiver\\offexchange",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2010-01-04",
+        "last_date": "2026-05-05",
+        "covers_window_start": true,
+        "covers_window_end": false,
+        "gap_days_at_start": -3649,
+        "gap_days_at_end": 26,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "DPI",
+          "Date",
+          "OTC_Short",
+          "OTC_Total"
+        ],
+        "actual_cols": [
+          "DPI",
+          "Date",
+          "OTC_Short",
+          "OTC_Total",
+          "Ticker"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [],
       "notes": ""
     },
     {
@@ -469,6 +902,44 @@
         "corporate_donors_recent"
       ],
       "consuming_strategies": [],
+      "producer_source_path": "data_prefetch\\quiver\\corporatedonors\\global.parquet",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2025-06-10",
+        "last_date": "2026-03-31",
+        "covers_window_start": false,
+        "covers_window_end": false,
+        "gap_days_at_start": 1987,
+        "gap_days_at_end": 61,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "CommitteeName",
+          "TransactionAmount",
+          "TransactionDate"
+        ],
+        "actual_cols": [
+          "BioGuideID",
+          "CandidateName",
+          "CommitteeName",
+          "CompanyCMTEID",
+          "CompanyCMTENM",
+          "Cycle",
+          "Ticker",
+          "TransactionAmount",
+          "TransactionDate",
+          "TransactionType",
+          "Uploaded"
+        ],
+        "missing_cols": [],
+        "contract_satisfied": true
+      },
+      "issue_flags": [
+        "LATE_START_first=2025-06-10"
+      ],
       "notes": ""
     },
     {
@@ -505,6 +976,44 @@
         "strat_xs_momentum_quality_combined",
         "strat_xs_momentum_top_decile",
         "strat_xs_momentum_with_smart_money_long"
+      ],
+      "producer_source_path": "",
+      "temporal_coverage": {
+        "present": true,
+        "first_date": "2009-07-23",
+        "last_date": "2026-04-23",
+        "covers_window_start": true,
+        "covers_window_end": false,
+        "gap_days_at_start": -3814,
+        "gap_days_at_end": 38,
+        "is_stale": false,
+        "is_narrow_window": false
+      },
+      "schema_contract": {
+        "present": true,
+        "required_cols_detected": [
+          "close"
+        ],
+        "actual_cols": [
+          "cik",
+          "company_name",
+          "end_date",
+          "filing_date",
+          "financials_json",
+          "fiscal_period",
+          "fiscal_year",
+          "period_of_report_date",
+          "source_filing_url",
+          "start_date",
+          "ticker"
+        ],
+        "missing_cols": [
+          "close"
+        ],
+        "contract_satisfied": false
+      },
+      "issue_flags": [
+        "SCHEMA_MISSING_COLS=['close']"
       ],
       "notes": ""
     }

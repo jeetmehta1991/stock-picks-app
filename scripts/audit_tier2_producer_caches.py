@@ -159,15 +159,24 @@ class ProducerAuditRow:
     smoke_error: str = ""
     consumed_signal_keys: list = field(default_factory=list)
     consuming_strategies: list = field(default_factory=list)
+    # B748d per CHECKLIST #106 -- new probes
+    producer_source_path: str = ""        # (a) discovered from producer source
+    temporal_coverage: dict = field(default_factory=dict)  # (c)
+    schema_contract: dict = field(default_factory=dict)    # (d)
+    issue_flags: list = field(default_factory=list)        # human-readable verdicts
     notes: str = ""
 
 
 def _probe_data_path(path_str: str) -> tuple[bool, int, int]:
-    """Returns (exists, row_count, unique_tickers).
+    """B748d (2026-06-14) per CHECKLIST #106(b): RECURSIVE glob, not parent-only.
+
+    Returns (exists, row_count, unique_tickers).
 
     For a single parquet file: counts rows + unique Ticker (case-insensitive).
-    For a directory of per-ticker parquets: counts files + sum of rows across
-    all parquets.
+    For a directory of per-ticker parquets: recursive scan (**/*.parquet) so
+    nested subdir layouts (e.g. SEC EDGAR `<form>/<TICKER>.parquet`) are
+    discovered. Pre-B748d this used parent-only glob and missed 11 form-type
+    subdirs × ~1700 files each in `data_prefetch/sec_edgar/`.
     """
     path = _REPO / path_str
     if not path.exists():
@@ -184,7 +193,8 @@ def _probe_data_path(path_str: str) -> tuple[bool, int, int]:
                     break
             return (True, n_rows, n_tickers)
         if path.is_dir():
-            parquets = list(path.glob("*.parquet"))
+            # B748d: recursive glob to catch nested subdirs (per CHECKLIST #106(b))
+            parquets = list(path.rglob("*.parquet"))
             n_rows = 0
             for p in parquets[:50]:  # cap at 50 files for speed
                 try:
@@ -195,6 +205,214 @@ def _probe_data_path(path_str: str) -> tuple[bool, int, int]:
         return (True, 0, 0)
     except Exception:
         return (True, 0, 0)
+
+
+def _discover_producer_path(spec: "ProducerSpec") -> str:
+    """B748d per CHECKLIST #106(a): identify producer's TRUE cache path by
+    READING THE PRODUCER FUNCTION SOURCE (not just any module-level constant).
+
+    ALWAYS runs (B748d revision: prior version skipped discovery when the
+    registry path also existed, missing the case where both paths exist
+    but point to DIFFERENT data -- e.g. `compute_sec_edgar_signals` whose
+    registry points to `sec_edgar/` raw filing-index while the producer
+    actually reads `sec_edgar_decoded/` with the enriched `item_codes`
+    column. Caller compares against `spec.data_path` to decide drift).
+
+    Parses the producer function body to find module-level path constants
+    referenced inside it + walks called helpers in the same module to
+    catch orchestrator producers (e.g. compute_sec_edgar_signals calls
+    sc_13d_filed_within_days + eight_k_item_filed_within_days which use
+    _DECODED_CACHE_DIR).
+    """
+    try:
+        mod = importlib.import_module(spec.module)
+        full_src = Path(mod.__file__).read_text(encoding="utf-8")
+    except Exception:
+        return ""
+    # Find function body
+    func_pat = re.compile(rf'^def {re.escape(spec.func)}\b', re.MULTILINE)
+    m = func_pat.search(full_src)
+    if not m:
+        return ""
+    start = m.start()
+    next_def = re.search(r"^def \w+", full_src[start + 1:], re.MULTILINE)
+    end = start + 1 + next_def.start() if next_def else len(full_src)
+    body = full_src[start:end]
+    # B748d: walk same-module helpers transitively (BFS to depth 3) so we
+    # catch orchestrator -> helper -> _load function chains (e.g. sec_edgar
+    # compute -> sc_13d_filed_within_days -> _load_decoded -> _DECODED_CACHE_DIR)
+    bodies_to_scan = [body]
+    seen: set[str] = {spec.func}
+    frontier = [body]
+    skip_calls = {"isinstance", "len", "str", "int", "float", "bool", "dict",
+                  "set", "list", "tuple", "print", "round", "min", "max",
+                  "sum", "any", "all", "pd", "np", "Path", "open", "type",
+                  "range", "zip", "map", "filter", "sorted", "reversed",
+                  "getattr", "hasattr", "setattr", "iter", "next", "enumerate",
+                  "update", "get", "items", "keys", "values", "copy", "append"}
+    for _depth in range(3):
+        new_frontier = []
+        for b in frontier:
+            helper_calls = set(re.findall(r"\b([a-z_][a-z0-9_]*)\(", b))
+            for h in helper_calls:
+                if h in skip_calls or h in seen:
+                    continue
+                h_pat = re.compile(rf'^def {re.escape(h)}\b', re.MULTILINE)
+                hm = h_pat.search(full_src)
+                if hm:
+                    h_start = hm.start()
+                    h_next = re.search(r"^def \w+", full_src[h_start + 1:], re.MULTILINE)
+                    h_end = h_start + 1 + h_next.start() if h_next else len(full_src)
+                    h_body = full_src[h_start:h_end]
+                    bodies_to_scan.append(h_body)
+                    new_frontier.append(h_body)
+                    seen.add(h)
+        frontier = new_frontier
+        if not frontier:
+            break
+    used_constants: set[str] = set()
+    for b in bodies_to_scan:
+        used_constants.update(re.findall(r"\b(_[A-Z][A-Z0-9_]*)\b", b))
+    candidates = []
+    for attr_name in used_constants:
+        val = getattr(mod, attr_name, None)
+        if isinstance(val, Path):
+            candidates.append((attr_name, val))
+    if not candidates:
+        return ""
+    # Prefer the candidate whose path exists
+    for name, p in candidates:
+        if p.exists():
+            try:
+                return str(p.relative_to(_REPO))
+            except ValueError:
+                return str(p)
+    return ""
+
+
+def _temporal_coverage_probe(path_str: str,
+                              window_start: str = "2020-01-01",
+                              window_end: str = "2026-05-31",
+                              date_cols: tuple = ("filing_date", "Date", "date",
+                                                    "TransactionDate", "event_date",
+                                                    "settlement_date")) -> dict:
+    """B748d per CHECKLIST #106(c): temporal coverage probe.
+
+    Returns dict with:
+      first_date, last_date: actual date range in the data
+      window_start, window_end: requested measurement window
+      covers_start, covers_end: bool flags
+      gap_days_at_start, gap_days_at_end: int (negative = ahead, positive = stale)
+    Aggregates across all parquets in a directory (recursive) or reads the
+    single parquet.
+    """
+    path = _REPO / path_str
+    if not path.exists():
+        return {"present": False}
+    try:
+        import pandas as pd
+        all_dates: list = []
+        if path.is_file() and path.suffix == ".parquet":
+            df = pd.read_parquet(path)
+            for c in date_cols:
+                if c in df.columns:
+                    dt = pd.to_datetime(df[c], errors="coerce").dropna()
+                    all_dates.extend(dt.tolist())
+                    break
+        elif path.is_dir():
+            files = list(path.rglob("*.parquet"))
+            # Sample stratified: first + last + middle + 7 random per CHECKLIST #11
+            # (granular before aggregating)
+            sample = files[:5] + files[-5:] + files[len(files)//2 : len(files)//2 + 5] if len(files) > 15 else files
+            sample = list(dict.fromkeys(sample))[:20]
+            for f in sample:
+                try:
+                    df = pd.read_parquet(f)
+                    for c in date_cols:
+                        if c in df.columns:
+                            dt = pd.to_datetime(df[c], errors="coerce").dropna()
+                            all_dates.extend(dt.tolist())
+                            break
+                except Exception:
+                    pass
+        if not all_dates:
+            return {"present": True, "no_date_col": True}
+        first = min(all_dates).date()
+        last = max(all_dates).date()
+        ws = date.fromisoformat(window_start)
+        we = date.fromisoformat(window_end)
+        return {
+            "present": True,
+            "first_date": str(first),
+            "last_date": str(last),
+            "covers_window_start": first <= ws,
+            "covers_window_end": last >= we,
+            "gap_days_at_start": (first - ws).days,
+            "gap_days_at_end": (we - last).days,
+            "is_stale": (we - last).days > 90,
+            "is_narrow_window": (last - first).days < 90,
+        }
+    except Exception as e:
+        return {"present": True, "error": str(e)}
+
+
+def _schema_contract_probe(spec: "ProducerSpec", path_str: str) -> dict:
+    """B748d per CHECKLIST #106(d): schema-contract probe.
+
+    Reads producer source to identify columns the producer requires from its
+    cached parquet (df[...] subscripts, f"item_codes" checks, etc.), then
+    reads a sample parquet to verify those columns exist.
+    """
+    path = _REPO / path_str
+    if not path.exists():
+        return {"present": False}
+    try:
+        mod = importlib.import_module(spec.module)
+        full_src = Path(mod.__file__).read_text(encoding="utf-8")
+    except Exception:
+        return {"present": True, "error": "cannot read producer source"}
+    # B748d: scope to the SPECIFIC producer function (and its helper calls)
+    # to avoid catching sibling-producer column references in shared modules
+    # (e.g. all 6 congressional_alt_data producers live in one .py).
+    func_pat = re.compile(rf'^def {re.escape(spec.func)}\b', re.MULTILINE)
+    m = func_pat.search(full_src)
+    if not m:
+        src = full_src
+    else:
+        start = m.start()
+        next_def = re.search(r"^def \w+", full_src[start + 1:], re.MULTILINE)
+        end = start + 1 + next_def.start() if next_def else len(full_src)
+        src = full_src[start:end]
+    # Only flag column refs the producer body EXPLICITLY guards on.
+    required_cols: set[str] = set()
+    for m in re.finditer(
+        r'["\']([A-Za-z_][A-Za-z0-9_]*)["\']\s+(?:not\s+)?in\s+(?:src|df|sub|window)\.columns',
+        src,
+    ):
+        required_cols.add(m.group(1))
+    # Filter out non-column tokens
+    required_cols = {c for c in required_cols if not c.startswith("_") and len(c) >= 2}
+    # Sample a parquet for actual schema
+    try:
+        import pandas as pd
+        if path.is_file() and path.suffix == ".parquet":
+            df = pd.read_parquet(path)
+        else:
+            files = list(path.rglob("*.parquet"))
+            if not files:
+                return {"present": True, "no_files": True}
+            df = pd.read_parquet(files[0])
+        actual_cols = set(df.columns)
+        missing = required_cols - actual_cols
+        return {
+            "present": True,
+            "required_cols_detected": sorted(required_cols),
+            "actual_cols": sorted(actual_cols),
+            "missing_cols": sorted(missing),
+            "contract_satisfied": not missing,
+        }
+    except Exception as e:
+        return {"present": True, "error": str(e)}
 
 
 def _smoke_probe_producer(spec: ProducerSpec, ticker: str, as_of: date) -> tuple[bool, list, str]:
@@ -291,34 +509,45 @@ def _detect_cache_mechanism(spec: ProducerSpec) -> str:
 
 
 def _find_consuming_strategies(signal_keys: tuple) -> list[str]:
-    """Grep screener.py for strategies that consume any of the named signal keys.
-
-    For dead-strategy determination: also widens the search to detect any
-    `s.get(<key>` pattern where <key> is any string in signal_keys.
+    """B748d per CHECKLIST #106(g): grep ALL `backtest/signals/*.py` for
+    in-module strategies (not just `screener.py`). The pre-B748d version
+    only scanned `screener.py` and missed 4 in-module consumers in
+    `backtest/signals/index_rebalance.py` (strategies re-exported into
+    screener via aliased imports).
     """
     if not signal_keys:
         return []
-    src = SCREENER_PATH.read_text(encoding="utf-8")
     matches: set[str] = set()
-    pattern = re.compile(r"^def (strat_\w+)\(s\):\s*$", re.MULTILINE)
-    func_spans: list[tuple[str, int, int]] = []
-    last_name = None
-    last_start = -1
-    for m in pattern.finditer(src):
+    pattern = re.compile(r"^def (strat_\w+)\(s(?:[:\) ]|, )", re.MULTILINE)
+    # Scan all signal modules + screener.py
+    sig_dir = SCREENER_PATH.parent
+    for py_file in sig_dir.glob("*.py"):
+        try:
+            src = py_file.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        # Strip docstrings + comments before searching (don't match references
+        # in commentary)
+        stripped = re.sub(r'"""[\s\S]*?"""', '', src)
+        stripped = re.sub(r"'''[\s\S]*?'''", '', stripped)
+        stripped = "\n".join(line.split("#", 1)[0] for line in stripped.splitlines())
+        func_spans: list[tuple[str, int, int]] = []
+        last_name = None
+        last_start = -1
+        for m in pattern.finditer(stripped):
+            if last_name is not None:
+                func_spans.append((last_name, last_start, m.start()))
+            last_name = m.group(1)
+            last_start = m.start()
         if last_name is not None:
-            func_spans.append((last_name, last_start, m.start()))
-        last_name = m.group(1)
-        last_start = m.start()
-    if last_name is not None:
-        func_spans.append((last_name, last_start, len(src)))
-    for name, start, end in func_spans:
-        body = src[start:end]
-        for key in signal_keys:
-            # match `"key"`, `'key'`, `.get("key"`, `.get('key'`
-            if (f'"{key}"' in body or f"'{key}'" in body
-                    or f'.get("{key}"' in body or f".get('{key}'" in body):
-                matches.add(name)
-                break
+            func_spans.append((last_name, last_start, len(stripped)))
+        for name, start, end in func_spans:
+            body = stripped[start:end]
+            for key in signal_keys:
+                if (f'"{key}"' in body or f"'{key}'" in body
+                        or f'.get("{key}"' in body or f".get('{key}'" in body):
+                    matches.add(name)
+                    break
     return sorted(matches)
 
 
@@ -366,6 +595,31 @@ def audit_all(probe_ticker: str = "AAPL", as_of: date | None = None) -> list[Pro
         ast_keys = _list_all_emitted_keys(spec)
         all_keys = tuple(sorted(set(spec.consumed_signal_keys) | set(ast_keys)))
         consumers = _find_consuming_strategies(all_keys)
+
+        # B748d per CHECKLIST #106 -- new probes
+        producer_source_path = _discover_producer_path(spec)
+        # Use producer-source-discovered path for the more rigorous probes;
+        # fall back to registry hardcoded path
+        probe_path = producer_source_path or spec.data_path
+        temporal = _temporal_coverage_probe(probe_path)
+        schema = _schema_contract_probe(spec, probe_path)
+        # Synthesize issue flags per #106(c)+(d)
+        flags: list[str] = []
+        if temporal.get("present") and temporal.get("is_stale"):
+            flags.append(f"STALE_last={temporal.get('last_date')}_{temporal.get('gap_days_at_end')}d_to_window_end")
+        if temporal.get("present") and temporal.get("is_narrow_window"):
+            flags.append(f"NARROW_window={temporal.get('first_date')}_to_{temporal.get('last_date')}")
+        if temporal.get("present") and temporal.get("covers_window_start") is False:
+            flags.append(f"LATE_START_first={temporal.get('first_date')}")
+        if schema.get("present") and schema.get("missing_cols"):
+            flags.append(f"SCHEMA_MISSING_COLS={schema.get('missing_cols')}")
+        # B748d: normalize Windows backslash to forward slash for comparison
+        norm = lambda s: s.replace("\\", "/") if s else s
+        if producer_source_path and norm(producer_source_path) != norm(spec.data_path):
+            flags.append(
+                f"REGISTRY_PATH_DRIFT_registry={spec.data_path}_actual={producer_source_path}"
+            )
+
         rows.append(ProducerAuditRow(
             producer=spec.func,
             module=spec.module.split(".")[-1],
@@ -381,6 +635,10 @@ def audit_all(probe_ticker: str = "AAPL", as_of: date | None = None) -> list[Pro
             smoke_error=smoke_err,
             consumed_signal_keys=list(all_keys),
             consuming_strategies=consumers,
+            producer_source_path=producer_source_path,
+            temporal_coverage=temporal,
+            schema_contract=schema,
+            issue_flags=flags,
         ))
     return rows
 
