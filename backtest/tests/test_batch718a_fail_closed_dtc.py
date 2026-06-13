@@ -50,43 +50,47 @@ def test_b718a_pin1_dtc_threshold_direction_fix():
 
 
 # ---------------------------------------------------------------------------
-# Pin 2: _strat SHORT direction fails CLOSED when frame introspection
-# cannot find `s` (B713 reviewer fail-open critique)
+# Pin 2: SUPERSEDED-BY-B718d. Original assertion: `_strat` fails closed when
+# caller frame has no `s` (via inspect.currentframe central guard).
+# Post-B718d (2026-06-13): central guard REMOVED; explicit per-strategy gate
+# at call site replaces it. `_strat` is now a pure passthrough -- this pin
+# re-asserts the new contract: fires=True in is fires=True out.
 # ---------------------------------------------------------------------------
-def test_b718a_pin2_strat_short_fails_closed_when_no_s_in_caller():
-    """When _strat is called with direction='short' from a caller that does
-    NOT have `s` in its local scope, fires MUST be forced to False
-    (fail-closed) -- NOT silently passed through (fail-open per B713 critique).
+def test_b718a_pin2_strat_now_passes_through_fires_post_b718d():
+    """Post-B718d: `_strat` no longer applies a central borrow guard. The
+    strategy itself folds `not _short_borrow_trap_active(s)` into its `fires`
+    boolean BEFORE calling `_strat`. B744 lint enforces this cluster-wide.
     """
-    # Simulate a caller that doesn't have `s` in locals -- the introspection
-    # will find this test function's frame, which has no `s`
     result = _strat(
         fires=True,
         direction="short",
         category="test",
-        signals_used=["test_signal"],
+        signals_used=["test_signal", "borrow_ok"],
         context_bullets=["test bullet"],
     )
-    assert result["fires"] is False, (
-        "_strat(direction='short') must fail CLOSED when caller has no `s` "
-        "in locals; got fires=True (fail-open, the original bug)"
-    )
+    # Post-B718d: fires=True passes through; strategy was responsible for
+    # setting this to False if borrow trap was active.
+    assert result["fires"] is True
+    assert result["direction"] == "short"
 
 
-def test_b718a_pin3_strat_short_with_high_dtc_blocks_fire():
-    """When caller has `s` in locals with days_to_cover > 5.0, fires must
-    be blocked."""
-    s = {"days_to_cover": 10.0}  # noqa: F841 -- intentional local for introspection
+def test_b718a_pin3_strat_short_high_dtc_requires_explicit_gate_post_b718d():
+    """Post-B718d: `_strat` no longer reads caller's `s`. The strategy must
+    fold the borrow check into `fires` itself. Here we simulate the explicit
+    pattern: `fires = trigger AND not _short_borrow_trap_active(s)`.
+    """
+    s = {"days_to_cover": 10.0}
+    # Strategy's own gate folds the borrow check into fires
+    fires_after_gate = True and not _short_borrow_trap_active(s)
+    assert fires_after_gate is False, "explicit gate should set fires=False at DTC=10"
     result = _strat(
-        fires=True,
+        fires=fires_after_gate,
         direction="short",
         category="test",
-        signals_used=["test_signal"],
+        signals_used=["test_signal", "borrow_ok"],
         context_bullets=["test bullet"],
     )
-    assert result["fires"] is False, (
-        "_strat(direction='short') must block when caller's s has DTC > 5"
-    )
+    assert result["fires"] is False
 
 
 def test_b718a_pin4_strat_short_with_low_dtc_allows_fire():
@@ -125,11 +129,19 @@ def test_b718a_pin5_strat_long_unaffected_by_borrow_guard():
 
 
 # ---------------------------------------------------------------------------
-# Pin 6: _strat3 fails CLOSED parallel to _strat
+# Pin 6: SUPERSEDED-BY-B718d. Original assertion: `_strat3` fails closed when
+# caller has no `s` (via inspect.currentframe central guard).
+# Post-B718d (2026-06-13): central guard REMOVED; explicit per-strategy gate
+# at call site replaces it (B740-B743 + B744 lint). `_strat3` is now a pure
+# passthrough -- this pin re-asserts the new contract: fires_short passed in
+# True is returned True. Strategies enforce the gate themselves before calling.
 # ---------------------------------------------------------------------------
-def test_b718a_pin6_strat3_short_branch_fails_closed_when_no_s():
-    """When _strat3 is called with fires_short=True from a caller without
-    `s` in locals, fires_short must be forced to False (fail-closed)."""
+def test_b718a_pin6_strat3_now_passes_through_fires_short_post_b718d():
+    """Post-B718d: `_strat3` no longer applies a central borrow guard. Strategies
+    are responsible for the explicit `_short_borrow_trap_active(s)` gate at
+    their own call site (B740-B743) + the B744 registration-time lint enforces
+    it cluster-wide.
+    """
     result = _strat3(
         fires_long=False,
         fires_short=True,
@@ -139,28 +151,36 @@ def test_b718a_pin6_strat3_short_branch_fails_closed_when_no_s():
         bullets_long=[],
         bullets_short=["test short bullet"],
     )
-    # Both branches blocked -> overall return is no-fire
-    assert result["fires"] is False, (
-        "_strat3 SHORT branch must fail CLOSED when caller has no `s`"
+    # Post-B718d: fires_short=True passes through; strategy must have set this
+    # to False if borrow trap was active.
+    assert result["fires"] is True
+    assert result["direction"] == "short"
+
+
+def test_b718a_pin7_strat3_short_high_dtc_now_requires_explicit_gate_post_b718d():
+    """Post-B718d: high DTC alone does NOT block `_strat3` SHORT branch -- the
+    strategy must explicitly fold the borrow check into `fires_short` before
+    calling. The B744 lint guarantees every short-emitting strategy does so.
+
+    Here we simulate the explicit-gate pattern: strategy computes
+    `fires_short = trigger AND not _short_borrow_trap_active(s)` itself.
+    """
+    from backtest.signals.screener import _short_borrow_trap_active
+    s = {"days_to_cover": 7.0}  # GME-class
+    # Strategy's own gate folds borrow check into fires_short
+    fires_short_after_gate = True and not _short_borrow_trap_active(s)
+    assert fires_short_after_gate is False, (
+        "explicit gate should set fires_short=False when DTC > 5"
     )
-
-
-def test_b718a_pin7_strat3_short_high_dtc_blocks_only_short():
-    """When _strat3 is called with fires_short=True AND fires_long=True AND
-    DTC > 5 in caller's s, the SHORT branch is blocked and the LONG branch
-    passes through cleanly (single-direction LONG outcome)."""
-    s = {"days_to_cover": 7.0}  # noqa: F841 -- GME-class
     result = _strat3(
         fires_long=True,
-        fires_short=True,
+        fires_short=fires_short_after_gate,
         category="test",
         signals_used_long=["test_long"],
-        signals_used_short=["test_short"],
+        signals_used_short=["test_short", "borrow_ok"],
         bullets_long=["long bullet"],
         bullets_short=["short bullet"],
     )
-    # Short blocked, long not -> direction=long
+    # Short blocked at strategy level (post-B718d); LONG passes through
     assert result["fires"] is True
-    assert result["direction"] == "long", (
-        f"Expected direction='long' after SHORT blocked by borrow guard; got {result}"
-    )
+    assert result["direction"] == "long"

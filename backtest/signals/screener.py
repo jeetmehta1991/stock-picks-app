@@ -130,53 +130,29 @@ def _short_borrow_trap_active(s) -> bool:
 def _strat(fires, direction, category, signals_used, context_bullets):
     """Single-direction strategy  -  fires True/False with fixed direction.
 
-    B671 Round 2 Q5 (owner-approved 2026-06-10 per AskUserQuestion Round 2,
-    option "Per-strategy pre-fire gate (cleanest, biggest blast radius)"):
-    SHORT-direction emissions are CENTRALLY gated by SM-5 borrow-trap
-    consult via inspect.currentframe access to the caller strategy's `s`
-    variable. Centralizing the consult here (rather than requiring per-
-    strategy edits at every fire call) ensures:
+    B718d (2026-06-13) removed the inspect.currentframe-based central borrow
+    guard. Per S4-B713-INSPECT-CURRENTFRAME-REVERT-TO-EXPLICIT-GATE: every
+    pure-short strategy now declares an explicit `_short_borrow_trap_active(s)`
+    check at its own call site (B740/B741) and `"borrow_ok"` in its
+    signals_used list. The B744 registration-time lint
+    (`scripts/borrow_gate_lint.py` + `test_batch744_borrow_gate_lint.py` pin1)
+    fails the pyramid if any short-emitting strategy is missing the gate.
 
-      (1) Every current SHORT strategy is automatically protected
-      (2) Every FUTURE SHORT strategy is automatically protected
-          (no risk of new strategy author forgetting the consult,
-          which was the reviewer F5 concern that motivated this work)
-      (3) Single point of policy enforcement; threshold change in
-          _short_borrow_trap_active() propagates immediately to all
-          consumers
+    History:
+    - B671 Round 2 Q5 (2026-06-10): introduced inspect.currentframe central guard.
+    - B713 (2026-06-12): external reviewer flagged inspect.currentframe as a
+      load-bearing risk control on a fragile, fail-open mechanism invisible
+      at the call site.
+    - B718a (2026-06-12): converted fail-open to fail-closed (partial fix).
+    - B740-B743 (2026-06-13): bulk-refactored 51 pure-short + 61 dual _strat3
+      strategies to explicit gate at call site.
+    - B744 (2026-06-13): enabled registration-time lint (this invariant is
+      now machine-enforced).
+    - B718d (this batch): removed inspect.currentframe from this helper.
 
-    The gate fires when direction == "short" AND caller has `s` in its
-    local frame AND _short_borrow_trap_active(s) returns True. When all
-    three conditions hold, `fires` is forced to False before constructing
-    the return dict.
-
-    SAFETY:
-      - direction == "avoid" (SM-5 itself, other avoid emitters) unaffected
-      - direction == "long" unaffected
-      - Test-path callers that lack `s` in caller frame are unaffected
-        (caller_locals.get("s") returns None -> no block)
-      - Backward compatible with all existing test fixtures
+    `direction` semantics: "long" / "short" / "avoid" are accepted; the helper
+    is now purely a return-dict constructor.
     """
-    if direction == "short":
-        # B718a (2026-06-12 owner-approved): convert fail-open to fail-closed
-        # per B713 reviewer critique. Original inspect.currentframe behavior
-        # silently passed shorts unprotected when frame introspection failed
-        # (decorator wrap, comprehension call, Python implementation without
-        # stack frames per language spec). New behavior: if introspection
-        # cannot find `s`, block the short emission (fail closed). Full
-        # structural fix per S4-B713-INSPECT-CURRENTFRAME-REVERT staged as
-        # B718b/c/d cluster-by-cluster bulk refactor to explicit borrow_ok
-        # gates + registration-time lint.
-        import inspect
-        frame = inspect.currentframe()
-        s = None
-        if frame is not None and frame.f_back is not None:
-            s = frame.f_back.f_locals.get("s")
-        if s is None:
-            # Fail CLOSED: introspection failed -> assume borrow risk
-            fires = False
-        elif _short_borrow_trap_active(s):
-            fires = False
     return {
         "fires":           bool(fires),
         "direction":       direction,
@@ -232,24 +208,15 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
     """Three-state strategy  -  evaluates long, short, or avoid independently.
     Returns the dominant direction; if both fire, returns avoid (conflicting signals).
 
-    B671 Round 2 Q5 (owner-approved 2026-06-10 per AskUserQuestion Round 2):
-    SHORT branch gated by SM-5 borrow-trap consult via inspect.currentframe.
-    LONG branch unaffected. See _strat docstring for the full rationale +
-    safety analysis; same centralized policy applied here.
+    B718d (2026-06-13): inspect.currentframe central borrow guard REMOVED.
+    Per S4-B713-INSPECT-CURRENTFRAME-REVERT-TO-EXPLICIT-GATE: every dual
+    strategy's SHORT branch now declares an explicit
+    `_short_borrow_trap_active(s)` check at its own call site (B742/B743)
+    and `"borrow_ok"` in its signals_used_short list. The B744 lint enforces
+    this cluster-wide. See `_strat` docstring for full migration history.
+
+    LONG branch was never gated and is unchanged.
     """
-    if fires_short:
-        # B718a (2026-06-12 owner-approved): fail-closed parallel to _strat.
-        # See _strat docstring for full B713 reviewer critique + staged fix.
-        import inspect
-        frame = inspect.currentframe()
-        s = None
-        if frame is not None and frame.f_back is not None:
-            s = frame.f_back.f_locals.get("s")
-        if s is None:
-            # Fail CLOSED: introspection failed -> assume borrow risk
-            fires_short = False
-        elif _short_borrow_trap_active(s):
-            fires_short = False
     if fires_long and not fires_short:
         return {"fires": True,  "direction": "long",  "category": category,
                 "signals_used": signals_used_long, "context_bullets": bullets_long}
