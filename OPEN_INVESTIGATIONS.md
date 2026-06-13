@@ -896,3 +896,15 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   - (C) Close the 2 B748b-queued backfill tickets (sec_edgar + index_rebalance) as RESOLVED-DATA-ALREADY-EXISTS
 - **Joint:** CHECKLIST #106 codified this turn; `feedback_data_consumption_audit_must_apply_checklist_44b` memory entry; B748c walk-back commit
 - **Status:** RESOLVED-B748d -- 10 of 10 EXPLORATORY tags were FALSE positives caused by B745 audit-script path-discovery bugs. B748d (2026-06-14) extended audit per CHECKLIST #106(a)-(g) surfacing 4 PATH DRIFT findings: persistence reads `derived/institutional_persistence_t1a/` (not `quiver/sec13fchanges/`); news reads `polygon/news/` (not `quiver/quivernews/`); sec_edgar reads `sec_edgar_decoded/` (not `sec_edgar/`); index_rebalance reads `derived/index_rebalance_events.parquet` (B748c found this one already). Runtime probes on each REAL path verified producers fire. All 10 strategies revived. Only SC_13D 17-month staleness refresh remains a real action item.
+
+
+## INV-055 -- SEC EDGAR form-naming change + sparse decoded cache (2026-06-14)
+- **Observed:** B748e SC_13D refresh smoke surfaced TWO data-quality findings beyond the original ticket scope:
+  1. **SEC EDGAR form-naming change**: from 2025-Q1 onward many filings labeled `SCHEDULE 13D` / `SCHEDULE 13D/A` instead of `SC 13D` / `SC 13D/A`. The strict-equality form filter in `scripts/prefetch_sec_edgar.py:parse_filings_for_form` silently rejected every such filing. **Fix shipped B748e** (`_normalize_form` helper); pin tests at `test_batch748e_sec_form_naming_fix.py`. Same risk exists for SC 13G/A and any other form SEC may rename; the normalization helper handles all `SCHEDULE *` -> `SC *` variants.
+  2. **Sparse SC_13D decoded cache pre-B748e**: only 623 of 1715 SC_13D INDEX tickers had a decoded parquet (~36% coverage). The B748e scope-filtered refresh decoded 2032 filings on/after 2024-12-17 (matches original ticket). **Remaining undecoded gap: ~14,750 pre-2024-12-17 filings** across the ~1100 tickers that never had decoded data. Producer fires correctly on the decoded subset; the broader gap affects historical 2020-2024 measurement coverage for `strat_activist_13d_long`.
+- **Recommended action:**
+  - (A) Schedule a separate full-historical decode batch for SC_13D + SC_13D/A across the 14,750 pre-Dec-2024 undecoded filings (~37 min SEC EDGAR free-tier pulls)
+  - (B) Apply same form-naming normalization audit to other SEC forms (SC 13G/A, 8-K item codes) to verify no silent-skip
+  - (C) Document the schema-mismatch + form-naming check as a recurring annual cadence (SEC may rename forms again)
+- **Joint:** B748e SC13D-INCREMENTAL-REFRESH ticket (RESOLVED); B748f-FULL-HISTORICAL-SC13D-DECODE (new follow-up); CHECKLIST #15 + #44(b) lessons reinforced.
+- **Status:** OPEN -- form-naming fix shipped; historical decode backfill awaiting owner approval.

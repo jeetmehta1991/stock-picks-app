@@ -138,6 +138,22 @@ def fetch_submissions(cik: str, retries: int = 3) -> Optional[dict]:
     return None
 
 
+def _normalize_form(form_str: str) -> str:
+    """B748e (2026-06-14) per CHECKLIST #15 + #44(b): SEC EDGAR uses
+    'SCHEDULE 13D' / 'SCHEDULE 13D/A' interchangeably with 'SC 13D' /
+    'SC 13D/A' depending on the filing year. Pre-2025: 'SC 13D'. From
+    2025+: 'SCHEDULE 13D' on many filings. Same for SC 13G.
+
+    Without normalization the prefetch silently misses all 2025+ activist
+    filings on the strict-equality form filter. This was the root cause
+    of the SC_13D cache maxing out at 2024-12-16 -- not because there
+    were no new filings, but because the script couldn't recognize them.
+    """
+    s = (form_str or "").upper().strip()
+    s = s.replace("SCHEDULE ", "SC ")
+    return s
+
+
 def parse_filings_for_form(
     submissions: dict,
     form_filter: str,
@@ -150,9 +166,10 @@ def parse_filings_for_form(
     filing_dates = recent.get("filingDate", []) or []
     accession_numbers = recent.get("accessionNumber", []) or []
     primary_docs = recent.get("primaryDocument", []) or []
+    target = _normalize_form(form_filter)
     rows = []
     for i, form in enumerate(forms):
-        if form == form_filter:
+        if _normalize_form(form) == target:
             rows.append({
                 "ticker":           ticker,
                 "cik":              cik,
