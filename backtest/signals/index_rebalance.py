@@ -148,7 +148,17 @@ def _strat_signal(fires: bool, direction: str, category: str,
 
 def strat_post_inclusion_drift_long(s: dict) -> dict:
     """DEC-370 #1: ride the post-S&P-500-inclusion drift (T+0..T+45).
-    Shleifer 1986 / Lynch-Mendenhall 1997 / Petajisto 2011."""
+    Shleifer 1986 / Lynch-Mendenhall 1997 / Petajisto 2011.
+
+    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved per
+    B747 finding + B745 finding-grade audit).
+    `compute_index_rebalance_signals` reads from
+    `Backtesting universe/index_rebalance_events.parquet` which
+    currently has 0 rows. The strategy CANNOT FIRE until the parquet
+    is populated (separate ticket: S&P 500 add/drop events parquet
+    backfill from S&P DJI press releases). B652 W5m + B722 po3 +
+    B738 FOMC precedent.
+    """
     fires = (
         s.get("within_post_inclusion_window", False)
         and "add" in str(s.get("last_event_type", ""))
@@ -164,7 +174,12 @@ def strat_post_inclusion_drift_long(s: dict) -> dict:
 
 def strat_post_inclusion_reversal_short(s: dict) -> dict:
     """DEC-370 #1b: fade the inclusion pop reversal (T+60..T+120).
-    Beneish-Whaley 1996 documents partial reversal post-inclusion."""
+    Beneish-Whaley 1996 documents partial reversal post-inclusion.
+
+    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved).
+    Same data-source-empty situation as strat_post_inclusion_drift_long;
+    see that docstring for full migration precedent + ticket reference.
+    """
     fires = (
         s.get("in_reversal_window", False)
         and "add" in str(s.get("last_event_type", ""))
@@ -179,7 +194,11 @@ def strat_post_inclusion_reversal_short(s: dict) -> dict:
 
 def strat_post_deletion_drift_short(s: dict) -> dict:
     """DEC-370 #2: short post-deletion drift (T+0..T+30).
-    Chen-Noronha-Singal 2004 RFS."""
+    Chen-Noronha-Singal 2004 RFS.
+
+    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved).
+    Same data-source-empty situation as strat_post_inclusion_drift_long.
+    """
     fires = (
         s.get("within_post_deletion_window", False)
         and "drop" in str(s.get("last_event_type", ""))
@@ -196,7 +215,11 @@ def strat_post_deletion_drift_short(s: dict) -> dict:
 def strat_pre_rebalance_long(s: dict) -> dict:
     """DEC-370 #3: pre-Russell-rebalance long for known additions.
     Cai-Houge 2008: index-fund front-running creates ~3-5% lift in
-    T-10..T-0 window. Requires announce_date already known."""
+    T-10..T-0 window. Requires announce_date already known.
+
+    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved).
+    Same data-source-empty situation as strat_post_inclusion_drift_long.
+    """
     fires = (
         s.get("within_pre_rebalance_window", False)
         and s.get("days_to_rebalance", 0) > 0

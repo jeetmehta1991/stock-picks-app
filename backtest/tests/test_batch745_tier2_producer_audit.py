@@ -25,12 +25,13 @@ from scripts.audit_tier2_producer_caches import (
 # --------------------------------------------------------------------------
 # Registry-level invariants
 # --------------------------------------------------------------------------
-def test_b745_pin1_producer_registry_has_17_tier2_producers():
-    """PRODUCERS registry must cover all 17 TIER 2 producers (per the B690
-    revised sketch). If this fails, the registry has been edited; verify the
-    new producer was added intentionally + classify it.
+def test_b745_pin1_producer_registry_has_16_tier2_producers_post_b748b():
+    """PRODUCERS registry covers 16 TIER 2 producers post-B748b
+    (compute_recent_8k_signal DELETED 2026-06-13 as genuine orphan).
+    If this fails, the registry has been edited; verify the new producer
+    was added intentionally + classify it.
     """
-    assert len(PRODUCERS) == 17, f"expected 17 TIER 2 producers; got {len(PRODUCERS)}"
+    assert len(PRODUCERS) == 16, f"expected 16 TIER 2 producers (post-B748b); got {len(PRODUCERS)}"
 
 
 def test_b745_pin2_no_duplicate_producer_entries():
@@ -67,10 +68,10 @@ def test_b745_pin4_corporatedonors_cache_is_not_a_stub():
 # --------------------------------------------------------------------------
 # Path classification snapshot (locks current state for regression detection)
 # --------------------------------------------------------------------------
-def test_b745_pin5_classification_snapshot_2026_06_13():
-    """Path classification snapshot as of audit run 2026-06-13:
+def test_b745_pin5_classification_snapshot_post_b748b():
+    """Path classification snapshot post-B748b (recent_8k DELETED):
       Path A: 12 producers (existing module-level caches)
-      Path B: 3  producers (no cache; needs one added)
+      Path B: 2  producers (no cache; needs one added) -- was 3 pre-B748b
       Path C: 1  producer  (cross_sectional; needs ohlcv_dict)
       Path D: 1  producer  (sec_edgar_extractor; data dir empty)
 
@@ -81,8 +82,8 @@ def test_b745_pin5_classification_snapshot_2026_06_13():
     counts: dict[str, int] = {"A": 0, "B": 0, "C": 0, "D": 0}
     for r in rows:
         counts[r.path_classification] += 1
-    assert counts == {"A": 12, "B": 3, "C": 1, "D": 1}, (
-        f"path classification drift: {counts} (expected A=12, B=3, C=1, D=1). "
+    assert counts == {"A": 12, "B": 2, "C": 1, "D": 1}, (
+        f"path classification drift: {counts} (expected A=12, B=2, C=1, D=1 post-B748b). "
         f"Re-scope B746-B754 if intentional."
     )
 

@@ -312,29 +312,6 @@
       "notes": ""
     },
     {
-      "producer": "compute_recent_8k_signal",
-      "module": "macro_events",
-      "cache_var": "",
-      "cache_mechanism": "none",
-      "path_classification": "B",
-      "data_path": "data_prefetch/sec_edgar",
-      "data_exists": true,
-      "data_row_count": 0,
-      "data_unique_tickers": 0,
-      "smoke_emits_non_empty": true,
-      "smoke_signal_keys": [
-        "days_since_8k",
-        "recent_8k_filed"
-      ],
-      "smoke_error": "",
-      "consumed_signal_keys": [
-        "days_since_8k",
-        "recent_8k_filed"
-      ],
-      "consuming_strategies": [],
-      "notes": ""
-    },
-    {
       "producer": "compute_housetrading_signals",
       "module": "congressional_alt_data",
       "cache_var": "_HOUSETRADING_BY_TICKER",

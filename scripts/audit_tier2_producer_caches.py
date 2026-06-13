@@ -107,10 +107,8 @@ PRODUCERS: list[ProducerSpec] = [
                  cache_var="",  # _load_events() uses module-level scope check
                  data_path="Backtesting universe/index_rebalance_events.parquet",
                  consumed_signal_keys=("index_rebalance_window",)),
-    ProducerSpec("backtest.signals.macro_events", "compute_recent_8k_signal",
-                 cache_var="",  # uses per-ticker parquet read inside
-                 data_path="data_prefetch/sec_edgar",
-                 consumed_signal_keys=("recent_8k_filed",)),
+    # compute_recent_8k_signal DELETED in B748b 2026-06-13 (genuine orphan:
+    # 0 consumers in ALL_STRATEGIES, 0 data rows). Registry size 17 -> 16.
     ProducerSpec("backtest.signals.congressional_alt_data", "compute_housetrading_signals",
                  cache_var="_HOUSETRADING_BY_TICKER",
                  data_path="data_prefetch/quiver/housetrading",

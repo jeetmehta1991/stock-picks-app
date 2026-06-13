@@ -2,7 +2,7 @@
 
 # Source: scripts/audit_tier2_producer_caches.py per CHECKLIST #77
 
-Probe ticker: `AAPL`  |  Probe as_of: `2024-06-28`  |  Total producers audited: **17**
+Probe ticker: `AAPL`  |  Probe as_of: `2024-06-28`  |  Total producers audited: **16**
 
 ## Headline finding (pre-audit investigation, 2026-06-13)
 
@@ -27,14 +27,13 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
 | 7 | `compute_yoy_surprise_signal` | `earnings_surprise_yoy` | none | **B** | 2,876 | 1,937 | YES | days_since_last_earnings, earnings_eps_yoy_growth, within_pead_window |  |
 | 8 | `compute_search_volume_signals` | `search_volume` | module_dict | **A** | 13,100 | 1,417 | YES | search_volume_index_recent, search_volume_observations, search_volume_zscore_30d |  |
 | 9 | `compute_index_rebalance_signals` | `index_rebalance` | none | **B** | 0 | 0 | NO | (empty) |  |
-| 10 | `compute_recent_8k_signal` | `macro_events` | none | **B** | 0 | 0 | YES | days_since_8k, recent_8k_filed |  |
-| 11 | `compute_housetrading_signals` | `congressional_alt_data` | module_dict | **A** | 1,276 | 1,937 | YES | house_buy_count_90d, house_cluster_buy, house_cluster_sell |  |
-| 12 | `compute_gov_contracts_signals` | `congressional_alt_data` | module_dict | **A** | 905 | 1,941 | YES | gov_contracts_4q_sum, gov_contracts_last_qtr_amount, gov_contracts_qoq_growth |  |
-| 13 | `compute_lobbying_signals` | `congressional_alt_data` | module_dict | **A** | 2,371 | 1,941 | YES | lobbying_amount_1y, lobbying_amount_q, lobbying_amount_yoy |  |
-| 14 | `compute_patentmomentum_signals` | `congressional_alt_data` | module_dict | **A** | 5,830,800 | 1,595 | YES | patent_momentum_90d_avg, patent_momentum_above_avg, patent_momentum_recent |  |
-| 15 | `compute_offexchange_signals` | `congressional_alt_data` | module_dict | **A** | 132,704 | 1,851 | YES | dpi_30d_avg, dpi_elevated, dpi_recent |  |
-| 16 | `compute_corporatedonors_signals` | `congressional_alt_data` | module_dict | **A** | 25,000 | 432 | NO | (empty) |  |
-| 17 | `compute_cross_sectional_features` | `cross_sectional` | needs_ohlcv_dict | **C** | 2,876 | 1,937 | YES | xs_avoid_high_ivol, xs_avoid_high_max, xs_beta |  |
+| 10 | `compute_housetrading_signals` | `congressional_alt_data` | module_dict | **A** | 1,276 | 1,937 | YES | house_buy_count_90d, house_cluster_buy, house_cluster_sell |  |
+| 11 | `compute_gov_contracts_signals` | `congressional_alt_data` | module_dict | **A** | 905 | 1,941 | YES | gov_contracts_4q_sum, gov_contracts_last_qtr_amount, gov_contracts_qoq_growth |  |
+| 12 | `compute_lobbying_signals` | `congressional_alt_data` | module_dict | **A** | 2,371 | 1,941 | YES | lobbying_amount_1y, lobbying_amount_q, lobbying_amount_yoy |  |
+| 13 | `compute_patentmomentum_signals` | `congressional_alt_data` | module_dict | **A** | 5,830,800 | 1,595 | YES | patent_momentum_90d_avg, patent_momentum_above_avg, patent_momentum_recent |  |
+| 14 | `compute_offexchange_signals` | `congressional_alt_data` | module_dict | **A** | 132,704 | 1,851 | YES | dpi_30d_avg, dpi_elevated, dpi_recent |  |
+| 15 | `compute_corporatedonors_signals` | `congressional_alt_data` | module_dict | **A** | 25,000 | 432 | NO | (empty) |  |
+| 16 | `compute_cross_sectional_features` | `cross_sectional` | needs_ohlcv_dict | **C** | 2,876 | 1,937 | YES | xs_avoid_high_ivol, xs_avoid_high_max, xs_beta |  |
 
 ## Path classification summary
 
@@ -82,7 +81,7 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
     - data: `data_prefetch/quiver/corporatedonors/global.parquet` -- rows=25,000, tickers=432
     - smoke: emits=False, error=none
 
-### PATH B -- no cache; needs module-level cache added  (3 producers)
+### PATH B -- no cache; needs module-level cache added  (2 producers)
 
 - **`compute_yoy_surprise_signal`** (earnings_surprise_yoy)
     - data: `data_prefetch/polygon/financials` -- rows=2,876, tickers=1,937
@@ -91,9 +90,6 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
 - **`compute_index_rebalance_signals`** (index_rebalance)
     - data: `Backtesting universe/index_rebalance_events.parquet` -- rows=0, tickers=0
     - smoke: emits=False, error=none
-- **`compute_recent_8k_signal`** (macro_events)
-    - data: `data_prefetch/sec_edgar` -- rows=0, tickers=0
-    - smoke: emits=True, error=none
 
 ### PATH C -- needs ohlcv_dict or full-universe data  (1 producers)
 

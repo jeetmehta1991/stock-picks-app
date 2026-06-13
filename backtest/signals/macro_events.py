@@ -89,43 +89,10 @@ def compute_pre_fomc_signals(as_of: date) -> dict:
     }
 
 
-def compute_recent_8k_signal(
-    ticker: str,
-    as_of: date,
-    lookback_days: int = 5,
-) -> dict:
-    """Detect recent 8-K filing for a ticker (proxy for material event
-    including buybacks, M&A, guidance changes). Manconi-Peyer-Vermaelen
-    2019 JFQA documented 4pct/yr abnormal return on filtered buybacks;
-    8-K filings without item-level text parsing are a less-specific
-    proxy but still flag corporate-event proximity.
-
-    Returns:
-      - recent_8k_filed: bool (8-K filed in last lookback_days)
-      - days_since_8k:   int (-1 if none in window)
-    """
-    safe_ticker = ticker.replace(".", "-")
-    path = (
-        Path(__file__).parent.parent.parent
-        / "data_prefetch" / "sec_edgar" / "8_K" / f"{safe_ticker}.parquet"
-    )
-    if not path.exists():
-        return {}
-    try:
-        df = pd.read_parquet(path)
-        if df.empty or "filing_date" not in df.columns:
-            return {}
-        df["filing_date_dt"] = pd.to_datetime(df["filing_date"], errors="coerce").dt.date
-        df = df.dropna(subset=["filing_date_dt"])
-        cutoff = as_of - timedelta(days=lookback_days)
-        recent = df[(df["filing_date_dt"] >= cutoff) & (df["filing_date_dt"] <= as_of)]
-        if recent.empty:
-            return {"recent_8k_filed": False, "days_since_8k": -1}
-        most_recent = recent.iloc[-1]["filing_date_dt"]
-        days_since = (as_of - most_recent).days
-        return {
-            "recent_8k_filed": True,
-            "days_since_8k":   int(days_since),
-        }
-    except Exception:
-        return {}
+# B748b (2026-06-13 owner-approved): `compute_recent_8k_signal` DELETED.
+# Per B745 finding-grade audit: zero consumers across the registry (no
+# strategy in ALL_STRATEGIES consumed `recent_8k_filed` or `days_since_8k`).
+# Codebase already flagged the producer as suspect at screener.py:3091.
+# Data path (data_prefetch/sec_edgar/8_K/) was also 0 rows; producer was
+# both data-empty AND consumer-empty (genuine orphan). Source preserved
+# in git history at commit de0d7b522~1 if revival ever needed.

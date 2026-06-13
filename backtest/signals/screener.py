@@ -4287,9 +4287,14 @@ def strat_activist_13d_long(s):
     +3-5pp/yr alpha for 5 years post-filing. Filers most associated:
     Icahn, Ackman, Peltz, Elliott, ValueAct, Starboard.
 
-    NOT REGISTERED in ALL_STRATEGIES in Batch 522 -- ships SCAFFOLD-only
-    pending P17a scoped extraction completion (in flight ~6h) + owner
-    approval for ALL_STRATEGIES wire-in.
+    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved per
+    B747 finding + B745 finding-grade audit).
+    `compute_sec_edgar_signals` reads from `data_prefetch/sec_edgar/`
+    which currently contains 0 rows; the producer is SCAFFOLD-only
+    pending Polygon SEC EDGAR data backfill (separate ticket). The
+    strategy CANNOT FIRE until the data source is populated.
+    B652 W5m + B722 po3 precedent: cube measures and records but no
+    production deployment regardless of cube verdict.
     """
     fires = bool(s.get("sc_13d_filed_within_30d", False))
     filer = s.get("sc_13d_latest_filer_identity", "")
@@ -4317,9 +4322,13 @@ def strat_m_and_a_target_long(s):
     disclosure that a company is being acquired or signed a major
     partnership; stock often gaps 10-30% on the next bar.
 
-    NOT REGISTERED in ALL_STRATEGIES in Batch 522 -- ships SCAFFOLD-only
-    pending P17a scoped extraction completion + owner approval for
-    ALL_STRATEGIES wire-in.
+    EXPLORATORY -- DO NOT DEPLOY (B748b 2026-06-13 owner-approved per
+    B747 finding + B745 finding-grade audit).
+    Same data-source-empty situation as strat_activist_13d_long:
+    `compute_sec_edgar_signals` reads from `data_prefetch/sec_edgar/`
+    which has 0 rows. Cannot fire until Polygon SEC EDGAR backfill
+    ships. See strat_activist_13d_long docstring for migration
+    precedent + queue ticket reference.
     """
     fires = bool(s.get("8k_item_1_01_filed_within_30d", False))
     return _strat(fires, "long", "sec_edgar_sleeve",
@@ -7328,20 +7337,15 @@ def screen_instrument(
             signals.update(pers)
     except Exception as _e:
         _log_silent_producer_failure("institutional_persistence", _e)
-    # Batch 224: macro event signals (pre-FOMC proximity) + recent 8-K
-    # filing flag (buyback proxy). Pre-FOMC signals are universe-wide
-    # (same value for all tickers on a given day); 8-K is per-ticker.
+    # Batch 224: pre-FOMC macro signals (universe-wide; same value for all
+    # tickers on a given day). B748b (2026-06-13 owner-approved) removed
+    # the per-ticker `compute_recent_8k_signal` call -- producer DELETED
+    # (zero consumers in ALL_STRATEGIES per B745 finding-grade audit).
     try:
-        from backtest.signals.macro_events import (
-            compute_pre_fomc_signals,
-            compute_recent_8k_signal,
-        )
+        from backtest.signals.macro_events import compute_pre_fomc_signals
         pre_fomc = compute_pre_fomc_signals(as_of)
         if pre_fomc:
             signals.update(pre_fomc)
-        recent_8k = compute_recent_8k_signal(ticker, as_of)
-        if recent_8k:
-            signals.update(recent_8k)
     except Exception as _e:
         _log_silent_producer_failure("macro_events", _e)
     # Batch 210: SMC / ICT signals via vendored smartmoneyconcepts library.
