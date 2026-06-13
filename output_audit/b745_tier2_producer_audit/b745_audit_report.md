@@ -34,7 +34,7 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
 | 14 | `compute_patentmomentum_signals` | `congressional_alt_data` | module_dict | **A** | 5,830,800 | 1,595 | YES | patent_momentum_90d_avg, patent_momentum_above_avg, patent_momentum_recent |  |
 | 15 | `compute_offexchange_signals` | `congressional_alt_data` | module_dict | **A** | 132,704 | 1,851 | YES | dpi_30d_avg, dpi_elevated, dpi_recent |  |
 | 16 | `compute_corporatedonors_signals` | `congressional_alt_data` | module_dict | **A** | 25,000 | 432 | NO | (empty) |  |
-| 17 | `compute_cross_sectional_features` | `cross_sectional` | needs_ohlcv_dict | **C** | 2,876 | 1,937 | NO | (empty) | exception: AttributeError: 'str' object has no attribute 'it |
+| 17 | `compute_cross_sectional_features` | `cross_sectional` | needs_ohlcv_dict | **C** | 2,876 | 1,937 | YES | xs_avoid_high_ivol, xs_avoid_high_max, xs_beta |  |
 
 ## Path classification summary
 
@@ -99,7 +99,7 @@ The audit below confirms whether each producer READS + EMITS correctly + whether
 
 - **`compute_cross_sectional_features`** (cross_sectional)
     - data: `data_prefetch/polygon/financials` -- rows=2,876, tickers=1,937
-    - smoke: emits=False, error=exception: AttributeError: 'str' object has no attribute 'items'
+    - smoke: emits=True, error=none
     - consumed by 7 strategy(s): strat_pre_fomc_quality_momentum_long, strat_pre_rebalance_long, strat_xs_combined_momentum_low_ivol, strat_xs_momentum_bottom_decile_short, strat_xs_momentum_quality_combined, strat_xs_momentum_top_decile...
 
 ### PATH D -- data missing/sparse/broken; consuming strategies may be effectively dead  (1 producers)

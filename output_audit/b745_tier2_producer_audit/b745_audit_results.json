@@ -504,9 +504,18 @@
       "data_exists": true,
       "data_row_count": 2876,
       "data_unique_tickers": 1937,
-      "smoke_emits_non_empty": false,
-      "smoke_signal_keys": [],
-      "smoke_error": "exception: AttributeError: 'str' object has no attribute 'items'",
+      "smoke_emits_non_empty": true,
+      "smoke_signal_keys": [
+        "xs_avoid_high_ivol",
+        "xs_avoid_high_max",
+        "xs_beta",
+        "xs_beta_decile",
+        "xs_high_beta_decile",
+        "xs_ivol",
+        "xs_ivol_decile",
+        "xs_low_beta_decile"
+      ],
+      "smoke_error": "",
       "consumed_signal_keys": [
         "xs_momentum_bottom_decile",
         "xs_momentum_top_decile"

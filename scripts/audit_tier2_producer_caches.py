@@ -223,18 +223,25 @@ def _smoke_probe_producer(spec: ProducerSpec, ticker: str, as_of: date) -> tuple
             }, index=dates)
             result = fn(ticker, ohlcv, as_of)
         elif spec.func == "compute_cross_sectional_features":
+            # B746 (2026-06-13): correct signature is (ohlcv_dict, as_of) -- batch producer,
+            # not per-ticker. Previous B745 smoke-probe passed ticker as first arg + tripped
+            # AttributeError on str.items(); finding (5) re-classified as audit-script bug,
+            # not producer bug.
             import pandas as pd
             import numpy as np
             dates = pd.bdate_range(end=pd.Timestamp(as_of), periods=300)
-            ohlcv = pd.DataFrame({
+            ohlcv_a = pd.DataFrame({
                 "open":  np.linspace(90, 110, 300),
                 "high":  np.linspace(91, 111, 300),
                 "low":   np.linspace(89, 109, 300),
                 "close": np.linspace(90, 110, 300),
                 "volume": np.full(300, 1e6),
             }, index=dates)
-            ohlcv_dict = {ticker: ohlcv, "MSFT": ohlcv, "GOOGL": ohlcv}
-            result = fn(ticker, ohlcv_dict, as_of)
+            ohlcv_b = ohlcv_a * 1.1
+            ohlcv_dict = {ticker: ohlcv_a, "MSFT": ohlcv_a, "GOOGL": ohlcv_b, "SPY": ohlcv_a}
+            batch_result = fn(ohlcv_dict, as_of)
+            # batch returns dict-of-dicts; smoke = our probe ticker's slice
+            result = batch_result.get(ticker, {}) if isinstance(batch_result, dict) else {}
         else:
             result = fn(ticker, as_of)
         if not isinstance(result, dict):
