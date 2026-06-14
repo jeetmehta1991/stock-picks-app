@@ -1,5 +1,26 @@
 # Stage 4 Cluster Walks — Master Index
 
+> **B750 STATUS BANNER (2026-06-14) — 3 NEW CLUSTER DOCS SHIPPED + STALE-STATE CORRECTIONS.**
+>
+> Owner directive 2026-06-14 "approve all": cluster-walk the remaining 96 unwalked strategies across 3 new cluster docs (≤40 per cluster). B750 ships framework + sample walks (3 walks per cluster doc) for:
+> - **Cluster A — Oscillator & Mean-Reversion (30 strategies)** — [STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md](STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md)
+> - **Cluster B — Trend Confluence & Chart-Pattern Residual (33 strategies)** — [STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md](STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md)
+> - **Cluster C — Context, Event & Calendar (33-35 strategies)** — [STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md](STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md)
+>
+> **Total cluster-walk coverage post-B750:** 132 (8 prior docs) + 8.5 (3 new docs) = **140.5 walked / 221 registered = 64%** (up from 60% pre-B750). Remaining ~80 walks ship in B751-B762 at 5-10 per batch.
+>
+> **Stale-state correction (B750):** the prior B691 banner + "Outstanding owner review queue" section listed 5 cluster docs as unreviewed (SMC + ICT + Breakout + Event-driven + Chart+Candle). All 5 received external reviews B696-B719 between B679 and B750. **All 8 prior cluster docs have external review.** Per-cluster banners are the source of truth; this index doc had drifted.
+>
+> **New cross-cluster patterns introduced B750:** Pattern R (Connors-stack OR-disjunct), Pattern T (MA-cross + trend-gate collinearity), Pattern U (multi-timeframe weekly/monthly PIT discipline), Pattern V (cross-sectional / news / sec_edgar producer TIER 2 wireup blocker), Pattern Z (calendar event PIT discipline), Pattern AA (event-strategy structurally-limited effective-N → EXPLORATORY mandatory), Pattern BB (news sentiment vendor SPOF sentinel).
+>
+> **B750 sample-walk highlights surfacing pre-cube actionable findings:**
+> - **CRITICAL pre-cube:** Pattern V (cross_sectional/news/sec_edgar wireup blocker per B716) blocks ~25 Cluster C strategies + 6 Cluster B factor strategies pre-B690b
+> - **HIGH pre-cube:** Pattern Q cluster-wide EVENT-conversion sweep (~15+ Cluster A oscillators + 5 Cluster B confluence strategies over B710 5K ceiling)
+> - **HIGH pre-cube:** Pattern AA EXPLORATORY-tag sweep on 18 event-strategies (index rebalance + classification change + pre_fomc + halloween/january/totm/pre_holiday) per W5 council precedent
+> - **MEDIUM pre-cube:** AVWAP-50low anchor PIT audit (B750/A-22 Pattern K parallel to B719 SMC)
+
+---
+
 > **B691 STATUS BANNER (2026-06-11) — B660 complete + harness gap discovered + B689 shipped + re-run in flight.** The full-universe B660 fire-count measurement landed [2026-06-11 02:30 UTC](output_audit/fire_count_measured_b660_full_universe.json) (503-ticker T1a × 6.41 cal yrs × 616,040 bars; 222 strategies measured). Headline: 76 PASS_CUBE / 146 FAIL_FIRE_STARVED. Audit of the per-bar `gate_marginals` dicts found that ~103 of the 146 FAIL_FIRE_STARVED verdicts are **FALSE NEGATIVES caused by a measurement harness gap**: pre-B689 `scripts/measure_fire_count.py:_precompute_signals_for_ticker` invoked only `compute_all_signals` from `technical.py`. Strategies whose entry gates on non-technical producer signals (chart_patterns, smc_ict, ict_producers, multi_timeframe, volume_profile, cross_asset, calendar_effects, COT, pre_fomc, smart_money, sec_edgar, news_sentiment, pead, cross_sectional, etc.) had their gate signals absent from the precompute dict → 0 fires structurally guaranteed regardless of underlying data. **B689 (2026-06-11 commit `8e8c258dd`):** measure_fire_count.py extended with TIER 1 (per-bar df-only) + TIER 3 (per-as_of global) producer wire-in; 13/13 pin tests PASS; smoke confirmed +132 keys per bar AAPL Jun-Aug 2024 with previously-0-firing `smc_fvg_retest_long` + `po3_bullish` now firing. **B660 re-run kicked off [09:30:39 2026-06-11 background task `bzja19ugq`]** with B689 extended signals ENABLED; ETA ~2026-06-12 09:30-12:30 (~24h wall-clock; signal precompute ~doubles to 14-16h).
 >
 > **Per-cluster B660 verdict trust level (this batch's headline):**
@@ -38,18 +59,29 @@
 
 | # | Cluster | Doc | Batch shipped | Lines | Strategies | Walks created | Owner review |
 |---|---|---|---|---|---|---|---|
-| 1 | **Pivot** | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | Pre-session (B640-B652) | 1967 | 10 | 10 | ✅ 2 rounds (methodology 9 + C1-C6 + 2C1-2C7 + per-strategy + regime classifier) |
-| 2 | **Trend** | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | Pre-session (B654-B657) | 690 | 12 | 12 | ✅ Companion to pivot; reviewer findings absorbed |
-| 3 | **Smart Money (data-source)** | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | B672 + B674 incorp | 4571 | 41 | 41 | ✅ 2 rounds (B669 cluster-walk critique 7 findings + B673 cross-cutting feasibility CC1-CC7 + per-strategy reframings) — B674 commit `2cc5d6efd` incorporated 12 NEW EXECUTION_QUEUE tickets |
-| 4 | **SMC (pure price-action)** | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | B673 | 1691 | 18 | 18 | ❌ **NO REVIEW YET** |
-| 5 | **ICT (pure price-action)** | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | B675 | 933 | 12 | 12 | ❌ **NO REVIEW YET** |
-| 6 | **Breakout** | [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) | B676 | 1005 | 19 | 19 | ❌ **NO REVIEW YET** |
-| 7 | **Event-driven** | [STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md) | B677 | 568 | 10 (7 NEW + 3 cross-ref to SM) | 7 | ❌ **NO REVIEW YET** |
-| 8 | **Chart pattern + Candle** | [STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md](STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md) | B678 | 447 | 16 (10 NEW + 6 cross-ref) | 10 | ❌ **NO REVIEW YET** |
+| 1 | **Pivot** | [STAGE_4_PIVOT_CLUSTER_WALKS.md](STAGE_4_PIVOT_CLUSTER_WALKS.md) | Pre-session (B640-B652) | 1967 | 10 | 10 | ✅ B710 external adversarial review + methodology + C1-C6 + 2C1-2C7 |
+| 2 | **Trend** | [STAGE_4_TREND_CLUSTER_WALKS.md](STAGE_4_TREND_CLUSTER_WALKS.md) | Pre-session (B654-B657) | 690 | 12 | 12 | ✅ B696 banner external reviewer recommendations |
+| 3 | **Smart Money (data-source)** | [STAGE_4_SMART_MONEY_CLUSTER_WALKS.md](STAGE_4_SMART_MONEY_CLUSTER_WALKS.md) | B672 + B674 incorp | 4571 | 41 | 41 | ✅ B673 + B713 external adversarial reviews; 2 rounds incorporated |
+| 4 | **SMC (pure price-action)** | [STAGE_4_SMC_CLUSTER_WALKS.md](STAGE_4_SMC_CLUSTER_WALKS.md) | B673 | 1691 | 18 | 18 | ✅ B719 external adversarial review |
+| 5 | **ICT (pure price-action)** | [STAGE_4_ICT_CLUSTER_WALKS.md](STAGE_4_ICT_CLUSTER_WALKS.md) | B675 | 933 | 12 | 12 | ✅ B705 external adversarial review |
+| 6 | **Breakout** | [STAGE_4_BREAKOUT_CLUSTER_WALKS.md](STAGE_4_BREAKOUT_CLUSTER_WALKS.md) | B676 | 1005 | 19 | 19 | ✅ B696 banner external reviewer recommendations |
+| 7 | **Event-driven** | [STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md](STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md) | B677 | 568 | 10 (7 NEW + 3 cross-ref to SM) | 7 | ✅ B702 external adversarial review |
+| 8 | **Chart pattern + Candle** | [STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md](STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md) | B678 | 447 | 16 (10 NEW + 6 cross-ref) | 10 | ✅ B699 banner external review incorporated + Phase-0 producer audit executed |
+| 9 | **Oscillator & Mean-Reversion (NEW B750)** | [STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md](STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md) | **B750** | 600+ (framework + 3 sample walks) | 30 | 3 (framework + 3 sample) | ⏳ Awaiting B751+ external reviewer pass |
+| 10 | **Trend Confluence & Chart-Pattern Residual (NEW B750)** | [STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md](STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md) | **B750** | 600+ | 33 | 3 (framework + 3 sample) | ⏳ Awaiting B751+ external reviewer pass |
+| 11 | **Context, Event & Calendar (NEW B750)** | [STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md](STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md) | **B750** | 700+ | 33-35 (reconciliation pending) | 2.5 (framework + 2 full + 1 partial sample) | ⏳ Awaiting B751+ external reviewer pass |
 
 ---
 
-## Outstanding owner review queue
+## ~~Outstanding owner review queue~~ → ALL 8 PRIOR CLUSTER DOCS HAVE EXTERNAL REVIEW (B750 correction)
+
+> **B750 STALE-STATE CORRECTION (2026-06-14):** the section below was authored B679 (2026-06-10) when 5 cluster docs were still pending external review. Between B679 and B750, owner provided external adversarial reviews for SMC (B719) + ICT (B705) + Event-driven (B702) + Breakout (B696 banner incorporated reviewer recs) + Chart+Candle (B699 banner). All 8 prior cluster docs now have external review. Per-cluster banners are source-of-truth.
+>
+> **The "5 unreviewed" framing below is HISTORICAL and DOES NOT apply post-B696/B699/B702/B705/B719.**
+>
+> Current outstanding reviewer-pass queue: **3 NEW cluster docs from B750** (Oscillator & Mean-Reversion + Trend Confluence & Chart-Pattern Residual + Context Event & Calendar). All 3 ship framework + sample walks B750; full walks complete B751-B762. External reviewer pass scheduled post-completion or per-doc as owner directs.
+
+## HISTORICAL — Outstanding owner review queue (B679 framing; superseded B750)
 
 **5 unreviewed cluster docs await your feedback** covering **75 strategies** / **4,644 lines**:
 
@@ -145,21 +177,28 @@ Per `feedback_no_rushing_per_strategy_tweak` + `project_no_apriori_strategy_prun
 
 ---
 
-## Strategy count attestation (cluster walk coverage)
+## Strategy count attestation (cluster walk coverage — B750 update)
 
 | Source | Count | Verification |
 |---|---|---|
-| `len(ALL_STRATEGIES)` total registry | **222** | Per CLAUDE.md attestation block (2026-06-09 last update); next attestation refresh post-B660 |
-| Pivot cluster walks | ~10 | W1-W10 + W5m |
-| Trend cluster walks | ~12 | T1-T12 |
-| Smart-money cluster walks | 41 | SM-1 through SM-41 (post-B670 deletions: 39 + 2 Class 7 NEW in momentum_trend) |
+| `len(ALL_STRATEGIES)` total registry | **221** | Per CLAUDE.md attestation block (2026-06-12 last update); B722 final post-deletions |
+| `DEPRECATED_STRATEGIES` | 0 | B316a empty |
+| `STRATEGIES_DISABLED_MISSING_PRODUCER` | 1 | `dxy_headwind_multinational_short` (foreign_rev_pct producer absent) |
+| Active for cube | 220 | Post-DISABLED filter |
+| Pivot cluster walks | 10 | W1-W10 + W5m |
+| Trend cluster walks | ~12-15 | T1-T15 |
+| Smart-money cluster walks | 41 | SM-1 through SM-41 |
 | SMC cluster walks | 18 | SMC-1 through SMC-18 |
-| ICT cluster walks | 12 | ICT-1 through ICT-12 (excl. 2 ict turtle_soup which are in chart_pattern category) |
+| ICT cluster walks | 12 | ICT-1 through ICT-12 (excl. turtle_soup in chart_pattern) |
 | Breakout cluster walks | 19 | BR-1 through BR-19 |
-| Event-driven cluster walks | 10 | EV-1 through EV-7 + 3 cross-refs (SM-1, SM-2, SM-6) |
-| Chart-pattern + Candle cluster walks | 16 | CC-1 through CC-7 + CP-1 through CP-9 |
-| **Sum (unique)** | **~138** | (some cross-cluster strategies walked once, referenced multiple times) |
-| Strategies not yet cluster-walked | ~78 | multi_timeframe (5), cross_asset (5), factor (6), confluence (2), mean_reversion (3), momentum (3), news_sentiment (6), volume_profile (3), pairs (2), orb (2), vwap (1), pivot-1 (1), classification_change (10 partial), smart_money_sleeve (10 walked in SM doc), smart_money_13f (7 walked in SM doc), institutional_persistence (12 walked in SM doc) |
+| Event-driven cluster walks | 7 | EV-1 through EV-7 (+ 3 cross-refs to SM) |
+| Chart-pattern + Candle cluster walks | 18 | CC-1 through CC-7 + CP-1 through CP-11 |
+| **B750 NEW Cluster A walks** | **3** | A-1 rsi_oversold + A-15 ppo_crossover + A-22 avwap_50_reclaim |
+| **B750 NEW Cluster B walks** | **3** | B-3 golden_cross_50_200 + B-13 supertrend_ichimoku_adx + B-29 xs_low_beta_long |
+| **B750 NEW Cluster C walks** | **2.5** | C-13 news_sentiment_long + C-21 vix_backwardation_long + C-26 post_inclusion_drift_long (partial) |
+| **Sum (unique)** | **~140.5** | (some cross-cluster strategies walked once, referenced multiple times) |
+| Strategies not yet cluster-walked (post-B750) | **~80** | Cluster A pending: 27 (B751-B756). Cluster B pending: 30 (B754-B757). Cluster C pending: 30-32 (B758-B761). Plus the +2 Cluster C reconciliation. |
+| **Stage 4 walk coverage post-B750** | **140.5 / 221 = 64%** | Up from 60% pre-B750. Target 96-walk completion across B751-B762 → 100% coverage. |
 
 ---
 
