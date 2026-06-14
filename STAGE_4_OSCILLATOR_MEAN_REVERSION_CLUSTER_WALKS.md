@@ -1336,6 +1336,212 @@ Fire projection: Wide 2-gate strategy; independent-product UB significantly over
 
 ---
 
+---
+
+## Per-strategy walks (B754 batch — A-18 / A-19 / A-20 / A-21 / A-23)
+
+> A-22 strat_avwap_50_reclaim already walked B750.
+
+### A-18. `strat_camarilla_rsi_obv` (Camarilla S3/R3 + RSI + OBV + CMF confluence, dual, batched B628 + B629)
+
+**Step 1 — Registration:** [screener.py:2248](backtest/signals/screener.py#L2248). No docstring; inline B628 F1 (obv_bearish positive symmetric) + B629 F1 (cmf_negative positive symmetric). Both silent-gaps closed.
+
+**Step 2 — Gates:** LONG (4): `near_cam_s3` + `rsi_14<35` + `obv_bullish` + `cmf_positive`. SHORT (5): `near_cam_r3` + `rsi_14>65` + `obv_bearish` (B628 F1) + `cmf_negative` (B629 F1) + B718.
+
+**Step 3 — Producer:** `compute_pivots(...)` STATE (near_cam_s3/r3 proximity gates). `compute_rsi(...)` STATE. `compute_obv(...)` STATE direction. `compute_cmf(...)` STATE zone. PIT-clean. B628 + B629 + B718 all applied.
+
+**Step 4 — Doc vs reality:** CLEAN. Both F1 fix lineages VERIFIED via inline comments.
+
+**Step 5 — Regime affinity:** Not set. NO long-term regime gate (no 200-EMA). Like A-11 mfi_oversold and A-16 keltner_lower — uses "Camarilla S3/R3 level + RSI extreme + OBV/CMF flow" thesis as level-touch-with-flow mechanism.
+
+**Step 6 — Inverse:** Dual present. Symmetric.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B628 F1 + B629 F1 + B718 | CLEAN — gold-standard silent-gap closure | — |
+| G | `rsi_14<35` and `rsi_14>65` hardcoded; cluster G family | Class 2 cluster rolled | **Class 2** |
+| Q | All 4 STATE gates | Cluster Pattern Q candidate | **Class 2** |
+| Pattern A | NO long-term regime gate — distinct level-touch-with-flow thesis (Camarilla S3/R3 + OBV/CMF) | CLEAN per author intent | — |
+| J | vs A-19 camarilla_rsi_obv_short (SHORT-only standalone), A-17 camarilla_r4_breakout (breakout level), W9 camarilla_s3_bounce (Pivot cluster) | Post-B690b Camarilla family Pattern J audit | **Class 6 DEFERRED-POST-B690b (queue `S4-B754-PATTERN-J-CAMARILLA-FAMILY-CONSOLIDATION`)** |
+| N | Camarilla S3/R3 + RSI extreme clusters in vol regimes | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS.** A-18 is gold-standard silent-gap-closure (B628+B629 both F1). Distinct mechanism (level-touch + flow + no trend gate). Status post-B754: PRE-CUBE-CLEAN.
+
+Fire projection: 4-gate confluence tight; ~2-6 fires/ticker/yr LONG; ~1K-3K/yr universe-wide. PASS_CUBE range possible; possibly FAIL_FIRE_STARVED per Pattern N. EXPLORATORY tag candidate.
+
+---
+
+### A-19. `strat_camarilla_rsi_obv_short` (Camarilla R3 + RSI overbought + OBV + CMF SHORT-only, batched B628 + B629)
+
+**Step 1 — Registration:** [screener.py:2532](backtest/signals/screener.py#L2532). No docstring; same B628 F1 + B629 F1 fixes inline. SHORT-only standalone.
+
+**Step 2 — Gates:** SHORT (5): `near_cam_r3` + `rsi_14>65` + `obv_bearish` (B628 F1) + `cmf_negative` (B629 F1) + B718.
+
+**Step 3 — Producer:** Same as A-18 SHORT primitives. PIT-clean.
+
+**Step 4 — Doc vs reality:** No docstring; gate-set IDENTICAL to A-18 SHORT branch.
+
+**Step 5 — Regime affinity:** Not set. **NO regime gate** (same as A-18 SHORT side — distinct level-touch-with-flow thesis).
+
+**Step 6 — Inverse:** SHORT-only. LONG mirror would be A-18 LONG branch (`near_cam_s3` + `rsi_14<35` + `obv_bullish` + `cmf_positive`).
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B628 + B629 + B718 | CLEAN | — |
+| **CRITICAL Pattern W (vs A-18 SHORT branch)** | **A-19 gates are IDENTICAL to A-18 SHORT branch.** Both fire on near_cam_r3 + rsi_14>65 + obv_bearish + cmf_negative + B718. This is a DETERMINISTIC DUPLICATE post-B628/B629. | Owner decision: (a) DELETE A-19 redundant per B718 hull_rsi_short / B720 PO3 / B752 A-8 precedent; (b) DIFFERENTIATE with extra gate; (c) keep deliberately as alternate registration | **Class 1-OR-DELETE (queue `S4-B754-A-19-PATTERN-W-DELETE-DECISION-VS-A-18-SHORT-IDENTICAL`)** |
+| Pattern A | NO regime gate (same as A-18 SHORT) | CLEAN per author intent if A-19 retained | — |
+| Q | All STATE | Cluster | **Class 2** |
+| J | vs A-18 SHORT (deterministic duplicate per Pattern W) | Resolved by Pattern W decision | — |
+
+**Recommendation: DELETE A-19 per Pattern W vs A-18 SHORT branch IDENTITY.** This is the second clearest DELETE candidate in Cluster A (after A-8 stochrsi_overbought_short which differs from A-7 SHORT only in regime gate; A-19 has NO difference from A-18 SHORT). Status post-B754: **HIGHEST-CONFIDENCE DELETE CANDIDATE.**
+
+Fire projection: Same as A-18 SHORT branch; redundancy confirmed.
+
+---
+
+### A-20. `strat_cpr_narrow_momentum` (CPR-narrow-tight + above_cpr + RSI + MACD + 200-EMA, dual, batched B358 + B718)
+
+**Step 1 — Registration:** [screener.py:2217](backtest/signals/screener.py#L2217). Docstring: B358 cell-audit Bucket B added 200-EMA regime gate (pre-B358 lost -355pp at WR 30.6% without regime gate). B718 swapped `cpr_narrow` → `cpr_narrow_tight` (0.05 threshold per B654 producer) per B710 ceiling finding (was 12,534/yr LONG + 8,463/yr SHORT = 21K total = state-flag rate above 5K ceiling).
+
+Heavy forensic-fix lineage: B358 + B654 + B710 + B718.
+
+**Step 2 — Gates:** LONG (5): `cpr_narrow_tight` (B718) + `above_cpr` + `rsi_14>50` + `macd_12_26_9_bullish` + `price_above_ema_200` (B358 + B663). SHORT (6): mirror + `below_ema_200` (B630) + B718.
+
+**Step 3 — Producer:** `compute_cpr(...)` for `cpr_narrow_tight` (B654 producer at 0.05 threshold), `above_cpr`/`below_cpr`. `compute_macd(...)` STATE. Standard. PIT-clean. B654 narrow-scope variant present per B718 swap.
+
+**Step 4 — Doc vs reality:** CLEAN. B358 + B718 lineages VERIFIED.
+
+**Step 5 — Regime affinity:** Not set in registry. 200-EMA gate enforces regime per B358 cell-audit. CLEAN.
+
+**Step 6 — Inverse:** Dual present. Symmetric per B630.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B358 + B663 + B630 + B718 + B654 narrow-scope all applied | CLEAN — gold-standard multi-batch forensic lineage | — |
+| G | `rsi_14>50` / `rsi_14<50` hardcoded mid-thresholds | Producer-additive `rsi_14>50` boolean | **Class 2 cluster G** |
+| Q | CPR + RSI + MACD all STATE | Cluster Pattern Q | **Class 2** |
+| J | vs A-21 cpr_narrow_momentum_short (SHORT-only standalone), W8 cpr_narrow_bullish (Pivot cluster) | Post-B690b CPR-family Pattern J audit | **Class 6 (queue `S4-B754-PATTERN-J-CPR-FAMILY-CONSOLIDATION-POST-B690b`)** |
+| Pattern B710 ceiling | 21K/yr pre-B718 → post-B718 swap to cpr_narrow_tight (0.05) per B710 ceiling fix; expected ~5-10× reduction | Post-B660 re-measure: verify cpr_narrow_tight produces <5K/yr | **Class 6 DEFERRED-POST-B660-RE-RUN (queue `S4-B754-A-20-B718-CEILING-FIX-VALIDATE-POST-B660-RE-MEASURE`)** |
+| N | CPR + momentum confluence in trending days | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS + B718 ceiling-fix validation post-B660.** Comprehensive forensic-fix lineage (B358 + B654 + B710 + B718 + B663 + B630). Status post-B754: PRE-CUBE-CLEAN.
+
+Fire projection: Post-B718 swap to cpr_narrow_tight (0.05): expected ~2K-4K/yr LONG (reduction from 12,534/yr pre-B718). PASS_CUBE range post-fix.
+
+---
+
+### A-21. `strat_cpr_narrow_momentum_short` (CPR-narrow-tight + below_cpr + RSI<50 + MACD bearish SHORT-only, batched B718)
+
+**Step 1 — Registration:** [screener.py:2547](backtest/signals/screener.py#L2547). Docstring: B718 swap cpr_narrow→cpr_narrow_tight (B654 0.05 threshold) per B710 ceiling finding (was 13,906/yr SHORT). Same B654 W8 + B718 W8a precedent.
+
+**Step 2 — Gates:** SHORT (5): `cpr_narrow_tight` + `below_cpr` + `rsi_14<50` + `macd_12_26_9_bearish` + B718.
+
+**Step 3 — Producer:** Same as A-20 SHORT primitives minus regime gate. PIT-clean.
+
+**Step 4 — Doc vs reality:** CLEAN. B718 ceiling lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. **NO regime gate** (no below_ema_200) — different from A-20 SHORT branch which HAS it.
+
+**Step 6 — Inverse:** SHORT-only. LONG mirror is A-20 LONG branch.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B718 borrow gate + B630 macd_bearish symmetric present | CLEAN | — |
+| **Pattern W (vs A-20 SHORT branch)** | **A-21 = A-20 SHORT MINUS below_ema_200 regime gate.** Adding below_ema_200 → deterministic duplicate of A-20 SHORT. Same Pattern W pattern as A-8 vs A-7 SHORT and A-19 (different scope). | Owner decision: (a) DELETE A-21 (after add below_ema_200 → A-20 SHORT duplicate); (b) ADD regime gate then accept Pattern W cascade → DELETE; (c) keep deliberately gate-less | **Class 1-OR-DELETE (queue `S4-B754-A-21-PATTERN-W-DELETE-DECISION-VS-A-20-SHORT-MINUS-REGIME`)** |
+| Pattern A | NO regime gate (vs A-20 SHORT which has it) | If kept: add `below_ema_200` to align with cluster discipline | **Class 2 + Pattern W cascade** |
+| G | rsi_14<50 hardcoded | Cluster G | **Class 2** |
+| B718 ceiling fix | Same B710 ceiling fix as A-20; post-B660 verify | Cross-ref `S4-B754-A-20-B718-CEILING-FIX-VALIDATE-POST-B660-RE-MEASURE` | **Class 6** |
+
+**Recommendation: DELETE A-21 per Pattern W cascade vs A-20 SHORT branch.** Third Cluster A SHORT-redundancy after A-8 and A-19. Pattern: a SHORT-only "_short" variant standalone is mechanically redundant with the same-family dual strategy's SHORT branch. Cluster-wide SHORT-redundancy audit candidate.
+
+**NEW META-PATTERN B754: Cluster A short-standalone-vs-dual-SHORT-branch DELETE pattern.** Surfaced 3× across walks: A-8 (vs A-7), A-19 (vs A-18 IDENTICAL), A-21 (vs A-20 minus regime). Cluster-wide audit ticket needed.
+
+---
+
+### A-23. `strat_avwap_252_breakout` (AVWAP-252-low reclaim + volume + RSI, dual, batched B208 + B630)
+
+**Step 1 — Registration:** [screener.py:4394](backtest/signals/screener.py#L4394). Docstring: B208 family — Brian Shannon (2022) CMT whitepaper "Maximum Trading Gains With Anchored VWAP." AVWAP anchored at 252-day swing low; long reclaims + volume + RSI<70 confirm institutional accumulation; short symmetric for distribution.
+
+**Step 2 — Gates:** LONG (4): `above_avwap_252low` + `abs(pct_from_252) < 2.0` (HARDCODED 2% proximity) + `vol_spike_15x` + `rsi_14 < 70`. SHORT (5): `(not above_avwap_252low)` + within 2% + vol_spike_1.5x + `rsi_14 > 30` + B718.
+
+**Pattern F NOT-pattern concern:** SHORT side uses `(not above_avwap_252low)` — should be symmetric `below_avwap_252low` per `feedback_never_use_NOT_s_get_pattern`. SAME Pattern F as A-22 avwap_50_reclaim (B750 walk surfaced).
+
+**Step 3 — Producer:** Same AVWAP producer as A-22. **PIT-discipline check pending per S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY** (cross-applies to AVWAP-252-low).
+
+Producer-source verdict: AVWAP-252 needs SAME producer audit as AVWAP-50 (B750/A-22). PIT-clean methodology if anchor lookback past-only.
+
+**Step 4 — Doc vs reality:** CLEAN. Brian Shannon 2022 + B208 lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. AVWAP-252 reclaim is itself a regime-shift signal (institutional accumulation). CLEAN per Pattern A.
+
+**Step 6 — Inverse:** Dual present (_strat3). Symmetric.
+
+**Pattern S verdict:** SHORT side AVWAP-loss faces bull-drift + borrow + squeeze asymmetry.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| **F (NOT-pattern on SHORT)** | `(not above_avwap_252low)` — same Pattern F as A-22 avwap_50_reclaim B750/A-22 walk surfaced | Producer-additive `below_avwap_252low` symmetric per `feedback_never_use_NOT_s_get_pattern` | **Class 2 LOOSEN/TIGHTEN (queue `S4-B754-A-23-PATTERN-F-NOT-AVWAP-252-REPLACE`, parallel to B750/A-22)** |
+| F (borrow gate) | B718 explicit gate present | CLEAN | — |
+| G | `abs(pct_from_252) < 2.0` hardcoded proximity; `rsi_14<70` / `rsi_14>30` hardcoded | Producer-additive booleans | **Class 2** |
+| PIT-discipline | AVWAP-252-low anchor inherits PIT-audit concern from AVWAP-50 (S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY) | Apply SAME producer-audit to compute_avwap_signals 252-day-low anchor | **Class 9 PRODUCER-AUDIT (queue `S4-B754-A-23-AVWAP-252-ANCHOR-PIT-VERIFY-CROSS-REF-B750`)** |
+| J | vs A-22 avwap_50_reclaim + A-24 avwap_20high_rejection_short (3-strategy AVWAP family) | Cross-ref `S4-B750-PATTERN-J-CLUSTER-A-MARGINAL-CONTRIBUTION-AUDIT-POST-B690b` (AVWAP family component) | **Class 6** |
+| N | AVWAP-252 breakouts cluster around regime shifts | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS + Class 2 Pattern F fix + cross-ref AVWAP-252 PIT-audit ticket.** Status post-B754: PRE-CUBE-CLEAN POST-FIXES.
+
+Fire projection: 4-gate stack with rare 252-day-low proximity; ~1-3 fires/ticker/yr; ~500-1,500/yr universe-wide. **FAIL_FIRE_STARVED-likely**; EXPLORATORY candidate per Pattern AA event-strategy effective-N concern.
+
+---
+
+## B754 cluster walk completion wrap-up
+
+### Disposition summary (5 walks shipped)
+
+| Walk | Strategy | Status | Key finding |
+|---|---|---|---|
+| A-18 | camarilla_rsi_obv | KEEP-AS-IS | Gold-standard B628+B629 silent-gap closure; distinct level+flow thesis |
+| A-19 | camarilla_rsi_obv_short | **DELETE CANDIDATE (HIGHEST CONFIDENCE)** | Gates IDENTICAL to A-18 SHORT branch — deterministic duplicate |
+| A-20 | cpr_narrow_momentum | KEEP-AS-IS + Post-B660 validate | Comprehensive forensic lineage (B358+B654+B710+B718) |
+| A-21 | cpr_narrow_momentum_short | **DELETE CANDIDATE** | A-20 SHORT minus regime gate; Pattern W cascade |
+| A-23 | avwap_252_breakout | KEEP-AS-IS + Pattern F + PIT-audit | Pattern F NOT-pattern (same as B750/A-22); AVWAP-252 PIT-audit cross-ref |
+
+**NEW META-PATTERN B754: SHORT-standalone-vs-dual-SHORT-branch DELETE pattern.** Surfaced 3× across Cluster A walks: A-8 (vs A-7 minus regime), A-19 (vs A-18 IDENTICAL), A-21 (vs A-20 minus regime). Cluster-wide audit ticket: are there OTHER such SHORT-standalone variants in the registry that mirror existing dual-strategy SHORT branches?
+
+### NEW EXECUTION_QUEUE tickets surfaced (B754)
+
+1. `S4-B754-PATTERN-J-CAMARILLA-FAMILY-CONSOLIDATION` — A-17 + A-18 + A-19 + W9 (Pivot) Camarilla family post-B690b audit. DEFERRED-POST-B690b.
+2. `S4-B754-A-19-PATTERN-W-DELETE-DECISION-VS-A-18-SHORT-IDENTICAL` — HIGHEST-CONFIDENCE DELETE candidate (identical gates). PENDING-OWNER-DECISION-A-B-OR-C.
+3. `S4-B754-PATTERN-J-CPR-FAMILY-CONSOLIDATION-POST-B690b` — A-20 + A-21 + W8 (Pivot) CPR family. DEFERRED-POST-B690b.
+4. `S4-B754-A-20-B718-CEILING-FIX-VALIDATE-POST-B660-RE-MEASURE` — verify cpr_narrow_tight (0.05) drops fire rate from 12,534/yr pre-B718 to <5K/yr post-fix. DEFERRED-POST-B660-RE-RUN.
+5. `S4-B754-A-21-PATTERN-W-DELETE-DECISION-VS-A-20-SHORT-MINUS-REGIME` — Pattern W cascade DELETE candidate. PENDING-OWNER-DECISION-A-B-OR-C.
+6. `S4-B754-A-23-PATTERN-F-NOT-AVWAP-252-REPLACE` — producer-additive `below_avwap_252low` symmetric (parallel to B750/A-22 fix). PENDING-OWNER-APPROVAL.
+7. `S4-B754-A-23-AVWAP-252-ANCHOR-PIT-VERIFY-CROSS-REF-B750` — apply S4-B750-AVWAP-50LOW PIT-audit template to AVWAP-252-low anchor. PENDING-OWNER-APPROVAL.
+8. `S4-B754-META-CLUSTER-A-SHORT-STANDALONE-VS-DUAL-SHORT-AUDIT` — META-pattern audit: identify ALL SHORT-only standalones that mirror existing dual SHORT branches across registry. PENDING-OWNER-APPROVAL.
+
+### Owner decision gates (B754 surfaces)
+
+| Decision | Severity | Pre-cube urgency |
+|---|---|---|
+| A-19 DELETE (HIGHEST CONFIDENCE - identical to A-18 SHORT) | **HIGH** | Pre-cube — affects cube cell count + Bonferroni |
+| A-21 DELETE (Pattern W cascade vs A-20 SHORT) | HIGH | Pre-cube |
+| META Cluster A SHORT-standalone-vs-dual audit | HIGH | Pre-cube (cluster-wide implications) |
+| Pattern J Camarilla family consolidation | MEDIUM | Post-B690b |
+| Pattern J CPR family consolidation | MEDIUM | Post-B690b |
+| Pattern F fix on A-23 (NOT-pattern) | LOW | Pre-cube small fix |
+| AVWAP-252 anchor PIT audit | MEDIUM | Pre-cube (PIT integrity) |
+
+---
+
 ## B750 cluster walk completion wrap-up
 
 ### Disposition summary (3 walks shipped)
@@ -1438,12 +1644,12 @@ Fire projection: Wide 2-gate strategy; independent-product UB significantly over
 | A-15 ppo_crossover | ✅ Walked B750 | 2026-06-14 | Step 1-7 complete; 4 queue tickets surfaced |
 | A-16 keltner_lower | ✅ Walked B753 | 2026-06-14 | KEEP-AS-IS; candle-confirmation analog of A-11 |
 | A-17 camarilla_r4_breakout | ✅ Walked B753 | 2026-06-14 | KEEP-AS-IS + **Pattern X (NEW) cluster reassignment to B or Pivot** |
-| A-18 camarilla_rsi_obv | ⏳ Pending B754 | — | |
-| A-19 camarilla_rsi_obv_short | ⏳ Pending B754 | — | |
-| A-20 cpr_narrow_momentum | ⏳ Pending B754 | — | |
-| A-21 cpr_narrow_momentum_short | ⏳ Pending B754 | — | |
+| A-18 camarilla_rsi_obv | ✅ Walked B754 | 2026-06-14 | KEEP-AS-IS; B628+B629 gold-standard silent-gap closure |
+| A-19 camarilla_rsi_obv_short | ✅ Walked B754 | 2026-06-14 | **DELETE CANDIDATE (HIGHEST CONFIDENCE)** — gates IDENTICAL to A-18 SHORT |
+| A-20 cpr_narrow_momentum | ✅ Walked B754 | 2026-06-14 | KEEP-AS-IS; comprehensive forensic lineage (B358+B654+B710+B718) |
+| A-21 cpr_narrow_momentum_short | ✅ Walked B754 | 2026-06-14 | **DELETE CANDIDATE** Pattern W cascade vs A-20 SHORT |
 | A-22 avwap_50_reclaim | ✅ Walked B750 | 2026-06-14 | Step 1-7 complete; 7 queue tickets surfaced incl. CRITICAL AVWAP PIT audit |
-| A-23 avwap_252_breakout | ⏳ Pending B754 | — | |
+| A-23 avwap_252_breakout | ✅ Walked B754 | 2026-06-14 | KEEP-AS-IS + Pattern F NOT-pattern fix + AVWAP-252 PIT-audit cross-ref |
 | A-24 avwap_20high_rejection_short | ⏳ Pending B755 | — | |
 | A-25 awesome_oscillator | ⏳ Pending B755 | — | |
 | A-26 cmf_flip | ⏳ Pending B755 | — | |
@@ -1452,7 +1658,7 @@ Fire projection: Wide 2-gate strategy; independent-product UB significantly over
 | A-29 prev_day_low_bounce | ⏳ Pending B755 | — | |
 | A-30 bb_squeeze_volume | ⏳ Pending B756 | — | |
 
-**Progress: 18/30 walked (60%) — B750 framework + 3 + B751 4 + B752 6 + B753 5 walks shipped.**
+**Progress: 23/30 walked (77%) — B750 framework + 3 + B751 4 + B752 6 + B753 5 + B754 5 walks shipped.**
 
 ---
 

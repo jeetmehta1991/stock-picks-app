@@ -102,6 +102,40 @@ Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; f
 
 **Cumulative B750+B751+B752 = 41 NEW tickets** filed in EXECUTION_QUEUE.md (35 prior + 6 B752).
 
+---
+
+**B750 MISSED-TICKET-AUDIT (filed B754 via `feedback_data_consumption_audit_must_apply_checklist_44b`):**
+- `S4-B750-B-19-HEAD-SHOULDERS-TOP-SHORT-EXPLORATORY-VERIFY` — verify strat_head_and_shoulders_top_short inherits B732 EXPLORATORY status from inverse (h&s bottom long); doc-only verification. PENDING-VERIFICATION-DURING-B756-CLUSTER-B-WALK.
+
+---
+
+**B753 (2026-06-14) TICKETS SURFACED (5 walks: A-12/A-13/A-14/A-16/A-17) — filed B754 via missed-ticket-audit per `feedback_data_consumption_audit_must_apply_checklist_44b`:**
+
+The B753 cluster doc wrap-up surfaced 5 tickets but my B753 EXECUTION_QUEUE.md edit attempt had a failed replace_all (2-match ambiguity); the "ADDITIONAL TICKETS SURFACED" block intended to be added was never actually written. Comprehensive audit (B754) caught the gap.
+
+- `S4-B753-PATTERN-CC-ADAPTIVE-THRESHOLD-CUBE-EXTENSION` — **NEW Pattern CC.** Cube infrastructure for VIX-conditional adaptive RSI thresholds (A-12 bollinger_lower + A-13 bollinger_tight implement adaptive parameter logic). Cube must handle triple-threshold sweeps. PENDING-OWNER-APPROVAL.
+- `S4-B753-PATTERN-J-BOLLINGER-FAMILY-CONSOLIDATION` — A-12 + A-13 are looser/tighter variants of same BB-touch + Connors-stack mechanism. CRITICAL consolidation candidate post-B690b. Expected 2 → 1 + parameter sweep on (sigma, adx_on/off, rsi_threshold_floor). DEFERRED-POST-B690b.
+- `S4-B753-A-14-REGIME-AFFINITY-ADD-BELOW-EMA-200` — A-14 bollinger_upper_short lacks regime gate (Pattern A); align with cluster discipline by adding `below_ema_200`. PENDING-OWNER-APPROVAL.
+- `S4-B753-A-17-CLUSTER-REASSIGNMENT-TO-CLUSTER-B-OR-PIVOT` — **NEW Pattern X.** A-17 camarilla_r4_breakout is mis-clustered in A (Oscillator); is breakout/pivot mechanism. Reassign to Cluster B Trend Confluence OR cross-reference Pivot cluster doc. PENDING-OWNER-DECISION-A-OR-B.
+- `S4-B753-A-17-CAMARILLA-R4-FIRE-COUNT-VALIDATE-POST-B660-RE-MEASURE` — verify B641 R3→R4 re-anchor produced fire count in PASS_CUBE range. DEFERRED-POST-B660-RE-RUN.
+
+**B754 audit correction:** cumulative B750+B751+B752+B753 = **46 NEW tickets** filed (corrected from claimed 41 in commit message). My B753 commit message claimed 46 cumulative which was the INTENT but only 40 were actually filed (35 B750-B751 prior + 6 B752 = 41 of which 40 unique post-B-19 correction + 5 B753 missing = 40 actual; now reconciled to 46 actual via this audit).
+
+---
+
+**B754 (2026-06-14) TICKETS SURFACED (5 walks: A-18/A-19/A-20/A-21/A-23):**
+
+1. `S4-B754-PATTERN-J-CAMARILLA-FAMILY-CONSOLIDATION` — A-17 + A-18 + A-19 + W9 (Pivot) Camarilla family post-B690b. DEFERRED-POST-B690b.
+2. `S4-B754-A-19-PATTERN-W-DELETE-DECISION-VS-A-18-SHORT-IDENTICAL` — **HIGHEST-CONFIDENCE DELETE candidate** (gates identical to A-18 SHORT branch). PENDING-OWNER-DECISION-A-B-OR-C.
+3. `S4-B754-PATTERN-J-CPR-FAMILY-CONSOLIDATION-POST-B690b` — A-20 + A-21 + W8 (Pivot) CPR family. DEFERRED-POST-B690b.
+4. `S4-B754-A-20-B718-CEILING-FIX-VALIDATE-POST-B660-RE-MEASURE` — verify cpr_narrow_tight (0.05) drops fire rate from 12,534/yr pre-B718. DEFERRED-POST-B660-RE-RUN.
+5. `S4-B754-A-21-PATTERN-W-DELETE-DECISION-VS-A-20-SHORT-MINUS-REGIME` — Pattern W cascade DELETE candidate. PENDING-OWNER-DECISION-A-B-OR-C.
+6. `S4-B754-A-23-PATTERN-F-NOT-AVWAP-252-REPLACE` — producer-additive `below_avwap_252low` symmetric (parallel to B750/A-22 fix). PENDING-OWNER-APPROVAL.
+7. `S4-B754-A-23-AVWAP-252-ANCHOR-PIT-VERIFY-CROSS-REF-B750` — apply S4-B750-AVWAP-50LOW PIT-audit template to AVWAP-252-low anchor. PENDING-OWNER-APPROVAL.
+8. `S4-B754-META-CLUSTER-A-SHORT-STANDALONE-VS-DUAL-SHORT-AUDIT` — **NEW META-PATTERN** audit: identify ALL SHORT-only standalones that mirror existing dual SHORT branches across registry. Surfaced 3× in Cluster A (A-8 vs A-7, A-19 vs A-18 IDENTICAL, A-21 vs A-20 minus regime). PENDING-OWNER-APPROVAL.
+
+**Cumulative B750+B751+B752+B753+B754 = 54 NEW tickets** filed (46 prior + 8 B754).
+
 **Next live work after B752:** B753 picks up Cluster A walks A-12 through A-17 (bollinger_lower + bollinger_tight + bollinger_upper_short + keltner_lower + camarilla_r4_breakout).
 
 ---

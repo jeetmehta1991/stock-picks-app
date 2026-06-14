@@ -197,11 +197,12 @@ Per `feedback_no_rushing_per_strategy_tweak` + `project_no_apriori_strategy_prun
 | **B751 NEW Cluster A walks** | **4** | A-2 rsi_overbought_short + A-3 rsi9_extreme + A-4 rsi21_slow + A-5 rsi_volume_200ema |
 | **B752 NEW Cluster A walks** | **6** | A-6 stoch_oversold + A-7 stochrsi_oversold + A-8 stochrsi_overbought_short (DELETE candidate) + A-9 williams_r_oversold + A-10 ultimate_oscillator (EXPLORATORY candidate) + A-11 mfi_oversold |
 | **B753 NEW Cluster A walks** | **5** | A-12 bollinger_lower (Pattern CC adaptive thresholds) + A-13 bollinger_tight (J consolidation pair with A-12) + A-14 bollinger_upper_short + A-16 keltner_lower + A-17 camarilla_r4_breakout (**Pattern X cluster reassignment candidate**) |
+| **B754 NEW Cluster A walks** | **5** | A-18 camarilla_rsi_obv + A-19 camarilla_rsi_obv_short (**HIGHEST-CONFIDENCE DELETE**) + A-20 cpr_narrow_momentum + A-21 cpr_narrow_momentum_short (**DELETE Pattern W cascade**) + A-23 avwap_252_breakout (Pattern F NOT-pattern + PIT-audit) |
 | **B750 NEW Cluster B walks** | **3** | B-3 golden_cross_50_200 + B-13 supertrend_ichimoku_adx + B-29 xs_low_beta_long |
 | **B750 NEW Cluster C walks** | **2.5** | C-13 news_sentiment_long + C-21 vix_backwardation_long + C-26 post_inclusion_drift_long (partial) |
-| **Sum (unique)** | **~155.5** | (some cross-cluster strategies walked once, referenced multiple times) |
-| Strategies not yet cluster-walked (post-B753) | **~65** | Cluster A pending: 12 (B754-B756). Cluster B pending: 30 (B754-B757). Cluster C pending: 30-32 (B758-B761). |
-| **Stage 4 walk coverage post-B753** | **155.5 / 221 = 70%** | Up from 68% post-B752. Target 96-walk completion across B754-B762 → 100% coverage. |
+| **Sum (unique)** | **~160.5** | (some cross-cluster strategies walked once, referenced multiple times) |
+| Strategies not yet cluster-walked (post-B754) | **~60** | Cluster A pending: 7 (B755-B756). Cluster B pending: 30 (B756-B757). Cluster C pending: 30-32 (B758-B761). |
+| **Stage 4 walk coverage post-B754** | **160.5 / 221 = 73%** | Up from 70% post-B753. Target 96-walk completion across B755-B762 → 100% coverage. |
 
 ---
 
