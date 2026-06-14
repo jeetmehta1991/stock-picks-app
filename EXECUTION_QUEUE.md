@@ -180,7 +180,34 @@ Owner directive 2026-06-14 "approve all for filing" — 16 council tickets queue
 
 ### TIER 3 — Process-discipline immediate actions
 
-7. **`S4-B755-COUNCIL-PATTERN-W-DELETE-BUNDLE-A-8-A-19-A-21`** — Bundle 3 Pattern W deletes (A-8 stochrsi_overbought_short + A-19 camarilla_rsi_obv_short HIGHEST CONFIDENCE + A-21 cpr_narrow_momentum_short) into ONE batch — 1 pyramid + 1 doc sync + 1 count update (vs 3 separate batches). 221 → 218. B722 hull_rsi_short precedent. **VALIDATION INFRA SHIPPED-B759 (2026-06-15):** `scripts/validate_pattern_w_candidates.py` (~330 LOC) + `backtest/tests/test_batch759_pattern_w_validation.py` (19 pin tests PASS) — consumes fire-bar matrix similarity output and (a) validates the 3 council-named candidates per Jaccard >= 0.85 threshold; (b) surfaces ADDITIONAL Pattern W candidates the council missed via eyeball; (c) surfaces Pattern J consolidation candidates (phi >= 0.70 per B709 PEAD-restore precedent). Each council candidate gets verdict: CONFIRMED / MARGINAL / REJECTED / INSUFFICIENT_DATA + agreement_with_council annotation. Per Contrarian advisor concern: "A-19 IDENTICAL gates - sure or silently-no-op?" empirically resolved once demo/full fire-bar runs land. PENDING actual execution post-fire-bar-demo. Source: Advisor E + Chairman. Class 1 KEEP-AS-IS/DELETE. HIGH (single batch).
+7. **`S4-B755-COUNCIL-PATTERN-W-DELETE-BUNDLE-A-8-A-19-A-21`** — Bundle 3 Pattern W deletes. **EMPIRICALLY REFUTED-B760 (2026-06-15) by demo fire-bar matrix consumption** — the council's gate-text-comparison methodology DOES NOT survive empirical validation. Demo (50 tickers × 1yr 2024) verdicts:
+   - **A-8 stochrsi_overbought_short vs A-7 SHORT: REJECTED** (Jaccard < 0.50; council DELETE_CANDIDATE OVERTURNED). Both fire substantially (758 + 592) but on DIFFERENT bars.
+   - **A-19 camarilla_rsi_obv_short vs A-18: NOT_FOUND_IN_SIMILARITY_MATRIX** (council HIGHEST_CONFIDENCE_DELETE OVERTURNED). Root cause: BOTH strategies fire 0 times on demo. The Contrarian advisor's exact prediction CONFIRMED: "two strategies firing on the same gates because one of the gates is silently no-op is a BUG not a duplicate." Camarilla R3/S3 proximity (`near_cam_r3` / `near_cam_s3`) appears to be the silent-no-op gate — investigation queued as new ticket.
+   - **A-21 cpr_narrow_momentum_short vs A-20 SHORT: REJECTED** (Jaccard < 0.50; council DELETE_CANDIDATE OVERTURNED). Both fire substantially (654 + ~300 SHORT-only estimated from 976 LONG+SHORT total) but on DIFFERENT bars.
+   
+   **0 of 3 council DELETE candidates survived empirical validation.** Pattern W gate-text methodology DOES NOT replace fire-bar Jaccard precompute (chairman's TIER 1.1 ticket directly vindicated). 
+   
+   The 3 strategies REMAIN ACTIVE. Council recommendation HALTED until full run resolves edge cases. Source: B760 demo Pattern W validation. Class 1 KEEP-AS-IS-EMPIRICAL. STATUS: **REFUTED-PENDING-FULL-RUN-CONFIRMATION**.
+
+---
+
+**B760 (2026-06-15) NEW TICKETS SURFACED BY DEMO VALIDATION:**
+
+17. **`S4-B760-CAMARILLA-NEAR-S3-R3-PRODUCER-EMISSION-AUDIT`** — Investigate why BOTH A-18 camarilla_rsi_obv and A-19 camarilla_rsi_obv_short fire 0 times on 50-ticker × 1yr demo despite producing emit-rate True for OBV/CMF gates. Hypothesis: `near_cam_s3` and `near_cam_r3` are silent-no-op STATE signals — Camarilla R3/S3 levels are deep extremes rarely touched (per B641 docstring "outermost levels = Range*1.1/2"). Per CHECKLIST #106 (e) KNOWN-EVENT runtime probe: find a date where S&P 500 had a Camarilla R3 touch and verify producer fires. If `near_cam_r3` never returns True empirically, this is a producer Pattern G/Q issue masquerading as Pattern W. PENDING-OWNER-APPROVAL. Source: B760 empirical refutation of A-19 HIGHEST_CONFIDENCE. Class 9 PRODUCER-AUDIT. **CRITICAL pre-cube** (affects 3-strategy Camarilla family viability).
+
+18. **`S4-B760-PATTERN-W-METHODOLOGY-REVISION-EMPIRICAL-NOT-GATE-TEXT`** — Codify that ALL Pattern W deletion decisions must use fire-bar Jaccard precompute (B709 phi-correlation / B760 chairman) NOT gate-text comparison. Pattern W deletion proposals via gate-text inspection are HEURISTIC ONLY pending empirical validation. Update STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md sections referencing "Pattern W deterministic-duplicate" to note empirical validation requirement. PENDING-OWNER-APPROVAL. Source: B760 0-of-3 council validation. Class 2 METHODOLOGY-CORRECTION. HIGH.
+
+19. **`S4-B760-AVWAP-50-RECLAIM-HIGH-FIRE-COUNT-AUDIT`** — Demo measured 1,228 fires for `strat_avwap_50_reclaim` on 50 tickers × 1yr (the top firer in Cluster A). Extrapolated to T1a 503 tickers × 6.4yr: ~80K fires/yr universe-wide, **well above B710 5K/yr state-flag ceiling**. Per B718 cpr_narrow_tight precedent (12,534/yr → tighten to 0.05 producer): potential ceiling-fix candidate. Audit hardcoded `pct_from_50 < 1.5` proximity threshold — tighten to 0.5 producer-additive? PENDING-OWNER-APPROVAL. Source: B760 demo. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
+
+20. **`S4-B760-RSI9-EXTREME-1-FIRE-FAIL-FIRE-STARVED-EXPLORATORY-MANDATORY`** — Demo measured **1 fire** for `strat_rsi9_extreme` on 50 tickers × 1yr (LONG-only RSI-9 < 20 + 200-EMA + rsi_9_rising). Extrapolated to T1a × 6.4yr ≈ 60-80 fires total universe-wide-lifetime. **Below min_trades=100 by an order of magnitude.** Per W5m precedent: EXPLORATORY-tag mandatory; cannot deploy regardless of cube verdict. PENDING-OWNER-APPROVAL. Source: B760 demo. Class 6 DEFERRED-POST-FULL-RUN-CONFIRM. HIGH.
+
+21. **`S4-B760-AVWAP-20HIGH-REJECTION-SHORT-3-FIRES-FAIL-FIRE-STARVED-CONFIRM`** — Demo measured **3 fires** for `strat_avwap_20high_rejection_short` (already EXPLORATORY-tagged per A-24 walk). Demo CONFIRMS the FAIL_FIRE_STARVED status — no action needed beyond existing EXPLORATORY tag. Source: B760 demo. Class 8 EMPIRICAL-CONFIRMATION-OF-PRIOR-VERDICT.
+
+22. **`S4-B760-KELTNER-LOWER-6-FIRES-FAIL-FIRE-STARVED-EXPLORATORY-CANDIDATE`** — Demo measured 6 fires for `strat_keltner_lower` (LONG-only KC touch + hammer + obv_bullish). Per W5m precedent + A-23 + A-24 FAIL_FIRE_STARVED precedent: EXPLORATORY-tag candidate. Source: B760 demo. Class 6 DEFERRED-POST-FULL-RUN-CONFIRM. MEDIUM-HIGH.
+
+23. **`S4-B760-FIRE-BAR-MATRIX-FULL-RUN-LAUNCH`** — Launch `python scripts/build_fire_bar_matrix.py --full` in background (~14 hours, overnight). Demo confirmed pipeline works end-to-end; full run gives definitive empirical evidence for Pattern W / Pattern J / Pattern N decisions. PENDING-EXECUTION-IN-B761. Source: B760 demo success. Class 9 INFRA. **CRITICAL Pre-anything definitive**.
+
+**Cumulative B750-B755 + COUNCIL + B756-B760 = 77 + 7 (B760 follow-ups) = 84 NEW tickets** filed.
 
 8. **`S4-B755-COUNCIL-PATTERN-CC-CLUSTER-A-FAMILY-APPLICATION`** — Pattern CC (VIX-conditional adaptive thresholds) under-applied; should propagate to all 22 threshold-based Cluster A strategies. RV20-percentile per-ticker (D's extension; bigger than VIX-only). Cluster-wide ticket. PENDING-OWNER-APPROVAL. Source: Advisor C + D. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
 
