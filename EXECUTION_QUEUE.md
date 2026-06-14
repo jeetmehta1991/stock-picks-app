@@ -34,6 +34,65 @@
 
 ---
 
+## B750-B751 STAGE 4 CLUSTER WALK SWEEP — NEW TICKETS SURFACED (2026-06-14)
+
+Owner directive 2026-06-14 "approve all" cluster-walk the 96 previously-unwalked strategies across 3 new cluster docs. B750 shipped framework + 3 sample walks per cluster (8.5 walks total). B751 shipped 4 Cluster A follow-on walks (A-2/A-3/A-4/A-5). Total 12.5 walks shipped across B750+B751.
+
+**NEW EXECUTION_QUEUE tickets surfaced (B750 + B751 = 35 tickets):**
+
+Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; full per-strategy detail lives in the 3 cluster docs:
+- [STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md](STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md) — B750 wrap-up section + B751 wrap-up section
+- [STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md](STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md) — B750 wrap-up section
+- [STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md](STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md) — B750 wrap-up section
+
+**Cluster-wide pre-cube tickets (highest leverage):**
+- `S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP` — producer-additive EVENT variants for STATE oscillator signals (~15+ Cluster A strategies; over B710 5K ceiling otherwise). PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-Q-CLUSTER-B-EVENT-CONVERSION-SWEEP` — same for Cluster B confluence strategies (~5 strategies including B-13 supertrend_ichimoku_adx). PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-AA-EVENT-STRATEGY-EXPLORATORY-CLASSIFICATION-SWEEP` — EXPLORATORY-tag sweep on 18 event-strategies (index rebalance + classification change + pre_fomc + halloween/january/totm/pre_holiday) per W5 council. PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-G-CLUSTER-A-THRESHOLD-SIGNAL-HARDENING` — cube-sweepable threshold signals (rsi_14<35/<40/<45 etc.). PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-N-EFFECTIVE-N-AUTOCORRELATION-CUBE-EXTENSION` — cube infrastructure ticket for autocorrelation-based effective-N (cross-ref W5 council Pattern N concern). PENDING-OWNER-APPROVAL.
+
+**Pre-cube producer-audit tickets (CRITICAL):**
+- `S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY` — producer audit on `compute_avwap_signals` 50-day-low anchor (parallel to B719 SMC Pattern K). PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-U-MULTI-TIMEFRAME-PRODUCER-PIT-VERIFY` — multi_timeframe.py weekly/monthly resample PIT discipline. PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-Z-CALENDAR-PIT-AUDIT` — calendar_effects.py PIT verification. PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-BB-NEWS-SENTIMENT-VENDOR-SPOF-SENTINEL` — loud-failure sentinel on Polygon news sentiment-score distribution. PENDING-OWNER-APPROVAL.
+
+**Pattern J consolidation candidates (post-B690b):**
+- `S4-B750-PATTERN-J-CLUSTER-A-MARGINAL-CONTRIBUTION-AUDIT-POST-B690b` — 30 Cluster A strategies → ~15-20 effective primitives. DEFERRED-POST-B690b.
+- `S4-B750-PATTERN-J-MA-CROSS-CONSOLIDATION-AUDIT` — 5 MA-cross variants → 1-2 effective. DEFERRED-POST-B690b.
+- `S4-B750-PATTERN-J-FACTOR-CLUSTER-CONSOLIDATION-AUDIT` — 6 xs_* strategies → 2-3 effective. DEFERRED-POST-B690b.
+- `S4-B750-PATTERN-J-CLUSTER-C-CLASSIFICATION-CHANGE-CONSOLIDATION-AUDIT` — 8 classification_change variants. DEFERRED-POST-B690b.
+- `S4-B750-PATTERN-J-CLUSTER-C-NEWS-SENTIMENT-CONSOLIDATION-AUDIT` — 6 news strategies. DEFERRED-POST-B690b.
+- `S4-B751-PATTERN-J-RSI-WINDOW-FAMILY-CONSOLIDATION-AUDIT-POST-B690b` — 4 RSI window strategies (A-1/A-3/A-4/A-5). DEFERRED-POST-B690b.
+
+**Per-strategy fixes (small-scope, pre-cube):**
+- `S4-B750-A-22-PATTERN-F-NOT-MACD-BULL-REPLACE` — avwap_50_reclaim SHORT side NOT-pattern fix. PENDING-OWNER-APPROVAL.
+- `S4-B750-A-1-PATTERN-Q-RSI-OVERSOLD-EVENT-CONVERSION` — strat_rsi_oversold EVENT variant. PENDING-OWNER-APPROVAL.
+- `S4-B750-A-15-PPO-ADX-TEMPORALITY-MISMATCH-EVENT-CONVERSION` — strat_ppo_crossover EVENT-anchored ADX. PENDING-OWNER-APPROVAL.
+- `S4-B750-B-13-Q-EVENT-CONVERSION` — strat_supertrend_ichimoku_adx EVENT triad. PENDING-OWNER-APPROVAL.
+- `S4-B750-B-29-REGIME-AFFINITY-ADD` — strat_xs_low_beta_long `{bear, neutral}` affinity per B358 cell-audit. PENDING-OWNER-APPROVAL.
+- `S4-B750-C-13-SENTIMENT-THRESHOLD-SIGNAL-HARDENING` — news_sentiment threshold producer signals. PENDING-OWNER-APPROVAL.
+- `S4-B750-C-21-REGIME-AFFINITY-ADD` — strat_vix_backwardation_long `{bear, crisis}` affinity. PENDING-OWNER-APPROVAL.
+- `S4-B750-C-26-WALK-COMPLETE-IN-B751` — complete strat_post_inclusion_drift_long walk (wrapper-target source). PENDING-EXECUTION-B751.
+- `S4-B751-A-2-G-RSI-OVERBOUGHT-THRESHOLD-HARDENING` — producer-additive `rsi_14>68`. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-2-Q-MIXED-TEMPORALITY-EVENT-CONVERSION` — A-2 rsi_14_rising STATE → EVENT. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-2-REGIME-AFFINITY-ADD` — strat_rsi_overbought_short `{bear, neutral}`. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-2-PATTERN-W-VS-RSI-OVERSOLD-SHORT` — A-2 vs A-1 SHORT branch deterministic-duplicate check. DEFERRED-POST-B690b.
+- `S4-B751-A-3-F-EXPLICIT-DEFAULT-FALSE-CONSISTENCY` — A-3 explicit default consistency with B663. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-3-Q-RSI-9-EVENT-CONVERSION` — A-3 producer-additive `rsi_9_cross_below_20_recent_3d`. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-4-G-RSI-21-THRESHOLD-HARDENING` — A-4 producer-additive `rsi_21<35` + `rsi_21>65`. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-4-Q-RSI-21-EVENT-CONVERSION` — A-4 producer-additive `rsi_21_cross_below_35_recent_5d`. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-5-G-RSI-14-THRESHOLD-HARDENING` — A-5 consolidation candidate with A-1 + A-2. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-5-Q-EVENT-CONVERSION` — A-5 cluster Pattern Q rolled. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-5-B320-LOOSENING-VERIFY-POST-B660` — verify B320 vol-gate loosening produces PASS_CUBE; revert if still starved. DEFERRED-POST-B660-RE-RUN.
+
+**Status flips applied this turn:** No prior queue items resolved or reopened. 35 NEW tickets added per per-turn discipline; documented inline above with cross-references to cluster docs.
+
+**Next live work after B751:** B752 picks up Cluster A walks A-6 through A-11 (stoch_oversold + stochrsi_oversold + stochrsi_overbought_short + williams_r_oversold + ultimate_oscillator + mfi_oversold). 6 walks per batch per established B751 pace.
+
+---
+
 ## B739 DECISION 5 SEQUENCE APPROVAL (2026-06-13)
 
 Owner-approved the full Cat 1-6 SM-cluster sequence per Decision 5 walkthrough. 22 tickets now carry status `APPROVED-IN-SEQUENCE-DECISION-5-2026-06-13` (read as: rule + scope owner-approved; execution waits for upstream prerequisites per the critical path below). 2 Cat 7 tickets ship as B739 (rows marked `RESOLVED-IMPLEMENTED-B739`).

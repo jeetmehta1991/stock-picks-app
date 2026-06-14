@@ -525,6 +525,380 @@ A-priori fire-count projection: AVWAP reclaim + MACD bullish + 200-EMA + 1.5% pr
 
 ---
 
+---
+
+## Per-strategy walks (B751 batch — A-2 / A-3 / A-4 / A-5)
+
+### A-2. `strat_rsi_overbought_short` (RSI overbought sell-rally, mean_reversion, batched B630)
+
+**Step 1 — Strategy registration + docstring claim**
+
+[screener.py:1397](backtest/signals/screener.py#L1397)
+
+```python
+def strat_rsi_overbought_short(s):
+    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
+    fires = (s.get("rsi_14", 50) > 68 and
+             s.get("below_sma_50") and
+             (s.get("bearish_engulfing") or s.get("rsi_14_rising") == False) and not _short_borrow_trap_active(s))
+    return _strat(fires, "short", "mean_reversion", ...)
+```
+
+No standalone docstring; claim from context_bullets: "RSI-14 overbought at >68 + below 50 SMA + bearish momentum confirms sellers".
+
+**Step 2 — Gate-by-gate analysis**
+
+SHORT (4 gates):
+1. `s.get("rsi_14", 50) > 68` — overbought RSI (HARDCODED threshold)
+2. `s.get("below_sma_50")` — below 50-SMA (B630 producer symmetric signal)
+3. `s.get("bearish_engulfing") or s.get("rsi_14_rising") == False` — bearish confirmation OR-disjunct
+4. `not _short_borrow_trap_active(s)` — B718 borrow gate
+
+Effective gate count: 4 (with OR-disjunct).
+
+**Step 3 — Producer source read (CHECKLIST #105)**
+
+Producers:
+- `rsi_14`: standard Wilder smoothing in technical.py. PIT-clean.
+- `below_sma_50`: B630 producer-additive positive-symmetric inverse to `price_above_sma_50`. PIT-clean.
+- `bearish_engulfing`: candle-pattern producer in technical.py. EVENT signal.
+- `rsi_14_rising`: state signal (RSI today > RSI yesterday). STATE.
+
+Producer-source verdict: PIT-clean. B630 positive-symmetric signal present (no F NOT-pattern). EVENT bearish_engulfing OR STATE rsi_not_rising = mixed temporality.
+
+**Step 4 — Signal-docstring vs producer-reality check**
+
+- "RSI > 68" claim — VERIFIED (hardcoded threshold)
+- "below 50 SMA" — VERIFIED
+- "bearish momentum confirms sellers" — VERIFIED via OR-disjunct
+
+Verdict: CLEAN.
+
+**Step 5 — Regime affinity check**
+
+Not set in registry. Falls through to default. SHORT-only mean-reversion strategy implicitly targets bear/neutral regimes (50-SMA gate selects downtrend context).
+
+**Recommendation:** Add explicit `STRATEGY_REGIME_AFFINITY['rsi_overbought_short'] = {bear, neutral}` per implicit gate-selection. Pattern A doc-vs-registry mismatch.
+
+**Step 6 — Missing-inverse audit**
+
+SHORT-only strategy. The LONG mirror is `strat_rsi_oversold` (A-1, dual). But A-1 SHORT branch already covers RSI > 65 + below_sma_50 + below_ema_200. The standalone strat_rsi_overbought_short adds: tighter RSI threshold (>68 vs >65) + bearish_engulfing OR not-rising confirmation. This is a TIGHTER variant of A-1 SHORT branch.
+
+**Pattern W concern (deterministic duplicate):** Post-tightening, `strat_rsi_overbought_short` and `strat_rsi_oversold` SHORT branch may fire on overlapping bars. Pattern W audit candidate per B718 hull_rsi_short precedent.
+
+**Step 7 — Bundled disposition recommendations**
+
+| Category | Finding | Action | Class |
+|---|---|---|---|
+| **F (silent-gap)** | B630 `below_sma_50` symmetric present | CLEAN | — |
+| **F (borrow gate)** | B718 explicit gate present | CLEAN | — |
+| **G (hardcoded threshold)** | `rsi_14 > 68` hardcoded; not cube-sweepable | Producer-additive: emit `rsi_14>68` boolean alongside existing `rsi_14<35` | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-2-G-RSI-OVERBOUGHT-THRESHOLD-HARDENING`)** |
+| **Q (STATE vs EVENT)** | `rsi_14_rising == False` is STATE; bearish_engulfing is EVENT; mixed temporality on OR-disjunct | EVENT-conversion: replace `(rsi_14_rising == False)` with `rsi_14_falling_cross_recent_3d` (producer-additive) | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-2-Q-MIXED-TEMPORALITY-EVENT-CONVERSION`)** |
+| **Pattern A (regime affinity)** | Implicit bear/neutral targeting; explicit registry entry missing | Add `STRATEGY_REGIME_AFFINITY['rsi_overbought_short'] = {bear, neutral}` | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-2-REGIME-AFFINITY-ADD`)** |
+| **W (deterministic duplicate)** | Post-tightening may overlap with strat_rsi_oversold SHORT branch | Pattern W audit post-B690b measurement | **Class 6 DEFERRED-POST-B690b (cross-ref `S4-B751-A-2-PATTERN-W-VS-RSI-OVERSOLD-SHORT`)** |
+| **S (asymmetric expectancy)** | SHORT-only mean-reversion faces bull-drift + borrow + squeeze | Document; cube empirically validates | **Class 6 DEFERRED-POST-CUBE** |
+
+**Disposition recommendation: KEEP-AS-IS + Class 2 fixes. Status post-B751: PRE-CUBE-CLEAN POST-FIXES.**
+
+A-priori fire-count projection: RSI > 68 + downtrend gate + bearish confirm = stack of 4 gates SHORT-side; estimated ~10-30 fires/ticker/yr on T1a during 2020-2026 bear/neutral windows. Universe-wide: ~3,000-10,000/yr SHORT. Possibly above B710 5K ceiling — Pattern Q EVENT-conversion would mitigate.
+
+---
+
+### A-3. `strat_rsi9_extreme` (RSI-9 extreme oversold + uptrend, mean_reversion, LONG-only)
+
+**Step 1 — Strategy registration + docstring claim**
+
+[screener.py:1379](backtest/signals/screener.py#L1379)
+
+```python
+def strat_rsi9_extreme(s):
+    # No natural short inverse  -  stays long-only (extreme oversold in uptrend)
+    fires = (s.get("rsi_9_extreme_os") and s.get("price_above_ema_200") and s.get("rsi_9_rising"))
+    return _strat(fires, "long", "mean_reversion", ...)
+```
+
+No standalone docstring; inline comment: "No natural short inverse - stays long-only (extreme oversold in uptrend)". context_bullets: "RSI-9 extreme oversold below 20", "Above 200 EMA - uptrend context", "RSI-9 rising - recovering".
+
+**Step 2 — Gate-by-gate analysis**
+
+LONG (3 gates):
+1. `s.get("rsi_9_extreme_os")` — RSI-9 < 20 (PRODUCER threshold; EVENT/STATE depending on producer)
+2. `s.get("price_above_ema_200")` — 200-EMA regime gate
+3. `s.get("rsi_9_rising")` — RSI-9 today > RSI-9 yesterday (STATE)
+
+LONG-only. Effective gate count: 3.
+
+**Step 3 — Producer source read (CHECKLIST #105)**
+
+Producers:
+- `rsi_9_extreme_os`: emitted by `compute_rsi(window=9)` in technical.py if `rsi_9 < 20`. STATE signal.
+- `price_above_ema_200`: standard. Verify post-B663 default-False fix.
+- `rsi_9_rising`: state delta (today > yesterday). STATE.
+
+**Note:** This walk's gate `s.get("price_above_ema_200")` uses NO default specified. Per Python dict.get semantics, default is `None` → falsy → effectively `False`. Acceptable but inconsistent with explicit `False` default elsewhere. Pre-B663 silent-gap concern: `s.get(key)` without explicit default == None == falsy on truthy check, so this is functionally equivalent to default-False. Not Pattern F.
+
+Producer-source verdict: PIT-clean. All 3 gates STATE-based. Pattern Q candidate.
+
+**Step 4 — Signal-docstring vs producer-reality check**
+
+- "RSI-9 below 20" — VERIFIED via producer signal `rsi_9_extreme_os`
+- "Above 200 EMA" — VERIFIED
+- "RSI-9 rising" — VERIFIED
+
+CLEAN.
+
+**Step 5 — Regime affinity check**
+
+Not set in registry. Inline comment claims "extreme oversold in uptrend" — implicit bull regime. 200-EMA gate enforces this.
+
+CLEAN — gate enforces the implicit regime claim. No Pattern A mismatch.
+
+**Step 6 — Missing-inverse audit**
+
+LONG-only by design (comment: "No natural short inverse"). Symmetric mirror would be RSI-9 > 80 + below 200 EMA + RSI-9 falling — exists conceptually but the author deliberately excluded.
+
+Per `feedback_long_short_inverse_audit` + `feedback_asymmetric_data_sources_break_mechanical_inverse`: the author's decision is defensible if (a) symmetric SHORT lacks distinct empirical anchor, OR (b) borrow + squeeze asymmetry on the mirror outweighs alpha. For RSI extreme oversold/overbought, the asymmetric expectancy (drift + borrow on SHORT) supports LONG-only treatment.
+
+**Recommendation:** Accept author's LONG-only decision. No Class 7 NEW SHORT inverse needed.
+
+**Step 7 — Bundled disposition recommendations**
+
+| Category | Finding | Action | Class |
+|---|---|---|---|
+| **F (silent-gap)** | Implicit default-falsy on `price_above_ema_200`; functionally equivalent to default-False | Minor: add explicit `default=False` for consistency with B663 sweep | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-3-F-EXPLICIT-DEFAULT-FALSE-CONSISTENCY`)** |
+| **G (hardcoded threshold)** | `rsi_9_extreme_os` consumes producer threshold (20); cube can sweep producer threshold | CLEAN | — |
+| **Q (STATE vs EVENT)** | All 3 gates STATE; fire rate may inflate during prolonged oversold windows | EVENT-conversion candidate: emit `rsi_9_cross_below_20_recent_3d` per B655 T10 precedent | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-3-Q-RSI-9-EVENT-CONVERSION`)** |
+| **J (marginal contribution)** | RSI-9 vs RSI-14 (A-1) vs RSI-21 (A-4) — same primitive at different windows | Post-B690b: Pattern J audit on RSI window family | **Class 6 DEFERRED-POST-B690b** |
+| **N (effective-N)** | RSI extreme oversold clusters in vol regimes | Cube infra ticket | **Class 8 CUBE-INFRA** |
+
+**Disposition recommendation: KEEP-AS-IS + Class 2 minor fixes. LONG-only justified per asymmetric data sources discipline. Status post-B751: PRE-CUBE-CLEAN.**
+
+A-priori fire-count projection: RSI-9 < 20 is rare (extreme oversold); + uptrend (200-EMA) is even rarer (oversold in uptrend); + rising (recovery) is the EVENT trigger. Stacked gates: estimated 1-3 fires/ticker/yr on T1a in benign conditions; 5-15 in vol regimes. Universe-wide: ~500-1,500/yr. **Possibly FAIL_FIRE_STARVED in per-regime split** — EXPLORATORY candidate.
+
+---
+
+### A-4. `strat_rsi21_slow` (Slow RSI-21 mean-reversion, dual, batched B630)
+
+**Step 1 — Strategy registration + docstring claim**
+
+[screener.py:1387](backtest/signals/screener.py#L1387)
+
+```python
+def strat_rsi21_slow(s):
+    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
+    fl = (s.get("rsi_21", 50) < 35 and s.get("price_above_sma_50"))
+    fs = (s.get("rsi_21", 50) > 65 and s.get("below_sma_50")) and not _short_borrow_trap_active(s)
+    return _strat3(fl, fs, "mean_reversion", ...)
+```
+
+No standalone docstring; B630 comment indicates symmetric inverse signal. context_bullets: "Slow RSI-21 oversold below 35", "Above 50 SMA - uptrend context" (LONG) / mirror for SHORT.
+
+**Step 2 — Gate-by-gate analysis**
+
+LONG (2 gates):
+1. `s.get("rsi_21", 50) < 35` — slow RSI-21 oversold (HARDCODED threshold)
+2. `s.get("price_above_sma_50")` — 50-SMA uptrend context
+
+SHORT (3 gates):
+1. `s.get("rsi_21", 50) > 65` — slow RSI-21 overbought (HARDCODED)
+2. `s.get("below_sma_50")` — B630 producer symmetric
+3. `not _short_borrow_trap_active(s)` — B718 borrow gate
+
+Effective gate count: LONG=2 / SHORT=3.
+
+**Step 3 — Producer source read (CHECKLIST #105)**
+
+Producers:
+- `rsi_21`: 21-window RSI with Wilder smoothing in technical.py. STATE. PIT-clean.
+- `price_above_sma_50`, `below_sma_50`: standard SMA + B630 symmetric. PIT-clean.
+
+Producer-source verdict: PIT-clean. B630 symmetric signal present (no F NOT-pattern). All gates STATE-based.
+
+**Step 4 — Signal-docstring vs producer-reality check**
+
+CLEAN. Gates match context bullets.
+
+**Step 5 — Regime affinity check**
+
+Not set in registry. Falls through to default. SMA-50 gate implicitly selects bull (LONG) / bear (SHORT) regimes.
+
+CLEAN — implicit regime via SMA gate.
+
+**Step 6 — Missing-inverse audit**
+
+LONG/SHORT present (_strat3 dual). Symmetric mechanical mirror.
+
+**Pattern S verdict:** Same as A-1 — SHORT side faces bull-drift + borrow + squeeze asymmetry.
+
+**Pattern J + Pattern W (CRITICAL):** strat_rsi21_slow vs strat_rsi_oversold (A-1):
+- A-1 LONG: `(rsi_2 < 5 OR rsi_14 < 35)` AND `price_above_sma_50` AND `price_above_ema_200`
+- A-4 LONG: `rsi_21 < 35` AND `price_above_sma_50`
+
+A-4 is a STRICT SUBSET of A-1 LONG if rsi_21 < 35 implies (rsi_2 < 5 OR rsi_14 < 35). Statistical relationship: rsi_21 lags rsi_14 lags rsi_2. When rsi_21 < 35, rsi_14 is usually also < 35 (slower indicator more conservative). When rsi_14 < 35, rsi_2 is often < 5 too. So A-4 LONG firings ≈ subset of A-1 LONG firings minus 200-EMA gate difference.
+
+Also A-4 vs A-3 (rsi9_extreme): RSI-21 < 35 vs RSI-9 < 20 — different oversold definitions, but overlap exists.
+
+**Pattern J/W audit candidate:** RSI window family (RSI-9, RSI-14, RSI-21) reskins.
+
+**Step 7 — Bundled disposition recommendations**
+
+| Category | Finding | Action | Class |
+|---|---|---|---|
+| **F (silent-gap)** | B630 `below_sma_50` symmetric present | CLEAN | — |
+| **F (borrow gate)** | B718 explicit gate present | CLEAN | — |
+| **G (hardcoded threshold)** | `rsi_21 < 35` and `> 65` hardcoded | Producer-additive: emit `rsi_21<35` and `rsi_21>65` booleans | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-4-G-RSI-21-THRESHOLD-HARDENING`)** |
+| **Q (STATE vs EVENT)** | Both gates STATE | EVENT-conversion candidate per cluster Pattern Q | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-4-Q-RSI-21-EVENT-CONVERSION`)** |
+| **J (RSI window family)** | RSI-9, RSI-14, RSI-21 — same primitive at different windows; A-4 LONG ≈ subset of A-1 LONG | Post-B690b: gate-redundancy diagnostic on RSI window family | **Class 6 DEFERRED-POST-B690b (cross-ref `S4-B750-PATTERN-J-CLUSTER-A-MARGINAL-CONTRIBUTION-AUDIT-POST-B690b`)** |
+| **W (deterministic duplicate)** | A-4 LONG potentially strict subset of A-1 LONG | Pattern W audit post-B690b | **Class 6 DEFERRED-POST-B690b** |
+| **N (effective-N)** | Cluster A Pattern N | Cube infra | **Class 8 CUBE-INFRA** |
+
+**Disposition recommendation: KEEP-AS-IS PENDING Pattern J/W audit. May consolidate or delete post-B690b. Status post-B751: PRE-CUBE-CLEAN; CONSOLIDATION CANDIDATE.**
+
+A-priori fire-count projection: RSI-21 is slower than RSI-14, fires LESS often. Stack of 2 gates LONG / 3 SHORT. Estimated 5-15 fires/ticker/yr LONG; ~3-10 SHORT. Universe-wide: ~1,500-5,000/yr LONG. PASS_CUBE range; possibly EXPLORATORY post-Pattern-N effective-N adjustment.
+
+---
+
+### A-5. `strat_rsi_volume_200ema` (RSI + volume + 200-EMA confluence, dual, batched B320 + B630)
+
+**Step 1 — Strategy registration + docstring claim**
+
+[screener.py:2164](backtest/signals/screener.py#L2164)
+
+```python
+def strat_rsi_volume_200ema(s):
+    """Batch 320 (2026-05-25): loosened vol gate from vol_spike_2x to
+    vol_above_avg (>=1.0x) per owner directive. The 2x bar combined with
+    RSI<35 AND above-200-EMA was nearly impossible to satisfy in trending
+    markets (RSI<30 + uptrend is itself rare); the volume gate compounded
+    that to zero. Above-average volume on the oversold day still confirms
+    the move, without the 2x sledgehammer."""
+    fl = (s.get("rsi_14", 50) < 35 and s.get("vol_above_avg") and s.get("price_above_ema_200"))
+    # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
+    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and s.get("below_ema_200")) and not _short_borrow_trap_active(s)
+    return _strat3(fl, fs, "confluence", ...)
+```
+
+Category: "confluence" (NOT mean_reversion). Triple-gate confluence on RSI + volume + 200-EMA.
+
+Citation: B320 loosening lineage (2026-05-25) per owner directive. Pre-B320 used vol_spike_2x; B320 loosened to vol_above_avg per fire-starvation finding.
+
+**Step 2 — Gate-by-gate analysis**
+
+LONG (3 gates):
+1. `s.get("rsi_14", 50) < 35` — RSI oversold (hardcoded)
+2. `s.get("vol_above_avg")` — volume above 20d average (B320 loosened from vol_spike_2x)
+3. `s.get("price_above_ema_200")` — 200-EMA regime
+
+SHORT (4 gates):
+1. `s.get("rsi_14", 50) > 65` — RSI overbought (hardcoded)
+2. `s.get("vol_above_avg")` — volume above avg
+3. `s.get("below_ema_200")` — B630 producer symmetric
+4. `not _short_borrow_trap_active(s)` — B718 borrow gate
+
+Effective gate count: LONG=3 / SHORT=4.
+
+**Step 3 — Producer source read (CHECKLIST #105)**
+
+Producers:
+- `rsi_14`: standard. PIT-clean.
+- `vol_above_avg`: `today_volume / 20-day_avg > 1.0`. STATE. PIT-clean.
+- `price_above_ema_200`, `below_ema_200`: standard + B630 symmetric. PIT-clean.
+
+Producer-source verdict: PIT-clean. B630 symmetric present. All STATE-based.
+
+**Step 4 — Signal-docstring vs producer-reality check**
+
+- "RSI<35" — VERIFIED
+- "vol above 20d avg" (B320 loosening) — VERIFIED
+- "above 200 EMA" — VERIFIED
+- B320 batch lineage docstring claim — VERIFIED via git blame
+
+CLEAN.
+
+**Step 5 — Regime affinity check**
+
+Not set in registry. 200-EMA gate selects bull (LONG) / bear (SHORT) regimes implicitly.
+
+CLEAN.
+
+**Step 6 — Missing-inverse audit**
+
+LONG/SHORT present (_strat3 dual). Symmetric.
+
+**Pattern J + Pattern W (CRITICAL):** strat_rsi_volume_200ema vs strat_rsi_oversold (A-1):
+- A-1 LONG: `(rsi_2<5 OR rsi_14<35)` AND `price_above_sma_50` AND `price_above_ema_200`
+- A-5 LONG: `rsi_14<35` AND `vol_above_avg` AND `price_above_ema_200`
+
+Differences:
+- A-1 uses Connors-OR-disjunct; A-5 uses single rsi_14<35
+- A-1 has 50-SMA pullback gate; A-5 doesn't
+- A-5 has vol_above_avg gate; A-1 doesn't
+- Both have 200-EMA
+
+Pattern J: A-1 vs A-5 share the 200-EMA + rsi_14<35 core. Distinguishing: A-1's Connors-OR + SMA-50 pullback vs A-5's volume confirmation. Different secondary gates. Not strict duplicate but high overlap.
+
+**Pattern N + Pattern Q:** All STATE-based; clusters in vol regimes; effective-N inflation expected.
+
+**Step 7 — Bundled disposition recommendations**
+
+| Category | Finding | Action | Class |
+|---|---|---|---|
+| **F (silent-gap)** | B630 `below_ema_200` symmetric present | CLEAN | — |
+| **F (borrow gate)** | B718 explicit gate present | CLEAN | — |
+| **G (hardcoded threshold)** | `rsi_14<35` and `rsi_14>65` hardcoded | Producer-additive: emit boolean signals; cube can sweep | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-5-G-RSI-14-THRESHOLD-HARDENING`)** |
+| **Q (STATE vs EVENT)** | All 3 gates STATE | EVENT-conversion candidate | **Class 2 LOOSEN/TIGHTEN (queue `S4-B751-A-5-Q-EVENT-CONVERSION`)** |
+| **J (vs A-1)** | Shares 200-EMA + rsi_14<35 core with strat_rsi_oversold (A-1); distinguishing gate is volume_above_avg | Post-B690b: gate-redundancy diagnostic + ablation on vol_above_avg gate | **Class 6 DEFERRED-POST-B690b** |
+| **N (effective-N)** | Cluster A Pattern N | Cube infra | **Class 8 CUBE-INFRA** |
+| **B320 lineage check** | B320 loosened vol gate per fire-starvation; verify post-B660 fire count justifies loosening or reverts | Post-B660 re-measurement: verify fire rate is in PASS_CUBE range now; if still <100/yr, reconsider B320 loosening | **Class 6 DEFERRED-POST-B660-RE-RUN (queue `S4-B751-A-5-B320-LOOSENING-VERIFY-POST-B660`)** |
+
+**Disposition recommendation: KEEP-AS-IS + Class 2 fixes + B320 lineage verification. Status post-B751: PRE-CUBE-CLEAN; J-audit candidate.**
+
+A-priori fire-count projection: RSI<35 + vol_above_avg + 200-EMA = 3-gate confluence; estimated 5-20 fires/ticker/yr on T1a. Universe-wide: ~2,500-10,000/yr LONG. PASS_CUBE range; B320 loosening worked.
+
+---
+
+## B751 cluster walk completion wrap-up
+
+### Disposition summary (4 walks shipped)
+
+| Walk | Strategy | Status | Class actions surfaced |
+|---|---|---|---|
+| A-2 | rsi_overbought_short | KEEP-AS-IS + Class 2 G + Q + regime affinity | G + Q + Pattern A + W + S |
+| A-3 | rsi9_extreme | KEEP-AS-IS + Class 2 minor F + Q | F (minor) + Q + J + N + LONG-only justified |
+| A-4 | rsi21_slow | KEEP-AS-IS PENDING J/W audit | F (clean) + G + Q + J (RSI window family) + W |
+| A-5 | rsi_volume_200ema | KEEP-AS-IS + Class 2 G + Q + B320 lineage verify | F (clean) + G + Q + J (vs A-1) + B320 lineage |
+
+**RSI window family (A-1 + A-3 + A-4 + A-5) is the dominant B751 finding.** 4 RSI strategies share the same primitive (RSI threshold + trend gate) at different windows (RSI-2/9/14/21). Pattern J consolidation candidate post-B690b. Likely 4 → 1-2 effective strategies.
+
+**Pattern Q EVENT-conversion (continued from B750) confirmed cluster-wide.** All 4 B751 walks have STATE-based gates that over-fire during oversold/overbought persistence.
+
+### NEW EXECUTION_QUEUE tickets surfaced (B751)
+
+1. `S4-B751-A-2-G-RSI-OVERBOUGHT-THRESHOLD-HARDENING` — producer-additive `rsi_14>68` boolean. PENDING-OWNER-APPROVAL.
+2. `S4-B751-A-2-Q-MIXED-TEMPORALITY-EVENT-CONVERSION` — replace `rsi_14_rising == False` STATE with `rsi_14_falling_cross_recent_3d` EVENT. PENDING-OWNER-APPROVAL.
+3. `S4-B751-A-2-REGIME-AFFINITY-ADD` — `STRATEGY_REGIME_AFFINITY['rsi_overbought_short'] = {bear, neutral}`. PENDING-OWNER-APPROVAL.
+4. `S4-B751-A-2-PATTERN-W-VS-RSI-OVERSOLD-SHORT` — post-B690b Pattern W audit (vs A-1 SHORT branch). DEFERRED-POST-B690b.
+5. `S4-B751-A-3-F-EXPLICIT-DEFAULT-FALSE-CONSISTENCY` — add explicit `default=False` to `price_above_ema_200` and `rsi_9_rising` for B663 consistency. PENDING-OWNER-APPROVAL.
+6. `S4-B751-A-3-Q-RSI-9-EVENT-CONVERSION` — producer-additive `rsi_9_cross_below_20_recent_3d`. PENDING-OWNER-APPROVAL.
+7. `S4-B751-A-4-G-RSI-21-THRESHOLD-HARDENING` — producer-additive `rsi_21<35` + `rsi_21>65` booleans. PENDING-OWNER-APPROVAL.
+8. `S4-B751-A-4-Q-RSI-21-EVENT-CONVERSION` — producer-additive `rsi_21_cross_below_35_recent_5d`. PENDING-OWNER-APPROVAL.
+9. `S4-B751-A-5-G-RSI-14-THRESHOLD-HARDENING` — same as A-1 + A-2 (consolidation candidate). PENDING-OWNER-APPROVAL.
+10. `S4-B751-A-5-Q-EVENT-CONVERSION` — cluster Pattern Q rolled. PENDING-OWNER-APPROVAL.
+11. `S4-B751-A-5-B320-LOOSENING-VERIFY-POST-B660` — verify B320 vol-gate loosening produces PASS_CUBE fire rate; revert if still starved. DEFERRED-POST-B660-RE-RUN.
+12. `S4-B751-PATTERN-J-RSI-WINDOW-FAMILY-CONSOLIDATION-AUDIT-POST-B690b` — 4 RSI window-family strategies (A-1 + A-3 + A-4 + A-5) consolidation candidate. DEFERRED-POST-B690b.
+
+### Owner decision gates (B751 surfaces)
+
+| Decision | Severity | Pre-cube urgency |
+|---|---|---|
+| Pattern J RSI window family consolidation audit | HIGH | Post-B690b (waits on measurement) |
+| Pattern Q cluster sweep (extension of B750/A-1 ticket) | MEDIUM | Pre-cube preferred (B751 walks add 4 more EVENT-conversion candidates) |
+| Pattern G threshold-signal hardening sweep | LOW-MED | Pre-cube preferred (cube sweep capability) |
+| Per-strategy regime-affinity adds (A-2) | LOW | Pre-cube |
+| B320 lineage verify (A-5) | LOW-MED | Post-B660 re-run |
+
+---
+
 ## B750 cluster walk completion wrap-up
 
 ### Disposition summary (3 walks shipped)
@@ -611,10 +985,10 @@ A-priori fire-count projection: AVWAP reclaim + MACD bullish + 200-EMA + 1.5% pr
 | Walk | Status | Batch | Notes |
 |---|---|---|---|
 | A-1 rsi_oversold | ✅ Walked B750 | 2026-06-14 | Step 1-7 complete; 7 queue tickets surfaced |
-| A-2 rsi_overbought_short | ⏳ Pending B751 | — | |
-| A-3 rsi9_extreme | ⏳ Pending B751 | — | |
-| A-4 rsi21_slow | ⏳ Pending B751 | — | |
-| A-5 rsi_volume_200ema | ⏳ Pending B751 | — | |
+| A-2 rsi_overbought_short | ✅ Walked B751 | 2026-06-14 | Step 1-7 complete; 5 queue tickets surfaced (G + Q + regime + W + S) |
+| A-3 rsi9_extreme | ✅ Walked B751 | 2026-06-14 | Step 1-7 complete; 4 queue tickets surfaced (LONG-only justified per asymmetric data) |
+| A-4 rsi21_slow | ✅ Walked B751 | 2026-06-14 | Step 1-7 complete; Pattern J RSI window family + W audit candidates |
+| A-5 rsi_volume_200ema | ✅ Walked B751 | 2026-06-14 | Step 1-7 complete; B320 lineage verify + J vs A-1 ablation candidate |
 | A-6 stoch_oversold | ⏳ Pending B752 | — | |
 | A-7 stochrsi_oversold | ⏳ Pending B752 | — | |
 | A-8 stochrsi_overbought_short | ⏳ Pending B752 | — | |
@@ -641,7 +1015,7 @@ A-priori fire-count projection: AVWAP reclaim + MACD bullish + 200-EMA + 1.5% pr
 | A-29 prev_day_low_bounce | ⏳ Pending B755 | — | |
 | A-30 bb_squeeze_volume | ⏳ Pending B756 | — | |
 
-**Progress: 3/30 walked (10%) — framework + 3 sample walks shipped B750.**
+**Progress: 7/30 walked (23%) — B750 framework + 3 sample walks + B751 4 walks shipped.**
 
 ---
 
