@@ -152,6 +152,68 @@ The B753 cluster doc wrap-up surfaced 5 tickets but my B753 EXECUTION_QUEUE.md e
 
 **CLUSTER A COMPLETE. Next live work after B755:** B756 starts Cluster B per-strategy walks (33 strategies; B-3/B-13/B-29 already walked B750). Remaining: B-1/B-2/B-4 through B-12 + B-14 through B-28 + B-30 through B-33 = 30 walks at 5-7 per batch (~5 batches B756-B760).
 
+---
+
+## B755-COUNCIL ADVERSARIAL REVIEW — 16 NEW TICKETS (2026-06-14)
+
+Owner-invoked LLM Council (aiwithremy SKILL.md) on B755 completion: "Anything missing? Anything not yet added to execution queue? Comprehensive adversarial review across architecture / market triggers / feasibility / success rate / edge cases / issues / false negatives / false positives. How to boost win rate % AND net ROI per strategy?"
+
+5 advisors (Contrarian / First Principles / Expansionist / Outsider / Executor) → 5 anonymized peer reviewers → chairman synthesis. Peer convergence: First Principles strongest 4/5; Expansionist biggest blind spot 4/5. Two meta-misses surfaced via peer review that the 5 advisors all missed: (a) whether mean-reversion has tradeable edge at T1a daily-bar at all per Lo-MacKinlay literature; (b) no fire-bar sparse matrix precompute makes every consolidation claim unfalsifiable.
+
+Owner directive 2026-06-14 "approve all for filing" — 16 council tickets queued below per `feedback_execution_queue_mandatory_per_turn.md`.
+
+### TIER 1 — Pre-anything-else (foundational measurement infrastructure)
+
+1. **`S4-B755-COUNCIL-FIRE-BAR-SPARSE-MATRIX-PRECOMPUTE`** — **THE ONE THING TO DO FIRST** per council chairman. All 30 Cluster A strategies × T1a PIT-active universe × 2020-2026 daily bars → boolean fire matrix. Foundation for: Pattern W validation (Jaccard), Pattern J consolidation (phi-correlation per B709 0.70 threshold), Pattern N effective-N (autocorrelation), Pattern AA effective-N adjustment, orthogonal return-stream selection. Without this matrix, every claim about consolidation count (3 vs 12-15 vs 30), every Pattern W deletion candidate, every Pattern J family verdict is unfalsifiable opinion. PENDING-OWNER-APPROVAL. Source: Reviewer 2 + Advisor A/C convergence. Class 9 INFRA. **CRITICAL Pre-anything**.
+
+2. **`S4-B755-COUNCIL-CHECKLIST-106-CLUSTER-A-PRODUCER-DATA-AUDIT`** — Apply B748c CHECKLIST #106 discipline to every Cluster A producer: RSI/Stoch/Williams/MFI/Ultimate/StochRSI/Bollinger/Keltner/Camarilla/CPR/AVWAP/MACD/OBV/CMF/PPO/ROC/Awesome. Verify each returns non-empty across T1a/T1c/T2/T3 × 2020-2026 PIT-active slices. Until this lands, every B750-B755 walk verdict is conditional on a possibly-false premise. PENDING-OWNER-APPROVAL. Source: Reviewers 3+4. Class 9 PRODUCER-AUDIT. **CRITICAL Pre-cube**.
+
+3. **`S4-B755-COUNCIL-MEAN-REVERSION-EDGE-PRIOR-TEST`** — Compute aggregate Cluster A long-side hit-rate + mean PnL on T1a 2020-2026 with ZERO gates (every oversold/overbought threshold fire). If null/negative, Cluster A is structurally edgeless at daily-bar T1a per Lo-MacKinlay literature — tuning is overfit-manufacturing per `feedback_no_prior_edge_consolidate_before_tune.md`. PENDING-OWNER-APPROVAL. Source: Reviewers 1+5. Class 9 META. **CRITICAL Pre-tune**.
+
+### TIER 2 — Verdict-machinery fix (before any cube run)
+
+4. **`S4-B755-COUNCIL-BENJAMINI-HOCHBERG-FDR-VS-BONFERRONI`** — Replace Bonferroni with Benjamini-Hochberg FDR or López-de-Prado deflated Sharpe. 23K-cell Bonferroni at α=0.05 → α/cell = 2.2e-6 = 4.6σ. FDR controls false-discovery-rate not family-wise-error — correct tool for correlated tests on shared OHLCV. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 8 CUBE-INFRA. HIGH.
+
+5. **`S4-B755-COUNCIL-INSUFFICIENT-POWER-TAG-DISTINCT-FROM-EXPLORATORY`** — A-10 ultimate_oscillator Sharpe 0.49 @ n=27 has 95% CI [-0.3, 1.3] — indistinguishable from null. Tag INSUFFICIENT_POWER not EXPLORATORY. Re-tag A-10 + B753/A-13/A-15/A-29/A-30 audit for n<50 cases with CI spanning null. PENDING-OWNER-APPROVAL. Source: Advisor C + Reviewer 1. Class 2 LOOSEN/TIGHTEN. HIGH.
+
+6. **`S4-B755-COUNCIL-EXPLORATORY-TO-DELETE-TIME-BOUND-ESCALATION`** — Time-bound auto-escalation rule: EXPLORATORY strategies with n<50 trades after 2 cube cycles → auto-delete. Prevents EXPLORATORY becoming junk-drawer parking lot (Outsider's lens). Codify before tagging more strategies. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 2 LOOSEN/TIGHTEN. HIGH.
+
+### TIER 3 — Process-discipline immediate actions
+
+7. **`S4-B755-COUNCIL-PATTERN-W-DELETE-BUNDLE-A-8-A-19-A-21`** — Bundle 3 Pattern W deletes (A-8 stochrsi_overbought_short + A-19 camarilla_rsi_obv_short HIGHEST CONFIDENCE + A-21 cpr_narrow_momentum_short) into ONE batch — 1 pyramid + 1 doc sync + 1 count update (vs 3 separate batches). 221 → 218. B722 hull_rsi_short precedent. PENDING-OWNER-APPROVAL. Source: Advisor E. Class 1 KEEP-AS-IS/DELETE. HIGH (single batch).
+
+8. **`S4-B755-COUNCIL-PATTERN-CC-CLUSTER-A-FAMILY-APPLICATION`** — Pattern CC (VIX-conditional adaptive thresholds) under-applied; should propagate to all 22 threshold-based Cluster A strategies. RV20-percentile per-ticker (D's extension; bigger than VIX-only). Cluster-wide ticket. PENDING-OWNER-APPROVAL. Source: Advisor C + D. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
+
+9. **`S4-B755-COUNCIL-CAMARILLA-SHIFT1-LOOKAHEAD-PROBE`** — Grep `compute_camarilla_pivots` for `.shift(1)` on H/L/C inputs. B643 lineage: pivot-family producers had this exact bug. Producer-source audit; affects A-17/A-18/A-19. PENDING-OWNER-APPROVAL. Source: Advisor C. Class 9 PRODUCER-AUDIT. MEDIUM-HIGH.
+
+10. **`S4-B755-COUNCIL-AVWAP-252-SURVIVORSHIP-PATTERN-V-PROBE`** — A-23 AVWAP-252-low anchor requires 252-day history. T2/T3 tickers with <252 days silently fail gate. This is Pattern V cross-sectional blocker masquerading as Pattern AA effective-N issue. Different fix. PENDING-OWNER-APPROVAL. Source: Advisor C. Class 9 PRODUCER-AUDIT. MEDIUM.
+
+11. **`S4-B755-COUNCIL-REGISTRATION-TIME-GATE-HASH-DUPLICATE-DETECTOR`** — Hash the gate-set on strategy registration; refuse identical registration. Catches Pattern W IDENTICAL duplicates upstream (e.g., A-19 vs A-18 SHORT) instead of by human eyeball six layers downstream. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 8 INFRA. MEDIUM.
+
+12. **`S4-B755-COUNCIL-UPSTREAM-TAXONOMY-PROCESS-AUDIT`** — 3 of 30 Cluster A strategies (A-17/A-29/A-30) were Pattern X mis-clustered. What UPSTREAM process put them there? Same process feeds Clusters B/C. Audit STRATEGY_CATEGORIES assignment logic. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 8 INFRA. MEDIUM.
+
+13. **`S4-B755-COUNCIL-PATTERN-J-VIA-RETURN-STREAM-NOT-GATE-SIMILARITY`** — Pattern J consolidation done by gate-similarity is curve-fitting; by return-stream correlation is portfolio engineering. Pairwise trade-day return correlation across 30 strategies; keep low-correlation islands, demote high-correlation clusters regardless of individual Sharpe. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 2 METHODOLOGY. MEDIUM.
+
+14. **`S4-B755-COUNCIL-PATTERN-T-FAMILY-GREP-ALL-221-STRATEGIES`** — Grep `ema_cross AND price_above_ema` across all 221 strategies per `feedback_family_bug_grep_before_one_liners.md`. Min 8-12 hits expected outside Cluster A. Bundled audit ticket. PENDING-OWNER-APPROVAL. Source: Advisor E. Class 9 AUDIT. MEDIUM.
+
+15. **`S4-B755-COUNCIL-PATTERN-CC-BLAST-RADIUS-ENUMERATION`** — Pattern CC is a global helper change masquerading as per-strategy idea. Per `feedback_local_changes_default_global_needs_approval.md` owe explicit blast-radius enumeration BEFORE pattern propagates beyond A-12 + A-13. PENDING-OWNER-APPROVAL. Source: Advisor E. Class 9 META. LOW-MEDIUM.
+
+16. **`S4-B755-COUNCIL-STRATEGY-ROSTER-REGEN-OVERDUE-6-BATCHES`** — 6 batches (B750-B755) modified category/status without regen STRATEGY_ROSTER.md per `feedback_strategy_roster_doc_maintenance.md`. Regen overdue. PENDING-OWNER-APPROVAL. Source: Advisor E. Class 1 DOC-SYNC. LOW (immediate).
+
+### REJECTED (per existing memory directives — documented for audit trail)
+
+- **D's 6+ Class 7 NEW additions**: rsi_2_pullback_dual_window / camarilla_pivot_reclaim_long / cpr_widening_breakout / bb_squeeze_lower_tag_long / AVWAP×4 anchor variants (earnings-day/52w-low/gap-day/FOMC) / rsi_oversold_post_earnings_drift_long. REJECTED per `feedback_no_prior_edge_consolidate_before_tune.md` B705 lesson — tuning/expanding no-edge family manufactures overfit. Re-evaluate ONLY after TIER 1-3 edge-prior measurement infrastructure lands.
+- **D's Pattern AA inversion** (A-24 + 50-high + 100-high mirror expansion to "rescue" fire-count). REJECTED per `feedback_minimum_fire_count_gate_before_cube.md` — the disciplined response to FAIL_FIRE_STARVED is accept rarity or DELETE, not manufacture trigger surface.
+
+### Cumulative ticket count post-council
+
+**B750+B751+B752+B753+B754+B755+B755-COUNCIL = 61 prior + 16 council = 77 NEW tickets** filed in EXECUTION_QUEUE.md across Stage 4 sweep B750-B755.
+
+**Next live work after B755-COUNCIL filing:** PENDING-OWNER-DIRECTION. Choose one of:
+- (a) Start TIER 1 work (S4-B755-COUNCIL-FIRE-BAR-SPARSE-MATRIX-PRECOMPUTE) — "the one thing to do first" per council chairman
+- (b) Continue B756 Cluster B walks (Stage 4 coverage expansion) per pre-council plan
+- (c) Different priority order across the 16 council tickets
+
 **Next live work after B752:** B753 picks up Cluster A walks A-12 through A-17 (bollinger_lower + bollinger_tight + bollinger_upper_short + keltner_lower + camarilla_r4_breakout).
 
 ---
