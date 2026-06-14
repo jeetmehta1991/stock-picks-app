@@ -1542,6 +1542,303 @@ Fire projection: 4-gate stack with rare 252-day-low proximity; ~1-3 fires/ticker
 
 ---
 
+---
+
+## Per-strategy walks (B755 batch — A-24 / A-25 / A-26 / A-27 / A-28 / A-29 / A-30) — FINAL CLUSTER A WALKS
+
+### A-24. `strat_avwap_20high_rejection_short` (AVWAP-20-high rejection + bearish candle + volume + 200-EMA SHORT-only, batched B208 + B630)
+
+**Step 1 — Registration:** [screener.py:4470](backtest/signals/screener.py#L4470). Docstring: B208 "Recent high acts as resistance; price tests then rejects with bearish candle + volume. Designed to fire in neutral/bear regime (high-quality short setup per Anchored VWAP discipline)."
+
+**Step 2 — Gates:** SHORT (6): `(not above_avwap_20high, True)` (NOT-pattern with default True!) + `abs(pct_from_20h) < 1.0` (1% proximity HARDCODED) + `(shooting_star OR bearish_engulfing)` + `vol_spike_15x` + `below_ema_200` (B630 symmetric) + B718.
+
+**Step 3 — Producer:** Same AVWAP family as A-22 + A-23. PIT-audit concern carries.
+
+**Pattern F NOT-pattern CRITICAL:** `not s.get("above_avwap_20high", True)` — uses default `True` so when key absent, `not True = False` blocks SHORT. This is FAIL-CLOSED behavior (safer than default-False which would fail-open). But STILL violates `feedback_never_use_NOT_s_get_pattern` discipline.
+
+Producer-source verdict: PIT-clean methodology. B630 + B718 + B208 lineage VERIFIED. **Pattern F NOT-pattern present** (cross-applies to A-22 + A-23 family fix).
+
+**Step 4 — Doc vs reality:** CLEAN. B208 + B630 lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set in registry. Docstring claims neutral/bear regime; `below_ema_200` gate enforces this. CLEAN.
+
+**Step 6 — Inverse:** SHORT-only standalone. LONG mirror exists conceptually (AVWAP-20-low reclaim + bullish candle); not registered. Per `feedback_long_short_inverse_audit`: AVWAP-20-high rejection has natural LONG counterpart but absence is deliberate per B208 discipline (high-quality short setup focus).
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| **F (NOT-pattern on SHORT)** | `not s.get("above_avwap_20high", True)` — Pattern F with FAIL-CLOSED default | Producer-additive `below_avwap_20high` symmetric (parallel to B750/A-22 + B754/A-23) | **Class 2 (queue `S4-B755-A-24-PATTERN-F-NOT-AVWAP-20HIGH-REPLACE`)** |
+| F (borrow gate) | B718 explicit gate | CLEAN | — |
+| G | `abs(pct_from_20h) < 1.0` hardcoded proximity (tighter than A-22 1.5%, A-23 2.0%) | Producer-additive | **Class 2** |
+| **AVWAP family PIT-audit (CRITICAL cross-ref)** | AVWAP-20-high anchor inherits PIT-audit concern from A-22 + A-23 | Apply SAME producer-audit to compute_avwap_signals 20-day-high anchor | **Class 9 PRODUCER-AUDIT (queue `S4-B755-A-24-AVWAP-20HIGH-ANCHOR-PIT-VERIFY-CROSS-REF-B750-B754`)** |
+| Q | Mixed STATE (AVWAP touch) + EVENT (candle pattern + vol_spike) | Acceptable mixed temporality | **Class 1 KEEP-AS-IS** |
+| J | AVWAP family (A-22 + A-23 + A-24) consolidation post-B690b | Cross-ref `S4-B750-PATTERN-J-CLUSTER-A-MARGINAL-CONTRIBUTION-AUDIT-POST-B690b` (AVWAP component) | **Class 6** |
+| Pattern S | SHORT-only without LONG mirror; AVWAP rejection thesis is naturally asymmetric per Bulkowski + Wyckoff resistance discipline | CLEAN | — |
+
+**Recommendation: KEEP-AS-IS + Class 2 Pattern F fix + cross-ref AVWAP PIT-audit ticket family.** Status post-B755: PRE-CUBE-CLEAN POST-FIXES.
+
+Fire projection: tight 6-gate stack with 1% proximity + EVENT candle + vol confirm; ~1-3 fires/ticker/yr SHORT; ~500-1,500/yr universe-wide. FAIL_FIRE_STARVED-likely; EXPLORATORY tag candidate per Pattern AA.
+
+---
+
+### A-25. `strat_awesome_oscillator` (AO zero-line cross + EMA-20, dual, batched B627)
+
+**Step 1 — Registration:** [screener.py:984](backtest/signals/screener.py#L984). Docstring: Bill Williams AO = SMA(5, midprice) - SMA(34, midprice); zero-line cross flips momentum bias. EMA-20 confirms direction alignment. B627 F1 silent-gap fix per `feedback_never_use_NOT_s_get_pattern`.
+
+**Step 2 — Gates:** LONG (2): `ao_cross_up` (EVENT) + `price_above_ema_20`. SHORT (3): `ao_cross_dn` (EVENT) + `below_ema_20` (B609 producer symmetric, B627 F1 fix) + B718.
+
+Effective gate count: LONG=2 / SHORT=3.
+
+**Step 3 — Producer:** `compute_awesome_oscillator(...)` — AO STATE + cross-up/cross-dn EVENT. `compute_ema_20(...)` STATE + B609 symmetric `below_ema_20`. PIT-clean. B627 F1 + B718 applied.
+
+**Step 4 — Doc vs reality:** CLEAN. Bill Williams definition + B627 F1 lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. EMA-20 gate implicit trend regime. CLEAN.
+
+**Step 6 — Inverse:** Dual present (_strat3). Symmetric per B609 producer.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B627 F1 + B609 symmetric + B718 borrow | CLEAN — gold-standard B627 F1 closure | — |
+| G | Pure event/state signals; no hardcoded thresholds | CLEAN | — |
+| Q | AO cross is EVENT + EMA-20 STATE = mixed temporality | LOWER priority for EVENT-conversion | **Class 1 KEEP-AS-IS** |
+| J | vs A-26 cmf_flip (similar momentum-oscillator family) + A-15 ppo_crossover + other crossover-event strategies in cluster | Pattern J family audit post-B690b | **Class 6** |
+| N | AO crossovers cluster in trending regimes | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS.** Cleanest 2-gate strategy in Cluster A (LONG side). B627 F1 silent-gap closure exemplary. Status post-B755: PRE-CUBE-CLEAN.
+
+Fire projection: AO cross events ~3-8/ticker/yr; ~1,500-4,000/yr universe-wide LONG. PASS_CUBE range.
+
+---
+
+### A-26. `strat_cmf_flip` (CMF zero-line cross + RSI mid-threshold, dual)
+
+**Step 1 — Registration:** [screener.py:1421](backtest/signals/screener.py#L1421). No docstring; inline simple.
+
+**Step 2 — Gates:** LONG (2): `cmf_cross_up` (EVENT) + `rsi_14 < 50` (HARDCODED mid-threshold). SHORT (3): `cmf_cross_dn` + `rsi_14 > 50` + B718.
+
+**Step 3 — Producer:** `compute_cmf(...)` cross-up/cross-dn EVENT signals. `compute_rsi(...)` STATE. PIT-clean.
+
+**Step 4 — Doc vs reality:** No docstring; gates straightforward. CLEAN.
+
+**Step 5 — Regime affinity:** Not set. No long-term regime gate. RSI mid-threshold (above/below 50) provides directional bias but no trend gate. **DISTINCTIVE — no EMA gate.**
+
+**Pattern A concern:** A-26 + A-29 prev_day_low_bounce + A-30 bb_squeeze_volume are the remaining Cluster A strategies without long-term regime gate.
+
+**Step 6 — Inverse:** Dual present. Symmetric.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B718 borrow gate | CLEAN | — |
+| G | `rsi_14 < 50` / `rsi_14 > 50` hardcoded mid-thresholds (same as A-7 stochrsi_oversold mid-thresholds) | Producer-additive | **Class 2 cluster G family** |
+| Q | CMF cross is EVENT + RSI STATE = mixed temporality | LOWER priority | **Class 1 KEEP-AS-IS** |
+| Pattern A | NO long-term regime gate | Consider adding `price_above_ema_200` for LONG / `below_ema_200` for SHORT per cluster discipline OR accept distinct mechanism | **Class 2-OR-1 (queue `S4-B755-A-26-REGIME-AFFINITY-DECISION-ADD-EMA-VS-KEEP-DISTINCT`)** |
+| J | vs A-25 + A-15 ppo + A-9 williams (momentum-oscillator family) | Pattern J post-B690b | **Class 6** |
+| N | CMF zero-line crossings cluster in regime transitions | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS PENDING owner decision on regime-gate add.** A-26 is simplest oscillator-cross strategy in cluster. Status post-B755: PRE-CUBE-CLEAN PENDING-OWNER-DECISION on regime gate.
+
+Fire projection: CMF cross events ~5-15/ticker/yr × RSI mid-threshold gate ~40-60% retention; ~2,500-7,500/yr universe-wide LONG. PASS_CUBE.
+
+---
+
+### A-27. `strat_roc_burst` (ROC turn + volume spike, dual)
+
+**Step 1 — Registration:** [screener.py:975](backtest/signals/screener.py#L975). No docstring; inline simple.
+
+**Step 2 — Gates:** LONG (2): `roc_turning_up` (EVENT) + `vol_spike_15x` (state-bar-event). SHORT (3): mirror with `roc_turning_dn` + `vol_spike_15x` + B718.
+
+**Step 3 — Producer:** `compute_roc(...)` direction-turn EVENT (today's ROC sign change). `vol_spike_15x` STATE-bar (today's vol >= 1.5× 20d avg). PIT-clean.
+
+**Step 4 — Doc vs reality:** No docstring; gates simple and clear. CLEAN.
+
+**Step 5 — Regime affinity:** Not set. NO regime gate. Distinct "early momentum + volume" mechanism.
+
+**Step 6 — Inverse:** Dual present. Symmetric.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B718 borrow gate | CLEAN | — |
+| G | `vol_spike_15x` = producer threshold (1.5×); sweepable | CLEAN | — |
+| Q | ROC turn EVENT + vol spike state-bar-event = both event-like | CLEAN | — |
+| Pattern A | NO long-term regime gate; distinct early-momentum-with-volume mechanism | CLEAN per author intent | — |
+| J | vs A-25 awesome + A-15 ppo (momentum-osc family) | Pattern J post-B690b | **Class 6** |
+| N | ROC bursts cluster around news/earnings | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS.** Simplest momentum-burst strategy in cluster (2 gates, both event-like). Status post-B755: PRE-CUBE-CLEAN.
+
+Fire projection: ROC turn + 1.5× vol = ~10-20 fires/ticker/yr; ~5K-10K/yr universe-wide LONG. **Possibly over B710 5K ceiling** — Pattern N effective-N adjustment likely brings under.
+
+---
+
+### A-28. `strat_williams_stoch_dual` (Williams %R + Stoch K/D EVENT + pivot, dual, batched B729 STATE→EVENT redesign)
+
+**Step 1 — Registration:** [screener.py:2274](backtest/signals/screener.py#L2274). **Extensive docstring** documenting B729 STATE→EVENT redesign per B655 T10 + B721 + B722 precedents + S4-B717 ceiling routing. B660 measured 4,091 LONG + 6,587 SHORT/yr; SHORT above 5K ceiling, LONG borderline. Pre-B729: STATE (~20% of bars). Post-B729: K/D CROSS EVENT signals.
+
+**Step 2 — Gates:** LONG (3): `williams_r_oversold` + `stoch_bullish_cross` (B729 EVENT) + `(near_s1 OR near_s2 OR near_cam_s3)` (pivot support). SHORT (4): mirror with `williams_r > -20` (overbought STATE) + `stoch_bearish_cross` (B729 EVENT) + pivot resistance + B718.
+
+**Step 3 — Producer:** `compute_williams_r(...)` STATE. `compute_stochastic(...)` cross-up/cross-dn EVENT (B729 producer-additive). `compute_pivots(...)` STATE. PIT-clean. B729 EVENT signals present.
+
+**Step 4 — Doc vs reality:** CLEAN. B655 T10 + B721 + B722 precedents + S4-B717 ceiling routing VERIFIED. B729 redesign exemplary application of Pattern Q EVENT-conversion cluster-wide.
+
+**Step 5 — Regime affinity:** Not set. NO long-term regime gate. Pivot levels + Williams + Stoch cross at pivot support/resistance is high-conviction setup.
+
+**Step 6 — Inverse:** Dual present. Symmetric per B729 redesign (LONG bull cross + SHORT bear cross).
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B718 borrow gate | CLEAN | — |
+| **Q (GOLD-STANDARD B729 EVENT-conversion)** | **A-28 is the cluster's exemplary Pattern Q EVENT-conversion application.** B729 surfaced pre-B729 STATE rate 4-6K/yr above B710 ceiling; redesign converted to EVENT and brought fires under ceiling. | TEMPLATE for cluster Pattern Q sweep | **Class 1 KEEP-AS-IS — REFERENCE-IMPLEMENTATION for B750 Pattern Q ticket** |
+| G | Williams %R producer threshold (-80/-20) sweepable; no hardcoded direct thresholds in strategy | CLEAN | — |
+| Pattern A | NO long-term regime gate; pivot + cross at level is the regime context | CLEAN per author intent | — |
+| J | vs other Williams strategies + Stoch strategies + pivot-confluence strategies | Pattern J post-B690b | **Class 6** |
+| N | Pivot-cross + Williams confluence at vol regimes | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS — REFERENCE-IMPLEMENTATION.** A-28 is the gold-standard Pattern Q EVENT-conversion example for cluster sweep. Status post-B755: PRE-CUBE-CLEAN; reference template for B750 cluster Pattern Q ticket.
+
+Fire projection: Post-B729 EVENT redesign brought rate under B710 5K ceiling per docstring. Verified B660 measurement = LONG ~4K, SHORT ~6.5K. **Verify post-B660 re-run that fires stay in PASS_CUBE range.**
+
+---
+
+### A-29. `strat_prev_day_low_bounce` (Previous-day low + hammer + CMF, dual, batched B629)
+
+**Step 1 — Registration:** [screener.py:809](backtest/signals/screener.py#L809). No docstring; inline B629 F1 cmf-family sweep positive-symmetric `cmf_negative`. **Category in code: "pivot"** (not mean_reversion).
+
+**Step 2 — Gates:** LONG (3): `near_prev_low` + `hammer` (EVENT) + `cmf_positive`. SHORT (4): `near_prev_high` + `shooting_star` (EVENT) + `cmf_negative` (B629 F1) + B718.
+
+**Step 3 — Producer:** `compute_pivots(...)` for prev_low/prev_high proximity. `compute_candle_patterns(...)` for hammer/shooting_star EVENT. `compute_cmf(...)` STATE direction. PIT-clean.
+
+**Step 4 — Doc vs reality:** CLEAN. B629 F1 lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. NO long-term regime gate. Level-touch-with-candle-confirmation thesis (like A-11 mfi + A-16 keltner + A-18 camarilla_rsi_obv).
+
+**Pattern X concern (mis-clustered):** A-29 category = "pivot" (NOT mean_reversion or oscillator). Same Pattern X mis-clustering as A-17 camarilla_r4_breakout (Cluster A walk surfaced Pattern X).
+
+**Step 6 — Inverse:** Dual present. Symmetric.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B629 F1 + B718 | CLEAN | — |
+| G | Pure producer signals; no hardcoded thresholds | CLEAN | — |
+| Q | Pivot proximity STATE + candle EVENT + CMF STATE = mixed temporality | CLEAN | — |
+| **Pattern X (mis-clustered like A-17)** | **A-29 category "pivot" — belongs in Pivot cluster doc cross-reference OR Cluster B Trend Confluence sub-family.** Mean-rev mechanism at prev-day level is pivot-based not oscillator-based | Same disposition as A-17 — cluster reassignment | **Class 2 cross-ref `S4-B753-A-17-CLUSTER-REASSIGNMENT-TO-CLUSTER-B-OR-PIVOT` (queue `S4-B755-A-29-CLUSTER-REASSIGNMENT-VIA-PATTERN-X`)** |
+| J | vs A-11 mfi + A-16 keltner + A-18 camarilla_rsi_obv (level-touch-with-flow family) | Pattern J post-B690b | **Class 6** |
+
+**Recommendation: KEEP-AS-IS + Pattern X cluster reassignment cross-ref.** Distinct level-touch-with-candle thesis. Mis-clustered like A-17. Status post-B755: PRE-CUBE-CLEAN; reassignment pending owner direction.
+
+Fire projection: prev-low + hammer + CMF positive = tight EVENT confluence; ~5-12/ticker/yr LONG; ~2,500-6,000/yr universe-wide. PASS_CUBE range.
+
+---
+
+### A-30. `strat_bb_squeeze_volume` (BB squeeze + 2× volume + VWAP confluence, dual, batched B634)
+
+**Step 1 — Registration:** [screener.py:2189](backtest/signals/screener.py#L2189). No docstring; inline B634 sweep positive-symmetric `below_vwap`. **Category in code: "confluence"** (not mean_reversion).
+
+**Step 2 — Gates:** LONG (3): `squeeze_fire_up` (EVENT) + `vol_spike_2x` (state-bar-event) + `above_vwap`. SHORT (4): `squeeze_fire_dn` + `vol_spike_2x` + `below_vwap` (B634 producer symmetric) + B718.
+
+**Step 3 — Producer:** `compute_bollinger(...)` squeeze_fire_up/dn EVENT (BB squeeze release direction). `compute_vwap(...)` STATE. PIT-clean. B634 + B718 applied.
+
+**Step 4 — Doc vs reality:** No docstring; gates clear. CLEAN.
+
+**Step 5 — Regime affinity:** Not set. NO long-term regime gate. VWAP gate provides intraday-direction context.
+
+**Pattern X concern (mis-clustered like A-17 + A-29):** A-30 category = "confluence" — belongs in Cluster B Trend Confluence per category. Same mis-clustering Pattern X.
+
+**Step 6 — Inverse:** Dual present. Symmetric per B634.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B634 F1 symmetric + B718 borrow gate | CLEAN | — |
+| G | `vol_spike_2x` = producer threshold sweepable | CLEAN | — |
+| Q | BB squeeze release is EVENT + vol_spike state-bar-event + VWAP STATE = mixed temporality with EVENT element | CLEAN | — |
+| **Pattern X (mis-clustered)** | **A-30 category "confluence" — belongs in Cluster B Trend Confluence** | Same disposition as A-17 + A-29 cluster reassignment | **Class 2 cross-ref (queue `S4-B755-A-30-CLUSTER-REASSIGNMENT-VIA-PATTERN-X`)** |
+| J | vs A-13 bollinger_tight + A-12 bollinger_lower (BB family) | Cross-ref `S4-B753-PATTERN-J-BOLLINGER-FAMILY-CONSOLIDATION` (BB family includes A-30 squeeze variant) | **Class 6** |
+| N | BB squeeze releases cluster around vol expansion | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS + Pattern X cluster reassignment.** BB-squeeze-with-volume-and-VWAP is a confluence breakout strategy, not oscillator/mean-rev. Status post-B755: PRE-CUBE-CLEAN; reassignment pending owner direction.
+
+Fire projection: BB squeeze release + 2× vol + VWAP confirm = tight confluence; ~3-8 fires/ticker/yr LONG; ~1,500-4,000/yr universe-wide. PASS_CUBE range.
+
+---
+
+## B755 cluster walk completion wrap-up — CLUSTER A COMPLETE
+
+### Disposition summary (7 walks shipped; Cluster A FINAL = 30/30 = 100%)
+
+| Walk | Strategy | Status | Key finding |
+|---|---|---|---|
+| A-24 | avwap_20high_rejection_short | KEEP-AS-IS + Pattern F + AVWAP-20-high PIT-audit | NOT-pattern with FAIL-CLOSED default; AVWAP family fix |
+| A-25 | awesome_oscillator | KEEP-AS-IS | Cleanest 2-gate LONG; B627 F1 gold-standard |
+| A-26 | cmf_flip | KEEP-AS-IS PENDING owner decision on regime gate add | No long-term regime gate (simplest oscillator-cross) |
+| A-27 | roc_burst | KEEP-AS-IS | Simplest momentum-burst (2 event-like gates) |
+| A-28 | williams_stoch_dual | KEEP-AS-IS — **REFERENCE IMPLEMENTATION for B750 Pattern Q sweep** | B729 STATE→EVENT redesign gold-standard |
+| A-29 | prev_day_low_bounce | KEEP-AS-IS + Pattern X cluster reassignment | Category "pivot" — mis-clustered like A-17 |
+| A-30 | bb_squeeze_volume | KEEP-AS-IS + Pattern X cluster reassignment | Category "confluence" — mis-clustered like A-17 |
+
+### Cluster A FINAL META-FINDINGS (post-30/30 completion)
+
+**1. Cluster A SHORT-standalone-vs-dual DELETE pattern (META B754 + B755):**
+- A-8 stochrsi_overbought_short (DELETE candidate vs A-7 SHORT minus regime)
+- A-19 camarilla_rsi_obv_short (HIGHEST-CONFIDENCE DELETE vs A-18 SHORT IDENTICAL)
+- A-21 cpr_narrow_momentum_short (DELETE candidate vs A-20 SHORT minus regime)
+- **Net DELETE potential: 3 strategies from Cluster A pre-cube. 30 → 27 effective.**
+
+**2. Pattern X cluster reassignment candidates (Cluster A → other clusters):**
+- A-17 camarilla_r4_breakout (category "pivot")
+- A-29 prev_day_low_bounce (category "pivot")
+- A-30 bb_squeeze_volume (category "confluence")
+- **Net REASSIGNMENT: 3 strategies migrate to Cluster B / Pivot doc. 27 → 24 effective in Cluster A pure-oscillator/mean-rev.**
+
+**3. Pattern J consolidation candidates (post-B690b):**
+- RSI window family (A-1 + A-3 + A-4 + A-5) → 1-2 effective
+- Stoch/StochRSI family (A-6 + A-7 + A-8 if kept) → 1-2 effective
+- Bollinger family (A-12 + A-13 + A-30) → 1 + parameter sweep
+- AVWAP family (A-22 + A-23 + A-24) → 1-2 effective
+- Camarilla family (A-17 if kept + A-18 + A-19 if kept + W9 Pivot) → 1-2 effective
+- CPR family (A-20 + A-21 if kept + W8 Pivot) → 1-2 effective
+- Williams/Connors family (A-9 + A-10 + part of A-1 OR-disjunct) → consolidate Connors-OR
+- **Net consolidation potential: 30 strategies → ~12-15 effective primitives post-Pattern-J + Pattern W + Pattern X.**
+
+**4. EXPLORATORY tag candidates (Cluster A):**
+- A-10 ultimate_oscillator (Sharpe 0.49 @ 27 trades = FAIL_FIRE_STARVED)
+- A-18 camarilla_rsi_obv (4-gate confluence likely FAIL_FIRE_STARVED)
+- A-23 avwap_252_breakout (rare 252-day-low proximity event)
+- A-24 avwap_20high_rejection_short (tight 6-gate FAIL_FIRE_STARVED-likely)
+- **Pattern AA EXPLORATORY-tag sweep candidates from Cluster A alone: 4 strategies.**
+
+### NEW EXECUTION_QUEUE tickets surfaced (B755)
+
+1. `S4-B755-A-24-PATTERN-F-NOT-AVWAP-20HIGH-REPLACE` — producer-additive `below_avwap_20high` (parallel to B750/A-22 + B754/A-23 AVWAP family fix). PENDING-OWNER-APPROVAL.
+2. `S4-B755-A-24-AVWAP-20HIGH-ANCHOR-PIT-VERIFY-CROSS-REF-B750-B754` — AVWAP-20-high anchor PIT audit (completes AVWAP family). PENDING-OWNER-APPROVAL.
+3. `S4-B755-A-26-REGIME-AFFINITY-DECISION-ADD-EMA-VS-KEEP-DISTINCT` — owner decision on regime gate for A-26 cmf_flip. PENDING-OWNER-DECISION-A-OR-B.
+4. `S4-B755-A-29-CLUSTER-REASSIGNMENT-VIA-PATTERN-X` — A-29 prev_day_low_bounce reassign to Pivot cluster doc (category "pivot"). PENDING-OWNER-APPROVAL.
+5. `S4-B755-A-30-CLUSTER-REASSIGNMENT-VIA-PATTERN-X` — A-30 bb_squeeze_volume reassign to Cluster B Trend Confluence (category "confluence"). PENDING-OWNER-APPROVAL.
+6. `S4-B755-A-28-B729-REFERENCE-IMPLEMENTATION-FOR-CLUSTER-Q-SWEEP` — document A-28 as reference template in B750/PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP ticket. PENDING-OWNER-APPROVAL.
+7. `S4-B755-CLUSTER-A-COMPLETION-META-FINDINGS` — META-summary ticket: 3 DELETE candidates + 3 Pattern X reassignments + 7 Pattern J consolidation families + 4 EXPLORATORY-tag candidates. Net Cluster A effective primitives: 30 → ~12-15 post-routing. PENDING-OWNER-REVIEW.
+
+### Owner decision gates (B755 Cluster A FINAL)
+
+| Decision | Severity | Pre-cube urgency |
+|---|---|---|
+| **Cluster A META: 3 DELETEs + 3 reassignments + 4 EXPLORATORY tags** | **HIGH** | Pre-cube preferred (affects 10 of 30 strategies = 33% disposition decisions) |
+| Pattern Q EVENT-conversion sweep using A-28 as reference template | HIGH | Pre-cube preferred (affects ~10 strategies) |
+| AVWAP family Pattern F + PIT-audit unification (A-22 + A-23 + A-24) | MEDIUM | Pre-cube preferred (3 strategies + producer audit) |
+
+---
+
 ## B750 cluster walk completion wrap-up
 
 ### Disposition summary (3 walks shipped)
@@ -1650,15 +1947,15 @@ Fire projection: 4-gate stack with rare 252-day-low proximity; ~1-3 fires/ticker
 | A-21 cpr_narrow_momentum_short | ✅ Walked B754 | 2026-06-14 | **DELETE CANDIDATE** Pattern W cascade vs A-20 SHORT |
 | A-22 avwap_50_reclaim | ✅ Walked B750 | 2026-06-14 | Step 1-7 complete; 7 queue tickets surfaced incl. CRITICAL AVWAP PIT audit |
 | A-23 avwap_252_breakout | ✅ Walked B754 | 2026-06-14 | KEEP-AS-IS + Pattern F NOT-pattern fix + AVWAP-252 PIT-audit cross-ref |
-| A-24 avwap_20high_rejection_short | ⏳ Pending B755 | — | |
-| A-25 awesome_oscillator | ⏳ Pending B755 | — | |
-| A-26 cmf_flip | ⏳ Pending B755 | — | |
-| A-27 roc_burst | ⏳ Pending B755 | — | |
-| A-28 williams_stoch_dual | ⏳ Pending B755 | — | |
-| A-29 prev_day_low_bounce | ⏳ Pending B755 | — | |
-| A-30 bb_squeeze_volume | ⏳ Pending B756 | — | |
+| A-24 avwap_20high_rejection_short | ✅ Walked B755 | 2026-06-14 | KEEP-AS-IS + Pattern F NOT-pattern + AVWAP-20-high PIT-audit |
+| A-25 awesome_oscillator | ✅ Walked B755 | 2026-06-14 | KEEP-AS-IS; cleanest 2-gate LONG; B627 F1 gold-standard |
+| A-26 cmf_flip | ✅ Walked B755 | 2026-06-14 | KEEP-AS-IS PENDING regime-gate decision |
+| A-27 roc_burst | ✅ Walked B755 | 2026-06-14 | KEEP-AS-IS; simplest momentum-burst |
+| A-28 williams_stoch_dual | ✅ Walked B755 | 2026-06-14 | KEEP-AS-IS — **REFERENCE IMPLEMENTATION for B750 Pattern Q sweep (B729 STATE→EVENT)** |
+| A-29 prev_day_low_bounce | ✅ Walked B755 | 2026-06-14 | KEEP-AS-IS + Pattern X reassignment (category "pivot") |
+| A-30 bb_squeeze_volume | ✅ Walked B755 | 2026-06-14 | KEEP-AS-IS + Pattern X reassignment (category "confluence") |
 
-**Progress: 23/30 walked (77%) — B750 framework + 3 + B751 4 + B752 6 + B753 5 + B754 5 walks shipped.**
+**Progress: 30/30 walked (100%) — CLUSTER A COMPLETE.** B750 framework + 3 + B751 4 + B752 6 + B753 5 + B754 5 + B755 7 walks shipped. Total 7 batches; cumulative cluster-walk progress 13 weeks of work compressed into single 2026-06-14 owner-directed sweep.
 
 ---
 

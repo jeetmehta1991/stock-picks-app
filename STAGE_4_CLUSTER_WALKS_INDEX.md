@@ -198,11 +198,12 @@ Per `feedback_no_rushing_per_strategy_tweak` + `project_no_apriori_strategy_prun
 | **B752 NEW Cluster A walks** | **6** | A-6 stoch_oversold + A-7 stochrsi_oversold + A-8 stochrsi_overbought_short (DELETE candidate) + A-9 williams_r_oversold + A-10 ultimate_oscillator (EXPLORATORY candidate) + A-11 mfi_oversold |
 | **B753 NEW Cluster A walks** | **5** | A-12 bollinger_lower (Pattern CC adaptive thresholds) + A-13 bollinger_tight (J consolidation pair with A-12) + A-14 bollinger_upper_short + A-16 keltner_lower + A-17 camarilla_r4_breakout (**Pattern X cluster reassignment candidate**) |
 | **B754 NEW Cluster A walks** | **5** | A-18 camarilla_rsi_obv + A-19 camarilla_rsi_obv_short (**HIGHEST-CONFIDENCE DELETE**) + A-20 cpr_narrow_momentum + A-21 cpr_narrow_momentum_short (**DELETE Pattern W cascade**) + A-23 avwap_252_breakout (Pattern F NOT-pattern + PIT-audit) |
+| **B755 NEW Cluster A walks (FINAL)** | **7** | A-24 avwap_20high_rejection_short + A-25 awesome_oscillator + A-26 cmf_flip + A-27 roc_burst + A-28 williams_stoch_dual (**Pattern Q REFERENCE IMPL**) + A-29 prev_day_low_bounce (Pattern X reassign) + A-30 bb_squeeze_volume (Pattern X reassign) — **CLUSTER A 30/30 = 100% COMPLETE** |
 | **B750 NEW Cluster B walks** | **3** | B-3 golden_cross_50_200 + B-13 supertrend_ichimoku_adx + B-29 xs_low_beta_long |
 | **B750 NEW Cluster C walks** | **2.5** | C-13 news_sentiment_long + C-21 vix_backwardation_long + C-26 post_inclusion_drift_long (partial) |
-| **Sum (unique)** | **~160.5** | (some cross-cluster strategies walked once, referenced multiple times) |
-| Strategies not yet cluster-walked (post-B754) | **~60** | Cluster A pending: 7 (B755-B756). Cluster B pending: 30 (B756-B757). Cluster C pending: 30-32 (B758-B761). |
-| **Stage 4 walk coverage post-B754** | **160.5 / 221 = 73%** | Up from 70% post-B753. Target 96-walk completion across B755-B762 → 100% coverage. |
+| **Sum (unique)** | **~167.5** | (some cross-cluster strategies walked once, referenced multiple times) |
+| Strategies not yet cluster-walked (post-B755) | **~53** | **CLUSTER A 30/30 = 100% COMPLETE.** Cluster B pending: 30 (B756-B760). Cluster C pending: 30-32 (B761-B762). |
+| **Stage 4 walk coverage post-B755** | **167.5 / 221 = 76%** | Up from 73% post-B754. Target 96-walk completion across B756-B762 → 100% coverage. |
 
 ---
 
