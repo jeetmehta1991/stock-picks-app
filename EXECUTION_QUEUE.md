@@ -89,8 +89,6 @@ Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; f
 
 **Status flips applied this turn:** No prior queue items resolved or reopened. 35 NEW tickets added per per-turn discipline; documented inline above with cross-references to cluster docs.
 
-**Next live work after B752:** B753 picks up Cluster A walks A-12 through A-17 (bollinger_lower + bollinger_tight + bollinger_upper_short + keltner_lower + camarilla_r4_breakout). 5-6 walks per batch per established pace.
-
 ---
 
 **B752 (2026-06-14) ADDITIONAL TICKETS SURFACED (6 walks: A-6 through A-11):**

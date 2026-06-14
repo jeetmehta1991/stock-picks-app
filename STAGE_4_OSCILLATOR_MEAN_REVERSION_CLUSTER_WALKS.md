@@ -1123,6 +1123,219 @@ Fire projection: 3-gate stack MFI + pivot + OBV; ~5-15/ticker/yr LONG (pivots co
 
 ---
 
+---
+
+## Per-strategy walks (B753 batch — A-12 / A-13 / A-14 / A-16 / A-17)
+
+> A-15 strat_ppo_crossover already walked B750.
+
+### A-12. `strat_bollinger_lower` (BB 20,2 touch + Connors stack + VIX-conditional thresholds + ADX, dual, batched B204 + B663)
+
+**Step 1 — Registration:** [screener.py:1430](backtest/signals/screener.py#L1430). Docstring: B204 Connors discipline + VIX-conditional thresholds (low-VIX tighten to 35/65; high-VIX loosen to 45/55; default 40/60). Citations: Quantified Strategies 2024 backtest + Atlantis-Press Su 2024 multi-indicator confluence study.
+
+**Step 2 — Gates:** LONG (4): `bb_20_20_touch_lower` + `(rsi_2<5 OR rsi_14<thr_long)` + `price_above_ema_200` (B663) + `adx<30` (no-strong-trend). SHORT (5): mirror with `bb_20_20_touch_upper` + `(rsi_2>95 OR rsi_14>thr_short)` + `below_ema_200` (B630 symmetric) + `adx<30` + B718.
+
+VIX-conditional thresholds: rsi_thr_long ∈ {35, 40, 45} depending on `vix_band_low`/default/`vix_band_high`. Symmetric on short side.
+
+**Step 3 — Producer:** `compute_bollinger(...)` STATE. `compute_adx(...)` STATE. `compute_rsi(...)` STATE. `vix_band_low`/`vix_band_high` STATE from `cross_asset.py` VIX-regime classification. PIT-clean. B663 default-False fix + B630 symmetric present.
+
+**Step 4 — Doc vs reality:** CLEAN. B204 + VIX-conditional + B663 lineage VERIFIED. Quantified Strategies 2024 + Atlantis-Press Su 2024 citations grounded.
+
+**Step 5 — Regime affinity:** Not set in registry. 200-EMA + ADX<30 + VIX-conditional thresholds form a tri-axis regime gate. CLEAN — gates enforce mean-reversion-favorable conditions (uptrend AND low ADX AND VIX-aware).
+
+**Step 6 — Inverse:** Dual present. Symmetric (with B630 fix). Pattern S asymmetric expectancy applies.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B663 + B630 symmetric + B718 borrow | CLEAN | — |
+| **NEW Pattern CC** | **VIX-conditional adaptive thresholds.** Strategy reads VIX band and adjusts RSI thresholds at runtime. This is ADAPTIVE PARAMETER LOGIC, not hardcoded. Cube would need to sweep the VIX-band thresholds AS A TRIPLE not as single parameter. | Document as **Pattern CC — adaptive parameter logic** (NEW); cube infrastructure needs to handle triple-threshold sweeps for this strategy | **Class 8 CUBE-INFRA (queue `S4-B753-PATTERN-CC-ADAPTIVE-THRESHOLD-CUBE-EXTENSION`)** |
+| G | `rsi_2<5` hardcoded Connors threshold; same as A-1/A-9/A-10 | Cluster Pattern G rolled | **Class 2 cross-ref** |
+| Q | bb_touch is STATE; cross-event variant doesn't exist for BB | Producer-additive `bb_touch_cross_lower_recent_3d`? Lower-priority | **Class 6 DEFERRED-OPTIONAL** |
+| R | Connors-OR-disjunct PROPORTIONAL — paired with ADX<30 + 200-EMA + VIX gates (tighter than A-1's gate count) | CLEAN | — |
+| J | vs A-13 bollinger_tight (looser variant of same strategy at different sigma) | Pattern J marginal-contribution audit post-B690b | **Class 6 DEFERRED-POST-B690b** |
+| Pattern A | docstring/code matches; ADX gate adds "no strong trend" axis | CLEAN | — |
+
+**Recommendation: KEEP-AS-IS.** A-12 is the most parameter-adaptive strategy in Cluster A (VIX-conditional thresholds). Status post-B753: PRE-CUBE-CLEAN; Pattern CC cube-infra ticket needed.
+
+Fire projection: tight 4-gate stack with VIX-conditional adjustment; ~3-8 fires/ticker/yr LONG; universe-wide ~1,500-4,000/yr. PASS_CUBE range.
+
+---
+
+### A-13. `strat_bollinger_tight` (BB 1.5σ + 2σ touch + Connors + VIX-conditional, dual, batched B204 + B663)
+
+**Step 1 — Registration:** [screener.py:1471](backtest/signals/screener.py#L1471). Docstring: B204 same discipline as A-12 but tighter 1.5-sigma band + softer RSI threshold (1.5sig more frequent = less stringent oscillator confirmation needed).
+
+**Step 2 — Gates:** LONG (3): `(bb_20_15_touch_lower OR bb_20_20_touch_lower)` + `(rsi_2<10 OR rsi_14<thr_long)` + `price_above_ema_200` (B663). SHORT (4): mirror + `below_ema_200` (B630) + B718.
+
+**No ADX gate** vs A-12 (tighter strategy = less strong-trend filter needed).
+
+VIX-conditional thresholds: rsi_thr_long ∈ {40, 45, 50}; rsi_thr_short ∈ {50, 55, 60} (slightly looser than A-12 across the board per docstring).
+
+**Step 3 — Producer:** Same as A-12 minus ADX. PIT-clean.
+
+**Step 4 — Doc vs reality:** CLEAN. Tighter BB + looser RSI matches docstring claim.
+
+**Step 5 — Regime affinity:** Not set. 200-EMA + VIX-conditional. CLEAN.
+
+**Step 6 — Inverse:** Dual present. Symmetric.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B663 + B630 + B718 all applied | CLEAN | — |
+| CC (NEW Pattern) | VIX-conditional adaptive thresholds (same as A-12) | Cluster-wide ticket per A-12 | **Class 8 cross-ref `S4-B753-PATTERN-CC-ADAPTIVE-THRESHOLD-CUBE-EXTENSION`** |
+| **Pattern J (CRITICAL)** | **A-13 is a LOOSER variant of A-12 — same BB primitive at 1.5σ vs 2σ, same Connors-OR-disjunct at softer thresholds, NO ADX gate vs A-12 has it.** Strong consolidation candidate. | Post-B690b: Pattern J audit; expected A-12 + A-13 → 1 strategy + parameter (band-sigma OR ADX-on/off) | **Class 6 DEFERRED-POST-B690b (queue `S4-B753-PATTERN-J-BOLLINGER-FAMILY-CONSOLIDATION`)** |
+| G | Same Connors-stack hardcoded thresholds | Class 2 cluster rolled | — |
+| R | Connors-OR PROPORTIONAL (BB + 200-EMA gate stack) | CLEAN | — |
+| Q | All gates STATE | Cluster Pattern Q rolled | **Class 2** |
+
+**Recommendation: KEEP-AS-IS PENDING Pattern J consolidation.** Likely consolidates with A-12 post-B690b. Status post-B753: PRE-CUBE-CLEAN; Pattern J candidate (HIGH-priority within Cluster A consolidation).
+
+Fire projection: Looser stack than A-12; ~6-15 fires/ticker/yr LONG; ~3,000-7,500/yr universe-wide. PASS_CUBE.
+
+---
+
+### A-14. `strat_bollinger_upper_short` (BB upper + RSI>70 + shooting_star SHORT-only)
+
+**Step 1 — Registration:** [screener.py:1516](backtest/signals/screener.py#L1516). No docstring. SHORT-only standalone.
+
+**Step 2 — Gates:** SHORT (4): `bb_20_20_touch_upper` + `rsi_14>70` + `shooting_star` + B718.
+
+**Step 3 — Producer:** Same as A-12/A-13 SHORT-side primitives + shooting_star EVENT (candle pattern). PIT-clean.
+
+**Step 4 — Doc vs reality:** No docstring; gates straightforward.
+
+**Step 5 — Regime affinity:** Not set. **NO REGIME GATE** (no below_ema_200) — same Pattern W concern as A-8.
+
+**Step 6 — Inverse:** SHORT-only. LONG mirror: A-12/A-13 LONG branches (BB lower) are the closest analogs but A-14 doesn't have direct LONG counterpart with shooting_star↔hammer.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B718 borrow gate present | CLEAN | — |
+| **CRITICAL Pattern W (vs A-12 SHORT branch + A-13 SHORT branch)** | **A-14 vs A-12 SHORT branch:** A-12 SHORT has `bb_20_20_touch_upper` + RSI threshold + `below_ema_200` + ADX<30. A-14 has `bb_20_20_touch_upper` + `rsi_14>70` + `shooting_star`. Different gates (A-14 has candle pattern + tighter RSI; A-12 SHORT has regime + ADX). NOT a strict subset. A-14 is a distinct strategy adding shooting_star EVENT confirmation. | KEEP-AS-IS (distinct mechanism) | **Class 1** |
+| Pattern A | NO long-term regime gate (no below_ema_200) | Add `below_ema_200` regime gate to align with cluster discipline | **Class 2 LOOSEN/TIGHTEN (queue `S4-B753-A-14-REGIME-AFFINITY-ADD-BELOW-EMA-200`)** |
+| G | `rsi_14 > 70` hardcoded; same as A-2 (rsi_overbought_short) but `>70` vs `>68` | Producer-additive | **Class 2 cluster G** |
+| Q | BB touch STATE + RSI STATE; shooting_star EVENT (candle bar) | Mixed temporality OK (EVENT element present) | **Class 1 KEEP-AS-IS** |
+| J | vs A-2 rsi_overbought_short + A-8 stochrsi_overbought_short + A-12 SHORT branch | Post-B690b SHORT-family Pattern J audit | **Class 6** |
+| S | SHORT-only, NO regime gate = worst-case bull-drift exposure | Add regime gate (Class 2 above) mitigates | — |
+
+**Recommendation: KEEP-AS-IS + Class 2 add regime gate (below_ema_200).** Distinct from A-12 SHORT branch (shooting_star EVENT is the differentiator). Once regime gate added, alignment with cluster discipline restored. Status post-B753: PRE-CUBE-CLEAN POST-FIX.
+
+Fire projection: BB upper + RSI>70 + shooting_star EVENT = tight 3-gate SHORT stack but missing regime gate inflates rate. Estimated ~10-25 fires/ticker/yr SHORT; ~5K-12K/yr universe-wide. Possibly over B710 5K ceiling pre-regime-gate-add.
+
+---
+
+### A-16. `strat_keltner_lower` (KC touch + candle + OBV, dual, batched B628)
+
+**Step 1 — Registration:** [screener.py:1527](backtest/signals/screener.py#L1527). No docstring; inline comment B628 F1 family-sweep positive-symmetric `obv_bearish`.
+
+**Step 2 — Gates:** LONG (3): `kc_touch_lower` + `hammer` + `obv_bullish`. SHORT (4): `kc_touch_upper` + `shooting_star` + `obv_bearish` (B628 F1) + B718.
+
+**Step 3 — Producer:** `compute_keltner_channel(...)` STATE. `hammer`/`shooting_star` EVENT (candle patterns). `compute_obv(...)` STATE direction. PIT-clean. B628 F1 fix present.
+
+**Step 4 — Doc vs reality:** CLEAN. B628 F1 VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. **NO REGIME GATE** (no 200-EMA/SMA). Same observation as A-11 mfi_oversold — uses "level-touch + candle + flow" thesis instead of trend gate.
+
+**Pattern A:** A-16 + A-11 are the 2 Cluster A oscillators without long-term regime gate. Both use level-touch (KC band / pivot S1-S2) + flow confirmation (OBV / candle).
+
+**Step 6 — Inverse:** Dual present. Symmetric. Per Pattern S asymmetric expectancy.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B628 F1 + B718 | CLEAN | — |
+| G | `kc_touch_lower` = producer level; CLEAN. `hammer`/`shooting_star` = producer EVENT patterns; CLEAN | CLEAN | — |
+| Q | KC touch STATE + candle EVENT + OBV STATE = mixed temporality | CLEAN | **Class 1 KEEP-AS-IS** |
+| Pattern A | NO long-term regime gate; distinct mechanism (level + candle + flow) | DISTINCT THESIS — CLEAN per author intent | — |
+| J | vs A-11 mfi_oversold (both "level + flow" mean-rev) and vs A-12/A-13 BB family (similar level-touch mean-rev) | Post-B690b audit | **Class 6** |
+| N | KC touch + candle clusters in vol regimes | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS.** A-16 is the candle-confirmation analog of A-11's OBV-confirmation thesis. Mixed STATE+EVENT temporality is clean. Status post-B753: PRE-CUBE-CLEAN.
+
+Fire projection: KC touch lower + hammer + OBV bullish = rare confluence; ~3-8/ticker/yr LONG; ~1,500-4,000/yr universe-wide. PASS_CUBE range.
+
+---
+
+### A-17. `strat_camarilla_r4_breakout` (Camarilla R4/S4 + vol spike, dual, **CRITICAL B641 RENAME**)
+
+**Step 1 — Registration:** [screener.py:741](backtest/signals/screener.py#L741). **Extensive docstring** documenting B641 rename: pre-B641 was `strat_camarilla_r3_breakout` firing on `above_cam_r3` — a SOURCE-SYSTEM CONTRADICTION per Slim Khan / Nick Scott Camarilla theory (R3 = fade/reversal level; R4 = breakout level). B641 re-anchored to R4/S4; resolved same-level opposite-direction conflict with W9 strat_camarilla_s3_bounce.
+
+**Step 2 — Gates:** LONG (2): `above_cam_r4` + `vol_spike_2x`. SHORT (3): `below_cam_s4` + `vol_spike_2x` + B718.
+
+Wide 2-gate strategy per docstring; independent-product UB fire projection deferred to measurement.
+
+**Step 3 — Producer:** `compute_pivots(...)` STATE `above_cam_r4`/`below_cam_s4` per BUG-09 RESOLVED-IMPLEMENTED Pass 53. `vol_spike_2x` STATE today_volume / 20-day_avg >= 2.0. PIT-clean.
+
+**Step 4 — Doc vs reality:** CLEAN — extensive docstring lineage VERIFIED. B641 rename + producer-signal swap + W9 distinction VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. Camarilla R4/S4 breakout is a momentum/breakout strategy, not mean-reversion. Despite being in Cluster A (oscillator/mean-rev), this strategy is CATEGORICALLY DIFFERENT. Category in code: `"pivot"` (not mean_reversion or momentum). **Mis-clustered in Cluster A.**
+
+**Recommendation:** Move A-17 to **Cluster B (Trend Confluence)** OR Pivot cluster doc cross-reference. It is a breakout strategy, not mean-reversion. Per Cluster B/Pivot doc semantics, R4 breakout is a trend-confluence/breakout strategy.
+
+**Step 6 — Inverse:** Dual present. Per Pattern S asymmetric expectancy.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B718 borrow gate present | CLEAN | — |
+| G | Producer thresholds (`above_cam_r4`, `vol_spike_2x`) cube-sweepable | CLEAN | — |
+| **Pattern X (NEW B753)** | **A-17 mis-clustered in Cluster A.** Category is "pivot" / mechanism is breakout-with-volume. Belongs in Cluster B Trend Confluence OR Pivot cluster doc. | **Cluster re-assignment** to Cluster B (B-7+ Pivot-confluence sub-family) or cross-reference to Pivot cluster doc | **Class 2 (queue `S4-B753-A-17-CLUSTER-REASSIGNMENT-TO-CLUSTER-B-OR-PIVOT`)** |
+| B641 lineage | Source-system contradiction fix (R3→R4 rename) — proper Camarilla discipline restored | CLEAN | — |
+| W9 conflict | Pre-B641 fired LONG at R3 while W9 fires SHORT at R3 — fixed by re-anchor | CLEAN | — |
+| Q | All gates STATE; vol_spike is EVENT-like (today's bar exceeds 2× avg) | Acceptable mixed temporality | **Class 1 KEEP-AS-IS** |
+| J | vs other Camarilla strategies (W9 strat_camarilla_s3_bounce in Pivot cluster) | Post-B690b Pattern J audit if mis-clustering kept | **Class 6 DEFERRED** |
+
+**Recommendation: KEEP-AS-IS + Pattern X cluster-reassignment to Cluster B or Pivot cross-reference.** B641 rename is gold-standard cluster-walk-driven fix. Status post-B753: PRE-CUBE-CLEAN; reassignment pending owner direction.
+
+Fire projection: Wide 2-gate strategy; independent-product UB significantly over-counts. B641 docstring defers to measurement. Per B660 re-measure: estimate ~1K-3K/yr universe-wide LONG-side; SHORT-side lower due to gate asymmetry.
+
+---
+
+## B753 cluster walk completion wrap-up
+
+### Disposition summary (5 walks shipped)
+
+| Walk | Strategy | Status | Key finding |
+|---|---|---|---|
+| A-12 | bollinger_lower | KEEP-AS-IS + Pattern CC | VIX-conditional adaptive thresholds (NEW Pattern CC) |
+| A-13 | bollinger_tight | KEEP-AS-IS PENDING Pattern J | Looser variant of A-12; CRITICAL Pattern J consolidation candidate post-B690b |
+| A-14 | bollinger_upper_short | KEEP-AS-IS + Class 2 add regime gate | NO regime gate (Pattern A); distinct from A-12 SHORT via shooting_star EVENT |
+| A-16 | keltner_lower | KEEP-AS-IS | Candle-confirmation analog of A-11; mixed STATE+EVENT clean |
+| A-17 | camarilla_r4_breakout | KEEP-AS-IS + Pattern X cluster reassignment | **MIS-CLUSTERED** in Cluster A (is breakout/pivot mechanism); B641 rename gold-standard cluster-walk-driven fix |
+
+**Pattern X (NEW B753) — cluster reassignment.** A-17 is the first walk where a Cluster A strategy is identified as belonging in a different cluster (Cluster B Trend Confluence or Pivot). Per `feedback_narrow_scope_blast_radius`, the reassignment is documented but not auto-applied — owner direction required.
+
+**Pattern CC (NEW B753) — adaptive parameter logic.** A-12 + A-13 implement VIX-conditional adaptive RSI thresholds. This is parameter-adaptive logic not hardcoded constants. Cube infrastructure may need to handle triple-threshold sweeps for this class of strategy.
+
+**Pattern J consolidation pair surfaced:** A-12 + A-13 (Bollinger family) is the cleanest consolidation candidate post-B690b in Cluster A. A-12 = 2σ band + ADX gate + tighter RSI; A-13 = 1.5σ+2σ band + no ADX + looser RSI. Expected post-J: 1 underlying strategy + parameter sweep on (sigma, adx_on/off, rsi_threshold_floor).
+
+### NEW EXECUTION_QUEUE tickets surfaced (B753)
+
+1. `S4-B753-PATTERN-CC-ADAPTIVE-THRESHOLD-CUBE-EXTENSION` — cube infrastructure for VIX-conditional adaptive parameters (affects A-12 + A-13). NEW PATTERN CC. PENDING-OWNER-APPROVAL.
+2. `S4-B753-PATTERN-J-BOLLINGER-FAMILY-CONSOLIDATION` — A-12 + A-13 consolidation candidate post-B690b. DEFERRED-POST-B690b.
+3. `S4-B753-A-14-REGIME-AFFINITY-ADD-BELOW-EMA-200` — add `below_ema_200` regime gate to align with cluster discipline. PENDING-OWNER-APPROVAL.
+4. `S4-B753-A-17-CLUSTER-REASSIGNMENT-TO-CLUSTER-B-OR-PIVOT` — Pattern X mis-clustering; reassign to Cluster B Trend Confluence OR add cross-reference to Pivot cluster doc. PENDING-OWNER-DECISION-A-OR-B.
+5. `S4-B753-A-17-CAMARILLA-R4-FIRE-COUNT-VALIDATE-POST-B660-RE-MEASURE` — verify B641 R3→R4 re-anchor produced fire count in PASS_CUBE range. DEFERRED-POST-B660-RE-RUN.
+
+### Owner decision gates (B753 surfaces)
+
+| Decision | Severity | Pre-cube urgency |
+|---|---|---|
+| A-17 cluster reassignment (Pattern X) | MEDIUM | Pre-cube doc-only (no engine change) |
+| A-14 regime gate add (Pattern A) | LOW-MED | Pre-cube |
+| Pattern CC cube infrastructure for adaptive thresholds | MEDIUM | Pre-cube (otherwise A-12/A-13 not cube-sweepable in adaptive mode) |
+| Pattern J Bollinger family consolidation | HIGH | Post-B690b (waits on measurement) |
+
+---
+
 ## B750 cluster walk completion wrap-up
 
 ### Disposition summary (3 walks shipped)
@@ -1219,12 +1432,12 @@ Fire projection: 3-gate stack MFI + pivot + OBV; ~5-15/ticker/yr LONG (pivots co
 | A-9 williams_r_oversold | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS; Sharpe 0.30 carrier; full fixes |
 | A-10 ultimate_oscillator | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS gold-standard cleanness; EXPLORATORY candidate |
 | A-11 mfi_oversold | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS; distinct pivot-support thesis |
-| A-12 bollinger_lower | ⏳ Pending B753 | — | |
-| A-13 bollinger_tight | ⏳ Pending B753 | — | |
-| A-14 bollinger_upper_short | ⏳ Pending B753 | — | |
+| A-12 bollinger_lower | ✅ Walked B753 | 2026-06-14 | KEEP-AS-IS + Pattern CC (VIX-conditional adaptive thresholds) |
+| A-13 bollinger_tight | ✅ Walked B753 | 2026-06-14 | KEEP-AS-IS PENDING Pattern J consolidation with A-12 |
+| A-14 bollinger_upper_short | ✅ Walked B753 | 2026-06-14 | KEEP-AS-IS + Class 2 add regime gate |
 | A-15 ppo_crossover | ✅ Walked B750 | 2026-06-14 | Step 1-7 complete; 4 queue tickets surfaced |
-| A-16 keltner_lower | ⏳ Pending B753 | — | |
-| A-17 camarilla_r4_breakout | ⏳ Pending B753 | — | |
+| A-16 keltner_lower | ✅ Walked B753 | 2026-06-14 | KEEP-AS-IS; candle-confirmation analog of A-11 |
+| A-17 camarilla_r4_breakout | ✅ Walked B753 | 2026-06-14 | KEEP-AS-IS + **Pattern X (NEW) cluster reassignment to B or Pivot** |
 | A-18 camarilla_rsi_obv | ⏳ Pending B754 | — | |
 | A-19 camarilla_rsi_obv_short | ⏳ Pending B754 | — | |
 | A-20 cpr_narrow_momentum | ⏳ Pending B754 | — | |
@@ -1239,7 +1452,7 @@ Fire projection: 3-gate stack MFI + pivot + OBV; ~5-15/ticker/yr LONG (pivots co
 | A-29 prev_day_low_bounce | ⏳ Pending B755 | — | |
 | A-30 bb_squeeze_volume | ⏳ Pending B756 | — | |
 
-**Progress: 13/30 walked (43%) — B750 framework + 3 + B751 4 + B752 6 walks shipped.**
+**Progress: 18/30 walked (60%) — B750 framework + 3 + B751 4 + B752 6 + B753 5 walks shipped.**
 
 ---
 
