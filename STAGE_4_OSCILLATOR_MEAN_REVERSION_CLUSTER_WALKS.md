@@ -899,6 +899,230 @@ A-priori fire-count projection: RSI<35 + vol_above_avg + 200-EMA = 3-gate conflu
 
 ---
 
+---
+
+## Per-strategy walks (B752 batch — A-6 / A-7 / A-8 / A-9 / A-10 / A-11)
+
+### A-6. `strat_stoch_oversold` (Stochastic K/D cross + EMA-20, LONG-only as registered, batched B627)
+
+**Step 1 — Registration:** [screener.py:1538](backtest/signals/screener.py#L1538). Docstring: stoch %K < 20 AND K-cross-above-D AND price-above-EMA-20. SHORT side present in code (B627 fix) but `_strat3` returns dual.
+
+**Step 2 — Gates:** LONG (3): `stoch_oversold` + `stoch_bullish_cross` + `price_above_ema_20`. SHORT (4): `stoch_overbought` + `stoch_bearish_cross` + `below_ema_20` (B627 F1 positive symmetric) + B718 borrow gate.
+
+**Step 3 — Producer:** `compute_stochastic(...)` in technical.py. `stoch_oversold` is STATE (%K<20). `stoch_bullish_cross` is EVENT (K cross above D today). `price_above_ema_20`/`below_ema_20` standard + B609 producer symmetric. PIT-clean. **Mixed STATE+EVENT temporality** (state gate + cross event) — better than pure-STATE Cluster-A average.
+
+**Step 4 — Doc vs reality:** CLEAN. Gates match context bullets. B627 F1 lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. EMA-20 gate implicit bull/bear regime. CLEAN.
+
+**Step 6 — Inverse:** Dual present (_strat3 LONG + SHORT). Symmetric.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B627 F1 silent-gap fix applied; B718 borrow gate present | CLEAN | — |
+| G | `stoch_oversold` (%K<20) uses producer threshold; cube-sweepable | CLEAN | — |
+| Q | Mixed STATE+EVENT (cross is EVENT) — best-in-class for Cluster A oscillators | LOWER PRIORITY for EVENT-conversion sweep | **Class 1 KEEP-AS-IS** |
+| J | vs A-7 stochrsi_oversold + A-9 williams_r_oversold + A-10 ultimate_oscillator (all oversold-bounce family) | Post-B690b: oversold-family marginal-contribution audit | **Class 6 DEFERRED-POST-B690b** |
+| N | Stoch extremes cluster in vol regimes | Cube infra | **Class 8 CUBE-INFRA** |
+
+**Recommendation: KEEP-AS-IS. Cleanest oscillator strategy in Cluster A by Pattern Q score** (has explicit cross EVENT). A-priori fire projection: ~10-25 fires/ticker/yr; universe-wide ~5K-12K/yr LONG. PASS_CUBE range; possibly over B710 5K ceiling.
+
+---
+
+### A-7. `strat_stochrsi_oversold` (StochRSI cross + RSI gate + 200-EMA, dual, batched B206 + B663)
+
+**Step 1 — Registration:** [screener.py:1019](backtest/signals/screener.py#L1019). Docstring: B206 Connors discipline — 200-EMA gate added because pre-B206 fired aggressively in downtrends (-1.01 EV at 132 trades).
+
+**Step 2 — Gates:** LONG (4): `stochrsi_oversold` + `stochrsi_cross_up` + `rsi_14<55` + `price_above_ema_200` (B663). SHORT (5): mirror with `rsi_14>45` + `below_ema_200` (B630 symmetric) + B718.
+
+**Step 3 — Producer:** `compute_stochrsi(...)` in technical.py. `stochrsi_oversold` STATE (StochRSI<20). `stochrsi_cross_up` EVENT. rsi_14 STATE. PIT-clean.
+
+**Step 4 — Doc vs reality:** CLEAN. B206 lineage VERIFIED. B663 default-False fix present.
+
+**Step 5 — Regime affinity:** Not set. 200-EMA gate enforces regime per docstring intent. CLEAN.
+
+**Step 6 — Inverse:** Dual present. Symmetric. Per Pattern S: SHORT side faces bull-drift; cube expected LONG > SHORT alpha.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B663 + B630 symmetric + B718 borrow | CLEAN | — |
+| G | `rsi_14<55` and `rsi_14>45` hardcoded thresholds (non-canonical "not overbought"/"not oversold") | Producer-additive booleans | **Class 2 (queue `S4-B752-A-7-G-RSI-14-MID-THRESHOLD-HARDENING`)** |
+| Q | Mixed STATE+EVENT (cross EVENT) — same as A-6 | LOWER priority for cluster sweep | **Class 1 KEEP-AS-IS** |
+| J | vs A-6 stoch_oversold (both K-cross oscillator families) | Post-B690b audit | **Class 6 DEFERRED-POST-B690b** |
+| R | NOT a Connors-OR-disjunct strategy (B206 added 200-EMA gate only, not rsi_2<5 OR-extension) | CLEAN — different B206 application | — |
+
+**Recommendation: KEEP-AS-IS + Class 2 G fix. Status post-B752: PRE-CUBE-CLEAN.** Fire projection: tight 4-gate stack; ~5-15/ticker/yr LONG; ~2,500-7,500/yr universe-wide. PASS_CUBE range.
+
+---
+
+### A-8. `strat_stochrsi_overbought_short` (StochRSI overbought SHORT)
+
+**Step 1 — Registration:** [screener.py:2382](backtest/signals/screener.py#L2382). SHORT-only standalone (vs A-7 SHORT branch which has below_ema_200 gate added).
+
+**Step 2 — Gates:** SHORT (4): `stochrsi_overbought` + `stochrsi_cross_dn` + `rsi_14>45` + B718 borrow gate.
+
+**Step 3 — Producer:** Same as A-7 SHORT signals. PIT-clean.
+
+**Step 4 — Doc vs reality:** No docstring. Gate-set vs A-7 SHORT branch: **A-7 SHORT adds `below_ema_200`; A-8 lacks it.** A-8 fires on overbought + cross_dn + RSI>45 WITHOUT regime gate.
+
+**Step 5 — Regime affinity:** Not set. **A-8 has NO regime gate — fires in ANY regime including bull (where short fights drift).** Critical finding.
+
+**Step 6 — Inverse:** No LONG mirror exists as standalone; A-7 LONG is the closest dual-strategy LONG analog.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B718 borrow gate present | CLEAN | — |
+| **CRITICAL Pattern W** | **A-8 is essentially A-7 SHORT branch MINUS the `below_ema_200` regime gate.** Post-tightening (if A-8 added below_ema_200), it would be deterministic duplicate of A-7 SHORT. | Owner decision: (a) DELETE A-8 (redundant); (b) ADD below_ema_200 → becomes A-7 SHORT duplicate → DELETE; (c) KEEP A-8 deliberately gate-less for bull-fade SHORT signal (unusual choice) | **Class 1-OR-DELETE (queue `S4-B752-A-8-PATTERN-W-DELETE-DECISION-VS-A-7-SHORT`)** |
+| Pattern A | No regime gate; fires in bull regime against drift | Add `below_ema_200` regime gate (then becomes A-7 SHORT duplicate per Pattern W) | **Class 2 + Pattern W cascade** |
+| Q | Mixed STATE+EVENT | LOWER priority | — |
+| S | SHORT-only without regime gate = worst-case bull-drift exposure | Document | — |
+
+**Recommendation: DELETE A-8 per Pattern W vs A-7 SHORT branch.** A-8 likely registered as separate strategy before A-7 SHORT side was added (B206 expansion). Per `feedback_no_prior_edge_consolidate_before_tune` + B718 hull_rsi precedent: redundant SHORT variant = DELETE-WRAPPER. Status post-B752: **DELETE CANDIDATE.**
+
+Fire projection: ~15-30/ticker/yr SHORT (no regime gate inflates rate); universe-wide ~7K-15K/yr SHORT. Over B710 5K ceiling. Likely FAIL_CEILING + redundant with A-7 SHORT.
+
+---
+
+### A-9. `strat_williams_r_oversold` (Williams %R + Connors RSI(2) + CMF, dual, batched B206 + B629 + B663)
+
+**Step 1 — Registration:** [screener.py:941](backtest/signals/screener.py#L941). Docstring: B206 Connors stack — primary = Williams %R OR Connors RSI(2)<5; 200-EMA regime gate. BUG-11 resolved. Sharpe 0.30 in Phase 1A-beta (current best-performing oversold strategy).
+
+**Step 2 — Gates:** LONG (3): `(williams_r_oversold OR rsi_2<5)` + `price_above_ema_200` (B663) + `cmf_positive`. SHORT (4): mirror with `cmf_negative` (B629 F1 positive symmetric) + `below_ema_200` (B630 symmetric) + B718 borrow gate.
+
+**Step 3 — Producer:** `compute_williams_r(...)` STATE. `compute_cmf(...)` STATE (chaikin money flow ZONE). PIT-clean. B629 F1 + B663 fixes present.
+
+**Step 4 — Doc vs reality:** CLEAN. Sharpe 0.30 + BUG-11 + B629 + B663 lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. 200-EMA gate enforces regime. CLEAN per Pattern A.
+
+**Step 6 — Inverse:** Dual (_strat3). Symmetric. Per Pattern S.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B629 + B663 + B718 all applied; positive-symmetric throughout | CLEAN | — |
+| G | `williams_r_oversold` = `%R<-80` producer threshold; sweepable. `rsi_2<5` hardcoded; same Pattern G as A-1 Connors-stack | Producer-additive booleans for rsi_2 thresholds | **Class 2 LOOSEN/TIGHTEN (queue `S4-B752-A-9-G-RSI-2-THRESHOLD-HARDENING`)** |
+| Q | All 3 LONG gates STATE | EVENT-conversion candidate per cluster Pattern Q | **Class 2 (queue `S4-B752-A-9-Q-WILLIAMS-CMF-EVENT-CONVERSION`)** |
+| R | Connors-OR-disjunct same as A-1 + A-10 (rsi_2 path) — proportional tightening: CMF gate adds flow confirmation | Pattern R PROPORTIONAL — CLEAN | — |
+| J | vs A-1 (RSI Connors), A-6 (stoch), A-7 (stochRSI), A-10 (UO Connors) | Oversold-family Pattern J audit post-B690b | **Class 6** |
+| N | Cluster A Pattern N | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS + Class 2 fixes.** Sharpe 0.30 carrier — empirically best oversold strategy in Phase 1A-beta. CLEAN post-B629/B663/B718. Status post-B752: PRE-CUBE-CLEAN.
+
+Fire projection: 3 LONG gates Williams + Connors + CMF stack; ~5-15/ticker/yr; ~2,500-7,500/yr universe-wide LONG. PASS_CUBE.
+
+---
+
+### A-10. `strat_ultimate_oscillator` (UO + Connors RSI(2) + 200-SMA, dual, batched B206 + B631)
+
+**Step 1 — Registration:** [screener.py:1055](backtest/signals/screener.py#L1055). Docstring extensive: Williams 1976 UO (4×avg7 + 2×avg14 + avg28)/7; UO<30 oversold / UO>70 overbought canonical extremes. B206 Connors stack: UO_oversold OR rsi_2<5. Sharpe 0.49 (BEST in oversold family at Phase 1A-beta) but only 27 trades. B631: F1 + F2 + (a) — last instance of `not s.get("price_above_sma_200")` NOT-pattern fixed (positive symmetric `below_sma_200`); uo_overbought signal swap; close_above_open bullish bar gate added.
+
+**Step 2 — Gates:** LONG (3): `(uo_oversold OR rsi_2<5)` + `price_above_sma_200` + `close_above_open` (B631 a). SHORT (4): mirror with `uo_overbought` (B631 F2 swap) + `below_sma_200` (B631 F1) + `close_below_open` (B631 a) + B718 borrow gate.
+
+**Step 3 — Producer:** `compute_ultimate_oscillator(...)` STATE. `compute_sma_200(...)` standard + B630 symmetric `below_sma_200`. close_above_open/close_below_open EVENT. PIT-clean.
+
+**Step 4 — Doc vs reality:** CLEAN. Williams 1976 + B206 + B631 (F1+F2+a) lineage VERIFIED. Sharpe 0.49 Phase 1A-beta + 27 trades VERIFIED via existing dashboards.
+
+**Step 5 — Regime affinity:** Not set. Docstring DEFERRED-TO-R5 manifest M1 entry `{bull}` is B623 REMOVE_OK candidate (+31.1pp PnL on REMOVE). Pre-R5 affinity addition WAITS for owner direction-aware confirmation.
+
+**Recommendation:** Honor B623 REMOVE_OK status — no Pattern A change pre-R5. Per memory `feedback_r5_paused_pending_stage4_completion`.
+
+**Step 6 — Inverse:** Dual (_strat3). Symmetric per B631. Pattern S asymmetric expectancy applies.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B631 fully applied (F1+F2+a) + B718 borrow gate | CLEAN — **A-10 is the most thoroughly cleaned strategy in Cluster A** | — |
+| G | `rsi_2<5` hardcoded; same as A-1/A-9 Connors-stack | Cluster-wide producer-additive | **Class 2 cross-ref `S4-B751-A-5-G-RSI-14-THRESHOLD-HARDENING` family** |
+| Q | UO STATE + Connors-RSI STATE + close_above_open EVENT bar (B631 a) — mixed temporality with EVENT element | LOWER priority for EVENT-conversion (already partially EVENT-anchored) | **Class 1 KEEP-AS-IS** |
+| R | Connors-OR same as A-1/A-9 — proportional tightening: B631 (a) bullish-bar gate adds EVENT confirmation. CLEAN. | — | — |
+| J | vs A-1 (RSI), A-9 (Williams %R) Connors-stack family | Pattern J audit post-B690b | **Class 6** |
+| Pattern A R5-deferred | docstring marks `{bull}` REMOVE_OK candidate per B623 | Wait for R5 confirmation per memory | **Class 6 DEFERRED-R5** |
+| N | UO extreme is rare; effective-N concern | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS.** A-10 is the gold-standard cleaned strategy in Cluster A (most thorough B631 F1+F2+a application). Sharpe 0.49 best-in-family at 27 trades = EXPLORATORY-tag-eligible per fire-count + W5m precedent. Status post-B752: PRE-CUBE-CLEAN; B623 REMOVE_OK pending R5.
+
+Fire projection: tight 3-gate stack with EVENT bar; ~2-8/ticker/yr LONG; ~1K-4K/yr universe-wide. **Possibly FAIL_FIRE_STARVED per W5 council Pattern AA** — EXPLORATORY-tag candidate.
+
+---
+
+### A-11. `strat_mfi_oversold` (MFI + pivot S1/S2 + OBV, dual, batched B628)
+
+**Step 1 — Registration:** [screener.py:1409](backtest/signals/screener.py#L1409). No docstring; inline comment B628 F1 family-sweep positive-symmetric `obv_bearish`.
+
+**Step 2 — Gates:** LONG (3): `mfi_oversold` + `(near_s1 OR near_s2)` + `obv_bullish`. SHORT (4): mirror with `mfi_overbought` + `(near_r1 OR near_r2)` + `obv_bearish` (B628 F1 positive symmetric) + B718 borrow gate.
+
+**Step 3 — Producer:** `compute_mfi(...)` STATE (MFI<20 oversold). `compute_pivots(...)` STATE (near support/resistance). `compute_obv(...)` STATE (OBV direction). PIT-clean. B628 F1 fix present.
+
+**Step 4 — Doc vs reality:** CLEAN. B628 F1 lineage VERIFIED.
+
+**Step 5 — Regime affinity:** Not set. No regime gate (no 200-EMA/SMA). Different pattern than other Cluster A oscillators — uses pivot-S1/S2 for support context (mean-rev "buy support" thesis), not trend gate.
+
+**Pattern A concern:** A-11 is the ONLY Cluster A oscillator strategy WITHOUT a long-term regime gate (200-EMA/SMA). Implicit mean-reversion-at-support thesis vs other strategies' Connors-discipline trend-aligned mean-reversion. Distinct mechanism. Acceptable.
+
+**Step 6 — Inverse:** Dual present. Symmetric. Per Pattern S.
+
+**Step 7 — Disposition:**
+
+| Cat | Finding | Action | Class |
+|---|---|---|---|
+| F | B628 F1 positive symmetric + B718 borrow gate | CLEAN | — |
+| G | `mfi_oversold` = producer threshold; sweepable | CLEAN | — |
+| Q | All 3 gates STATE | EVENT-conversion candidate (cluster Pattern Q rolled) | **Class 2** |
+| Pattern A | NO long-term regime gate — uses pivot-support as context | DISTINCT THESIS from cluster norm; CLEAN per author intent | — |
+| J | vs A-1/A-6/A-7/A-9/A-10 oversold family | Pattern J audit post-B690b | **Class 6** |
+| N | MFI oversold + pivot support clusters in vol regimes | Cube infra | **Class 8** |
+
+**Recommendation: KEEP-AS-IS.** Distinct pivot-support mechanism justifies absence of trend gate. Status post-B752: PRE-CUBE-CLEAN.
+
+Fire projection: 3-gate stack MFI + pivot + OBV; ~5-15/ticker/yr LONG (pivots constrain to ~10-20% of bars); ~2,500-7,500/yr universe-wide. PASS_CUBE range.
+
+---
+
+## B752 cluster walk completion wrap-up
+
+### Disposition summary (6 walks shipped)
+
+| Walk | Strategy | Status | Key finding |
+|---|---|---|---|
+| A-6 | stoch_oversold | KEEP-AS-IS | Cleanest oscillator (mixed STATE+EVENT) |
+| A-7 | stochrsi_oversold | KEEP-AS-IS + Class 2 G | Same cleanness; G fix on RSI mid-thresholds |
+| A-8 | stochrsi_overbought_short | **DELETE CANDIDATE** | Pattern W vs A-7 SHORT branch (missing regime gate = redundant once fixed) |
+| A-9 | williams_r_oversold | KEEP-AS-IS + Class 2 fixes | Sharpe 0.30 carrier; full B629+B663 fixes applied |
+| A-10 | ultimate_oscillator | KEEP-AS-IS (gold-standard cleanness) | Sharpe 0.49 best-in-family; B631 F1+F2+a fully applied; **EXPLORATORY candidate per FIRE_STARVED** |
+| A-11 | mfi_oversold | KEEP-AS-IS | Distinct pivot-support thesis (no trend gate); CLEAN |
+
+**A-8 DELETE recommendation is the headline B752 finding.** Pattern W vs A-7 SHORT branch: A-8 fires on overbought + cross_dn + rsi_14>45 WITHOUT regime gate; A-7 SHORT does same WITH below_ema_200. Owner decision per B720 PO3 / B722 hull_rsi precedent: (a) DELETE A-8, (b) add regime gate to A-8 (then deterministic duplicate of A-7 SHORT → still DELETE), (c) keep A-8 deliberately gate-less for bull-fade SHORT.
+
+**A-10 EXPLORATORY-tag candidacy is the second key B752 finding.** Sharpe 0.49 best-in-family but only 27 Phase 1A-beta trades = FAIL_FIRE_STARVED per W5m precedent. Per W5 council recommendation: tag EXPLORATORY pending B690b re-measurement.
+
+### NEW EXECUTION_QUEUE tickets surfaced (B752)
+
+1. `S4-B752-A-7-G-RSI-14-MID-THRESHOLD-HARDENING` — producer-additive `rsi_14<55` + `rsi_14>45` booleans (StochRSI's "not extreme" mid-thresholds). PENDING-OWNER-APPROVAL.
+2. `S4-B752-A-8-PATTERN-W-DELETE-DECISION-VS-A-7-SHORT` — Pattern W audit + owner decision (a/b/c) on strat_stochrsi_overbought_short deletion. PENDING-OWNER-DECISION-A-B-OR-C.
+3. `S4-B752-A-9-G-RSI-2-THRESHOLD-HARDENING` — same as A-1/A-10 cluster-wide producer-additive. PENDING-OWNER-APPROVAL.
+4. `S4-B752-A-9-Q-WILLIAMS-CMF-EVENT-CONVERSION` — A-9 cluster Pattern Q rolled. PENDING-OWNER-APPROVAL.
+5. `S4-B752-A-10-EXPLORATORY-TAG-CANDIDATE-POST-B660-RE-MEASURE` — A-10 Sharpe 0.49 @ 27 trades = FIRE_STARVED; EXPLORATORY tag candidate per W5m. PENDING-OWNER-APPROVAL-PENDING-B660-RE-MEASURE-VERIFY.
+6. `S4-B752-PATTERN-J-OSCILLATOR-OVERSOLD-FAMILY-CONSOLIDATION-AUDIT-POST-B690b` — 5 oversold-family strategies (A-1 RSI Connors + A-6 stoch + A-7 stochRSI + A-9 Williams Connors + A-10 UO Connors) consolidation candidate. DEFERRED-POST-B690b.
+
+### Owner decision gates (B752 surfaces)
+
+| Decision | Severity | Pre-cube urgency |
+|---|---|---|
+| A-8 DELETE vs add-regime-gate (Pattern W cascade) | **HIGH** | Pre-cube — affects cube cell count + Bonferroni denominator |
+| A-10 EXPLORATORY tag pending B660 re-measure | MEDIUM | Pre-cube |
+| Pattern J oversold-family consolidation audit | HIGH | Post-B690b |
+
+---
+
 ## B750 cluster walk completion wrap-up
 
 ### Disposition summary (3 walks shipped)
@@ -989,12 +1213,12 @@ A-priori fire-count projection: RSI<35 + vol_above_avg + 200-EMA = 3-gate conflu
 | A-3 rsi9_extreme | ✅ Walked B751 | 2026-06-14 | Step 1-7 complete; 4 queue tickets surfaced (LONG-only justified per asymmetric data) |
 | A-4 rsi21_slow | ✅ Walked B751 | 2026-06-14 | Step 1-7 complete; Pattern J RSI window family + W audit candidates |
 | A-5 rsi_volume_200ema | ✅ Walked B751 | 2026-06-14 | Step 1-7 complete; B320 lineage verify + J vs A-1 ablation candidate |
-| A-6 stoch_oversold | ⏳ Pending B752 | — | |
-| A-7 stochrsi_oversold | ⏳ Pending B752 | — | |
-| A-8 stochrsi_overbought_short | ⏳ Pending B752 | — | |
-| A-9 williams_r_oversold | ⏳ Pending B752 | — | |
-| A-10 ultimate_oscillator | ⏳ Pending B752 | — | |
-| A-11 mfi_oversold | ⏳ Pending B752 | — | |
+| A-6 stoch_oversold | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS; cleanest oscillator (mixed STATE+EVENT) |
+| A-7 stochrsi_oversold | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS + Class 2 G fix |
+| A-8 stochrsi_overbought_short | ✅ Walked B752 | 2026-06-14 | **DELETE CANDIDATE** Pattern W vs A-7 SHORT |
+| A-9 williams_r_oversold | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS; Sharpe 0.30 carrier; full fixes |
+| A-10 ultimate_oscillator | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS gold-standard cleanness; EXPLORATORY candidate |
+| A-11 mfi_oversold | ✅ Walked B752 | 2026-06-14 | KEEP-AS-IS; distinct pivot-support thesis |
 | A-12 bollinger_lower | ⏳ Pending B753 | — | |
 | A-13 bollinger_tight | ⏳ Pending B753 | — | |
 | A-14 bollinger_upper_short | ⏳ Pending B753 | — | |
@@ -1015,7 +1239,7 @@ A-priori fire-count projection: RSI<35 + vol_above_avg + 200-EMA = 3-gate conflu
 | A-29 prev_day_low_bounce | ⏳ Pending B755 | — | |
 | A-30 bb_squeeze_volume | ⏳ Pending B756 | — | |
 
-**Progress: 7/30 walked (23%) — B750 framework + 3 sample walks + B751 4 walks shipped.**
+**Progress: 13/30 walked (43%) — B750 framework + 3 + B751 4 + B752 6 walks shipped.**
 
 ---
 

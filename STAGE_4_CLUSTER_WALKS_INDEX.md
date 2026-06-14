@@ -195,11 +195,12 @@ Per `feedback_no_rushing_per_strategy_tweak` + `project_no_apriori_strategy_prun
 | Chart-pattern + Candle cluster walks | 18 | CC-1 through CC-7 + CP-1 through CP-11 |
 | **B750 NEW Cluster A walks** | **3** | A-1 rsi_oversold + A-15 ppo_crossover + A-22 avwap_50_reclaim |
 | **B751 NEW Cluster A walks** | **4** | A-2 rsi_overbought_short + A-3 rsi9_extreme + A-4 rsi21_slow + A-5 rsi_volume_200ema |
+| **B752 NEW Cluster A walks** | **6** | A-6 stoch_oversold + A-7 stochrsi_oversold + A-8 stochrsi_overbought_short (DELETE candidate) + A-9 williams_r_oversold + A-10 ultimate_oscillator (EXPLORATORY candidate) + A-11 mfi_oversold |
 | **B750 NEW Cluster B walks** | **3** | B-3 golden_cross_50_200 + B-13 supertrend_ichimoku_adx + B-29 xs_low_beta_long |
 | **B750 NEW Cluster C walks** | **2.5** | C-13 news_sentiment_long + C-21 vix_backwardation_long + C-26 post_inclusion_drift_long (partial) |
-| **Sum (unique)** | **~144.5** | (some cross-cluster strategies walked once, referenced multiple times) |
-| Strategies not yet cluster-walked (post-B751) | **~76** | Cluster A pending: 23 (B752-B756). Cluster B pending: 30 (B754-B757). Cluster C pending: 30-32 (B758-B761). Plus the +2 Cluster C reconciliation. |
-| **Stage 4 walk coverage post-B751** | **144.5 / 221 = 65%** | Up from 64% post-B750 (and 60% pre-B750). Target 96-walk completion across B752-B762 → 100% coverage. |
+| **Sum (unique)** | **~150.5** | (some cross-cluster strategies walked once, referenced multiple times) |
+| Strategies not yet cluster-walked (post-B752) | **~70** | Cluster A pending: 17 (B753-B756). Cluster B pending: 30 (B754-B757). Cluster C pending: 30-32 (B758-B761). Plus the +2 Cluster C reconciliation. |
+| **Stage 4 walk coverage post-B752** | **150.5 / 221 = 68%** | Up from 65% post-B751. Target 96-walk completion across B753-B762 → 100% coverage. |
 
 ---
 

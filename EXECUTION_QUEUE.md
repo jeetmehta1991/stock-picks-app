@@ -89,7 +89,22 @@ Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; f
 
 **Status flips applied this turn:** No prior queue items resolved or reopened. 35 NEW tickets added per per-turn discipline; documented inline above with cross-references to cluster docs.
 
-**Next live work after B751:** B752 picks up Cluster A walks A-6 through A-11 (stoch_oversold + stochrsi_oversold + stochrsi_overbought_short + williams_r_oversold + ultimate_oscillator + mfi_oversold). 6 walks per batch per established B751 pace.
+**Next live work after B752:** B753 picks up Cluster A walks A-12 through A-17 (bollinger_lower + bollinger_tight + bollinger_upper_short + keltner_lower + camarilla_r4_breakout). 5-6 walks per batch per established pace.
+
+---
+
+**B752 (2026-06-14) ADDITIONAL TICKETS SURFACED (6 walks: A-6 through A-11):**
+
+- `S4-B752-A-7-G-RSI-14-MID-THRESHOLD-HARDENING` — producer-additive `rsi_14<55` + `rsi_14>45` booleans for StochRSI mid-thresholds. PENDING-OWNER-APPROVAL.
+- `S4-B752-A-8-PATTERN-W-DELETE-DECISION-VS-A-7-SHORT` — **HIGH-PRIORITY** Pattern W audit + owner decision (a/b/c) on strat_stochrsi_overbought_short deletion. PENDING-OWNER-DECISION-A-B-OR-C.
+- `S4-B752-A-9-G-RSI-2-THRESHOLD-HARDENING` — cluster-wide producer-additive (rolls up A-1/A-9/A-10 Connors-stack G). PENDING-OWNER-APPROVAL.
+- `S4-B752-A-9-Q-WILLIAMS-CMF-EVENT-CONVERSION` — A-9 cluster Pattern Q rolled. PENDING-OWNER-APPROVAL.
+- `S4-B752-A-10-EXPLORATORY-TAG-CANDIDATE-POST-B660-RE-MEASURE` — A-10 ultimate_oscillator Sharpe 0.49 @ 27 trades FAIL_FIRE_STARVED; EXPLORATORY tag per W5m precedent. PENDING-OWNER-APPROVAL-PENDING-B660-RE-MEASURE.
+- `S4-B752-PATTERN-J-OSCILLATOR-OVERSOLD-FAMILY-CONSOLIDATION-AUDIT-POST-B690b` — 5 oversold-family strategies (A-1/A-6/A-7/A-9/A-10) consolidation candidate. DEFERRED-POST-B690b.
+
+**Cumulative B750+B751+B752 = 41 NEW tickets** filed in EXECUTION_QUEUE.md (35 prior + 6 B752).
+
+**Next live work after B752:** B753 picks up Cluster A walks A-12 through A-17 (bollinger_lower + bollinger_tight + bollinger_upper_short + keltner_lower + camarilla_r4_breakout).
 
 ---
 
