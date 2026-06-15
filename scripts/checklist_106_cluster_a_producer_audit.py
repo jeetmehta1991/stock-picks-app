@@ -275,8 +275,23 @@ def _probe_producer_coverage(
                 stats["n_observations"] += 1
                 year_stats = stats["by_year"][year]
                 year_stats["n_observations"] += 1
-                # Treat boolean True or truthy non-None as "active"
-                if sig_val is True or (sig_val and isinstance(sig_val, bool)):
+                # B775 FIX: Accept Python bool AND numpy.bool_ as boolean signals.
+                # Original strict check `isinstance(sig_val, bool)` rejected
+                # numpy.bool_ values (which pandas producers commonly emit via
+                # vectorized comparisons). This caused FALSE POSITIVES in B767
+                # smoke + B775 demo: hammer / shooting_star / near_cam_r3 / etc
+                # were classified emitted_but_always_False when they actually
+                # were True np.bool_ on real bars. Per CHECKLIST #44(b)
+                # investigate-why: producer compute_pivot_signals returns
+                # np.bool_ from pandas comparisons; producer compute_ema_sma
+                # returns Python bool from _safe_float-wrapped scalar compare.
+                # Both should count.
+                try:
+                    import numpy as _np
+                    _is_bool_like = isinstance(sig_val, (bool, _np.bool_))
+                except Exception:
+                    _is_bool_like = isinstance(sig_val, bool)
+                if sig_val is True or (sig_val and _is_bool_like):
                     stats["n_True_observations"] += 1
                     year_stats["n_True"] += 1
                     ticker_emitted_True.add(sig_name)

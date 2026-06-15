@@ -477,6 +477,22 @@ B-29 walk doc previously flagged this as "Pattern V: cross_sectional.compute_cro
 
 **Cumulative ticket count post-B774: 130 unique S4-B7XX tickets** (129 post-B773 + 1 B774 infra blocker).
 
+### TIER 14 — B775 CHECKLIST-106 audit numpy.bool_ counting bug FIX + B767/B775 false-positive elimination
+
+**B775 demo audit (bh15ewc9v, completed 09:01 UTC after 9658s ~2.7hr runtime on 50 tickers x 2yr) surfaced an AUDIT BUG.** Parsing showed all 14 B767 "emitted_but_always_False" candidates STILL showing 0 True observations across 24,546 bars (impossible for normal-frequency signals like hammer / cpr_narrow_tight / close_above_open). Per CHECKLIST #44(b) investigate-why: root-cause is `scripts/checklist_106_cluster_a_producer_audit.py:279` strict-type check `isinstance(sig_val, bool)` which **REJECTS `numpy.bool_` values** -- and most producer signals (compute_pivot_signals etc.) return `numpy.bool_` from pandas vectorized comparisons.
+
+**B775 FIX shipped:** line 279 modified to accept `(bool, numpy.bool_)`. Post-fix smoke re-run verified all 15 candidates now show realistic True rates (5-51%): hammer 5.3% / shooting_star 4.6% / near_cam_r3 16.0% (matches B761 ~21% AAPL probe) / above_cpr 51.1% / close_above_open 49.1% etc.
+
+**Pattern F candidates dropped 49 -> 34** (15 false positives eliminated). The 34 remaining are mostly the metadata-shorthand cases B767 already correctly identified.
+
+**B767 + B775 demo verdicts SUPERSEDED in scope:** The 14 "emitted_but_always_False" findings were all audit-bug false positives. **Cluster A producer-data audit final verdict (post-B775):** ZERO runtime silent-no-op gates + ZERO "emitted-but-always-False" gates + 53 metadata-mismatches in signals_used field shorthand (METADATA only, NOT runtime). Chairman's TIER 0 B748c-pattern contamination concern is FULLY refuted.
+
+64. **`S4-B775-CHECKLIST-106-AUDIT-PIN-TEST-NUMPY-BOOL-COUNTING`** — Codify B775 numpy.bool_ counting fix as pin test in test_unit.py. Probe: build synthetic OHLCV where hammer or near_cam_r3 is known True (numpy.bool_); assert True-counter increments for both Python bool AND numpy.bool_ values. Future refactors of the True-counting logic will trip this test. Defense-in-depth pattern mirror of B770 #62 PIT pin test. PENDING-OWNER-APPROVAL. Source: B775 audit-bug discovery. Class 1 TEST-CODIFICATION. MEDIUM.
+
+**B775 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (audit numpy.bool_ counting bug + 15 false positives eliminated) + 1 nuanced (post-fix Cluster A producer-audit final verdict is CLEANER than initial B767/B775 verdicts -- zero runtime gates + zero always-False producers). Tickets filed: **1 NEW (#64 pin test) + 1 code change** (`scripts/checklist_106_cluster_a_producer_audit.py:279` accepts numpy.bool_). **Audit-clean: YES.** This is the THIRD case CHECKLIST #44(b) investigate-why has caught an audit/measurement bug masquerading as strategy verdict (B748c FILE-LIST gap; B774 measurement-harness gap; B775 audit-bug).
+
+**Cumulative ticket count post-B775: 131 unique S4-B7XX tickets** (130 post-B774 + 1 B775 pin test).
+
 ### Annotations to existing tickets (per CHECKLIST #107 reconciliation)
 
 - **`S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP`** (existing): reviewer recommends RE-RATE from "MEDIUM, pre-cube preferred" to "TOP keystone 3-in-1 fix". Council partial-adopt: Q is real fix BUT NOT keystone (Contrarian: it's 2-in-1; First Principles: keystone is latent-collapse). Sweep stays MEDIUM pending TIER 0-2 evidence + post-Q fire-count projection (ticket #34).

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "as_of_run": "2026-06-15T02:34:25.095660",
+    "as_of_run": "2026-06-15T14:41:14.885071",
     "n_tickers_probed": 3,
     "n_tickers_universe": 519,
     "date_range": {
@@ -11,7 +11,7 @@
     "n_unique_signals_declared": 93,
     "n_signals_observed": 572,
     "n_bars_total": 756,
-    "runtime_seconds": 337.3,
+    "runtime_seconds": 299.0,
     "enable_extended_signals": true,
     "axes_audited": {
       "a_path_from_source": "technical.py (compute_all_signals dispatcher)",
@@ -23,17 +23,6 @@
     }
   },
   "declared_signals_inventory": {
-    "price_above_ema_200": {
-      "n_strategies_using": 6,
-      "strategies": [
-        "rsi_oversold",
-        "rsi9_extreme",
-        "bollinger_lower",
-        "bollinger_tight",
-        "cpr_narrow_momentum",
-        "avwap_50_reclaim"
-      ]
-    },
     "price_above_sma_50": {
       "n_strategies_using": 2,
       "strategies": [
@@ -48,19 +37,24 @@
         "bollinger_lower"
       ]
     },
-    "bearish_signal": {
+    "price_above_ema_200": {
+      "n_strategies_using": 6,
+      "strategies": [
+        "rsi_oversold",
+        "rsi9_extreme",
+        "bollinger_lower",
+        "bollinger_tight",
+        "cpr_narrow_momentum",
+        "avwap_50_reclaim"
+      ]
+    },
+    "below_sma_50": {
       "n_strategies_using": 1,
       "strategies": [
         "rsi_overbought_short"
       ]
     },
     "rsi_14>68": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "rsi_overbought_short"
-      ]
-    },
-    "below_sma_50": {
       "n_strategies_using": 1,
       "strategies": [
         "rsi_overbought_short"
@@ -90,6 +84,12 @@
         "bb_squeeze_volume"
       ]
     },
+    "bearish_signal": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi_overbought_short"
+      ]
+    },
     "rsi_9<20": {
       "n_strategies_using": 1,
       "strategies": [
@@ -108,12 +108,11 @@
         "rsi21_slow"
       ]
     },
-    "above_ema_200": {
-      "n_strategies_using": 3,
+    "rsi_14<35": {
+      "n_strategies_using": 2,
       "strategies": [
         "rsi_volume_200ema",
-        "stochrsi_oversold",
-        "williams_r_oversold"
+        "camarilla_rsi_obv"
       ]
     },
     "vol_above_avg": {
@@ -122,11 +121,19 @@
         "rsi_volume_200ema"
       ]
     },
-    "rsi_14<35": {
-      "n_strategies_using": 2,
+    "above_ema_200": {
+      "n_strategies_using": 3,
       "strategies": [
         "rsi_volume_200ema",
-        "camarilla_rsi_obv"
+        "stochrsi_oversold",
+        "williams_r_oversold"
+      ]
+    },
+    "stoch_bullish_cross": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "stoch_oversold",
+        "williams_stoch_dual"
       ]
     },
     "price_above_ema_20": {
@@ -136,27 +143,7 @@
         "awesome_oscillator"
       ]
     },
-    "below_ema_20": {
-      "n_strategies_using": 2,
-      "strategies": [
-        "stoch_oversold",
-        "awesome_oscillator"
-      ]
-    },
-    "stoch_overbought": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "stoch_oversold"
-      ]
-    },
     "stoch_bearish_cross": {
-      "n_strategies_using": 2,
-      "strategies": [
-        "stoch_oversold",
-        "williams_stoch_dual"
-      ]
-    },
-    "stoch_bullish_cross": {
       "n_strategies_using": 2,
       "strategies": [
         "stoch_oversold",
@@ -167,6 +154,19 @@
       "n_strategies_using": 1,
       "strategies": [
         "stoch_oversold"
+      ]
+    },
+    "stoch_overbought": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stoch_oversold"
+      ]
+    },
+    "below_ema_20": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "stoch_oversold",
+        "awesome_oscillator"
       ]
     },
     "stochrsi_cross_up": {
@@ -187,13 +187,13 @@
         "stochrsi_oversold"
       ]
     },
-    "stochrsi_overbought": {
+    "rsi_14>45": {
       "n_strategies_using": 1,
       "strategies": [
         "stochrsi_overbought_short"
       ]
     },
-    "rsi_14>45": {
+    "stochrsi_overbought": {
       "n_strategies_using": 1,
       "strategies": [
         "stochrsi_overbought_short"
@@ -219,7 +219,7 @@
         "prev_day_low_bounce"
       ]
     },
-    "williams_r_oversold_or_rsi_2<5": {
+    "below_ema_200": {
       "n_strategies_using": 1,
       "strategies": [
         "williams_r_oversold"
@@ -233,34 +233,10 @@
         "prev_day_low_bounce"
       ]
     },
-    "below_ema_200": {
+    "williams_r_oversold_or_rsi_2<5": {
       "n_strategies_using": 1,
       "strategies": [
         "williams_r_oversold"
-      ]
-    },
-    "uo_overbought_or_rsi_2>95": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "ultimate_oscillator"
-      ]
-    },
-    "close_above_open": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "ultimate_oscillator"
-      ]
-    },
-    "below_sma_200": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "ultimate_oscillator"
-      ]
-    },
-    "uo_oversold_or_rsi_2<5": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "ultimate_oscillator"
       ]
     },
     "close_below_open": {
@@ -275,19 +251,57 @@
         "ultimate_oscillator"
       ]
     },
+    "uo_oversold_or_rsi_2<5": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "close_above_open": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "uo_overbought_or_rsi_2>95": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "below_sma_200": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
     "mfi_oversold": {
       "n_strategies_using": 1,
       "strategies": [
         "mfi_oversold"
       ]
     },
-    "at_support": {
+    "at_resistance": {
       "n_strategies_using": 1,
       "strategies": [
         "mfi_oversold"
       ]
     },
+    "obv_bearish": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "mfi_oversold",
+        "keltner_lower",
+        "camarilla_rsi_obv_short"
+      ]
+    },
     "mfi_overbought": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "mfi_oversold"
+      ]
+    },
+    "at_support": {
       "n_strategies_using": 1,
       "strategies": [
         "mfi_oversold"
@@ -301,27 +315,13 @@
         "camarilla_rsi_obv"
       ]
     },
-    "obv_bearish": {
-      "n_strategies_using": 3,
-      "strategies": [
-        "mfi_oversold",
-        "keltner_lower",
-        "camarilla_rsi_obv_short"
-      ]
-    },
-    "at_resistance": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "mfi_oversold"
-      ]
-    },
-    "adx<30": {
+    "bb_20_20_touch_lower": {
       "n_strategies_using": 1,
       "strategies": [
         "bollinger_lower"
       ]
     },
-    "bb_20_20_touch_lower": {
+    "adx<30": {
       "n_strategies_using": 1,
       "strategies": [
         "bollinger_lower"
@@ -359,17 +359,17 @@
         "bollinger_upper_short"
       ]
     },
+    "kc_touch_lower": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "keltner_lower"
+      ]
+    },
     "hammer": {
       "n_strategies_using": 2,
       "strategies": [
         "keltner_lower",
         "prev_day_low_bounce"
-      ]
-    },
-    "kc_touch_lower": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "keltner_lower"
       ]
     },
     "kc_touch_upper": {
@@ -378,10 +378,11 @@
         "keltner_lower"
       ]
     },
-    "above_cam_r4": {
-      "n_strategies_using": 1,
+    "vol_spike_2x": {
+      "n_strategies_using": 2,
       "strategies": [
-        "camarilla_r4_breakout"
+        "camarilla_r4_breakout",
+        "bb_squeeze_volume"
       ]
     },
     "below_cam_s4": {
@@ -390,11 +391,10 @@
         "camarilla_r4_breakout"
       ]
     },
-    "vol_spike_2x": {
-      "n_strategies_using": 2,
+    "above_cam_r4": {
+      "n_strategies_using": 1,
       "strategies": [
-        "camarilla_r4_breakout",
-        "bb_squeeze_volume"
+        "camarilla_r4_breakout"
       ]
     },
     "near_cam_s3": {
@@ -422,11 +422,10 @@
         "cpr_narrow_momentum_short"
       ]
     },
-    "price_below_ema_200": {
-      "n_strategies_using": 2,
+    "rsi_14>50": {
+      "n_strategies_using": 1,
       "strategies": [
-        "cpr_narrow_momentum",
-        "avwap_20high_rejection_short"
+        "cpr_narrow_momentum"
       ]
     },
     "macd_bullish": {
@@ -434,25 +433,6 @@
       "strategies": [
         "cpr_narrow_momentum",
         "avwap_50_reclaim"
-      ]
-    },
-    "rsi_14>50": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "cpr_narrow_momentum"
-      ]
-    },
-    "below_cpr": {
-      "n_strategies_using": 2,
-      "strategies": [
-        "cpr_narrow_momentum",
-        "cpr_narrow_momentum_short"
-      ]
-    },
-    "above_cpr": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "cpr_narrow_momentum"
       ]
     },
     "rsi_14<50": {
@@ -468,6 +448,26 @@
       "strategies": [
         "cpr_narrow_momentum",
         "cpr_narrow_momentum_short"
+      ]
+    },
+    "price_below_ema_200": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "avwap_20high_rejection_short"
+      ]
+    },
+    "below_cpr": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short"
+      ]
+    },
+    "above_cpr": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "cpr_narrow_momentum"
       ]
     },
     "near_avwap_50low<1.5pct": {
@@ -488,13 +488,13 @@
         "avwap_252_breakout"
       ]
     },
-    "near_avwap_252low<2pct": {
+    "above_avwap_252low": {
       "n_strategies_using": 1,
       "strategies": [
         "avwap_252_breakout"
       ]
     },
-    "above_avwap_252low": {
+    "near_avwap_252low<2pct": {
       "n_strategies_using": 1,
       "strategies": [
         "avwap_252_breakout"
@@ -544,6 +544,12 @@
         "cmf_flip"
       ]
     },
+    "ppo_crossover_up": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ppo_crossover"
+      ]
+    },
     "adx_trending": {
       "n_strategies_using": 1,
       "strategies": [
@@ -556,19 +562,13 @@
         "ppo_crossover"
       ]
     },
-    "ppo_crossover_up": {
-      "n_strategies_using": 1,
-      "strategies": [
-        "ppo_crossover"
-      ]
-    },
-    "roc_turning_dn": {
+    "roc_turning_up": {
       "n_strategies_using": 1,
       "strategies": [
         "roc_burst"
       ]
     },
-    "roc_turning_up": {
+    "roc_turning_dn": {
       "n_strategies_using": 1,
       "strategies": [
         "roc_burst"
@@ -598,13 +598,13 @@
         "williams_stoch_dual"
       ]
     },
-    "near_prev_low": {
+    "near_prev_high": {
       "n_strategies_using": 1,
       "strategies": [
         "prev_day_low_bounce"
       ]
     },
-    "near_prev_high": {
+    "near_prev_low": {
       "n_strategies_using": 1,
       "strategies": [
         "prev_day_low_bounce"
@@ -616,13 +616,13 @@
         "bb_squeeze_volume"
       ]
     },
-    "below_vwap": {
+    "above_vwap": {
       "n_strategies_using": 1,
       "strategies": [
         "bb_squeeze_volume"
       ]
     },
-    "above_vwap": {
+    "below_vwap": {
       "n_strategies_using": 1,
       "strategies": [
         "bb_squeeze_volume"
@@ -758,25 +758,25 @@
     },
     "cpr_narrow": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 669,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 669
         }
       }
     },
     "cpr_narrow_tight": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 229,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 229
         }
       }
     },
@@ -974,421 +974,421 @@
     },
     "above_pivot": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 394,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 394
         }
       }
     },
     "above_r1": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 184,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 184
         }
       }
     },
     "above_r2": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 81,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 81
         }
       }
     },
     "below_s1": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 162,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 162
         }
       }
     },
     "below_s2": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 85,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 85
         }
       }
     },
     "near_pivot": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 129,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 129
         }
       }
     },
     "near_s1": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 93,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 93
         }
       }
     },
     "near_s2": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 49,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 49
         }
       }
     },
     "near_s3": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 22,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 22
         }
       }
     },
     "near_r1": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 91,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 91
         }
       }
     },
     "near_r2": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 53,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 53
         }
       }
     },
     "near_s1_wide": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 405,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 405
         }
       }
     },
     "near_s2_wide": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 232,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 232
         }
       }
     },
     "near_r1_wide": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 423,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 423
         }
       }
     },
     "near_r2_wide": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 262,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 262
         }
       }
     },
     "above_cpr": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 386,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 386
         }
       }
     },
     "inside_cpr": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 21,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 21
         }
       }
     },
     "below_cpr": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 362,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 362
         }
       }
     },
     "near_cam_s3": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 107,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 107
         }
       }
     },
     "near_cam_s4": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 88,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 88
         }
       }
     },
     "near_cam_r3": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 121,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 121
         }
       }
     },
     "above_cam_r3": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 252,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 252
         }
       }
     },
     "above_cam_r4": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 171,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 171
         }
       }
     },
     "below_cam_s3": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 239,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 239
         }
       }
     },
     "below_cam_s4": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 157,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 157
         }
       }
     },
     "above_wood_p": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 390,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 390
         }
       }
     },
     "near_wood_s1": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 73,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 73
         }
       }
     },
     "near_wood_r1": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 91,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 91
         }
       }
     },
     "above_prev_high": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 206,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 206
         }
       }
     },
     "below_prev_low": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 181,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 181
         }
       }
     },
     "below_prev_high": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 548,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 548
         }
       }
     },
     "above_prev_low": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 569,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 569
         }
       }
     },
     "near_prev_high": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 88,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 88
         }
       }
     },
     "near_prev_low": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 76,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 76
         }
       }
     },
     "near_prev_close": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 141,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 141
         }
       }
     },
@@ -1418,49 +1418,49 @@
     },
     "gap_up_2pct": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 29,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 29
         }
       }
     },
     "gap_dn_2pct": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 26,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 26
         }
       }
     },
     "close_above_open": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 371,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 371
         }
       }
     },
     "close_below_open": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 382,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 382
         }
       }
     },
@@ -1622,85 +1622,85 @@
     },
     "near_fib_236": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 69,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 69
         }
       }
     },
     "near_fib_382": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 56,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 56
         }
       }
     },
     "near_fib_500": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 36,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 36
         }
       }
     },
     "near_fib_618": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 41,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 41
         }
       }
     },
     "near_fib_786": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 23,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 23
         }
       }
     },
     "at_key_fib": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 133,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 133
         }
       }
     },
     "at_key_fib_wide": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 278,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 278
         }
       }
     },
@@ -2774,37 +2774,37 @@
     },
     "roc_positive": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 427,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 427
         }
       }
     },
     "roc_turning_up": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 44,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 44
         }
       }
     },
     "roc_turning_dn": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 43,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 43
         }
       }
     },
@@ -5174,25 +5174,25 @@
     },
     "near_52w_high": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 59,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 59
         }
       }
     },
     "break_52w_high": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 23,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 23
         }
       }
     },
@@ -5210,25 +5210,25 @@
     },
     "near_52w_low": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 2,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 12,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 12
         }
       }
     },
     "break_52w_low": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 1,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 4,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 4
         }
       }
     },
@@ -5258,13 +5258,13 @@
     },
     "break_52w_high_clearance_atr_05": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 10,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 10
         }
       }
     },
@@ -5282,49 +5282,49 @@
     },
     "near_52w_high_95pct": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 170,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 170
         }
       }
     },
     "near_52w_low_105pct": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 2,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 42,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 42
         }
       }
     },
     "above_prev_high_clearance_atr_05": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 66,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 66
         }
       }
     },
     "below_prev_low_clearance_atr_05": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 64,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 64
         }
       }
     },
@@ -5354,169 +5354,169 @@
     },
     "inside_bar": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 90,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 90
         }
       }
     },
     "outside_bar": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 68,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 68
         }
       }
     },
     "doji": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 49,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 49
         }
       }
     },
     "hammer": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 40,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 40
         }
       }
     },
     "shooting_star": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 35,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 35
         }
       }
     },
     "pin_bar": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 93,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 93
         }
       }
     },
     "bullish_pin_bar": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 45,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 45
         }
       }
     },
     "bearish_pin_bar": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 48,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 48
         }
       }
     },
     "marubozu_bull": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 7,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 7
         }
       }
     },
     "marubozu_bear": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 2,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 4,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 4
         }
       }
     },
     "bullish_engulfing": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 28,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 28
         }
       }
     },
     "bearish_engulfing": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 21,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 21
         }
       }
     },
     "morning_star": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 44,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 44
         }
       }
     },
     "evening_star": {
       "n_tickers_emitting": 3,
-      "n_tickers_with_True": 0,
+      "n_tickers_with_True": 3,
       "n_observations": 756,
-      "n_True_observations": 0,
+      "n_True_observations": 40,
       "by_year": {
         "2024": {
           "n_observations": 756,
-          "n_True": 0
+          "n_True": 40
         }
       }
     },
@@ -7514,16 +7514,6 @@
       "severity": "HIGH"
     },
     {
-      "signal": "bearish_signal",
-      "issue": "declared_but_never_emitted",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "rsi_overbought_short"
-      ],
-      "n_tickers_probed": 3,
-      "severity": "MEDIUM"
-    },
-    {
       "signal": "rsi_14>68",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
@@ -7562,6 +7552,16 @@
       "severity": "HIGH"
     },
     {
+      "signal": "bearish_signal",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "rsi_overbought_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
       "signal": "rsi_9<20",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
@@ -7582,6 +7582,17 @@
       "severity": "MEDIUM"
     },
     {
+      "signal": "rsi_14<35",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "rsi_volume_200ema",
+        "camarilla_rsi_obv"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
       "signal": "above_ema_200",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 3,
@@ -7589,17 +7600,6 @@
         "rsi_volume_200ema",
         "stochrsi_oversold",
         "williams_r_oversold"
-      ],
-      "n_tickers_probed": 3,
-      "severity": "HIGH"
-    },
-    {
-      "signal": "rsi_14<35",
-      "issue": "declared_but_never_emitted",
-      "n_strategies_declaring": 2,
-      "strategies": [
-        "rsi_volume_200ema",
-        "camarilla_rsi_obv"
       ],
       "n_tickers_probed": 3,
       "severity": "HIGH"
@@ -7645,26 +7645,6 @@
       "severity": "MEDIUM"
     },
     {
-      "signal": "uo_overbought_or_rsi_2>95",
-      "issue": "declared_but_never_emitted",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "ultimate_oscillator"
-      ],
-      "n_tickers_probed": 3,
-      "severity": "MEDIUM"
-    },
-    {
-      "signal": "close_above_open",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "ultimate_oscillator"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
       "signal": "uo_oversold_or_rsi_2<5",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
@@ -7675,17 +7655,17 @@
       "severity": "MEDIUM"
     },
     {
-      "signal": "close_below_open",
-      "issue": "emitted_but_always_False",
+      "signal": "uo_overbought_or_rsi_2>95",
+      "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
       "strategies": [
         "ultimate_oscillator"
       ],
-      "n_observations": 756,
+      "n_tickers_probed": 3,
       "severity": "MEDIUM"
     },
     {
-      "signal": "at_support",
+      "signal": "at_resistance",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
       "strategies": [
@@ -7695,7 +7675,7 @@
       "severity": "MEDIUM"
     },
     {
-      "signal": "at_resistance",
+      "signal": "at_support",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
       "strategies": [
@@ -7745,59 +7725,6 @@
       "severity": "MEDIUM"
     },
     {
-      "signal": "shooting_star",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 3,
-      "strategies": [
-        "bollinger_upper_short",
-        "keltner_lower",
-        "prev_day_low_bounce"
-      ],
-      "n_observations": 756,
-      "severity": "HIGH"
-    },
-    {
-      "signal": "hammer",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 2,
-      "strategies": [
-        "keltner_lower",
-        "prev_day_low_bounce"
-      ],
-      "n_observations": 756,
-      "severity": "HIGH"
-    },
-    {
-      "signal": "above_cam_r4",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "camarilla_r4_breakout"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
-      "signal": "below_cam_s4",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "camarilla_r4_breakout"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
-      "signal": "near_cam_s3",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "camarilla_rsi_obv"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
       "signal": "rsi_14>65",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
@@ -7808,44 +7735,12 @@
       "severity": "MEDIUM"
     },
     {
-      "signal": "near_cam_r3",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "camarilla_rsi_obv_short"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
       "signal": "macd_bearish",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 2,
       "strategies": [
         "cpr_narrow_momentum",
         "cpr_narrow_momentum_short"
-      ],
-      "n_tickers_probed": 3,
-      "severity": "HIGH"
-    },
-    {
-      "signal": "price_below_ema_200",
-      "issue": "declared_but_never_emitted",
-      "n_strategies_declaring": 2,
-      "strategies": [
-        "cpr_narrow_momentum",
-        "avwap_20high_rejection_short"
-      ],
-      "n_tickers_probed": 3,
-      "severity": "HIGH"
-    },
-    {
-      "signal": "macd_bullish",
-      "issue": "declared_but_never_emitted",
-      "n_strategies_declaring": 2,
-      "strategies": [
-        "cpr_narrow_momentum",
-        "avwap_50_reclaim"
       ],
       "n_tickers_probed": 3,
       "severity": "HIGH"
@@ -7861,25 +7756,15 @@
       "severity": "MEDIUM"
     },
     {
-      "signal": "below_cpr",
-      "issue": "emitted_but_always_False",
+      "signal": "macd_bullish",
+      "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 2,
       "strategies": [
         "cpr_narrow_momentum",
-        "cpr_narrow_momentum_short"
+        "avwap_50_reclaim"
       ],
-      "n_observations": 756,
+      "n_tickers_probed": 3,
       "severity": "HIGH"
-    },
-    {
-      "signal": "above_cpr",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "cpr_narrow_momentum"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
     },
     {
       "signal": "rsi_14<50",
@@ -7894,14 +7779,14 @@
       "severity": "HIGH"
     },
     {
-      "signal": "cpr_narrow_tight",
-      "issue": "emitted_but_always_False",
+      "signal": "price_below_ema_200",
+      "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 2,
       "strategies": [
         "cpr_narrow_momentum",
-        "cpr_narrow_momentum_short"
+        "avwap_20high_rejection_short"
       ],
-      "n_observations": 756,
+      "n_tickers_probed": 3,
       "severity": "HIGH"
     },
     {
@@ -7967,26 +7852,6 @@
       "severity": "MEDIUM"
     },
     {
-      "signal": "roc_turning_dn",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "roc_burst"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
-      "signal": "roc_turning_up",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "roc_burst"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
       "signal": "at_pivot_support",
       "issue": "declared_but_never_emitted",
       "n_strategies_declaring": 1,
@@ -8005,150 +7870,9 @@
       ],
       "n_tickers_probed": 3,
       "severity": "MEDIUM"
-    },
-    {
-      "signal": "near_prev_low",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "prev_day_low_bounce"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
-    },
-    {
-      "signal": "near_prev_high",
-      "issue": "emitted_but_always_False",
-      "n_strategies_declaring": 1,
-      "strategies": [
-        "prev_day_low_bounce"
-      ],
-      "n_observations": 756,
-      "severity": "MEDIUM"
     }
   ],
-  "temporal_gaps": [
-    {
-      "signal": "cpr_narrow_tight",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "above_cpr",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "below_cpr",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "near_cam_s3",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "near_cam_r3",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "above_cam_r4",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "below_cam_s4",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "near_prev_high",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "near_prev_low",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "close_above_open",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "close_below_open",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "roc_turning_up",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "roc_turning_dn",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "hammer",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    },
-    {
-      "signal": "shooting_star",
-      "year": "2024",
-      "emission_rate": 0.0,
-      "n_True": 0,
-      "n_observations": 756,
-      "issue": "emission_rate_below_threshold"
-    }
-  ],
+  "temporal_gaps": [],
   "known_event_probes": [
     {
       "ticker": "AAPL",
