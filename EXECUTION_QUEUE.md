@@ -236,6 +236,21 @@ Owner directive 2026-06-15 04:50 UTC: "Is execution queue updated? Anything that
 
 **Audit verdict:** 6 findings from B756-B761 batches were surfaced in commit messages + analysis but NOT filed as queue tickets. Per `feedback_execution_queue_mandatory_per_turn` HARD RULE this was a gap. Now closed. Cumulative tracking discipline maintained.
 
+---
+
+## B764 COMPREHENSIVE AUDIT #2 (2026-06-15) — 3 MISSING ITEMS FILED
+
+Owner directive 2026-06-15 (post-B763): "update execution queue. anything missed?" Per `feedback_execution_queue_mandatory_per_turn` re-verified queue against B762-B763 batch deliverables.
+
+31. **`S4-B763-PATTERN-T-AUDIT-UNDER-COUNT-INVESTIGATION`** — B763 audit found **6 Pattern T MEDIUM candidates** across all 221 strategies vs council Advisor E's "min 8-12 expected outside Cluster A". The actual count is below expectation AND distribution-wrong: 5 of 6 candidates are IN OR NEAR Cluster A (`awesome_oscillator` + `stoch_oversold` + `stochrsi_oversold` + `golden_cross_9_21` + `golden_cross_20_50`); only `force_index_breakout` is outside. Possible reasons for the under-count: (a) **regex coverage gap** — older string-based cross signals not in my pattern list (e.g., "_signal_cross", "_ma_cross" without ema/sma prefix); (b) **prior B663 + B630 silent-gap sweeps already cleaned many collinear-gate cases** (mechanically removed Pattern F NOT-patterns, side-effect cleaned some Pattern T candidates); (c) **council estimate was order-of-magnitude not literal**. Per CHECKLIST #44(b) investigate-why: extend regex coverage AND re-run vs git-history to see if B663/B630 batches had Pattern T as side-effect. PENDING-OWNER-APPROVAL. Source: B763 audit + council expectation mismatch. Class 9 AUDIT-VERIFICATION. MEDIUM.
+
+**Background-run status updates (per `feedback_monitor_intermediate_counts` per-turn discipline):**
+
+- Ticket #23 `S4-B760-FIRE-BAR-MATRIX-FULL-RUN-LAUNCH`: STATUS RUNNING since 03:43 UTC. Background task `biu7dcrbi`. ETA ~14hr overnight. 0-byte stdout (normal Windows buffering during compute-heavy precompute). At ~01:00 UTC next session expected complete.
+- Ticket #30 `S4-B761-DEMO-EDGE-PRIOR-LAUNCH-STATUS`: STATUS RUNNING-OVERRUN since 03:43 UTC. Background task `b43gepdb0`. Expected ETA was ~30min; actual ~75min+ elapsed. Likely cause: TIER 1+3 producer precompute on 50 tickers × 2yr is slower than initial smoke (3t × 1yr) projection suggested. Still running, no signs of hang.
+
+**B764 audit verdict:** 1 additional finding ticket filed + 2 status annotations. Total cumulative: **98 unique S4-B7XX tickets** (97 prior + 1 B764 audit add).
+
 18. **`S4-B760-PATTERN-W-METHODOLOGY-REVISION-EMPIRICAL-NOT-GATE-TEXT`** — Codify that ALL Pattern W deletion decisions must use fire-bar Jaccard precompute (B709 phi-correlation / B760 chairman) NOT gate-text comparison. Pattern W deletion proposals via gate-text inspection are HEURISTIC ONLY pending empirical validation. Update STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md sections referencing "Pattern W deterministic-duplicate" to note empirical validation requirement. PENDING-OWNER-APPROVAL. Source: B760 0-of-3 council validation. Class 2 METHODOLOGY-CORRECTION. HIGH.
 
 19. **`S4-B760-AVWAP-50-RECLAIM-HIGH-FIRE-COUNT-AUDIT`** — Demo measured 1,228 fires for `strat_avwap_50_reclaim` on 50 tickers × 1yr (the top firer in Cluster A). Extrapolated to T1a 503 tickers × 6.4yr: ~80K fires/yr universe-wide, **well above B710 5K/yr state-flag ceiling**. Per B718 cpr_narrow_tight precedent (12,534/yr → tighten to 0.05 producer): potential ceiling-fix candidate. Audit hardcoded `pct_from_50 < 1.5` proximity threshold — tighten to 0.5 producer-additive? PENDING-OWNER-APPROVAL. Source: B760 demo. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
