@@ -911,6 +911,27 @@ Verdict report: `output_audit/b798_b788_55b_b29_event_smoke_verdict.md`
 
 **Cumulative ticket count post-B798: 134 unique S4-B7XX tickets** (no change).
 
+### TIER 37 — B799 #50 metadata cleanup (5 of 7 shorthand keys normalized) + #67 launched
+
+**#50 partial cleanup SHIPPED.** 5 of 7 `signals_used` metadata field shorthand keys normalized to canonical producer keys via replace_all sweeps:
+- `macd_bullish` → `macd_12_26_9_bullish` (7 strats)
+- `macd_bearish` → `macd_12_26_9_bearish` (9 strats)
+- `above_ema_200` → `price_above_ema_200` (3 strats)
+- `price_below_ema_200` → `below_ema_200` (22 strats)
+- `vol_spike_1.5x` → `vol_spike_15x` (10 strats)
+
+**Total ~51 metadata declarations cleaned up.** Per B767 verdict: this is METADATA-only (signals_used field used by dashboard + STRATEGY_ROSTER.md); runtime fires logic was already using correct producer keys. Pyramid 842/842 across all 5 sweeps.
+
+Remaining 2 keys (`bb_touch_lower_tight` + `bearish_signal`) affect 1 strategy each + lack obvious canonical producer equivalent. Deferred.
+
+**#67 full T1a MFI obv test launched (bcru8s1hr)** via `python scripts/mfi_obv_anti_selection_test.py --full`. Background ETA ~2-6hr. Verdict ships when complete.
+
+Existing **#50 + #67 annotations updated.**
+
+**B799 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (5-of-7 metadata cleanups shipped) + 1 nuanced (#67 background launched). Tickets filed: **0 NEW + 1 annotation** on #50 (5-of-7 SHIPPED) + #67 launched + 1 code change (5 sweeps in screener.py). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B799: 134 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
 All 6 producer-additive items from B766 council bundle now shipped:
