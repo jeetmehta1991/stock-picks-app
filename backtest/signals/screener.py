@@ -2206,6 +2206,17 @@ def strat_pivot_fib_confluence(s):
 
 
 def strat_golden_cross_volume(s):
+    """STATUS POST-B772: EXPLORATORY (per B660 empirical fire-count = 23.1/yr universe-wide = FAIL_FIRE_STARVED).
+
+    Below 100 min_trades_overall PASSING_CRITERIA threshold (148 total fires
+    across T1a 2020-2026 = 6.4yr x 23.1/yr). Per
+    feedback_no_a_priori_strategy_pruning the cube still runs but verdict
+    interpretation must account for low effective-N (cube cannot produce
+    statistically valid PASS/FAIL at <100 trades). EVENT-vol_spike_2x AND
+    EVENT-cross combination is the fire-starving leg: B-3 canonical golden
+    cross_50_200 fires 504/yr without the vol gate; adding vol_spike_2x
+    drops to 23/yr (= ~22x reduction).
+    """
     fl = (s.get("ema_50_200_golden_cross") and s.get("vol_spike_2x"))
     fs = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
@@ -2299,6 +2310,16 @@ def strat_williams_stoch_dual(s):
 # --- Trend-following shorts (4) ---
 
 def strat_death_cross_50_200_volume(s):
+    """STATUS POST-B772: EXPLORATORY (per B660 empirical fire-count = 13.6/yr universe-wide = FAIL_FIRE_STARVED).
+
+    Below 100 min_trades_overall PASSING_CRITERIA threshold (87 total fires
+    across T1a 2020-2026 = 6.4yr x 13.6/yr). SHORT-only sister of
+    strat_golden_cross_volume; same EVENT-cross AND EVENT-vol-spike compound
+    gate produces fire-starvation. Per feedback_no_a_priori_strategy_pruning
+    cube still runs but verdict cannot be statistically valid at <100 trades.
+    SHORT-side asymmetry per Pattern S adds further drag (drift bias +
+    borrow cost + squeeze risk).
+    """
     fires = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "trend",
         ["ema_50_200_death_cross", "vol_spike_2x", "borrow_ok"],
