@@ -54,7 +54,7 @@ Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; f
 
 **Pre-cube producer-audit tickets (CRITICAL):**
 - `S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY` — producer audit on `compute_avwap_signals` 50-day-low anchor (parallel to B719 SMC Pattern K). PENDING-OWNER-APPROVAL.
-- `S4-B750-PATTERN-U-MULTI-TIMEFRAME-PRODUCER-PIT-VERIFY` — multi_timeframe.py weekly/monthly resample PIT discipline. PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-U-MULTI-TIMEFRAME-PRODUCER-PIT-VERIFY` — multi_timeframe.py weekly/monthly resample PIT discipline. ~~PENDING-OWNER-APPROVAL~~ **COMPLETED-EMPIRICAL B770 2026-06-15.** **VERDICT: NOT CONTAMINATED.** Producer source read (CHECKLIST #105) + caller audit (3 call paths: engine line 824 + pool worker line 7819 + measure_fire_count line 559 all slice df[<=as_of] before passing) + KNOWN-EVENT runtime probe (CHECKLIST #44(b)): synthetic 30-week OHLCV with Wed/Fri price gap, full-window weekly_close=131.0 vs as_of=Wed slice weekly_close=130.0 (matches expected Wed close, NOT Friday). Monthly probe: full=127.9 vs mid-month slice=126.5 (matches expected). Defense-in-depth surfacing: second resample site at technical.py:917 (Batch 207 Ichimoku weekly Kumo) inherits same PIT-clean verdict by transitivity. Contrarian's "risk-theater" caveat partially validated (risk was hypothetical, no concrete lookahead PATH found) but chairman elevation to CRITICAL was correct reasoning given asymmetric cost (half-day audit vs catastrophic invisible-in-metrics bug if it had been wrong). Verdict report: `output_audit/pattern_u_pit_audit_B770_VERDICT.md`. Follow-up #62 defense-in-depth pin test filed.
 - `S4-B750-PATTERN-Z-CALENDAR-PIT-AUDIT` — calendar_effects.py PIT verification. PENDING-OWNER-APPROVAL.
 - `S4-B750-PATTERN-BB-NEWS-SENTIMENT-VENDOR-SPOF-SENTINEL` — loud-failure sentinel on Polygon news sentiment-score distribution. PENDING-OWNER-APPROVAL.
 
@@ -376,6 +376,16 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 **B769 CHECKLIST #107 reconciliation:** Findings surfaced (line-by-line per `feedback_line_by_line_ticket_extraction_before_synthesis`): 35 sub-claims distilled to 10 distinct findings F1-F10 + 3 unanimous-all-missed (M1/M2/M3). Tickets filed: **10 NEW (#52-#61) + 3 annotations (Pattern U / Pattern Q / B-19 EXPLORATORY) + 1 REJECTED audit-trailed (F10).** **Audit-clean: YES.**
 
 **Cumulative ticket count post-B769: 128 unique S4-B7XX tickets** (118 post-B768 + 10 B769 council additions).
+
+### TIER 9 — B770 Pattern U PIT audit COMPLETED-EMPIRICAL (B769 TIER 0 ticket executed)
+
+**B770 executed B769 chairman's TIER 0 "THE ONE THING TO DO FIRST"** = Pattern U multi-timeframe PIT audit on existing #S4-B750-PATTERN-U-MULTI-TIMEFRAME-PRODUCER-PIT-VERIFY (annotated COMPLETED-EMPIRICAL above with full verdict). **VERDICT: NOT CONTAMINATED.** Producer source read + 3 caller audit paths verified + KNOWN-EVENT runtime probe (synthetic Wed-slice = Wed close not Fri close). Defense-in-depth secondary surfacing: technical.py:917 (Batch 207 Ichimoku weekly Kumo) inherits same PIT-clean verdict. Verdict report: `output_audit/pattern_u_pit_audit_B770_VERDICT.md`.
+
+62. **`S4-B770-RESAMPLE-PIT-PIN-TEST-DEFENSE-IN-DEPTH`** — Codify B770 KNOWN-EVENT runtime probe as pin test in `backtest/tests/test_unit.py`. Probe: build synthetic OHLCV with deterministic Wed/Fri price gap; slice to Wed; assert `compute_weekly_bias(df_slice)["weekly_close"]` equals Wed close NOT Fri close. Future contributors who add a new resample-then-iloc[-1] producer or modify caller's slicing discipline will trip this test. Defense-in-depth against the bug class even though current code is clean. Apply to multi_timeframe.py (compute_weekly_bias + compute_monthly_bias) + technical.py:917 (Ichimoku weekly Kumo). Per Contrarian (B769 inline council): risk-theater critique was correct that risk was hypothetical, but defense-in-depth pin test fortifies against FUTURE drift in caller-slicing-discipline. PENDING-OWNER-APPROVAL. Source: B770 audit defense-in-depth surfacing. Class 1 TEST-CODIFICATION. MEDIUM.
+
+**B770 CHECKLIST #107 reconciliation:** Findings surfaced: 2 (F1 primary multi_timeframe.py PIT-clean verdict at producer + 3 call sites; F2 defense-in-depth secondary surfacing technical.py:917 Ichimoku weekly Kumo same pattern same verdict by transitivity). Tickets filed: 1 NEW (#62 defense-in-depth pin test) + 1 annotation on existing #S4-B750-PATTERN-U (COMPLETED-EMPIRICAL with NOT-CONTAMINATED verdict + scope-extension to technical.py:917). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B770: 129 unique S4-B7XX tickets** (128 post-B769 + 1 B770 defense-in-depth pin test).
 
 ### Annotations to existing tickets (per CHECKLIST #107 reconciliation)
 
