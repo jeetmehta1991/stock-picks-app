@@ -884,6 +884,33 @@ Producer-additive per Wyckoff Selling Climax + Connors capitulation. Added to co
 
 **Cumulative ticket count post-B796: 134 unique S4-B7XX tickets** (no change).
 
+### TIER 36 — B798 B788 #55(b) B-29 EVENT smoke verdict + factor-sub-cluster EVENT-rollout decision
+
+**bklplhvtt landed** (3,822s runtime). B788 EVENT-form for strat_xs_low_beta_long fires **22 / 5,000 bars (0.44%)** = ~553/yr universe-wide projection.
+
+**Comparison:** B786 STATE 71,355/yr → B798 EVENT 553/yr = **~128x reduction** (substantially MORE than B655 T10 10x precedent).
+
+**Per CHECKLIST #108 (b):** 553/yr above min_trades_overall=100 + above min_trades=30/regime. PASS gates. BORDERLINE-LOW but ships.
+
+**Factor sub-cluster EVENT-rollout decisions (per per-strategy CHECKLIST #108 (b)):**
+
+| Strategy | B786 STATE | EVENT projection (~128x ↓) | Decision |
+|---|---|---|---|
+| **B-29** | 71,355/yr | **553/yr** | **B788 SHIPPED** |
+| B-27 | 0 (compound) | N/A | EXPLORATORY-tagged B787 |
+| B-28 | 43/yr (survivorship) | <1/yr | EXPLORATORY-tagged B787 |
+| **B-30** | 587/yr BORDERLINE | 4.6/yr | **STATE retained** (#108 gate fail) |
+| B-31 | 0 (compound) | N/A | EXPLORATORY-tagged B787 |
+| **B-32** | 3,074/yr PASS | 24/yr | **STATE retained** (#108 gate fail) |
+
+**Factor sub-cluster EVENT-rollout COMPLETE.** Only B-29 converts; B-30 + B-32 stay STATE per CHECKLIST #108 fire-count gate.
+
+Verdict report: `output_audit/b798_b788_55b_b29_event_smoke_verdict.md`
+
+**B798 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (B788 553/yr above gates + cube measures edge-per-trade) + 1 nuanced (B-30 + B-32 EVENT-rollout rejected per #108 (b) fire-count gate per-strategy). Tickets filed: **0 NEW + 0 annotations** (verdict-only batch). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B798: 134 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
 All 6 producer-additive items from B766 council bundle now shipped:
