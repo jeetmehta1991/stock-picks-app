@@ -125,6 +125,11 @@ def _force_line_buffered_stdout() -> None:
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OHLCV_DIR = REPO_ROOT / "data_prefetch" / "polygon" / "ohlcv_daily"
 T1A_PATH = REPO_ROOT / "Backtesting universe" / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
+# B781 #65: T2 + T3 universe paths for factor-universe expansion per owner directive 58(e)
+T2_PATH = REPO_ROOT / "Backtesting universe" / "Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv"
+T3_PATH = REPO_ROOT / "Backtesting universe" / "Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv"
+# B781 #66: SPY benchmark force-include for cross_sectional beta + IVOL computation
+FACTOR_BENCHMARK = "SPY"
 
 
 # The 10 strategies covered by B640 walk bundle, post-B641 W10 rename.
@@ -324,6 +329,101 @@ def _load_ohlcv(ticker: str) -> Optional[pd.DataFrame]:
     if not needed.issubset(set(df.columns)):
         return None
     return df
+
+
+def _get_t2_tickers_pit(start: date, end: date) -> list[str]:
+    """B781 #65: load T2 universe (spinoffs + recent IPOs) with PIT-active filter.
+
+    Per CSV schema: Symbol, Company, Sector, added_date, removed_date, MarketCapB,
+    Tier2Reason. PIT filter: (added_date IS NULL OR added_date <= end) AND
+    (removed_date IS NULL OR removed_date > start).
+    """
+    if not T2_PATH.exists():
+        logger.warning("T2 universe CSV not found at %s; T2 expansion skipped", T2_PATH)
+        return []
+    df = pd.read_csv(T2_PATH, comment="#")
+    added = pd.to_datetime(df["added_date"], errors="coerce").dt.date
+    removed = pd.to_datetime(df["removed_date"], errors="coerce").dt.date
+    mask = ((added.isna()) | (added <= end)) & ((removed.isna()) | (removed > start))
+    df = df[mask]
+    return sorted(df["Symbol"].astype(str).str.upper().dropna().unique().tolist())
+
+
+def _get_t3_tickers_pit(start: date, end: date) -> list[str]:
+    """B781 #65: load T3 universe (momentum top-100) with PIT-active filter.
+
+    Per CSV schema: Symbol, Company, Sector, added_date, removed_date, MomentumScore,
+    MarketCapB, LastPrice. T3 has multi-period rows (a ticker can enter+exit+re-enter)
+    -- aggregate by unique Symbol after PIT mask. PIT filter: (added_date <= end) AND
+    (removed_date IS NULL OR removed_date > start).
+    """
+    if not T3_PATH.exists():
+        logger.warning("T3 universe CSV not found at %s; T3 expansion skipped", T3_PATH)
+        return []
+    df = pd.read_csv(T3_PATH, comment="#")
+    added = pd.to_datetime(df["added_date"], errors="coerce").dt.date
+    removed = pd.to_datetime(df["removed_date"], errors="coerce").dt.date
+    mask = ((added.isna()) | (added <= end)) & ((removed.isna()) | (removed > start))
+    df = df[mask]
+    syms = df["Symbol"].astype(str).str.upper().dropna()
+    # Remove blanks (some T3 rows have empty/NaN Symbol from grouped-endpoint quirks)
+    syms = syms[(syms != "") & (syms != "NAN")]
+    return sorted(syms.unique().tolist())
+
+
+def _build_factor_universe_ohlcv(
+    t1a_ohlcv_cache: dict, start: date, end: date,
+) -> dict:
+    """B781 #65 + #66: build broader ohlcv_dict for cross_sectional factor compute.
+
+    Returns dict of {ticker: OHLCV DataFrame} containing:
+      - All T1a tickers already in t1a_ohlcv_cache (passed in)
+      - SPY benchmark (force-include for beta + IVOL per #66; cross_sectional.py:141
+        requires benchmark="SPY" in dict; without it, xs_beta_decile + xs_ivol_decile
+        keys never emitted -> factor strategies depending on them silent-zero-fire)
+      - T2 spinoffs + recent IPOs PIT-active in [start, end] window (#65 owner directive
+        58(e) factor universe expansion -- T1a+T2+T3 union mitigates structural
+        survivorship bias)
+      - T3 momentum top-100 PIT-active in [start, end] window (#65 same)
+
+    Strategy-evaluation loop continues on T1a-only ohlcv_cache; this broader dict is
+    passed ONLY to _precompute_tier2_panel for cross_sectional ranking denominator.
+
+    Per `feedback_narrow_scope_blast_radius`: factor RANK universe expands, EXECUTION
+    universe stays T1a (engine per-day liquid filter unchanged).
+    """
+    factor_dict = dict(t1a_ohlcv_cache)  # start with T1a copy
+    # #66 SPY force-include
+    if FACTOR_BENCHMARK not in factor_dict:
+        spy_df = _load_ohlcv(FACTOR_BENCHMARK)
+        if spy_df is not None:
+            factor_dict[FACTOR_BENCHMARK] = spy_df
+            logger.info("B781 #66 SPY benchmark force-included (%d bars)", len(spy_df))
+        else:
+            logger.warning(
+                "B781 #66 SPY benchmark OHLCV missing at %s; cross_sectional beta + IVOL will be empty",
+                OHLCV_DIR / f"{FACTOR_BENCHMARK}.parquet",
+            )
+    # #65 T2 + T3 universe expansion
+    t2_tickers = _get_t2_tickers_pit(start, end)
+    t3_tickers = _get_t3_tickers_pit(start, end)
+    expansion_tickers = set(t2_tickers) | set(t3_tickers)
+    expansion_tickers -= set(factor_dict.keys())  # don't double-load T1a-overlap
+    t_load = time.time()
+    n_loaded = 0
+    n_missing = 0
+    for ticker in expansion_tickers:
+        df = _load_ohlcv(ticker)
+        if df is not None:
+            factor_dict[ticker] = df
+            n_loaded += 1
+        else:
+            n_missing += 1
+    logger.info(
+        "B781 #65 T2+T3 universe expansion: %d loaded (T2 %d + T3 %d unique; %d not-in-overlap-with-T1a; %d cache-misses; %.1fs)",
+        n_loaded, len(t2_tickers), len(t3_tickers), len(expansion_tickers), n_missing, time.time() - t_load,
+    )
+    return factor_dict
 
 
 # ---------------------------------------------------------------------------
@@ -801,10 +901,21 @@ def measure_strategies(
         # matches backtest engine's per-day cross_sectional invocation in
         # screener.py:7954. Cost: ~21x compute vs monthly; engine-cadence-parity
         # accepted per directive.
-        t_tier2 = time.time()
-        tier2_panel = _precompute_tier2_panel(ohlcv_cache, start, end, sample_cadence_days=1)
+        # B781 #65 + #66: build BROADER factor-universe ohlcv_dict (T1a + T2 + T3
+        # + SPY benchmark) before TIER 2 panel pre-build. Owner directive 58(e)
+        # universe expansion + SPY-gap fix from B780. T2/T3 OHLCV is loaded
+        # ONLY for cross_sectional ranking denominator; strategy-evaluation
+        # loop continues on T1a-only ohlcv_cache.
+        t_factor_universe = time.time()
+        factor_ohlcv = _build_factor_universe_ohlcv(ohlcv_cache, start, end)
         logger.info(
-            "B776 #63 TIER 2 cross_sectional panel pre-built: %d business-day xs_features dicts (%.1fs) -- B779 daily cadence",
+            "B781 factor-universe ohlcv built: %d tickers (T1a + T2 + T3 + SPY; was %d T1a-only); %.1fs",
+            len(factor_ohlcv), len(ohlcv_cache), time.time() - t_factor_universe,
+        )
+        t_tier2 = time.time()
+        tier2_panel = _precompute_tier2_panel(factor_ohlcv, start, end, sample_cadence_days=1)
+        logger.info(
+            "B776 #63 TIER 2 cross_sectional panel pre-built: %d business-day xs_features dicts (%.1fs) -- B779 daily cadence + B781 expanded universe",
             len(tier2_panel), time.time() - t_tier2,
         )
     else:
