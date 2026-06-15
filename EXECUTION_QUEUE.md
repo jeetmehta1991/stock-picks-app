@@ -304,7 +304,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 44. **`S4-B766-A-12-BOLLINGER-BAND-WALK-IN-DOWNTREND-CONTINUATION-FAILURE-MODE`** — A-12 strat_bollinger_lower fires on BB lower-band touch. Per reviewer: in strong downtrend, price WALKS the lower band (rides it down). Lower-band touch is then a CONTINUATION signal, not a reversion signal — mirror of shooting-star/BB-upper failure mode from candle cluster. Fix: fire on BAND RE-ENTRY (close back inside band after touch/close outside), not the touch itself. Bollinger equivalent of reclaim-bar entry. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 Bollinger section. Class 2 LOOSEN/TIGHTEN. HIGH.
 
-45. **`S4-B766-A-12-BB-PCTB-THRESHOLD-CUBE-SWEEPABLE`** — A-12 uses hardcoded %b threshold (Bollinger band touch). Per reviewer: %b threshold should be SWEPT not fixed; producer-additive `bb_pctb_lt_threshold` boolean per Pattern G cube-sweepability. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 Bollinger section. Class 2 LOOSEN/TIGHTEN. MEDIUM.
+45. **`S4-B766-A-12-BB-PCTB-THRESHOLD-CUBE-SWEEPABLE`** — A-12 uses hardcoded %b threshold (Bollinger band touch). Per reviewer: %b threshold should be SWEPT not fixed; producer-additive `bb_pctb_lt_threshold` boolean per Pattern G cube-sweepability. ~~PENDING-OWNER-APPROVAL~~ **SHIPPED B792 2026-06-15** (producer-additive only; no consumer-side change). Added `bb_{key}_pctb` (float [0,1]) + `bb_{key}_pctb_lt_{05/10/15/20/25}` (oversold bands) + `bb_{key}_pctb_gt_{75/80/85/90/95}` (overbought bands) for all 3 BB variants (20_2.0 / 20_1.5 / 10_2.0) = 33 new producer signals. Pattern G cube-sweepable per B654 cpr_narrow_tight 0.05/0.15 precedent. Existing strat_bollinger_lower + strat_bollinger_tight + strat_bollinger_upper_short UNCHANGED; cube can SWEEP optimal threshold per regime via STRATEGY_EXIT_OVERRIDE or alternative-strategy registration without further code change. Source: B766 reviewer rec + B779 owner approval + B792 implementation. Class 2 LOOSEN/TIGHTEN.
 
 46. **`S4-B766-AVWAP-PROXIMITY-ATR-SCALED-NOT-FIXED-PERCENT`** — A-22 avwap_50_reclaim (1.5% proximity) + A-23 avwap_252_breakout (2.0% proximity) + A-24 avwap_20high_rejection_short (1.0% proximity) all use FIXED percent proximity gates. Per reviewer: 1.5% means different things on a 15%-vol name vs 60%-vol name. Replace with ATR-scaled proximity (e.g., 0.5 × 20-bar ATR / price). Producer-additive `near_avwap_X_atr_scaled` family. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 AVWAP section. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
 
@@ -843,6 +843,14 @@ Demo signal: obv_bullish gate produces RARE but VERY HIGH-quality fires (+316 bp
 **B791 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (B789 smoke verdict CONTRADICTED by demo; revert applied) + 1 nuanced (smoke n=0 vs demo n=3 with +319.5 bps lift — methodological lesson). Tickets filed: **1 NEW (#67 full-T1a re-test)** + 1 annotation on #43 (B789 SUPERSEDED by B791 REVERT) + 1 code change (B791 revert of strat_mfi_oversold). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B791: 134 unique S4-B7XX tickets** (133 post-B790 + 1 B791 #67 full-T1a test).
+
+### TIER 31 — B792 #45 BB pctb cube-sweepable producer-additive SHIPPED
+
+Producer-additive Pattern G cube-sweepability per B654 cpr_narrow_tight 0.05/0.15 precedent. Added to compute_bollinger (technical.py): `bb_{key}_pctb` float [0,1] + `bb_{key}_pctb_lt_{05/10/15/20/25}` (oversold bands) + `bb_{key}_pctb_gt_{75/80/85/90/95}` (overbought bands) for all 3 BB variants (20_2.0 / 20_1.5 / 10_2.0) = **33 new producer signals**. Existing strategies UNCHANGED; cube can SWEEP optimal threshold per regime without further code change. Pyramid 842/842.
+
+**B792 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#45 producer-additive cube-sweepability shipped). Tickets filed: **0 NEW + 1 annotation** on #45 (SHIPPED) + 1 code change (technical.py compute_bollinger). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B792: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 

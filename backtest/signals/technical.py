@@ -1256,6 +1256,27 @@ def compute_bollinger(df: pd.DataFrame) -> dict:
         result[f"{key}_touch_upper"] = close >= u*0.995
         result[f"{key}_squeeze"]    = bw < 0.08
         result[f"{key}_expanding"]  = bw > (pu-pl)/pm if pm else False
+        # B792 #45 (2026-06-15 owner-approved B779) cube-sweepable %b
+        # threshold family per Pattern G producer-additive precedent (B654
+        # cpr_narrow_tight 0.05/0.15 variants). pctb = (close-lower) /
+        # (upper-lower) normalized to [0,1]. Producer-additive bb_pctb_lt_X
+        # booleans enable cube to sweep optimal threshold per regime/strategy
+        # without consumer-side change. Existing strategies unchanged.
+        try:
+            if u > l:
+                pctb = (close - l) / (u - l)
+                result[f"{key}_pctb"] = round(float(pctb), 4)
+                # Threshold family: 0.05 / 0.10 / 0.15 / 0.20 / 0.25
+                # Pattern G cube-sweepable per B654 precedent.
+                for thr in (0.05, 0.10, 0.15, 0.20, 0.25):
+                    thr_str = str(thr).replace("0.", "")  # "05", "10", "15", "20", "25"
+                    result[f"{key}_pctb_lt_{thr_str}"] = bool(pctb < thr)
+                # Symmetric upper-side thresholds
+                for thr in (0.75, 0.80, 0.85, 0.90, 0.95):
+                    thr_str = str(thr).replace("0.", "")
+                    result[f"{key}_pctb_gt_{thr_str}"] = bool(pctb > thr)
+        except Exception:
+            pass
     return result
 
 
