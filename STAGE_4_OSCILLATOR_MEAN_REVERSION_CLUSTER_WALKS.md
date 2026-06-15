@@ -129,7 +129,8 @@ Sub-clustered by technical-family for walk sequencing:
 | **A.1 RSI family** | 5 | `rsi_oversold` (dual), `rsi_overbought_short`, `rsi9_extreme` (long), `rsi21_slow` (dual), `rsi_volume_200ema` (?) |
 | **A.2 Stoch / StochRSI** | 3 | `stoch_oversold` (long), `stochrsi_oversold` (long), `stochrsi_overbought_short` |
 | **A.3 Williams / Ultimate / MFI** | 3 | `williams_r_oversold` (long), `ultimate_oscillator` (dual), `mfi_oversold` (dual) |
-| **A.4 Bollinger** | 3 | `bollinger_lower` (dual), `bollinger_tight` (dual), `bollinger_upper_short` |
+| **A.4a Bollinger mean-reversion** | 2 | `bollinger_lower` (dual), `bollinger_upper_short` |
+| **A.4b Bollinger breakout/squeeze** (B782 #36 reclassify per B766 council reviewer rec #4) | 1 | `bollinger_tight` (dual) -- squeeze-then-expansion is volatility-compression-then-directional-resolution per Carter 2005 TTM squeeze + Bulkowski breakout literature; NOT mean-reversion (band-touch is incidental, expansion direction is the signal) |
 | **A.5 Keltner** | 1 | `keltner_lower` (long) |
 | **A.6 Camarilla** | 3 | `camarilla_r4_breakout` (dual; B641 renamed from r3), `camarilla_rsi_obv` (dual), `camarilla_rsi_obv_short` |
 | **A.7 CPR** | 2 | `cpr_narrow_momentum` (dual), `cpr_narrow_momentum_short` |
@@ -226,6 +227,34 @@ Many Cluster A duals were structured via mechanical inverse: LONG fires when ove
 
 Walks surface Pattern S concern: dual strategies where SHORT side may be structurally weaker than LONG; cube may show LONG PASS / SHORT FAIL not because of strategy design but due to drift + borrow + squeeze asymmetry.
 
+### Pattern S — CUBE INTERPRETATION GUIDE PRE-REGISTRATION (B782 #49 per B766 council reviewer rec)
+
+**Pre-registered expectation for cube verdict interpretation on dual mean-reversion strategies:**
+
+Per Pattern S structural argument + B768 empirical pre-cube edge-prior test (single-trigger forward returns, 50 tickers x 2024-2025, 24546 bars, 14 triggers, runtime 9605s):
+
+| Direction | Triggers tested | Verdict | Hit @10d range | PnL @10d range |
+|---|---|---|---|---|
+| LONG oversold (rsi_14<30/<20, bb_lower_touch, mfi<20, stoch<20, williams<-80, ultimate<30) | 7 | **7/7 EDGE_EXISTS** | 54.3% - 63.0% | **+87 to +184 bps/10d** |
+| SHORT overbought (rsi_14>70/>80, bb_upper_touch, mfi>80, stoch>80, williams>-20, ultimate>70) | 7 | **7/7 EDGE_NEGATIVE** | 45.0% - 51.2% | **-5 to -516 bps/10d** |
+
+**100% direction-asymmetric** at single-trigger level (no strategy-specific gating; pure conditional-expectation probe). Worst SHORT trigger rsi_14_gt_80 measured -516 bps/10d Sharpe -0.299.
+
+**Implication for cube verdict on dual mean-rev strategies (A-1 RSI / A-4 RSI21 / A-5 RSI-vol / A-7 stochRSI / A-9 williams / A-10 UO / A-11 MFI / A-12 bollinger / A-16 keltner / A-18 camarilla_rsi_obv):**
+
+Cube cell verdicts will likely show:
+- LONG side: PASS_CUBE on most (or all) of these strategies if the cube's exit/sizing is reasonable
+- SHORT side: FAIL_CUBE on most (or all) due to structural drift + borrow + squeeze + Pattern S asymmetry
+
+**Interpretation rule:** when cube shows "LONG PASS / SHORT FAIL" on a dual mean-rev strategy:
+- DO NOT conclude "the oscillator is broken" or "the strategy class doesn't work"
+- DO conclude "split off LONG as deployable; SHORT side is structurally headwinded"
+- DO NOT delete SHORT-side strategies from the cube based on this pattern alone (per `feedback_no_a_priori_strategy_pruning`; EXPLORATORY-tag standard path if persistent FAIL_FIRE_STARVED or FAIL_CUBE per W5m/Lucca precedent)
+
+This is documentation-only pre-registration; no code changes. Per `feedback_audit_recommendations_against_existing_directives`: pre-registering the expectation prevents post-cube "oscillator failure" misreadings + supports per-direction split decisions.
+
+Source: B768 empirical edge-prior test (`output_audit/mean_reversion_edge_prior_test_demo_VERDICT.md`) + B766 council reviewer Part 3 + B782 #49 codification.
+
 ### Pattern T — MA-cross redundancy with EMA-trend gate (NEW)
 
 MA-cross strategies (golden_cross_*, death_cross_*) fire on MA-line cross. But many of those same strategies ALSO consume `price_above_ema_200` as a regime gate. This is collinear: if golden_cross_50_200 fires (50-SMA > 200-SMA), price is likely ALREADY above 200-EMA. The trend gate adds little marginal information.
@@ -254,7 +283,7 @@ If RSI variants are tightened (e.g., rsi21_slow's RSI<35 threshold lowered to <3
 | A-10 | `strat_ultimate_oscillator` | Larry Williams UO oversold | dual | A.3 Ultimate | technical.py | ❌ pending B752 | active |
 | A-11 | `strat_mfi_oversold` | MFI oversold + OBV confirm | dual | A.3 MFI | technical.py | ❌ pending B752 | active |
 | A-12 | `strat_bollinger_lower` | Bollinger lower-band mean-rev | dual | A.4 Bollinger | technical.py | ❌ pending B753 | active |
-| A-13 | `strat_bollinger_tight` | Bollinger tight bands + touch | dual | A.4 Bollinger | technical.py | ❌ pending B753 | active |
+| A-13 | `strat_bollinger_tight` | Bollinger tight bands + touch (squeeze-then-expansion; NOT mean-reversion per B782 #36 reclassify) | dual | A.4b Bollinger breakout/squeeze | technical.py | ❌ pending B753 | active |
 | A-14 | `strat_bollinger_upper_short` | Bollinger upper short | short | A.4 Bollinger | technical.py | ❌ pending B753 | active |
 | A-15 | `strat_ppo_crossover` | PPO crossover + ADX | dual | A.9 Momentum osc | technical.py | ⏳ B750 walked | active |
 | A-16 | `strat_keltner_lower` | Keltner lower-band bounce | long | A.5 Keltner | technical.py | ❌ pending B753 | active |
@@ -362,7 +391,7 @@ Per `feedback_long_short_inverse_audit`: inverse exists, symmetric mechanical mi
 | **R (Connors OR-disjunct)** | (rsi_2<5 OR rsi_14<35) is signal-multiplication WITHOUT proportional tightening of the regime gates | Owner decision: (a) keep status quo + accept higher fire rate; (b) tighten 200-EMA to a stronger trend gate (e.g., add ADX>20); (c) split into separate strategies | **Class 1 KEEP-AS-IS or Class 2 TIGHTEN (owner-decision)** |
 | **S (asymmetric expectancy)** | SHORT may underperform due to bull-drift + borrow + squeeze | Document; cube empirically validates | **Class 6 DEFERRED-POST-CUBE** |
 
-**Disposition recommendation: KEEP-AS-IS + queue Class 2 producer-additive thresholds for Pattern G and Pattern Q. Status post-B750: PRE-CUBE-CLEAN.**
+**Disposition recommendation: KEEP-AS-IS + queue Class 2 producer-additive thresholds for Pattern G and Pattern Q. Status post-B750: CODE-CLEAN, EDGE-UNVALIDATED.**
 
 A-priori fire-count projection: Connors-OR-disjunct expands the (rsi_14<35) primary trigger significantly via rsi_2<5 (which fires more often than rsi_14<35 on intraday vol). Expected universe-wide fire rate on T1a 2020-2026: ~200-500/yr LONG-side (rough estimate; cube empirically validates). Above min_trades=100 threshold.
 
@@ -437,7 +466,7 @@ LONG/SHORT both present in same function (_strat3 dual). Symmetric mechanical mi
 | **N (effective-N)** | PPO crossovers cluster in trending regimes | Cube infra ticket | **Class 8 CUBE-INFRA** |
 | **T (gate redundancy)** | ADX trending + PPO crossover both fire in trending markets — collinearity check needed | Post-B690b: gate-correlation diagnostic between adx_trending and ppo_crossover_up | **Class 6 DEFERRED-POST-B690b** |
 
-**Disposition recommendation: KEEP-AS-IS + Pattern Q EVENT-conversion candidate. Status post-B750: PRE-CUBE-CLEAN.**
+**Disposition recommendation: KEEP-AS-IS + Pattern Q EVENT-conversion candidate. Status post-B750: CODE-CLEAN, EDGE-UNVALIDATED.**
 
 A-priori fire-count projection: PPO crossovers + ADX>25 trending = ~5-15 fires/ticker/yr on T1a (medium-frequency). Universe-wide ~2000-7000/yr (PASS_CUBE per B660 ceiling).
 
@@ -519,7 +548,7 @@ LONG/SHORT both present (_strat3 dual). Symmetric mechanical mirror. Per `feedba
 | **N (effective-N)** | AVWAP reclaims cluster around vol regimes; effective-N inflation | Cube infra ticket | **Class 8 CUBE-INFRA** |
 | **PIT-discipline** | `above_avwap_50low` anchor is "50-day rolling low" — verify anchor lookback excludes today | Producer-audit: `pattern_producer_audit.py` (B699/B700/B735 template) on `compute_avwap_signals` | **Class 9 PRODUCER-AUDIT (queue `S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY`)** |
 
-**Disposition recommendation: KEEP-AS-IS + Pattern F NOT-pattern fix + Pattern G threshold-signal hardening + PIT-audit. Status post-B750: PRE-CUBE-CLEAN POST-FIXES.**
+**Disposition recommendation: KEEP-AS-IS + Pattern F NOT-pattern fix + Pattern G threshold-signal hardening + PIT-audit. Status post-B750: CODE-CLEAN, EDGE-UNVALIDATED POST-FIXES.**
 
 A-priori fire-count projection: AVWAP reclaim + MACD bullish + 200-EMA + 1.5% proximity = stack of 4 gates; estimated ~3-10 fires/ticker/yr on T1a; universe-wide ~500-2000/yr LONG-side (likely PASS_CUBE). SHORT side likely lower due to drift.
 
@@ -598,7 +627,7 @@ SHORT-only strategy. The LONG mirror is `strat_rsi_oversold` (A-1, dual). But A-
 | **W (deterministic duplicate)** | Post-tightening may overlap with strat_rsi_oversold SHORT branch | Pattern W audit post-B690b measurement | **Class 6 DEFERRED-POST-B690b (cross-ref `S4-B751-A-2-PATTERN-W-VS-RSI-OVERSOLD-SHORT`)** |
 | **S (asymmetric expectancy)** | SHORT-only mean-reversion faces bull-drift + borrow + squeeze | Document; cube empirically validates | **Class 6 DEFERRED-POST-CUBE** |
 
-**Disposition recommendation: KEEP-AS-IS + Class 2 fixes. Status post-B751: PRE-CUBE-CLEAN POST-FIXES.**
+**Disposition recommendation: KEEP-AS-IS + Class 2 fixes. Status post-B751: CODE-CLEAN, EDGE-UNVALIDATED POST-FIXES.**
 
 A-priori fire-count projection: RSI > 68 + downtrend gate + bearish confirm = stack of 4 gates SHORT-side; estimated ~10-30 fires/ticker/yr on T1a during 2020-2026 bear/neutral windows. Universe-wide: ~3,000-10,000/yr SHORT. Possibly above B710 5K ceiling — Pattern Q EVENT-conversion would mitigate.
 
@@ -671,7 +700,7 @@ Per `feedback_long_short_inverse_audit` + `feedback_asymmetric_data_sources_brea
 | **J (marginal contribution)** | RSI-9 vs RSI-14 (A-1) vs RSI-21 (A-4) — same primitive at different windows | Post-B690b: Pattern J audit on RSI window family | **Class 6 DEFERRED-POST-B690b** |
 | **N (effective-N)** | RSI extreme oversold clusters in vol regimes | Cube infra ticket | **Class 8 CUBE-INFRA** |
 
-**Disposition recommendation: KEEP-AS-IS + Class 2 minor fixes. LONG-only justified per asymmetric data sources discipline. Status post-B751: PRE-CUBE-CLEAN.**
+**Disposition recommendation: KEEP-AS-IS + Class 2 minor fixes. LONG-only justified per asymmetric data sources discipline. Status post-B751: CODE-CLEAN, EDGE-UNVALIDATED.**
 
 A-priori fire-count projection: RSI-9 < 20 is rare (extreme oversold); + uptrend (200-EMA) is even rarer (oversold in uptrend); + rising (recovery) is the EVENT trigger. Stacked gates: estimated 1-3 fires/ticker/yr on T1a in benign conditions; 5-15 in vol regimes. Universe-wide: ~500-1,500/yr. **Possibly FAIL_FIRE_STARVED in per-regime split** — EXPLORATORY candidate.
 
@@ -752,7 +781,7 @@ Also A-4 vs A-3 (rsi9_extreme): RSI-21 < 35 vs RSI-9 < 20 — different oversold
 | **W (deterministic duplicate)** | A-4 LONG potentially strict subset of A-1 LONG | Pattern W audit post-B690b | **Class 6 DEFERRED-POST-B690b** |
 | **N (effective-N)** | Cluster A Pattern N | Cube infra | **Class 8 CUBE-INFRA** |
 
-**Disposition recommendation: KEEP-AS-IS PENDING Pattern J/W audit. May consolidate or delete post-B690b. Status post-B751: PRE-CUBE-CLEAN; CONSOLIDATION CANDIDATE.**
+**Disposition recommendation: KEEP-AS-IS PENDING Pattern J/W audit. May consolidate or delete post-B690b. Status post-B751: CODE-CLEAN, EDGE-UNVALIDATED; CONSOLIDATION CANDIDATE.**
 
 A-priori fire-count projection: RSI-21 is slower than RSI-14, fires LESS often. Stack of 2 gates LONG / 3 SHORT. Estimated 5-15 fires/ticker/yr LONG; ~3-10 SHORT. Universe-wide: ~1,500-5,000/yr LONG. PASS_CUBE range; possibly EXPLORATORY post-Pattern-N effective-N adjustment.
 
@@ -851,7 +880,7 @@ Pattern J: A-1 vs A-5 share the 200-EMA + rsi_14<35 core. Distinguishing: A-1's 
 | **N (effective-N)** | Cluster A Pattern N | Cube infra | **Class 8 CUBE-INFRA** |
 | **B320 lineage check** | B320 loosened vol gate per fire-starvation; verify post-B660 fire count justifies loosening or reverts | Post-B660 re-measurement: verify fire rate is in PASS_CUBE range now; if still <100/yr, reconsider B320 loosening | **Class 6 DEFERRED-POST-B660-RE-RUN (queue `S4-B751-A-5-B320-LOOSENING-VERIFY-POST-B660`)** |
 
-**Disposition recommendation: KEEP-AS-IS + Class 2 fixes + B320 lineage verification. Status post-B751: PRE-CUBE-CLEAN; J-audit candidate.**
+**Disposition recommendation: KEEP-AS-IS + Class 2 fixes + B320 lineage verification. Status post-B751: CODE-CLEAN, EDGE-UNVALIDATED; J-audit candidate.**
 
 A-priori fire-count projection: RSI<35 + vol_above_avg + 200-EMA = 3-gate confluence; estimated 5-20 fires/ticker/yr on T1a. Universe-wide: ~2,500-10,000/yr LONG. PASS_CUBE range; B320 loosening worked.
 
@@ -955,7 +984,7 @@ A-priori fire-count projection: RSI<35 + vol_above_avg + 200-EMA = 3-gate conflu
 | J | vs A-6 stoch_oversold (both K-cross oscillator families) | Post-B690b audit | **Class 6 DEFERRED-POST-B690b** |
 | R | NOT a Connors-OR-disjunct strategy (B206 added 200-EMA gate only, not rsi_2<5 OR-extension) | CLEAN — different B206 application | — |
 
-**Recommendation: KEEP-AS-IS + Class 2 G fix. Status post-B752: PRE-CUBE-CLEAN.** Fire projection: tight 4-gate stack; ~5-15/ticker/yr LONG; ~2,500-7,500/yr universe-wide. PASS_CUBE range.
+**Recommendation: KEEP-AS-IS + Class 2 G fix. Status post-B752: CODE-CLEAN, EDGE-UNVALIDATED.** Fire projection: tight 4-gate stack; ~5-15/ticker/yr LONG; ~2,500-7,500/yr universe-wide. PASS_CUBE range.
 
 ---
 
@@ -1014,7 +1043,7 @@ Fire projection: ~15-30/ticker/yr SHORT (no regime gate inflates rate); universe
 | J | vs A-1 (RSI Connors), A-6 (stoch), A-7 (stochRSI), A-10 (UO Connors) | Oversold-family Pattern J audit post-B690b | **Class 6** |
 | N | Cluster A Pattern N | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS + Class 2 fixes.** Sharpe 0.30 carrier — empirically best oversold strategy in Phase 1A-beta. CLEAN post-B629/B663/B718. Status post-B752: PRE-CUBE-CLEAN.
+**Recommendation: KEEP-AS-IS + Class 2 fixes.** Sharpe 0.30 carrier — empirically best oversold strategy in Phase 1A-beta. CLEAN post-B629/B663/B718. Status post-B752: CODE-CLEAN, EDGE-UNVALIDATED.
 
 Fire projection: 3 LONG gates Williams + Connors + CMF stack; ~5-15/ticker/yr; ~2,500-7,500/yr universe-wide LONG. PASS_CUBE.
 
@@ -1048,7 +1077,7 @@ Fire projection: 3 LONG gates Williams + Connors + CMF stack; ~5-15/ticker/yr; ~
 | Pattern A R5-deferred | docstring marks `{bull}` REMOVE_OK candidate per B623 | Wait for R5 confirmation per memory | **Class 6 DEFERRED-R5** |
 | N | UO extreme is rare; effective-N concern | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS.** A-10 is the gold-standard cleaned strategy in Cluster A (most thorough B631 F1+F2+a application). Sharpe 0.49 best-in-family at 27 trades = EXPLORATORY-tag-eligible per fire-count + W5m precedent. Status post-B752: PRE-CUBE-CLEAN; B623 REMOVE_OK pending R5.
+**Recommendation: KEEP-AS-IS.** A-10 is the gold-standard cleaned strategy in Cluster A (most thorough B631 F1+F2+a application). Sharpe 0.49 best-in-family at 27 trades = EXPLORATORY-tag-eligible per fire-count + W5m precedent. Status post-B752: CODE-CLEAN, EDGE-UNVALIDATED; B623 REMOVE_OK pending R5.
 
 Fire projection: tight 3-gate stack with EVENT bar; ~2-8/ticker/yr LONG; ~1K-4K/yr universe-wide. **Possibly FAIL_FIRE_STARVED per W5 council Pattern AA** — EXPLORATORY-tag candidate.
 
@@ -1081,7 +1110,7 @@ Fire projection: tight 3-gate stack with EVENT bar; ~2-8/ticker/yr LONG; ~1K-4K/
 | J | vs A-1/A-6/A-7/A-9/A-10 oversold family | Pattern J audit post-B690b | **Class 6** |
 | N | MFI oversold + pivot support clusters in vol regimes | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS.** Distinct pivot-support mechanism justifies absence of trend gate. Status post-B752: PRE-CUBE-CLEAN.
+**Recommendation: KEEP-AS-IS.** Distinct pivot-support mechanism justifies absence of trend gate. Status post-B752: CODE-CLEAN, EDGE-UNVALIDATED.
 
 Fire projection: 3-gate stack MFI + pivot + OBV; ~5-15/ticker/yr LONG (pivots constrain to ~10-20% of bars); ~2,500-7,500/yr universe-wide. PASS_CUBE range.
 
@@ -1157,7 +1186,7 @@ VIX-conditional thresholds: rsi_thr_long ∈ {35, 40, 45} depending on `vix_band
 | J | vs A-13 bollinger_tight (looser variant of same strategy at different sigma) | Pattern J marginal-contribution audit post-B690b | **Class 6 DEFERRED-POST-B690b** |
 | Pattern A | docstring/code matches; ADX gate adds "no strong trend" axis | CLEAN | — |
 
-**Recommendation: KEEP-AS-IS.** A-12 is the most parameter-adaptive strategy in Cluster A (VIX-conditional thresholds). Status post-B753: PRE-CUBE-CLEAN; Pattern CC cube-infra ticket needed.
+**Recommendation: KEEP-AS-IS.** A-12 is the most parameter-adaptive strategy in Cluster A (VIX-conditional thresholds). Status post-B753: CODE-CLEAN, EDGE-UNVALIDATED; Pattern CC cube-infra ticket needed.
 
 Fire projection: tight 4-gate stack with VIX-conditional adjustment; ~3-8 fires/ticker/yr LONG; universe-wide ~1,500-4,000/yr. PASS_CUBE range.
 
@@ -1192,7 +1221,7 @@ VIX-conditional thresholds: rsi_thr_long ∈ {40, 45, 50}; rsi_thr_short ∈ {50
 | R | Connors-OR PROPORTIONAL (BB + 200-EMA gate stack) | CLEAN | — |
 | Q | All gates STATE | Cluster Pattern Q rolled | **Class 2** |
 
-**Recommendation: KEEP-AS-IS PENDING Pattern J consolidation.** Likely consolidates with A-12 post-B690b. Status post-B753: PRE-CUBE-CLEAN; Pattern J candidate (HIGH-priority within Cluster A consolidation).
+**Recommendation: KEEP-AS-IS PENDING Pattern J consolidation.** Likely consolidates with A-12 post-B690b. Status post-B753: CODE-CLEAN, EDGE-UNVALIDATED; Pattern J candidate (HIGH-priority within Cluster A consolidation).
 
 Fire projection: Looser stack than A-12; ~6-15 fires/ticker/yr LONG; ~3,000-7,500/yr universe-wide. PASS_CUBE.
 
@@ -1224,7 +1253,7 @@ Fire projection: Looser stack than A-12; ~6-15 fires/ticker/yr LONG; ~3,000-7,50
 | J | vs A-2 rsi_overbought_short + A-8 stochrsi_overbought_short + A-12 SHORT branch | Post-B690b SHORT-family Pattern J audit | **Class 6** |
 | S | SHORT-only, NO regime gate = worst-case bull-drift exposure | Add regime gate (Class 2 above) mitigates | — |
 
-**Recommendation: KEEP-AS-IS + Class 2 add regime gate (below_ema_200).** Distinct from A-12 SHORT branch (shooting_star EVENT is the differentiator). Once regime gate added, alignment with cluster discipline restored. Status post-B753: PRE-CUBE-CLEAN POST-FIX.
+**Recommendation: KEEP-AS-IS + Class 2 add regime gate (below_ema_200).** Distinct from A-12 SHORT branch (shooting_star EVENT is the differentiator). Once regime gate added, alignment with cluster discipline restored. Status post-B753: CODE-CLEAN, EDGE-UNVALIDATED POST-FIX.
 
 Fire projection: BB upper + RSI>70 + shooting_star EVENT = tight 3-gate SHORT stack but missing regime gate inflates rate. Estimated ~10-25 fires/ticker/yr SHORT; ~5K-12K/yr universe-wide. Possibly over B710 5K ceiling pre-regime-gate-add.
 
@@ -1257,7 +1286,7 @@ Fire projection: BB upper + RSI>70 + shooting_star EVENT = tight 3-gate SHORT st
 | J | vs A-11 mfi_oversold (both "level + flow" mean-rev) and vs A-12/A-13 BB family (similar level-touch mean-rev) | Post-B690b audit | **Class 6** |
 | N | KC touch + candle clusters in vol regimes | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS.** A-16 is the candle-confirmation analog of A-11's OBV-confirmation thesis. Mixed STATE+EVENT temporality is clean. Status post-B753: PRE-CUBE-CLEAN.
+**Recommendation: KEEP-AS-IS.** A-16 is the candle-confirmation analog of A-11's OBV-confirmation thesis. Mixed STATE+EVENT temporality is clean. Status post-B753: CODE-CLEAN, EDGE-UNVALIDATED.
 
 Fire projection: KC touch lower + hammer + OBV bullish = rare confluence; ~3-8/ticker/yr LONG; ~1,500-4,000/yr universe-wide. PASS_CUBE range.
 
@@ -1293,7 +1322,7 @@ Wide 2-gate strategy per docstring; independent-product UB fire projection defer
 | Q | All gates STATE; vol_spike is EVENT-like (today's bar exceeds 2× avg) | Acceptable mixed temporality | **Class 1 KEEP-AS-IS** |
 | J | vs other Camarilla strategies (W9 strat_camarilla_s3_bounce in Pivot cluster) | Post-B690b Pattern J audit if mis-clustering kept | **Class 6 DEFERRED** |
 
-**Recommendation: KEEP-AS-IS + Pattern X cluster-reassignment to Cluster B or Pivot cross-reference.** B641 rename is gold-standard cluster-walk-driven fix. Status post-B753: PRE-CUBE-CLEAN; reassignment pending owner direction.
+**Recommendation: KEEP-AS-IS + Pattern X cluster-reassignment to Cluster B or Pivot cross-reference.** B641 rename is gold-standard cluster-walk-driven fix. Status post-B753: CODE-CLEAN, EDGE-UNVALIDATED; reassignment pending owner direction.
 
 Fire projection: Wide 2-gate strategy; independent-product UB significantly over-counts. B641 docstring defers to measurement. Per B660 re-measure: estimate ~1K-3K/yr universe-wide LONG-side; SHORT-side lower due to gate asymmetry.
 
@@ -1367,7 +1396,7 @@ Fire projection: Wide 2-gate strategy; independent-product UB significantly over
 | J | vs A-19 camarilla_rsi_obv_short (SHORT-only standalone), A-17 camarilla_r4_breakout (breakout level), W9 camarilla_s3_bounce (Pivot cluster) | Post-B690b Camarilla family Pattern J audit | **Class 6 DEFERRED-POST-B690b (queue `S4-B754-PATTERN-J-CAMARILLA-FAMILY-CONSOLIDATION`)** |
 | N | Camarilla S3/R3 + RSI extreme clusters in vol regimes | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS.** A-18 is gold-standard silent-gap-closure (B628+B629 both F1). Distinct mechanism (level-touch + flow + no trend gate). Status post-B754: PRE-CUBE-CLEAN.
+**Recommendation: KEEP-AS-IS.** A-18 is gold-standard silent-gap-closure (B628+B629 both F1). Distinct mechanism (level-touch + flow + no trend gate). Status post-B754: CODE-CLEAN, EDGE-UNVALIDATED.
 
 Fire projection: 4-gate confluence tight; ~2-6 fires/ticker/yr LONG; ~1K-3K/yr universe-wide. PASS_CUBE range possible; possibly FAIL_FIRE_STARVED per Pattern N. EXPLORATORY tag candidate.
 
@@ -1430,7 +1459,7 @@ Heavy forensic-fix lineage: B358 + B654 + B710 + B718.
 | Pattern B710 ceiling | 21K/yr pre-B718 → post-B718 swap to cpr_narrow_tight (0.05) per B710 ceiling fix; expected ~5-10× reduction | Post-B660 re-measure: verify cpr_narrow_tight produces <5K/yr | **Class 6 DEFERRED-POST-B660-RE-RUN (queue `S4-B754-A-20-B718-CEILING-FIX-VALIDATE-POST-B660-RE-MEASURE`)** |
 | N | CPR + momentum confluence in trending days | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS + B718 ceiling-fix validation post-B660.** Comprehensive forensic-fix lineage (B358 + B654 + B710 + B718 + B663 + B630). Status post-B754: PRE-CUBE-CLEAN.
+**Recommendation: KEEP-AS-IS + B718 ceiling-fix validation post-B660.** Comprehensive forensic-fix lineage (B358 + B654 + B710 + B718 + B663 + B630). Status post-B754: CODE-CLEAN, EDGE-UNVALIDATED.
 
 Fire projection: Post-B718 swap to cpr_narrow_tight (0.05): expected ~2K-4K/yr LONG (reduction from 12,534/yr pre-B718). PASS_CUBE range post-fix.
 
@@ -1497,7 +1526,7 @@ Producer-source verdict: AVWAP-252 needs SAME producer audit as AVWAP-50 (B750/A
 | J | vs A-22 avwap_50_reclaim + A-24 avwap_20high_rejection_short (3-strategy AVWAP family) | Cross-ref `S4-B750-PATTERN-J-CLUSTER-A-MARGINAL-CONTRIBUTION-AUDIT-POST-B690b` (AVWAP family component) | **Class 6** |
 | N | AVWAP-252 breakouts cluster around regime shifts | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS + Class 2 Pattern F fix + cross-ref AVWAP-252 PIT-audit ticket.** Status post-B754: PRE-CUBE-CLEAN POST-FIXES.
+**Recommendation: KEEP-AS-IS + Class 2 Pattern F fix + cross-ref AVWAP-252 PIT-audit ticket.** Status post-B754: CODE-CLEAN, EDGE-UNVALIDATED POST-FIXES.
 
 Fire projection: 4-gate stack with rare 252-day-low proximity; ~1-3 fires/ticker/yr; ~500-1,500/yr universe-wide. **FAIL_FIRE_STARVED-likely**; EXPLORATORY candidate per Pattern AA event-strategy effective-N concern.
 
@@ -1576,7 +1605,7 @@ Producer-source verdict: PIT-clean methodology. B630 + B718 + B208 lineage VERIF
 | J | AVWAP family (A-22 + A-23 + A-24) consolidation post-B690b | Cross-ref `S4-B750-PATTERN-J-CLUSTER-A-MARGINAL-CONTRIBUTION-AUDIT-POST-B690b` (AVWAP component) | **Class 6** |
 | Pattern S | SHORT-only without LONG mirror; AVWAP rejection thesis is naturally asymmetric per Bulkowski + Wyckoff resistance discipline | CLEAN | — |
 
-**Recommendation: KEEP-AS-IS + Class 2 Pattern F fix + cross-ref AVWAP PIT-audit ticket family.** Status post-B755: PRE-CUBE-CLEAN POST-FIXES.
+**Recommendation: KEEP-AS-IS + Class 2 Pattern F fix + cross-ref AVWAP PIT-audit ticket family.** Status post-B755: CODE-CLEAN, EDGE-UNVALIDATED POST-FIXES.
 
 Fire projection: tight 6-gate stack with 1% proximity + EVENT candle + vol confirm; ~1-3 fires/ticker/yr SHORT; ~500-1,500/yr universe-wide. FAIL_FIRE_STARVED-likely; EXPLORATORY tag candidate per Pattern AA.
 
@@ -1608,7 +1637,7 @@ Effective gate count: LONG=2 / SHORT=3.
 | J | vs A-26 cmf_flip (similar momentum-oscillator family) + A-15 ppo_crossover + other crossover-event strategies in cluster | Pattern J family audit post-B690b | **Class 6** |
 | N | AO crossovers cluster in trending regimes | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS.** Cleanest 2-gate strategy in Cluster A (LONG side). B627 F1 silent-gap closure exemplary. Status post-B755: PRE-CUBE-CLEAN.
+**Recommendation: KEEP-AS-IS.** Cleanest 2-gate strategy in Cluster A (LONG side). B627 F1 silent-gap closure exemplary. Status post-B755: CODE-CLEAN, EDGE-UNVALIDATED.
 
 Fire projection: AO cross events ~3-8/ticker/yr; ~1,500-4,000/yr universe-wide LONG. PASS_CUBE range.
 
@@ -1641,7 +1670,7 @@ Fire projection: AO cross events ~3-8/ticker/yr; ~1,500-4,000/yr universe-wide L
 | J | vs A-25 + A-15 ppo + A-9 williams (momentum-oscillator family) | Pattern J post-B690b | **Class 6** |
 | N | CMF zero-line crossings cluster in regime transitions | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS PENDING owner decision on regime-gate add.** A-26 is simplest oscillator-cross strategy in cluster. Status post-B755: PRE-CUBE-CLEAN PENDING-OWNER-DECISION on regime gate.
+**Recommendation: KEEP-AS-IS PENDING owner decision on regime-gate add.** A-26 is simplest oscillator-cross strategy in cluster. Status post-B755: CODE-CLEAN, EDGE-UNVALIDATED PENDING-OWNER-DECISION on regime gate.
 
 Fire projection: CMF cross events ~5-15/ticker/yr × RSI mid-threshold gate ~40-60% retention; ~2,500-7,500/yr universe-wide LONG. PASS_CUBE.
 
@@ -1672,7 +1701,7 @@ Fire projection: CMF cross events ~5-15/ticker/yr × RSI mid-threshold gate ~40-
 | J | vs A-25 awesome + A-15 ppo (momentum-osc family) | Pattern J post-B690b | **Class 6** |
 | N | ROC bursts cluster around news/earnings | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS.** Simplest momentum-burst strategy in cluster (2 gates, both event-like). Status post-B755: PRE-CUBE-CLEAN.
+**Recommendation: KEEP-AS-IS.** Simplest momentum-burst strategy in cluster (2 gates, both event-like). Status post-B755: CODE-CLEAN, EDGE-UNVALIDATED.
 
 Fire projection: ROC turn + 1.5× vol = ~10-20 fires/ticker/yr; ~5K-10K/yr universe-wide LONG. **Possibly over B710 5K ceiling** — Pattern N effective-N adjustment likely brings under.
 
@@ -1703,7 +1732,7 @@ Fire projection: ROC turn + 1.5× vol = ~10-20 fires/ticker/yr; ~5K-10K/yr unive
 | J | vs other Williams strategies + Stoch strategies + pivot-confluence strategies | Pattern J post-B690b | **Class 6** |
 | N | Pivot-cross + Williams confluence at vol regimes | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS — REFERENCE-IMPLEMENTATION.** A-28 is the gold-standard Pattern Q EVENT-conversion example for cluster sweep. Status post-B755: PRE-CUBE-CLEAN; reference template for B750 cluster Pattern Q ticket.
+**Recommendation: KEEP-AS-IS — REFERENCE-IMPLEMENTATION.** A-28 is the gold-standard Pattern Q EVENT-conversion example for cluster sweep. Status post-B755: CODE-CLEAN, EDGE-UNVALIDATED; reference template for B750 cluster Pattern Q ticket.
 
 Fire projection: Post-B729 EVENT redesign brought rate under B710 5K ceiling per docstring. Verified B660 measurement = LONG ~4K, SHORT ~6.5K. **Verify post-B660 re-run that fires stay in PASS_CUBE range.**
 
@@ -1735,7 +1764,7 @@ Fire projection: Post-B729 EVENT redesign brought rate under B710 5K ceiling per
 | **Pattern X (mis-clustered like A-17)** | **A-29 category "pivot" — belongs in Pivot cluster doc cross-reference OR Cluster B Trend Confluence sub-family.** Mean-rev mechanism at prev-day level is pivot-based not oscillator-based | Same disposition as A-17 — cluster reassignment | **Class 2 cross-ref `S4-B753-A-17-CLUSTER-REASSIGNMENT-TO-CLUSTER-B-OR-PIVOT` (queue `S4-B755-A-29-CLUSTER-REASSIGNMENT-VIA-PATTERN-X`)** |
 | J | vs A-11 mfi + A-16 keltner + A-18 camarilla_rsi_obv (level-touch-with-flow family) | Pattern J post-B690b | **Class 6** |
 
-**Recommendation: KEEP-AS-IS + Pattern X cluster reassignment cross-ref.** Distinct level-touch-with-candle thesis. Mis-clustered like A-17. Status post-B755: PRE-CUBE-CLEAN; reassignment pending owner direction.
+**Recommendation: KEEP-AS-IS + Pattern X cluster reassignment cross-ref.** Distinct level-touch-with-candle thesis. Mis-clustered like A-17. Status post-B755: CODE-CLEAN, EDGE-UNVALIDATED; reassignment pending owner direction.
 
 Fire projection: prev-low + hammer + CMF positive = tight EVENT confluence; ~5-12/ticker/yr LONG; ~2,500-6,000/yr universe-wide. PASS_CUBE range.
 
@@ -1768,7 +1797,7 @@ Fire projection: prev-low + hammer + CMF positive = tight EVENT confluence; ~5-1
 | J | vs A-13 bollinger_tight + A-12 bollinger_lower (BB family) | Cross-ref `S4-B753-PATTERN-J-BOLLINGER-FAMILY-CONSOLIDATION` (BB family includes A-30 squeeze variant) | **Class 6** |
 | N | BB squeeze releases cluster around vol expansion | Cube infra | **Class 8** |
 
-**Recommendation: KEEP-AS-IS + Pattern X cluster reassignment.** BB-squeeze-with-volume-and-VWAP is a confluence breakout strategy, not oscillator/mean-rev. Status post-B755: PRE-CUBE-CLEAN; reassignment pending owner direction.
+**Recommendation: KEEP-AS-IS + Pattern X cluster reassignment.** BB-squeeze-with-volume-and-VWAP is a confluence breakout strategy, not oscillator/mean-rev. Status post-B755: CODE-CLEAN, EDGE-UNVALIDATED; reassignment pending owner direction.
 
 Fire projection: BB squeeze release + 2× vol + VWAP confirm = tight confluence; ~3-8 fires/ticker/yr LONG; ~1,500-4,000/yr universe-wide. PASS_CUBE range.
 
