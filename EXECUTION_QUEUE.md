@@ -298,7 +298,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 41. **`S4-B766-A-5-VOL-ABOVE-AVG-WRONG-DIRECTION-FIX`** — A-5 strat_rsi_volume_200ema gate uses `vol_above_avg` (volume above 20-day average). Per reviewer: this is WRONG DIRECTION for mean-reversion entry. For reversion you want vol_spike (CAPITULATION) on the DOWN day + drying volume on the TURN. Current gate fires on above-average volume regardless of price direction. Fix: replace `vol_above_avg` with composite `vol_spike_on_down_day_recent + vol_below_avg_on_turn`. This is a STRATEGY BUG not a tune. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 A-5 section. Class 2 BUG-FIX. HIGH.
 
-42. **`S4-B766-A-6-A-9-WILLIAMS-STOCH-ALGEBRAIC-DUPLICATE-PATTERN-J-PAIR`** — Williams %R is algebraically near-identical to Stochastic %K by construction (both normalize price location within a lookback range; differ only in inversion sign and divisor). A-9 `strat_williams_r_oversold` + A-6 `strat_stoch_oversold` are likely Pattern J duplicates the doc didn't pair. Run B709 phi-correlation precompute on A-6 vs A-9 fire-sets specifically. Likely deletion candidate. PENDING-EXECUTION (post-TIER-1 phi-correlation audit). Source: B766 reviewer Part 2 Stoch/Williams section. Class 6 DEFERRED-POST-PHI. HIGH.
+42. **`S4-B766-A-6-A-9-WILLIAMS-STOCH-ALGEBRAIC-DUPLICATE-PATTERN-J-PAIR`** — Williams %R is algebraically near-identical to Stochastic %K by construction (both normalize price location within a lookback range; differ only in inversion sign and divisor). A-9 `strat_williams_r_oversold` + A-6 `strat_stoch_oversold` are likely Pattern J duplicates the doc didn't pair. Run B709 phi-correlation precompute on A-6 vs A-9 fire-sets specifically. Likely deletion candidate. ~~PENDING-EXECUTION~~ **COMPLETED-EMPIRICAL B785 2026-06-15.** **VERDICT: REFUTED at fire-stream level.** B760 demo fire-bar similarity (50 tickers x 1yr 2024): LONG phi = **+0.024** (n_stoch=10 / n_williams=464 / n_both=2 / Jaccard=0.0042); SHORT phi = **-0.002** (n_stoch=6 / n_williams=149 / n_both=0 / Jaccard=0.0000). Both phi << 0.70 Pattern J consolidation threshold + << 0.85 DELETE threshold. Council's algebraic-identity premise (Williams %R = Stoch %K up to sign/offset) correct AT SIGNAL LEVEL but WRONG at strategy-level: different gate stacks (Stoch's oversold threshold + EMA-20 + close-direction vs Williams's oversold threshold + EMA-200 + SMA-50) produce nearly DISJOINT fire-streams. Aligned with B709 PEAD-restore precedent (phi=0.297 < 0.70 -> retain both). **REJECT Pattern J consolidation; KEEP both strategies as-is.** Caveat surfaced (not in scope of #42): Stoch:Williams 1:47 fire-rate asymmetry suggests Stoch gate-stack may be over-tight; separate Pattern G candidate IF empirically surfaced. Verdict report: `output_audit/b785_42_williams_stoch_pattern_j_verdict.md`. Source: B766 reviewer + B709 methodology + B785 empirical refutation. Class 6 DEFERRED-POST-PHI.
 
 43. **`S4-B766-A-11-MFI-OBV-ANTI-SELECTION-CONDITIONAL-ADD-TEST`** — A-11 strat_mfi_oversold gate requires obv_bullish. Per reviewer: fresh decline into oversold means OBV has been FALLING, so requiring obv_bullish may ANTI-SELECT (filter out the real reversion opportunities). Run B709-style conditional-add-test: does adding obv_bullish gate improve win rate or reduce it? Test on existing B689 data. PENDING-EXECUTION. Source: B766 reviewer Part 2 MFI section. Class 9 EMPIRICAL-VERIFICATION. MEDIUM-HIGH.
 
@@ -684,6 +684,22 @@ Verdict report: `output_audit/b784_38_48_checklist_108_preflight.md`
 **B784 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#108 pre-flight on 11 items: 2 BLOCKED + 2 TRACTABLE + 6 PENDING + 1 DONE) + 1 nuanced (B320 vs #41 directive conflict caught by #108 application). Tickets filed: **0 NEW + 11 annotations** on existing #38-#48 (each annotated with CHECKLIST #108 pre-flight result + tractability scope). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B784: 133 unique S4-B7XX tickets** (no change).
+
+### TIER 24 — B785 #42 Williams-Stoch Pattern J REFUTED (phi=0.024 LONG / -0.002 SHORT)
+
+**#42 council reviewer rec REFUTED EMPIRICALLY:** B760 demo fire-bar similarity precompute shows phi-correlation 0.024 LONG / -0.002 SHORT between strat_stoch_oversold (A-6) + strat_williams_r_oversold (A-9). Both << 0.70 consolidation threshold + << 0.85 DELETE threshold.
+
+Council reviewer was correct at SIGNAL-LEVEL (Williams %R = Stoch %K up to sign/offset) but WRONG at STRATEGY-LEVEL: different gate-stacks (Stoch's oversold threshold + EMA-20 + close-direction vs Williams's oversold threshold + EMA-200 + SMA-50) produce nearly DISJOINT fire-streams. Intersection: 2 of 474 LONG / 0 of 155 SHORT.
+
+Aligned with B709 PEAD-restore precedent (phi=0.297 < 0.70 -> retain both).
+
+**Disposition:** REJECT Pattern J consolidation; KEEP both A-6 + A-9 strategies as-is. No code changes.
+
+Verdict report: `output_audit/b785_42_williams_stoch_pattern_j_verdict.md`
+
+**B785 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#42 REFUTED at phi=0.024 / -0.002) + 1 nuanced (Stoch:Williams 1:47 fire-rate asymmetry separate Pattern G candidate IF empirically surfaced, not in #42 scope). Tickets filed: **0 NEW + 1 annotation** on #42 (REFUTED-EMPIRICAL). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B785: 133 unique S4-B7XX tickets** (no change; #42 closed in place).
 
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
