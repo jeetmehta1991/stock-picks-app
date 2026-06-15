@@ -193,7 +193,16 @@ Owner directive 2026-06-14 "approve all for filing" — 16 council tickets queue
 
 **B760 (2026-06-15) NEW TICKETS SURFACED BY DEMO VALIDATION:**
 
-17. **`S4-B760-CAMARILLA-NEAR-S3-R3-PRODUCER-EMISSION-AUDIT`** — Investigate why BOTH A-18 camarilla_rsi_obv and A-19 camarilla_rsi_obv_short fire 0 times on 50-ticker × 1yr demo despite producing emit-rate True for OBV/CMF gates. Hypothesis: `near_cam_s3` and `near_cam_r3` are silent-no-op STATE signals — Camarilla R3/S3 levels are deep extremes rarely touched (per B641 docstring "outermost levels = Range*1.1/2"). Per CHECKLIST #106 (e) KNOWN-EVENT runtime probe: find a date where S&P 500 had a Camarilla R3 touch and verify producer fires. If `near_cam_r3` never returns True empirically, this is a producer Pattern G/Q issue masquerading as Pattern W. PENDING-OWNER-APPROVAL. Source: B760 empirical refutation of A-19 HIGHEST_CONFIDENCE. Class 9 PRODUCER-AUDIT. **CRITICAL pre-cube** (affects 3-strategy Camarilla family viability).
+17. **`S4-B760-CAMARILLA-NEAR-S3-R3-PRODUCER-EMISSION-AUDIT`** — Investigate why BOTH A-18 camarilla_rsi_obv and A-19 camarilla_rsi_obv_short fire 0 times on 50-ticker × 1yr demo. **B761 EMPIRICAL PROBE RESULTS (2026-06-15 AAPL 2024 251 bars):** the silent-no-op hypothesis is **REFUTED**:
+    - `near_cam_r3` emits True **21.12%** of bars (53/251)
+    - `near_cam_s3` emits True **17.53%** of bars (44/251)
+    - EITHER: **37.85%** of bars
+    
+    The Camarilla proximity producer is NOT a silent-no-op. **Reframed root cause: Pattern AA effective-N** — the 4-gate LONG AND-stack (`near_cam_s3` + `rsi_14<35` + `obv_bullish` + `cmf_positive`) creates a NEGATIVELY-CORRELATED gate intersection: price at deep support (S3) typically co-occurs with falling OBV (sellers driving price down), so `obv_bullish` is RARE when `near_cam_s3` is True. Similarly for SHORT: `near_cam_r3` + `rsi_14>65` co-occurs with RISING OBV typically. The 4-gate confluence requires simultaneous (price-extreme + flow-reversal) which is structurally rare.
+    
+    Per W5m precedent: camarilla_rsi_obv family (3 strategies: A-17 + A-18 + A-19) is **EXPLORATORY-tag candidate per Pattern AA**, NOT a producer fix candidate. STATUS: **HYPOTHESIS-REFUTED-RECLASSIFIED-TO-PATTERN-AA**. New follow-up ticket below.
+
+24. **`S4-B761-CAMARILLA-RSI-OBV-FAMILY-EXPLORATORY-TAG-MANDATORY`** — Per B761 empirical refutation + W5m precedent: tag A-18 camarilla_rsi_obv + A-19 camarilla_rsi_obv_short as EXPLORATORY (DO-NOT-DEPLOY regardless of cube verdict). A-17 camarilla_r4_breakout has different gates so may not be affected. Per Pattern AA: 4-gate-stack with negative gate-correlation = structurally-limited effective-N below min_trades=100. PENDING-OWNER-APPROVAL. Source: B761 empirical probe. Class 6 DEFERRED + EXPLORATORY tag. HIGH.
 
 18. **`S4-B760-PATTERN-W-METHODOLOGY-REVISION-EMPIRICAL-NOT-GATE-TEXT`** — Codify that ALL Pattern W deletion decisions must use fire-bar Jaccard precompute (B709 phi-correlation / B760 chairman) NOT gate-text comparison. Pattern W deletion proposals via gate-text inspection are HEURISTIC ONLY pending empirical validation. Update STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md sections referencing "Pattern W deterministic-duplicate" to note empirical validation requirement. PENDING-OWNER-APPROVAL. Source: B760 0-of-3 council validation. Class 2 METHODOLOGY-CORRECTION. HIGH.
 
