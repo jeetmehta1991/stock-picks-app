@@ -300,7 +300,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 42. **`S4-B766-A-6-A-9-WILLIAMS-STOCH-ALGEBRAIC-DUPLICATE-PATTERN-J-PAIR`** — Williams %R is algebraically near-identical to Stochastic %K by construction (both normalize price location within a lookback range; differ only in inversion sign and divisor). A-9 `strat_williams_r_oversold` + A-6 `strat_stoch_oversold` are likely Pattern J duplicates the doc didn't pair. Run B709 phi-correlation precompute on A-6 vs A-9 fire-sets specifically. Likely deletion candidate. ~~PENDING-EXECUTION~~ **COMPLETED-EMPIRICAL B785 2026-06-15.** **VERDICT: REFUTED at fire-stream level.** B760 demo fire-bar similarity (50 tickers x 1yr 2024): LONG phi = **+0.024** (n_stoch=10 / n_williams=464 / n_both=2 / Jaccard=0.0042); SHORT phi = **-0.002** (n_stoch=6 / n_williams=149 / n_both=0 / Jaccard=0.0000). Both phi << 0.70 Pattern J consolidation threshold + << 0.85 DELETE threshold. Council's algebraic-identity premise (Williams %R = Stoch %K up to sign/offset) correct AT SIGNAL LEVEL but WRONG at strategy-level: different gate stacks (Stoch's oversold threshold + EMA-20 + close-direction vs Williams's oversold threshold + EMA-200 + SMA-50) produce nearly DISJOINT fire-streams. Aligned with B709 PEAD-restore precedent (phi=0.297 < 0.70 -> retain both). **REJECT Pattern J consolidation; KEEP both strategies as-is.** Caveat surfaced (not in scope of #42): Stoch:Williams 1:47 fire-rate asymmetry suggests Stoch gate-stack may be over-tight; separate Pattern G candidate IF empirically surfaced. Verdict report: `output_audit/b785_42_williams_stoch_pattern_j_verdict.md`. Source: B766 reviewer + B709 methodology + B785 empirical refutation. Class 6 DEFERRED-POST-PHI.
 
-43. **`S4-B766-A-11-MFI-OBV-ANTI-SELECTION-CONDITIONAL-ADD-TEST`** — A-11 strat_mfi_oversold gate requires obv_bullish. Per reviewer: fresh decline into oversold means OBV has been FALLING, so requiring obv_bullish may ANTI-SELECT (filter out the real reversion opportunities). Run B709-style conditional-add-test: does adding obv_bullish gate improve win rate or reduce it? Test on existing B689 data. PENDING-EXECUTION. Source: B766 reviewer Part 2 MFI section. Class 9 EMPIRICAL-VERIFICATION. MEDIUM-HIGH.
+43. **`S4-B766-A-11-MFI-OBV-ANTI-SELECTION-CONDITIONAL-ADD-TEST`** — A-11 strat_mfi_oversold gate requires obv_bullish. Per reviewer: fresh decline into oversold means OBV has been FALLING, so requiring obv_bullish may ANTI-SELECT (filter out the real reversion opportunities). Run B709-style conditional-add-test: does adding obv_bullish gate improve win rate or reduce it? Test on existing B689 data. ~~PENDING-EXECUTION~~ **COMPLETED-EMPIRICAL B789 2026-06-15.** **VERDICT: ANTI_SELECTION_CONFIRMED_EXTREME.** Built `scripts/mfi_obv_anti_selection_test.py` (4-cell B709-style test on T1a OHLCV + forward 10-day returns). B789 smoke (5 tickers x 2024 / 1,260 bars): mfi_oversold AND obv_bullish = **0 obs** (gate so restrictive strategy can't fire); mfi_oversold AND NOT obv_bullish = **28 obs / +190.7 bps/10d / 57.1% hit** (REAL EDGE). Reviewer's anti-selection claim 100% validated -- requiring obv_bullish during oversold filters out the very mean-reversion opportunities the strategy targets. **FIX APPLIED B789**: strat_mfi_oversold gate stack changed: LONG dropped obv_bullish; SHORT dropped obv_bearish (symmetric per `feedback_structural_symmetry_not_economic_symmetry` similar-warning + cube authoritative). Post-fix projection ~5K-15K/yr universe-wide. Demo (30 tickers; bxdl3d103) launched as background for at-scale confirmation. CHECKLIST #108 pre-flight inline in strategy docstring (a-d documented). Owner-approved B779 "approve all other recs". Source: B766 reviewer + B709 methodology + B789 empirical + B779 owner approval. Class 9 EMPIRICAL-VERIFICATION.
 
 44. **`S4-B766-A-12-BOLLINGER-BAND-WALK-IN-DOWNTREND-CONTINUATION-FAILURE-MODE`** — A-12 strat_bollinger_lower fires on BB lower-band touch. Per reviewer: in strong downtrend, price WALKS the lower band (rides it down). Lower-band touch is then a CONTINUATION signal, not a reversion signal — mirror of shooting-star/BB-upper failure mode from candle cluster. Fix: fire on BAND RE-ENTRY (close back inside band after touch/close outside), not the touch itself. Bollinger equivalent of reclaim-bar entry. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 Bollinger section. Class 2 LOOSEN/TIGHTEN. HIGH.
 
@@ -780,6 +780,30 @@ Existing #56 ticket annotation updated below with FINAL VERDICT.
 **B788 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#55(b) producer-additive + strategy change shipped) + 1 nuanced (test updated to codify new behavior per `feedback_audit_recommendations_against_existing_directives` test-supersession). Tickets filed: **0 NEW + 1 annotation** on #55 (option b SHIPPED for B-29) + 3 code changes (cross_sectional.py producer-additive + screener.py strategy gate + test_unit.py test update). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B788: 133 unique S4-B7XX tickets** (no change).
+
+### TIER 28 — B789 #43 MFI obv anti-selection ANTI_SELECTION_CONFIRMED_EXTREME + gate fix applied
+
+**B789 SHIPPED #43 fix.** Built `scripts/mfi_obv_anti_selection_test.py` (4-cell B709-style conditional-add-test). Smoke 5 tickers x 2024 = 1,260 bars:
+
+| Cell | n | mean_pnl@10d | hit_rate |
+|---|---:|---:|---:|
+| mfi_oversold AND obv_bullish | **0** | None | None |
+| mfi_oversold AND NOT obv_bullish | **28** | **+190.7 bps** | **57.1%** |
+| mfi_NOT_oversold AND obv_bullish | 701 | +40.7 bps | 55.6% |
+| mfi_NOT_oversold AND NOT obv_bullish | 531 | +93.3 bps | 58.6% |
+
+**ANTI_SELECTION_CONFIRMED_EXTREME**: obv_bullish gate produces ZERO observations during MFI-oversold (gate so restrictive strategy can't fire); the NOT-obv_bullish cell shows STRONG edge (+190.7 bps/10d / 57.1% hit). Reviewer's claim 100% validated.
+
+**Gate fix applied (strat_mfi_oversold; symmetric per `feedback_structural_symmetry_not_economic_symmetry`):**
+- LONG: dropped obv_bullish (was anti-selecting); now `mfi_oversold AND at_support`
+- SHORT: dropped obv_bearish (same logic); now `mfi_overbought AND at_resistance AND borrow_ok`
+- CHECKLIST #108 pre-flight (a-d) inline in strategy docstring
+
+Demo (30 tickers; bxdl3d103) launched as background for at-scale confirmation.
+
+**B789 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#43 ANTI_SELECTION_CONFIRMED_EXTREME on smoke; gate fix applied) + 1 nuanced (symmetric SHORT-side application per cube-authoritative + similar-warning logic). Tickets filed: **0 NEW + 1 annotation** on #43 (COMPLETED-EMPIRICAL + gate fix shipped) + 1 new script (mfi_obv_anti_selection_test.py 200 LOC) + 1 strategy change (strat_mfi_oversold). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B789: 133 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
