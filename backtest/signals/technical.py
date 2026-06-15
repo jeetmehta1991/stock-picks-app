@@ -1297,6 +1297,33 @@ def compute_bollinger(df: pd.DataFrame) -> dict:
                     result[f"{key}_pctb_gt_{thr_str}"] = bool(pctb > thr)
         except Exception:
             pass
+        # B794 #44 (2026-06-15 owner-approved B779) producer-additive
+        # BB band-reclaim EVENT signals per B766 reviewer rec. In strong
+        # downtrend, price WALKS the lower band (touch = continuation not
+        # reversion). Reclaim = (close back inside band today) AND (close
+        # was outside band within last 3 days). Mirror for upper-side
+        # rejection-back-in. Existing touch consumers unchanged.
+        try:
+            close_series = df["close"]
+            upper_series = mid + std_m * std
+            lower_series = mid - std_m * std
+            window_len = 4  # last 4 bars: today + 3 prior
+            cs = close_series.iloc[-window_len:]
+            us = upper_series.iloc[-window_len:]
+            ls = lower_series.iloc[-window_len:]
+            if len(cs) == window_len and len(us) == window_len and len(ls) == window_len:
+                today_close = float(cs.iloc[-1]); today_u = float(us.iloc[-1]); today_l = float(ls.iloc[-1])
+                today_inside = (today_close > today_l) and (today_close < today_u)
+                prior_below_lower = bool((cs.iloc[:-1] < ls.iloc[:-1]).any())
+                prior_above_upper = bool((cs.iloc[:-1] > us.iloc[:-1]).any())
+                result[f"{key}_reclaim_from_lower_recent_3d"] = bool(today_inside and prior_below_lower)
+                result[f"{key}_reclaim_from_upper_recent_3d"] = bool(today_inside and prior_above_upper)
+            else:
+                result[f"{key}_reclaim_from_lower_recent_3d"] = False
+                result[f"{key}_reclaim_from_upper_recent_3d"] = False
+        except Exception:
+            result[f"{key}_reclaim_from_lower_recent_3d"] = False
+            result[f"{key}_reclaim_from_upper_recent_3d"] = False
     return result
 
 
