@@ -3338,9 +3338,28 @@ def strat_xs_low_beta_long(s):
     strong-bull regimes per BAB literature; bear / neutral is where
     absolute alpha is captured). Removing the gate aligns the
     implementation with the published full-sample edge. See
-    PHASE_1A_BETA_STAGE_D_LOSER_CELL_AUDIT.md Bucket C."""
+    PHASE_1A_BETA_STAGE_D_LOSER_CELL_AUDIT.md Bucket C.
+
+    Batch 788 #55(b) (2026-06-15 owner-approved B779 Priority A):
+    EVENT-on-rank-crossing conversion. STATE form fired 71,355/yr per
+    B786 #56 GATE FINAL verdict (every other bar for low-beta T1a names;
+    NOT a tradable entry signal -- portfolio-tilt PRIMITIVE as entry GATE).
+    Per CHECKLIST #108 pre-flight:
+      (a) Hypothesis: 21-day decile retention -> daily firing on every
+          low-beta name. EVENT discriminates the NEWLY-low-beta this week.
+      (b) Fire-count projection: 71K/yr STATE -> ~3-10K/yr EVENT (10x per
+          B655 T10 precedent).
+      (c) Validation plan: smoke + cube cell measurement of B-29 EVENT
+          vs prior STATE-form baseline.
+      (d) Precedent: B655 T10 supertrend EVENT-conversion (10x); B772
+          B-13 LONG EVENT-conversion; B655 / B722 hull_rsi STATE->EVENT.
+
+    Producer-additive `xs_low_beta_decile_entry_recent_5d` shipped in
+    same B788 batch (cross_sectional.py: compute beta deciles at as_of
+    AND as_of-5d; entry boolean = (today_decile<=2) AND (5d_ago_decile>2)).
+    """
     fires = (
-        s.get("xs_low_beta_decile", False)
+        s.get("xs_low_beta_decile_entry_recent_5d", False)
         and s.get("xs_avoid_high_ivol", True)
     )
     return _strat(fires, "long", "factor",

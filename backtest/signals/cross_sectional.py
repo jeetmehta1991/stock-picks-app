@@ -158,6 +158,32 @@ def compute_cross_sectional_features(
                     if betas:
                         beta_s = pd.Series(betas)
                         beta_deciles = _safe_decile(beta_s)
+                        # B788 #55(b): also compute beta deciles at as_of - 5 days
+                        # for entry-recent-5d EVENT signal. Per B786 #56 GATE FINAL
+                        # verdict B-29 xs_low_beta_long fires 71K/yr (STATE retention
+                        # ~21-day window); EVENT semantics reduces ~10x per B655 T10
+                        # precedent. Owner-approved B787 (option Priority A).
+                        beta_deciles_5d_ago: pd.Series = pd.Series([], dtype=int)
+                        try:
+                            if len(returns) >= beta_lookback + 5:
+                                bench_ret_5d = returns[benchmark].iloc[-(beta_lookback + 5):-5]
+                                if len(bench_ret_5d) >= 30:
+                                    bench_var_5d = float(bench_ret_5d.var())
+                                    if bench_var_5d > 0:
+                                        betas_5d = {}
+                                        for ticker in returns.columns:
+                                            if ticker == benchmark:
+                                                continue
+                                            tkr_ret_5d = returns[ticker].iloc[-(beta_lookback + 5):-5]
+                                            common_5d = pd.concat([tkr_ret_5d, bench_ret_5d], axis=1, join="inner").dropna()
+                                            if len(common_5d) < 30:
+                                                continue
+                                            cov_5d = float(common_5d.iloc[:, 0].cov(common_5d.iloc[:, 1]))
+                                            betas_5d[ticker] = cov_5d / bench_var_5d
+                                        if betas_5d:
+                                            beta_deciles_5d_ago = _safe_decile(pd.Series(betas_5d))
+                        except Exception:
+                            beta_deciles_5d_ago = pd.Series([], dtype=int)
                         for ticker, b in beta_s.items():
                             out.setdefault(ticker, {})
                             out[ticker]["xs_beta"] = round(float(b), 4)
@@ -166,6 +192,16 @@ def compute_cross_sectional_features(
                                 out[ticker]["xs_beta_decile"] = d
                                 out[ticker]["xs_low_beta_decile"] = (d <= 2)
                                 out[ticker]["xs_high_beta_decile"] = (d >= 9)
+                                # B788 #55(b) EVENT-on-rank-crossing: fires only
+                                # when ticker NEWLY entered bottom-2-decile within
+                                # last 5 days. Reduces 71K/yr STATE to ~3-10K/yr
+                                # EVENT per B655 T10 precedent.
+                                if ticker in beta_deciles_5d_ago.index:
+                                    d_5d = int(beta_deciles_5d_ago[ticker])
+                                    entered = (d <= 2) and (d_5d > 2)
+                                    out[ticker]["xs_low_beta_decile_entry_recent_5d"] = bool(entered)
+                                else:
+                                    out[ticker]["xs_low_beta_decile_entry_recent_5d"] = False
         except Exception:
             pass
 

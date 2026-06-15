@@ -8303,15 +8303,30 @@ def test_batch220_xs_momentum_top_decile_long_fires():
 
 
 def test_batch220_xs_low_beta_long_requires_filters():
-    """Batch 220: BAB long requires xs_low_beta_decile + 200-EMA +
-    not-high-IVOL."""
+    """Batch 220 + B358 + B788 #55(b) (2026-06-15): BAB long requires
+    xs_low_beta_decile_entry_recent_5d (EVENT-on-rank-crossing) + not-high-IVOL.
+
+    B358: removed price_above_ema_200 bull-regime gate (cell-audit Bucket C).
+    B788 #55(b): EVENT-conversion per owner-approved B779 Priority A.
+    Pre-B788 STATE form fired 71K/yr per B786 #56 GATE FINAL verdict; EVENT
+    form fires ~3-10K/yr (10x reduction per B655 T10 precedent).
+    """
     from backtest.signals.screener import strat_xs_low_beta_long
+    # B788 EVENT-form: requires xs_low_beta_decile_entry_recent_5d (newly
+    # entered bottom-2-decile within last 5 days), NOT xs_low_beta_decile
+    # (STATE retention).
     s = {
-        "xs_low_beta_decile": True,
-        "price_above_ema_200": True,
+        "xs_low_beta_decile_entry_recent_5d": True,
         "xs_avoid_high_ivol": True,
     }
     assert strat_xs_low_beta_long(s)["fires"] is True
+    # STATE-only (no recent entry) should NOT fire (B788 EVENT-conversion)
+    s_state_only = {
+        "xs_low_beta_decile": True,
+        "xs_low_beta_decile_entry_recent_5d": False,
+        "xs_avoid_high_ivol": True,
+    }
+    assert strat_xs_low_beta_long(s_state_only)["fires"] is False
 
 
 def test_batch220_xs_combined_momentum_low_ivol():
