@@ -1,0 +1,8172 @@
+{
+  "meta": {
+    "as_of_run": "2026-06-15T02:34:25.095660",
+    "n_tickers_probed": 3,
+    "n_tickers_universe": 519,
+    "date_range": {
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    },
+    "n_cluster_a_strategies": 30,
+    "n_unique_signals_declared": 93,
+    "n_signals_observed": 572,
+    "n_bars_total": 756,
+    "runtime_seconds": 337.3,
+    "enable_extended_signals": true,
+    "axes_audited": {
+      "a_path_from_source": "technical.py (compute_all_signals dispatcher)",
+      "b_recursive_glob": "n/a (single-file producer set)",
+      "c_temporal_coverage": "per-year emission rate; threshold 0.1%",
+      "d_schema_contract": "declared signals_used vs emitted dict",
+      "e_known_event_runtime": "2 probes",
+      "f_investigate_why": "per-signal severity tagging in candidates"
+    }
+  },
+  "declared_signals_inventory": {
+    "price_above_ema_200": {
+      "n_strategies_using": 6,
+      "strategies": [
+        "rsi_oversold",
+        "rsi9_extreme",
+        "bollinger_lower",
+        "bollinger_tight",
+        "cpr_narrow_momentum",
+        "avwap_50_reclaim"
+      ]
+    },
+    "price_above_sma_50": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "rsi_oversold",
+        "rsi21_slow"
+      ]
+    },
+    "rsi_2<5_or_rsi_14<35": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "rsi_oversold",
+        "bollinger_lower"
+      ]
+    },
+    "bearish_signal": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi_overbought_short"
+      ]
+    },
+    "rsi_14>68": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi_overbought_short"
+      ]
+    },
+    "below_sma_50": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi_overbought_short"
+      ]
+    },
+    "borrow_ok": {
+      "n_strategies_using": 19,
+      "strategies": [
+        "rsi_overbought_short",
+        "stoch_oversold",
+        "stochrsi_overbought_short",
+        "williams_r_oversold",
+        "ultimate_oscillator",
+        "mfi_oversold",
+        "bollinger_upper_short",
+        "keltner_lower",
+        "camarilla_r4_breakout",
+        "camarilla_rsi_obv_short",
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short",
+        "avwap_20high_rejection_short",
+        "awesome_oscillator",
+        "ppo_crossover",
+        "roc_burst",
+        "williams_stoch_dual",
+        "prev_day_low_bounce",
+        "bb_squeeze_volume"
+      ]
+    },
+    "rsi_9<20": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi9_extreme"
+      ]
+    },
+    "rsi_9_rising": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi9_extreme"
+      ]
+    },
+    "rsi_21<35": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi21_slow"
+      ]
+    },
+    "above_ema_200": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "rsi_volume_200ema",
+        "stochrsi_oversold",
+        "williams_r_oversold"
+      ]
+    },
+    "vol_above_avg": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "rsi_volume_200ema"
+      ]
+    },
+    "rsi_14<35": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "rsi_volume_200ema",
+        "camarilla_rsi_obv"
+      ]
+    },
+    "price_above_ema_20": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "stoch_oversold",
+        "awesome_oscillator"
+      ]
+    },
+    "below_ema_20": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "stoch_oversold",
+        "awesome_oscillator"
+      ]
+    },
+    "stoch_overbought": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stoch_oversold"
+      ]
+    },
+    "stoch_bearish_cross": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "stoch_oversold",
+        "williams_stoch_dual"
+      ]
+    },
+    "stoch_bullish_cross": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "stoch_oversold",
+        "williams_stoch_dual"
+      ]
+    },
+    "stoch_oversold": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stoch_oversold"
+      ]
+    },
+    "stochrsi_cross_up": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stochrsi_oversold"
+      ]
+    },
+    "stochrsi_oversold": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stochrsi_oversold"
+      ]
+    },
+    "rsi_14<55": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stochrsi_oversold"
+      ]
+    },
+    "stochrsi_overbought": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stochrsi_overbought_short"
+      ]
+    },
+    "rsi_14>45": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stochrsi_overbought_short"
+      ]
+    },
+    "stochrsi_cross_dn": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "stochrsi_overbought_short"
+      ]
+    },
+    "williams_r_overbought_or_rsi_2>95": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "williams_r_oversold"
+      ]
+    },
+    "cmf_positive": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "williams_r_oversold",
+        "camarilla_rsi_obv",
+        "prev_day_low_bounce"
+      ]
+    },
+    "williams_r_oversold_or_rsi_2<5": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "williams_r_oversold"
+      ]
+    },
+    "cmf_negative": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "williams_r_oversold",
+        "camarilla_rsi_obv_short",
+        "prev_day_low_bounce"
+      ]
+    },
+    "below_ema_200": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "williams_r_oversold"
+      ]
+    },
+    "uo_overbought_or_rsi_2>95": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "close_above_open": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "below_sma_200": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "uo_oversold_or_rsi_2<5": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "close_below_open": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "price_above_sma_200": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ]
+    },
+    "mfi_oversold": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "mfi_oversold"
+      ]
+    },
+    "at_support": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "mfi_oversold"
+      ]
+    },
+    "mfi_overbought": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "mfi_oversold"
+      ]
+    },
+    "obv_bullish": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "mfi_oversold",
+        "keltner_lower",
+        "camarilla_rsi_obv"
+      ]
+    },
+    "obv_bearish": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "mfi_oversold",
+        "keltner_lower",
+        "camarilla_rsi_obv_short"
+      ]
+    },
+    "at_resistance": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "mfi_oversold"
+      ]
+    },
+    "adx<30": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bollinger_lower"
+      ]
+    },
+    "bb_20_20_touch_lower": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bollinger_lower"
+      ]
+    },
+    "bb_touch_lower_tight": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bollinger_tight"
+      ]
+    },
+    "rsi_2<10_or_rsi_14<40": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bollinger_tight"
+      ]
+    },
+    "rsi_14>70": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bollinger_upper_short"
+      ]
+    },
+    "shooting_star": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "bollinger_upper_short",
+        "keltner_lower",
+        "prev_day_low_bounce"
+      ]
+    },
+    "bb_20_20_touch_upper": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bollinger_upper_short"
+      ]
+    },
+    "hammer": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "keltner_lower",
+        "prev_day_low_bounce"
+      ]
+    },
+    "kc_touch_lower": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "keltner_lower"
+      ]
+    },
+    "kc_touch_upper": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "keltner_lower"
+      ]
+    },
+    "above_cam_r4": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "camarilla_r4_breakout"
+      ]
+    },
+    "below_cam_s4": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "camarilla_r4_breakout"
+      ]
+    },
+    "vol_spike_2x": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "camarilla_r4_breakout",
+        "bb_squeeze_volume"
+      ]
+    },
+    "near_cam_s3": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "camarilla_rsi_obv"
+      ]
+    },
+    "rsi_14>65": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "camarilla_rsi_obv_short"
+      ]
+    },
+    "near_cam_r3": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "camarilla_rsi_obv_short"
+      ]
+    },
+    "macd_bearish": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short"
+      ]
+    },
+    "price_below_ema_200": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "avwap_20high_rejection_short"
+      ]
+    },
+    "macd_bullish": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "avwap_50_reclaim"
+      ]
+    },
+    "rsi_14>50": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "cpr_narrow_momentum"
+      ]
+    },
+    "below_cpr": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short"
+      ]
+    },
+    "above_cpr": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "cpr_narrow_momentum"
+      ]
+    },
+    "rsi_14<50": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short",
+        "cmf_flip"
+      ]
+    },
+    "cpr_narrow_tight": {
+      "n_strategies_using": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short"
+      ]
+    },
+    "near_avwap_50low<1.5pct": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_50_reclaim"
+      ]
+    },
+    "above_avwap_50low": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_50_reclaim"
+      ]
+    },
+    "rsi_14<70": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_252_breakout"
+      ]
+    },
+    "near_avwap_252low<2pct": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_252_breakout"
+      ]
+    },
+    "above_avwap_252low": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_252_breakout"
+      ]
+    },
+    "vol_spike_1.5x": {
+      "n_strategies_using": 3,
+      "strategies": [
+        "avwap_252_breakout",
+        "avwap_20high_rejection_short",
+        "roc_burst"
+      ]
+    },
+    "near_avwap_20high<1pct": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_20high_rejection_short"
+      ]
+    },
+    "shooting_star_or_bearish_engulfing": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_20high_rejection_short"
+      ]
+    },
+    "below_avwap_20high": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "avwap_20high_rejection_short"
+      ]
+    },
+    "ao_cross_dn": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "awesome_oscillator"
+      ]
+    },
+    "ao_cross_up": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "awesome_oscillator"
+      ]
+    },
+    "cmf_cross_up": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "cmf_flip"
+      ]
+    },
+    "adx_trending": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ppo_crossover"
+      ]
+    },
+    "ppo_crossover_dn": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ppo_crossover"
+      ]
+    },
+    "ppo_crossover_up": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "ppo_crossover"
+      ]
+    },
+    "roc_turning_dn": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "roc_burst"
+      ]
+    },
+    "roc_turning_up": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "roc_burst"
+      ]
+    },
+    "at_pivot_support": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "williams_stoch_dual"
+      ]
+    },
+    "williams_r_overbought": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "williams_stoch_dual"
+      ]
+    },
+    "at_pivot_resistance": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "williams_stoch_dual"
+      ]
+    },
+    "williams_r_oversold": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "williams_stoch_dual"
+      ]
+    },
+    "near_prev_low": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "prev_day_low_bounce"
+      ]
+    },
+    "near_prev_high": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "prev_day_low_bounce"
+      ]
+    },
+    "squeeze_fire_dn": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bb_squeeze_volume"
+      ]
+    },
+    "below_vwap": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bb_squeeze_volume"
+      ]
+    },
+    "above_vwap": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bb_squeeze_volume"
+      ]
+    },
+    "squeeze_fire_up": {
+      "n_strategies_using": 1,
+      "strategies": [
+        "bb_squeeze_volume"
+      ]
+    }
+  },
+  "signal_coverage": {
+    "pivot": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "r1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "r2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "r3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "s1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "s2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "s3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cpr_top": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cpr_bottom": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cpr_width": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cpr_narrow": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cpr_narrow_tight": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_r4": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_r3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_r2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_r1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_s1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_s2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_s3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cam_s4": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "wood_p": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "wood_r1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "wood_r2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "wood_s1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "wood_s2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "prev_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "prev_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "prev_close": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_pivot": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_r1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_r2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_s1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_s2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_pivot": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_s1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_s2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_s3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_r1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_r2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_s1_wide": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_s2_wide": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_r1_wide": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_r2_wide": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_cpr": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "inside_cpr": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_cpr": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_cam_s3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_cam_s4": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_cam_r3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_cam_r3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_cam_r4": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_cam_s3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_cam_s4": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_wood_p": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_wood_s1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_wood_r1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_prev_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_prev_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_prev_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_prev_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_prev_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_prev_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_prev_close": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "gap_up_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "gap_dn_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "gap_up_2pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "gap_dn_2pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "close_above_open": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "close_below_open": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "recent_capitulation_at_s3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "capitulation_lookback_window": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "recent_blowoff_at_r3": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "blowoff_lookback_window": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "fib_236": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "fib_382": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "fib_500": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "fib_618": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "fib_786": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "fib_ext_127": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "fib_ext_162": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "swing_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "swing_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_fib_236": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_fib_382": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_fib_500": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_fib_618": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_fib_786": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "at_key_fib": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "at_key_fib_wide": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vwap": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vwap_upper_1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vwap_upper_2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vwap_lower_1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vwap_lower_2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_vwap": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 420,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 420
+        }
+      }
+    },
+    "below_vwap": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 336,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 336
+        }
+      }
+    },
+    "pct_from_vwap": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "avwap_252low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 751,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 751,
+          "n_True": 0
+        }
+      }
+    },
+    "above_avwap_252low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 751,
+      "n_True_observations": 602,
+      "by_year": {
+        "2024": {
+          "n_observations": 751,
+          "n_True": 602
+        }
+      }
+    },
+    "below_avwap_252low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 751,
+      "n_True_observations": 149,
+      "by_year": {
+        "2024": {
+          "n_observations": 751,
+          "n_True": 149
+        }
+      }
+    },
+    "pct_from_avwap_252low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 751,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 751,
+          "n_True": 0
+        }
+      }
+    },
+    "avwap_50low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 717,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 717,
+          "n_True": 0
+        }
+      }
+    },
+    "above_avwap_50low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 717,
+      "n_True_observations": 566,
+      "by_year": {
+        "2024": {
+          "n_observations": 717,
+          "n_True": 566
+        }
+      }
+    },
+    "below_avwap_50low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 717,
+      "n_True_observations": 151,
+      "by_year": {
+        "2024": {
+          "n_observations": 717,
+          "n_True": 151
+        }
+      }
+    },
+    "pct_from_avwap_50low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 717,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 717,
+          "n_True": 0
+        }
+      }
+    },
+    "avwap_20high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 648,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 648,
+          "n_True": 0
+        }
+      }
+    },
+    "above_avwap_20high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 648,
+      "n_True_observations": 188,
+      "by_year": {
+        "2024": {
+          "n_observations": 648,
+          "n_True": 188
+        }
+      }
+    },
+    "below_avwap_20high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 648,
+      "n_True_observations": 460,
+      "by_year": {
+        "2024": {
+          "n_observations": 648,
+          "n_True": 460
+        }
+      }
+    },
+    "pct_from_avwap_20high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 648,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 648,
+          "n_True": 0
+        }
+      }
+    },
+    "avwap_20low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 689,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 689,
+          "n_True": 0
+        }
+      }
+    },
+    "above_avwap_20low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 689,
+      "n_True_observations": 532,
+      "by_year": {
+        "2024": {
+          "n_observations": 689,
+          "n_True": 532
+        }
+      }
+    },
+    "below_avwap_20low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 689,
+      "n_True_observations": 157,
+      "by_year": {
+        "2024": {
+          "n_observations": 689,
+          "n_True": 157
+        }
+      }
+    },
+    "pct_from_avwap_20low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 689,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 689,
+          "n_True": 0
+        }
+      }
+    },
+    "rsi_2": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "rsi_2_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 237,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 237
+        }
+      }
+    },
+    "rsi_2_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 276,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 276
+        }
+      }
+    },
+    "rsi_2_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 417,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 417
+        }
+      }
+    },
+    "rsi_2_rising": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 394,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 394
+        }
+      }
+    },
+    "rsi_2_extreme_os": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 178,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 178
+        }
+      }
+    },
+    "rsi_2_extreme_ob": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 219,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 219
+        }
+      }
+    },
+    "rsi_9": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "rsi_9_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 78,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 78
+        }
+      }
+    },
+    "rsi_9_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 94,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 94
+        }
+      }
+    },
+    "rsi_9_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 428,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 428
+        }
+      }
+    },
+    "rsi_9_rising": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 394,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 394
+        }
+      }
+    },
+    "rsi_9_extreme_os": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 14,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 14
+        }
+      }
+    },
+    "rsi_9_extreme_ob": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 26,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 26
+        }
+      }
+    },
+    "rsi_14": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "rsi_14_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 34,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 34
+        }
+      }
+    },
+    "rsi_14_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 65,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 65
+        }
+      }
+    },
+    "rsi_14_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 435,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 435
+        }
+      }
+    },
+    "rsi_14_rising": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 394,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 394
+        }
+      }
+    },
+    "rsi_14_extreme_os": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "rsi_14_extreme_ob": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 3,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 3
+        }
+      }
+    },
+    "rsi_21": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "rsi_21_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 3,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 3
+        }
+      }
+    },
+    "rsi_21_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 28,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 28
+        }
+      }
+    },
+    "rsi_21_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 464,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 464
+        }
+      }
+    },
+    "rsi_21_rising": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 394,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 394
+        }
+      }
+    },
+    "rsi_21_extreme_os": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "rsi_21_extreme_ob": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "stochrsi_k": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "stochrsi_d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "stochrsi_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 234,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 234
+        }
+      }
+    },
+    "stochrsi_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 246,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 246
+        }
+      }
+    },
+    "stochrsi_cross_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 189,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 189
+        }
+      }
+    },
+    "stochrsi_cross_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 205,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 205
+        }
+      }
+    },
+    "stoch_k": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "stoch_d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "stoch_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 127,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 127
+        }
+      }
+    },
+    "stoch_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 164,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 164
+        }
+      }
+    },
+    "stoch_bullish_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 96,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 96
+        }
+      }
+    },
+    "stoch_bearish_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 95,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 95
+        }
+      }
+    },
+    "macd_12_26_9_line": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "macd_12_26_9_signal": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "macd_12_26_9_hist": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "macd_12_26_9_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 405,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 405
+        }
+      }
+    },
+    "macd_12_26_9_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 351,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 351
+        }
+      }
+    },
+    "macd_12_26_9_crossover_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 34,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 34
+        }
+      }
+    },
+    "macd_12_26_9_crossover_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 34,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 34
+        }
+      }
+    },
+    "macd_8_21_5_line": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "macd_8_21_5_signal": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "macd_8_21_5_hist": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "macd_8_21_5_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 399,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 399
+        }
+      }
+    },
+    "macd_8_21_5_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 357,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 357
+        }
+      }
+    },
+    "macd_8_21_5_crossover_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 50,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 50
+        }
+      }
+    },
+    "macd_8_21_5_crossover_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 50,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 50
+        }
+      }
+    },
+    "ppo": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ppo_signal": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ppo_hist": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ppo_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 391,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 391
+        }
+      }
+    },
+    "ppo_crossover_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 31,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 31
+        }
+      }
+    },
+    "ppo_crossover_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 31,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 31
+        }
+      }
+    },
+    "williams_r": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "williams_r_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 140,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 140
+        }
+      }
+    },
+    "williams_r_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 184,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 184
+        }
+      }
+    },
+    "williams_r_rising": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 379,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 379
+        }
+      }
+    },
+    "roc_12": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "roc_positive": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "roc_turning_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "roc_turning_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ao": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ao_positive": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 427,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 427
+        }
+      }
+    },
+    "ao_cross_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 18,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 18
+        }
+      }
+    },
+    "ao_cross_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 19,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 19
+        }
+      }
+    },
+    "ao_twin_peaks_bull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 34,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 34
+        }
+      }
+    },
+    "uo": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "uo_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 18,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 18
+        }
+      }
+    },
+    "uo_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 12,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 12
+        }
+      }
+    },
+    "ema_9_21_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 433,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 433
+        }
+      }
+    },
+    "ema_9_21_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 323,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 323
+        }
+      }
+    },
+    "ema_9_21_golden_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 16,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 16
+        }
+      }
+    },
+    "ema_9_21_death_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 17,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 17
+        }
+      }
+    },
+    "sma_9_21_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 424,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 424
+        }
+      }
+    },
+    "sma_9_21_golden_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 18,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 18
+        }
+      }
+    },
+    "price_above_ema_9": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 426,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 426
+        }
+      }
+    },
+    "price_above_ema_21": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 426,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 426
+        }
+      }
+    },
+    "price_above_sma_21": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 422,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 422
+        }
+      }
+    },
+    "below_ema_9": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 330,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 330
+        }
+      }
+    },
+    "below_ema_21": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 330,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 330
+        }
+      }
+    },
+    "below_ema_9_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 213,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 213
+        }
+      }
+    },
+    "below_ema_21_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 142,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 142
+        }
+      }
+    },
+    "price_above_ema_9_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 247,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 247
+        }
+      }
+    },
+    "price_above_ema_21_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 142,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 142
+        }
+      }
+    },
+    "below_sma_9": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 341,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 341
+        }
+      }
+    },
+    "below_sma_21": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 334,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 334
+        }
+      }
+    },
+    "ema_20_50_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 502,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 502
+        }
+      }
+    },
+    "ema_20_50_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 254,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 254
+        }
+      }
+    },
+    "ema_20_50_golden_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 6,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 6
+        }
+      }
+    },
+    "ema_20_50_death_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 7,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 7
+        }
+      }
+    },
+    "sma_20_50_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 449,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 449
+        }
+      }
+    },
+    "sma_20_50_golden_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 9,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 9
+        }
+      }
+    },
+    "price_above_ema_20": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 427,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 427
+        }
+      }
+    },
+    "price_above_ema_50": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 467,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 467
+        }
+      }
+    },
+    "price_above_sma_50": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 454,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 454
+        }
+      }
+    },
+    "below_ema_20": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 329,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 329
+        }
+      }
+    },
+    "below_ema_50": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 289,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 289
+        }
+      }
+    },
+    "below_ema_20_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 149,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 149
+        }
+      }
+    },
+    "below_ema_50_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 107,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 107
+        }
+      }
+    },
+    "price_above_ema_20_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 147,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 147
+        }
+      }
+    },
+    "price_above_ema_50_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 114,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 114
+        }
+      }
+    },
+    "below_sma_20": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 329,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 329
+        }
+      }
+    },
+    "below_sma_50": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 302,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 302
+        }
+      }
+    },
+    "ema_50_200_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 552,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 552
+        }
+      }
+    },
+    "ema_50_200_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 204,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 204
+        }
+      }
+    },
+    "ema_50_200_golden_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 5,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 5
+        }
+      }
+    },
+    "ema_50_200_death_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 4,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 4
+        }
+      }
+    },
+    "sma_50_200_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 474,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 474
+        }
+      }
+    },
+    "sma_50_200_golden_cross": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 5,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 5
+        }
+      }
+    },
+    "price_above_ema_200": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 504,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 504
+        }
+      }
+    },
+    "price_above_sma_200": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 514,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 514
+        }
+      }
+    },
+    "below_ema_200": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 252,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 252
+        }
+      }
+    },
+    "below_ema_200_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 68,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 68
+        }
+      }
+    },
+    "price_above_ema_200_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 55,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 55
+        }
+      }
+    },
+    "below_sma_200": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 242,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 242
+        }
+      }
+    },
+    "dema": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "tema": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "tema_above_dema": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 409,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 409
+        }
+      }
+    },
+    "tema_cross_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 21,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 21
+        }
+      }
+    },
+    "tema_cross_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 22,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 22
+        }
+      }
+    },
+    "price_above_tema": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 385,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 385
+        }
+      }
+    },
+    "price_below_tema": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 371,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 371
+        }
+      }
+    },
+    "price_above_dema": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 392,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 392
+        }
+      }
+    },
+    "price_below_dema": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 364,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 364
+        }
+      }
+    },
+    "adx": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "adx_di_plus": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "adx_di_minus": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "adx_trending": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 327,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 327
+        }
+      }
+    },
+    "adx_strong": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 84,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 84
+        }
+      }
+    },
+    "adx_di_bull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 437,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 437
+        }
+      }
+    },
+    "adx_di_bear": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 319,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 319
+        }
+      }
+    },
+    "adx_cross_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 133,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 133
+        }
+      }
+    },
+    "psar_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 429,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 429
+        }
+      }
+    },
+    "psar_value": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "psar_flip_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 33,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 33
+        }
+      }
+    },
+    "psar_flip_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 32,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 32
+        }
+      }
+    },
+    "ichi_tenkan": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ichi_kijun": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ichi_senkou_a": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ichi_senkou_b": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "ichi_above_cloud": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 413,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 413
+        }
+      }
+    },
+    "ichi_below_cloud": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 231,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 231
+        }
+      }
+    },
+    "ichi_tk_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 402,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 402
+        }
+      }
+    },
+    "ichi_tk_cross_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 14,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 14
+        }
+      }
+    },
+    "ichi_tk_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 332,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 332
+        }
+      }
+    },
+    "ichi_tk_cross_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 16,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 16
+        }
+      }
+    },
+    "ichi_cloud_thick": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 658,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 658
+        }
+      }
+    },
+    "ichi_above_cloud_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 88,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 88
+        }
+      }
+    },
+    "ichi_below_cloud_break_recent_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 62,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 62
+        }
+      }
+    },
+    "ichi_weekly_above_cloud": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 397,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 397
+        }
+      }
+    },
+    "ichi_weekly_below_cloud": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 195,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 195
+        }
+      }
+    },
+    "ichi_weekly_in_cloud": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 164,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 164
+        }
+      }
+    },
+    "supertrend_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 736,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 736
+        }
+      }
+    },
+    "supertrend_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 20,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 20
+        }
+      }
+    },
+    "supertrend_value": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "supertrend_flip_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 5,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 5
+        }
+      }
+    },
+    "supertrend_flip_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 5,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 5
+        }
+      }
+    },
+    "supertrend_flip_recent_long_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 25,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 25
+        }
+      }
+    },
+    "supertrend_flip_recent_short_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 25,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 25
+        }
+      }
+    },
+    "supertrend_lookback_window": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "chandelier_long_value": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "chandelier_short_value": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "chandelier_long_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 520,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 520
+        }
+      }
+    },
+    "chandelier_short_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 428,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 428
+        }
+      }
+    },
+    "chandelier_long_flip_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 39,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 39
+        }
+      }
+    },
+    "chandelier_short_flip_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 42,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 42
+        }
+      }
+    },
+    "hull_ma": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "hull_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 408,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 408
+        }
+      }
+    },
+    "hull_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 348,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 348
+        }
+      }
+    },
+    "hull_flip_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 39,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 39
+        }
+      }
+    },
+    "hull_flip_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 38,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 38
+        }
+      }
+    },
+    "price_above_hull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 397,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 397
+        }
+      }
+    },
+    "price_below_hull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 359,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 359
+        }
+      }
+    },
+    "bb_20_20_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_20_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_20_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_20_bandwidth": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_20_above_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 427,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 427
+        }
+      }
+    },
+    "bb_20_20_touch_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 60,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 60
+        }
+      }
+    },
+    "bb_20_20_touch_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 63,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 63
+        }
+      }
+    },
+    "bb_20_20_squeeze": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 190,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 190
+        }
+      }
+    },
+    "bb_20_20_expanding": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 369,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 369
+        }
+      }
+    },
+    "bb_20_15_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_15_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_15_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_15_bandwidth": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_20_15_above_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 427,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 427
+        }
+      }
+    },
+    "bb_20_15_touch_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 112,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 112
+        }
+      }
+    },
+    "bb_20_15_touch_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 162,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 162
+        }
+      }
+    },
+    "bb_20_15_squeeze": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 320,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 320
+        }
+      }
+    },
+    "bb_20_15_expanding": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 369,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 369
+        }
+      }
+    },
+    "bb_10_20_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_10_20_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_10_20_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_10_20_bandwidth": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bb_10_20_above_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 414,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 414
+        }
+      }
+    },
+    "bb_10_20_touch_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 56,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 56
+        }
+      }
+    },
+    "bb_10_20_touch_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 68,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 68
+        }
+      }
+    },
+    "bb_10_20_squeeze": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 377,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 377
+        }
+      }
+    },
+    "bb_10_20_expanding": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 405,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 405
+        }
+      }
+    },
+    "kc_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "kc_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "kc_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "inside_kc": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 619,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 619
+        }
+      }
+    },
+    "kc_touch_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 61,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 61
+        }
+      }
+    },
+    "kc_touch_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 103,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 103
+        }
+      }
+    },
+    "dc10_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "dc10_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "dc10_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "dc10_breakout_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 95,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 95
+        }
+      }
+    },
+    "dc10_breakout_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 67,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 67
+        }
+      }
+    },
+    "dc10_new_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 158,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 158
+        }
+      }
+    },
+    "dc20_upper": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "dc20_lower": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "dc20_mid": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "dc20_breakout_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 63,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 63
+        }
+      }
+    },
+    "dc20_breakout_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 43,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 43
+        }
+      }
+    },
+    "dc20_new_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 104,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 104
+        }
+      }
+    },
+    "dc10_breakout_up_1pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 153,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 153
+        }
+      }
+    },
+    "dc10_breakout_dn_1pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 111,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 111
+        }
+      }
+    },
+    "dc10_strong_breakout_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 25,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 25
+        }
+      }
+    },
+    "dc10_strong_breakout_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 23,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 23
+        }
+      }
+    },
+    "atr": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "atr_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "entry_stop_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "entry_stop_short": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "squeeze_in": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 215,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 215
+        }
+      }
+    },
+    "squeeze_momentum": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "squeeze_positive": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 420,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 420
+        }
+      }
+    },
+    "squeeze_fire_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 27,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 27
+        }
+      }
+    },
+    "squeeze_fire_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 25,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 25
+        }
+      }
+    },
+    "obv_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 388,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 388
+        }
+      }
+    },
+    "obv_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 368,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 368
+        }
+      }
+    },
+    "obv_rising": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 403,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 403
+        }
+      }
+    },
+    "obv_falling": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 353,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 353
+        }
+      }
+    },
+    "obv_diverge_bull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 58,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 58
+        }
+      }
+    },
+    "vol_ratio_20d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vol_above_avg": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 288,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 288
+        }
+      }
+    },
+    "vol_below_avg": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 468,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 468
+        }
+      }
+    },
+    "vol_spike_12x": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 150,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 150
+        }
+      }
+    },
+    "vol_spike_15x": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 67,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 67
+        }
+      }
+    },
+    "vol_spike_17x": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 36,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 36
+        }
+      }
+    },
+    "vol_spike_2x": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 21,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 21
+        }
+      }
+    },
+    "vol_spike_3x": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 8,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 8
+        }
+      }
+    },
+    "close_in_top_40pct_of_range": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 312,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 312
+        }
+      }
+    },
+    "close_in_bottom_40pct_of_range": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 296,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 296
+        }
+      }
+    },
+    "ad_rising": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 388,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 388
+        }
+      }
+    },
+    "cmf": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "cmf_positive": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 359,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 359
+        }
+      }
+    },
+    "cmf_negative": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 397,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 397
+        }
+      }
+    },
+    "cmf_cross_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 44,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 44
+        }
+      }
+    },
+    "cmf_cross_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 45,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 45
+        }
+      }
+    },
+    "mfi": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "mfi_oversold": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 23,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 23
+        }
+      }
+    },
+    "mfi_overbought": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 22,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 22
+        }
+      }
+    },
+    "force_index_positive": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 408,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 408
+        }
+      }
+    },
+    "force_index_cross_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 50,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 50
+        }
+      }
+    },
+    "force_index_cross_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 50,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 50
+        }
+      }
+    },
+    "near_52w_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "break_52w_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "year_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_52w_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "break_52w_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "year_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "atr_14": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "break_52w_high_clearance_atr_05": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "break_52w_high_confirmed_today": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 19,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 19
+        }
+      }
+    },
+    "near_52w_high_95pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_52w_low_105pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "above_prev_high_clearance_atr_05": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "below_prev_low_clearance_atr_05": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "near_52w_high_retest_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 12,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 12
+        }
+      }
+    },
+    "near_52w_low_retest_short": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 4,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 4
+        }
+      }
+    },
+    "inside_bar": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "outside_bar": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "doji": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "hammer": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "shooting_star": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "pin_bar": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bullish_pin_bar": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bearish_pin_bar": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "marubozu_bull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "marubozu_bear": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bullish_engulfing": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bearish_engulfing": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "morning_star": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "evening_star": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "three_white_soldiers": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 46,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 46
+        }
+      }
+    },
+    "three_black_crows": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 48,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 48
+        }
+      }
+    },
+    "resistance_break_retest": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 186,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 186
+        }
+      }
+    },
+    "support_break_retest": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 131,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 131
+        }
+      }
+    },
+    "dc20_resistance_break_retest_strong": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 129,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 129
+        }
+      }
+    },
+    "dc20_support_break_retest_strong": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 85,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 85
+        }
+      }
+    },
+    "year_high_break_retest_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 48,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 48
+        }
+      }
+    },
+    "year_low_break_retest_short": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 12,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 12
+        }
+      }
+    },
+    "r1_break_retest_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 417,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 417
+        }
+      }
+    },
+    "s1_break_retest_short": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 351,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 351
+        }
+      }
+    },
+    "pct_change_5d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "pct_change_10d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "pct_change_20d": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "head_shoulders_top_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 38,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 38
+        }
+      }
+    },
+    "head_shoulders_bottom_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 30,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 30
+        }
+      }
+    },
+    "double_top_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 177,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 177
+        }
+      }
+    },
+    "double_bottom_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 140,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 140
+        }
+      }
+    },
+    "cup_handle_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 185,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 185
+        }
+      }
+    },
+    "inverted_cup_handle_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 160,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 160
+        }
+      }
+    },
+    "flag_bull_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 14,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 14
+        }
+      }
+    },
+    "flag_bear_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 9,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 9
+        }
+      }
+    },
+    "flag_bull_pole_move_pct": {
+      "n_tickers_emitting": 2,
+      "n_tickers_with_True": 0,
+      "n_observations": 14,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 14,
+          "n_True": 0
+        }
+      }
+    },
+    "flag_bull_breakout_level": {
+      "n_tickers_emitting": 2,
+      "n_tickers_with_True": 0,
+      "n_observations": 14,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 14,
+          "n_True": 0
+        }
+      }
+    },
+    "triangle_ascending_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 1,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 1
+        }
+      }
+    },
+    "triangle_descending_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 1,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 1
+        }
+      }
+    },
+    "triangle_symmetric_detected": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "flag_bull_break_retest_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 16,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 16
+        }
+      }
+    },
+    "flag_bear_break_retest_short": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 10,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 10
+        }
+      }
+    },
+    "flag_bull_broke": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 15,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 15
+        }
+      }
+    },
+    "flag_bear_broke": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 7,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 7
+        }
+      }
+    },
+    "triangle_apex_break_retest_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 10,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 10
+        }
+      }
+    },
+    "cup_handle_neckline_break_retest_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 74,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 74
+        }
+      }
+    },
+    "smc_fvg_bullish_active": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 310,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 310
+        }
+      }
+    },
+    "smc_fvg_bearish_active": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 253,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 253
+        }
+      }
+    },
+    "smc_inverse_fvg_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 600,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 600
+        }
+      }
+    },
+    "smc_fvg_retest_long_zone": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 27,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 27
+        }
+      }
+    },
+    "smc_fvg_retest_short_zone": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 28,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 28
+        }
+      }
+    },
+    "smc_inverse_fvg_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 545,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 545
+        }
+      }
+    },
+    "smc_ob_bullish_active": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 318,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 318
+        }
+      }
+    },
+    "smc_ob_bearish_active": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 171,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 171
+        }
+      }
+    },
+    "smc_breaker_block_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 367,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 367
+        }
+      }
+    },
+    "smc_breaker_block_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 9,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 9
+        }
+      }
+    },
+    "smc_mitigation_block_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 23,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 23
+        }
+      }
+    },
+    "smc_mitigation_block_short": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 2,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 2
+        }
+      }
+    },
+    "smc_bos_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 189,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 189
+        }
+      }
+    },
+    "smc_bos_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 51,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 51
+        }
+      }
+    },
+    "smc_choch_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "smc_choch_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 68,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 68
+        }
+      }
+    },
+    "smc_bos_retest_long": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 34,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 34
+        }
+      }
+    },
+    "smc_bos_retest_short": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 47,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 47
+        }
+      }
+    },
+    "smc_liquidity_swept_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 10,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 10
+        }
+      }
+    },
+    "smc_liquidity_swept_dn": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 10,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 10
+        }
+      }
+    },
+    "smc_equal_highs_swept": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 2,
+      "n_observations": 756,
+      "n_True_observations": 72,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 72
+        }
+      }
+    },
+    "smc_equal_lows_swept": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 1,
+      "n_observations": 756,
+      "n_True_observations": 51,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 51
+        }
+      }
+    },
+    "smc_ote_long_zone": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 41,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 41
+        }
+      }
+    },
+    "smc_ote_short_zone": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 54,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 54
+        }
+      }
+    },
+    "smc_retracement_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "smc_dealing_range_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "smc_in_discount_zone": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 286,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 286
+        }
+      }
+    },
+    "smc_in_premium_zone": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 470,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 470
+        }
+      }
+    },
+    "po3_accumulation_active": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 328,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 328
+        }
+      }
+    },
+    "po3_manipulation_sweep_down": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 75,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 75
+        }
+      }
+    },
+    "po3_manipulation_sweep_up": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 116,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 116
+        }
+      }
+    },
+    "po3_mmbm_setup": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 17,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 17
+        }
+      }
+    },
+    "po3_mmsm_setup": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 37,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 37
+        }
+      }
+    },
+    "po3_accum_range_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "is_week_open": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 159,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 159
+        }
+      }
+    },
+    "week_open_gap_up_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "week_open_gap_down_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "week_open_gap_up_15pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 9,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 9
+        }
+      }
+    },
+    "week_open_gap_down_15pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 7,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 7
+        }
+      }
+    },
+    "weekly_close": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "weekly_ema_10": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "weekly_ema_20": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "weekly_above_ema_10": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 462,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 462
+        }
+      }
+    },
+    "weekly_above_ema_20": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 484,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 484
+        }
+      }
+    },
+    "weekly_bias_bull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 440,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 440
+        }
+      }
+    },
+    "weekly_bias_bear": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 250,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 250
+        }
+      }
+    },
+    "weekly_momentum_4w": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "weekly_momentum_pos": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 410,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 410
+        }
+      }
+    },
+    "monthly_close": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "monthly_sma_6": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "monthly_sma_12": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "monthly_above_sma_6": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 490,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 490
+        }
+      }
+    },
+    "monthly_above_sma_12": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 518,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 518
+        }
+      }
+    },
+    "monthly_bias_bull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 457,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 457
+        }
+      }
+    },
+    "monthly_bias_bear": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 205,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 205
+        }
+      }
+    },
+    "monthly_momentum_6m": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "monthly_momentum_pos": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 483,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 483
+        }
+      }
+    },
+    "htf_aligned_bull": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 403,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 403
+        }
+      }
+    },
+    "htf_aligned_bear": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 185,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 185
+        }
+      }
+    },
+    "htf_disagreement": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 18,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 18
+        }
+      }
+    },
+    "po3_bullish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 67,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 67
+        }
+      }
+    },
+    "po3_bearish": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 78,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 78
+        }
+      }
+    },
+    "po3_close_position": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "po3_sweep_below_prior_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 367,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 367
+        }
+      }
+    },
+    "po3_sweep_above_prior_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 407,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 407
+        }
+      }
+    },
+    "vp_poc": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vp_value_area_high": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vp_value_area_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vp_close_above_poc": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 460,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 460
+        }
+      }
+    },
+    "vp_close_below_poc": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 296,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 296
+        }
+      }
+    },
+    "vp_in_value_area": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 401,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 401
+        }
+      }
+    },
+    "vp_close_near_poc_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vp_above_value_area": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 257,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 257
+        }
+      }
+    },
+    "vp_below_value_area": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 98,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 98
+        }
+      }
+    },
+    "bond_equity_ratio": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "bond_equity_20d_pct_change": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "risk_off_regime_bond_signal": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 72,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 72
+        }
+      }
+    },
+    "risk_on_regime_bond_signal": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 435,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 435
+        }
+      }
+    },
+    "risk_off_regime_bond_signal_strong": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 36,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 36
+        }
+      }
+    },
+    "risk_on_regime_bond_signal_strong": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 186,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 186
+        }
+      }
+    },
+    "vix_today": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vix_vix3m_ratio": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "vix_term_contango": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 729,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 729
+        }
+      }
+    },
+    "vix_term_backwardation": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 27,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 27
+        }
+      }
+    },
+    "sector_strongest": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "sector_strongest_rs": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "sector_weakest": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "sector_weakest_rs": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "sector_rs_map": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "defensive_leadership": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 315,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 315
+        }
+      }
+    },
+    "gold_silver_ratio": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "gold_silver_20d_pct_change": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "risk_off_regime_gold_signal": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 243,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 243
+        }
+      }
+    },
+    "dxy_proxy_close": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "dxy_20d_pct_change": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "usd_strengthening": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 192,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 192
+        }
+      }
+    },
+    "usd_weakening": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 24,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 24
+        }
+      }
+    },
+    "dow": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "is_monday": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 144,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 144
+        }
+      }
+    },
+    "is_friday": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 153,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 153
+        }
+      }
+    },
+    "trading_day_of_month": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "trading_days_left_in_month": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "is_totm_window": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 252,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 252
+        }
+      }
+    },
+    "is_totm_window_first_day": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 72,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 72
+        }
+      }
+    },
+    "is_january": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 63,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 63
+        }
+      }
+    },
+    "is_pre_holiday": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 30,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 30
+        }
+      }
+    },
+    "days_to_next_holiday": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "is_halloween_period": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 372,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 372
+        }
+      }
+    },
+    "is_summer_period": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 384,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 384
+        }
+      }
+    },
+    "is_halloween_period_first_day": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 3,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 3
+        }
+      }
+    },
+    "pre_fomc_d1": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 24,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 24
+        }
+      }
+    },
+    "pre_fomc_d0": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 24,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 24
+        }
+      }
+    },
+    "pre_fomc_window": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 3,
+      "n_observations": 756,
+      "n_True_observations": 48,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 48
+        }
+      }
+    },
+    "days_until_fomc": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 756,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 756,
+          "n_True": 0
+        }
+      }
+    },
+    "double_bottom_trough": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 140,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 140,
+          "n_True": 0
+        }
+      }
+    },
+    "double_bottom_neckline": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 140,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 140,
+          "n_True": 0
+        }
+      }
+    },
+    "double_top_peak": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 177,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 177,
+          "n_True": 0
+        }
+      }
+    },
+    "double_top_neckline": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 177,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 177,
+          "n_True": 0
+        }
+      }
+    },
+    "cup_handle_rim": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 218,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 218,
+          "n_True": 0
+        }
+      }
+    },
+    "cup_handle_depth_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 218,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 218,
+          "n_True": 0
+        }
+      }
+    },
+    "cup_handle_breakout_level": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 218,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 218,
+          "n_True": 0
+        }
+      }
+    },
+    "inverted_cup_handle_rim_low": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 222,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 222,
+          "n_True": 0
+        }
+      }
+    },
+    "inverted_cup_handle_height_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 222,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 222,
+          "n_True": 0
+        }
+      }
+    },
+    "inverted_cup_handle_breakdown_level": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 222,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 222,
+          "n_True": 0
+        }
+      }
+    },
+    "head_shoulders_bottom_neckline": {
+      "n_tickers_emitting": 2,
+      "n_tickers_with_True": 0,
+      "n_observations": 30,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 30,
+          "n_True": 0
+        }
+      }
+    },
+    "head_shoulders_magnitude_pct": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 68,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 68,
+          "n_True": 0
+        }
+      }
+    },
+    "head_shoulders_top_neckline": {
+      "n_tickers_emitting": 3,
+      "n_tickers_with_True": 0,
+      "n_observations": 38,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 38,
+          "n_True": 0
+        }
+      }
+    },
+    "flag_bear_pole_move_pct": {
+      "n_tickers_emitting": 1,
+      "n_tickers_with_True": 0,
+      "n_observations": 9,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 9,
+          "n_True": 0
+        }
+      }
+    },
+    "flag_bear_breakdown_level": {
+      "n_tickers_emitting": 1,
+      "n_tickers_with_True": 0,
+      "n_observations": 9,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 9,
+          "n_True": 0
+        }
+      }
+    },
+    "triangle_support_level": {
+      "n_tickers_emitting": 1,
+      "n_tickers_with_True": 0,
+      "n_observations": 1,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 1,
+          "n_True": 0
+        }
+      }
+    },
+    "triangle_breakdown_pct": {
+      "n_tickers_emitting": 1,
+      "n_tickers_with_True": 0,
+      "n_observations": 1,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 1,
+          "n_True": 0
+        }
+      }
+    },
+    "triangle_resistance_level": {
+      "n_tickers_emitting": 1,
+      "n_tickers_with_True": 0,
+      "n_observations": 1,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 1,
+          "n_True": 0
+        }
+      }
+    },
+    "triangle_breakout_pct": {
+      "n_tickers_emitting": 1,
+      "n_tickers_with_True": 0,
+      "n_observations": 1,
+      "n_True_observations": 0,
+      "by_year": {
+        "2024": {
+          "n_observations": 1,
+          "n_True": 0
+        }
+      }
+    }
+  },
+  "pattern_f_candidates": [
+    {
+      "signal": "rsi_2<5_or_rsi_14<35",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "rsi_oversold",
+        "bollinger_lower"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "bearish_signal",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "rsi_overbought_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_14>68",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "rsi_overbought_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "borrow_ok",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 19,
+      "strategies": [
+        "rsi_overbought_short",
+        "stoch_oversold",
+        "stochrsi_overbought_short",
+        "williams_r_oversold",
+        "ultimate_oscillator",
+        "mfi_oversold",
+        "bollinger_upper_short",
+        "keltner_lower",
+        "camarilla_r4_breakout",
+        "camarilla_rsi_obv_short",
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short",
+        "avwap_20high_rejection_short",
+        "awesome_oscillator",
+        "ppo_crossover",
+        "roc_burst",
+        "williams_stoch_dual",
+        "prev_day_low_bounce",
+        "bb_squeeze_volume"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "rsi_9<20",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "rsi9_extreme"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_21<35",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "rsi21_slow"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "above_ema_200",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 3,
+      "strategies": [
+        "rsi_volume_200ema",
+        "stochrsi_oversold",
+        "williams_r_oversold"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "rsi_14<35",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "rsi_volume_200ema",
+        "camarilla_rsi_obv"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "rsi_14<55",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "stochrsi_oversold"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_14>45",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "stochrsi_overbought_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "williams_r_overbought_or_rsi_2>95",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "williams_r_oversold"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "williams_r_oversold_or_rsi_2<5",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "williams_r_oversold"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "uo_overbought_or_rsi_2>95",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "close_above_open",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "uo_oversold_or_rsi_2<5",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "close_below_open",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "ultimate_oscillator"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "at_support",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "mfi_oversold"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "at_resistance",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "mfi_oversold"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "adx<30",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "bollinger_lower"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "bb_touch_lower_tight",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "bollinger_tight"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_2<10_or_rsi_14<40",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "bollinger_tight"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_14>70",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "bollinger_upper_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "shooting_star",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 3,
+      "strategies": [
+        "bollinger_upper_short",
+        "keltner_lower",
+        "prev_day_low_bounce"
+      ],
+      "n_observations": 756,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "hammer",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "keltner_lower",
+        "prev_day_low_bounce"
+      ],
+      "n_observations": 756,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "above_cam_r4",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "camarilla_r4_breakout"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "below_cam_s4",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "camarilla_r4_breakout"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "near_cam_s3",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "camarilla_rsi_obv"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_14>65",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "camarilla_rsi_obv_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "near_cam_r3",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "camarilla_rsi_obv_short"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "macd_bearish",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "price_below_ema_200",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "avwap_20high_rejection_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "macd_bullish",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "avwap_50_reclaim"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "rsi_14>50",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "cpr_narrow_momentum"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "below_cpr",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short"
+      ],
+      "n_observations": 756,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "above_cpr",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "cpr_narrow_momentum"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_14<50",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 3,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short",
+        "cmf_flip"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "cpr_narrow_tight",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 2,
+      "strategies": [
+        "cpr_narrow_momentum",
+        "cpr_narrow_momentum_short"
+      ],
+      "n_observations": 756,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "near_avwap_50low<1.5pct",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "avwap_50_reclaim"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "rsi_14<70",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "avwap_252_breakout"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "near_avwap_252low<2pct",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "avwap_252_breakout"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "vol_spike_1.5x",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 3,
+      "strategies": [
+        "avwap_252_breakout",
+        "avwap_20high_rejection_short",
+        "roc_burst"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "HIGH"
+    },
+    {
+      "signal": "near_avwap_20high<1pct",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "avwap_20high_rejection_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "shooting_star_or_bearish_engulfing",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "avwap_20high_rejection_short"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "roc_turning_dn",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "roc_burst"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "roc_turning_up",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "roc_burst"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "at_pivot_support",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "williams_stoch_dual"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "at_pivot_resistance",
+      "issue": "declared_but_never_emitted",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "williams_stoch_dual"
+      ],
+      "n_tickers_probed": 3,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "near_prev_low",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "prev_day_low_bounce"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    },
+    {
+      "signal": "near_prev_high",
+      "issue": "emitted_but_always_False",
+      "n_strategies_declaring": 1,
+      "strategies": [
+        "prev_day_low_bounce"
+      ],
+      "n_observations": 756,
+      "severity": "MEDIUM"
+    }
+  ],
+  "temporal_gaps": [
+    {
+      "signal": "cpr_narrow_tight",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "above_cpr",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "below_cpr",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "near_cam_s3",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "near_cam_r3",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "above_cam_r4",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "below_cam_s4",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "near_prev_high",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "near_prev_low",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "close_above_open",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "close_below_open",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "roc_turning_up",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "roc_turning_dn",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "hammer",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    },
+    {
+      "signal": "shooting_star",
+      "year": "2024",
+      "emission_rate": 0.0,
+      "n_True": 0,
+      "n_observations": 756,
+      "issue": "emission_rate_below_threshold"
+    }
+  ],
+  "known_event_probes": [
+    {
+      "ticker": "AAPL",
+      "date": "2020-03-23",
+      "signal": "rsi_14<35",
+      "expected": true,
+      "actual": null,
+      "passed": false,
+      "note": "COVID crash low; AAPL RSI(14) was ~22"
+    },
+    {
+      "ticker": "AAPL",
+      "date": "2024-08-05",
+      "signal": "rsi_14<35",
+      "expected": true,
+      "actual": false,
+      "passed": false,
+      "note": "August 2024 carry-unwind; AAPL gapped down"
+    }
+  ]
+}
