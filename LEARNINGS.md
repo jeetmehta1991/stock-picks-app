@@ -1947,3 +1947,30 @@ Without this schema-comparison evidence, the queue row should be rejected and re
 **Apply when.** Owner-prompted "find more gaps" questions. After any new lesson lands (run the sweep at the new lesson's level of abstraction). Quarterly even without prompt.
 
 **Cross-references.** CHECKLIST #100 (codified rule), AU7/AU8/AU9/AU10 queue rows (concrete remediation), L164/L167/L168/L169 (lessons-must-propagate family), Batch 456 (this codification).
+
+---
+
+### L171 -- Per-batch findings-vs-tickets reconciliation gate prevents catch-up audits [process/discipline]
+
+**Owner directive 2026-06-15 Batch 765.** *"add to the checklist at end of each batch commit, explicitly enumerate findings vs filed tickets before considering the batch 'shipped'."*
+
+**Trigger.** Two consecutive comprehensive audits (B762 + B764) each surfaced findings that had been documented in commit messages but NOT filed as `EXECUTION_QUEUE.md` tickets:
+- B762 (2026-06-15 post-B761): found 6 missing tickets across B756-B761 (signals_used convention inconsistency, KNOWN-EVENT probe failures, shooting_star/hammer always-False, verdict-rule OR-logic edge case, demo zero-pattern-W/J finding, demo-edge-prior tracker).
+- B764 (2026-06-15 post-B763): found 1 missing ticket from B763 (Pattern T audit under-count vs council expectation 8-12 vs actual 6).
+
+Both audits were OWNER-PROMPTED catch-ups. The discipline `feedback_execution_queue_mandatory_per_turn` was supposed to enforce this same-turn, but per-batch I was sometimes:
+- Annotating existing tickets with `SHIPPED-BNNN` (covered)
+- Filing tickets for primary findings (covered)
+- BUT missing follow-up tickets for SECONDARY findings surfaced in analysis output / commit body
+
+**Method.** Codified as CHECKLIST #107 (HARD RULE): at end of each batch BEFORE the final commit + push, enumerate all distinct findings, search `EXECUTION_QUEUE.md` for matching tickets, file any missing ticket SAME batch, state `Findings surfaced: N; Tickets filed: N; Audit-clean: YES` in commit body for visibility.
+
+**Findings.** This is a SECONDARY-FINDINGS-MISSING pattern -- the primary finding always gets a ticket because it's what motivates the batch. But secondary findings ("oh and also we noticed X") surface in analysis stdout or commit-message bullets but don't always get queue tickets because the batch is "about" the primary finding.
+
+The pre-flight gate at end-of-batch is the structural fix: making the reconciliation a CHECKLIST item rather than relying on memory makes the lapse impossible.
+
+**Rule.** Codified as CHECKLIST #107.
+
+**Apply when.** Every batch commit. Pure doc-sync batches state `Findings: 0; Audit-clean: YES (doc-sync only)`. Audit-type batches (B762/B764-style catch-ups) state both findings filed AND reconciliation steps applied.
+
+**Cross-references.** CHECKLIST #107 (codified rule), CHECKLIST #94 (queue mandatory per-turn -- L171 strengthens by adding pre-flight gate), CHECKLIST #95 (codify gaps same-turn -- L171 is a CHECKLIST #95 instance), feedback_execution_queue_mandatory_per_turn memory rule, B762 + B764 audit batches (precipitating events).
