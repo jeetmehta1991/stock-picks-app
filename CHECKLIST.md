@@ -1674,3 +1674,34 @@ State compliance visibly: "Checklist: ✅ [each item]"
      e. Annotation discipline for "shipped under existing ticket" cases: when a batch ships infra under an existing pre-existing ticket (e.g., B756 shipped TIER 1.1 fire-bar matrix under existing `S4-B755-COUNCIL-FIRE-BAR-SPARSE-MATRIX-PRECOMPUTE`), the existing ticket gets a `SHIPPED-BNNN` annotation AND the batch's commit message enumerates it as "Findings: 0 new tickets needed (shipped under existing #NN)". This makes the reconciliation explicit even when count is 0.
      f. Past failure history: **B762 audit (2026-06-15) found 6 missed tickets across B756-B761 batches** (signals_used convention inconsistency, KNOWN-EVENT probe failures, shooting_star/hammer always-False, verdict-rule OR-logic edge case, demo zero-pattern-W/J finding, demo-edge-prior-launch tracker). **B764 audit (2026-06-15) found 1 missed ticket from B763** (Pattern T audit under-count vs council expectation). Both were owner-prompted catch-up audits. This rule eliminates the need by making the audit a per-batch checklist item, not a periodic catch-up.
      g. Scope clarification: applies to ALL Stage 4 / Stage 5 batches that ship code, audits, scripts, or analysis. Pure doc-sync batches (per #67) without analysis findings can skip the reconciliation step but must state `Findings: 0; Audit-clean: YES (doc-sync only)` for visibility.
+
+108. **SOFT-DISCIPLINE -- Gate-MODIFICATION justification per-turn (POST-walk on EXISTING strategies; NOT pre-registration of NEW strategies).** (Per B769 council F2 + B776 M3 memo `PROJECT_PRINCIPLES_M3_GATE_JUSTIFICATION_VS_NO_A_PRIORI_PRUNING.md` 3-scenario scoping resolution.)
+
+     Every turn that ADDS, REMOVES, or REPLACES a gate on an EXISTING strategy must surface in the response BEFORE applying the change:
+     a. **Conditional-return hypothesis** -- what regime/scenario does this gate help/hurt? cite per-regime expectation
+     b. **Fire-count projection** -- post-modification fires/year per regime; flag if projection drops below `min_trades=30` per regime (per `feedback_minimum_fire_count_gate_before_cube.md`)
+     c. **Validation plan** -- what cube cell / regime-conditional measurement confirms the hypothesis post-cube?
+     d. **Literature or empirical precedent cited** -- Bulkowski / Nison / B358 / B654 / B655 / B663 / B722 etc.
+
+     **NOT REQUIRED FOR** (the rule explicitly EXCLUDES these scenarios per M3 memo):
+     - Class 7 NEW strategy initial wiring (no prior empirical history exists; per `feedback_wire_new_strategies_on_the_spot.md` ships same-turn)
+     - Urgent silent-gap fixes (Pattern F default-True bugs; same-turn fix is mandatory)
+     - Producer-side fixes (NaN handling, lookback init, gap-up open; not strategy gate changes)
+     - Pure mechanical refactors (variable rename, function-signature change; behavior unchanged)
+     - Pyramid-driven test fixes (codifying existing behavior, not modifying it)
+
+     Compatible with: `feedback_no_a_priori_strategy_pruning.md` (Scenario 1 NEW strategy registration is explicitly excluded), cube-authoritative principle (validation plan defers final PASS/FAIL to cube cell), `feedback_minimum_fire_count_gate_before_cube.md` (fire-count projection is now a per-turn requirement for gate modifications, not just walks).
+
+     **Past precedents that exemplify CORRECT application:**
+     - B358 (2026-05-25): xs_low_beta_long 200-EMA gate REMOVAL -- cell-audit showed -6.22% loss in neutral regime; conditional-return evidence drove gate-removal
+     - B654 (2026-06-09): W8 cpr_narrow_tight tightening 0.15 -> 0.05 -- 87% True ceiling-flag drove tightening; gate addition with fire-count projection
+     - B655 (2026-06-09): T10 supertrend redundancy fix -- 99.19% True ceiling-flag drove State->Event conversion; B655 set the EVENT-conversion precedent
+     - B663 (2026-06-09): default-True silent-gap sweep -- empirical evidence of silent-pass behavior drove gate removal
+     - B722 (2026-06-12): Pattern W deterministic-duplicate deletions -- identical-gates evidence drove strategy-level removal
+     - B772 (2026-06-15): Pattern Q EVENT-conversion on B-13 LONG with SHORT held STATE -- fire-count projection ~10x reduction would push SHORT below threshold; asymmetric application
+
+     **Past failure history (gate-modifications shipped WITHOUT pre-flight, later flagged in review):**
+     - B608/B609/B610 (2026-06-07): 3 sequential walks each removed `STRATEGY_REGIME_AFFINITY` entries as F1 fixes without family-bug grep; B611 external-AI critique flagged the pattern (40 dual strategies same Batch 271 mass-edit signature). Resolved via `feedback_family_bug_grep_before_one_liners.md` + CHECKLIST entry (n).
+     - B573 (2026-06-04): global `near()` threshold change from 0.003 -> 0.015 affecting 14 strategies; owner requested 1.5pct for doji = 2 strategies. Resolved via `feedback_narrow_scope_blast_radius.md` + #108 makes per-strategy override explicit.
+
+     This rule operationalizes B358's lesson as a per-turn checklist item without conflicting with the project's no-a-priori-pruning stance.
