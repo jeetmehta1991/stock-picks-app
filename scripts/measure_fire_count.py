@@ -796,12 +796,15 @@ def measure_strategies(
         # B776 #63 TIER 2 cross_sectional panel pre-build. Per B774 measurement-
         # gap finding: without this wireup, factor strategies (xs_low_beta_long
         # etc.) silently report 0 fires regardless of true fire rate.
-        # Monthly cadence (21 business days) -> factor signals are rank-cutoffs
-        # typically monthly-rebalanced; intermediate days fill forward.
+        # B779 (2026-06-15 owner directive): sample_cadence_days changed
+        # 21 -> 1 (daily rebalance). Owner override of B776 monthly default;
+        # matches backtest engine's per-day cross_sectional invocation in
+        # screener.py:7954. Cost: ~21x compute vs monthly; engine-cadence-parity
+        # accepted per directive.
         t_tier2 = time.time()
-        tier2_panel = _precompute_tier2_panel(ohlcv_cache, start, end, sample_cadence_days=21)
+        tier2_panel = _precompute_tier2_panel(ohlcv_cache, start, end, sample_cadence_days=1)
         logger.info(
-            "B776 #63 TIER 2 cross_sectional panel pre-built: %d business-day xs_features dicts (%.1fs)",
+            "B776 #63 TIER 2 cross_sectional panel pre-built: %d business-day xs_features dicts (%.1fs) -- B779 daily cadence",
             len(tier2_panel), time.time() - t_tier2,
         )
     else:

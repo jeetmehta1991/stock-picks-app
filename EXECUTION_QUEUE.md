@@ -548,6 +548,42 @@ CHECKLIST #108 text codifies gate-modification soft-discipline as the per-turn p
 
 **Cumulative ticket count post-B778: 131 unique S4-B7XX tickets** (no change; #55 + #58 + #59 closed in place).
 
+### TIER 18 — B779 owner-directives applied: daily rebalance + symmetric Pattern Q + owner approvals annotated
+
+**Owner directives received 2026-06-15 13:25 UTC:**
+- "58 e" -- Choose option (e) expand factor universe to T1a+T2+T3
+- "Rebalance daily" -- B776 sample_cadence_days 21 -> 1
+- "No asymmetric. Want symmetric only" -- revert B773 LONG-only Pattern Q B-13; apply symmetric (both LONG + SHORT)
+- "Background still in flight wait" -- bp7s0d6w2 continues; do NOT launch #57 yet
+- "Approve all other recs" -- #55(b) EVENT-on-rank-crossing approved; CHECKLIST #108 stays; 5 EXPLORATORY tags stay; B766 council bundle #35/#36/#37/#38-#48/#49 all approved
+
+**Code changes shipped B779:**
+- `scripts/measure_fire_count.py` -- `sample_cadence_days=21 -> 1` (daily rebalance per directive; ~21x compute cost accepted)
+- `backtest/signals/screener.py` strat_supertrend_ichimoku_adx -- SYMMETRIC Pattern Q (mirror SHORT side: supertrend_flip_recent_short_5d AND ichi_below_cloud_break_recent_5d AND adx_strong); supersedes B773 asymmetric LONG-only
+
+**Annotations applied to existing tickets (10 + new ticket #65):**
+- #55(b) APPROVED -- EVENT-on-rank-crossing; producer-side new signals needed (#65)
+- #58(e) APPROVED -- factor universe expansion T1a+T2+T3; implementation queued (#65)
+- 5 EXPLORATORY tags (B-4 / B-5 / B-18 / B-19 / B-20) CONFIRMED -- non-deletion markers stay
+- CHECKLIST #108 (B777) CONFIRMED -- applies to gate-mods from B779 onward
+- #35 + #36 + #37 + #38-#48 + #49 -- B766 council bundle APPROVED; bundle ships as B780 follow-up
+
+65. **`S4-B779-FACTOR-UNIVERSE-EXPANSION-T1A-T2-T3-PRODUCER-IMPLEMENTATION`** — Per B779 owner directive: implement #58(e) factor universe expansion. Modify cross_sectional invocations in `screener.py:7954` + `measure_fire_count.py:_precompute_tier2_panel` to pass T1a+T2+T3 ohlcv_dict union (vs current T1a-only). Pre-requisites: (a) load T2 universe CSV (350 tickers; comment-prefix parsing fix needed); (b) load T3 universe CSV (1220 unique tickers; comment-prefix parsing fix needed); (c) verify OHLCV cache availability for T2/T3 in backtest/data/cache/ + data_prefetch/polygon/ohlcv_daily/; (d) merge T1a+T2+T3 unique ticker set into ohlcv_dict for compute_cross_sectional_features; (e) preserve per-day liquid universe gating for STRATEGY firing (T1a-only) -- factor RANKS expand to T1a+T2+T3 but execution stays T1a. Universe-expansion changes the rank denominator but not the execution universe (Novy-Marx 2014 / AFP 2019 acknowledged structural bias mitigation). Implementation queued for B780+ after bp7s0d6w2 lands (current in-flight measurement uses pre-B779 T1a-only config; obsolete-known but completes for sanity). PENDING-EXECUTION. Source: B779 owner directive 58(e). Class 8 INFRA. **CRITICAL POST-bp7s0d6w2.**
+
+**B779 CHECKLIST #107 reconciliation:** Findings surfaced: 0 new analysis findings (owner-directive batch). Tickets filed: 1 NEW (#65 universe-expansion implementation) + 2 code changes (daily cadence + symmetric Pattern Q) + 10+ existing-ticket annotations (#55/#58/#35-49/CHECKLIST #108/EXPLORATORY confirmations). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B779: 132 unique S4-B7XX tickets** (131 post-B778 + 1 B779 universe-expansion implementation).
+
+### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
+
+Owner approved B766 council reviewer recommendations for execution. Bundle ships as B780+ follow-up:
+
+- **#35 `S4-B766-RSI-REDUNDANCY-DIAGNOSTIC-DE-SEQUENCE-NOW-FROM-POST-B690b`** -- APPROVED. De-sequence from "post-B690b" to RUN-NOW. Cluster A runs entirely on technical.py producers; B689 wireup covers them. Existing B751 ticket de-sequenced.
+- **#36 `S4-B766-A-13-BOLLINGER-TIGHT-RECLASSIFY-TO-BREAKOUT`** -- APPROVED. A-13 strat_bollinger_tight reclassify from A.4 Bollinger mean-reversion to breakout/squeeze-expansion category. Strategy registration unchanged; cluster A walk doc + STRATEGY_ROSTER.md categorization update needed.
+- **#37 `S4-B766-PRE-CUBE-CLEAN-RENAME-TO-CODE-CLEAN-EDGE-UNVALIDATED`** -- APPROVED. Cluster A walk doc "PRE-CUBE-CLEAN" verdict label rename to "CODE-CLEAN, EDGE-UNVALIDATED". Apply cluster-wide.
+- **#38-#48 per-strategy specifics (11 tickets)** -- APPROVED. Cluster A walk doc edits per Reviewer 5: RSI family fire-on-cross-not-state (#38); A-1 Connors OR-disjunct emphasis correction (#39); RSI capitulation-volume gate (#40); A-5 vol_above_avg wrong-direction fix (#41); A-6/A-9 Williams-Stoch algebraic-duplicate Pattern J pair (#42); A-11 MFI obv anti-selection conditional-add-test (#43); A-12 Bollinger band-walk-in-downtrend continuation-failure-mode (#44); A-12 BB pctb threshold cube-sweepable (#45); AVWAP proximity ATR-scaled (#46); AVWAP reclaim entry firing-logic formalization (#47); A-17/A-20/A-21 Camarilla CPR timeframe-mismatch structural decision (#48). Per CHECKLIST #108: each gate-modification within these tickets requires per-turn pre-flight (hypothesis + projection + validation + precedent).
+- **#49 `S4-B766-PATTERN-S-SHORT-SIDE-ASYMMETRY-PRE-REGISTER-EXPECTATION`** -- APPROVED. Cluster doc + cube verdict interpretation guide pre-registers LONG-pass/SHORT-fail expectation on dual mean-rev strategies. Doc-only; ships in B780+ bundle.
+
 ### Annotations to existing tickets (per CHECKLIST #107 reconciliation)
 
 - **`S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP`** (existing): reviewer recommends RE-RATE from "MEDIUM, pre-cube preferred" to "TOP keystone 3-in-1 fix". Council partial-adopt: Q is real fix BUT NOT keystone (Contrarian: it's 2-in-1; First Principles: keystone is latent-collapse). Sweep stays MEDIUM pending TIER 0-2 evidence + post-Q fire-count projection (ticket #34).

@@ -2282,23 +2282,20 @@ def strat_camarilla_rsi_obv(s):
 
 
 def strat_supertrend_ichimoku_adx(s):
-    """Batch 773 (2026-06-15) Pattern Q EVENT-conversion on LONG side per B769
-    council F4 (re-sequenced parallel-not-after) + chairman "ships when ready":
-    fire on FRESH confluence (supertrend FLIP + ichi BREAK, recent 5d) AND
-    adx_strong STATE confirmation; not sustained STATE-only confluence.
+    """Batch 779 (2026-06-15 owner directive "No asymmetric. Want symmetric only"):
+    SYMMETRIC Pattern Q EVENT-conversion applied to BOTH LONG and SHORT sides.
 
-    LONG side rationale: B660 measured 3,365 fires/yr LONG-side universe-wide
-    (over-firing). Pattern Q reduces to fresh-flip-event with strong-trend
-    confirmation; ~10x reduction expected per B655 T10 precedent -> ~340/yr
-    LONG (still PASS_CUBE; min_trades=100 overall easily satisfied).
+    Supersedes B773's asymmetric LONG-only application. Owner accepts that SHORT
+    side may drop below min_trades=30/regime threshold per fire-count projection
+    (B660 measured 63/yr SHORT; ~10x reduction expected ~6/yr); cube will measure
+    + the EXPLORATORY tagging path is available if cube confirms low-fire.
 
-    SHORT side kept STATE-form per feedback_minimum_fire_count_gate_before_
-    cube: B660 measured only 63 fires/yr SHORT-side; Pattern Q reduction
-    (~10x) would push to ~6/yr -- below min_trades=30 per-regime threshold
-    (cube would not produce statistically valid PASS/FAIL). Asymmetric
-    application per feedback_structural_symmetry_not_economic_symmetry
-    (structural symmetry doesn't imply economic; SHORT-side already low-fire
-    structurally + drift bias + borrow + squeeze risk).
+    LONG side: STATE supertrend_bullish AND ichi_above_cloud AND adx_strong
+               -> EVENT supertrend_flip_recent_long_5d AND ichi_above_cloud_break_recent_5d
+                  AND adx_strong (STATE confirmation)
+    SHORT side: STATE supertrend_bearish AND ichi_below_cloud AND adx_strong
+                -> EVENT supertrend_flip_recent_short_5d AND ichi_below_cloud_break_recent_5d
+                   AND adx_strong (STATE confirmation)
 
     Cross-system pairwise correlations measured B660 + verified B772
     (all <0.090) -- the three indicators are EMPIRICALLY INDEPENDENT, so
@@ -2306,21 +2303,24 @@ def strat_supertrend_ichimoku_adx(s):
     F8 refutation B772). adx_strong stays STATE confirmation -- no EVENT
     variant exists; adx_strong at fire bar confirms trend strength, not
     a stale signal.
+
+    Per feedback_no_a_priori_strategy_pruning: SHORT side stays active +
+    cube measures; if FAIL_FIRE_STARVED post-cube, EXPLORATORY tag applied
+    via standard precedent (B644 W5 / B772 B-4-5 / B773 B-18-20).
     """
-    # B773 Pattern Q EVENT-conversion (LONG): supertrend FLIP + ichi BREAK
-    # recent 5d. EVENT signals available per B770 PIT audit (multi_timeframe
-    # PIT-clean; technical.py ichi_above_cloud_break_recent_5d emitted).
+    # B779 Pattern Q EVENT-conversion SYMMETRIC: both LONG and SHORT use
+    # supertrend FLIP + ichi BREAK recent 5d EVENT signals.
     fl = (s.get("supertrend_flip_recent_long_5d")
           and s.get("ichi_above_cloud_break_recent_5d")
           and s.get("adx_strong"))
-    # SHORT side KEPT STATE per fire-count threshold rationale (docstring).
-    # B630 sweep: positive symmetric supertrend_bearish (B630 producer)
-    fs = (s.get("supertrend_bearish") and s.get("ichi_below_cloud") and s.get("adx_strong")) and not _short_borrow_trap_active(s)
+    fs = (s.get("supertrend_flip_recent_short_5d")
+          and s.get("ichi_below_cloud_break_recent_5d")
+          and s.get("adx_strong")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["supertrend_flip_recent_long_5d","ichi_above_cloud_break_recent_5d","adx_strong"],
-        ["supertrend_bearish","ichi_below_cloud","adx_strong", "borrow_ok"],
-        ["Supertrend FLIP + Ichimoku BREAK + ADX strong  -  fresh trend confluence (B773 Pattern Q EVENT-conversion)"],
-        ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bearish (SHORT STATE per fire-count threshold)"])
+        ["supertrend_flip_recent_short_5d","ichi_below_cloud_break_recent_5d","adx_strong", "borrow_ok"],
+        ["Supertrend FLIP up + Ichimoku BREAK above cloud + ADX strong  -  fresh bullish confluence (B779 symmetric Pattern Q)"],
+        ["Supertrend FLIP down + Ichimoku BREAK below cloud + ADX strong  -  fresh bearish confluence (B779 symmetric Pattern Q)"])
 
 
 def strat_williams_stoch_dual(s):
