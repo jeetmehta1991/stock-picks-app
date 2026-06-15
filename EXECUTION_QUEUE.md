@@ -251,6 +251,95 @@ Owner directive 2026-06-15 (post-B763): "update execution queue. anything missed
 
 **B764 audit verdict:** 1 additional finding ticket filed + 2 status annotations. Total cumulative: **98 unique S4-B7XX tickets** (97 prior + 1 B764 audit add).
 
+---
+
+## B766 EXTERNAL REVIEWER FEEDBACK ON CLUSTER A — COUNCIL VERDICT + 22 NEW TICKETS (2026-06-15)
+
+External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md`) delivered 4-part adversarial review + 6-phase implementation plan. Owner directive: "Don't trust blindly. Review thoroughly. Do it line by line. log to execution queue. refer to checklist and memory docs. council this."
+
+**Council methodology (aiwithremy LLM Council):** 5 advisors (Contrarian / First Principles / Expansionist / Outsider / Executor) → 5 peer reviewers anonymized → chairman synthesis. **Unanimous (5/5)**: First Principles strongest, Expansionist biggest blind spot. **Unanimous all-missed**: CHECKLIST #106 producer-data audit pre-flight + post-fix fire-count projection.
+
+**Reviewer's load-bearing claim** (Pattern Q × Pattern N compound = 10-50× → effective-N 30-80 → cluster STATISTICALLY UNVALIDATABLE): **PARTIALLY REFUTED by council.** Contrarian's math correction (Q + N are projections of same vol-regime latent; multiplying double-counts March 2020) reduces compound to 5-15× → effective-N 130-400 → cluster HARDER not unvalidatable. First Principles' deeper reframe: the 30 strategies encode 4-7 latent factors; Bonferroni 23K is partly fictional.
+
+**Council adoption decisions:**
+- ADOPT recs #3 (RSI redundancy NOW), #4 (A-13 reclassify to breakout), #5 (CODE-CLEAN/EDGE-UNVALIDATED rename)
+- DEFER recs #1 (Pattern Q "keystone" framing — gated on TIER 0-2 evidence), #2 (Pattern N pre-cube — Contrarian math correction stands)
+- REJECT Expansionist's 5-8 new strategies + 220-strategy wrapper retrofit (violates `feedback_no_prior_edge_consolidate_before_tune`)
+
+### TIER 0 — Pre-anything-else (council-unanimous missing pre-flight)
+
+32. **`S4-B766-COUNCIL-CLUSTER-A-PRODUCER-DATA-AUDIT-PRE-FLIGHT`** — **THE ONE THING TO DO FIRST per chairman.** Run `scripts/checklist_106_cluster_a_producer_audit.py --full` (B757-shipped script) on all 30 Cluster A producers before any other action. Per B748c precedent: if even 2-3 of the 30 silently default-return, the entire effective-N debate is contaminated and every downstream council/reviewer recommendation is built on bad counts. UNANIMOUS council blind spot (5/5 peer reviewers flagged). PENDING-EXECUTION. Source: B766 council. Class 9 PRODUCER-AUDIT. **CRITICAL Pre-everything**.
+
+### TIER 1 — Latent collapse measurement (per First Principles + B709 precedent)
+
+33. **`S4-B766-COUNCIL-CLUSTER-A-LATENT-COLLAPSE-PHI-CORRELATION-AUDIT`** — Per First Principles advisor + Reviewer 3 (B709 phi=0.297 PEAD-restore precedent): empirically measure how many DISTINCT latent factors Cluster A actually encodes. Hypothesis: 4-7 latents wearing 30 costumes (oscillator-oversold + band-touch + AVWAP-pullback + pivot-support + capitulation-volume-reversal + RSI(2)-extreme). Run phi-correlation across all 30 fire-sets pairwise on B760 demo fire-bar matrix output (existing) + full run when it lands. Cluster strategies into latent groups by phi >= 0.70. Net effective hypothesis count for Bonferroni recalculation = number of distinct latents, not number of strategies. PENDING-EXECUTION. Source: B766 council First Principles. Class 9 META. **CRITICAL Pre-cube**.
+
+### TIER 2 — Post-fix fire-count projection (per `feedback_minimum_fire_count_gate_before_cube`)
+
+34. **`S4-B766-COUNCIL-POST-Q-FIRE-COUNT-PROJECTION-PER-STRATEGY`** — Per Reviewer 5 (peer review): if Pattern Q EVENT-conversion collapses STATE over-fires 3-10×, many Cluster A strategies fall below min_trades=30/regime threshold, making cube statistically incapable of producing PASS/FAIL regardless of Bonferroni math. Mandatory pre-Q-rollout: compute projected post-conversion fires/year per strategy. Strategies projected <30/yr/regime route to DELETE or universe-change, NOT EVENT-conversion. UNANIMOUS council missed flag. PENDING-EXECUTION. Source: B766 council Reviewer 5. Class 9 META. **CRITICAL Pre-Q-rollout**.
+
+### TIER 3 — Reviewer recs ADOPTED (executable now)
+
+35. **`S4-B766-RSI-REDUNDANCY-DIAGNOSTIC-DE-SEQUENCE-NOW-FROM-POST-B690b`** — De-sequence existing `S4-B751-PATTERN-J-RSI-WINDOW-FAMILY-CONSOLIDATION-AUDIT-POST-B690` from "post-B690b" deferred to RUN-NOW. Reviewer correctly identified mis-sequencing: B689 data covers technical.py producers (RSI family); B690b is TIER 2 wireup for SM/event clusters, IRRELEVANT to Cluster A which runs entirely on technical.py. The data exists; the gate was misplaced. ADOPT reviewer rec #3 unanimously. PENDING-OWNER-APPROVAL. Source: B766 reviewer rec #3 + Executor advisor. Class 2 SEQUENCING-CORRECTION. HIGH (no new code needed; just sequencing).
+
+36. **`S4-B766-A-13-BOLLINGER-TIGHT-RECLASSIFY-TO-BREAKOUT`** — A-13 `strat_bollinger_tight` (currently classified as A.4 Bollinger mean-reversion in Cluster A) RECLASSIFY to breakout/squeeze-then-expansion category. Per Carter 2005 TTM squeeze + Bulkowski breakout literature: squeeze-then-expansion is a volatility-compression-then-directional-resolution pattern, not mean-reversion. Tune as breakout (fire on expansion bar with directional confirmation), not band-touch. Cluster reassignment per Pattern X precedent (A-17 / A-29 / A-30 from prior B753/B755 walks). ADOPT reviewer rec #4. PENDING-OWNER-APPROVAL. Source: B766 reviewer rec #4. Class 2 CLUSTER-REASSIGNMENT. MEDIUM-HIGH.
+
+### TIER 4 — Labeling discipline (Outsider unanimous adoption)
+
+37. **`S4-B766-PRE-CUBE-CLEAN-RENAME-TO-CODE-CLEAN-EDGE-UNVALIDATED`** — Cluster A walk doc uses "PRE-CUBE-CLEAN" on 7 walks as disposition verdict. Outsider advisor + Executor: this conflates code-hygiene (no silent-gap, borrow-gate present, PIT-clean, docstring matches) with EDGE (does the strategy actually work?). A reader sees 7 green checkmarks and infers cluster is in good shape; actual state is "code correct; edge unresolved pending Pattern J latent-collapse + effective-N". Rename to "CODE-CLEAN, EDGE-UNVALIDATED" cluster-wide. Apply to all 30 Cluster A walks + future cluster docs. ADOPT reviewer rec #5. PENDING-OWNER-APPROVAL. Source: B766 reviewer rec #5 + Outsider unanimous. Class 1 DOC-DISCIPLINE. MEDIUM.
+
+### TIER 5 — Per-strategy specific fixes (reviewer line-by-line extraction)
+
+38. **`S4-B766-RSI-FAMILY-A-1-A-4-A-5-FIRE-ON-CROSS-UP-NOT-STATE`** — A-1 rsi_oversold, A-4 rsi21_slow, A-5 rsi_volume_200ema fire on RSI sub-threshold STATE (rsi_14<35 stays True for many bars during oversold episode). A-3 rsi9_extreme already correctly uses `rsi_9_rising` (the "turn" not the extreme). Apply A-3's pattern to A-1/A-4/A-5: producer-additive `rsi_14_cross_up_recent_3d` per B655 T10 + B722 hull_rsi precedents. Mean-reversion's "right entry" = turn not the extreme. Per Reviewer 5 + post-Q fire-count projection ticket. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 RSI section. Class 2 LOOSEN/TIGHTEN. HIGH.
+
+39. **`S4-B766-A-1-CONNORS-OR-DISJUNCT-EMPHASIS-CORRECTION`** — A-1 strat_rsi_oversold uses `(rsi_2 < 5 OR rsi_14 < 35)` Connors-OR-disjunct with EQUAL emphasis. Per Connors+Alvarez 2009: RSI(2)<5 in uptrend is the documented edge; RSI(14)<35 is the slower fallback. The OR-disjunct has emphasis backwards: RSI(14)<35 is the NOISY leg that adds most fires; RSI(2)<5 is the SELECTIVE leg with the real edge. Tune: make RSI(2)<5 PRIMARY, drop or down-weight RSI(14)<35 path. Also resolves existing Pattern R ticket (`S4-B750-A-1-PATTERN-Q-RSI-OVERSOLD-EVENT-CONVERSION` family) better than current "add EVENT variant" approach. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 Connors stack section. Class 2 LOOSEN/TIGHTEN. HIGH.
+
+40. **`S4-B766-RSI-FAMILY-REVERSION-CONTEXT-CAPITULATION-VOLUME-GATE`** — None of A-1/A-3/A-4/A-5 require evidence the oversold is EXHAUSTING (capitulation volume + higher low forming + reversal bar). Mean-reversion's universal WR lever. Per Wyckoff Selling Climax + Connors capitulation discipline. Producer-additive: `capitulation_recent_3d` = (vol_spike_2x_on_down_day_recent_3d AND drying_volume_on_turn). Apply to all 4 RSI strategies. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 reversion-context section. Class 2 LOOSEN/TIGHTEN. HIGH.
+
+41. **`S4-B766-A-5-VOL-ABOVE-AVG-WRONG-DIRECTION-FIX`** — A-5 strat_rsi_volume_200ema gate uses `vol_above_avg` (volume above 20-day average). Per reviewer: this is WRONG DIRECTION for mean-reversion entry. For reversion you want vol_spike (CAPITULATION) on the DOWN day + drying volume on the TURN. Current gate fires on above-average volume regardless of price direction. Fix: replace `vol_above_avg` with composite `vol_spike_on_down_day_recent + vol_below_avg_on_turn`. This is a STRATEGY BUG not a tune. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 A-5 section. Class 2 BUG-FIX. HIGH.
+
+42. **`S4-B766-A-6-A-9-WILLIAMS-STOCH-ALGEBRAIC-DUPLICATE-PATTERN-J-PAIR`** — Williams %R is algebraically near-identical to Stochastic %K by construction (both normalize price location within a lookback range; differ only in inversion sign and divisor). A-9 `strat_williams_r_oversold` + A-6 `strat_stoch_oversold` are likely Pattern J duplicates the doc didn't pair. Run B709 phi-correlation precompute on A-6 vs A-9 fire-sets specifically. Likely deletion candidate. PENDING-EXECUTION (post-TIER-1 phi-correlation audit). Source: B766 reviewer Part 2 Stoch/Williams section. Class 6 DEFERRED-POST-PHI. HIGH.
+
+43. **`S4-B766-A-11-MFI-OBV-ANTI-SELECTION-CONDITIONAL-ADD-TEST`** — A-11 strat_mfi_oversold gate requires obv_bullish. Per reviewer: fresh decline into oversold means OBV has been FALLING, so requiring obv_bullish may ANTI-SELECT (filter out the real reversion opportunities). Run B709-style conditional-add-test: does adding obv_bullish gate improve win rate or reduce it? Test on existing B689 data. PENDING-EXECUTION. Source: B766 reviewer Part 2 MFI section. Class 9 EMPIRICAL-VERIFICATION. MEDIUM-HIGH.
+
+44. **`S4-B766-A-12-BOLLINGER-BAND-WALK-IN-DOWNTREND-CONTINUATION-FAILURE-MODE`** — A-12 strat_bollinger_lower fires on BB lower-band touch. Per reviewer: in strong downtrend, price WALKS the lower band (rides it down). Lower-band touch is then a CONTINUATION signal, not a reversion signal — mirror of shooting-star/BB-upper failure mode from candle cluster. Fix: fire on BAND RE-ENTRY (close back inside band after touch/close outside), not the touch itself. Bollinger equivalent of reclaim-bar entry. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 Bollinger section. Class 2 LOOSEN/TIGHTEN. HIGH.
+
+45. **`S4-B766-A-12-BB-PCTB-THRESHOLD-CUBE-SWEEPABLE`** — A-12 uses hardcoded %b threshold (Bollinger band touch). Per reviewer: %b threshold should be SWEPT not fixed; producer-additive `bb_pctb_lt_threshold` boolean per Pattern G cube-sweepability. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 Bollinger section. Class 2 LOOSEN/TIGHTEN. MEDIUM.
+
+46. **`S4-B766-AVWAP-PROXIMITY-ATR-SCALED-NOT-FIXED-PERCENT`** — A-22 avwap_50_reclaim (1.5% proximity) + A-23 avwap_252_breakout (2.0% proximity) + A-24 avwap_20high_rejection_short (1.0% proximity) all use FIXED percent proximity gates. Per reviewer: 1.5% means different things on a 15%-vol name vs 60%-vol name. Replace with ATR-scaled proximity (e.g., 0.5 × 20-bar ATR / price). Producer-additive `near_avwap_X_atr_scaled` family. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 AVWAP section. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
+
+47. **`S4-B766-AVWAP-RECLAIM-ENTRY-FIRING-LOGIC-FORMALIZATION`** — A-22 avwap_50_reclaim fires on `above_avwap_50low` (STATE: price above AVWAP). Per reviewer: AVWAP reclaim is institutional-cost-basis concept; entry should fire on RECLAIM EVENT (close back above AVWAP AFTER being below), not the STATE. Producer-additive `avwap_50_reclaim_recent_3d` per B655 T10 EVENT-conversion pattern. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 AVWAP section. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
+
+48. **`S4-B766-A-17-A-20-A-21-CAMARILLA-CPR-TIMEFRAME-MISMATCH-STRUCTURAL-DECISION`** — A-17 camarilla_r4_breakout + A-20 cpr_narrow_momentum + A-21 cpr_narrow_momentum_short are the SAME strategies that measured 12,534/yr + 8,463/yr in pivot cluster B660 measurement (per existing B720+B718 ceiling work). Camarilla + CPR are intraday tools on daily bars — timeframe mismatch confirmed empirically, not hypothetical. Parameter tuning won't fix structural mismatch. Owner decision: (a) move strategies to intraday bars; (b) reframe as daily momentum and DROP pivot-precision language; (c) DELETE per timeframe-mismatch rationale. PENDING-OWNER-DECISION-A-B-OR-C. Source: B766 reviewer Part 2 Camarilla/CPR section + cross-cluster connection to pivot cluster B660 data. Class 2 STRUCTURAL-DECISION. HIGH.
+
+49. **`S4-B766-PATTERN-S-SHORT-SIDE-ASYMMETRY-PRE-REGISTER-EXPECTATION`** — Per reviewer Part 3 + Pattern S precedent: mean-reversion overbought-shorts will look bad in cube for STRUCTURAL reasons (drift + borrow + squeeze), NOT signal failure. Pre-register expectation in cluster doc + cube verdict interpretation guide: LONG-pass/SHORT-fail on dual mean-rev strategies (A-1 RSI / A-4 RSI21 / A-5 RSI-vol / A-7 stochRSI / A-9 williams / A-10 UO / A-11 MFI / A-12 bollinger / A-16 keltner / A-18 camarilla_rsi_obv) = "split off LONG, don't conclude oscillator is broken." NOT "delete short side because it doesn't work." Documentation-only ticket. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 3 Pattern S section. Class 1 DOC-INTERPRETATION-GUIDE. MEDIUM.
+
+### Annotations to existing tickets (per CHECKLIST #107 reconciliation)
+
+- **`S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP`** (existing): reviewer recommends RE-RATE from "MEDIUM, pre-cube preferred" to "TOP keystone 3-in-1 fix". Council partial-adopt: Q is real fix BUT NOT keystone (Contrarian: it's 2-in-1; First Principles: keystone is latent-collapse). Sweep stays MEDIUM pending TIER 0-2 evidence + post-Q fire-count projection (ticket #34).
+- **`S4-B750-PATTERN-N-EFFECTIVE-N-AUTOCORRELATION-CUBE-EXTENSION`** (existing): reviewer recommends elevate from "Class 8 CUBE-INFRA, not strategy-specific" to "cluster-existential, BUILD BEFORE cube". Council REJECTS elevation per Contrarian math correction (Q + N are projections of same latent; post-hoc p-value correction sufficient). Ticket stays Class 8.
+- **`S4-B751-PATTERN-J-RSI-WINDOW-FAMILY-CONSOLIDATION-AUDIT-POST-B690b`** (existing): de-sequenced via new ticket #35. Per reviewer rec #3 unanimous adoption.
+- **`S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY`** (existing): CONFIRMED by reviewer as correctly queued. No change.
+- **`S4-B750-A-22-PATTERN-F-NOT-MACD-BULL-REPLACE`** (existing): Reviewer says "SHIP IT." Executor Monday item #1. No change needed; just ship.
+
+### B766 council adoption-decision matrix
+
+| Reviewer rec | Council verdict | Filed ticket |
+|---|---|---|
+| #1 Pattern Q keystone 3-in-1 | DEFER (reframe per Contrarian + First Principles) | annotation on existing ticket |
+| #2 Pattern N pre-cube cluster-existential | REJECT (Contrarian math correction) | annotation on existing ticket |
+| #3 RSI redundancy NOW | **ADOPT** | #35 de-sequence |
+| #4 A-13 reclassify to breakout | **ADOPT** | #36 |
+| #5 PRE-CUBE-CLEAN rename | **ADOPT** | #37 |
+| Per-strategy specifics (10 items) | **ADOPT all 10** | #38-#48 |
+| Pattern S pre-register | ADOPT (doc-only) | #49 |
+| **NEW from council** | TIER 0/1/2 pre-flights | #32, #33, #34 |
+| Expansionist's 5-8 NEW + 220-strategy wrapper | **REJECT** (consolidate-before-expand) | Audit-trailed not filed |
+
+**Cumulative ticket count post-B766: 116 unique S4-B7XX tickets** (98 prior + 18 B766 council additions, source-verified via grep `S4-B766-[A-Z0-9_-]+`).
+
+**B766 CHECKLIST #107 reconciliation:** Findings surfaced: ~35 distinct line-by-line reviewer findings (4-part + 6-phase implementation). Deduplicated against 98 existing tickets + council adoption verdicts → **18 NEW B766 tickets filed (#32-#49) + 5 existing-ticket annotations + ~8 Expansionist recs REJECTED + audit-trailed**. **Tickets filed: 18.** **Audit-clean: YES.**
+
 18. **`S4-B760-PATTERN-W-METHODOLOGY-REVISION-EMPIRICAL-NOT-GATE-TEXT`** — Codify that ALL Pattern W deletion decisions must use fire-bar Jaccard precompute (B709 phi-correlation / B760 chairman) NOT gate-text comparison. Pattern W deletion proposals via gate-text inspection are HEURISTIC ONLY pending empirical validation. Update STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md sections referencing "Pattern W deterministic-duplicate" to note empirical validation requirement. PENDING-OWNER-APPROVAL. Source: B760 0-of-3 council validation. Class 2 METHODOLOGY-CORRECTION. HIGH.
 
 19. **`S4-B760-AVWAP-50-RECLAIM-HIGH-FIRE-COUNT-AUDIT`** — Demo measured 1,228 fires for `strat_avwap_50_reclaim` on 50 tickers × 1yr (the top firer in Cluster A). Extrapolated to T1a 503 tickers × 6.4yr: ~80K fires/yr universe-wide, **well above B710 5K/yr state-flag ceiling**. Per B718 cpr_narrow_tight precedent (12,534/yr → tighten to 0.05 producer): potential ceiling-fix candidate. Audit hardcoded `pct_from_50 < 1.5` proximity threshold — tighten to 0.5 producer-additive? PENDING-OWNER-APPROVAL. Source: B760 demo. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
