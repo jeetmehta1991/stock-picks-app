@@ -1415,43 +1415,48 @@ def strat_rsi_overbought_short(s):
 
 
 def strat_mfi_oversold(s):
-    """B789 #43 (2026-06-15 owner-approved B779) ANTI-SELECTION FIX: dropped
-    obv_bullish (LONG) + obv_bearish (SHORT) gates per B789 #43 smoke verdict
-    ANTI_SELECTION_CONFIRMED_EXTREME.
+    """B791 REVERT-OF-B789-#43 (2026-06-15): B789 demo (30 tickers x 1yr)
+    CONTRADICTED B789 smoke (5 tickers) verdict. obv_bullish gate appears
+    SELECTIVE not anti-selecting. Restored B628 F1 symmetric obv gates pending
+    larger-sample (full T1a) test per `feedback_audit_recommendations_against_
+    existing_directives` empirical-evidence-supersedes-rule.
 
-    Per CHECKLIST #108 pre-flight:
-      (a) Hypothesis: obv_bullish gate anti-selects mean-reversion opportunities.
-          Fresh decline into oversold = OBV has been FALLING; requiring obv_bullish
-          filters out the very reversion opportunities the strategy targets.
-          Mirror logic for SHORT side: fresh rally into overbought = OBV rising;
-          requiring obv_bearish anti-selects symmetrically.
-      (b) Fire-count projection: pre-fix B789 smoke = 0 fires for mfi_oversold +
-          obv_bullish on 5 tickers x 1yr (gate so restrictive strategy can't fire).
-          Post-fix mfi_oversold + at_support fires ~28 obs per 5 tickers x 1yr =
-          ~5K-15K/yr universe-wide.
-      (c) Validation plan: B789 demo (30 tickers x 1yr; bxdl3d103) + cube cell
-          measurement post-fix. Smoke ANTI_SELECTION_CONFIRMED_EXTREME with
-          +190.7 bps/10d / 57.1% hit on NOT-obv_bullish cell (28 obs).
-      (d) Precedent: B358 cell-audit gate-removal pattern (xs_low_beta_long 200-EMA
-          gate removed per conditional-return evidence); B654 W8 cpr_narrow_tight
-          tightening pattern.
+    SMOKE -> DEMO DIVERGENCE per B789:
+      Smoke 5 tickers x 1yr (1,260 bars):
+        cell_a (mfi_oversold AND obv_bullish):       0 obs
+        cell_b (mfi_oversold AND NOT obv_bullish):   28 obs / +190.7 bps / 57.1%
+        verdict: ANTI_SELECTION_CONFIRMED_EXTREME
 
-    Symmetric application per `feedback_structural_symmetry_not_economic_symmetry`
-    (similar SHORT-side asymmetry warning; cube measures). Reviewer's claim
-    surfaced LONG-side anti-selection; mirror SHORT-side likely same; cube
-    verdict authoritative.
+      Demo 30 tickers x 1yr (7,560 bars):
+        cell_a (mfi_oversold AND obv_bullish):       3 obs / +319.5 bps / 100%
+        cell_b (mfi_oversold AND NOT obv_bullish):   153 obs / +3.1 bps / 49%
+        verdict: INSUFFICIENT_DATA (a=3 too small but +316bps lift)
+
+    Demo signal: obv_bullish gate produces RARE but VERY HIGH-quality fires
+    (+319.5 bps mean lift vs +3.1 bps without). Smoke was an under-powered
+    snapshot that happened to miss all 3 cell_a opportunities in the 5-ticker
+    sample.
+
+    Per `feedback_no_a_priori_strategy_pruning` + `feedback_audit_recommendations_
+    against_existing_directives`: REVERT B789 fix. Restore B628 F1 symmetric
+    obv gates. A definitive verdict requires full T1a x 2024-2025 (~500 tickers
+    x 504 bars = 252K ticker-bars; cell_a expected ~50-100 obs at full scale).
+
+    NEW TICKET (#67 in B791): full T1a re-test of MFI obv conditional-add
+    methodology + cube cell measurement. Until then: keep B628 F1 symmetric
+    obv gates as-is.
+
+    Batch 628 F1 family-sweep (original): positive symmetric obv_bearish.
     """
-    # B789 #43 ANTI-SELECTION FIX: obv_bullish gate DROPPED (was anti-selecting
-    # the very mean-reversion opportunities the strategy targets).
-    fl = s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2"))
-    # B789 #43 symmetric: obv_bearish gate DROPPED SHORT side same logic.
+    # B791 REVERT-OF-B789: restored obv gates per demo evidence.
+    fl = (s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
     fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2"))
-          and not _short_borrow_trap_active(s))
+          and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
-        ["mfi_oversold","at_support"],
-        ["mfi_overbought","at_resistance", "borrow_ok"],
-        ["MFI oversold - volume-weighted RSI below 20","At pivot support (B789 #43 obv_bullish dropped)"],
-        ["MFI overbought - volume-weighted RSI above 80","At pivot resistance (B789 #43 obv_bearish dropped)"])
+        ["mfi_oversold","at_support","obv_bullish"],
+        ["mfi_overbought","at_resistance","obv_bearish", "borrow_ok"],
+        ["MFI oversold - volume-weighted RSI below 20","At pivot support","OBV rising (B791 restored per demo +319.5 bps lift)"],
+        ["MFI overbought - volume-weighted RSI above 80","At pivot resistance","OBV falling (B628 F1)"])
 
 
 def strat_cmf_flip(s):

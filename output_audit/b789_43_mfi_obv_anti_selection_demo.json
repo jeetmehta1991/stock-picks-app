@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "as_of_run": "2026-06-16T02:40:24",
+    "start": "2024-01-01",
+    "end": "2024-12-31",
+    "n_tickers_universe": 519,
+    "n_tickers_probed": 30,
+    "n_tickers_done": 30,
+    "n_cache_misses": 0,
+    "n_bars_total": 7560,
+    "horizon_days": 10,
+    "runtime_seconds": 764.2
+  },
+  "cells": {
+    "mfi_oversold_AND_obv_bullish": {
+      "n": 3,
+      "mean_pnl_bps": 319.5,
+      "hit_rate": 1.0
+    },
+    "mfi_oversold_AND_NOT_obv_bullish": {
+      "n": 153,
+      "mean_pnl_bps": 3.1,
+      "hit_rate": 0.4902
+    },
+    "mfi_NOT_oversold_AND_obv_bullish": {
+      "n": 4164,
+      "mean_pnl_bps": 17.9,
+      "hit_rate": 0.5358
+    },
+    "mfi_NOT_oversold_AND_NOT_obv_bullish": {
+      "n": 3240,
+      "mean_pnl_bps": 33.5,
+      "hit_rate": 0.5173
+    }
+  },
+  "verdict": "INSUFFICIENT_DATA (a=3 b=153 - both need >=30 OR a==0+b>=10)"
+}

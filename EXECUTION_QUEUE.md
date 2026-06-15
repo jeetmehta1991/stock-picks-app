@@ -821,6 +821,29 @@ Per `feedback_no_rushing_per_strategy_tweak`: one strategy per batch. Owner-appr
 
 **Cumulative ticket count post-B790: 133 unique S4-B7XX tickets** (no change).
 
+### TIER 30 — B791 REVERT-OF-B789 #43 per demo SMOKE-DEMO divergence + NEW #67 full-T1a test ticket
+
+**bxdl3d103 demo result CONTRADICTED B789 smoke verdict:**
+
+| Cell | smoke 5tk | demo 30tk |
+|---|---|---|
+| mfi_oversold AND obv_bullish | **0 obs** | **3 obs / +319.5 bps / 100% win** |
+| mfi_oversold AND NOT obv_bullish | 28 obs / +190.7 bps / 57% | 153 obs / +3.1 bps / 49% |
+
+Demo signal: obv_bullish gate produces RARE but VERY HIGH-quality fires (+316 bps lift over no-gate cell). Smoke was an under-powered snapshot that happened to miss all 3 cell_a opportunities in the 5-ticker sample.
+
+**B791 ACTION:** REVERT B789 gate fix per `feedback_audit_recommendations_against_existing_directives` empirical-evidence-supersedes-rule. Restored B628 F1 symmetric obv gates on strat_mfi_oversold (both LONG obv_bullish + SHORT obv_bearish).
+
+**Lesson per `feedback_audit_recommendations_against_existing_directives` + B789 case:** smoke results on small samples (n=5 tickers) can produce VERY misleading verdicts when extreme-case cells have n=0. Need demo-scale (30+ tickers) BEFORE applying gate-mods.
+
+67. **`S4-B791-MFI-OBV-FULL-T1A-CONDITIONAL-ADD-RE-TEST`** — Per B789/B791 SMOKE-DEMO divergence: definitive verdict on MFI obv anti-selection requires full T1a x 2024-2025 (~500 tickers x 504 bars = 252K ticker-bars; cell_a expected ~50-100 obs at full scale). Demo n=3 with +319.5 bps suggests gate is SELECTIVE not anti-selecting; full T1a test will resolve. Existing test infrastructure (`scripts/mfi_obv_anti_selection_test.py --full`) ready. Runtime estimate: ~14hr. PENDING-EXECUTION (background launchable). Source: B789 smoke + B791 demo + revert. Class 9 EMPIRICAL-VERIFICATION. MEDIUM.
+
+**Annotation on #43:** B789 fix SUPERSEDED by B791 REVERT per demo evidence. Final verdict pending #67 full-T1a test.
+
+**B791 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (B789 smoke verdict CONTRADICTED by demo; revert applied) + 1 nuanced (smoke n=0 vs demo n=3 with +319.5 bps lift — methodological lesson). Tickets filed: **1 NEW (#67 full-T1a re-test)** + 1 annotation on #43 (B789 SUPERSEDED by B791 REVERT) + 1 code change (B791 revert of strat_mfi_oversold). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B791: 134 unique S4-B7XX tickets** (133 post-B790 + 1 B791 #67 full-T1a test).
+
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
 Owner approved B766 council reviewer recommendations for execution. Bundle ships as B780+ follow-up:
