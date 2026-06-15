@@ -510,6 +510,30 @@ def compute_rsi(df: pd.DataFrame) -> dict:
         result[f"rsi_{p}_rising"]      = v > pv
         result[f"rsi_{p}_extreme_os"]  = v < 20
         result[f"rsi_{p}_extreme_ob"]  = v > 80
+        # B795 #38 (2026-06-15 owner-approved B779) producer-additive
+        # RSI cross-up/down EVENT signals per B766 reviewer rec. Pattern:
+        # rsi crossed from <30 to >=30 (cross_up_oversold_recent_3d) = fresh
+        # exit from oversold; targets the TURN not the EXTREME (Wyckoff Spring
+        # / Connors capitulation discipline). Mirror for cross_down_overbought.
+        # Existing STATE consumers unchanged; new EVENT family is opt-in.
+        try:
+            n_lookback = 3
+            s_recent = s.iloc[-(n_lookback + 1):]
+            if len(s_recent) == n_lookback + 1:
+                today_val = float(s_recent.iloc[-1])
+                prior_vals = s_recent.iloc[:-1]
+                # cross_up_oversold: today >= 30 AND any prior bar in last 3d had val < 30
+                cross_up_os = (today_val >= 30) and bool((prior_vals < 30).any())
+                cross_dn_ob = (today_val <= 70) and bool((prior_vals > 70).any())
+                # Extreme variants: cross from <20 to >=20 (very oversold turn)
+                cross_up_extreme_os = (today_val >= 20) and bool((prior_vals < 20).any())
+                cross_dn_extreme_ob = (today_val <= 80) and bool((prior_vals > 80).any())
+                result[f"rsi_{p}_cross_up_oversold_recent_3d"]    = bool(cross_up_os)
+                result[f"rsi_{p}_cross_dn_overbought_recent_3d"]  = bool(cross_dn_ob)
+                result[f"rsi_{p}_cross_up_extreme_os_recent_3d"]  = bool(cross_up_extreme_os)
+                result[f"rsi_{p}_cross_dn_extreme_ob_recent_3d"]  = bool(cross_dn_extreme_ob)
+        except Exception:
+            pass
     return result
 
 

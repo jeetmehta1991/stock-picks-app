@@ -290,7 +290,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 ### TIER 5 — Per-strategy specific fixes (reviewer line-by-line extraction)
 
-38. **`S4-B766-RSI-FAMILY-A-1-A-4-A-5-FIRE-ON-CROSS-UP-NOT-STATE`** — A-1 rsi_oversold, A-4 rsi21_slow, A-5 rsi_volume_200ema fire on RSI sub-threshold STATE (rsi_14<35 stays True for many bars during oversold episode). A-3 rsi9_extreme already correctly uses `rsi_9_rising` (the "turn" not the extreme). Apply A-3's pattern to A-1/A-4/A-5: producer-additive `rsi_14_cross_up_recent_3d` per B655 T10 + B722 hull_rsi precedents. Mean-reversion's "right entry" = turn not the extreme. Per Reviewer 5 + post-Q fire-count projection ticket. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 RSI section. Class 2 LOOSEN/TIGHTEN. HIGH.
+38. **`S4-B766-RSI-FAMILY-A-1-A-4-A-5-FIRE-ON-CROSS-UP-NOT-STATE`** — A-1 rsi_oversold, A-4 rsi21_slow, A-5 rsi_volume_200ema fire on RSI sub-threshold STATE (rsi_14<35 stays True for many bars during oversold episode). A-3 rsi9_extreme already correctly uses `rsi_9_rising` (the "turn" not the extreme). Apply A-3's pattern to A-1/A-4/A-5: producer-additive `rsi_14_cross_up_recent_3d` per B655 T10 + B722 hull_rsi precedents. Mean-reversion's "right entry" = turn not the extreme. Per Reviewer 5 + post-Q fire-count projection ticket. ~~PENDING-OWNER-APPROVAL~~ **PRODUCER-ADDITIVE SHIPPED B795 2026-06-15** (strategy-side EVENT-conversion deferred per `feedback_no_rushing_per_strategy_tweak` + B789 lesson). Added to compute_rsi (technical.py) for all 4 RSI periods (2 / 9 / 14 / 21) x 4 EVENT signals = **16 new producer signals**: `rsi_{p}_cross_up_oversold_recent_3d` (today>=30 + prior 3d<30) + `rsi_{p}_cross_dn_overbought_recent_3d` (today<=70 + prior 3d>70) + extreme variants for <20 / >80 thresholds. Wyckoff Spring + Connors capitulation discipline = turn not extreme. Strategies (A-1 strat_rsi_oversold / A-4 strat_rsi21_slow / A-5 strat_rsi_volume_200ema) UNCHANGED; strategy-side EVENT-conversion deferred to B796+ with smoke+demo verification per B789 lesson. Source: B766 reviewer rec + B779 owner approval + B795 producer-additive. Class 2 LOOSEN/TIGHTEN.
 
 39. **`S4-B766-A-1-CONNORS-OR-DISJUNCT-EMPHASIS-CORRECTION`** — A-1 strat_rsi_oversold uses `(rsi_2 < 5 OR rsi_14 < 35)` Connors-OR-disjunct with EQUAL emphasis. Per Connors+Alvarez 2009: RSI(2)<5 in uptrend is the documented edge; RSI(14)<35 is the slower fallback. The OR-disjunct has emphasis backwards: RSI(14)<35 is the NOISY leg that adds most fires; RSI(2)<5 is the SELECTIVE leg with the real edge. Tune: make RSI(2)<5 PRIMARY, drop or down-weight RSI(14)<35 path. Also resolves existing Pattern R ticket (`S4-B750-A-1-PATTERN-Q-RSI-OVERSOLD-EVENT-CONVERSION` family) better than current "add EVENT variant" approach. **B768 ANNOTATION (PARTIALLY REFUTED 2026-06-15):** Demo edge-prior measured `rsi_14_lt_30` Sharpe@10d=0.281 (STRONGEST of all 14 triggers tested) with hit_rate 63%, pnl=+184bp/10d. RSI(14)<30 is genuine documented edge, NOT noisy fallback. Reviewer's emphasis-backward claim does NOT survive direct measurement at threshold 30. Strategy's actual gate is 14<35 (looser); cube will measure that specifically. Recommendation revised: KEEP OR-disjunct pending cube; rsi_14<30 leg has real edge per B768 empirical evidence. PENDING-OWNER-APPROVAL (revised scope). Source: B766 reviewer Part 2 Connors stack section + B768 empirical refutation. Class 2 LOOSEN/TIGHTEN. HIGH.
 
@@ -867,6 +867,14 @@ Producer-additive per B766 reviewer rec. Added to compute_bollinger (technical.p
 **B794 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#44 producer-additive shipped; strategy-side deferred). Tickets filed: **0 NEW + 1 annotation** on #44 (PRODUCER-ADDITIVE-SHIPPED; strategy deferred) + 1 code change. **Audit-clean: YES.**
 
 **Cumulative ticket count post-B794: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 34 — B795 #38 RSI cross-up/down EVENT producer-additive SHIPPED
+
+Producer-additive per B766 reviewer rec. Added to compute_rsi (technical.py) for all 4 RSI periods (2 / 9 / 14 / 21) x 4 EVENT signals = **16 new producer signals**. Strategies (A-1/A-4/A-5) UNCHANGED; strategy-side EVENT-conversion deferred per `feedback_no_rushing_per_strategy_tweak` + B789 lesson. Pyramid 842/842.
+
+**B795 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#38 producer-additive shipped). Tickets filed: **0 NEW + 1 annotation** + 1 code change. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B795: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
