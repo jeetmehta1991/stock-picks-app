@@ -4589,24 +4589,45 @@ def strat_avwap_252_breakout(s):
 
 
 def strat_avwap_50_reclaim(s):
-    """Batch 208: AVWAP-50-low reclaim with confirming momentum. Higher-
-    frequency variant of the 252-low strategy targeting recent-leg
+    """B790 #47 (2026-06-15 owner-approved B779) EVENT-on-reclaim conversion
+    per B766 reviewer rec. Pre-fix used `above_avwap_50low` STATE gate which
+    retained True for extended periods after reclaim (entry timing diluted).
+    Now fires only on the FRESH reclaim event (close back above AVWAP after
+    being below within last 3 days).
+
+    CHECKLIST #108 pre-flight:
+      (a) Hypothesis: STATE above_avwap_50low retains True for extended periods
+          after a reclaim; STATE gate fires throughout the up-period (entry
+          timing diluted). EVENT avwap_50low_reclaim_recent_3d fires only on
+          fresh reclaim bars (true entry-timing signal).
+      (b) Fire-count projection: STATE form fires ~52% of bars when above
+          AVWAP-50low (per B768 demo + cluster doc); EVENT form ~5-10% of
+          STATE rate. Pre-fix B760 fire count for strat_avwap_50_reclaim was
+          ~1,228/yr at smoke scale; post-fix ~125-250/yr expected.
+      (c) Validation plan: cube cell measurement post-fix; verify edge persists.
+      (d) Precedent: B655 T10 supertrend / B772 B-13 / B788 B-29 EVENT-conversion.
+
+    Producer-additive `avwap_50low_reclaim_recent_3d` shipped same batch in
+    compute_vwap (technical.py).
+
+    Batch 208 (original): AVWAP-50-low reclaim with confirming momentum.
+    Higher-frequency variant of the 252-low strategy targeting recent-leg
     reclaims rather than annual-reference inflections. Pairs naturally
-    with the 50-day momentum window."""
-    above_50 = s.get("above_avwap_50low", False)
-    pct_from_50 = s.get("pct_from_avwap_50low", 0.0)
+    with the 50-day momentum window.
+    """
+    # B790 #47 EVENT-on-reclaim: fire on FRESH reclaim event, not STATE retention.
+    reclaim_event_long = s.get("avwap_50low_reclaim_recent_3d", False)
+    loss_event_short = s.get("avwap_50low_loss_recent_3d", False)
     macd_bull = s.get("macd_12_26_9_bullish", False)
     # Long: just reclaimed AVWAP-50 + MACD turning bullish
     fl = (
-        above_50
-        and abs(pct_from_50) < 1.5
+        reclaim_event_long
         and macd_bull
         and s.get("price_above_ema_200", False)  # require uptrend regime
     )
     # Short: just lost AVWAP-50 + MACD turning bearish
     fs = (
-        (not above_50)
-        and abs(pct_from_50) < 1.5
+        loss_event_short
         and (not macd_bull)
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))

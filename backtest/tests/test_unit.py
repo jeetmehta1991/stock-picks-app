@@ -9006,14 +9006,20 @@ def test_batch208_avwap_252_breakout_long_fires_near_reclaim():
 
 
 def test_batch208_avwap_50_reclaim_requires_200ema_regime():
-    """Batch 208: avwap_50_reclaim long requires price > 200-EMA (regime
-    gate). Short side requires price below 200-EMA (symmetric)."""
+    """Batch 208 + B790 #47 (2026-06-15 EVENT-conversion): avwap_50_reclaim long
+    requires EVENT signal `avwap_50low_reclaim_recent_3d` + price > 200-EMA
+    (regime gate). Short side requires EVENT loss signal + price < 200-EMA.
+
+    B790 #47 EVENT-conversion: STATE `above_avwap_50low` was retained for
+    extended periods after reclaim diluting entry timing. Producer-additive
+    EVENT signal fires only on FRESH reclaim bar.
+    """
     from backtest.signals.screener import strat_avwap_50_reclaim
+    # B790 EVENT-form: requires avwap_50low_reclaim_recent_3d (fresh reclaim event)
     s = {
-        "above_avwap_50low": True,
-        "pct_from_avwap_50low": 0.5,
+        "avwap_50low_reclaim_recent_3d": True,
         "macd_12_26_9_bullish": True,
-        "price_above_ema_200": False,  # bear regime
+        "price_above_ema_200": False,  # bear regime -> should NOT fire LONG
     }
     r = strat_avwap_50_reclaim(s)
     assert not r["fires"] or r["direction"] != "long"

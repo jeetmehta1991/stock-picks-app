@@ -308,7 +308,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 46. **`S4-B766-AVWAP-PROXIMITY-ATR-SCALED-NOT-FIXED-PERCENT`** — A-22 avwap_50_reclaim (1.5% proximity) + A-23 avwap_252_breakout (2.0% proximity) + A-24 avwap_20high_rejection_short (1.0% proximity) all use FIXED percent proximity gates. Per reviewer: 1.5% means different things on a 15%-vol name vs 60%-vol name. Replace with ATR-scaled proximity (e.g., 0.5 × 20-bar ATR / price). Producer-additive `near_avwap_X_atr_scaled` family. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 AVWAP section. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
 
-47. **`S4-B766-AVWAP-RECLAIM-ENTRY-FIRING-LOGIC-FORMALIZATION`** — A-22 avwap_50_reclaim fires on `above_avwap_50low` (STATE: price above AVWAP). Per reviewer: AVWAP reclaim is institutional-cost-basis concept; entry should fire on RECLAIM EVENT (close back above AVWAP AFTER being below), not the STATE. Producer-additive `avwap_50_reclaim_recent_3d` per B655 T10 EVENT-conversion pattern. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 AVWAP section. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
+47. **`S4-B766-AVWAP-RECLAIM-ENTRY-FIRING-LOGIC-FORMALIZATION`** — A-22 avwap_50_reclaim fires on `above_avwap_50low` (STATE: price above AVWAP). Per reviewer: AVWAP reclaim is institutional-cost-basis concept; entry should fire on RECLAIM EVENT (close back above AVWAP AFTER being below), not the STATE. Producer-additive `avwap_50_reclaim_recent_3d` per B655 T10 EVENT-conversion pattern. ~~PENDING-OWNER-APPROVAL~~ **SHIPPED B790 2026-06-15** (owner-approved B779). Producer-additive `avwap_{key}_reclaim_recent_3d` + `avwap_{key}_loss_recent_3d` added to `compute_vwap` (technical.py) for all 4 AVWAP anchors (252low / 50low / 20high / 20low; FREE producer-side extensibility for future EVENT consumers). strat_avwap_50_reclaim gate switched STATE -> EVENT: LONG uses `avwap_50low_reclaim_recent_3d`; SHORT uses `avwap_50low_loss_recent_3d`. CHECKLIST #108 pre-flight inline in strategy docstring (a-d). Test test_batch208_avwap_50_reclaim_requires_200ema_regime updated to codify B790 EVENT-form. Source: B766 reviewer + B779 owner approval + B790 implementation. Class 2 LOOSEN/TIGHTEN.
 
 48. **`S4-B766-A-17-A-20-A-21-CAMARILLA-CPR-TIMEFRAME-MISMATCH-STRUCTURAL-DECISION`** — A-17 camarilla_r4_breakout + A-20 cpr_narrow_momentum + A-21 cpr_narrow_momentum_short are the SAME strategies that measured 12,534/yr + 8,463/yr in pivot cluster B660 measurement (per existing B720+B718 ceiling work). Camarilla + CPR are intraday tools on daily bars — timeframe mismatch confirmed empirically, not hypothetical. Parameter tuning won't fix structural mismatch. Owner decision: (a) move strategies to intraday bars; (b) reframe as daily momentum and DROP pivot-precision language; (c) DELETE per timeframe-mismatch rationale. ~~PENDING-OWNER-DECISION-A-B-OR-C~~ **SHIPPED B787 2026-06-15** (owner-decided option (b) reframe as daily momentum). Per CLAUDE.md: intraday is out-of-Stage-2 scope; option (a) deferred indefinitely. Per `feedback_no_a_priori_strategy_pruning`: option (c) DELETE rejected. Option (b) applied: strategy docstrings updated on strat_camarilla_r4_breakout + strat_cpr_narrow_momentum + strat_cpr_narrow_momentum_short with "REFRAMED POST-B787 #48" headers explicitly DROPPING pivot-precision language + treating as DAILY momentum-context (R4 break + volume / narrow CPR + directional close). Cube measures whether daily-momentum-shaped edge survives at the high B660 fire rates. Source: B766 reviewer Part 2 + B787 owner option (b) decision. Class 2 STRUCTURAL-DECISION.
 
@@ -804,6 +804,22 @@ Demo (30 tickers; bxdl3d103) launched as background for at-scale confirmation.
 **B789 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#43 ANTI_SELECTION_CONFIRMED_EXTREME on smoke; gate fix applied) + 1 nuanced (symmetric SHORT-side application per cube-authoritative + similar-warning logic). Tickets filed: **0 NEW + 1 annotation** on #43 (COMPLETED-EMPIRICAL + gate fix shipped) + 1 new script (mfi_obv_anti_selection_test.py 200 LOC) + 1 strategy change (strat_mfi_oversold). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B789: 133 unique S4-B7XX tickets** (no change).
+
+### TIER 29 — B790 #47 AVWAP reclaim EVENT-conversion SHIPPED
+
+Per `feedback_no_rushing_per_strategy_tweak`: one strategy per batch. Owner-approved B779 (#47 in B766 bundle).
+
+**Producer-additive (compute_vwap technical.py):** `avwap_{key}_reclaim_recent_3d` + `avwap_{key}_loss_recent_3d` for all 4 AVWAP anchors (252low / 50low / 20high / 20low). Reclaim = (today_close > avwap) AND (any prior bar in last 3 days had close < avwap). Mirror for loss.
+
+**Strategy change (strat_avwap_50_reclaim):** STATE `above_avwap_50low` + proximity gate -> EVENT `avwap_50low_reclaim_recent_3d` (LONG) / `avwap_50low_loss_recent_3d` (SHORT). CHECKLIST #108 pre-flight inline (a-d) in docstring.
+
+**Test update:** `test_batch208_avwap_50_reclaim_requires_200ema_regime` updated to codify B790 EVENT-form per `feedback_audit_recommendations_against_existing_directives` test-supersession pattern.
+
+**Fire-count projection per CHECKLIST #108 (b):** STATE form fires ~1,228/yr at B760 smoke scale; EVENT form expected ~125-250/yr (5-10x reduction per B655 T10 precedent). Cube cell measurement post-fix verifies edge persistence.
+
+**B790 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#47 EVENT-conversion shipped with producer + strategy + test changes). Tickets filed: **0 NEW + 1 annotation** on #47 (SHIPPED) + 3 code changes (technical.py producer-additive + screener.py strategy gate + test_unit.py test update). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B790: 133 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 

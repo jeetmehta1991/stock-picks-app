@@ -415,6 +415,34 @@ def compute_vwap(df: pd.DataFrame) -> dict:
         # False if absent).
         out[f"below_avwap_{key}"]        = close < avwap
         out[f"pct_from_avwap_{key}"]     = round((close - avwap) / avwap * 100, 3)
+        # B790 #47 (2026-06-15 owner-approved B779) producer-additive
+        # EVENT-on-reclaim/loss signals per CHECKLIST #108 + B655 T10 +
+        # B788 B-29 EVENT-conversion precedent. Pattern: was close<avwap
+        # within last N days AND is close>avwap today -> reclaim event.
+        # Mirror for loss. Computes from existing avwap_s Series sliced
+        # to last N+1 bars + post-anchor close series.
+        try:
+            n_lookback = 3
+            avwap_recent = avwap_s.iloc[-(n_lookback + 1):]
+            close_recent = post["close"].iloc[-(n_lookback + 1):]
+            if len(avwap_recent) >= 2 and len(close_recent) == len(avwap_recent):
+                # Reclaim event: today close > avwap AND any prior bar
+                # within last n_lookback had close < avwap.
+                today_above = close > avwap
+                today_below = close < avwap
+                # Compare prior bars (exclude today)
+                prior_close = close_recent.iloc[:-1]
+                prior_avwap = avwap_recent.iloc[:-1]
+                prior_below = (prior_close < prior_avwap).any()
+                prior_above = (prior_close > prior_avwap).any()
+                out[f"avwap_{key}_reclaim_recent_3d"] = bool(today_above and prior_below)
+                out[f"avwap_{key}_loss_recent_3d"]    = bool(today_below and prior_above)
+            else:
+                out[f"avwap_{key}_reclaim_recent_3d"] = False
+                out[f"avwap_{key}_loss_recent_3d"]    = False
+        except Exception:
+            out[f"avwap_{key}_reclaim_recent_3d"] = False
+            out[f"avwap_{key}_loss_recent_3d"]    = False
     return out
 
 
