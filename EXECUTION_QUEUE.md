@@ -204,6 +204,38 @@ Owner directive 2026-06-14 "approve all for filing" — 16 council tickets queue
 
 24. **`S4-B761-CAMARILLA-RSI-OBV-FAMILY-EXPLORATORY-TAG-MANDATORY`** — Per B761 empirical refutation + W5m precedent: tag A-18 camarilla_rsi_obv + A-19 camarilla_rsi_obv_short as EXPLORATORY (DO-NOT-DEPLOY regardless of cube verdict). A-17 camarilla_r4_breakout has different gates so may not be affected. Per Pattern AA: 4-gate-stack with negative gate-correlation = structurally-limited effective-N below min_trades=100. PENDING-OWNER-APPROVAL. Source: B761 empirical probe. Class 6 DEFERRED + EXPLORATORY tag. HIGH.
 
+---
+
+## B762 COMPREHENSIVE AUDIT (2026-06-15) — 6 MISSING TICKETS FILED
+
+Owner directive 2026-06-15 04:50 UTC: "Is execution queue updated? Anything that has been missed? Do a comprehensive review." Source-verified via grep `S4-B7[5-6][0-9]-` against all B756-B761 commit messages + cluster doc wrap-ups + finding summaries. **6 findings surfaced in B756-B761 but NOT filed as queue tickets** per `feedback_execution_queue_mandatory_per_turn` HARD RULE:
+
+25. **`S4-B757-SIGNALS-USED-CONVENTION-INCONSISTENCY`** — B757 CHECKLIST-106 smoke audit surfaced that the `signals_used` field returned by strategies mixes THREE incompatible content types:
+    - **Real producer keys** (`rsi_14`, `shooting_star`) — auditable against compute_all_signals output
+    - **Semantic descriptions** (`rsi_2<5_or_rsi_14<35`, `at_pivot_support`) — NOT producer keys; describe the gate's mechanism in human-readable form
+    - **Convention markers** (`borrow_ok`) — tested via `_short_borrow_trap_active()` helper, not producer-emitted signal
+    
+    19 strategies declare `borrow_ok` in signals_used; CHECKLIST-106 audit flagged it as HIGH-severity Pattern F because it's "declared but never emitted". This is a FALSE POSITIVE caused by convention-vs-producer-key conflation. Per `feedback_data_consumption_audit_must_apply_checklist_44b` discipline: codify which signals_used entries are auditable producer keys vs which are documentation/convention. Possible fix: introduce a `producer_signals_used` field separate from documentation `signals_used`. PENDING-OWNER-APPROVAL. Source: B757 smoke. Class 2 METHODOLOGY-CORRECTION. MEDIUM-HIGH.
+
+26. **`S4-B757-KNOWN-EVENT-PROBES-FAIL-REVISIT`** — B757 smoke ran 2 KNOWN-EVENT probes per CHECKLIST #106(e): AAPL 2020-03-23 COVID-crash + 2024-08-05 carry-unwind, both expecting `rsi_14 < 35`. **Both FAILED** but for different reasons: 2020-03-23 was OUTSIDE the smoke window (AAPL OHLCV cache may start 2024); 2024-08-05 actual rsi_14 was >= 35 per producer (suggesting probe date was wrong or AAPL recovered too quickly for closing-bar RSI). Per CHECKLIST #44(b): investigate-why — verify (a) full-window OHLCV cache includes 2020, (b) the 2024-08-05 date is correct (gut-check: maybe August 5 was the gap-down bar but RSI took 1-2 more days to dip below 35). PENDING-OWNER-APPROVAL. Source: B757 smoke. Class 9 PRODUCER-AUDIT. MEDIUM.
+
+27. **`S4-B757-SHOOTING-STAR-HAMMER-ALWAYS-FALSE-DEMO-CONFIRM`** — B757 smoke flagged `shooting_star` (3 strats) + `hammer` (2 strats) as "emitted_but_always_False". Could be (a) small-sample artifact (candle patterns are rare; 3 tickers × 1yr × ~252 bars = small chance) or (b) real producer issue. Demo (50 tickers × 2yr) will resolve. PENDING-DEMO-AUDIT-COMPLETION (b71jvqov2-equivalent for CHECKLIST-106). Source: B757 smoke. Class 9 PRODUCER-AUDIT. MEDIUM.
+
+28. **`S4-B758-VERDICT-RULE-OR-LOGIC-EDGE-CASE-REFINEMENT`** — B758 smoke edge-prior test verdicted `rsi_14_lt_30_long` as EDGE_NEGATIVE despite +74.34bps mean PnL and 0.19 Sharpe. Root cause: EDGE_NEGATIVE rule uses OR-logic `hit_rate < 0.49 OR mean_pnl < -3bps`. RSI<30 has hit_rate 0.441 (below threshold) BUT mean PnL +74bps. This is the classic "low win rate / high payoff" mean-reversion pattern (the EV is positive despite <50% wins because winners are larger). The verdict rule should distinguish "low WR but profitable" from "low WR AND unprofitable". Propose: EDGE_NEGATIVE = (hit_rate < 0.49 AND mean_pnl < -3bps); add new class EDGE_ASYMMETRIC_PAYOFF = (hit_rate < 0.49 AND mean_pnl > 10bps AND sharpe > 0.05). PENDING-OWNER-APPROVAL. Source: B758 smoke. Class 2 METHODOLOGY-REFINEMENT. MEDIUM-HIGH.
+
+29. **`S4-B760-DEMO-FIRE-BAR-ZERO-PATTERN-W-J-CANDIDATES-FINDING`** — B760 demo fire-bar matrix surfaced **0** Pattern W candidates (Jaccard ≥ 0.85) and **0** Pattern J candidates (phi ≥ 0.70) across 30 Cluster A strategies × 50 tickers × 1yr 2024. **This contradicts BOTH** the council's gate-text Pattern W methodology (3 candidates surfaced) AND the chairman's projected "30 → ~12-15 effective primitives" Pattern J consolidation. Possible interpretations: (a) cluster A is more orthogonal than gate-text inspection suggested → fewer consolidation opportunities; (b) demo sample (50 tickers × 1yr) insufficient to reveal true overlap → full run (T1a × 2020-2026) will resolve; (c) thresholds (0.85 / 0.70) too strict → consider tiered surfacing. The full fire-bar matrix run (S4-B760-FIRE-BAR-MATRIX-FULL-RUN-LAUNCH, ticket #23, currently RUNNING-B761) will give definitive answer. PENDING-FULL-RUN-COMPLETION. Source: B760 demo. Class 8 FINDING-AWAITING-DEFINITIVE-EVIDENCE. HIGH.
+
+30. **`S4-B761-DEMO-EDGE-PRIOR-LAUNCH-STATUS`** — Per B761 launched `python scripts/mean_reversion_edge_prior_test.py --demo` in background (task `b43gepdb0`, started 03:43 UTC, ETA ~30min). Will give definitive answer to smoke's MEAN_REVERSION_EDGE_CONFIRMED verdict on a 50-ticker × 2yr (2024-2025) sample. Status: RUNNING-B761. Update queue with verdict when complete. Source: B761 batch. Class 9 INFRA. MEDIUM (tracking).
+
+**Cumulative ticket count post-B762 audit:**
+- B750-B755 batches: ~80 tickets
+- B755-COUNCIL: 16 tickets  
+- B756-B761 follow-ups: 7 tickets (B760 #17-23 + B761 #24)
+- **B762 missed-ticket audit: +6 tickets (#25-30)**
+- **Grand total: ~91 NEW Stage 4 sweep tickets** filed in EXECUTION_QUEUE.md
+
+**Audit verdict:** 6 findings from B756-B761 batches were surfaced in commit messages + analysis but NOT filed as queue tickets. Per `feedback_execution_queue_mandatory_per_turn` HARD RULE this was a gap. Now closed. Cumulative tracking discipline maintained.
+
 18. **`S4-B760-PATTERN-W-METHODOLOGY-REVISION-EMPIRICAL-NOT-GATE-TEXT`** — Codify that ALL Pattern W deletion decisions must use fire-bar Jaccard precompute (B709 phi-correlation / B760 chairman) NOT gate-text comparison. Pattern W deletion proposals via gate-text inspection are HEURISTIC ONLY pending empirical validation. Update STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md sections referencing "Pattern W deterministic-duplicate" to note empirical validation requirement. PENDING-OWNER-APPROVAL. Source: B760 0-of-3 council validation. Class 2 METHODOLOGY-CORRECTION. HIGH.
 
 19. **`S4-B760-AVWAP-50-RECLAIM-HIGH-FIRE-COUNT-AUDIT`** — Demo measured 1,228 fires for `strat_avwap_50_reclaim` on 50 tickers × 1yr (the top firer in Cluster A). Extrapolated to T1a 503 tickers × 6.4yr: ~80K fires/yr universe-wide, **well above B710 5K/yr state-flag ceiling**. Per B718 cpr_narrow_tight precedent (12,534/yr → tighten to 0.05 producer): potential ceiling-fix candidate. Audit hardcoded `pct_from_50 < 1.5` proximity threshold — tighten to 0.5 producer-additive? PENDING-OWNER-APPROVAL. Source: B760 demo. Class 2 LOOSEN/TIGHTEN. MEDIUM-HIGH.
