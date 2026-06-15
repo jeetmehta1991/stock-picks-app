@@ -2005,7 +2005,16 @@ def strat_bullish_engulfing_support(s):
 
 
 def strat_hammer_at_support_long(s):
-    """Batch 685 (2026-06-10 owner-approved Class 7 NEW) per
+    """STATUS POST-B773: EXPLORATORY (per B769 council F5 + Outsider flag --
+    Class 7 NEW inverse-mirror registered B685 but NEVER cluster-walked).
+
+    Pragmatic EXPLORATORY tag per chairman's "walk only if walk could change
+    disposition" rule (otherwise process-theater). Tag is NON-DELETION per
+    feedback_no_a_priori_strategy_pruning; strategy still registers + runs +
+    cube-evaluates. Remove tag post-cluster-walk if validation produces
+    PASS_CUBE outcome.
+
+    Batch 685 (2026-06-10 owner-approved Class 7 NEW) per
     feedback_long_short_inverse_audit + B683 self-critique CC-4
     missing-inverse audit. Symmetric mirror of CC-4
     strat_shooting_star_short.
@@ -2273,13 +2282,45 @@ def strat_camarilla_rsi_obv(s):
 
 
 def strat_supertrend_ichimoku_adx(s):
+    """Batch 773 (2026-06-15) Pattern Q EVENT-conversion on LONG side per B769
+    council F4 (re-sequenced parallel-not-after) + chairman "ships when ready":
+    fire on FRESH confluence (supertrend FLIP + ichi BREAK, recent 5d) AND
+    adx_strong STATE confirmation; not sustained STATE-only confluence.
+
+    LONG side rationale: B660 measured 3,365 fires/yr LONG-side universe-wide
+    (over-firing). Pattern Q reduces to fresh-flip-event with strong-trend
+    confirmation; ~10x reduction expected per B655 T10 precedent -> ~340/yr
+    LONG (still PASS_CUBE; min_trades=100 overall easily satisfied).
+
+    SHORT side kept STATE-form per feedback_minimum_fire_count_gate_before_
+    cube: B660 measured only 63 fires/yr SHORT-side; Pattern Q reduction
+    (~10x) would push to ~6/yr -- below min_trades=30 per-regime threshold
+    (cube would not produce statistically valid PASS/FAIL). Asymmetric
+    application per feedback_structural_symmetry_not_economic_symmetry
+    (structural symmetry doesn't imply economic; SHORT-side already low-fire
+    structurally + drift bias + borrow + squeeze risk).
+
+    Cross-system pairwise correlations measured B660 + verified B772
+    (all <0.090) -- the three indicators are EMPIRICALLY INDEPENDENT, so
+    this is genuine fresh-confluence, not collinear triple-counted (per
+    F8 refutation B772). adx_strong stays STATE confirmation -- no EVENT
+    variant exists; adx_strong at fire bar confirms trend strength, not
+    a stale signal.
+    """
+    # B773 Pattern Q EVENT-conversion (LONG): supertrend FLIP + ichi BREAK
+    # recent 5d. EVENT signals available per B770 PIT audit (multi_timeframe
+    # PIT-clean; technical.py ichi_above_cloud_break_recent_5d emitted).
+    fl = (s.get("supertrend_flip_recent_long_5d")
+          and s.get("ichi_above_cloud_break_recent_5d")
+          and s.get("adx_strong"))
+    # SHORT side KEPT STATE per fire-count threshold rationale (docstring).
     # B630 sweep: positive symmetric supertrend_bearish (B630 producer)
-    fl = (s.get("supertrend_bullish") and s.get("ichi_above_cloud") and s.get("adx_strong"))
     fs = (s.get("supertrend_bearish") and s.get("ichi_below_cloud") and s.get("adx_strong")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["supertrend_bullish","ichi_above_cloud","adx_strong"], ["supertrend_bearish","ichi_below_cloud","adx_strong", "borrow_ok"],
-        ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bullish"],
-        ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bearish"])
+        ["supertrend_flip_recent_long_5d","ichi_above_cloud_break_recent_5d","adx_strong"],
+        ["supertrend_bearish","ichi_below_cloud","adx_strong", "borrow_ok"],
+        ["Supertrend FLIP + Ichimoku BREAK + ADX strong  -  fresh trend confluence (B773 Pattern Q EVENT-conversion)"],
+        ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bearish (SHORT STATE per fire-count threshold)"])
 
 
 def strat_williams_stoch_dual(s):
@@ -4541,7 +4582,17 @@ def strat_head_and_shoulders_bottom_long(s):
 
 
 def strat_head_and_shoulders_top_short(s):
-    """Batch 685 (2026-06-10 owner-approved Class 7 NEW) per
+    """STATUS POST-B773: EXPLORATORY (per B769 council F5 + Outsider flag --
+    Class 7 NEW inverse-mirror registered B685 but NEVER cluster-walked +
+    inherits chart-pattern repaint/phantom-breakout risk + SHORT-side
+    fighting upward drift per Pattern S structural asymmetry).
+
+    Pragmatic EXPLORATORY tag per chairman's "walk only if walk could change
+    disposition" rule. Tag is NON-DELETION per feedback_no_a_priori_strategy_
+    pruning. Note B732 referenced EXPLORATORY-inheritance from h&s-bottom
+    long counterpart but code marker was missing; B773 codifies.
+
+    Batch 685 (2026-06-10 owner-approved Class 7 NEW) per
     feedback_long_short_inverse_audit + B683 self-critique B678 CC-B
     missing-inverse audit. Mirror of strat_head_and_shoulders_bottom_long.
 
@@ -4609,7 +4660,16 @@ def strat_double_bottom_long(s):
 
 
 def strat_inverted_cup_and_handle_short(s):
-    """Batch 686 (2026-06-10 owner-approved Class 7 NEW per B683 self-
+    """STATUS POST-B773: EXPLORATORY (per B769 council F5 + Outsider flag --
+    Class 7 NEW inverse-mirror registered B686 but NEVER cluster-walked +
+    inherits chart-pattern repaint/phantom-breakout risk + SHORT-side
+    fighting upward drift per Pattern S + previously flagged EXPLORATORY-
+    candidate in docstring post-B660 fire-starve risk class).
+
+    B773 codifies EXPLORATORY-candidate to full EXPLORATORY status.
+    Tag is NON-DELETION per feedback_no_a_priori_strategy_pruning.
+
+    Batch 686 (2026-06-10 owner-approved Class 7 NEW per B683 self-
     critique CP-1 missing-inverse audit; deferred from B685 pending
     producer-side methodology work; now scoped + executed B686).
 

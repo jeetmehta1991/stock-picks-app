@@ -409,6 +409,53 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 **Cumulative ticket count post-B772: 129 unique S4-B7XX tickets** (no change; #53 + #54 closed in place).
 
+### TIER 12 — B773 TIER 2 work: Pattern Q EVENT-conversion (B-13 LONG) + Class-7 EXPLORATORY tag extension (B-18/B-19/B-20)
+
+**B773 executed B769 TIER 2 work** -- both items in parallel (chairman: "1-2 weeks", but tractable now since data exists).
+
+**Pattern Q EVENT-conversion on B-13 strat_supertrend_ichimoku_adx (LONG side only):**
+
+  Per B769 F4 chairman re-sequence (parallel NOT sequential per Executor false-dependency).
+  B660 measured 3,365/yr LONG-side (over-firing) + 63/yr SHORT-side.
+
+  LONG side: STATE `supertrend_bullish AND ichi_above_cloud AND adx_strong`
+             -> EVENT `supertrend_flip_recent_long_5d AND ichi_above_cloud_break_recent_5d AND adx_strong`
+  Expected ~10x reduction per B655 T10 precedent -> ~340/yr LONG (still PASS_CUBE).
+
+  SHORT side KEPT STATE per `feedback_minimum_fire_count_gate_before_cube`:
+  B660 measured 63/yr SHORT; Pattern Q reduction ~10x would push to ~6/yr (below
+  min_trades=30/regime). Asymmetric application per `feedback_structural_symmetry_
+  not_economic_symmetry` (drift + borrow + squeeze + low-fire structurally).
+
+  Per B772 F8 refutation: cross-system pairwise correlations all <0.090 -- the three
+  indicators are EMPIRICALLY INDEPENDENT, so this is genuine fresh-confluence not
+  collinear triple-counting. adx_strong stays STATE confirmation (no EVENT variant
+  exists for ADX; adx_strong at fire bar confirms trend strength at the event).
+
+  Existing #S4-B750-B-13-Q-EVENT-CONVERSION SHIPPED B773 LONG side; SHORT side
+  intentionally not converted per asymmetric fire-count rationale.
+
+**Class-7 EXPLORATORY tag extension (B-18 + B-19 + B-20):**
+
+  Per B769 F5 + Outsider flag annotation on existing #S4-B750-B-19-HEAD-SHOULDERS-
+  TOP-SHORT-EXPLORATORY-VERIFY: EXTEND scope from B-19 only.
+  B-21 strat_triangle_descending_short ALREADY EXPLORATORY (B732). B-18/B-19/B-20
+  did NOT carry the code marker despite docstring references.
+
+  B773 codified STATUS POST-B773: EXPLORATORY docstrings on:
+    B-18 strat_hammer_at_support_long (unwalked + chart-pattern repaint risk)
+    B-19 strat_head_and_shoulders_top_short (unwalked + repaint + SHORT-drift)
+    B-20 strat_inverted_cup_and_handle_short (B-660 fire-starve candidate + repaint + SHORT-drift)
+
+  Per chairman pragmatic-action verdict: "walk only if walk could change disposition"
+  -- EXPLORATORY-tag pragmatic action chosen over walking 3 strategies that would
+  reach the same disposition. Per `feedback_no_a_priori_strategy_pruning`: NON-
+  DELETION marker; strategies still register + run + cube-evaluate.
+
+**B773 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (B-13 Pattern Q LONG asymmetric application; B-18/B-19/B-20 EXPLORATORY tag pragmatic codification) + 1 nuanced (Pattern Q SHORT-side held back to avoid pushing fire-count below threshold). Tickets filed: **0 NEW** + 2 annotations (existing #S4-B750-B-13-Q-EVENT-CONVERSION SHIPPED-LONG-SIDE; existing #S4-B750-B-19-EXPLORATORY-VERIFY scope-extended-codified) + **4 code changes** (B-13 Pattern Q LONG-side + B-18/B-19/B-20 EXPLORATORY docstrings). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B773: 129 unique S4-B7XX tickets** (no change; existing tickets closed in place).
+
 ### Annotations to existing tickets (per CHECKLIST #107 reconciliation)
 
 - **`S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP`** (existing): reviewer recommends RE-RATE from "MEDIUM, pre-cube preferred" to "TOP keystone 3-in-1 fix". Council partial-adopt: Q is real fix BUT NOT keystone (Contrarian: it's 2-in-1; First Principles: keystone is latent-collapse). Sweep stays MEDIUM pending TIER 0-2 evidence + post-Q fire-count projection (ticket #34).
