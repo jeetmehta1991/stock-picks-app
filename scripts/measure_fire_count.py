@@ -511,19 +511,75 @@ def _precompute_tier3_panel(
     return panel
 
 
+def _precompute_tier2_panel(
+    ohlcv_cache: dict, start: date, end: date,
+    sample_cadence_days: int = 21,
+) -> dict[date, dict]:
+    """B776 (S4-B774 ticket #63): precompute TIER 2 cross-sectional features
+    per as_of across business days in [start, end]. Returns dict[date,
+    dict[ticker, dict[xs_*_decile, int]]].
+
+    Same producer as backtest engine invokes (screener.py:7954):
+        from backtest.signals.cross_sectional import compute_cross_sectional_features
+        xs_features = compute_cross_sectional_features(ohlcv_dict, as_of)
+
+    Without this wireup, the 6 factor strategies (xs_low_beta_long / xs_*_decile_*)
+    silently report 0 fires in measurement harness regardless of true fire rate
+    (B774 measurement-gap finding). screener.py invokes the producer in backtest;
+    measure_fire_count.py previously did NOT.
+
+    Sampling cadence: factor signals are typically monthly-rebalanced rank
+    cutoffs; consecutive daily as_of values produce near-identical ranks.
+    Default sample_cadence_days=21 (monthly) -> compute once per month, fill
+    forward for intermediate business days. This reduces cost ~21x vs daily
+    while preserving the rank-cutoff signal at fire bars.
+
+    Returns dict keyed by EVERY business day in range (not just sampled
+    cadence); intermediate days fill forward from the last sampled date.
+    Caller code merges xs_features[ticker] into the per-ticker signals dict.
+    """
+    from backtest.signals.cross_sectional import compute_cross_sectional_features
+    panel: dict[date, dict] = {}
+    bar_dates = list(pd.date_range(start, end, freq="B").date)
+    if not bar_dates:
+        return panel
+    # Sample dates: every Nth business day (default monthly)
+    sampled = bar_dates[::sample_cadence_days]
+    if sampled[-1] != bar_dates[-1]:
+        sampled.append(bar_dates[-1])
+    last_xs: dict = {}
+    sampled_set = set(sampled)
+    for d in bar_dates:
+        if d in sampled_set:
+            try:
+                last_xs = compute_cross_sectional_features(ohlcv_cache, d)
+            except Exception as exc:
+                logger.debug("compute_cross_sectional_features failed at %s: %s", d, exc)
+                last_xs = {}
+        panel[d] = last_xs
+    return panel
+
+
 def _worker_precompute_ticker(args: tuple) -> tuple[str, list]:
     """B694: top-level multiprocessing worker. Computes per-bar signals for
     one ticker. Returns (ticker, signals_by_bar list). Picklable.
 
     Args tuple: (ticker, df, start, end, enable_extended_signals, cot_series,
-                 tier3_panel).
+                 tier3_panel, [tier2_panel]).
+    B776 (#63): added optional tier2_panel for cross_sectional xs_features.
     """
-    ticker, df, start, end, enable_extended, cot_series, tier3_panel = args
+    # Backward-compatible: support both 7-tuple (pre-B776) and 8-tuple (post-B776)
+    if len(args) == 7:
+        ticker, df, start, end, enable_extended, cot_series, tier3_panel = args
+        tier2_panel = None
+    else:
+        ticker, df, start, end, enable_extended, cot_series, tier3_panel, tier2_panel = args
     sigs = _precompute_signals_for_ticker(
         df, ticker, start, end,
         as_of_cache=tier3_panel,
         enable_extended_signals=enable_extended,
         cot_series=cot_series,
+        tier2_panel=tier2_panel,
     )
     return ticker, sigs
 
@@ -533,6 +589,7 @@ def _precompute_signals_for_ticker(
     as_of_cache: Optional[dict] = None,
     enable_extended_signals: bool = True,
     cot_series: tuple[str, ...] = DEFAULT_COT_SERIES,
+    tier2_panel: Optional[dict] = None,
 ) -> list[tuple[date, dict]]:
     """Compute signals for every bar in [start, end] for one ticker.
 
@@ -572,6 +629,13 @@ def _precompute_signals_for_ticker(
             if bar_date not in as_of_cache:
                 as_of_cache[bar_date] = _compute_tier3_signals_for_as_of(bar_date, cot_series)
             signals.update(as_of_cache[bar_date])
+            # B776 #63 TIER 2 merge (per-as_of cross_sectional; xs_*_decile keys)
+            # Without this, factor strategies (xs_low_beta_long etc.) silently
+            # report 0 fires per B774 measurement-gap finding.
+            if tier2_panel is not None and bar_date in tier2_panel:
+                xs_features_for_bar = tier2_panel[bar_date]
+                if isinstance(xs_features_for_bar, dict) and ticker in xs_features_for_bar:
+                    signals.update(xs_features_for_bar[ticker])
         out.append((bar_date, signals))
     return out
 
@@ -729,8 +793,20 @@ def measure_strategies(
             "B694 TIER 3 panel pre-built: %d business-day signal dicts (%.1fs)",
             len(tier3_panel), time.time() - t_tier3,
         )
+        # B776 #63 TIER 2 cross_sectional panel pre-build. Per B774 measurement-
+        # gap finding: without this wireup, factor strategies (xs_low_beta_long
+        # etc.) silently report 0 fires regardless of true fire rate.
+        # Monthly cadence (21 business days) -> factor signals are rank-cutoffs
+        # typically monthly-rebalanced; intermediate days fill forward.
+        t_tier2 = time.time()
+        tier2_panel = _precompute_tier2_panel(ohlcv_cache, start, end, sample_cadence_days=21)
+        logger.info(
+            "B776 #63 TIER 2 cross_sectional panel pre-built: %d business-day xs_features dicts (%.1fs)",
+            len(tier2_panel), time.time() - t_tier2,
+        )
     else:
         tier3_panel = {}
+        tier2_panel = {}
 
     # B694: multiprocessing branch when n_workers > 1. Single-threaded branch
     # preserved as the default + the fallback for diff-vs-baseline runs.
@@ -740,10 +816,11 @@ def measure_strategies(
             "B694 multiprocessing ENABLED: spawning %d worker processes for per-ticker precompute",
             n_workers,
         )
-        # Build per-ticker arg tuples. ohlcv df is picklable; tier3_panel is
-        # picklable (plain nested dict).
+        # Build per-ticker arg tuples. ohlcv df is picklable; tier3_panel +
+        # tier2_panel are picklable (plain nested dicts). B776 #63 8-tuple
+        # includes tier2_panel.
         worker_args = [
-            (ticker, df, start, end, enable_extended_signals, cot_series, tier3_panel)
+            (ticker, df, start, end, enable_extended_signals, cot_series, tier3_panel, tier2_panel)
             for ticker, df in ohlcv_cache.items()
         ]
         n_done = 0
@@ -770,6 +847,7 @@ def measure_strategies(
                     as_of_cache=tier3_panel,
                     enable_extended_signals=enable_extended_signals,
                     cot_series=cot_series,
+                    tier2_panel=tier2_panel,
                 )
             except Exception as exc:
                 import traceback

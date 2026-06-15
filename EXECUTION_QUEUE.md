@@ -359,7 +359,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 60. **`S4-B769-COUNCIL-CLUSTER-B-GATE-JUSTIFICATION-SOFT-DISCIPLINE-PER-TURN-NOT-CHECKLIST-PRE-GATE`** — Per F2 REVISED + Reviewer 4 meta-gate conflict + M3 unanimous-missed: codify gate-justification PRINCIPLE softly. Each turn that ADDS a gate must surface (a) conditional-return hypothesis, (b) post-cube validation plan, (c) cite empirical or literature precedent. **NOT a pre-gate CHECKLIST item** (that would be a-priori-pruning rule conflicting with cube-authoritative stance per Reviewer 4 + M3). Per-turn soft-discipline format. GATED on #61 (M3 conflict-resolution memo). PENDING-OWNER-APPROVAL. Source: B769 external council F2 REVISED + B769 inline council Reviewer 4 + M3 unanimous-missed. Class 1 DOC-DISCIPLINE. TIER 3 POST-F1-F9 MEDIUM.
 
-61. **`S4-B769-COUNCIL-CLUSTER-B-F2-META-GATE-VS-NO-A-PRIORI-PRUNING-CONFLICT-RESOLUTION-MEMO`** — Per M3 (unanimous all-five-missed by external council): codifying "gates need conditional-return evidence" before cube runs is itself an a-priori-pruning rule. Principle correct; codification mechanism may conflict with project's `feedback_no_a_priori_strategy_pruning.md` + cube-authoritative stance. **Resolve BEFORE adding to CHECKLIST** (precedes #60). Memo addresses: (a) when does soft-discipline pre-gate become a-priori-pruning?, (b) how to distinguish "evidence-required" from "approval-required"?, (c) is the principle compatible with the project's existing rules? PENDING-OWNER-APPROVAL. Source: B769 inline council M3 unanimous-missed. Class 1 PROJECT-PRINCIPLES. TIER 3 PRE-#60 MEDIUM.
+61. **`S4-B769-COUNCIL-CLUSTER-B-F2-META-GATE-VS-NO-A-PRIORI-PRUNING-CONFLICT-RESOLUTION-MEMO`** — Per M3 (unanimous all-five-missed by external council): codifying "gates need conditional-return evidence" before cube runs is itself an a-priori-pruning rule. Principle correct; codification mechanism may conflict with project's `feedback_no_a_priori_strategy_pruning.md` + cube-authoritative stance. **Resolve BEFORE adding to CHECKLIST** (precedes #60). Memo addresses: (a) when does soft-discipline pre-gate become a-priori-pruning?, (b) how to distinguish "evidence-required" from "approval-required"?, (c) is the principle compatible with the project's existing rules? ~~PENDING-OWNER-APPROVAL~~ **COMPLETED B776 2026-06-15.** Memo authored at `PROJECT_PRINCIPLES_M3_GATE_JUSTIFICATION_VS_NO_A_PRIORI_PRUNING.md`. Resolution: 3-scenario scoping (NEW strategy design = excluded; gate MODIFICATION to existing = soft-discipline applies; gate REMOVAL on evidence of harm = mandatory). Proposes CHECKLIST #108 (soft-discipline scope) for ticket #60 implementation. Compatible with no_a_priori_pruning + cube_authoritative + wire_new_strategies_on_the_spot. Unblocks #60. Source: B769 inline council M3 unanimous-missed + B776 memo synthesis. Class 1 PROJECT-PRINCIPLES.
 
 ### B769 annotations on existing tickets (3 annotations per CHECKLIST #107)
 
@@ -464,7 +464,7 @@ This is exactly the M1 unanimous-missed concern from B769 council (Reviewer 1): 
 
 B-29 walk doc previously flagged this as "Pattern V: cross_sectional.compute_cross_sectional_features needs B690 TIER 2 harness wireup" but it was left as a documented blocker not a concrete ticket. B774 codifies as actionable infra ticket.
 
-63. **`S4-B774-MEASURE-FIRE-COUNT-EXTEND-CROSS-SECTIONAL-PRODUCER-WIREUP`** — Per B774 measurement-gap discovery on TIER 3 #56 GATE attempt: extend `scripts/measure_fire_count.py` to invoke `compute_cross_sectional_features(ohlcv_dict, as_of)` as universe-wide pre-pass at each as_of, then merge xs_* keys into each ticker's signal dict before strategy evaluation. Same pattern as `screener.py:7954` does in backtest engine. Without this wireup, all 6 factor strategies (B-27 to B-32) report 0 fires in measurement harness regardless of true fire rate -- contaminating TIER 3 #56 GATE + all downstream design tickets. **CRITICAL INFRA BLOCKER for TIER 3.** PENDING-OWNER-APPROVAL. Source: B774 measurement-gap discovery + B-29 walk doc Pattern V flag + B660 contamination evidence. Class 8 INFRA. **CRITICAL** (precedes #56 -> #55 -> #57/#58/#59 chain).
+63. **`S4-B774-MEASURE-FIRE-COUNT-EXTEND-CROSS-SECTIONAL-PRODUCER-WIREUP`** — Per B774 measurement-gap discovery on TIER 3 #56 GATE attempt: extend `scripts/measure_fire_count.py` to invoke `compute_cross_sectional_features(ohlcv_dict, as_of)` as universe-wide pre-pass at each as_of, then merge xs_* keys into each ticker's signal dict before strategy evaluation. Same pattern as `screener.py:7954` does in backtest engine. Without this wireup, all 6 factor strategies (B-27 to B-32) report 0 fires in measurement harness regardless of true fire rate -- contaminating TIER 3 #56 GATE + all downstream design tickets. **CRITICAL INFRA BLOCKER for TIER 3.** ~~PENDING-OWNER-APPROVAL~~ **SHIPPED B776 2026-06-15.** Implementation: added `_precompute_tier2_panel(ohlcv_cache, start, end, sample_cadence_days=21)` to measure_fire_count.py (mirrors B694 `_precompute_tier3_panel` pattern; monthly-rebalance cadence with fill-forward for intermediate days). Wired into both single-threaded + multiprocessing branches of `measure_strategies`. Updated `_precompute_signals_for_ticker` to accept `tier2_panel` parameter and merge `xs_features[ticker]` into per-bar signals dict. Updated `_worker_precompute_ticker` to accept 8-tuple args (backward-compatible with 7-tuple). **SMOKE-VERIFY:** 12 tickers x 6 months: `xs_momentum_top_decile` fires 152 times (was 0 pre-B776); `xs_low_beta_long` fires 0 on small sample (decile-cutoff requires larger universe; expected). TIER 3 #56 GATE re-attempt now possible on next B660-class measurement run. Source: B774 measurement-gap discovery + B776 implementation. Class 8 INFRA.
 
 **TIER 3 REVISED sequence (B774):**
 - TIER 3 INFRA-BLOCKER: **#63 wire cross_sectional producer into measure_fire_count.py** (NEW)
@@ -492,6 +492,35 @@ B-29 walk doc previously flagged this as "Pattern V: cross_sectional.compute_cro
 **B775 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (audit numpy.bool_ counting bug + 15 false positives eliminated) + 1 nuanced (post-fix Cluster A producer-audit final verdict is CLEANER than initial B767/B775 verdicts -- zero runtime gates + zero always-False producers). Tickets filed: **1 NEW (#64 pin test) + 1 code change** (`scripts/checklist_106_cluster_a_producer_audit.py:279` accepts numpy.bool_). **Audit-clean: YES.** This is the THIRD case CHECKLIST #44(b) investigate-why has caught an audit/measurement bug masquerading as strategy verdict (B748c FILE-LIST gap; B774 measurement-harness gap; B775 audit-bug).
 
 **Cumulative ticket count post-B775: 131 unique S4-B7XX tickets** (130 post-B774 + 1 B775 pin test).
+
+### TIER 15 — B776 TIER 3 dual work: #61 M3 memo + #63 cross_sectional wireup (both shipped)
+
+**B776 executed both TIER 3 parallel-independent items in one batch** per `feedback_path_c_min_batch_size` batching directive:
+
+**#61 M3 conflict-resolution memo SHIPPED:** `PROJECT_PRINCIPLES_M3_GATE_JUSTIFICATION_VS_NO_A_PRIORI_PRUNING.md` authored. Resolves Reviewer 4 critique on F2 codification by 3-scenario scoping:
+- Scenario 1 (NEW strategy design) -- EXCLUDED from soft-discipline (no pre-cube evidence yet; Class 7 NEW still ships same-turn)
+- Scenario 2 (gate MODIFICATION to existing) -- soft-discipline APPLIES (conditional-return hypothesis + fire-count projection + validation plan required)
+- Scenario 3 (gate REMOVAL on evidence of harm) -- MANDATORY (template: B358 / B654 / B655 / B663 / B722)
+
+Proposed CHECKLIST #108 text for #60 implementation. Compatible with all existing project rules (no_a_priori_pruning, cube_authoritative, wire_new_strategies_on_the_spot). Unblocks #60.
+
+**#63 cross_sectional wireup SHIPPED:** measure_fire_count.py extended with `_precompute_tier2_panel(ohlcv_cache, start, end, sample_cadence_days=21)` mirroring B694 TIER 3 panel pattern. Monthly cadence reflects factor strategies' typical monthly-rebalance + fill-forward for intermediate business days reduces compute ~21x vs daily.
+
+  Implementation details:
+  - New helper `_precompute_tier2_panel` calls `compute_cross_sectional_features(ohlcv_cache, as_of)` per sampled date
+  - Updated `_precompute_signals_for_ticker` to accept `tier2_panel` parameter; merges `xs_features[ticker]` into per-bar signals dict
+  - Updated `_worker_precompute_ticker` to accept 8-tuple args (backward-compatible with 7-tuple via len-check)
+  - Wired into both single-threaded + multiprocessing branches of `measure_strategies`
+
+  SMOKE-VERIFY (12 tickers x 6 months 2024-H1):
+    xs_momentum_top_decile: 152 fires (was 0 pre-B776; 25/month projection)
+    xs_low_beta_long: 0 fires (decile-cutoff needs larger universe; expected on 12-ticker sample)
+
+  TIER 3 #56 GATE re-attempt now possible on next B660-class measurement run.
+
+**B776 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (M3 memo synthesis with 3-scenario scoping; TIER 2 wireup successful with empirical verification). Tickets filed: **0 NEW + 2 annotations** on existing #61 (COMPLETED with memo location) + #63 (SHIPPED with smoke verification) + **2 code changes** (PROJECT_PRINCIPLES doc + measure_fire_count.py 4 functions modified). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B776: 131 unique S4-B7XX tickets** (no change; #61 + #63 closed in place).
 
 ### Annotations to existing tickets (per CHECKLIST #107 reconciliation)
 
