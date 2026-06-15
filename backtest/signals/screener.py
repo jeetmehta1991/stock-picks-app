@@ -739,7 +739,15 @@ def strat_camarilla_s3_bounce(s):
 
 
 def strat_camarilla_r4_breakout(s):
-    """Camarilla R4 breakout / S4 breakdown with volume confirmation.
+    """REFRAMED POST-B787 #48 (owner-directed 2026-06-15 option b): the
+    underlying Camarilla pivots are originally INTRADAY tools per Slim Khan
+    / Nick Scott; applying them to DAILY bars creates a timeframe-mismatch
+    that the strategy treats as DAILY momentum-context (where R4 break +
+    volume confirms daily momentum), NOT as pivot-precision intraday signal.
+    Cube measures whether daily-momentum-shaped edge survives; pivot-
+    precision language explicitly DROPPED per owner direction.
+
+    Camarilla R4 breakout / S4 breakdown with volume confirmation.
 
     Batch 641 (2026-06-09 owner-directed Tier 1 ship via external-AI
     audit of B640 walk bundle W10):
@@ -2235,7 +2243,14 @@ def strat_golden_cross_volume(s):
 
 
 def strat_cpr_narrow_momentum(s):
-    """Batch 358 (2026-05-25 owner-approved cell-audit Bucket B): added
+    """REFRAMED POST-B787 #48 (owner-directed 2026-06-15 option b): CPR
+    (Central Pivot Range) is originally an INTRADAY tool; applying to DAILY
+    bars treats it as DAILY momentum-context (narrow CPR -> directional
+    momentum-day per the daily-bar interpretation), NOT pivot-precision.
+    Cube measures whether daily-momentum-shaped edge survives; pivot-
+    precision language explicitly DROPPED per owner direction.
+
+    Batch 358 (2026-05-25 owner-approved cell-audit Bucket B): added
     200-EMA regime gate per direction. Cell audit
     (cpr_narrow_momentum x atr_trail_1x) lost -355pp at WR 30.6% with
     no regime gate. Long now requires above_200_ema; short requires
@@ -2607,7 +2622,12 @@ def strat_camarilla_rsi_obv_short(s):
 
 
 def strat_cpr_narrow_momentum_short(s):
-    """B718 (2026-06-12 owner-approved per "approve all" of S4-B717-
+    """REFRAMED POST-B787 #48 (owner-directed 2026-06-15 option b): CPR
+    SHORT mirror of strat_cpr_narrow_momentum; same intraday->daily-
+    timeframe reframing applies (daily-momentum-shaped, NOT pivot-precision).
+    Cube measures; pivot-precision language explicitly DROPPED.
+
+    B718 (2026-06-12 owner-approved per "approve all" of S4-B717-
     CEILING-FLAGGED-REDUNDANCY-DIAGNOSTIC-26-STRATEGIES): switched
     cpr_narrow -> cpr_narrow_tight (0.05 threshold; B654 producer) per
     B710 reviewer fire-count-ceiling finding. B660 post-B689 measurement
@@ -3215,7 +3235,15 @@ def strat_xs_quality_top_quintile_long(s):
 
 
 def strat_xs_momentum_quality_combined(s):
-    """Batch 222: Quality-momentum joint signal. Top-decile 12-1
+    """STATUS POST-B787: EXPLORATORY (per B786 #56 GATE FINAL verdict
+    FAIL_FIRE_STARVED 0 fires/yr under full B779+B781 config).
+
+    Owner-approved B787 EXPLORATORY tag per W5m precedent (non-deletion).
+    Root cause: Pattern AA compound AND-stack -- AND of xs_momentum_top_
+    decile (43/yr post-expansion) and xs_quality_top_quintile (rare) and
+    price_above_ema_200. Compound rarity drives joint to 0.
+
+    Batch 222: Quality-momentum joint signal. Top-decile 12-1
     momentum AND top-quintile gross profitability. Asness-Moskowitz-
     Pedersen 2013 JF documents Sharpe approaches 1.4 in this
     combination. Higher conviction than either factor alone."""
@@ -3251,7 +3279,16 @@ def strat_pead_with_insider_confirmation_long(s):
 
 
 def strat_xs_momentum_top_decile(s):
-    """Batch 220 (cross-sectional factor 2026-05-18 owner-approved research
+    """STATUS POST-B787: EXPLORATORY (per B786 #56 GATE FINAL verdict
+    FAIL_FIRE_STARVED 43 fires/yr under full B779+B781 config; 200x drop
+    from B780 8,996/yr baseline due to #58(e) survivorship-bias correction).
+
+    Owner-approved B787 EXPLORATORY tag per W5m precedent (non-deletion;
+    cube still runs). Post-#58(e) ranking, T1a names mostly NOT in top
+    decile when T2+T3 momentum names join the rank universe. Previous
+    8,996/yr count was survivorship-inflated.
+
+    Batch 220 (cross-sectional factor 2026-05-18 owner-approved research
     review). Long top decile of 12-1 momentum (Moskowitz-Ooi-Pedersen 2012
     JFE; refreshed Goyal-Jegadeesh-Subrahmanyam 2024 RFS - Sharpe 1.2-1.6
     net of costs 1985-2023). Single highest-ROI addition per the review.
@@ -3313,7 +3350,17 @@ def strat_xs_low_beta_long(s):
 
 
 def strat_xs_combined_momentum_low_ivol(s):
-    """Batch 220: Combined factor signal - top-decile momentum AND
+    """STATUS POST-B787: EXPLORATORY (per B786 #56 GATE FINAL verdict
+    FAIL_FIRE_STARVED 0 fires/yr under full B779+B781 config).
+
+    Owner-approved B787 EXPLORATORY tag per W5m precedent (non-deletion;
+    cube still runs; pre-registers FAIL expectation per `feedback_no_a_
+    priori_strategy_pruning`). Root cause: Pattern AA compound AND-stack
+    (xs_momentum_top_decile AND xs_avoid_high_ivol AND price_above_ema_200)
+    where xs_momentum_top_decile already fires 43/yr post #58(e) universe
+    expansion; compound rarity drives joint to 0.
+
+    Batch 220: Combined factor signal - top-decile momentum AND
     bottom-quintile IVOL (high quality momentum). Asness-Moskowitz-
     Pedersen 2013 JF "Value and Momentum Everywhere" documented Sharpe
     approaches 1.4 when momentum combined with quality/low-vol filter."""
