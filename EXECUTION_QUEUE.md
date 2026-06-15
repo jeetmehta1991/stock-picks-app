@@ -701,6 +701,40 @@ Verdict report: `output_audit/b785_42_williams_stoch_pattern_j_verdict.md`
 
 **Cumulative ticket count post-B785: 133 unique S4-B7XX tickets** (no change; #42 closed in place).
 
+### TIER 25 — B786 #56 GATE FINAL VERDICT (b8l2hqhv2 landed; full B779+B781 config)
+
+**b8l2hqhv2 #56 GATE proper re-measurement landed 2026-06-15 (runtime 12,871s ~3.6hr)** -- 50 random T1a tickers × 2024-2025 × daily cadence + T1a+T2+T3+SPY universe + #66 SPY force-include.
+
+**#56 GATE FINAL VERDICT:**
+
+| # | Strategy | L/yr | S/yr | Total | Verdict | Δ vs B780 baseline |
+|---|---|---:|---:|---:|---|---|
+| B-27 | xs_combined_momentum_low_ivol | 0 | 0 | 0 | **FAIL_FIRE_STARVED** | 0 → 0 (compound AND-stack) |
+| B-28 | xs_momentum_top_decile | 43 | 0 | 43 | **FAIL_FIRE_STARVED** | 8,996 → 43 (~200x ↓; survivorship-correction) |
+| **B-29** | xs_low_beta_long (BAB) | **71,355** | 0 | **71,355** | **PASS_CUBE ⚠ over-fires** | 0 (SPY-gap) → 71,355 |
+| B-30 | xs_momentum_bottom_decile_short | 0 | 587 | 587 | **BORDERLINE** | 10,272 → 587 (~17x ↓) |
+| B-31 | xs_momentum_quality_combined | 0 | 0 | 0 | **FAIL_FIRE_STARVED** | 425 → 0 (compound 3-gate) |
+| B-32 | xs_quality_top_quintile_long | 3,074 | 0 | 3,074 | **PASS_CUBE clean** | 7,849 → 3,074 (~2.5x ↓) |
+
+**Three findings:**
+1. **#58(e) universe expansion EMPIRICALLY VALIDATED:** momentum strategies dropped 17-200x as survivorship-bias correction visible. The B780 8,996/yr was SURVIVORSHIP-INFLATED; 43/yr is the cross-sectionally honest count.
+2. **B-29 71K/yr URGENTLY CONFIRMS #55 architecture concern:** ~140 fires/day on T1a-execution; per-ticker ~650 fires over 6.4yr = every other bar. NOT a tradable entry signal; portfolio-tilt PRIMITIVE used as entry-signal GATE. **Owner-approved #55 option (b) EVENT-on-rank-crossing in B779 is now URGENT producer-side work for B-29.**
+3. **Pattern AA on compound AND-stacks**: B-27 + B-31 0-fire because they AND-stack the already-rare xs_momentum_top_decile (43/yr) with additional gates. Compound rarity → 0.
+
+**Per-strategy disposition (cube-authoritative per `feedback_no_a_priori_strategy_pruning`):**
+- B-27 / B-28 / B-31: FAIL_FIRE_STARVED -- EXPLORATORY-tag candidates (pending owner; non-deletion)
+- B-29: PASS_CUBE but over-fires -- #55(b) EVENT-on-rank-crossing producer needed urgently
+- B-30: BORDERLINE 587/yr -- cube measures with realistic borrow (#59 cost matrix)
+- **B-32: PASS_CUBE clean -- proceed to #57 design extension (regime affinity per Asness-Frazzini-Pedersen 2019)**
+
+Verdict report: `output_audit/b786_factor_56_gate_FINAL_verdict.md`
+
+Existing #56 ticket annotation updated below with FINAL VERDICT.
+
+**B786 CHECKLIST #107 reconciliation:** Findings surfaced: 3 primary (#56 FINAL verdict; B-29 71K/yr empirically confirms #55 architecture concern; survivorship-bias correction visible 17-200x) + 2 nuanced (Pattern AA compound AND-stack on B-27/B-31; B-32 only single-factor strategy clean post-expansion). Tickets filed: **0 NEW + 1 annotation** on #56 (FINAL-VERDICT-UNDER-PROPER-CONFIG) + cross-reference to #55 (architecture-concern-empirically-validated-at-71K/yr). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B786: 133 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
 Owner approved B766 council reviewer recommendations for execution. Bundle ships as B780+ follow-up:
