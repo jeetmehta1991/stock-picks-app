@@ -443,6 +443,26 @@ def compute_vwap(df: pd.DataFrame) -> dict:
         except Exception:
             out[f"avwap_{key}_reclaim_recent_3d"] = False
             out[f"avwap_{key}_loss_recent_3d"]    = False
+        # B793 #46 (2026-06-15 owner-approved B779) producer-additive ATR-
+        # scaled AVWAP proximity per B766 reviewer rec. FIXED percent proximity
+        # (e.g., 1.5%) means different things on 15%-vol name vs 60%-vol name.
+        # ATR-scaled proximity uses 0.5/1.0/1.5/2.0 x 20-bar ATR / price
+        # thresholds. Pattern G cube-sweepable per B654 precedent. Existing
+        # consumers (strat_avwap_*) unchanged; new family is opt-in for any
+        # ATR-aware strategy registration.
+        try:
+            atr_20 = _atr_series(df, 20)
+            atr_today = _safe_float(atr_20.iloc[-1])
+            if atr_today > 0 and close > 0:
+                atr_pct = atr_today / close  # ATR as fraction of price
+                pct_from = abs(close - avwap) / avwap if avwap > 0 else 0
+                # Multiplier thresholds: 0.5 / 1.0 / 1.5 / 2.0 x ATR
+                for mult in (0.5, 1.0, 1.5, 2.0):
+                    thr = mult * atr_pct
+                    thr_str = str(mult).replace(".", "")  # "05", "10", "15", "20"
+                    out[f"near_avwap_{key}_atr_{thr_str}x"] = bool(pct_from < thr)
+        except Exception:
+            pass
     return out
 
 
