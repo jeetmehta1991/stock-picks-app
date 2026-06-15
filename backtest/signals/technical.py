@@ -1555,6 +1555,50 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["vol_spike_2x"]  = ratio >= 2.0
     result["vol_spike_3x"]  = ratio >= 3.0
 
+    # B796 #40 (2026-06-15 owner-approved B779) producer-additive
+    # capitulation-volume EVENT signals per B766 reviewer rec. RSI family
+    # strategies (A-1/A-3/A-4/A-5) lack evidence that oversold is EXHAUSTING.
+    # Wyckoff Selling Climax + Connors capitulation discipline:
+    #   capitulation = (vol_spike_2x on a DOWN-day in last 3d) AND
+    #                  (drying volume on today's TURN: today vol < avg AND
+    #                   today close > today open)
+    # Mirror for SHORT: blowoff = (vol_spike_2x on UP-day last 3d) AND
+    # (drying volume on today's TURN-down).
+    try:
+        n_lookback = 3
+        c_recent = c.iloc[-(n_lookback + 1):]  # today + 3 prior
+        v_recent = v.iloc[-(n_lookback + 1):]
+        avg20_recent = v.iloc[-(n_lookback + 21):].rolling(20).mean().iloc[-(n_lookback + 1):]
+        # Identify down-days / up-days in PRIOR 3 bars
+        prior_close = c_recent.iloc[:-1]
+        prior_close_change = prior_close.diff()
+        prior_vol = v_recent.iloc[:-1]
+        prior_avg20 = avg20_recent.iloc[:-1]
+        # vol_spike_2x_on_down_day: prior close went DOWN AND prior vol >= 2x avg20
+        vol_spike_2x_on_down = bool(
+            ((prior_close_change < 0) & (prior_vol >= 2.0 * prior_avg20)).any()
+        )
+        vol_spike_2x_on_up = bool(
+            ((prior_close_change > 0) & (prior_vol >= 2.0 * prior_avg20)).any()
+        )
+        # Today's turn:
+        o_today = _safe_float(df["open"].iloc[-1])
+        drying_vol_on_up_turn = (today_v < avg20) and (c_today > o_today)
+        drying_vol_on_down_turn = (today_v < avg20) and (c_today < o_today)
+        result["vol_spike_2x_on_down_day_recent_3d"] = vol_spike_2x_on_down
+        result["vol_spike_2x_on_up_day_recent_3d"]   = vol_spike_2x_on_up
+        result["drying_volume_on_up_turn"]           = bool(drying_vol_on_up_turn)
+        result["drying_volume_on_down_turn"]         = bool(drying_vol_on_down_turn)
+        result["capitulation_recent_3d"]             = bool(vol_spike_2x_on_down and drying_vol_on_up_turn)
+        result["blowoff_recent_3d"]                  = bool(vol_spike_2x_on_up and drying_vol_on_down_turn)
+    except Exception:
+        result["vol_spike_2x_on_down_day_recent_3d"] = False
+        result["vol_spike_2x_on_up_day_recent_3d"]   = False
+        result["drying_volume_on_up_turn"]           = False
+        result["drying_volume_on_down_turn"]         = False
+        result["capitulation_recent_3d"]             = False
+        result["blowoff_recent_3d"]                  = False
+
     # B589 (2026-06-04 owner directive 52w_high_breakout walk: "add
     # close above open and close within 40% of day high. Add inverse
     # for mirror"). Range-position signals:

@@ -294,7 +294,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 39. **`S4-B766-A-1-CONNORS-OR-DISJUNCT-EMPHASIS-CORRECTION`** — A-1 strat_rsi_oversold uses `(rsi_2 < 5 OR rsi_14 < 35)` Connors-OR-disjunct with EQUAL emphasis. Per Connors+Alvarez 2009: RSI(2)<5 in uptrend is the documented edge; RSI(14)<35 is the slower fallback. The OR-disjunct has emphasis backwards: RSI(14)<35 is the NOISY leg that adds most fires; RSI(2)<5 is the SELECTIVE leg with the real edge. Tune: make RSI(2)<5 PRIMARY, drop or down-weight RSI(14)<35 path. Also resolves existing Pattern R ticket (`S4-B750-A-1-PATTERN-Q-RSI-OVERSOLD-EVENT-CONVERSION` family) better than current "add EVENT variant" approach. **B768 ANNOTATION (PARTIALLY REFUTED 2026-06-15):** Demo edge-prior measured `rsi_14_lt_30` Sharpe@10d=0.281 (STRONGEST of all 14 triggers tested) with hit_rate 63%, pnl=+184bp/10d. RSI(14)<30 is genuine documented edge, NOT noisy fallback. Reviewer's emphasis-backward claim does NOT survive direct measurement at threshold 30. Strategy's actual gate is 14<35 (looser); cube will measure that specifically. Recommendation revised: KEEP OR-disjunct pending cube; rsi_14<30 leg has real edge per B768 empirical evidence. PENDING-OWNER-APPROVAL (revised scope). Source: B766 reviewer Part 2 Connors stack section + B768 empirical refutation. Class 2 LOOSEN/TIGHTEN. HIGH.
 
-40. **`S4-B766-RSI-FAMILY-REVERSION-CONTEXT-CAPITULATION-VOLUME-GATE`** — None of A-1/A-3/A-4/A-5 require evidence the oversold is EXHAUSTING (capitulation volume + higher low forming + reversal bar). Mean-reversion's universal WR lever. Per Wyckoff Selling Climax + Connors capitulation discipline. Producer-additive: `capitulation_recent_3d` = (vol_spike_2x_on_down_day_recent_3d AND drying_volume_on_turn). Apply to all 4 RSI strategies. PENDING-OWNER-APPROVAL. Source: B766 reviewer Part 2 reversion-context section. Class 2 LOOSEN/TIGHTEN. HIGH.
+40. **`S4-B766-RSI-FAMILY-REVERSION-CONTEXT-CAPITULATION-VOLUME-GATE`** — None of A-1/A-3/A-4/A-5 require evidence the oversold is EXHAUSTING (capitulation volume + higher low forming + reversal bar). Mean-reversion's universal WR lever. Per Wyckoff Selling Climax + Connors capitulation discipline. Producer-additive: `capitulation_recent_3d` = (vol_spike_2x_on_down_day_recent_3d AND drying_volume_on_turn). Apply to all 4 RSI strategies. ~~PENDING-OWNER-APPROVAL~~ **PRODUCER-ADDITIVE SHIPPED B796 2026-06-15** (strategies-side application deferred per `feedback_no_rushing_per_strategy_tweak`). Added to compute_volume (technical.py) per Wyckoff Selling Climax + Connors capitulation: `vol_spike_2x_on_down_day_recent_3d` + `vol_spike_2x_on_up_day_recent_3d` + `drying_volume_on_up_turn` + `drying_volume_on_down_turn` + `capitulation_recent_3d` (composite LONG: spike-on-down + drying-on-turn-up) + `blowoff_recent_3d` (composite SHORT mirror) = **6 new producer signals**. Existing strategies UNCHANGED; strategy-side application of capitulation gate to A-1/A-3/A-4/A-5 deferred to B797+ with smoke+demo verification per B789 lesson. Source: B766 reviewer rec + B779 owner approval + B796 producer-additive. Class 2 LOOSEN/TIGHTEN.
 
 41. **`S4-B766-A-5-VOL-ABOVE-AVG-WRONG-DIRECTION-FIX`** — A-5 strat_rsi_volume_200ema gate uses `vol_above_avg` (volume above 20-day average). Per reviewer: this is WRONG DIRECTION for mean-reversion entry. For reversion you want vol_spike (CAPITULATION) on the DOWN day + drying volume on the TURN. Current gate fires on above-average volume regardless of price direction. Fix: replace `vol_above_avg` with composite `vol_spike_on_down_day_recent + vol_below_avg_on_turn`. This is a STRATEGY BUG not a tune. ~~PENDING-OWNER-APPROVAL~~ **REJECTED B787 2026-06-15** (owner-decided option (i) Keep B320). Per `feedback_audit_recommendations_against_existing_directives`: Batch 320 (2026-05-25 prior owner directive) explicitly LOOSENED from `vol_spike_2x` to `vol_above_avg` because tight gate was "nearly impossible to satisfy" + "compounded that to zero" fire-starve. Reviewer's re-tightening (vol_spike_on_down is even rarer + composite AND-of-2-events) would return to fire-starved state. **B320 empirical fire-count evidence outweighs reviewer's literature-only intuition.** Strategy stays as-is. Source: B766 reviewer rec + B320 owner directive + B787 owner option (i) decision. Class 2 BUG-FIX. REJECTED.
 
@@ -875,6 +875,28 @@ Producer-additive per B766 reviewer rec. Added to compute_rsi (technical.py) for
 **B795 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#38 producer-additive shipped). Tickets filed: **0 NEW + 1 annotation** + 1 code change. **Audit-clean: YES.**
 
 **Cumulative ticket count post-B795: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 35 — B796 #40 RSI capitulation-volume producer-additive SHIPPED
+
+Producer-additive per Wyckoff Selling Climax + Connors capitulation. Added to compute_volume (technical.py): `vol_spike_2x_on_down_day_recent_3d` + `vol_spike_2x_on_up_day_recent_3d` + `drying_volume_on_up_turn` + `drying_volume_on_down_turn` + `capitulation_recent_3d` (LONG composite) + `blowoff_recent_3d` (SHORT composite) = **6 new producer signals**. Strategies (A-1/A-3/A-4/A-5) UNCHANGED. Strategy-side application deferred per `feedback_no_rushing`. Pyramid 842/842.
+
+**B796 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary. Tickets: **0 NEW + 1 annotation + 1 code change**. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B796: 134 unique S4-B7XX tickets** (no change).
+
+### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
+
+All 6 producer-additive items from B766 council bundle now shipped:
+- B790 #47 AVWAP reclaim_recent_3d (8 signals: 2 directions x 4 anchors)
+- B792 #45 BB pctb cube-sweepable (33 signals)
+- B793 #46 AVWAP proximity ATR-scaled (16 signals)
+- B794 #44 BB band-reclaim EVENT (6 signals)
+- B795 #38 RSI cross EVENT (16 signals)
+- B796 #40 RSI capitulation/blowoff (6 signals)
+
+**Total: 85 new producer signals** across compute_vwap + compute_bollinger + compute_rsi + compute_volume.
+
+Strategy-side EVENT-conversion + producer-consuming strategies queued for B797+ per `feedback_no_rushing_per_strategy_tweak` + B789 smoke-vs-demo lesson: each strategy modification gets its own batch with CHECKLIST #108 pre-flight + smoke + demo verification before commit.
 
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
