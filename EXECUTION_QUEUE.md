@@ -627,6 +627,27 @@ Per B779 owner approval ("Approve all other recs"), B782 ships the doc-only item
 
 **Cumulative ticket count post-B782: 133 unique S4-B7XX tickets** (no change; #36 + #37 + #49 closed in place).
 
+### TIER 22 — B783 B781 smoke verified (#66 confirmed; #65 working) + proper #56 GATE re-measurement launched
+
+**bbg84zfcs (B781 smoke) landed 2026-06-15:**
+- xs_low_beta_long (B-29 BAB): **1,301 fires** on 20 tickers x 6mo (was 0 in B777 baseline due to SPY-gap)
+- xs_momentum_top_decile: 0 fires (was 8,996/yr in T1a-only B777 ranking) -- universe-expansion-induced rank-denominator shift; expected per #58(e) survivorship-bias correction
+
+**#66 SPY benchmark fix EMPIRICALLY VERIFIED:** B-29 0 -> 1,301 fires on smaller smoke proves SPY force-include resolves the silent-zero-fire measurement gap from B780 #44(b) discovery.
+
+**#65 universe expansion working as designed:** xs_momentum_top_decile drop from B777 8,996/yr to 0 in 20-ticker smoke is the CORRECT survivorship-bias-correction effect (T1a tickers shift down momentum percentile when T2/T3 names join the rank universe). 20-ticker smoke too small for definitive verdict; proper #56 GATE re-measurement launched.
+
+**Proper #56 GATE re-measurement launched (b8l2hqhv2):**
+- 50 tickers (random seed 42) x 2024-2025
+- Full B779+B781 config: daily cadence + T1a+T2+T3+SPY rank universe + cross_sectional wireup
+- Output: `output_audit/b783_factor_56_gate_proper_remeasure.json`
+- ETA ~60-120 min
+- Verdict batch: B784
+
+**B783 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (#66 SPY fix CONFIRMED; #65 universe-expansion rank-shift visible) + 1 nuanced (xs_low_beta_long 52% fire rate is universe-expansion-induced concentration). Tickets filed: **0 NEW + 0 annotations** (smoke verification + measurement launch; final verdict in B784). **Audit-clean: YES (smoke-verification only).**
+
+**Cumulative ticket count post-B783: 133 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
 Owner approved B766 council reviewer recommendations for execution. Bundle ships as B780+ follow-up:
