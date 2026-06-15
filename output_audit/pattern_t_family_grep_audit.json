@@ -1,0 +1,104 @@
+{
+  "meta": {
+    "as_of_run": "2026-06-15T10:30:29.640314",
+    "n_strategies_audited": 221,
+    "n_no_source": 0,
+    "n_clean": 215,
+    "n_pattern_t_candidates": 6,
+    "n_high_collinearity": 0,
+    "n_medium_collinearity": 6,
+    "thresholds": {
+      "HIGH": "MA-cross + trend-gate share at least one numeric window",
+      "MEDIUM": "MA-cross + trend-gate present but at unrelated timescales"
+    }
+  },
+  "candidates": [
+    {
+      "strategy": "awesome_oscillator",
+      "verdict": "PATTERN_T_MEDIUM",
+      "ma_cross_signals": [
+        "ao_cross_dn",
+        "ao_cross_up"
+      ],
+      "trend_gate_signals": [
+        "below_ema_20",
+        "price_above_ema_20"
+      ],
+      "n_ma_cross_signals": 2,
+      "n_trend_gate_signals": 2
+    },
+    {
+      "strategy": "force_index_breakout",
+      "verdict": "PATTERN_T_MEDIUM",
+      "ma_cross_signals": [
+        "force_index_cross_dn",
+        "force_index_cross_up"
+      ],
+      "trend_gate_signals": [
+        "below_ema_20",
+        "price_above_ema_20"
+      ],
+      "n_ma_cross_signals": 2,
+      "n_trend_gate_signals": 2
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "verdict": "PATTERN_T_MEDIUM",
+      "ma_cross_signals": [
+        "ema_20_50_death_cross",
+        "ema_20_50_golden_cross"
+      ],
+      "trend_gate_signals": [
+        "below_ema_200",
+        "price_above_ema_200",
+        "price_below_ema_200"
+      ],
+      "n_ma_cross_signals": 2,
+      "n_trend_gate_signals": 3
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "verdict": "PATTERN_T_MEDIUM",
+      "ma_cross_signals": [
+        "ema_9_21_death_cross",
+        "ema_9_21_golden_cross"
+      ],
+      "trend_gate_signals": [
+        "below_sma_50",
+        "price_above_sma_50",
+        "price_below_sma_50"
+      ],
+      "n_ma_cross_signals": 2,
+      "n_trend_gate_signals": 3
+    },
+    {
+      "strategy": "stoch_oversold",
+      "verdict": "PATTERN_T_MEDIUM",
+      "ma_cross_signals": [
+        "stoch_bearish_cross",
+        "stoch_bullish_cross"
+      ],
+      "trend_gate_signals": [
+        "below_ema_20",
+        "price_above_ema_20"
+      ],
+      "n_ma_cross_signals": 2,
+      "n_trend_gate_signals": 2
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "verdict": "PATTERN_T_MEDIUM",
+      "ma_cross_signals": [
+        "stochrsi_cross_dn",
+        "stochrsi_cross_up"
+      ],
+      "trend_gate_signals": [
+        "above_ema_200",
+        "below_ema_200",
+        "price_above_ema_200"
+      ],
+      "n_ma_cross_signals": 2,
+      "n_trend_gate_signals": 3
+    }
+  ]
+}
