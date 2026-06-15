@@ -648,6 +648,43 @@ Per B779 owner approval ("Approve all other recs"), B782 ships the doc-only item
 
 **Cumulative ticket count post-B783: 133 unique S4-B7XX tickets** (no change).
 
+### TIER 23 — B784 CHECKLIST #108 pre-flight applied to #38-#48 bundle; #41 BLOCKED on B320 conflict
+
+**B784 FIRST FULL APPLICATION of CHECKLIST #108 (codified B777) to a bundle**: per-turn pre-flight on 11 council reviewer recs surfaces tractability + directive conflicts:
+
+| # | Status | Tractability |
+|---|---|---|
+| 38 RSI fire-on-cross-not-state | PENDING-MULTI-BATCH | Producer + per-strategy walks |
+| 39 Connors OR-disjunct | **COMPLETED-EMPIRICAL B768** (PARTIALLY REFUTED; rsi_14<30 has REAL edge) | NO ACTION |
+| 40 RSI capitulation-volume gate | PENDING-MULTI-BATCH | Producer + per-strategy walks |
+| **41 A-5 vol_above_avg wrong-direction** | **BLOCKED-PENDING-OWNER-DECISION** | **B320 owner directive CONFLICT** |
+| 42 Williams-Stoch Pattern J pair | **TRACTABLE NOW** | Analytical phi-correlation |
+| 43 MFI obv anti-selection | **TRACTABLE NOW** | Analytical conditional-add-test |
+| 44 A-12 BB band-walk continuation | PENDING-MULTI-BATCH | Producer-additive bb_reclaim |
+| 45 A-12 BB pctb cube-sweepable | PENDING-MULTI-BATCH | Producer-additive bb_pctb family |
+| 46 AVWAP proximity ATR-scaled | PENDING-MULTI-BATCH | Producer-additive near_avwap_atr |
+| 47 AVWAP reclaim EVENT-conversion | PENDING-MULTI-BATCH | Producer-additive |
+| **48 Camarilla CPR timeframe** | **PENDING-OWNER-DECISION** | a/b/c choice (intraday/reframe/delete) |
+
+**Critical #41 finding (CHECKLIST #108 application caught directive conflict):** reviewer rec #41 proposes `vol_spike_on_down + vol_below_avg_on_turn` replacement for current `vol_above_avg` -- but **Batch 320 owner directive (2026-05-25) explicitly LOOSENED from `vol_spike_2x` to `vol_above_avg`** because tight gate fire-starved the strategy. Reviewer's proposed re-tightening would likely return to fire-starved state. Per `feedback_audit_recommendations_against_existing_directives`: surface BEFORE applying.
+
+**Critical #48 finding:** structural a/b/c decision needed (move-to-intraday / reframe-as-daily-momentum / DELETE-per-mismatch). Owner choice required.
+
+**Tractable next-batches (B785+):**
+- B785 #42 Williams-Stoch Pattern J phi-correlation audit (analytical)
+- B786 #43 MFI obv anti-selection conditional-add-test (analytical)
+- B787+ producer-side work for #38/#40/#44/#45/#46/#47 (each multi-batch per `feedback_no_rushing_per_strategy_tweak`)
+
+**Items needing owner input before action:**
+- #41 — pick (i) keep B320 / REJECT #41 OR (ii) override B320 / apply #41 OR (iii) split into 2 strategies
+- #48 — pick (a) move-to-intraday OR (b) reframe-as-daily OR (c) DELETE
+
+Verdict report: `output_audit/b784_38_48_checklist_108_preflight.md`
+
+**B784 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#108 pre-flight on 11 items: 2 BLOCKED + 2 TRACTABLE + 6 PENDING + 1 DONE) + 1 nuanced (B320 vs #41 directive conflict caught by #108 application). Tickets filed: **0 NEW + 11 annotations** on existing #38-#48 (each annotated with CHECKLIST #108 pre-flight result + tractability scope). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B784: 133 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle (#35-#49) approval annotations (owner 2026-06-15 13:25 UTC "Approve all other recs")
 
 Owner approved B766 council reviewer recommendations for execution. Bundle ships as B780+ follow-up:
