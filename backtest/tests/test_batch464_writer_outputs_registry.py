@@ -88,6 +88,7 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
     # --- c: engine-internal / forensic only (no downstream consumer, debug evidence) ---
     "benchmark_curve.parquet":       ("c", "BUG-95 benchmark curve -- alongside equity_curve; debug + dashboard reads via load_parquet helper if present"),
     "stop_cluster_pattern.json":     ("c", "DEC-216 stop-cluster forensic; lives in output dir for inspection"),
+    "cube_compose_verdict.csv":      ("a", "B822: DEC-422 cube-compose verdict (per-strategy x exit-method composed PASS/FAIL); pre-1B+ consumer for cube replay pipeline"),
 }
 
 

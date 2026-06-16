@@ -43,7 +43,9 @@ BATCH_417_NEW_ENTRIES_ACTIVE = {
     "institutional_buy_momentum_long": {"bull"},
     "institutional_cluster_long":      {"bear"},
     "macd_fast_crossover":             {"bull"},
-    "morning_star":                    {"bear"},
+    # B639 (Stage 4 morning_star walk option a 2026-06-09): F3 family-
+    # bug fix removed morning_star regime affinity entry. B822 removes
+    # from B417 ACTIVE list.
     "parabolic_sar_flip":              {"bear"},
     "ppo_crossover":                   {"bear"},
     "tema_dema":                       {"bear"},
@@ -56,6 +58,7 @@ BATCH_417_REMOVED_BY_FAMILY_AUDIT = {
     "break_retest_volume",       # B608 F1
     "cpr_narrow_momentum",       # B617 family audit
     "hull_rsi",                  # B617 family audit
+    "morning_star",              # B639 F3 family-bug fix
 }
 
 
@@ -86,16 +89,15 @@ def test_batch417_removed_by_family_audit(strategy):
 
 
 def test_batch417_strategy_regime_affinity_count_floor():
-    """STRATEGY_REGIME_AFFINITY entries post-B617 family audit.
+    """STRATEGY_REGIME_AFFINITY entries post-B617 + B639 family audits.
 
-    B617 update: removed 19 Class A entries (dual strategies with explicit
-    single-direction regime entries that mis-regimed the opposite
-    direction). Prior floor was 127; post-B617 floor is 105 (19 removed +
-    other batch maintenance). Future batches may add more after direction-
-    disaggregated cube validation."""
-    assert len(STRATEGY_REGIME_AFFINITY) >= 105, (
+    B617: removed 19 Class A entries. B639 + later batches continued the
+    family-bug pattern fixes (removing dual-strategy single-direction
+    regime affinity entries that mis-regimed the opposite direction).
+    B822 lowered floor to 100 reflecting current 101 state."""
+    assert len(STRATEGY_REGIME_AFFINITY) >= 100, (
         f"STRATEGY_REGIME_AFFINITY has {len(STRATEGY_REGIME_AFFINITY)} "
-        f"entries, expected >= 105 post-B617 family audit")
+        f"entries, expected >= 100 post-B617 + B639 family audits")
 
 
 # Batch 418 (2026-05-28 owner-approved "proceed"): 15 OVERRIDES of existing
