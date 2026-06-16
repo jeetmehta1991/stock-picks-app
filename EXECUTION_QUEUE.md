@@ -176,7 +176,7 @@ Owner directive 2026-06-14 "approve all for filing" — 16 council tickets queue
 
 5. **`S4-B755-COUNCIL-INSUFFICIENT-POWER-TAG-DISTINCT-FROM-EXPLORATORY`** — A-10 ultimate_oscillator Sharpe 0.49 @ n=27 has 95% CI [-0.3, 1.3] — indistinguishable from null. Tag INSUFFICIENT_POWER not EXPLORATORY. Re-tag A-10 + B753/A-13/A-15/A-29/A-30 audit for n<50 cases with CI spanning null. ~~PENDING-OWNER-APPROVAL~~ **SHIPPED B809 2026-06-16** (CHECKLIST.md #109 codification). Two distinct tag classes added per Advisor C + Reviewer 1: (a) EXPLORATORY = PRE-CUBE marker (no/minimal track record); (b) INSUFFICIENT_POWER = POST-CUBE marker (cube cell exists but n<50 + 95% Sharpe CI spans 0). Default gates: n<30 + no-cube → EXPLORATORY; n<50 + cube + CI spans null → INSUFFICIENT_POWER; n>=50 → standard PASS/FAIL. Prevents conflation of pre-cube vs power-limited verdicts. Re-tagging of A-10 + specific strategies deferred to post-cube batch when cube cells exist. Source: B755 council Advisor C + Reviewer 1 + B809 codification. Class 2 LOOSEN/TIGHTEN.
 
-6. **`S4-B755-COUNCIL-EXPLORATORY-TO-DELETE-TIME-BOUND-ESCALATION`** — Time-bound auto-escalation rule: EXPLORATORY strategies with n<50 trades after 2 cube cycles → auto-delete. Prevents EXPLORATORY becoming junk-drawer parking lot (Outsider's lens). Codify before tagging more strategies. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 2 LOOSEN/TIGHTEN. HIGH.
+6. **`S4-B755-COUNCIL-EXPLORATORY-TO-DELETE-TIME-BOUND-ESCALATION`** — Time-bound auto-escalation rule: EXPLORATORY strategies with n<50 trades after 2 cube cycles → auto-delete. Prevents EXPLORATORY becoming junk-drawer parking lot (Outsider's lens). Codify before tagging more strategies. ~~PENDING-OWNER-APPROVAL~~ **CODIFIED-DEFERRED B810 2026-06-16.** Principle codified; auto-delete BEHAVIOR scope-narrowed per `feedback_audit_recommendations_against_existing_directives` conflict with `feedback_no_a_priori_strategy_pruning` (which requires "0 trades OR verdict=FAIL across all regimes AND negative Sharpe AND negative profit factor" — NOT just low-n). B810 codification: after 2 cube cycles, EXPLORATORY strategies with n<50 trades trigger OWNER REVIEW (not auto-delete). Final deletion still requires no-a-priori-pruning's existing empirical criteria. This preserves both: Outsider's "junk-drawer prevention" via review trigger; no-a-priori-pruning via owner final-say-on-deletion. Time-bound escalation behavior DEFERRED PENDING FIRST CUBE CYCLE (no cube cells yet on tagged strategies). Source: B755 council Advisor B + B810 scope-narrowing per existing-directive audit. Class 2 LOOSEN/TIGHTEN.
 
 ### TIER 3 — Process-discipline immediate actions
 
@@ -1084,6 +1084,21 @@ Per Advisor C + Reviewer 1 example: A-10 ultimate_oscillator Sharpe 0.49 @ n=27 
 **B809 CHECKLIST #107 reconciliation:** Findings: 1 primary (#5 SHIPPED CHECKLIST #109). Tickets: **0 NEW + 1 annotation + 1 doc change** (CHECKLIST.md). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B809: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 48 — B810 #6 EXPLORATORY-to-DELETE escalation CODIFIED-DEFERRED
+
+**B810 SHIPPED #6 codification with scope-narrowing.** Per `feedback_audit_recommendations_against_existing_directives`: original ticket proposed auto-DELETE after 2 cube cycles + n<50, but this CONFLICTS with `feedback_no_a_priori_strategy_pruning` (which requires "0 trades OR verdict=FAIL across all regimes AND negative Sharpe AND negative profit factor" — NOT just low-n).
+
+**B810 resolution:** preserve BOTH directives via OWNER REVIEW trigger (not auto-delete):
+- After 2 cube cycles, EXPLORATORY strategies with n<50 trades → OWNER REVIEW
+- Final deletion still requires no-a-priori-pruning empirical criteria
+- This preserves Outsider's junk-drawer-prevention concern + owner final-say on deletion
+
+Time-bound behavior DEFERRED pending first cube cycle (no cube cells on tagged strategies yet).
+
+**B810 CHECKLIST #107 reconciliation:** Findings: 1 primary (#6 CODIFIED-DEFERRED with scope-narrow). Tickets: **0 NEW + 1 annotation**. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B810: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
