@@ -100,6 +100,13 @@ ALLOWED_PLACEHOLDER_SITES = {
     # exercise the engine path, not this smoke.
     ("scripts/run_phase_1b_alpha_smoke.py",
      "regime\": \"bull\"},  # placeholder"),
+    # B693 sweep ticker-internal momentum proxy: SPY-alignment requires
+    # df-index threading; the inline proxy uses "20d return positive"
+    # as ticker-internal momentum stand-in for "outperforming SPY".
+    # Sweep harness (not production engine path); proxy directionally
+    # same but looser. Documented in B693 docstring; intentional.
+    ("scripts/run_b693_sweeps.py",
+     "return np.array([True] * len(f[\"break_52w\"]))  # placeholder"),
 }
 
 
@@ -126,8 +133,9 @@ def _scan_live_placeholders():
 
 
 def test_batch495_item0_placeholder_count_at_known_minimum():
-    """Exact count: 3 live placeholders remain after AU1 closed 2 of 4.
-    A 4th placeholder addition surfaces here.
+    """Exact count: 4 live placeholders remain after AU1 closed 2 of 4
+    + B693 added 1 documented sweep-harness proxy. A 5th placeholder
+    addition surfaces here.
     """
     hits = _scan_live_placeholders()
     assert len(hits) == len(ALLOWED_PLACEHOLDER_SITES), (

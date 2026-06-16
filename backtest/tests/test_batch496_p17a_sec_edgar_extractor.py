@@ -185,15 +185,17 @@ def test_batch496_p17a_sc13d_degrades_gracefully_on_garbage():
 # Consumer signal helpers (decoded-cache absent today)
 # ---------------------------------------------------------------------------
 
-def test_batch496_p17a_decoded_cache_dir_not_present_today():
-    """Pin: data_prefetch/sec_edgar_decoded/ does NOT exist until owner
-    runs the extractor batch job."""
+def test_batch496_p17a_decoded_cache_dir_present():
+    """Pin: data_prefetch/sec_edgar_decoded/ EXISTS post-extractor-run
+    (originally pinned absence until owner ran the extractor batch job;
+    B815 flipped to existence pin since extractor has since run).
+    """
     from pathlib import Path
     decoded = Path(__file__).resolve().parent.parent.parent / \
         "data_prefetch" / "sec_edgar_decoded"
-    assert not decoded.exists(), (
-        f"Decoded cache directory {decoded} now exists -- the extractor "
-        f"ran. Update queue row P17a + flip this pin to existence."
+    assert decoded.exists(), (
+        f"Decoded cache directory {decoded} should exist post-extractor-run. "
+        f"If absent, re-run the SEC EDGAR extractor batch job (queue P17a)."
     )
 
 
