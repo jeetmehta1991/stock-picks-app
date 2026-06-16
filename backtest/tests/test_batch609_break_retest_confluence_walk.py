@@ -146,30 +146,32 @@ def test_batch609_regime_default_short_bear_crisis_neutral():
 
 
 def test_batch609_strat_long_6_gates_fires():
-    """Pin (8)."""
+    """Pin (8) B821: B728 added close_in_top_40pct_of_range strong-close."""
     from backtest.signals.screener import strat_break_retest_confluence
     s = {
-        "resistance_break_retest": True,
-        "macd_12_26_9_bullish": True,
-        "price_above_ema_20": True,
-        "price_above_ema_50": True,
-        "close_above_open": True,
-        "vol_below_avg": True,
+        "resistance_break_retest":      True,
+        "macd_12_26_9_bullish":         True,
+        "price_above_ema_20":           True,
+        "price_above_ema_50":           True,
+        "close_above_open":             True,
+        "vol_below_avg":                True,
+        "close_in_top_40pct_of_range":  True,   # B728 strong-close
     }
     out = strat_break_retest_confluence(s)
     assert out["fires"] is True and out["direction"] == "long"
 
 
 def test_batch609_strat_short_6_gates_fires():
-    """Pin (9)."""
+    """Pin (9) B821: B728 added close_in_bottom_40pct_of_range strong-close."""
     from backtest.signals.screener import strat_break_retest_confluence
     s = {
-        "support_break_retest": True,
-        "macd_12_26_9_bearish": True,
-        "below_ema_20": True,
-        "below_ema_50": True,
-        "close_below_open": True,
-        "vol_below_avg": True,
+        "support_break_retest":            True,
+        "macd_12_26_9_bearish":            True,
+        "below_ema_20":                    True,
+        "below_ema_50":                    True,
+        "close_below_open":                True,
+        "vol_below_avg":                   True,
+        "close_in_bottom_40pct_of_range":  True,   # B728 strong-close
     }
     out = strat_break_retest_confluence(s)
     assert out["fires"] is True and out["direction"] == "short"

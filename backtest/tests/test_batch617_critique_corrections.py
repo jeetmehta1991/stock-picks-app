@@ -106,13 +106,15 @@ def test_batch617_obv_bearish_true_on_falling_obv():
 # ----- strat_break_retest_volume pins -----
 
 def test_batch617_long_fires_with_obv_bullish():
-    """Pin (4): LONG switched to obv_bullish (B617)."""
+    """Pin (4): LONG switched to obv_bullish (B617). B821: B728 added
+    close_in_top_40pct_of_range strong-close gate."""
     from backtest.signals.screener import strat_break_retest_volume
     s = {
-        "resistance_break_retest": True,
-        "obv_bullish": True,        # B617: switched from obv_rising
-        "close_above_open": True,
-        "vol_below_avg": True,
+        "resistance_break_retest":      True,
+        "obv_bullish":                  True,   # B617: switched from obv_rising
+        "close_above_open":             True,
+        "vol_below_avg":                True,
+        "close_in_top_40pct_of_range":  True,   # B728 strong-close
     }
     out = strat_break_retest_volume(s)
     assert out["fires"] is True and out["direction"] == "long"
@@ -133,13 +135,15 @@ def test_batch617_long_silent_gap_obv_bullish_absent():
 
 
 def test_batch617_short_fires_with_obv_bearish():
-    """Pin (6): SHORT switched to obv_bearish (B617 symmetric)."""
+    """Pin (6): SHORT switched to obv_bearish (B617 symmetric).
+    B821: B728 added close_in_bottom_40pct_of_range strong-close."""
     from backtest.signals.screener import strat_break_retest_volume
     s = {
-        "support_break_retest": True,
-        "obv_bearish": True,        # B617: switched from obv_falling
-        "close_below_open": True,
-        "vol_below_avg": True,
+        "support_break_retest":            True,
+        "obv_bearish":                     True,   # B617: switched from obv_falling
+        "close_below_open":                True,
+        "vol_below_avg":                   True,
+        "close_in_bottom_40pct_of_range":  True,   # B728 strong-close
     }
     out = strat_break_retest_volume(s)
     assert out["fires"] is True and out["direction"] == "short"

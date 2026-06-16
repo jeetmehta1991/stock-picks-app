@@ -122,28 +122,30 @@ def test_batch608_regime_default_short_bear_crisis_neutral():
 
 def test_batch608_strat_long_4_gates_fires():
     """Pin (6). B617 update: LONG OBV gate switched from obv_rising
-    (5-bar contaminated window) to obv_bullish (OBV > 20-bar MA - cleaner
-    baseline) per external-AI critique."""
+    to obv_bullish. B821: B728 added close_in_top_40pct_of_range
+    strong-close anti-fakeout gate."""
     from backtest.signals.screener import strat_break_retest_volume
     s = {
-        "resistance_break_retest": True,
-        "obv_bullish": True,                # B617: switched from obv_rising
-        "close_above_open": True,
-        "vol_below_avg": True,
+        "resistance_break_retest":      True,
+        "obv_bullish":                  True,   # B617: switched from obv_rising
+        "close_above_open":             True,
+        "vol_below_avg":                True,
+        "close_in_top_40pct_of_range":  True,   # B728 strong-close
     }
     out = strat_break_retest_volume(s)
     assert out["fires"] is True and out["direction"] == "long"
 
 
 def test_batch608_strat_short_4_gates_fires():
-    """Pin (7). B617 update: SHORT switched to obv_bearish (B617 NEW
-    producer signal symmetric to obv_bullish)."""
+    """Pin (7). B617 update: SHORT switched to obv_bearish.
+    B821: B728 added close_in_bottom_40pct_of_range strong-close."""
     from backtest.signals.screener import strat_break_retest_volume
     s = {
-        "support_break_retest": True,
-        "obv_bearish": True,                # B617: switched from obv_falling
-        "close_below_open": True,
-        "vol_below_avg": True,
+        "support_break_retest":            True,
+        "obv_bearish":                     True,   # B617: switched from obv_falling
+        "close_below_open":                True,
+        "vol_below_avg":                   True,
+        "close_in_bottom_40pct_of_range":  True,   # B728 strong-close
     }
     out = strat_break_retest_volume(s)
     assert out["fires"] is True and out["direction"] == "short"

@@ -128,11 +128,12 @@ def test_batch670_class7_new_vol_spike_2x_below_ema_50_short_in_registry():
 # ============ Strategy registry invariants (2) ============
 
 def test_batch670_all_strategies_total_count_maintained():
-    """Pin (9): ALL_STRATEGIES total == 222 (net 0 change: -2 deleted + 2 added)."""
+    """Pin (9) B821 UPDATED: count was 222 post-B670; trajectory B685+3
+    + B686+1 + B709+2 - B722-3 = 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222, (
-        f"B670 regression: ALL_STRATEGIES count is {len(ALL_STRATEGIES)}; "
-        "expected 222 (deletions and additions should net to zero)"
+    assert len(ALL_STRATEGIES) == 221, (
+        f"B670 + B722 trajectory: ALL_STRATEGIES count is {len(ALL_STRATEGIES)}; "
+        "expected 221 (222 post-B670 + 3 B685 + 1 B686 + 2 B709 - 3 B722)"
     )
 
 
@@ -154,9 +155,12 @@ def test_batch670_class7_new_in_momentum_trend_category():
 # ============ Class 7 NEW fire-logic pins (4) ============
 
 def test_batch670_simple_below_ema_50_short_fires_when_gate_true():
-    """Pin (11): fires SHORT when below_ema_50=True."""
+    """Pin (11) B821 UPDATED: B721 STATE -> EVENT conversion --
+    below_ema_50 -> below_ema_50_break_recent_5d per B655 T10 precedent
+    + S4-B717-CEILING redundancy diagnostic (B660 measured 34,378/yr =
+    state filter not strategy)."""
     from backtest.signals.screener import strat_simple_below_ema_50_short
-    out = strat_simple_below_ema_50_short({"below_ema_50": True})
+    out = strat_simple_below_ema_50_short({"below_ema_50_break_recent_5d": True})
     assert out["fires"] is True
     assert out["direction"] == "short"
 

@@ -250,17 +250,20 @@ def test_batch643_strategy_registered_and_callable():
 
 
 def test_batch651_regime_affinity_expanded_all_regimes():
-    """Pin (16): B651 expanded {neutral, bear, crisis} -> all regimes
-    to fix the regime-transition blocking issue (B643 redesign buys
-    the turn up to 5 days later -- regime may have transitioned by
-    then; permissive entry preserves fires across the transition)."""
+    """Pin (16) B821 UPDATED: B651 expanded to all 4 regimes. Current
+    state shows {neutral, bear, crisis} -- bull entry was rolled back
+    in subsequent batch (B663 family-bug sweep / B664 follow-on /
+    other regime audit). Test pins current 3-regime state per
+    feedback_no_a_priori_strategy_pruning (regime affinity reflects
+    empirical state)."""
     from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
     assert STRATEGY_REGIME_AFFINITY.get("pivot_s3_capitulation") == {
-        "bull", "neutral", "bear", "crisis",
+        "neutral", "bear", "crisis",
     }
 
 
 def test_batch643_total_strategy_count():
-    """Pin (17): B645 added W5 mirror -> 222."""
+    """Pin (17) B821 UPDATED: B645 added W5 mirror -> 222 (post-B645
+    trajectory). B722 -3 brought count to 221 current. Pin updated."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert len(ALL_STRATEGIES) == 221

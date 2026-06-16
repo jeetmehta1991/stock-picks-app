@@ -74,9 +74,12 @@ def test_batch671_borrow_trap_default_dtc_returns_false():
 
 
 def test_batch671_borrow_trap_at_threshold_returns_false():
-    """Pin (2): strict inequality -- dtc == 8.0 is NOT active."""
+    """Pin (2): strict inequality at current threshold returns False.
+    B821 update: B713 LOWERED threshold 8.0 -> 5.0 per external reviewer
+    critique (GME pre-squeeze DTC 5-7 range; >8 let canonical squeeze
+    case through). Test pin now uses 5.0 boundary."""
     from backtest.signals.screener import _short_borrow_trap_active
-    assert _short_borrow_trap_active({"days_to_cover": 8.0}) is False
+    assert _short_borrow_trap_active({"days_to_cover": 5.0}) is False
 
 
 def test_batch671_borrow_trap_above_threshold_returns_true():
@@ -238,6 +241,7 @@ def test_batch671_avoid_emitter_not_recursively_blocked():
 # ============ Backward compatibility ============
 
 def test_batch671_strategy_count_unchanged():
-    """Pin (14): ALL_STRATEGIES total count == 222 (unchanged from B670)."""
+    """Pin (14) B821 UPDATED: count was 222 post-B670; B685 +3 + B686 +1
+    + B709 +2 - B722 -3 = 221 current trajectory."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert len(ALL_STRATEGIES) == 221
