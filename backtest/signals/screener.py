@@ -955,6 +955,21 @@ def strat_williams_r_oversold(s):
 
     BUG-11 RESOLVED-IMPLEMENTED Pass 53 v8h+1: short branch uses explicit
     default to prevent firing when key absent.
+    
+
+    B831 (2026-06-16) PATTERN S SHORT-SIDE ANNOTATION: this is a dual-
+    direction mean-reversion strategy. Per B768 demo edge-prior (50
+    tickers x 2yr): LONG 7/7 EDGE_EXISTS (hit 54-63 percent / pnl +87
+    to +184 bp/10d) vs SHORT 7/7 EDGE_NEGATIVE (hit 45-51 percent /
+    pnl -5 to -516 bp/10d). SHORT-side faces structural headwinds
+    (equity drift bias + borrow cost + squeeze risk + STATE-form anti-
+    edge). Per `feedback_no_a_priori_strategy_pruning`: cube still
+    measures per-direction per-cell -- LONG-side cube-authoritative;
+    SHORT-side EXPLORATORY interpretation per
+    STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md Pattern S
+    section + B782 cube-interpretation guide. DO NOT conclude oscillator
+    BROKEN if SHORT fails; do split off LONG; do NOT delete SHORT a-
+    priori.
     """
     rsi_2 = s.get("rsi_2", 50)
     # B663 family-bug sweep: positive symmetric below_ema_200 (B630 producer) replaces (not above_200) NOT-pattern silent-gap per feedback_never_use_NOT_s_get_pattern
@@ -1100,6 +1115,21 @@ def strat_ultimate_oscillator(s):
     DEFERRED to R5 per B624 manifest M1: STRATEGY_REGIME_AFFINITY
     entry `{bull}` is a B623 REMOVE_OK candidate (REMOVE gains
     +31.1pp PnL). Map removal pends R5 direction-aware confirmation.
+    
+
+    B831 (2026-06-16) PATTERN S SHORT-SIDE ANNOTATION: this is a dual-
+    direction mean-reversion strategy. Per B768 demo edge-prior (50
+    tickers x 2yr): LONG 7/7 EDGE_EXISTS (hit 54-63 percent / pnl +87
+    to +184 bp/10d) vs SHORT 7/7 EDGE_NEGATIVE (hit 45-51 percent /
+    pnl -5 to -516 bp/10d). SHORT-side faces structural headwinds
+    (equity drift bias + borrow cost + squeeze risk + STATE-form anti-
+    edge). Per `feedback_no_a_priori_strategy_pruning`: cube still
+    measures per-direction per-cell -- LONG-side cube-authoritative;
+    SHORT-side EXPLORATORY interpretation per
+    STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md Pattern S
+    section + B782 cube-interpretation guide. DO NOT conclude oscillator
+    BROKEN if SHORT fails; do split off LONG; do NOT delete SHORT a-
+    priori.
     """
     rsi_2 = s.get("rsi_2", 50)
     fl = (
@@ -1393,7 +1423,19 @@ def strat_rsi9_extreme(s):
 
 
 def strat_rsi21_slow(s):
-    # B630 sweep: positive symmetric below_sma_50 (B630 producer)
+    """B630 sweep: positive symmetric below_sma_50 (B630 producer).
+
+    B831 (2026-06-16) PATTERN S SHORT-SIDE ANNOTATION: dual-direction
+    mean-reversion strategy. Per B768 demo edge-prior (50 tickers x 2yr):
+    LONG 7/7 EDGE_EXISTS vs SHORT 7/7 EDGE_NEGATIVE. SHORT-side faces
+    structural headwinds (drift + borrow + squeeze + STATE anti-edge).
+    Per `feedback_no_a_priori_strategy_pruning`: cube measures per-
+    direction per-cell; LONG-side cube-authoritative; SHORT-side
+    EXPLORATORY interpretation per STAGE_4_OSCILLATOR_MEAN_REVERSION
+    _CLUSTER_WALKS.md Pattern S + B782 cube-interpretation guide. DO
+    NOT conclude oscillator BROKEN if SHORT fails; DO split off LONG;
+    DO NOT delete SHORT a-priori.
+    """
     fl = (s.get("rsi_21", 50) < 35 and s.get("price_above_sma_50"))
     fs = (s.get("rsi_21", 50) > 65 and s.get("below_sma_50")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
@@ -1473,6 +1515,21 @@ def strat_mfi_oversold(s):
     B791 REVERT empirically validated at full T1a scale. obv gates STAY.
 
     Batch 628 F1 family-sweep (original): positive symmetric obv_bearish.
+    
+
+    B831 (2026-06-16) PATTERN S SHORT-SIDE ANNOTATION: this is a dual-
+    direction mean-reversion strategy. Per B768 demo edge-prior (50
+    tickers x 2yr): LONG 7/7 EDGE_EXISTS (hit 54-63 percent / pnl +87
+    to +184 bp/10d) vs SHORT 7/7 EDGE_NEGATIVE (hit 45-51 percent /
+    pnl -5 to -516 bp/10d). SHORT-side faces structural headwinds
+    (equity drift bias + borrow cost + squeeze risk + STATE-form anti-
+    edge). Per `feedback_no_a_priori_strategy_pruning`: cube still
+    measures per-direction per-cell -- LONG-side cube-authoritative;
+    SHORT-side EXPLORATORY interpretation per
+    STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md Pattern S
+    section + B782 cube-interpretation guide. DO NOT conclude oscillator
+    BROKEN if SHORT fails; do split off LONG; do NOT delete SHORT a-
+    priori.
     """
     # B791 REVERT-OF-B789: restored obv gates per demo evidence.
     fl = (s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
@@ -2281,7 +2338,22 @@ def strat_rsi_volume_200ema(s):
     RSI<35 AND above-200-EMA was nearly impossible to satisfy in trending
     markets (RSI<30 + uptrend is itself rare); the volume gate compounded
     that to zero. Above-average volume on the oversold day still confirms
-    the move, without the 2x sledgehammer."""
+    the move, without the 2x sledgehammer.
+
+    B831 (2026-06-16) PATTERN S SHORT-SIDE ANNOTATION: this is a dual-
+    direction mean-reversion strategy. Per B768 demo edge-prior (50
+    tickers x 2yr): LONG 7/7 EDGE_EXISTS (hit 54-63 percent / pnl +87
+    to +184 bp/10d) vs SHORT 7/7 EDGE_NEGATIVE (hit 45-51 percent /
+    pnl -5 to -516 bp/10d). SHORT-side faces structural headwinds
+    (equity drift bias + borrow cost + squeeze risk + STATE-form anti-
+    edge). Per `feedback_no_a_priori_strategy_pruning`: cube still
+    measures per-direction per-cell -- LONG-side cube-authoritative;
+    SHORT-side EXPLORATORY interpretation per
+    STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md Pattern S
+    section + B782 cube-interpretation guide. DO NOT conclude oscillator
+    BROKEN if SHORT fails; do split off LONG; do NOT delete SHORT a-
+    priori.
+    """
     fl = (s.get("rsi_14", 50) < 35 and s.get("vol_above_avg") and s.get("price_above_ema_200"))
     # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
     fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and s.get("below_ema_200")) and not _short_borrow_trap_active(s)
