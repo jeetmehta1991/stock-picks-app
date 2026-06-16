@@ -11803,3 +11803,39 @@ def test_batch301_fetch_info_bulk_universe_recovery(tmp_path):
         f"Pre-fix baseline was 8/150. Regression suspect."
     )
     print(f"[OK] Batch 301 Stage D universe recovery: {have_mcap}/150 mcap>=100M (was 8/150)")
+
+
+def test_batch804_checklist_106_audit_numpy_bool_pin():
+    """B804 #64 pin test: codifies B775 numpy.bool_ counting fix in
+    `scripts/checklist_106_cluster_a_producer_audit.py:_signal_is_true_observation`.
+
+    Pre-B775 audit had strict `isinstance(sig_val, bool)` check that REJECTED
+    numpy.bool_ instances -- causing FALSE POSITIVES in B767 smoke + B775 demo
+    where pandas-emitted signals (hammer, near_cam_r3, shooting_star, etc.)
+    were classified emitted_but_always_False when actually np.True_ on real
+    bars. Per CHECKLIST #44(b) investigate-why this is now fixed; B804 pin
+    test trips if a future refactor regresses the fix.
+    """
+    import numpy as np
+    from scripts.checklist_106_cluster_a_producer_audit import _signal_is_true_observation
+
+    # Python bool True/False
+    assert _signal_is_true_observation(True) is True, "Python bool True must count"
+    assert _signal_is_true_observation(False) is False, "Python bool False must NOT count"
+
+    # numpy.bool_ True/False (the B775 bug fix - pre-B775 these were rejected)
+    assert _signal_is_true_observation(np.True_) is True, "numpy.True_ must count post-B775 fix"
+    assert _signal_is_true_observation(np.False_) is False, "numpy.False_ must NOT count"
+
+    # Non-boolean truthy values (e.g. RSI=45.93 float) must NOT count
+    assert _signal_is_true_observation(45.93) is False, "float must NOT count (not a boolean signal)"
+    assert _signal_is_true_observation(1) is False, "int 1 must NOT count (not bool-typed)"
+    assert _signal_is_true_observation(0) is False, "int 0 must NOT count"
+    assert _signal_is_true_observation("True") is False, "str 'True' must NOT count"
+    assert _signal_is_true_observation(None) is False, "None must NOT count"
+    # Strings/lists/dicts truthy but not bool-typed must NOT count
+    assert _signal_is_true_observation([1, 2]) is False, "list must NOT count"
+    assert _signal_is_true_observation({"k": "v"}) is False, "dict must NOT count"
+    # np scalar types other than bool_ must NOT count
+    assert _signal_is_true_observation(np.float64(1.0)) is False, "np.float64 must NOT count"
+    assert _signal_is_true_observation(np.int64(1)) is False, "np.int64 must NOT count"

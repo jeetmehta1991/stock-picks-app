@@ -125,6 +125,31 @@ logger = logging.getLogger("checklist_106_cluster_a_audit")
 REPO_ROOT = Path(_REPO)
 OUTPUT_DIR = REPO_ROOT / "output_audit"
 
+
+def _signal_is_true_observation(sig_val) -> bool:
+    """B775 numpy.bool_ counting fix (B804 extracted to helper for pin test).
+
+    Returns True when sig_val is a boolean True observation in the audit
+    sense: accepts both Python `bool` and `numpy.bool_` (which pandas
+    producers commonly emit via vectorized comparisons). Rejects non-
+    boolean truthy values (e.g. rsi_14=45.93 float).
+
+    Pre-B775 audit used strict `isinstance(sig_val, bool)` which REJECTED
+    numpy.bool_ -> caused FALSE POSITIVES in B767/B775 smoke (hammer /
+    shooting_star / near_cam_r3 etc classified emitted_but_always_False
+    when actually True np.bool_ on real bars). B775 fix accepts both
+    types; B804 pin test codifies the contract so future refactors trip
+    a clear test if the bug regresses.
+    """
+    if sig_val is True:
+        return True
+    try:
+        import numpy as _np
+        _is_bool_like = isinstance(sig_val, (bool, _np.bool_))
+    except Exception:
+        _is_bool_like = isinstance(sig_val, bool)
+    return bool(sig_val and _is_bool_like)
+
 # KNOWN-EVENT probes per CHECKLIST #106(e). These are dates where, per
 # market history, specific oscillator signals are known to have triggered.
 # If a producer fails to emit the signal on these dates, the producer has
@@ -275,23 +300,11 @@ def _probe_producer_coverage(
                 stats["n_observations"] += 1
                 year_stats = stats["by_year"][year]
                 year_stats["n_observations"] += 1
-                # B775 FIX: Accept Python bool AND numpy.bool_ as boolean signals.
-                # Original strict check `isinstance(sig_val, bool)` rejected
-                # numpy.bool_ values (which pandas producers commonly emit via
-                # vectorized comparisons). This caused FALSE POSITIVES in B767
-                # smoke + B775 demo: hammer / shooting_star / near_cam_r3 / etc
-                # were classified emitted_but_always_False when they actually
-                # were True np.bool_ on real bars. Per CHECKLIST #44(b)
-                # investigate-why: producer compute_pivot_signals returns
-                # np.bool_ from pandas comparisons; producer compute_ema_sma
-                # returns Python bool from _safe_float-wrapped scalar compare.
-                # Both should count.
-                try:
-                    import numpy as _np
-                    _is_bool_like = isinstance(sig_val, (bool, _np.bool_))
-                except Exception:
-                    _is_bool_like = isinstance(sig_val, bool)
-                if sig_val is True or (sig_val and _is_bool_like):
+                # B775 FIX (via B804 _signal_is_true_observation helper):
+                # accepts Python bool AND numpy.bool_ as boolean True signals.
+                # Counted as True observation when signal-value is bool-typed
+                # AND truthy. Pin test in test_unit.py codifies the contract.
+                if _signal_is_true_observation(sig_val):
                     stats["n_True_observations"] += 1
                     year_stats["n_True"] += 1
                     ticker_emitted_True.add(sig_name)

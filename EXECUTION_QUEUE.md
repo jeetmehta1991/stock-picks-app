@@ -487,7 +487,7 @@ B-29 walk doc previously flagged this as "Pattern V: cross_sectional.compute_cro
 
 **B767 + B775 demo verdicts SUPERSEDED in scope:** The 14 "emitted_but_always_False" findings were all audit-bug false positives. **Cluster A producer-data audit final verdict (post-B775):** ZERO runtime silent-no-op gates + ZERO "emitted-but-always-False" gates + 53 metadata-mismatches in signals_used field shorthand (METADATA only, NOT runtime). Chairman's TIER 0 B748c-pattern contamination concern is FULLY refuted.
 
-64. **`S4-B775-CHECKLIST-106-AUDIT-PIN-TEST-NUMPY-BOOL-COUNTING`** — Codify B775 numpy.bool_ counting fix as pin test in test_unit.py. Probe: build synthetic OHLCV where hammer or near_cam_r3 is known True (numpy.bool_); assert True-counter increments for both Python bool AND numpy.bool_ values. Future refactors of the True-counting logic will trip this test. Defense-in-depth pattern mirror of B770 #62 PIT pin test. PENDING-OWNER-APPROVAL. Source: B775 audit-bug discovery. Class 1 TEST-CODIFICATION. MEDIUM.
+64. **`S4-B775-CHECKLIST-106-AUDIT-PIN-TEST-NUMPY-BOOL-COUNTING`** — Codify B775 numpy.bool_ counting fix as pin test in test_unit.py. Probe: build synthetic OHLCV where hammer or near_cam_r3 is known True (numpy.bool_); assert True-counter increments for both Python bool AND numpy.bool_ values. Future refactors of the True-counting logic will trip this test. Defense-in-depth pattern mirror of B770 #62 PIT pin test. ~~PENDING-OWNER-APPROVAL~~ **SHIPPED B804 2026-06-16.** Extracted B775 True-counting logic from `scripts/checklist_106_cluster_a_producer_audit.py` inline check into module-level `_signal_is_true_observation(sig_val) -> bool` helper. Added 11-assertion pin test `test_batch804_checklist_106_audit_numpy_bool_pin` in test_unit.py covering: Python bool True/False; numpy.True_/False_; non-bool truthies (float, int, str, list, dict, None, np.float64, np.int64) — all REJECTED per the bool-typed-only contract. Future refactors of `_signal_is_true_observation` regress trip pin test. Pyramid 843/843. Source: B775 audit-bug discovery + B804 codification. Class 1 TEST-CODIFICATION.
 
 **B775 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (audit numpy.bool_ counting bug + 15 false positives eliminated) + 1 nuanced (post-fix Cluster A producer-audit final verdict is CLEANER than initial B767/B775 verdicts -- zero runtime gates + zero always-False producers). Tickets filed: **1 NEW (#64 pin test) + 1 code change** (`scripts/checklist_106_cluster_a_producer_audit.py:279` accepts numpy.bool_). **Audit-clean: YES.** This is the THIRD case CHECKLIST #44(b) investigate-why has caught an audit/measurement bug masquerading as strategy verdict (B748c FILE-LIST gap; B774 measurement-harness gap; B775 audit-bug).
 
@@ -985,6 +985,21 @@ Other 5 candidates (rsi21 / williams_r / uo / mfi / ultimate_oscillator + rsi_vo
 **B803 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (#51 PARTIAL-SHIPPED 3-of-8; #40 strategy-side BLOCKED on all RSI targets). Tickets: **0 NEW + 2 annotations** + 3 EXPLORATORY docstrings. **Audit-clean: YES.**
 
 **Cumulative ticket count post-B803: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 42 — B804 #64 CHECKLIST-106 numpy.bool_ counting PIN TEST SHIPPED
+
+**B804 SHIPPED #64 pin test** + refactor. Extracted B775 True-counting inline check into module-level `_signal_is_true_observation(sig_val) -> bool` helper. Added 11-assertion pin test `test_batch804_checklist_106_audit_numpy_bool_pin` in test_unit.py.
+
+**Assertions cover:**
+- Python bool True/False → counted/not-counted
+- numpy.True_/False_ → counted/not-counted (the B775 fix)
+- Non-bool truthies (float, int, str, list, dict, None, np.float64, np.int64) → all REJECTED per bool-typed-only contract
+
+Pyramid 843/843 (842 + 1 new pin test). Future refactors regress trip the test.
+
+**B804 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#64 SHIPPED). Tickets: **0 NEW + 1 annotation** + 2 code changes (helper refactor + pin test). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B804: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
