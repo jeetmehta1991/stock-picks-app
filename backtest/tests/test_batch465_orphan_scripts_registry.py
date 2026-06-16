@@ -153,6 +153,155 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "refresh cadence). Consumed by Batch 519 P15 sleeves "
         "(strat_squeeze_setup_long + strat_short_borrow_trap_avoid).",
     ),
+    # ----- Batch 836 (2026-06-16) AU9 23-entry expansion -----
+    # Per owner directive 2026-06-16 'Gate 5 18 substantive pyramid items
+    # execute'. B826 + B748e + B602-B748 batch wave created 23 new orphan
+    # scripts. Classifying each per the AU9 (a/b/c) rubric.
+    "scripts/aws_b660_launch.py": (
+        "a",
+        "Batch 660 launch script for full T1a x 2020-2026 fire-count "
+        "measurement run on AWS. One-time launch for B660 background job; "
+        "owner-approval to archive once B660 measurement set is locked.",
+    ),
+    "scripts/b748e_incremental_sc13d_decoder.py": (
+        "a",
+        "Batch 748e SC 13D incremental decoder. One-shot SEC EDGAR SC 13D "
+        "extraction pass run during the B748 sec_edgar_decoded buildup. "
+        "Documented in B748e commit; archive candidate after extractor "
+        "becomes the canonical path.",
+    ),
+    "scripts/backfill_quiet_strategies.py": (
+        "a",
+        "One-time backfill of quiet-strategy producer-zero re-audit data. "
+        "Archive candidate once Stage 3 producer_zero_reaudit.json is the "
+        "primary surface.",
+    ),
+    "scripts/checklist_106_cluster_a_producer_audit.py": (
+        "c",
+        "Batch 757 CHECKLIST-106 producer-data audit for Cluster A. "
+        "Recurring audit run during Stage 4 cluster walks. Consumed by "
+        "B767 council pre-flight + ad-hoc producer-health probes. Needs "
+        "cron/launcher wiring for systematic pre-cube audit cadence.",
+    ),
+    "scripts/cross_sectional_pit_audit.py": (
+        "c",
+        "Batch 746 cross_sectional PIT-invariance audit. Verdict-grade "
+        "audit ran during B690-step-2. Recurring audit pattern for any "
+        "factor-strategy PIT regression. Needs documented manual-trigger "
+        "condition for re-runs.",
+    ),
+    "scripts/extract_proposed_changes.py": (
+        "a",
+        "Batch 566 Stage 4 step 1 of 4 change extractor (351 atomic rows "
+        "from R4). One-shot extraction; archive candidate once Stage 4 "
+        "per-change approval surface is finalized.",
+    ),
+    "scripts/fetch_flt_one_time_b561.py": (
+        "a",
+        "Batch 561 one-time FLT (FleetCor / Corpay) ticker data fetch for "
+        "sector_history.csv 2023-03-17 IT->Industrials cohort. Explicit "
+        "one-time in filename; archive after FLT inclusion in cache.",
+    ),
+    "scripts/init_approvals.py": (
+        "a",
+        "One-time initializer for approvals.json (Stage 4 per-change "
+        "approval state). Archive after first owner-approval workflow "
+        "cycle establishes the file lifecycle.",
+    ),
+    "scripts/mark_s4_reviewed.py": (
+        "a",
+        "Owner-utility to mark Stage 4 walk-doc strategies as reviewed. "
+        "One-time / ad-hoc operator tool. Archive candidate; not part of "
+        "automated workflow.",
+    ),
+    "scripts/mean_reversion_edge_prior_test.py": (
+        "c",
+        "Batch 758 mean-reversion edge-prior test script (B709-style "
+        "conditional-add-test methodology). Diagnostic test consumed by "
+        "Pattern S empirical validation (B768). Needs documented re-run "
+        "trigger condition for any mean-reversion strategy walk.",
+    ),
+    "scripts/mfi_obv_anti_selection_test.py": (
+        "c",
+        "Batch 789 MFI x OBV anti-selection conditional-add-test (B709-"
+        "style 4-cell test on T1a OHLCV + forward 10d returns). Diagnostic "
+        "test; consumed by B826 #67 full-T1a verdict. Operator-run; needs "
+        "documented trigger condition for any new gate-modification audit.",
+    ),
+    "scripts/pattern_t_family_grep_audit.py": (
+        "b",
+        "Batch 763 Pattern T MA-cross + trend-gate collinearity family-"
+        "grep audit. Documented procedure for cluster-wide redundancy "
+        "audits. Retain in scripts/ as documented re-runnable audit when "
+        "new Pattern T candidates surface.",
+    ),
+    "scripts/pit_universe_discipline_audit.py": (
+        "b",
+        "Batch 747 PIT-universe discipline audit (B690 revised step 3 per "
+        "owner question 'why does there need to be any delisting?'). "
+        "Documented audit procedure; retain in scripts/ for re-run when "
+        "universe-construction discipline questions arise.",
+    ),
+    "scripts/preflight_cross_sweep.py": (
+        "b",
+        "Batch 568 preflight cross-sweep utility. Owner-approval cross-"
+        "sweep tool per feedback_audit_recommendations_against_existing"
+        "_directives. Documented procedure; retain.",
+    ),
+    "scripts/producer_collision_audit.py": (
+        "b",
+        "Batch 736 producer-collision auditor. Documented audit for "
+        "detecting collision between TIER 1 / TIER 2 / TIER 3 producer "
+        "signal key emissions. Retain in scripts/ for re-run when "
+        "producer-side schema changes land.",
+    ),
+    "scripts/refactor_b718b_explicit_borrow_gate.py": (
+        "a",
+        "Batch 718b explicit borrow gate refactor (Pattern Y consolidation "
+        "step 1). One-time refactor; archive after B742 strat3 chunk lands.",
+    ),
+    "scripts/refactor_b742_strat3_explicit_borrow_gate.py": (
+        "a",
+        "Batch 742 explicit borrow gate refactor (Pattern Y consolidation "
+        "step 2; _strat3 SHORT branch). One-time refactor; archive after "
+        "B744 borrow-gate lint test pins the post-refactor state.",
+    ),
+    "scripts/run_b693_sweeps.py": (
+        "a",
+        "Batch 693 sweep harness for entry-side multi-feature gate "
+        "exploration. One-time sweep; outputs in batch's owner-approval "
+        "candidates. Archive candidate after R5 cube iteration.",
+    ),
+    "scripts/run_b702_ev3_deletion_empirical_verify.py": (
+        "a",
+        "Batch 702 EV-3 deletion empirical verify script (phi correlation "
+        "test that produced B709 EMPIRICAL-RESTORE verdict). One-time "
+        "verification; archive after B709 restoration is locked.",
+    ),
+    "scripts/run_b737_confronting_tests.py": (
+        "a",
+        "Batch 737 confronting-tests runner. One-time adversarial-tests "
+        "harness from B737 walk. Archive candidate.",
+    ),
+    "scripts/validate_pattern_w_candidates.py": (
+        "b",
+        "Batch 759 Pattern W validation consumer (post-B758 edge-prior "
+        "test methodology). Documented validation procedure for Pattern W "
+        "DELETE candidates per council methodology. Retain in scripts/.",
+    ),
+    "scripts/validate_smc_panel_cache_semantic.py": (
+        "b",
+        "Batch 555/560 SMC panel-cache semantic validation. Documented "
+        "validation for USE_SMC_PANEL_CACHE flag flip decision (per-key "
+        "bool divergence + per-key float divergence audit). Retain in "
+        "scripts/ for re-run when flag-flip is owner-considered.",
+    ),
+    "scripts/validate_trigger_followthrough.py": (
+        "b",
+        "Batch 757/758 trigger-followthrough validation consumer (post-"
+        "B756 fire-bar matrix smoke). Documented validation procedure for "
+        "Pattern W candidate testing. Retain in scripts/.",
+    ),
 }
 
 
