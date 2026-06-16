@@ -64,10 +64,10 @@ REPO = Path(__file__).resolve().parents[2]
 # Expected engine status (as of matrix regen 2026-05-20 Batch 260)
 EXPECTED_STATUS: dict[str, str] = {
     "BUG-014": "N/A",
-    "BUG-015": "YES",
+    "BUG-015": "PARTIAL-ORPHAN",  # B815: build_dashboard_stage_2.py is CLI script not library module; false-positive orphan
     "BUG-016": "N/A",
     "BUG-018": "FUNC-DEAD",  # KNOWN gap; Bonferroni code not in canonical backtest
-    "BUG-022": "YES",
+    "BUG-022": "PARTIAL-ORPHAN",  # B815: same as BUG-015; build_dashboard_stage_2.py CLI script orphan-detection false-positive
     "BUG-023": "YES",
     "BUG-133": "YES",
 }
@@ -99,6 +99,24 @@ KNOWN_GAPS: dict[str, str] = {
         "The FUNC-DEAD status will resolve once Batch 459's dual-source "
         "coverage (matrix extension to scripts/*) is regenerated with a "
         "coverage_report_optimizer.json captured."
+    ),
+    "BUG-015": (
+        "scripts/build_dashboard_stage_2.py is a CLI script (cron-invoked "
+        "per docstring), NOT a library module. The orphan-detection "
+        "heuristic looks for Python importers and treats CLI-only files "
+        "as orphaned, which is a false-positive for runnable scripts. "
+        "The script remains engine-active (generates dashboard_stage_2/"
+        "data.json + data.js consumed by index.html). Verified B815 "
+        "2026-06-16 by reading the script header. Documenting PARTIAL-"
+        "ORPHAN status as expected for this class of file."
+    ),
+    "BUG-022": (
+        "Same finding as BUG-015 -- both BUGs tag the same primary "
+        "helper scripts/build_dashboard_stage_2.py (CLI script). "
+        "PARTIAL-ORPHAN status is verification-heuristic false-positive; "
+        "script remains engine-active via cron invocation. The orphan-"
+        "detection methodology improvement (recognize CLI scripts as "
+        "non-orphan) is queued separately."
     ),
 }
 

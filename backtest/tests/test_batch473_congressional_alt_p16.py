@@ -103,6 +103,9 @@ def test_gov_contracts_emits_last_qtr_and_4q_sum(tmp_path, monkeypatch):
 def test_gov_contracts_pit_drops_future_quarters(tmp_path, monkeypatch):
     import backtest.signals.congressional_alt_data as cad
     monkeypatch.setattr(cad, "_GOV_CONTRACTS_DIR", tmp_path)
+    # B815 fix: clear module-level cache to prevent pollution from prior
+    # tests using same ticker "T" (B535 OPT-A introduced the cache).
+    cad._GOV_CONTRACTS_BY_TICKER.clear()
     df = pd.DataFrame([
         {"Ticker": "T", "Amount": "100.0", "Qtr": 1, "Year": 2024},
         {"Ticker": "T", "Amount": "200.0", "Qtr": 2, "Year": 2024},  # future
@@ -150,6 +153,9 @@ def test_lobbying_sums_amounts_in_window(tmp_path, monkeypatch):
 def test_lobbying_yoy_growth(tmp_path, monkeypatch):
     import backtest.signals.congressional_alt_data as cad
     monkeypatch.setattr(cad, "_LOBBYING_DIR", tmp_path)
+    # B815 fix: clear module-level cache to prevent pollution from prior
+    # tests using same ticker "T" (B535 OPT-A introduced the cache).
+    cad._LOBBYING_BY_TICKER.clear()
     today = date(2024, 6, 1)
     df = _make_lobbying_df([
         ("TEST", today - timedelta(days=100), 2_000_000),
