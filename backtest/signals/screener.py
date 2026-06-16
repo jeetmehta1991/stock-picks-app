@@ -1457,6 +1457,21 @@ def strat_mfi_oversold(s):
     methodology + cube cell measurement. Until then: keep B628 F1 symmetric
     obv gates as-is.
 
+    B826 #67 FULL T1a VERDICT (2026-06-16; bcru8s1hr 503 tickers x 1260+
+    bars = 423,566 ticker-bars; runtime ~14h):
+
+      Cell A (mfi_oversold AND obv_bullish):     n= 374  hit=56.42%
+      Cell B (mfi_oversold AND NOT obv_bullish): n=9226  hit=53.32%
+      Delta: obv_bullish gate -> +3.10pp WIN-RATE EDGE
+
+      mean_pnl@10d field CORRUPTED (cell B = 150M bps = 1.5M-percent;
+      cells C/D similarly affected). Hit-rate is the trustworthy metric.
+      Test script verdict label "ANTI_SELECTION_CONFIRMED" was computed
+      from corrupted mean_pnl + is REFUTED by hit-rate. NEW ticket #69
+      filed for the mean_pnl data-quality investigation.
+
+    B791 REVERT empirically validated at full T1a scale. obv gates STAY.
+
     Batch 628 F1 family-sweep (original): positive symmetric obv_bearish.
     """
     # B791 REVERT-OF-B789: restored obv gates per demo evidence.
