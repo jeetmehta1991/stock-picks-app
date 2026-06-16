@@ -316,7 +316,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 ### TIER 6 — B767 follow-ups from ticket #32 COMPLETED-EMPIRICAL execution
 
-50. **`S4-B767-METADATA-SIGNALS-USED-FIELD-SHORTHAND-NORMALIZATION`** — Normalize `signals_used` metadata field across 53 declarations spanning 8 shorthand keys → canonical producer keys. Affected keys: `above_ema_200` → `price_above_ema_200` (3 strats); `price_below_ema_200` → `below_ema_200` (22 strats); `macd_bullish` → `macd_12_26_9_bullish` (7 strats); `macd_bearish` → `macd_12_26_9_bearish` (9 strats); `vol_spike_1.5x` → producer-additive `vol_spike_15x` or drop (10 strats); `bb_touch_lower_tight` → producer-additive variant or drop (1 strat); `bearish_signal` → producer-specific name (1 strat). **CRITICAL DISTINCTION:** Runtime fires logic ALREADY uses correct producer keys (spot-check confirmed williams_r_oversold + supertrend_macd + bollinger_tight). This is METADATA / dashboard / STRATEGY_ROSTER.md accuracy bug, NOT runtime silent-no-op bug. **P3 polish, NOT P0 blocker.** Affected strategies enumerated in `output_audit/checklist_106_cluster_a_producer_audit_VERDICT.md`. PENDING-OWNER-APPROVAL. Source: B767 execution of ticket #32. Class 1 DOC-DISCIPLINE / METADATA. P3 LOW (no runtime impact; dashboard accuracy only).
+50. **`S4-B767-METADATA-SIGNALS-USED-FIELD-SHORTHAND-NORMALIZATION`** — Normalize `signals_used` metadata field across 53 declarations spanning 8 shorthand keys → canonical producer keys. Affected keys: `above_ema_200` → `price_above_ema_200` (3 strats); `price_below_ema_200` → `below_ema_200` (22 strats); `macd_bullish` → `macd_12_26_9_bullish` (7 strats); `macd_bearish` → `macd_12_26_9_bearish` (9 strats); `vol_spike_1.5x` → producer-additive `vol_spike_15x` or drop (10 strats); `bb_touch_lower_tight` → producer-additive variant or drop (1 strat); `bearish_signal` → producer-specific name (1 strat). **CRITICAL DISTINCTION:** Runtime fires logic ALREADY uses correct producer keys (spot-check confirmed williams_r_oversold + supertrend_macd + bollinger_tight). This is METADATA / dashboard / STRATEGY_ROSTER.md accuracy bug, NOT runtime silent-no-op bug. **P3 polish, NOT P0 blocker.** Affected strategies enumerated in `output_audit/checklist_106_cluster_a_producer_audit_VERDICT.md`. ~~PENDING-OWNER-APPROVAL~~ **COMPLETED B806 2026-06-16** (7 of 7 shorthand keys). B799 shipped 5 of 7 keys (51 declarations across macd_bullish/macd_bearish/above_ema_200/price_below_ema_200/vol_spike_1.5x). B806 shipped remaining 2 keys: `bearish_signal` → `bearish_engulfing_or_not_rsi_14_rising` (compound canonical); `bb_reclaim_lower_tight` (post-B801 form) → `bb_20_15_or_20_20_reclaim_from_lower_recent_3d` (compound canonical) + SHORT mirror. Source: B767 execution of ticket #32 + B779 owner approval + B799+B806 implementation. Class 1 DOC-DISCIPLINE / METADATA.
 
 **B767 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (METADATA-mismatch confirmed at 53 declarations across 8 keys) + 1 deferred-to-B768 (14 emitted-but-always-False candidates pending demo bh15ewc9v). Tickets filed: 1 NEW (#50) + 1 annotation on #32 (COMPLETED-EMPIRICAL with verdict). **Audit-clean: YES.**
 
@@ -1008,6 +1008,21 @@ Pyramid 843/843 (842 + 1 new pin test). Future refactors regress trip the test.
 **B805 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#62 SHIPPED). Tickets: **0 NEW + 1 annotation + 1 code change** (pin test). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B805: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 44 — B806 #50 metadata cleanup COMPLETE (remaining 2 shorthand keys canonicalized)
+
+**B806 SHIPPED final 2 of 7 #50 metadata cleanups:**
+- `bearish_signal` (1 strat strat_rsi_overbought_short) → `bearish_engulfing_or_not_rsi_14_rising` (canonical compound)
+- `bb_reclaim_lower_tight` (strat_bollinger_tight) → `bb_20_15_or_20_20_reclaim_from_lower_recent_3d` (canonical compound)
+- `bb_reclaim_upper_tight` (same strategy SHORT) → `bb_20_15_or_20_20_reclaim_from_upper_recent_3d`
+
+Note: these strategies received B801/B803 producer-key changes in this turn; cleanup now harmonizes signals_used field with new runtime producer keys.
+
+**#50 ticket COMPLETE.** B799 5 keys (51 declarations) + B806 2 keys (3 declarations) = 7 of 7 shorthand keys cleaned up.
+
+**B806 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#50 final 2 keys SHIPPED). Tickets: **0 NEW + 1 annotation + 3 code changes**. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B806: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 

@@ -1417,8 +1417,9 @@ def strat_rsi_overbought_short(s):
     fires = (s.get("rsi_14", 50) > 68 and
              s.get("below_sma_50") and
              (s.get("bearish_engulfing") or s.get("rsi_14_rising") == False) and not _short_borrow_trap_active(s))
+    # B806 #50 metadata cleanup: bearish_signal shorthand -> canonical compound
     return _strat(fires, "short", "mean_reversion",
-        ["rsi_14>68","below_sma_50","bearish_signal", "borrow_ok"],
+        ["rsi_14>68","below_sma_50","bearish_engulfing_or_not_rsi_14_rising", "borrow_ok"],
         [f"RSI-14 overbought at {s.get('rsi_14',0):.1f}  -  above 68",
          "Below 50 SMA  -  selling rally in downtrend",
          "Bearish momentum confirms sellers taking control"])
@@ -1583,9 +1584,9 @@ def strat_bollinger_tight(s):
         and below_200
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
-        ["bb_reclaim_lower_tight", f"rsi_2<10_or_rsi_14<{rsi_thr_long}",
+        ["bb_20_15_or_20_20_reclaim_from_lower_recent_3d", f"rsi_2<10_or_rsi_14<{rsi_thr_long}",
          "price_above_ema_200"],
-        ["bb_reclaim_upper_tight", f"rsi_2>90_or_rsi_14>{rsi_thr_short}",
+        ["bb_20_15_or_20_20_reclaim_from_upper_recent_3d", f"rsi_2>90_or_rsi_14>{rsi_thr_short}",
          "below_ema_200", "borrow_ok"],
         ["Price RECLAIMED inside tight BB after lower-band touch (B801 #44 EVENT)",
          f"RSI(2)<10 OR RSI(14)<{rsi_thr_long}",
