@@ -1118,6 +1118,25 @@ Process check after launch discovered **PRE-EXISTING fire-bar matrix --full run 
 
 **Cumulative ticket count post-B812: 134 unique S4-B7XX tickets** (no change).
 
+### TIER 51 — B833 TIER 2 producer engine-wireup audit COMPLETE (Gate 2)
+
+**B833 (2026-06-16 owner directive 'TIER 2 producer wire-in - execute'):** audited 17 TIER 2 producers for engine wireup at `screener.py:screen_instrument`. **ALL 17 WIRED:**
+- smart-money: `compute_insider_cluster_signals` (7841), `institutional_signal` (7870; note name lacks `compute_` prefix), `compute_corporatedonors_signals`, `compute_patentmomentum_signals` (Quiver suite)
+- congressional: `compute_lobbying_signals`, `compute_gov_contracts_signals`, `compute_offexchange_signals`
+- event-driven: `compute_news_sentiment_signals` (7999), `compute_pead_signals` (7804), `compute_sec_edgar_signals`, `compute_short_interest_signals`, `compute_yoy_surprise_signal`, `compute_recent_8k_signal`
+- index-rebalance/classification: `compute_index_rebalance_signals` (7980), `universe.get_classification_change_signals` reading `sector_history.csv`
+- cross-sectional: `compute_cross_sectional_features` (B776 SHIPPED)
+
+**Engine path COMPLETE.** R4 cube ran with all TIER 2 producers (104 fired strategies in R4 optimizer JSONs = empirical confirmation).
+
+**Separate gap (NOT engine-blocking):** `scripts/measure_fire_count.py` TIER 2 extension — affects B660-style fire-count diagnostic accuracy, not engine cube execution. Filed NEW ticket #70.
+
+70. **`S4-B833-MEASURE-FIRE-COUNT-TIER-2-EXTENSION`** — measure_fire_count.py is standalone B660 diagnostic; engine path is complete. Smart-money + event-driven TIER 2 producers absent from measure_fire_count.py precompute (TIER 1 + TIER 3 + cross_sectional wired via B689 + B776; remaining ~13 modules NOT yet wired). Affects #108 (b) projection accuracy but does NOT block R4/R5. Scope: ~13 producer modules to wire into `_precompute_signals_for_ticker_bar`. Estimated 2-3 batches. **NON-CRITICAL** (engine path complete). Class 8 INFRA. Source: B833 audit + Gate 2 directive 2026-06-16.
+
+**B833 CHECKLIST #107 reconciliation:** Findings: 1 primary (engine TIER 2 wireup COMPLETE). Tickets: 1 NEW (#70). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B833: 137 unique S4-B7XX tickets** (134 + #67 B791 + #68 B813 + #69 B826 + #70 B833 cumulative).
+
 ### TIER 50 — B813 wired-but-not-engine-activated AUDIT per `feedback_wired_means_engine_consumed`
 
 **B813 SHIPPED umbrella audit ticket #68 with council-validated narrow-first-application path (Option C).**
