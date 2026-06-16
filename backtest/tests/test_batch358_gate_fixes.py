@@ -31,25 +31,33 @@ from backtest.signals.screener import (
 
 
 def _hull_rsi_bull_signals(*, above_200: bool):
-    """Signal dict that satisfies all Hull-RSI gates EXCEPT the regime gate."""
+    """Signal dict that satisfies all Hull-RSI gates EXCEPT the regime gate.
+    B722 STATE -> EVENT conversion: price_above_ema_200 ->
+    price_above_ema_200_break_recent_5d. B656 dropped rsi_9>50/<50 no-op gate.
+    """
     return {
-        "hull_bullish":        True,
-        "price_above_hull":    True,
-        "rsi_9":               60.0,
-        "adx":                 25.0,
-        "adx_trending":        True,
-        "price_above_ema_200": above_200,
+        "hull_bullish":                          True,
+        "price_above_hull":                      True,
+        "hull_bearish":                          False,
+        "price_below_hull":                      False,
+        "adx":                                   25.0,
+        "adx_trending":                          True,
+        "price_above_ema_200_break_recent_5d":   above_200,  # B722 EVENT
+        "below_ema_200_break_recent_5d":         False,
     }
 
 
-def _hull_rsi_bear_signals(*, above_200: bool):
+def _hull_rsi_bear_signals(*, below_200: bool):
+    """B722 EVENT-form: below_ema_200_break_recent_5d for SHORT regime gate."""
     return {
-        "hull_bullish":        False,
-        "price_above_hull":    False,
-        "rsi_9":               40.0,
-        "adx":                 25.0,
-        "adx_trending":        True,
-        "price_above_ema_200": above_200,
+        "hull_bullish":                          False,
+        "price_above_hull":                      False,
+        "hull_bearish":                          True,
+        "price_below_hull":                      True,
+        "adx":                                   25.0,
+        "adx_trending":                          True,
+        "price_above_ema_200_break_recent_5d":   False,
+        "below_ema_200_break_recent_5d":         below_200,  # B722 EVENT
     }
 
 
@@ -65,21 +73,24 @@ def test_hull_rsi_long_fires_in_bull_regime():
 
 def test_hull_rsi_long_BLOCKED_in_bear_regime():
     """Batch 358 fix: long leg must NOT fire below 200-EMA even if other
-    conditions are met (was firing pre-fix -> -1371pp loss in audit)."""
+    conditions are met (was firing pre-fix -> -1371pp loss in audit).
+    B722: regime gate now EVENT (recent_5d break)."""
     result = strat_hull_rsi(_hull_rsi_bull_signals(above_200=False))
     assert result["fires"] is False
 
 
 def test_hull_rsi_short_fires_in_bear_regime():
-    """Short leg: fires when bearish conditions met AND below 200-EMA."""
-    result = strat_hull_rsi(_hull_rsi_bear_signals(above_200=False))
+    """Short leg: fires when bearish conditions met AND below 200-EMA.
+    B722 EVENT-form: below_ema_200_break_recent_5d."""
+    result = strat_hull_rsi(_hull_rsi_bear_signals(below_200=True))
     assert result["fires"] is True
     assert result["direction"] == "short"
 
 
 def test_hull_rsi_short_BLOCKED_in_bull_regime():
-    """Batch 358 fix: short leg must NOT fire above 200-EMA."""
-    result = strat_hull_rsi(_hull_rsi_bear_signals(above_200=True))
+    """Batch 358 fix: short leg must NOT fire above 200-EMA.
+    B722 EVENT-form: SHORT requires below_ema_200_break_recent_5d=True."""
+    result = strat_hull_rsi(_hull_rsi_bear_signals(below_200=False))
     assert result["fires"] is False
 
 
@@ -87,22 +98,28 @@ def test_hull_rsi_short_BLOCKED_in_bull_regime():
 # T1 - Unit: cpr_narrow_bullish
 # ---------------------------------------------------------------------
 def _cpr_bullish_long_signals(*, above_200: bool):
+    """B654 narrow-scope: cpr_narrow -> cpr_narrow_tight (0.05 threshold).
+    B641 F1b: below_ema_200 positive symmetric for SHORT side."""
     return {
-        "cpr_narrow":          True,
+        "cpr_narrow_tight":     True,   # B654
         "above_cpr":            True,
         "rsi_14":               60.0,
         "above_avwap_50low":    True,
+        "below_avwap_50low":    False,
         "price_above_ema_200":  above_200,
+        "below_ema_200":        False,
     }
 
 
-def _cpr_bullish_short_signals(*, above_200: bool):
+def _cpr_bullish_short_signals(*, below_200: bool):
     return {
-        "cpr_narrow":          True,
+        "cpr_narrow_tight":     True,   # B654
         "below_cpr":            True,
         "rsi_14":               40.0,
         "above_avwap_50low":    False,
-        "price_above_ema_200":  above_200,
+        "below_avwap_50low":    True,   # B641 F1
+        "price_above_ema_200":  False,
+        "below_ema_200":        below_200,  # B641 F1b
     }
 
 
@@ -118,13 +135,13 @@ def test_cpr_narrow_bullish_long_BLOCKED_in_bear_regime():
 
 
 def test_cpr_narrow_bullish_short_fires_in_bear_regime():
-    result = strat_cpr_narrow_bullish(_cpr_bullish_short_signals(above_200=False))
+    result = strat_cpr_narrow_bullish(_cpr_bullish_short_signals(below_200=True))
     assert result["fires"] is True
     assert result["direction"] == "short"
 
 
 def test_cpr_narrow_bullish_short_BLOCKED_in_bull_regime():
-    result = strat_cpr_narrow_bullish(_cpr_bullish_short_signals(above_200=True))
+    result = strat_cpr_narrow_bullish(_cpr_bullish_short_signals(below_200=False))
     assert result["fires"] is False
 
 
@@ -132,22 +149,28 @@ def test_cpr_narrow_bullish_short_BLOCKED_in_bull_regime():
 # T1 - Unit: cpr_narrow_momentum
 # ---------------------------------------------------------------------
 def _cpr_momentum_long_signals(*, above_200: bool):
+    """B654 narrow-scope: cpr_narrow -> cpr_narrow_tight (0.05 threshold).
+    B641 F1b: below_ema_200 positive symmetric for SHORT."""
     return {
-        "cpr_narrow":           True,
+        "cpr_narrow_tight":      True,   # B654
         "above_cpr":             True,
         "rsi_14":                60.0,
         "macd_12_26_9_bullish":  True,
+        "macd_12_26_9_bearish":  False,
         "price_above_ema_200":   above_200,
+        "below_ema_200":         False,
     }
 
 
-def _cpr_momentum_short_signals(*, above_200: bool):
+def _cpr_momentum_short_signals(*, below_200: bool):
     return {
-        "cpr_narrow":           True,
+        "cpr_narrow_tight":      True,   # B654
         "below_cpr":             True,
         "rsi_14":                40.0,
         "macd_12_26_9_bullish":  False,
-        "price_above_ema_200":   above_200,
+        "macd_12_26_9_bearish":  True,
+        "price_above_ema_200":   False,
+        "below_ema_200":         below_200,  # B641 F1b
     }
 
 
@@ -163,13 +186,13 @@ def test_cpr_narrow_momentum_long_BLOCKED_in_bear_regime():
 
 
 def test_cpr_narrow_momentum_short_fires_in_bear_regime():
-    result = strat_cpr_narrow_momentum(_cpr_momentum_short_signals(above_200=False))
+    result = strat_cpr_narrow_momentum(_cpr_momentum_short_signals(below_200=True))
     assert result["fires"] is True
     assert result["direction"] == "short"
 
 
 def test_cpr_narrow_momentum_short_BLOCKED_in_bull_regime():
-    result = strat_cpr_narrow_momentum(_cpr_momentum_short_signals(above_200=True))
+    result = strat_cpr_narrow_momentum(_cpr_momentum_short_signals(below_200=False))
     assert result["fires"] is False
 
 
@@ -179,10 +202,12 @@ def test_cpr_narrow_momentum_short_BLOCKED_in_bull_regime():
 def test_xs_low_beta_long_fires_regardless_of_regime():
     """Batch 358 Bucket C: regime gate REMOVED per Frazzini-Pedersen
     full-sample BAB literature. Strategy must fire whenever core
-    factor signals are present, irrespective of 200-EMA status."""
+    factor signals are present, irrespective of 200-EMA status.
+    B788 STATE -> EVENT conversion: xs_low_beta_decile (STATE) replaced
+    by xs_low_beta_decile_entry_recent_5d (EVENT rank-crossing)."""
     base = {
-        "xs_low_beta_decile":  True,
-        "xs_avoid_high_ivol":  True,
+        "xs_low_beta_decile_entry_recent_5d":  True,  # B788 EVENT
+        "xs_avoid_high_ivol":                  True,
     }
     # Above 200-EMA
     result = strat_xs_low_beta_long({**base, "price_above_ema_200": True})
