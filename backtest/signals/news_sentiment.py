@@ -27,11 +27,80 @@ reads pre-computed scores when available + falls back to rule-based.
 
 from __future__ import annotations
 
+import logging
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
+
+
+# B832 (2026-06-16) PATTERN BB SPOF SENTINEL state.
+# Per S4-B750-PATTERN-BB-NEWS-SENTIMENT-VENDOR-SPOF-SENTINEL: Polygon news
+# is a single-point-of-failure for ~6 news-sentiment-consuming strategies
+# (news_momentum_long / news_reversal_short / news_sentiment_shift_long
+# etc). If the vendor goes silent (parquets stale OR sentiment field all
+# zero OR rule-based fallback active for too long) those strategies fire
+# on stale/degenerate signal without operator awareness.
+#
+# Sentinel pattern: track per-process call counts + degenerate-emission
+# counts; once thresholds breached, log a WARNING once-per-process
+# (rate-limited via _SPOF_WARNED flag). Mirrors B416 silent-producer
+# logging pattern.
+_SPOF_CALL_COUNT = 0
+_SPOF_EMPTY_RETURNS = 0       # data file missing OR empty parquet
+_SPOF_ZERO_SCORE_RETURNS = 0  # cur_n>0 but all scores rounded to 0.0
+_SPOF_RULE_FALLBACK_ONLY = 0  # cur_n>0 but news_uses_polygon_score=False
+_SPOF_WARNED = {"empty": False, "zero_score": False, "rule_only": False}
+_SPOF_THRESHOLDS = {
+    "empty": 50,         # 50 consecutive empty returns -> vendor cache exhausted
+    "zero_score": 30,    # 30 zero-score returns -> sentiment field degraded
+    "rule_only": 100,    # 100 rule-only returns -> Polygon sentiment field absent
+}
+
+
+def _spof_record(outcome: str) -> None:
+    """B832 PATTERN BB: record one news-sentiment producer call + emit
+    rate-limited WARNING if SPOF threshold breached. Called once per
+    compute_news_sentiment_signals invocation."""
+    global _SPOF_CALL_COUNT, _SPOF_EMPTY_RETURNS, _SPOF_ZERO_SCORE_RETURNS, _SPOF_RULE_FALLBACK_ONLY
+    _SPOF_CALL_COUNT += 1
+    if outcome == "empty":
+        _SPOF_EMPTY_RETURNS += 1
+        if _SPOF_EMPTY_RETURNS >= _SPOF_THRESHOLDS["empty"] and not _SPOF_WARNED["empty"]:
+            logger.warning(
+                "B832 SPOF SENTINEL: news_sentiment producer returned EMPTY "
+                "for %d consecutive calls -- Polygon news parquet cache "
+                "likely exhausted OR all ticker files missing. News-sentiment "
+                "strategies firing on stale signal. Check data_prefetch/polygon/news/",
+                _SPOF_EMPTY_RETURNS,
+            )
+            _SPOF_WARNED["empty"] = True
+    elif outcome == "zero_score":
+        _SPOF_ZERO_SCORE_RETURNS += 1
+        if _SPOF_ZERO_SCORE_RETURNS >= _SPOF_THRESHOLDS["zero_score"] and not _SPOF_WARNED["zero_score"]:
+            logger.warning(
+                "B832 SPOF SENTINEL: news_sentiment producer emitted "
+                "zero-score for %d returns despite article-count>0 -- Polygon "
+                "sentiment field may be all-null OR rule-based scorer degraded. "
+                "News-sentiment strategies firing on degenerate signal.",
+                _SPOF_ZERO_SCORE_RETURNS,
+            )
+            _SPOF_WARNED["zero_score"] = True
+    elif outcome == "rule_only":
+        _SPOF_RULE_FALLBACK_ONLY += 1
+        if _SPOF_RULE_FALLBACK_ONLY >= _SPOF_THRESHOLDS["rule_only"] and not _SPOF_WARNED["rule_only"]:
+            logger.warning(
+                "B832 SPOF SENTINEL: news_sentiment producer emitted Polygon-"
+                "sentiment-absent (rule-fallback only) for %d returns -- "
+                "Polygon vendor sentiment field may be silently dropped. "
+                "Rule-based fallback active; FinBERT/LLM-based scoring not yet "
+                "deployed. Validate Polygon news API contract.",
+                _SPOF_RULE_FALLBACK_ONLY,
+            )
+            _SPOF_WARNED["rule_only"] = True
 
 
 _NEWS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "news"
@@ -287,6 +356,7 @@ def compute_news_sentiment_signals(
     # now just consumes published_date column directly.
     df = _load_news_parquet(ticker)
     if df.empty or "published_date" not in df.columns:
+        _spof_record("empty")  # B832 SPOF SENTINEL: vendor cache exhausted
         return {}
 
     # Current window: [as_of - lookback_days, as_of]
@@ -365,6 +435,7 @@ def compute_news_sentiment_signals(
         vol_zscore_5d = ((count_5d - expected) / sd_5) if sd_5 > 0 else 0.0
 
     if cur_n == 0:
+        _spof_record("empty")  # B832 SPOF SENTINEL: no current-window articles
         return {"news_count_7d": 0, "news_article_count": 0,
                 "news_sentiment_score": 0.0, "news_sentiment_mean": 0.0,
                 "news_bullish_pct": 0.0, "news_bearish_pct": 0.0,
@@ -380,6 +451,13 @@ def compute_news_sentiment_signals(
     shift = (cur_avg - prior_avg) if prior_n > 0 else 0.0
 
     avg_r = round(float(cur_avg), 4)
+
+    # B832 SPOF SENTINEL: degenerate emission detection. cur_n>0 here.
+    if avg_r == 0.0 and n_pos == 0 and n_neg == 0:
+        _spof_record("zero_score")  # articles present but all neutral
+    elif not uses_polygon:
+        _spof_record("rule_only")   # rule-based fallback active (no Polygon sentiment field)
+
     return {
         "news_count_7d":             int(cur_n),
         "news_article_count":        int(cur_n),
