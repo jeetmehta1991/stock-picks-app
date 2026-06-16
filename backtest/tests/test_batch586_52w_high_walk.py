@@ -97,21 +97,24 @@ def test_batch586_sector_strength_unknown():
 
 
 def test_batch586_strat_52w_high_breakout_post_b586():
-    """Pin (4) + (5): all conditions required. B589 added 2 more gates
-    (close_above_open + close_in_top_40pct_of_range)."""
+    """Pin (4) + (5) B836 UPDATED: B589 added 2 gates (close_above_open +
+    close_in_top_40pct_of_range); B698 then added anti-fakeout signals +
+    2-of-N voting where break_52w_high is REQUIRED and n_confirm >= 2
+    from {vol_spike_17x, close_above_open, close_in_top_40pct_of_range,
+    break_52w_high_clearance_atr_05, break_52w_high_confirmed_today}.
+    Sector filter is no longer in the fires logic (replaced by 2-of-N
+    voting on stronger anti-fakeout signals)."""
     from backtest.signals.screener import strat_52w_high_breakout
-    # All conditions True -> fires (B589 added 2 gates -> now 5 total)
+    # All conditions True -> fires (B698 2-of-N voting; >=2 of 5 confirm)
     s_all = {"break_52w_high": True, "vol_spike_17x": True,
-             "sector_outperforming_spy": True,
              "close_above_open": True, "close_in_top_40pct_of_range": True}
     assert strat_52w_high_breakout(s_all)["fires"] == True
-    # Missing sector filter -> no fire
-    s_no_sector = dict(s_all); s_no_sector["sector_outperforming_spy"] = False
-    assert strat_52w_high_breakout(s_no_sector)["fires"] == False
-    # Old vol_spike_2x alone (no _17x) -> no fire
-    s_old = dict(s_all); s_old["vol_spike_17x"] = False
-    s_old["vol_spike_2x"] = True
-    assert strat_52w_high_breakout(s_old)["fires"] == False
+    # Without break_52w_high (hard prereq) -> no fire
+    s_no_break = dict(s_all); s_no_break["break_52w_high"] = False
+    assert strat_52w_high_breakout(s_no_break)["fires"] == False
+    # Only 1 of N confirmations -> no fire (need >=2)
+    s_one_confirm = {"break_52w_high": True, "vol_spike_17x": True}
+    assert strat_52w_high_breakout(s_one_confirm)["fires"] == False
 
 
 def test_batch586_pullback_long_fires():
@@ -205,10 +208,14 @@ def test_batch586_builder_renders_plain_trigger():
     row = m.group(0)
     # Plain trigger column should reference the human-readable conditions.
     # B589 owner-directed expanded descriptions; phrasing changed.
-    assert "prior 252 trading days" in row, (
-        f"52w_high_breakout row missing '252 trading days' plain phrase; "
+    assert "prior 252 trading days" in row.lower() or "highest h" in row.lower(), (
+        f"52w_high_breakout row missing 52w-high plain phrase; "
         f"row:\n{row[:400]}"
     )
-    assert "sector SPDR ETF" in row or "outperforming" in row.lower(), (
-        f"52w_high_breakout row missing sector strength plain phrase"
+    # B836 UPDATED: sector filter REMOVED by B698 (replaced with 2-of-N
+    # anti-fakeout voting). Sector strength language no longer expected.
+    # Verify the 2-of-N voting language instead.
+    assert "break_52w_high" in row or "confirm" in row.lower(), (
+        f"52w_high_breakout row missing 2-of-N anti-fakeout confirmation "
+        f"phrasing per B698"
     )
