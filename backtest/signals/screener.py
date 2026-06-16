@@ -4595,27 +4595,35 @@ def strat_avwap_252_breakout(s):
     Short: price loses AVWAP-252-low to the downside + volume confirms.
     Symmetric inverse for distribution / breakdown days.
     """
-    above_252 = s.get("above_avwap_252low", False)
-    pct_from_252 = s.get("pct_from_avwap_252low", 0.0)
+    # B802 #47 (2026-06-16 owner-approved B779) AVWAP-252 RECLAIM/LOSS EVENT-
+    # conversion per B790 same-pattern precedent. B660 baseline 1,268/yr; EVENT
+    # projection ~127/yr ~= 32/regime BORDERLINE-PASS min_trades=30.
+    # CHECKLIST #108 pre-flight:
+    #   (a) Hypothesis: STATE above_avwap_252low retains True for extended
+    #       periods after reclaim. EVENT signal fires only on fresh reclaim.
+    #   (b) Fire-count projection: 1,268/yr -> ~127/yr (10x per B655 T10).
+    #       Per-regime ~32 marginally above 30 threshold.
+    #   (c) Validation plan: cube cell measurement.
+    #   (d) Precedent: B790 #47 strat_avwap_50_reclaim (same producer family).
+    reclaim_252_long = s.get("avwap_252low_reclaim_recent_3d", False)
+    loss_252_short  = s.get("avwap_252low_loss_recent_3d", False)
     vol_ok = s.get("vol_spike_15x", False)
     rsi_14 = s.get("rsi_14", 50)
-    # Long: just reclaimed (close to AVWAP but above) + volume + RSI not capped
+    # Long: fresh reclaim EVENT + volume + RSI not capped
     fl = (
-        above_252
-        and abs(pct_from_252) < 2.0   # within 2% of AVWAP (close to inflection)
+        reclaim_252_long
         and vol_ok
         and rsi_14 < 70
     )
-    # Short: just lost (close below AVWAP) + volume + RSI not capped
+    # Short: fresh loss EVENT + volume + RSI not capped
     fs = (
-        (not above_252)
-        and abs(pct_from_252) < 2.0
+        loss_252_short
         and vol_ok
         and rsi_14 > 30
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "vwap",
-        ["above_avwap_252low", "near_avwap_252low<2pct", "vol_spike_15x", "rsi_14<70"],
-        ["below_avwap_252low", "near_avwap_252low<2pct", "vol_spike_15x", "rsi_14>30", "borrow_ok"],
+        ["avwap_252low_reclaim_recent_3d", "vol_spike_15x", "rsi_14<70"],
+        ["avwap_252low_loss_recent_3d", "vol_spike_15x", "rsi_14>30", "borrow_ok"],
         ["Price reclaimed Anchored VWAP from 252d low - institutional accumulation",
          "Close to AVWAP inflection (within 2%)", "Volume 1.5x ADV(20)",
          "RSI not extreme overbought"],

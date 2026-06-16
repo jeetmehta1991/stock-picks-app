@@ -954,6 +954,23 @@ Second strategy-side EVENT-conversion using B794 #44 producer-additive. Per CHEC
 
 **Cumulative ticket count post-B801: 134 unique S4-B7XX tickets** (no change).
 
+### TIER 40 — B802 #47 strat_avwap_252_breakout EVENT-conversion SHIPPED + #38 strategy-side BLOCKED
+
+**B802 SHIPPED #47 A-23.** Per CHECKLIST #108 (b): B660 baseline 1,268/yr → EVENT ~127/yr → per-regime ~32 (BORDERLINE-PASS min_trades=30 just above threshold).
+
+**Strategy change (strat_avwap_252_breakout):** `above_avwap_252low` STATE + `abs(pct_from_252) < 2.0` proximity → `avwap_252low_reclaim_recent_3d` EVENT (LONG); mirror SHORT. Pre-B802 STATE+proximity gate superseded. Test test_batch208_avwap_252_breakout_long_fires_near_reclaim updated to codify B802 EVENT-form.
+
+**#38 STRATEGY-SIDE BLOCKED (all 3 targets per CHECKLIST #108 + audit-against-existing-directives):**
+- A-1 strat_rsi_oversold: B768 measured STATE rsi_14<30 has STRONGEST edge of all 14 triggers (+184 bps/10d, Sharpe 0.281, 63% hit). EVENT-conversion would lose this measured edge per `feedback_audit_recommendations_against_existing_directives` empirical-supersedes-literature. #39 REFUTED reviewer's same-class claim.
+- A-4 strat_rsi21_slow: already FAIL_FIRE_STARVED 1.7/yr (B660); EVENT would worsen.
+- A-5 strat_rsi_volume_200ema: post-fix projection 19/regime FAILS #108 gate.
+
+#38 strategy-side application BLOCKED on all 3 targets per #108 + B768 empirical evidence. Producer-additive remains valuable for future Class 7 NEW strategies that consume the EVENT signals.
+
+**B802 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (B802 #47 A-23 SHIPPED; #38 strategy-side BLOCKED on all 3 via #108 + empirical-supersedes). Tickets: **0 NEW + 2 annotations** (#47 A-22+A-23 SHIPPED; #38 STRATEGY-SIDE-BLOCKED) + 2 code changes (strategy + test). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B802: 134 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
 All 6 producer-additive items from B766 council bundle now shipped:

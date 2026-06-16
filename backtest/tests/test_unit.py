@@ -8983,24 +8983,27 @@ def test_batch208_avwap_strategies_registered_in_ALL_STRATEGIES():
 
 
 def test_batch208_avwap_252_breakout_long_fires_near_reclaim():
-    """Batch 208: avwap_252_breakout long fires when price is just above
-    AVWAP-252-low (within 2%) with volume confirmation."""
+    """Batch 208 + B802 #47 (2026-06-16 EVENT-conversion): avwap_252_breakout
+    long fires on fresh RECLAIM EVENT (was below AVWAP-252-low within last 3 days,
+    now above) with volume confirmation. B802 EVENT-conversion supersedes the
+    pre-B802 STATE+proximity gate.
+    """
     from backtest.signals.screener import strat_avwap_252_breakout
+    # B802 EVENT-form: requires avwap_252low_reclaim_recent_3d
     s = {
-        "above_avwap_252low": True,
-        "pct_from_avwap_252low": 0.5,  # 0.5% above (near inflection)
+        "avwap_252low_reclaim_recent_3d": True,
         "vol_spike_15x": True,
         "rsi_14": 50.0,
     }
     r = strat_avwap_252_breakout(s)
     assert r["fires"] is True and r["direction"] == "long"
 
-    # Beyond 2% from AVWAP -> no fire (no longer "near inflection")
-    s["pct_from_avwap_252low"] = 5.0
+    # No fresh reclaim event -> no fire
+    s["avwap_252low_reclaim_recent_3d"] = False
     assert strat_avwap_252_breakout(s)["fires"] is False
 
-    # Volume missing -> no fire
-    s["pct_from_avwap_252low"] = 0.5
+    # Volume missing -> no fire (even with reclaim)
+    s["avwap_252low_reclaim_recent_3d"] = True
     s["vol_spike_15x"] = False
     assert strat_avwap_252_breakout(s)["fires"] is False
 
