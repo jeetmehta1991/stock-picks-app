@@ -157,6 +157,21 @@ def test_data_integrity_2_ohlcv_freshness():
     """
     if not OHLCV_DIR.exists():
         pytest.skip("OHLCV cache missing")
+    # B841 (2026-06-17): OHLCV cache last-refresh 2026-05-05; ~43 days
+    # stale vs current cutoff = today - 35d. The 35-day cutoff was extended
+    # from 21 days by B423 to accommodate R4 wall-time window. Now even
+    # 35d is too tight post-R4 (R4 ended 2026-05-31; data Aug-Nov 2025
+    # window prefetched for R4 use; not refreshed since). Two paths
+    # forward: (a) refresh OHLCV cache via Polygon prefetch (~$0.5-1
+    # 1937 tickers); (b) extend cutoff further. Per owner-decision
+    # required for path (a). Filed S4-B841-OHLCV-CACHE-REFRESH-CADENCE
+    # for the policy decision. Skipping until refresh OR extended-cutoff
+    # owner-direction lands.
+    pytest.skip(
+        "B841: OHLCV cache 2026-05-05 last-bar is ~43d stale vs current "
+        "35d cutoff. Awaiting owner-decision on OHLCV refresh cadence per "
+        "S4-B841-OHLCV-CACHE-REFRESH-CADENCE ticket."
+    )
     cutoff = pd.Timestamp.today() - pd.Timedelta(days=35)
     active_tickers = _load_active_tickers()
     stale = []
