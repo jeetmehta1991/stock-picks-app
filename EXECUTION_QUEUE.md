@@ -838,6 +838,8 @@ Demo signal: obv_bullish gate produces RARE but VERY HIGH-quality fires (+316 bp
 
 67. **`S4-B791-MFI-OBV-FULL-T1A-CONDITIONAL-ADD-RE-TEST`** — Per B789/B791 SMOKE-DEMO divergence: definitive verdict on MFI obv anti-selection requires full T1a x 2024-2025 (~500 tickers x 504 bars = 252K ticker-bars; cell_a expected ~50-100 obs at full scale). Demo n=3 with +319.5 bps suggests gate is SELECTIVE not anti-selecting; full T1a test will resolve. Existing test infrastructure (`scripts/mfi_obv_anti_selection_test.py --full`) ready. Runtime estimate: ~14hr. PENDING-EXECUTION (background launchable). Source: B789 smoke + B791 demo + revert. Class 9 EMPIRICAL-VERIFICATION. MEDIUM.
 
+68. **`S4-B813-WIRED-BUT-NOT-ENGINE-ACTIVATED-AUDIT-UMBRELLA`** — Static-analysis audit of producer-emitted signal keys (`out["KEY"] = ...`) vs strategy-consumed keys (`s.get("KEY")` in screener.py) surfaced **104 wired-but-not-engine-consumed signals** per `feedback_wired_means_engine_consumed`. Runtime emission probe on largest bucket (multi_timeframe.py 15 keys) CONFIRMS emission — 15 of 18 are BY-DESIGN intermediates feeding `weekly_bias_bull/bear` + `monthly_bias_bull/bear`. By-source-file: multi_timeframe.py 15 (BY-DESIGN intermediates) / index_rebalance.py 9 (DEFER 68b verify post_inclusion_drift_long consumption) / ict_producers.py 7 (DEFER 68c po3 manipulation DELETE candidates) / smc_panel_cache.py 6 (**BY-DESIGN per DEC-508 Phase B canary**) / sec_edgar_extractor.py 5 (metadata) / technical.py 5 (vix_* consumed by regime_filter; ichi_weekly_in_cloud DELETE candidate) / universe.py 5 (universe metadata; expected orphans) / chart-patterns 6 (producer metadata). **Council Option C (narrow-first-application):** 1 umbrella ticket NOT 4 mass-tickets (Contrarian + B810 #6 junk-drawer concern); per-bucket walks DEFERRED per `feedback_no_rushing_per_strategy_tweak`. **DELETE candidates flagged not auto-deleted per B663 silent-gap precedent:** ichi_weekly_in_cloud, po3_manipulation_sweep_down/up. Source: B813 inline-council 5-lens verdict + #44(b) runtime probe methodology + `feedback_wired_means_engine_consumed`. Class 9 META-AUDIT. PENDING-OWNER-APPROVAL.
+
 **Annotation on #43:** B789 fix SUPERSEDED by B791 REVERT per demo evidence. Final verdict pending #67 full-T1a test.
 
 **B791 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (B789 smoke verdict CONTRADICTED by demo; revert applied) + 1 nuanced (smoke n=0 vs demo n=3 with +319.5 bps lift — methodological lesson). Tickets filed: **1 NEW (#67 full-T1a re-test)** + 1 annotation on #43 (B789 SUPERSEDED by B791 REVERT) + 1 code change (B791 revert of strat_mfi_oversold). **Audit-clean: YES.**
@@ -1113,6 +1115,48 @@ Process check after launch discovered **PRE-EXISTING fire-bar matrix --full run 
 **B812 CHECKLIST #107 reconciliation:** Findings: 1 primary (pre-existing run detected; duplicate avoided). Tickets: **0 NEW + 1 annotation**. **Audit-clean: YES.**
 
 **Cumulative ticket count post-B812: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 50 — B813 wired-but-not-engine-activated AUDIT per `feedback_wired_means_engine_consumed`
+
+**B813 SHIPPED umbrella audit ticket #68 with council-validated narrow-first-application path (Option C).**
+
+**Council inline (5 lenses):** Advocate (ship-as-proposed), Skeptic (static-regex false-positive risk), First-Principles (need runtime emission probe per B748c FILE-LIST + #44(b)), Contrarian (4-mass-tickets risks B810 #6 junk-drawer), Outsider (multi_timeframe.py 15-orphan bucket is largest; start there). **Verdict: Option C — one umbrella ticket + runtime probe on largest bucket + DELETE-flag for unambiguous dead-code, no mass-file.**
+
+**Static-analysis finding (regex `out["KEY"] = ...` vs `s.get("KEY")`):**
+- Strategy-class orphans: **0** (all 221 strategies registered in ALL_STRATEGIES)
+- Producer-emitted keys (static-detect): 185
+- Consumer keys in screener.py: 336
+- **Producer-emitted but no strategy consumes: 104**
+
+**104 orphans by source file:**
+- `multi_timeframe.py` 15 — weekly_*/monthly_* helpers (BY-DESIGN INTERMEDIATES per runtime probe)
+- `index_rebalance.py` 9 — days_since_inclusion etc
+- `ict_producers.py` 7 — po3_accumulation_active, week_open_gap_*
+- `smc_panel_cache.py` 6 — bos_choch, fvg, liquidity, ob, retracements, swings (**BY-DESIGN per DEC-508 Phase B canary**)
+- `sec_edgar_extractor.py` 5 — metadata, not signal-actionable
+- `technical.py` 5 — vix_band/value/percentile (consumed by regime_filter.py, NOT screener — false-positive); `ichi_weekly_in_cloud` (genuine dead-code candidate)
+- `universe.py` 5 — universe metadata (expected orphan)
+- Chart patterns ~6 — producer-side metadata fields; only binary detection consumed
+
+**Runtime probe (multi_timeframe.py largest bucket):**
+- compute_weekly_bias: 9 keys emitted (weekly_close + weekly_ema_10/20 + weekly_above_ema_10/20 + weekly_bias_bull/bear + weekly_momentum_4w + weekly_momentum_pos)
+- compute_monthly_bias: 9 keys emitted (monthly_close + monthly_sma_6/12 + monthly_above_sma_6/12 + monthly_bias_bull/bear + monthly_momentum_6m + monthly_momentum_pos)
+- Verdict: **EMISSION CONFIRMED**; 15 of 18 are BY-DESIGN intermediates (only weekly/monthly_bias_bull/bear consumed); not orphan bugs
+
+**Caveat:** consumer-side static analysis has FALSE-POSITIVE risk (255 consumer-no-producer matches; many likely from dynamic-key emissions like `for k in keys: out[k] = ...`). 104 producer-side orphans are higher-confidence.
+
+**DELETE candidates (autonomous-flag, NOT auto-delete per B663 silent-gap precedent):**
+- `technical.py: ichi_weekly_in_cloud` — looks like dead code (B-13 supertrend_ichimoku_adx uses `ichi_in_cloud` not weekly variant)
+- `ict_producers.py: po3_manipulation_sweep_down/up` — not consumed by strat_po3_bullish/bearish
+
+**Followup (DEFER per `feedback_no_rushing_per_strategy_tweak`):**
+- 68a — multi_timeframe.py 15 intermediates: classify each as by-design vs surface-able to strategies (Pattern U W6/W7/W8 walks)
+- 68b — index_rebalance.py 9 helpers: verify each consumed by post_inclusion_drift_long / classification_change_*
+- 68c — ict_producers.py 4 po3 manipulation signals: confirm DELETE vs strategy-wire-up
+
+**B813 CHECKLIST #107 reconciliation:** Findings: 5 primary (104 orphans + multi_timeframe runtime probe + 3 by-design exclusions + 2 DELETE candidates). Tickets: **1 NEW umbrella (#68) + 0 annotations**. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B813: 135 unique S4-B7XX tickets** (134 + 1 NEW = 135).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
