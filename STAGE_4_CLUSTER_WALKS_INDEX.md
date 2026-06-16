@@ -1,6 +1,12 @@
 # Stage 4 Cluster Walks — Master Index
 
-> **B750 STATUS BANNER (2026-06-14) — 3 NEW CLUSTER DOCS SHIPPED + STALE-STATE CORRECTIONS.**
+> **B828 STATUS BANNER (2026-06-16) — STAGE 4 WALKS DONE per owner confirmation.**
+>
+> Owner explicit confirmation 2026-06-16: all Stage 4 per-strategy cluster walks across the 221-strategy registry are COMPLETE. The B750 64%-coverage banner below is HISTORICAL — superseded by post-B750 walk batches (B656/B657/B663/B670/B682/B685/B686/B709/B718/B720-B725/B727-B730/B732 + many subsequent through B826).
+>
+> **`feedback_r5_paused_pending_stage4_completion` gate LIFTED.** R5 cube execution is now plannable on the merits per owner directive 2026-06-16 — gated by entire-execution-queue resolution + implementation per the sequential directives surfaced in CLAUDE.md Phase 1A-β R5 next-status banner (Stage 4 per-change approval → Stage 5 implementation → producer wireup → EVENT rollouts → BH-FDR → 18 pyramid items → R5 launch).
+>
+> **HISTORICAL B750 banner (preserved for traceability):**
 >
 > Owner directive 2026-06-14 "approve all": cluster-walk the remaining 96 unwalked strategies across 3 new cluster docs (≤40 per cluster). B750 ships framework + sample walks (3 walks per cluster doc) for:
 > - **Cluster A — Oscillator & Mean-Reversion (30 strategies)** — [STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md](STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md)
