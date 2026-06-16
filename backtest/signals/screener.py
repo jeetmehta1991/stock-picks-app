@@ -1547,27 +1547,40 @@ def strat_bollinger_tight(s):
         rsi_thr_long, rsi_thr_short = 50, 50
     else:
         rsi_thr_long, rsi_thr_short = 45, 55
+    # B801 #44 (2026-06-16 owner-approved B779) BAND-RECLAIM EVENT-conversion
+    # per B766 reviewer rec + CHECKLIST #108. B660 baseline 6,725/yr; EVENT
+    # projection ~673/yr ~= 168/regime PASS (largest fire-count margin in
+    # cluster A).
+    # Pre-fix: bb_20_15_touch_lower OR bb_20_20_touch_lower STATE; B800-pattern
+    # extended.
+    # CHECKLIST #108 pre-flight:
+    #   (a) Hypothesis: same as B800 (touch = continuation in band-walk;
+    #       reclaim = actual mean-reversion).
+    #   (b) Fire-count projection: 6,725/yr STATE -> ~673/yr EVENT; per-regime
+    #       ~168 well above min_trades=30 (largest safety margin in cluster A).
+    #   (c) Validation plan: cube cell measurement.
+    #   (d) Precedent: B800 strat_bollinger_lower (just shipped same pattern).
     rsi_long_ok = (rsi_2 < 10) or (rsi_14 < rsi_thr_long)
     fl = (
-        (s.get("bb_20_15_touch_lower") or s.get("bb_20_20_touch_lower"))
+        (s.get("bb_20_15_reclaim_from_lower_recent_3d") or s.get("bb_20_20_reclaim_from_lower_recent_3d"))
         and rsi_long_ok
         and above_200
     )
     rsi_short_ok = (rsi_2 > 90) or (rsi_14 > rsi_thr_short)
     fs = (
-        (s.get("bb_20_15_touch_upper") or s.get("bb_20_20_touch_upper"))
+        (s.get("bb_20_15_reclaim_from_upper_recent_3d") or s.get("bb_20_20_reclaim_from_upper_recent_3d"))
         and rsi_short_ok
         and below_200
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
-        ["bb_touch_lower_tight", f"rsi_2<10_or_rsi_14<{rsi_thr_long}",
+        ["bb_reclaim_lower_tight", f"rsi_2<10_or_rsi_14<{rsi_thr_long}",
          "price_above_ema_200"],
-        ["bb_touch_upper_tight", f"rsi_2>90_or_rsi_14>{rsi_thr_short}",
+        ["bb_reclaim_upper_tight", f"rsi_2>90_or_rsi_14>{rsi_thr_short}",
          "below_ema_200", "borrow_ok"],
-        ["Price at tight lower Bollinger Band - extreme low",
+        ["Price RECLAIMED inside tight BB after lower-band touch (B801 #44 EVENT)",
          f"RSI(2)<10 OR RSI(14)<{rsi_thr_long}",
          "Price above 200-EMA (regime gate)"],
-        ["Price at tight upper Bollinger Band - extreme high",
+        ["Price RECLAIMED inside tight BB after upper-band touch (B801 #44 EVENT)",
          f"RSI(2)>90 OR RSI(14)>{rsi_thr_short}",
          "Price below 200-EMA (bear regime)"])
 

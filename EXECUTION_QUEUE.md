@@ -944,6 +944,16 @@ First strategy-side EVENT-conversion using B794 #44 producer-additive. Per CHECK
 
 **Cumulative ticket count post-B800: 134 unique S4-B7XX tickets** (no change).
 
+### TIER 39 — B801 #44 strat_bollinger_tight EVENT-conversion SHIPPED
+
+Second strategy-side EVENT-conversion using B794 #44 producer-additive. Per CHECKLIST #108 (b): B660 baseline 6,725/yr → EVENT ~673/yr → per-regime ~168 (largest safety margin in cluster A).
+
+**Strategy change (strat_bollinger_tight):** `bb_20_15_touch_lower OR bb_20_20_touch_lower` STATE → `bb_20_15_reclaim_from_lower OR bb_20_20_reclaim_from_lower` EVENT. Mirror SHORT. CHECKLIST #108 (a-d) inline.
+
+**B801 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#44 second strategy-side rollout). Tickets: **0 NEW + 1 annotation** on #44 (A-12 + A-13 SHIPPED) + 1 code change. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B801: 134 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
 All 6 producer-additive items from B766 council bundle now shipped:
