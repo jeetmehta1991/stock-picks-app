@@ -272,7 +272,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 ### TIER 1 — Latent collapse measurement (per First Principles + B709 precedent)
 
-33. **`S4-B766-COUNCIL-CLUSTER-A-LATENT-COLLAPSE-PHI-CORRELATION-AUDIT`** — Per First Principles advisor + Reviewer 3 (B709 phi=0.297 PEAD-restore precedent): empirically measure how many DISTINCT latent factors Cluster A actually encodes. Hypothesis: 4-7 latents wearing 30 costumes (oscillator-oversold + band-touch + AVWAP-pullback + pivot-support + capitulation-volume-reversal + RSI(2)-extreme). Run phi-correlation across all 30 fire-sets pairwise on B760 demo fire-bar matrix output (existing) + full run when it lands. Cluster strategies into latent groups by phi >= 0.70. Net effective hypothesis count for Bonferroni recalculation = number of distinct latents, not number of strategies. PENDING-EXECUTION. Source: B766 council First Principles. Class 9 META. **CRITICAL Pre-cube**.
+33. **`S4-B766-COUNCIL-CLUSTER-A-LATENT-COLLAPSE-PHI-CORRELATION-AUDIT`** — Per First Principles advisor + Reviewer 3 (B709 phi=0.297 PEAD-restore precedent): empirically measure how many DISTINCT latent factors Cluster A actually encodes. Hypothesis: 4-7 latents wearing 30 costumes (oscillator-oversold + band-touch + AVWAP-pullback + pivot-support + capitulation-volume-reversal + RSI(2)-extreme). Run phi-correlation across all 30 fire-sets pairwise on B760 demo fire-bar matrix output (existing) + full run when it lands. Cluster strategies into latent groups by phi >= 0.70. Net effective hypothesis count for Bonferroni recalculation = number of distinct latents, not number of strategies. ~~PENDING-EXECUTION~~ **COMPLETED-EMPIRICAL B807 2026-06-16.** **VERDICT: COUNCIL LATENT-COLLAPSE HYPOTHESIS REFUTED.** Across 486 pairs in B760 fire-bar similarity Parquet: **0 pairs phi >= 0.85** (DELETE threshold) + **0 pairs phi >= 0.70** (consolidation threshold) + 3 pairs phi 0.50-0.70 (MEDIUM, below threshold) + 9 pairs phi 0.30-0.50 (LOW) + **474 of 486 pairs (97.5%) phi < 0.30 (essentially independent)**. Highest phi 0.693 is same-strategy dual-direction pair (cpr_narrow_momentum LONG vs cpr_narrow_momentum_short SHORT; not a distinct latent); highest CROSS-strategy phi 0.518 (bollinger_lower vs bollinger_tight). Cluster A strategies have DIVERSE empirical fire patterns; gate-stack diversity moderates underlying-signal similarity. Aligned with B785 #42 Williams-Stoch (phi=0.024) + B787 #35 RSI family (max phi=0.10). Council's "Bonferroni partly fictional" claim NOT supported by data; distinct hypotheses count = strategy count. Refutes First Principles + Reviewer 3; supports Contrarian "not identical constructs" caveat. Verdict report: `output_audit/b807_33_latent_collapse_phi_audit_VERDICT.md`. Source: B766 council First Principles + B760 demo + B807 empirical refutation. Class 9 META.
 
 ### TIER 2 — Post-fix fire-count projection (per `feedback_minimum_fire_count_gate_before_cube`)
 
@@ -1023,6 +1023,23 @@ Note: these strategies received B801/B803 producer-key changes in this turn; cle
 **B806 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#50 final 2 keys SHIPPED). Tickets: **0 NEW + 1 annotation + 3 code changes**. **Audit-clean: YES.**
 
 **Cumulative ticket count post-B806: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 45 — B807 #33 latent-collapse phi-correlation audit REFUTED
+
+**B807 SHIPPED #33 verdict.** Across 486 pairs in B760 fire-bar similarity Parquet:
+- 0 pairs phi >= 0.85 (DELETE threshold per B722)
+- 0 pairs phi >= 0.70 (consolidation threshold)
+- 3 pairs phi 0.50-0.70 MEDIUM
+- 9 pairs phi 0.30-0.50 LOW
+- **474 of 486 (97.5%) phi < 0.30 essentially independent**
+
+Council's "30 strategies → 4-7 latent factors" hypothesis REFUTED at the fire-stream level. Distinct hypotheses count = strategy count; Bonferroni denominator NOT fictional per data.
+
+Verdict report: `output_audit/b807_33_latent_collapse_phi_audit_VERDICT.md`
+
+**B807 CHECKLIST #107 reconciliation:** Findings: 1 primary (#33 REFUTED). Tickets: **0 NEW + 1 annotation**. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B807: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
