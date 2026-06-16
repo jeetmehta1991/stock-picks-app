@@ -109,21 +109,27 @@ def test_batch642_neutral_fallback():
 # =================== EMA-cross hysteresis band ===================
 
 def test_batch642_ema_hysteresis_constant_exists():
-    """Pin (7)."""
+    """Pin (7). B665 (2026-06-09 2nd-wave-redux critique #8 owner-
+    approved revert): unvalidated curve-fit-to-2022 directional bet
+    reverted to 0.0 (symmetric binary EMA-cross). B820 pins the post-
+    B665 state. If S5-REGIME-WALK-FORWARD-VALIDATION shows asymmetric
+    sticky-bear earns its keep OOS, this returns to 2.0."""
     from backtest.engine.regime_filter import EMA_CROSS_HYSTERESIS_PCT
-    assert EMA_CROSS_HYSTERESIS_PCT == 2.0
+    assert EMA_CROSS_HYSTERESIS_PCT == 0.0
 
 
 def test_batch642_with_hysteresis_stays_bear_when_just_barely_above_ema():
-    """Pin (8): pre-B642 SPY closing +0.5% above 200-EMA would have
-    exited bear immediately. Post-B642 requires >= +2% to confirm exit."""
+    """Pin (8) B820 UPDATED via B665: pre-B642 SPY closing +0.5% above
+    200-EMA would have exited bear immediately. B642 added 2% sticky-bear
+    band; B665 reverted to 0.0 symmetric. With 0.0 hysteresis, +0.5%
+    above EMA exits bear (no stickiness)."""
     from backtest.engine.regime_filter import classify_regime_with_hysteresis
-    # prev=bear, SPY above EMA by 0.5% -- not enough to exit
+    # prev=bear, SPY above EMA by 0.5% -- with 0.0 hysteresis, exits immediately
     out = classify_regime_with_hysteresis(
         vix_value=20.0, spy_above_200ema=True, prev_regime="bear",
         spy_pct_from_200ema=0.5,
     )
-    assert out == "bear", f"Expected bear (sticky), got {out}"
+    assert out != "bear", f"B665-reverted: 0.0 hysteresis exits bear; got {out}"
 
 
 def test_batch642_with_hysteresis_exits_bear_when_decisively_above():
@@ -163,12 +169,12 @@ def test_batch642_with_hysteresis_legacy_no_pct_falls_back():
 
 
 def test_batch642_get_regime_context_computes_pct_from_inputs():
-    """Pin (12): get_regime_context computes spy_pct_from_200ema from
-    spy_close + spy_ema200 and passes to classifier. We verify by
-    constructing a scenario where the EMA hysteresis matters: prev=bear,
-    SPY just barely above 200-EMA."""
+    """Pin (12) B820 UPDATED via B665: get_regime_context computes
+    spy_pct_from_200ema from spy_close + spy_ema200 and passes to
+    classifier. B665 reverted hysteresis 2.0 -> 0.0; SPY +0.49% above
+    EMA now exits bear (no stickiness)."""
     from backtest.engine.regime_filter import get_regime_context
-    # spy_close = 410, spy_ema200 = 408 -> +0.49% above (below 2% band)
+    # spy_close = 410, spy_ema200 = 408 -> +0.49% above (still positive)
     ctx = get_regime_context(
         vix_value=20.0,
         spy_close=410.0,
@@ -176,10 +182,11 @@ def test_batch642_get_regime_context_computes_pct_from_inputs():
         prev_regime="bear",
         use_hysteresis=True,
     )
-    # Should stay bear due to EMA hysteresis (only 0.49% above)
-    assert ctx["regime"] == "bear", (
-        f"Expected bear sticky via EMA hysteresis; got {ctx['regime']}. "
-        f"spy_pct_from_200ema should be ~0.49% (below 2% band)."
+    # B665 symmetric: any above-EMA exits bear (no 2% band)
+    assert ctx["regime"] != "bear", (
+        f"B665-reverted: 0.0 hysteresis -> SPY +0.49% above EMA exits "
+        f"bear; got {ctx['regime']}. spy_pct_from_200ema computed from "
+        f"410/408 = ~0.49%."
     )
 
     # Confirm a decisive cross does exit

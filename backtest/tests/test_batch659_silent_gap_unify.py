@@ -181,13 +181,14 @@ def test_batch659_t3_short_blocked_when_ema200_keys_missing():
 
 
 def test_batch659_t3_short_fires_with_explicit_below_ema_200():
-    """Pin (6)."""
+    """Pin (6). B820: B722 STATE -> EVENT conversion --
+    below_ema_200 -> below_ema_200_break_recent_5d."""
     from backtest.signals.screener import strat_hull_rsi
     s = {
         "hull_bearish": True,
         "price_below_hull": True,
         "adx": 25.0,
-        "below_ema_200": True,
+        "below_ema_200_break_recent_5d": True,  # B722 EVENT
     }
     out = strat_hull_rsi(s)
     assert out["fires"] is True and out["direction"] == "short"
@@ -195,8 +196,10 @@ def test_batch659_t3_short_fires_with_explicit_below_ema_200():
 
 def test_batch659_t3_executable_no_longer_uses_not_pattern():
     """Pin: t3 source-body must NOT contain `(not above_200)` -- swap
-    must have happened. Strip BOTH leading-`#` lines AND trailing-`#`
-    comments before scanning."""
+    must have happened. B820 update: B722 STATE -> EVENT further
+    refined the SHORT gate to `below_ema_200_break_recent_5d` (5d
+    rank-crossing). The B659 swap is still semantically correct (no
+    NOT-pattern remains); just the consumed key name evolved."""
     import inspect
     import re
     from backtest.signals.screener import strat_hull_rsi
@@ -214,19 +217,26 @@ def test_batch659_t3_executable_no_longer_uses_not_pattern():
     assert "(not above_200)" not in code, (
         "B659 T3 regression: NOT-pattern silent-gap still in T3 executable code"
     )
-    assert 's.get("below_ema_200"' in code, (
-        "B659 T3: positive symmetric below_ema_200 read must be present in body"
+    # B820: check for either B659 form OR B722 EVENT-conversion form
+    has_positive_symmetric_short_gate = (
+        's.get("below_ema_200"' in code
+        or 's.get("below_ema_200_break_recent_5d"' in code
+    )
+    assert has_positive_symmetric_short_gate, (
+        "B659/B722 T3: positive symmetric below_ema_200 read (or EVENT variant) "
+        "must be present in body"
     )
 
 
 def test_batch659_t3_long_unchanged():
-    """Pin (10): T3 LONG side unchanged (above_200 still positively required)."""
+    """Pin (10): T3 LONG side -- B820: B722 STATE -> EVENT conversion
+    applies to LONG too (price_above_ema_200_break_recent_5d)."""
     from backtest.signals.screener import strat_hull_rsi
     s = {
         "hull_bullish": True,
         "price_above_hull": True,
         "adx": 25.0,
-        "price_above_ema_200": True,
+        "price_above_ema_200_break_recent_5d": True,  # B722 EVENT
     }
     out = strat_hull_rsi(s)
     assert out["fires"] is True and out["direction"] == "long"

@@ -38,13 +38,14 @@ from __future__ import annotations
 
 
 def test_batch656_long_fires_without_rsi_9_in_fixture():
-    """Pin (1)."""
+    """Pin (1). B820 update: B722 STATE -> EVENT conversion --
+    price_above_ema_200 -> price_above_ema_200_break_recent_5d."""
     from backtest.signals.screener import strat_hull_rsi
     s = {
         "hull_bullish": True,
         "price_above_hull": True,
         "adx": 25.0,
-        "price_above_ema_200": True,
+        "price_above_ema_200_break_recent_5d": True,  # B722 EVENT
         # NO rsi_9 key -- B656 strategy no longer reads it
     }
     out = strat_hull_rsi(s)
@@ -54,13 +55,13 @@ def test_batch656_long_fires_without_rsi_9_in_fixture():
 def test_batch656_long_fires_at_rsi_9_boundary_50():
     """Pin (2): rsi_9 = 50 boundary value. Pre-B656 the strict
     `rsi_9>50` check would fail (50 > 50 is False); post-B656 the
-    gate is gone so strategy fires anyway."""
+    gate is gone so strategy fires anyway. B820: B722 EVENT-form."""
     from backtest.signals.screener import strat_hull_rsi
     s = {
         "hull_bullish": True,
         "price_above_hull": True,
         "adx": 25.0,
-        "price_above_ema_200": True,
+        "price_above_ema_200_break_recent_5d": True,  # B722 EVENT
         "rsi_9": 50.0,
     }
     out = strat_hull_rsi(s)
@@ -77,15 +78,15 @@ def test_batch656_long_does_NOT_fire_with_only_rsi_9_no_other_gates():
 
 
 def test_batch656_short_fires_without_rsi_9():
-    """Pin (4). B659 update: SHORT side now uses positive symmetric
-    `below_ema_200` (was `(not above_200)` NOT-pattern silent-gap pre
-    -B659). Fixture extended."""
+    """Pin (4). B659 update: SHORT side positive symmetric
+    `below_ema_200`. B820: B722 further STATE -> EVENT conversion to
+    `below_ema_200_break_recent_5d`."""
     from backtest.signals.screener import strat_hull_rsi
     s = {
         "hull_bearish": True,
         "price_below_hull": True,
         "adx": 25.0,
-        "below_ema_200": True,  # B659: positive symmetric replaces `(not above_200)`
+        "below_ema_200_break_recent_5d": True,  # B722 EVENT (was B659 below_ema_200 STATE)
     }
     out = strat_hull_rsi(s)
     assert out["fires"] is True and out["direction"] == "short"

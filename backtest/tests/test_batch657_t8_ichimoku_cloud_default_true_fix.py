@@ -45,10 +45,12 @@ def test_batch657_long_blocked_when_weekly_missing():
 
 
 def test_batch657_long_fires_when_weekly_emitted():
-    """Pin (2): with all 4 gates True the strategy fires LONG."""
+    """Pin (2): with all 4 gates True the strategy fires LONG.
+    B820 update: B725 STATE -> EVENT conversion -- ichi_above_cloud ->
+    ichi_above_cloud_break_recent_5d."""
     from backtest.signals.screener import strat_ichimoku_cloud_breakout
     s = {
-        "ichi_above_cloud": True,
+        "ichi_above_cloud_break_recent_5d": True,  # B725 EVENT
         "ichi_tk_bullish": True,
         "adx_trending": True,
         "ichi_weekly_above_cloud": True,
@@ -70,10 +72,11 @@ def test_batch657_short_blocked_when_weekly_missing():
 
 
 def test_batch657_short_fires_when_weekly_below_cloud():
-    """Pin (4)."""
+    """Pin (4). B820: B725 STATE -> EVENT -- ichi_below_cloud ->
+    ichi_below_cloud_break_recent_5d."""
     from backtest.signals.screener import strat_ichimoku_cloud_breakout
     s = {
-        "ichi_below_cloud": True,
+        "ichi_below_cloud_break_recent_5d": True,  # B725 EVENT
         "ichi_tk_bearish": True,
         "adx_trending": True,
         "ichi_weekly_below_cloud": True,
@@ -106,13 +109,13 @@ def test_batch657_executable_code_uses_default_false():
 
 def test_batch657_confluence_structure_preserved():
     """Pin (6): option A status-quo on the 4-gate confluence
-    structure. The OTHER 3 gates (ichi_above_cloud + ichi_tk_bullish
-    + adx_trending) are unchanged."""
+    structure. B820: B725 STATE -> EVENT -- ichi_above_cloud_break
+    _recent_5d replaces ichi_above_cloud."""
     from backtest.signals.screener import strat_ichimoku_cloud_breakout
     # Verify each individual gate still blocks LONG when missing
     # (preserves confluence semantics)
     base = {
-        "ichi_above_cloud": True,
+        "ichi_above_cloud_break_recent_5d": True,  # B725 EVENT
         "ichi_tk_bullish": True,
         "adx_trending": True,
         "ichi_weekly_above_cloud": True,
@@ -120,7 +123,7 @@ def test_batch657_confluence_structure_preserved():
     # All True -> fires
     assert strat_ichimoku_cloud_breakout(base)["fires"] is True
     # Each gate individually missing -> blocks
-    for gate in ("ichi_above_cloud", "ichi_tk_bullish", "adx_trending"):
+    for gate in ("ichi_above_cloud_break_recent_5d", "ichi_tk_bullish", "adx_trending"):
         s = {k: v for k, v in base.items() if k != gate}
         assert strat_ichimoku_cloud_breakout(s)["fires"] is False, (
             f"B657: missing {gate} should block LONG (confluence preserved)"

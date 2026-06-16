@@ -165,10 +165,12 @@ def test_batch630_sweep_complete(signal_name):
 # ----- Spot-check fires -----
 
 def test_batch630_supertrend_macd_short_fires():
-    """Pin (10): strat_supertrend_macd SHORT (double-swap)."""
+    """Pin (10): strat_supertrend_macd SHORT (double-swap).
+    B820 update: B655 STATE -> EVENT -- supertrend_bearish ->
+    supertrend_flip_recent_short_5d."""
     from backtest.signals.screener import strat_supertrend_macd
     s = {
-        "supertrend_bearish": True,
+        "supertrend_flip_recent_short_5d": True,  # B655 EVENT
         "macd_12_26_9_bearish": True,
         "adx": 25,
     }
@@ -189,23 +191,26 @@ def test_batch630_supertrend_macd_short_standalone_fires():
 
 
 def test_batch630_evening_star_short_fires_with_below_sma_50():
-    """Pin (12)."""
-    from backtest.signals.screener import strat_evening_star_short
-    s = {
-        "evening_star": True,
-        "rsi_14": 60,
-        "below_sma_50": True,
-    }
-    out = strat_evening_star_short(s)
-    assert out["fires"] is True and out["direction"] == "short"
+    """Pin (12) B820: strat_evening_star_short DELETED in B639 per
+    Stage 4 walk of strat_morning_star option (a). Standalone became
+    strict subset of strat_morning_star SHORT after option-2 reconcile-
+    to-reversal removed ema_50_200 trend gates. Test pinned to verify
+    deletion."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert "evening_star_short" not in ALL_STRATEGIES, (
+        "B639 deleted evening_star_short -- if it re-appears, that's "
+        "regression from a B639 walkback"
+    )
 
 
 def test_batch630_supertrend_ichimoku_adx_short_fires():
-    """Pin (13)."""
+    """Pin (13). B820: B655 + B725 STATE -> EVENT --
+    supertrend_bearish -> supertrend_flip_recent_short_5d;
+    ichi_below_cloud -> ichi_below_cloud_break_recent_5d."""
     from backtest.signals.screener import strat_supertrend_ichimoku_adx
     s = {
-        "supertrend_bearish": True,
-        "ichi_below_cloud": True,
+        "supertrend_flip_recent_short_5d": True,    # B655 EVENT
+        "ichi_below_cloud_break_recent_5d": True,   # B725 EVENT
         "adx_strong": True,
     }
     out = strat_supertrend_ichimoku_adx(s)
