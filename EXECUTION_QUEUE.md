@@ -381,7 +381,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 **B770 executed B769 chairman's TIER 0 "THE ONE THING TO DO FIRST"** = Pattern U multi-timeframe PIT audit on existing #S4-B750-PATTERN-U-MULTI-TIMEFRAME-PRODUCER-PIT-VERIFY (annotated COMPLETED-EMPIRICAL above with full verdict). **VERDICT: NOT CONTAMINATED.** Producer source read + 3 caller audit paths verified + KNOWN-EVENT runtime probe (synthetic Wed-slice = Wed close not Fri close). Defense-in-depth secondary surfacing: technical.py:917 (Batch 207 Ichimoku weekly Kumo) inherits same PIT-clean verdict. Verdict report: `output_audit/pattern_u_pit_audit_B770_VERDICT.md`.
 
-62. **`S4-B770-RESAMPLE-PIT-PIN-TEST-DEFENSE-IN-DEPTH`** — Codify B770 KNOWN-EVENT runtime probe as pin test in `backtest/tests/test_unit.py`. Probe: build synthetic OHLCV with deterministic Wed/Fri price gap; slice to Wed; assert `compute_weekly_bias(df_slice)["weekly_close"]` equals Wed close NOT Fri close. Future contributors who add a new resample-then-iloc[-1] producer or modify caller's slicing discipline will trip this test. Defense-in-depth against the bug class even though current code is clean. Apply to multi_timeframe.py (compute_weekly_bias + compute_monthly_bias) + technical.py:917 (Ichimoku weekly Kumo). Per Contrarian (B769 inline council): risk-theater critique was correct that risk was hypothetical, but defense-in-depth pin test fortifies against FUTURE drift in caller-slicing-discipline. PENDING-OWNER-APPROVAL. Source: B770 audit defense-in-depth surfacing. Class 1 TEST-CODIFICATION. MEDIUM.
+62. **`S4-B770-RESAMPLE-PIT-PIN-TEST-DEFENSE-IN-DEPTH`** — Codify B770 KNOWN-EVENT runtime probe as pin test in `backtest/tests/test_unit.py`. Probe: build synthetic OHLCV with deterministic Wed/Fri price gap; slice to Wed; assert `compute_weekly_bias(df_slice)["weekly_close"]` equals Wed close NOT Fri close. Future contributors who add a new resample-then-iloc[-1] producer or modify caller's slicing discipline will trip this test. Defense-in-depth against the bug class even though current code is clean. Apply to multi_timeframe.py (compute_weekly_bias + compute_monthly_bias) + technical.py:917 (Ichimoku weekly Kumo). Per Contrarian (B769 inline council): risk-theater critique was correct that risk was hypothetical, but defense-in-depth pin test fortifies against FUTURE drift in caller-slicing-discipline. ~~PENDING-OWNER-APPROVAL~~ **SHIPPED B805 2026-06-16.** Added `test_batch805_resample_pit_pin_multi_timeframe` pin test in test_unit.py. Build synthetic 30-week OHLCV with deterministic Wed=Mon+1.0 / Fri=Mon+2.0 gap; (probe 1) full-window weekly_close = 131.0 (Friday); (probe 2) `df.index.date <= wed.date()` slice weekly_close = 130.0 (Wednesday); (confirmation) full vs sliced differ by >0.5 prove resample respects slice boundary. Future refactors introducing lookahead path (resample on unsliced df, or slice POST-resample) trip the test. Pyramid 844/844. Source: B770 audit defense-in-depth + B805 codification. Class 1 TEST-CODIFICATION.
 
 **B770 CHECKLIST #107 reconciliation:** Findings surfaced: 2 (F1 primary multi_timeframe.py PIT-clean verdict at producer + 3 call sites; F2 defense-in-depth secondary surfacing technical.py:917 Ichimoku weekly Kumo same pattern same verdict by transitivity). Tickets filed: 1 NEW (#62 defense-in-depth pin test) + 1 annotation on existing #S4-B750-PATTERN-U (COMPLETED-EMPIRICAL with NOT-CONTAMINATED verdict + scope-extension to technical.py:917). **Audit-clean: YES.**
 
@@ -1000,6 +1000,14 @@ Pyramid 843/843 (842 + 1 new pin test). Future refactors regress trip the test.
 **B804 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#64 SHIPPED). Tickets: **0 NEW + 1 annotation** + 2 code changes (helper refactor + pin test). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B804: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 43 — B805 #62 RESAMPLE-PIT PIN TEST SHIPPED
+
+**B805 SHIPPED #62 pin test.** Added `test_batch805_resample_pit_pin_multi_timeframe` codifying B770 KNOWN-EVENT PIT probe. Synthetic 30-week OHLCV with deterministic Wed/Fri gap; probe 1 full-window weekly_close=131.0 (Fri); probe 2 sliced-to-Wed weekly_close=130.0 (Wed); confirmation gate full vs sliced differ by >0.5. Future refactors introducing lookahead path trip the test. Pyramid 844/844.
+
+**B805 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#62 SHIPPED). Tickets: **0 NEW + 1 annotation + 1 code change** (pin test). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B805: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 

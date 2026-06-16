@@ -11805,6 +11805,76 @@ def test_batch301_fetch_info_bulk_universe_recovery(tmp_path):
     print(f"[OK] Batch 301 Stage D universe recovery: {have_mcap}/150 mcap>=100M (was 8/150)")
 
 
+def test_batch805_resample_pit_pin_multi_timeframe():
+    """B805 #62 pin test: codifies B770 Pattern U PIT audit finding that
+    multi_timeframe.py weekly/monthly resample is backward-only when caller
+    slices df to [<=as_of].
+
+    Per B770 audit (output_audit/pattern_u_pit_audit_B770_VERDICT.md):
+    Backtest engine at backtest/engine/backtest.py:824 and pool worker at
+    backtest/signals/screener.py:7819 BOTH slice `df[df.index.date <= as_of]`
+    before passing to compute_weekly_bias. The resample then respects the
+    slice boundary -- weekly_close = close of as_of bar (Wed), NOT Fri close.
+
+    Future refactors that introduce a lookahead path (e.g. resample on
+    unsliced df, or slice POST-resample) will trip this pin test.
+
+    Defense-in-depth pattern mirror of B804 #64 numpy.bool_ pin test.
+    """
+    import pandas as pd
+    import numpy as np
+    from backtest.signals.multi_timeframe import compute_weekly_bias, compute_monthly_bias
+
+    # Build synthetic 30-week OHLCV with deterministic Wed/Fri price gap.
+    # Each Monday close = 100 + week_index * 1.0; each subsequent business day
+    # adds +0.5. So Mon=100, Tue=100.5, Wed=101.0, Thu=101.5, Fri=102.0 (week 0).
+    # Then Mon=101, Tue=101.5, Wed=102.0, Thu=102.5, Fri=103.0 (week 1) etc.
+    n = 150  # 30 weeks x 5 business days
+    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    close = np.zeros(n)
+    for i in range(n):
+        week_idx = i // 5
+        dow = i % 5
+        close[i] = 100.0 + week_idx * 1.0 + dow * 0.5  # Mon..Fri: 100.0,100.5,101.0,101.5,102.0
+    df = pd.DataFrame(
+        {
+            "open": close - 0.1,
+            "high": close + 0.5,
+            "low":  close - 0.5,
+            "close": close,
+            "volume": np.full(n, 1_000_000.0),
+        },
+        index=idx,
+    )
+
+    # PROBE 1: full-window weekly close = Friday of last week
+    out_full = compute_weekly_bias(df)
+    assert "weekly_close" in out_full
+    # Last week's Friday close = 100 + 29*1 + 4*0.5 = 100 + 29 + 2 = 131.0
+    assert abs(out_full["weekly_close"] - 131.0) < 0.01, (
+        f"B770 PIT pin: full-window weekly_close expected 131.0 (Fri), got {out_full['weekly_close']}"
+    )
+
+    # PROBE 2: slice to Wednesday of last week -> weekly close MUST equal Wed close, NOT Fri close.
+    # Last week's Wednesday = index[-3] (Fri=-1, Thu=-2, Wed=-3)
+    wed_date = idx[-3].date()
+    df_slice_wed = df[df.index.date <= wed_date]
+    out_wed = compute_weekly_bias(df_slice_wed)
+    assert "weekly_close" in out_wed
+    # Wednesday close = 100 + 29*1 + 2*0.5 = 100 + 29 + 1 = 130.0
+    assert abs(out_wed["weekly_close"] - 130.0) < 0.01, (
+        f"B770 PIT pin: as_of=Wed sliced weekly_close expected 130.0 (Wed), got "
+        f"{out_wed['weekly_close']}. Lookahead detected!"
+    )
+
+    # CONFIRMATION GATE: full-window weekly_close (131.0) MUST differ from sliced
+    # weekly_close (130.0) -- proving the resample respects the slice boundary.
+    assert abs(out_full["weekly_close"] - out_wed["weekly_close"]) > 0.5, (
+        "B770 PIT pin: full-window weekly_close and sliced weekly_close should "
+        "differ when slice cuts off Thu+Fri data. Lookahead suspect."
+    )
+
+
 def test_batch804_checklist_106_audit_numpy_bool_pin():
     """B804 #64 pin test: codifies B775 numpy.bool_ counting fix in
     `scripts/checklist_106_cluster_a_producer_audit.py:_signal_is_true_observation`.
