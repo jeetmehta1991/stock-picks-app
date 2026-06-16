@@ -1137,6 +1137,48 @@ Process check after launch discovered **PRE-EXISTING fire-bar matrix --full run 
 
 **Cumulative ticket count post-B833: 137 unique S4-B7XX tickets** (134 + #67 B791 + #68 B813 + #69 B826 + #70 B833 cumulative).
 
+### TIER 52 — B834 Stage 4 per-change approval — Tranche 1 analysis (R4 cube PASS cells)
+
+**B834 (2026-06-16 owner directive 'Stage 4 per-change approval - execute next'):** ran PASS-cell extraction on R4 optimizer output (104 strategy JSONs). **15 cube-PASS cells identified** (verdict=PASS + 5-gate-pass + n>=30).
+
+**Cube empirical evidence (15 PASS cells, sorted by Sharpe DESC):**
+
+| Strategy | Exit | n | Sharpe | PF | WR | PSR | Status |
+|---|---|---:|---:|---:|---:|---:|---|
+| bollinger_tight | breakeven_plus_trail | 380 | 0.625 | 2.04 | 45.0% | 1.000 | EXISTS-B414 |
+| xs_quality_top_quintile_long | breakeven_plus_trail | 607 | 0.559 | 2.10 | 37.4% | 1.000 | EXISTS-B414 |
+| cmf_flip | breakeven_plus_trail | 636 | 0.538 | 2.36 | 39.3% | 1.000 | EXISTS-B414 |
+| monthly_bias_momentum_long | breakeven_plus_trail | 1335 | 0.535 | 2.06 | 38.0% | 1.000 | EXISTS-B414 |
+| pead_long | breakeven_plus_trail | 528 | 0.505 | 2.35 | 39.8% | 1.000 | EXISTS-B414 |
+| williams_r_oversold | breakeven_plus_trail | 849 | 0.491 | 1.84 | 43.1% | 1.000 | **NEW B834-CANDIDATE** |
+| stochrsi_oversold | breakeven_plus_trail | 1115 | 0.481 | 1.94 | 40.6% | 1.000 | **SWAP B834** (current: `time_stop_days: 10` per B309) |
+| pairs_mean_reversion_long | breakeven_plus_trail | 1145 | 0.418 | 2.74 | 31.4% | 1.000 | EXISTS-B414 |
+| po3_bullish | breakeven_plus_trail | 1501 | 0.386 | 1.67 | 37.4% | 1.000 | **SWAP B834** (current: `class_time_stop` per B309) |
+| adx_initiation | breakeven_plus_trail | 955 | 0.375 | 3.26 | 48.1% | 1.000 | EXISTS-B414 |
+| institutional_cluster_long | earnings_blackout | 278 | 0.373 | 3.10 | 54.0% | 1.000 | **NEW B834-CANDIDATE** |
+| cpr_narrow_bullish | breakeven_plus_trail | 2177 | 0.303 | 1.47 | 40.6% | 1.000 | **SWAP B834** (current: `regime_flip` per B309) |
+| xs_low_beta_long | breakeven_plus_trail | 1079 | 0.302 | 2.07 | 24.9% | 1.000 | EXISTS-B414 (preserves higher Sharpe over earnings_blackout 0.258) |
+| xs_momentum_top_decile | earnings_blackout | 383 | 0.279 | 2.35 | 52.7% | 1.000 | EXISTS-B414 (alternative on existing strategy) |
+| xs_low_beta_long | earnings_blackout | 1079 | 0.258 | 3.09 | 56.4% | 1.000 | EXISTS-B414 (alternative; lower Sharpe than current breakeven_plus_trail) |
+
+**B834 Stage 4 RECOMMENDATIONS (5 candidates for owner approval → Stage 5 implementation):**
+
+| # | Change class | Strategy | Recommendation | Justification |
+|---|---|---|---|---|
+| 71 | NEW Class 1 | **williams_r_oversold** | ADD `STRATEGY_EXIT_OVERRIDE[williams_r_oversold] = {"exit_method": "breakeven_plus_trail"}` | R4 cube empirical Sharpe 0.491 / n=849 / PF 1.84 / PSR 1.000; no prior STRATEGY_EXIT_OVERRIDE entry to conflict with; cube-PASS-anywhere per DEC-426 5-Gate. |
+| 72 | NEW Class 1 | **institutional_cluster_long** | ADD `STRATEGY_EXIT_OVERRIDE[institutional_cluster_long] = {"exit_method": "earnings_blackout"}` | R4 cube empirical Sharpe 0.373 / n=278 / PF 3.10 / PSR 1.000; only PASS exit; no prior entry. |
+| 73 | SWAP Class 1 | **stochrsi_oversold** | CHANGE `{"time_stop_days": 10, "initial_pct": 0.04}` (B309 single-batch evidence) → `{"exit_method": "breakeven_plus_trail"}` (R4 cube Sharpe 0.481 / n=1115). | B414 didn't swap; R4 cube empirical evidence supersedes B309 single-batch per `project_no_apriori_strategy_pruning` cube-authoritative principle. |
+| 74 | SWAP Class 1 | **po3_bullish** | CHANGE `{"exit_method": "class_time_stop"}` (B309 OOS sum +395pp / 136 OOS) → `{"exit_method": "breakeven_plus_trail"}` (R4 cube Sharpe 0.386 / n=1501). | B414 didn't swap; R4 cube measured at full scale supersedes B309 single-batch OOS-sum measurement; cube cells per DEC-426 5-Gate verdict authoritative. |
+| 75 | SWAP Class 1 | **cpr_narrow_bullish** | CHANGE `{"exit_method": "regime_flip"}` (B309 OOS +142pp / 37 OOS) → `{"exit_method": "breakeven_plus_trail"}` (R4 cube Sharpe 0.303 / n=2177). | B414 didn't swap; R4 cube empirical evidence at full universe scale supersedes B309 single-batch. |
+
+**3 SWAPS WARRANT OWNER REVIEW per `feedback_audit_recommendations_against_existing_directives`:** each REPLACES a prior Batch 309 STRATEGY_EXIT_OVERRIDE decision based on B309 single-batch OOS-sum evidence. R4 cube empirical Sharpe is the formal cube-authoritative metric per workflow Stage 2 Lens B Layer 2. Owner sign-off on supersession recommended before Stage 5 implementation.
+
+**B834 CHECKLIST #107 reconciliation:** Findings: 5 primary (2 NEW + 3 SWAP). Tickets: **5 NEW (#71-75) STRATEGY_EXIT_OVERRIDE Stage 4 candidates**. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B834: 142 unique S4-B7XX tickets** (137 + 5 NEW #71-75 Stage 4 candidates).
+
+**1A-α GATE IMPACT NOTE:** R4 max PASS-cell Sharpe is 0.625 (bollinger_tight × breakeven_plus_trail) — BELOW 1A-α gate threshold (Sharpe >= 0.7 OOS). Stage 5 implementation of these 5 candidates is unlikely to lift R5 OOS Sharpe above 0.7 by itself; structural cube changes (additional Stage 4 work on Dim A/B/C, producer fix delta from R4, OPT-D + Tier 3 vectorized exits activation, broader Phase 1A-β re-scope per workflow) are also needed for 1A-α PASS.
+
 ### TIER 50 — B813 wired-but-not-engine-activated AUDIT per `feedback_wired_means_engine_consumed`
 
 **B813 SHIPPED umbrella audit ticket #68 with council-validated narrow-first-application path (Option C).**
