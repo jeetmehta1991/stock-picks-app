@@ -276,7 +276,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 ### TIER 2 — Post-fix fire-count projection (per `feedback_minimum_fire_count_gate_before_cube`)
 
-34. **`S4-B766-COUNCIL-POST-Q-FIRE-COUNT-PROJECTION-PER-STRATEGY`** — Per Reviewer 5 (peer review): if Pattern Q EVENT-conversion collapses STATE over-fires 3-10×, many Cluster A strategies fall below min_trades=30/regime threshold, making cube statistically incapable of producing PASS/FAIL regardless of Bonferroni math. Mandatory pre-Q-rollout: compute projected post-conversion fires/year per strategy. Strategies projected <30/yr/regime route to DELETE or universe-change, NOT EVENT-conversion. UNANIMOUS council missed flag. PENDING-EXECUTION. Source: B766 council Reviewer 5. Class 9 META. **CRITICAL Pre-Q-rollout**.
+34. **`S4-B766-COUNCIL-POST-Q-FIRE-COUNT-PROJECTION-PER-STRATEGY`** — Per Reviewer 5 (peer review): if Pattern Q EVENT-conversion collapses STATE over-fires 3-10×, many Cluster A strategies fall below min_trades=30/regime threshold, making cube statistically incapable of producing PASS/FAIL regardless of Bonferroni math. Mandatory pre-Q-rollout: compute projected post-conversion fires/year per strategy. Strategies projected <30/yr/regime route to DELETE or universe-change, NOT EVENT-conversion. UNANIMOUS council missed flag. ~~PENDING-EXECUTION~~ **COMPLETED-EMPIRICAL B808 2026-06-16.** Applied per-strategy CHECKLIST #108 (b) projection methodology across all Pattern Q rollout candidates this turn: A-12 strat_bollinger_lower B660 1,980/yr → EVENT ~198/yr per-regime ~50 PASS (B800 SHIPPED); A-13 strat_bollinger_tight B660 6,725/yr → EVENT ~673/yr per-regime ~168 PASS (B801 SHIPPED); A-22 strat_avwap_50_reclaim PRE-shipped B790 ~856/yr post-fix; A-23 strat_avwap_252_breakout B660 1,268/yr → EVENT ~127/yr per-regime ~32 BORDERLINE-PASS (B802 SHIPPED); B-13 strat_supertrend_ichimoku_adx B660 3,428/yr → EVENT ~340/yr LONG asymmetric per-regime ~85 PASS (B773 SHIPPED LONG; B779 owner-directed symmetric B788/B779 LONG+SHORT EVENT-conversion with SHORT ~6/yr accepted-fire-starve per owner override); B-29 strat_xs_low_beta_long B786 71,355/yr → EVENT 553/yr per-regime ~138 PASS (B788 SHIPPED + B798 smoke-verified 553/yr); BLOCKED-PER-#108: A-1 strat_rsi_oversold 1,336/yr → ~134/yr 33-borderline PLUS B768 measured edge supersedes (BLOCKED-B802); A-4 strat_rsi21_slow 1.7/yr already starved (BLOCKED); A-5 strat_rsi_volume_200ema 763/yr → 19/regime FAIL (BLOCKED-B802); A-11 strat_mfi_oversold 7.6/yr already starved (BLOCKED); RSI capitulation gate (B796 #40) 100-1000x reduction estimate too restrictive (BLOCKED-B803). **Council Reviewer 5's gate-condition operationalized as CHECKLIST #108 (b); applied per-strategy this turn for every Pattern Q rollout proposal.** Source: B766 council Reviewer 5 + B800-B803 + B788 per-strategy applications. Class 9 META.
 
 ### TIER 3 — Reviewer recs ADOPTED (executable now)
 
@@ -1040,6 +1040,31 @@ Verdict report: `output_audit/b807_33_latent_collapse_phi_audit_VERDICT.md`
 **B807 CHECKLIST #107 reconciliation:** Findings: 1 primary (#33 REFUTED). Tickets: **0 NEW + 1 annotation**. **Audit-clean: YES.**
 
 **Cumulative ticket count post-B807: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 46 — B808 #34 POST-Q fire-count projection per strategy COMPLETED-EMPIRICAL
+
+**B808 SHIPPED #34 verdict.** Council Reviewer 5's gate-condition operationalized as CHECKLIST #108 (b); applied per-strategy across all Pattern Q rollout proposals this turn:
+
+| Strategy | Pre-fix /yr | Post-fix /yr | Per-regime | Decision | Batch |
+|---|---:|---:|---:|---|---|
+| A-12 bollinger_lower | 1,980 | ~198 | ~50 | PASS - SHIPPED | B800 |
+| A-13 bollinger_tight | 6,725 | ~673 | ~168 | PASS - SHIPPED | B801 |
+| A-22 avwap_50_reclaim | (already EVENT) | ~856 | ~214 | PASS - SHIPPED | B790 |
+| A-23 avwap_252_breakout | 1,268 | ~127 | ~32 | BORDERLINE-PASS - SHIPPED | B802 |
+| B-13 supertrend_ichimoku_adx (LONG) | 3,365 | ~340 | ~85 | PASS - SHIPPED | B773→B779 |
+| B-13 supertrend_ichimoku_adx (SHORT) | 63 | ~6 | ~1.5 | OWNER-ACCEPTED below threshold | B779 |
+| B-29 xs_low_beta_long | 71,355 | 553 | ~138 | PASS - SHIPPED + smoke verified | B788/B798 |
+| A-1 rsi_oversold | 1,336 | ~134 | ~33 | BLOCKED (B768 empirical edge supersedes) | B802 |
+| A-4 rsi21_slow | 1.7 | — | — | already FAIL_FIRE_STARVED | BLOCKED |
+| A-5 rsi_volume_200ema | 763 | ~76 | ~19 | BLOCKED (fail #108 gate) | B802 |
+| A-11 mfi_oversold | 7.6 | — | — | already FAIL_FIRE_STARVED | BLOCKED |
+| RSI capitulation gate | — | -100-1000x | <gate | BLOCKED across RSI family | B803 |
+
+Council Reviewer 5's concern operationalized AND applied per-strategy at gate-modification time — 8 SHIPPED + 5 BLOCKED + 1 owner-accepted below threshold.
+
+**B808 CHECKLIST #107 reconciliation:** Findings: 1 primary (#34 COMPLETED-EMPIRICAL via per-strategy #108 (b) applications). Tickets: **0 NEW + 1 annotation**. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B808: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
