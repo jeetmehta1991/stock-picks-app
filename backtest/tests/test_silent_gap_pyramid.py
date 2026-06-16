@@ -1435,17 +1435,19 @@ def test_batch314_cat2_news_sentiment_loosen():
 
 
 def test_batch314_cat3a_poc_magnet_loosen():
-    """Cat-3 A: strat_poc_magnet_long threshold widens 2% -> 4%."""
+    """B314 Cat-3 A loosen (2% -> 4%) REVERTED by B724 back to 2% per
+    S4-B717 ceiling routing + B710 'fires too often' verdict + B660
+    measured 11,334/yr LONG. Test updated B814 to reflect current 2%."""
     from backtest.signals.screener import strat_poc_magnet_long
-    # 3% from POC (was excluded pre-Batch-314, included post)
+    # 1% from POC fires (well under 2% threshold)
     sig = {
-        "vp_close_near_poc_pct": 0.03,
+        "vp_close_near_poc_pct": 0.01,
         "vp_close_above_poc": True,
         "price_above_ema_200": True,
     }
     assert strat_poc_magnet_long(sig)["fires"] is True
-    # 5% from POC still excluded (boundary check)
-    sig2 = dict(sig); sig2["vp_close_near_poc_pct"] = 0.05
+    # 3% from POC excluded (B724 tightened back to 2%)
+    sig2 = dict(sig); sig2["vp_close_near_poc_pct"] = 0.03
     assert strat_poc_magnet_long(sig2)["fires"] is False
 
 
@@ -1699,11 +1701,35 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       2-gate structure: recent_blowoff_at_r3 + bearish-reversal
     #       trigger today. Marked EXPLORATORY pending Stage 5 cube
     #       validation. Net: +1 = 221 -> 222.)
-    assert len(ALL_STRATEGIES) == 222, (
+    #   218 after Batch 670 (SM-9 + SM-23 DELETED per Pattern C
+    #       STRENGTHENED + 2 Class 7 NEW replacements wired. Net: net 0
+    #       on cluster total but inst-capitulation + inst-distribution
+    #       deleted = -2; pre-B670 was 222 = 220 post-B670; +2 NEW =
+    #       222 unchanged at cluster total.) NOTE: B670 net 0; 222 -> 222.
+    #   218 after Batch 682 (BR-15 strat_volume_spike_breakout_retest
+    #       DELETED per B620 precedent + B621 0.01/yr FAIL_FIRE_STARVED
+    #       + EV-3 strat_pead_long_high_yoy_growth_only DELETED Pattern W
+    #       + EV-4 strat_pead_short_negative_yoy_growth DELETED symmetric
+    #       + EV-7 strat_buyback_8k_recent_long DELETED CC-B 8-K pop-mix.
+    #       Net: -4 = 222 -> 218.)
+    #   221 after Batch 685 (+3 Class 7 NEW: strat_head_and_shoulders_top
+    #       _short + strat_triangle_descending_short + strat_hammer_at
+    #       _support_long. Net: +3 = 218 -> 221.)
+    #   222 after Batch 686 (+1 Class 7 NEW strat_inverted_cup_and_handle
+    #       _short bearish mirror of CP-1. Net: +1 = 221 -> 222.)
+    #   224 after Batch 709 (+2 EMPIRICAL-RESTORE strat_pead_long_high_yoy
+    #       _growth_only + strat_pead_short_negative_yoy_growth restored
+    #       per B702 adversarial review verdict; B709 phi=0.297 well below
+    #       0.70 revert threshold. Net: +2 = 222 -> 224.)
+    #   221 after Batch 722 (-3 strat_hull_rsi_short DELETED Pattern W
+    #       post-B718 + strat_po3_htf_aligned_long DELETED HYBRID Pattern
+    #       F + strat_po3_htf_aligned_short DELETED same. Net: -3 = 224
+    #       -> 221.)
+    assert len(ALL_STRATEGIES) == 221, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
-        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636/639/645 "
-        f"trajectory: ALL_STRATEGIES count must be 222 post-B645, "
-        f"got {len(ALL_STRATEGIES)}"
+        f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636/639/645/"
+        f"670/682/685/686/709/722 trajectory: ALL_STRATEGIES count "
+        f"must be 221 post-B722, got {len(ALL_STRATEGIES)}"
     )
 
 
@@ -1752,12 +1778,14 @@ def test_batch329_retest_variants_fire_on_retest_signal():
     # (2026-06-10 owner-approved per B620 precedent + B680 self-critique
     # CC-B 0.01/yr B621 FAIL_FIRE_STARVED). Removed from this test.
 
-    # cup_and_handle_retest_long
-    s = {"cup_handle_detected": True, "resistance_break_retest": True,
+    # cup_and_handle_retest_long (B685 producer fix: resistance_break_retest
+    # -> cup_handle_neckline_break_retest_long; chart_patterns producer
+    # anchored on handle high not DC20 max)
+    s = {"cup_handle_detected": True, "cup_handle_neckline_break_retest_long": True,
          "price_above_ema_200": True, "price_above_ema_50": True,
          "rsi_14": 50}
     assert strat_cup_and_handle_retest_long(s)["fires"] is True
-    s2 = dict(s); s2["resistance_break_retest"] = False
+    s2 = dict(s); s2["cup_handle_neckline_break_retest_long"] = False
     assert strat_cup_and_handle_retest_long(s2)["fires"] is False
 
     # flag_bull_retest_long (post-B607 F1 walk: NEW flag-anchored producer
@@ -1769,9 +1797,11 @@ def test_batch329_retest_variants_fire_on_retest_signal():
          "vol_below_avg": True}
     assert strat_flag_bull_retest_long(s)["fires"] is True
 
-    # triangle_ascending_retest_long
+    # triangle_ascending_retest_long (B685 producer fix: resistance_break_retest
+    # -> triangle_apex_break_retest_long; chart_patterns producer anchored on
+    # SPECIFIC triangle_resistance_level apex, not DC20 max)
     s = {"triangle_ascending_detected": True,
-         "resistance_break_retest": True, "price_above_ema_200": True}
+         "triangle_apex_break_retest_long": True, "price_above_ema_200": True}
     assert strat_triangle_ascending_retest_long(s)["fires"] is True
 
 
@@ -2599,12 +2629,14 @@ def test_batch334_smc_ict_fully_consumed():
 
 
 def test_batch333_wave3_persistence_strategies_registered():
-    """Wave 3 Batch 333: 3 institutional persistence strategies registered."""
+    """Wave 3 Batch 333: 2 institutional persistence strategies registered.
+    B814: removed institutional_capitulation_short -- DELETED in B670
+    per Pattern C STRENGTHENED + 2 Class 7 NEW replacements wired."""
     from backtest.signals.screener import ALL_STRATEGIES
     expected = [
         "institutional_persistent_holders_long",
         "institutional_strong_conviction_long",
-        "institutional_capitulation_short",
+        # B670 DELETED: "institutional_capitulation_short",
     ]
     missing = [n for n in expected if n not in ALL_STRATEGIES]
     assert not missing, f"Batch 333: missing strategy registrations: {missing}"
@@ -2638,20 +2670,15 @@ def test_batch333_institutional_strong_conviction_long_fires():
 
 
 def test_batch333_institutional_capitulation_short_fires():
-    """Batch 333: capitulation_short needs institutional_negative AND
-    vol_spike_2x AND below 50-EMA.
-    B633 fixture-drift repair: swapped to positive symmetric below_ema_50."""
-    from backtest.signals.screener import strat_institutional_capitulation_short
-    s = {
-        "institutional_negative": True,
-        "vol_spike_2x": True,
-        "below_ema_50": True,             # B633: positive symmetric
-    }
-    out = strat_institutional_capitulation_short(s)
-    assert out["fires"] is True and out["direction"] == "short"
-    # Above 50 EMA (below_ema_50=False): gated
-    s2 = dict(s); s2["below_ema_50"] = False
-    assert strat_institutional_capitulation_short(s2)["fires"] is False
+    """Batch 333: strategy strat_institutional_capitulation_short DELETED
+    in B670 per Pattern C STRENGTHENED + 2 Class 7 NEW replacements wired.
+    Test pinned to verify deletion (not re-registration)."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert "institutional_capitulation_short" not in ALL_STRATEGIES, (
+        "B670 deleted institutional_capitulation_short per Pattern C "
+        "STRENGTHENED -- if it re-appears in ALL_STRATEGIES, that's "
+        "regression from a B670 walkback"
+    )
 
 
 def test_batch332_wave3_classification_change_strategies_registered():
@@ -2808,12 +2835,14 @@ def test_batch331_institutional_volume_confirmation_long_fires():
 
 
 def test_batch330_wave3_13f_strategies_registered():
-    """Wave 3 (Batch 330): 3 13F-based strategies registered in ALL_STRATEGIES."""
+    """Wave 3 (Batch 330): 2 13F-based strategies registered in ALL_STRATEGIES.
+    B814: removed institutional_distribution_short -- DELETED in B670
+    per Pattern C STRENGTHENED + 2 Class 7 NEW replacements wired."""
     from backtest.signals.screener import ALL_STRATEGIES
     expected = [
         "institutional_cluster_long",
         "institutional_buy_momentum_long",
-        "institutional_distribution_short",
+        # B670 DELETED: "institutional_distribution_short",
     ]
     missing = [n for n in expected if n not in ALL_STRATEGIES]
     assert not missing, f"Wave 3: missing 13F strategy registrations: {missing}"
@@ -2852,19 +2881,15 @@ def test_batch330_institutional_buy_momentum_long():
 
 
 def test_batch330_institutional_distribution_short():
-    """Wave 3 (Batch 330): institutional_distribution_short fires on
-    13F=='negative' AND below 50-EMA (trend agrees).
-    B633 fixture-drift repair: swapped to positive symmetric below_ema_50."""
-    from backtest.signals.screener import strat_institutional_distribution_short
-    s = {
-        "institutional_negative": True,
-        "below_ema_50": True,           # B633: positive symmetric
-    }
-    out = strat_institutional_distribution_short(s)
-    assert out["fires"] is True and out["direction"] == "short"
-    # Above 50 EMA (below_ema_50=False): gated
-    s2 = dict(s); s2["below_ema_50"] = False
-    assert strat_institutional_distribution_short(s2)["fires"] is False
+    """Wave 3 (Batch 330): strategy strat_institutional_distribution_short
+    DELETED in B670 per Pattern C STRENGTHENED + 2 Class 7 NEW replacements
+    wired. Test pinned to verify deletion (not re-registration)."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert "institutional_distribution_short" not in ALL_STRATEGIES, (
+        "B670 deleted institutional_distribution_short per Pattern C "
+        "STRENGTHENED -- if it re-appears in ALL_STRATEGIES, that's "
+        "regression from a B670 walkback"
+    )
 
 
 def test_batch330_screener_injects_institutional_signal():
@@ -3328,7 +3353,8 @@ def test_batch320_rsi_volume_200ema_loosen():
 
 
 def test_batch320_break_retest_volume_drops_vol_spike():
-    """Batch 320 baseline + B608 walk gates + B617 critique re-fix.
+    """Batch 320 baseline + B608 walk gates + B617 critique re-fix
+    + B728 strong-close anti-fakeout gate.
 
     Lineage:
     - B320 dropped vol_spike_2x (per Bulkowski - volume elevated on break,
@@ -3339,7 +3365,11 @@ def test_batch320_break_retest_volume_drops_vol_spike():
       absorption on retest dry-up).
     - B617 switched OBV gate from obv_rising (5-bar contaminated window)
       to obv_bullish (20-bar MA baseline; OBV[-1] > obv_ma_20). Producer
-      added symmetric obv_bearish for SHORT side."""
+      added symmetric obv_bearish for SHORT side.
+    - B728 added close_in_top_40pct_of_range / bottom_40pct_of_range
+      strong-close anti-fakeout per B710 W1 + S4-B717 ceiling routing
+      (close_above_open is weak ~50% True; strong-close separates real-
+      retest-hold from weak-bounce). B814 updated test fixture."""
     from backtest.signals.screener import strat_break_retest_volume
     sig = {
         "resistance_break_retest": True,
@@ -3348,6 +3378,8 @@ def test_batch320_break_retest_volume_drops_vol_spike():
         # B608-added gates
         "close_above_open": True,
         "vol_below_avg": True,
+        # B728-added strong-close gate
+        "close_in_top_40pct_of_range": True,
     }
     out = strat_break_retest_volume(sig)
     assert out["fires"] is True
