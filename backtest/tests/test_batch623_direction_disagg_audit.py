@@ -101,14 +101,19 @@ def test_batch623_classify_remove_ok_when_remove_wins_or_ties():
     assert rec == "REMOVE_OK", f"Expected REMOVE_OK (delta=+150); got {rec}"
 
 
-def test_batch623_audit_produces_21_results():
-    """Pin (5): audit produces one result per deferred dual entry."""
+def test_batch623_audit_produces_18_results():
+    """Pin (5) B839 UPDATED: audit produces one result per deferred dual
+    entry. Count drift 21 -> 18 due to subsequent strategy deletions
+    (B620 squeeze_setup_event_only_long + B639 evening_star_short +
+    B722 hull_rsi_short / po3_htf_aligned_long / po3_htf_aligned_short).
+    Floor pinned to 18 per current B395-final cube state; if count rises
+    again, this pin surfaces the addition."""
     tl = Path("output_batch395_final/trade_log.csv")
     if not tl.exists():
         pytest.skip("cube trade_log absent")
     result = audit(tl)
-    assert result["deferred_strategies_audited"] == 21
-    assert len(result["results"]) == 21
+    assert result["deferred_strategies_audited"] == 18
+    assert len(result["results"]) == 18
     # Every result has the required keys
     for r in result["results"]:
         assert "strategy" in r

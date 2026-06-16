@@ -121,7 +121,7 @@ def test_batch576_ghost_strategies_legitimate(post_backfill):
     from backtest.signals.screener import ALL_STRATEGIES
     approval_strats = {r["strategy"] for r in post_backfill["approvals"]}
     ghosts = approval_strats - set(ALL_STRATEGIES.keys())
-    # Known legitimate ghosts (B622 fixture-drift repair):
+    # Known legitimate ghosts (B622 fixture-drift repair + B839 update):
     legitimate_ghosts = {
         "lead_lag_sector_rotation",        # non-ALL_STRATEGIES path
         "news_sentiment_shift_short",      # B571 Class 7 Approved awaiting wiring
@@ -130,6 +130,35 @@ def test_batch576_ghost_strategies_legitimate(post_backfill):
                                            #   explicit pair donchian_breakout_retest_long
                                            #   + donchian_breakdown_retest_short carries
                                            #   the semantics
+        "hull_rsi_short",                  # B722 deletion (Pattern W
+                                           #   deterministic-duplicate post-B718 tightening;
+                                           #   strat_hull_rsi SHORT branch carries
+                                           #   the semantics)
+        "evening_star_short",              # B639 deletion (Stage 4 walk
+                                           #   morning_star option a; standalone became
+                                           #   strict subset of strat_morning_star SHORT
+                                           #   post option-2 reconcile-to-reversal)
+        "po3_htf_aligned_long",            # B722 deletion (HYBRID Pattern F;
+                                           #   strict subset of strat_po3_bullish on
+                                           #   weekly_bias_bull axis)
+        "po3_htf_aligned_short",           # B722 deletion (same as long mirror)
+        "squeeze_setup_event_only_long",   # B620 deletion (~2.5 fires/yr
+                                           #   FAIL_FIRE_STARVED; A/B question
+                                           #   answerable post-cube from squeeze_setup
+                                           #   _long trade log filter)
+        "buyback_8k_recent_long",          # B682 deletion (CC-B 8-K
+                                           #   population-mixing M&A Item 1.01
+                                           #   SM-4 feasibility-failure carry)
+        "volume_spike_breakout_retest",    # B682 deletion (B620 precedent +
+                                           #   B621 0.01/yr FAIL_FIRE_STARVED estimator)
+        "camarilla_r3_breakout",           # B641 RENAME to camarilla_r4_breakout
+                                           #   (Camarilla source-system re-anchor;
+                                           #   R3=fade per Slim Khan/Nick Scott;
+                                           #   R4=breakout level)
+        "institutional_capitulation_short",# B670 deletion (Pattern C
+                                           #   STRENGTHENED + 2 Class 7 NEW
+                                           #   replacements wired)
+        "institutional_distribution_short",# B670 deletion (same)
     }
     # Every ghost should be either a known legitimate one OR a Class 7
     # owner-added candidate awaiting wiring (dimension_source == 'owner_added')

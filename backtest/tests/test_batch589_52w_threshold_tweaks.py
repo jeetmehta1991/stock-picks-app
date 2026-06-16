@@ -131,19 +131,22 @@ def test_batch589_near_52w_low_105pct():
 
 
 def test_batch589_strat_52w_high_breakout_requires_5():
-    """Pin (6): all 5 conditions required (B589 added 2)."""
+    """Pin (6) B839 UPDATED: B589 added 2 confirmation gates; B698 then
+    refactored to 2-of-N anti-fakeout voting where break_52w_high is the
+    only hard prereq + >=2 of 5 confirmations needed. Single missing
+    confirmation no longer blocks fire if other confirmations satisfy
+    >=2 quorum."""
     from backtest.signals.screener import strat_52w_high_breakout
     # All True -> fires
     s_all = {"break_52w_high": True, "vol_spike_17x": True,
-             "sector_outperforming_spy": True, "close_above_open": True,
-             "close_in_top_40pct_of_range": True}
+             "close_above_open": True, "close_in_top_40pct_of_range": True}
     assert strat_52w_high_breakout(s_all)["fires"] == True
-    # Missing close_above_open -> no fire
-    s_no_co = dict(s_all); s_no_co["close_above_open"] = False
-    assert strat_52w_high_breakout(s_no_co)["fires"] == False
-    # Missing top_40 -> no fire
-    s_no_top = dict(s_all); s_no_top["close_in_top_40pct_of_range"] = False
-    assert strat_52w_high_breakout(s_no_top)["fires"] == False
+    # No break_52w_high (hard prereq) -> no fire
+    s_no_break = dict(s_all); s_no_break["break_52w_high"] = False
+    assert strat_52w_high_breakout(s_no_break)["fires"] == False
+    # Only 1 confirmation -> no fire (need >=2 of N)
+    s_one_confirm = {"break_52w_high": True, "vol_spike_17x": True}
+    assert strat_52w_high_breakout(s_one_confirm)["fires"] == False
 
 
 def test_batch589_strat_52w_low_breakdown_requires_5():

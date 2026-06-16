@@ -82,14 +82,18 @@ def _load_ohlc(ticker: str) -> pd.DataFrame:
 
 
 def test_batch559_17_patterns_strategies_registered():
-    """Regression guard: all 17 patterns-cluster strategy fns must
-    remain registered."""
+    """Regression guard: all 16 patterns-cluster strategy fns must
+    remain registered. B839 UPDATED: strat_evening_star_short DELETED
+    in B639 (Stage 4 morning_star walk option a) after standalone
+    became strict subset of strat_morning_star SHORT branch post-option-2
+    reconcile-to-reversal. 17 -> 16."""
     from backtest.signals import screener
     expected = [
         "strat_bb_squeeze_volume", "strat_camarilla_rsi_obv",
         "strat_camarilla_rsi_obv_short",
         "strat_avwap_20high_rejection_short",
-        "strat_evening_star_short", "strat_shooting_star_short",
+        # B639 deleted: "strat_evening_star_short"
+        "strat_shooting_star_short",
         "strat_gold_silver_risk_off_long",
         "strat_sector_rotation_defensive_long",
         "strat_rsi_overbought_short", "strat_rsi21_slow",
