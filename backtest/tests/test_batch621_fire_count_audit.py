@@ -123,14 +123,18 @@ EXPECTED_REAL_FAIL = {
     "golden_cross_volume",
     "stoch_oversold",
     "dc20_break_retest",
-    "morning_star",
+    # B823 removed: "morning_star" -- B639 family-bug-fix walk removed
+    # the regime affinity entry; strategy still active but no longer in
+    # FAIL_FIRE_STARVED bucket (regime gates relaxed).
     "52wh_break_retest",
     "golden_cross_20_50",
     "activist_13d_long",
     "donchian_10_breakout",
     "keltner_lower",
     "pivot_r2_continuation",
-    "cup_and_handle_retest_long",
+    # B823 removed: "cup_and_handle_retest_long" -- B685 producer fix
+    # (cup_handle_neckline_break_retest_long replaces resistance_break
+    # _retest) moved strategy out of FAIL bucket.
     "r1_break_retest",
 }
 

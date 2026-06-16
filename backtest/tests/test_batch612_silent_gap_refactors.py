@@ -278,9 +278,8 @@ def test_batch612_all_strategies_count_post_b682_at_218():
     additive (no add/delete); count was 221 at B612.
 
     Post-B682 (2026-06-10 owner-approved deletions per B680 self-critique):
-    222 -> 218 (-4 strategies: BR-15 volume_spike_breakout_retest +
-    EV-3 pead_long_high_yoy_growth_only + EV-4 pead_short_negative_yoy_growth
-    + EV-7 buyback_8k_recent_long). Count assertion updated to 218.
+    222 -> 218 (-4 strategies). B823 updated: trajectory continues
+    218 + B685+3 + B686+1 + B709+2 - B722-3 = 221.
     """
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 218
+    assert len(ALL_STRATEGIES) == 221

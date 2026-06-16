@@ -383,6 +383,7 @@ def test_batch641_execution_queue_13_new_tickets():
 def test_batch641_all_strategies_count_now_222_post_b645():
     """W10 rename was net-zero count change in B641; B645 wired W5
     mirror Class 7 NEW so count is 222 post-B645+. B654 (W8 redundancy
-    fix) is also net-zero count change."""
+    fix) is also net-zero count change. B823 updated: B682-4 + B685+3
+    + B686+1 + B709+2 - B722-3 = 221 current trajectory."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert len(ALL_STRATEGIES) == 221

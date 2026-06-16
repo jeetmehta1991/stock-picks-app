@@ -116,11 +116,14 @@ def test_batch629_prev_day_low_bounce_short_silent_gap_closed():
 # ----- 2. williams_r_oversold -----
 
 def test_batch629_williams_r_oversold_short_fires():
-    """Pin (5)."""
+    """Pin (5). B823: B641 F1b positive symmetric below_ema_200
+    (B630 producer) replaces NOT-pattern silent-gap. Test fixture
+    extended with below_ema_200=True."""
     from backtest.signals.screener import strat_williams_r_oversold
     s = {
         "williams_r": -15,         # >-20 -> overbought-side condition
         "price_above_ema_200": False,
+        "below_ema_200": True,     # B641 F1b: positive symmetric
         "cmf_negative": True,
     }
     out = strat_williams_r_oversold(s)

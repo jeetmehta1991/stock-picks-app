@@ -219,6 +219,7 @@ def test_batch645_b291_short_default_applies():
 
 
 def test_batch645_total_strategy_count_222():
-    """Pin (16): +1 Class 7 NEW; 221 -> 222."""
+    """Pin (16) B823 UPDATED: +1 Class 7 NEW; 221 -> 222 post-B645.
+    Trajectory: B682-4 + B685+3 + B686+1 + B709+2 - B722-3 = 221 current."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 222
+    assert len(ALL_STRATEGIES) == 221

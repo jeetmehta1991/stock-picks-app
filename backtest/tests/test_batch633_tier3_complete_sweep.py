@@ -132,15 +132,15 @@ def test_batch633_ichi_above_cloud_emitted():
 # ----- Spot-check fires -----
 
 def test_batch633_hull_rsi_short_fires():
-    """Pin (7): hull_bearish + price_below_hull positive symmetric."""
-    from backtest.signals.screener import strat_hull_rsi_short
-    s = {
-        "hull_bearish": True,
-        "price_below_hull": True,
-        "rsi_9": 40,
-    }
-    out = strat_hull_rsi_short(s)
-    assert out["fires"] is True and out["direction"] == "short"
+    """Pin (7) B823 UPDATED: strat_hull_rsi_short DELETED in B722 per
+    Pattern W deterministic-duplicate finding (post-B718 tightening
+    fired on IDENTICAL gates to strat_hull_rsi SHORT branch). Test
+    converted to absence-pin (regression guard against B722 walkback)."""
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert "hull_rsi_short" not in ALL_STRATEGIES, (
+        "B722 deleted hull_rsi_short per Pattern W deterministic-duplicate -- "
+        "if it re-appears, that's regression from a B722 walkback"
+    )
 
 
 def test_batch633_prev_day_high_break_short_fires_with_below_vwap():
