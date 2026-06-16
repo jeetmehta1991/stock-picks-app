@@ -174,7 +174,7 @@ Owner directive 2026-06-14 "approve all for filing" — 16 council tickets queue
 
 4. **`S4-B755-COUNCIL-BENJAMINI-HOCHBERG-FDR-VS-BONFERRONI`** — Replace Bonferroni with Benjamini-Hochberg FDR or López-de-Prado deflated Sharpe. 23K-cell Bonferroni at α=0.05 → α/cell = 2.2e-6 = 4.6σ. FDR controls false-discovery-rate not family-wise-error — correct tool for correlated tests on shared OHLCV. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 8 CUBE-INFRA. HIGH.
 
-5. **`S4-B755-COUNCIL-INSUFFICIENT-POWER-TAG-DISTINCT-FROM-EXPLORATORY`** — A-10 ultimate_oscillator Sharpe 0.49 @ n=27 has 95% CI [-0.3, 1.3] — indistinguishable from null. Tag INSUFFICIENT_POWER not EXPLORATORY. Re-tag A-10 + B753/A-13/A-15/A-29/A-30 audit for n<50 cases with CI spanning null. PENDING-OWNER-APPROVAL. Source: Advisor C + Reviewer 1. Class 2 LOOSEN/TIGHTEN. HIGH.
+5. **`S4-B755-COUNCIL-INSUFFICIENT-POWER-TAG-DISTINCT-FROM-EXPLORATORY`** — A-10 ultimate_oscillator Sharpe 0.49 @ n=27 has 95% CI [-0.3, 1.3] — indistinguishable from null. Tag INSUFFICIENT_POWER not EXPLORATORY. Re-tag A-10 + B753/A-13/A-15/A-29/A-30 audit for n<50 cases with CI spanning null. ~~PENDING-OWNER-APPROVAL~~ **SHIPPED B809 2026-06-16** (CHECKLIST.md #109 codification). Two distinct tag classes added per Advisor C + Reviewer 1: (a) EXPLORATORY = PRE-CUBE marker (no/minimal track record); (b) INSUFFICIENT_POWER = POST-CUBE marker (cube cell exists but n<50 + 95% Sharpe CI spans 0). Default gates: n<30 + no-cube → EXPLORATORY; n<50 + cube + CI spans null → INSUFFICIENT_POWER; n>=50 → standard PASS/FAIL. Prevents conflation of pre-cube vs power-limited verdicts. Re-tagging of A-10 + specific strategies deferred to post-cube batch when cube cells exist. Source: B755 council Advisor C + Reviewer 1 + B809 codification. Class 2 LOOSEN/TIGHTEN.
 
 6. **`S4-B755-COUNCIL-EXPLORATORY-TO-DELETE-TIME-BOUND-ESCALATION`** — Time-bound auto-escalation rule: EXPLORATORY strategies with n<50 trades after 2 cube cycles → auto-delete. Prevents EXPLORATORY becoming junk-drawer parking lot (Outsider's lens). Codify before tagging more strategies. PENDING-OWNER-APPROVAL. Source: Advisor B. Class 2 LOOSEN/TIGHTEN. HIGH.
 
@@ -1065,6 +1065,25 @@ Council Reviewer 5's concern operationalized AND applied per-strategy at gate-mo
 **B808 CHECKLIST #107 reconciliation:** Findings: 1 primary (#34 COMPLETED-EMPIRICAL via per-strategy #108 (b) applications). Tickets: **0 NEW + 1 annotation**. **Audit-clean: YES.**
 
 **Cumulative ticket count post-B808: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 47 — B809 #5 INSUFFICIENT_POWER tag codification SHIPPED (CHECKLIST #109)
+
+**B809 SHIPPED CHECKLIST #109.** Two distinct tag classes for strategies that cube cannot deliver clear PASS/FAIL on:
+- **EXPLORATORY** = PRE-CUBE marker (no/minimal track record)
+- **INSUFFICIENT_POWER** = POST-CUBE marker (cube cell exists; n<50 + 95% Sharpe CI spans 0)
+
+Default classification gate:
+- n<30 + no-cube-cell → EXPLORATORY
+- n<50 + cube-cell + CI spans null → INSUFFICIENT_POWER
+- n>=50 → standard PASS_CUBE / FAIL_CUBE
+
+Prevents two failure modes: tagging cube-measured borderline strategies as EXPLORATORY (semantic conflation) + over-aggressive deletion of strategies with positive point estimate but wide CI.
+
+Per Advisor C + Reviewer 1 example: A-10 ultimate_oscillator Sharpe 0.49 @ n=27 has 95% CI [-0.3, 1.3] → INSUFFICIENT_POWER (not EXPLORATORY). Re-tagging of specific strategies deferred until cube cells exist.
+
+**B809 CHECKLIST #107 reconciliation:** Findings: 1 primary (#5 SHIPPED CHECKLIST #109). Tickets: **0 NEW + 1 annotation + 1 doc change** (CHECKLIST.md). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B809: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 

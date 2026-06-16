@@ -1705,3 +1705,23 @@ State compliance visibly: "Checklist: ✅ [each item]"
      - B573 (2026-06-04): global `near()` threshold change from 0.003 -> 0.015 affecting 14 strategies; owner requested 1.5pct for doji = 2 strategies. Resolved via `feedback_narrow_scope_blast_radius.md` + #108 makes per-strategy override explicit.
 
      This rule operationalizes B358's lesson as a per-turn checklist item without conflicting with the project's no-a-priori-pruning stance.
+
+109. **CLASSIFICATION DISCIPLINE -- INSUFFICIENT_POWER tag distinct from EXPLORATORY.** (Per B755 council Advisor C + Reviewer 1 + B807 #5 codification 2026-06-16.)
+
+     Two distinct tag classes for strategies that the cube cannot deliver a clear PASS/FAIL on:
+
+     a. **EXPLORATORY** -- PRE-CUBE marker. Strategy has minimal or no empirical track record at the time of tagging.
+        Examples: Class 7 NEW strategies tagged at registration; B-27/B-28/B-31 factor strategies tagged B787 per B786 #56 GATE FINAL FAIL_FIRE_STARVED; B-4/B-5 golden_cross_volume tagged B772 per B660 23/yr and 14/yr fire counts; B-18/B-19/B-20 chart-pattern shorts tagged B773 per chairman pragmatic-action verdict.
+        Disposition: non-deletion runtime marker; cube still runs strategy; tag pre-registers FAIL expectation so cube failure is not misread as strategy-class failure.
+
+     b. **INSUFFICIENT_POWER** -- POST-CUBE marker. Strategy has been cube-measured but the cell's effective-N is too small for the verdict to be statistically distinguishable from null.
+        Canonical example: A-10 ultimate_oscillator Sharpe 0.49 at n=27. The 95% CI on a Sharpe estimate at n=27 is approximately [-0.3, 1.3] -- the CI spans null. The point estimate is favorable but the confidence interval cannot rule out edge=0.
+        Disposition: SEPARATE class from EXPLORATORY. Strategy stays active per feedback_no_a_priori_strategy_pruning but cube cell is annotated INSUFFICIENT_POWER pending additional regime cycles or larger ticker sample.
+
+     **Default classification gate** (when tagging a strategy):
+     - n < 30 trades AND no cube cell yet -> EXPLORATORY
+     - n < 50 trades AND cube cell exists AND 95% Sharpe CI spans 0 -> INSUFFICIENT_POWER
+     - n >= 50 trades AND verdict is FAIL_CUBE -> standard FAIL_CUBE disposition (per existing pre-flight rules)
+     - n >= 50 trades AND verdict is PASS_CUBE -> standard PASS_CUBE disposition
+
+     This rule prevents two failure modes: (i) tagging cube-measured borderline strategies as EXPLORATORY (which is pre-cube semantically; conflates measurement-missing with measurement-power-limited); (ii) over-aggressive deletion of strategies with positive point estimate but wide CI (the data says we don't know yet).
