@@ -324,7 +324,7 @@ External reviewer (3,800-word feedback on `STAGE_4_OSCILLATOR_MEAN_REVERSION_CLU
 
 **EMPIRICAL FINDING (B758 demo b43gepdb0 completed 2026-06-15T11:53 UTC, 50 tickers x 2024-2025, 24546 bars, 14 triggers tested):** Aggregate verdict **MEAN_REVERSION_EDGE_CONFIRMED**. **100% direction-asymmetry: LONG 7/7 EDGE_EXISTS** (hit 54-63%, pnl +87 to +184 bp/10d, Sharpe +0.13 to +0.28; rsi_14_lt_30 STRONGEST at +184bp +0.281 Sharpe). **SHORT 7/7 EDGE_NEGATIVE** (hit 45-51%, pnl -5 to -516 bp/10d; rsi_14_gt_80 WORST at -516bp). Full verdict report: `output_audit/mean_reversion_edge_prior_test_demo_VERDICT.md`.
 
-51. **`S4-B768-PATTERN-S-EXPLORATORY-TAG-7-MEAN-REV-SHORT-STRATEGIES`** — Per Pattern S EMPIRICAL VALIDATION (B768 demo edge-prior 100% direction-asymmetry on 50 tickers x 2yr) + `feedback_no_prior_edge_consolidate_before_tune.md` rule (tuning a no-edge strategy manufactures overfit backtest): tag the 7-8 SHORT mean-reversion strategies in Cluster A as EXPLORATORY pre-cube (mirror of A-23 / A-24 / W5m precedent). Affected: strat_rsi_overbought_short / strat_rsi21_overbought_short / strat_rsi_volume_200ema_short / strat_stochrsi_overbought_short / strat_williams_r_overbought_short / strat_uo_overbought_short / strat_mfi_overbought_short / strat_bollinger_upper_short. Cube will run them per `feedback_no_a_priori_strategy_pruning` no-deletion principle; EXPLORATORY tag pre-registers FAIL expectation so cube-failure is NOT misread as universal mean-rev failure. Doc update STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md needed cluster-wide. PENDING-OWNER-APPROVAL. Source: B768 demo edge-prior 100% short-side EDGE_NEGATIVE finding. Class 2 EXPLORATORY-TAG. HIGH.
+51. **`S4-B768-PATTERN-S-EXPLORATORY-TAG-7-MEAN-REV-SHORT-STRATEGIES`** — Per Pattern S EMPIRICAL VALIDATION (B768 demo edge-prior 100% direction-asymmetry on 50 tickers x 2yr) + `feedback_no_prior_edge_consolidate_before_tune.md` rule (tuning a no-edge strategy manufactures overfit backtest): tag the 7-8 SHORT mean-reversion strategies in Cluster A as EXPLORATORY pre-cube (mirror of A-23 / A-24 / W5m precedent). Affected: strat_rsi_overbought_short / strat_rsi21_overbought_short / strat_rsi_volume_200ema_short / strat_stochrsi_overbought_short / strat_williams_r_overbought_short / strat_uo_overbought_short / strat_mfi_overbought_short / strat_bollinger_upper_short. Cube will run them per `feedback_no_a_priori_strategy_pruning` no-deletion principle; EXPLORATORY tag pre-registers FAIL expectation so cube-failure is NOT misread as universal mean-rev failure. Doc update STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md needed cluster-wide. ~~PENDING-OWNER-APPROVAL~~ **PARTIAL-SHIPPED B803 2026-06-16** (3 of 8 standalone SHORT strategies tagged). Of 8 candidates listed: 3 exist as standalone `_short` strategies in registry (strat_rsi_overbought_short / strat_stochrsi_overbought_short / strat_bollinger_upper_short) -- EXPLORATORY docstrings ADDED B803. Other 5 (rsi21 / williams_r / uo / mfi / ultimate_oscillator + rsi_volume_200ema-SHORT) are SHORT-BRANCHES of dual-direction strategies (single docstring, can't tag SHORT-branch only without invalidating LONG-side measured edge per B768). For dual strategies, Pattern S asymmetry is documented in B782 #49 cluster doc Pattern S section + cube measures per-direction per-cell. Per `feedback_no_a_priori_strategy_pruning`: 3-of-8 tags are NON-DELETION markers; cube still runs all 8 + measures per-direction edge. Source: B768 demo edge-prior + B779 owner approval + B803 partial-ship. Class 2 EXPLORATORY-TAG.
 
 **B768 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (MEAN_REVERSION_EDGE_CONFIRMED + 100% direction-asymmetry) + 2 annotation findings (council ticket #49 EMPIRICALLY VALIDATED at single-trigger level; council ticket #39 PARTIALLY REFUTED -- rsi_14<30 STRONGEST 10d-Sharpe of all 14 triggers). Tickets filed: 1 NEW (#51 Pattern S EXPLORATORY tag) + 2 annotations on existing tickets (#49 re-rate MEDIUM->HIGH; #39 partial refutation). **Audit-clean: YES.**
 
@@ -970,6 +970,21 @@ Second strategy-side EVENT-conversion using B794 #44 producer-additive. Per CHEC
 **B802 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (B802 #47 A-23 SHIPPED; #38 strategy-side BLOCKED on all 3 via #108 + empirical-supersedes). Tickets: **0 NEW + 2 annotations** (#47 A-22+A-23 SHIPPED; #38 STRATEGY-SIDE-BLOCKED) + 2 code changes (strategy + test). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B802: 134 unique S4-B7XX tickets** (no change).
+
+### TIER 41 — B803 #51 Pattern S EXPLORATORY-tag PARTIAL-SHIPPED + #40 strategy-side BLOCKED
+
+**B803 PARTIAL-SHIPPED #51.** Of 8 candidates listed in ticket: 3 exist as standalone `_short` strategies; EXPLORATORY docstrings ADDED:
+- strat_rsi_overbought_short
+- strat_stochrsi_overbought_short
+- strat_bollinger_upper_short
+
+Other 5 candidates (rsi21 / williams_r / uo / mfi / ultimate_oscillator + rsi_volume_200ema-SHORT) are SHORT-BRANCHES of dual-direction strategies — cannot tag SHORT-branch only without invalidating LONG-side measured edge per B768. For dual strategies, Pattern S asymmetry already documented in B782 #49 cluster doc Pattern S pre-registration section.
+
+**#40 STRATEGY-SIDE BLOCKED on RSI family per CHECKLIST #108.** Capitulation_recent_3d marginal in B660 measured at 0.07% (similar `recent_capitulation_at_s3` reference). Adding as AND gate to existing RSI strategies would cut fires 100-1000x — all targets fail #108 per-regime threshold post-add. Producer-additive remains for future Class 7 NEW strategies that consume it.
+
+**B803 CHECKLIST #107 reconciliation:** Findings surfaced: 2 primary (#51 PARTIAL-SHIPPED 3-of-8; #40 strategy-side BLOCKED on all RSI targets). Tickets: **0 NEW + 2 annotations** + 3 EXPLORATORY docstrings. **Audit-clean: YES.**
+
+**Cumulative ticket count post-B803: 134 unique S4-B7XX tickets** (no change).
 
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 

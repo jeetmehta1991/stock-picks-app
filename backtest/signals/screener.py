@@ -1403,6 +1403,16 @@ def strat_rsi21_slow(s):
 
 
 def strat_rsi_overbought_short(s):
+    """STATUS POST-B803: EXPLORATORY (per B766 council #51 + B768 Pattern S
+    empirical validation 100% direction-asymmetry on 14 triggers: LONG 7/7
+    EDGE_EXISTS / SHORT 7/7 EDGE_NEGATIVE).
+
+    Mean-reversion SHORT-side faces structural headwinds (drift bias + borrow
+    cost + squeeze risk + STATE-form anti-edge per B768 measurement). Per
+    `feedback_no_a_priori_strategy_pruning`: NON-DELETION marker; cube still
+    runs + measures; tag pre-registers FAIL expectation so cube-fail isn't
+    misread as oscillator-broken.
+    """
     # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fires = (s.get("rsi_14", 50) > 68 and
              s.get("below_sma_50") and
@@ -1586,6 +1596,13 @@ def strat_bollinger_tight(s):
 
 
 def strat_bollinger_upper_short(s):
+    """STATUS POST-B803: EXPLORATORY (per B766 council #51 + B768 Pattern S
+    100% direction-asymmetry; SHORT mean-reversion structurally headwinded).
+
+    Per `feedback_no_a_priori_strategy_pruning`: non-deletion marker.
+    Note: separate from B800 strat_bollinger_lower SHORT-branch which received
+    its own EVENT-conversion per dual-direction strategy structure.
+    """
     fires = (s.get("bb_20_20_touch_upper") and
              s.get("rsi_14", 50) > 70 and
              s.get("shooting_star") and not _short_borrow_trap_active(s))
@@ -2521,6 +2538,12 @@ def strat_macd_crossover_short(s):
 
 
 def strat_stochrsi_overbought_short(s):
+    """STATUS POST-B803: EXPLORATORY (per B766 council #51 + B768 Pattern S
+    100% direction-asymmetry; SHORT mean-reversion structurally headwinded).
+
+    Per `feedback_no_a_priori_strategy_pruning`: non-deletion marker;
+    cube still runs + tag pre-registers FAIL expectation.
+    """
     fires = (s.get("stochrsi_overbought") and
              s.get("stochrsi_cross_dn") and
              s.get("rsi_14", 50) > 45 and not _short_borrow_trap_active(s))
