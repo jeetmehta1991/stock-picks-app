@@ -82,9 +82,12 @@ def test_b745_pin5_classification_snapshot_post_b748b():
     counts: dict[str, int] = {"A": 0, "B": 0, "C": 0, "D": 0}
     for r in rows:
         counts[r.path_classification] += 1
-    assert counts == {"A": 12, "B": 2, "C": 1, "D": 1}, (
-        f"path classification drift: {counts} (expected A=12, B=2, C=1, D=1 post-B748b). "
-        f"Re-scope B746-B754 if intentional."
+    # B819 update: SEC EDGAR extractor has since run + populated data
+    # (verified B815 cache-dir-exists flip in test_batch496); producer
+    # graduated D -> A. New baseline: A=13, B=2, C=1, D=0.
+    assert counts == {"A": 13, "B": 2, "C": 1, "D": 0}, (
+        f"path classification drift: {counts} (expected A=13, B=2, C=1, D=0 "
+        f"post-B819 SEC EDGAR graduation). Re-scope B746-B754 if intentional."
     )
 
 
@@ -104,7 +107,7 @@ def test_b745_pin6_specific_producer_paths_pinned():
         "compute_patentmomentum_signals":        "A",
         "compute_corporatedonors_signals":       "A",
         "compute_cross_sectional_features":      "C",
-        "compute_sec_edgar_signals":             "D",
+        "compute_sec_edgar_signals":             "A",  # B819: graduated D -> A post-extractor-run
     }
     for func, expected_path in expected.items():
         assert by_func.get(func) == expected_path, (
@@ -116,8 +119,9 @@ def test_b745_pin6_specific_producer_paths_pinned():
 # Dead-producer findings
 # --------------------------------------------------------------------------
 def test_b745_pin7_zero_data_producers_flagged():
-    """Three producers have 0 data rows + must be flagged in the audit:
-      sec_edgar_extractor (Path D), index_rebalance + recent_8k (Path B but data-missing).
+    """Producers with 0 data rows must be flagged in the audit.
+    B819 update: SEC EDGAR has since been run -> data populated; only
+    index_rebalance + recent_8k remain Path B / data-missing.
 
     Their consuming strategies have been firing on absent signal -- Pattern F input.
     """
@@ -125,11 +129,12 @@ def test_b745_pin7_zero_data_producers_flagged():
     by_func = {r.producer: r for r in rows}
     sec_edgar = by_func.get("compute_sec_edgar_signals")
     assert sec_edgar is not None
-    assert sec_edgar.data_row_count == 0, (
-        f"sec_edgar should have 0 rows (B689 silent-gap was correct for THIS producer); "
+    # B819 update: sec_edgar graduated D -> A; data now populated.
+    assert sec_edgar.data_row_count > 0, (
+        f"sec_edgar should now have rows (extractor has run since B815 cache-dir-exists flip); "
         f"got {sec_edgar.data_row_count}"
     )
-    assert sec_edgar.path_classification == "D"
+    assert sec_edgar.path_classification == "A"
 
     index_reb = by_func.get("compute_index_rebalance_signals")
     assert index_reb is not None
