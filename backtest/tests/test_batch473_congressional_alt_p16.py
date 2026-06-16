@@ -29,6 +29,11 @@ def test_housetrading_empty_on_missing_file(tmp_path, monkeypatch):
 def test_housetrading_counts_distinct_buyers(tmp_path, monkeypatch):
     import backtest.signals.congressional_alt_data as cad
     monkeypatch.setattr(cad, "_HOUSETRADING_DIR", tmp_path)
+    # B842 fix: clear module-level cache to prevent pollution from prior
+    # tests using ticker "TEST" (B535 OPT-A introduced the cache); same
+    # fix-pattern as B816 for _GOV_CONTRACTS_BY_TICKER + _LOBBYING_BY_TICKER.
+    if hasattr(cad, "_HOUSETRADING_BY_TICKER"):
+        cad._HOUSETRADING_BY_TICKER.clear()
     today = date(2024, 6, 1)
     df = _make_house_df([
         ("Rep A", today - timedelta(days=10), "Purchase"),
