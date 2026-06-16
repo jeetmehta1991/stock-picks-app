@@ -91,13 +91,25 @@ def test_batch417_removed_by_family_audit(strategy):
 def test_batch417_strategy_regime_affinity_count_floor():
     """STRATEGY_REGIME_AFFINITY entries post-B617 + B639 family audits.
 
-    B617: removed 19 Class A entries. B639 + later batches continued the
-    family-bug pattern fixes (removing dual-strategy single-direction
-    regime affinity entries that mis-regimed the opposite direction).
-    B822 lowered floor to 100 reflecting current 101 state."""
+    Floor trajectory (each lowering documented with rationale):
+      127 -> 105 (B617): removed 19 Class A entries (dual strategies
+        with single-direction regime entries that mis-regimed the
+        opposite direction); 3-entry margin for upcoming B639 work.
+      105 -> 100 (B822/B825): B639 morning_star removal + later family-
+        bug-fix batches dropped 4 more entries (current=101). Floor
+        lowered to 100 with 1-entry margin. NEXT removal MUST be
+        documented in this floor with explicit batch+reason BEFORE
+        lowering further; silent lowering is the regression-guard
+        failure mode this test exists to prevent.
+
+    Per Council audit B825: this floor is a regression-guard. Lowering
+    it without surfacing the cause defeats its purpose. Future lowering
+    requires (a) which batch removed entries, (b) why, (c) explicit
+    floor update in same batch."""
     assert len(STRATEGY_REGIME_AFFINITY) >= 100, (
         f"STRATEGY_REGIME_AFFINITY has {len(STRATEGY_REGIME_AFFINITY)} "
-        f"entries, expected >= 100 post-B617 + B639 family audits")
+        f"entries, expected >= 100 (post-B617 -19 -> 105; post-B639 + "
+        f"family audits to current 101 -> 100 floor with 1-entry margin)")
 
 
 # Batch 418 (2026-05-28 owner-approved "proceed"): 15 OVERRIDES of existing

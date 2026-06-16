@@ -101,22 +101,26 @@ KNOWN_GAPS: dict[str, str] = {
         "coverage_report_optimizer.json captured."
     ),
     "BUG-015": (
-        "scripts/build_dashboard_stage_2.py is a CLI script (cron-invoked "
-        "per docstring), NOT a library module. The orphan-detection "
-        "heuristic looks for Python importers and treats CLI-only files "
-        "as orphaned, which is a false-positive for runnable scripts. "
-        "The script remains engine-active (generates dashboard_stage_2/"
-        "data.json + data.js consumed by index.html). Verified B815 "
-        "2026-06-16 by reading the script header. Documenting PARTIAL-"
+        "scripts/build_dashboard_stage_2.py is a CLI script (OWNER-"
+        "manually-invoked per docstring claim of cron; no cron config "
+        "exists in .github/workflows/), NOT a library module. The orphan-"
+        "detection heuristic looks for Python importers and treats CLI-"
+        "only files as orphaned, which is a false-positive for runnable "
+        "scripts. Verified B825 2026-06-16: dashboard_stage_2/data.json "
+        "mtime Jun 12 19:52 proves script IS executed; absence of cron/"
+        "workflow config confirms manual invocation. Script remains "
+        "engine-active (generates dashboard_stage_2/data.json + data.js "
+        "consumed by GitHub Pages index.html). Documenting PARTIAL-"
         "ORPHAN status as expected for this class of file."
     ),
     "BUG-022": (
         "Same finding as BUG-015 -- both BUGs tag the same primary "
-        "helper scripts/build_dashboard_stage_2.py (CLI script). "
-        "PARTIAL-ORPHAN status is verification-heuristic false-positive; "
-        "script remains engine-active via cron invocation. The orphan-"
-        "detection methodology improvement (recognize CLI scripts as "
-        "non-orphan) is queued separately."
+        "helper scripts/build_dashboard_stage_2.py (manually-invoked "
+        "CLI script, NOT cron as original B816 comment incorrectly "
+        "stated). PARTIAL-ORPHAN status is verification-heuristic false-"
+        "positive; script remains engine-active via owner manual run. "
+        "The orphan-detection methodology improvement (recognize manual-"
+        "CLI scripts as non-orphan) is queued separately."
     ),
 }
 
