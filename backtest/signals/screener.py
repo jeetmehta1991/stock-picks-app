@@ -1489,22 +1489,40 @@ def strat_bollinger_lower(s):
         rsi_thr_long, rsi_thr_short = 45, 55
     else:
         rsi_thr_long, rsi_thr_short = 40, 60
-    # Long: BB touch lower AND (Connors RSI(2)<5 OR vanilla RSI<thr) AND
-    # regime gate (price > 200-EMA) AND no strong trend.
+    # B800 #44 (2026-06-15 owner-approved B779) BAND-RECLAIM EVENT-conversion
+    # per B766 reviewer rec + CHECKLIST #108 (B660 baseline 1,980/yr; EVENT
+    # projection ~198/yr ~= 50/regime PASSES min_trades=30/regime gate).
+    # Pre-fix: bb_20_20_touch_lower STATE retained True throughout band-walk
+    # in strong downtrend (touch = CONTINUATION not REVERSION; reviewer's
+    # primary critique). Post-fix: bb_20_20_reclaim_from_lower_recent_3d EVENT
+    # fires only on actual reclaim (close back inside band after being outside),
+    # filtering band-walks.
+    #
+    # CHECKLIST #108 pre-flight:
+    #   (a) Hypothesis: BB touch_lower is continuation in downtrend; reclaim
+    #       filters band-walks; targets actual mean-reversion bars.
+    #   (b) Fire-count projection: 1,980/yr STATE -> ~198/yr EVENT (B660 baseline
+    #       x 10x reduction per B655 T10). Per-regime ~50 > min_trades=30 PASS.
+    #   (c) Validation plan: cube cell measurement post-fix; verify edge persists
+    #       in filtered band-walk-corrected subset.
+    #   (d) Precedent: B790 #47 AVWAP reclaim_recent_3d (same pattern); B655 T10.
+    #
+    # Long: BB band-reclaim from lower AND (Connors RSI(2)<5 OR vanilla RSI<thr)
+    # AND regime gate (price > 200-EMA) AND no strong trend.
     rsi_long_ok = (rsi_2 < 5) or (rsi_14 < rsi_thr_long)
-    fl = (s.get("bb_20_20_touch_lower") and rsi_long_ok and above_200 and adx_ok)
-    # Short: opposite side; positive-symmetric below_ema_200 (B663 from NOT-pattern).
+    fl = (s.get("bb_20_20_reclaim_from_lower_recent_3d") and rsi_long_ok and above_200 and adx_ok)
+    # Short: opposite side; reclaim from upper EVENT mirrors LONG fix.
     rsi_short_ok = (rsi_2 > 95) or (rsi_14 > rsi_thr_short)
-    fs = (s.get("bb_20_20_touch_upper") and rsi_short_ok and below_200 and adx_ok) and not _short_borrow_trap_active(s)
+    fs = (s.get("bb_20_20_reclaim_from_upper_recent_3d") and rsi_short_ok and below_200 and adx_ok) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
-        ["bb_20_20_touch_lower", f"rsi_2<5_or_rsi_14<{rsi_thr_long}",
+        ["bb_20_20_reclaim_from_lower_recent_3d", f"rsi_2<5_or_rsi_14<{rsi_thr_long}",
          "price_above_ema_200", "adx<30"],
-        ["bb_20_20_touch_upper", f"rsi_2>95_or_rsi_14>{rsi_thr_short}",
+        ["bb_20_20_reclaim_from_upper_recent_3d", f"rsi_2>95_or_rsi_14>{rsi_thr_short}",
          "below_ema_200", "adx<30", "borrow_ok"],
-        [f"Price at lower Bollinger Band - statistically extreme low",
+        [f"Price RECLAIMED inside BB after lower-band touch (B800 #44 EVENT) - actual reversion not continuation",
          f"RSI(2)<5 Connors extreme OR RSI(14)<{rsi_thr_long}",
          "Price above 200-EMA (regime gate)", "No strong trend"],
-        [f"Price at upper Bollinger Band - statistically extreme high",
+        [f"Price RECLAIMED inside BB after upper-band touch (B800 #44 EVENT) - actual reversion not continuation",
          f"RSI(2)>95 OR RSI(14)>{rsi_thr_short}",
          "Price below 200-EMA (bear regime)", "No strong trend"])
 

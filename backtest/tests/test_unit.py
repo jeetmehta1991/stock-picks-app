@@ -9385,12 +9385,17 @@ def test_batch204_compute_macro_overlays_adds_vix_band():
 
 
 def test_batch204_bollinger_lower_requires_200ema_regime_gate():
-    """Batch 204: strat_bollinger_lower must require price_above_ema_200
-    for long entry (Connors regime-gate discipline). Without the gate,
-    the strategy fades mega-cap-driven uptrends (Mag-7 fade trap)."""
+    """Batch 204 + B800 #44 (2026-06-15 EVENT-conversion): strat_bollinger_lower
+    must require price_above_ema_200 for long entry (Connors regime-gate
+    discipline). Without the gate, the strategy fades mega-cap-driven uptrends
+    (Mag-7 fade trap).
+
+    B800 #44 EVENT-conversion: bb_20_20_touch_lower STATE -> bb_20_20_reclaim_
+    from_lower_recent_3d EVENT.
+    """
     from backtest.signals.screener import strat_bollinger_lower
     s = {
-        "bb_20_20_touch_lower": True, "bb_20_20_touch_upper": False,
+        "bb_20_20_reclaim_from_lower_recent_3d": True, "bb_20_20_reclaim_from_upper_recent_3d": False,
         "rsi_2": 3.0, "rsi_14": 30.0, "adx": 20.0,
         "price_above_ema_200": False,
     }
@@ -9405,12 +9410,16 @@ def test_batch204_bollinger_lower_requires_200ema_regime_gate():
 
 
 def test_batch204_bollinger_lower_connors_rsi2_path():
-    """Batch 204: RSI(2)<5 fires even when RSI(14) is moderate.
-    Connors canonical: short-window oscillator extreme is the primary
-    entry signal, long-window RSI is the fallback."""
+    """Batch 204 + B800 #44 (2026-06-15 EVENT-conversion): RSI(2)<5 fires even
+    when RSI(14) is moderate. Connors canonical: short-window oscillator extreme
+    is the primary entry signal, long-window RSI is the fallback.
+
+    B800 #44 EVENT-conversion: pre-fix used bb_20_20_touch_lower STATE; now uses
+    bb_20_20_reclaim_from_lower_recent_3d EVENT (filters band-walks).
+    """
     from backtest.signals.screener import strat_bollinger_lower
     s = {
-        "bb_20_20_touch_lower": True, "bb_20_20_touch_upper": False,
+        "bb_20_20_reclaim_from_lower_recent_3d": True, "bb_20_20_reclaim_from_upper_recent_3d": False,
         "rsi_2": 3.0, "rsi_14": 50.0,  # NOT conventionally oversold
         "adx": 20.0, "price_above_ema_200": True,
     }
@@ -9420,11 +9429,14 @@ def test_batch204_bollinger_lower_connors_rsi2_path():
 
 
 def test_batch204_bollinger_vix_band_adjusts_threshold():
-    """Batch 204: VIX-low band tightens RSI threshold (35 vs 40); VIX-high
-    band loosens (45 vs 40). Atlantis-Press Su 2024 confluence study."""
+    """Batch 204 + B800 #44: VIX-low band tightens RSI threshold (35 vs 40);
+    VIX-high band loosens (45 vs 40). Atlantis-Press Su 2024 confluence study.
+
+    B800 #44 EVENT-conversion updates the BB gate; VIX threshold logic unchanged.
+    """
     from backtest.signals.screener import strat_bollinger_lower
     s_low = {
-        "bb_20_20_touch_lower": True, "bb_20_20_touch_upper": False,
+        "bb_20_20_reclaim_from_lower_recent_3d": True, "bb_20_20_reclaim_from_upper_recent_3d": False,
         "rsi_2": 30.0, "rsi_14": 42.0, "adx": 20.0,
         "price_above_ema_200": True, "vix_band_low": True,
     }

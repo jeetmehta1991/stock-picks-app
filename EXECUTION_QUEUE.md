@@ -932,6 +932,18 @@ Existing **#50 + #67 annotations updated.**
 
 **Cumulative ticket count post-B799: 134 unique S4-B7XX tickets** (no change).
 
+### TIER 38 — B800 #44 strat_bollinger_lower BAND-RECLAIM EVENT-conversion SHIPPED
+
+First strategy-side EVENT-conversion using B794 #44 producer-additive. Per CHECKLIST #108 (b) fire-count projection: B660 baseline 1,980/yr; EVENT projection ~198/yr; per-regime ~50 > min_trades=30 PASS.
+
+**Strategy change (strat_bollinger_lower):** `bb_20_20_touch_lower` STATE → `bb_20_20_reclaim_from_lower_recent_3d` EVENT (LONG); `bb_20_20_touch_upper` → `bb_20_20_reclaim_from_upper_recent_3d` (SHORT). CHECKLIST #108 (a-d) inline in strategy code.
+
+**Test updates (3 tests in test_batch204_*):** updated to codify B800 EVENT-form per `feedback_audit_recommendations_against_existing_directives` test-supersession pattern.
+
+**B800 CHECKLIST #107 reconciliation:** Findings surfaced: 1 primary (#44 first strategy-side rollout shipped). Tickets filed: **0 NEW + 1 annotation** on #44 (PRODUCER-ADDITIVE-SHIPPED + STRATEGY-A-12 SHIPPED) + 4 code changes (strategy + 3 tests). **Audit-clean: YES.**
+
+**Cumulative ticket count post-B800: 134 unique S4-B7XX tickets** (no change).
+
 ### B766 council bundle PRODUCER-ADDITIVE PHASE COMPLETE (B790-B796)
 
 All 6 producer-additive items from B766 council bundle now shipped:
