@@ -1,0 +1,129 @@
+{
+  "strategy": "post_inclusion_reversal_short",
+  "n_trades": 7,
+  "aggregate": {
+    "n": 7,
+    "win_rate": 0.5714,
+    "mean_pp": 6.3025,
+    "std_pp": 15.4768,
+    "sum_pp": 44.1172,
+    "profit_factor": 2.9946,
+    "rr_ratio": 2.246,
+    "sharpe": 0.9745,
+    "t_stat": 1.0774,
+    "skew": 0.514,
+    "kurtosis": -0.7112,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [],
+    "restrictive": [],
+    "always_on": [],
+    "proposals": []
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 5,
+        "win_rate": 0.6,
+        "mean_pp": 2.8451,
+        "std_pp": 13.2255,
+        "sum_pp": 14.2256,
+        "profit_factor": 1.6836,
+        "rr_ratio": 1.1224,
+        "sharpe": 0.5629,
+        "t_stat": 0.481,
+        "skew": 0.1149,
+        "kurtosis": -2.0012,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 1,
+        "win_rate": 1.0,
+        "mean_pp": 31.1995,
+        "std_pp": 0.0,
+        "sum_pp": 31.1995,
+        "profit_factor": 99.0,
+        "rr_ratio": 99.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -1.3078,
+        "std_pp": 0.0,
+        "sum_pp": -1.3078,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.9745,
+    "tier_rec": "MEDIUM_HIGH",
+    "size_pct": 1.5
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 7,
+      "min": 4,
+      "p25": 22.5,
+      "median": 50.0,
+      "p75": 62.0,
+      "max": 85
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

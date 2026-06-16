@@ -1,0 +1,140 @@
+{
+  "strategy": "keltner_lower",
+  "n_trades": 1,
+  "aggregate": {
+    "n": 1,
+    "win_rate": 1.0,
+    "mean_pp": 10.8073,
+    "std_pp": 0.0,
+    "sum_pp": 10.8073,
+    "profit_factor": 99.0,
+    "rr_ratio": 99.0,
+    "sharpe": 0.0,
+    "t_stat": 0.0,
+    "skew": 0.0,
+    "kurtosis": 0.0,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "hammer",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "kc_touch_lower",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "kc_touch_upper",
+        "fires_at": 0.0,
+        "n_present": 1
+      },
+      {
+        "clause": "obv_bullish",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "shooting_star",
+        "fires_at": 100.0,
+        "n_present": 1
+      }
+    ],
+    "restrictive": [
+      {
+        "clause": "kc_touch_upper",
+        "fires_at": 0.0,
+        "n_present": 1
+      }
+    ],
+    "always_on": [
+      {
+        "clause": "hammer",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "kc_touch_lower",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "obv_bullish",
+        "fires_at": 100.0,
+        "n_present": 1
+      },
+      {
+        "clause": "shooting_star",
+        "fires_at": 100.0,
+        "n_present": 1
+      }
+    ],
+    "proposals": [
+      "consider OR-fallback for `kc_touch_upper` (fires only 0.0% on fired trades)",
+      "clauses ['hammer', 'kc_touch_lower', 'obv_bullish', 'shooting_star'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 1,
+        "win_rate": 1.0,
+        "mean_pp": 10.8073,
+        "std_pp": 0.0,
+        "sum_pp": 10.8073,
+        "profit_factor": 99.0,
+        "rr_ratio": 99.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.0,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

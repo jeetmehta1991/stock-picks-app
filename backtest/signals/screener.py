@@ -5498,7 +5498,18 @@ def strat_classification_change_recent_long(s):
     analyst re-rating windows; entering on the new-classification side
     captures the analyst-cycle re-evaluation alpha. Gated by 200-EMA
     to filter out cases where reclassification follows business
-    deterioration."""
+    deterioration.
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("price_above_ema_200", False)
@@ -5518,7 +5529,18 @@ def strat_classification_change_to_tech_long(s):
     Communication Services, Health Care). Chen-Chen 2010: moves into
     high-multiple sectors trigger sustained re-rating. Examples in our
     sector_history.csv: META/GOOGL 2018 IT->Comms (Comms is growth);
-    V/MA 2023 IT->Financials (NOT growth -- gated off correctly)."""
+    V/MA 2023 IT->Financials (NOT growth -- gated off correctly).
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_change_to_tech", False)
         and s.get("price_above_ema_200", False)
@@ -5536,7 +5558,18 @@ def strat_classification_change_to_defensive_short(s):
     (Materials, Utilities, Real Estate, Consumer Staples) + bearish
     trend. Defensive re-classification + price weakness = continuation
     short setup. Less common than growth re-classification but cleaner
-    signal when both conditions align."""
+    signal when both conditions align.
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_change_to_defensive", False)
         and s.get("below_ema_200", False)  # B630 sweep
@@ -5559,7 +5592,18 @@ def strat_classification_change_to_defensive_short(s):
 def strat_classification_change_volume_long(s):
     """Wave 3 (Batch 335): recent reclassification + volume spike confirming
     market notice. Brogaard-Heath-Saadi 2019 + Lo-Wang 2000: volume
-    confirms broad-market price discovery on the reclassification event."""
+    confirms broad-market price discovery on the reclassification event.
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("vol_spike_2x", False)
@@ -5578,7 +5622,18 @@ def strat_classification_change_momentum_long(s):
     """Wave 3 (Batch 335): reclassification + MACD bullish (price momentum
     agrees with analyst re-rating). Chen-Chen 2010 + standard momentum
     confirmation. Distinct from Batch 332 generic version by requiring
-    momentum confluence."""
+    momentum confluence.
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("macd_12_26_9_bullish", False)
@@ -5596,7 +5651,18 @@ def strat_classification_change_from_tech_short(s):
     sector (IT/Comms/Health). Symmetric to to_tech long: re-rating INTO
     a lower-multiple sector + bearish trend = continuation short. Example:
     V/MA 2023 IT -> Financials (would fire if price trended below 200-EMA
-    in the 90d post-reclassification window)."""
+    in the 90d post-reclassification window).
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_change_from_tech", False)
         and s.get("below_ema_200", False)  # B630 sweep
@@ -5613,7 +5679,18 @@ def strat_classification_change_from_tech_short(s):
 def strat_classification_change_breakout_long(s):
     """Wave 3 (Batch 335): recent reclassification + post-break retest.
     The institutional-sponsorship signature of a reclassification-driven
-    breakout. Sustained re-rating + technical confirmation."""
+    breakout. Sustained re-rating + technical confirmation.
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("resistance_break_retest", False)
@@ -5637,7 +5714,18 @@ def strat_classification_change_with_institutional_long(s):
     """Wave 3 (Batch 337): smart-money validates re-rating. Reclassification
     co-incident with institutional accumulation = highest-conviction
     re-rating signal. Brogaard-Heath-Saadi 2019 (re-rating) +
-    Cohen-Frazzini-Malloy 2008 (institutional cluster)."""
+    Cohen-Frazzini-Malloy 2008 (institutional cluster).
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("institutional_buy", False)
@@ -5654,7 +5742,18 @@ def strat_classification_change_with_institutional_long(s):
 def strat_classification_change_with_insider_long(s):
     """Wave 3 (Batch 337): insider validates re-rating. Insider cluster
     co-incident with reclassification = board-level + analyst agreement.
-    Cohen-Malloy-Pomorski 2012 (insider) + reclassification literature."""
+    Cohen-Malloy-Pomorski 2012 (insider) + reclassification literature.
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("insider_cluster_active", False)
@@ -5673,7 +5772,18 @@ def strat_classification_change_oversold_long(s):
     mean-reversion. Re-rating that hasn't yet been priced in by the market
     creates the cleanest entry window. RSI<35 + above 200-EMA filters out
     falling-knife reclassifications (e.g., distressed companies re-classed
-    to lower-multiple sectors)."""
+    to lower-multiple sectors).
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("classification_changed_recent", False)
         and s.get("rsi_14", 50) < 35
@@ -6161,6 +6271,17 @@ def strat_totm_long(s):
     bar in window. Post-B723: is_totm_window_first_day True only on
     BAR ENTERING window. Catches Ariel 1987 turn-of-month effect at
     EVENT bar.
+    
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
     """
     fires = s.get("is_totm_window_first_day", False) and s.get("price_above_ema_200", False)
     return _strat(fires, "long", "calendar",
@@ -6170,7 +6291,18 @@ def strat_totm_long(s):
 
 
 def strat_pre_holiday_long(s):
-    """Batch 254: Lakonishok-Smidt 1988 + Ariel 1990 pre-holiday drift."""
+    """Batch 254: Lakonishok-Smidt 1988 + Ariel 1990 pre-holiday drift.
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("is_pre_holiday", False)
         and s.get("dow", 0) != 0  # not Monday
@@ -6184,7 +6316,18 @@ def strat_pre_holiday_long(s):
 
 
 def strat_january_effect_small_cap_long(s):
-    """Batch 254: Rozeff-Kinney 1976 January Effect (small/micro-cap subset)."""
+    """Batch 254: Rozeff-Kinney 1976 January Effect (small/micro-cap subset).
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
+    """
     fires = (
         s.get("is_january", False)
         and s.get("cap_band", "") in ("micro", "small")
@@ -6209,6 +6352,17 @@ def strat_halloween_seasonal_long(s):
     day of November (transition Oct->Nov). Catches Bouman-Jacobsen 2002
     canonical "buy in November" entry without firing every bar of the
     6-month period.
+    
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
     """
     fires = s.get("is_halloween_period_first_day", False) and s.get("price_above_ema_200", False)
     return _strat(fires, "long", "calendar",

@@ -1,0 +1,172 @@
+{
+  "strategy": "news_sentiment_long",
+  "n_trades": 5,
+  "aggregate": {
+    "n": 5,
+    "win_rate": 0.4,
+    "mean_pp": -2.1928,
+    "std_pp": 9.6009,
+    "sum_pp": -10.9639,
+    "profit_factor": 0.5968,
+    "rr_ratio": 0.8952,
+    "sharpe": -0.5555,
+    "t_stat": -0.5107,
+    "skew": 0.7149,
+    "kurtosis": -2.4561,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": [
+      {
+        "clause": "news_sentiment_mean > 0.5",
+        "empirical": {
+          "min": 0.5308,
+          "p25": 0.5833,
+          "median": 0.625,
+          "p75": 0.6667,
+          "max": 0.6813,
+          "n": 5
+        },
+        "verdict": "BINDING",
+        "proposal": "loosen news_sentiment_mean > 0.5 -> 0.375 (BINDING; min fire=0.531)"
+      },
+      {
+        "clause": "news_article_count >= 3.0",
+        "empirical": {
+          "min": 6.0,
+          "p25": 6.0,
+          "median": 8.0,
+          "p75": 13.0,
+          "max": 79.0,
+          "n": 5
+        },
+        "verdict": "LOOSE",
+        "proposal": "tighten news_article_count >= 3.0 -> ~6.0 (LOOSE; p25 fire=6.000)"
+      }
+    ]
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "news_article_count",
+        "fires_at": 100.0,
+        "n_present": 5
+      },
+      {
+        "clause": "news_sentiment_mean",
+        "fires_at": 100.0,
+        "n_present": 5
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 100.0,
+        "n_present": 1
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "news_article_count",
+        "fires_at": 100.0,
+        "n_present": 5
+      },
+      {
+        "clause": "news_sentiment_mean",
+        "fires_at": 100.0,
+        "n_present": 5
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 100.0,
+        "n_present": 1
+      }
+    ],
+    "proposals": [
+      "clauses ['news_article_count', 'news_sentiment_mean', 'price_above_ema_200'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 1,
+        "win_rate": 1.0,
+        "mean_pp": 5.6903,
+        "std_pp": 0.0,
+        "sum_pp": 5.6903,
+        "profit_factor": 99.0,
+        "rr_ratio": 99.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 4,
+        "win_rate": 0.25,
+        "mean_pp": -4.1636,
+        "std_pp": 9.8494,
+        "sum_pp": -16.6542,
+        "profit_factor": 0.3875,
+        "rr_ratio": 1.1626,
+        "sharpe": -1.0145,
+        "t_stat": -0.8454,
+        "skew": 1.9396,
+        "kurtosis": 3.8177,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -0.5555,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 5,
+      "min": 4,
+      "p25": 22.0,
+      "median": 38.0,
+      "p75": 42.0,
+      "max": 107
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

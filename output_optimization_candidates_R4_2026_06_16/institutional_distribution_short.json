@@ -1,0 +1,97 @@
+{
+  "strategy": "institutional_distribution_short",
+  "n_trades": 2,
+  "aggregate": {
+    "n": 2,
+    "win_rate": 0.5,
+    "mean_pp": 1.294,
+    "std_pp": 3.0902,
+    "sum_pp": 2.588,
+    "profit_factor": 3.9042,
+    "rr_ratio": 3.9042,
+    "sharpe": 0.8476,
+    "t_stat": 0.5922,
+    "skew": 0.0,
+    "kurtosis": 0.0,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "function_not_found"
+  },
+  "dimension_b_compound": {
+    "status": "function_not_found"
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bull": {
+        "n": 1,
+        "win_rate": 1.0,
+        "mean_pp": 3.4791,
+        "std_pp": 0.0,
+        "sum_pp": 3.4791,
+        "profit_factor": 99.0,
+        "rr_ratio": 99.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -0.8911,
+        "std_pp": 0.0,
+        "sum_pp": -0.8911,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.8476,
+    "tier_rec": "MEDIUM_HIGH",
+    "size_pct": 1.5
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

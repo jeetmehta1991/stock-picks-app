@@ -1,0 +1,214 @@
+{
+  "strategy": "camarilla_s3_bounce",
+  "n_trades": 15,
+  "aggregate": {
+    "n": 15,
+    "win_rate": 0.2667,
+    "mean_pp": 8.1974,
+    "std_pp": 38.4225,
+    "sum_pp": 122.961,
+    "profit_factor": 2.4256,
+    "rr_ratio": 6.6704,
+    "sharpe": 0.4258,
+    "t_stat": 0.8263,
+    "skew": 3.0541,
+    "kurtosis": 10.168,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": [
+      {
+        "clause": "rsi_14 < 35.0",
+        "empirical": {
+          "min": 28.63,
+          "p25": 31.6,
+          "median": 34.88,
+          "p75": 69.44,
+          "max": 77.65,
+          "n": 15
+        },
+        "verdict": "normal",
+        "proposal": null
+      },
+      {
+        "clause": "rsi_14 > 65.0",
+        "empirical": {
+          "min": 28.63,
+          "p25": 31.6,
+          "median": 34.88,
+          "p75": 69.44,
+          "max": 77.65,
+          "n": 15
+        },
+        "verdict": "normal",
+        "proposal": null
+      }
+    ]
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "near_cam_r3",
+        "fires_at": 100.0,
+        "n_present": 15
+      },
+      {
+        "clause": "near_cam_s3",
+        "fires_at": 100.0,
+        "n_present": 15
+      },
+      {
+        "clause": "obv_bullish",
+        "fires_at": 53.3,
+        "n_present": 15
+      },
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 15
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "near_cam_r3",
+        "fires_at": 100.0,
+        "n_present": 15
+      },
+      {
+        "clause": "near_cam_s3",
+        "fires_at": 100.0,
+        "n_present": 15
+      },
+      {
+        "clause": "rsi_14",
+        "fires_at": 100.0,
+        "n_present": 15
+      }
+    ],
+    "proposals": [
+      "clauses ['near_cam_r3', 'near_cam_s3', 'rsi_14'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 5,
+        "win_rate": 0.2,
+        "mean_pp": -1.6024,
+        "std_pp": 11.8088,
+        "sum_pp": -8.0119,
+        "profit_factor": 0.6878,
+        "rr_ratio": 2.7512,
+        "sharpe": -0.2915,
+        "t_stat": -0.3034,
+        "skew": 1.3548,
+        "kurtosis": 1.9347,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 9,
+        "win_rate": 0.3333,
+        "mean_pp": 14.8552,
+        "std_pp": 48.8772,
+        "sum_pp": 133.6972,
+        "profit_factor": 3.3105,
+        "rr_ratio": 6.6209,
+        "sharpe": 0.5934,
+        "t_stat": 0.9118,
+        "skew": 2.3874,
+        "kurtosis": 5.9787,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -2.7244,
+        "std_pp": 0.0,
+        "sum_pp": -2.7244,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.4258,
+    "tier_rec": "MEDIUM",
+    "size_pct": 0.75
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {
+      "Health Care": {
+        "n": 5,
+        "win_rate": 0.4,
+        "mean_pp": 25.0114,
+        "std_pp": 63.8186,
+        "sum_pp": 125.0571,
+        "profit_factor": 5.2544,
+        "rr_ratio": 7.8816,
+        "sharpe": 0.5948,
+        "t_stat": 0.8763,
+        "skew": 2.0314,
+        "kurtosis": 4.1923,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 15,
+      "min": 13,
+      "p25": 20.0,
+      "median": 43.0,
+      "p75": 82.5,
+      "max": 211
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

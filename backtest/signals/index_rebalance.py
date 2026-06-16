@@ -162,6 +162,17 @@ def strat_post_inclusion_drift_long(s: dict) -> dict:
     Coverage note: T1a-active coverage 23.5% is expected (currently-
     active T1a names mostly were always in S&P/NDX and never had
     add/drop events; this is correct, not a data gap).
+    
+
+    STATUS POST-B830: EXPLORATORY -- PATTERN AA (event-strategy
+    structurally-limited effective-N per W5 council + S5-MULTIPLE-TESTING
+    -CORRECTION precedent). PRE-CUBE marker; DO NOT DEPLOY regardless of
+    cube verdict until BOTH (a) sufficient empirical fire count to clear
+    DEC-426 5-Gate Bonferroni-corrected significance, AND (b) cost-aware
+    M10 cube haircut applied. Per `feedback_no_a_priori_strategy_pruning`
+    + AA pattern documented STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS
+    .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
+    measure empirical edge.
     """
     fires = (
         s.get("within_post_inclusion_window", False)

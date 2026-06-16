@@ -1,0 +1,136 @@
+{
+  "strategy": "institutional_breakout_confirmation_long",
+  "n_trades": 3,
+  "aggregate": {
+    "n": 3,
+    "win_rate": 0.0,
+    "mean_pp": -11.2916,
+    "std_pp": 1.5956,
+    "sum_pp": -33.8748,
+    "profit_factor": 0.0,
+    "rr_ratio": 0.0,
+    "sharpe": -30.7658,
+    "t_stat": -12.2574,
+    "skew": 0.0,
+    "kurtosis": 0.0,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "close_above_open",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "institutional_buy",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "resistance_break_retest",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "close_above_open",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "institutional_buy",
+        "fires_at": 100.0,
+        "n_present": 3
+      },
+      {
+        "clause": "resistance_break_retest",
+        "fires_at": 100.0,
+        "n_present": 3
+      }
+    ],
+    "proposals": [
+      "clauses ['close_above_open', 'institutional_buy', 'resistance_break_retest'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -13.1324,
+        "std_pp": 0.0,
+        "sum_pp": -13.1324,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 2,
+        "win_rate": 0.0,
+        "mean_pp": -10.3712,
+        "std_pp": 0.0954,
+        "sum_pp": -20.7424,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": -453.1919,
+        "t_stat": -153.7379,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -30.7658,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "insufficient_n"
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

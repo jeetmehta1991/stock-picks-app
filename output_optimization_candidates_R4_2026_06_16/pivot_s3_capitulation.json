@@ -1,0 +1,163 @@
+{
+  "strategy": "pivot_s3_capitulation",
+  "n_trades": 11,
+  "aggregate": {
+    "n": 11,
+    "win_rate": 0.0909,
+    "mean_pp": -6.5393,
+    "std_pp": 4.8361,
+    "sum_pp": -71.9328,
+    "profit_factor": 0.0036,
+    "rr_ratio": 0.0361,
+    "sharpe": -4.3816,
+    "t_stat": -4.4847,
+    "skew": 0.3477,
+    "kurtosis": -2.0838,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "above_prev_high",
+        "fires_at": 100.0,
+        "n_present": 11
+      },
+      {
+        "clause": "bullish_engulfing",
+        "fires_at": 100.0,
+        "n_present": 11
+      },
+      {
+        "clause": "hammer",
+        "fires_at": 100.0,
+        "n_present": 11
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "above_prev_high",
+        "fires_at": 100.0,
+        "n_present": 11
+      },
+      {
+        "clause": "bullish_engulfing",
+        "fires_at": 100.0,
+        "n_present": 11
+      },
+      {
+        "clause": "hammer",
+        "fires_at": 100.0,
+        "n_present": 11
+      }
+    ],
+    "proposals": [
+      "clauses ['above_prev_high', 'bullish_engulfing', 'hammer'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 7,
+        "win_rate": 0.1429,
+        "mean_pp": -5.5932,
+        "std_pp": 4.7843,
+        "sum_pp": -39.1524,
+        "profit_factor": 0.0066,
+        "rr_ratio": 0.0397,
+        "sharpe": -4.4637,
+        "t_stat": -3.0931,
+        "skew": -0.1262,
+        "kurtosis": -2.4109,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 3,
+        "win_rate": 0.0,
+        "mean_pp": -7.4552,
+        "std_pp": 6.0309,
+        "sum_pp": -22.3655,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": -3.04,
+        "t_stat": -2.1411,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -10.4149,
+        "std_pp": 0.0,
+        "sum_pp": -10.4149,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -4.3816,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 11,
+      "min": 2,
+      "p25": 10.5,
+      "median": 20.0,
+      "p75": 27.5,
+      "max": 88
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

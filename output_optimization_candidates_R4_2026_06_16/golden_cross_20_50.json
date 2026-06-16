@@ -1,0 +1,166 @@
+{
+  "strategy": "golden_cross_20_50",
+  "n_trades": 12,
+  "aggregate": {
+    "n": 12,
+    "win_rate": 0.0833,
+    "mean_pp": -6.39,
+    "std_pp": 5.7638,
+    "sum_pp": -76.6801,
+    "profit_factor": 0.0771,
+    "rr_ratio": 0.8485,
+    "sharpe": -2.774,
+    "t_stat": -3.8405,
+    "skew": 1.1103,
+    "kurtosis": 0.4674,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "ema_20_50_death_cross",
+        "fires_at": 91.7,
+        "n_present": 12
+      },
+      {
+        "clause": "ema_20_50_golden_cross",
+        "fires_at": 8.3,
+        "n_present": 12
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 11.1,
+        "n_present": 9
+      }
+    ],
+    "restrictive": [
+      {
+        "clause": "ema_20_50_golden_cross",
+        "fires_at": 8.3,
+        "n_present": 12
+      },
+      {
+        "clause": "price_above_ema_200",
+        "fires_at": 11.1,
+        "n_present": 9
+      }
+    ],
+    "always_on": [
+      {
+        "clause": "ema_20_50_death_cross",
+        "fires_at": 91.7,
+        "n_present": 12
+      }
+    ],
+    "proposals": [
+      "consider OR-fallback for `ema_20_50_golden_cross` (fires only 8.3% on fired trades)",
+      "consider OR-fallback for `price_above_ema_200` (fires only 11.1% on fired trades)",
+      "clauses ['ema_20_50_death_cross'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 7,
+        "win_rate": 0.1429,
+        "mean_pp": -5.0063,
+        "std_pp": 6.71,
+        "sum_pp": -35.0441,
+        "profit_factor": 0.1546,
+        "rr_ratio": 0.9277,
+        "sharpe": -2.0573,
+        "t_stat": -1.974,
+        "skew": 0.718,
+        "kurtosis": -0.4138,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 1,
+        "win_rate": 0.0,
+        "mean_pp": -10.4002,
+        "std_pp": 0.0,
+        "sum_pp": -10.4002,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": 0.0,
+        "t_stat": 0.0,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "neutral": {
+        "n": 4,
+        "win_rate": 0.0,
+        "mean_pp": -7.809,
+        "std_pp": 4.3876,
+        "sum_pp": -31.2358,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": -3.9369,
+        "t_stat": -3.5595,
+        "skew": 1.5863,
+        "kurtosis": 2.3054,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -2.774,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 12,
+      "min": 1,
+      "p25": 10.0,
+      "median": 37.5,
+      "p75": 55.5,
+      "max": 101
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}
