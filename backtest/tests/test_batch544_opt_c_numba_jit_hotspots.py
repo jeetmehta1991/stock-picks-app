@@ -103,18 +103,40 @@ def test_batch544_numba_supertrend_matches_pure_python_reference():
 
 
 def test_batch544_compute_supertrend_returns_expected_schema():
-    """Public API contract preserved: same dict keys + types."""
+    """Public API contract preserved: same dict keys + types.
+    B840 UPDATED: B655 T10 supertrend redundancy-audit added 3 keys
+    (supertrend_bearish + supertrend_flip_recent_long_5d +
+    supertrend_flip_recent_short_5d) + supertrend_lookback_window
+    diagnostic per B655 producer-additive EVENT-conversion. Schema
+    superset of original 4 keys."""
     from backtest.signals.technical import compute_supertrend
     df = _make_ohlcv(n_dates=250)
     out = compute_supertrend(df)
-    assert set(out.keys()) == {
+    # Original 4 keys still required (back-compat)
+    required = {
         "supertrend_bullish", "supertrend_value",
         "supertrend_flip_up", "supertrend_flip_dn",
     }
+    assert required.issubset(set(out.keys())), (
+        f"missing required keys: {required - set(out.keys())}"
+    )
+    # B655 additions (5-bar lookback EVENT + symmetric bearish + lookback diagnostic)
+    b655_additions = {
+        "supertrend_bearish",
+        "supertrend_flip_recent_long_5d",
+        "supertrend_flip_recent_short_5d",
+        "supertrend_lookback_window",
+    }
+    assert b655_additions.issubset(set(out.keys())), (
+        f"missing B655 keys: {b655_additions - set(out.keys())}"
+    )
     assert isinstance(out["supertrend_bullish"], bool)
     assert isinstance(out["supertrend_value"], float)
     assert isinstance(out["supertrend_flip_up"], bool)
     assert isinstance(out["supertrend_flip_dn"], bool)
+    assert isinstance(out["supertrend_bearish"], bool)
+    assert isinstance(out["supertrend_flip_recent_long_5d"], bool)
+    assert isinstance(out["supertrend_flip_recent_short_5d"], bool)
 
 
 def test_batch544_compute_supertrend_short_history_returns_empty():
