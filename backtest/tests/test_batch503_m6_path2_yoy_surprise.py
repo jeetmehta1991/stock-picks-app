@@ -165,14 +165,18 @@ def test_batch682_deletion_pead_yoy_sleeves_no_longer_registered():
     REMAIN valid because the producer signals are still used by future
     work (if owner wants YoY-threshold parameter variant on EV-1/EV-2).
     """
+    # B824 FLIPPED: B709 EMPIRICAL-RESTORE reversed B682's "deterministic
+    # strict subset" rationale (B709 phi=0.297 well below 0.70 revert
+    # threshold; 70% of EV-3 fires distinct fundamental-momentum
+    # population EV-1 misses entirely). Tests now pin RESTORATION.
     from backtest.signals.screener import ALL_STRATEGIES
-    assert "pead_long_high_yoy_growth_only" not in ALL_STRATEGIES, (
-        "B682 deletion: pead_long_high_yoy_growth_only must be REMOVED"
+    assert "pead_long_high_yoy_growth_only" in ALL_STRATEGIES, (
+        "B709 EMPIRICAL-RESTORE: pead_long_high_yoy_growth_only must EXIST"
     )
-    assert "pead_short_negative_yoy_growth" not in ALL_STRATEGIES, (
-        "B682 deletion: pead_short_negative_yoy_growth must be REMOVED"
+    assert "pead_short_negative_yoy_growth" in ALL_STRATEGIES, (
+        "B709 EMPIRICAL-RESTORE: pead_short_negative_yoy_growth must EXIST"
     )
-    # Strategy function deletion verification
+    # B824 FLIPPED: B709 RESTORE -- strategy functions must EXIST.
     import backtest.signals.screener as screener
-    assert not hasattr(screener, "strat_pead_long_high_yoy_growth_only")
-    assert not hasattr(screener, "strat_pead_short_negative_yoy_growth")
+    assert hasattr(screener, "strat_pead_long_high_yoy_growth_only")
+    assert hasattr(screener, "strat_pead_short_negative_yoy_growth")

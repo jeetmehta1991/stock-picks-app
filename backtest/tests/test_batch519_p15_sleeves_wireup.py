@@ -109,9 +109,11 @@ def test_batch519_squeeze_handles_missing_si_signal_gracefully():
 # ---------------------------------------------------------------------------
 
 def test_batch519_short_borrow_trap_avoid_fires_above_5_dtc():
-    """Days-to-cover > 5 -> fires `avoid` direction."""
+    """B824 UPDATED: B671 Q6 owner-approved tightening 5.0 -> 8.0.
+    The strategy now fires only at dtc > 8.0 (was > 5.0 in original
+    B519). Test fixture dtc 7.5 -> 10.0 above new threshold."""
     from backtest.signals.screener import strat_short_borrow_trap_avoid
-    s = {"days_to_cover": 7.5}
+    s = {"days_to_cover": 10.0}  # B824: above new 8.0 threshold
     r = strat_short_borrow_trap_avoid(s)
     assert r["fires"] is True
     assert r["direction"] == "avoid"
