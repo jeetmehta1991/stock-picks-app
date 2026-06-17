@@ -192,8 +192,20 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
         "expected_value": round(expected_value, 4),
         "profit_factor":  round(profit_factor, 4),
         "win_loss_ratio": round(win_loss_ratio, 4),
-        "max_dd":         round(max_dd_pct, 4),
-        "total_roi":      round(total_roi, 4),
+        # B889 (2026-06-18) Council 15 surfacing fix: unify column names
+        # with writer.py (which uses _pct suffix) so dashboard tabs display
+        # consistent column names across strategies + cube views. Owner-
+        # raised concern in Council 15 ("why is max DD / total ROI not
+        # being calculated?") was actually a column-naming-drift surfacing
+        # bug, not a computation gap. Keep legacy aliases for backward
+        # compat per `feedback_doc_count_drift_must_be_test_pinned`.
+        "max_drawdown_pct": round(max_dd_pct, 4),
+        "total_roi_pct":    round(total_roi, 4),
+        # Legacy aliases (B889 backward-compat) -- retained for any consumer
+        # reading the old keys; can be removed after Stage 3 papertrading
+        # confirms no downstream depends on the short names.
+        "max_dd":           round(max_dd_pct, 4),
+        "total_roi":        round(total_roi, 4),
         "sharpe":         round(sharpe, 4),
         "t_stat":         round(t_stat, 4),
         "psr":            psr,

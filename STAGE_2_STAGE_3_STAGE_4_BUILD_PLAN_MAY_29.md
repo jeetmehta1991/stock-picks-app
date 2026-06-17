@@ -431,6 +431,98 @@ If subset is **30-50 cells with verified delta improvement** -> Phase 1B-α laun
 | **Soft-score ranking + best-of-26 collapse** | **NEW** -- winner identification methodology |
 | **Consolidated dashboard** | **NEW** -- 3 -> 1 over B891+ |
 
+### 10.10a Council 15 Corrections (Owner-Surfaced 2026-06-17/18; B889)
+
+**Owner's substantive correction:** Council 14's recommendation of "≥3 of 4 regimes" for per-regime PASS gate **directly contradicted the project's core principle.** CLAUDE.md explicitly states: *"Per-regime strategy library: different strategies for different regimes — not universal strategies"* + criterion #11 *"PASS in ≥1 regime, not universal pass required"* + design philosophy *"A strategy valid in crisis but not bull is deployed only during crisis — this is intentional."*
+
+A short strategy is supposed to fail in bull/neutral/crisis and PASS ONLY in bear. Council 14's universality-bias was wrong for THIS project.
+
+**Council 15 (5-advisor + chairman) corrections to B888 section 10:**
+
+| # | B888 element | Council 15 correction |
+|---|---|---|
+| **1** | "≥3 of 4 regimes" lens threshold (section 10.2 Group F) | **CORRECTED: `min_regimes_passing = 1` per CLAUDE.md canonical.** Optional augment: `min_passing_regime_bar_day_coverage ≥ 2.0%` to catch "passes only in 47 days" without forcing universality. Code at `config.py:506` currently reads `2`; this is doc-vs-code DRIFT requiring owner ratification before flip. |
+| **2** | "Max DD / Total ROI not being calculated" owner complaint | **DIAGNOSED: surfacing/naming bug, not computation gap.** Both ARE computed (`metrics.py:_max_drawdown` line 40-66 + per-trade ROI in `compute_per_bucket_metrics` line 660); ARE gated (`PASSING_CRITERIA #6, #7`); ARE surfaced as `max_drawdown_pct` + `total_roi_pct` in `writer.py:104-107`. **Naming drift root cause:** `cube_populator.py:195-196` uses `max_dd` + `total_roi` (cube cols) vs writer's `_pct` suffix. Dashboard tabs displayed different sets. **Fix applied B889:** unified naming with backward-compat aliases. |
+| **3** | "Best-of-26 collapse" (section 10.3) | **CLARIFIED: collapse is EXIT-AXIS ONLY, never strategy-axis.** B807 latent-collapse audit empirically forbids strategy-axis collapse (97.5% phi<0.30 across 4-7 latent-factor hypotheses). The 218 strategies are NOT 4-7 latent factors with reskins — they are 218 distinct hypothesis tests. Collapse only across the 26 exit_method choices per (strategy, regime). |
+| **4** | "B888 lens 4-metric replacement" framing (section 10.2) | **DROPPED MISLEADING FRAMING.** All 4 lens components (PSR, Calmar, DSR, regime-coverage) are ALREADY in PASSING_CRITERIA or DEC-426 5-Gate. The B888 lens is correctly framed as a **soft-score ranking layer + 3 AUTO-FAIL augmentations**, not a threshold-stack replacement. No methodology shift per Council 7 directive. |
+| **5** | metrics.py "sleeping unicorns" (section 10.6) | **CONCRETE WIRING PLAN (~50 lines top-3):** (a) `_cost_sensitivity_sharpe` → AUTO-FAIL gate `sharpe_at_20bps >= 0.7` (~10 lines in `metrics.py:2442`); (b) `_chow_test` → AUTO-FAIL gate `max_chow_break: False` AND post-break Sharpe < 0.3 (~15 lines); (c) `_adf_test` → REGIME-CONDITIONAL AUTO-FAIL on mean-reversion strategies only (non-stationary mean-rev = no edge; ~15 lines with strategy-tag predicate). |
+
+### 10.10b Full Threshold Stack Iteration (Council 15 First Principles taxonomy)
+
+**Group A — Trade Distribution Quality (4 params):**
+
+| Param | Value | Measures | Catches | Redundancy |
+|---|---|---|---|---|
+| `min_win_rate` | 0.45 per-regime | Fraction winning trades | "Fires often, mostly loses" | NOT redundant with PF (WR ignores magnitude) |
+| `min_profit_factor` | 1.2 / 1.3 overall | Sum(wins) / Sum(losses) | "Wins small, losses huge" | NOT redundant with WR (PF captures magnitude) |
+| `min_expected_value` | 0.0 | Mean per-trade P&L > 0 | Raw-dollar scale floor | Partial overlap with PF; cheap diagnostic |
+| `min_win_loss_ratio` | 1.0 | Avg win / avg loss | Fragility shape | Partial overlap with PF; diagnostic |
+
+**Group B — Risk-Adjusted Quality (4 params; NOT mutually redundant):**
+
+| Param | Value | Measures | Why NOT redundant |
+|---|---|---|---|
+| `min_sharpe_overall` / per-regime | 1.0 / 0.7 | Excess return / total vol | Industry-canonical "decent"; penalizes upside vol |
+| `min_sortino_overall` / per-regime | 1.0 / 0.7 | Excess return / DOWNSIDE vol | Correct for R:R≥2.0 skewed dists (Sharpe over-penalizes wins) |
+| `min_calmar` | 0.5 | CAGR / max DD | PATH-AWARE (Sharpe is path-blind) |
+| `min_deflated_sharpe` (DSR) | 0.95 | Multi-testing-corrected Sharpe | **Anti-overfitting gate** — most important at 39,676-cell denominator |
+
+**Group C — Drawdown & ROI (2 params) ← OWNER'S COMPLAINT LIVED HERE; B889 RESOLVED:**
+
+| Param | Value | Surfaced as | Status |
+|---|---|---|---|
+| `max_drawdown` | 25.0 | `max_drawdown_pct` (writer) + `max_drawdown_pct` (cube post-B889) + legacy `max_dd` alias | ✅ Computed + gated + UNIFIED naming B889 |
+| `min_total_roi` | 0.0 | `total_roi_pct` (writer) + `total_roi_pct` (cube post-B889) + legacy `total_roi` alias | ✅ Same |
+
+**Group D — Sample-Size Power (2 params):**
+
+| Param | Value | Why split |
+|---|---|---|
+| `min_trades` | 100 overall | BUG-31 codification of CLAUDE.md criterion #9 |
+| `min_trades_per_regime` | 30 | Per-regime power floor; matches DEC-426 5-Gate min_trades_per_cell |
+
+**Group E — Multiple-Testing & Significance (DEC-426 5-Gate per cell):**
+
+| Gate | Value | Measures |
+|---|---|---|
+| n ≥ 30 | Sample size per cell | Statistical power |
+| p < 0.05 Bonferroni over 39,676 | Significance after multi-testing | Anti-false-positive |
+| PSR ≥ 0.95 | Probabilistic Sharpe Ratio | Prob(true Sharpe > 0) |
+| t-stat ≥ 3.4 | Robustness | Small-sample correction |
+| R:R ≥ 2.0 | Asymmetric payoff | Deliberate design choice |
+
+**Group F — Per-Regime Verdict (1 param) ← OWNER'S CORRECTION:**
+
+| Param | CURRENT CODE | DOC SAYS | CORRECTION |
+|---|---|---|---|
+| `min_regimes_passing` | 2 (config.py:506) | 1 (CLAUDE.md criterion #11) | **Flip code to 1 pending owner ratification.** Doc-vs-code drift surfaced by Council 15. Optional augment: `min_passing_regime_bar_day_coverage ≥ 2.0%`. |
+
+**Group G — Audit Triggers (NOT gates; diagnostic flags):**
+
+| Param | Value | Triggers |
+|---|---|---|
+| `audit_win_rate_above` | 0.65 | DEC-084 manual look-ahead inspection |
+| `audit_profit_factor_above` | 1.5 | Same |
+
+### 10.10c metrics.py Leverage Audit (Concrete Wiring Plan)
+
+**GATED (7 functions):** `_sharpe`, `_sharpe_daily`, `_profit_factor`, `_max_drawdown`, `_calmar`, `_sortino_ratio`, `_deflated_sharpe`. ✅ All correct.
+
+**UNGATED (8 functions) + B888-B891 promotion plan:**
+
+| Function | Current | Promote? | Wire cost | When | Action |
+|---|---|---|---|---|---|
+| `_cost_sensitivity_sharpe` | columns exist | **YES — HIGH** | ~10 lines | B889 | Gate: `sharpe_at_20bps >= 0.7` |
+| `_chow_test` | telemetry only | **YES — HIGH** | ~15 lines | B889 | Gate: structural break + post-break Sharpe < 0.3 → FAIL |
+| `_adf_test` | telemetry only | **YES — REGIME-COND** | ~15 lines | B889 | Gate for mean-rev strategies only (non-stationary equity = no edge) |
+| `_kelly_criterion` | column exists | Sizing not gate | ~20 lines | B890 | Stage 3 position-sizing input; hard FAIL on negative Kelly |
+| `_event_window_breakdown` | columns exist | MEDIUM | ~10 lines | B891 | Dashboard surface; advisory |
+| `_event_conditional_win_rate` | columns exist | MEDIUM | ~10 lines | B891 | Same |
+| `_time_in_market_metrics` | column exists | LOW | ~5 lines | B891 | Capital efficiency dashboard column |
+| `_confidence_interval_95` | column exists | MEDIUM | ~10 lines | B891 | Gate `ci_low > 0.50` for CI-aware WR |
+
+**Top-3 promotion (~40 lines total):** cost-sensitivity + Chow + ADF (regime-conditional). Land in B889 same turn as the regime-coverage code flip.
+
 ### 10.10 Council 14 Diagnostic (Honest Risk Surface)
 
 **Contrarian Council 14 dissent (preserved for honesty):**
