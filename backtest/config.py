@@ -223,23 +223,22 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     #   stochrsi_oversold  x time_stop_10d         = +107 pp (27 OOS, 74% WR)
     #
     # Batch 284 entries that REMAIN (winners):
-    # B834-RECOMMEND-SWAP-DEFERRED #73: stochrsi_oversold R4 cube
-    #   Sharpe 0.481 breakeven_plus_trail beats B309 time_stop_days=10
-    #   but SWAP invalidates test_batch287a_per_strategy_initial_pct
-    #   _override pin -- HOLDING for owner-explicit approval before
-    #   Stage 5 implementation.
-    "stochrsi_oversold":           {"time_stop_days": 10, "initial_pct": 0.04},
-    # B834-RECOMMEND-SWAP-DEFERRED #74: po3_bullish R4 cube Sharpe
-    #   0.386 breakeven_plus_trail beats B309 class_time_stop OOS +395pp
-    #   but SWAP invalidates test_batch284_check_per_strategy_exit
-    #   _hit_class_time_stop pin -- HOLDING for owner-explicit approval.
-    "po3_bullish":                 {"exit_method": "class_time_stop"},
+    # B834-SWAP-APPLIED #73 (owner-approved B886 2026-06-17): R4 cube
+    #   Sharpe 0.481 breakeven_plus_trail beats B309 time_stop_days=10.
+    #   Invalidated test_batch287a_per_strategy_initial_pct_override pin
+    #   (updated B886 to match new exit_method).
+    "stochrsi_oversold":           {"exit_method": "breakeven_plus_trail"},
+    # B834-SWAP-APPLIED #74 (owner-approved B886): R4 cube Sharpe 0.386
+    #   breakeven_plus_trail beats B309 class_time_stop OOS +395pp.
+    #   Invalidated test_batch284_check_per_strategy_exit_hit_class_time
+    #   _stop pin (updated B886).
+    "po3_bullish":                 {"exit_method": "breakeven_plus_trail"},
     "avwap_50_reclaim":            {"exit_method": "hybrid_50pct_target"},
-    # B834-RECOMMEND-SWAP-DEFERRED #75: cpr_narrow_bullish R4 cube
-    #   Sharpe 0.303 breakeven_plus_trail beats B309 regime_flip OOS
-    #   +142pp but SWAP invalidates test_batch285_regime_flip_exits
-    #   _on_regime_change pin -- HOLDING for owner-explicit approval.
-    "cpr_narrow_bullish":          {"exit_method": "regime_flip"},
+    # B834-SWAP-APPLIED #75 (owner-approved B886): R4 cube Sharpe 0.303
+    #   breakeven_plus_trail beats B309 regime_flip OOS +142pp.
+    #   Invalidated test_batch285_regime_flip_exits_on_regime_change pin
+    #   (updated B886).
+    "cpr_narrow_bullish":          {"exit_method": "breakeven_plus_trail"},
 
     # ----- Legacy Batch 284/285 entries RETAINED for backward-compat -----
     # These entries STAY in the dict but their strategies are in
