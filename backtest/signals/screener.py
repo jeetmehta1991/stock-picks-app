@@ -236,7 +236,16 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
 # -----------------------------------------------------------------------------
 
 def strat_pivot_s1_bounce(s):
-    """Floor-trader pivot S1 support bounce / R1 resistance rejection
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): floor-trader pivots are originally INTRADAY tools
+    per Wells/Person; applying to DAILY bars treats S1/R1 as DAILY support/
+    resistance-zone reaction levels (proximity + candle confirmation),
+    NOT pivot-precision intraday signal. Cube measures whether daily-
+    bar-derived S1/R1 reaction edge survives; pivot-precision language
+    explicitly DROPPED per owner direction. Resolves 4-cycle deferral
+    per B710 reviewer + CHECKLIST (r) timeframe-mismatch rule.
+
+    Floor-trader pivot S1 support bounce / R1 resistance rejection
     with single-bar candle confirmation + OBV flow.
 
     Fires LONG when ALL THREE: (a) price within 0.3% of pivot S1
@@ -281,6 +290,15 @@ def strat_pivot_s1_bounce(s):
 
 
 def strat_pivot_s2_bounce(s):
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): floor-trader pivots are originally INTRADAY tools
+    per Wells/Person; applying to DAILY bars treats S2/R2 as DAILY support/
+    resistance-zone reaction levels (proximity + RSI + candle), NOT
+    pivot-precision intraday signal. Cube measures whether daily-bar-
+    derived S2/R2 reaction edge survives; pivot-precision language
+    explicitly DROPPED per owner direction. Resolves 4-cycle deferral
+    per B710 reviewer + CHECKLIST (r) timeframe-mismatch rule.
+    """
     fl = (s.get("near_s2") and s.get("rsi_14", 50) < 40 and (s.get("hammer") or s.get("bullish_engulfing")))
     fs = (s.get("near_r2") and s.get("rsi_14", 50) > 60 and s.get("bearish_engulfing")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
@@ -290,7 +308,16 @@ def strat_pivot_s2_bounce(s):
 
 
 def strat_pivot_s3_capitulation(s):
-    """Floor-trader pivot S3 capitulation LONG with REVERSAL CONFIRMATION
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): floor-trader pivots are originally INTRADAY tools
+    per Wells/Person; applying to DAILY bars treats S3 as DAILY deep-support
+    capitulation zone (proximity + reversal confirmation), NOT pivot-precision
+    intraday signal. Cube measures whether daily-bar-derived S3 capitulation
+    edge survives; pivot-precision language explicitly DROPPED per owner
+    direction. Resolves 4-cycle deferral per B710 reviewer + CHECKLIST (r)
+    timeframe-mismatch rule.
+
+    Floor-trader pivot S3 capitulation LONG with REVERSAL CONFIRMATION
     (Wyckoff Selling Climax + Spring/Test sequence).
 
     Batch 643 (2026-06-09 owner-directed W5 redesign option C per
@@ -402,7 +429,16 @@ def strat_pivot_s3_capitulation(s):
 
 
 def strat_pivot_r3_blowoff_short(s):
-    """Floor-trader pivot R3 blowoff-top SHORT with REVERSAL CONFIRMATION
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): floor-trader pivots are originally INTRADAY tools
+    per Wells/Person; applying to DAILY bars treats R3 as DAILY deep-resistance
+    blowoff zone (proximity + reversal confirmation), NOT pivot-precision
+    intraday signal. Cube measures whether daily-bar-derived R3 blowoff edge
+    survives; pivot-precision language explicitly DROPPED per owner direction.
+    Resolves 4-cycle deferral per B710 reviewer + CHECKLIST (r)
+    timeframe-mismatch rule.
+
+    Floor-trader pivot R3 blowoff-top SHORT with REVERSAL CONFIRMATION
     (Wyckoff Buying Climax + Upthrust-Test sequence).
 
     Batch 645 (2026-06-09 Class 7 NEW wired per owner directive (a) from
@@ -516,7 +552,16 @@ def strat_pivot_r3_blowoff_short(s):
 
 
 def strat_pivot_r1_breakout(s):
-    """Pivot R1 breakout. Batch 205 (Pivot optimization 2026-05-17 owner-
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): floor-trader pivots are originally INTRADAY tools
+    per Wells/Person; applying to DAILY bars treats R1 break + AVWAP confluence
+    as DAILY momentum-context breakout (volume + AVWAP-institutional-reference
+    confirmation), NOT pivot-precision intraday signal. Cube measures whether
+    daily-bar-derived R1 breakout edge survives; pivot-precision language
+    explicitly DROPPED per owner direction. Resolves 4-cycle deferral per
+    B710 reviewer + CHECKLIST (r) timeframe-mismatch rule.
+
+    Pivot R1 breakout. Batch 205 (Pivot optimization 2026-05-17 owner-
     approved research review): stacked with Anchored VWAP gate (Brian
     Shannon 2022) + DiNapoli volume confirmation. AVWAP-from-252-day-low
     is the institutional reference level; breakouts above R1 that ALSO
@@ -562,7 +607,16 @@ def strat_pivot_r1_breakout(s):
 
 
 def strat_pivot_r2_continuation(s):
-    """Pivot R2 trend-continuation. Batch 205: requires AVWAP + 2x volume
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): floor-trader pivots are originally INTRADAY tools
+    per Wells/Person; applying to DAILY bars treats R2 secondary breakout as
+    DAILY trend-continuation momentum (2x volume + AVWAP + EMA-trend), NOT
+    pivot-precision intraday signal. Cube measures whether daily-bar-derived
+    R2 trend-continuation edge survives; pivot-precision language explicitly
+    DROPPED per owner direction. Resolves 4-cycle deferral per B710 reviewer
+    + CHECKLIST (r) timeframe-mismatch rule.
+
+    Pivot R2 trend-continuation. Batch 205: requires AVWAP + 2x volume
     (stronger threshold than R1 since R2 is the secondary breakout) +
     EMA 50/200 trend confirmation.
 
@@ -602,7 +656,17 @@ def strat_pivot_r2_continuation(s):
 
 
 def strat_cpr_narrow_bullish(s):
-    """Central Pivot Range narrow breakout. Batch 205: stacked with
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): CPR (Central Pivot Range) is originally an
+    INTRADAY tool; applying to DAILY bars treats it as DAILY momentum-context
+    (narrow CPR -> directional momentum-day per daily-bar interpretation +
+    AVWAP institutional reference), NOT pivot-precision intraday signal.
+    Cube measures whether daily-momentum-shaped edge survives; pivot-
+    precision language explicitly DROPPED per owner direction. Resolves
+    4-cycle deferral per B710 reviewer + CHECKLIST (r) timeframe-mismatch
+    rule.
+
+    Central Pivot Range narrow breakout. Batch 205: stacked with
     Anchored VWAP gate per Brian Shannon. Narrow CPR + above CPR + above
     AVWAP is the canonical institutional-grade directional day signal.
 
@@ -695,7 +759,16 @@ def strat_cpr_narrow_bullish(s):
 
 
 def strat_camarilla_s3_bounce(s):
-    """Camarilla S3/R3 mean-reversion bounce with RSI extreme + OBV
+    """REFRAMED POST-B879 #48 (owner-directed 2026-06-17 option b extending
+    B787 partial reframe): Camarilla pivots (Slim Khan / Nick Scott) are
+    originally INTRADAY tools; applying to DAILY bars treats S3/R3 as DAILY
+    mean-reversion zones (proximity + RSI extreme + OBV flow), NOT pivot-
+    precision intraday signal. Cube measures whether daily-bar-derived
+    S3/R3 mean-reversion edge survives; pivot-precision language explicitly
+    DROPPED per owner direction. Resolves 4-cycle deferral per B710
+    reviewer + CHECKLIST (r) timeframe-mismatch rule.
+
+    Camarilla S3/R3 mean-reversion bounce with RSI extreme + OBV
     flow confirmation.
 
     Camarilla pivots (Slim Khan / Nick Scott) compute support/
