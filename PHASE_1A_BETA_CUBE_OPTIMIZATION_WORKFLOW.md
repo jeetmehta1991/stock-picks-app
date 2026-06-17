@@ -1,7 +1,7 @@
 # Phase 1A-beta Cube Optimization Workflow
 
 **Locked 2026-05-28** (owner directive: "Lock the above. ... Create a new reference md file").
-**Updated 2026-06-02 (R4 iteration)** — strategy/exit counts refreshed to live values (204 registered / 203 active strategies / 26 exit methods / 36,946 cells); R4 launch flow + Batch 532 phased PILOT→WAVE structure + 5 abort gates documented; R5/R6 iteration framing added.
+**Updated 2026-06-17 (B887; pre-R5 doc-sync)** — strategy/exit counts refreshed to live values (**219 registered / 218 active strategies / 26 exit methods / 39,676 cells (5,668 per regime)**; 1 disabled-missing-producer = dxy_headwind_multinational_short per Batch 372); roster churn since B572: +14 Class 7 NEW (B603/B605/B607/B636/B645/B685/B686/B709 — pead/news/52w-low/flag-bear-retest/3-black-crows/r3-blowoff/3 chart-pattern mirrors/2 PEAD restores/inverted-cup) − 14 deletions (B620/B682/B687/B722/B874 — squeeze-event-only/BR-15/EV-3/EV-4/EV-7/T5-T4-SHORT-dup/hull-rsi-short/po3-htf-aligned ×2/camarilla-rsi-obv ×2); 5 Stage 5 SWAPs applied (B835/B886: williams_r_oversold + institutional_cluster_long + stochrsi_oversold + po3_bullish + cpr_narrow_bullish all migrated to breakeven_plus_trail per B834 R4 cube verdicts). B887 supersedes "**Updated 2026-06-02**" snapshot. R5 paused pending B883 triage audit completion (current as of B887).
 
 **Status.** Canonical reference for how (strategy × exit × regime) cube data flows from a Phase 1A-beta cube run through optimization → owner review → implementation → re-validation → the 1A-α owner gate. Authoritative across re-run iterations (R3 → R4 → R5 → R6…). Stage 1 (the AWS cube run) is the only stage that is environment-specific; Stages 2-6 are platform-agnostic and re-used on every iteration.
 
@@ -46,7 +46,7 @@ flowchart TD
         SUM[optimization_summary.md<br/>top-line proposals + bucket counts]
         CAND[optimization_candidates_*.json<br/>~100-150 per-strategy files]
         PZJ[producer_zero_reaudit.json<br/>3-bucket classification]
-        CVC[cell_verdict_cube.csv<br/>36,946 cells = single source of truth]
+        CVC[cell_verdict_cube.csv<br/>39,676 cells = single source of truth]
     end
 
     S3 --> S4
@@ -109,7 +109,7 @@ flowchart TD
 
 ## Core principle (do not violate)
 
-**Unit of analysis: `(strategy × exit_method × regime)` CELL.** Live as of 2026-06-02 (R4 launch): `len(ALL_STRATEGIES) × len(EXIT_STRATEGIES) × 7 regimes = 204 registered / 203 active × 26 × 7 = 36,946 cells` (5,278 per regime). No batch-aggregated PnL anywhere. Aggregation is the trap; cells are the answer (`feedback_strategy_x_exit_cell_analysis.md`).
+**Unit of analysis: `(strategy × exit_method × regime)` CELL.** Live as of 2026-06-17 (B887 doc-sync; pre-R5): `len(ALL_STRATEGIES) × len(EXIT_STRATEGIES) × 7 regimes = 219 registered / 218 active × 26 × 7 = 39,676 cells` (5,668 per regime). No batch-aggregated PnL anywhere. Aggregation is the trap; cells are the answer (`feedback_strategy_x_exit_cell_analysis.md`).
 
 Counts drift over time as strategies/exits get added; always re-derive from `len(ALL_STRATEGIES)` + `len(EXIT_STRATEGIES)` at iteration start (`feedback_doc_count_drift_must_be_test_pinned`). Recent additions:
 - Batch 467 P10 +2 news strategies
@@ -118,7 +118,7 @@ Counts drift over time as strategies/exits get added; always re-derive from `len
 - Batch 519 P15 +2 short-interest sleeves (`squeeze_setup_long` + `short_borrow_trap_avoid`)
 - Batch 531 P17 +2 SEC EDGAR sleeves (`activist_13d_long` + `m_and_a_target_long`)
 
-DEC-426 5-Gate validity per cell: `n ≥ 30`, `p < 0.05` Bonferroni-corrected over 5,278 cells/regime (updated for live count), `PSR ≥ 0.95`, `t ≥ 3.4`, `R:R ≥ 2.0`. CLAUDE.md 11 criteria layered on top per cell.
+DEC-426 5-Gate validity per cell: `n ≥ 30`, `p < 0.05` Bonferroni-corrected over 5,668 cells/regime (B887 live count), `PSR ≥ 0.95`, `t ≥ 3.4`, `R:R ≥ 2.0`. CLAUDE.md 11 criteria layered on top per cell.
 
 No a-priori pruning (`project_no_apriori_strategy_pruning.md`): a strategy may be deprecated only if its 26-exit cube row shows 0 PASS cells in any regime AND 0/26 exits fire `n ≥ 30` in any regime.
 
@@ -126,7 +126,7 @@ No a-priori pruning (`project_no_apriori_strategy_pruning.md`): a strategy may b
 
 ## Stage 1 — Cube run
 
-**Action.** Run Phase 1A-beta engine across the full universe (1,937 tickers × ~4y 2022-05 to 2026-04 × 203 active strategies × 26 exits = 36,946 (strategy × exit × regime) cells). 5-batch AWS orchestration via `scripts/aws_batch395_*.py` is the canonical execution path; single-machine Hetzner remains the fallback.
+**Action.** Run Phase 1A-beta engine across the full universe (1,937 tickers × ~4y 2022-05 to 2026-04 × 218 active strategies × 26 exits = 39,676 (strategy × exit × regime) cells; B887). 5-batch AWS orchestration via `scripts/aws_batch395_*.py` is the canonical execution path; single-machine Hetzner remains the fallback.
 
 **R4 launch flow (2026-06-02 — current iteration):**
 Post-Batch-532 phased PILOT → WAVE structure per `feedback_monitor_intermediate_counts` (R3 burned 10h before anomalies surfaced; phased approach catches problems early):
@@ -224,7 +224,7 @@ For each fired strategy + each quiet strategy:
 
 | Layer | What it produces | Action implied |
 |---|---|---|
-| L1 — per-exit aggregate | Across all 203 active strategies that used each of 26 exits: aggregate Sharpe, PF, WR, n. Ranks exits with `n_strategies_paired ≥ 5` gate. | Top-5 = default-good exits for new strategies; bottom-5 = deprecation candidates only if L2 confirms 0 PASS cells anywhere. |
+| L1 — per-exit aggregate | Across all 218 active strategies (B887) that used each of 26 exits: aggregate Sharpe, PF, WR, n. Ranks exits with `n_strategies_paired ≥ 5` gate. | Top-5 = default-good exits for new strategies; bottom-5 = deprecation candidates only if L2 confirms 0 PASS cells anywhere. |
 | L2 — per-(strategy × exit) cell verdict | Each cell `n ≥ 5`: Sharpe + DEC-426 5-Gate. PASS cells become `STRATEGY_EXIT_OVERRIDE` candidates. | Direct evidence for deployed config per strategy. Feeds Phase 1B-α winners list. |
 | L3 — within-family variant ranking | `time_stop` (10d/20d/class_time_stop), `r_multiple` (2r/3r), `trailing` (5/10/15pct), `atr_trail` (1x/2x/mae_conditional/vix_conditional), `chandelier`, `breakeven`, `partial` (multi_tier_partial/hybrid_50pct_target). | Per-family default + per-strategy override. |
 
@@ -238,7 +238,7 @@ For quiet (zero-fire) strategies, three buckets:
 Phase 1A-beta single-batch baseline (2026-05-26) showed ~106 COMPOUND_RESTRICTIVE strategies. Post-AWS-cube re-audit will produce the live count + per-strategy gate-keys table.
 
 **Dashboard view/expectations:**
-- All 13 existing tabs refresh against the merged AWS cube. Expected R4 counts (post-OPT + producer fixes): ~40-60k trades (vs R3's 29k due to BUG-61 ticker_strategy block-mode unlock + B556 SMC + B561 sector_history producer fixes), ~120-150 fired strategies of 203 (vs R3's ~85-100 from 185), ~36,946 cells computed.
+- All 13 existing tabs refresh against the merged AWS cube. Expected R4 counts (post-OPT + producer fixes): ~40-60k trades (vs R3's 29k due to BUG-61 ticker_strategy block-mode unlock + B556 SMC + B561 sector_history producer fixes), ~120-150 fired strategies of 218 active (B887; vs R3's ~85-100 from 185), ~39,676 cells computed.
 - **NEW "Optimizer Status" widget on Overview** — last-run timestamp, input/output dirs, runtime, summary.md top-line proposals.
 
 ### Stage 2 flow detail
@@ -267,7 +267,7 @@ flowchart TB
     subgraph LB[Lens B — Per-exit 3 layers · Batch 391]
         direction TB
         L1[L1 · Per-exit aggregate<br/>26 exits across 203 strategies<br/>Sharpe/PF/WR/n ranking]
-        L2[L2 · Per-strategy x exit cell verdict<br/>5,278 cells per regime<br/>PASS cells → STRATEGY_EXIT_OVERRIDE]
+        L2[L2 · Per-strategy x exit cell verdict<br/>5,668 cells per regime<br/>PASS cells → STRATEGY_EXIT_OVERRIDE]
         L3[L3 · Within-family variant ranking<br/>time_stop, r_multiple, trailing,<br/>atr_trail, chandelier, breakeven, partial]
     end
 
@@ -297,7 +297,7 @@ Three reviewable artifacts emitted to `output_optimization_candidates_<YYYY_MM_D
 | `optimization_summary.md` (living) | **NEW tab "Optimizer Summary"** — server-side render. Top blocks: bucket counts + L1 exit ranking + L2 PASS-cell table + L3 family-winner mapping + top proposals. |
 | `optimization_candidates_<strategy>.json` (~85-100 files) | **NEW tab "Candidates"** — per-strategy drill-down sidebar. Shows 9-dim findings + L2 winning-exit cells per regime + L3 family-winner mapping + proposed changes. Per-change approval radio: Approved / Rejected / Deferred / Awaiting. State persists to `approvals.json`. |
 | `producer_zero_reaudit.json` | **NEW tab "Quiet Strategies"** — 3-column layout PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE. Per-strategy gate-keys + per-clause empirical fire rate + Dim B compound-restriction analysis. COMPOUND_RESTRICTIVE highlighted as priority. |
-| (master cell table — derived) | **NEW tab "Cell Verdict Cube"** — 36,946 cells (203 active × 26 × 7 regimes), sortable by Sharpe/PF/WR/n/p/PSR, filterable by `cell_verdict ∈ {PASS, FAIL, INSUFFICIENT_SAMPLE}` and regime. PASS highlighted. **Single source of cell-level truth.** |
+| (master cell table — derived) | **NEW tab "Cell Verdict Cube"** — 39,676 cells (218 active × 26 × 7 regimes; B887), sortable by Sharpe/PF/WR/n/p/PSR, filterable by `cell_verdict ∈ {PASS, FAIL, INSUFFICIENT_SAMPLE}` and regime. PASS highlighted. **Single source of cell-level truth.** |
 
 **Existing tab auto-mappings:**
 - **2. Regime** — per-regime PASS-cell counts (Dim C).
@@ -523,11 +523,11 @@ from backtest import config as cfg
 n_strat = len(ALL_STRATEGIES)                                    # 204 (2026-06-02)
 n_disabled = len(cfg.STRATEGIES_DISABLED_MISSING_PRODUCER)       # 1
 n_dep = len(cfg.DEPRECATED_STRATEGIES)                           # 0
-n_active = n_strat - n_disabled                                  # 203
+n_active = n_strat - n_disabled                                  # 218 (B887)
 n_exits = len(EXIT_STRATEGIES)                                   # 26
 n_regimes = 7                                                    # bull / neutral / bear / crisis / + sub-classifications
-cells_per_regime = n_active * n_exits                            # 5,278
-total_cells = cells_per_regime * n_regimes                       # 36,946
+cells_per_regime = n_active * n_exits                            # 5,668 (B887)
+total_cells = cells_per_regime * n_regimes                       # 39,676 (B887)
 ```
 
 ### DEC-426 5-Gate validity criteria (per cell)
@@ -627,7 +627,7 @@ Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys; engine
 | `trade_log.csv` | `output_batch395_final/` | All-batch concatenated trade log |
 | `trade_exit_detail.csv` | `output_batch395_final/` | All-batch cube rows |
 | `skipped_trades.csv` | `output_batch395_final/` | All-batch skip log |
-| `verdict_cube.csv` | `output_batch395_final/` | The (strategy × exit × regime × sector) verdict cube (5,278 / regime) |
+| `verdict_cube.csv` | `output_batch395_final/` | The (strategy × exit × regime × sector) verdict cube (5,668 / regime; B887) |
 | `equity_curve.parquet` | `output_batch395_final/` | Daily portfolio equity (post Batch 499 analyst overlay) |
 | `strategy_regime_matrix.json` | `output_batch395_final/` | `{strategy: {regime: {wr, n, avg_pnl_pct}}}` matrix |
 | `portfolio_metrics_overlay.json` | `output_batch395_final/` | total_return / max_drawdown / Sharpe / etc |
@@ -640,7 +640,7 @@ Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys; engine
 | `optimization_summary.md` | `output_optimization_candidates_<date>/` | Living top-line summary (proposals + bucket counts + L1/L3 rankings) |
 | `optimization_candidates_<strategy>.json` | `output_optimization_candidates_<date>/` | Per-strategy: 9-dim findings + L2 winning-exit cells + L3 family map + proposed changes |
 | `producer_zero_reaudit.json` | `output_optimization_candidates_<date>/` | 3-bucket classification of quiet strategies |
-| `cell_verdict_cube.csv` | `output_optimization_candidates_<date>/` | Master cell-level table (36,946 cells); single source of cell-level truth |
+| `cell_verdict_cube.csv` | `output_optimization_candidates_<date>/` | Master cell-level table (39,676 cells; B887); single source of cell-level truth |
 
 ### Stage 4 state
 
