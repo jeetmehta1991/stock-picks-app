@@ -1759,3 +1759,22 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Meta-pattern surfaced (Council 18):** Past failures have a common shape -- Claude frames the task as MECHANICAL ("regenerate roster") instead of VERIFICATION-BEARING ("deliver a current roster to owner"). The pre-flight (#45) didn't fire because "regenerate" feels like a mechanical step. Fix: any task involving a `python scripts/...py` regeneration is verification-bearing by default, and pre-flight must enumerate data-source freshness before claiming success.
 
      **Recovery protocol when staleness detected by owner:** the FIRST batch after the owner flag must (a) acknowledge the rolling-staleness pattern, (b) enumerate every data source and its as-of date, (c) scrub stale-source columns OR add prominent disclaimers, (d) codify a build-time assertion preventing return, (e) update LEARNINGS with the meta-pattern.
+
+112. **HARD RULE -- Refuse the heroic-batch trap. When owner asks for ALL-N updates, ship K with evidence + DEFER N-K explicitly with reasons.** (Council 19 Contrarian verdict 2026-06-18 B895; multi-front directive after B894 RED FLAG.)
+
+     Owner directive pattern: "Update ALL md files. Do not miss any. Council this. Be comprehensive."
+
+     The trap: attempt all N items in one batch, ship a heroic-looking commit, declare victory. **This is the B894 failure pattern with a new mask.** If you "update ALL 175 MD files" in one batch, you will pattern-match-replace strategy counts without auditing whether each file's surrounding paragraph is still semantically true. That is identical to the staleness lapse owner just red-flagged -- different surface, same crime.
+
+     **The 4 mandatory scope-discipline gates:**
+
+     1. **Enumerate scope honestly.** Count actual items (e.g., 175 .md files; 25+ with potential drift; 5 NEW scripts; multi-batch wired-implemented audit).
+     2. **Compute irreducible time.** Realistic budget per item (e.g., ~3 min freshness audit per .md = 9 hours total). If irreducible > one batch, the answer is NOT to compress; it's to stage.
+     3. **Ship the irreducible minimum THIS turn with EVIDENCE.** Grep output. Live-source verification. Visible audit trail. Not "all" -- "K with proof."
+     4. **DEFER explicitly with reasons in EXECUTION_QUEUE.** Each deferred item gets a ticket: `B89N-DEFER-X: [item] -- deferred because [resource constraint]; will ship [batch range]`. Silent skipping is non-compliant per #110.
+
+     **Compliance check (single-question version):** Before claiming "comprehensive" or "all" or "everything", ask: "Can I quote the grep output that proves this claim for EACH item I claim to have addressed?" If no, the claim is the B894 pattern. Demote to "K items with evidence + N-K deferred to [batches]."
+
+     **Owner expectation calibration:** Owner asking for "comprehensive" is asking for COMPLETE COVERAGE, not COMPLETE-IN-ONE-BATCH. Completing coverage across multiple batches with explicit deferral tickets HONORS the directive better than one batch of unverified claims. Past failure: B892 + B894 -- I tried to "update STRATEGY_ROSTER" in one batch and missed data-source staleness. Three iterations later it's still being flagged.
+
+     **Recovery protocol when owner red-flags heroic-batch overpromise:** the FIRST batch after the lapse must (a) acknowledge the trap, (b) re-scope honestly with deferral tickets, (c) ship the verifiable subset, (d) codify the prevention rule (this rule), (e) update LEARNINGS with the meta-pattern. B895 applies this protocol to "update ALL md files" directive.

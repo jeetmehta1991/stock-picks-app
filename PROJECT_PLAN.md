@@ -386,7 +386,7 @@ Detail: ENGINEERING_REGISTER.md Sprint 5 + STRATEGY_REGISTER.md.
 
 | Layer | Description | Count |
 |---|---|---|
-| Layer 1 | Baseline roster (60 strategy classes per archived PROJECT_PLAN section 6 = baseline; live `len(ALL_STRATEGIES)`=186 registered / 185 active Batch 372 includes later layers Pass 53) | 60 |
+| Layer 1 | Baseline roster (60 strategy classes per archived PROJECT_PLAN section 6 = baseline; **live `len(ALL_STRATEGIES)`=219 registered / 218 active as of 2026-06-18 B895** per CHECKLIST #111 freshness audit, source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"`; was 186 at Batch 372 historical anchor — see CLAUDE.md banner for full B372→B874 lineage) | 60 |
 | Layer 2 | Phase 0.D additions (ICT/SMC + Earnings Momentum + Calendar) | TBD |
 | Layer 3 | Pass 52 RESOLVED-DECIDED additions (chart patterns DEC-355-362 + categories DEC-367-371) | 13 |
 | Layer 4 | PENDING strategy-additive sub-decisions (DEC-141/142/143/145/176 per STRATEGY_REGISTER.md Layer 4) | ~5-6 |

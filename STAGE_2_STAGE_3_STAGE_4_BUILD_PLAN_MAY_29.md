@@ -4,6 +4,8 @@
 **Goal:** Maximum Claude-assisted build work on Max plan credits before May 29 downgrade to Pro plan. Post-May-29 operation is `python scripts/X.py` triggers + light Claude sessions for analysis.
 **Supersedes:** original "execute all phases by May 29" framing — that's compute-bound; reframe is "build all infrastructure now, run compute later."
 
+> **B895 FRESHNESS NOTE (2026-06-18 per CHECKLIST #111):** This doc was authored 2026-05-19 and contains MAY-26-ERA numerics: "185 active strats × 25 exits × 4 regimes = 4,625 cells" (lines 16, 18, 85, 170). **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219 + `from backtest.engine.exit_strategies import EXIT_STRATEGIES; print(len(EXIT_STRATEGIES))` = 26):** 219 registered / 218 active × 26 exits × 7 regimes = 39,676 cube cells. Pre-B894 references to "186" / "185" / "25 exits" / "4 regimes" in this doc are historical Pass 53 Day 9+ anchors. For canonical Phase 1B-α path see `PATH_TO_PHASE_1B_ALPHA.md` (section 10 collapsed B894).
+
 ---
 
 ## 1. Phase summary table (canonical)

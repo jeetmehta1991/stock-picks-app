@@ -6,6 +6,8 @@
 
 **Phase 1B-alpha path (canonical, B894 standalone):** [`PATH_TO_PHASE_1B_ALPHA.md`](PATH_TO_PHASE_1B_ALPHA.md) — B888 Council 14 synthesis + B889 Council 15 corrections + B890-B891 implementation (DEC-611/612/613/614). 6-day R5-to-Phase-1B-alpha path + threshold taxonomy + soft-score winner ID + R4-R5 delta + dashboard consolidation + metrics.py promotion plan.
 
+> **B895 FRESHNESS NOTE (2026-06-18 per CHECKLIST #111):** This doc was authored 2026-05-15 and contains MAY-ERA numerics: "199 strategies" / "live 186" / "185 active" at lines 451, 561. **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219 registered / 218 active. Historical anchors preserved for batch lineage; canonical current state in CLAUDE.md banner + STRATEGY_ROSTER.md (post-B894 scrub of stale columns).
+
 **Owner directives Pass 52 turn 134:**
 - Q1 = (B) All 5 stages — full lifecycle elaborated; Stage 1 brief, Stage 2 full, Stage 3-5 planning level
 - Q2 = ALL 15 sections per Stage 2 phase
