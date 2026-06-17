@@ -8188,12 +8188,121 @@ def test_batch222_compute_insider_cluster_signals_no_data():
 def test_batch221_passing_criteria_adds_sortino_calmar_regime():
     """Batch 221 (validation gates 2026-05-18 owner-approved): config
     PASSING_CRITERIA must define min_sortino_overall, min_sortino_per_regime,
-    min_calmar, min_regimes_passing."""
+    min_calmar, min_regimes_passing.
+
+    B891 (2026-06-18) DEC-611 OWNER-APPROVED CORRECTION: min_regimes_passing
+    flipped 2 -> 1 per CLAUDE.md canonical criterion #11. Carver's >=2 rule
+    was scale-correct for ~20-strategy universal-deployment systems; this
+    project's 218-strategy per-regime library design intentionally preserves
+    regime-specialists (short=bear-only; VIX spike=crisis-only) as P1
+    candidates. Pin updated to reflect new canonical value."""
     from backtest.config import PASSING_CRITERIA
     assert PASSING_CRITERIA.get("min_sortino_overall") == 1.0
     assert PASSING_CRITERIA.get("min_sortino_per_regime") == 0.7
     assert PASSING_CRITERIA.get("min_calmar") == 0.5
-    assert PASSING_CRITERIA.get("min_regimes_passing") == 2
+    assert PASSING_CRITERIA.get("min_regimes_passing") == 1  # DEC-611 B891
+
+
+def test_batch890_dec612_cost_sensitivity_gate():
+    """B890 DEC-612 cost-sensitivity AUTO-FAIL gate.
+
+    Insufficient sample (None) auto-passes; ratio >= 0.5 passes; ratio < 0.5
+    fails. Negative-Sharpe and zero-Sharpe edge cases auto-pass to avoid
+    spurious fails on degenerate cells.
+    """
+    from backtest.results.metrics import _eval_cost_sensitivity_gate
+    # Insufficient sample
+    assert _eval_cost_sensitivity_gate(None, None, 0.5) is True
+    assert _eval_cost_sensitivity_gate(1.0, None, 0.5) is True
+    assert _eval_cost_sensitivity_gate(None, 0.5, 0.5) is True
+    # Pass cases
+    assert _eval_cost_sensitivity_gate(1.0, 0.7, 0.5) is True   # ratio 0.7
+    assert _eval_cost_sensitivity_gate(1.0, 0.5, 0.5) is True   # ratio 0.5 exactly
+    # Fail case
+    assert _eval_cost_sensitivity_gate(1.0, 0.3, 0.5) is False  # ratio 0.3
+    # Edge cases
+    assert _eval_cost_sensitivity_gate(0.0, 0.0, 0.5) is True   # zero-Sharpe
+    assert _eval_cost_sensitivity_gate(-0.5, -0.3, 0.5) is True  # negative
+
+
+def test_batch890_dec613_chow_gate():
+    """B890 DEC-613 Chow break-point AUTO-FAIL gate.
+
+    No structural break -> pass. Structural break + post-break Sharpe < 0.3
+    -> fail. Insufficient-sample cases auto-pass.
+    """
+    import pandas as pd
+    from backtest.results.metrics import _eval_chow_gate
+    # Insufficient sample
+    assert _eval_chow_gate(None, 0.05, 0.3, pd.Series()) is True
+    assert _eval_chow_gate({"insufficient_sample": True}, 0.05, 0.3, pd.Series()) is True
+    assert _eval_chow_gate({"p_value": None}, 0.05, 0.3, pd.Series()) is True
+    # No break (p >= 0.05) -> pass
+    eq = pd.Series([1.0 + 0.001 * i for i in range(100)])
+    assert _eval_chow_gate({"p_value": 0.20, "split_idx": 50}, 0.05, 0.3, eq) is True
+    # Break with split_idx at end -> pass (cannot compute post-break)
+    assert _eval_chow_gate({"p_value": 0.001, "split_idx": 99}, 0.05, 0.3, eq) is True
+
+
+def test_batch890_dec614_adf_gate():
+    """B890 DEC-614 ADF stationarity AUTO-FAIL gate REGIME-CONDITIONAL.
+
+    Non-mean-rev strategy -> auto-pass (gate doesn't apply).
+    Mean-rev strategy + stationary (p<0.10) -> FAIL.
+    Mean-rev strategy + non-stationary (p>=0.10) -> PASS.
+    Insufficient sample -> auto-pass.
+    """
+    from backtest.results.metrics import _eval_adf_gate
+    # Non-mean-rev strategy: gate doesn't apply
+    assert _eval_adf_gate("breakout_strategy", {"p_value": 0.001}, 0.10) is True
+    assert _eval_adf_gate("smc_choch_reversal", {"p_value": 0.001}, 0.10) is True
+    # Mean-rev strategy: stationary equity -> FAIL
+    assert _eval_adf_gate("rsi_oversold", {"p_value": 0.001}, 0.10) is False
+    assert _eval_adf_gate("bollinger_lower", {"p_value": 0.05}, 0.10) is False
+    # Mean-rev strategy: non-stationary equity -> PASS
+    assert _eval_adf_gate("rsi_oversold", {"p_value": 0.5}, 0.10) is True
+    # Insufficient sample auto-pass
+    assert _eval_adf_gate("rsi_oversold", None, 0.10) is True
+    assert _eval_adf_gate("rsi_oversold", {"insufficient_sample": True}, 0.10) is True
+    assert _eval_adf_gate("rsi_oversold", {"p_value": None}, 0.10) is True
+
+
+def test_batch890_mean_reversion_taxonomy_complete():
+    """B890 DEC-614 mean-reversion taxonomy drift-guard.
+
+    MEAN_REVERSION_STRATEGIES set in config.py must contain at least the
+    minimum baseline of 12 strategies as of B890 + must exactly match
+    grep `category="mean_reversion"` in screener.py (with possible additions
+    for new Class 7 NEW_STRATEGY in future). Pin enforces feedback_doc_count
+    _drift_must_be_test_pinned -- when a new mean-rev strategy is added via
+    Class 7 workflow, this set must be updated in same batch."""
+    from backtest.config import MEAN_REVERSION_STRATEGIES
+    # Baseline at B890
+    assert len(MEAN_REVERSION_STRATEGIES) >= 12, (
+        f"B890 baseline: 12 mean-rev strategies; got {len(MEAN_REVERSION_STRATEGIES)}"
+    )
+    # Spot-check canonical members
+    expected_members = {
+        "bollinger_lower", "bollinger_tight", "bollinger_upper_short",
+        "keltner_lower", "rsi_oversold", "rsi_overbought_short",
+        "rsi9_extreme", "rsi21_slow", "williams_r_oversold",
+        "stochrsi_oversold", "stochrsi_overbought_short", "mfi_oversold",
+    }
+    assert expected_members.issubset(MEAN_REVERSION_STRATEGIES), (
+        f"B890 missing canonical mean-rev strategies: "
+        f"{expected_members - MEAN_REVERSION_STRATEGIES}"
+    )
+
+
+def test_batch890_passing_criteria_new_gate_keys():
+    """B890 DEC-612/613/614 PASSING_CRITERIA must define 4 new keys:
+    min_cost_sensitivity_ratio, chow_test_p_max, chow_post_break_sharpe_min,
+    adf_test_p_max_mean_reversion. Pin enforces drift-guard."""
+    from backtest.config import PASSING_CRITERIA
+    assert PASSING_CRITERIA.get("min_cost_sensitivity_ratio") == 0.5
+    assert PASSING_CRITERIA.get("chow_test_p_max") == 0.05
+    assert PASSING_CRITERIA.get("chow_post_break_sharpe_min") == 0.3
+    assert PASSING_CRITERIA.get("adf_test_p_max_mean_reversion") == 0.10
 
 
 def test_batch221_compute_pbo_cscv_basic():

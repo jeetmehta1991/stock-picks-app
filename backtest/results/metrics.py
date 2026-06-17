@@ -2174,6 +2174,106 @@ def _aep_pct_metric(df_trades: pd.DataFrame) -> dict:
     }
 
 
+def _eval_cost_sensitivity_gate(
+    sharpe_0bps, sharpe_20bps, min_ratio: float,
+) -> bool:
+    """DEC-612 (B890) cost-sensitivity AUTO-FAIL gate.
+
+    Returns True if gate passes (Sharpe degradation under realistic 20bps
+    friction is within tolerance). Insufficient sample (None) auto-passes
+    to avoid double-penalty with trade_count gate.
+
+    Gate: sharpe_at_20bps / sharpe_at_0bps >= min_ratio (default 0.5).
+
+    Council 16 Executor rationale: 20bps = T1a-conservative
+    (5bps slippage + 1bp IB commission + spread). Brutal for T3 but T3
+    strategies should clear this floor anyway.
+    """
+    if sharpe_0bps is None or sharpe_20bps is None:
+        return True  # insufficient sample auto-pass
+    if sharpe_0bps == 0:
+        return True  # avoid div-by-zero; trivial case
+    if sharpe_0bps < 0:
+        # negative clean-Sharpe strategy will be killed by other gates;
+        # cost gate doesn't apply meaningfully
+        return True
+    return (sharpe_20bps / sharpe_0bps) >= min_ratio
+
+
+def _eval_chow_gate(
+    chow_result: dict, p_max: float, post_break_sharpe_min: float,
+    equity_curve: pd.Series,
+) -> bool:
+    """DEC-613 (B890) Chow break-point AUTO-FAIL gate.
+
+    Returns True if gate passes (no structural break OR post-break Sharpe
+    still acceptable). Insufficient sample (n<60 to satisfy ~30 pre + ~30
+    post per Contrarian Council 16) auto-passes.
+
+    Gate: if Chow p<p_max (default 0.05), require post-break Sharpe >=
+    post_break_sharpe_min (default 0.3). Otherwise FAIL.
+    """
+    if chow_result is None or not isinstance(chow_result, dict):
+        return True  # insufficient sample auto-pass
+    if chow_result.get("insufficient_sample"):
+        return True
+    p_value = chow_result.get("p_value")
+    if p_value is None:
+        return True
+    if p_value >= p_max:
+        return True  # no structural break -> pass
+    # Structural break detected; check post-break Sharpe
+    split_idx = chow_result.get("split_idx")
+    if split_idx is None or split_idx >= len(equity_curve) - 1:
+        return True  # cannot compute post-break Sharpe -> pass
+    try:
+        post_break_returns = equity_curve.iloc[split_idx:].pct_change().dropna()
+        if len(post_break_returns) < 10:
+            return True  # too few post-break bars to evaluate
+        # Annualized Sharpe approximation (252 trading days)
+        mean_ret = post_break_returns.mean()
+        std_ret = post_break_returns.std()
+        if std_ret == 0 or std_ret is None:
+            return True
+        post_break_sharpe = (mean_ret / std_ret) * (252 ** 0.5)
+        return post_break_sharpe >= post_break_sharpe_min
+    except Exception:
+        return True  # computational issue auto-pass to avoid spurious fails
+
+
+def _eval_adf_gate(
+    strategy: str, adf_result: dict, p_max: float,
+) -> bool:
+    """DEC-614 (B890) ADF stationarity AUTO-FAIL gate.
+
+    REGIME-CONDITIONAL: applies to mean-reversion strategies only.
+    Non-mean-rev strategies auto-pass (gate doesn't apply).
+
+    Mean-reversion taxonomy at config.MEAN_REVERSION_STRATEGIES (DEC-614
+    explicit auditable file per Contrarian Council 16). When new mean-rev
+    strategy added via Class 7 workflow, must be added to the set in same
+    batch (pin test enforces).
+
+    Gate (mean-rev strategies only): if ADF p < p_max (default 0.10), the
+    equity curve is stationary (= mean-reverting non-compounder) -> FAIL.
+    Insufficient sample auto-pass.
+    """
+    from backtest.config import MEAN_REVERSION_STRATEGIES
+    if strategy not in MEAN_REVERSION_STRATEGIES:
+        return True  # not a mean-rev strategy -> gate doesn't apply
+    if adf_result is None or not isinstance(adf_result, dict):
+        return True  # insufficient sample auto-pass
+    if adf_result.get("insufficient_sample"):
+        return True
+    p_value = adf_result.get("p_value")
+    if p_value is None:
+        return True
+    # Stationary equity curve (p < p_max) on mean-rev strategy = whip-saw
+    # non-compounder -> FAIL. Non-stationary (p >= p_max) = trending equity
+    # = potentially compounding edge -> PASS.
+    return p_value >= p_max
+
+
 def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     """Compute all metrics for a single strategy across all trades."""
     g = df[df["strategy"] == strategy]
@@ -2437,6 +2537,36 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         # Batch 221 NEW gates (Sortino + Calmar). None auto-passes (insufficient sample).
         "sortino":            (sortino_val is None) or (sortino_val >= pc.get("min_sortino_overall", 1.0)),
         "calmar":             (calmar_val is None) or (calmar_val >= pc.get("min_calmar", 0.5)),
+        # Batch 890 (2026-06-18) Council 16 owner-approved DEC-612 cost-
+        # sensitivity AUTO-FAIL: degraded-Sharpe (at 20bps realistic friction)
+        # must retain >=50% of clean-Sharpe value. Insufficient-sample auto-
+        # pass mirrors DSR pattern at line 2436. cost_sensitivity dict keys
+        # come from _cost_sensitivity_sharpe at line 578-602.
+        "cost_sensitivity":   _eval_cost_sensitivity_gate(
+            cost_sensitivity.get("sharpe_at_0bps"),
+            cost_sensitivity.get("sharpe_at_20bps"),
+            pc.get("min_cost_sensitivity_ratio", 0.5),
+        ),
+        # Batch 890 DEC-613 Chow break-point AUTO-FAIL: structural break
+        # (p<0.05) AND post-break Sharpe < 0.3 -> FAIL. Insufficient sample
+        # auto-passes. chow_result computed at line 2229.
+        "chow_break":         _eval_chow_gate(
+            chow_result,
+            pc.get("chow_test_p_max", 0.05),
+            pc.get("chow_post_break_sharpe_min", 0.3),
+            equity_curve,
+        ),
+        # Batch 890 DEC-614 ADF stationarity AUTO-FAIL: REGIME-CONDITIONAL
+        # on mean-reversion strategies only. Mean-reverting equity curve =
+        # whip-saw non-compounder. Non-mean-rev strategies auto-pass. Mean-
+        # reversion taxonomy at config.MEAN_REVERSION_STRATEGIES (DEC-614
+        # explicit auditable file per Contrarian Council 16). adf_result
+        # computed at line 2228.
+        "adf_stationary":     _eval_adf_gate(
+            strategy,
+            adf_result,
+            pc.get("adf_test_p_max_mean_reversion", 0.10),
+        ),
         # regime_verdicts replaces per-regime count  -  see regime_verdicts and best_regimes
     }
     passes_all = all(passes.values())

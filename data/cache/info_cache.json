@@ -582,5 +582,13 @@
     "market_cap": 0,
     "exchange": "",
     "ipo_date": null
+  },
+  "BRK.B": {
+    "name": "BRK.B",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
   }
 }

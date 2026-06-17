@@ -5,7 +5,7 @@
 
 ## Decision Registry
 
-**Total: 534 decision entries (Pass 53 close: +DEC-589 + DEC-590 + DEC-591/592/593 prefetch-audit remediation + DEC-594/595 spec-without-build structural fix + DEC-596 standing approvals + per-turn push + DEC-607 INV-046 realism-floor raise + DEC-608 Sprint 0A.8 NO-LIVE-API HARD CUT implementation + DEC-609 H1 OHLCV master prefetch with vwap+n + DEC-610 forward-looking SPEC_ONLY -> DEFERRED_TO_* re-classification methodology; Pass 53 review-cycle DECs DEC-509-588 propagation pending DEC-588 doc-reconciliation pass; PARTIAL-SPEC-ONLY status counts pending retroactive audit per DEC-594)**
+**Total: 534 decision entries (Pass 53 close: +DEC-589 + DEC-590 + DEC-591/592/593 prefetch-audit remediation + DEC-594/595 spec-without-build structural fix + DEC-596 standing approvals + per-turn push + DEC-607 INV-046 realism-floor raise + DEC-608 Sprint 0A.8 NO-LIVE-API HARD CUT implementation + DEC-609 H1 OHLCV master prefetch with vwap+n + DEC-610 forward-looking SPEC_ONLY -> DEFERRED_TO_* re-classification methodology; **B890/B891 owner-approved Council 16: DEC-611 min_regimes_passing 2->1 per CLAUDE.md canonical + DEC-612 cost-sensitivity AUTO-FAIL gate + DEC-613 Chow break-point AUTO-FAIL gate + DEC-614 ADF stationarity REGIME-CONDITIONAL AUTO-FAIL gate**; Pass 53 review-cycle DECs DEC-509-588 propagation pending DEC-588 doc-reconciliation pass; PARTIAL-SPEC-ONLY status counts pending retroactive audit per DEC-594)**
 
 | Status | Count |
 |---|---|

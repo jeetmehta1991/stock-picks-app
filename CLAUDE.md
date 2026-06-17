@@ -117,7 +117,7 @@ LEARNINGS.md      # 89 lessons — L88: no Wikipedia, L89: universe staleness
 
 ---
 
-## Passing Criteria (11 tiered overall/per-regime + per-regime verdict)
+## Passing Criteria (14 tiered overall/per-regime + 3 AUTO-FAIL screens; per-regime verdict)
 
 All overall thresholds must pass for a strategy to advance overall. Additionally, each strategy gets a per-regime verdict (PASS/FAIL/INSUFFICIENT_DATA) for each of the 7 historical regimes evaluated against the per-regime thresholds. A strategy valid in crisis but not bull is deployed only during crisis — this is intentional. Per-regime thresholds are lower than overall thresholds because per-regime trade samples are smaller (statistical-power tradeoff codified in Pass 53 owner decisions 2026-05-12 via BUG-31/32/33).
 
@@ -133,9 +133,15 @@ All overall thresholds must pass for a strategy to advance overall. Additionally
 | 8 | Macro correlation | ≥5pp win rate diff | same | original |
 | 9 | Min trades | ≥30 | ≥100 | BUG-31 Batch 112 (codified existing) |
 | 10 | Sharpe ratio | ≥0.7 | ≥1.0 | BUG-33 Batch 110 |
-| 11 | Per-regime verdict | PASS in ≥1 regime (not universal pass required) | -- | original |
+| 11 | Per-regime verdict | PASS in ≥1 regime (not universal pass required) | -- | original; B891 DEC-611 reverted min_regimes_passing from 2 to 1 per CLAUDE.md canonical (Batch 221 had drifted to 2 via Carver 2015 universal-strategy rule which doesn't scale to 218-strategy per-regime library) |
+| 12 | Sortino ratio | ≥0.7 | ≥1.0 | Batch 221 (Sortino-Price 1991 JoI; asymmetric vol penalty) |
+| 13 | Calmar ratio | ≥0.5 (CAGR / max DD) | same | Batch 221 (Carver 2019 "Leveraged Trading"; path-aware) |
+| 14 | Deflated Sharpe (DSR) | ≥0.95 | same | Batch 186 (Bailey-Lopez de Prado 2014 multi-testing correction) |
+| **AUTO-FAIL #1** | **Cost-sensitivity ratio** | `sharpe_at_20bps / sharpe_at_0bps ≥ 0.5` (insufficient sample → auto-pass) | same | **B890 DEC-612** (Council 15 promoted from advisory to gate; catches strategies that die under realistic friction) |
+| **AUTO-FAIL #2** | **Chow break-point** | p ≥ 0.05 OR post-break Sharpe ≥ 0.3 | same | **B890 DEC-613** (catches dead-strategy regime-coincidence false positives) |
+| **AUTO-FAIL #3** | **ADF stationarity (regime-conditional: mean-rev strategies only)** | non-mean-rev → auto-pass; mean-rev → p ≥ 0.10 (non-stationary equity passes; stationary = whip-saw non-compounder fails) | same | **B890 DEC-614** (mean-rev taxonomy at `MEAN_REVERSION_STRATEGIES` set; explicit auditable file per Council 16 Contrarian) |
 
-Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys (`min_*`, `min_*_overall`, `min_*_per_regime`). Caller-side verdict functions read these to gate overall vs per-regime PASS evaluation.
+Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys (`min_*`, `min_*_overall`, `min_*_per_regime`, `*_test_p_max`, `*_post_break_sharpe_min`, `min_cost_sensitivity_ratio`). Caller-side verdict functions read these to gate overall vs per-regime PASS evaluation. AUTO-FAIL screens are evaluated alongside the 14 canonical criteria in `metrics.py::compute_strategy_metrics` `passes` dict (lines 2418-2470).
 
 ---
 

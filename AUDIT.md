@@ -6,6 +6,22 @@
 
 ---
 
+## B890/B891 (2026-06-18) — 4 DECs OWNER-APPROVED PER COUNCIL 16
+
+**DEC-611 RESOLVED-IMPLEMENTED Batch 891 2026-06-18:** Per-regime PASS gate corrected `min_regimes_passing: 2 -> 1`. Council 15 surfaced doc-vs-code DRIFT: CLAUDE.md criterion #11 specifies "PASS in >=1 regime, not universal pass required" but `backtest/config.py:506` had drifted to `2` via Batch 221 (2026-05-18) per Carver 2015 universal-strategy rule. Carver's rule was scale-correct for ~20-strategy universal-deployment systems and does NOT apply to this project's 218-strategy per-regime library design where short=bear-only / VIX-spike=crisis-only strategies are intentionally Priority-1 candidates. Owner-approved 2026-06-17/18 per Council 16. Pin: `test_batch221_passing_criteria_adds_sortino_calmar_regime` updated to assert =1. Same-commit pyramid 6/6 PASS on B890 target tests.
+
+**DEC-612 RESOLVED-IMPLEMENTED Batch 890 2026-06-18:** Cost-sensitivity AUTO-FAIL gate promoted from advisory to PASSING_CRITERIA. New key `min_cost_sensitivity_ratio: 0.5` requires `sharpe_at_20bps / sharpe_at_0bps >= 0.5`. 20bps = T1a-conservative (5bps slippage + 1bp IB commission + spread per Council 16 Executor); brutal for T3 but T3 strategies should clear this floor. Insufficient-sample auto-pass mirrors DSR/Sortino/Calmar pattern. `_eval_cost_sensitivity_gate` helper added to metrics.py. Pin: `test_batch890_dec612_cost_sensitivity_gate` (8 assertions covering pass/fail/None/negative/zero edge cases).
+
+**DEC-613 RESOLVED-IMPLEMENTED Batch 890 2026-06-18:** Chow break-point AUTO-FAIL gate promoted from advisory to PASSING_CRITERIA. New keys `chow_test_p_max: 0.05` + `chow_post_break_sharpe_min: 0.3`. Catches dead-strategy false positives (regime-coincidence: strategy died at 2022-06-13 rate-hike pivot, still coasting on pre-break trades). Gate logic: if Chow p<0.05 (structural break detected), require post-break Sharpe >=0.3 -- otherwise FAIL. Insufficient-sample auto-pass per Council 16 Contrarian (n<60 to satisfy ~30 pre + ~30 post). `_eval_chow_gate` helper added to metrics.py. Pin: `test_batch890_dec613_chow_gate` (5 assertions).
+
+**DEC-614 RESOLVED-IMPLEMENTED Batch 890 2026-06-18:** ADF stationarity REGIME-CONDITIONAL AUTO-FAIL gate promoted from advisory to PASSING_CRITERIA. New key `adf_test_p_max_mean_reversion: 0.10`. **REGIME-CONDITIONAL: applies to mean-reversion strategies only.** Non-mean-rev strategies auto-pass (gate doesn't apply). Mean-rev strategies with stationary equity (p<0.10) = whip-saw non-compounders -> FAIL. Mean-reversion taxonomy at `config.MEAN_REVERSION_STRATEGIES` set (12 strategies as of B890): bollinger_lower/tight/upper_short + keltner_lower + rsi_oversold/_overbought_short + rsi9_extreme + rsi21_slow + williams_r_oversold + stochrsi_oversold/_overbought_short + mfi_oversold. Explicit auditable file per Council 16 Contrarian (rather than name-regex inference). When new mean-rev strategy added via Class 7 NEW_STRATEGY workflow, must be added to set in same batch (pin `test_batch890_mean_reversion_taxonomy_complete` enforces). `_eval_adf_gate` helper added to metrics.py. Pin: `test_batch890_dec614_adf_gate` (7 assertions).
+
+**Test pyramid:** 6/6 PASS on targeted run (test_batch890_* + updated test_batch221). Full pyramid pending B660 v2 background completion (avoid CPU contention per `feedback_check_existing_pids_before_long_background_launch`).
+
+**Doc sweep B890/B891:** CLAUDE.md banner passing-criteria table updated (11 -> 14 + 3 AUTO-FAIL), PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md table updated, STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md section 10.10a-10.10c documented Council 15 corrections leading to B890/B891, AUDIT_INDEX.md +4 DECs (538 total), STRATEGY_ROSTER.md regenerated (no per-strategy change), EXECUTION_QUEUE.md TIER pending. CHECKLIST + LEARNINGS not updated (no new process gaps surfaced; these are config-only gates not workflow rules).
+
+---
+
 
 ## EXECUTIVE SUMMARY (read this first)
 

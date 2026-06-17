@@ -26,7 +26,19 @@
       "Bash(awk 'NR==454 || NR==483' /c/Users/jeetm/Github/stock-picks-app/AUDIT_INDEX.md)",
       "Bash(xxd)",
       "WebFetch(domain:massive.com)",
-      "Bash(python -m pytest backtest/tests/test_data_integrity.py -v)"
+      "Bash(python -m pytest backtest/tests/test_data_integrity.py -v)",
+      "WebFetch(domain:www.finra.org)",
+      "WebFetch(domain:cdn.finra.org)",
+      "WebFetch(domain:www.indexologyblog.com)",
+      "WebFetch(domain:www.etfstrategy.com)",
+      "WebFetch(domain:www.zacks.com)",
+      "WebFetch(domain:lipperalpha.refinitiv.com)",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; aws ec2 get-console-output --instance-id i-03db583a7ba98b2bb --query Output --output text 2>$null | Out-File -Encoding utf8 C:\\\\tmp\\\\console.txt; \\(Get-Content C:\\\\tmp\\\\console.txt | Measure-Object -Line\\).Lines; Get-Content C:\\\\tmp\\\\console.txt -Tail 60)",
+      "PowerShell($out = aws ec2 get-console-output --instance-id i-03db583a7ba98b2bb --query Output --output text 2>$null; if \\($out\\) { $lines = $out -split \"`n\"; \"Total lines: $\\($lines.Count\\)\"; \"===LAST 80===\"; $lines | Select-Object -Last 80 | Out-String } else { \"Console output empty or stderr only\" })",
+      "PowerShell(aws ec2 get-console-output --instance-id i-03db583a7ba98b2bb --query Output --output text 2>&1 | Out-File -FilePath C:\\\\tmp\\\\console.txt -Encoding utf8; Test-Path C:\\\\tmp\\\\console.txt; if \\(Test-Path C:\\\\tmp\\\\console.txt\\) { \\(Get-Item C:\\\\tmp\\\\console.txt\\).Length; Get-Content C:\\\\tmp\\\\console.txt -Tail 100 })",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; $env:PYTHONUTF8=\"1\"; aws ec2 get-console-output --instance-id i-03db583a7ba98b2bb --query Output --output text > C:\\\\tmp\\\\console.txt 2>$null; \\(Get-Item C:\\\\tmp\\\\console.txt\\).Length; Get-Content C:\\\\tmp\\\\console.txt -Tail 80 -Encoding utf8)",
+      "PowerShell(Get-Process -Id 9988 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.StartTime -gt \\(Get-Date\\).AddHours\\(-2\\) } | Select-Object Id, StartTime, CPU, WS | Format-Table -AutoSize)"
     ]
   }
 }

@@ -584,7 +584,7 @@ Note: Code returns 5 atomic labels; the cube_populator decorates into 7-regime g
 | 25 | `earnings_blackout` | event | Force exit before earnings announcement |
 | 26 | `class_time_stop` | time_stop | Strategy-class-specific time stop |
 
-### CLAUDE.md 11 passing criteria (layered on top of DEC-426 5-Gate)
+### CLAUDE.md 14 passing criteria + 3 AUTO-FAIL screens (layered on top of DEC-426 5-Gate; updated B890/B891)
 
 Per cell: thresholds layered as "Per-regime threshold" vs "Overall threshold":
 
@@ -600,9 +600,15 @@ Per cell: thresholds layered as "Per-regime threshold" vs "Overall threshold":
 | 8 | Macro correlation | ≥5pp WR diff | same |
 | 9 | Min trades | ≥30 | ≥100 |
 | 10 | Sharpe ratio | ≥0.7 | ≥1.0 |
-| 11 | Per-regime verdict | PASS in ≥1 regime | (PASS-anywhere is enough) |
+| 11 | Per-regime verdict | PASS in ≥1 regime (B891 DEC-611 reverted from 2 to 1) | (PASS-anywhere is enough) |
+| 12 | Sortino ratio | ≥0.7 | ≥1.0 |
+| 13 | Calmar ratio | ≥0.5 | same |
+| 14 | Deflated Sharpe (DSR) | ≥0.95 | same |
+| **AUTO-FAIL #1** | **Cost-sensitivity ratio** | `sharpe_at_20bps / sharpe_at_0bps ≥ 0.5` | same |
+| **AUTO-FAIL #2** | **Chow break-point** | p ≥ 0.05 OR post-break Sharpe ≥ 0.3 | same |
+| **AUTO-FAIL #3** | **ADF stationarity (mean-rev only)** | non-mean-rev → auto-pass; mean-rev p ≥ 0.10 | same |
 
-Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys; engine consumes via `metrics.py`.
+Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys; engine consumes via `metrics.py`. **B890/B891 additions:** AUTO-FAIL screens evaluated alongside canonical criteria in `metrics.py::compute_strategy_metrics` `passes` dict (lines 2418-2470); mean-reversion taxonomy at `config.MEAN_REVERSION_STRATEGIES` (12 strategies; explicit auditable file per Council 16). **Per-regime gate corrected B891 DEC-611:** flipped from `min_regimes_passing=2` (Batch 221 Carver 2015 universal-strategy rule, didn't scale to 218-strategy per-regime library) back to canonical `=1` per CLAUDE.md criterion #11.
 
 ---
 

@@ -500,10 +500,21 @@ PASSING_CRITERIA = {
     # "Leveraged Trading" 2019 standard. Source: Magdon-Ismail-Atiya 2004
     # Risk Magazine.
     "min_calmar":              0.5,    # Batch 221: Calmar >= 0.5
-    # Per-regime PASS in >=2 regimes (was implicit >=1 via "any regime
-    # passes"). Carver 2015: a strategy passing only in one regime is
-    # likely a regime-coincidence finding, not a robust edge.
-    "min_regimes_passing":     2,      # Batch 221: must PASS in >=2 of 4 regimes
+    # Per-regime PASS gate.
+    # Batch 221 (2026-05-18): set to 2 per Carver 2015 "strategy passing
+    #   only in one regime is likely a regime-coincidence finding."
+    # Batch 891 (2026-06-18) DEC-611 OWNER-APPROVED CORRECTION: REVERTED
+    #   to 1 per CLAUDE.md canonical criterion #11 ("PASS in >=1 regime,
+    #   not universal pass required") + CLAUDE.md core principle ("Per-
+    #   regime strategy library: different strategies for different
+    #   regimes -- not universal strategies"). Council 15 surfaced the
+    #   doc-vs-code DRIFT; Council 16 implementation owner-approved
+    #   2026-06-18. Project design intentionally preserves regime-
+    #   specialist strategies (short = bear regime only; VIX spike =
+    #   crisis only) as Priority-1 candidates -- Carver's >=2 rule
+    #   was for ~20-strategy universal-deployment systems and does
+    #   NOT scale-correctly to a 218-strategy per-regime-library design.
+    "min_regimes_passing":     1,      # DEC-611 B891 (was 2 Batch 221; per CLAUDE.md canonical)
     # BUG-32 RESOLVED-IMPLEMENTED Batch 111 2026-05-12 (owner-approved
     # option C 2026-05-12): tiered profit-factor. `min_profit_factor`
     # above stays the per-regime PASS threshold (1.2 baseline, 1.3 for
@@ -532,6 +543,41 @@ PASSING_CRITERIA = {
     # DEC-084 spec (more aggressive flagging of suspicious win rates).
     "audit_win_rate_above":    0.65,
     "audit_profit_factor_above": 1.5,
+    # Batch 890 (2026-06-18) Council 16 owner-approved per Council 15
+    # corrections: promote 3 metrics.py "sleeping unicorns" from advisory
+    # (computed but ungated) to AUTO-FAIL gates per `feedback_doc_count_drift
+    # _must_be_test_pinned` + B888 implementation plan section 10.10c.
+    # DEC-612 cost-sensitivity gate: degraded-Sharpe (at realistic 20bps
+    #   commission+slippage) must retain >=50% of clean-Sharpe value. Catches
+    #   strategies that look profitable in zero-cost backtest but die under
+    #   realistic execution friction. Threshold derived per Council 16
+    #   Executor: 20bps tier-conservative for T1a (~5bps slippage + 1bp IB
+    #   commission + spread); brutal for T3 but acceptable since T3 strategies
+    #   should clear this floor anyway. Insufficient-sample auto-PASS per
+    #   Contrarian Council 16 (None auto-passes; mirrors DSR/Sortino/Calmar
+    #   pattern at line 2436-2439).
+    "min_cost_sensitivity_ratio": 0.5,    # DEC-612 B890: sharpe_at_20bps / sharpe_at_0bps >= 0.5
+    # DEC-613 Chow break-point gate: catches dead-strategy false positives
+    #   (regime-coincidence: strategy died at 2022-06-13 rate-hike pivot,
+    #   still coasting on pre-break trades). p < 0.05 indicates structural
+    #   break; require post-break Sharpe >= 0.3 to confirm strategy survived
+    #   the break. Insufficient sample (n<60 to satisfy ~30 pre + ~30 post
+    #   per Contrarian Council 16) auto-passes to avoid double-penalty with
+    #   trade_count gate.
+    "chow_test_p_max": 0.05,              # DEC-613 B890
+    "chow_post_break_sharpe_min": 0.3,    # DEC-613 B890: only enforced when Chow p < 0.05
+    # DEC-614 ADF stationarity gate: REGIME-CONDITIONAL applied to
+    #   mean-reversion strategies only (per Council 15 First Principles).
+    #   Mean-reverting equity curve = whip-saw non-compounder; LLM agents
+    #   add zero value to non-compounding strategies. Non-stationary equity
+    #   on a mean-reversion strategy is the canonical "no edge" signature.
+    #   Insufficient sample auto-PASS. Non-mean-rev strategies AUTO-PASS
+    #   (gate doesn't apply). Mean-reversion classification taxonomy is
+    #   explicit + auditable: MEAN_REVERSION_STRATEGIES set populated at
+    #   module load from screener._strat3 / _strat category="mean_reversion"
+    #   tag (per Contrarian Council 16 "explicit auditable taxonomy file"
+    #   demand).
+    "adf_test_p_max_mean_reversion": 0.10,  # DEC-614 B890
 }
 
 # DEC-083 + DEC-406 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 39
@@ -1020,6 +1066,43 @@ DEPRECATED_STRATEGIES: set[str] = set()
 #     curated CSV.
 STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
     "dxy_headwind_multinational_short",
+}
+
+
+# DEC-614 (B890 owner-approved 2026-06-18) ADF mean-reversion taxonomy.
+# Per Council 16 Contrarian "explicit auditable taxonomy file" demand:
+# rather than infer mean-reversion classification via regex / name-pattern,
+# enumerate the strategies explicitly. This set is the SINGLE SOURCE OF TRUTH
+# for ADF AUTO-FAIL gate (DEC-614 / adf_test_p_max_mean_reversion).
+#
+# Derivation: strategies registered via screener._strat3() / _strat() with
+# category="mean_reversion" tag. Cross-checked via grep
+# `category.*mean_reversion` in screener.py (12 hits as of B890).
+#
+# Maintenance discipline: when a new mean-reversion strategy is added via
+# Class 7 NEW_STRATEGY workflow, add to this set in the SAME batch.
+# Pin test `test_batch890_mean_reversion_taxonomy_complete` asserts that
+# every category="mean_reversion" registration in screener.py has a matching
+# entry here (drift-guard per `feedback_doc_count_drift_must_be_test_pinned`).
+MEAN_REVERSION_STRATEGIES: set[str] = {
+    # Bollinger band mean-reversion family
+    "bollinger_lower",
+    "bollinger_tight",
+    "bollinger_upper_short",
+    # Keltner mean-reversion
+    "keltner_lower",
+    # RSI extreme mean-reversion
+    "rsi_oversold",
+    "rsi_overbought_short",
+    "rsi9_extreme",
+    "rsi21_slow",
+    # Williams %R mean-reversion
+    "williams_r_oversold",
+    # Stochastic mean-reversion
+    "stochrsi_oversold",
+    "stochrsi_overbought_short",
+    # MFI mean-reversion
+    "mfi_oversold",
 }
 
 
