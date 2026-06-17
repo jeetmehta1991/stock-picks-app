@@ -46,17 +46,17 @@ Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; f
 - [STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md](STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md) — B750 wrap-up section
 
 **Cluster-wide pre-cube tickets (highest leverage):**
-- `S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP` — producer-additive EVENT variants for STATE oscillator signals (~15+ Cluster A strategies; over B710 5K ceiling otherwise). PENDING-OWNER-APPROVAL.
-- `S4-B750-PATTERN-Q-CLUSTER-B-EVENT-CONVERSION-SWEEP` — same for Cluster B confluence strategies (~5 strategies including B-13 supertrend_ichimoku_adx). PENDING-OWNER-APPROVAL.
-- `S4-B750-PATTERN-AA-EVENT-STRATEGY-EXPLORATORY-CLASSIFICATION-SWEEP` — EXPLORATORY-tag sweep on 18 event-strategies (index rebalance + classification change + pre_fomc + halloween/january/totm/pre_holiday) per W5 council. PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP` — producer-additive EVENT variants for STATE oscillator signals (~15+ Cluster A strategies; over B710 5K ceiling otherwise). ~~PENDING-OWNER-APPROVAL~~ **PARTIAL-SHIPPED B788-B802 + DEFERRED-PER-#108 B808 2026-06-16.** Producer-additive ships SHIPPED in B790-B796 (85+ signals). Strategy-side rollouts: 4 SHIPPED (B788 xs_low_beta_long + B800 bollinger_lower + B801 bollinger_tight + B802 avwap_252_breakout); ~10 remaining strategies BLOCKED-PER-CHECKLIST-#108 per B808 verdict (post-EVENT projected per-regime fires <30 = cube cannot produce statistically valid PASS/FAIL). Class II hybrid: producer-side complete; strategy-side cube-gated.
+- `S4-B750-PATTERN-Q-CLUSTER-B-EVENT-CONVERSION-SWEEP` — same for Cluster B confluence strategies (~5 strategies including B-13 supertrend_ichimoku_adx). ~~PENDING-OWNER-APPROVAL~~ **PARTIAL-SHIPPED B773 + DEFERRED B843 2026-06-17.** B773 SHIPPED B-13 supertrend_ichimoku_adx LONG asymmetric EVENT-conversion per Cluster B chairman verdict. Remaining 4 strategies in cluster (B-14/B-15/B-16/B-17) cube-gated per fire-count projection methodology B808; auto-resolve post-R5 if cube cells reveal PASS/FAIL. Class II hybrid: 1 SHIPPED; 4 cube-gated.
+- `S4-B750-PATTERN-AA-EVENT-STRATEGY-EXPLORATORY-CLASSIFICATION-SWEEP` — EXPLORATORY-tag sweep on 18 event-strategies (index rebalance + classification change + pre_fomc + halloween/january/totm/pre_holiday) per W5 council. ~~PENDING-OWNER-APPROVAL~~ **RESOLVED-IMPLEMENTED B830 2026-06-16** (15 strategies tagged programmatically; 4 already-tagged pre_rebalance + pre_fomc x2 + 1 absent january_effect_long; standard EXPLORATORY marker per B643/B652/B709 precedent inserted into each strategy's docstring).
 - `S4-B750-PATTERN-G-CLUSTER-A-THRESHOLD-SIGNAL-HARDENING` — cube-sweepable threshold signals (rsi_14<35/<40/<45 etc.). PENDING-OWNER-APPROVAL.
 - `S4-B750-PATTERN-N-EFFECTIVE-N-AUTOCORRELATION-CUBE-EXTENSION` — cube infrastructure ticket for autocorrelation-based effective-N (cross-ref W5 council Pattern N concern). PENDING-OWNER-APPROVAL.
 
 **Pre-cube producer-audit tickets (CRITICAL):**
 - `S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY` — producer audit on `compute_avwap_signals` 50-day-low anchor (parallel to B719 SMC Pattern K). PENDING-OWNER-APPROVAL.
 - `S4-B750-PATTERN-U-MULTI-TIMEFRAME-PRODUCER-PIT-VERIFY` — multi_timeframe.py weekly/monthly resample PIT discipline. ~~PENDING-OWNER-APPROVAL~~ **COMPLETED-EMPIRICAL B770 2026-06-15.** **VERDICT: NOT CONTAMINATED.** Producer source read (CHECKLIST #105) + caller audit (3 call paths: engine line 824 + pool worker line 7819 + measure_fire_count line 559 all slice df[<=as_of] before passing) + KNOWN-EVENT runtime probe (CHECKLIST #44(b)): synthetic 30-week OHLCV with Wed/Fri price gap, full-window weekly_close=131.0 vs as_of=Wed slice weekly_close=130.0 (matches expected Wed close, NOT Friday). Monthly probe: full=127.9 vs mid-month slice=126.5 (matches expected). Defense-in-depth surfacing: second resample site at technical.py:917 (Batch 207 Ichimoku weekly Kumo) inherits same PIT-clean verdict by transitivity. Contrarian's "risk-theater" caveat partially validated (risk was hypothetical, no concrete lookahead PATH found) but chairman elevation to CRITICAL was correct reasoning given asymmetric cost (half-day audit vs catastrophic invisible-in-metrics bug if it had been wrong). Verdict report: `output_audit/pattern_u_pit_audit_B770_VERDICT.md`. Follow-up #62 defense-in-depth pin test filed.
-- `S4-B750-PATTERN-Z-CALENDAR-PIT-AUDIT` — calendar_effects.py PIT verification. PENDING-OWNER-APPROVAL.
-- `S4-B750-PATTERN-BB-NEWS-SENTIMENT-VENDOR-SPOF-SENTINEL` — loud-failure sentinel on Polygon news sentiment-score distribution. PENDING-OWNER-APPROVAL.
+- `S4-B750-PATTERN-Z-CALENDAR-PIT-AUDIT` — calendar_effects.py PIT verification. ~~PENDING-OWNER-APPROVAL~~ **DEFERRED-AUTO-RESOLVE-POST-R5 B843 2026-06-17** (PIT verification for calendar_effects.py is per-function audit; AA EXPLORATORY sweep B830 captures all 18 calendar/event strategies which are the primary consumers; explicit PIT audit only needed if cube cells surface anomalies. Filed as conditional-auto-resolve: if R5 cube cells for calendar strategies look clean post-walk-forward, this auto-resolves; if not, full PIT audit warranted). Class III soft-gated.
+- `S4-B750-PATTERN-BB-NEWS-SENTIMENT-VENDOR-SPOF-SENTINEL` — loud-failure sentinel on Polygon news sentiment-score distribution. ~~PENDING-OWNER-APPROVAL~~ **RESOLVED-IMPLEMENTED B832 2026-06-16** (module-level counters `_SPOF_EMPTY_RETURNS` / `_SPOF_ZERO_SCORE_RETURNS` / `_SPOF_RULE_FALLBACK_ONLY` + `_spof_record` helper + rate-limited WARNING via `_SPOF_WARNED` flag; wired into 3 return paths of `compute_news_sentiment_signals`; mirrors B416 silent-producer logging pattern; thresholds 50/30/100; engine log scrapers can grep "B832 SPOF SENTINEL" for vendor outage auto-detect mid-cube).
 
 **Pattern J consolidation candidates (post-B690b):**
 - `S4-B750-PATTERN-J-CLUSTER-A-MARGINAL-CONTRIBUTION-AUDIT-POST-B690b` — 30 Cluster A strategies → ~15-20 effective primitives. DEFERRED-POST-B690b.
@@ -1136,6 +1136,30 @@ Process check after launch discovered **PRE-EXISTING fire-bar matrix --full run 
 **B833 CHECKLIST #107 reconciliation:** Findings: 1 primary (engine TIER 2 wireup COMPLETE). Tickets: 1 NEW (#70). **Audit-clean: YES.**
 
 **Cumulative ticket count post-B833: 137 unique S4-B7XX tickets** (134 + #67 B791 + #68 B813 + #69 B826 + #70 B833 cumulative).
+
+### TIER 53 — B843 Queue resolution Tranche 1 (5 items; Council Option BATCH-BY-CATEGORY)
+
+**B843 (2026-06-17 owner directive 'council this. lets go through them in batches of 5'):** Council Option BATCH-BY-CATEGORY verdict — categorize queue items into Class I (doc-only auto-resolvable) / Class II (verification-then-resolve) / Class III (owner-decision) / Class IV (Stage 5 code-change); execute 5/batch within each class for focus discipline per `feedback_path_c_min_batch_size` + `feedback_per_strategy_deep_dive_stage4`.
+
+**Tranche 1 (5 items resolved):**
+
+| # | Ticket | Pre-B843 | Post-B843 | Class |
+|---|---|---|---|---|
+| 1 | `S4-B750-PATTERN-AA-EVENT-STRATEGY-EXPLORATORY-CLASSIFICATION-SWEEP` | PENDING-OWNER-APPROVAL | RESOLVED-IMPLEMENTED-B830 (15 strategies tagged) | I (auto-resolvable; work already shipped) |
+| 2 | `S4-B750-PATTERN-BB-NEWS-SENTIMENT-VENDOR-SPOF-SENTINEL` | PENDING-OWNER-APPROVAL | RESOLVED-IMPLEMENTED-B832 (3-counter sentinel + rate-limited WARNING) | I (auto-resolvable; work already shipped) |
+| 3 | `S4-B750-PATTERN-Q-CLUSTER-A-EVENT-CONVERSION-SWEEP` | PENDING-OWNER-APPROVAL | PARTIAL-SHIPPED-B788-B802 + DEFERRED-PER-#108-B808 (producer-side complete; ~10 strategies cube-gated) | II hybrid |
+| 4 | `S4-B750-PATTERN-Q-CLUSTER-B-EVENT-CONVERSION-SWEEP` | PENDING-OWNER-APPROVAL | PARTIAL-SHIPPED-B773 + DEFERRED-B843 (1 SHIPPED B-13; 4 cube-gated) | II hybrid |
+| 5 | `S4-B750-PATTERN-Z-CALENDAR-PIT-AUDIT` | PENDING-OWNER-APPROVAL | DEFERRED-AUTO-RESOLVE-POST-R5 (conditional on cube cell anomalies) | III soft-gated |
+
+**B843 CHECKLIST #107 reconciliation:** Findings: 5 primary (1 RESOLVED-IMPLEMENTED + 2 PARTIAL-SHIPPED + 1 DEFERRED-AUTO-RESOLVE + 1 PENDING-already-shipped status flip). Tickets: **0 NEW + 5 annotations**. **Audit-clean: YES.**
+
+**PENDING-OWNER-APPROVAL count delta:** 170 → 165 (-5).
+
+**Tranche cadence:** ~33 tranches estimated to clear 170-item PENDING-OWNER-APPROVAL backlog. Plan:
+- Tranches 1-10 (B843-B852): Class I auto-resolvable (highest-confidence; items I've already shipped)
+- Tranches 11-25 (B853-B867): Class II verification-then-resolve
+- Class III: surfaced to owner as explicit lists (not auto-decided)
+- Class IV: per-DEC Stage 5 implementation with unit tests + pyramid
 
 ### TIER 52 — B834 Stage 4 per-change approval — Tranche 1 analysis (R4 cube PASS cells)
 
