@@ -1750,6 +1750,63 @@ _archived_b713_original_inspect_currentframe_ticket_superseded_by_PARTIALLY-RESO
 
 ---
 
+## TIER 54 — Walk-Forward Delta Theory (B881 pre-R5 synthesis 2026-06-17)
+
+**Trigger:** Owner asked "what else is pending" for R5; I surfaced as biggest gap: *"R4 best OOS Sharpe = 0.419; what's the structural theory that R5 should beat the 0.7 gate?"* Council approved building it.
+
+**Context:** R4 (output_batch395_final) walk-forward FAILED 1A-α gate (best OOS Sharpe 0.419 < 0.7 threshold across all 9 optimizer-selected cells). R5 launch without quantified theory of change risks repeating R4's failure mode at $9.30 + $300 downstream cost.
+
+### Cumulative change-class inventory (B660 → B880; this 2026-06 cycle)
+
+| Class | Description | Examples | Direction on OOS Sharpe |
+|---|---|---|---|
+| **A. Pattern W deletions** | Strict-subset or literal-duplicate strategies removed; reduces Bonferroni denominator | B722 -3 (hull_rsi_short + po3_htf_aligned × 2); B874 -2 (camarilla_rsi_obv + standalone); B682 prior -4 (BR-15/EV-3/EV-4/EV-7); B720 prior; B687 T5 | ✅ **Small positive** (+0.005 to +0.02 estimated; reduced denominator at 5,694 cells vs 5,746) |
+| **B. STATE→EVENT conversions** | 10x fire-count reduction per B655 T10 precedent (state-flag 99% True → 5-bar event 0-5%) | B655 T10 supertrend; B721 simple_below_ema_50_short; B722 hull_rsi dual; B729 williams_stoch_dual; B795 RSI EVENT family (4 periods × multi-threshold) | ⚠ **Conditional positive** (+0.05 to +0.15 per converted cell IF n stays ≥ 30; INSUFFICIENT_POWER risk per CHECKLIST #109 if n drops) |
+| **C. EXPLORATORY tags** | Pre-registers SHORT-side / event-strategy expected-fail; CHECKLIST #109 INSUFFICIENT_POWER framework | B643 W5; B652 W5m; B709 EV-3/4 restored; B722 po3_bullish/bearish; B873 A-7 SHORT (this session); B875 A-20 SHORT + A-21 (this session) | **Neutral** (0 direct; framework for post-cube interpretation only) |
+| **D. AA EXPLORATORY (B830)** | 15 event-strategies tagged programmatically per W5 council | strat_pre_fomc + index_rebalance + classification_change + halloween/january/totm/pre_holiday family | **Neutral** (0 direct; per #109) |
+| **E. Pattern S Mean-Rev SHORT (B803+B831)** | SHORT-side structurally headwinded; pre-registered FAIL | rsi21_slow / rsi_volume_200ema / williams_r_oversold / mfi_oversold / ultimate_oscillator (5 dual SHORT branches) | **Neutral** (per #109; cube measures separately) |
+| **F. Honest-language reframes** | CHECKLIST (r) timeframe-mismatch compliance; doc-only | B787 (3 strategies); B879 (8 strategies); 11 total floor-trader/Camarilla/CPR | **Neutral** (zero behavior change) |
+| **G. Producer-additive** | New signals available for strategy gates | B795 RSI EVENT family; B790-B796 Pattern Q producers (AVWAP/RSI/capitulation/breakout EVENTs); B832 BB SPOF sentinel | ⚠ **Conditional positive** (only if strategies adopt new signals; most haven't yet) |
+| **H. Fire-bar matrix INFRA** | Foundation for Pattern W/J/N/AA validation | B756 SHIPPED-SMOKE; B807 demo verdict; B812/B827 PID-died; ticket 9 option D re-launch sequence | **Neutral on Sharpe** (post-cube validation enabler) |
+
+### Aggregate prediction (honest synthesis)
+
+| Component | Estimated OOS Sharpe delta |
+|---|---|
+| Pattern W deletions (Class A) | +0.005 to +0.02 |
+| STATE→EVENT conversions on shipped subset (Class B; ~5 strategies converted of 219) | +0.02 to +0.08 (cell-aggregate, conservative; many cells unaffected) |
+| EXPLORATORY tags (Classes C/D/E) | 0 (framework only) |
+| Reframes (Class F) | 0 (doc-only) |
+| Producer-additive (Class G) | +0.01 to +0.05 (only if strategies switch; most haven't) |
+| **TOTAL EXPECTED** | **+0.035 to +0.15** |
+| **R4 baseline OOS Sharpe** | **0.419** |
+| **R5 PROJECTED OOS Sharpe** | **0.45 to 0.57** |
+| **Walk-forward 1A-α gate** | **0.7** |
+| **GATE MARGIN** | **🔴 STILL SHORT BY 0.13 TO 0.25** |
+
+### Critical finding
+
+**The structural changes scoped to date are NOT EXPECTED TO CLEAR THE 0.7 OOS Sharpe gate.** This session's changes are PRIMARILY deferrals, EXPLORATORY tags, reframes, and 5 strategy deletions. The Sharpe-impacting changes (Class B STATE→EVENT, Class G producer-additive) are PARTIAL — most of the 219 strategies still use STATE-form gates and haven't adopted new EVENT producers.
+
+### Options to close the gap (owner decision required)
+
+| # | Option | Expected Sharpe delta | Cost / Effort |
+|---|---|---|---|
+| **1** | **Launch R5 as-is** | +0.035 to +0.15 → projected 0.45-0.57 OOS (FAIL gate) | $9.30 + walk-forward time; high risk of re-failure |
+| **2** | **Cluster B-E walks complete first** (per ticket 9 option D foreground) | Unknown; likely +0.02 to +0.10 per cluster IF deletions/conversions surface | 4-8 batches of walks; weeks |
+| **3** | **Full STATE→EVENT sweep across registry** | +0.10 to +0.30 (highest leverage; per B655 T10 + B722 hull_rsi precedent extended cluster-wide) | Major batch (~30+ strategies); requires producer family completeness |
+| **4** | **R4 trade-log forensic + targeted cell deletion** | +0.05 to +0.15 (delete the worst-Sharpe cells from R4 data) | 1-2 batches; uses existing R4 data |
+| **5** | **Exit method ablation** (some of 26 exits may dilute Sharpe; B-meta MIS-CLUSTER finding) | Unknown; +0.02 to +0.10 estimated | 1 batch + cube re-replay |
+| **6** | **Combination (recommended)** — (2) + (4) + (5) staged before R5 | +0.10 to +0.35 → projected 0.52-0.77 (clears gate at high end) | 5-8 batches; ~2-3 weeks |
+
+### Recommendation
+
+**DO NOT LAUNCH R5 AS-IS.** The cumulative session changes give expected OOS Sharpe 0.45-0.57, materially below the 0.7 gate. Recommend Option 6 (Combination): Cluster B walks foreground (per ticket 9 D) + R4 forensic-driven targeted cell deletions + exit method ablation before R5 launch. Estimated 2-3 weeks of work; brings projected R5 OOS Sharpe to 0.52-0.77 range with gate-clearance probability materially improved.
+
+**Alternative if owner accepts R5-as-is:** explicit pre-commitment to "if R5 OOS Sharpe < 0.7, queue items above are the next-action batch" — captures the audit trail per `feedback_audit_recommendations_against_existing_directives`.
+
+---
+
 ## Completed log (DONE-ARCHIVED — truly closed; most recent first; one line per item)
 
 - 2026-05-29 — `execution-queue-create` — Created EXECUTION_QUEUE.md + CHECKLIST #94 (Batch 432). Owner directive: bring order to chaos.
