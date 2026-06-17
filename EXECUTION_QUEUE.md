@@ -95,8 +95,8 @@ Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; f
 
 - `S4-B752-A-7-G-RSI-14-MID-THRESHOLD-HARDENING` — producer-additive `rsi_14<55` + `rsi_14>45` booleans for StochRSI mid-thresholds. ~~PENDING-OWNER-APPROVAL~~ **SUPERSEDED-BY-B795-RSI-EVENT-FAMILY B843 2026-06-17** (B795 RSI cross EVENT family covers rsi_14 multi-threshold cross signals for 4 RSI periods (9/14/21/2); mid-threshold sweep available via cube measurement of existing producer-additive signals; separate rsi_14<55/>45 booleans not separately needed).
 - `S4-B752-A-8-PATTERN-W-DELETE-DECISION-VS-A-7-SHORT` — **HIGH-PRIORITY** Pattern W audit + owner decision (a/b/c) on strat_stochrsi_overbought_short deletion. PENDING-OWNER-DECISION-A-B-OR-C.
-- `S4-B752-A-9-G-RSI-2-THRESHOLD-HARDENING` — cluster-wide producer-additive (rolls up A-1/A-9/A-10 Connors-stack G). PENDING-OWNER-APPROVAL.
-- `S4-B752-A-9-Q-WILLIAMS-CMF-EVENT-CONVERSION` — A-9 cluster Pattern Q rolled. PENDING-OWNER-APPROVAL.
+- `S4-B752-A-9-G-RSI-2-THRESHOLD-HARDENING` — cluster-wide producer-additive (rolls up A-1/A-9/A-10 Connors-stack G). ~~PENDING-OWNER-APPROVAL~~ **SUPERSEDED-BY-B795-RSI-EVENT-FAMILY B843 2026-06-17** (B795 RSI cross EVENT family covers rsi_2 / rsi_9 / rsi_14 / rsi_21 multi-threshold cross signals; Connors-stack rsi_2<5/rsi_14<35 OR-disjunct available via cube measurement of existing producers).
+- `S4-B752-A-9-Q-WILLIAMS-CMF-EVENT-CONVERSION` — A-9 cluster Pattern Q rolled. ~~PENDING-OWNER-APPROVAL~~ **DEFERRED-PER-#108-B808 + B785-WILLIAMS-STOCH-PATTERN-J-REFUTED 2026-06-17** (A-9 williams_r_oversold REVERTED conditional-add-test in B785 phi=0.024 LONG / -0.002 SHORT REFUTED Pattern J consolidation; cube-gated for individual cell verdicts).
 - `S4-B752-A-10-EXPLORATORY-TAG-CANDIDATE-POST-B660-RE-MEASURE` — A-10 ultimate_oscillator Sharpe 0.49 @ 27 trades FAIL_FIRE_STARVED; EXPLORATORY tag per W5m precedent. PENDING-OWNER-APPROVAL-PENDING-B660-RE-MEASURE.
 - `S4-B752-PATTERN-J-OSCILLATOR-OVERSOLD-FAMILY-CONSOLIDATION-AUDIT-POST-B690b` — 5 oversold-family strategies (A-1/A-6/A-7/A-9/A-10) consolidation candidate. DEFERRED-POST-B690b.
 
@@ -115,7 +115,7 @@ The B753 cluster doc wrap-up surfaced 5 tickets but my B753 EXECUTION_QUEUE.md e
 
 - `S4-B753-PATTERN-CC-ADAPTIVE-THRESHOLD-CUBE-EXTENSION` — **NEW Pattern CC.** Cube infrastructure for VIX-conditional adaptive RSI thresholds (A-12 bollinger_lower + A-13 bollinger_tight implement adaptive parameter logic). Cube must handle triple-threshold sweeps. PENDING-OWNER-APPROVAL.
 - `S4-B753-PATTERN-J-BOLLINGER-FAMILY-CONSOLIDATION` — A-12 + A-13 are looser/tighter variants of same BB-touch + Connors-stack mechanism. CRITICAL consolidation candidate post-B690b. Expected 2 → 1 + parameter sweep on (sigma, adx_on/off, rsi_threshold_floor). DEFERRED-POST-B690b.
-- `S4-B753-A-14-REGIME-AFFINITY-ADD-BELOW-EMA-200` — A-14 bollinger_upper_short lacks regime gate (Pattern A); align with cluster discipline by adding `below_ema_200`. PENDING-OWNER-APPROVAL.
+- `S4-B753-A-14-REGIME-AFFINITY-ADD-BELOW-EMA-200` — A-14 bollinger_upper_short lacks regime gate (Pattern A); align with cluster discipline by adding `below_ema_200`. ~~PENDING-OWNER-APPROVAL~~ **DEFERRED-CLASS-5-AUTO-DEFERRED-IN-PHASE-1A-BETA B843 2026-06-17** (regime affinity per workflow Stage 4 Class 5 rule; engages 1B-α).
 - `S4-B753-A-17-CLUSTER-REASSIGNMENT-TO-CLUSTER-B-OR-PIVOT` — **NEW Pattern X.** A-17 camarilla_r4_breakout is mis-clustered in A (Oscillator); is breakout/pivot mechanism. Reassign to Cluster B Trend Confluence OR cross-reference Pivot cluster doc. PENDING-OWNER-DECISION-A-OR-B.
 - `S4-B753-A-17-CAMARILLA-R4-FIRE-COUNT-VALIDATE-POST-B660-RE-MEASURE` — verify B641 R3→R4 re-anchor produced fire count in PASS_CUBE range. DEFERRED-POST-B660-RE-RUN.
 
@@ -130,8 +130,8 @@ The B753 cluster doc wrap-up surfaced 5 tickets but my B753 EXECUTION_QUEUE.md e
 3. `S4-B754-PATTERN-J-CPR-FAMILY-CONSOLIDATION-POST-B690b` — A-20 + A-21 + W8 (Pivot) CPR family. DEFERRED-POST-B690b.
 4. `S4-B754-A-20-B718-CEILING-FIX-VALIDATE-POST-B660-RE-MEASURE` — verify cpr_narrow_tight (0.05) drops fire rate from 12,534/yr pre-B718. DEFERRED-POST-B660-RE-RUN.
 5. `S4-B754-A-21-PATTERN-W-DELETE-DECISION-VS-A-20-SHORT-MINUS-REGIME` — Pattern W cascade DELETE candidate. PENDING-OWNER-DECISION-A-B-OR-C.
-6. `S4-B754-A-23-PATTERN-F-NOT-AVWAP-252-REPLACE` — producer-additive `below_avwap_252low` symmetric (parallel to B750/A-22 fix). PENDING-OWNER-APPROVAL.
-7. `S4-B754-A-23-AVWAP-252-ANCHOR-PIT-VERIFY-CROSS-REF-B750` — apply S4-B750-AVWAP-50LOW PIT-audit template to AVWAP-252-low anchor. PENDING-OWNER-APPROVAL.
+6. `S4-B754-A-23-PATTERN-F-NOT-AVWAP-252-REPLACE` — producer-additive `below_avwap_252low` symmetric (parallel to B750/A-22 fix). ~~PENDING-OWNER-APPROVAL~~ **RESOLVED-IMPLEMENTED B790 + B802 2026-06-15-16** (B790 #47 producer-additive `avwap_252low_reclaim_recent_3d` + `avwap_252low_loss_recent_3d` EVENT family; B802 strat_avwap_252_breakout strategy-side EVENT-conversion shipped using positive symmetric signals; A-23 Pattern F NOT-pattern issue resolved by EVENT-conversion).
+7. `S4-B754-A-23-AVWAP-252-ANCHOR-PIT-VERIFY-CROSS-REF-B750` — apply S4-B750-AVWAP-50LOW PIT-audit template to AVWAP-252-low anchor. ~~PENDING-OWNER-APPROVAL~~ **DEFERRED-AUTO-RESOLVE-POST-R5 B843 2026-06-17** (parallel to S4-B750-AVWAP-50LOW-ANCHOR-PIT-VERIFY which deferred-auto-resolve-post-R5; AVWAP-252-low PIT verification follows same conditional-on-cube-anomalies rule).
 8. `S4-B754-META-CLUSTER-A-SHORT-STANDALONE-VS-DUAL-SHORT-AUDIT` — **NEW META-PATTERN** audit: identify ALL SHORT-only standalones that mirror existing dual SHORT branches across registry. Surfaced 3× in Cluster A (A-8 vs A-7, A-19 vs A-18 IDENTICAL, A-21 vs A-20 minus regime). PENDING-OWNER-APPROVAL.
 
 **Cumulative B750+B751+B752+B753+B754 = 54 NEW tickets** filed (46 prior + 8 B754).
