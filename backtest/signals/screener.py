@@ -1044,7 +1044,15 @@ def strat_stochrsi_oversold(s):
     add 200-EMA regime gate (Connors discipline). StochRSI cross-up is
     a momentum-turn signal; without the regime gate it fires aggressively
     in downtrends (Phase 1A-beta showed -1.01 expected_value at 132
-    trades, indicating the strategy fires inside bear/downtrend bias)."""
+    trades, indicating the strategy fires inside bear/downtrend bias).
+
+    SHORT BRANCH STATUS POST-B873: EXPLORATORY (per S4-B752-A-8 council
+    option C approved 2026-06-17; A-7 SHORT branch + A-8 standalone
+    strat_stochrsi_overbought_short both pre-registered EXPLORATORY so
+    R5 cube measures whether the regime-gated subset (A-7 SHORT) carries
+    distinct edge vs the broader unrestricted set (A-8). A-8 already
+    EXPLORATORY per B803 + B768 Pattern S; matching tag applied here for
+    symmetric cube pre-registration per `feedback_no_a_priori_strategy_pruning`)."""
     rsi_2 = s.get("rsi_2", 50)
     # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer) per feedback_never_use_NOT_s_get_pattern
     above_200 = s.get("price_above_ema_200", False)
