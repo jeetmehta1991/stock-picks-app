@@ -657,7 +657,7 @@ Per B779 owner approval ("Approve all other recs"), B782 ships the doc-only item
 | 38 RSI fire-on-cross-not-state | PENDING-MULTI-BATCH | Producer + per-strategy walks |
 | 39 Connors OR-disjunct | **COMPLETED-EMPIRICAL B768** (PARTIALLY REFUTED; rsi_14<30 has REAL edge) | NO ACTION |
 | 40 RSI capitulation-volume gate | PENDING-MULTI-BATCH | Producer + per-strategy walks |
-| **41 A-5 vol_above_avg wrong-direction** | **BLOCKED-PENDING-OWNER-DECISION** | **B320 owner directive CONFLICT** |
+| **41 A-5 vol_above_avg wrong-direction** | **CLOSED — OWNER-APPROVED-DEFER-POST-R5-CUBE B878 2026-06-17** (formal CHECKLIST #109-item pre-flight + council 5-lens verdict DEFER. B320 directive 2026-05-25 LOOSENED `vol_spike_2x` → `vol_above_avg` because tight gate fire-starved A-5; reviewer rec #41 proposes Wyckoff-Spring vol-bracket `vol_spike_on_down` + `vol_below_avg_on_turn` -- structurally distinct from B320 but requires 2 new producer signals (verified absent via grep). Per `feedback_audit_recommendations_against_existing_directives` + `feedback_no_a_priori_strategy_pruning` + CHECKLIST #108: cube-authoritative measurement of existing A-5 LONG (EDGE_EXISTS per B768) needed BEFORE re-tightening risks B320 fire-starvation recurrence. Reviewer rec #41 becomes candidate post-R5 A-5 walk action if LONG cube edge weakens.) | **B320 owner directive CONFLICT** |
 | 42 Williams-Stoch Pattern J pair | **TRACTABLE NOW** | Analytical phi-correlation |
 | 43 MFI obv anti-selection | **TRACTABLE NOW** | Analytical conditional-add-test |
 | 44 A-12 BB band-walk continuation | PENDING-MULTI-BATCH | Producer-additive bb_reclaim |
