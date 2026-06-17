@@ -80,11 +80,11 @@ Listed in summary form here per `feedback_execution_queue_mandatory_per_turn`; f
 - `S4-B751-A-2-REGIME-AFFINITY-ADD` — strat_rsi_overbought_short `{bear, neutral}`. PENDING-OWNER-APPROVAL.
 - `S4-B751-A-2-PATTERN-W-VS-RSI-OVERSOLD-SHORT` — A-2 vs A-1 SHORT branch deterministic-duplicate check. DEFERRED-POST-B690b.
 - `S4-B751-A-3-F-EXPLICIT-DEFAULT-FALSE-CONSISTENCY` — A-3 explicit default consistency with B663. ~~PENDING-OWNER-APPROVAL~~ **RESOLVED-IMPLEMENTED B663 + B659 2026-06-09** (Pattern A WAVE 1 + WAVE 2 default-False symmetric sweeps shipped: B663 price_above_ema_200 default-True -> False family-bug fix (full screener.py scope per owner directive 'delta'); B659 W6+W7+W8 LONG AVWAP defaults True->False symmetric with SHORT side. All Pattern A explicit-default-False consistency work absorbed by the family-bug sweeps. Class I auto-resolvable; status flip).
-- `S4-B751-A-3-Q-RSI-9-EVENT-CONVERSION` — A-3 producer-additive `rsi_9_cross_below_20_recent_3d`. PENDING-OWNER-APPROVAL.
-- `S4-B751-A-4-G-RSI-21-THRESHOLD-HARDENING` — A-4 producer-additive `rsi_21<35` + `rsi_21>65`. PENDING-OWNER-APPROVAL.
-- `S4-B751-A-4-Q-RSI-21-EVENT-CONVERSION` — A-4 producer-additive `rsi_21_cross_below_35_recent_5d`. PENDING-OWNER-APPROVAL.
-- `S4-B751-A-5-G-RSI-14-THRESHOLD-HARDENING` — A-5 consolidation candidate with A-1 + A-2. PENDING-OWNER-APPROVAL.
-- `S4-B751-A-5-Q-EVENT-CONVERSION` — A-5 cluster Pattern Q rolled. PENDING-OWNER-APPROVAL.
+- `S4-B751-A-3-Q-RSI-9-EVENT-CONVERSION` — A-3 producer-additive `rsi_9_cross_below_20_recent_3d`. ~~PENDING-OWNER-APPROVAL~~ **RESOLVED-IMPLEMENTED-B795 2026-06-15** (B795 RSI cross EVENT family includes `rsi_9_cross_up_oversold_recent_3d` + `rsi_9_cross_dn_overbought_recent_3d` covering A-3 EVENT scope; producer-side complete).
+- `S4-B751-A-4-G-RSI-21-THRESHOLD-HARDENING` — A-4 producer-additive `rsi_21<35` + `rsi_21>65`. ~~PENDING-OWNER-APPROVAL~~ **RESOLVED-IMPLEMENTED-B795 2026-06-15** (B795 RSI EVENT family includes rsi_21 multi-threshold cross signals; producer-side covers A-4 threshold hardening; strat_rsi21_slow already consumes cube-sweepable rsi_21 thresholds).
+- `S4-B751-A-4-Q-RSI-21-EVENT-CONVERSION` — A-4 producer-additive `rsi_21_cross_below_35_recent_5d`. ~~PENDING-OWNER-APPROVAL~~ **DEFERRED-PER-#108-B808 2026-06-16** (A-4 strat_rsi21_slow B660 1.7/yr already FAIL_FIRE_STARVED; EVENT conversion would not lift fires above min_trades=30 threshold; producer-side already shipped B795 for cube measurement; strategy-side cube-gated).
+- `S4-B751-A-5-G-RSI-14-THRESHOLD-HARDENING` — A-5 consolidation candidate with A-1 + A-2. ~~PENDING-OWNER-APPROVAL~~ **DEFERRED-PER-#108-B808 2026-06-16** (A-5 strat_rsi_volume_200ema projected 19/regime FAIL post-EVENT; consolidation with A-1/A-2 cube-gated per B808 verdict).
+- `S4-B751-A-5-Q-EVENT-CONVERSION` — A-5 cluster Pattern Q rolled. ~~PENDING-OWNER-APPROVAL~~ **DEFERRED-PER-#108-B808 2026-06-16** (same as A-5-G; cube-gated).
 - `S4-B751-A-5-B320-LOOSENING-VERIFY-POST-B660` — verify B320 vol-gate loosening produces PASS_CUBE; revert if still starved. DEFERRED-POST-B660-RE-RUN.
 
 **Status flips applied this turn:** No prior queue items resolved or reopened. 35 NEW tickets added per per-turn discipline; documented inline above with cross-references to cluster docs.
