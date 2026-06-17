@@ -1336,10 +1336,7 @@ Owner approved B766 council reviewer recommendations for execution. Bundle ships
 
 **B750+B751+B752+B753+B754+B755+B755-COUNCIL = 61 prior + 16 council = 77 NEW tickets** filed in EXECUTION_QUEUE.md across Stage 4 sweep B750-B755.
 
-**Next live work after B755-COUNCIL filing:** PENDING-OWNER-DIRECTION. Choose one of:
-- (a) Start TIER 1 work (S4-B755-COUNCIL-FIRE-BAR-SPARSE-MATRIX-PRECOMPUTE) — "the one thing to do first" per council chairman
-- (b) Continue B756 Cluster B walks (Stage 4 coverage expansion) per pre-council plan
-- (c) Different priority order across the 16 council tickets
+**Next live work after B755-COUNCIL filing:** **CLOSED — OWNER-APPROVED-OPTION-D-PARALLEL-MATRIX-BACKGROUND-+-CLUSTER-B-FOREGROUND B880 2026-06-17** (formal CHECKLIST #109-item pre-flight + council 5-lens). Option (a) S4-B755-COUNCIL-FIRE-BAR-SPARSE-MATRIX-PRECOMPUTE already SHIPPED-SMOKE-B756 (script + 12 pin tests PASS); FULL run blocked by B812 PID-died incident. Implementation sequence per CHECKLIST #68 smoke→demo→full + memory `feedback_check_existing_pids_before_long_background_launch` + `feedback_powershell_authoritative_for_windows_process_truth`: (1) pre-flight `Get-Process` + bash `ps -ef` zero-PID check; (2) DEMO 20-ticker × 6mo run with stdout-to-log throughput measurement; (3) FULL launch with `nohup ... > log 2>&1 &` + Monitor-armed completion notification; (4) PARALLEL FOREGROUND continue Cluster B walks per B756+ pre-council plan. ETA estimate: 6-12h full run per B660 overnight precedent; precise ETA gated on demo measurement.
 
 **Next live work after B752:** B753 picks up Cluster A walks A-12 through A-17 (bollinger_lower + bollinger_tight + bollinger_upper_short + keltner_lower + camarilla_r4_breakout).
 

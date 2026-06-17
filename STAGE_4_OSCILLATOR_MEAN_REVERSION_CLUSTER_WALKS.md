@@ -287,9 +287,9 @@ If RSI variants are tightened (e.g., rsi21_slow's RSI<35 threshold lowered to <3
 | A-14 | `strat_bollinger_upper_short` | Bollinger upper short | short | A.4 Bollinger | technical.py | ❌ pending B753 | active |
 | A-15 | `strat_ppo_crossover` | PPO crossover + ADX | dual | A.9 Momentum osc | technical.py | ⏳ B750 walked | active |
 | A-16 | `strat_keltner_lower` | Keltner lower-band bounce | long | A.5 Keltner | technical.py | ❌ pending B753 | active |
-| A-17 | `strat_camarilla_r4_breakout` | Camarilla R4 breakout (B641 renamed) | dual | A.6 Camarilla | technical.py | ❌ pending B753 | active |
-| A-18 | `strat_camarilla_rsi_obv` | Camarilla + RSI + OBV confluence | dual | A.6 Camarilla | technical.py | ❌ pending B754 | active |
-| A-19 | `strat_camarilla_rsi_obv_short` | Camarilla + RSI + OBV short | short | A.6 Camarilla | technical.py | ❌ pending B754 | active |
+| A-17 | `strat_camarilla_r4_breakout` | Camarilla R4 breakout (B641 renamed) | dual | A.6 Camarilla | technical.py | ✅ B753 walked → **B874 REASSIGNED to Pivot cluster (canonical)**; cross-ref retained here for walk traceability per ticket 2 owner-approved option B | active |
+| A-18 | `strat_camarilla_rsi_obv` | Camarilla + RSI + OBV confluence | dual | A.6 Camarilla | technical.py | ✅ B754 walked → **B874 DELETED per S4-B754-A-19 Pattern W strict-subset of W9 strat_camarilla_s3_bounce + literal-duplicate-pair META-PATTERN** | ~~active~~ DELETED |
+| A-19 | `strat_camarilla_rsi_obv_short` | Camarilla + RSI + OBV short | short | A.6 Camarilla | technical.py | ✅ B754 walked → **B874 DELETED per S4-B754-A-19 Pattern W literal duplicate of strat_camarilla_rsi_obv SHORT branch** | ~~active~~ DELETED |
 | A-20 | `strat_cpr_narrow_momentum` | CPR narrow + momentum | dual | A.7 CPR | technical.py | ❌ pending B754 | active |
 | A-21 | `strat_cpr_narrow_momentum_short` | CPR narrow + momentum short | short | A.7 CPR | technical.py | ❌ pending B754 | active |
 | A-22 | `strat_avwap_50_reclaim` | AVWAP-50 reclaim + MACD | dual | A.8 AVWAP | technical.py | ⏳ B750 walked | active |

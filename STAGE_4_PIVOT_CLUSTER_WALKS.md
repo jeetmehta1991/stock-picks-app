@@ -44,9 +44,9 @@
 > | W8a | cpr_narrow_momentum | 12,530 | 8,460 | ✅ PASS |
 > | W8b | cpr_narrow_momentum_short | 0 | 13,902 | ✅ PASS |
 > | W9 | camarilla_s3_bounce | 17 | 49 | ✅ PASS |
-> | W9b | camarilla_rsi_obv | 4 | 14 | 🔴 **FAIL_FIRE_STARVED (real)** — 4-gate stack with `rsi` + `obv` confluence; ~18/yr universe-wide |
-> | W9c | camarilla_rsi_obv_short | 0 | 14 | 🔴 **FAIL_FIRE_STARVED (real)** — symmetric inverse of W9b |
-> | W10 | camarilla_r4_breakout (post-B641 R3→R4 rename) | 764 | 891 | ✅ PASS |
+> | W9b | ~~camarilla_rsi_obv~~ | ~~4~~ | ~~14~~ | **B874 DELETED** — Pattern W strict-subset of W9 strat_camarilla_s3_bounce (added cmf_negative gate makes it subset); owner-approved option A2 council 5-lens |
+> | W9c | ~~camarilla_rsi_obv_short~~ | ~~0~~ | ~~14~~ | **B874 DELETED** — Pattern W literal-duplicate of W9b SHORT branch (B754 META-PATTERN instance #2); owner-approved option A2 |
+> | W10 | camarilla_r4_breakout (post-B641 R3→R4 rename) | 764 | 891 | ✅ PASS — **B874 also CANONICAL HOME (Pattern X reassign from Oscillator A-17 per ticket 2 owner-approved option B B879 cross-reference)** |
 >
 > **All previous `PENDING-B660` labels in this doc are now RESOLVED.** Pre-B660 estimates (e.g. W5 ~18.3/yr B643 estimator) overshot the measured 2/yr by ~9×; consistent with the `feedback_minimum_fire_count_gate_before_cube` lesson that pre-cube estimators are upper-bounds. W5 + W5m + W4 + W9b + W9c FAIL_FIRE_STARVED are REAL (not harness-gap); per `feedback_walk_step5` rare-but-strong signals can carry as EXPLORATORY pending Stage 5 cube empirical adjudication.
 >
