@@ -2443,6 +2443,15 @@ def strat_cpr_narrow_momentum(s):
     extended here per B654 precedent + reviewer's "fires too often to
     be selective" verdict. Other consumers of `cpr_narrow` 0.15
     unchanged per feedback_narrow_scope_blast_radius.
+
+    SHORT BRANCH STATUS POST-B875: EXPLORATORY (per S4-B754-A-21 council
+    option C approved 2026-06-17; A-20 dual SHORT + A-21 standalone
+    strat_cpr_narrow_momentum_short both pre-registered EXPLORATORY so
+    R5 cube measures whether the regime-gated subset (A-20 SHORT with
+    below_ema_200) carries distinct edge vs the broader unrestricted set
+    (A-21 standalone without regime gate). Same Pattern S framework as
+    B831 + ticket 1 (A-7/A-8 stochrsi pair) symmetric application per
+    `feedback_no_a_priori_strategy_pruning`).
     """
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)
@@ -2787,6 +2796,15 @@ def strat_cpr_narrow_momentum_short(s):
     B710 5K/yr ceiling. Same B654 W8 + B718 W8a precedent applied here
     (W8b); other consumers of `cpr_narrow` 0.15 unchanged per
     feedback_narrow_scope_blast_radius.
+
+    STATUS POST-B875: EXPLORATORY (per S4-B754-A-21 council option C
+    approved 2026-06-17; standalone is A-20 dual SHORT MINUS the
+    `below_ema_200` regime gate = BROADER not strict subset. Both A-20
+    dual SHORT + this A-21 standalone pre-registered EXPLORATORY so R5
+    cube measures whether regime-gated subset carries distinct edge vs
+    broader unrestricted set. Same Pattern S framework as B831 + ticket 1
+    A-7/A-8 stochrsi pair precedent per
+    `feedback_no_a_priori_strategy_pruning`).
     """
     # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer)
     fires = (s.get("cpr_narrow_tight") and
