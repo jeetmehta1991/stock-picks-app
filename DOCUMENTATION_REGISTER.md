@@ -567,3 +567,65 @@ Per CHECKLIST #67 / DEC-498 per-turn doc sync rule: Sprint 0A documentation regi
 
 **Archive:**
 - 3 docs moved to `archive/2026-05-05-pass-53-archive-docs/` (PROJECT_HANDOFF_2026-05-04.md / ADVERSARIAL_AUDIT_PASS_52_TURN_132.md / CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133.md)
+
+---
+
+## B892 (2026-06-18) STALE .MD FLAG TABLE (Council 17 framework; OWNER REVIEW REQUIRED)
+
+**Owner directive 2026-06-17:** "Flag stale, outdated md documents that can be archived. Do not archive any md docs without my permission."
+
+Per Council 17 First Principles 3-axis classifier (Consumer / Canonicality / Auto-generation): flagging only. Owner approves archive decisions next turn.
+
+### Top-level .md staleness candidates (B892 inventory)
+
+| File | Last commit | Last batch | Refs | Verdict |
+|---|---|---|---|---|
+| `PHASE_1A_BETA_STATUS.md` | 2026-06-08 | Batch 635 | 7 | **FLAG-FOR-OWNER-REVIEW** |
+| `PHASE_1B_AUDIT_2026_05_25.md` | 2026-05-25 | Batch 345 | 5 | **FLAG-FOR-OWNER-REVIEW** (dated suffix = snapshot) |
+| `PHASE_1B_STATE_SCHEMA_DIFF.md` | 2026-05-25 | Batch 351 | 4 | **FLAG-FOR-OWNER-REVIEW** |
+| `IMPLEMENTATION_DRAFTS_T1.md` | 2026-05-19 | Batch 239 | 3 | **FLAG-FOR-OWNER-REVIEW** (draft prefix) |
+| `IMPLEMENTATION_PLAN.md` | 2026-05-27 | (no batch tag) | 7 | **FLAG-FOR-OWNER-REVIEW** (canonical-confusion; see below) |
+| `PROJECT_PLAN_ARCHIVE.md` | 2026-04-30 | (no batch tag) | 46 | **KEEP** (archival reference; 46 refs = historical citation network) |
+| `PHASE_1A_BETA_PER_STRAT_EXIT_FORENSIC.md` | 2026-05-26 | Batch 376 | 1 | **FLAG-FOR-OWNER-REVIEW** (forensic snapshot) |
+
+**Canonical-confusion to resolve (Executor Council 17):** 4 overlapping plan docs:
+- `PROJECT_PLAN.md` (CLAUDE.md canonical)
+- `DETAILED_PROJECT_PLAN.md` (canonical per CLAUDE.md)
+- `STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md` (canonical per CLAUDE.md banner for current phase)
+- `IMPLEMENTATION_PLAN.md` (no canonical pointer; **likely stale**)
+
+**Owner action requested:** review 6 FLAG-FOR-OWNER-REVIEW entries + decide per-file: (a) archive via `git mv` to `.archive/`, (b) update in-place + add "superseded-by" header pointer, or (c) keep as historical reference.
+
+### Smoke files archived B892 (5 files; 0 .md or .py consumers)
+
+Moved to `.archive/output_audit_smoke_2026-06-18/`:
+- `fire_count_measured_b641_smoke_5x2.json`
+- `b789_43_mfi_obv_anti_selection_smoke.json` + `_demo.json`
+- `mean_reversion_edge_prior_test_smoke.json`
+- `pattern_w_validation_demo.json`
+
+**NOT archived (smoke/demo with .md backreferences; per owner "no .md archive"):**
+- `checklist_106_cluster_a_producer_audit_smoke/demo.json` (4 VERDICT.md refs)
+- `fire_bar_similarity_cluster_a_demo.parquet` (2 VERDICT.md refs)
+- `fire_bar_matrix_cluster_a_smoke/demo.parquet` (r5_triage_audit ref)
+- `mean_reversion_edge_prior_test_demo.json` (VERDICT.md ref)
+- `fire_bar_summary_cluster_a_smoke/demo.json` (script outputs)
+
+**Future coordinated archive proposal (owner-approval-pending):** Move smoke/demo files together with their VERDICT.md (preserves traceability). Currently blocked by owner "do not archive any md docs without my permission."
+
+### Council 17 framework codification (going forward)
+
+Per First Principles 3-axis classifier, future doc archival decisions evaluated on:
+
+| Axis | Test |
+|---|---|
+| **Consumer** | grep filename in repo (>=30 days). Zero refs = no consumer; any refs = consumer exists |
+| **Canonicality** | single source of truth (CANONICAL) vs snapshot tied to batch/date (SNAPSHOT). Filename heuristics: dated suffix, batch suffix, phase-status suffix, draft suffix, audit suffix signal SNAPSHOT |
+| **Auto-gen** | header banner says "auto-generated" or file produced by script (e.g., STRATEGY_ROSTER.md). Mixed = hybrid rot = repair generator |
+
+**Verdict matrix:**
+- (No consumer, Snapshot) → **Archive candidate**
+- (Has consumer, Snapshot) → **Keep with "(historical)" prefix**
+- (Has consumer, Canonical, Auto-gen) → **Repair the generator** (STRATEGY_ROSTER B892 fix pattern)
+- (Has consumer, Canonical, Hand-edited) → **Refresh in-place; add freshness gate**
+- (Has consumer, Canonical, Mixed) → **HYBRID ROT** — split into auto-gen + hand-edit halves

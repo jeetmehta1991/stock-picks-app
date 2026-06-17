@@ -1725,3 +1725,18 @@ State compliance visibly: "Checklist: ✅ [each item]"
      - n >= 50 trades AND verdict is PASS_CUBE -> standard PASS_CUBE disposition
 
      This rule prevents two failure modes: (i) tagging cube-measured borderline strategies as EXPLORATORY (which is pre-cube semantically; conflates measurement-missing with measurement-power-limited); (ii) over-aggressive deletion of strategies with positive point estimate but wide CI (the data says we don't know yet).
+
+110. **HARD RULE -- Per-turn enforcement gates MUST fire on every turn that ships code/docs. No exceptions.** (Owner directive 2026-06-18 Batch 892: "Updating the execution queue, following the checklist and updating the checklist if any misses is mandatory in each turn!")
+
+     Pass 52 + Pass 53 already established #45 (per-response compliance statement), #94 (update EXECUTION_QUEUE every turn), #96 (show queue at end of turn), #95 (codify process gaps in CHECKLIST + LEARNINGS same turn). B892 owner directive ELEVATES these from "should comply" to "MUST fire -- non-compliance is a process failure of the turn itself, not a future-fix."
+
+     **The 4 mandatory per-turn gates:**
+
+     1. **Pre-flight CHECKLIST block visible** (#45 + #85) -- before EVERY recommendation. Not at end of response (post-hoc); BEFORE the recommendation is stated.
+     2. **EXECUTION_QUEUE entry written this turn** (#94) -- every turn that ships code/docs adds a queue annotation. Standing rule per `feedback_execution_queue_mandatory_per_turn`. Past failure: B883-B891 all skipped this; owner flagged B892.
+     3. **CHECKLIST update if gap surfaced** (#95) -- when a process miss is identified mid-turn, codify here SAME TURN. Past failure: I missed #94/#96 in B883-B891 batches; should have codified after first miss.
+     4. **Show queue tail at end of turn** (#96) -- top 5-10 rows or current TIER entry. Visible confirmation the queue update landed.
+
+     **Compliance check (single-question version):** at end of every turn that shipped code or docs, ask: "Did I write an EXECUTION_QUEUE entry, run CHECKLIST pre-flight, surface any process gap, and show the queue tail?" If any answer is no, the response is non-compliant per B892 owner directive.
+
+     **Recovery protocol when miss is detected:** the FIRST batch after the miss must (a) acknowledge the lapse explicitly, (b) write the missing queue entries retroactively (one entry per skipped batch), (c) codify the prevention rule in CHECKLIST, (d) update LEARNINGS if a new lesson surfaced. B892 applies this protocol to B883-B891 cycle.

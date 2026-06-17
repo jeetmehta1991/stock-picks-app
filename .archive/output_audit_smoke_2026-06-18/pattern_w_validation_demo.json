@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "as_of_run": "2026-06-15T03:43:15.651802",
+    "similarity_input": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_similarity_cluster_a_demo.parquet",
+    "n_pairs_audited": 486,
+    "thresholds": {
+      "jaccard_delete": 0.85,
+      "jaccard_marginal": 0.5,
+      "phi_consolidation": 0.7,
+      "min_n_for_validation": 30
+    }
+  },
+  "council_named_candidates": [
+    {
+      "candidate_strategy": "stochrsi_overbought_short",
+      "vs_strategy": "stochrsi_oversold",
+      "direction": "short",
+      "council_verdict": "DELETE_CANDIDATE",
+      "council_basis": "A-8 vs A-7 SHORT branch: A-8 lacks below_ema_200 regime gate; otherwise identical",
+      "empirical_jaccard": 0.186016,
+      "empirical_phi": 0.420254,
+      "n_a": 758,
+      "n_b": 141,
+      "n_both": 141,
+      "empirical_verdict": "REJECTED",
+      "agreement_with_council": "DISAGREES"
+    },
+    {
+      "candidate_strategy": "camarilla_rsi_obv_short",
+      "vs_strategy": "camarilla_rsi_obv",
+      "direction": "short",
+      "council_verdict": "HIGHEST_CONFIDENCE_DELETE",
+      "council_basis": "A-19 vs A-18 SHORT branch: gates IDENTICAL post-B628 F1 + B629 F1 silent-gap closure",
+      "empirical_verdict": "NOT_FOUND_IN_SIMILARITY_MATRIX",
+      "empirical_jaccard": null,
+      "empirical_phi": null,
+      "n_a": 0,
+      "n_b": 0,
+      "n_both": 0,
+      "note": "Pair absent; possible no fires for either strategy in the run window"
+    },
+    {
+      "candidate_strategy": "cpr_narrow_momentum_short",
+      "vs_strategy": "cpr_narrow_momentum",
+      "direction": "short",
+      "council_verdict": "DELETE_CANDIDATE",
+      "council_basis": "A-21 vs A-20 SHORT branch: A-21 lacks below_ema_200 regime gate",
+      "empirical_jaccard": 0.493884,
+      "empirical_phi": 0.693029,
+      "n_a": 323,
+      "n_b": 654,
+      "n_both": 323,
+      "empirical_verdict": "REJECTED",
+      "agreement_with_council": "DISAGREES"
+    }
+  ],
+  "additional_pattern_w_candidates": [],
+  "pattern_j_candidates": []
+}

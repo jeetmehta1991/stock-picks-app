@@ -681,17 +681,27 @@ def main() -> int:
     if bug_fixed_n:
         out_lines.append(f"**Producer bug fixes (B585 ledger - SEPARATE from S4 review):** **{bug_fixed_n} strategies** have had a producer bug fix applied. These strategies STILL need a full 7-step S4 walk per owner directive 2026-06-04 'bug fix is NOT S4 review completion.' See `Producer Bug Fix` column for batch tag.")
         out_lines.append("")
-    out_lines.append("**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **206** (205 + 1 special-path). Note: 207 unique strategies in approvals.json = 206 engine + 1 queued (`news_sentiment_shift_short` Class 7 Approved B571 awaiting wiring).")
+    # B892 (2026-06-18) Council 17 First Principles + Executor fix: remove
+    # hardcoded literals from prose. Stale numerics (205/206/207) baked into
+    # the template at B576-era were the root cause of owner's "STRATEGY_ROSTER
+    # extremely stale" complaint. Replaced with live-computed values via
+    # f-strings + the STRATEGY_REGIME_AFFINITY dict scan below.
+    out_lines.append(f"**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **{len(ALL_STRATEGIES) + 1}** ({len(ALL_STRATEGIES)} + 1 special-path).")
     out_lines.append("")
     out_lines.append("**Count reconciliation:**")
     out_lines.append(f"- `len(ALL_STRATEGIES)` = {len(ALL_STRATEGIES)} (standard dict path)")
     out_lines.append(f"- +1 special path (`lead_lag_sector_rotation`)")
     out_lines.append(f"- **= True engine roster: {len(ALL_STRATEGIES) + 1}**")
-    out_lines.append(f"- +1 queued for wiring (news_sentiment_shift_short)")
-    out_lines.append(f"- Unique strategies in approvals: {len(ALL_STRATEGIES) + 2}")
     out_lines.append(f"- approvals.json ROWS != strategies (each strategy can have multiple change-class rows)")
     out_lines.append("")
-    out_lines.append("**TODO (B577 surfaced):** Only 1 of 205 strategies has explicit `STRATEGY_REGIME_AFFINITY` (`head_and_shoulders_bottom_long`). 204 strategies fall through to default 'all regimes'. R4 empirical per-regime cube data should feed back into deployment-time affinity rules. See EXECUTION_QUEUE.md item `regime-affinity-investigation`.")
+    # B892 live-computed STRATEGY_REGIME_AFFINITY count (was hardcoded "1 of 205")
+    try:
+        from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
+        n_with_affinity = len(STRATEGY_REGIME_AFFINITY)
+    except Exception:
+        n_with_affinity = 0
+    n_without_affinity = len(ALL_STRATEGIES) - n_with_affinity
+    out_lines.append(f"**STRATEGY_REGIME_AFFINITY coverage (live count, B892):** {n_with_affinity} of {len(ALL_STRATEGIES)} strategies have explicit regime affinity declarations in `regime_selector.STRATEGY_REGIME_AFFINITY`. {n_without_affinity} strategies fall through to default 'all regimes'. Per CLAUDE.md criterion #11 + DEC-611 (B891), the per-regime PASS gate is `min_regimes_passing=1` so strategies without explicit affinity can still earn regime-specific deployment via cube empirical PASS in any regime.")
     out_lines.append("")
     out_lines.append("**Stage 4 approvals (per-strategy mapping, B576 drift correction):** Every registered strategy has at least one approvals.json row. Quiet strategies (no R4 fires) carry a `Class 0 QUIET_NO_CANDIDATES` placeholder Awaiting row.")
     out_lines.append("")

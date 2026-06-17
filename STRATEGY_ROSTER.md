@@ -10,17 +10,15 @@
 
 **Producer bug fixes (B585 ledger - SEPARATE from S4 review):** **9 strategies** have had a producer bug fix applied. These strategies STILL need a full 7-step S4 walk per owner directive 2026-06-04 'bug fix is NOT S4 review completion.' See `Producer Bug Fix` column for batch tag.
 
-**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **206** (205 + 1 special-path). Note: 207 unique strategies in approvals.json = 206 engine + 1 queued (`news_sentiment_shift_short` Class 7 Approved B571 awaiting wiring).
+**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **220** (219 + 1 special-path).
 
 **Count reconciliation:**
 - `len(ALL_STRATEGIES)` = 219 (standard dict path)
 - +1 special path (`lead_lag_sector_rotation`)
 - **= True engine roster: 220**
-- +1 queued for wiring (news_sentiment_shift_short)
-- Unique strategies in approvals: 221
 - approvals.json ROWS != strategies (each strategy can have multiple change-class rows)
 
-**TODO (B577 surfaced):** Only 1 of 205 strategies has explicit `STRATEGY_REGIME_AFFINITY` (`head_and_shoulders_bottom_long`). 204 strategies fall through to default 'all regimes'. R4 empirical per-regime cube data should feed back into deployment-time affinity rules. See EXECUTION_QUEUE.md item `regime-affinity-investigation`.
+**STRATEGY_REGIME_AFFINITY coverage (live count, B892):** 101 of 219 strategies have explicit regime affinity declarations in `regime_selector.STRATEGY_REGIME_AFFINITY`. 118 strategies fall through to default 'all regimes'. Per CLAUDE.md criterion #11 + DEC-611 (B891), the per-regime PASS gate is `min_regimes_passing=1` so strategies without explicit affinity can still earn regime-specific deployment via cube empirical PASS in any regime.
 
 **Stage 4 approvals (per-strategy mapping, B576 drift correction):** Every registered strategy has at least one approvals.json row. Quiet strategies (no R4 fires) carry a `Class 0 QUIET_NO_CANDIDATES` placeholder Awaiting row.
 
