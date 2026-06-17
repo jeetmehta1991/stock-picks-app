@@ -260,3 +260,184 @@ Per owner directive 2026-05-25: "Phase 1A beta will compulsorily analyse each st
 - ✅ #75 — commit per addressal
 - ✅ #77 — phase scope verified against PROJECT_PLAN.md, not memory
 - ✅ #78 — per-addressal pyramid mandate preserved
+
+---
+
+## 10. B888 — Path to Phase 1B-alpha (Council 14 synthesis, 2026-06-17 / 2026-06-18)
+
+# Source: Council 14 verdict (5 advisors + chairman synthesis) per owner directive 2026-06-17 "Council this. Be extremely thorough" on Phase 1B-α plan + threshold recommendations + metrics integration + dashboard optimizations + R4-R5 delta + R5 fine-tuning. Inputs: PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md (B887 doc-sync state), backtest/results/metrics.py (12 function inventory), backtest/config.py:451-535 (PASSING_CRITERIA threshold stack), dashboard_phase_1a + dashboard_stage_2 + dashboard_sprint0a (catalog), Council 7 binding directive ("R5 -> agents -> papertrade. No changes."), R4 baseline OOS Sharpe 0.419 vs 0.7 gate.
+
+**Owner directive 2026-06-17:** "Suggest what is the best and the simplest way to reach Phase 1B-α? What needs to be done? How do we identify the best unique strategy x exit combinations? What should be the thresholds...? Look at metrics.py and see all the metrics being calculated. What should be integrated into our evaluations? Take a look at the analysis dashboards. Suggest optimizations. How do we compare deltas from R4 to R5? Thinking of R5, how can we fine tune our strategy parameters to get the best value? We have already done 1 round of optimization in stage 4? What should be our target going ahead?"
+
+**Binding constraint (Council 7):** No methodology changes. R5 -> agents -> papertrade sequence preserved. All B888 augmentations are POST-R5 analytical lenses + ablation extraction, not gate replacements.
+
+### 10.1 The 6-Day Path (Tue -> Sun)
+
+| Day | Action | Bottleneck | Cost |
+|---|---|---|---|
+| Tue (B888 day) | B660 v2 completes; Council 14 chairman verdict surfaced (B888); pre-commit Sharpe-band gate confirmed (B882 still authoritative); owner pre-approves $300 Haiku trigger condition | Owner pre-approval (15 min) | $0 |
+| Tue PM -> Wed AM | G3 pyramid + G5 optimizer + #6 fire-bar matrix in sequence (~6-7h overnight; no parallelization to avoid CPU contention with B660 v2) | Compute | $0 |
+| Wed | R5 launch on AWS c7a.8xlarge spot 3 instances x 5h = ~$7.80 (B884 instance-type decision) | AWS wall-clock 5-7h | $7.80 |
+| Thu AM | Stage 3 winner extraction (`scripts/optimize_strategies_from_cube.py`); B882 decision-tree gate applied; B888 r5_delta_analyzer.py runs | **Owner attention (1h)** | $0 |
+| Thu PM -> Sat | Phase 1B-α Haiku run on Priority-1 (deployment-optimized cells) + AGENT-CANDIDATE tag only; mid-run abort watchdog per DEC-131 lookahead | Compute (~37-40h); Haiku $50-150 | $50-150 |
+| Sun | DEC-131 gate: agent_sharpe minus rules_sharpe >= 0.2 net on >=3 combos -> advance to Phase 1B full; or stop | Owner | $0 |
+
+**Single sequential bottleneck:** Thursday AM owner sign-off on B882 Sharpe-band decision tree applied to R5 results.
+
+### 10.2 Threshold Stack Simplification (POST-R5 ANALYTICAL LENS, not gate replacement)
+
+**Existing 11-criteria + 5-Gate stack remains canonical** (no methodology change per Council 7). B888 adds a parallel **classification lens** for owner-facing winner identification + dashboard surfacing.
+
+Council 14 First Principles + Outsider diagnosis: 16-knob stack has multicollinearity (Sharpe + Sortino + Calmar all measure risk-adjusted return; PF + WR + W/L are algebraically linked; DSR already corrects for multiple testing). B888 lens replaces it with 4 metrics:
+
+| Metric | B888 lens threshold | Rationale | Existing gate (unchanged) |
+|---|---|---|---|
+| **PSR** (Probabilistic Sharpe Ratio) | >= 0.95 with explicit n | Captures Sharpe + sample size + skew + kurtosis in one metric per Bailey-Lopez-de-Prado 2012 | min_sharpe_overall 1.0; min_sharpe_per_regime 0.7; min_trades 100/30 |
+| **Calmar** (promoted from deflator to primary) | >= **1.0** (was 0.5 deflator) | Drawdown-resilient cells = agent-stable cells per Expansionist Council 14; Phase 1B-α agents over-weight recent losses -> drawdowns kill agent confidence loops | min_calmar 0.5 (unchanged in canonical) |
+| **DSR** with confidence interval | DSR > 0 with CI not arbitrary 0.95 | First Principles: DSR is the multiple-testing correction; raw threshold 0.95 + Bonferroni on top = double-counting | min_deflated_sharpe 0.95 (unchanged) |
+| **Per-regime PASS** | >= **3** of 4 regimes (was 2) | Contrarian: Carver's >=2-of-4 rule was for ~20 strategies; 218 strategies = 21 combinatorial ways to win = guaranteed false positives. Scale-correction. | min_regimes_passing 2 (unchanged) |
+
+**AUTO-FAIL screens (NEW B888 additions; metrics.py-computed but never gated):**
+
+| Screen | Threshold | Source | Catches |
+|---|---|---|---|
+| **Chow break-point** | p < 0.05 + post-break Sharpe < 0.3 | Expansionist + Contrarian | Dead-strategy false positives (regime-coincidence; strategy died at 2022-06-13 rate-hike pivot, still coasting on pre-break trades) |
+| **ADF stationarity** | p < 0.05 (mean-reverting equity curve) | Expansionist | Whip-saw non-compounders; LLM agents add zero value to non-compounding strategies |
+| **Cost-sensitivity Sharpe** | degradation > 30% from base | Built but never gated | Strategies that die under realistic slippage/commission |
+
+### 10.3 Best Unique Strategy x Exit Identification (Best-of-26 Collapse + Soft-Score)
+
+**Council 14 unanimous convergence:** 39,676 cells dilutes signal; collapse to deployment-optimized form.
+
+```
+# Pseudocode for scripts/r5_winner_identifier.py (B888 NEW)
+for strategy in ALL_STRATEGIES:                       # 218 strategies
+    for regime in REGIMES:                            # 7 regimes
+        # Best-of-26 collapse
+        best_cell = argmax(soft_score(cell) for cell in cells_for(strategy, regime))
+        # -> 218 x 7 = 1,526 deployment-optimized cells (vs 39,676 raw)
+
+# Soft-score formula (Expansionist Council 14)
+def soft_score(cell):
+    return (0.30 * normalized(cell.sharpe)
+          + 0.25 * normalized(cell.calmar)
+          + 0.20 * normalized(cell.profit_factor)
+          + 0.15 * normalized(cell.dsr)
+          + 0.10 * (1 - cell.cost_sensitivity))
+
+# Rank by soft-score; emit Priority tiers
+P1 = top-N% by soft-score AND passes all AUTO-FAIL screens (Chow + ADF + cost-sensitivity)
+P2 = below P1 threshold but per-regime PASS in >=3 of 4 regimes
+P3 = below P2; excluded from Phase 1B-α
+```
+
+**Output:** `output_audit/winners_r5_b888.parquet` with columns: `[strategy, regime, exit, soft_score, sharpe, calmar, psr, dsr, chow_pvalue, adf_pvalue, cost_sensitivity, priority_tier, agent_candidate_flag, delta_vs_r4]`.
+
+**Asymmetric value (Expansionist):** soft-score ranking surfaces cells just-below ALL-criteria-pass thresholds (e.g., passes everything except 1 metric by 1pp) -- these would die silently under current gate stack. With soft-score, they surface for owner review.
+
+### 10.4 R4 -> R5 Delta Intelligence (FREE Ablation Study)
+
+**Council 14 4-of-5 strongest insight:** R4 + R5 with cumulative B722/B874/B635/B886 changes = the most expensive controlled-ablation study ever assembled. Throwing it away by treating R5 as fresh verdict is throwing away the intelligence.
+
+**B888 NEW script: `scripts/r5_delta_analyzer.py` (to be written before R5 launches).**
+
+For each (strategy x exit x regime) cell present in both R4 and R5:
+
+| Delta condition | Interpretation | Action |
+|---|---|---|
+| dSharpe >= +0.10 AND attributable to B722-B886 walk | Walk earned its keep | Promote strategy in Priority-1 |
+| dSharpe <= -0.10 | Revert candidate; walk overfit | Surface for owner review; potential B889 revert |
+| |dSharpe| < 0.05 despite gate changes | Cosmetic walk | Document; no action |
+| FAIL-overall -> PASS-per-regime flip | Tier-3 regime-specific deployer (NEW edge discovered) | Add to P2 tier (regime-conditional deployment) |
+
+**Aggregation method (First Principles rigor):** per-cluster Kolmogorov-Smirnov test on Sharpe distribution shift across R4 vs R5. Unit of inference = cluster x regime, not raw per-cell (39,676 cell deltas are noise).
+
+**Visualization:** new dashboard tab "R4-R5 Delta" (see section 10.5).
+
+### 10.5 Dashboard Consolidation (3 -> 1)
+
+**Council 14 First Principles + Outsider:** 3 dashboards fragment by phase rather than by question.
+
+**B888 plan: build `dashboard_stage_4_cube_explorer/` consolidating 4 tabs:**
+
+| Tab | Content | Source |
+|---|---|---|
+| 1. **Cell Verdict Cube** | Filterable by strategy/exit/regime; soft-score sorted; AUTO-FAIL flags visible; Priority tier badges | r5 trade logs + winners_r5_b888.parquet |
+| 2. **R4-R5 Delta** | Per-cell delta-metrics heatmaps; cluster-regime KS test summary; walk-impact attribution | r5_delta_analyzer.py output |
+| 3. **Walk-Impact** | Per-batch Stage 4 walk contribution to Sharpe delta (which walks earned their keep) | Delta analyzer aggregated by batch |
+| 4. **Phase 1B-α Candidate** | AGENT-CANDIDATE vs MECHANICAL-PURE tagging; agent-overlay decision support | soft-score output + manual tagging |
+
+**Deprecation plan:**
+- `dashboard_phase_1a/` -- supersede with Cell Verdict Cube tab; archive after B888+5 batches
+- `dashboard_stage_2/` -- supersede with EXECUTION_QUEUE + AUDIT_INDEX integration; archive after B888+5 batches
+- `dashboard_sprint0a/` -- convert to static JSON reference data (no JS UI); not user-facing
+
+### 10.6 metrics.py Integration (Sleeping Unicorns)
+
+**Council 14 Expansionist + Contrarian:** metrics.py computes 12 functions; PASSING_CRITERIA reads 6. The 6 unused are the highest-leverage diagnostic gates.
+
+| metrics.py function | Current status | B888 plan |
+|---|---|---|
+| `_chow_test` (regime break-point) | Computed; not gated | **AUTO-FAIL screen** (B888 lens) -- catches dead-strategy regime-coincidence |
+| `_adf_test` (equity curve stationarity) | Computed; not gated | **AUTO-FAIL screen** -- catches whip-saw non-compounders |
+| `_cost_sensitivity_sharpe` | Computed; not gated | **AUTO-FAIL screen** -- catches slippage-killed strategies |
+| `_kelly_criterion` | Computed; advisory | Surface in dashboard for position-sizing tier validation (not a gate) |
+| `_event_window_breakdown` | Computed; advisory | Surface in dashboard for event-driven strategies (PEAD/FOMC/buyback) |
+| `_event_conditional_win_rate` | Computed; advisory | Same as above; helps owner triage event-strategy quality |
+| `_time_in_market_metrics` | Computed; advisory | Surface in dashboard for capital efficiency comparison |
+| `_sortino_ratio` | Computed; gated | Keep canonical gate; demote from B888 lens (redundant with Calmar) |
+| `_sharpe` / `_sharpe_daily` | Computed; gated | Keep canonical; lens uses PSR (which incorporates) |
+| `_profit_factor` | Computed; gated | Keep canonical; lens uses soft-score weighting |
+| `_max_drawdown` | Computed; gated | Keep canonical; lens uses Calmar (which incorporates) |
+| `_deflated_sharpe` (DSR) | Computed; gated 0.95 | Keep canonical 0.95; lens uses DSR > 0 with CI |
+| `_calmar` | Computed; gated 0.5 | Keep canonical 0.5; lens promotes to 1.0 primary |
+
+**No metrics.py changes required -- just wire the 3 unused gates (Chow/ADF/cost-sensitivity) as AUTO-FAIL screens in `r5_winner_identifier.py`.**
+
+### 10.7 Post-Stage-4 Target (Honest)
+
+**Original Stage 2 BUILD PLAN target:** ">=10 Priority-1 combos identified -> Phase 1B-α."
+
+**B888 corrected target (per Council 14 First Principles):** "By Sunday, produce a ranked list of <=50 deployment-optimized cells with R4-R5 delta-verified edge improvement and pass the Chow+ADF AUTO-FAIL screens."
+
+If subset is **<30 cells** -> project's "218 strategies have edge" premise is empirically falsified. Response: fewer strategies, not more agents. Honest stop-gate.
+
+If subset is **30-50 cells with verified delta improvement** -> Phase 1B-α launches restricted to AGENT-CANDIDATE-tagged cells only (per Expansionist per-cell triage), ~60% Haiku budget savings vs blanket P1 set.
+
+### 10.8 Scripts to Build (B888 + Following Batches)
+
+| Script | When | Effort | Status |
+|---|---|---|---|
+| `scripts/r5_delta_analyzer.py` | NOW (parallel to B660 v2) | ~2h Claude | B888 priority |
+| `scripts/r5_winner_identifier.py` (soft-score + AUTO-FAIL screens) | Pre-R5 (or by Thursday AM) | ~3h Claude | B888-B889 |
+| `scripts/eval_r5_sharpe_band.py` (B882 decision tree evaluator) | Pre-R5 | ~1h Claude | B889 |
+| `scripts/dec131_mid_run_watchdog.py` (1B-α abort if lookahead detected) | Pre-1B-α | ~1h Claude | B890 |
+| `dashboard_stage_4_cube_explorer/` build | Post-R5 | ~4-6h Claude | B891 |
+
+**Total Claude effort:** ~11-13h across B888-B891. None block R5 launch except `r5_delta_analyzer.py` (which is built before R5 lands).
+
+### 10.9 What Stays Vs What Changes
+
+| Element | Status |
+|---|---|
+| Council 7 "R5 -> agents -> papertrade. No changes." directive | **UNCHANGED** |
+| PASSING_CRITERIA 11-criteria + 5-Gate canonical | **UNCHANGED** (no methodology shift) |
+| 218 active strategies; no a-priori cull (`feedback_no_a_priori_strategy_pruning`) | **UNCHANGED** |
+| DEC-426 5-Gate (n>=30, p<0.05 Bonferroni, PSR>=0.95, t>=3.4, R:R>=2.0) | **UNCHANGED** |
+| Phase 1B-α 11-agent pipeline + $300 Haiku budget | **UNCHANGED** |
+| DEC-131 gate (agent_sharpe minus rules_sharpe >= 0.2 on >=3 combos) | **UNCHANGED** |
+| **B888 lens** (4-metric + AUTO-FAIL screens applied to R5 OUTPUT) | **NEW** -- analytical only, no gate replacement |
+| **R4-R5 delta analyzer** | **NEW** -- free ablation extraction |
+| **Soft-score ranking + best-of-26 collapse** | **NEW** -- winner identification methodology |
+| **Consolidated dashboard** | **NEW** -- 3 -> 1 over B891+ |
+
+### 10.10 Council 14 Diagnostic (Honest Risk Surface)
+
+**Contrarian Council 14 dissent (preserved for honesty):**
+- "R4 0.419 OOS came from researcher running 800+ batches against same holdout. True Sharpe possibly below 0.419 or negative."
+- "39,676 cells x ~140 walk-mutations x 800 batches ~= 4.4M researcher DoF. At this trial count, Sharpe 1.0 overall = random noise. Honest threshold ~1.8-2.2."
+- "Stage 4 walks were optimization round 1 against corrupted oracle. Round 2 needs clean OOS slice (2026-Q2 forward, sealed) before R5 means anything."
+
+**Owner's binding response (Council 7):** "R5 -> agents -> papertrade. No changes." -- overrules the methodology-shift concern. B888 honors directive while extracting maximum delta-intelligence + lens-classification value from the R5 output.
+
+**Honest fallback if R5 OOS Sharpe < 0.5:** B882 Sharpe-band decision tree triggers STOP. Defer Phase 1B-α. Re-architect via clean post-2026 forward-test window (Contrarian's prescription becomes actionable post-failure).
