@@ -111,4 +111,4 @@ def test_batch626_legacy_2_gate_fixture_does_not_fire_long():
 def test_batch626_all_strategies_count_unchanged():
     """Pin (7): B626 is pure refactor + docstring; no add/delete."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219

@@ -141,33 +141,13 @@ def test_batch629_williams_r_oversold_short_silent_gap_closed():
     assert strat_williams_r_oversold(s)["fires"] is False
 
 
-# ----- 3 + 4. camarilla_rsi_obv (dual + standalone) -----
-
-def test_batch629_camarilla_rsi_obv_short_full_positive_signals():
-    """Pin (7): both B628 obv-fix AND B629 cmf-fix gates use positive
-    symmetric signals."""
-    from backtest.signals.screener import strat_camarilla_rsi_obv
-    s = {
-        "near_cam_r3": True,
-        "rsi_14": 70,
-        "obv_bearish": True,
-        "cmf_negative": True,
-    }
-    out = strat_camarilla_rsi_obv(s)
-    assert out["fires"] is True and out["direction"] == "short"
-
-
-def test_batch629_camarilla_rsi_obv_short_standalone_full_positive():
-    """Pin (8)."""
-    from backtest.signals.screener import strat_camarilla_rsi_obv_short
-    s = {
-        "near_cam_r3": True,
-        "rsi_14": 70,
-        "obv_bearish": True,
-        "cmf_negative": True,
-    }
-    out = strat_camarilla_rsi_obv_short(s)
-    assert out["fires"] is True and out["direction"] == "short"
+# ----- 3 + 4. camarilla_rsi_obv (dual + standalone) (B874 DELETED) -----
+# Pins (7) + (8) removed B874: strat_camarilla_rsi_obv (dual) +
+# strat_camarilla_rsi_obv_short (standalone) deleted per S4-B754-A-19
+# Pattern W deterministic strict-subset of A-18 W9 + B754 META-PATTERN
+# SHORT-standalone-vs-dual-mirror. B629 cmf-fix history preserved in
+# git log + B629 commit. Family-bug sweep completeness test below still
+# validates cmf_positive family-wide.
 
 
 # ----- Family-bug sweep completeness -----
@@ -197,4 +177,4 @@ def test_batch629_cmf_family_sweep_complete():
 def test_batch629_all_strategies_count_unchanged():
     """Pin (10)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219

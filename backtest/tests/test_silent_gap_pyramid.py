@@ -1725,7 +1725,7 @@ def test_batch329_bug111_six_retest_variants_registered():
     #       post-B718 + strat_po3_htf_aligned_long DELETED HYBRID Pattern
     #       F + strat_po3_htf_aligned_short DELETED same. Net: -3 = 224
     #       -> 221.)
-    assert len(ALL_STRATEGIES) == 221, (
+    assert len(ALL_STRATEGIES) == 219, (
         f"BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + "
         f"B572/580/581/586/588/591/592/599/603/605/607/610/611/615/620/636/639/645/"
         f"670/682/685/686/709/722 trajectory: ALL_STRATEGIES count "

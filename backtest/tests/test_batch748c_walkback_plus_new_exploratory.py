@@ -124,7 +124,7 @@ def test_b748c_pin2_nine_originally_tagged_strategies_now_revived_post_b748d():
 def test_b748c_pin3_strategy_count_unchanged_at_221():
     """B748c is docstring + walk-back only; no roster change."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219
 
 
 def test_b748c_pin4_strat_activist_13d_long_has_stale_data_caveat():

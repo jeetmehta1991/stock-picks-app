@@ -131,7 +131,7 @@ def test_batch670_all_strategies_total_count_maintained():
     """Pin (9) B821 UPDATED: count was 222 post-B670; trajectory B685+3
     + B686+1 + B709+2 - B722-3 = 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221, (
+    assert len(ALL_STRATEGIES) == 219, (
         f"B670 + B722 trajectory: ALL_STRATEGIES count is {len(ALL_STRATEGIES)}; "
         "expected 221 (222 post-B670 + 3 B685 + 1 B686 + 2 B709 - 3 B722)"
     )

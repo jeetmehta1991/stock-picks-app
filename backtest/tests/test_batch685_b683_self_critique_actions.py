@@ -66,7 +66,7 @@ CP-1 EXPLORATORY marker (1):
   (18) 'cup_and_handle_long' in EXPLORATORY_STRATEGIES constant
 
 Strategy count attestation (1):
-  (19) len(ALL_STRATEGIES) == 221 (was 218; +3 Class 7 NEW)
+  (19) len(ALL_STRATEGIES) == 219 (was 218; +3 Class 7 NEW)
 """
 from __future__ import annotations
 

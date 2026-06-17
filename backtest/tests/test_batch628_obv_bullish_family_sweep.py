@@ -135,34 +135,13 @@ def test_batch628_bullish_engulfing_short_silent_gap_closed():
     assert strat_bullish_engulfing_support(s)["fires"] is False
 
 
-# ----- 6 + 7. camarilla_rsi_obv duo (partial F1 only; cmf gate untouched) -----
-
-def test_batch628_camarilla_rsi_obv_short_obv_half_fires():
-    """Pin (11): obv_bearish swap works on the dual.
-    B629 follow-up: cmf gate also swapped to positive symmetric
-    cmf_negative; fixture extended."""
-    from backtest.signals.screener import strat_camarilla_rsi_obv
-    s = {
-        "near_cam_r3": True,
-        "rsi_14": 70,
-        "obv_bearish": True,
-        "cmf_negative": True,    # B629 follow-up: positive symmetric
-    }
-    out = strat_camarilla_rsi_obv(s)
-    assert out["fires"] is True and out["direction"] == "short"
-
-
-def test_batch628_camarilla_rsi_obv_short_single_fires():
-    """Pin (12). B629 update: cmf_negative positive symmetric."""
-    from backtest.signals.screener import strat_camarilla_rsi_obv_short
-    s = {
-        "near_cam_r3": True,
-        "rsi_14": 70,
-        "obv_bearish": True,
-        "cmf_negative": True,    # B629 follow-up
-    }
-    out = strat_camarilla_rsi_obv_short(s)
-    assert out["fires"] is True and out["direction"] == "short"
+# ----- 6 + 7. camarilla_rsi_obv duo (B874 DELETED per S4-B754-A-19) -----
+# Pins (11) + (12) removed B874: strat_camarilla_rsi_obv (dual) +
+# strat_camarilla_rsi_obv_short (standalone) deleted per S4-B754-A-19
+# Pattern W deterministic strict-subset of A-18 W9 strat_camarilla_s3_bounce
+# + B754 META-PATTERN SHORT-standalone-vs-dual-mirror. B628 silent-gap fix
+# history preserved in git log + B628 commit. Family-bug sweep completeness
+# test below still validates obv_bullish family-wide.
 
 
 # ----- Family-bug sweep completeness -----
@@ -197,4 +176,4 @@ def test_batch628_obv_bullish_family_sweep_complete():
 def test_batch628_all_strategies_count_unchanged():
     """Pin (14): pure refactor; no add/delete."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219

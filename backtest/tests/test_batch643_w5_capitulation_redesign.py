@@ -266,4 +266,4 @@ def test_batch643_total_strategy_count():
     """Pin (17) B821 UPDATED: B645 added W5 mirror -> 222 (post-B645
     trajectory). B722 -3 brought count to 221 current. Pin updated."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219

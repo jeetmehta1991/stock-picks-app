@@ -182,4 +182,4 @@ def test_batch613_registry_short_removed_btwin_added():
 def test_batch613_all_strategies_count_preserved_at_221():
     """Pin (11): B613 is -1 SHORT + 1 B-twin = net 0."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219

@@ -120,7 +120,7 @@ def test_batch682_all_strategies_count_218():
     Current pinning reflects trajectory to B722 (latest count-changing
     batch)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221, (
+    assert len(ALL_STRATEGIES) == 219, (
         f"B682 trajectory through B722: expected 221 (218 post-B682 + 3 "
         f"B685 NEW + 1 B686 NEW + 2 B709 RESTORE - 3 B722 DELETE); "
         f"got {len(ALL_STRATEGIES)}"

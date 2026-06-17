@@ -2457,22 +2457,6 @@ def strat_cpr_narrow_momentum(s):
         ["Narrow-tight CPR + below CPR + RSI<50 + MACD bearish + below 200-EMA - five-signal bearish day"])
 
 
-def strat_camarilla_rsi_obv(s):
-    # B628 F1: obv_bullish -> obv_bearish (positive symmetric).
-    # B629 F1 cmf-family sweep: cmf_positive -> cmf_negative
-    # (B629 producer signal). Both silent-gaps now closed.
-    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35
-          and s.get("obv_bullish") and s.get("cmf_positive"))
-    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65
-          and s.get("obv_bearish")
-          and s.get("cmf_negative") and not _short_borrow_trap_active(s))
-    return _strat3(fl, fs, "confluence",
-        ["near_cam_s3","rsi_14<35","obv_bullish","cmf_positive"],
-        ["near_cam_r3","rsi_14>65","obv_bearish","cmf_negative", "borrow_ok"],
-        ["Camarilla S3 + RSI oversold + OBV rising + CMF positive - highest conviction long"],
-        ["Camarilla R3 + RSI overbought + OBV bearish + CMF negative - highest conviction short (B628 F1 + B629 F1)"])
-
-
 def strat_supertrend_ichimoku_adx(s):
     """Batch 779 (2026-06-15 owner directive "No asymmetric. Want symmetric only"):
     SYMMETRIC Pattern Q EVENT-conversion applied to BOTH LONG and SHORT sides.
@@ -2787,22 +2771,7 @@ def strat_prev_day_low_breakdown(s):
          "Below VWAP  -  intraday sellers dominating"])
 
 
-# --- Confluence shorts (2) ---
-
-def strat_camarilla_rsi_obv_short(s):
-    # B628 F1: obv_bullish -> obv_bearish (positive symmetric).
-    # B629 F1 cmf-family sweep: cmf_positive -> cmf_negative.
-    # Both silent-gaps now closed.
-    fires = (s.get("near_cam_r3") and
-             s.get("rsi_14", 50) > 65 and
-             s.get("obv_bearish") and
-             s.get("cmf_negative") and not _short_borrow_trap_active(s))
-    return _strat(fires, "short", "confluence",
-        ["near_cam_r3", "rsi_14>65", "obv_bearish", "cmf_negative", "borrow_ok"],
-        ["Camarilla R3 - strongest institutional resistance",
-         "RSI-14 overbought above 65",
-         "OBV bearish + CMF negative - four systems confirming short (B628 F1 + B629 F1)"])
-
+# --- Confluence shorts (1; B874 deleted strat_camarilla_rsi_obv_short Pattern W) ---
 
 def strat_cpr_narrow_momentum_short(s):
     """REFRAMED POST-B787 #48 (owner-directed 2026-06-15 option b): CPR
@@ -7331,7 +7300,6 @@ ALL_STRATEGIES = {
     "pivot_fib_confluence":     strat_pivot_fib_confluence,
     "golden_cross_volume":      strat_golden_cross_volume,
     "cpr_narrow_momentum":      strat_cpr_narrow_momentum,
-    "camarilla_rsi_obv":        strat_camarilla_rsi_obv,
     "supertrend_ichimoku_adx":  strat_supertrend_ichimoku_adx,
     "williams_stoch_dual":      strat_williams_stoch_dual,
     # Dedicated shorts  -  Trend (4)
@@ -7352,8 +7320,7 @@ ALL_STRATEGIES = {
     # Batch 592 (2026-06-05) owner correction kept both tight pairs coexisting:
     "donchian_breakout_long":           strat_donchian_breakout_long,
     "donchian_breakout_retest_long":    strat_donchian_breakout_retest_long,
-    # Dedicated shorts  -  Confluence (2)
-    "camarilla_rsi_obv_short":      strat_camarilla_rsi_obv_short,
+    # Dedicated shorts  -  Confluence (1; B874 deleted camarilla_rsi_obv_short Pattern W)
     "cpr_narrow_momentum_short":    strat_cpr_narrow_momentum_short,
     # Break-and-Retest (5)  -  BUG-111 / DEC-355 through DEC-362 chart pattern spec
     "dc20_break_retest":            strat_dc20_break_retest,

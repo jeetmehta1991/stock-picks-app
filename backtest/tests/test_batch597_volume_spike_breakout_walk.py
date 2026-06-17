@@ -155,4 +155,4 @@ def test_batch597_regime_default_short_bear_crisis_neutral():
 def test_batch597_all_strategies_count_post_b599():
     """Pin (7): subsequent batches added; current count 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219

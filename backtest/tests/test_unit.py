@@ -10376,7 +10376,7 @@ def test_batch373_e1_doc_count_pin_against_code():
     #       (phi correlation = 0.297 on 29 T1a tickers 2020-2026; 70% of EV-3 fires are
     #       a distinct population EV-1 misses entirely; B682 deletion empirically wrong).
     #       222 -> 224.
-    assert len(ALL_STRATEGIES) == 221, (
+    assert len(ALL_STRATEGIES) == 219, (
         f"F-002 drift: ALL_STRATEGIES expected 221 post-B722 deletions + EXPLORATORY "
         f"(hull_rsi_short Pattern W + 2 po3_htf_aligned Pattern F = -3); "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."

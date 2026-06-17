@@ -148,4 +148,4 @@ def test_batch627_family_bug_sweep_complete_no_active_pattern_remains():
 def test_batch627_all_strategies_count_unchanged():
     """Pin (8): pure refactor; no add/delete."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219

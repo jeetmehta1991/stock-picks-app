@@ -237,4 +237,4 @@ def test_batch609_short_silent_gap_below_ema_50_fixed():
 def test_batch609_all_strategies_count_unchanged_at_221():
     """Pin (14)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 221
+    assert len(ALL_STRATEGIES) == 219
