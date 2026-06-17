@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "as_of_run": "2026-06-18T02:28:45.852519",
+    "start": "2020-01-01",
+    "end": "2026-05-31",
+    "n_tickers_universe": 614,
+    "n_tickers_evaluated": 606,
+    "n_strategies_requested": 30,
+    "n_strategies_resolved": 30,
+    "n_bars_total": 566446,
+    "n_fires_total": 420870,
+    "per_strategy_fires": {
+      "rsi_oversold": 10096,
+      "rsi_volume_200ema": 5772,
+      "stoch_oversold": 860,
+      "stochrsi_oversold": 25606,
+      "stochrsi_overbought_short": 36020,
+      "williams_r_oversold": 28654,
+      "ultimate_oscillator": 3644,
+      "bollinger_lower": 14729,
+      "bollinger_tight": 49947,
+      "bollinger_upper_short": 528,
+      "camarilla_r4_breakout": 12714,
+      "cpr_narrow_momentum": 44350,
+      "cpr_narrow_momentum_short": 30791,
+      "avwap_50_reclaim": 64531,
+      "avwap_252_breakout": 9657,
+      "avwap_20high_rejection_short": 162,
+      "awesome_oscillator": 22369,
+      "cmf_flip": 23213,
+      "ppo_crossover": 15928,
+      "roc_burst": 8757,
+      "williams_stoch_dual": 7145,
+      "prev_day_low_bounce": 3652,
+      "bb_squeeze_volume": 1068,
+      "camarilla_rsi_obv": 208,
+      "rsi9_extreme": 37,
+      "keltner_lower": 133,
+      "camarilla_rsi_obv_short": 170,
+      "mfi_oversold": 69,
+      "rsi21_slow": 60
+    },
+    "enable_extended_signals": true,
+    "runtime_seconds": 234933.9,
+    "pattern_candidates": {
+      "jaccard_threshold": 0.85,
+      "phi_threshold": 0.7,
+      "n_pattern_w_candidates": 1,
+      "n_pattern_j_candidates": 2
+    }
+  },
+  "patterns": {
+    "jaccard_threshold": 0.85,
+    "phi_threshold": 0.7,
+    "pattern_w_candidates": [
+      {
+        "strategy_a": "camarilla_rsi_obv",
+        "strategy_b": "camarilla_rsi_obv_short",
+        "direction": "short",
+        "n_a": 170,
+        "n_b": 170,
+        "n_both": 170,
+        "jaccard": 1.0,
+        "phi_correlation": 1.0
+      }
+    ],
+    "pattern_j_candidates": [
+      {
+        "strategy_a": "camarilla_rsi_obv",
+        "strategy_b": "camarilla_rsi_obv_short",
+        "direction": "short",
+        "n_a": 170,
+        "n_b": 170,
+        "n_both": 170,
+        "jaccard": 1.0,
+        "phi_correlation": 1.0
+      },
+      {
+        "strategy_a": "cpr_narrow_momentum",
+        "strategy_b": "cpr_narrow_momentum_short",
+        "direction": "short",
+        "n_a": 19383,
+        "n_b": 30791,
+        "n_both": 19383,
+        "jaccard": 0.629502,
+        "phi_correlation": 0.785096
+      }
+    ]
+  },
+  "output_paths": {
+    "long_format_matrix": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_matrix_cluster_a_full.parquet",
+    "similarity_matrix": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_similarity_cluster_a_full.parquet",
+    "summary": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_summary_cluster_a_full.json"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "as_of_run": "2026-06-15T03:41:31.024375",
+    "start": "2024-01-01",
+    "end": "2024-12-31",
+    "n_tickers_universe": 519,
+    "n_tickers_evaluated": 50,
+    "n_strategies_requested": 30,
+    "n_strategies_resolved": 30,
+    "n_bars_total": 12348,
+    "n_fires_total": 8939,
+    "per_strategy_fires": {
+      "rsi_oversold": 236,
+      "rsi_volume_200ema": 120,
+      "stochrsi_oversold": 592,
+      "stochrsi_overbought_short": 758,
+      "williams_r_oversold": 613,
+      "ultimate_oscillator": 81,
+      "bollinger_lower": 278,
+      "bollinger_tight": 1015,
+      "camarilla_r4_breakout": 299,
+      "cpr_narrow_momentum": 976,
+      "cpr_narrow_momentum_short": 654,
+      "avwap_50_reclaim": 1228,
+      "avwap_252_breakout": 181,
+      "awesome_oscillator": 502,
+      "cmf_flip": 520,
+      "ppo_crossover": 406,
+      "roc_burst": 179,
+      "williams_stoch_dual": 159,
+      "prev_day_low_bounce": 76,
+      "bb_squeeze_volume": 21,
+      "bollinger_upper_short": 19,
+      "keltner_lower": 6,
+      "stoch_oversold": 16,
+      "avwap_20high_rejection_short": 3,
+      "rsi9_extreme": 1
+    },
+    "enable_extended_signals": true,
+    "runtime_seconds": 4765.4,
+    "pattern_candidates": {
+      "jaccard_threshold": 0.85,
+      "phi_threshold": 0.7,
+      "n_pattern_w_candidates": 0,
+      "n_pattern_j_candidates": 0
+    }
+  },
+  "patterns": {
+    "jaccard_threshold": 0.85,
+    "phi_threshold": 0.7,
+    "pattern_w_candidates": [],
+    "pattern_j_candidates": []
+  },
+  "output_paths": {
+    "long_format_matrix": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_matrix_cluster_a_demo.parquet",
+    "similarity_matrix": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_similarity_cluster_a_demo.parquet",
+    "summary": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_summary_cluster_a_demo.json"
+  }
+}

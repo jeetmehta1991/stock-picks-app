@@ -1,0 +1,3 @@
+baseline rows: 0
+cached   rows: 0
+BOTH trade_logs empty -- nothing to compare

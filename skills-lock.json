@@ -1,0 +1,3023 @@
+{
+  "version": 1,
+  "skills": {
+    "a-b-test-config-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/a-b-test-config-creator/SKILL.md",
+      "computedHash": "5db36d75ba4c2c52b644a8abc48aa3c4b340427860aa4a439764dc5c39971499"
+    },
+    "ab-test-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/ab-test-analyzer/SKILL.md",
+      "computedHash": "6330051cf24162bdcbf11abad790a134ff59901ff9ebc8367e717bec8e14ebc7"
+    },
+    "acceptance-criteria-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/acceptance-criteria-creator/SKILL.md",
+      "computedHash": "8470e30c5f090306c79edb7fa614d9b90beda5ea5c1f94a830de0f974de68dfc"
+    },
+    "accessibility-audit-runner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/accessibility-audit-runner/SKILL.md",
+      "computedHash": "c65d7cd0b416dd6d0fd8c5bb41bc14b2909e850cd8e69f2143264198acf64746"
+    },
+    "adr-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/adr-generator/SKILL.md",
+      "computedHash": "e693e5af960306303c0a35cc537ad18aed300ba5be8838634f974c933b13216b"
+    },
+    "aggregation-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/aggregation-helper/SKILL.md",
+      "computedHash": "c8ee4f81ca2ee5ee01e4732a67f930f7c0d676970d3da1f0b8c8401780296d85"
+    },
+    "airflow-dag-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/airflow-dag-generator/SKILL.md",
+      "computedHash": "e4bec1c0b98636a10b4bc51e4d27317fc230648fb0b2109292b616f19b75c455"
+    },
+    "airflow-operator-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/airflow-operator-creator/SKILL.md",
+      "computedHash": "9fb7478c66c6e05c6760197ef8fff3d5cb9ae5d98f0a64d5fe17b0d9d2b6ddf4"
+    },
+    "alertmanager-rules-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/alertmanager-rules-config/SKILL.md",
+      "computedHash": "394838dd1c8d4d677bdfb71cf04e1a3837ef61ac3a1363ea246359b8877ac45d"
+    },
+    "anomaly-detector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/anomaly-detector/SKILL.md",
+      "computedHash": "781633eb94f3d91bcd3e7eec58722d0b769149d6c0583642b111c91d794c87f8"
+    },
+    "ansible-playbook-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/ansible-playbook-generator/SKILL.md",
+      "computedHash": "00a66ebeeeb260b2b6e676f35430badb0cd0b24e9850544775b30a820b072d93"
+    },
+    "ansible-role-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/ansible-role-creator/SKILL.md",
+      "computedHash": "a1baf7dc9ff16a97f1103d9ce6eab223b2a0c7702bdcffb21460721e544b7c8a"
+    },
+    "apdex-score-calculator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/apdex-score-calculator/SKILL.md",
+      "computedHash": "22cef2a0a7826da0872207b230c87e36c1d09174ca59084f6804757e05284f4c"
+    },
+    "api-caching-strategy": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/api-caching-strategy/SKILL.md",
+      "computedHash": "498a1b537083f0a426df708c33d0f6c8c2450e944ce4946b1de6923873398495"
+    },
+    "api-client-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/api-client-generator/SKILL.md",
+      "computedHash": "0210b764cd7cb2341a1df92f4a6b5fd0b670b77879c4a59cc6e2c91dd587e8f2"
+    },
+    "api-flow-diagram-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/api-flow-diagram-creator/SKILL.md",
+      "computedHash": "3a3a18e3b1c5f242a105bb9c6e20903412705b99f2c472aa32f80caafc0b3949"
+    },
+    "api-gateway-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/api-gateway-config/SKILL.md",
+      "computedHash": "56f65351061a6dd53b73e06404281d37d4b7475af466cdff5f14f8ee5ec1bea5"
+    },
+    "api-health-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/api-health-checker/SKILL.md",
+      "computedHash": "ea452b6b5e87abadf1336c7bb230ef86384d5a80e520ede348b77d6aa8fa1ba3"
+    },
+    "api-key-auth-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/api-key-auth-setup/SKILL.md",
+      "computedHash": "9bc855458711e04b89fc5e2a40a6606d5a6d29eb44a7dbe9108ca3893e12cc84"
+    },
+    "api-key-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/api-key-manager/SKILL.md",
+      "computedHash": "15aeb8fc61b9852b397b2b079be95c6915e7ed806dd8260f8b71339540d8d5ae"
+    },
+    "api-mock-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/api-mock-generator/SKILL.md",
+      "computedHash": "56c728a63a8cd9511067c68f0365bd89e998f393df5b3efe68b14ec78f841690"
+    },
+    "api-rate-limiting-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/api-rate-limiting-config/SKILL.md",
+      "computedHash": "37086f92d457dd795890968cfb83ea986ed61121593be925394c83b1661eca0a"
+    },
+    "api-reference-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/api-reference-creator/SKILL.md",
+      "computedHash": "160c08ad958b7a518f57a85ff394cfa43b0a82679befad70d98da92e6a6081ed"
+    },
+    "api-response-cacher": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/api-response-cacher/SKILL.md",
+      "computedHash": "6084b6f2eda9cc5076f8947696d1adc853c6f5b1dcae771cdf74efbac621b6de"
+    },
+    "api-test-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/api-test-generator/SKILL.md",
+      "computedHash": "1d9b94228eb074bf641f4aa6c4095f3b9e98b415448f7f8b96cee7e744058a39"
+    },
+    "api-testing-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/api-testing-helper/SKILL.md",
+      "computedHash": "b724399500eba81c6e6ca155daa3da63cc27c9997f4da7601f2d8573a05fa210"
+    },
+    "api-throttling-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/api-throttling-setup/SKILL.md",
+      "computedHash": "acf9166fbf387a2917e21ef98b02c78a79c3ee42e1739f2bb9c779fcfe1da21b"
+    },
+    "approval-workflow-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/approval-workflow-generator/SKILL.md",
+      "computedHash": "618463d1ce732ea17c4bb9c02d8ca91306d1190feb7bb5b1156fc7957bf8c07e"
+    },
+    "architecture-diagram-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/architecture-diagram-creator/SKILL.md",
+      "computedHash": "9a37b4b199e6a7770de95a9802ecbf76c7f4f364bc0f1121238db03e6688c338"
+    },
+    "architecture-doc-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/architecture-doc-creator/SKILL.md",
+      "computedHash": "bd0a86ad01b93ee14de46d170617ea4ba655414ebe7409ad2cdf9916009c7bd4"
+    },
+    "argocd-app-deployer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/argocd-app-deployer/SKILL.md",
+      "computedHash": "ebf2eb02af89363d90ffa497ae05e8c9dfc03d201ee928068508e135c6fe6a95"
+    },
+    "aria-attribute-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/aria-attribute-helper/SKILL.md",
+      "computedHash": "a79932b97ac98e6078cae60a25dfd7f2c1b95146e9349a360997e47247ef4bb3"
+    },
+    "artillery-config-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/artillery-config-generator/SKILL.md",
+      "computedHash": "37d1e3fa479e8fd0ca2a8ddc846fad6edfba7a226f521903a94468e2c2d2a4b3"
+    },
+    "asana-task-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/asana-task-creator/SKILL.md",
+      "computedHash": "563bafaf0738d3a275a0afa37e491aee821f85b774a184b4b468a455f62f0af9"
+    },
+    "ascii-art-diagram-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/ascii-art-diagram-creator/SKILL.md",
+      "computedHash": "d465c4f6f324706df9f19274700306701e5c4cb271b37c2daeaed22551d41e34"
+    },
+    "async-api-caller": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/async-api-caller/SKILL.md",
+      "computedHash": "fdb225847b55eef3edfc3ab0313fa89adb87c25c02b26f73faee340a5fd8d99c"
+    },
+    "attack-surface-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/attack-surface-analyzer/SKILL.md",
+      "computedHash": "d36d8a6a8055ca5e2ec7278ffe4bd78854ab226e132c2893641290154f8d8985"
+    },
+    "audit-trail-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/audit-trail-helper/SKILL.md",
+      "computedHash": "47acf029c9093f2f48bad3930ff43b877b0bf0d0b5237b5441aed3598b553136"
+    },
+    "azure-ml-deployer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/azure-ml-deployer/SKILL.md",
+      "computedHash": "405b0966e82d3563ed4513c3be1b67d1eeed7e00f0d1f21557f64dca3eee07a3"
+    },
+    "background-worker-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/background-worker-creator/SKILL.md",
+      "computedHash": "215a26297e296aa341b99c96f7486dda45415faa38462c415527de353d910284"
+    },
+    "backlog-grooming-assistant": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/backlog-grooming-assistant/SKILL.md",
+      "computedHash": "9464b602b8382c1bf585733574caa612a18dceaf26cb1470bdb1e9c30e14fad6"
+    },
+    "backtesting-frameworks": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/quantitative-trading/skills/backtesting-frameworks/SKILL.md",
+      "computedHash": "792069fc176d944805f2136a8f98aa7c77ef138c25678baa03d282c5fe18159a"
+    },
+    "backtesting-trading-strategies": {
+      "source": "gracefullight/stock-checker",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/backtesting-trading-strategies/SKILL.md",
+      "computedHash": "23aa3da222e91ca8fee575df979f6ea7ac1071a46badc3e310f921b7a258d83f"
+    },
+    "bash-script-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/bash-script-helper/SKILL.md",
+      "computedHash": "3fc5fc2c69b602bb58fa35a4ae25e080ce0dca3977a00e983e2727428e07387b"
+    },
+    "batch-file-processor": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/batch-file-processor/SKILL.md",
+      "computedHash": "211c575a3f19f01cff8689ae85b5013d906c3972f98443612a95ca84bb46b549"
+    },
+    "batch-inference-pipeline": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/batch-inference-pipeline/SKILL.md",
+      "computedHash": "b489fb9f1dde4d464dbd6e7797a9186ae60903d975359bc218a9a5b1f058ccda"
+    },
+    "batch-request-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/batch-request-handler/SKILL.md",
+      "computedHash": "3f08b212252ee99c50890897ee0597ab43c91dfef7b8c1dd04f9f3ff8461bd1d"
+    },
+    "beam-pipeline-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/beam-pipeline-builder/SKILL.md",
+      "computedHash": "a9688a026fe1d18396478719aaf90c46542cd3742f8b9b61834666c038583604"
+    },
+    "bearer-token-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/bearer-token-validator/SKILL.md",
+      "computedHash": "96442ece850eeb959edce39b8de9f72c3305355fe0ac652f2ebce35970da906e"
+    },
+    "benchmark-suite-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/benchmark-suite-creator/SKILL.md",
+      "computedHash": "26427a986be0d22d08d753599d6d10ace835dbcb7479377e49e228a6afa08978"
+    },
+    "bigquery-ml-model-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/bigquery-ml-model-creator/SKILL.md",
+      "computedHash": "f991a1406fdebc2082e441f5a2b3f4c664326e50bea5208e97b54095cf314e2f"
+    },
+    "bigquery-scheduled-query": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/bigquery-scheduled-query/SKILL.md",
+      "computedHash": "d5ed4f3775221f44508359ff1a76380a9724515a983dbffebfefaa15f0608697"
+    },
+    "bigquery-table-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/bigquery-table-creator/SKILL.md",
+      "computedHash": "59ea4458b31f08f7f162403ec8a5ea11b6a4000b6fdbeca47594a7a0cc6e382f"
+    },
+    "bigquery-view-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/bigquery-view-generator/SKILL.md",
+      "computedHash": "b6c54a0b96a6920d9d63755cfcbf7ad6dd5aea8c678dc3827d55147ed447cf63"
+    },
+    "bottleneck-identifier": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/bottleneck-identifier/SKILL.md",
+      "computedHash": "3ee4db84240a07ca26568af9bb0b7752176dedfbd7cf91eb290b63864e20d883"
+    },
+    "branch-naming-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/branch-naming-helper/SKILL.md",
+      "computedHash": "e00e94ef55850449cf22c2681d8a55a70fc68d196d70b517f60a02b3accf49fa"
+    },
+    "bundle-size-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/bundle-size-analyzer/SKILL.md",
+      "computedHash": "a42b5bb4439bed3abd23e935fab5be4aea67e988f9fc6e6d1f96f136c1d155ab"
+    },
+    "calendar-event-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/calendar-event-creator/SKILL.md",
+      "computedHash": "150df1ac72e3ddcf7e08d0dfed34f8c0277b3b85adeb71fd1670f6a57c50a540"
+    },
+    "canary-deployment-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/canary-deployment-setup/SKILL.md",
+      "computedHash": "04c9d304f156f3b0afb0f585db7df0a2e58fd798204d0336a780a2810aff857b"
+    },
+    "cdc-pipeline-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/cdc-pipeline-creator/SKILL.md",
+      "computedHash": "33814f2657e43884748b78767354668af8eea8ac62add1498c17c1881ff164e9"
+    },
+    "cdk-stack-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/cdk-stack-generator/SKILL.md",
+      "computedHash": "a9b6490b3bbb8442b1178d18bc4acfc7b7dbf528f4b6f86803e8f128e582ae2b"
+    },
+    "cert-manager-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/cert-manager-setup/SKILL.md",
+      "computedHash": "9ef400c70f74c8b79a39b0d80c5fab94236d33e8ff661b2d0c70009ad5b1e8b8"
+    },
+    "certificate-lifecycle-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/certificate-lifecycle-manager/SKILL.md",
+      "computedHash": "d86a43bebc5409327e2888ff2f13523d5eaeeee8a609e5331b437dea20b8e37d"
+    },
+    "change-request-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/change-request-generator/SKILL.md",
+      "computedHash": "89aa6be972cef2525d9ad22af1f063ef95a5b2b24113e74f6eb4088452f8550c"
+    },
+    "changelog-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/changelog-creator/SKILL.md",
+      "computedHash": "9a74870093b1a9199c3dbb27e6960f648d157b88b3990cbfa50b97ef75b72572"
+    },
+    "changelog-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/changelog-generator/SKILL.md",
+      "computedHash": "cb1619d0a39d6e7c3b025b7c02acd03aa485021627461dd79ab5e0a7cb859db3"
+    },
+    "chart-js-config-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/chart-js-config-creator/SKILL.md",
+      "computedHash": "c8a37e475cba3732c2528d6f924799bf00015c64bfd1d119769337312c50d9c3"
+    },
+    "chart-type-recommender": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/chart-type-recommender/SKILL.md",
+      "computedHash": "32259b4cab8cd8a40379d25c9de61973d6fbb68a410edc1582650c20ea5dc4ea"
+    },
+    "churn-analysis-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/churn-analysis-helper/SKILL.md",
+      "computedHash": "3e84e42e487eab02d2a58bdb6eaf3e6a1624a5209a8923a7d2dde6cdd988f7fb"
+    },
+    "circuit-breaker-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/circuit-breaker-setup/SKILL.md",
+      "computedHash": "a45c2c313979735b2e17772d7556baeaa5d6ba4620c081f0ed1d809226d9f274"
+    },
+    "cloud-function-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/cloud-function-generator/SKILL.md",
+      "computedHash": "74a3b9b44db439ad9946faa2abaa6ab2eace62d15bd9fff876f23b7efbf7e8a7"
+    },
+    "cloud-logging-sink-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/cloud-logging-sink-setup/SKILL.md",
+      "computedHash": "813e65c4b91398b7b8201bd5ea513826f9283fc04ad3a366007cf1fe111db561"
+    },
+    "cloud-monitoring-alert": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/cloud-monitoring-alert/SKILL.md",
+      "computedHash": "626f66b11d41b3a97db0e1fd8169f18ef43d358a77100467378fec26d5f84da4"
+    },
+    "cloud-run-service-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/cloud-run-service-config/SKILL.md",
+      "computedHash": "f3ba3b7cc49674e51ea4664d7c6eec5c62574c8d80cb9bdc629ff0bc92fe8d98"
+    },
+    "cloud-scheduler-job-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/cloud-scheduler-job-creator/SKILL.md",
+      "computedHash": "1f514c330a58e4c9301fe7570ae452cc3bc784edf1977a07cdc006c7d6813812"
+    },
+    "cloud-security-posture": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/cloud-security-posture/SKILL.md",
+      "computedHash": "29489b1beac05c476433ea10acfa1e5bb0df2701f69cb4a573913970d9b2cf20"
+    },
+    "cloud-sql-instance-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/cloud-sql-instance-setup/SKILL.md",
+      "computedHash": "5b0fe93a3c9b561cf95a212cee09f3bab23839a2fa096f1ccd30db01807dde1c"
+    },
+    "cloud-tasks-queue-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/cloud-tasks-queue-setup/SKILL.md",
+      "computedHash": "a2125d926979693f0f9f1f92a2d51e3092ecf888d9d8c5297bc7355a005b4b24"
+    },
+    "cloudformation-template-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/cloudformation-template-creator/SKILL.md",
+      "computedHash": "9613bd1d02c8064911c5a202a64d6b999690ed4eb036f6a0f7b914cca33f27bc"
+    },
+    "cloudfront-distribution-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/cloudfront-distribution-setup/SKILL.md",
+      "computedHash": "52c195112330446e740eac2acdf7e34423414d277175827b23cb8bca22a09b6a"
+    },
+    "cloudwatch-alarm-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/cloudwatch-alarm-creator/SKILL.md",
+      "computedHash": "c7c1ef1b582204e6a54e1fff11b3992d5a4a34621447d632392fe47b41f7ee1b"
+    },
+    "code-documentation-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/code-documentation-analyzer/SKILL.md",
+      "computedHash": "4b71267c78af7ad0aefe94dbed737a36849a64a482f258f0e8835f63c9680e76"
+    },
+    "code-injection-detector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/code-injection-detector/SKILL.md",
+      "computedHash": "db4e8d2298cfdc779c907b3db9a930b43296d74560a10236680ffe9c332c7ea6"
+    },
+    "code-of-conduct-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/code-of-conduct-generator/SKILL.md",
+      "computedHash": "4f0ae1c8612d9fa2b89724b278b2469f956ad158daa1c4a851328fa8f0d56a67"
+    },
+    "code-splitting-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/code-splitting-helper/SKILL.md",
+      "computedHash": "ed1e74d871837552a7a3f6f53e5f46aae1bb097663fa320e8671b201c750e65c"
+    },
+    "cohort-analysis-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/cohort-analysis-creator/SKILL.md",
+      "computedHash": "62f36ba6ebed8433b1d6aa3c61f27dbacfeebd1b7fdaadb6afa835f4cf1ea1ad"
+    },
+    "color-contrast-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/color-contrast-checker/SKILL.md",
+      "computedHash": "8bc70c1f263d9a55d765cc5a3921abfa416ee026a5a90c920aeaad98b07ba16c"
+    },
+    "commit-message-formatter": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/commit-message-formatter/SKILL.md",
+      "computedHash": "a78750941030be3e22e493321279fb21705a1ccec6cc55996dd65063f8afb8f2"
+    },
+    "complex-join-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/complex-join-helper/SKILL.md",
+      "computedHash": "b0d2eb70b1f07f84698ef6bc246145215cca97cecde06a7a9631065bfbf7513f"
+    },
+    "compression-optimizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/compression-optimizer/SKILL.md",
+      "computedHash": "d9724a4a2b467aa96991f1713a362eee2cda018e00f354c9216ccde5bb0dfa75"
+    },
+    "conditional-request-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/conditional-request-helper/SKILL.md",
+      "computedHash": "5fbb50db12cbfa439acb925131d55b7d26278cefdf8ac4317f1fcae3d608bbf9"
+    },
+    "configuration-reference-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/configuration-reference-generator/SKILL.md",
+      "computedHash": "4d39784457b554dba96f2ae35f850d4e7bb8e2589e9abc8ac11ad920fd1af5e0"
+    },
+    "confluence-page-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/confluence-page-generator/SKILL.md",
+      "computedHash": "b82c5410e1e23d814d8fb7076ef42db97ca6344d10ef530936fdf720c1e0da9f"
+    },
+    "confusion-matrix-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/confusion-matrix-generator/SKILL.md",
+      "computedHash": "f4ead84c68c44766dc879bcb36d0446567771241cdf6e99989526973abc233dd"
+    },
+    "connection-pool-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/connection-pool-analyzer/SKILL.md",
+      "computedHash": "33e808de05b3d9246f60cfd58076ff0198c67789b64287b8fe9b184300a3d112"
+    },
+    "connection-pooling-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/connection-pooling-config/SKILL.md",
+      "computedHash": "f2cc3d742f9f076b9f629ce0326c4518570a9a6ea337ca969dee1b097f4ebbae"
+    },
+    "consul-service-discovery": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/consul-service-discovery/SKILL.md",
+      "computedHash": "5d5dcf70b100605d161418a26a3d00bcecb79b21ca14d10400071da9543efac8"
+    },
+    "container-security-auditor": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/container-security-auditor/SKILL.md",
+      "computedHash": "653952d4ff077ed995371fbc023a6fd612b71633ca25c25c262cc24d67dc101c"
+    },
+    "content-security-policy-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/content-security-policy-generator/SKILL.md",
+      "computedHash": "afe31c0b484104bd3a068b593607e46fc05d5f985b43a9e7e2a3f667033df5e0"
+    },
+    "contract-test-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/contract-test-creator/SKILL.md",
+      "computedHash": "d0255bbaf5f31932e9a727118e17f48f01a4995d186569fee46bcf8344d8b7d9"
+    },
+    "contributing-guide-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/contributing-guide-creator/SKILL.md",
+      "computedHash": "3714eaf9335b2042e44b9b19d907708f0d06aec9223d8316a296d7da65e6e611"
+    },
+    "cookie-security-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/cookie-security-analyzer/SKILL.md",
+      "computedHash": "fbd8588fef673a99fdbb9d0482cdbdda3145e550adffddbb0a3cd7d3f15410bd"
+    },
+    "correlation-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/correlation-analyzer/SKILL.md",
+      "computedHash": "20be896c93b26825a6f37dbbea25b88171d9a34a4e6c541bf48860d2dbfc4b97"
+    },
+    "cors-policy-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/cors-policy-validator/SKILL.md",
+      "computedHash": "c6e4d2f08d95cdd1ac56a09c553bdb9cc6c7928516550b1c974f8a2025a2386d"
+    },
+    "cost-optimization-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/cost-optimization-analyzer/SKILL.md",
+      "computedHash": "18381f5deb18b40cfead9e72c68fbfb9558f9b6f5001712153d82b6fe70ebc85"
+    },
+    "coverage-report-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/coverage-report-analyzer/SKILL.md",
+      "computedHash": "b197250536a5102557180f0b1a4157024c7fa305c152b31ea47064c428bee486"
+    },
+    "cpu-profiler-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/cpu-profiler-config/SKILL.md",
+      "computedHash": "21709fd5ddf4049bf47b339956e282a34629f58bb9716ab78219a03f4e19bdd6"
+    },
+    "cron-job-scheduler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/cron-job-scheduler/SKILL.md",
+      "computedHash": "fa83f60406fa2dabbfc6c1d052905512a936c193b85d32715fc985a6333e1833"
+    },
+    "cross-validation-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/cross-validation-setup/SKILL.md",
+      "computedHash": "d251dc97f041d52cc05acf43542613a56944b20c6ea08e10619992bf082cc5fd"
+    },
+    "csrf-protection-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/csrf-protection-validator/SKILL.md",
+      "computedHash": "5e7ccb2e52b0d704296e253fd22cd5be756052798d71f3df89bd6722cfa00e82"
+    },
+    "css-module-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/css-module-generator/SKILL.md",
+      "computedHash": "7fd6eca17eabe8fb858a200cfb0aebd6409040b50752284fc317e8ae622bc16d"
+    },
+    "csv-processor": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/csv-processor/SKILL.md",
+      "computedHash": "deb044360ed474117f3392844bdc185971a5fbb0c963484dd46072b4f0eca309"
+    },
+    "cte-query-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/cte-query-builder/SKILL.md",
+      "computedHash": "c769cd9cb5fe73a641cf728a1bb9b1c2d2939fb7b12342281654f9a3024ff488"
+    },
+    "d2-diagram-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/d2-diagram-creator/SKILL.md",
+      "computedHash": "7d226053fce7a356494a7d81b14d1e7553adbbe4eafc3832f9524def59eabf96"
+    },
+    "dagster-pipeline-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/dagster-pipeline-creator/SKILL.md",
+      "computedHash": "49281e75616681a33d1ac1e7620fc7b5951a7f8876797f23751aedcb8724b781"
+    },
+    "dashboard-layout-planner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/dashboard-layout-planner/SKILL.md",
+      "computedHash": "a281c7ddd80ea7290cc96241d0336f2b856757ef4ef6096b9fc20a84d94718c1"
+    },
+    "data-augmentation-pipeline": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/data-augmentation-pipeline/SKILL.md",
+      "computedHash": "db359c36b38f00ac18b308407eb9bac657ef45868f31ac5e39c553af6236e73a"
+    },
+    "data-catalog-updater": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/data-catalog-updater/SKILL.md",
+      "computedHash": "6cc1833a6a55e4b45b2a3c09faa2f57c7653817c10429a514a47c99f5c739644"
+    },
+    "data-lineage-tracker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/data-lineage-tracker/SKILL.md",
+      "computedHash": "643a6783b786b51d6f87cb60fffb9a399ef8e13b1692bfe619f75436173ee08a"
+    },
+    "data-normalization-tool": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/data-normalization-tool/SKILL.md",
+      "computedHash": "1607142abb67ce5540da8520af38a67418597dd9cbdcea15eb37aa59b872db23"
+    },
+    "data-partitioner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/data-partitioner/SKILL.md",
+      "computedHash": "8e87bf30705e825cd10f87b423759e77f3dee7c7664c8b59d5c41f6a3cf640fe"
+    },
+    "data-quality-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/data-quality-checker/SKILL.md",
+      "computedHash": "80376bc89827f42833867a4bd0dca99e4bfb2dfe4d4d35a7a1ff232c95bafa3d"
+    },
+    "data-story-outliner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/data-story-outliner/SKILL.md",
+      "computedHash": "643c55c1f5811939e87d81551f87ba57d160f43b8261b32ab7aab9c88ffbe569"
+    },
+    "data-visualization-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/data-visualization-helper/SKILL.md",
+      "computedHash": "0d0f8c552caae1336003f2d7320b06d2d481fa7cf370788db24725f777000e0c"
+    },
+    "database-query-profiler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/database-query-profiler/SKILL.md",
+      "computedHash": "dc0a376ad75a59224e8956563c0145693156407b9a5e8ab131f6493001b9fd29"
+    },
+    "database-schema-designer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/database-schema-designer/SKILL.md",
+      "computedHash": "3a52773629c2d5a1106b05bbed384a160de56f5a7f67c98df94f953047c7e62d"
+    },
+    "database-schema-visualizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/database-schema-visualizer/SKILL.md",
+      "computedHash": "eb61d125a5832f1699be7a13abdf6aba49469d47e72cd4b042c964a60340faaa"
+    },
+    "database-test-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/database-test-helper/SKILL.md",
+      "computedHash": "12aff1182fde073e8c624351bd7379432e92c5c06ae7e10bff44d158a43164e2"
+    },
+    "dataset-loader-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/dataset-loader-creator/SKILL.md",
+      "computedHash": "1212976cb3331d3a1906a6a729908574deeec9c132b57fd796df1579205b4332"
+    },
+    "date-range-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/date-range-analyzer/SKILL.md",
+      "computedHash": "082ae8546a38b20d232c7d7a9c2e6c56e93561c58fce518f8f6a91f01ebdc123"
+    },
+    "dbt-model-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/dbt-model-generator/SKILL.md",
+      "computedHash": "4b1f32d9a489c2deebcfce760238f45450fe35920eff217cdb51958718fa303f"
+    },
+    "dbt-test-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/dbt-test-creator/SKILL.md",
+      "computedHash": "e6ba1cf7a3ccfc01414aa539a7d203130fbf68e528728499cb6897a62962d2be"
+    },
+    "definition-of-done-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/definition-of-done-generator/SKILL.md",
+      "computedHash": "bd4270b5a4c2c9826a9d8e523f9ca9f5478e54450e9444921e536136ed01006c"
+    },
+    "dependency-vulnerability-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/dependency-vulnerability-checker/SKILL.md",
+      "computedHash": "6bfc6ba309d76fc12cd698e3cb155dd0a2771dcef9de5dc6132c8ab20cb3c06f"
+    },
+    "deprecation-notice-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/deprecation-notice-generator/SKILL.md",
+      "computedHash": "3f19eaaa73683be01631cc05a8f46ee2d96202a1ba8d143e2a1410c7d7d9779e"
+    },
+    "design-doc-template": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/design-doc-template/SKILL.md",
+      "computedHash": "f6b797497498694cc6e7bac30230fedda3d8f21a7523b9e3ae76286163f41c23"
+    },
+    "discord-bot-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/discord-bot-generator/SKILL.md",
+      "computedHash": "24697f65f1e4fc5f2c284a32821bc3fbfc0faaf317c55568f742e90a76d1065f"
+    },
+    "distributed-training-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/distributed-training-setup/SKILL.md",
+      "computedHash": "94bc16527729038fe3318a39ea109f92d79c08c1c3db5d7831583aee4628512c"
+    },
+    "django-view-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/django-view-generator/SKILL.md",
+      "computedHash": "e7179d149ecec72e097fdbc9753f838e574e7be00cedbf3684a2fd34d047d995"
+    },
+    "docker-compose-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/docker-compose-creator/SKILL.md",
+      "computedHash": "ef32eddace444fe78313f9289f770bdc6838104626af4eaf095c1c0815f17243"
+    },
+    "docker-container-basics": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/docker-container-basics/SKILL.md",
+      "computedHash": "4f448016c15649ddb1d650bbeab0ab430788d84d74ca8cd7cd77993be8ec94c6"
+    },
+    "dockerfile-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/dockerfile-generator/SKILL.md",
+      "computedHash": "e1c3fa25708037ad32f920db2ee3df6060ef1e80e184a6123d1d08b597f67925"
+    },
+    "document-merger": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/document-merger/SKILL.md",
+      "computedHash": "03cb1e9c74f911d8095e436080739ae1546420e895adb4fd35f25362cfa44875"
+    },
+    "docusaurus-config-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/docusaurus-config-setup/SKILL.md",
+      "computedHash": "c32902fc40d99948eaddcb7576544687328d8a81297665512016598d02fa03f4"
+    },
+    "dotenv-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/dotenv-manager/SKILL.md",
+      "computedHash": "2fa9e5b496fd127c809483b5f3feaf7cef02842089b50d2c7319116978c428a4"
+    },
+    "dynamodb-table-designer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/dynamodb-table-designer/SKILL.md",
+      "computedHash": "70c580d1d82ceb5f5deae89974e046c006558792eb15177c40d739e850ce8991"
+    },
+    "early-stopping-callback": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/early-stopping-callback/SKILL.md",
+      "computedHash": "f6aa7adc59732f0117daca2343206188f73b63f18b6c3af9a407e5915e0227c0"
+    },
+    "ecs-task-definition-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/ecs-task-definition-creator/SKILL.md",
+      "computedHash": "1996064b9a0e4732f1e8d287b966115a2b9feb15c6f684e9ce81e7ac581492af"
+    },
+    "eks-cluster-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/eks-cluster-config/SKILL.md",
+      "computedHash": "e2fe34bf4ab4cd1f9c1163029a4d36aad6eb2585b9bcc755582297f116c94d3e"
+    },
+    "elasticache-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/elasticache-config/SKILL.md",
+      "computedHash": "2d709da3bbfe82bfb1b96165ee5f6d34ece71e50302f7cc769363addd735ad79"
+    },
+    "elasticsearch-index-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/elasticsearch-index-manager/SKILL.md",
+      "computedHash": "f514fc41c46d4db7e2ea81a9740026140b7785cf8ea9dbda851c6c1359aa83e1"
+    },
+    "email-parser": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/email-parser/SKILL.md",
+      "computedHash": "ac033f6a52bd7ec8874d5fadfe4cc9e25fc27195a4145d345dafbf7541cc6ef6"
+    },
+    "email-template-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/email-template-generator/SKILL.md",
+      "computedHash": "058e8cba201b77baf9fa95de143af9f270855d8777133916e0466510c56026b4"
+    },
+    "encryption-at-rest-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/encryption-at-rest-checker/SKILL.md",
+      "computedHash": "6dace61094c84701db1cb960b009058999b16ae9bccec50a8da7c492d880f7f5"
+    },
+    "env-secret-detector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/env-secret-detector/SKILL.md",
+      "computedHash": "ead431e3eef26048441d0fdacf4883319e3203303b1b80a3ddbb3d681b767495"
+    },
+    "environment-variables-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/environment-variables-handler/SKILL.md",
+      "computedHash": "f0d1188c214a5e52fe1a2c25315889596f1856d0c7a8c23a5282e8fb7d946a79"
+    },
+    "envoy-proxy-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/envoy-proxy-config/SKILL.md",
+      "computedHash": "d9ebac159cc0823376eaaaa6feeeff65f0df9a939a5fb93ecdd5f6c4437cf4f2"
+    },
+    "error-handler-middleware": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/error-handler-middleware/SKILL.md",
+      "computedHash": "b646dd1b75fc89b711515c66501dc153b93cdd1d633f1cb5b7ff6f9322ee8f34"
+    },
+    "error-mapping-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/error-mapping-helper/SKILL.md",
+      "computedHash": "a1992d926da8ddcea40bd8073e1f0bb9f7d5b52fb1bde1212b8391f20b00fb27"
+    },
+    "etag-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/etag-handler/SKILL.md",
+      "computedHash": "a6bda77b5935c6756bcc6e12a0f3c8b0895a8cd7b66232405f026cf68b845903"
+    },
+    "eventbridge-rule-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/eventbridge-rule-creator/SKILL.md",
+      "computedHash": "44940e4ccfc1122656ce537cd4cfe187bbd9061ad847d98767468ccd823905a2"
+    },
+    "excel-formula-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/excel-formula-generator/SKILL.md",
+      "computedHash": "9334df7f857d629da51aaa539edda021e10c55db6c10e4452f20f3c967dfd637"
+    },
+    "excel-macro-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/excel-macro-creator/SKILL.md",
+      "computedHash": "8409bbaecc4c4a79be87b3b81dbf118954ab78722495cec8c034297f03514a01"
+    },
+    "executive-summary-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/executive-summary-creator/SKILL.md",
+      "computedHash": "2c8c90954b21e06e3020dad7a76adbceacf883e57021fce15ee38fffc00c97a6"
+    },
+    "express-route-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/express-route-generator/SKILL.md",
+      "computedHash": "436822328de7d74e72db7b252b11184503e53973afa6c99a0822e40668cc6008"
+    },
+    "factory-pattern-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/factory-pattern-creator/SKILL.md",
+      "computedHash": "06b1deb686c491e4f57ca8888d4c56ec41c85bcc06b8229035ee3000010af889"
+    },
+    "faq-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/faq-generator/SKILL.md",
+      "computedHash": "e6c15a04a7022d7fa0f3d54a072f9b45a4c4d8a0313d9318b517d7f9ada289ba"
+    },
+    "fastapi-ml-endpoint": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/fastapi-ml-endpoint/SKILL.md",
+      "computedHash": "ec3f7cd75236aff4baecd981b967842aa9b6bffae90edbffdd018ebe281e3977"
+    },
+    "fastapi-router-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/fastapi-router-creator/SKILL.md",
+      "computedHash": "1be179ced2b155e3b1f61c3f0b1f0ea8348b7e7378d801ab467776d70b072916"
+    },
+    "fastify-plugin-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/fastify-plugin-creator/SKILL.md",
+      "computedHash": "bec99166cea6aaf22e900ec40ed89573c0fce4e4278a604584fa4946200d14e7"
+    },
+    "feature-engineering-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/feature-engineering-helper/SKILL.md",
+      "computedHash": "de7ae913552e908cf6e1a6b7fa71c045bf5e2d58dc04ddd635fc51ecd5f267a5"
+    },
+    "feature-importance-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/feature-importance-analyzer/SKILL.md",
+      "computedHash": "336374873db398b0204802c154b9adb6f1ebf9aca6aa7b29b07946dd792937cc"
+    },
+    "feature-store-connector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/feature-store-connector/SKILL.md",
+      "computedHash": "e9bcbeb03d62ca5ee6ae69325c0875a31acd320400135f8362c8ba4129f5d522"
+    },
+    "file-format-converter": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/file-format-converter/SKILL.md",
+      "computedHash": "e0ab5ffdc4b15e46e23bb352c21855fdde876984bbeaacbfc8434cc96a05d41d"
+    },
+    "filtering-query-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/filtering-query-builder/SKILL.md",
+      "computedHash": "0cc49fd6cec4e8e61a740cb32fac8668956e59456685519aabd3603ce3de7b0a"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    },
+    "firebase-rules-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/firebase-rules-generator/SKILL.md",
+      "computedHash": "57b409318b141fb255364d1138a6a122df9aaaa73a2677d8b417d5621102b412"
+    },
+    "firestore-index-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/firestore-index-creator/SKILL.md",
+      "computedHash": "c08f713d053b8cc3cd1774537713fd063c3968909b5a863ce8a3b470471be927"
+    },
+    "firewall-rule-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/firewall-rule-generator/SKILL.md",
+      "computedHash": "c3117374c792df68ce4de554fa27bf266e54227396aeabfddca9376900a6fa9d"
+    },
+    "fixture-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/fixture-generator/SKILL.md",
+      "computedHash": "6af521acc40635984adaa7e9413d6e6adfeba102707574a73a0ccfc7129452a2"
+    },
+    "flaky-test-detector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/flaky-test-detector/SKILL.md",
+      "computedHash": "1c4c571f0d160fc60036582e3c08cbeb4a4e1ff5423e3071d9badffc4a95a84f"
+    },
+    "flame-graph-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/flame-graph-generator/SKILL.md",
+      "computedHash": "835dba90a3d63b23120ee327404c9823e5c28b023ed99ad33931be60923605b3"
+    },
+    "flask-blueprint-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/flask-blueprint-creator/SKILL.md",
+      "computedHash": "84a9ee6a7723c08f8b3fc28ae33967aa0035146f3f5f4ade4c783b739bae6a67"
+    },
+    "flask-ml-api-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/flask-ml-api-creator/SKILL.md",
+      "computedHash": "3ec3e5b5f8cd32f7cb923d431512b96ef70073f7f6c5aa36b297fd3600b37c01"
+    },
+    "flink-job-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/flink-job-creator/SKILL.md",
+      "computedHash": "3b8cf8c4eb80982bfca279be9c3953c9732c7a978439a4edca59d7415fc81459"
+    },
+    "fluentd-config-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/fluentd-config-generator/SKILL.md",
+      "computedHash": "b642fa88d2b9b84246e0dddd5cdcaa549fb9a89e396b9b16564e3a0e22c16653"
+    },
+    "flux-gitops-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/flux-gitops-setup/SKILL.md",
+      "computedHash": "0a42abc4d1424a0a6ffe12a9d11846f6fb3f338e6802deb002752a6817a62350"
+    },
+    "forecast-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/forecast-generator/SKILL.md",
+      "computedHash": "1deaec4038837038b30f6d3184974323fa77dfafe321e95ffa8ddba55d166e8b"
+    },
+    "forensics-data-collector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/forensics-data-collector/SKILL.md",
+      "computedHash": "d3c6b08575c9ea7f16fa6711d596297c9e49a126885ee0e04f6fc620108879e0"
+    },
+    "form-builder-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/form-builder-helper/SKILL.md",
+      "computedHash": "3fe1ca975aff1ad62c493ff2430c8fe6c88f92ebbf80273e23e16eb292dbc0e5"
+    },
+    "funnel-analysis-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/funnel-analysis-builder/SKILL.md",
+      "computedHash": "44db5f8fe731123b0c1e76f81d89de275c9c02f48311629ccdb03804d36eba1b"
+    },
+    "gatling-scenario-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/gatling-scenario-creator/SKILL.md",
+      "computedHash": "e9fce282e9251a941cf1a3be7b288bffaff62a619dbe7d6face18745b8820b2d"
+    },
+    "gc-log-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/gc-log-analyzer/SKILL.md",
+      "computedHash": "cd72781631edba98eb85d1b4b6b42e5e1bf97ae081800d0c381c4273c6619693"
+    },
+    "gcs-bucket-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/gcs-bucket-config/SKILL.md",
+      "computedHash": "d02edbdadc00b4a454a213ce95a6d9fc8c74ce4db32c382fd7c7bced43895f25"
+    },
+    "gcs-lifecycle-policy": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/gcs-lifecycle-policy/SKILL.md",
+      "computedHash": "359c231ead5594d27ca44d9e6965e732c20cadc01f1b58df03a2efd8709e88bf"
+    },
+    "gdpr-compliance-scanner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/gdpr-compliance-scanner/SKILL.md",
+      "computedHash": "5c932c8750b3e4f2044b7bb19ede6447b928a51fafec8912ea09fd336f3343bd"
+    },
+    "gin-middleware-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/gin-middleware-creator/SKILL.md",
+      "computedHash": "7620f2ac01ed5b6c4de2a6549872901bb956f65b482fdecfd01af1b4abfaa0f4"
+    },
+    "git-workflow-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/git-workflow-manager/SKILL.md",
+      "computedHash": "ef5d3e80003237b81f6cce27dd16d47472a7ee948c95be1e1d19794d6d72010d"
+    },
+    "github-actions-starter": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/github-actions-starter/SKILL.md",
+      "computedHash": "1d53aa45f42cd705576c627dc4caf20934699fc826a7f863ffde5b3077f90b73"
+    },
+    "github-issue-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/github-issue-creator/SKILL.md",
+      "computedHash": "736a637f2cb0ca40028a4077e78e97afb7b4afa1288be6aaee4934b547000ced"
+    },
+    "github-project-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/github-project-setup/SKILL.md",
+      "computedHash": "083d5da877f2f323a9a6cdd40fd81c7d3324c7aa42840478b2d28b8718906579"
+    },
+    "gitignore-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/gitignore-generator/SKILL.md",
+      "computedHash": "4dc2608488c42c8ba022b63ee46daf1d21cd4614f1e9443b863e1b8a4d255e02"
+    },
+    "gitlab-ci-basics": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/gitlab-ci-basics/SKILL.md",
+      "computedHash": "2f226a9c9d241418ca7d573db81825356a9be77c327cfb16f907dd5ac57abff4"
+    },
+    "gitlab-epic-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/gitlab-epic-creator/SKILL.md",
+      "computedHash": "c409ea55f6b3b3403e1528eddfc2931ba47881f2b4b37b7fecd7560deb0e40e1"
+    },
+    "gke-cluster-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/gke-cluster-config/SKILL.md",
+      "computedHash": "4d12a447de666c74e9868674e81ab4f8f26b3ef0232b26c003cba767f893a6b1"
+    },
+    "go-handler-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/go-handler-generator/SKILL.md",
+      "computedHash": "ce3433bb5f0948def8ee9b72cca77b80972b0bdca9bb8203f3177c4d126e46a2"
+    },
+    "go-test-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/go-test-generator/SKILL.md",
+      "computedHash": "9406a4b78b2fd6c1286d5fdeb02c5d1288452e027b303c51c058a6172631b7fb"
+    },
+    "google-sheets-automation": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/google-sheets-automation/SKILL.md",
+      "computedHash": "527247b3230290f5313561eeb48b1ff4e9b161ff6fc321abba9fb2be5b7ae7c7"
+    },
+    "governance-checklist-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/governance-checklist-generator/SKILL.md",
+      "computedHash": "483072f4651c3f9718002636b08950e2ac0e022eae379e2d93473584ad5b24ae"
+    },
+    "gpu-resource-optimizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/gpu-resource-optimizer/SKILL.md",
+      "computedHash": "01c1a007185943969b8850207a92893fd71b1a6cf15aeb507853357e761011a0"
+    },
+    "gradient-clipping-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/gradient-clipping-helper/SKILL.md",
+      "computedHash": "ca31c4e9c0aab899aad052e21f6a3ad0422e30090a4a8085153b898849e8be4e"
+    },
+    "grafana-dashboard-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/grafana-dashboard-creator/SKILL.md",
+      "computedHash": "3c262c867ca592ad3a8cdaafa9db3b4d07f156efd0b8347d6ffd81c7310da366"
+    },
+    "graphql-mutation-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/graphql-mutation-builder/SKILL.md",
+      "computedHash": "a29839913ff6d002948dd42e96e3347cfffe485e4d33f12404f5f0c0582e1827"
+    },
+    "graphql-resolver-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/graphql-resolver-creator/SKILL.md",
+      "computedHash": "457fb1a975ca00a3a01ccab8d4ce9b5a71e745d1ac42ad2e98bdc5603091a852"
+    },
+    "graphql-schema-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/graphql-schema-generator/SKILL.md",
+      "computedHash": "0ad10e754a44ff761b9b0df52ae665889ac5ecb686152d7f8292a8e891c47d9a"
+    },
+    "graphql-subscription-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/graphql-subscription-setup/SKILL.md",
+      "computedHash": "49f39f02632152872aedafe15ee76ac24ab3080e00f0ba419ea8b855dbd106d1"
+    },
+    "graphviz-dot-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/graphviz-dot-generator/SKILL.md",
+      "computedHash": "8ca73c1b44c9bd416596c1f5e6bc345deccf6c92ecd6759c3fa81f0d5dd3f6e8"
+    },
+    "grpc-service-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/grpc-service-generator/SKILL.md",
+      "computedHash": "a9ae14561812d1094dbcbbe4fb9f3f0e54248e43bd3bbeae1b3da6d6f0c29560"
+    },
+    "hardcoded-credential-finder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/hardcoded-credential-finder/SKILL.md",
+      "computedHash": "d25adacca5dacbc2aedf9e2ca46b0f455fcd6eb0090fdd4f1a08a05c5b5a8055"
+    },
+    "heap-dump-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/heap-dump-analyzer/SKILL.md",
+      "computedHash": "6ed5c96d8018181f84260e6e9133451fc1f6496f8913eefe696e2df730480b07"
+    },
+    "helm-chart-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/helm-chart-generator/SKILL.md",
+      "computedHash": "67f6bdd8d748dbcf3a6fdf40f6d8b53c93c85051e8be39fbd64f69201b247997"
+    },
+    "helm-values-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/helm-values-manager/SKILL.md",
+      "computedHash": "12ba1c80683dc25fa99afe246403ef704a225f841a77f36aa50df8ea1fd8bc2c"
+    },
+    "hipaa-audit-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/hipaa-audit-helper/SKILL.md",
+      "computedHash": "c0d3084a12ca734693302fe541e4f02dc55e3f0dad70d5752fb075debc9ea0c1"
+    },
+    "http-client-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/http-client-config/SKILL.md",
+      "computedHash": "b03484743a26e780492c3cea71d7ec34dcf028e2e6538585893ca16644fed856"
+    },
+    "http-header-security-audit": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/http-header-security-audit/SKILL.md",
+      "computedHash": "ce16da6e8604a722c9509a7c07d789741689adcd49f960f1f3395ed152b4d79d"
+    },
+    "http-method-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/http-method-helper/SKILL.md",
+      "computedHash": "4894d22306cc58d5dec83b06d96fdbe19467e1060a1f5dd5290b4a61a0c4ecbf"
+    },
+    "https-certificate-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/https-certificate-checker/SKILL.md",
+      "computedHash": "60ca29d154ade82f10b84692b64dce3de7ff3d3315373f758650e9f1b658081e"
+    },
+    "hypermedia-link-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/hypermedia-link-generator/SKILL.md",
+      "computedHash": "786f629f0dd7580e18d831e3a66837a7eac4ccbba1c507996c65066a73c03ed0"
+    },
+    "hyperparameter-tuner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/hyperparameter-tuner/SKILL.md",
+      "computedHash": "e9eca063c1b42bea2cd49460ea259666b06323b3064cdef985e3a37248492d71"
+    },
+    "iam-binding-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/iam-binding-creator/SKILL.md",
+      "computedHash": "0cb3caa643f511579ee84adba826cf785f752e537f99b5259b7e748b16d94ce2"
+    },
+    "iam-policy-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/iam-policy-creator/SKILL.md",
+      "computedHash": "4d19ca4189d728acf7d0bc6180d03f6fac3e3bc1e97f0cdd87df055f8b1a6326"
+    },
+    "iam-policy-reviewer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/iam-policy-reviewer/SKILL.md",
+      "computedHash": "e0b123a10964650444990e8c302b9fbee6461fb04815a0f5050637a7969c3ded"
+    },
+    "iam-role-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/iam-role-generator/SKILL.md",
+      "computedHash": "c53da84b9c76ae57ffbeee3cbb1983540eafdeede500e96528325ca03f1d305f"
+    },
+    "image-optimization-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/image-optimization-helper/SKILL.md",
+      "computedHash": "7686263b7b19f931bc9bf4d149fff7a5124ecaa0d7f1a83288717bd0c6d6eccd"
+    },
+    "impact-analysis-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/impact-analysis-helper/SKILL.md",
+      "computedHash": "acd30c5d3d96ed685163b007edf2c2fbe244d56f444347bb509baccabde95706"
+    },
+    "incident-postmortem-template": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/incident-postmortem-template/SKILL.md",
+      "computedHash": "bdf8f488a4780d49a5958d100173e94f648581d22fa9d496c542a6c6c45c966b"
+    },
+    "incident-response-planner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/incident-response-planner/SKILL.md",
+      "computedHash": "121bf5c9ff20128b4d58bc623b36c740a7e78abdd46a91b2ef9d08694631d83d"
+    },
+    "incremental-load-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/incremental-load-setup/SKILL.md",
+      "computedHash": "64d3b71d46b4604b30acdf7f026eea322cf9efb554197eab346710dc924a7474"
+    },
+    "inference-latency-profiler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/inference-latency-profiler/SKILL.md",
+      "computedHash": "3dfc3e09b872d04b8ead65895426d2495ee05d8ef476bd4a3ac100d4a433b1d0"
+    },
+    "infographic-outline-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/infographic-outline-creator/SKILL.md",
+      "computedHash": "7318170bbfc4f154e3304f9966163fa039c730fab70d566a5c9505271aa90d03"
+    },
+    "input-validation-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/input-validation-checker/SKILL.md",
+      "computedHash": "132e5adb25181fc4caa37dabfdc83e46c4a8116dc10cc7c989665302844ad49c"
+    },
+    "insecure-deserialization-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/insecure-deserialization-checker/SKILL.md",
+      "computedHash": "f78c3b23119b723947957f909383de64078f71d5145399ebc7c5afcd42b435d7"
+    },
+    "installation-guide-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/installation-guide-creator/SKILL.md",
+      "computedHash": "0748e7c930a7b581d37f8f8fbab63f3d40bb2703f27344c88376f1ae843ae8e0"
+    },
+    "integration-test-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/integration-test-generator/SKILL.md",
+      "computedHash": "25de01ded59df3d6cacc0c37bc2605481b12ee3946de457f72b03ed4e610a2f0"
+    },
+    "integration-test-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/integration-test-setup/SKILL.md",
+      "computedHash": "0aecadd09c7112da32b237b9884e0cb4088807936e88e80dbbb78e49d3d44985"
+    },
+    "invoice-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/invoice-generator/SKILL.md",
+      "computedHash": "d1a6b816914e9d583f11fd04879c22c644c2a9fe586ccccd60b37adfeb483611"
+    },
+    "iso27001-gap-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/iso27001-gap-analyzer/SKILL.md",
+      "computedHash": "f602e2cbca7bb056070302e5e13a8204538a7e892027ac275c9391b80d8156d2"
+    },
+    "istio-service-mesh-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/istio-service-mesh-config/SKILL.md",
+      "computedHash": "823ef5051bfc617e7747a18beaed2cc6e944634cc9dc1eee3aa2ac26a616385d"
+    },
+    "jenkins-pipeline-intro": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/jenkins-pipeline-intro/SKILL.md",
+      "computedHash": "c3d20668efd4b0a9ff47bc63efe085c12b0fd62374c61906898d5f9467a28f16"
+    },
+    "jest-test-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/jest-test-generator/SKILL.md",
+      "computedHash": "c45c1da1841cfb7c4734496025722e97870ecbe9cfa76bd8a52798d120647c96"
+    },
+    "jira-ticket-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/jira-ticket-generator/SKILL.md",
+      "computedHash": "031c4d1e66d15ae656541f624cd82da9c6a41464b686de48f40f15f3ca65bcc1"
+    },
+    "jira-workflow-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/jira-workflow-creator/SKILL.md",
+      "computedHash": "70ff9485714d1255b56fad7978d6c7fb9f285b6bf045df20c33dcf24fff0ae3f"
+    },
+    "jmeter-test-plan-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/jmeter-test-plan-creator/SKILL.md",
+      "computedHash": "4fac06d4008ddbff161095c79d5a329ba5e03b2cd1f58646b1f734c2e9605e79"
+    },
+    "jsdoc-comment-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/jsdoc-comment-generator/SKILL.md",
+      "computedHash": "c2c443013824251e755149f829a1932a7c923c32a02b3648966611422b2c95f8"
+    },
+    "json-config-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/json-config-manager/SKILL.md",
+      "computedHash": "bf8b27e427d259a754cbaf6d90c29e836a27d57ca2128e231988ee0db40b763a"
+    },
+    "jwt-token-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/jwt-token-validator/SKILL.md",
+      "computedHash": "2f466c95778ecdc2ec46c1abf3f4d7fbf0c09d816dc01dced8d3ce5ffc318475"
+    },
+    "k6-script-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/k6-script-generator/SKILL.md",
+      "computedHash": "4134696bd681755dee0e86b8285b95804376ac8583a72f6a00267aa4eb43187d"
+    },
+    "kafka-producer-consumer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/kafka-producer-consumer/SKILL.md",
+      "computedHash": "7d06ce72195433749d8c5ae28ccb0b95c62a030aea930f8dbd7e13642fbd9a66"
+    },
+    "kafka-stream-processor": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/kafka-stream-processor/SKILL.md",
+      "computedHash": "a041da2d8f6fc1cf545b93391cb9bf1b44d641d4b08fa8ce7e76a97ee0deb204"
+    },
+    "key-rotation-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/key-rotation-manager/SKILL.md",
+      "computedHash": "cfaa03024e6e537ca2b81e232701cf8e333f5634103fd70abdfc9fc65dbcaf99"
+    },
+    "keyboard-navigation-tester": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/keyboard-navigation-tester/SKILL.md",
+      "computedHash": "a6bfbc61b68b50863f89699a98e1c3237d3f95064b69590cdf1a15c5bfd14561"
+    },
+    "kpi-dashboard-template": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/kpi-dashboard-template/SKILL.md",
+      "computedHash": "4f19e6e95ee9c7ad481f6d70b00bd8edb4956cd01d7b6c92e2f7251c6972b7a3"
+    },
+    "kpi-definition-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/kpi-definition-helper/SKILL.md",
+      "computedHash": "f3d844914993cbb4401807c5268e5027e170b938292287002fa280718fb5d2d6"
+    },
+    "kubernetes-configmap-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/kubernetes-configmap-handler/SKILL.md",
+      "computedHash": "4e2705d5ac4ba9f6cbbc92deb3ef4a713b66545afe95d46c1e5770a2eb1355d8"
+    },
+    "kubernetes-deployment-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/kubernetes-deployment-creator/SKILL.md",
+      "computedHash": "12f2cd41e5f2a7695221e9d036f31fdf2176cf4c8047d601603b57e82ef83234"
+    },
+    "kubernetes-ingress-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/kubernetes-ingress-config/SKILL.md",
+      "computedHash": "4731855d85296c0180cee6dc8ac9e02124dfe5d1ccd85276ebab75a1758dafd1"
+    },
+    "kubernetes-rbac-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/kubernetes-rbac-analyzer/SKILL.md",
+      "computedHash": "9c4ec206ab3e418ac3b1f0c57fc9c4ed7ab4738ab60151f436c1588ff1bf8ecd"
+    },
+    "kubernetes-secrets-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/kubernetes-secrets-manager/SKILL.md",
+      "computedHash": "338638f62338de828d3d4d8276cdff642e44708cbe254d2155206b83f6bd2ff3"
+    },
+    "kubernetes-service-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/kubernetes-service-manager/SKILL.md",
+      "computedHash": "5d5162f3c939e638741c43d68231ad99c6bd83630c41c98823a0107caa3b00e3"
+    },
+    "lambda-function-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/lambda-function-generator/SKILL.md",
+      "computedHash": "e99da38606b50ca3391742a22c7c861894a2792779fb57493b93c22a8493af6f"
+    },
+    "lambda-layer-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/lambda-layer-creator/SKILL.md",
+      "computedHash": "1c597b9a11f48ad5d9c5dc2ec0abd5e618be5fa185e7e1a29c5b4c3d047d5e91"
+    },
+    "lazy-loading-implementer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/lazy-loading-implementer/SKILL.md",
+      "computedHash": "b4bfc75d6917e91c084b3e787251300df4e792960092261bfc1a57bf1d9e6504"
+    },
+    "learning-rate-scheduler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/learning-rate-scheduler/SKILL.md",
+      "computedHash": "99229358285152c459a07865e852b18c263d4f067395a1938c5c513f4fdba9e8"
+    },
+    "license-compliance-scanner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/license-compliance-scanner/SKILL.md",
+      "computedHash": "91f112ab498abb66e32ae871c0d79c25cefa6e22a2610320700df0b80bdd1840"
+    },
+    "linear-issue-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/linear-issue-generator/SKILL.md",
+      "computedHash": "c0b23d513c02e54b53adf480616b1fbafdf907e332e0d8387c40dc0dcb4dd64d"
+    },
+    "linux-commands-guide": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/linux-commands-guide/SKILL.md",
+      "computedHash": "71caae87bc1fb956e9fcd587a9050c27ff9aa15dfee828966e869bf2ea2d83ce"
+    },
+    "load-test-scenario-planner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/load-test-scenario-planner/SKILL.md",
+      "computedHash": "125d41cf09d50fc7ebe8ced4c7089a09f074261fe6d135d2f470fa105eee5352"
+    },
+    "locust-test-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/locust-test-creator/SKILL.md",
+      "computedHash": "402c2f45078b14251b4185cbb7cc1a1185ad0ed4dd3edab50450371ccf757671"
+    },
+    "log-analysis-security": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/log-analysis-security/SKILL.md",
+      "computedHash": "e765493ab28ca0c243ce1195b3d8dfa618c48d8bdbddef89d613fe811ca6fc3b"
+    },
+    "long-polling-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/long-polling-handler/SKILL.md",
+      "computedHash": "4240cda4bdbcace45025d067381d5417a65c1b1c4f10ddae0a3e6234a1eb4348"
+    },
+    "luigi-task-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/luigi-task-generator/SKILL.md",
+      "computedHash": "841791ca6ee9402285ccc60763168996ea2bd4af43dbedbfa8dc97558be931c0"
+    },
+    "make-scenario-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/make-scenario-creator/SKILL.md",
+      "computedHash": "983e632f44270862aad31749138cafdbc8b9cdd4807ef1ab2d26d97e506b1565"
+    },
+    "makefile-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/makefile-generator/SKILL.md",
+      "computedHash": "7f67a457770c37d1ce11d2f62f170361b4027714971224ebb2453a38da16b44a"
+    },
+    "meeting-scheduler-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/meeting-scheduler-helper/SKILL.md",
+      "computedHash": "a3a3da344300fb44bd547167120494f133f474cef2f836c5701627f33b363e87"
+    },
+    "memcached-config-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/memcached-config-helper/SKILL.md",
+      "computedHash": "fb8d92e2b036d7c20a802ca4166c6736e70a2fa28cabcb7e5b29e6ba29694d12"
+    },
+    "memory-profiler-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/memory-profiler-setup/SKILL.md",
+      "computedHash": "4bebe591770354ec6e4f3a0063f6a380b4033feeb2911910891f5f370e1f077b"
+    },
+    "memorystore-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/memorystore-config/SKILL.md",
+      "computedHash": "b84861cb69c967d92c20ff1bcf68a36e5f3c6eaf402e2c44e2f876fa8e8926e3"
+    },
+    "mermaid-class-diagram-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/mermaid-class-diagram-generator/SKILL.md",
+      "computedHash": "31e104192d451bbe4f19c12ca3da886b08c2f315269ce0eecd8c59d786319826"
+    },
+    "mermaid-er-diagram-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/mermaid-er-diagram-creator/SKILL.md",
+      "computedHash": "165913ed29a5203f2e5c5b6e7da6607172e0209a3d6e8bc08979cf736c2fc752"
+    },
+    "mermaid-flowchart-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/mermaid-flowchart-generator/SKILL.md",
+      "computedHash": "f872afd4062b42831d8978c9b6eef9d7fdccd3baafe67be52a39fb636127cb66"
+    },
+    "mermaid-gantt-chart-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/mermaid-gantt-chart-generator/SKILL.md",
+      "computedHash": "30f7630589ed7722ceb7e009e63011f99e5f97f5cf75d91eba4135e866d88074"
+    },
+    "mermaid-sequence-diagram-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/mermaid-sequence-diagram-creator/SKILL.md",
+      "computedHash": "dd57dc5d67e37634d8b63adaee7102b6a8269632eaaea222474a069120b13ad4"
+    },
+    "mermaid-state-diagram-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/mermaid-state-diagram-creator/SKILL.md",
+      "computedHash": "ff2ddab1e2c1645bd629422355bc5b301acd499b281cf4b32a5e4679b11f0d89"
+    },
+    "metadata-extractor": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/metadata-extractor/SKILL.md",
+      "computedHash": "ce5edbe29c8e05973a00655a777895756a9cf22f702ec3d505ef873d96073114"
+    },
+    "metric-calculator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/metric-calculator/SKILL.md",
+      "computedHash": "5a8fe1f5a65b7664a5d55b76d4e30c9128f32df123314ba04c314b1d5d609e89"
+    },
+    "migration-guide-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/migration-guide-creator/SKILL.md",
+      "computedHash": "d437a6b33515b7148c16c1bd25cd02afb5021c4e158eef1b4bd34c6ebdbd27c0"
+    },
+    "mindmap-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/mindmap-generator/SKILL.md",
+      "computedHash": "f09926a4aa9a74f6a55ee35729490e73c55f40334f5e0d504845033df9f06919"
+    },
+    "mixed-precision-trainer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/mixed-precision-trainer/SKILL.md",
+      "computedHash": "40df13673a9ca2c488d0b3f447c6572ddff41653a429853d49a5f77b9864f256"
+    },
+    "mkdocs-config-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/mkdocs-config-generator/SKILL.md",
+      "computedHash": "0fa6ff99686a715bb9984d19ccec898d7a94bf0f4dc78990ca28de05ed2e1fe9"
+    },
+    "mlflow-tracking-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/mlflow-tracking-setup/SKILL.md",
+      "computedHash": "398deebc712efd820f9eb93481df81c60cd7e23451383e4b0d6c64585e39b2dc"
+    },
+    "mocha-test-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/mocha-test-setup/SKILL.md",
+      "computedHash": "8c6e166d284403866243dfce216fa65e1bb966d679f8a32b7ea50bccb111c27f"
+    },
+    "mock-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/mock-generator/SKILL.md",
+      "computedHash": "ef324ccf89e6cfed43ba23c154cd92c14da97610a460f06625dc75ade9d00ceb"
+    },
+    "model-checkpoint-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/model-checkpoint-manager/SKILL.md",
+      "computedHash": "57e2e1e5636111e88c406172e7afa0670d0ac06ae5695694c6b961e8361375d9"
+    },
+    "model-drift-detector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/model-drift-detector/SKILL.md",
+      "computedHash": "5c1153869a62dbe03cae34c9e2a54ed074b1fc35133f8b6cda14df511d83670f"
+    },
+    "model-evaluation-metrics": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/model-evaluation-metrics/SKILL.md",
+      "computedHash": "636da3abc389686398869d02eafe5ca798fd63521bdc49a6a4da74d41cd9167f"
+    },
+    "model-explainability-tool": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/model-explainability-tool/SKILL.md",
+      "computedHash": "1476597738979332749725292d32fdb772c9cc4f30f5db8c705cc5ab77b751c0"
+    },
+    "model-export-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/model-export-helper/SKILL.md",
+      "computedHash": "e9aedc3d51b93a66ffe362d60162942dc35bdd262ddec5923476fab6116ec6e0"
+    },
+    "model-pruning-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/model-pruning-helper/SKILL.md",
+      "computedHash": "933ee9a06b32cfecfd317fbfd485f86737419cb509128df674466512251fb658"
+    },
+    "model-quantization-tool": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/model-quantization-tool/SKILL.md",
+      "computedHash": "5e749cca980a16dccb3a117dd2b09cff8d0c5ee7ca82a747af14ff79d10596f4"
+    },
+    "model-registry-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/model-registry-manager/SKILL.md",
+      "computedHash": "89ec71ae5e4f36318cbb51f4a21ce637303eb325807c79c73a310fe5f30791e1"
+    },
+    "model-versioning-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/model-versioning-manager/SKILL.md",
+      "computedHash": "1afcb41f577672425128d20c1137b8155617308b7ef2fe724bb6e31aa72368a1"
+    },
+    "mutation-test-runner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/mutation-test-runner/SKILL.md",
+      "computedHash": "79d8ba87d09ff88c641aead59f932e7e47dccf79126554eed55a2f3d4b46c18c"
+    },
+    "n8n-workflow-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/n8n-workflow-generator/SKILL.md",
+      "computedHash": "6c0676143d07f8630a26d116ee0e212edfaf1620e9c52aae548746cde6291309"
+    },
+    "nestjs-module-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/nestjs-module-generator/SKILL.md",
+      "computedHash": "67b96e966e13fd7697b4c330c687719a925985d722891fc775a921d77f2a6a9a"
+    },
+    "network-diagram-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/network-diagram-generator/SKILL.md",
+      "computedHash": "aeb21d6be993a35e59d7eb933c0798517d4fb412ffbdcf91d508bafbf74e03cd"
+    },
+    "network-latency-tester": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/network-latency-tester/SKILL.md",
+      "computedHash": "c7c3c2743c9798ee1e783215090289b41cafd16cb574a4732b4e440a5abdcc80"
+    },
+    "network-security-scanner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/network-security-scanner/SKILL.md",
+      "computedHash": "0a35cd0962baed04df497bce117e9e62e5cf85662f11f1f022c3aaaa9cfaf6c3"
+    },
+    "nginx-ingress-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/nginx-ingress-manager/SKILL.md",
+      "computedHash": "e4a68fbbbbc11d46b82502860804d55cf8dc83ae35da4f4f01f59efe790264c4"
+    },
+    "notification-dispatcher": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/notification-dispatcher/SKILL.md",
+      "computedHash": "4cccfe98c59dbf46c4d93179eb51fea82d8e987bdbf7bd956dc9f7e7d3d0245a"
+    },
+    "npm-scripts-optimizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/npm-scripts-optimizer/SKILL.md",
+      "computedHash": "c729eedb24d05f36f0e00e6c5c24921706782d56e319db03995d47444d165a2c"
+    },
+    "oauth-callback-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/oauth-callback-handler/SKILL.md",
+      "computedHash": "9db7c6a2dd657fef69b9f72fd64c2c52d5ebf99051790e4f55a2c0173811bd9d"
+    },
+    "oauth-client-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/oauth-client-setup/SKILL.md",
+      "computedHash": "92ddb88346bbefc385f7c1552c3298fdd3c2a647ec253164c6146b0f04964971"
+    },
+    "oauth2-flow-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/oauth2-flow-helper/SKILL.md",
+      "computedHash": "a19f995f954136871e12b19a57d280101eca2262d0879e8f4b5cb39a3552eef4"
+    },
+    "okr-tracker-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/okr-tracker-creator/SKILL.md",
+      "computedHash": "ab1f08ed85884cab51d3906e56a74f94abd7fce6851e7811bc7a58086a59e035"
+    },
+    "onnx-converter": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/onnx-converter/SKILL.md",
+      "computedHash": "a931baa0ca46f96477b884aa6d0645e2c4cf6ba197c72a2e712b6bc90e2c6e52"
+    },
+    "open-graph-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/open-graph-creator/SKILL.md",
+      "computedHash": "afb45d5d80e8b7555f1a8f940d4e30e00e55ed65b2ad07a4d20c1fbe0d184159"
+    },
+    "openapi-spec-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/openapi-spec-generator/SKILL.md",
+      "computedHash": "3100aa0e5f7c680391a972030a817633189a2cdbd9bca1c0b4f747981d8120cb"
+    },
+    "optuna-study-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/optuna-study-creator/SKILL.md",
+      "computedHash": "367b25c953584161d4be25f23d285b7c76e5ff92a478c04d9fa5c629567a0873"
+    },
+    "org-chart-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/org-chart-creator/SKILL.md",
+      "computedHash": "40ab82862c8c1cf865b97e4d63110e4ea9777db07a9b859f4af98771acd4aa22"
+    },
+    "package-json-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/package-json-manager/SKILL.md",
+      "computedHash": "9bc0053c5fd0323dc163c2aa3025810b3df23200aafad17e330083258085b58c"
+    },
+    "pagination-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/pagination-helper/SKILL.md",
+      "computedHash": "f30f0b9131f959cf9c24ec490802a70a48e4510a6294134fb0dbf2343f2ffcb7"
+    },
+    "pandas-pro": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/pandas-pro/SKILL.md",
+      "computedHash": "244a87c4e9e20aac2822cdd99a221a7fa6999bf1194abbbd4a5e16bde34bf6ef"
+    },
+    "password-hash-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/password-hash-generator/SKILL.md",
+      "computedHash": "21ecf1979a4c133a3ca8282f7ce8e8a7ee09c221b48d3630f1998e56bc341812"
+    },
+    "password-strength-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/password-strength-analyzer/SKILL.md",
+      "computedHash": "90b11dbb9e4ee1c1a03fe2cceb160aeb1f86bf086cc8c18a175420666301ad9f"
+    },
+    "path-traversal-finder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/path-traversal-finder/SKILL.md",
+      "computedHash": "b8c3f848713fbd7edcf3fb1050b28fca185e78a66fa68491eeb47068aae8c5dd"
+    },
+    "pci-dss-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/pci-dss-validator/SKILL.md",
+      "computedHash": "6f1d0919f838b210d2376b46b4f72e6fc16efabde69137e044a83d9fa1cb3c74"
+    },
+    "pdf-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/pdf-generator/SKILL.md",
+      "computedHash": "1e6782b7f5514dc6e5b52f1ea916057840d05fc8bc7c7cfca5e8b6ff24496f71"
+    },
+    "pdf-parser": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/pdf-parser/SKILL.md",
+      "computedHash": "0933f5831a900cfea29f0fd5a90dff3adb25fcca72588623a83c6dff7133ff23"
+    },
+    "penetration-test-planner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/penetration-test-planner/SKILL.md",
+      "computedHash": "e425d2aa2e9c3f91ccbe24623adc454d6cbb0b80d85f7e129629e80246d4dc84"
+    },
+    "percentile-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/percentile-analyzer/SKILL.md",
+      "computedHash": "506f53e41912e294cb9f82745c7816ea01021da99b2810862f4caac86a98a1d8"
+    },
+    "performance-baseline-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/performance-baseline-creator/SKILL.md",
+      "computedHash": "4c45893223db209933048ebc783bde00c8158402533461e4b80a30692c7694b2"
+    },
+    "performance-lighthouse-runner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/performance-lighthouse-runner/SKILL.md",
+      "computedHash": "3646a9c24d8e9802859edeb7de63325763332ac13510888828107d955e3f567a"
+    },
+    "pinia-store-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/pinia-store-setup/SKILL.md",
+      "computedHash": "277842fe91757050d6069ba9e03414e920624b54cf2d9f0b2167b513aeefeb68"
+    },
+    "pipeline-monitoring-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/pipeline-monitoring-setup/SKILL.md",
+      "computedHash": "c68b533b6aab82b5a4a574bde994d1a1f77814f203a37e6b4dc3c1c360f16603"
+    },
+    "pivot-table-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/pivot-table-creator/SKILL.md",
+      "computedHash": "599860d9aa816c7ba5b048aa483db2d3b5f37cddee439018e96fe59959251039"
+    },
+    "plantuml-diagram-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/plantuml-diagram-generator/SKILL.md",
+      "computedHash": "7c99c86c987d9b8e0ec50195d92a3ef87a00c2925d9188ada19fa791691d41c5"
+    },
+    "plotly-chart-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/plotly-chart-generator/SKILL.md",
+      "computedHash": "b655a697bfeedd093ee029c0d22caf4ca1b216b62f659cd069b26df313233e72"
+    },
+    "polling-mechanism-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/polling-mechanism-setup/SKILL.md",
+      "computedHash": "7307ac2f2b64d5631fbba8b9aa50229e9bb7b90534e52dd23a1028cf451c4690"
+    },
+    "pre-commit-hook-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/pre-commit-hook-setup/SKILL.md",
+      "computedHash": "05e8f4ffcda50287f86c14c044ac697fd80f4827008325035cc504976743d7ba"
+    },
+    "prediction-monitor": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/prediction-monitor/SKILL.md",
+      "computedHash": "8ac62a2e75029bbcf37878f918f2147d03f3a043660492228d05b01d0afd0ef6"
+    },
+    "prefect-flow-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/prefect-flow-builder/SKILL.md",
+      "computedHash": "914cc9c8ea7eb8128fcccc5710ed6050297df93f059e33d7bf42032de96b1a9a"
+    },
+    "presentation-slide-outliner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/presentation-slide-outliner/SKILL.md",
+      "computedHash": "2d06d602fade88986e68e52cda0c422355780b1d7489b48e29ee4b60a51adf87"
+    },
+    "prisma-schema-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/prisma-schema-helper/SKILL.md",
+      "computedHash": "f785dfadce7184344929f8ec7b4768b531321589636b7eccff7874d9ccfd53b5"
+    },
+    "process-flow-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/process-flow-generator/SKILL.md",
+      "computedHash": "a65a74375ffd2d4b63d0cf47e7ed0cc8327336dff64024e88a19f33f84046eda"
+    },
+    "prometheus-config-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/prometheus-config-generator/SKILL.md",
+      "computedHash": "ac5ee40127422ee840eec8b285c1cf4c209075423237ec4c5061055d40c0f70c"
+    },
+    "property-based-test-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/property-based-test-helper/SKILL.md",
+      "computedHash": "ba212e42c0f5f672673117833136603e4a4442c3784c0c5e35843afba48ce385"
+    },
+    "pubsub-subscription-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/pubsub-subscription-config/SKILL.md",
+      "computedHash": "91a23b6f100b1cc391da9eb9da151d7371ed36749205f841f9035151faf7f52d"
+    },
+    "pubsub-topic-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/pubsub-topic-setup/SKILL.md",
+      "computedHash": "beb7f95f0f983472b5c08a8e4f76aac147644f9b0944ce8f2ed5c84804852b5a"
+    },
+    "pwa-manifest-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/pwa-manifest-generator/SKILL.md",
+      "computedHash": "6d2099dab1e0028c99275f0a0622dc5a1f430801b507ba188c8195670740bfc1"
+    },
+    "pyspark-transformer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/pyspark-transformer/SKILL.md",
+      "computedHash": "12c882a482cc94070a4b338dbe6a0e1e1ab77fb0fd96ec3eb492d3cd8c8b5556"
+    },
+    "pytest-test-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/pytest-test-generator/SKILL.md",
+      "computedHash": "0f8000b6f401a98c0df421baefbd0c250e2b005b4ec0a539e89092918b6615b0"
+    },
+    "python-testing": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/python-testing/SKILL.md",
+      "computedHash": "9bb9ccc595dbc4fd6ea1e70ba14e0d9c17f0ed0dc55331d593b1e0965d31df39"
+    },
+    "pytorch-model-trainer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/pytorch-model-trainer/SKILL.md",
+      "computedHash": "dcd306d171b13f2952dec4459d30f0c74328ae7ebcd1e8a7f4e8f059dec943f1"
+    },
+    "quantitative-research": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/quantitative-research/SKILL.md",
+      "computedHash": "843f83d7b590d39d94f018344675e28cd46ac8e7a842100b01dd05ab90d79f57"
+    },
+    "quickstart-guide-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/quickstart-guide-generator/SKILL.md",
+      "computedHash": "c9ab16f35ba76dde919d21fc848a244b73caafb905f9df8bf0b17da62065ce9d"
+    },
+    "rabbitmq-queue-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/rabbitmq-queue-setup/SKILL.md",
+      "computedHash": "01ed44aa8bd70ed6ec0917001b539916e73678795bd4a6a120a2d892d2843eab"
+    },
+    "rate-limit-middleware": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/rate-limit-middleware/SKILL.md",
+      "computedHash": "7c23c6ca88cfb7413653a86046cc96e057802b2307f54d7bbd9894c41fa5298c"
+    },
+    "rate-limiter-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/rate-limiter-config/SKILL.md",
+      "computedHash": "e444f12ac30b532f90924dc1796b8105f23952adab9a68c5a6c4baa041db2bd8"
+    },
+    "rds-instance-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/rds-instance-setup/SKILL.md",
+      "computedHash": "95c992b94f04c3f24b33daa0d44c4133583af5e48f9d0ba37c8b4c7c9c4a0e5c"
+    },
+    "react-component-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/react-component-generator/SKILL.md",
+      "computedHash": "cec613d26ec1f7bb30c0e46785375ce4c861c60a5abc92bd244fa13db122227c"
+    },
+    "react-context-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/react-context-setup/SKILL.md",
+      "computedHash": "26f905daaeee10fefd4d174db3c5b0b804b0bef3c5065f8bde1f3c72b0fe9e40"
+    },
+    "react-hook-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/react-hook-creator/SKILL.md",
+      "computedHash": "99c1248d717b743478fdb5fc02dbb130a3b27265a16d553a16a31167c257cba6"
+    },
+    "readme-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/readme-generator/SKILL.md",
+      "computedHash": "d222ce7bda6a21e338f9b2d1f884bcfe6483ea474e3e2b6fdde01268700f5967"
+    },
+    "redis-cache-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/redis-cache-manager/SKILL.md",
+      "computedHash": "d8864eb211fc1f17e47f3fecb3ecb8607f364ca17c0767c7d0d0e6b7b6aaa76a"
+    },
+    "redux-slice-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/redux-slice-generator/SKILL.md",
+      "computedHash": "e29898aafe3503507640da7b428ccec4105a0eff747d0c9c59050ec79d528727"
+    },
+    "regression-analysis-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/regression-analysis-helper/SKILL.md",
+      "computedHash": "600a914342286b52bbcc6c215845bdc66ae99c0c97174150a5cadcaebf5afd83"
+    },
+    "release-notes-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/release-notes-generator/SKILL.md",
+      "computedHash": "eea117f03a8d57c541fec647c2d0e32a8bb1dbb4ccd837979a1682ad33dd2516"
+    },
+    "reminder-system-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/reminder-system-creator/SKILL.md",
+      "computedHash": "e62aae5d5f0ba6444961d44ee0daa36f9b91190dd5db05d68f4684513b26c5c5"
+    },
+    "report-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/report-generator/SKILL.md",
+      "computedHash": "be198db8576ebc408c21a123393a6091e0cd57f089045befa7bc010f1b8010dd"
+    },
+    "report-template-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/report-template-generator/SKILL.md",
+      "computedHash": "30a4277dce4a69f7364666ec5dab8e5ea7a2beb3b0ef008249c20f5d4990d5ea"
+    },
+    "request-body-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/request-body-validator/SKILL.md",
+      "computedHash": "9020ec8dc6872a7366d11af4ecb32194befac3bc28af690209d0db4ce8cd10ce"
+    },
+    "request-interceptor-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/request-interceptor-creator/SKILL.md",
+      "computedHash": "58c095bea9905d2c5ab95c08994c19edcc63a8398b6dfa77853ff931b82cb86d"
+    },
+    "request-validator-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/request-validator-generator/SKILL.md",
+      "computedHash": "2bfe439955bf684ac2523e1c0ac96887d4afe4ab3290470e77caab087ff20816"
+    },
+    "response-schema-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/response-schema-generator/SKILL.md",
+      "computedHash": "0652baf4f41fd16b7b79e92b05e6dda969f442a6ba737fa43f0d1100b3230680"
+    },
+    "response-time-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/response-time-analyzer/SKILL.md",
+      "computedHash": "62ece1905466290e09a2ac39762ed45c1244f72219913c9eba4ce6c82c52778c"
+    },
+    "response-transformer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/response-transformer/SKILL.md",
+      "computedHash": "03a6e3bd81b73ce797d55c7fbce62caec53cca67f3fce73b8ae71a39132a25c3"
+    },
+    "responsive-breakpoint-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/responsive-breakpoint-analyzer/SKILL.md",
+      "computedHash": "bae4b00053b518b5b475d65865ac3c514796e2405ab5f709857a56e0e9695487"
+    },
+    "rest-endpoint-designer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/rest-endpoint-designer/SKILL.md",
+      "computedHash": "1b20d10a303e719e0561ef31cce4383d20218d9c906b04d92fa464667bba8457"
+    },
+    "retention-calculator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/retention-calculator/SKILL.md",
+      "computedHash": "18d2f273e0383db77b602a11456ceb536edec03eb55c2b1b58990d2f810303e9"
+    },
+    "retry-logic-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/retry-logic-helper/SKILL.md",
+      "computedHash": "598372a9bde72ccfa476b89f639d3b174a427ffe65939cf27323ac1ccc2e798d"
+    },
+    "risk-assessment-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/risk-assessment-creator/SKILL.md",
+      "computedHash": "02329da42986851055ea8061197b11fa5debc473f90f9dda71d6afcdb2cbfdeb"
+    },
+    "roadmap-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/roadmap-generator/SKILL.md",
+      "computedHash": "44b2534fd29603c690c93e0bd9481d7a5a9a7ca8e12eb1157ae84ccf534b4dae"
+    },
+    "roc-curve-plotter": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/roc-curve-plotter/SKILL.md",
+      "computedHash": "5b1928497b932294ffdf985f0e985362b2029d7084d82e3453d4f4e67f214c10"
+    },
+    "route53-record-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/route53-record-manager/SKILL.md",
+      "computedHash": "1533ae1dde728fa2caa1a403394d25bc6ab3a637073a598020ce4d30c6b9342c"
+    },
+    "runbook-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/runbook-creator/SKILL.md",
+      "computedHash": "1bbec96a887a47475ca5e6f3524f6495c472d9a50bb8f88c2938bd1e1a6c235e"
+    },
+    "s3-bucket-policy-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/s3-bucket-policy-generator/SKILL.md",
+      "computedHash": "9b8e8232f4115ced4561acac9f70515ab21fbdedbfa64cd640b417643cfd3569"
+    },
+    "s3-lifecycle-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/s3-lifecycle-config/SKILL.md",
+      "computedHash": "59e88f9973417664e5ccc9191a607daf5d0da9cf9ccd8d93533d1edc8cad6b77"
+    },
+    "sagemaker-endpoint-deployer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/sagemaker-endpoint-deployer/SKILL.md",
+      "computedHash": "9f649fa4f57362203f505172bc7b04da17ea68d293cf53436f59fdf84daf5eaa"
+    },
+    "sam-template-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/sam-template-builder/SKILL.md",
+      "computedHash": "314638512188dac23b40ad47fedb5d8d05597de12eeebf5fb30bd97be7cbb061"
+    },
+    "schema-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/schema-validator/SKILL.md",
+      "computedHash": "7586548fda50915d2a11735ff95d81349199e1e212ccde89fed7bb88f2b98075"
+    },
+    "sdk-documentation-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/sdk-documentation-generator/SKILL.md",
+      "computedHash": "58d9af15e7ac126ff8de16407b85d61932d78e50fee727a784baaa3df2f8f4c5"
+    },
+    "sdk-wrapper-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/sdk-wrapper-creator/SKILL.md",
+      "computedHash": "27a8596374e4909a0a4be6cea7e1b91135bb95a79f9d74c584128aa2f75132c0"
+    },
+    "secret-scanner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/secret-scanner/SKILL.md",
+      "computedHash": "0f86a5ba78c47610e66bf07793aa270056abd7b1bf3cdc7bd6d6cb1410f24ccd"
+    },
+    "security-benchmark-runner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/security-benchmark-runner/SKILL.md",
+      "computedHash": "6c235019a434f2f536764491a4d72813fdb44f76561eec78ea540108eec202d4"
+    },
+    "security-group-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/security-group-generator/SKILL.md",
+      "computedHash": "a0723bccdb86923f83789c4119bc3449a73129d1a81a649343f19816bb9f1591"
+    },
+    "security-headers-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/security-headers-generator/SKILL.md",
+      "computedHash": "c99f4af025f93198e15f04ed85f4f695ca54984a998432fa2c68b5758b569dbc"
+    },
+    "security-policy-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/security-policy-generator/SKILL.md",
+      "computedHash": "48832e9148c06dc87cbcd1a9145a29948351bcd2c7951e2c920184ea5000956a"
+    },
+    "seo-meta-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/seo-meta-generator/SKILL.md",
+      "computedHash": "aa25154ee19c8b6830132ea919ff9f03896e41e6e7c7b0045bf31017f29888fb"
+    },
+    "sequelize-model-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/sequelize-model-creator/SKILL.md",
+      "computedHash": "c0ca8e35367194db50c43263428d4d213a373af05c3197dc15ac4b9b38036972"
+    },
+    "server-sent-events-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/server-sent-events-setup/SKILL.md",
+      "computedHash": "36b58c8480501866271eacd46edb23b6086771cbca123482d1610c54e3f01e2d"
+    },
+    "service-account-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/service-account-manager/SKILL.md",
+      "computedHash": "e158484ad47a56798100e543edc197d667f1980c3e9421f46867feb13bea9308"
+    },
+    "session-security-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/session-security-checker/SKILL.md",
+      "computedHash": "3650a885747715fad26e7786394ca9ff385fe350accc0f7986e74527c8dca374"
+    },
+    "siem-rule-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/siem-rule-generator/SKILL.md",
+      "computedHash": "71b007ebf0809fd1d6255ebce278e4981930921b36ba0603ec6fe490382ca7f8"
+    },
+    "sklearn-pipeline-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/sklearn-pipeline-builder/SKILL.md",
+      "computedHash": "b2957112aef173b54aa390af5f5c611fe8331b607f212149d51d2d1985a0dd4c"
+    },
+    "sla-monitor-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/sla-monitor-setup/SKILL.md",
+      "computedHash": "6116770017e1508611d67b41b6c9a6e2af7efb07c3958eda0fba9cb2fe9f13d0"
+    },
+    "slack-bot-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/slack-bot-creator/SKILL.md",
+      "computedHash": "309e33cac04405d612e69da32479a22bc94042d35efb5a3537cbf57e5d36552e"
+    },
+    "snapshot-test-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/snapshot-test-helper/SKILL.md",
+      "computedHash": "7ccafb0c8b11cde702e0b3cdb00b3a6a2e9176ee0289d8590d99c3c5ae4e0215"
+    },
+    "sns-topic-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/sns-topic-config/SKILL.md",
+      "computedHash": "c6baec8d22c9b25adfb8c3c521ed0e75fd82f39045da74fba319a41d21c290e5"
+    },
+    "soak-test-planner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/soak-test-planner/SKILL.md",
+      "computedHash": "2d69244a5c97a97e1ef8a9d08b6483383a305918738eb05b2df33f6da575d175"
+    },
+    "soc2-compliance-checker": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/soc2-compliance-checker/SKILL.md",
+      "computedHash": "599948bf8b9c41678d33fbb6cf0fc8864a80b911abe1c2bce3c01a6af58e0aaa"
+    },
+    "sorting-parameter-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/sorting-parameter-handler/SKILL.md",
+      "computedHash": "27329cf99423ff34f16e652134c84f8789902600669d9463dd9bf23a98d39a13"
+    },
+    "spark-job-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/spark-job-creator/SKILL.md",
+      "computedHash": "3138358b6c5a49782e8f7918ca95eb7eeb7e1279bf2272e2787277db11cb362d"
+    },
+    "spark-sql-optimizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/spark-sql-optimizer/SKILL.md",
+      "computedHash": "f5aabbc4cfa221676147d43b8250174304dc56e61e0a6f397d4a9ceff5880b2a"
+    },
+    "spike-test-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/spike-test-setup/SKILL.md",
+      "computedHash": "2c6bb1f70f764a90560e35242c96ca3e4e74d6346937824b86cf919b3dd6a1d1"
+    },
+    "sprint-planning-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/sprint-planning-helper/SKILL.md",
+      "computedHash": "a812a6954e852bcb06c2e95ed1979b88667dcfd72a3edbf2739a0a3f65181fd7"
+    },
+    "spy-setup-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/spy-setup-helper/SKILL.md",
+      "computedHash": "72ed8919fbe8e360ce86c293671241639bd1b31fc5e47ea666cf5453e579838a"
+    },
+    "sql-injection-detector": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/sql-injection-detector/SKILL.md",
+      "computedHash": "9072e73177efe860b8e4407aec5c31088ba35944885ab4310afda80ab75cfd4e"
+    },
+    "sql-migration-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/sql-migration-generator/SKILL.md",
+      "computedHash": "a814b4a64a2a5d372ee0cd64ed22715b7cb46f1682af1a92aa6baed490dafd56"
+    },
+    "sql-query-optimizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/sql-query-optimizer/SKILL.md",
+      "computedHash": "b0040d39606f8f692ae93e3bfe42d96cf30abafe423d497c5d402f0d40fc6692"
+    },
+    "sql-transform-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/11-data-pipelines/sql-transform-helper/SKILL.md",
+      "computedHash": "f968288a5e2697862883e67ecb6938afb498a468c76c691d81e409421809d018"
+    },
+    "sqs-queue-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/sqs-queue-setup/SKILL.md",
+      "computedHash": "b344c1104e7ac2e5a865d7fca5ad975b0066c233ab7b609c366d1e6f15555c97"
+    },
+    "ssh-key-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/ssh-key-manager/SKILL.md",
+      "computedHash": "4f15169a6459fd554eb0c7ce0aafa603847fd0eb3c7588ae836c928467a8ccb1"
+    },
+    "stakeholder-communication-template": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/stakeholder-communication-template/SKILL.md",
+      "computedHash": "765034354c5e97ad5056d0a769b9ffd87fea61ef2a91173ff17cde1f52a5ae6d"
+    },
+    "statistical-significance-calculator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/statistical-significance-calculator/SKILL.md",
+      "computedHash": "5e1304cbe2f60d1319c9da2b2bfb8906bc4f808bd1b5714cf770da6549eb6ac9"
+    },
+    "status-code-recommender": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/status-code-recommender/SKILL.md",
+      "computedHash": "9f36318660ebb1a3a224771de514e5c079a9648bafcfb2f6054feb19fa6b590f"
+    },
+    "status-report-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/status-report-generator/SKILL.md",
+      "computedHash": "ac12f13c314c82ff92b417928c412dde8f658dc7de794ae00c57e960a0228c19"
+    },
+    "step-functions-workflow": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/step-functions-workflow/SKILL.md",
+      "computedHash": "4442604ca61be1effc74f9b72f356c2117b2e10edb8626acb2e858dc9328d889"
+    },
+    "streaming-inference-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/streaming-inference-setup/SKILL.md",
+      "computedHash": "84addd7ec6920903977d857305bc29ee993c99a1461a91b11bd029fbca49f248"
+    },
+    "stress-test-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/stress-test-config/SKILL.md",
+      "computedHash": "d6f9f7f2dcb6dc43eb6ab1fe6467ffae84469736c17ae49c39c0a8551e2e0315"
+    },
+    "stub-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/stub-creator/SKILL.md",
+      "computedHash": "0473bea20e759f126ed7a91016ea8b835f3fb2fc5db9ec59bbfb6f9ed1c38720"
+    },
+    "styled-components-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/styled-components-helper/SKILL.md",
+      "computedHash": "3a63dc251cd51a3f0e8233e1cd7b5652734c1df0f4ea2807b44e4fc961e59f4a"
+    },
+    "survey-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/survey-creator/SKILL.md",
+      "computedHash": "a6870d4b923d9cd4655d63d91efc6dbc783df6704f089666f73e1ff5481c9f31"
+    },
+    "svg-icon-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/svg-icon-generator/SKILL.md",
+      "computedHash": "20e21ca67bb58b09924f59cc791e9bcf9ab5567f8e3f0085c1644d0a57b2d74d"
+    },
+    "swagger-doc-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/swagger-doc-creator/SKILL.md",
+      "computedHash": "94ccda961fe1e695d54045c29c76ff2cde293ebfbb2124d43b4f7e20b3659648"
+    },
+    "tailwind-class-optimizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/tailwind-class-optimizer/SKILL.md",
+      "computedHash": "7bb094ab58d0a255ed74a8ab404b4ff8e08565b5195c2bdd05ad2ae00f49cf85"
+    },
+    "teams-webhook-sender": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/teams-webhook-sender/SKILL.md",
+      "computedHash": "1a71c1521ada5f6e40ed91ddecc92cbe5d184832fffa44507ad8af8469323fef"
+    },
+    "technical-diagram-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/technical-diagram-analyzer/SKILL.md",
+      "computedHash": "4907b528810009c85c8de4ed048db93278be41f1aba5de3906a9e20f6ce178cc"
+    },
+    "tensorboard-visualizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/tensorboard-visualizer/SKILL.md",
+      "computedHash": "1d28c9aaab97f27797149c0ae0ca5ccfbb8cc7149da4e25d86f31ce87604b5d1"
+    },
+    "tensorflow-model-trainer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/tensorflow-model-trainer/SKILL.md",
+      "computedHash": "7056a51e7513166630d6cffa4a5b3cccf777c73fc5edbf3e26f8953d0bd18487"
+    },
+    "tensorflow-savedmodel-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/tensorflow-savedmodel-creator/SKILL.md",
+      "computedHash": "fc9e1d8bc5cf78abbeeb877d6efd18e2f7f577c77eed444c73403bf1181c0e9b"
+    },
+    "tensorflow-serving-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/tensorflow-serving-setup/SKILL.md",
+      "computedHash": "18d106fd8fd9948bb6b9279f9e6a8051465ce17fe3a0f98965374df22ba4753a"
+    },
+    "terraform-module-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/terraform-module-creator/SKILL.md",
+      "computedHash": "6018067f4ae33a0d6ed5b0be996de0167cc5939052cb5da82cff0728bf68fdea"
+    },
+    "terraform-provider-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/terraform-provider-config/SKILL.md",
+      "computedHash": "9f0af213837a8f451fb9e00c8765d9a13c942eb6ffa405f0e5bf6dd5c84d4db4"
+    },
+    "terraform-state-manager": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/terraform-state-manager/SKILL.md",
+      "computedHash": "8a92c24667a2fed4ab56b5548d7b78733d7b1fb49d52bf33ed59a19f164c6ecb"
+    },
+    "test-data-builder": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/test-data-builder/SKILL.md",
+      "computedHash": "99db6b7428d973d28fe0416b234498d33bde0c849049d1f7ad7fb038af1ae616"
+    },
+    "test-naming-enforcer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/test-naming-enforcer/SKILL.md",
+      "computedHash": "491898d4e88defb6467b0839c27486f502d8f4985b6cd3469f26244b550de41e"
+    },
+    "test-organization-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/test-organization-helper/SKILL.md",
+      "computedHash": "3f38c4878d1cf859fea6e9826d80d416b8b3b3ec4adb604de345f5a1261aa1ef"
+    },
+    "test-parallelizer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/test-parallelizer/SKILL.md",
+      "computedHash": "632da7a0abb9f6ef405df6144a667cc39f2919365c45916c14c1d7738e0cbc3a"
+    },
+    "test-retry-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/test-retry-config/SKILL.md",
+      "computedHash": "e48b3393df980ccef4e39e6ebe153cd1e0a478bf96803f5039c618d122d466bf"
+    },
+    "thread-dump-analyzer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/thread-dump-analyzer/SKILL.md",
+      "computedHash": "ee7e9c7396e00074d59e438b84a5f8a44f756c521ecf86176fdad63705e84fde"
+    },
+    "threat-model-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/threat-model-creator/SKILL.md",
+      "computedHash": "c513d9ffdcc3b5e0f8ca34b34915c5561afac1df7c85622699f6154421b79910"
+    },
+    "throughput-calculator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/10-performance-testing/throughput-calculator/SKILL.md",
+      "computedHash": "4d967fe3ca9052145d6ba236cc630aeeddeef9d2f4e3be6acb4113a613acd90d"
+    },
+    "time-series-decomposer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/time-series-decomposer/SKILL.md",
+      "computedHash": "bd86c0f5171565131d2dd7905f5aa5ad5b818bf7f9dc11caa3922b40cd2412a9"
+    },
+    "timeout-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/timeout-handler/SKILL.md",
+      "computedHash": "e047bc36283b4f27cd2d6259b7ecad222a8d67abb10b5b7e56ae83d00fbb8e56"
+    },
+    "torchscript-exporter": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/torchscript-exporter/SKILL.md",
+      "computedHash": "6b62d58ae0066ba066bb0ad76a6b21d3538a2505cf4e3ec3682af09759ef6131"
+    },
+    "torchserve-config-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/torchserve-config-generator/SKILL.md",
+      "computedHash": "d8f1d24afeaa67bd916c458d1f69301052521cd2a48674cc0b04e2fd329da736"
+    },
+    "train-test-splitter": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/train-test-splitter/SKILL.md",
+      "computedHash": "d75e07db18693141c5d9a697bab5eb8beaae221e44192fc83f4421a11e79beec"
+    },
+    "triton-inference-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/triton-inference-config/SKILL.md",
+      "computedHash": "e8de8c85979a270e24f70db0a15b463a1d0a3ee6035af553575ad329570dd968"
+    },
+    "troubleshooting-guide-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/troubleshooting-guide-creator/SKILL.md",
+      "computedHash": "3ee1512c6cf812eefba15864c3df8d5293620c8d35e9fd010f51c5cb121e03a6"
+    },
+    "tutorial-outline-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/tutorial-outline-creator/SKILL.md",
+      "computedHash": "63e711207a4474313322ec479a36e080f1a40cdbd73723c72dcfa700bc61442f"
+    },
+    "typeorm-entity-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/typeorm-entity-generator/SKILL.md",
+      "computedHash": "840d0c6d5aa9f9cdfcffcd4016526a9455b28368d0ba45dab418d40d8dc69f3f"
+    },
+    "unittest-test-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/unittest-test-creator/SKILL.md",
+      "computedHash": "46dbd5ae9c9a2839af33e7a28e010545c12bd37b370ad42437837fd5864b4fee"
+    },
+    "user-journey-mapper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/18-visual-content/user-journey-mapper/SKILL.md",
+      "computedHash": "98a33d3d55db812f1f394825b1d5d79cebabc22f6d312cc67fcbd35f32b15ab4"
+    },
+    "user-story-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/20-enterprise-workflows/user-story-generator/SKILL.md",
+      "computedHash": "2ab2456dc29862aeea3961d385189d6ba061b18a708f344b6872e8f4ad07a2b2"
+    },
+    "vault-secrets-integrator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/02-devops-advanced/vault-secrets-integrator/SKILL.md",
+      "computedHash": "3a6b2d7edd44140d2537a0c4ba49811e9d9c16e792fcba8b3b7e4f2a279c5b16"
+    },
+    "version-bumper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/version-bumper/SKILL.md",
+      "computedHash": "ada291603344fcfec402a3c9f2fddc204a729e7594b0acc4d8811cb46088d9b9"
+    },
+    "versioning-strategy-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/15-api-development/versioning-strategy-helper/SKILL.md",
+      "computedHash": "f7738e0751565ba9fe77e7ef5819388703d7452dfeacf6f3bda086f1933b3e54"
+    },
+    "vertex-ai-deployer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/08-ml-deployment/vertex-ai-deployer/SKILL.md",
+      "computedHash": "f7af5ebde48b45134468dbc63e88bc71d82fb0f85361fa090c5efc9e7f08da77"
+    },
+    "vertex-ai-endpoint-config": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/vertex-ai-endpoint-config/SKILL.md",
+      "computedHash": "bdeecf06ac3dbacf432f5a27ad81425f16bdb9cfec1566ee51247aa6a085f228"
+    },
+    "vertex-ai-pipeline-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/vertex-ai-pipeline-creator/SKILL.md",
+      "computedHash": "e0e6ae80e11f949d4a164430967b69ea12337f7715eed55852fbbfbcfbc18185"
+    },
+    "visualization-best-practices": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/visualization-best-practices/SKILL.md",
+      "computedHash": "2099d592cd9e12d8da55e2698ec0353770ea1403331ffb94abc28513d21ffc99"
+    },
+    "vitepress-config-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/17-technical-docs/vitepress-config-creator/SKILL.md",
+      "computedHash": "b8110f0532e59410035979345b6c801d7ef6d510096c3a322b8ac555ad84e0eb"
+    },
+    "vitest-test-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/09-test-automation/vitest-test-creator/SKILL.md",
+      "computedHash": "b175abcb99da5ff28482a6170d462f611d42da56ce3a5357dbf10a034aaf6a1c"
+    },
+    "vpc-network-designer": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/13-aws-skills/vpc-network-designer/SKILL.md",
+      "computedHash": "e800d26b2d0873f30b3d0139ccceec242fee0ba4eab6ce07fdf24740ec3421e5"
+    },
+    "vpc-network-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/14-gcp-skills/vpc-network-setup/SKILL.md",
+      "computedHash": "27869a95a4c0d6ae654f478309760a532e91e9d21410eacc4d10dfa5b451b7a0"
+    },
+    "vue-component-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/vue-component-generator/SKILL.md",
+      "computedHash": "23db9a6af70c7924734ceca6bdcdaee03653a71358d230ad6d1efa302849d6fd"
+    },
+    "vue-composable-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/vue-composable-creator/SKILL.md",
+      "computedHash": "38e967e66f5c1ea5d12ce0442febf74f686fd2e57d811268289afdc8d9623469"
+    },
+    "vulnerability-report-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/vulnerability-report-generator/SKILL.md",
+      "computedHash": "aac3cbdd08fd58cce9d1547ddbdc0517290735f38cb534c19ea37ce477edb968"
+    },
+    "waf-rule-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/waf-rule-creator/SKILL.md",
+      "computedHash": "3f98bd938aabd3c3bc52d8db2a17faf0d74963374cc292495a83be90ca21b224"
+    },
+    "wandb-experiment-logger": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/07-ml-training/wandb-experiment-logger/SKILL.md",
+      "computedHash": "731d112c656252d62059abfb67b30e515a5b3fe25a17abb000dfa6e74cca24d0"
+    },
+    "web-vitals-monitor": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/web-vitals-monitor/SKILL.md",
+      "computedHash": "30258ae302270bef5b6b7adad5094f28782ea9c1380360ab9b9382800696aff1"
+    },
+    "webhook-receiver-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/webhook-receiver-generator/SKILL.md",
+      "computedHash": "8ad7d6502481efde4701327ee593178e43dafb81b50ce428785ddf3dc050d3c3"
+    },
+    "webhook-retry-handler": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/webhook-retry-handler/SKILL.md",
+      "computedHash": "5644ac706b32c6af1da30552d3c55a24990d5b0c12fc85abdf39d4c9781a84b4"
+    },
+    "webhook-sender-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/webhook-sender-creator/SKILL.md",
+      "computedHash": "ab8fd595c3e5e98d7cec462a9c86ee35556bc02404b187e1f71428b84a5c18e1"
+    },
+    "webhook-signature-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/webhook-signature-validator/SKILL.md",
+      "computedHash": "10bfda6da0e98b4b08b1539ede16c0fdbeb5396b937d705cf5120d88b292df84"
+    },
+    "websocket-client-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/16-api-integration/websocket-client-creator/SKILL.md",
+      "computedHash": "19890d8c3246da135e9e5c91a1e1d9bb56bf0eaa6b380323cd13e139e743ec46"
+    },
+    "websocket-handler-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/06-backend-dev/websocket-handler-setup/SKILL.md",
+      "computedHash": "fd029a4a9ff7a2f9117b72fdff35b8c098c6df7d8afb612150606e148f902760"
+    },
+    "window-function-generator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/12-data-analytics/window-function-generator/SKILL.md",
+      "computedHash": "7d45b93289d9a19475e33bb560e44064d4b58a597d4c0313d4a73e8bcb0e02b0"
+    },
+    "xss-vulnerability-scanner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/03-security-fundamentals/xss-vulnerability-scanner/SKILL.md",
+      "computedHash": "a6c83f1897c51faeae21bf1b7141d4ec855f35fef0331c03788fb695c684db0c"
+    },
+    "yaml-config-validator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/01-devops-basics/yaml-config-validator/SKILL.md",
+      "computedHash": "570cbd5d38d09f945fa103bd74d54c385d2ecdc12e5710d9cd17a6240408a6d4"
+    },
+    "zapier-integration-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/19-business-automation/zapier-integration-helper/SKILL.md",
+      "computedHash": "c154d75a893e90f2341e0aefd18ce574325ff68bfe6c10a1b0e6e9d2f2ca9fd9"
+    },
+    "zero-trust-config-helper": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/04-security-advanced/zero-trust-config-helper/SKILL.md",
+      "computedHash": "082bb831e08b9fa60819fbaab5732aaaf0b84eb23ac09d649cb861976976bbe9"
+    },
+    "zustand-store-creator": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/05-frontend-dev/zustand-store-creator/SKILL.md",
+      "computedHash": "9003378613ecc390a7f47a162b4f8fdbbf7adf629246209d57e3ead5e8de546a"
+    }
+  }
+}

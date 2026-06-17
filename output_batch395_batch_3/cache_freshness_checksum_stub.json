@@ -1,0 +1,11 @@
+{
+  "assert_cache_fresh": "OK (no raise)",
+  "checksum_sample": {
+    "file_path": "scripts/build_verification_matrix.py",
+    "sha256": "8588f9b9dc5572270341f2535b5bed898232b18481c576e966a98a3964e77e8a",
+    "last_validated_iso": "2026-05-28T23:45:34.242995",
+    "row_count": null,
+    "size_bytes": 33086,
+    "note": "ok"
+  }
+}

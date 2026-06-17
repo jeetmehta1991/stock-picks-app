@@ -1,0 +1,234 @@
+{
+  "cmf_flip": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "cpr_narrow_momentum_short": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "donchian_10_breakout": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "donchian_breakdown_retest_short": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "inside_bar_breakout": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "macd_crossover": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "macd_fast_crossover": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "mmbm_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "mmsm_short": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "morning_star": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "naked_poc_retest_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "pairs_mean_reversion_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "pairs_mean_reversion_short": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "parabolic_sar_flip": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "pead_long_high_yoy_growth_only": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "po3_bullish": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "ppo_crossover": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "prev_day_low_bounce": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "r1_break_retest": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "smc_breaker_block_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "squeeze_breakout": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "stochrsi_overbought_short": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "stochrsi_oversold": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "supertrend_macd": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "tema_dema": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "three_black_crows_short": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "week_opening_gap_fill_up": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "williams_r_oversold": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "xs_momentum_quality_combined": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  }
+}

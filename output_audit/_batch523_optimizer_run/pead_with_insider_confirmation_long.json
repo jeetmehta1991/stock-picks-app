@@ -1,0 +1,145 @@
+{
+  "strategy": "pead_with_insider_confirmation_long",
+  "n_trades": 9,
+  "aggregate": {
+    "n": 9,
+    "win_rate": 0.5556,
+    "mean_pp": 4.8742,
+    "std_pp": 16.2634,
+    "sum_pp": 43.8678,
+    "profit_factor": 2.8559,
+    "rr_ratio": 2.2847,
+    "sharpe": 0.72,
+    "t_stat": 0.8991,
+    "skew": 1.7936,
+    "kurtosis": 3.9795,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "insider_cluster_active",
+        "fires_at": 100.0,
+        "n_present": 9
+      },
+      {
+        "clause": "pead_positive_surprise",
+        "fires_at": 100.0,
+        "n_present": 9
+      },
+      {
+        "clause": "within_pead_window",
+        "fires_at": 100.0,
+        "n_present": 9
+      }
+    ],
+    "restrictive": [],
+    "always_on": [
+      {
+        "clause": "insider_cluster_active",
+        "fires_at": 100.0,
+        "n_present": 9
+      },
+      {
+        "clause": "pead_positive_surprise",
+        "fires_at": 100.0,
+        "n_present": 9
+      },
+      {
+        "clause": "within_pead_window",
+        "fires_at": 100.0,
+        "n_present": 9
+      }
+    ],
+    "proposals": [
+      "clauses ['insider_cluster_active', 'pead_positive_surprise', 'within_pead_window'] fire 90%+ - removing them wouldn't reduce admission significantly"
+    ]
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 3,
+        "win_rate": 0.6667,
+        "mean_pp": 11.0684,
+        "std_pp": 28.2848,
+        "sum_pp": 33.2051,
+        "profit_factor": 4.0643,
+        "rr_ratio": 2.0322,
+        "sharpe": 0.7355,
+        "t_stat": 0.6778,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 6,
+        "win_rate": 0.5,
+        "mean_pp": 1.7771,
+        "std_pp": 8.2858,
+        "sum_pp": 10.6627,
+        "profit_factor": 1.833,
+        "rr_ratio": 1.833,
+        "sharpe": 0.6233,
+        "t_stat": 0.5254,
+        "skew": -0.0603,
+        "kurtosis": -0.6974,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": 0.72,
+    "tier_rec": "MEDIUM_HIGH",
+    "size_pct": 1.5
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 9,
+      "min": 2,
+      "p25": 22.0,
+      "median": 39.0,
+      "p75": 55.0,
+      "max": 120
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "as_of": "2026-05-31",
+  "window": {
+    "start": "2020-01-01",
+    "end": "2026-05-31"
+  },
+  "modes": {
+    "survivor_only": {
+      "n_tickers": 503,
+      "definition": "T1a active at as_of (removed_date IS NULL)"
+    },
+    "delisted_only": {
+      "n_tickers": 111,
+      "definition": "T1a removed during window (removed_date BETWEEN start AND end)"
+    },
+    "full": {
+      "n_tickers": 614,
+      "definition": "SURVIVOR_ONLY UNION DELISTED_ONLY with PIT filter applied per-bar"
+    }
+  },
+  "strategies": {
+    "pivot_s3_capitulation": {
+      "by_mode": {
+        "survivor_only": {
+          "mode": "survivor_only",
+          "n_tickers": 503,
+          "n_fires": 0,
+          "sum_return_atr_trail": 0.0,
+          "sum_return_20bar": 0.0,
+          "n_hits": 0,
+          "sum_mae": 0.0,
+          "sum_mfe": 0.0,
+          "n_blow_ups": 0
+        },
+        "delisted_only": {
+          "mode": "delisted_only",
+          "n_tickers": 103,
+          "n_fires": 0,
+          "sum_return_atr_trail": 0.0,
+          "sum_return_20bar": 0.0,
+          "n_hits": 0,
+          "sum_mae": 0.0,
+          "sum_mfe": 0.0,
+          "n_blow_ups": 0
+        },
+        "full": {
+          "mode": "full",
+          "n_tickers": 606,
+          "n_fires": 0,
+          "sum_return_atr_trail": 0.0,
+          "sum_return_20bar": 0.0,
+          "n_hits": 0,
+          "sum_mae": 0.0,
+          "sum_mfe": 0.0,
+          "n_blow_ups": 0
+        }
+      },
+      "survivor_sensitivity": {
+        "return_inflation_pp": 0.0,
+        "hit_rate_inflation_pp": 0.0,
+        "blow_up_rate_hidden_pp": 0.0,
+        "verdict": "indeterminate"
+      }
+    },
+    "pivot_r3_blowoff_short": {
+      "by_mode": {
+        "survivor_only": {
+          "mode": "survivor_only",
+          "n_tickers": 503,
+          "n_fires": 0,
+          "sum_return_atr_trail": 0.0,
+          "sum_return_20bar": 0.0,
+          "n_hits": 0,
+          "sum_mae": 0.0,
+          "sum_mfe": 0.0,
+          "n_blow_ups": 0
+        },
+        "delisted_only": {
+          "mode": "delisted_only",
+          "n_tickers": 103,
+          "n_fires": 0,
+          "sum_return_atr_trail": 0.0,
+          "sum_return_20bar": 0.0,
+          "n_hits": 0,
+          "sum_mae": 0.0,
+          "sum_mfe": 0.0,
+          "n_blow_ups": 0
+        },
+        "full": {
+          "mode": "full",
+          "n_tickers": 606,
+          "n_fires": 0,
+          "sum_return_atr_trail": 0.0,
+          "sum_return_20bar": 0.0,
+          "n_hits": 0,
+          "sum_mae": 0.0,
+          "sum_mfe": 0.0,
+          "n_blow_ups": 0
+        }
+      },
+      "survivor_sensitivity": {
+        "return_inflation_pp": 0.0,
+        "hit_rate_inflation_pp": 0.0,
+        "blow_up_rate_hidden_pp": 0.0,
+        "verdict": "indeterminate"
+      }
+    }
+  },
+  "scaffold_note": "B666 scaffold: per-strategy fire+return measurement deferred to post-B660 batch per SURVIVORSHIP_VERIFICATION_METHODOLOGY.md. Only n_tickers counts are populated; metrics are zero."
+}

@@ -1809,6 +1809,7 @@ _archived_b713_original_inspect_currentframe_ticket_superseded_by_PARTIALLY-RESO
 
 ## Completed log (DONE-ARCHIVED — truly closed; most recent first; one line per item)
 
+- 2026-06-18 — `b893-stale-md-archive-3-files` — Batch 893: Owner-approved archive of 3 stale .md files from B892 flag table: PHASE_1A_BETA_STATUS.md + PHASE_1B_AUDIT_2026_05_25.md + IMPLEMENTATION_DRAFTS_T1.md → `.archive/2026-06-18-stale-md/`. Active references updated to point to archive path: PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md (2 refs), MONITORING_FRAMEWORK.md, EXECUTION_QUEUE.md cross-references, STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md, scripts/drift_audit_pre_phase_1a_beta.py. Historical citations in test files (test_phase_1b_agents.py + test_silent_gap_pyramid.py) + LEARNINGS L157 left as-is (no operational consumer). DOCUMENTATION_REGISTER B892 table updated marking 3 as ARCHIVED B893.
 - 2026-06-18 — `b892-doc-hygiene-sweep` — Batch 892: STRATEGY_ROSTER generator hardcoded-literal fix (205/206/207/220 → live-computed via STRATEGY_REGIME_AFFINITY scan; "TODO B577 surfaced" stale framing removed); 5 smoke files archived to `.archive/output_audit_smoke_2026-06-18/`; stale .md flag table appended to DOCUMENTATION_REGISTER.md (6 FLAG-FOR-OWNER-REVIEW entries); CHECKLIST #110 codified per-turn EXECUTION_QUEUE enforcement (Pass 52 mandate elevation per owner directive). Council 17 framework (3-axis classifier) preserved for future archival decisions.
 - 2026-06-18 — `b890-b891-passing-criteria-gates` — Batch 890+891 (combined per Council 16 sequencing): DEC-611 min_regimes_passing 2→1 per CLAUDE.md canonical; DEC-612 cost-sensitivity AUTO-FAIL gate (sharpe_at_20bps/sharpe_at_0bps ≥ 0.5); DEC-613 Chow break-point AUTO-FAIL gate; DEC-614 ADF stationarity REGIME-CONDITIONAL AUTO-FAIL on mean-rev only. 12 enumerated MEAN_REVERSION_STRATEGIES taxonomy. 6 pin tests PASS (test_batch221 updated + 5 NEW test_batch890_*). Doc sweep: CLAUDE.md banner table 11→14 + 3 AUTO-FAIL; PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md table updated; AUDIT.md +4 DEC entries; AUDIT_INDEX.md 534→538; STRATEGY_ROSTER regenerated.
 - 2026-06-18 — `b889-council-15-corrections` — Batch 889: Council 15 corrections to B888 + max_drawdown_pct surfacing fix in cube_populator.py. Owner correctly flagged Council 14's "≥3 of 4 regimes" recommendation as contradiction to CLAUDE.md per-regime principle. Build plan section 10.10a-10.10c added with 7 corrections.
@@ -1836,7 +1837,7 @@ _archived_b713_original_inspect_currentframe_ticket_superseded_by_PARTIALLY-RESO
 
 - `CHECKLIST.md` #94 — mandatory per-turn queue update (rule 2 above).
 - `MONITORING_FRAMEWORK.md` — L0-L7 stack (cube run monitor sits in L4 layer).
-- `PHASE_1A_BETA_STATUS.md` — Phase 1A-β living doc (Stage 1-6 batch ship list).
+- `PHASE_1A_BETA_STATUS.md` — **ARCHIVED B893 2026-06-18** per owner approval (see `.archive/2026-06-18-stale-md/PHASE_1A_BETA_STATUS.md`); Stage 1-6 batch ship list now lives in this file's Completed log + TIER entries.
 - `PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md` — locked 6-stage workflow.
 - `archive/cube_rounds/rounds.json` — round-by-round registry (Batch 443) consumed by Tabs 17 + 18.
 - `CLAUDE.md` HARD RULES — owner approval, no-new-md-without-approval (`feedback_no_write_only_md_files`), full-pyramid mandate (CHECKLIST #69/#93).

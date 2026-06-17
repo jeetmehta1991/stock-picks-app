@@ -1,0 +1,1410 @@
+{
+  "head_and_shoulders_bottom_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 1.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "post_inclusion_reversal_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 1.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "pead_with_insider_confirmation_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 1.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "52wh_break_retest": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 1.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "institutional_distribution_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 1.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "stoch_oversold": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.8,
+    "total_trades": 5,
+    "passes_all": false
+  },
+  "vix_backwardation_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.7143,
+    "total_trades": 7,
+    "passes_all": false
+  },
+  "camarilla_s3_bounce": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.6667,
+    "total_trades": 3,
+    "passes_all": false
+  },
+  "bullish_engulfing_support": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.5,
+    "total_trades": 2,
+    "passes_all": false
+  },
+  "pivot_s2_bounce": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.5,
+    "total_trades": 2,
+    "passes_all": false
+  },
+  "pivot_s1_bounce": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.4615,
+    "total_trades": 26,
+    "passes_all": false
+  },
+  "cpr_narrow_momentum": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.4412,
+    "total_trades": 68,
+    "passes_all": false
+  },
+  "stochrsi_overbought_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.4375,
+    "total_trades": 80,
+    "passes_all": false
+  },
+  "break_retest_volume": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.4,
+    "total_trades": 50,
+    "passes_all": false
+  },
+  "halloween_seasonal_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.4,
+    "total_trades": 5,
+    "passes_all": false
+  },
+  "williams_stoch_dual": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3871,
+    "total_trades": 31,
+    "passes_all": false
+  },
+  "avwap_50_reclaim": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3815,
+    "total_trades": 249,
+    "passes_all": false
+  },
+  "cpr_narrow_bullish": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3801,
+    "total_trades": 463,
+    "passes_all": false
+  },
+  "htf_aligned_breakout_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3684,
+    "total_trades": 57,
+    "passes_all": false
+  },
+  "po3_bullish": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3585,
+    "total_trades": 318,
+    "passes_all": false
+  },
+  "ultimate_oscillator": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3537,
+    "total_trades": 82,
+    "passes_all": false
+  },
+  "htf_aligned_breakout_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.35,
+    "total_trades": 40,
+    "passes_all": false
+  },
+  "pre_fomc_long_sleeve": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3469,
+    "total_trades": 49,
+    "passes_all": false
+  },
+  "prev_day_low_bounce": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3333,
+    "total_trades": 12,
+    "passes_all": false
+  },
+  "risk_off_bond_equity_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3333,
+    "total_trades": 33,
+    "passes_all": false
+  },
+  "pairs_mean_reversion_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.314,
+    "total_trades": 242,
+    "passes_all": false
+  },
+  "cmf_flip": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3015,
+    "total_trades": 136,
+    "passes_all": false
+  },
+  "avwap_252_breakout": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3,
+    "total_trades": 40,
+    "passes_all": false
+  },
+  "insider_cluster_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.3,
+    "total_trades": 10,
+    "passes_all": false
+  },
+  "xs_low_beta_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2987,
+    "total_trades": 231,
+    "passes_all": false
+  },
+  "bollinger_tight": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2907,
+    "total_trades": 86,
+    "passes_all": false
+  },
+  "ppo_crossover": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2879,
+    "total_trades": 66,
+    "passes_all": false
+  },
+  "xs_momentum_bottom_decile_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2861,
+    "total_trades": 416,
+    "passes_all": false
+  },
+  "tema_dema": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2805,
+    "total_trades": 82,
+    "passes_all": false
+  },
+  "golden_cross_9_21": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2703,
+    "total_trades": 37,
+    "passes_all": false
+  },
+  "xs_quality_top_quintile_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2667,
+    "total_trades": 105,
+    "passes_all": false
+  },
+  "macd_fast_crossover": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2653,
+    "total_trades": 49,
+    "passes_all": false
+  },
+  "macd_crossover": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2647,
+    "total_trades": 34,
+    "passes_all": false
+  },
+  "williams_r_oversold": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2611,
+    "total_trades": 180,
+    "passes_all": false
+  },
+  "pead_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2609,
+    "total_trades": 92,
+    "passes_all": false
+  },
+  "supertrend_macd": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2604,
+    "total_trades": 96,
+    "passes_all": false
+  },
+  "monthly_bias_momentum_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2595,
+    "total_trades": 262,
+    "passes_all": false
+  },
+  "ichimoku_cloud_breakout": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2556,
+    "total_trades": 90,
+    "passes_all": false
+  },
+  "ichimoku_tk_cross": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.25,
+    "total_trades": 16,
+    "passes_all": false
+  },
+  "squeeze_breakout": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.25,
+    "total_trades": 36,
+    "passes_all": false
+  },
+  "pairs_mean_reversion_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.25,
+    "total_trades": 28,
+    "passes_all": false
+  },
+  "pivot_r1_breakout": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.25,
+    "total_trades": 24,
+    "passes_all": false
+  },
+  "orb_stocks_in_play_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2453,
+    "total_trades": 53,
+    "passes_all": false
+  },
+  "po3_bearish": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2446,
+    "total_trades": 327,
+    "passes_all": false
+  },
+  "adx_initiation": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2429,
+    "total_trades": 177,
+    "passes_all": false
+  },
+  "buyback_8k_recent_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2414,
+    "total_trades": 58,
+    "passes_all": false
+  },
+  "parabolic_sar_flip": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2394,
+    "total_trades": 71,
+    "passes_all": false
+  },
+  "po3_htf_aligned_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2391,
+    "total_trades": 46,
+    "passes_all": false
+  },
+  "awesome_oscillator": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2381,
+    "total_trades": 42,
+    "passes_all": false
+  },
+  "orb_stocks_in_play_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2381,
+    "total_trades": 42,
+    "passes_all": false
+  },
+  "hull_rsi_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2364,
+    "total_trades": 55,
+    "passes_all": false
+  },
+  "stochrsi_oversold": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2364,
+    "total_trades": 220,
+    "passes_all": false
+  },
+  "xs_momentum_top_decile": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2353,
+    "total_trades": 85,
+    "passes_all": false
+  },
+  "break_retest_confluence": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2353,
+    "total_trades": 17,
+    "passes_all": false
+  },
+  "cpr_narrow_momentum_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2353,
+    "total_trades": 17,
+    "passes_all": false
+  },
+  "double_bottom_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2308,
+    "total_trades": 13,
+    "passes_all": false
+  },
+  "hull_rsi": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2297,
+    "total_trades": 74,
+    "passes_all": false
+  },
+  "three_white_soldiers": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2267,
+    "total_trades": 75,
+    "passes_all": false
+  },
+  "po3_htf_aligned_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.225,
+    "total_trades": 40,
+    "passes_all": false
+  },
+  "force_index_breakout": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2246,
+    "total_trades": 138,
+    "passes_all": false
+  },
+  "pead_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2243,
+    "total_trades": 107,
+    "passes_all": false
+  },
+  "morning_star": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2174,
+    "total_trades": 46,
+    "passes_all": false
+  },
+  "bollinger_lower": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2143,
+    "total_trades": 28,
+    "passes_all": false
+  },
+  "institutional_cluster_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.209,
+    "total_trades": 67,
+    "passes_all": false
+  },
+  "inside_bar_breakout": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.2,
+    "total_trades": 5,
+    "passes_all": false
+  },
+  "camarilla_r3_breakout": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.1967,
+    "total_trades": 61,
+    "passes_all": false
+  },
+  "lead_lag_sector_rotation": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.1667,
+    "total_trades": 48,
+    "passes_all": false
+  },
+  "roc_burst": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.1333,
+    "total_trades": 15,
+    "passes_all": false
+  },
+  "institutional_buy_momentum_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.125,
+    "total_trades": 32,
+    "passes_all": false
+  },
+  "r1_break_retest": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.125,
+    "total_trades": 24,
+    "passes_all": false
+  },
+  "prev_day_high_break": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.1,
+    "total_trades": 20,
+    "passes_all": false
+  },
+  "totm_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 5,
+    "passes_all": false
+  },
+  "rsi_oversold": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 4,
+    "passes_all": false
+  },
+  "institutional_breakout_confirmation_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 3,
+    "passes_all": false
+  },
+  "news_sentiment_shift_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 2,
+    "passes_all": false
+  },
+  "institutional_persistent_holders_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "golden_cross_20_50": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 2,
+    "passes_all": false
+  },
+  "dc20_break_retest": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 2,
+    "passes_all": false
+  },
+  "shooting_star_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "pre_rebalance_long": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "pivot_s3_capitulation": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 2,
+    "passes_all": false
+  },
+  "bollinger_upper_short": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 1,
+    "passes_all": false
+  },
+  "prev_day_low_breakdown": {
+    "best_regimes": [],
+    "regime_verdicts": {
+      "bear_correction_2022": "INSUFFICIENT_DATA",
+      "rate_rising_2022_2023": "INSUFFICIENT_DATA",
+      "strong_bull_2023": "INSUFFICIENT_DATA",
+      "rate_falling_2024": "INSUFFICIENT_DATA",
+      "ai_sector_bull_2024": "INSUFFICIENT_DATA",
+      "tariff_shock_2025": "INSUFFICIENT_DATA",
+      "ai_divergence_2025_2026": "INSUFFICIENT_DATA",
+      "covid_crisis_2020": "INSUFFICIENT_DATA"
+    },
+    "overall_win_rate": 0.0,
+    "total_trades": 1,
+    "passes_all": false
+  }
+}

@@ -1,0 +1,99 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,total_pnl_pct,runner_up_method,runner_up_metric,edge_over_runner_up,n,n_exits_in_cell,rank_in_cell
+atr_trail_2x,bull,Consumer Staples,unknown,low_lt_15,long_ge_11d,37.2397,breakeven_plus_trail,33.9384,3.3012999999999977,19,25,1.0
+atr_trail_vix_conditional,bear,Information Technology,unknown,mid_15_25,medium_4_10d,-89.8087,chandelier_3x,-92.442,2.6332999999999913,46,25,1.0
+breakeven_plus_trail,bull,Health Care,unknown,mid_15_25,long_ge_11d,2573.3437,regime_flip,1514.3635,1058.9802,293,25,1.0
+breakeven_plus_trail,bull,Health Care,unknown,mid_15_25,medium_4_10d,-27.59829999999998,ma_exit_ema9,-283.1311,255.5328,125,25,1.0
+breakeven_plus_trail,bull,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,1254.4953,trailing_15pct,1014.8693000000001,239.62599999999998,177,25,1.0
+breakeven_plus_trail,bull,Information Technology,unknown,mid_15_25,long_ge_11d,1500.1778,time_stop_10d,1284.059,216.11879999999996,281,25,1.0
+breakeven_plus_trail,bear,Industrials,unknown,mid_15_25,long_ge_11d,510.55240000000003,regime_flip,294.6288,215.92360000000002,73,25,1.0
+breakeven_plus_trail,bull,Consumer Discretionary,unknown,low_lt_15,long_ge_11d,419.2785,trailing_15pct,227.22570000000002,192.0528,95,25,1.0
+breakeven_plus_trail,bear,Health Care,unknown,mid_15_25,medium_4_10d,50.161199999999994,ma_exit_ema9,-104.4145,154.57569999999998,51,25,1.0
+breakeven_plus_trail,neutral,Industrials,unknown,mid_15_25,long_ge_11d,245.2929,hybrid_50pct_target,96.82469999999999,148.46820000000002,52,25,1.0
+breakeven_plus_trail,bull,Information Technology,unknown,low_lt_15,long_ge_11d,664.1084,regime_flip,534.3973,129.7111,123,25,1.0
+breakeven_plus_trail,bear,Health Care,unknown,high_25_40,medium_4_10d,53.40429999999999,earnings_blackout,-58.40640000000001,111.8107,51,25,1.0
+breakeven_plus_trail,bull,Industrials,unknown,mid_15_25,long_ge_11d,960.4013,trailing_15pct,849.6661,110.73519999999996,173,25,1.0
+breakeven_plus_trail,bear,Consumer Discretionary,unknown,high_25_40,long_ge_11d,504.4106,trailing_15pct,396.67159999999996,107.73900000000003,97,25,1.0
+breakeven_plus_trail,bull,Financials,unknown,mid_15_25,long_ge_11d,294.3326,time_stop_10d,194.12380000000002,100.2088,105,25,1.0
+breakeven_plus_trail,bear,Health Care,unknown,high_25_40,long_ge_11d,760.2696,hybrid_50pct_target,665.1772,95.0924,98,25,1.0
+breakeven_plus_trail,bull,Health Care,unknown,low_lt_15,short_le_3d,-88.1362,trailing_5pct,-171.9896,83.8534,35,25,1.0
+breakeven_plus_trail,bear,Financials,unknown,high_25_40,long_ge_11d,263.14799999999997,trailing_15pct,181.81500000000003,81.33299999999994,51,25,1.0
+breakeven_plus_trail,bull,Utilities,unknown,mid_15_25,long_ge_11d,294.3732,regime_flip,216.1176,78.25559999999999,39,25,1.0
+breakeven_plus_trail,bear,Information Technology,unknown,mid_15_25,long_ge_11d,647.348,regime_flip,572.9587,74.38929999999993,83,25,1.0
+breakeven_plus_trail,bear,Health Care,unknown,mid_15_25,short_le_3d,-14.142800000000001,chandelier_3x,-67.5308,53.388,28,25,1.0
+breakeven_plus_trail,bear,Unknown,unknown,mid_15_25,long_ge_11d,221.5327,fixed_4r_2r,175.62959999999998,45.90310000000002,27,25,1.0
+chandelier_3x,bull,Information Technology,unknown,low_lt_15,medium_4_10d,-55.352,r_multiple_3r,-103.8244,48.4724,34,25,1.0
+chandelier_3x,bear,Consumer Discretionary,unknown,high_25_40,medium_4_10d,-3.4078000000000017,next_pivot_target,-42.2419,38.8341,29,25,1.0
+chandelier_3x,neutral,Consumer Discretionary,unknown,mid_15_25,short_le_3d,41.1892,ma_exit_ema9,33.3193,7.869900000000001,10,25,1.0
+chandelier_3x,neutral,Materials,unknown,mid_15_25,short_le_3d,-44.4336,trailing_5pct,-51.6207,7.187100000000001,10,25,1.0
+chandelier_3x,bear,Consumer Discretionary,unknown,mid_15_25,short_le_3d,-30.725399999999997,earnings_blackout,-36.31229999999999,5.586899999999996,16,25,1.0
+chandelier_3x,bear,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,-51.1364,multi_tier_partial,-56.1005,4.964099999999995,23,25,1.0
+class_time_stop,bear,Industrials,unknown,mid_15_25,short_le_3d,129.5679,earnings_blackout,82.48349999999999,47.08440000000002,16,25,1.0
+class_time_stop,bear,Information Technology,unknown,high_25_40,short_le_3d,-85.0235,trailing_5pct,-116.0824,31.05890000000001,27,25,1.0
+class_time_stop,bull,Industrials,unknown,low_lt_15,short_le_3d,24.236400000000003,hybrid_50pct_target,10.464699999999997,13.771700000000006,13,25,1.0
+class_time_stop,bear,Real Estate,unknown,mid_15_25,long_ge_11d,34.831100000000006,regime_flip,28.6902,6.140900000000006,15,25,1.0
+earnings_blackout,bull,Information Technology,unknown,low_lt_15,short_le_3d,660.7451000000001,trailing_5pct,-106.0094,766.7545000000001,23,25,1.0
+earnings_blackout,neutral,Information Technology,unknown,mid_15_25,long_ge_11d,1079.9064,breakeven_plus_trail,338.0331,741.8733000000001,60,25,1.0
+earnings_blackout,bull,Communication Services,unknown,mid_15_25,long_ge_11d,1109.6037,breakeven_plus_trail,472.5622,637.0414999999998,53,25,1.0
+earnings_blackout,neutral,Energy,unknown,mid_15_25,long_ge_11d,708.9721000000001,trailing_15pct,252.9436,456.02850000000007,28,25,1.0
+earnings_blackout,bull,Health Care,unknown,low_lt_15,long_ge_11d,1886.1717,breakeven_plus_trail,1511.6489,374.5228000000002,165,25,1.0
+earnings_blackout,bear,Communication Services,unknown,high_25_40,long_ge_11d,617.2497000000001,trailing_15pct,249.9072,367.3425000000001,20,25,1.0
+earnings_blackout,bull,Energy,unknown,mid_15_25,long_ge_11d,847.0736,breakeven_plus_trail,511.5206,335.55300000000005,101,25,1.0
+earnings_blackout,bear,Materials,unknown,high_25_40,long_ge_11d,405.9084,ma_exit_ema9,86.6906,319.21779999999995,27,25,1.0
+earnings_blackout,bear,Health Care,unknown,high_25_40,short_le_3d,287.1599,class_time_stop,-14.658800000000006,301.8187,54,25,1.0
+earnings_blackout,bull,Energy,unknown,low_lt_15,long_ge_11d,637.2704,trailing_15pct,380.0628,257.2076,65,25,1.0
+earnings_blackout,neutral,Materials,unknown,mid_15_25,long_ge_11d,287.9783,trailing_15pct,50.45249999999999,237.5258,16,25,1.0
+earnings_blackout,bear,Information Technology,unknown,high_25_40,long_ge_11d,977.9739999999999,breakeven_plus_trail,752.7857,225.1882999999999,91,25,1.0
+earnings_blackout,bear,Energy,unknown,high_25_40,medium_4_10d,162.5009,fixed_4r_2r,-37.326499999999996,199.8274,24,25,1.0
+earnings_blackout,bull,Energy,unknown,mid_15_25,medium_4_10d,138.8086,ma_exit_ema9,-58.5075,197.3161,20,25,1.0
+earnings_blackout,bear,Energy,unknown,high_25_40,long_ge_11d,420.1106000000001,breakeven_plus_trail,256.757,163.35360000000009,40,25,1.0
+earnings_blackout,bull,Materials,unknown,mid_15_25,long_ge_11d,330.2688,hybrid_50pct_target,181.1236,149.1452,51,25,1.0
+earnings_blackout,bull,Materials,unknown,mid_15_25,short_le_3d,42.7217,breakeven_plus_trail,-55.716100000000004,98.43780000000001,19,25,1.0
+earnings_blackout,neutral,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,201.2402,breakeven_plus_trail,130.179,71.06119999999999,51,25,1.0
+earnings_blackout,bull,Materials,unknown,low_lt_15,long_ge_11d,333.4923,hybrid_50pct_target,266.3499,67.14240000000001,33,25,1.0
+earnings_blackout,bear,Utilities,unknown,high_25_40,long_ge_11d,56.126999999999995,breakeven_plus_trail,32.914100000000005,23.21289999999999,10,25,1.0
+fixed_4r_2r,bull,Financials,unknown,low_lt_15,long_ge_11d,61.40729999999999,r_multiple_3r,42.303599999999996,19.103699999999996,57,25,1.0
+hybrid_50pct_target,bull,Information Technology,unknown,mid_15_25,short_le_3d,-224.2776,trailing_5pct,-306.2114,81.93380000000002,73,25,1.0
+hybrid_50pct_target,neutral,Health Care,unknown,mid_15_25,short_le_3d,19.3884,r_multiple_3r,-43.084500000000006,62.47290000000001,26,25,1.0
+hybrid_50pct_target,bull,Industrials,unknown,low_lt_15,medium_4_10d,102.9496,class_time_stop,41.2512,61.69840000000001,22,25,1.0
+hybrid_50pct_target,bear,Consumer Discretionary,unknown,mid_15_25,long_ge_11d,405.55010000000004,earnings_blackout,353.793,51.75710000000004,67,25,1.0
+hybrid_50pct_target,bull,Industrials,unknown,mid_15_25,medium_4_10d,-11.854500000000012,next_pivot_target,-62.733599999999996,50.87909999999998,49,25,1.0
+hybrid_50pct_target,bull,Materials,unknown,low_lt_15,medium_4_10d,47.5521,earnings_blackout,20.8816,26.670500000000004,10,25,1.0
+hybrid_50pct_target,bull,Communication Services,unknown,mid_15_25,medium_4_10d,18.871299999999998,class_time_stop,7.756799999999997,11.114500000000001,11,25,1.0
+hybrid_50pct_target,bear,Materials,unknown,high_25_40,medium_4_10d,-28.858400000000003,r_multiple_2r,-33.9203,5.061899999999994,19,25,1.0
+ma_exit_ema9,bear,Materials,unknown,mid_15_25,medium_4_10d,-13.1835,next_pivot_target,-54.3333,41.1498,14,25,1.0
+ma_exit_ema9,bull,Materials,unknown,mid_15_25,medium_4_10d,-36.3574,next_pivot_target,-43.177299999999995,6.819899999999997,22,25,1.0
+ma_exit_ema9,neutral,Unknown,unknown,mid_15_25,long_ge_11d,48.164500000000004,earnings_blackout,43.808499999999995,4.356000000000009,21,25,1.0
+multi_tier_partial,bear,Financials,unknown,high_25_40,medium_4_10d,-36.6121,breakeven_plus_trail,-42.66250000000001,6.05040000000001,18,25,1.0
+next_pivot_target,bear,Information Technology,unknown,high_25_40,medium_4_10d,-23.483300000000003,ma_exit_ema9,-141.7286,118.2453,56,25,1.0
+next_pivot_target,bull,Financials,unknown,mid_15_25,medium_4_10d,20.970100000000002,trailing_5pct,-79.4817,100.4518,37,25,1.0
+next_pivot_target,bull,Information Technology,unknown,mid_15_25,medium_4_10d,-200.4405,r_multiple_2r,-243.1396,42.699100000000016,116,25,1.0
+next_pivot_target,bear,Industrials,unknown,high_25_40,medium_4_10d,-26.564,breakeven_plus_trail,-58.886799999999994,32.322799999999994,27,25,1.0
+next_pivot_target,bear,Unknown,unknown,mid_15_25,medium_4_10d,-12.763499999999997,multi_tier_partial,-44.4043,31.640800000000002,14,25,1.0
+next_pivot_target,bear,Unknown,unknown,high_25_40,short_le_3d,-40.45420000000001,trailing_5pct,-59.1028,18.648599999999995,14,25,1.0
+next_pivot_target,bull,Health Care,unknown,low_lt_15,medium_4_10d,-176.847,ma_exit_ema9,-194.7731,17.92609999999999,55,25,1.0
+next_pivot_target,neutral,Consumer Staples,unknown,mid_15_25,long_ge_11d,7.6233,time_stop_10d,-2.5497999999999994,10.1731,19,25,1.0
+next_pivot_target,bull,Consumer Discretionary,unknown,mid_15_25,short_le_3d,-33.9482,mfe_lockin_trail,-40.505700000000004,6.5575000000000045,17,25,1.0
+next_pivot_target,bear,Consumer Staples,unknown,mid_15_25,long_ge_11d,0.2777000000000007,ma_exit_ema9,-5.3604,5.638100000000001,13,25,1.0
+r_multiple_2r,neutral,Information Technology,unknown,mid_15_25,medium_4_10d,18.4384,hybrid_50pct_target,12.284699999999999,6.153700000000002,23,25,1.0
+r_multiple_2r,neutral,Financials,unknown,mid_15_25,long_ge_11d,104.1898,breakeven_plus_trail,98.9637,5.226100000000002,31,25,1.0
+r_multiple_2r,bear,Unknown,unknown,high_25_40,medium_4_10d,-36.4944,trailing_5pct,-37.8221,1.3277,13,25,1.0
+r_multiple_2r,bear,Financials,unknown,mid_15_25,medium_4_10d,-26.451099999999993,next_pivot_target,-27.411099999999998,0.9600000000000044,14,25,1.0
+r_multiple_3r,bear,Consumer Staples,unknown,high_25_40,long_ge_11d,39.6904,r_multiple_2r,33.744699999999995,5.945700000000002,18,25,1.0
+regime_flip,bear,Energy,unknown,high_25_40,short_le_3d,-9.3554,chandelier_3x,-27.3346,17.9792,10,25,1.0
+regime_flip,bull,Industrials,unknown,mid_15_25,short_le_3d,-37.532,time_stop_10d,-46.02080000000001,8.488800000000012,33,25,1.0
+time_stop_10d,bear,Energy,unknown,mid_15_25,long_ge_11d,161.5668,r_multiple_3r,106.6179,54.948899999999995,42,25,1.0
+time_stop_10d,neutral,Communication Services,unknown,mid_15_25,long_ge_11d,60.587599999999995,atr_trail_2x,29.56000000000001,31.027599999999985,17,25,1.0
+time_stop_10d,neutral,Health Care,unknown,mid_15_25,long_ge_11d,161.8735,hybrid_50pct_target,137.8733,24.000200000000007,54,25,1.0
+time_stop_10d,bear,Financials,unknown,mid_15_25,long_ge_11d,101.2895,breakeven_plus_trail,93.32169999999999,7.967800000000011,48,25,1.0
+time_stop_20d,bear,Energy,unknown,high_25_40,short_le_3d,-9.3554,chandelier_3x,-27.3346,17.9792,10,25,1.0
+time_stop_20d,bull,Industrials,unknown,mid_15_25,short_le_3d,-37.532,time_stop_10d,-46.02080000000001,8.488800000000012,33,25,1.0
+trailing_15pct,bear,Industrials,unknown,high_25_40,long_ge_11d,990.0453,breakeven_plus_trail,567.6727999999999,422.37250000000006,72,25,1.0
+trailing_15pct,bull,Utilities,unknown,low_lt_15,long_ge_11d,216.6722,trailing_10pct,100.0192,116.653,19,25,1.0
+trailing_15pct,bear,Unknown,unknown,high_25_40,long_ge_11d,290.0744,breakeven_plus_trail,285.23380000000003,4.840599999999995,27,25,1.0
+trailing_15pct,neutral,Consumer Discretionary,unknown,mid_15_25,medium_4_10d,-15.329100000000004,ma_exit_ema9,-17.6277,2.298599999999997,10,25,1.0
+trailing_15pct,bear,Communication Services,unknown,mid_15_25,long_ge_11d,61.47260000000001,next_pivot_target,60.8285,0.6441000000000088,19,25,1.0
+trailing_5pct,bear,Consumer Discretionary,unknown,high_25_40,short_le_3d,-106.8404,multi_tier_partial,-124.9473,18.106899999999996,27,25,1.0
+trailing_5pct,bull,Financials,unknown,mid_15_25,short_le_3d,-71.5546,ma_exit_ema9,-87.09400000000001,15.539400000000015,16,25,1.0
+trailing_5pct,neutral,Information Technology,unknown,mid_15_25,short_le_3d,-85.9578,ma_exit_ema9,-99.673,13.715199999999996,20,25,1.0
+trailing_5pct,bear,Information Technology,unknown,mid_15_25,short_le_3d,-96.2472,ma_exit_ema9,-106.4068,10.159599999999998,25,25,1.0
+trailing_5pct,bear,Financials,unknown,high_25_40,short_le_3d,-64.5494,ma_exit_ema9,-66.5526,2.0031999999999925,14,25,1.0

@@ -1,0 +1,168 @@
+............................................................F.F.F.F.F.F. [  1%]
+F...................sss...........s.....................s............... [  3%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+......................F.........F....................................... [  7%]
+........................................................................ [  9%]
+...F..FF..FFF.........................................F..F.............. [ 10%]
+........................................................................ [ 12%]
+................................FF................F..................... [ 13%]
+.................................................F...................... [ 15%]
+........................................................................ [ 17%]
+.F...................................................................... [ 18%]
+.......................................FF.........................F..... [ 20%]
+....F...................F............................................... [ 21%]
+.............F.....................................F.................... [ 23%]
+..........................F............................................. [ 24%]
+........F....F.........F................................................ [ 26%]
+........................................................................ [ 27%]
+...FF...........FF..........................F........................... [ 29%]
+....................F.F................................................. [ 31%]
+.F....F......................................F..............F.FF........ [ 32%]
+.........F...................................................F......FF.. [ 34%]
+.F................FF...............F............FF.F....F.F.F........FFF [ 35%]
+............................................................F.F......F.. [ 37%]
+.........F.FF..FF.FF.F.........................F........................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+.......FFF.............................................................. [ 45%]
+........................................................................ [ 46%]
+......................................................................F. [ 48%]
+..............................................................s......... [ 49%]
+........s............................................................... [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 57%]
+..................................................................F..... [ 59%]
+.............................x...................s...................... [ 60%]
+..............sssss..................................................... [ 62%]
+..................................F.F................................... [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+..........................s...................s......................... [ 68%]
+..............................................F.s....................... [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+.....................................s.................................. [ 74%]
+......s...............................................s...s............. [ 76%]
+......................................................F......FF......... [ 77%]
+...................................F..F..........F..F................... [ 79%]
+.F...................xxx............s..............x.x.................. [ 80%]
+...........................................s............................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 99%]
+......................                                                   [100%]
+============================== warnings summary ===============================
+backtest/tests/test_e2e_phase1a_smoke.py::test_g1_engine_finishes
+  C:\Users\jeetm\Github\stock-picks-app\backtest\engine\multiple_testing_correction.py:276: RuntimeWarning: Mean of empty slice
+    d_boot_mean = np.nanmean(d_boot, axis=1)
+
+backtest/tests/test_e2e_phase1a_smoke.py::test_g1_engine_finishes
+  C:\Users\jeetm\Github\stock-picks-app\backtest\engine\multiple_testing_correction.py:277: RuntimeWarning: Degrees of freedom <= 0 for slice.
+    d_boot_var = np.nanvar(d_boot, axis=1) / np.maximum(d_count, 1)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_batch358_gate_fixes.py::test_hull_rsi_long_fires_in_bull_regime
+FAILED backtest/tests/test_batch358_gate_fixes.py::test_hull_rsi_short_fires_in_bear_regime
+FAILED backtest/tests/test_batch358_gate_fixes.py::test_cpr_narrow_bullish_long_fires_in_bull_regime
+FAILED backtest/tests/test_batch358_gate_fixes.py::test_cpr_narrow_bullish_short_fires_in_bear_regime
+FAILED backtest/tests/test_batch358_gate_fixes.py::test_cpr_narrow_momentum_long_fires_in_bull_regime
+FAILED backtest/tests/test_batch358_gate_fixes.py::test_cpr_narrow_momentum_short_fires_in_bear_regime
+FAILED backtest/tests/test_batch358_gate_fixes.py::test_xs_low_beta_long_fires_regardless_of_regime
+FAILED backtest/tests/test_batch417_regime_affinity.py::test_batch417_strategy_regime_affinity_entry[morning_star-expected_regimes4]
+FAILED backtest/tests/test_batch417_regime_affinity.py::test_batch417_strategy_regime_affinity_count_floor
+FAILED backtest/tests/test_batch464_writer_outputs_registry.py::test_registry_covers_all_write_only_outputs
+FAILED backtest/tests/test_batch464_writer_outputs_registry.py::test_classification_distribution_matches_scan_size
+FAILED backtest/tests/test_batch465_orphan_scripts_registry.py::test_registry_covers_all_orphan_scripts
+FAILED backtest/tests/test_batch465_orphan_scripts_registry.py::test_classification_distribution_matches_scan_size
+FAILED backtest/tests/test_batch466_bug_engine_status_registry.py::test_named_bugs_have_expected_engine_status
+FAILED backtest/tests/test_batch466_bug_engine_status_registry.py::test_func_dead_bugs_are_in_known_gaps
+FAILED backtest/tests/test_batch473_congressional_alt_p16.py::test_gov_contracts_pit_drops_future_quarters
+FAILED backtest/tests/test_batch473_congressional_alt_p16.py::test_lobbying_yoy_growth
+FAILED backtest/tests/test_batch495_pattern3_closures.py::test_batch495_item0_placeholder_count_at_known_minimum
+FAILED backtest/tests/test_batch495_pattern3_closures.py::test_batch495_item0_every_placeholder_in_allowlist
+FAILED backtest/tests/test_batch496_p17a_sec_edgar_extractor.py::test_batch496_p17a_decoded_cache_dir_not_present_today
+FAILED backtest/tests/test_batch503_m6_path2_yoy_surprise.py::test_batch682_deletion_pead_yoy_sleeves_no_longer_registered
+FAILED backtest/tests/test_batch519_p15_sleeves_wireup.py::test_batch519_short_borrow_trap_avoid_fires_above_5_dtc
+FAILED backtest/tests/test_batch533_r4_runtime_path_audit.py::test_batch533_drift_audit_carries_disambiguated_aws_keys
+FAILED backtest/tests/test_batch533_r4_runtime_path_audit.py::test_batch533_aws_instance_matches_drift_audit
+FAILED backtest/tests/test_batch537_opt_b_panel_technical.py::test_batch537_ema_sma_panel_matches_per_ticker
+FAILED backtest/tests/test_batch538_panel_wire_in_parity_gate.py::test_batch538_parity_gate_signals_match_when_panel_provided
+FAILED backtest/tests/test_batch544_opt_c_numba_jit_hotspots.py::test_batch544_compute_supertrend_returns_expected_schema
+FAILED backtest/tests/test_batch559_phase1a_beta_patterns_cluster_verdict.py::test_batch559_17_patterns_strategies_registered
+FAILED backtest/tests/test_batch568_preflight_cross_sweep.py::test_batch568_rerun_preserves_status_and_history
+FAILED backtest/tests/test_batch576_drift_closure.py::test_batch576_ghost_strategies_legitimate
+FAILED backtest/tests/test_batch586_52w_high_walk.py::test_batch586_strat_52w_high_breakout_post_b586
+FAILED backtest/tests/test_batch586_52w_high_walk.py::test_batch586_builder_renders_plain_trigger
+FAILED backtest/tests/test_batch589_52w_threshold_tweaks.py::test_batch589_strat_52w_high_breakout_requires_5
+FAILED backtest/tests/test_batch608_break_retest_volume_walk.py::test_batch608_strat_long_4_gates_fires
+FAILED backtest/tests/test_batch608_break_retest_volume_walk.py::test_batch608_strat_short_4_gates_fires
+FAILED backtest/tests/test_batch609_break_retest_confluence_walk.py::test_batch609_strat_long_6_gates_fires
+FAILED backtest/tests/test_batch609_break_retest_confluence_walk.py::test_batch609_strat_short_6_gates_fires
+FAILED backtest/tests/test_batch612_silent_gap_refactors.py::test_batch612_all_strategies_count_post_b682_at_218
+FAILED backtest/tests/test_batch617_critique_corrections.py::test_batch617_long_fires_with_obv_bullish
+FAILED backtest/tests/test_batch617_critique_corrections.py::test_batch617_short_fires_with_obv_bearish
+FAILED backtest/tests/test_batch621_fire_count_audit.py::test_batch621_real_fail_set_matches_audit
+FAILED backtest/tests/test_batch623_direction_disagg_audit.py::test_batch623_audit_produces_21_results
+FAILED backtest/tests/test_batch629_cmf_family_sweep.py::test_batch629_williams_r_oversold_short_fires
+FAILED backtest/tests/test_batch630_mega_sweep_E.py::test_batch630_supertrend_macd_short_fires
+FAILED backtest/tests/test_batch630_mega_sweep_E.py::test_batch630_evening_star_short_fires_with_below_sma_50
+FAILED backtest/tests/test_batch630_mega_sweep_E.py::test_batch630_supertrend_ichimoku_adx_short_fires
+FAILED backtest/tests/test_batch633_tier3_complete_sweep.py::test_batch633_hull_rsi_short_fires
+FAILED backtest/tests/test_batch641_tier1_walk_bundle_followups.py::test_batch641_all_strategies_count_now_222_post_b645
+FAILED backtest/tests/test_batch642_regime_classifier_cleanup.py::test_batch642_ema_hysteresis_constant_exists
+FAILED backtest/tests/test_batch642_regime_classifier_cleanup.py::test_batch642_with_hysteresis_stays_bear_when_just_barely_above_ema
+FAILED backtest/tests/test_batch642_regime_classifier_cleanup.py::test_batch642_get_regime_context_computes_pct_from_inputs
+FAILED backtest/tests/test_batch643_w5_capitulation_redesign.py::test_batch651_regime_affinity_expanded_all_regimes
+FAILED backtest/tests/test_batch643_w5_capitulation_redesign.py::test_batch643_total_strategy_count
+FAILED backtest/tests/test_batch645_w5_mirror.py::test_batch645_total_strategy_count_222
+FAILED backtest/tests/test_batch656_t3_hull_rsi_redundancy.py::test_batch656_long_fires_without_rsi_9_in_fixture
+FAILED backtest/tests/test_batch656_t3_hull_rsi_redundancy.py::test_batch656_long_fires_at_rsi_9_boundary_50
+FAILED backtest/tests/test_batch656_t3_hull_rsi_redundancy.py::test_batch656_short_fires_without_rsi_9
+FAILED backtest/tests/test_batch657_t8_ichimoku_cloud_default_true_fix.py::test_batch657_long_fires_when_weekly_emitted
+FAILED backtest/tests/test_batch657_t8_ichimoku_cloud_default_true_fix.py::test_batch657_short_fires_when_weekly_below_cloud
+FAILED backtest/tests/test_batch657_t8_ichimoku_cloud_default_true_fix.py::test_batch657_confluence_structure_preserved
+FAILED backtest/tests/test_batch659_silent_gap_unify.py::test_batch659_t3_short_fires_with_explicit_below_ema_200
+FAILED backtest/tests/test_batch659_silent_gap_unify.py::test_batch659_t3_executable_no_longer_uses_not_pattern
+FAILED backtest/tests/test_batch659_silent_gap_unify.py::test_batch659_t3_long_unchanged
+FAILED backtest/tests/test_batch670_sm9_sm23_deletion_and_replacement.py::test_batch670_all_strategies_total_count_maintained
+FAILED backtest/tests/test_batch670_sm9_sm23_deletion_and_replacement.py::test_batch670_simple_below_ema_50_short_fires_when_gate_true
+FAILED backtest/tests/test_batch671_borrow_trap_central_gate_plus_threshold_tighten.py::test_batch671_borrow_trap_at_threshold_returns_false
+FAILED backtest/tests/test_batch671_borrow_trap_central_gate_plus_threshold_tighten.py::test_batch671_strategy_count_unchanged
+FAILED backtest/tests/test_batch682_b680_self_critique_actions.py::test_batch682_strat_pead_long_high_yoy_growth_only_deleted
+FAILED backtest/tests/test_batch682_b680_self_critique_actions.py::test_batch682_strat_pead_short_negative_yoy_growth_deleted
+FAILED backtest/tests/test_batch682_b680_self_critique_actions.py::test_batch682_pead_long_high_yoy_growth_only_not_in_registry
+FAILED backtest/tests/test_batch682_b680_self_critique_actions.py::test_batch682_pead_short_negative_yoy_growth_not_in_registry
+FAILED backtest/tests/test_batch682_b680_self_critique_actions.py::test_batch682_all_strategies_count_218
+FAILED backtest/tests/test_batch682_b680_self_critique_actions.py::test_batch682_dc20_break_retest_long_fires_on_vol_below_avg
+FAILED backtest/tests/test_batch682_b680_self_critique_actions.py::test_batch682_dc20_break_retest_short_fires_on_vol_below_avg
+FAILED backtest/tests/test_batch686_inverted_cup_and_handle.py::test_batch686_all_strategies_count_222
+FAILED backtest/tests/test_batch745_tier2_producer_audit.py::test_b745_pin5_classification_snapshot_post_b748b
+FAILED backtest/tests/test_batch745_tier2_producer_audit.py::test_b745_pin6_specific_producer_paths_pinned
+FAILED backtest/tests/test_batch745_tier2_producer_audit.py::test_b745_pin7_zero_data_producers_flagged
+FAILED backtest/tests/test_data_integrity.py::test_data_integrity_2_ohlcv_freshness
+FAILED backtest/tests/test_engine_optimization_parity.py::test_engine_parity_golden_exists_or_create
+FAILED backtest/tests/test_integration.py::test_bug_30_check_circuit_breakers_gate_on_config
+FAILED backtest/tests/test_integration.py::test_bug_232_intraday_extreme_uses_today_high_for_longs
+FAILED backtest/tests/test_performance.py::test_dashboard_stage_2_build_under_90s
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch314_cat3a_poc_magnet_loosen
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch329_bug111_six_retest_variants_registered
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch329_retest_variants_fire_on_retest_signal
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch333_wave3_persistence_strategies_registered
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch333_institutional_capitulation_short_fires
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch330_wave3_13f_strategies_registered
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch330_institutional_distribution_short
+FAILED backtest/tests/test_silent_gap_pyramid.py::test_batch320_break_retest_volume_drops_vol_spike
+91 failed, 4511 passed, 22 skipped, 6 xfailed, 2 warnings in 4335.59s (1:12:15)

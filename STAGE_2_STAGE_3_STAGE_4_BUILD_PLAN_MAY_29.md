@@ -241,7 +241,7 @@ Per owner directive 2026-05-25: "Phase 1A beta will compulsorily analyse each st
 
 - **Phase definitions:** [PROJECT_PLAN.md §3.6-3.11](PROJECT_PLAN.md)
 - **Current track plan + tools:** [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) (T0-T7 tracks)
-- **T1.1-T1.5 strategy drafts:** [IMPLEMENTATION_DRAFTS_T1.md](IMPLEMENTATION_DRAFTS_T1.md)
+- **T1.1-T1.5 strategy drafts:** **ARCHIVED B893 2026-06-18** per owner approval — see [`.archive/2026-06-18-stale-md/IMPLEMENTATION_DRAFTS_T1.md`](.archive/2026-06-18-stale-md/IMPLEMENTATION_DRAFTS_T1.md) (historical reference; T1.1-T1.5 wirings already implemented in screener.py per per-strategy registration tags)
 - **INV triage prep:** [TRIAGE_PREP_2026_05_19.md](archive/2026-05-28-pre-1a-alpha-gate/docs/TRIAGE_PREP_2026_05_19.md) (archived Batch 425)
 - **T0 close-out automation:** [scripts/run_t0_close_out.py](scripts/run_t0_close_out.py)
 - **T5b cointegrated pairs precompute:** [scripts/precompute_cointegrated_pairs.py](scripts/precompute_cointegrated_pairs.py)

@@ -479,7 +479,7 @@ Implementation queue once owner approves dashboard expansion:
 
 ## Cross-references
 
-- `PHASE_1A_BETA_STATUS.md` — run state, per-strategy data references, run-readiness table.
+- `PHASE_1A_BETA_STATUS.md` — **ARCHIVED B893 2026-06-18** per owner approval — moved to `.archive/2026-06-18-stale-md/PHASE_1A_BETA_STATUS.md` (historical reference; superseded by EXECUTION_QUEUE.md + STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md for live status).
 - `CLAUDE.md` — 1A-α owner gate (Sharpe ≥ 0.7 OOS), 11 passing criteria, DEC-426 5-Gate config.
 - `CHECKLIST.md` — #67 doc sync per turn, #69 full 13-tier pyramid, #77 source attribution, #85 visible pre-flight, #91 monitoring must act.
 - `LEARNINGS.md` — L149 (spec without build), L162 (monitoring without action).
@@ -698,7 +698,7 @@ Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys; engine
 ## Quick-start for a new reader
 
 1. **Read this file top-to-bottom.** ~25 min.
-2. **Look at `PHASE_1A_BETA_STATUS.md`** for current run state + per-strategy data references.
+2. **Look at `EXECUTION_QUEUE.md`** for current run state (PHASE_1A_BETA_STATUS.md was archived B893; use queue's Completed log + TIER entries for live status).
 3. **Read `CLAUDE.md` "Critical Rules" + "Approved Rules"** — owner-set boundaries that constrain Stage 4 approvals.
 4. **Skim `scripts/optimize_strategies_from_cube.py`** docstring — the Stage 2 engine.
 5. **Look at any prior `output_optimization_candidates_<date>/`** if one exists — concrete examples of Stage 3 outputs.

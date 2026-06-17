@@ -1,0 +1,4 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+mmsm_short,bull,4,0.25,-2.981,-11.924
+pairs_mean_reversion_long,bull,3,0.3333,-1.5429,-4.6288
+stochrsi_overbought_short,bull,4,0.5,1.6084,6.4334

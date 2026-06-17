@@ -1,0 +1,390 @@
+{
+  "cmf_flip": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -10.299904761904761,
+      "entry_date": "2023-08-01",
+      "exit_date": "2023-08-04",
+      "regime": "bull"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -5.960411111111111,
+      "entry_date": "2023-07-14",
+      "exit_date": "2023-11-07",
+      "regime": "bull"
+    }
+  ],
+  "cpr_narrow_momentum_short": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -10.35347619047619,
+      "entry_date": "2023-07-24",
+      "exit_date": "2023-08-04",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SPY",
+      "pnl_pct": -7.468988888888888,
+      "entry_date": "2023-08-09",
+      "exit_date": "2023-12-14",
+      "regime": "bull"
+    }
+  ],
+  "donchian_10_breakout": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -9.0938,
+      "entry_date": "2023-09-21",
+      "exit_date": "2023-12-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SPY",
+      "pnl_pct": -9.032066666666667,
+      "entry_date": "2023-08-16",
+      "exit_date": "2023-12-14",
+      "regime": "bull"
+    }
+  ],
+  "donchian_breakdown_retest_short": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -6.453055555555555,
+      "entry_date": "2023-09-29",
+      "exit_date": "2023-11-08",
+      "regime": "bull"
+    }
+  ],
+  "inside_bar_breakout": [],
+  "macd_crossover": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -5.2968222222222225,
+      "entry_date": "2023-10-20",
+      "exit_date": "2023-12-20",
+      "regime": "bear"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -1.2910777777777778,
+      "entry_date": "2023-09-06",
+      "exit_date": "2023-11-01",
+      "regime": "bull"
+    }
+  ],
+  "macd_fast_crossover": [
+    {
+      "ticker": "SPY",
+      "pnl_pct": -10.956888888888889,
+      "entry_date": "2023-10-19",
+      "exit_date": "2023-12-13",
+      "regime": "bull"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -10.489888888888888,
+      "entry_date": "2023-08-24",
+      "exit_date": "2023-12-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -9.575833333333334,
+      "entry_date": "2023-07-07",
+      "exit_date": "2023-11-07",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -1.3888222222222222,
+      "entry_date": "2023-07-21",
+      "exit_date": "2023-11-22",
+      "regime": "bull"
+    }
+  ],
+  "mmbm_long": [],
+  "mmsm_short": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -10.732444444444445,
+      "entry_date": "2023-07-03",
+      "exit_date": "2023-08-04",
+      "regime": "bull"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -9.409788888888889,
+      "entry_date": "2023-08-09",
+      "exit_date": "2023-12-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SPY",
+      "pnl_pct": -6.1185,
+      "entry_date": "2023-08-31",
+      "exit_date": "2023-12-14",
+      "regime": "bull"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -1.1992301587301588,
+      "entry_date": "2023-12-13",
+      "exit_date": "2023-12-29",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SPY",
+      "pnl_pct": -0.3572126984126984,
+      "entry_date": "2023-07-14",
+      "exit_date": "2023-08-03",
+      "regime": "bull"
+    }
+  ],
+  "morning_star": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -11.107444444444443,
+      "entry_date": "2023-07-17",
+      "exit_date": "2023-09-14",
+      "regime": "bull"
+    },
+    {
+      "ticker": "SPY",
+      "pnl_pct": -6.389266666666667,
+      "entry_date": "2023-07-20",
+      "exit_date": "2023-12-14",
+      "regime": "bull"
+    }
+  ],
+  "naked_poc_retest_long": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -11.491282539682539,
+      "entry_date": "2023-10-16",
+      "exit_date": "2023-10-26",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -1.2752380952380953,
+      "entry_date": "2023-07-06",
+      "exit_date": "2023-09-22",
+      "regime": "bull"
+    }
+  ],
+  "pairs_mean_reversion_long": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -3.4998301587301586,
+      "entry_date": "2023-09-14",
+      "exit_date": "2023-10-04",
+      "regime": "bull"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -1.5538095238095238,
+      "entry_date": "2023-07-12",
+      "exit_date": "2023-10-27",
+      "regime": "bull"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -0.5181952380952382,
+      "entry_date": "2023-07-10",
+      "exit_date": "2023-08-09",
+      "regime": "bull"
+    }
+  ],
+  "pairs_mean_reversion_short": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -10.829666666666665,
+      "entry_date": "2023-11-09",
+      "exit_date": "2023-12-18",
+      "regime": "bull"
+    },
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -10.371333333333332,
+      "entry_date": "2023-10-27",
+      "exit_date": "2023-11-10",
+      "regime": "bear"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -9.93532222222222,
+      "entry_date": "2023-07-31",
+      "exit_date": "2023-12-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -6.975409523809523,
+      "entry_date": "2023-10-18",
+      "exit_date": "2023-11-02",
+      "regime": "bull"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -6.734180952380952,
+      "entry_date": "2023-08-08",
+      "exit_date": "2023-08-21",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -1.0229111111111109,
+      "entry_date": "2023-07-20",
+      "exit_date": "2023-11-22",
+      "regime": "bull"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -0.4884333333333333,
+      "entry_date": "2023-10-13",
+      "exit_date": "2023-11-03",
+      "regime": "bull"
+    }
+  ],
+  "parabolic_sar_flip": [],
+  "pead_long_high_yoy_growth_only": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.462476190476188,
+      "entry_date": "2023-07-17",
+      "exit_date": "2023-08-10",
+      "regime": "bull"
+    }
+  ],
+  "po3_bullish": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -1.8297301587301589,
+      "entry_date": "2023-11-28",
+      "exit_date": "2023-12-18",
+      "regime": "bull"
+    }
+  ],
+  "ppo_crossover": [
+    {
+      "ticker": "MSFT",
+      "pnl_pct": -5.438822222222222,
+      "entry_date": "2023-07-24",
+      "exit_date": "2023-11-07",
+      "regime": "bull"
+    }
+  ],
+  "prev_day_low_bounce": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -10.270539682539681,
+      "entry_date": "2023-09-05",
+      "exit_date": "2023-09-28",
+      "regime": "bull"
+    }
+  ],
+  "r1_break_retest": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -11.121333333333332,
+      "entry_date": "2023-09-21",
+      "exit_date": "2023-11-20",
+      "regime": "bull"
+    }
+  ],
+  "smc_breaker_block_long": [],
+  "squeeze_breakout": [],
+  "stochrsi_overbought_short": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -10.746333333333332,
+      "entry_date": "2023-11-15",
+      "exit_date": "2023-12-18",
+      "regime": "bull"
+    },
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -9.93532222222222,
+      "entry_date": "2023-07-31",
+      "exit_date": "2023-12-20",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -1.307777777777778,
+      "entry_date": "2023-09-01",
+      "exit_date": "2023-11-14",
+      "regime": "bull"
+    }
+  ],
+  "stochrsi_oversold": [
+    {
+      "ticker": "SPY",
+      "pnl_pct": -1.3488507936507936,
+      "entry_date": "2023-08-10",
+      "exit_date": "2023-08-21",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -0.31174603174603177,
+      "entry_date": "2023-07-25",
+      "exit_date": "2023-08-02",
+      "regime": "bull"
+    }
+  ],
+  "supertrend_macd": [
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -8.71551111111111,
+      "entry_date": "2023-08-07",
+      "exit_date": "2023-11-22",
+      "regime": "bull"
+    }
+  ],
+  "tema_dema": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -9.963022222222223,
+      "entry_date": "2023-08-18",
+      "exit_date": "2023-10-09",
+      "regime": "bull"
+    },
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -0.7245444444444444,
+      "entry_date": "2023-07-20",
+      "exit_date": "2023-08-21",
+      "regime": "bull"
+    }
+  ],
+  "three_black_crows_short": [
+    {
+      "ticker": "SPY",
+      "pnl_pct": -8.306099999999999,
+      "entry_date": "2023-09-06",
+      "exit_date": "2023-12-14",
+      "regime": "bull"
+    }
+  ],
+  "week_opening_gap_fill_up": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.407020634920634,
+      "entry_date": "2023-10-09",
+      "exit_date": "2023-10-26",
+      "regime": "bear"
+    }
+  ],
+  "williams_r_oversold": [
+    {
+      "ticker": "NVDA",
+      "pnl_pct": -10.807814285714286,
+      "entry_date": "2023-09-11",
+      "exit_date": "2023-10-26",
+      "regime": "bull"
+    }
+  ],
+  "xs_momentum_quality_combined": []
+}

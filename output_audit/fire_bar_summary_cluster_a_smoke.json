@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "as_of_run": "2026-06-15T02:01:15.288446",
+    "start": "2024-01-01",
+    "end": "2024-12-31",
+    "n_tickers_universe": 519,
+    "n_tickers_evaluated": 3,
+    "n_strategies_requested": 3,
+    "n_strategies_resolved": 3,
+    "n_bars_total": 756,
+    "n_fires_total": 9,
+    "per_strategy_fires": {
+      "rsi_oversold": 9
+    },
+    "enable_extended_signals": true,
+    "runtime_seconds": 326.8,
+    "pattern_candidates": {
+      "jaccard_threshold": 0.85,
+      "phi_threshold": 0.7,
+      "n_pattern_w_candidates": 0,
+      "n_pattern_j_candidates": 0
+    }
+  },
+  "patterns": {
+    "jaccard_threshold": 0.85,
+    "phi_threshold": 0.7,
+    "pattern_w_candidates": [],
+    "pattern_j_candidates": []
+  },
+  "output_paths": {
+    "long_format_matrix": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_matrix_cluster_a_smoke.parquet",
+    "similarity_matrix": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_similarity_cluster_a_smoke.parquet",
+    "summary": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\fire_bar_summary_cluster_a_smoke.json"
+  }
+}

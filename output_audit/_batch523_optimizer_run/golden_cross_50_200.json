@@ -1,0 +1,122 @@
+{
+  "strategy": "golden_cross_50_200",
+  "n_trades": 5,
+  "aggregate": {
+    "n": 5,
+    "win_rate": 0.2,
+    "mean_pp": -7.7623,
+    "std_pp": 6.1394,
+    "sum_pp": -38.8117,
+    "profit_factor": 0.0766,
+    "rr_ratio": 0.3063,
+    "sharpe": -3.6049,
+    "t_stat": -2.8272,
+    "skew": 2.235,
+    "kurtosis": 4.9962,
+    "verdict": "INSUFFICIENT_SAMPLE",
+    "five_gate_pass": false,
+    "gates": {
+      "n_>=_30": false
+    }
+  },
+  "dimension_a_thresholds": {
+    "status": "ok",
+    "candidates": []
+  },
+  "dimension_b_compound": {
+    "status": "ok",
+    "per_clause": [
+      {
+        "clause": "ema_50_200_death_cross",
+        "fires_at": 60.0,
+        "n_present": 5
+      },
+      {
+        "clause": "ema_50_200_golden_cross",
+        "fires_at": 40.0,
+        "n_present": 5
+      }
+    ],
+    "restrictive": [],
+    "always_on": [],
+    "proposals": []
+  },
+  "dimension_c_regime": {
+    "status": "ok",
+    "per_regime": {
+      "bear": {
+        "n": 3,
+        "win_rate": 0.3333,
+        "mean_pp": -5.9445,
+        "std_pp": 7.9359,
+        "sum_pp": -17.8336,
+        "profit_factor": 0.1529,
+        "rr_ratio": 0.3058,
+        "sharpe": -1.8496,
+        "t_stat": -1.2974,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      },
+      "bull": {
+        "n": 2,
+        "win_rate": 0.0,
+        "mean_pp": -10.4891,
+        "std_pp": 0.1599,
+        "sum_pp": -20.9781,
+        "profit_factor": 0.0,
+        "rr_ratio": 0.0,
+        "sharpe": -264.4307,
+        "t_stat": -92.7454,
+        "skew": 0.0,
+        "kurtosis": 0.0,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "five_gate_pass": false,
+        "gates": {
+          "n_>=_30": false
+        }
+      }
+    },
+    "proposals": []
+  },
+  "dimension_d_exit": {
+    "status": "no_cube_data"
+  },
+  "dimension_e_sizing": {
+    "status": "ok",
+    "agg_sharpe": -3.6049,
+    "tier_rec": "LOW (skip)",
+    "size_pct": 0.0
+  },
+  "dimension_f_universe": {
+    "status": "ok",
+    "per_sector": {},
+    "proposals": []
+  },
+  "dimension_g_hold": {
+    "status": "ok",
+    "distribution": {
+      "n": 5,
+      "min": 2,
+      "p25": 21.0,
+      "median": 29.0,
+      "p75": 48.0,
+      "max": 55
+    },
+    "proposals": []
+  },
+  "dimension_h_cooldown": {
+    "status": "ok",
+    "reentries_within_5d": 0,
+    "proposals": []
+  },
+  "dimension_i_macro": {
+    "status": "ok",
+    "per_vix_band": {},
+    "proposals": []
+  }
+}

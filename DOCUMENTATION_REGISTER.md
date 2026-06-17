@@ -580,10 +580,10 @@ Per Council 17 First Principles 3-axis classifier (Consumer / Canonicality / Aut
 
 | File | Last commit | Last batch | Refs | Verdict |
 |---|---|---|---|---|
-| `PHASE_1A_BETA_STATUS.md` | 2026-06-08 | Batch 635 | 7 | **FLAG-FOR-OWNER-REVIEW** |
-| `PHASE_1B_AUDIT_2026_05_25.md` | 2026-05-25 | Batch 345 | 5 | **FLAG-FOR-OWNER-REVIEW** (dated suffix = snapshot) |
-| `PHASE_1B_STATE_SCHEMA_DIFF.md` | 2026-05-25 | Batch 351 | 4 | **FLAG-FOR-OWNER-REVIEW** |
-| `IMPLEMENTATION_DRAFTS_T1.md` | 2026-05-19 | Batch 239 | 3 | **FLAG-FOR-OWNER-REVIEW** (draft prefix) |
+| `PHASE_1A_BETA_STATUS.md` | 2026-06-08 | Batch 635 | 7 | **ARCHIVED B893 2026-06-18** owner-approved → `.archive/2026-06-18-stale-md/`; refs updated in workflow doc + MONITORING_FRAMEWORK + EXECUTION_QUEUE |
+| `PHASE_1B_AUDIT_2026_05_25.md` | 2026-05-25 | Batch 345 | 5 | **ARCHIVED B893 2026-06-18** owner-approved → `.archive/2026-06-18-stale-md/`; refs in test_phase_1b_agents.py + test_silent_gap_pyramid.py are historical citations (left as-is); drift_audit script updated |
+| `PHASE_1B_STATE_SCHEMA_DIFF.md` | 2026-05-25 | Batch 351 | 4 | **FLAG-FOR-OWNER-REVIEW** (not in B893 approval set) |
+| `IMPLEMENTATION_DRAFTS_T1.md` | 2026-05-19 | Batch 239 | 3 | **ARCHIVED B893 2026-06-18** owner-approved → `.archive/2026-06-18-stale-md/`; refs in BUILD_PLAN_PROGRESS + STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN updated to archive path; drift_audit script updated |
 | `IMPLEMENTATION_PLAN.md` | 2026-05-27 | (no batch tag) | 7 | **FLAG-FOR-OWNER-REVIEW** (canonical-confusion; see below) |
 | `PROJECT_PLAN_ARCHIVE.md` | 2026-04-30 | (no batch tag) | 46 | **KEEP** (archival reference; 46 refs = historical citation network) |
 | `PHASE_1A_BETA_PER_STRAT_EXIT_FORENSIC.md` | 2026-05-26 | Batch 376 | 1 | **FLAG-FOR-OWNER-REVIEW** (forensic snapshot) |

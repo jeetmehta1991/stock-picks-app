@@ -1,0 +1,6 @@
+strategy,regime,trades,win_rate,avg_pnl,total_roi
+macd_fast_crossover,bull,3,0.0,-4.0328,-12.0983
+mmsm_short,bull,4,0.25,-2.981,-11.924
+pairs_mean_reversion_long,bull,4,0.5,-0.6141,-2.4566
+stochrsi_overbought_short,bull,3,0.3333,0.8786,2.6358
+williams_r_oversold,bull,3,1.0,7.4658,22.3973

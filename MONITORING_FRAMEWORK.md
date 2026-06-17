@@ -190,5 +190,5 @@ Before invoking `scripts/aws_batch395_parallel.py` for a fresh cube run:
 - `CHECKLIST.md` — #67 doc-sync per turn; #69 full 13-tier pyramid; #90 status updates re-verify; #91 monitor must act; #92 no new .md without approval
 - `LEARNINGS.md` — L161 status updates; L162 monitor without action-on-read
 - `PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md` — locked workflow Stage 1-6; locks dashboard expectations per stage
-- `PHASE_1A_BETA_STATUS.md` — run-readiness table; per-batch ship status
+- `PHASE_1A_BETA_STATUS.md` — **ARCHIVED B893 2026-06-18** per owner approval (see `.archive/2026-06-18-stale-md/`); live run-readiness now in EXECUTION_QUEUE.md (Completed log + TIER entries)
 - Feedback memory: `feedback_monitor_intermediate_counts.md`, `feedback_no_write_only_md_files.md`, `feedback_strategy_x_exit_cell_analysis.md`, `feedback_audit_recommendations_against_existing_directives.md`

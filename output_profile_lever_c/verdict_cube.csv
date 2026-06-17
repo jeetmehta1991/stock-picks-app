@@ -1,0 +1,39 @@
+strategy,regime,sector,verdict,gates_passed,n_trades,gate_1_sample_size_value,gate_1_sample_size_passed
+52wh_break_retest,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+break_retest_confluence,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,bull,Broad Market,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_momentum,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+golden_cross_9_21,bull,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+halloween_seasonal_long,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+hull_rsi,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+ichimoku_cloud_breakout,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+institutional_breakout_confirmation_long,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+institutional_buy_momentum_long,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+lead_lag_sector_rotation,bull,Financials,INSUFFICIENT_SAMPLE,0,4,4,False
+lead_lag_sector_rotation,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_crossover,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Broad Market,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Consumer Staples,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Energy,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Financials,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+monthly_bias_momentum_long,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+pairs_mean_reversion_short,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,2,2,False
+pairs_mean_reversion_short,bull,Health Care,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bullish,bull,Broad Market,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_bullish,bull,Financials,INSUFFICIENT_SAMPLE,0,4,4,False
+po3_bullish,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+po3_htf_aligned_long,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+squeeze_breakout,bull,Consumer Staples,INSUFFICIENT_SAMPLE,0,1,1,False
+supertrend_ichimoku_adx,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+supertrend_macd,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_r_oversold,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_r_oversold,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,3,3,False
+williams_r_oversold,bull,Energy,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_r_oversold,bull,Information Technology,INSUFFICIENT_SAMPLE,0,2,2,False
+xs_low_beta_long,bull,Consumer Staples,INSUFFICIENT_SAMPLE,0,2,2,False
+xs_low_beta_long,bull,Health Care,INSUFFICIENT_SAMPLE,0,2,2,False
+xs_momentum_quality_combined,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False

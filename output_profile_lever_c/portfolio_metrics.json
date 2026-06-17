@@ -1,0 +1,13 @@
+{
+  "starting_capital": 100000.0,
+  "n_equity_points": 33,
+  "portfolio_total_return_pct": 0.6195,
+  "portfolio_sharpe": 3.6044,
+  "portfolio_max_drawdown_pct": -0.2792,
+  "benchmark_total_return_pct": 6.2118,
+  "alpha_annualized_pct": 1.0222,
+  "beta_to_benchmark": 0.0807,
+  "tracking_error_pct": 10.6327,
+  "information_ratio": -4.1992,
+  "note": "BUG-95: portfolio metrics from Portfolio.equity_curve"
+}
