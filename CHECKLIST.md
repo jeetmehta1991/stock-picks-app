@@ -1740,3 +1740,22 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Compliance check (single-question version):** at end of every turn that shipped code or docs, ask: "Did I write an EXECUTION_QUEUE entry, run CHECKLIST pre-flight, surface any process gap, and show the queue tail?" If any answer is no, the response is non-compliant per B892 owner directive.
 
      **Recovery protocol when miss is detected:** the FIRST batch after the miss must (a) acknowledge the lapse explicitly, (b) write the missing queue entries retroactively (one entry per skipped batch), (c) codify the prevention rule in CHECKLIST, (d) update LEARNINGS if a new lesson surfaced. B892 applies this protocol to B883-B891 cycle.
+
+111. **HARD RULE -- Regenerated-Artifact Freshness Audit. Auto-generated docs must list every data source + refuse to claim "refreshed" if any source is stale.** (Council 18 Contrarian verdict 2026-06-18 B894; owner red-flagged STRATEGY_ROSTER rolling staleness across B874/B887/B889/B892.)
+
+     Past failure pattern: Claude ran `python scripts/build_strategy_roster.py`, saw "Strategies: 219" output, assumed "fix worked" -- WITHOUT auditing whether the data sources feeding the regenerated columns were themselves stale. R4 cube fire status (May 31), approvals.json (pre-B722), s4_reviewed flags (pre-B585) all silently persisted as "current state" across 4 regeneration cycles. Owner flagged 3 times. Contrarian's diagnosis: **"confirmation by absence of error"** -- script ran, no exception, output mentions current count -> Claude concluded fix worked. This is pattern-match-without-verification, the exact failure mode #45 was built to prevent.
+
+     **The 4 mandatory regeneration-audit gates:**
+
+     1. **Enumerate every data source the generator reads.** For each: file path + last-modified date. List in commit message.
+     2. **Compare each source's modified date to the most recent batch that should have invalidated it.** Example: STRATEGY_ROSTER reads `approvals.json`; last update was pre-B722; B722-B874 deleted 5 strategies; therefore approvals.json is STALE.
+     3. **Refuse to claim "refreshed" if ANY source is stale.** Instead report: "regenerated against stale source X as-of DATE; columns Y/Z reflect stale data." This is the cube-cells-are-measurements-not-changes principle applied to derived docs.
+     4. **Either SCRUB the stale-source columns from output OR add prominent (table-header level, not footnote) "as-of DATE (stale)" disclaimers.** Scrub is preferred per Council 18 Contrarian: "anything that lies is worse than absent."
+
+     **Compliance check (single-question version):** After regenerating any auto-generated artifact (doc, dashboard, CSV, JSON), ask: "Did I list every data source the generator reads, compare each to the most recent invalidating batch, and either scrub or disclaim stale-source columns?" If any answer is no, the regeneration is non-compliant per B894 owner directive.
+
+     **Build-time invariant assertion (preferred):** Add `assert` statements in generator scripts that fail loudly if a deleted column tries to come back without a fresh data source. Example: `assert "QUIET" not in out_text, "B894 SCRUB violated: stale R4 cube fire-status column reappeared"`.
+
+     **Meta-pattern surfaced (Council 18):** Past failures have a common shape -- Claude frames the task as MECHANICAL ("regenerate roster") instead of VERIFICATION-BEARING ("deliver a current roster to owner"). The pre-flight (#45) didn't fire because "regenerate" feels like a mechanical step. Fix: any task involving a `python scripts/...py` regeneration is verification-bearing by default, and pre-flight must enumerate data-source freshness before claiming success.
+
+     **Recovery protocol when staleness detected by owner:** the FIRST batch after the owner flag must (a) acknowledge the rolling-staleness pattern, (b) enumerate every data source and its as-of date, (c) scrub stale-source columns OR add prominent disclaimers, (d) codify a build-time assertion preventing return, (e) update LEARNINGS with the meta-pattern.

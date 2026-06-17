@@ -5,6 +5,7 @@
 **Supersedes:** PROJECT_PLAN_v1_outdated.md (April 2026 version, marked outdated post-Pass-52)
 **Historical archive:** PROJECT_PLAN_ARCHIVE.md (pre-April-2026 reference)
 **Companion:** TRADING_RULES_AND_INFORMATION.md (canonical thresholds + criteria reference)
+**Phase 1B-alpha path (canonical):** [`PATH_TO_PHASE_1B_ALPHA.md`](PATH_TO_PHASE_1B_ALPHA.md) — B894 standalone refactor of B888 Council 14 synthesis + B889 Council 15 corrections + B890-B891 DEC-611/612/613/614 implementation. 6-day R5-to-Phase-1B-alpha path + threshold taxonomy + soft-score winner ID + R4-R5 delta intelligence.
 **Live dashboards:** https://jeetmehta1991.github.io/stock-picks-app/
 
 ---

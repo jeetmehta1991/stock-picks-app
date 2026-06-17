@@ -6,6 +6,8 @@
 
 **Source canonical:** STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md (build plan from Pass 53 Day 9+ 2026-05-19, 10-day window May 19 PM -> May 29).
 
+**Phase 1B-alpha path (canonical, B894):** [`PATH_TO_PHASE_1B_ALPHA.md`](PATH_TO_PHASE_1B_ALPHA.md) — refactored from STAGE_2 §10 to standalone per owner directive. Tracks B888-B891 Council 14/15 synthesis + DEC-611/612/613/614 implementation status.
+
 ---
 
 ## Status legend

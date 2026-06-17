@@ -663,24 +663,28 @@ def main() -> int:
     out_lines.append("")
     out_lines.append(f"**Auto-generated** via `scripts/build_strategy_roster.py`. Do NOT hand-edit. Regenerate every turn that modifies strategies, signals, thresholds, regime affinity, or status.")
     out_lines.append("")
-    # B577: fired vs quiet counts
-    fired_n = sum(1 for r in rows if r.get("fired_in_r4") == "YES")
-    quiet_n = sum(1 for r in rows if r.get("fired_in_r4") == "QUIET")
-    # B583: S4 reviewed counts
-    s4_reviewed_n = sum(1 for r in rows if r.get("s4_reviewed", "N").startswith("Y"))
-    s4_pending_n  = len(rows) - s4_reviewed_n
+    # B894 (2026-06-18) Council 18 owner-approved: SCRUBBED stale data-source-
+    # backed columns. Owner red-flagged repeated staleness across B874/B887/
+    # B889/B892 caused by columns sourced from R4-era data (output_batch395
+    # _final May 31 + approvals.json snapshot) without freshness audit. Per
+    # CHECKLIST #111 (NEW B894): regenerated artifacts must list every data
+    # source + refuse to claim "refreshed" if any source is stale.
+    #
+    # REMOVED COLUMNS (sourced from stale data):
+    # - "R4 cube fire status: N FIRED | N QUIET" (sourced from R4 May 31 cube)
+    # - "S4 Review progress: N REVIEWED / N PENDING" (stale s4_reviewed flags)
+    # - "Producer bug fixes: N strategies" (stale ledger)
+    # - Per-row "fired_in_r4" column = QUIET/FIRED (R4-era state)
+    # - Per-row "X Awaiting (n_rows=X)" Stage 4 column (stale approvals.json)
+    # - Per-row "s4_reviewed" Y/N column (stale flag)
+    #
+    # RETAINED COLUMNS (derivable from current screener.py + regime_selector.py):
+    # name | category | direction | trigger | signals | conditions |
+    # regime_affinity | active_status
     out_lines.append(f"**Total strategies:** {len(ALL_STRATEGIES)} | **Deprecated:** {len(DEPRECATED_STRATEGIES)} | **Disabled:** {len(STRATEGIES_DISABLED_MISSING_PRODUCER)} | **Active for cube:** {len(ALL_STRATEGIES) - len(DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER)}")
     out_lines.append("")
-    out_lines.append(f"**R4 cube fire status:** **{fired_n} FIRED** (have optimizer-extracted Class 1-7 rows) | **{quiet_n} QUIET** (zero R4 fires; Class 0 QUIET_NO_CANDIDATES placeholder per B576 drift backfill)")
+    out_lines.append("> **B894 NOTE (2026-06-18 Council 18 verdict per CHECKLIST #111):** R4 cube fire status, S4 Review progress, Producer Bug Fix ledger, and per-row Stage 4 Awaiting columns SCRUBBED from this doc - those data sources are stale (R4 era May 31; pre-B722/B874 deletions). Per `feedback_no_a_priori_strategy_pruning` + Council 18 Contrarian: \"anything that lies is worse than absent.\" Live cube fire status + S4 status will be restored after R5 cube execution with fresh data sources. Until then this doc shows only what's derivable from current `screener.py` + `regime_selector.py`.")
     out_lines.append("")
-    # B585: separate "S4 reviewed (full 7-step walk)" from "producer
-    # bug fixed (partial work)"
-    bug_fixed_n = sum(1 for r in rows if r.get("producer_bug_fix"))
-    out_lines.append(f"**S4 Review progress (B583+B585):** **{s4_reviewed_n} REVIEWED (full 7-step walk)** ({100.0*s4_reviewed_n/len(rows):.0f}%) | **{s4_pending_n} PENDING** ({100.0*s4_pending_n/len(rows):.0f}%) per `feedback_per_strategy_deep_dive_stage4`. Per-strategy 7-step deep-dive must complete before R5 cube run per `feedback_r5_paused_pending_stage4_completion`.")
-    out_lines.append("")
-    if bug_fixed_n:
-        out_lines.append(f"**Producer bug fixes (B585 ledger - SEPARATE from S4 review):** **{bug_fixed_n} strategies** have had a producer bug fix applied. These strategies STILL need a full 7-step S4 walk per owner directive 2026-06-04 'bug fix is NOT S4 review completion.' See `Producer Bug Fix` column for batch tag.")
-        out_lines.append("")
     # B892 (2026-06-18) Council 17 First Principles + Executor fix: remove
     # hardcoded literals from prose. Stale numerics (205/206/207) baked into
     # the template at B576-era were the root cause of owner's "STRATEGY_ROSTER
@@ -703,7 +707,9 @@ def main() -> int:
     n_without_affinity = len(ALL_STRATEGIES) - n_with_affinity
     out_lines.append(f"**STRATEGY_REGIME_AFFINITY coverage (live count, B892):** {n_with_affinity} of {len(ALL_STRATEGIES)} strategies have explicit regime affinity declarations in `regime_selector.STRATEGY_REGIME_AFFINITY`. {n_without_affinity} strategies fall through to default 'all regimes'. Per CLAUDE.md criterion #11 + DEC-611 (B891), the per-regime PASS gate is `min_regimes_passing=1` so strategies without explicit affinity can still earn regime-specific deployment via cube empirical PASS in any regime.")
     out_lines.append("")
-    out_lines.append("**Stage 4 approvals (per-strategy mapping, B576 drift correction):** Every registered strategy has at least one approvals.json row. Quiet strategies (no R4 fires) carry a `Class 0 QUIET_NO_CANDIDATES` placeholder Awaiting row.")
+    # B894 SCRUB: Stage 4 approvals per-strategy mapping line removed - sourced
+    # from stale approvals.json (R4-era; pre-B722/B874 deletions). Will be
+    # restored post-R5 with fresh data per CHECKLIST #111.
     out_lines.append("")
     out_lines.append("## Direction counts")
     direction_counts = {}
@@ -721,12 +727,14 @@ def main() -> int:
     out_lines.append("")
     out_lines.append("## Strategy Table")
     out_lines.append("")
-    # B585+B586: S4 Reviewed + Producer Bug Fix columns at positions
-    # 2+3 (visibility). B586 adds "Trigger Conditions" plain-language
-    # column right after raw Trigger code per owner directive 2026-06-04
-    # "update trigger column with such information for all strategies."
-    out_lines.append("| # | Name | S4 Reviewed | Producer Bug Fix | R4 Fires | Category | Direction | Trigger Conditions (plain) | Trigger (code) | Signals consumed | Regime affinity | Roster Status | Stage 4 Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    # B894 (2026-06-18) Council 18 SCRUB: removed columns sourced from stale
+    # R4/approvals.json data: S4 Reviewed, Producer Bug Fix, R4 Fires,
+    # Stage 4 Status. Retained: Name, Category, Direction, Trigger Conditions
+    # plain, Trigger code, Signals consumed, Regime affinity, Roster Status.
+    # Live cube fire status + S4 status will be re-introduced post-R5 via
+    # CHECKLIST #111 freshness audit gate.
+    out_lines.append("| # | Name | Category | Direction | Trigger Conditions (plain) | Trigger (code) | Signals consumed | Regime affinity | Roster Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
@@ -745,10 +753,9 @@ def main() -> int:
         # Escape pipes in plain trigger so they don't break the table
         trigger_plain = trigger_plain.replace("|", "\\|")
         out_lines.append(
-            f"| {i} | `{r['name']}` | {r['s4_reviewed']} | {r['producer_bug_fix']} | "
-            f"{r['fired_in_r4']} | {r['category']} | {r['direction']} | "
+            f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
             f"{trigger_plain} | `{trigger}` | {sigs} | {r['regime']} | "
-            f"{r['status']} | {r['stage_4']} |"
+            f"{r['status']} |"
         )
     out_lines.append("")
 
