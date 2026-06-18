@@ -1815,7 +1815,7 @@ Council 19 (Contrarian + Executor) verdict: SHIP K with evidence + DEFER N-K wit
 
 | Ticket | Description | Reason | Target batch |
 |---|---|---|---|
-| **B895-DEFER-A** | Remaining ~170 .md files freshness sweep | 175 .md × ~3 min real audit each = ~9h irreducible; cannot fit one batch context. Per Contrarian Council 19. | B896-B899 in tranches of ~40 files each |
+| **B895-DEFER-A** | ~~Remaining ~170 .md files freshness sweep~~ | **RESOLVED B907 (2026-06-18):** Owner correction B894 surfaced true scope = 95 non-archived .md (not 170). Sweep completed across 4 tranches: T1 B897 (4 surgical patches), T2 B898 (5 surgical + 10 AUDITED-NO-ACTION ledger), T3 B907 (1 surgical EXPLANATION.md + 7 AUDITED-NO-ACTION + 1 SKIP owner-managed manifest). 16 STAGE_4_*.md SNAPSHOT walks left as snapshots-by-design per Council 21 verdict. **Net: 10 surgical patches across 4 batches; 17 AUDITED-NO-ACTION verdicts; 1 owner-managed SKIP; 16 SNAPSHOT-by-design.** Sweep complete. | **RESOLVED B907** |
 | **B895-DEFER-B-1** | `r5_delta_analyzer.py` full body fill | R5 has not yet completed (per PATH_TO_PHASE_1B_ALPHA.md timeline = Thursday); scaffold + signatures ready B895 | B896 post-R5 |
 | **B895-DEFER-B-2** | `r5_winner_identifier.py` Best-of-26 collapse fill + tier quantile tuning | Needs actual R5 cube distribution to tune T1/T2/T3 quantiles; scaffold + soft-score + AUTO-FAIL screens shipped B895 | B896 post-R5 |
 | **B895-DEFER-B-3** | `dec131_mid_run_watchdog.py` full body fill | Phase 1B-α launches Thursday PM per timeline; scaffold + check-skeleton shipped B895 | B897 post-Phase-1B-α-launch |
