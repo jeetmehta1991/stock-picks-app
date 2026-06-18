@@ -1,5 +1,7 @@
 # Phase 1B AgentState schema diff (upstream vs our augmented)
 
+> **B909 SUPERSEDED-BY-NOTICE (2026-06-19 per owner directive Dec-2 update in place):** This doc was authored Batch 351 (2026-05-25) and captures the AgentState schema diff at that point in time. Superseded-by-effect: **`PATH_TO_PHASE_1B_ALPHA.md`** (B894 canonical Phase 1B-α path) + **`backtest/agents/toolkits/state_augmentation.py`** (live code authoritative). This historical schema diff retained for batch-lineage traceability (B350/B351 Sprint 7); any divergence post-2026-05-25 not reflected here. Canonical state schema = live code; canonical Phase 1B-α path = PATH_TO_PHASE_1B_ALPHA.md.
+
 **Source** (per CHECKLIST #77 canonical-source attribution):
 - Upstream: `vendored/tradingagents/tradingagents/agents/utils/agent_states.py` (TauricResearch/TradingAgents v0.2.5 commit `61522e1`)
 - Ours: `backtest/agents/toolkits/state_augmentation.py` (Sprint 7 Batch 350 + 351)

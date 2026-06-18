@@ -1,5 +1,13 @@
 # Phase 1A-beta single-batch per-(strategy x exit) forensic
 
+> **B909 SUPERSEDED-BY-NOTICE (2026-06-19 per owner directive Dec-2 update in place):** This doc was authored Batch 376 (2026-05-26) per owner directive to forensically analyze single-batch Phase 1A-β run from `output_phase_1a_beta_single_local/`. **Superseded-by-effect:**
+> - **Phase 1A-β R4 cube data:** `output_batch395_final/` (2026-05-31; 29,360 trades; canonical R4 source)
+> - **Phase 1A-β R5 readiness + Path to 1B-α:** [PATH_TO_PHASE_1B_ALPHA.md](PATH_TO_PHASE_1B_ALPHA.md) (B894 canonical)
+> - **R4 quiet/low-fire diagnosis:** [output_audit/b900_r4_quiet_low_fire_audit.json](output_audit/b900_r4_quiet_low_fire_audit.json) (B900; per-strategy categorization)
+> - **R4 calibration drift forensic findings:** EXECUTION_QUEUE.md B902-MISSED-K1 RESOLVED B908 ticket
+>
+> Single-batch forensic findings below retained for batch-lineage traceability (B376 pre-R4 era). Forward-looking forensic work uses output_batch395_final/ + b900 audit JSON + post-B907 measurement framework.
+
 **Source:** owner directive 2026-05-26 - pause next Phase 1A-beta + optimize each strategy and exit. Generated from output_phase_1a_beta_single_local/ artifacts.
 
 ## Headline

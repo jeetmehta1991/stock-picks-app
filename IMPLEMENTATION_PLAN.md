@@ -1,5 +1,13 @@
 # IMPLEMENTATION_PLAN.md — Post-Batch-225 pending + backlog implementation
 
+> **B909 SUPERSEDED-BY-NOTICE (2026-06-19 per owner directive Dec-2 update in place):** This doc was authored Batch 234 (2026-05-18) for post-B225 implementation detail at T0-T7 track granularity. **Multiple supersession layers added since:**
+> - **Architecture + cost + universe + timeframe canonical table:** [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md) (existing pointer from B240; preserved)
+> - **Phase 1B-α path canonical (B888 Council 14 + B891 DEC-611-614 + B894 standalone):** [PATH_TO_PHASE_1B_ALPHA.md](PATH_TO_PHASE_1B_ALPHA.md)
+> - **R5 readiness + DEFER tickets:** [EXECUTION_QUEUE.md](EXECUTION_QUEUE.md) (B895 forward; live tracker)
+> - **Live decision registry:** [AUDIT_INDEX.md](AUDIT_INDEX.md) (538 DECs incl. DEC-611-614 B890-B891)
+>
+> T0-T7 track implementation detail in body below remains canonical for that scope (specific track-by-track Sprint 0A → Stage 2 work). Forward-looking work post-2026-05-29 uses the above-pointed canonical docs.
+
 **Authored:** 2026-05-18 (Pass 53 Day 9+ Batch 234)
 **Updated:** 2026-05-19 (Batch 240) — superseded by [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md) for architecture + cost + universe + timeframe canonical table. This doc remains canonical for T0-T7 track implementation detail.
 

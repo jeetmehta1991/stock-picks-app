@@ -288,16 +288,24 @@ def test_engine_parity_pnl_sum_invariant(parity_run):
         R4-reality while still catching catastrophic regressions
         (e.g. accidental short-side flip, sign error, units bug
         which would produce |PnL| in the 1000s).
+      - Batch 908 (2026-06-19) widened band to [-260, 260] per owner
+        directive 2026-06-19 K1-Dec-1(b) following B907 investigation:
+        3 POST-R4 Class 7 NEW strategies (mmsm_short B581 -36.22pp /
+        three_black_crows_short B636 -10.48pp / week_opening_gap_fill
+        _up B581 -10.41pp) contributed -57pp combined to parity
+        scenario; pre-R4 baseline sums to -150pp (within prior band).
+        Owner choice (b) absorbs future Class 7 NEW + roster churn
+        through R5. Catastrophic threshold (|PnL| in 1000s) preserved.
     """
     actual = parity_run
     if "pnl_pct" not in actual.columns:
         pytest.skip("pnl_pct column missing")
     total_pp = actual["pnl_pct"].sum()
-    assert -200 <= total_pp <= 200, (
-        f"Parity scenario PnL sum {total_pp:.1f}pp outside [-200, 200]. "
+    assert -260 <= total_pp <= 260, (
+        f"Parity scenario PnL sum {total_pp:.1f}pp outside [-260, 260]. "
         f"Engine semantics likely changed beyond optimization + R4-config "
-        f"scope -- inspect for sign errors / units bugs / catastrophic "
-        f"roster collapse."
+        f"+ B908 roster-churn scope -- inspect for sign errors / units "
+        f"bugs / catastrophic roster collapse."
     )
 
 
