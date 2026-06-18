@@ -63,8 +63,38 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+# B901 (2026-06-18) fix: install vendored smartmoneyconcepts library. Without
+# this, the smc_ict producer silently fails with ModuleNotFoundError, and
+# all 18 SMC strategies + ICT-7/8/9/10 (Turtle Soup + Judas Swing) emit
+# zero fires regardless of underlying signal. This is the SAME bug B696
+# fixed in aws_b660_bootstrap.sh -- but the B696 author wrongly assumed
+# "B395 bootstrap doesn't need it because run_phase1a doesn't gate on SMC."
+# Council 23 (2026-06-18) verified: R4 May 31 ran run_phase1a via THIS
+# bootstrap with 18 SMC strategies registered AND ZERO SMC trades fired.
+# Diagnosed via B900 audit (output_audit/b900_r4_quiet_low_fire_audit.json):
+# top 6 R4_QUIET_BUT_FIRES_POST_B689 are ALL smc_* strategies (16631 / 9054
+# / 5676 / 4622 / 3429 / 3351 fires/yr in B660-ext vs 0 in R4 trades).
+if [ -d vendored/smartmoneyconcepts ]; then
+    echo "[$(date)] Installing vendored smartmoneyconcepts library..."
+    pip install -e vendored/smartmoneyconcepts/
+else
+    echo "[$(date)] WARNING: vendored/smartmoneyconcepts/ not present -- SMC producer will silent-fail" >&2
+fi
 # numba may fail on python3.14 -- requirements has python_version<'3.14' constraint
 echo "[$(date)] python: $(python --version)"
+# B901 verification: confirm smc import succeeds before launching engine.
+python -c "from vendored.smartmoneyconcepts.smartmoneyconcepts import smc; print('[$(date)] SMC library import OK')" 2>&1 || {
+    echo "[$(date)] FATAL: SMC library import FAILED -- aborting R5 launch to prevent R4-style silent-quiet bug" >&2
+    exit 1
+}
+
+# B901 (DEFER-I): enable raw-signal fire emission so R5 outputs per-strategy
+# pre-filter fire counts alongside trade_log. Council 23 verdict: this is the
+# self-instrumentation that prevents another dual-harness divergence post-cube.
+# Sidecar file: output/raw_signal_fires.<PID>.csv per worker; merge via
+# scripts/merge_batch_outputs.py.
+export EMIT_RAW_SIGNAL_FIRES=1
+echo "[$(date)] EMIT_RAW_SIGNAL_FIRES=1 set (R5 will emit per-strategy raw fire counts)"
 
 # Phase 4: pull prefetch data from S3 (instance IAM role grants read access)
 echo "[$(date)] Syncing data_prefetch/ from s3://$BATCH395_BUCKET/data_prefetch/..."

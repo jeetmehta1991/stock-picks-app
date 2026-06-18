@@ -40,7 +40,10 @@ Each strategy returns:
 """
 
 import logging
+import os
+from collections import Counter
 from datetime import date
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -48,6 +51,39 @@ import pandas as pd
 from backtest.config import ENTRY_GAP_ATR_MULT, LIQUIDITY
 from backtest.data.fetcher import passes_liquidity_filter
 from backtest.signals.technical import compute_all_signals, count_bullish_signals
+
+# B901 (2026-06-18) DEFER-I: raw-signal fire counter for R5 self-instrumentation.
+# Council 23 First Principles + Outsider verdict: R4 emitted only trade_log;
+# we cannot post-hoc distinguish "strategy never evaluated" from "all signals
+# filtered." This counter captures per-strategy fires BEFORE downstream
+# filters (close_above_open, regime gate, MAX_CANDIDATES_PER_DAY, look-ahead
+# audit, etc.) so the dual-harness divergence (R4 cube vs B660 v2 extended)
+# can be diagnosed in R5 results without a separate measurement run.
+# Default OFF; enabled by env EMIT_RAW_SIGNAL_FIRES=1 (set in R5 AWS bootstrap).
+_B901_EMIT_RAW_FIRES: bool = os.environ.get("EMIT_RAW_SIGNAL_FIRES", "0") == "1"
+_RAW_SIGNAL_FIRE_COUNTER: Counter = Counter()
+
+
+def emit_raw_signal_fire_counts(output_dir) -> Optional["Path"]:
+    """Write per-strategy raw signal fire counts to PID-tagged CSV.
+
+    Returns path of written file, or None if counter empty / flag OFF.
+    Called from writer.write_all_outputs at end of run when EMIT_RAW_
+    SIGNAL_FIRES=1 (B901 DEFER-I).
+
+    Multi-worker AWS R5: each worker process writes its own PID-tagged file;
+    merge_batch_outputs.py aggregates across workers via simple sum.
+    """
+    if not _B901_EMIT_RAW_FIRES or not _RAW_SIGNAL_FIRE_COUNTER:
+        return None
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / f"raw_signal_fires.{os.getpid()}.csv"
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write("strategy,raw_fires_pid_local\n")
+        for s, n in sorted(_RAW_SIGNAL_FIRE_COUNTER.items()):
+            f.write(f"{s},{n}\n")
+    return out_path
 
 logger = logging.getLogger(__name__)
 
@@ -8278,6 +8314,15 @@ def screen_instrument(
             result = fn(signals)
             if not result["fires"]:
                 continue
+            # B901 (2026-06-18) DEFER-I: increment raw signal fire counter when
+            # env flag EMIT_RAW_SIGNAL_FIRES=1 set. Counter captures fires
+            # BEFORE downstream filters (close_above_open, regime gate,
+            # MAX_CANDIDATES_PER_DAY, look-ahead audit, etc.) so post-cube
+            # diagnosis can distinguish "strategy never evaluated" from "all
+            # signals filtered." Default OFF so existing tests/runs unchanged;
+            # AWS R5 bootstrap will export EMIT_RAW_SIGNAL_FIRES=1.
+            if _B901_EMIT_RAW_FIRES:
+                _RAW_SIGNAL_FIRE_COUNTER[name] += 1
             direction = result["direction"]
             category = result.get("category", "")
             # Batch 263 Class A: directional confirmation gate

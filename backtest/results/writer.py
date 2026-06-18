@@ -100,6 +100,22 @@ def write_all_outputs(
         df_trades.to_csv(output_dir / "trade_log.csv", index=False)
         logger.info("Wrote trade_log.csv (0 trades)")
 
+    # B901 (2026-06-18) DEFER-I: emit per-strategy raw signal fire counts if
+    # EMIT_RAW_SIGNAL_FIRES=1 env flag set (default OFF). R5 AWS bootstrap
+    # exports the flag so R5 emits raw-fires sidecar alongside trade_log.
+    # Council 23 verdict: this enables post-cube dual-harness reconciliation
+    # without requiring a separate B660-style measurement run. Each worker
+    # process writes its own PID-tagged file; merge_batch_outputs.py
+    # aggregates via simple sum across workers.
+    try:
+        from backtest.signals.screener import emit_raw_signal_fire_counts
+        emit_path = emit_raw_signal_fire_counts(output_dir)
+        if emit_path is not None:
+            logger.info("B901: wrote raw signal fire counts to %s", emit_path)
+    except Exception as exc:
+        # Additive instrumentation; never block trade-log emission on failure
+        logger.warning("B901: raw signal fire emission failed (%s); continuing", exc)
+
     # -- Backtest results --
     if not metrics.empty:
         csv_m = metrics.drop(columns=["regime_details","passes"], errors="ignore")
