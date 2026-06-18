@@ -1974,3 +1974,29 @@ The pre-flight gate at end-of-batch is the structural fix: making the reconcilia
 **Apply when.** Every batch commit. Pure doc-sync batches state `Findings: 0; Audit-clean: YES (doc-sync only)`. Audit-type batches (B762/B764-style catch-ups) state both findings filed AND reconciliation steps applied.
 
 **Cross-references.** CHECKLIST #107 (codified rule), CHECKLIST #94 (queue mandatory per-turn -- L171 strengthens by adding pre-flight gate), CHECKLIST #95 (codify gaps same-turn -- L171 is a CHECKLIST #95 instance), feedback_execution_queue_mandatory_per_turn memory rule, B762 + B764 audit batches (precipitating events).
+
+
+### L172 -- Long-running job ETA must account for cache invalidation since last successful run [critical/process]
+
+**Context.** B896 2026-06-18 owner-flagged: "B660 v2 - ETA? Its way beyong estimated time. Whats wrong?" Investigation showed B885 v2 delta launch (PID 31404) running at 8.3% completion after 12.2h elapsed; script-emitted ETA 134h = 5.6 DAYS. Original B885 estimate was 45-90 min remaining -- overrun factor 80-150x.
+
+**Root cause.** B885 estimator assumed signal cache from B660 v1 (June 11) would be RECYCLABLE for B885 v2 (June 17). Between those dates, multiple batches invalidated the cache:
+- B689 EXTENDED signals: TIER 1 chart_patterns + smc + ict + multi_timeframe + volume_profile + TIER 3 cross_asset + calendar + pre_fomc + 7 COT series
+- B776 TIER 2 cross_sectional panel build (7.5h alone)
+- B781 universe expansion: T1a -> T1a + T2 + T3 + SPY (606 -> 1877 tickers)
+
+The actual runtime profile was:
+- 7.5h TIER 2 cross_sectional panel build
+- ~50h per-ticker signal precompute pipeline (606 tickers x ~5 min each at current scope; with B689 extended signal stack)
+- + strategy evaluation (the part B885 thought was the only cost)
+
+**Lesson.** When estimating a long-running job's runtime, do NOT trust prior-run timing IF intervening batches modified the signal/cache pipeline. Re-estimate via pilot. The pattern is identical to feedback_powershell_authoritative_for_windows_process_truth (don't trust stale state about Windows processes) and feedback_check_existing_pids_before_long_background_launch (don't launch without checking existing state). This is the THIRD instance of "trust stale state -> overrun" in 6 weeks.
+
+**Apply when.** Any background job estimated >30 min. Mandatory 3-gate pre-launch check codified in CHECKLIST #113:
+1. grep `git log <last-run-batch>..HEAD --oneline` for cache-invalidating batches
+2. Run 1% scope pilot to measure actual per-unit time
+3. Recompute ETA = pilot_time * scaling_factor + cache_rebuild_overhead
+
+**Recovery when overrun >5x detected.** KILL the job (not "let it finish"). The opportunity cost (~6 days blocking R5 launch this week) dominates the salvageable work (12.2h sunk).
+
+**Cross-references.** CHECKLIST #113 (codified rule), feedback_powershell_authoritative_for_windows_process_truth, feedback_check_existing_pids_before_long_background_launch, feedback_monitor_intermediate_counts (related: early-abort pattern), B896 recovery batch (instantiation).

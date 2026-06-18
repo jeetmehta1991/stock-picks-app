@@ -1778,3 +1778,22 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Owner expectation calibration:** Owner asking for "comprehensive" is asking for COMPLETE COVERAGE, not COMPLETE-IN-ONE-BATCH. Completing coverage across multiple batches with explicit deferral tickets HONORS the directive better than one batch of unverified claims. Past failure: B892 + B894 -- I tried to "update STRATEGY_ROSTER" in one batch and missed data-source staleness. Three iterations later it's still being flagged.
 
      **Recovery protocol when owner red-flags heroic-batch overpromise:** the FIRST batch after the lapse must (a) acknowledge the trap, (b) re-scope honestly with deferral tickets, (c) ship the verifiable subset, (d) codify the prevention rule (this rule), (e) update LEARNINGS with the meta-pattern. B895 applies this protocol to "update ALL md files" directive.
+
+113. **HARD RULE -- ETA estimates for long-running jobs must account for cache invalidation since the last successful run. Re-estimate or measure pilot before launching multi-hour jobs.** (B896 lesson 2026-06-18; B660 v2 / B885 delta launch overran ETA by 80-150x.)
+
+     B885 launched B660 v2 delta on 20 strategies with stated ETA "~45-90 min remaining." Actual measured behavior at 12.2h elapsed: signal precompute at 50/606 tickers = 8.3% with script-emitted ETA 482,344s = 134h = 5.6 DAYS remaining. **Overrun factor: 80-150x** of original estimate.
+
+     **Root cause:** B885 estimator assumed signal cache would be RECYCLABLE from B660 v1. Between B660 v1 (June 11) and B885 v2 launch (June 17), the following invalidated the cache:
+     - B689 EXTENDED signals added (TIER 1 chart_patterns + smc + ict + multi_timeframe + volume_profile + TIER 3 cross_asset + calendar + pre_fomc + 7 COT series)
+     - B776 TIER 2 cross_sectional panel build (7.5h alone)
+     - B781 universe expansion (T1a -> T1a + T2 + T3 + SPY = 606 -> 1877 tickers)
+
+     **The 3 mandatory pre-launch gates for any long-running job (>30 min):**
+
+     1. **Enumerate intervening changes since last successful run.** grep `git log <last-run-batch>..HEAD --oneline` for cache-impacting batches. Each B-prefix in the impacted-files set INVALIDATES cache.
+     2. **Run a pilot at 1% scope BEFORE launching at full scope.** For B885 v2: should have run measure_fire_count.py on 1 strategy + 10 tickers first (~3 min budget); the per-ticker time would have surfaced the 50h precompute cost immediately.
+     3. **Re-estimate via pilot * scaling factor + cache-rebuild overhead.** Pilot per-ticker time (~5 min) * 606 tickers = 50.5h JUST for precompute. Plus 7.5h TIER 2 panel build. Plus strategy evaluation. Honest ETA at launch should have been ~60h, not 45-90 min.
+
+     **Compliance check (single-question version):** Before launching any background job estimated >30 min, ask: "Have I (a) checked git log for cache-invalidating batches since last successful run, (b) run a 1% pilot to measure actual per-unit time, (c) recomputed ETA from pilot * scaling, NOT trusted prior-run timing?" If any answer is no, the launch is non-compliant.
+
+     **Recovery protocol when ETA overrun >5x detected:** the FIRST batch after detection must (a) KILL the job (not "let it finish"), (b) honestly diagnose root cause in EXECUTION_QUEUE entry, (c) decide between rescope/restart/skip based on critical-path analysis, (d) codify the cache-invalidation enumerator (this rule). B896 applies this protocol to B885 v2 -> B660 v2 lapse.
