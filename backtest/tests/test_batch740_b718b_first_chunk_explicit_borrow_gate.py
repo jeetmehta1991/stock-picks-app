@@ -38,7 +38,9 @@ B740_STRATEGIES = [
     "donchian_breakdown_short",
     "52w_low_breakdown",
     "prev_day_low_breakdown",
-    "camarilla_rsi_obv_short",
+    # camarilla_rsi_obv_short DELETED B874 per S4-B754-A-19 Pattern W
+    # council 5-lens option A2 (deterministic strict-subset of A-18 W9
+    # strat_camarilla_s3_bounce). Removed from B718b cohort.
     "cpr_narrow_momentum_short",
     "52wl_break_retest_short",
     "orb_stocks_in_play_short",
@@ -50,9 +52,10 @@ B740_STRATEGIES = [
 ]
 
 
-def test_b740_pin1_count_matches_26():
-    """B740 first chunk -- exactly 26 strategies refactored this batch."""
-    assert len(B740_STRATEGIES) == 26
+def test_b740_pin1_count_matches_25():
+    """B740 first chunk -- 26 strategies refactored this batch; B874 deleted
+    camarilla_rsi_obv_short reducing cohort to 25 (B899 migration)."""
+    assert len(B740_STRATEGIES) == 25
 
 
 def test_b740_pin2_all_26_registered():

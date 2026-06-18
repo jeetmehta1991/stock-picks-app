@@ -54,9 +54,11 @@ def test_b744_pin2_short_strategy_count_matches_b718b_cohort():
     rep = audit_screener("backtest/signals/screener.py")
     pure = [s for s in rep.short_strategies if not s.is_dual]
     dual = [s for s in rep.short_strategies if s.is_dual]
-    assert len(pure) == 51, f"expected 51 pure-short (B740+B741); got {len(pure)}"
-    assert len(dual) == 61, f"expected 61 dual _strat3 (B742+B743); got {len(dual)}"
-    assert len(rep.short_strategies) == 112
+    # B899 migration: B874 deleted camarilla_rsi_obv_short (pure-short)
+    # + camarilla_rsi_obv (dual). 51->50 pure, 61->60 dual, 112->110 total.
+    assert len(pure) == 50, f"expected 50 pure-short (B740+B741 post-B874); got {len(pure)}"
+    assert len(dual) == 60, f"expected 60 dual _strat3 (B742+B743 post-B874); got {len(dual)}"
+    assert len(rep.short_strategies) == 110
 
 
 def test_b744_pin3_synthetic_missing_gate_caught(tmp_path):

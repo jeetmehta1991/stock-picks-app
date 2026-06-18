@@ -31,7 +31,9 @@ B743_STRATEGIES = [
     "pivot_fib_confluence",
     "golden_cross_volume",
     "cpr_narrow_momentum",
-    "camarilla_rsi_obv",
+    # camarilla_rsi_obv DELETED B874 per S4-B754-A-19 Pattern W council
+    # 5-lens option A2 (literal-duplicate-pair META-PATTERN with standalone
+    # SHORT). Removed from B718b strat3 cohort B899 migration.
     "supertrend_ichimoku_adx",
     "williams_stoch_dual",
     "dc20_break_retest",
@@ -49,8 +51,9 @@ B743_STRATEGIES = [
 ]
 
 
-def test_b743_pin1_count_matches_30():
-    assert len(B743_STRATEGIES) == 30
+def test_b743_pin1_count_matches_29():
+    # B899 migration: 30 -> 29 post-B874 deletion of camarilla_rsi_obv (dual).
+    assert len(B743_STRATEGIES) == 29
 
 
 def test_b743_pin2_all_30_registered():
@@ -58,8 +61,9 @@ def test_b743_pin2_all_30_registered():
     assert not missing, f"missing: {missing}"
 
 
-def test_b743_pin3_combined_strat3_count_is_61():
-    """B742 (31) + B743 (30) = 61 total dual `_strat3` strategies.
+def test_b743_pin3_combined_strat3_count_is_60():
+    """B742 (31) + B743 (29 post-B874) = 60 total dual `_strat3` strategies.
+    Was 61 at B743 time; B899 migration post-B874 deletion of camarilla_rsi_obv.
 
     Cluster-wide regression guard: if a new dual strategy is added later,
     this test fails and the author is forced to add it to either cohort
@@ -68,7 +72,7 @@ def test_b743_pin3_combined_strat3_count_is_61():
     import re
     src = open("backtest/signals/screener.py", encoding="utf-8").read()
     strat3_count = len(re.findall(r'return _strat3\(', src))
-    expected = 61
+    expected = 60  # B899 migration: 61 -> 60 post-B874 deletion of camarilla_rsi_obv dual
     assert strat3_count == expected, (
         f"expected {expected} dual _strat3 strategies; got {strat3_count}. "
         f"If a new dual strategy was added, it must be added to either B742 or B743 cohort "

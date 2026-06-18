@@ -10512,10 +10512,13 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    assert active == 220, (
-        f"F-002 drift: active strategy count expected 220 (221 registered "
-        f"minus 1 disabled dxy_headwind_multinational_short); B722 deletions "
-        f"+ EXPLORATORY took 223 -> 220; got {active}."
+    # B899 (2026-06-18) migration: B874 deleted 2 strategies (S4-B754-A-19
+    # Pattern W council 5-lens option A2: camarilla_rsi_obv dual + standalone
+    # short) reducing 221 -> 219 registered / 218 active.
+    assert active == 218, (
+        f"F-002 drift: active strategy count expected 218 (219 registered "
+        f"minus 1 disabled dxy_headwind_multinational_short); B874 deletions "
+        f"took 221 -> 219; got {active}."
     )
 
     # F-004 exit method count

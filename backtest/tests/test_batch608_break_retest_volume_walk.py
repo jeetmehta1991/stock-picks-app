@@ -203,6 +203,6 @@ def test_batch608_all_strategies_count_unchanged_at_221():
     +/- changes don't require batch-by-batch test updates. Historical
     trail: B608 left count at 221; B613 net 0 (+ vol_below B-twin / -
     52w_low SHORT); B615 +1 (squeeze_setup B-twin); B620 -1 (deleted
-    that B-twin). Current 221."""
+    that B-twin). B722 -3 + B874 -2 reduced to 219. B899 floor migration."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) >= 221
+    assert len(ALL_STRATEGIES) >= 219

@@ -25,9 +25,12 @@ from scripts.build_fire_bar_matrix import (
 # Pin 1: Cluster A strategy list is exactly 30 (per state table in
 # STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md)
 # ---------------------------------------------------------------------------
-def test_pin1_cluster_a_strategies_count_is_30():
-    assert len(CLUSTER_A_STRATEGIES) == 30, (
-        f"Cluster A must list 30 strategies per state table; got "
+def test_pin1_cluster_a_strategies_count_is_28():
+    # B899 migration: 30 -> 28 post-B874 deletion of camarilla_rsi_obv
+    # (dual) + camarilla_rsi_obv_short per Pattern W deterministic-duplicate
+    # finding (S4-B754-A-19 council 5-lens option A2).
+    assert len(CLUSTER_A_STRATEGIES) == 28, (
+        f"Cluster A must list 28 strategies post-B874 (was 30 pre-B874); got "
         f"{len(CLUSTER_A_STRATEGIES)}"
     )
 

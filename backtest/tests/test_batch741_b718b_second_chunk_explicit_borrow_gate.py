@@ -79,8 +79,9 @@ def test_b741_pin4_borrow_trap_blocks_short_via_explicit_gate():
     )
 
 
-def test_b741_pin5_combined_b740_b741_covers_all_51_pure_short_strategies():
-    """B740 (26) + B741 (25) = 51 = total pure-short strategy count.
+def test_b741_pin5_combined_b740_b741_covers_all_50_pure_short_strategies():
+    """B740 (25 post-B874 deletion of camarilla_rsi_obv_short) + B741 (25) = 50.
+    Was 51 at B741 time; B874 deleted 1 pure-short reducing total to 50.
 
     Regression guard: if a new pure-short strategy is added later, this test
     fails and the author is forced to add it to the explicit-gate cohort.
@@ -89,7 +90,7 @@ def test_b741_pin5_combined_b740_b741_covers_all_51_pure_short_strategies():
     src = open("backtest/signals/screener.py", encoding="utf-8").read()
     # count `_strat(<var>, "short"` occurrences
     pure_short_count = len(re.findall(r'_strat\([A-Za-z_]\w*,\s*"short"', src))
-    expected = 51
+    expected = 50  # B899 migration: 51 -> 50 post-B874 camarilla_rsi_obv_short deletion
     assert pure_short_count == expected, (
         f"expected {expected} pure-short strategies in screener.py; got {pure_short_count}. "
         f"If a new pure-short was added, it must be added to either B740 or B741 cohort + given "

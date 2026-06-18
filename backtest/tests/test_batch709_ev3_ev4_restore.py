@@ -120,8 +120,10 @@ def test_b709_pin8_strategy_roster_count_increased_by_two():
     """
     from backtest.signals.screener import ALL_STRATEGIES
     n = len(ALL_STRATEGIES)
-    assert n >= 220, (
-        f"Expected ALL_STRATEGIES >= 220 post-B709 restore; got {n}. "
-        f"Either B709 restore is incomplete or another concurrent deletion "
-        f"shifted the count."
+    # B899 migration: B722 -3 + B874 -2 reduced 224 (B709 era) -> 219.
+    # Soft assertion preserves intent: B709 added 2, so >= 219 ensures
+    # B709 additions intact through subsequent owner-approved deletions.
+    assert n >= 219, (
+        f"Expected ALL_STRATEGIES >= 219 (B709 +2 EV3+EV4 intact through "
+        f"B722 -3 + B874 -2); got {n}."
     )

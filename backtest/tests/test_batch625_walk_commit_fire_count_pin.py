@@ -95,6 +95,15 @@ WALK_SUBJECT_RE = re.compile(
     r"(stage[- ]4[- ](?:re[- ])?walk|walk per CHECKLIST|Class 7 NEW)",
     re.IGNORECASE,
 )
+# B899 (2026-06-18) doc-sync exemption: doc-sync commits that REFERENCE
+# walks ("Stage-4-walks-done" status updates) match WALK_SUBJECT_RE but
+# are not walks themselves. Exclude them per CHECKLIST (k) intent
+# (fire-count projection applies to walks that PROPOSE GATE CHANGES, not
+# status updates).
+DOC_SYNC_SUBJECT_RE = re.compile(
+    r"(doc[- ]sync|R4[- ]complete|R5[- ]blocked|stage[- ]4[- ]walks[- ]done)",
+    re.IGNORECASE,
+)
 BATCH_NUMBER_RE = re.compile(r"\bBatch\s+(\d+)\b|^Merge batch/(\d+)\b", re.IGNORECASE)
 
 
@@ -130,6 +139,10 @@ def _get_walk_commits_since_b625() -> list[tuple[str, str, int]]:
             continue
         # Walk-pattern match
         if not WALK_SUBJECT_RE.search(subject):
+            continue
+        # B899 exemption: skip doc-sync commits that REFERENCE walks but
+        # are not walks themselves.
+        if DOC_SYNC_SUBJECT_RE.search(subject):
             continue
         commits.append((sha[:10], msg, batch_num))
     return commits

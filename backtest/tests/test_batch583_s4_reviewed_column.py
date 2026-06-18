@@ -74,13 +74,21 @@ def test_batch583_approvals_has_s4_reviewed_dict():
         assert key in entry, f"Missing {key} in s4_reviewed entry"
 
 
+@pytest.mark.skip(
+    reason="B894 (2026-06-18 Council 18) SCRUBBED 'S4 Reviewed' column from "
+    "STRATEGY_ROSTER.md per CHECKLIST #111: source data (s4_reviewed flags "
+    "in approvals.json) was stale pre-B585. Will be restored post-R5."
+)
 def test_batch583_roster_has_s4_column(regen_roster):
-    """Pin (2)."""
+    """Pin (2). B899 STATUS: SKIPPED per B894 column scrub."""
     assert "S4 Reviewed" in regen_roster
 
 
+@pytest.mark.skip(
+    reason="B894 SCRUBBED S4 Reviewed column; re-enable post-R5 per CHECKLIST #111"
+)
 def test_batch583_doji_at_support_reviewed(regen_roster):
-    """Pin (3): doji_at_support shows Y (B574)."""
+    """Pin (3): doji_at_support shows Y (B574). B899 SKIP per B894 column scrub."""
     # Find the row
     import re
     m = re.search(r"`doji_at_support`[^\n]*", regen_roster)
@@ -92,8 +100,12 @@ def test_batch583_doji_at_support_reviewed(regen_roster):
     )
 
 
+@pytest.mark.skip(
+    reason="B894 SCRUBBED S4 Reviewed + Producer Bug Fix columns; re-enable post-R5"
+)
 def test_batch586_52w_high_breakout_walked_post_b586(regen_roster):
-    """Pin (4) - updated B586: 52w_high_breakout was unmarked in B585,
+    """Pin (4) - B899 SKIP per B894 column scrub.
+    updated B586: 52w_high_breakout was unmarked in B585,
     then properly walked through full 7-step deep-dive in B586
     (vol_spike_17x + sector filter + pullback variants). Now shows
     S4 Reviewed=Y (B586) AND Producer Bug Fix=B582."""
@@ -129,9 +141,13 @@ def test_batch583_not_reviewed_strategy_shows_N(regen_roster):
     )
 
 
+@pytest.mark.skip(
+    reason="B894 SCRUBBED 'S4 Review progress' banner from STRATEGY_ROSTER per "
+    "CHECKLIST #111 (stale data source). Re-enable post-R5 with fresh data."
+)
 def test_batch583_header_summary(regen_roster):
     """Pin (6): header has S4 Review progress summary. B585 updated
-    header text to include 'full 7-step walk' qualifier."""
+    header text to include 'full 7-step walk' qualifier. B899 SKIP per B894."""
     assert "S4 Review progress" in regen_roster
     import re
     # B585 header: "**N REVIEWED (full 7-step walk)** (n%)"

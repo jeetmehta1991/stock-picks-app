@@ -278,7 +278,8 @@ def test_batch685_all_strategies_count_at_least_221():
     test_batch357_doc_count_drift_strategies + per-batch tests
     (test_batch686_all_strategies_count_222)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) >= 221, (
-        f"B685 strategy count drift: expected >=221 post-B685 additions; "
+    # B899 floor migration post-B722 (-3) + B874 (-2): 221 -> 219.
+    assert len(ALL_STRATEGIES) >= 219, (
+        f"B685 strategy count drift: expected >=219 post-B874 (B685 additions intact); "
         f"got {len(ALL_STRATEGIES)}"
     )

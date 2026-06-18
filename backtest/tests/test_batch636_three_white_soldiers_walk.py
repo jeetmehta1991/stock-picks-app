@@ -107,4 +107,4 @@ def test_batch636_three_black_crows_short_still_registered():
     intent is that the Class 7 NEW remains alive, not a count snapshot)."""
     from backtest.signals.screener import ALL_STRATEGIES
     assert "three_black_crows_short" in ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) >= 220  # drift-floor
+    assert len(ALL_STRATEGIES) >= 219  # drift-floor B899 migration post-B874 (was >=220 at B636)

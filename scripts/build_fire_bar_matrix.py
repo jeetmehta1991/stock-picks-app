@@ -83,8 +83,11 @@ state table):
   A.3 Williams/UO/MFI 3: williams_r_oversold ultimate_oscillator mfi_oversold
   A.4 Bollinger (3):     bollinger_lower bollinger_tight bollinger_upper_short
   A.5 Keltner (1):       keltner_lower
-  A.6 Camarilla (3):     camarilla_r4_breakout camarilla_rsi_obv
-                         camarilla_rsi_obv_short
+  A.6 Camarilla (1):     camarilla_r4_breakout
+                         (camarilla_rsi_obv dual + camarilla_rsi_obv_short
+                         DELETED B874 per S4-B754-A-19 Pattern W council
+                         5-lens option A2; deterministic strict-subset of
+                         W9 strat_camarilla_s3_bounce)
   A.7 CPR (2):           cpr_narrow_momentum cpr_narrow_momentum_short
   A.8 AVWAP (3):         avwap_50_reclaim avwap_252_breakout
                          avwap_20high_rejection_short
@@ -156,8 +159,8 @@ CLUSTER_A_STRATEGIES: list[str] = [
     "keltner_lower",
     # A.6 Camarilla
     "camarilla_r4_breakout",
-    "camarilla_rsi_obv",
-    "camarilla_rsi_obv_short",
+    # camarilla_rsi_obv + camarilla_rsi_obv_short DELETED B874 (B899 cluster
+    # A list migration; Pattern W deterministic-duplicate verdict)
     # A.7 CPR
     "cpr_narrow_momentum",
     "cpr_narrow_momentum_short",

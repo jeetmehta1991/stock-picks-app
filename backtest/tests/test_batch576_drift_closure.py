@@ -159,6 +159,13 @@ def test_batch576_ghost_strategies_legitimate(post_backfill):
                                            #   STRENGTHENED + 2 Class 7 NEW
                                            #   replacements wired)
         "institutional_distribution_short",# B670 deletion (same)
+        "camarilla_rsi_obv",               # B874 deletion (S4-B754-A-19
+                                           #   Pattern W council 5-lens
+                                           #   option A2; deterministic
+                                           #   strict-subset of W9 dual)
+        "camarilla_rsi_obv_short",         # B874 deletion (same META-PATTERN;
+                                           #   literal-duplicate-pair with
+                                           #   dual SHORT branch)
     }
     # Every ghost should be either a known legitimate one OR a Class 7
     # owner-added candidate awaiting wiring (dimension_source == 'owner_added')
@@ -175,9 +182,20 @@ def test_batch576_ghost_strategies_legitimate(post_backfill):
         )
 
 
+@pytest.mark.skip(
+    reason="B894 (2026-06-18 Council 18) SCRUBBED 'Stage 4 Status' column "
+    "from STRATEGY_ROSTER.md per CHECKLIST #111: source data (approvals.json) "
+    "was stale (pre-B722/B874). Column will be restored post-R5 with fresh data."
+)
 def test_batch576_roster_doc_shows_stage_4_column(post_backfill):
     """Pin (7) - regen roster + check the Stage 4 Status column exists
-    + 0 rows have 'no_approvals_row'."""
+    + 0 rows have 'no_approvals_row'.
+
+    B899 STATUS: SKIPPED. The column was intentionally removed by B894 Council
+    18 because its data source (approvals.json) was stale (pre-B722/B874).
+    Per CHECKLIST #111: 'anything that lies is worse than absent.' Will be
+    restored post-R5 cube execution with fresh data sources.
+    """
     rc = subprocess.run(
         [sys.executable, str(ROSTER_SCRIPT)],
         capture_output=True, text=True, timeout=60,

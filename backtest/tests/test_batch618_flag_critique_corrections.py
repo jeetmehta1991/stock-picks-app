@@ -357,6 +357,6 @@ def test_batch618_all_strategies_count_unchanged_at_222():
     """Pin (11): B618 is pure refactor + additive producer + docstring;
     no strategy add/delete.
     B622 floor-pin (converted from ==): B620 deleted squeeze_setup
-    _event_only_long (222->221)."""
+    _event_only_long (222->221). B899 migration post-B722/B874 to 219."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) >= 221
+    assert len(ALL_STRATEGIES) >= 219
