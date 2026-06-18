@@ -2,6 +2,8 @@
 
 **Status:** APPROVED B667 (2026-06-09 owner-approved all 6 decisions). Implementation module `backtest/engine/multiple_testing_correction.py` ships in B667 with 19 unit + integration test pins (test_batch667_multiple_testing_correction.py). The Stage-D cube selection step integration ships in B668 (separate batch since it requires cube-replay infrastructure changes).
 
+> **B897 FRESHNESS NOTE (2026-06-18 B895-DEFER-A tranche 1 per CHECKLIST #111):** This doc contains B667-era (2026-06-09) counts at lines 48 / 54 / 94 / 95 / 97 / 136 ("222 registered / 221 active / 220 strategies / 1,716 effective"). **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219 registered / 218 active. B722 -3 + B874 -2 reduced 222 → 219. Cube cells: 218 × 26 × 7 = 39,676 (was 40,404). Family-size N for Bonferroni: 218 deployable (excludes 1 disabled). Effective N (Bailey-LdP haircut, M9): scales proportionally from 1,716 baseline. Methodology unchanged; counts updated.
+
 **Originally:** DRAFT — Batch 666 (2026-06-09 owner-approved foundational re-prioritization commitment per B665 critique #9 + #7).
 
 **B667 outcome — owner-approved decisions:**

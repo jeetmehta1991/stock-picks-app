@@ -2,6 +2,8 @@
 
 **2026-05-26 Batch 372 LIVE COUNT:** `len(ALL_STRATEGIES) = 186` registered; `DEPRECATED_STRATEGIES = 0` (Batch 316a empty); `STRATEGIES_DISABLED_MISSING_PRODUCER = 1` (Batch 372 disabled `dxy_headwind_multinational_short` pending foreign_rev_pct producer); **185 active for Phase 1A-β cube** (185 × 25 = 4,625 cells, down from 4,650 pre-Batch-372). The "60" figure below refers to the Layer 1 baseline only; the live total spans Layer 1 + Layer 2 + Layer 3 + Wave 3 additions + Batch 316a un-deprecated literature-null strategies.
 
+> **B897 FRESHNESS NOTE (2026-06-18 B895-DEFER-A tranche 1 per CHECKLIST #111):** Above is Batch 372 historical anchor (2026-05-26). **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219 registered / 218 active. Cube: 218 × 26 exit methods × 7 regimes = 39,676 cells (was 4,625 in B372 scope). B372→B874 strategy lineage: +33 net additions via B709 EMPIRICAL-RESTORE + B685/B686 Class 7 NEW + B636/B645 + B603/B605/B607/B610 chart-pattern mirrors + B580/B581 Layer 2D ICT inline-spec sweeps − 5 deletions (B620/B682/B687/B722/B874). Inline "186 / 185" references preserved for historical lineage; canonical current state in CLAUDE.md banner + CANONICAL_FACTS.md F-002 (post-B897 update).
+
 **2026-05-15 Batch 178 status:** No strategy roster changes this session. Phase 1A backtest pipeline operates on Layer 1 baseline (60 strategies) per CANONICAL_FACTS.md F-002. Live per-strategy ranking on https://jeetmehta1991.github.io/stock-picks-app/dashboard_phase_1a/#strategies tab.
 
 **Generated:** Pass 52 turn 53

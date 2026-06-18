@@ -2,6 +2,8 @@
 
 **2026-05-15 Day 9+ Batch 178 status:** No rule/threshold changes this session — only inventory + dashboards + Wikipedia revisions prefetch. Canonical thresholds + criteria remain authoritative per §2A signals, §10.8 smart money composite, §13.12 API inventory cross-ref. Live coverage view: https://jeetmehta1991.github.io/stock-picks-app/dashboard_sprint0a/
 
+> **B897 FRESHNESS NOTE (2026-06-18 B895-DEFER-A tranche 1 per CHECKLIST #111):** This doc contains MAY-26-ERA strategy counts at lines 341, 671, 1213, 1240 ("186 / 185 active" / "199 planned target"). **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219 registered / 218 active. Inline references preserved for historical lineage; canonical current state in CLAUDE.md banner + CANONICAL_FACTS.md F-002 (post-B897 update).
+
 **Document role:** Canonical home for all trading rules, thresholds, criteria, benchmarks, and parameters across all 5 stages of the project. ENGINEERING_REGISTER references this document instead of duplicating thresholds inline.
 
 **Created:** Pass 52 turn 128
