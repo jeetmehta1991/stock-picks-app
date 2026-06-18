@@ -1106,6 +1106,48 @@ MEAN_REVERSION_STRATEGIES: set[str] = {
 }
 
 
+# B906 (2026-06-18) Council 28 NEW: MEASUREMENT_DISPUTED taxonomy. Auditable
+# set of strategies where R4 cube and B660-extended fire-count measurements
+# disagree materially, OR where both measurements are below the n=30 cube-
+# validity threshold without prior owner walk-back protection. Members are
+# INELIGIBLE for Stage 5 SWAP promotion + B888 Phase 1B-alpha winners
+# shortlist until removed (gate enforced by downstream selection scripts).
+#
+# Removal protocol (one of):
+#   (a) Post-B901 re-measurement via measure_fire_count.py confirms fire
+#       count >= 30/yr on full T1a x 6.41yr universe -> remove + cube-
+#       eligible
+#   (b) OPEN_INVESTIGATIONS entry resolved with empirical evidence of
+#       measurement-pair convergence -> remove + cube-eligible
+#   (c) Owner-approved EXPLORATORY tag applied -> remove (EXPLORATORY
+#       supersedes MEASUREMENT_DISPUTED as it's a deeper marker)
+#
+# Reason for separate taxonomy (vs just EXPLORATORY-tagging):
+#   - EXPLORATORY is sticky across roster docs, dashboards, count-pins
+#   - Tagging on KNOWN-BROKEN measurements would violate
+#     `feedback_no_a_priori_strategy_pruning`
+#   - MEASUREMENT_DISPUTED is INSTRUMENTED DEFER (Council 28 Option C+);
+#     auto-resolves when B901-fix + re-measurement lands (B907)
+#
+# DEC-614 PATTERN precedent: explicit auditable set in code +
+# `feedback_doc_count_drift_must_be_test_pinned` adherence.
+MEASUREMENT_DISPUTED: set[str] = {
+    # B906 initial population: 6 GENUINELY_FIRE_STARVED strategies from B900
+    # audit with NO existing EXPLORATORY tag AND NO walk-back marker.
+    # R4 cube fired < 30 / B660-extended also < 30 OR materially different
+    # measurement; clear cube-validity below n=30 threshold per
+    # `feedback_minimum_fire_count_gate_before_cube`. Resolve via B907
+    # post-B901 SMC fix re-measurement.
+    "institutional_oversold_long",                # R4=1, B660-ext=0.00/yr
+    "institutional_breakout_confirmation_long",   # R4=3, B660-ext=0.00/yr
+    "institutional_persistent_holders_long",      # R4=6, B660-ext=0.00/yr
+    "keltner_lower",                              # R4=1, B660-ext=17.93/yr -- MEASUREMENT DISAGREEMENT
+    "post_inclusion_reversal_short",              # R4=7, B660-ext=0.00/yr
+    "pivot_s2_bounce",                            # R4=10, B660-ext=28.38/yr -- BORDERLINE
+    "pivot_s3_capitulation",                      # R4=11, B660-ext=2.34/yr -- B643 redesign
+}
+
+
 # BUG-235 RESOLVED-IMPLEMENTED Batch 99 2026-05-12: AAII Investor Sentiment
 # Survey closes Wednesday close, AAII publishes results Thursday morning.
 # A Wed-dated survey is NOT tradeable on Wed itself -- it's tradeable from

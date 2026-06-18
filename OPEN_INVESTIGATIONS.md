@@ -908,3 +908,27 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   - (C) Document the schema-mismatch + form-naming check as a recurring annual cadence (SEC may rename forms again)
 - **Joint:** B748e SC13D-INCREMENTAL-REFRESH ticket (RESOLVED); B748f-FULL-HISTORICAL-SC13D-DECODE (new follow-up); CHECKLIST #15 + #44(b) lessons reinforced.
 - **Status:** OPEN -- form-naming fix shipped; historical decode backfill awaiting owner approval.
+
+
+## INV-056 -- B906 MEASUREMENT_DISPUTED: 7 strategies with R4 vs B660-extended fire-count divergence below n=30 cube-validity threshold (2026-06-18)
+- **Observed:** B900 audit (`output_audit/b900_r4_quiet_low_fire_audit.json`) classified 14 strategies as GENUINELY_FIRE_STARVED (R4 trades < 30 in 4yr backtest + B660-extended fires < 30/yr). Of those, 8 already had EXPLORATORY tag or walk-back marker. The remaining 7 lack protection AND can't yield valid cube verdict per `feedback_minimum_fire_count_gate_before_cube`. Council 28 (4-advisor synthesis) verdict: tagging EXPLORATORY on known-broken measurements violates `feedback_no_a_priori_strategy_pruning`; pure DEFER repeats B748b failure mode. Solution: NEW `MEASUREMENT_DISPUTED` set in `backtest/config.py` (DEC-614 pattern) + per-strategy investigation here + Stage 5/B888 promotion gate.
+
+### Per-strategy measurement pair
+
+| Strategy | R4 trades | B660-ext fires/yr | Discrepancy notes |
+|---|---|---|---|
+| `institutional_oversold_long` | 1 | 0.00 | Institutional family; not B748d-protected directly but related. Resolve via B907 re-measure. |
+| `institutional_breakout_confirmation_long` | 3 | 0.00 | Same family pattern. |
+| `institutional_persistent_holders_long` | 6 | 0.00 | Same family pattern. |
+| `keltner_lower` | 1 | **17.93** | **MEASUREMENT DISAGREEMENT** -- R4 fires 1 trade but B660-ext measures 17.93/yr signal-fires. Possible R4 engine bug OR signal-vs-trade gap. Investigate post-B901 SMC fix. |
+| `post_inclusion_reversal_short` | 7 | 0.00 | Index-rebalance strategy. B660 may not compute rebalance events. |
+| `pivot_s2_bounce` | 10 | **28.38** | **BORDERLINE** -- B660-ext just below 30/yr threshold. May PASS in R5 post-B901. |
+| `pivot_s3_capitulation` | 11 | 2.34 | B643 redesign era (Wyckoff Spring/Test); EXPLORATORY status pending Stage 5 cube empirical validation per W5 owner directive 2026-06-09. |
+
+- **Recommended action:**
+  - (A) **Auto-resolve gate**: post-B901 SMC fix + B907 re-measurement via `measure_fire_count.py` on current engine. Strategy whose fire count >= 30/yr post-fix is removed from MEASUREMENT_DISPUTED.
+  - (B) Strategies persisting < 30/yr post-fix: surface for owner per-strategy decision (EXPLORATORY tag vs walk redesign vs DELETE).
+  - (C) `keltner_lower` deserves immediate investigation: 17.93/yr B660 vs 1 R4 trade is a 17x discrepancy. Check engine call path for the strategy.
+  - (D) `pivot_s2_bounce` may simply need cube measurement; defer judgment.
+- **Joint:** B902-D defer council 27 verdict; B901 SMC root-cause fix; `feedback_minimum_fire_count_gate_before_cube`; DEC-614 MEAN_REVERSION_STRATEGIES taxonomy pattern.
+- **Status:** OPEN -- 7 strategies on MEASUREMENT_DISPUTED gate pending B907 post-fix re-measure.
