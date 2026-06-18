@@ -8,6 +8,8 @@
 
 **Phase 1B-alpha path (canonical, B894):** [`PATH_TO_PHASE_1B_ALPHA.md`](PATH_TO_PHASE_1B_ALPHA.md) — refactored from STAGE_2 §10 to standalone per owner directive. Tracks B888-B891 Council 14/15 synthesis + DEC-611/612/613/614 implementation status.
 
+> **B898 FRESHNESS NOTE (2026-06-18 B895-DEFER-A tranche 2 per CHECKLIST #111):** This doc contains MAY-26-ERA strategy counts inline (lines 32 "102 strategies May-20 target", 34 "186 registered / 185 active Batch 372", 39 "148 on May 25 Batch 316a → 186 by Batch 372", 142 "73/73 strategies QUIET", 151 "Active strategy count 125 → 148 → live 186"). **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219 registered / 218 active. B372→B874 lineage: net +33 via B709 EMPIRICAL-RESTORE + B685/B686/B636/B645/B603-B610 Class 7 NEW + B580/B581 Layer 2D ICT − 5 deletions (B620/B682/B687/B722/B874). Historical [DONE] lineage entries preserved as batch-progress evidence; canonical current state in CLAUDE.md banner.
+
 ---
 
 ## Status legend

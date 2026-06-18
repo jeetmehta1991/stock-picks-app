@@ -4,6 +4,8 @@
 **Owner:** mandatory per DEC-503 + CHECKLIST #69 + feedback_pyramid_full_13_tiers_mandatory.md
 **Created:** Batch 345 2026-05-25 in response to owner directive to "Create a new testing pyramid reference md document".
 
+> **B898 FRESHNESS NOTE (2026-06-18 B895-DEFER-A tranche 2 per CHECKLIST #111):** Line 305 references "185 strategies / 1,243 producer keys" (Batch 345 era). **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219 strategies / producer-key count to be re-measured (likely 1,400-1,500 after B689 EXTENDED signals + Layer 2D ICT additions). Phase 10 (Wiring Audit Gate) methodology unchanged. Test pyramid 13-tier structure unchanged. Lines 70 + 268 references to "BUG-218" / "Batch 218" are proper identifiers (not strategy counts) and require no update.
+
 This document supersedes the 9-tier subset in CHECKLIST #69 by enumerating the **full 13 tiers** from `IMPLEMENTATION_PLAN.md` Track T2 + `archive/2026-05-28-pre-1a-alpha-gate/docs/BATCH_318_PROCESS_POOL_DESIGN.md` (archived Batch 428). Any partial-pyramid run must report partial status per memory rule.
 
 ---

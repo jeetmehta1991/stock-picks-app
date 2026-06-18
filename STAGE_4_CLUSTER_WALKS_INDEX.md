@@ -1,5 +1,7 @@
 # Stage 4 Cluster Walks — Master Index
 
+> **B898 FRESHNESS UPDATE (2026-06-18 B895-DEFER-A tranche 2 per CHECKLIST #111):** B828 banner below references "221-strategy registry"; post-B828 B874 deleted 2 strategies. **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219-strategy registry / 218 active. B722 -3 + B874 -2 reduced 224 → 219. Walks-complete status UNCHANGED — Stage 4 cluster walks across 219 registered strategies are DONE per owner B828 confirmation, with B874 deletions being walk-derived (Pattern W deterministic-duplicate verdicts).
+>
 > **B828 STATUS BANNER (2026-06-16) — STAGE 4 WALKS DONE per owner confirmation.**
 >
 > Owner explicit confirmation 2026-06-16: all Stage 4 per-strategy cluster walks across the 221-strategy registry are COMPLETE. The B750 64%-coverage banner below is HISTORICAL — superseded by post-B750 walk batches (B656/B657/B663/B670/B682/B685/B686/B709/B718/B720-B725/B727-B730/B732 + many subsequent through B826).

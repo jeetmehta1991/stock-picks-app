@@ -1,6 +1,8 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
 **Last regenerated:** April 2026 (post-Pass 51)
 
+> **B898 FRESHNESS NOTE (2026-06-18 B895-DEFER-A tranche 2 per CHECKLIST #111):** Header claims "534 decision entries"; live `sync_doc_counts.py --check` reports `actual=534 claimed=534`. However, **DEC-611 / DEC-612 / DEC-613 / DEC-614 (owner-approved B890/B891 2026-06-18 Council 16) are referenced in the header narrative but NOT yet added as DECISION-NNN rows in the table below**. True total per registered-decisions = 534; per owner-approved including B890/B891 = **538**. **B899-DEFER ticket:** add DECISION-611/612/613/614 rows with full status/theme/pass-resolved per existing schema (~30 min surgical batch).
+
 ---
 
 ## Decision Registry
