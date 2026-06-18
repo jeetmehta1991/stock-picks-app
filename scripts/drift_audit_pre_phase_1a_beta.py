@@ -59,6 +59,28 @@ def live_values() -> dict:
         "regime_count":        4,    # bull/bear/neutral/crisis
         "phase_1a_beta_actual_wall_hours": 10.5,  # 2026-05-24 Hetzner
         "phase_1a_beta_pool_speedup_target": "4-8x",  # Batch 322 theoretical
+        # B907 DEFER-G (2026-06-18): AWS-disambiguated keys per B533 pin
+        # tests (test_batch533_r4_runtime_path_audit.py). Distinguishes
+        # Hetzner single-machine vs AWS multi-instance runtime estimation
+        # so future audits don't have to guess what "actual_wall_hours"
+        # 10.5 means.
+        # R4 ACTUAL CONFIG (2026-05-31 -- output_batch395_final/ run):
+        # 5 AWS c7a.4xlarge spot instances x ~30-40 min each =~ 2.5-3.3h
+        # per-instance compute; 1937 ticker universe split across 5
+        # batch395 instances; multiprocessing 14 of 16 vCPUs per instance.
+        # Hetzner fallback: single-machine pool 4-8x via Batch 322 levers.
+        "phase_1a_beta_aws_instance_type": "c7a.4xlarge",  # R4 actual; B884 R5 plan = c7a.8xlarge
+        "phase_1a_beta_aws_parallel_instances": 5,  # 5 batch395 instances
+        "phase_1a_beta_aws_pool_workers_per_instance": 12,  # of 16 vCPUs per aws_batch395_launch.py default (--workers 12; 4 reserved for engine/data/IPC)
+        "phase_1a_beta_aws_per_instance_compute_hours": 3.0,  # ~2.5-3.3h observed per instance
+        "phase_1a_beta_actual_wall_hours_note": (
+            "10.5h = Hetzner single-machine baseline 2026-05-24 (run_phase1a "
+            "--phase 1a-beta full T1a x 4yr without multiprocessing pool). "
+            "Distinct from AWS R4 run 2026-05-31 (output_batch395_final/) "
+            "which was 5 c7a.4xlarge spot instances x ~3h each = ~3h wall-"
+            "clock (parallel) at ~$7.80 cost per B884 instance-type "
+            "decision. For R5 planning use AWS keys not actual_wall_hours."
+        ),
     }
 
     if tl_path.exists():

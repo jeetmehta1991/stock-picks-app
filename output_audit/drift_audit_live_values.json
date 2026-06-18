@@ -13,5 +13,10 @@
   "regime_count": 4,
   "phase_1a_beta_actual_wall_hours": 10.5,
   "phase_1a_beta_pool_speedup_target": "4-8x",
+  "phase_1a_beta_aws_instance_type": "c7a.4xlarge",
+  "phase_1a_beta_aws_parallel_instances": 5,
+  "phase_1a_beta_aws_pool_workers_per_instance": 12,
+  "phase_1a_beta_aws_per_instance_compute_hours": 3.0,
+  "phase_1a_beta_actual_wall_hours_note": "10.5h = Hetzner single-machine baseline 2026-05-24 (run_phase1a --phase 1a-beta full T1a x 4yr without multiprocessing pool). Distinct from AWS R4 run 2026-05-31 (output_batch395_final/) which was 5 c7a.4xlarge spot instances x ~3h each = ~3h wall-clock (parallel) at ~$7.80 cost per B884 instance-type decision. For R5 planning use AWS keys not actual_wall_hours.",
   "tests_collected": 4631
 }
