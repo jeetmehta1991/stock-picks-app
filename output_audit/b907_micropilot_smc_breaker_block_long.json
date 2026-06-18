@@ -1,0 +1,52 @@
+{
+  "as_of": "2024-12-31",
+  "universe": "T1a_PIT_canonical",
+  "n_tickers_sampled": 5,
+  "n_tickers_full_t1a_pit_active": 511,
+  "projection_scale_factor": 102.2,
+  "ticker_sample_strategy": "first",
+  "ticker_sample_seed": null,
+  "n_cache_misses": 0,
+  "date_range": {
+    "start": "2024-09-01",
+    "end": "2024-12-31"
+  },
+  "n_bars_total": 6275,
+  "results": [
+    {
+      "strategy": "smc_breaker_block_long",
+      "n_fires_long": 101,
+      "n_fires_short": 0,
+      "n_fires_avoid": 0,
+      "n_bars_evaluated": 420,
+      "n_tickers_sampled": 5,
+      "ticker_year_span": 1.67,
+      "calendar_year_span": 0.33,
+      "measured_fires_per_calendar_year_long_sampled": 304.88,
+      "measured_fires_per_calendar_year_short_sampled": 0.0,
+      "measured_fires_per_calendar_year_total_sampled": 304.88,
+      "projected_fires_per_calendar_year_long_full_t1a": 31158.5,
+      "projected_fires_per_calendar_year_short_full_t1a": 0.0,
+      "projected_fires_per_calendar_year_total_full_t1a": 31158.5,
+      "projected_verdict_full_t1a": "PASS_CUBE",
+      "projection_scale_factor": 102.2,
+      "n_tickers_full_t1a_used_for_projection": 511,
+      "fires_per_ticker_year_long": 60.6,
+      "fires_per_ticker_year_short": 0.0,
+      "first_fire_date": "2024-09-03",
+      "last_fire_date": "2024-12-31",
+      "verdict": "PASS_CUBE",
+      "gate_marginals": {
+        "price_above_ema_200": 0.6381,
+        "smc_breaker_block_bullish": 0.2405
+      },
+      "gate_pairwise_correlation": {
+        "price_above_ema_200 x smc_breaker_block_bullish": 0.424
+      },
+      "independence_predicted_joint_prob": 0.153447,
+      "independence_predicted_vs_measured_ratio": 0.638,
+      "notes": "Evaluated in 0.1s; 5 tickers."
+    }
+  ],
+  "non_representativeness_caveat": "20-large-cap-sample x single-regime-arc (2022 bear -> 2023-24 bull) linearly scaled to T1a active. Breakout/trend strategies over-fire on this sample vs full universe; knife-catch strategies under-fire vs full universe (delisted/distressed names absent). Per external-AI critique 2026-06-09: 'specific verdict reversals are HYPOTHESES, not results.' Authoritative numbers require full --max-tickers 0 run across multiple regimes."
+}
