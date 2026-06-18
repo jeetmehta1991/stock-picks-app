@@ -1,0 +1,2005 @@
+{
+  "metadata": {
+    "r4_run_date": "2026-05-31",
+    "b660_v2_extended_date": "2026-06-12",
+    "audit_date": "2026-06-18",
+    "audit_batch": "B900",
+    "total_strategies_current_roster": 219,
+    "sources": {
+      "r4_trade_log": "output_batch395_final/trade_log.csv",
+      "b660_v2_extended": "output_audit/fire_count_measured_b660_post_b689_extended.json",
+      "live_roster": "python -c from backtest.signals.screener import ALL_STRATEGIES"
+    }
+  },
+  "summary": {
+    "by_category": {
+      "R4_QUIET_BUT_FIRES_POST_B689": 36,
+      "CLASS_7_NEW_POST_R4": 27,
+      "TRULY_QUIET_BOTH": 63,
+      "R4_LOW_BUT_FIRES_POST_B689": 19,
+      "R4_FIRED_OK": 60,
+      "GENUINELY_FIRE_STARVED": 14
+    },
+    "by_risk": {
+      "MED": 57,
+      "LOW": 82,
+      "HIGH": 80
+    },
+    "r4_fired_strategies": 102,
+    "r4_quiet_in_current_roster": 126,
+    "r4_low_fire_in_current_roster": 33
+  },
+  "strategies": [
+    {
+      "name": "52w_high_breakout",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1793.03,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "52w_high_breakout_pullback_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1268.24,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "52w_high_breakout_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "52w_high_breakout_with_smart_money_vol_below_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-06-07",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "52w_low_breakdown",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "52w_low_breakdown_pullback_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 622.11,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "52wh_break_retest",
+      "r4_n_trades": 3,
+      "b660_v2_ext_fires_per_yr": 1058.94,
+      "first_commit_date": "2026-05-13",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "52wl_break_retest_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 205.08,
+      "first_commit_date": "2026-06-06",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "activist_13d_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-31",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "adx_initiation",
+      "r4_n_trades": 955,
+      "b660_v2_ext_fires_per_yr": 1526.81,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "avwap_20high_rejection_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 21.83,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "avwap_252_breakout",
+      "r4_n_trades": 179,
+      "b660_v2_ext_fires_per_yr": 1268.24,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "avwap_50_reclaim",
+      "r4_n_trades": 1276,
+      "b660_v2_ext_fires_per_yr": 8559.2,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "awesome_oscillator",
+      "r4_n_trades": 212,
+      "b660_v2_ext_fires_per_yr": 3025.71,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "bb_squeeze_volume",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 135.21,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "bollinger_lower",
+      "r4_n_trades": 116,
+      "b660_v2_ext_fires_per_yr": 1979.56,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "bollinger_tight",
+      "r4_n_trades": 380,
+      "b660_v2_ext_fires_per_yr": 6724.69,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "bollinger_tight_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "bollinger_upper_short",
+      "r4_n_trades": 4,
+      "b660_v2_ext_fires_per_yr": 74.39,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "break_retest_confluence",
+      "r4_n_trades": 105,
+      "b660_v2_ext_fires_per_yr": 9704.55,
+      "first_commit_date": "2026-05-13",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "break_retest_volume",
+      "r4_n_trades": 329,
+      "b660_v2_ext_fires_per_yr": 10430.84,
+      "first_commit_date": "2026-05-13",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "bullish_engulfing_support",
+      "r4_n_trades": 28,
+      "b660_v2_ext_fires_per_yr": 527.6,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "camarilla_r4_breakout",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1654.39,
+      "first_commit_date": "2026-06-09",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "camarilla_s3_bounce",
+      "r4_n_trades": 15,
+      "b660_v2_ext_fires_per_yr": 65.97,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "classification_change_breakout_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_from_tech_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_momentum_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_oversold_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_recent_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_to_defensive_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_to_tech_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_volume_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_with_insider_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "classification_change_with_institutional_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "cmf_flip",
+      "r4_n_trades": 636,
+      "b660_v2_ext_fires_per_yr": 3151.26,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "cpr_narrow_bullish",
+      "r4_n_trades": 2177,
+      "b660_v2_ext_fires_per_yr": 7788.15,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "cpr_narrow_momentum",
+      "r4_n_trades": 283,
+      "b660_v2_ext_fires_per_yr": 20989.4,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "cpr_narrow_momentum_short",
+      "r4_n_trades": 109,
+      "b660_v2_ext_fires_per_yr": 13901.65,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "cup_and_handle_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 154.08,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "cup_and_handle_retest_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1585.3,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "dc20_break_retest",
+      "r4_n_trades": 6,
+      "b660_v2_ext_fires_per_yr": 10256.01,
+      "first_commit_date": "2026-05-13",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "death_cross_50_200_volume",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 13.57,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "doji_at_resistance_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 210.07,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "doji_at_support",
+      "r4_n_trades": 3,
+      "b660_v2_ext_fires_per_yr": 214.44,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "donchian_10_breakout",
+      "r4_n_trades": 3,
+      "b660_v2_ext_fires_per_yr": 3080.92,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "donchian_breakdown_retest_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1966.92,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "donchian_breakdown_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1114.62,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "donchian_breakout_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 960.69,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "donchian_breakout_retest_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 3389.25,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "donchian_breakout_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "double_bottom_long",
+      "r4_n_trades": 53,
+      "b660_v2_ext_fires_per_yr": 7507.59,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "dxy_headwind_multinational_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "flag_bear_retest_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 90.92,
+      "first_commit_date": "2026-06-07",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "flag_bull_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 990.32,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "flag_bull_retest_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 414.69,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "force_index_breakout",
+      "r4_n_trades": 621,
+      "b660_v2_ext_fires_per_yr": 7163.55,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "gold_silver_risk_off_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "golden_cross_20_50",
+      "r4_n_trades": 12,
+      "b660_v2_ext_fires_per_yr": 992.51,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "golden_cross_50_200",
+      "r4_n_trades": 5,
+      "b660_v2_ext_fires_per_yr": 504.05,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "golden_cross_9_21",
+      "r4_n_trades": 155,
+      "b660_v2_ext_fires_per_yr": 2535.07,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "golden_cross_volume",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 23.08,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "halloween_seasonal_long",
+      "r4_n_trades": 20,
+      "b660_v2_ext_fires_per_yr": 22410.16,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "hammer_at_support_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 123.83,
+      "first_commit_date": "2026-06-10",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "head_and_shoulders_bottom_long",
+      "r4_n_trades": 10,
+      "b660_v2_ext_fires_per_yr": 1476.13,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "head_and_shoulders_top_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1293.03,
+      "first_commit_date": "2026-06-10",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "htf_aligned_breakout_long",
+      "r4_n_trades": 190,
+      "b660_v2_ext_fires_per_yr": 1363.22,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "htf_aligned_breakout_short",
+      "r4_n_trades": 309,
+      "b660_v2_ext_fires_per_yr": 1256.39,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "hull_rsi",
+      "r4_n_trades": 360,
+      "b660_v2_ext_fires_per_yr": 17875.57,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "ichimoku_cloud_breakdown",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 114.94,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "ichimoku_cloud_breakout",
+      "r4_n_trades": 384,
+      "b660_v2_ext_fires_per_yr": 16602.81,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "ichimoku_tk_cross",
+      "r4_n_trades": 77,
+      "b660_v2_ext_fires_per_yr": 1496.71,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "inside_bar_breakout",
+      "r4_n_trades": 37,
+      "b660_v2_ext_fires_per_yr": 2295.83,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "insider_cluster_long",
+      "r4_n_trades": 51,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "insider_cluster_with_director_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_breakout_confirmation_long",
+      "r4_n_trades": 3,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_buy_momentum_long",
+      "r4_n_trades": 126,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "institutional_cluster_long",
+      "r4_n_trades": 278,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "institutional_committed_growth_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_high_conviction_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_increased_with_directors_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_insider_combo_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_multi_quarter_persistence_long",
+      "r4_n_trades": 1,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_oversold_long",
+      "r4_n_trades": 1,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_persistence_breakout_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_persistence_momentum_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_persistence_oversold_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_persistence_volume_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_persistent_holders_long",
+      "r4_n_trades": 6,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_recent_init_momentum_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_recent_init_volume_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_strong_conviction_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_volume_confirmation_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_with_directors_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "institutional_with_officers_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "inverted_cup_and_handle_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 123.67,
+      "first_commit_date": "2026-06-10",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "january_effect_small_cap_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "judas_swing_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 115.25,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "judas_swing_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 115.56,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "keltner_lower",
+      "r4_n_trades": 1,
+      "b660_v2_ext_fires_per_yr": 17.93,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "m_and_a_target_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-31",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "macd_bullish_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "macd_crossover",
+      "r4_n_trades": 144,
+      "b660_v2_ext_fires_per_yr": 6003.23,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "macd_crossover_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 2997.48,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "macd_fast_crossover",
+      "r4_n_trades": 256,
+      "b660_v2_ext_fires_per_yr": 9299.37,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "macd_ichimoku",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 2454.13,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "mfi_oversold",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 7.64,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "mfi_oversold_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "mmbm_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 2158.75,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "mmsm_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 2712.24,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "monthly_bias_momentum_long",
+      "r4_n_trades": 1335,
+      "b660_v2_ext_fires_per_yr": 10503.82,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "morning_star",
+      "r4_n_trades": 228,
+      "b660_v2_ext_fires_per_yr": 1866.02,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "naked_poc_retest_long",
+      "r4_n_trades": 1,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "news_momentum_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "news_momentum_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-06-05",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "news_reversal_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-06-05",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "news_reversal_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "news_sentiment_long",
+      "r4_n_trades": 5,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "news_sentiment_shift_long",
+      "r4_n_trades": 4,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "orb_stocks_in_play_long",
+      "r4_n_trades": 205,
+      "b660_v2_ext_fires_per_yr": 183.87,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "orb_stocks_in_play_short",
+      "r4_n_trades": 202,
+      "b660_v2_ext_fires_per_yr": 189.18,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pairs_mean_reversion_long",
+      "r4_n_trades": 1145,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pairs_mean_reversion_short",
+      "r4_n_trades": 165,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "parabolic_sar_flip",
+      "r4_n_trades": 338,
+      "b660_v2_ext_fires_per_yr": 2649.54,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "parabolic_sar_flip_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1338.89,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "pead_long",
+      "r4_n_trades": 528,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pead_long_high_yoy_growth_only",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-31",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "pead_short",
+      "r4_n_trades": 453,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pead_short_negative_yoy_growth",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-31",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "pead_with_insider_confirmation_long",
+      "r4_n_trades": 9,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "pead_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "pivot_fib_confluence",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 91.7,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "pivot_r1_breakout",
+      "r4_n_trades": 96,
+      "b660_v2_ext_fires_per_yr": 1655.48,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pivot_r2_continuation",
+      "r4_n_trades": 2,
+      "b660_v2_ext_fires_per_yr": 145.98,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "pivot_r3_blowoff_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 4.52,
+      "first_commit_date": "2026-06-09",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "MED"
+    },
+    {
+      "name": "pivot_s1_bounce",
+      "r4_n_trades": 97,
+      "b660_v2_ext_fires_per_yr": 365.72,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pivot_s2_bounce",
+      "r4_n_trades": 10,
+      "b660_v2_ext_fires_per_yr": 28.38,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "pivot_s3_capitulation",
+      "r4_n_trades": 11,
+      "b660_v2_ext_fires_per_yr": 2.34,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "po3_bearish",
+      "r4_n_trades": 1766,
+      "b660_v2_ext_fires_per_yr": 4075.14,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "po3_bullish",
+      "r4_n_trades": 1501,
+      "b660_v2_ext_fires_per_yr": 5550.65,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "poc_magnet_long",
+      "r4_n_trades": 2,
+      "b660_v2_ext_fires_per_yr": 11330.86,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "post_deletion_drift_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "post_inclusion_drift_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "post_inclusion_reversal_short",
+      "r4_n_trades": 7,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "ppo_crossover",
+      "r4_n_trades": 296,
+      "b660_v2_ext_fires_per_yr": 2156.1,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pre_fomc_long_sleeve",
+      "r4_n_trades": 229,
+      "b660_v2_ext_fires_per_yr": 1396.43,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "pre_fomc_quality_momentum_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "pre_holiday_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1743.28,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "pre_rebalance_long",
+      "r4_n_trades": 3,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "prev_day_high_break",
+      "r4_n_trades": 86,
+      "b660_v2_ext_fires_per_yr": 2721.13,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "prev_day_low_bounce",
+      "r4_n_trades": 49,
+      "b660_v2_ext_fires_per_yr": 499.06,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "prev_day_low_breakdown",
+      "r4_n_trades": 1,
+      "b660_v2_ext_fires_per_yr": 1218.8,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "r1_break_retest",
+      "r4_n_trades": 88,
+      "b660_v2_ext_fires_per_yr": 8076.98,
+      "first_commit_date": "2026-05-13",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "risk_off_bond_equity_short",
+      "r4_n_trades": 166,
+      "b660_v2_ext_fires_per_yr": 14180.5,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "roc_burst",
+      "r4_n_trades": 74,
+      "b660_v2_ext_fires_per_yr": 1155.64,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "rsi21_slow",
+      "r4_n_trades": 2,
+      "b660_v2_ext_fires_per_yr": 1.72,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "GENUINELY_FIRE_STARVED",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "rsi9_extreme",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 5.15,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "rsi_overbought_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "rsi_oversold",
+      "r4_n_trades": 25,
+      "b660_v2_ext_fires_per_yr": 1336.08,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "rsi_oversold_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "rsi_volume_200ema",
+      "r4_n_trades": 3,
+      "b660_v2_ext_fires_per_yr": 763.09,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "sector_rotation_defensive_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "shooting_star_short",
+      "r4_n_trades": 2,
+      "b660_v2_ext_fires_per_yr": 204.15,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "short_borrow_trap_avoid",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-31",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "simple_below_ema_50_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 34367.03,
+      "first_commit_date": "2026-06-10",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "smc_bos_continuation",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 490.02,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_bos_retest_entry",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 4622.24,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_breaker_block_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 16631.2,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_breaker_block_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 9053.74,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_choch_reversal",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 3350.88,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_discount_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1706.94,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_equal_highs_sweep_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1053.95,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_equal_lows_sweep_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1068.15,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_fvg_retest_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1528.84,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_fvg_retest_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1249.52,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_inverse_fvg",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 2424.19,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_liquidity_sweep_reversal",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1232.52,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_mitigation_block_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 205.39,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_mitigation_block_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 148.47,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_order_block_bounce",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 5675.57,
+      "first_commit_date": "2026-05-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_ote_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 735.33,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_ote_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 708.04,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "smc_premium_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1315.02,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "squeeze_breakout",
+      "r4_n_trades": 252,
+      "b660_v2_ext_fires_per_yr": 1819.7,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "squeeze_breakout_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "squeeze_setup_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-31",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "stoch_oversold",
+      "r4_n_trades": 21,
+      "b660_v2_ext_fires_per_yr": 112.13,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "stochrsi_overbought_short",
+      "r4_n_trades": 353,
+      "b660_v2_ext_fires_per_yr": 4923.55,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "stochrsi_oversold",
+      "r4_n_trades": 1115,
+      "b660_v2_ext_fires_per_yr": 3452.88,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "supertrend_ichimoku_adx",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 3428.08,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "supertrend_macd",
+      "r4_n_trades": 520,
+      "b660_v2_ext_fires_per_yr": 959.76,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "supertrend_macd_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 735.96,
+      "first_commit_date": "2026-04-28",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "tema_dema",
+      "r4_n_trades": 406,
+      "b660_v2_ext_fires_per_yr": 4074.52,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "three_black_crows_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 2463.8,
+      "first_commit_date": "2026-06-08",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "three_white_soldiers",
+      "r4_n_trades": 344,
+      "b660_v2_ext_fires_per_yr": 2616.33,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "totm_long",
+      "r4_n_trades": 22,
+      "b660_v2_ext_fires_per_yr": 14744.75,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_LOW_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "triangle_ascending_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 8.11,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "triangle_ascending_retest_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-25",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "triangle_descending_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 12.48,
+      "first_commit_date": "2026-06-10",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "MED"
+    },
+    {
+      "name": "turtle_soup_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 640.83,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "turtle_soup_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 585.93,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "ultimate_oscillator",
+      "r4_n_trades": 462,
+      "b660_v2_ext_fires_per_yr": 478.01,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "value_area_breakout_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 642.85,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "vix_backwardation_long",
+      "r4_n_trades": 33,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-19",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "vol_spike_2x_below_ema_50_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1312.53,
+      "first_commit_date": "2026-06-10",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "volume_spike_breakout",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 1820.48,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_QUIET_BUT_FIRES_POST_B689",
+      "risk_level": "MED"
+    },
+    {
+      "name": "week_opening_gap_fill_down",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 777.75,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "week_opening_gap_fill_up",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 865.25,
+      "first_commit_date": "2026-06-04",
+      "added_post_r4": true,
+      "category": "CLASS_7_NEW_POST_R4",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "weekly_bias_pullback_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "weekly_bias_pullback_short",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.31,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "williams_r_oversold",
+      "r4_n_trades": 849,
+      "b660_v2_ext_fires_per_yr": 3864.76,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "williams_stoch_dual",
+      "r4_n_trades": 134,
+      "b660_v2_ext_fires_per_yr": 10674.44,
+      "first_commit_date": "2026-04-17",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "xs_combined_momentum_low_ivol",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "xs_low_beta_long",
+      "r4_n_trades": 1079,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "xs_low_beta_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "xs_momentum_bottom_decile_short",
+      "r4_n_trades": 2163,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "xs_momentum_quality_combined",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "xs_momentum_top_decile",
+      "r4_n_trades": 383,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    },
+    {
+      "name": "xs_momentum_with_smart_money_long",
+      "r4_n_trades": 0,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-30",
+      "added_post_r4": false,
+      "category": "TRULY_QUIET_BOTH",
+      "risk_level": "HIGH"
+    },
+    {
+      "name": "xs_quality_top_quintile_long",
+      "r4_n_trades": 607,
+      "b660_v2_ext_fires_per_yr": 0.0,
+      "first_commit_date": "2026-05-18",
+      "added_post_r4": false,
+      "category": "R4_FIRED_OK",
+      "risk_level": "LOW"
+    }
+  ]
+}
