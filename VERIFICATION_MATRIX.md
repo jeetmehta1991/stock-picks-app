@@ -19,74 +19,46 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 - Total items audited: **736** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
 
 **By promotion tier:**
-- IMPLEMENTED: 357
-- DECIDED: 206
-- DEFERRED: 152
-- FUNC-DEAD: 19
-- UNKNOWN: 2
+- IMPLEMENTED: 336
+- DECIDED: 203
+- DEFERRED: 130
+- NOT-CONSUMED: 27
+- FUNC-DEAD: 25
+- UNKNOWN: 15
 
 **By coverage-driven engine status:**
-- Engine YES (executed): **165**
-- Engine LAZY-WIRED (all tagged files wired via lazy import chains): **6** (import chain exists; condition gating the call not met in this small backtest)
-- Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **105** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
-- Engine FUNC-DEAD (function exists but never executed): **25**
-- Engine NO (all tagged files orphaned): **27** (real wiring gap  -  helper file imported nowhere in the engine path)
+- Engine YES (executed): **185**
+- Engine LAZY-WIRED (all tagged files wired via lazy import chains): **1** (import chain exists; condition gating the call not met in this small backtest)
+- Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **113** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
+- Engine FUNC-DEAD (function exists but never executed): **2**
+- Engine NO (all tagged files orphaned): **28** (real wiring gap  -  helper file imported nowhere in the engine path)
 - Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **17** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
-- Engine N/A (no code expected): **391**
+- Engine N/A (no code expected): **390**
 
-### Classification anomalies (tier vs engine mismatch): **33**
+### Classification anomalies (tier vs engine mismatch): **4**
 
 | ID | Tier | Engine | Note |
 |---|---|---|---|
-| `DEC-028` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-034` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-078B` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-118` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-122` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-261` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-262` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-267` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-318` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-319` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-433` | DEFERRED | YES | DEFERRED but helper executes in current-phase backtest - intentional pre-wire or misclassification? |
-| `DEC-440` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-462` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-499` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-500` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-502` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-609` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-599` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-595` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-591` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-592` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-007` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-008` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-021` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-073` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-078` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-083` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+| `DEC-230` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
 | `BUG-186` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
-| `BUG-284` | IMPLEMENTED | NO | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-290` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-214` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-225` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
 | `BUG-241` | DECIDED | YES | DECIDED claims no-code-expected but coverage shows engine consumption - reclassify to IMPLEMENTED? |
+| `BUG-133` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
 
 ### Pyramid coverage gaps (count of engine-consumed items missing per tier)
 
-- `unit`: **10** items lack a reference in this tier's test files
-- `smoke`: **170** items lack a reference in this tier's test files
-- `integration`: **6** items lack a reference in this tier's test files
-- `system`: **171** items lack a reference in this tier's test files
-- `functional`: **170** items lack a reference in this tier's test files
-- `regression`: **169** items lack a reference in this tier's test files
-- `data_integrity`: **171** items lack a reference in this tier's test files
-- `performance`: **171** items lack a reference in this tier's test files
-- `acceptance`: **171** items lack a reference in this tier's test files
-- `property`: **171** items lack a reference in this tier's test files
-- `snapshot`: **171** items lack a reference in this tier's test files
-- `contract`: **171** items lack a reference in this tier's test files
-- `compatibility`: **171** items lack a reference in this tier's test files
+- `unit`: **12** items lack a reference in this tier's test files
+- `smoke`: **185** items lack a reference in this tier's test files
+- `integration`: **8** items lack a reference in this tier's test files
+- `system`: **186** items lack a reference in this tier's test files
+- `functional`: **185** items lack a reference in this tier's test files
+- `regression`: **184** items lack a reference in this tier's test files
+- `data_integrity`: **186** items lack a reference in this tier's test files
+- `performance`: **186** items lack a reference in this tier's test files
+- `acceptance`: **186** items lack a reference in this tier's test files
+- `property`: **186** items lack a reference in this tier's test files
+- `snapshot`: **186** items lack a reference in this tier's test files
+- `contract`: **186** items lack a reference in this tier's test files
+- `compatibility`: **186** items lack a reference in this tier's test files
 
 ### Engine-consumption gaps detail
 
@@ -96,7 +68,6 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-006` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-013` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-018` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_trader_toolkit.py has no live importer; another tagged file is wired (mentio... | YES | YES |
-| `DEC-019` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-021` | PARTIAL-ORPHAN | primary helper backtest/live_trading/risk_overlay.py has no live importer; another tagged file is wired (mention-only, n... | YES | YES |
 | `DEC-028` | NO | every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py) | no | no |
 | `DEC-034` | NO | every tagged file is orphaned (e.g. backtest/live_trading/risk_overlay.py) | no | no |
@@ -113,24 +84,19 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-111` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-118` | NO | every tagged file is orphaned (e.g. backtest/agents/toolkits/our_technical_toolkit.py) | no | no |
 | `DEC-122` | NO | every tagged file is orphaned (e.g. backtest/live_trading/ib_executor.py) | no | no |
-| `DEC-123` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-124` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/state_augmentation.py has no live importer; another tagged file is wired (mentio... | YES | YES |
 | `DEC-131` | PARTIAL-ORPHAN | primary helper backtest/agents/agent_gate_config.py has no live importer; another tagged file is wired (mention-only, no... | YES | YES |
-| `DEC-142` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-144` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-153` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `DEC-175` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-179` | PARTIAL-ORPHAN | primary helper scripts/monitor_phase_1a_beta_health.py has no live importer; another tagged file is wired (mention-only,... | YES | YES |
 | `DEC-189` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-... | YES | YES |
-| `DEC-206` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-207` | PARTIAL-ORPHAN | primary helper backtest/results/ab_orchestrator.py has no live importer; another tagged file is wired (mention-only, not... | YES | YES |
 | `DEC-209` | PARTIAL-ORPHAN | primary helper backtest/results/cube_populator.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `DEC-210` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `DEC-210` | PARTIAL-ORPHAN | primary helper backtest/results/ab_orchestrator.py has no live importer; another tagged file is wired (mention-only, not... | YES | YES |
 | `DEC-215` | PARTIAL-ORPHAN | primary helper backtest/results/ab_orchestrator.py has no live importer; another tagged file is wired (mention-only, not... | YES | YES |
+| `DEC-230` | NO | every tagged file is orphaned (e.g. backtest/util/structured_logger.py) | YES | no |
 | `DEC-231` | PARTIAL-ORPHAN | primary helper backtest/live_trading/risk_overlay.py has no live importer; another tagged file is wired (mention-only, n... | YES | no |
 | `DEC-246` | PARTIAL-ORPHAN | primary helper backtest/results/ab_orchestrator.py has no live importer; another tagged file is wired (mention-only, not... | YES | YES |
 | `DEC-247` | PARTIAL-ORPHAN | primary helper backtest/results/cube_populator.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `DEC-249` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-250` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-256` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-257` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
@@ -138,7 +104,6 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-262` | NO | every tagged file is orphaned (e.g. backtest/agents/toolkits/our_risk_toolkit.py) | no | no |
 | `DEC-267` | NO | every tagged file is orphaned (e.g. backtest/paper_trading/paper_portfolio.py) | no | no |
 | `DEC-280` | PARTIAL-ORPHAN | primary helper scripts/run_live_end_of_day.py has no live importer; another tagged file is wired (mention-only, not actu... | YES | YES |
-| `DEC-284` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-295` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-298` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-302` | PARTIAL-ORPHAN | primary helper scripts/prefetch_polygon_corp_actions.py has no live importer; another tagged file is wired (mention-only... | YES | YES |
@@ -148,7 +113,6 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-319` | NO | every tagged file is orphaned (e.g. scripts/refresh_aaii_sentiment.py) | YES | YES |
 | `DEC-321` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-325` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_fundamentals_toolkit.py has no live importer; another tagged file is wired (... | YES | YES |
-| `DEC-334` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-348` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-... | YES | YES |
 | `DEC-349` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-... | YES | YES |
 | `DEC-353` | PARTIAL-ORPHAN | primary helper backtest/live_trading/ib_executor.py has no live importer; another tagged file is wired (mention-only, no... | YES | YES |
@@ -160,14 +124,12 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-401` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-405` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-407` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `DEC-411` | FUNC-DEAD | function in backtest/signals/screener.py never executed | no | no |
 | `DEC-415` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `DEC-420` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-422` | PARTIAL-ORPHAN | primary helper backtest/results/cube_populator.py has no live importer; another tagged file is wired (mention-only, not ... | no | YES |
 | `DEC-423` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-425` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | no | YES |
 | `DEC-426` | PARTIAL-ORPHAN | primary helper backtest/results/cube_metrics_tier_b.py has no live importer; another tagged file is wired (mention-only,... | YES | YES |
-| `DEC-440` | FUNC-DEAD | function in backtest/signals/screener.py never executed | YES | YES |
+| `DEC-440` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_news_toolkit.py has no live importer; another tagged file is wired (mention-... | YES | YES |
 | `DEC-441` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-450` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-453` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | no | YES |
@@ -184,7 +146,6 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-496` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-494` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `DEC-497` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `DEC-499` | FUNC-DEAD | function in backtest/data/universe.py never executed | YES | YES |
 | `DEC-500` | NO | every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py) | no | no |
 | `DEC-501` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | no | YES |
 | `DEC-502` | NO | every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py) | YES | YES |
@@ -215,8 +176,8 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-011` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-012` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-015` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `BUG-018` | FUNC-DEAD | function in backtest/engine/backtest.py never executed | YES | YES |
-| `BUG-021` | FUNC-DEAD | function in backtest/engine/exit_strategies.py never executed | YES | YES |
+| `BUG-018` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
+| `BUG-021` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-022` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-027` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `BUG-028` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
@@ -225,13 +186,12 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-036` | NO | every tagged file is orphaned (e.g. scripts/revert_batch_69_phase_1.py) | no | YES |
 | `BUG-037` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-045` | NO | every tagged file is orphaned (e.g. scripts/build_verification_matrix.py) | no | YES |
-| `BUG-060` | FUNC-DEAD | function in backtest/signals/screener.py never executed | YES | YES |
 | `BUG-061` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-073` | NO | every tagged file is orphaned (e.g. scripts/prepopulate_cache_index.py) | no | YES |
-| `BUG-077` | FUNC-DEAD | function in backtest/signals/screener.py never executed | YES | YES |
-| `BUG-078` | FUNC-DEAD | function in backtest/engine/exit_manager.py never executed | YES | YES |
+| `BUG-077` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
+| `BUG-078` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-080` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
-| `BUG-083` | FUNC-DEAD | function in backtest/data/smart_money.py never executed | YES | YES |
+| `BUG-083` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-095` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_risk_toolkit.py has no live importer; another tagged file is wired (mention-... | YES | YES |
 | `BUG-110` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-111` | PARTIAL-ORPHAN | primary helper backtest/agents/toolkits/our_technical_toolkit.py has no live importer; another tagged file is wired (men... | YES | YES |
@@ -241,13 +201,11 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-273` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-284` | NO | every tagged file is orphaned (e.g. backtest/agents/toolkits/our_fundamentals_toolkit.py) | no | YES |
 | `BUG-286` | PARTIAL-ORPHAN | primary helper scripts/audit_trade_log_forensic.py has no live importer; another tagged file is wired (mention-only, not... | no | no |
-| `BUG-290` | FUNC-DEAD | function in backtest/signals/screener.py never executed | no | no |
-| `BUG-214` | FUNC-DEAD | function in backtest/engine/exit_manager.py never executed | YES | YES |
-| `BUG-225` | FUNC-DEAD | function in backtest/engine/regime_filter.py never executed | YES | YES |
+| `BUG-214` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-205` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-242` | PARTIAL-ORPHAN | primary helper scripts/build_dashboard_stage_2.py has no live importer; another tagged file is wired (mention-only, not ... | YES | YES |
 | `BUG-116` | NO | every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py) | no | YES |
-| `BUG-135` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
+| `BUG-133` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `BUG-138` | NO | every tagged file is orphaned (e.g. scripts/build_dashboard_stage_2.py) | no | YES |
 
 | ID | engine | unit | smoke | integration | system | functional | regression | data_integrity | performance | acceptance | property | snapshot | contract | compatibility |
@@ -267,7 +225,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-013` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-015` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-018` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-019` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-019` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-021` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-027` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-028` | NO | no | no | no | YES | no | no | no | no | no | no | no | no | no |
@@ -351,7 +309,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-120` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-121` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-122` | NO | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-123` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-123` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-124` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-125` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-126` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -368,9 +326,9 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-138` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-139` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-141` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-142` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-142` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-143` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-144` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-144` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-145` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-146` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-147` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -399,7 +357,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-172` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-173` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-174` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-175` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-175` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-176` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-177` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-178` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -429,11 +387,11 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-203` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-204` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-205` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-206` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-206` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-207` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-208` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-209` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-210` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-210` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-211` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-212` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-213` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -449,7 +407,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-227` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-228` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-229` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-230` | N/A | YES | no | no | no | no | no | no | no | no | no | no | no | no |
+| `DEC-230` | NO | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-231` | PARTIAL-ORPHAN | YES | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-232` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-233` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -468,7 +426,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-246` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-247` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-248` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-249` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-249` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-250` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-251` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-252` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -502,7 +460,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-281` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-282` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-283` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-284` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-284` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-285` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-286` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-287` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -546,7 +504,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-331` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-332` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-333` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-334` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-334` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-335` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-338` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-339` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -563,10 +521,10 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-353` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-354` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-355` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-356` | LAZY-WIRED | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-357` | LAZY-WIRED | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `DEC-356` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `DEC-357` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-358` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-359` | LAZY-WIRED | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-359` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-360` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-361` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-362` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -617,7 +575,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-408` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-409` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-410` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-411` | FUNC-DEAD | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `DEC-411` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-413` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-414` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-415` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
@@ -625,7 +583,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-417` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-418` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-419` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-420` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-420` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-421` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-422` | PARTIAL-ORPHAN | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-423` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
@@ -644,7 +602,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-437` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-438` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-439` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-440` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-440` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-441` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-442` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-443` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -701,7 +659,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `DEC-494` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-497` | PARTIAL-ORPHAN | YES | YES | YES | YES | no | no | YES | no | no | no | no | no | no |
 | `DEC-498` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-499` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-499` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-500` | NO | no | YES | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-501` | PARTIAL-ORPHAN | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-502` | NO | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
@@ -750,10 +708,10 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-015` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-016` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-017` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-018` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-018` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-019` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-020` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-021` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-021` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-022` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-023` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-024` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -783,7 +741,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-055` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-058` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-059` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-060` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-060` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-061` | PARTIAL-ORPHAN | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-063` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-064` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -796,13 +754,13 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-073` | NO | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-074` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-075` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-077` | FUNC-DEAD | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-078` | FUNC-DEAD | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-077` | PARTIAL-ORPHAN | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-078` | PARTIAL-ORPHAN | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-079` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-080` | PARTIAL-ORPHAN | YES | YES | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-081` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-082` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-083` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-083` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-084` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-085` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-086` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -854,10 +812,10 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-284` | NO | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-286` | PARTIAL-ORPHAN | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-287` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `BUG-288` | LAZY-WIRED | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `BUG-289` | LAZY-WIRED | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `BUG-290` | FUNC-DEAD | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `BUG-214` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-288` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `BUG-289` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `BUG-290` | YES | no | no | no | no | no | no | no | no | no | no | no | no | no |
+| `BUG-214` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-215` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-216` | N/A | no | YES | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-217` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -868,7 +826,7 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-222` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-223` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-224` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-225` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-225` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-205` | PARTIAL-ORPHAN | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-206` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-210` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -936,9 +894,9 @@ Add more coverage runs by writing additional `coverage_report_<tag>.json` files;
 | `BUG-128` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-129` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-132` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `BUG-133` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-133` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-134` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-135` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-135` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-136` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-137` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-138` | NO | no | no | YES | no | no | no | no | no | no | no | no | no | no |

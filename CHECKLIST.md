@@ -1831,3 +1831,5 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Past failure pattern this prevents:** L86 + L95 $150 wasted on full API run without small-test gate; B660 v2 12.2h sunk on unverified ETA; heroic-batch trap on autonomous mode without explicit STOP conditions.
 
      **First application:** B907 PILOT (Option B per Council 29) + B908 R5 HALT pending explicit $-approval.
+
+     **R5 STOP #1 REINFORCEMENT (owner directive 2026-06-19 B911):** R5 launch is BLOCKED until **explicit owner mention** of "launch R5" or equivalent verbal go-directive. This is stricter than prior Dec-4(b) "after Dec 5 + pyramid GREEN" gate-clearance interpretation. **Even if Dec 5 + pyramid GREEN both clear, R5 does NOT auto-launch** -- requires explicit owner GO directive. Apply same rule pattern to any subsequent AWS-spend cube runs (R5.1, R5.2, etc.) until owner removes this constraint. Per-turn STOP #1 check must verify: did owner explicitly say "launch R5" THIS session? If no, R5 stays HALT regardless of other technical gates.
