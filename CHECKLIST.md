@@ -1797,3 +1797,37 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Compliance check (single-question version):** Before launching any background job estimated >30 min, ask: "Have I (a) checked git log for cache-invalidating batches since last successful run, (b) run a 1% pilot to measure actual per-unit time, (c) recomputed ETA from pilot * scaling, NOT trusted prior-run timing?" If any answer is no, the launch is non-compliant.
 
      **Recovery protocol when ETA overrun >5x detected:** the FIRST batch after detection must (a) KILL the job (not "let it finish"), (b) honestly diagnose root cause in EXECUTION_QUEUE entry, (c) decide between rescope/restart/skip based on critical-path analysis, (d) codify the cache-invalidation enumerator (this rule). B896 applies this protocol to B885 v2 -> B660 v2 lapse.
+
+114. **HARD RULE -- Autonomous mode STOP conditions: 10 mandatory owner pings + green-light path for cheap/reversible work.** (Owner directive 2026-06-18 B907: "Continue autonomously unless explicit input needed from me." Council 29 codification.)
+
+     Owner directive: skip "continue" / "council this" friction on per-turn cadence. Council 29 4-advisor synthesis: "Autonomous mode eliminates ACKNOWLEDGMENT FRICTION, not JUDGMENT GATES."
+
+     **MANDATORY owner-ping STOP conditions (10 items):**
+
+     1. Any AWS / API spend ($) -- even $1 (per CLAUDE.md L86/L95 $150-pattern warning; small-test -> manual review -> approval -> scale)
+     2. Any change to PASSING_CRITERIA / canonical thresholds (DEC-611/612/613/614 owner-mandated)
+     3. Any strategy deletion (per `feedback_no_a_priori_strategy_pruning`)
+     4. Pyramid not GREEN -- ANY pyramid run with > 0 failing tests is a stop until investigated
+     5. Any long-running job projected > 2h without per-CHECKLIST #113 pilot first (e.g., B660 v2 / measure_fire_count.py full runs)
+     6. Any reversal of a prior-turn decision (per `feedback_audit_recommendations_against_existing_directives`)
+     7. Scope expansion > 2x planned blast radius mid-turn
+     8. B895-DEFER-A tranche touching CLAUDE.md / PROJECT_PLAN.md / DETAILED_PROJECT_PLAN.md / canonical docs
+     9. Council 28-class methodology change (taxonomy creation, gate semantics, verdict logic, DEC-class additions)
+     10. Any DEC closure requiring owner sign-off per CHECKLIST #45
+
+     **AUTONOMOUS GREEN-LIGHT PATH (per-turn rhythm):**
+     - Pre-flight CHECKLIST visible (per #45/#85)
+     - Council if SUBSTANTIVE scope/methodology decision (Council 28 precedent: every taxonomy creation; every defer-vs-execute; every walk-back protection check)
+     - Execute -- ONE DEFER ticket per turn typical (max 2 if mechanically trivial); no batches > 5
+     - Pyramid sample (smoke tests on touched files; full pyramid only when shipping engine changes)
+     - Commit + push per `feedback_standing_approvals`
+     - EXECUTION_QUEUE update + queue tail (#94 + #96)
+     - **STOP check** -- review 10 conditions above; if any triggered, surface to owner explicitly + HALT until owner pings
+
+     **Information-value framing (First Principles Council 29):** owner-pings have two purposes: (1) catch reversible mistakes before irreversible, (2) authorize irreversibly-costly actions. Autonomous mode waives (1) for LOW-STAKES REVERSIBLE work; does NOT waive (2). The expensive irreversible work is where to SLOW DOWN, not speed up.
+
+     **Council frequency cadence:** ~1 council per 3-5 batches when work is mechanical (DEFER drain, queue hygiene, doc-sync); ~1 per batch when methodology is in play (taxonomy / verdict change / class-7 NEW / walk-back).
+
+     **Past failure pattern this prevents:** L86 + L95 $150 wasted on full API run without small-test gate; B660 v2 12.2h sunk on unverified ETA; heroic-batch trap on autonomous mode without explicit STOP conditions.
+
+     **First application:** B907 PILOT (Option B per Council 29) + B908 R5 HALT pending explicit $-approval.
