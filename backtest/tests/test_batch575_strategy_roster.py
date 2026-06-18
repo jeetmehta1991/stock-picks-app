@@ -74,11 +74,15 @@ def test_batch575_row_count_matches_all_strategies(regen_doc):
 
 
 def test_batch575_columns_present(regen_doc):
-    """Pin (4). B576: Roster Status + Stage 4 Status columns added."""
+    """Pin (4). B576: Roster Status + Stage 4 Status columns added.
+    B899 (2026-06-18) update: 'Stage 4 Status' column SCRUBBED by B894
+    Council 18 per CHECKLIST #111 (stale data source). Pin updated to
+    reflect post-B894 column set.
+    """
     expected_headers = [
         "Name", "Category", "Direction", "Trigger",
         "Signals consumed", "Regime affinity",
-        "Roster Status", "Stage 4 Status",
+        "Roster Status",  # B894 SCRUBBED "Stage 4 Status" -- removed from expected list
     ]
     for h in expected_headers:
         assert h in regen_doc, f"missing column header: {h}"
