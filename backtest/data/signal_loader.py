@@ -70,6 +70,41 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_news_sentiment_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    as_of: date,
+    lookback_days: int = 7,
+) -> dict[str, Any]:
+    """Inject news sentiment signals (Batch 253 DEC-411).
+
+    B932 (2026-06-19) P0 commit 11/11 LAST EXTRACTION: extracted from
+    screener.py:8068-8076. Council 43 sequence "scariest last" position
+    due to vendor SPOF risk (BB news_sentiment vendor risk acknowledged)
+    + 1.05M article cache size.
+
+    Produces signal keys:
+        news_sentiment_mean         float (mean compound sentiment 7d)
+        news_sentiment_5d           float (5d window for crossover)
+        news_sentiment_shift        float (mean - 5d_mean)
+        news_count_7d               int
+
+    Failure mode: producer raises -> log at WARNING + leave signals
+    unchanged. Reads `data_prefetch/polygon/news/` cache (1.05M
+    articles). Council 43: 'cache-divergence assertion not just
+    parity' recommended — production-path smoke covered by canonical
+    parity contract.
+    """
+    try:
+        from backtest.signals.news_sentiment import compute_news_sentiment_signals
+        news_out = compute_news_sentiment_signals(ticker, as_of, lookback_days=lookback_days)
+        if news_out:
+            signals.update(news_out)
+    except Exception as _e:
+        _log_silent_producer_failure("news_sentiment", _e)
+    return signals
+
+
 def inject_institutional_persistence_signals(
     signals: dict[str, Any],
     ticker: str,

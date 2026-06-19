@@ -298,18 +298,17 @@ def test_b927_count_pinned_remaining_tier2_producers():
     screener_path = Path(__file__).resolve().parent.parent / "signals" / "screener.py"
     src = screener_path.read_text(encoding="utf-8")
     # Match unextracted TIER 2 producer-level try blocks
-    # Already-extracted: B921 inst + B923 insider + B924 classification +
-    # B927 pead + B928 yoy + B929 search_volume + B930 short_interest +
-    # B931 institutional_persistence (MAY-REVERT pending B906 owner)
-    # Remaining sentinels (these patterns should disappear as each extracts):
-    remaining_sentinels = {
-        "news_sentiment": r"from backtest\.signals\.news_sentiment import compute_news_sentiment_signals",
-    }
+    # Already-extracted (Phase P0 COMPLETE): B921 inst + B923 insider +
+    # B924 classification + B927 pead + B928 yoy + B929 search_volume +
+    # B930 short_interest + B931 institutional_persistence (MAY-REVERT
+    # pending B906) + B932 news_sentiment (LAST extraction)
+    # Remaining: 0 - Phase P0 extraction sequence COMPLETE
+    remaining_sentinels: dict = {}
     found = [k for k, pattern in remaining_sentinels.items() if re.search(pattern, src)]
-    assert len(found) == 1, (
-        f"B931 COUNT-PIN: expected exactly 1 TIER 2 producer still inline in "
-        f"screener.py (news_sentiment - last extraction in Council 43 sequence); "
-        f"found {len(found)}: {found!r}."
+    assert len(found) == 0, (
+        f"B932 COUNT-PIN: Phase P0 extraction sequence COMPLETE. Expected "
+        f"0 inline TIER 2 producers in screener.py; found {len(found)}: {found!r}. "
+        f"If a new producer was added post-Phase-P0, owner-decision required."
     )
 
 
@@ -513,6 +512,40 @@ def test_b931_signal_loader_persistence_matches_canonical_screener(ticker, as_of
 
     extra = set(actual.keys()) - set(expected.keys())
     assert not extra, f"B931 PARITY FAIL: extra keys {extra}"
+
+
+# ---------------------------------------------------------------------------
+# B932 (2026-06-19) P0 commit 11/11 LAST extraction: news_sentiment parity
+# ---------------------------------------------------------------------------
+
+from backtest.data.signal_loader import inject_news_sentiment_signals
+from backtest.signals.news_sentiment import compute_news_sentiment_signals
+
+
+@pytest.mark.parametrize("ticker", PARITY_FIXTURE_TICKERS)
+@pytest.mark.parametrize("as_of", PARITY_FIXTURE_DATES)
+def test_b932_signal_loader_news_sentiment_matches_canonical_screener(ticker, as_of):
+    """B932 engine path parity: news_sentiment signal_loader equals canonical screener binding."""
+    expected_raw = compute_news_sentiment_signals(ticker, as_of, lookback_days=7)
+    expected = expected_raw if expected_raw else {}
+
+    actual = {}
+    inject_news_sentiment_signals(actual, ticker, as_of)  # default lookback_days=7
+
+    for key in expected:
+        assert key in actual, f"B932 PARITY FAIL: key '{key}' missing"
+        assert actual[key] == expected[key], f"B932 PARITY FAIL: key '{key}' mismatch"
+
+    extra = set(actual.keys()) - set(expected.keys())
+    assert not extra, f"B932 PARITY FAIL: extra keys {extra}"
+
+
+def test_b932_news_sentiment_handles_missing_producer_gracefully():
+    signals = {}
+    try:
+        inject_news_sentiment_signals(signals, "NONEXISTENT", date(2024, 6, 30))
+    except Exception as e:
+        pytest.fail(f"B932 news_sentiment raised: {e!r}")
 
 
 def test_b931_persistence_handles_missing_producer_gracefully():

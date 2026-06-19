@@ -8051,15 +8051,11 @@ def screen_instrument(
             signals.update(pair_out)
     except Exception as _e:
         _log_silent_producer_failure("pairs_trading", _e)
-    # Batch 253: news sentiment signals (DEC-411). 7-day window from
-    # Polygon news cache (1.05M articles).
-    try:
-        from backtest.signals.news_sentiment import compute_news_sentiment_signals
-        news_out = compute_news_sentiment_signals(ticker, as_of, lookback_days=7)
-        if news_out:
-            signals.update(news_out)
-    except Exception as _e:
-        _log_silent_producer_failure("news_sentiment", _e)
+    # B932 (2026-06-19) engine path unification per Council 43 commit 11/11
+    # LAST EXTRACTION: news_sentiment extracted into signal_loader.
+    # Council 43 "scariest last" position; vendor SPOF risk acknowledged.
+    from backtest.data.signal_loader import inject_news_sentiment_signals
+    inject_news_sentiment_signals(signals, ticker, as_of, lookback_days=7)
     # B929 (2026-06-19) engine path unification per Council 43 commit 8/11:
     # Google Trends search-volume signals extracted into signal_loader.
     from backtest.data.signal_loader import inject_search_volume_signals
