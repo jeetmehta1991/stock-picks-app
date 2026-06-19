@@ -352,7 +352,8 @@ Each section traces END-TO-END (source -> producer -> binding -> strategy -> eng
 | 6 | Producer source extract + STATE/EVENT classification | AST scan; classify each signal; reject docstrings that overclaim for slow STATE |
 | 7 | Temporal coverage probe | Per-year-per-strategy fire count (NOT mean — strategies firing 100x 2020 then 0 2021-2026 pass mean but are dead) |
 | 8 | Data-source asymmetry tag | 13F long-only (B611), insider buy/sell asymmetry, short-interest contrarian — empirical not mechanical |
-| 9 | R4 cube metrics (all 7 regimes) | Sharpe + Sortino + Calmar + PF + max_DD + ROI + WR with bootstrap 90% CI (Quant: point estimates alone are coin flips) |
+| 9 | R4 cube metrics (all 7 regimes) | **TWO-TRACK per B934 Council 45:** (a) R4-included strategies (~102; in `output_batch395_final/`): Sharpe + Sortino + Calmar + PF + max_DD + ROI + WR with bootstrap 90% CI. (b) Post-R4 additions (~117): null + `r4_status="post_r4_addition"` + `evidence_source="section_9b"`. Per Quant: point estimates alone are coin flips. |
+| **9b** | **Pre-cube evidence (B934 Council 45 owner-approved addition)** | **For post-R4 additions (~117 strategies):** B907/B660 fire-count projection + Stage 4 walk batch reference per B883 ledger + EXPLORATORY/DORMANT/MEASUREMENT_DISPUTED status + attribution narrative per Section 13.7 gate #7. Defeats the laundering risk of "Section 9 NULL for 117"; makes 53% post-R4 gap auditable. **NEW dossier field:** `r5_inclusion_criterion ∈ {r4_metrics_passed, pre_cube_evidence_sufficient, deferred}`. |
 | 10 | Cost-sensitivity ratio | DEC-612 `sharpe_at_20bps / sharpe_at_0bps >= 0.5` (MULTIPLICATIVE GATE per Quant; NOT soft-score ingredient) |
 | 11 | Chow break point | DEC-613 (p<0.05 + post-break Sharpe<0.3 = dead-strategy false positive) |
 | 12 | ADF p-value | DEC-614 regime-conditional on `MEAN_REVERSION_STRATEGIES` |

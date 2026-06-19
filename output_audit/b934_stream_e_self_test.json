@@ -1,0 +1,222 @@
+{
+  "phase": "P1",
+  "batch": "B934",
+  "stream_e_self_test_passed": true,
+  "tests_run": 6,
+  "tests_passed": 6,
+  "results": [
+    {
+      "test_id": "self_test_meta",
+      "known_good_present": [
+        "donchian_10_breakout",
+        "po3_bullish",
+        "avwap_50_reclaim",
+        "institutional_cluster_long",
+        "rsi21_slow",
+        "smc_breaker_block_long",
+        "head_and_shoulders_top_short",
+        "hammer_at_support_long",
+        "institutional_high_conviction_long"
+      ],
+      "known_good_missing": [],
+      "canary_classification": {
+        "institutional_high_conviction_long": {
+          "canary_type": "pre_b922_baseline",
+          "checks": {
+            "runtime_check_required": true,
+            "in_all_strategies": true
+          }
+        },
+        "classification_change_recent_long": {
+          "canary_type": "b910_sector_history_stale",
+          "checks": {
+            "runtime_check_required": true,
+            "in_all_strategies": true
+          }
+        },
+        "dxy_headwind_multinational_short": {
+          "canary_type": "missing_producer_disabled",
+          "checks": {
+            "in_disabled_missing_producer": true,
+            "in_all_strategies": true
+          }
+        },
+        "institutional_persistent_holders_long": {
+          "canary_type": "b906_measurement_disputed",
+          "checks": {
+            "in_measurement_disputed": true,
+            "in_all_strategies": true
+          }
+        },
+        "mfi_oversold": {
+          "canary_type": "fire_starved_baseline",
+          "checks": {
+            "in_mean_reversion_set": true,
+            "in_all_strategies": true
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "test_id": "section_9a_r4_era_in_r4",
+      "n_r4_era_known_good_found_in_r4": 5,
+      "n_r4_era_known_good_total": 5,
+      "found_per_strategy": {
+        "donchian_10_breakout": true,
+        "po3_bullish": true,
+        "avwap_50_reclaim": true,
+        "institutional_cluster_long": true,
+        "rsi21_slow": true
+      },
+      "passed": true
+    },
+    {
+      "test_id": "section_9b_post_r4_NOT_in_r4",
+      "n_post_r4_known_good_unexpectedly_in_r4": 0,
+      "in_r4_per_strategy": {
+        "smc_breaker_block_long": false,
+        "head_and_shoulders_top_short": false,
+        "hammer_at_support_long": false,
+        "institutional_high_conviction_long": false
+      },
+      "passed": true
+    },
+    {
+      "test_id": "section_9b_evidence_available",
+      "n_post_r4_with_pre_cube_evidence": 4,
+      "n_post_r4_total": 4,
+      "evidence_per_strategy": {
+        "smc_breaker_block_long": {
+          "walk_lineage_markers": [
+            "B907 micro-pilot verified 31,158/yr"
+          ],
+          "in_measurement_disputed": false,
+          "in_r4": false,
+          "has_pre_cube_evidence": true
+        },
+        "head_and_shoulders_top_short": {
+          "walk_lineage_markers": [
+            "B685 Class 7 NEW Edwards-Magee 1948"
+          ],
+          "in_measurement_disputed": false,
+          "in_r4": false,
+          "has_pre_cube_evidence": true
+        },
+        "hammer_at_support_long": {
+          "walk_lineage_markers": [
+            "B685 Class 7 NEW Nison 1991"
+          ],
+          "in_measurement_disputed": false,
+          "in_r4": false,
+          "has_pre_cube_evidence": true
+        },
+        "institutional_high_conviction_long": {
+          "walk_lineage_markers": [
+            "B918 fix + B922 architectural unblock (156/yr sample)"
+          ],
+          "in_measurement_disputed": false,
+          "in_r4": false,
+          "has_pre_cube_evidence": true
+        }
+      },
+      "passed": true
+    },
+    {
+      "test_id": "r5_inclusion_criterion_enum",
+      "actual": [
+        "r4_metrics_passed",
+        "pre_cube_evidence_sufficient",
+        "deferred"
+      ],
+      "expected": [
+        "r4_metrics_passed",
+        "pre_cube_evidence_sufficient",
+        "deferred"
+      ],
+      "passed": true
+    },
+    {
+      "test_id": "section_9_broken_canaries",
+      "canary_results": {
+        "institutional_high_conviction_long": {
+          "canary_type": "pre_b922_baseline",
+          "expected_r4_fires": 0,
+          "in_r4": false,
+          "n_trades_in_r4": 0
+        },
+        "classification_change_recent_long": {
+          "canary_type": "b910_sector_history_stale",
+          "expected_r4_fires": 0,
+          "in_r4": false,
+          "n_trades_in_r4": 0
+        },
+        "dxy_headwind_multinational_short": {
+          "canary_type": "missing_producer_disabled",
+          "expected_r4_fires": "absent_from_cube",
+          "in_r4": false,
+          "n_trades_in_r4": 0
+        },
+        "institutional_persistent_holders_long": {
+          "canary_type": "b906_measurement_disputed",
+          "expected_r4_fires": "any",
+          "in_r4": true,
+          "n_trades_in_r4": 6
+        },
+        "mfi_oversold": {
+          "canary_type": "fire_starved_baseline",
+          "expected_r4_fires": "any_or_zero",
+          "in_r4": false,
+          "n_trades_in_r4": 0
+        }
+      },
+      "passed": true,
+      "purpose": "Diagnostic; records canary R4 state for later cross-check"
+    }
+  ],
+  "known_good_strategies_r4_era": [
+    "donchian_10_breakout",
+    "po3_bullish",
+    "avwap_50_reclaim",
+    "institutional_cluster_long",
+    "rsi21_slow"
+  ],
+  "known_good_strategies_post_r4": [
+    "smc_breaker_block_long",
+    "head_and_shoulders_top_short",
+    "hammer_at_support_long",
+    "institutional_high_conviction_long"
+  ],
+  "known_broken_canaries": [
+    {
+      "strategy": "institutional_high_conviction_long",
+      "canary_type": "pre_b922_baseline",
+      "expected_r4_fires": 0,
+      "description": "R4 cube ran pre-B918 fix; pre-B922 TIER 2 deferral; should show 0 fires"
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "canary_type": "b910_sector_history_stale",
+      "expected_r4_fires": 0,
+      "description": "sector_history.csv 1190d stale; producer emits empty in 2024 window"
+    },
+    {
+      "strategy": "dxy_headwind_multinational_short",
+      "canary_type": "missing_producer_disabled",
+      "expected_r4_fires": "absent_from_cube",
+      "description": "In STRATEGIES_DISABLED_MISSING_PRODUCER set (foreign_rev_pct producer absent)"
+    },
+    {
+      "strategy": "institutional_persistent_holders_long",
+      "canary_type": "b906_measurement_disputed",
+      "expected_r4_fires": "any",
+      "description": "In B906 MEASUREMENT_DISPUTED set; cube measurement validity in dispute"
+    },
+    {
+      "strategy": "mfi_oversold",
+      "canary_type": "fire_starved_baseline",
+      "expected_r4_fires": "any_or_zero",
+      "description": "Historical baseline mean-reversion; in MEAN_REVERSION_STRATEGIES set"
+    }
+  ]
+}

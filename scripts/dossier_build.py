@@ -67,7 +67,10 @@ DOSSIERS_DIR = REPO / "output_audit" / "dossiers"
 EVIDENCE_STORE_DIR = REPO / "evidence_store"
 
 
-# 19 dossier sections per PATH Section 13.3.
+# 20 dossier sections per PATH Section 13.3 + Council 45 (B934) addition of
+# Section 9b "pre_cube_evidence" addressing R4=102 vs roster=219 drift.
+# Section 9b is logically paired with Section 9 but stored separately to
+# preserve content-addressed evidence_store layout.
 DOSSIER_SECTIONS = [
     (1,  "wiring_trace_coverage",      "Wiring trace via coverage.py mode (NOT grep)"),
     (2,  "gate_stacking_fire_rate",    "Per-gate fire-rate + gate-stacking diagnostic"),
@@ -77,7 +80,7 @@ DOSSIER_SECTIONS = [
     (6,  "producer_state_event",       "Producer source extract + STATE/EVENT classification"),
     (7,  "temporal_coverage_probe",    "Per-year-per-strategy fire count (not mean)"),
     (8,  "data_source_asymmetry",      "Data-source asymmetry tag (B611 13F long-only pattern)"),
-    (9,  "r4_cube_metrics",            "R4 cube metrics (all regimes + bootstrap 90% CI)"),
+    (9,  "r4_cube_metrics",            "R4 cube metrics (all regimes + bootstrap 90% CI); NULL for post-R4 additions"),
     (10, "cost_sensitivity_ratio",     "Cost-sensitivity ratio (DEC-612)"),
     (11, "chow_break_point",           "Chow break-point test (DEC-613)"),
     (12, "adf_p_value",                "ADF stationarity p-value (DEC-614 mean-rev only)"),
@@ -88,17 +91,33 @@ DOSSIER_SECTIONS = [
     (17, "soft_score_weight_calibration","Soft-score weight calibration via null distribution"),
     (18, "per_regime_sharpe_dispersion","Per-regime Sharpe dispersion (Simpson's paradox guard)"),
     (19, "closest_neighbor_cluster",   "Closest-passing-neighbor + family + cluster_id"),
+    # B934 Council 45 addition (owner-approved): pre-cube evidence for post-R4 strategies
+    (20, "pre_cube_evidence_9b",       "Pre-cube evidence for post-R4 additions: B907/B660 fire-count + B883 walk batch + EXPLORATORY/DORMANT + attribution narrative"),
 ]
 
 
+# B934 Council 45 (owner-approved): r5_inclusion_criterion enum.
+R5_INCLUSION_CRITERIA = (
+    "r4_metrics_passed",              # In R4 cube AND passed PASSING_CRITERIA
+    "pre_cube_evidence_sufficient",   # Post-R4 with B907/B660 fire-count + Stage 4 walk + EXPLORATORY tag
+    "deferred",                       # Owner-explicit defer to next cube cycle
+)
+
+
 def _empty_dossier_schema(strategy: str) -> dict[str, Any]:
-    """Return a 19-section dossier with null values for not-yet-computed sections."""
+    """Return a 20-section dossier with null values for not-yet-computed sections.
+
+    B934 Council 45 (owner-approved): schema bumped from 19 to 20 sections to
+    accommodate Section 9b (pre_cube_evidence) addressing R4=102 vs roster=219
+    drift. r5_inclusion_criterion field added per Council 45 verdict.
+    """
     return {
-        "schema_version": "1.0",
-        "schema_source": "PATH_TO_PHASE_1B_ALPHA.md Section 13.3",
+        "schema_version": "1.1",
+        "schema_source": "PATH_TO_PHASE_1B_ALPHA.md Section 13.3 + B934 Council 45 (Section 9b + r5_inclusion_criterion)",
         "strategy": strategy,
-        "dossier_build_batch": "B933",
+        "dossier_build_batch": "B934",
         "phase": "P1",
+        "r5_inclusion_criterion": None,  # one of R5_INCLUSION_CRITERIA after Section 9 + 9b populated
         "sections": {
             f"section_{n:02d}_{key}": None
             for n, key, _desc in DOSSIER_SECTIONS
