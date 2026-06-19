@@ -1,0 +1,287 @@
+{
+  "summary": {
+    "sample_tickers": 50,
+    "sample_dates": 76,
+    "total_samples_processed": 3800,
+    "samples_skipped_no_fwd": 50,
+    "horizons_trading_days": [
+      5,
+      10,
+      21,
+      63
+    ],
+    "method": "13F producer signal standalone fwd-return test"
+  },
+  "base_rate": {
+    "h5d": {
+      "mean_fwd_return_pct": -0.075,
+      "hit_rate_pct": 48.72
+    },
+    "h10d": {
+      "mean_fwd_return_pct": 0.557,
+      "hit_rate_pct": 56.77
+    },
+    "h21d": {
+      "mean_fwd_return_pct": 1.387,
+      "hit_rate_pct": 55.62
+    },
+    "h63d": {
+      "mean_fwd_return_pct": 4.327,
+      "hit_rate_pct": 59.75
+    }
+  },
+  "buckets": [
+    {
+      "bucket": "ALL_BASE",
+      "horizon_days": 5,
+      "n": 3750,
+      "mean_fwd_return_pct": -0.075,
+      "hit_rate_pct": 48.72
+    },
+    {
+      "bucket": "ALL_BASE",
+      "horizon_days": 10,
+      "n": 3701,
+      "mean_fwd_return_pct": 0.557,
+      "hit_rate_pct": 56.77
+    },
+    {
+      "bucket": "ALL_BASE",
+      "horizon_days": 21,
+      "n": 3700,
+      "mean_fwd_return_pct": 1.387,
+      "hit_rate_pct": 55.62
+    },
+    {
+      "bucket": "ALL_BASE",
+      "horizon_days": 63,
+      "n": 3600,
+      "mean_fwd_return_pct": 4.327,
+      "hit_rate_pct": 59.75
+    },
+    {
+      "bucket": "signal_strong_buy",
+      "horizon_days": 5,
+      "n": 1572,
+      "mean_fwd_return_pct": -0.249,
+      "hit_rate_pct": 47.01
+    },
+    {
+      "bucket": "signal_strong_buy",
+      "horizon_days": 10,
+      "n": 1550,
+      "mean_fwd_return_pct": 0.53,
+      "hit_rate_pct": 53.48
+    },
+    {
+      "bucket": "signal_strong_buy",
+      "horizon_days": 21,
+      "n": 1550,
+      "mean_fwd_return_pct": 1.498,
+      "hit_rate_pct": 56.0
+    },
+    {
+      "bucket": "signal_strong_buy",
+      "horizon_days": 63,
+      "n": 1506,
+      "mean_fwd_return_pct": 3.327,
+      "hit_rate_pct": 56.77
+    },
+    {
+      "bucket": "signal_buy",
+      "horizon_days": 5,
+      "n": 2577,
+      "mean_fwd_return_pct": -0.064,
+      "hit_rate_pct": 48.04
+    },
+    {
+      "bucket": "signal_buy",
+      "horizon_days": 10,
+      "n": 2544,
+      "mean_fwd_return_pct": 0.555,
+      "hit_rate_pct": 55.35
+    },
+    {
+      "bucket": "signal_buy",
+      "horizon_days": 21,
+      "n": 2543,
+      "mean_fwd_return_pct": 1.307,
+      "hit_rate_pct": 54.35
+    },
+    {
+      "bucket": "signal_buy",
+      "horizon_days": 63,
+      "n": 2475,
+      "mean_fwd_return_pct": 3.711,
+      "hit_rate_pct": 58.18
+    },
+    {
+      "bucket": "signal_negative",
+      "horizon_days": 5,
+      "n": 477,
+      "mean_fwd_return_pct": 0.498,
+      "hit_rate_pct": 54.09
+    },
+    {
+      "bucket": "signal_negative",
+      "horizon_days": 10,
+      "n": 464,
+      "mean_fwd_return_pct": 0.965,
+      "hit_rate_pct": 62.07
+    },
+    {
+      "bucket": "signal_negative",
+      "horizon_days": 21,
+      "n": 464,
+      "mean_fwd_return_pct": 2.027,
+      "hit_rate_pct": 58.19
+    },
+    {
+      "bucket": "signal_negative",
+      "horizon_days": 63,
+      "n": 438,
+      "mean_fwd_return_pct": 5.769,
+      "hit_rate_pct": 66.67
+    },
+    {
+      "bucket": "new_positions_ge_3",
+      "horizon_days": 5,
+      "n": 1035,
+      "mean_fwd_return_pct": -0.387,
+      "hit_rate_pct": 47.05
+    },
+    {
+      "bucket": "new_positions_ge_3",
+      "horizon_days": 10,
+      "n": 1013,
+      "mean_fwd_return_pct": 0.391,
+      "hit_rate_pct": 52.42
+    },
+    {
+      "bucket": "new_positions_ge_3",
+      "horizon_days": 21,
+      "n": 1013,
+      "mean_fwd_return_pct": 1.321,
+      "hit_rate_pct": 54.39
+    },
+    {
+      "bucket": "new_positions_ge_3",
+      "horizon_days": 63,
+      "n": 969,
+      "mean_fwd_return_pct": 3.149,
+      "hit_rate_pct": 55.31
+    },
+    {
+      "bucket": "new_positions_ge_1",
+      "horizon_days": 5,
+      "n": 1845,
+      "mean_fwd_return_pct": -0.246,
+      "hit_rate_pct": 46.83
+    },
+    {
+      "bucket": "new_positions_ge_1",
+      "horizon_days": 10,
+      "n": 1823,
+      "mean_fwd_return_pct": 0.543,
+      "hit_rate_pct": 54.74
+    },
+    {
+      "bucket": "new_positions_ge_1",
+      "horizon_days": 21,
+      "n": 1823,
+      "mean_fwd_return_pct": 1.579,
+      "hit_rate_pct": 56.28
+    },
+    {
+      "bucket": "new_positions_ge_1",
+      "horizon_days": 63,
+      "n": 1779,
+      "mean_fwd_return_pct": 3.849,
+      "hit_rate_pct": 58.74
+    },
+    {
+      "bucket": "increased_ge_5",
+      "horizon_days": 5,
+      "n": 1002,
+      "mean_fwd_return_pct": -0.096,
+      "hit_rate_pct": 48.0
+    },
+    {
+      "bucket": "increased_ge_5",
+      "horizon_days": 10,
+      "n": 980,
+      "mean_fwd_return_pct": 0.641,
+      "hit_rate_pct": 52.55
+    },
+    {
+      "bucket": "increased_ge_5",
+      "horizon_days": 21,
+      "n": 980,
+      "mean_fwd_return_pct": 1.396,
+      "hit_rate_pct": 52.65
+    },
+    {
+      "bucket": "increased_ge_5",
+      "horizon_days": 63,
+      "n": 936,
+      "mean_fwd_return_pct": 3.28,
+      "hit_rate_pct": 54.38
+    },
+    {
+      "bucket": "increased_ge_2",
+      "horizon_days": 5,
+      "n": 2247,
+      "mean_fwd_return_pct": -0.053,
+      "hit_rate_pct": 48.2
+    },
+    {
+      "bucket": "increased_ge_2",
+      "horizon_days": 10,
+      "n": 2214,
+      "mean_fwd_return_pct": 0.554,
+      "hit_rate_pct": 54.47
+    },
+    {
+      "bucket": "increased_ge_2",
+      "horizon_days": 21,
+      "n": 2213,
+      "mean_fwd_return_pct": 1.229,
+      "hit_rate_pct": 53.82
+    },
+    {
+      "bucket": "increased_ge_2",
+      "horizon_days": 63,
+      "n": 2145,
+      "mean_fwd_return_pct": 3.458,
+      "hit_rate_pct": 57.2
+    },
+    {
+      "bucket": "strong_conviction_AND",
+      "horizon_days": 5,
+      "n": 714,
+      "mean_fwd_return_pct": -0.331,
+      "hit_rate_pct": 47.06
+    },
+    {
+      "bucket": "strong_conviction_AND",
+      "horizon_days": 10,
+      "n": 692,
+      "mean_fwd_return_pct": 0.355,
+      "hit_rate_pct": 50.72
+    },
+    {
+      "bucket": "strong_conviction_AND",
+      "horizon_days": 21,
+      "n": 692,
+      "mean_fwd_return_pct": 1.466,
+      "hit_rate_pct": 53.76
+    },
+    {
+      "bucket": "strong_conviction_AND",
+      "horizon_days": 63,
+      "n": 648,
+      "mean_fwd_return_pct": 4.032,
+      "hit_rate_pct": 56.33
+    }
+  ]
+}
