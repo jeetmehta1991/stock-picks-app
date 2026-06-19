@@ -293,3 +293,301 @@ If subset is **30-50 cells with verified delta improvement** -> Phase 1B-alpha l
 | B892 | 2026-06-18 | Doc-hygiene sweep (STRATEGY_ROSTER generator fix + smoke archive + flag table + CHECKLIST #110) |
 | B893 | 2026-06-18 | Archive 3 owner-approved stale .md files |
 | **B894** | **2026-06-18** | **THIS DOC created (refactored from STAGE_2 section 10 standalone per owner directive + Executor Council 18); CHECKLIST #111 freshness audit codified; STRATEGY_ROSTER stale-column scrub option (A)** |
+| B895-B917 | 2026-06-18/19 | R4 medium-risk strategy addressal + B912 producer probe + B913 micropilot 0-fires + B914 cohort audit anti-predictive + B915 walk template / Walk 1 of 6 / Council 35 DIAGNOSE-BEFORE-DISPOSE / B916 6-probes / B917 coverage map + stratified-sample retest |
+| **B918** | **2026-06-19** | **PRODUCTION BUG screener.py:7979 `inst.get("new_pos")` -> `"new_positions"` (commit 82290e2c00 2026-05-25; 25 days in prod; affected 7 strategies incl. R4 May 31); owner-approved fix (a); regression test `test_b918_screener_institutional_new_positions_wiring`; pyramid GREEN (699 unit + 149 integration)** |
+| **B919** | **2026-06-19** | **Post-fix micropilot still 0 fires -> SURFACED 4th MISS PATTERN: `measure_fire_count.py` lines 443-448 TIER 2 architectural deferral (~44 strategies untested by canonical tool); R4's screen_instrument path DOES exercise line 7979 fix (real R5 cube unblocked); validates Council 36 A1 wiring audit + Council 37 Outsider pre-flight self-test** |
+| **B920** | **2026-06-19** | **Council 38 5-advisor 14-question comprehensive workflow synthesis + Council 39 5-advisor bug-catching methodology synthesis (THIS SECTION 13 added)** |
+
+---
+
+## 13. R5 Comprehensive Pre-Launch Workflow (Council 38 + Council 39 Synthesis)
+
+# Source: B920 Council 38 (Contrarian + First Principles + Executor + Outsider + Expansionist/Quant) + Council 39 (5-advisor bug-catching panel) per owner directive 2026-06-19 ("Council 36 not comprehensive enough... we are not stuck in iterations over and over again. The project has been a mess till now"). Owner-approved Option (B) Synthesis Council 38 Path. Section additions per "Document everything comprehensively to ensure reference and compliance. Discipline to be enforced strictly! No exceptions."
+
+**Binding Discipline (NOT overridable):**
+- `feedback_mandatory_council_per_turn` (2026-06-19) — council BEFORE recommendations, not after; CHECKLIST per #110 enforcement mandatory
+- `feedback_no_surface_level_audits` (2026-06-19) — every audit step end-to-end (source -> producer -> binding -> strategy -> engine -> output)
+- `feedback_no_a_priori_strategy_pruning` (2026-05-25) — no deletions; DORMANT routing bucket preserves optionality
+- Council 38 Outsider warning: "36 councils -> 0 shipped R5. Comprehensiveness IS the disease. Hard moratorium on workflow redesign until R5 ships."
+
+### 13.1 The Synthesis — Three-Stream Architecture (replaces Council 36's 4 phases)
+
+Council 36's linear 4-phase A->B->C->D was rejected by all 5 Council 38 advisors. The reformulation:
+
+**Stream E (Evidence)** — deterministic scripts producing per-strategy `dossier.json` with 19 sections. No Claude in the loop. Outputs to content-addressed `evidence_store/<hash>/<section>.parquet`. Reproducible via `seed_registry.json`.
+
+**Stream D (Decision)** — Claude reads dossiers in batches of 5 per `feedback_path_c_min_batch_size`, applies CHECKLIST, surfaces per-strategy recommendations to owner. Owner approves; code mutates.
+
+**Stream V (Verification)** — pyramid runs per Stream-E-generator (one-time) + per Stream-D-batch (pre-commit). NOT per dossier section (would explode to 3,052 runs).
+
+**Why three streams replace four phases:** R5 launch is not a phase; it is the moment Stream E reports "0 strategies have open decision items + pyramid green + Sharpe-delta projection positive" across the dossier set.
+
+### 13.2 The 7 Phases (Executor's Operational Decomposition)
+
+| Phase | Name | Runs | Owner gate file | Est hrs |
+|---|---|---|---|---|
+| **P0** | Platform spine + wiring + schema pins | `make r5-p0` | `output_audit/r5_p0_blockers.md` | 4-6 |
+| **P1** | Universe diagnostics (Stream E fan-out, parallel 8-way) | `make r5-p1` | `output_audit/r5_p1_summary.md` | 8-12 |
+| **P2** | No-delete reclassification (STRATEGY_STATUS enum apply) | `make r5-p2` | `output_audit/r5_p2_status_proposed.csv` | 6-8 |
+| **P3** | Bug-batch fixes (autonomous fix loop, max 50 iterations) | `make r5-p3` | `output_audit/r5_p3_fix_log.md` | 16-24 |
+| **P4** | Per-strategy walks (sampled; 30 stratified by cluster) | `make r5-p4-sample` | `output_audit/r5_p4_walk_outputs.parquet` | 20-30 |
+| **P5** | R5 dry-run (1% sample cube validates pipeline) | `make r5-p5-dryrun` | `output_audit/r5_p5_dryrun_metrics.md` | 4-8 |
+| **P6** | Full R5 launch on AWS (5,694 cells) | `make r5-p6-launch` | `output_r5_final/` | 60-90 (compute) |
+
+**Total: ~118-178 wall-clock hours; ~30-40 owner-attention hours.**
+
+**Makefile-orchestrated (`Makefile.r5` at repo root):** `make -j8` gives free parallelism; phases idempotent; owner can run individual phases.
+
+### 13.3 19 Dossier Sections (Stream E Per-Strategy Output) — NO SURFACE-LEVEL
+
+Each section traces END-TO-END (source -> producer -> binding -> strategy -> engine -> output). Surface-level greps + docstring reads are STARTING POINTS, not conclusions.
+
+| # | Section | Depth requirement |
+|---|---|---|
+| 1 | Wiring trace via coverage | `coverage run` over canonical R4 backtest; assert strategy fn appears in `coverage.json` line-execution. NOT grep. |
+| 2 | Gate-stacking + per-gate fire-rate | RUNTIME measurement from R4 trade_log (NOT a-priori estimator; estimator missed B660 by order of magnitude) |
+| 3 | Inverse pair | EMPIRICAL probe (mechanical inverse, measure fire-count + crude WR); NOT literature speculation |
+| 4 | Redundancy phi-correlation matrix | Pairwise trade-day Jaccard across 219 strategies |
+| 5 | Regime affinity lineage from git log | Trace every regime-affinity addition/deletion to batch + rationale |
+| 6 | Producer source extract + STATE/EVENT classification | AST scan; classify each signal; reject docstrings that overclaim for slow STATE |
+| 7 | Temporal coverage probe | Per-year-per-strategy fire count (NOT mean — strategies firing 100x 2020 then 0 2021-2026 pass mean but are dead) |
+| 8 | Data-source asymmetry tag | 13F long-only (B611), insider buy/sell asymmetry, short-interest contrarian — empirical not mechanical |
+| 9 | R4 cube metrics (all 7 regimes) | Sharpe + Sortino + Calmar + PF + max_DD + ROI + WR with bootstrap 90% CI (Quant: point estimates alone are coin flips) |
+| 10 | Cost-sensitivity ratio | DEC-612 `sharpe_at_20bps / sharpe_at_0bps >= 0.5` (MULTIPLICATIVE GATE per Quant; NOT soft-score ingredient) |
+| 11 | Chow break point | DEC-613 (p<0.05 + post-break Sharpe<0.3 = dead-strategy false positive) |
+| 12 | ADF p-value | DEC-614 regime-conditional on `MEAN_REVERSION_STRATEGIES` |
+| 13 | Exit-axis best-26 vector + dispersion | Best-of-26 collapse + `iqr(sharpe_26)/median <= 1.5` dispersion gate (15th passing criterion); calibrate threshold from null distribution per Lo 2002 |
+| 14 | Returns autocorrelation correction (Lo 2002) | Positive autocorr inflates Sharpe; correction applied; corrected-Sharpe must re-pass |
+| 15 | Exit profitability fraction | `count(sharpe_exit > 0) / 26 >= 0.4` (>=40% of exits profitable; catches 1-of-26 lottery winners) |
+| 16 | Negative-control canary status | 5 null strategies injected pre-Stream-E; framework must identify them; if not, framework miscalibrated |
+| 17 | Soft-score weight calibration via null | Weights derived from null-distribution variance, NOT hand-tuned (Quant); revisit at Phase 1C as Bayesian posterior |
+| 18 | Per-regime Sharpe dispersion | Strategy passing in 1 regime PF=2.0 + failing in 6 PF=0.5 has Simpson's-paradox risk in pooled metrics |
+| 19 | Closest-passing-neighbor + family + cluster_id | Hierarchical clustering on sharpe-signature + signal-overlap + regime-bias |
+
+### 13.4 6 DECs to Surface (Pre-R5)
+
+| DEC | Description | Source |
+|---|---|---|
+| **DEC #1** | Soft-score reweight to 0.35/0.30/0.23/0.12 + DSR/cost-sens promoted from soft-ingredients to MULTIPLICATIVE GATES | First Principles + Quant |
+| **DEC #2** | Dispersion gate `iqr(sharpe_26)/median <= 1.5` (15th passing criterion); calibrated from null-distribution | Executor + Quant |
+| **DEC #3** | Coverage-based wiring definition (`coverage run` not grep) | Executor + First Principles |
+| **DEC #4** | OOS seal protocol: 2020-2023 IS / 2024-2026 OOS; hash posted to AUDIT.md before any Stream D; roster freeze; post-seal-trial counting | Executor + Quant + First Principles |
+| **DEC #5** | DSR N=5,694 specification (219 strategies x 26 exits, NOT 218; regime conditional not search) — Council 38 single biggest methodology hole | Quant |
+| **DEC #6** | PSR small-N companion gate (Bailey-Lopez de Prado 2012) — PSR per-strategy + DSR on family | Quant |
+
+### 13.5 STRATEGY_STATUS Enum (No-Delete Enforcement)
+
+```python
+class StrategyStatus(str, Enum):
+    ACTIVE = "active"                            # default; cube runs
+    EXPLORATORY = "exploratory"                  # B652 marker; cube runs; flagged in dashboard
+    NON_WINNER = "non_winner"                    # cube runs; flagged is_winner=False post-dedup
+    DORMANT = "dormant"                          # cube SKIPS; preserves optionality
+    DISABLED_MISSING_PRODUCER = "disabled_missing_producer"  # producer absent
+    DEPRECATED = "deprecated"                    # RESERVED; owner-explicit-DEC-only
+```
+
+**Invariants enforced via pytest:**
+- DORMANT requires owner-explicit DEC reactivation; 12-month auto-review timer surfaces re-walk batch
+- DEPRECATED requires entry in `DEPRECATION_LEDGER.md` with owner-signed B-tag
+- `STRATEGIES_DELETED_R5_ROUND = set()` always empty (asserted in pyramid)
+
+### 13.6 OOS Seal Protocol (DEC #4)
+
+| Step | Action |
+|---|---|
+| 1 | Freeze IS = 2020-2023 / OOS = 2024-2026 split before any Stream D batch |
+| 2 | Hash OOS slice (parquet content hash) + post to AUDIT.md with timestamp |
+| 3 | Stream E redacts 2024-2026 rows from dossier metrics until seal opens; Claude literally cannot see OOS data |
+| 4 | Any post-seal roster change counted as new search trial in DSR N |
+| 5 | OOS opens ONCE at R5 cube launch; Sharpe-delta measured (R5_OOS - R4_OOS), NOT (R5_full - R4_full) |
+| 6 | Quant nuance: roster ITSELF was constructed using post-2024 information (B709); mitigation = roster freeze as new trial |
+
+### 13.7 R5 Launch Gates (15 Boolean Conditions; Owner Reviews Gate Report)
+
+1. `len(dossiers) == 219`
+2. All strategies: `dossier.wiring_trace.coverage_hit == True`
+3. All strategies: `dossier.data_consumption.path in {A, C}` (no Path-B/D unresolved)
+4. All strategies: `dossier.inverse_pair.status in {exists, owner_waived, structurally_asymmetric}`
+5. All strategies: `dossier.fire_count.projected_per_year >= 30 OR status == EXPLORATORY OR status == DORMANT`
+6. All strategies: `dossier.gate_stacking_check == passed`
+7. All strategies: `dossier.r4_to_r5_changes.attribution_documented == True`
+8. `OOS_slice.integrity == sealed` (2024-2026 untouched since seal date)
+9. `pyramid.full_13_tier == green` per `feedback_pyramid_full_13_tiers_mandatory`
+10. `EXECUTION_QUEUE.open_items_blocking_r5 == 0`
+11. **Stream V pyramid green on every Stream E generator** (Executor)
+12. **OOS seal hash posted >=24h pre-Stream-D first batch** (Executor)
+13. **PSR per-strategy > 0.95** (Quant)
+14. **`seed_registry.json` published + Stream V reproduced 5 random strategies bit-identically** (Quant)
+15. **Planted-bug canary caught by walk methodology** (Council 39 — owner injects bug Claude-blind; if walk doesn't catch it, walk methodology is theater)
+
+### 13.8 Honest R5 Targets (Factor-Zoo Base-Rate Anchored)
+
+| Metric | Council 38 target | Anchor |
+|---|---|---|
+| Overall PASS strategies | **25-40** (NOT 70 — sales-pitch number) | McLean-Pontiff 2016 factor zoo ~10-18% survival |
+| Per-regime PASS strategies | 100-140 (NOT 180) | Same anchor |
+| Unique winners post-cluster-dedup | 30-60 | Cluster-derived |
+| CORE portfolio (60% capital) | ~30 strategies | Intersection of 5 rankings |
+| EDGE portfolio (25% capital) | ~30 strategies | Specialist metrics (CVaR_5, kelly-fraction-adjusted-Sharpe, event-window-conditional) |
+| DIVERSIFY portfolio (15% capital) | ~15 strategies | Low correlation to CORE on trade-day overlap |
+| Median Sharpe across 219 | >= 0.40 | R4 baseline ~0.25 |
+| DSR >= 0.95 winners | >= 15 | Up from ~5 in R4 |
+| Cost-sens >= 0.5 winners | >= 25 of the 30-60 | New multiplicative gate per DEC #1 |
+
+**If miss >= 3 targets:** R5 INSUFFICIENT verdict; owner-gated diagnostic loop reopens P1-P4. R5 result REPLACES P0 platform validation; verdict feeds Council 40.
+
+### 13.9 Bug-Catching Framework (Council 39 5-Advisor Synthesis)
+
+**Owner directive 2026-06-19:** "Bug catching overview is still too high level. Restricting to 4 recent gaps; producer and consumption bugs may still get missed. Need to address everything."
+
+**Council 39 critical blind spot (all 5 advisors converged):** Claude is BOTH bug-injector AND self-grader. Framework must include INDEPENDENT verifier — owner-runnable diagnostic CLI + planted-bug canary.
+
+#### 13.9.1 The Single Highest-Leverage Architectural Fix: Engine Path Unification
+
+**Problem:** `backtest.py::screen_instrument` and `scripts/measure_fire_count.py` are divergent paths; B919 surfaced TIER 2 deferral. The dual-engine path IS the bug factory.
+
+**Fix (Week 1 priority):**
+- Extract `load_signals_for_ticker()` into `backtest/data/signal_loader.py` (canonical single entry path)
+- Both `backtest.py::screen_instrument` and `measure_fire_count.py` import from it
+- `backtest/tests/test_engine_parity.py` asserts both paths produce identical fire-counts on 5T x 20-date fixture
+- Closes B919 (TIER 2 deferral) STRUCTURALLY; ~44 TIER 2-dependent strategies become testable
+
+#### 13.9.2 Bug-Catching Tier 0 Mechanisms (Week 1 — Eliminate-at-Source)
+
+| Mechanism | Closes | Day |
+|---|---|---|
+| Canonical `signal_loader.py` | B919 TIER 2 + B901 SMC class | Wed |
+| YAML signal-key registry + AST pre-commit check | B918 dict-key typo class | Mon |
+| Pre-push fire-count smoke on changed strategies | B913 gate-stacking class | Tue |
+| Inverse-roster diff bot + walk template requires MEASURED fire-count | B915 Walk 1 missing-inverse class | Thu |
+
+#### 13.9.3 Bug-Catching Tier 1 (Week 2 — Invariant Runtime + Independent Reviewer)
+
+- Codify 20-invariant manifest in `backtest/invariants/manifest.yaml`
+- `backtest/invariants/runtime.py` asserts invariants at engine startup
+- Owner-runnable diagnostic CLI: `python scripts/probe.py --invariant E1|C1|C6|C4|C5` (deterministic, no Claude interpretation)
+- Planted-bug canary: owner injects 1 silent bug into a producer (Claude-blind); Stage 4 walk must catch; if not, walk methodology is theater (R5 gate #15 above)
+
+#### 13.9.4 Bug-Class Taxonomy (Council 39 Enumeration; 75+ classes)
+
+**Producer-side (~25 classes):** Schema/contract bugs / PIT lookahead / silent-gap defaults / stale cache / survivorship bias / filing-lag violations / multi-version data source confusion / off-by-one rolling / NaN/inf propagation / empty DF handling / mutable defaults / cache invalidation / timezone confusion / float precision / producer crashes caught-and-empty / asymmetric data source confusion / symbol resolution failures (CDAY->DAY) / timezone/calendar drift / adjusted vs unadjusted price / OHLCV partial fill / unmasked NaN in rolling window / fillna propagation / Cython/numpy dtype mismatch / pandas merge cardinality / pyarrow schema drift.
+
+**Consumption-side (~25 classes):** Dict-key typos (B918) / `not s.get(key)` patterns / comparison operator wrong direction / threshold hardcoded vs config drift / gate-stacking impossibility (B913) / type coercion (int vs bool vs float) / default values masking actual data / race producer-write/consumer-read / wrong as_of (t vs t+1) / engine wiring path divergence (B919) / test mocks divergent from production / per-strategy override conflicts with global / regime-conditional gate fires in wrong regime / multi-timeframe alignment / calendar gate wrong calendar / threshold ramp-down semantics / cube cell expects metric not in writer schema / dashboard expects field not in dossier / config drift across batches / hardcoded magic numbers / unit confusion (bps vs decimal) / signed vs unsigned numeric / int overflow in cumsum / boolean array indexing misuse / chained pandas assignment SettingWithCopyWarning.
+
+**Architectural (~10 classes):** Engine path bypass (canonical vs alternate) / cache/index lookup divergence / backtest checkpoint resume / worker pool partition / AWS bootstrap install gap (B901 SMC) / CI bypass (`--no-verify`) / pre-commit hook bypass / test pyramid tier skipping / cube cell schema drift / dashboard data-source drift.
+
+**Statistical (~10 classes):** Multiple-testing N misspecification (DSR N=5,694) / bootstrap not corrected for serial correlation / PIT split contaminated by feature engineering / OOS slice leak via informal awareness / survivorship bias in universe / look-ahead via composite signal smoothing / pseudo-OOS via Stage 4 walks feeding R5 / researcher degrees-of-freedom inflation / sample-size adequacy / per-regime sample-split logic.
+
+**Data-layer (~10 classes):** Path-from-source recursive vs parent-only / temporal coverage gap (B917) / schema-contract probe missing (CHECKLIST #106) / KNOWN-EVENT runtime probe missing / #44(b) investigate-why skipped / data revision after seal / ticker rename map (CDAY->DAY) / holiday calendar drift / adjusted vs unadjusted price / universe membership PIT.
+
+**Observability (~10 classes):** Silent producer failures at DEBUG (B273) / intermediate counts not emitted / per-100-day cumulative progress missing / heartbeat absence (process died) / cache miss rate not surfaced / no baseline comparison alarm / log level too low / trade log emit failure not raised / test coverage report missing / performance regression not detected.
+
+#### 13.9.5 Detection Mechanism per Bug Class (Architecture-Level)
+
+| Layer | Mechanism | When | Catches |
+|---|---|---|---|
+| Pre-commit | YAML signal-key registry + AST scan | Every commit | Dict-key typos / silent-gap defaults / type coercion / threshold drift |
+| Pyramid Unit | 699+ tests + 30+ new invariants | Every commit | Schema contracts / config keys / API stability |
+| Pyramid Integration | 149+ tests + engine parity test | Every commit | Engine path divergence / cache lookup |
+| Pyramid Property | Hypothesis-based fuzz | Pre-push | Off-by-one / NaN propagation / edge cases |
+| Pyramid Coverage | `coverage run` on canonical backtest | Pre-merge | Wiring traces / dead code / unwired strategies |
+| Pyramid Data Integrity | Per-producer schema pin + temporal coverage | Daily (cron) | PIT lookahead / filing-lag / survivorship / stale cache |
+| Pyramid Negative-Control | 5 null strategies injected | Per cube run | Framework calibration / silent-pass false positives |
+| Pyramid Statistical | DSR N + bootstrap CI + null distribution | Per cube run | Multiple-testing / overfitting / look-ahead |
+| Pyramid Architectural | Engine-paths-parity + AWS-bootstrap-install + CI-not-bypassed | Pre-deploy | Engine bypass / install gap / CI bypass |
+| Runtime Invariants | `backtest/invariants/runtime.py` 20 invariants | Engine startup | Closed producer manifest / single entry path / fire-count power floor |
+| Observability | Intermediate-count emitter + heartbeat + baseline alarm | Per-100-day during cube | Silent crashes / hangs / drift |
+| Planted-Bug Canary | Owner-injected bug; framework must catch | Pre-R5 launch | Theater detection / walk methodology integrity |
+| Owner CLI | `python scripts/probe.py --invariant X` deterministic | Owner-on-demand | Independent verification (no Claude interpretation) |
+| Lineage Auto-Grown | Pattern library detection greps + false-positive rate tracking | Every walk | Recurrence of past bug classes |
+
+#### 13.9.6 Pattern Library (Auto-Grown; Compounding Asset)
+
+- Every bug found -> `pattern_<N>.json` (producer-type + symptom + detection-grep + fix-template + false-positive rate)
+- Library auto-runs detection greps on every walk + every commit
+- Dashboard shows "patterns prevented this turn" + "patterns prevented cumulative"
+- After 50 patterns, library catches ~80% of new walk bugs pre-commit
+- Day-1 seeds: `default-True-silent-gap`, `not-s-get-pattern`, `regime-affinity-mass-edit`, `gate-stacking-fire-starve`, `missing-inverse-mechanical-mirror`, `TIER-2-producer-deferral`, `asymmetric-data-source-mirror`, `STATE-vs-EVENT-temporality-mismatch`, `family-bug-grep-skip`, `wrong-dict-key-typo`.
+
+#### 13.9.7 What This Bug Framework Does NOT Catch (Honesty per Brief)
+
+- **Statistical methodology errors** beyond named ones (Bonferroni denominator on trade-sparse strategies, Chow on regime-coincidence). These need separate stream per DEC-508 Tier 3.
+- **Strategy-research-design errors** (Pattern W subset, no-prior-edge clusters). These are Stage 4 walk quality, not bug-catching.
+- **Adversarial market regime shifts post-R5.** Out of scope.
+- **Doc drift after R5** (the framework itself rots). Needs 90-day predicate-rot detector at Phase 1C.
+- **Unknown unknowns.** R5 will surface bug classes this framework didn't anticipate; that's what R5 is for. Council 40's methodology calibrates on what R5 actually broke.
+
+### 13.10 Time Estimate (Honest)
+
+| Estimate | Source | Caveat |
+|---|---|---|
+| 1 week | Outsider | Kill council 37; minimum-viable R5 |
+| 10-14 days | Executor | 118-178h wall-clock; 30-40h owner-attention |
+| 39 days | Expansionist | With platform + compounding assets |
+| 90-115 turns | Quant | With statistical depth |
+
+**Council 38 synthesis: ~2-3 weeks for Phase 0 + Phase 6 launch. Phase 1B-alpha follows after R5 verdict.**
+
+**Honest caveat (Outsider):** 36 prior councils -> 0 shipped R5. Hard moratorium on workflow redesign until R5 ships. After R5, Council 40 calibrates on actual failures, not feared ones.
+
+### 13.11 Discipline Enforcement (Strict; No Exceptions)
+
+Per owner directive 2026-06-19 ("Discipline to be enforced strictly! No exceptions"):
+
+1. **Mandatory council per turn** — every recommendation / verdict / disposition / methodology proposal preceded by Agent council call. Surfaced in response. Memory rule: `feedback_mandatory_council_per_turn`.
+2. **CHECKLIST compliance per #110** — pre-flight visible block applying full CHECKLIST.md (currently 55+ items) before every recommendation. End-of-response compliance statement (#45) is per-response gate.
+3. **No surface-level audits** — every audit traces END-TO-END (source -> producer -> binding -> strategy -> engine -> output). Memory rule: `feedback_no_surface_level_audits`.
+4. **No-delete invariant** — `STRATEGIES_DELETED_R5_ROUND = set()` always empty; DEPRECATED requires owner-signed B-tag in `DEPRECATION_LEDGER.md`.
+5. **OOS seal** — Claude literally cannot see 2024-2026 data until seal opens at R5 launch.
+6. **Planted-bug canary gate** — owner injects bug; framework must catch; otherwise walk methodology is theater (R5 launch gate #15).
+7. **Independent verifier** — owner-runnable diagnostic CLI for top 5 invariants (deterministic, no Claude interpretation).
+8. **Hard moratorium on workflow redesign** — no Council 40+ on workflow until R5 ships. After R5, Council 40 calibrates on actual failures.
+9. **Engine path unification** — single canonical `signal_loader.py`; both engines import; engine-parity pytest enforced.
+10. **Pattern library auto-runs** — every commit; false-positive rate tracked per pattern; auto-deprecate >30% FP.
+
+### 13.12 Integration Points
+
+| Target | Integration |
+|---|---|
+| `backtest/engine/backtest.py` | cube_runner adapter (cube_runner orchestrates, backtest.py executes per-cell) |
+| `backtest/results/metrics.py` | soft_score plugins (one per ranking); DSR/cost-sens become multiplicative gates (DEC #1) |
+| `backtest/results/writer.py` | walk_card emission + autopsy emission + delta record emission |
+| `STRATEGY_ROSTER.md` | Auto-included in cube_explorer (live link) |
+| `EXECUTION_QUEUE.md` | Walk-card schema items auto-queue |
+| `VERIFICATION_MATRIX.md` | Updated post-P0 (coverage-based wiring per DEC #3) |
+| `dashboard_phase_1a/` | DEPRECATE post-B921; archive to `archive/dashboard_phase_1a_r4/` |
+| `dashboard_stage_2/` | KEEP (DEC/BUG/INV registry — required for owner workflow) |
+| `dashboard_sprint0a/` | KEEP (API coverage — read-only ops) |
+| `dashboard_r5/` | NEW (single dashboard, 7 tabs; Cube heatmap + Winners + Cluster explorer + R4->R5 delta + Bug-fix attribution + Regime affinity + Fire-count diagnostic) |
+| Phase 1B-alpha launch spec | Consumes CORE/EDGE/DIVERSIFY portfolios as agent tiers |
+
+### 13.13 Failure Modes + Guardrails
+
+| Failure | Detection | Guardrail |
+|---|---|---|
+| Silent-gap typo (B918 class) | `test_no_signal_key_typos` (AST registry cross-check) | Pre-commit hook blocks commit |
+| Strategy silently fires 0 times | `test_every_strategy_fires_at_least_once_T1a_sample` | P0 fails; P1+ blocked |
+| P3 autonomous fix breaks unrelated strategy | `test_r5_phase_gates::test_p3_done` (full pyramid) | Fix reverted; manual review queued |
+| Median R4->R5 Sharpe delta negative | `r5_delta_analyzer.py` guardrail assertion | P6 blocked; revert candidate or accept w/ documented reason |
+| Unique winners < 30 or > 60 | `r5_cluster_dedup.py` exit code 2 | Owner-tuned cluster threshold required |
+| Cube cell convergence < 85% | P6 gate assertion | Partial-cube launch with explicit gap manifest |
+| Owner skips P2 manual review | `"OWNER_APPROVED" in r5_p2_status_proposed.csv` | P3 won't run |
+| Deprecation without ledger entry | `test_no_strategy_is_deprecated_without_owner_token` | No-delete invariant enforced |
+| Cost-sensitivity not measured | P1 emits per-strategy 20bps shock estimate | Catches friction-killers at P1 not P6 |
+| Compute crash mid-P6 | `r5_launch.py --checkpoint-every 100` | Resumable; no work lost |
+| OOS slice leak | Claude reads-only redacted dossier until seal opens | Stream E redaction; checked in pyramid |
+| Council fatigue (Outsider warning) | Hard moratorium per 13.11 #8 | Owner enforces |
+| Framework rots post-R5 | 90-day predicate-rot detector | Phase 1C item |
+| Stream E script bugs propagate to all 219 dossiers | Self-test on 5 known-good + 5 known-broken BEFORE running on 218 | Executor recommendation |
+| DSR N misspecification | DEC #5 explicit N=5,694 | Quant requirement |
+| Planted-bug canary missed by walk | R5 launch gate #15 BLOCKS | Independent verifier |
+
+### 13.14 Memory Rules Codified This Session
+
+- `feedback_mandatory_council_per_turn` (2026-06-19) — council BEFORE recommendations
+- `feedback_no_surface_level_audits` (2026-06-19) — end-to-end audit traces
+
+Both surface in pre-flight + EOT compliance statement per CHECKLIST #110.
+
+---
