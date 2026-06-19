@@ -180,6 +180,43 @@ def test_b923_signal_loader_insider_matches_canonical_screener(ticker, as_of):
     )
 
 
+def test_b926_insider_known_positive_fixture_mbx_2024():
+    """B926 KNOWN-POSITIVE fixture per CHECKLIST #106(e) + Council 42.
+
+    Source: Form-4 cache audit identified MBX (Mid Penn Bancorp) with
+    15 unique insider open-market purchases on 2024-09-16 cluster event.
+    This fixture asserts the producer + signal_loader correctly identify
+    the cluster (insider_cluster_active=True; unique_buyers>=15).
+
+    Council 42 verdict (Contrarian's epistemics): parity tests on an
+    EMPTY input are tautological. KNOWN-POSITIVE probes verify producer
+    actually fires when historical events DID occur. ~10-15 min effort
+    per extraction; satisfies CHECKLIST #106(e) KNOWN-EVENT runtime probe.
+
+    Future extractions (pead/persistence/short_interest/news_sentiment/
+    search_volume/earnings_surprise_yoy) should each ship with their
+    own KNOWN-POSITIVE fixture per same pattern.
+    """
+    # Via canonical signal_loader (B921 pattern carried forward to B923)
+    signals = {}
+    inject_insider_buying_signals(signals, "MBX", date(2024, 9, 30))
+
+    assert signals.get("insider_cluster_active") is True, (
+        f"B926 KNOWN-POSITIVE FAIL: MBX 2024-09-16 cluster (15 unique buyers) "
+        f"should set insider_cluster_active=True; got {signals.get('insider_cluster_active')!r}. "
+        f"All signals: {signals!r}"
+    )
+    assert signals.get("insider_unique_buyers_30d", 0) >= 5, (
+        f"B926 KNOWN-POSITIVE FAIL: MBX cluster should report >=5 unique "
+        f"buyers; got {signals.get('insider_unique_buyers_30d')!r}"
+    )
+    # Director participation verified in cache audit (5 directors)
+    assert signals.get("insider_director_buyers_30d", 0) >= 1, (
+        f"B926 KNOWN-POSITIVE FAIL: MBX cluster includes directors per "
+        f"cache audit; producer reported {signals.get('insider_director_buyers_30d')!r}"
+    )
+
+
 def test_b923_signal_loader_insider_handles_missing_producer_gracefully():
     """Insider producer raising must not propagate; signals dict left unchanged."""
     signals = {}
