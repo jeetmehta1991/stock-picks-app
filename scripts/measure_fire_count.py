@@ -1232,6 +1232,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="(B922 2026-06-19) ENABLE TIER 2 producer-level signal injection via canonical signal_loader. Closes B919 architectural deferral that silenced ~44 TIER 2-dependent strategies. Currently wires institutional_signal only (B921 extraction); insider + classification follow in subsequent commits per Council 41 sequence. Default OFF (pre-B922 behavior preserved).",
     )
     parser.add_argument(
+        "--no-tier2", action="store_true",
+        help="(B938 2026-06-19) Phase P1 batch 2 commit 3 Council 46 ESCAPE HATCH: explicitly DISABLE TIER 2 injection even if Phase P1 batch 3 flips default to ON. Overrides --include-tier2 if both passed. Use for pre-B922 backward-compat (e.g., AWS B660 bootstrap if pre-B922 fire-count comparison needed). See output_audit/b938_measure_fire_count_caller_audit.md for caller inventory.",
+    )
+    parser.add_argument(
         "--verbose", action="store_true",
         help="Verbose logging",
     )
@@ -1280,6 +1284,18 @@ def main(argv: Optional[list[str]] = None) -> int:
         ]
         logger.info("Loaded %d tickers from %s", len(ticker_subset), subset_path)
 
+    # B938 (2026-06-19) Council 46 escape hatch: --no-tier2 overrides --include-tier2.
+    # Resolution order:
+    #   - --no-tier2 set: TIER 2 disabled regardless of --include-tier2
+    #   - --include-tier2 set + no --no-tier2: TIER 2 enabled
+    #   - Neither set: default behavior (currently OFF; will flip to ON in batch 3)
+    include_tier2_resolved = (args.include_tier2 and not args.no_tier2)
+    if args.no_tier2 and args.include_tier2:
+        logger.warning(
+            "B938: both --no-tier2 and --include-tier2 passed; --no-tier2 takes precedence "
+            "(TIER 2 producers disabled). Per output_audit/b938_measure_fire_count_caller_audit.md."
+        )
+
     output = measure_strategies(
         strategy_names, start=start, end=end, max_tickers=args.max_tickers,
         ticker_sample_strategy=args.ticker_sample_strategy,
@@ -1288,7 +1304,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         cot_series=tuple(args.cot_series),
         n_workers=args.n_workers,
         ticker_subset=ticker_subset,
-        include_tier2_producers=args.include_tier2,
+        include_tier2_producers=include_tier2_resolved,
     )
 
     if args.output:
