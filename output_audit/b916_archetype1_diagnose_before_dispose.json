@@ -1,0 +1,259 @@
+{
+  "archetype": 1,
+  "strategies": [
+    "institutional_high_conviction_long",
+    "institutional_recent_init_momentum_long",
+    "institutional_recent_init_volume_long"
+  ],
+  "probes": [
+    {
+      "probe": "1_path_from_source",
+      "data_source": [
+        "data_prefetch/quiver/sec13fchanges/global.parquet (bulk; ~12 months recent)",
+        "data_prefetch/quiver/institutional/{TICKER}.parquet (per-ticker fallback; 2006-2025)"
+      ],
+      "producer_function": "backtest.data.smart_money.institutional_signal()",
+      "producer_output_dict": "{signal, new_positions, increased, decreased, source}",
+      "strategy_consumption": "s.get('institutional_new_positions', False)",
+      "engine_wiring": "screener.py: compute_smart_money_signals -> _has_institutional_buy",
+      "verification": "B912 corrected probe: producer fires 40% on 40 T1a samples",
+      "verdict": "PATH INTACT (producer source verified)"
+    },
+    {
+      "probe": "2_temporal_coverage",
+      "window": [
+        "2024-09-01",
+        "2024-12-31"
+      ],
+      "tickers": [
+        "NVDA",
+        "MSFT",
+        "AAPL",
+        "META",
+        "AMD"
+      ],
+      "coverage": {
+        "NVDA": {
+          "total_samples": 18,
+          "non_none_samples": 18,
+          "pct_non_none": 100.0
+        },
+        "MSFT": {
+          "total_samples": 18,
+          "non_none_samples": 18,
+          "pct_non_none": 100.0
+        },
+        "AAPL": {
+          "total_samples": 18,
+          "non_none_samples": 0,
+          "pct_non_none": 0.0
+        },
+        "META": {
+          "total_samples": 18,
+          "non_none_samples": 18,
+          "pct_non_none": 100.0
+        },
+        "AMD": {
+          "total_samples": 18,
+          "non_none_samples": 0,
+          "pct_non_none": 0.0
+        }
+      },
+      "verdict": "DATA AVAILABLE"
+    },
+    {
+      "probe": "3_schema_contract",
+      "sample": "NVDA @ 2024-09-30",
+      "expected_keys": [
+        "signal",
+        "new_positions",
+        "increased",
+        "decreased"
+      ],
+      "found_keys": [
+        "signal",
+        "new_positions",
+        "increased",
+        "decreased",
+        "source"
+      ],
+      "missing_keys": [],
+      "verdict": "SCHEMA INTACT"
+    },
+    {
+      "probe": "4_known_event_runtime",
+      "test_case": "NVDA @ 2024-09-30 (KNOWN heavy 13F inflow period)",
+      "signal_kind": "strong_buy",
+      "new_positions": 2,
+      "increased": 15,
+      "decreased": 0,
+      "verdict": "PRODUCER FIRED"
+    },
+    {
+      "probe": "5_pit_lag_integrity",
+      "test_case": "AAPL pre (2024-05-14) vs post (2024-05-16) Q1 2024 filing cutoff",
+      "pre_filing_signal": "none",
+      "post_filing_signal": "none",
+      "pre_new_positions": null,
+      "post_new_positions": null,
+      "verdict": "PIT INTACT (pre and post may differ as new data ingested)"
+    },
+    {
+      "probe": "6_strategy_level_cohort_audit",
+      "method": "STATE-portion of strategy gates (new_pos >= 3 AND above_ema_50)",
+      "caveat": "Approximation; full gate stack needs technical signal cache",
+      "rows": [
+        {
+          "bucket": "ALL_BASE",
+          "horizon": 5,
+          "n": 376,
+          "mean_fwd_return_pct": 0.378,
+          "hit_rate_pct": 54.79
+        },
+        {
+          "bucket": "ALL_BASE",
+          "horizon": 10,
+          "n": 376,
+          "mean_fwd_return_pct": 1.598,
+          "hit_rate_pct": 59.31
+        },
+        {
+          "bucket": "ALL_BASE",
+          "horizon": 21,
+          "n": 376,
+          "mean_fwd_return_pct": 2.645,
+          "hit_rate_pct": 57.45
+        },
+        {
+          "bucket": "ALL_BASE",
+          "horizon": 63,
+          "n": 376,
+          "mean_fwd_return_pct": 7.479,
+          "hit_rate_pct": 60.9
+        },
+        {
+          "bucket": "new_pos_only",
+          "horizon": 5,
+          "n": 112,
+          "mean_fwd_return_pct": 0.104,
+          "hit_rate_pct": 57.14
+        },
+        {
+          "bucket": "new_pos_only",
+          "horizon": 10,
+          "n": 112,
+          "mean_fwd_return_pct": 1.439,
+          "hit_rate_pct": 57.14
+        },
+        {
+          "bucket": "new_pos_only",
+          "horizon": 21,
+          "n": 112,
+          "mean_fwd_return_pct": 3.113,
+          "hit_rate_pct": 61.61
+        },
+        {
+          "bucket": "new_pos_only",
+          "horizon": 63,
+          "n": 112,
+          "mean_fwd_return_pct": 8.788,
+          "hit_rate_pct": 66.07
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 5,
+          "n": 67,
+          "mean_fwd_return_pct": 1.185,
+          "hit_rate_pct": 65.67
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 10,
+          "n": 67,
+          "mean_fwd_return_pct": 1.555,
+          "hit_rate_pct": 56.72
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 21,
+          "n": 67,
+          "mean_fwd_return_pct": 3.068,
+          "hit_rate_pct": 56.72
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 63,
+          "n": 67,
+          "mean_fwd_return_pct": 8.981,
+          "hit_rate_pct": 70.15
+        }
+      ],
+      "edges": [
+        {
+          "bucket": "new_pos_only",
+          "horizon": 5,
+          "n": 112,
+          "return_edge_pp": -0.274,
+          "hit_edge_pp": 2.35,
+          "verdict": "EDGE"
+        },
+        {
+          "bucket": "new_pos_only",
+          "horizon": 10,
+          "n": 112,
+          "return_edge_pp": -0.159,
+          "hit_edge_pp": -2.17,
+          "verdict": "NEG_EDGE"
+        },
+        {
+          "bucket": "new_pos_only",
+          "horizon": 21,
+          "n": 112,
+          "return_edge_pp": 0.468,
+          "hit_edge_pp": 4.16,
+          "verdict": "EDGE"
+        },
+        {
+          "bucket": "new_pos_only",
+          "horizon": 63,
+          "n": 112,
+          "return_edge_pp": 1.309,
+          "hit_edge_pp": 5.17,
+          "verdict": "EDGE"
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 5,
+          "n": 67,
+          "return_edge_pp": 0.807,
+          "hit_edge_pp": 10.88,
+          "verdict": "EDGE"
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 10,
+          "n": 67,
+          "return_edge_pp": -0.043,
+          "hit_edge_pp": -2.59,
+          "verdict": "NEG_EDGE"
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 21,
+          "n": 67,
+          "return_edge_pp": 0.423,
+          "hit_edge_pp": -0.73,
+          "verdict": "NO_EDGE"
+        },
+        {
+          "bucket": "new_pos_AND_above_ema50",
+          "horizon": 63,
+          "n": 67,
+          "return_edge_pp": 1.502,
+          "hit_edge_pp": 9.25,
+          "verdict": "EDGE"
+        }
+      ]
+    }
+  ]
+}
