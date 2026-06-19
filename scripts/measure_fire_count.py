@@ -756,6 +756,7 @@ def _precompute_signals_for_ticker(
                     inject_classification_change_signals,
                     inject_earnings_surprise_yoy_signals,
                     inject_insider_buying_signals,
+                    inject_institutional_persistence_signals,
                     inject_institutional_signals,
                     inject_pead_signals,
                     inject_search_volume_signals,
@@ -767,6 +768,7 @@ def _precompute_signals_for_ticker(
                 inject_insider_buying_signals(signals, ticker, bar_date)
                 inject_classification_change_signals(signals, ticker, bar_date)
                 inject_institutional_signals(signals, ticker, bar_date)
+                inject_institutional_persistence_signals(signals, ticker, bar_date)
                 inject_search_volume_signals(signals, ticker, bar_date)
         out.append((bar_date, signals))
     return out

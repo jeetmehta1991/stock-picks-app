@@ -70,6 +70,50 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_institutional_persistence_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    as_of: date,
+) -> dict[str, Any]:
+    """Inject multi-quarter institutional persistence signals (Batch 344/333b).
+
+    B931 (2026-06-19) P0 commit 10/11: extracted from screener.py:7989-7997.
+    Council 43 sequence MAY-REVERT TAG pending B906 owner decision.
+
+    B906 CONTEXT (carried forward from B922 / B925):
+        institutional_persistent_holders_long is in B906 MEASUREMENT_DISPUTED
+        set (backtest/config.py:1134). Dispute scope is CUBE-MEASUREMENT-
+        VALIDITY (R4=0 vs cube-projected fires divergence), NOT
+        extraction-pattern. B921 institutional_signal extraction was
+        approved under same logic; B931 persistence extraction follows
+        precedent.
+
+        If owner decides post-B931 to defer institutional_persistence,
+        this commit can be REVERTED via `git revert <SHA>` without
+        affecting other extractions (signal_loader functions are
+        independent).
+
+    Produces signal keys (per backtest/signals/institutional_persistence_consumer):
+        institutional_persistence_growing       bool
+        institutional_persistence_strong        bool
+        persistence_quarters_buying             int
+        total_active_holders                    int
+
+    Reads `data_prefetch/derived/institutional_persistence_t1a/{YYYY-01-01}.parquet`.
+    Failure mode: producer raises -> log at WARNING + leave signals unchanged.
+    Per Yan-Zhang 2009 RFS: cross-fund consensus over multiple quarters
+    forecasts alpha at 1-3 month horizon.
+    """
+    try:
+        from backtest.signals.institutional_persistence_consumer import compute_persistence_signals
+        pers = compute_persistence_signals(ticker, as_of)
+        if pers:
+            signals.update(pers)
+    except Exception as _e:
+        _log_silent_producer_failure("institutional_persistence", _e)
+    return signals
+
+
 def inject_short_interest_signals(
     signals: dict[str, Any],
     ticker: str,

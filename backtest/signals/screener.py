@@ -7952,15 +7952,12 @@ def screen_instrument(
     #   total_active_holders        int
     # Yan-Zhang 2009 RFS: cross-fund consensus over multiple quarters
     # forecasts alpha at the 1-3 month horizon.
-    try:
-        from backtest.signals.institutional_persistence_consumer import (
-            compute_persistence_signals,
-        )
-        pers = compute_persistence_signals(ticker, as_of)
-        if pers:
-            signals.update(pers)
-    except Exception as _e:
-        _log_silent_producer_failure("institutional_persistence", _e)
+    # B931 (2026-06-19) engine path unification per Council 43 commit 10/11
+    # with MAY-REVERT TAG pending B906 MEASUREMENT_DISPUTED owner decision.
+    # B906 dispute scope is cube-measurement-validity, NOT extraction-pattern
+    # (B921 institutional precedent). If owner defers, git revert B931.
+    from backtest.data.signal_loader import inject_institutional_persistence_signals
+    inject_institutional_persistence_signals(signals, ticker, as_of)
     # Batch 224: pre-FOMC macro signals (universe-wide; same value for all
     # tickers on a given day). B748b (2026-06-13 owner-approved) removed
     # the per-ticker `compute_recent_8k_signal` call -- producer DELETED
