@@ -70,6 +70,40 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_classification_change_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    as_of: date,
+) -> dict[str, Any]:
+    """Inject GICS classification-change signals into per-ticker signals dict.
+
+    B924 (2026-06-19) P0 commit 4/5: extracted from screener.py:7952-7961
+    (Batch 332 wiring). Council 41 sequence; ~10 strategies consume the
+    classification_change_* keys.
+
+    Produces signal keys (per backtest.data.universe.get_classification_change_signals):
+        classification_changed_recent       bool (within 90-day lookback)
+        days_since_classification_change    int  (None if no change)
+        classification_change_to_tech       bool (moved INTO IT/Comms/Health)
+        classification_change_to_defensive  bool (moved INTO defensive)
+        classification_change_from_tech     bool (moved OUT OF growth)
+
+    Reads sector_history.csv via universe.get_classification_change_signals.
+    Failure mode: producer raises -> log at WARNING + leave signals
+    unchanged. Per B416 / B910 sector_history staleness lineage: producer
+    output may be empty if sector_history.csv stale (1190+ days since
+    last event per B910 finding).
+    """
+    try:
+        from backtest.data.universe import get_classification_change_signals
+        cc_out = get_classification_change_signals(ticker, as_of)
+        if cc_out:
+            signals.update(cc_out)
+    except Exception as _e:
+        _log_silent_producer_failure("classification_change", _e)
+    return signals
+
+
 def inject_insider_buying_signals(
     signals: dict[str, Any],
     ticker: str,

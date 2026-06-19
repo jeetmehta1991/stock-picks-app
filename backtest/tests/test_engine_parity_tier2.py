@@ -190,3 +190,65 @@ def test_b923_signal_loader_insider_handles_missing_producer_gracefully():
             f"B923 signal_loader insider raised on non-existent ticker "
             f"(expected silent failure): {e!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# B924 (2026-06-19) P0 commit 4/5: classification_change extraction parity
+# ---------------------------------------------------------------------------
+
+from backtest.data.signal_loader import inject_classification_change_signals
+from backtest.data.universe import get_classification_change_signals
+
+
+def _canonical_screener_classification_logic(cc_out: dict) -> dict:
+    """Mirror screener.py:7954-7956 classification-change binding logic.
+
+    Pre-B924 inline:
+        cc_out = get_classification_change_signals(ticker, as_of)
+        if cc_out:
+            signals.update(cc_out)
+
+    Passthrough binding (same shape as B923 insider).
+    """
+    return cc_out if cc_out else {}
+
+
+@pytest.mark.parametrize("ticker", PARITY_FIXTURE_TICKERS)
+@pytest.mark.parametrize("as_of", PARITY_FIXTURE_DATES)
+def test_b924_signal_loader_classification_matches_canonical_screener(ticker, as_of):
+    """B924 engine path parity: classification_change signal_loader equals canonical screener binding."""
+    cc_out = get_classification_change_signals(ticker, as_of)
+    expected = _canonical_screener_classification_logic(cc_out)
+
+    actual = {}
+    inject_classification_change_signals(actual, ticker, as_of)
+
+    # All canonical keys must match exactly
+    for key in expected:
+        assert key in actual, (
+            f"B924 PARITY FAIL: key '{key}' missing from signal_loader output "
+            f"for {ticker} @ {as_of}. Producer returned: {cc_out!r}"
+        )
+        assert actual[key] == expected[key], (
+            f"B924 PARITY FAIL: key '{key}' value mismatch for {ticker} @ {as_of}. "
+            f"Canonical: {expected[key]!r}, signal_loader: {actual[key]!r}."
+        )
+
+    # No extra keys
+    extra = set(actual.keys()) - set(expected.keys())
+    assert not extra, (
+        f"B924 PARITY FAIL: signal_loader injected unexpected keys {extra} "
+        f"for {ticker} @ {as_of}."
+    )
+
+
+def test_b924_signal_loader_classification_handles_missing_producer_gracefully():
+    """Classification producer raising must not propagate; signals dict left unchanged."""
+    signals = {}
+    try:
+        inject_classification_change_signals(signals, "NONEXISTENT_TICKER_XYZ123", date(2024, 6, 30))
+    except Exception as e:
+        pytest.fail(
+            f"B924 signal_loader classification raised on non-existent ticker "
+            f"(expected silent failure): {e!r}"
+        )

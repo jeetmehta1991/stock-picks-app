@@ -7941,20 +7941,11 @@ def screen_instrument(
     # confirm byte-identical to canonical screener inline binding).
     from backtest.data.signal_loader import inject_insider_buying_signals
     inject_insider_buying_signals(signals, ticker, as_of)
-    # Batch 332 (2026-05-25 owner-approved Path C Wave 3 classification_change):
-    # inject recent-classification-change signals into per-ticker signals
-    # dict. Reads sector_history.csv via universe.get_classification_change_signals.
-    # No-op when ticker has no qualifying change row in 90-day lookback.
-    try:
-        from backtest.data.universe import get_classification_change_signals
-        cc_out = get_classification_change_signals(ticker, as_of)
-        if cc_out:
-            signals.update(cc_out)
-    except Exception as _e:
-        # Batch 416 (2026-05-28): rate-limited logging replaces silent pass.
-        # Without this, a producer failure on AWS / Hetzner was undetectable
-        # post-run (29,159 trades, 0 classification_* keys, 0 visible errors).
-        _log_silent_producer_failure("classification_change", _e)
+    # B924 (2026-06-19) engine path unification per Council 39+41 commit 4/5:
+    # classification_change injection extracted into signal_loader. Pattern
+    # carried forward from B921/B923 (parity tests confirm byte-identical).
+    from backtest.data.signal_loader import inject_classification_change_signals
+    inject_classification_change_signals(signals, ticker, as_of)
     # Batch 330 (2026-05-25 owner-approved Path C Wave 3): inject
     # institutional 13F signal into the per-ticker signals dict so
     # screener strategies can gate on it as the PRIMARY trigger.
