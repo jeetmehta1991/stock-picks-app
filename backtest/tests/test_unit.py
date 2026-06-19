@@ -1244,6 +1244,61 @@ def test_bug273_institutional_signal_with_synthetic_bulk():
     print(f"[OK] BUG-273 institutional_signal AAPL (sec13fchanges schema) -> {result['signal']}")
 
 
+def test_b918_screener_institutional_new_positions_wiring():
+    """B918 regression: screener.py:7979 must read 'new_positions' (plural).
+
+    BUG (commit 82290e2c00 2026-05-25): screener wired
+        signals['institutional_new_positions'] = int(inst.get('new_pos', 0) or 0)
+    but producer institutional_signal() returns dict with 'new_positions'
+    (plural). 'new_pos' key never existed -> default 0 silenced 7 strategies
+    for 25 days incl. R4 (May 31 2026). Council 35 path (g) RESCUE-AND-RETEST
+    + B918 per-gate probe surfaced the divergence. Owner approved fix (a)
+    2026-06-19.
+    """
+    quarter_end = "2024-03-31"
+    bulk = pd.DataFrame({
+        "Ticker": ["TESTTKR"] * 3,
+        "Date": ["2024-05-15"] * 3,
+        "ReportPeriod": [quarter_end] * 3,
+        "Fund": ["Fund A", "Fund B", "Fund C"],
+        "Change_Share": [1000, 500, 200],
+        "Change_Pct": [1.0, 1.0, 1.0],  # all = 1.0 = new positions
+        "Held": [1000, 500, 200],
+    })
+    _inject_quiver_bulk_for_test("sec13fchanges", bulk)
+    from backtest.data.smart_money import institutional_signal
+    # Verify producer dict-key contract: 'new_positions' (plural), NOT 'new_pos'.
+    inst = institutional_signal("TESTTKR", date(2024, 6, 1))
+    assert "new_positions" in inst, (
+        f"Producer schema regression: 'new_positions' key missing. Got: {list(inst.keys())}"
+    )
+    assert "new_pos" not in inst, (
+        "Producer must NOT use 'new_pos' (singular); strategies bind on 'new_positions'."
+    )
+    # Producer reads it correctly -> screener must also bind it correctly.
+    np_count = inst["new_positions"]
+    assert np_count >= 1, f"3 new-position funds should set count >= 1, got {np_count}"
+    # Static source-of-truth assertion: screener.py:7979 must read the SAME key
+    # that institutional_signal() returns. The actual bug was a typo on this line.
+    import re
+    from pathlib import Path
+    screener_path = Path(__file__).resolve().parent.parent / "signals" / "screener.py"
+    src = screener_path.read_text(encoding="utf-8")
+    # Find the binding line - must use 'new_positions' (plural).
+    binding = re.search(
+        r'signals\["institutional_new_positions"\]\s*=\s*int\(inst\.get\("(\w+)"',
+        src,
+    )
+    assert binding is not None, "screener.py binding pattern not found"
+    bound_key = binding.group(1)
+    assert bound_key == "new_positions", (
+        f"screener.py:7979 binds institutional_new_positions <- inst.get({bound_key!r}); "
+        f"must be 'new_positions' (plural). Producer never returns {bound_key!r}; "
+        f"this is the exact B918 bug pattern."
+    )
+    print(f"[OK] B918 screener wires inst.get('new_positions') -> institutional_new_positions")
+
+
 def test_bug273_institutional_signal_respects_45day_lag():
     """BUG-273: 13F filings have ~45-day reporting lag; pre-lag queries return none."""
     quarter_end = "2024-03-31"

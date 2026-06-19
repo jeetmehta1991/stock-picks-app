@@ -7976,7 +7976,10 @@ def screen_instrument(
             signals["institutional_strong_buy"] = sig_kind == "strong_buy"
             signals["institutional_buy"] = sig_kind in ("buy", "strong_buy")
             signals["institutional_negative"] = sig_kind == "negative"
-            signals["institutional_new_positions"] = int(inst.get("new_pos", 0) or 0)
+            # B918 (2026-06-19) bug fix: producer returns 'new_positions' (plural);
+            # 'new_pos' (singular) key never existed -> default 0 silenced 7 strategies
+            # from 2026-05-25 to 2026-06-19 incl. R4 (May 31). Owner-approved (a) fix.
+            signals["institutional_new_positions"] = int(inst.get("new_positions", 0) or 0)
             signals["institutional_increased"] = int(inst.get("increased", 0) or 0)
     except Exception as _e:
         _log_silent_producer_failure("institutional_signal", _e)
