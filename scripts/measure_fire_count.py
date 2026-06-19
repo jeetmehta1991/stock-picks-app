@@ -759,9 +759,11 @@ def _precompute_signals_for_ticker(
                     inject_institutional_signals,
                     inject_pead_signals,
                     inject_search_volume_signals,
+                    inject_short_interest_signals,
                 )
                 inject_pead_signals(signals, ticker, sub_df, bar_date)
                 inject_earnings_surprise_yoy_signals(signals, ticker, sub_df, bar_date)
+                inject_short_interest_signals(signals, ticker, bar_date)
                 inject_insider_buying_signals(signals, ticker, bar_date)
                 inject_classification_change_signals(signals, ticker, bar_date)
                 inject_institutional_signals(signals, ticker, bar_date)

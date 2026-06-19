@@ -7910,21 +7910,10 @@ def screen_instrument(
     # signature as PEAD (chained dependency on same financials cache).
     from backtest.data.signal_loader import inject_earnings_surprise_yoy_signals
     inject_earnings_surprise_yoy_signals(signals, ticker, df, as_of)
-    # Batch 519 (2026-05-31, P15 sleeves wired per owner directive):
-    # FINRA short-interest signals -- short_interest_pct + days_to_cover.
-    # Consumed by strat_squeeze_setup_long (long entry when high SI +
-    # bullish breakout) + strat_short_borrow_trap_avoid (avoid-direction
-    # gate when DTC > 5 days; blocks short entries on hard-to-borrow
-    # names). Graceful empty when ticker missing from
-    # data_prefetch/finra/short_interest/ cache (Batch 516 populated
-    # 1926 universe tickers).
-    try:
-        from backtest.signals.short_interest import compute_short_interest_signals
-        si_signal = compute_short_interest_signals(ticker, as_of)
-        if si_signal:
-            signals.update(si_signal)
-    except Exception as _e:
-        _log_silent_producer_failure("short_interest", _e)
+    # B930 (2026-06-19) engine path unification per Council 43 commit 9/11:
+    # FINRA short-interest extracted into signal_loader.
+    from backtest.data.signal_loader import inject_short_interest_signals
+    inject_short_interest_signals(signals, ticker, as_of)
     # B923 (2026-06-19) engine path unification per Council 39+41 commit 3/5:
     # insider buying cluster signal injection extracted into signal_loader.
     # Pattern carried forward from B921 institutional extraction (parity tests

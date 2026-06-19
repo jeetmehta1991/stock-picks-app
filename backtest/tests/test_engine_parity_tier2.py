@@ -298,20 +298,18 @@ def test_b927_count_pinned_remaining_tier2_producers():
     screener_path = Path(__file__).resolve().parent.parent / "signals" / "screener.py"
     src = screener_path.read_text(encoding="utf-8")
     # Match unextracted TIER 2 producer-level try blocks
-    # Already-extracted: institutional_signal (B921), insider_buying (B923),
-    # classification_change (B924), pead (B927), yoy (B928), search_volume (B929)
+    # Already-extracted: B921 inst + B923 insider + B924 classification +
+    # B927 pead + B928 yoy + B929 search_volume + B930 short_interest
     # Remaining sentinels (these patterns should disappear as each extracts):
     remaining_sentinels = {
-        "short_interest": r"from backtest\.signals\.short_interest import compute_short_interest_signals",
         "institutional_persistence": r"from backtest\.signals\.institutional_persistence_consumer import",
         "news_sentiment": r"from backtest\.signals\.news_sentiment import compute_news_sentiment_signals",
     }
     found = [k for k, pattern in remaining_sentinels.items() if re.search(pattern, src)]
-    assert len(found) == 3, (
-        f"B929 COUNT-PIN: expected exactly 3 TIER 2 producers still inline in "
-        f"screener.py (short_interest + institutional_persistence + news_sentiment); "
-        f"found {len(found)}: {found!r}. If a new producer was added, update "
-        f"this test + Council 43 sequence. If one was extracted, update sentinels."
+    assert len(found) == 2, (
+        f"B930 COUNT-PIN: expected exactly 2 TIER 2 producers still inline in "
+        f"screener.py (institutional_persistence + news_sentiment); "
+        f"found {len(found)}: {found!r}. Update sentinels if extracted."
     )
 
 
@@ -462,6 +460,40 @@ def test_b929_signal_loader_search_volume_matches_canonical_screener(ticker, as_
 
     extra = set(actual.keys()) - set(expected.keys())
     assert not extra, f"B929 PARITY FAIL: extra keys {extra}"
+
+
+# ---------------------------------------------------------------------------
+# B930 (2026-06-19) P0 commit 9/11: short_interest extraction parity
+# ---------------------------------------------------------------------------
+
+from backtest.data.signal_loader import inject_short_interest_signals
+from backtest.signals.short_interest import compute_short_interest_signals
+
+
+@pytest.mark.parametrize("ticker", PARITY_FIXTURE_TICKERS)
+@pytest.mark.parametrize("as_of", PARITY_FIXTURE_DATES)
+def test_b930_signal_loader_short_interest_matches_canonical_screener(ticker, as_of):
+    """B930 engine path parity: short_interest signal_loader equals canonical screener binding."""
+    expected_raw = compute_short_interest_signals(ticker, as_of)
+    expected = expected_raw if expected_raw else {}
+
+    actual = {}
+    inject_short_interest_signals(actual, ticker, as_of)
+
+    for key in expected:
+        assert key in actual, f"B930 PARITY FAIL: key '{key}' missing"
+        assert actual[key] == expected[key], f"B930 PARITY FAIL: key '{key}' mismatch"
+
+    extra = set(actual.keys()) - set(expected.keys())
+    assert not extra, f"B930 PARITY FAIL: extra keys {extra}"
+
+
+def test_b930_short_interest_handles_missing_producer_gracefully():
+    signals = {}
+    try:
+        inject_short_interest_signals(signals, "NONEXISTENT", date(2024, 6, 30))
+    except Exception as e:
+        pytest.fail(f"B930 short_interest raised: {e!r}")
 
 
 def test_b929_search_volume_handles_missing_producer_gracefully():

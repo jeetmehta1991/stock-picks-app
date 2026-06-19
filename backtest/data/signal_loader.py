@@ -70,6 +70,39 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_short_interest_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    as_of: date,
+) -> dict[str, Any]:
+    """Inject FINRA short-interest signals (Batch 519 P15).
+
+    B930 (2026-06-19) P0 commit 9/11: extracted from screener.py:7931-7937.
+    Council 43 sequence. 2-arg signature.
+
+    Produces signal keys:
+        short_interest_pct      float (% of float held short)
+        days_to_cover           float (SI / avg-daily-volume)
+
+    Consumed by strat_squeeze_setup_long (long entry when high SI +
+    bullish breakout) + strat_short_borrow_trap_avoid (avoid-direction
+    gate when DTC > 5 days; blocks short entries on hard-to-borrow
+    names).
+
+    Failure mode: producer raises -> log at WARNING + leave signals
+    unchanged. Reads `data_prefetch/finra/short_interest/` cache (B516
+    populated 1926 universe tickers).
+    """
+    try:
+        from backtest.signals.short_interest import compute_short_interest_signals
+        si_signal = compute_short_interest_signals(ticker, as_of)
+        if si_signal:
+            signals.update(si_signal)
+    except Exception as _e:
+        _log_silent_producer_failure("short_interest", _e)
+    return signals
+
+
 def inject_search_volume_signals(
     signals: dict[str, Any],
     ticker: str,
