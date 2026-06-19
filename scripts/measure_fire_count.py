@@ -668,18 +668,23 @@ def _worker_precompute_ticker(args: tuple) -> tuple[str, list]:
                  tier3_panel, [tier2_panel]).
     B776 (#63): added optional tier2_panel for cross_sectional xs_features.
     """
-    # Backward-compatible: support both 7-tuple (pre-B776) and 8-tuple (post-B776)
+    # Backward-compatible: support 7-tuple (pre-B776) / 8-tuple (post-B776) / 9-tuple (post-B922)
     if len(args) == 7:
         ticker, df, start, end, enable_extended, cot_series, tier3_panel = args
         tier2_panel = None
-    else:
+        include_tier2_producers = False
+    elif len(args) == 8:
         ticker, df, start, end, enable_extended, cot_series, tier3_panel, tier2_panel = args
+        include_tier2_producers = False
+    else:
+        ticker, df, start, end, enable_extended, cot_series, tier3_panel, tier2_panel, include_tier2_producers = args
     sigs = _precompute_signals_for_ticker(
         df, ticker, start, end,
         as_of_cache=tier3_panel,
         enable_extended_signals=enable_extended,
         cot_series=cot_series,
         tier2_panel=tier2_panel,
+        include_tier2_producers=include_tier2_producers,
     )
     return ticker, sigs
 
@@ -690,6 +695,7 @@ def _precompute_signals_for_ticker(
     enable_extended_signals: bool = True,
     cot_series: tuple[str, ...] = DEFAULT_COT_SERIES,
     tier2_panel: Optional[dict] = None,
+    include_tier2_producers: bool = False,
 ) -> list[tuple[date, dict]]:
     """Compute signals for every bar in [start, end] for one ticker.
 
@@ -736,6 +742,15 @@ def _precompute_signals_for_ticker(
                 xs_features_for_bar = tier2_panel[bar_date]
                 if isinstance(xs_features_for_bar, dict) and ticker in xs_features_for_bar:
                     signals.update(xs_features_for_bar[ticker])
+            # B922 (2026-06-19): TIER 2 producer-level merge via canonical
+            # signal_loader. Opt-in per --include-tier2 flag. Closes B919
+            # architectural deferral that silenced ~44 TIER 2-dependent
+            # strategies. Council 39 single highest-leverage fix + Council 41
+            # commit 2/5 sequence. Currently wires institutional_signal only
+            # (B921 extraction); insider + classification follow in commits 3-4.
+            if include_tier2_producers:
+                from backtest.data.signal_loader import inject_institutional_signals
+                inject_institutional_signals(signals, ticker, bar_date)
         out.append((bar_date, signals))
     return out
 
@@ -771,8 +786,17 @@ def measure_strategies(
     cot_series: tuple[str, ...] = DEFAULT_COT_SERIES,
     n_workers: int = 1,
     ticker_subset: Optional[list[str]] = None,
+    include_tier2_producers: bool = False,
 ) -> dict:
     """Measure fires for each named strategy across the T1a universe.
+
+    `include_tier2_producers` (B922 2026-06-19): when True, opt-in TIER 2
+    producer-level signal injection via canonical signal_loader. Closes
+    B919 architectural deferral that silenced ~44 TIER 2-dependent
+    strategies. Pre-B922 default behavior preserved by False default per
+    Council 41 backward-compat requirement. Currently wires
+    institutional_signal only (B921 extraction); insider + classification
+    follow in commits 3-4 per Council 41 sequence.
 
     `ticker_sample_strategy` (B648 owner-directed post-critique):
       "first" -- alphabetical-ish first N (legacy default; B641 used this;
@@ -932,9 +956,10 @@ def measure_strategies(
         )
         # Build per-ticker arg tuples. ohlcv df is picklable; tier3_panel +
         # tier2_panel are picklable (plain nested dicts). B776 #63 8-tuple
-        # includes tier2_panel.
+        # includes tier2_panel. B922 9-tuple appends include_tier2_producers.
         worker_args = [
-            (ticker, df, start, end, enable_extended_signals, cot_series, tier3_panel, tier2_panel)
+            (ticker, df, start, end, enable_extended_signals, cot_series,
+             tier3_panel, tier2_panel, include_tier2_producers)
             for ticker, df in ohlcv_cache.items()
         ]
         n_done = 0
@@ -962,6 +987,7 @@ def measure_strategies(
                     enable_extended_signals=enable_extended_signals,
                     cot_series=cot_series,
                     tier2_panel=tier2_panel,
+                    include_tier2_producers=include_tier2_producers,
                 )
             except Exception as exc:
                 import traceback
@@ -1181,6 +1207,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="(B694) Path to a text file containing one ticker per line. Alternative to --ticker-subset for large subsets that exceed shell arg length.",
     )
     parser.add_argument(
+        "--include-tier2", action="store_true",
+        help="(B922 2026-06-19) ENABLE TIER 2 producer-level signal injection via canonical signal_loader. Closes B919 architectural deferral that silenced ~44 TIER 2-dependent strategies. Currently wires institutional_signal only (B921 extraction); insider + classification follow in subsequent commits per Council 41 sequence. Default OFF (pre-B922 behavior preserved).",
+    )
+    parser.add_argument(
         "--verbose", action="store_true",
         help="Verbose logging",
     )
@@ -1237,6 +1267,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         cot_series=tuple(args.cot_series),
         n_workers=args.n_workers,
         ticker_subset=ticker_subset,
+        include_tier2_producers=args.include_tier2,
     )
 
     if args.output:
