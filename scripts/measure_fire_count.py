@@ -749,15 +749,18 @@ def _precompute_signals_for_ticker(
             # commit 2/5 sequence. Currently wires institutional_signal only
             # (B921 extraction); insider + classification follow in commits 3-4.
             if include_tier2_producers:
-                # B921 + B923 + B924 (2026-06-19): TIER 2 producer-level
-                # injection via canonical signal_loader. Order matches
+                # B921 + B923 + B924 + B927 (2026-06-19): TIER 2 producer-
+                # level injection via canonical signal_loader. Order matches
                 # screener.py inline order for parity. Each function is
-                # byte-identical to canonical inline binding.
+                # byte-identical to canonical inline binding. PEAD requires
+                # ohlcv_df slice (PIT-safe via sub_df = df.iloc[:i+1]).
                 from backtest.data.signal_loader import (
                     inject_classification_change_signals,
                     inject_insider_buying_signals,
                     inject_institutional_signals,
+                    inject_pead_signals,
                 )
+                inject_pead_signals(signals, ticker, sub_df, bar_date)
                 inject_insider_buying_signals(signals, ticker, bar_date)
                 inject_classification_change_signals(signals, ticker, bar_date)
                 inject_institutional_signals(signals, ticker, bar_date)

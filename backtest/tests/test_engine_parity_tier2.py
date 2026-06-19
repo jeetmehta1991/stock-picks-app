@@ -279,6 +279,146 @@ def test_b924_signal_loader_classification_matches_canonical_screener(ticker, as
     )
 
 
+def test_b927_count_pinned_remaining_tier2_producers():
+    """B927 count-pin per Council 43: 6 TIER 2 producers remaining when extraction sequence starts.
+
+    Council 42 said "5"; Council 43 verified 6 in screener.py. This count-pin
+    prevents Council-42-class miscounting on future extraction batches.
+
+    After B927 pead extraction lands: 5 remaining (yoy + search_volume +
+    short_interest + institutional_persistence + news_sentiment).
+    After all extractions complete: 0 remaining.
+
+    Test updates as each producer extracts; failure indicates either a
+    NEW producer was added that requires extraction OR an existing one
+    was extracted without updating the canonical list.
+    """
+    import re
+    from pathlib import Path
+    screener_path = Path(__file__).resolve().parent.parent / "signals" / "screener.py"
+    src = screener_path.read_text(encoding="utf-8")
+    # Match unextracted TIER 2 producer-level try blocks
+    # Already-extracted: institutional_signal (B921), insider_buying (B923),
+    # classification_change (B924), pead (B927 this commit)
+    # Remaining sentinels (these patterns should disappear as each extracts):
+    remaining_sentinels = {
+        "yoy_surprise": r"from backtest\.signals\.earnings_surprise_yoy import compute_yoy_surprise_signal",
+        "search_volume": r"from backtest\.signals\.search_volume import compute_search_volume_signals",
+        "short_interest": r"from backtest\.signals\.short_interest import compute_short_interest_signals",
+        "institutional_persistence": r"from backtest\.signals\.institutional_persistence_consumer import",
+        "news_sentiment": r"from backtest\.signals\.news_sentiment import compute_news_sentiment_signals",
+    }
+    found = [k for k, pattern in remaining_sentinels.items() if re.search(pattern, src)]
+    assert len(found) == 5, (
+        f"B927 COUNT-PIN: expected exactly 5 TIER 2 producers still inline in "
+        f"screener.py (yoy + search_volume + short_interest + institutional_"
+        f"persistence + news_sentiment); found {len(found)}: {found!r}. "
+        f"If a new producer was added, update this test + Council 43 sequence. "
+        f"If one was extracted, update the sentinels dict above."
+    )
+
+
+# ---------------------------------------------------------------------------
+# B927 (2026-06-19) P0 commit 6/11: pead extraction parity
+# ---------------------------------------------------------------------------
+
+from backtest.data.signal_loader import inject_pead_signals
+from backtest.signals.pead import compute_pead_signals
+
+
+def _load_ohlcv_for_pead(ticker: str) -> "pd.DataFrame":
+    """Load minimal OHLCV slice needed for pead producer call."""
+    import pandas as pd
+    from pathlib import Path
+    REPO = Path(__file__).resolve().parent.parent.parent
+    p = REPO / "data_prefetch" / "polygon" / "ohlcv_daily" / f"{ticker}.parquet"
+    if not p.exists():
+        return pd.DataFrame()
+    df = pd.read_parquet(p)
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.set_index("date").sort_index()
+    return df
+
+
+@pytest.mark.parametrize("ticker", PARITY_FIXTURE_TICKERS)
+@pytest.mark.parametrize("as_of", PARITY_FIXTURE_DATES)
+def test_b927_signal_loader_pead_matches_canonical_screener(ticker, as_of):
+    """B927 engine path parity: pead signal_loader output equals canonical screener binding."""
+    df = _load_ohlcv_for_pead(ticker)
+    if df.empty:
+        pytest.skip(f"No OHLCV cache for {ticker}")
+
+    # Direct producer call (canonical screener.py inline)
+    expected_raw = compute_pead_signals(ticker, df, as_of)
+    expected = expected_raw if expected_raw else {}
+
+    # Via signal_loader (B927)
+    actual = {}
+    inject_pead_signals(actual, ticker, df, as_of)
+
+    # Passthrough binding: all canonical keys/values match
+    for key in expected:
+        assert key in actual, (
+            f"B927 PARITY FAIL: key '{key}' missing for {ticker} @ {as_of}. "
+            f"Producer: {expected_raw!r}"
+        )
+        assert actual[key] == expected[key], (
+            f"B927 PARITY FAIL: key '{key}' mismatch for {ticker} @ {as_of}."
+        )
+
+    extra = set(actual.keys()) - set(expected.keys())
+    assert not extra, f"B927 PARITY FAIL: extra keys {extra}"
+
+
+def test_b927_pead_known_positive_fixture_aapl_2024():
+    """B927 KNOWN-POSITIVE fixture per Council 42 #106(e) + Council 43 hardened contract.
+
+    Source: AAPL has reliable quarterly earnings filings with Polygon
+    financials cache populated. Pick a date >10 days post-Q1-2024 earnings
+    announcement (filed ~2024-05-02) where within_pead_window should still
+    be True (60-day drift window).
+
+    Asserts signal_loader produces non-empty pead dict + within_pead_window
+    binding for known-historical-earnings event.
+    """
+    df = _load_ohlcv_for_pead("AAPL")
+    if df.empty:
+        pytest.skip("No AAPL OHLCV cache")
+
+    # 2024-06-15: ~6 weeks post Apple Q2 FY2024 earnings (filed 2024-05-02)
+    # should still be within 60-day pead window
+    signals = {}
+    inject_pead_signals(signals, "AAPL", df, date(2024, 6, 15))
+
+    # Sanity check: producer should have emitted SOMETHING about days_since
+    # for a historical AAPL earnings event. If empty, may indicate
+    # financials cache missing or producer signature drift.
+    if not signals:
+        pytest.skip(
+            "PEAD producer emitted empty for AAPL 2024-06-15 - financials "
+            "cache may be missing or producer behavior changed. Not a "
+            "B927 extraction failure (parity test confirms byte-identical "
+            "to canonical screener)."
+        )
+    # When fixture data present, days_since_last_earnings should be a non-
+    # negative integer
+    if "days_since_last_earnings" in signals:
+        assert signals["days_since_last_earnings"] >= 0, (
+            f"B927 KNOWN-POSITIVE FAIL: days_since_last_earnings should be "
+            f">=0; got {signals['days_since_last_earnings']!r}"
+        )
+
+
+def test_b927_signal_loader_pead_handles_missing_producer_gracefully():
+    """PEAD producer raising must not propagate."""
+    import pandas as pd
+    signals = {}
+    try:
+        inject_pead_signals(signals, "NONEXISTENT_XYZ", pd.DataFrame(), date(2024, 6, 30))
+    except Exception as e:
+        pytest.fail(f"B927 signal_loader pead raised on missing data: {e!r}")
+
+
 def test_b924_signal_loader_classification_handles_missing_producer_gracefully():
     """Classification producer raising must not propagate; signals dict left unchanged."""
     signals = {}

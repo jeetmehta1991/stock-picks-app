@@ -7898,16 +7898,13 @@ def screen_instrument(
     if vix_value is not None and vix_history is not None:
         from backtest.signals.technical import compute_macro_overlays
         signals = compute_macro_overlays(signals, vix_value, vix_history)
-    # Batch 209: PEAD signals (post-earnings drift). No-op when financials
-    # prefetch missing for this ticker. Strategy gates inside strat_pead_*
-    # check within_pead_window / pead_positive_surprise / etc.
-    try:
-        from backtest.signals.pead import compute_pead_signals
-        pead = compute_pead_signals(ticker, df, as_of)
-        if pead:
-            signals.update(pead)
-    except Exception as _e:
-        _log_silent_producer_failure("pead", _e)
+    # B927 (2026-06-19) engine path unification per Council 43 sequence
+    # commit 6/11: PEAD signal injection extracted into signal_loader.
+    # Pattern carried forward from B921/B923/B924 (parity tests confirm
+    # byte-identical). Note: pead requires df parameter (different from
+    # institutional/insider/classification 2-arg signature).
+    from backtest.data.signal_loader import inject_pead_signals
+    inject_pead_signals(signals, ticker, df, as_of)
     # Batch 507 (2026-05-31, M6 Path-2 sleeves wired per owner directive):
     # YoY-growth surprise signal layered on top of PEAD. Emits
     # yoy_surprise_high / yoy_surprise_negative consumed by

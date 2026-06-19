@@ -70,6 +70,46 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_pead_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    df: Any,
+    as_of: date,
+) -> dict[str, Any]:
+    """Inject Post-Earnings Announcement Drift (PEAD) signals.
+
+    B927 (2026-06-19) P0 commit 6/11: extracted from screener.py:7904-7910
+    (Batch 209 wiring per Bernard-Thomas 1989 PEAD effect). Council 43
+    sequence "boring first / risky last"; pead is first in remaining 6
+    extractions because it has lowest data-source SPOF risk + ~4 strategies
+    consume.
+
+    Note: pead producer requires ohlcv_df (different signature from
+    institutional/insider/classification). Caller must pass the per-ticker
+    OHLCV DataFrame.
+
+    Produces signal keys (all optional; absent when data missing):
+        days_since_last_earnings        int
+        within_pead_window              bool (days_since <= 60)
+        earnings_eps_yoy_growth         float
+        earnings_announcement_return    float
+        pead_positive_surprise          bool (yoy>0 AND ann_return>+2%)
+        pead_negative_surprise          bool (yoy<0 AND ann_return<0)
+
+    Failure mode: producer raises -> log at WARNING + leave signals
+    unchanged. Reads `data_prefetch/polygon/financials/` per-ticker
+    parquet (B295 fix: financials_json string handling).
+    """
+    try:
+        from backtest.signals.pead import compute_pead_signals
+        pead = compute_pead_signals(ticker, df, as_of)
+        if pead:
+            signals.update(pead)
+    except Exception as _e:
+        _log_silent_producer_failure("pead", _e)
+    return signals
+
+
 def inject_classification_change_signals(
     signals: dict[str, Any],
     ticker: str,
