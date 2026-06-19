@@ -1,0 +1,39 @@
+{
+  "window": [
+    "2024-09-01",
+    "2024-12-31"
+  ],
+  "sample": [
+    "A",
+    "ABNB",
+    "ACGL",
+    "ADM",
+    "ADP",
+    "ALL",
+    "AMTM",
+    "GEN",
+    "AAPL",
+    "ABBV"
+  ],
+  "results": {
+    "individual_gate_counts": {
+      "institutional_new_positions_ge_3": 536,
+      "institutional_new_positions_ge_1": 658,
+      "institutional_buy_or_strong_buy": 658,
+      "price_above_ema_50": 663,
+      "price_above_ema_200": 713,
+      "vol_spike_2x": 40,
+      "macd_12_26_9_bullish": 22,
+      "TOTAL_SAMPLES": 1220
+    },
+    "strategy_level_counts": {
+      "high_conviction_long_(new_pos>=3 AND above_ema_50)": 240,
+      "recent_init_momentum_long_(new_pos>=3 AND macd AND above_ema_200)": 2,
+      "recent_init_volume_long_(new_pos>=3 AND vol_spike AND above_ema_50)": 11,
+      "LOOSE_high_conviction_(new_pos>=1 AND above_ema_50)": 347,
+      "LOOSE_recent_init_volume_(new_pos>=1 AND vol_spike AND above_ema_50)": 13,
+      "DROP_STATE_recent_init_volume_(vol_spike AND above_ema_50)": 20,
+      "DROP_TREND_high_conviction_(new_pos>=3 only)": 536
+    }
+  }
+}
