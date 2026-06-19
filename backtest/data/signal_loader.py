@@ -70,6 +70,36 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_earnings_surprise_yoy_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    df: Any,
+    as_of: date,
+) -> dict[str, Any]:
+    """Inject YoY earnings surprise signals (Batch 507 M6 Path-2 sleeves).
+
+    B928 (2026-06-19) P0 commit 7/11: extracted from screener.py:7916-7922
+    (Batch 507 wiring). Council 43 sequence; additive on PEAD per Foster-
+    Olsen-Shevlin 1984. Same df-requirement signature as PEAD producer.
+
+    Produces signal keys:
+        yoy_surprise_high       bool (yoy_growth >= +5%; owner-tunable)
+        yoy_surprise_negative   bool (yoy_growth <= -5%)
+
+    Failure mode: producer raises -> log at WARNING + leave signals
+    unchanged. Reads same Polygon financials as PEAD (chained
+    dependency).
+    """
+    try:
+        from backtest.signals.earnings_surprise_yoy import compute_yoy_surprise_signal
+        yoy_signal = compute_yoy_surprise_signal(ticker, df, as_of)
+        if yoy_signal:
+            signals.update(yoy_signal)
+    except Exception as _e:
+        _log_silent_producer_failure("earnings_surprise_yoy", _e)
+    return signals
+
+
 def inject_pead_signals(
     signals: dict[str, Any],
     ticker: str,

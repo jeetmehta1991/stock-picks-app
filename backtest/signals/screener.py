@@ -7905,18 +7905,11 @@ def screen_instrument(
     # institutional/insider/classification 2-arg signature).
     from backtest.data.signal_loader import inject_pead_signals
     inject_pead_signals(signals, ticker, df, as_of)
-    # Batch 507 (2026-05-31, M6 Path-2 sleeves wired per owner directive):
-    # YoY-growth surprise signal layered on top of PEAD. Emits
-    # yoy_surprise_high / yoy_surprise_negative consumed by
-    # strat_pead_long_high_yoy_growth_only + strat_pead_short_negative_yoy_growth.
-    # Graceful empty when PEAD data missing (degrades same as PEAD).
-    try:
-        from backtest.signals.earnings_surprise_yoy import compute_yoy_surprise_signal
-        yoy_signal = compute_yoy_surprise_signal(ticker, df, as_of)
-        if yoy_signal:
-            signals.update(yoy_signal)
-    except Exception as _e:
-        _log_silent_producer_failure("earnings_surprise_yoy", _e)
+    # B928 (2026-06-19) engine path unification per Council 43 commit 7/11:
+    # YoY surprise signal extracted into signal_loader. Same df-requirement
+    # signature as PEAD (chained dependency on same financials cache).
+    from backtest.data.signal_loader import inject_earnings_surprise_yoy_signals
+    inject_earnings_surprise_yoy_signals(signals, ticker, df, as_of)
     # Batch 519 (2026-05-31, P15 sleeves wired per owner directive):
     # FINRA short-interest signals -- short_interest_pct + days_to_cover.
     # Consumed by strat_squeeze_setup_long (long entry when high SI +

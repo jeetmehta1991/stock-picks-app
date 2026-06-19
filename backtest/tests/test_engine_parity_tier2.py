@@ -299,19 +299,18 @@ def test_b927_count_pinned_remaining_tier2_producers():
     src = screener_path.read_text(encoding="utf-8")
     # Match unextracted TIER 2 producer-level try blocks
     # Already-extracted: institutional_signal (B921), insider_buying (B923),
-    # classification_change (B924), pead (B927 this commit)
+    # classification_change (B924), pead (B927), earnings_surprise_yoy (B928)
     # Remaining sentinels (these patterns should disappear as each extracts):
     remaining_sentinels = {
-        "yoy_surprise": r"from backtest\.signals\.earnings_surprise_yoy import compute_yoy_surprise_signal",
         "search_volume": r"from backtest\.signals\.search_volume import compute_search_volume_signals",
         "short_interest": r"from backtest\.signals\.short_interest import compute_short_interest_signals",
         "institutional_persistence": r"from backtest\.signals\.institutional_persistence_consumer import",
         "news_sentiment": r"from backtest\.signals\.news_sentiment import compute_news_sentiment_signals",
     }
     found = [k for k, pattern in remaining_sentinels.items() if re.search(pattern, src)]
-    assert len(found) == 5, (
-        f"B927 COUNT-PIN: expected exactly 5 TIER 2 producers still inline in "
-        f"screener.py (yoy + search_volume + short_interest + institutional_"
+    assert len(found) == 4, (
+        f"B928 COUNT-PIN: expected exactly 4 TIER 2 producers still inline in "
+        f"screener.py (search_volume + short_interest + institutional_"
         f"persistence + news_sentiment); found {len(found)}: {found!r}. "
         f"If a new producer was added, update this test + Council 43 sequence. "
         f"If one was extracted, update the sentinels dict above."
@@ -407,6 +406,48 @@ def test_b927_pead_known_positive_fixture_aapl_2024():
             f"B927 KNOWN-POSITIVE FAIL: days_since_last_earnings should be "
             f">=0; got {signals['days_since_last_earnings']!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# B928 (2026-06-19) P0 commit 7/11: earnings_surprise_yoy extraction parity
+# ---------------------------------------------------------------------------
+
+from backtest.data.signal_loader import inject_earnings_surprise_yoy_signals
+from backtest.signals.earnings_surprise_yoy import compute_yoy_surprise_signal
+
+
+@pytest.mark.parametrize("ticker", PARITY_FIXTURE_TICKERS)
+@pytest.mark.parametrize("as_of", PARITY_FIXTURE_DATES)
+def test_b928_signal_loader_yoy_matches_canonical_screener(ticker, as_of):
+    """B928 engine path parity: yoy surprise signal_loader equals canonical screener binding."""
+    df = _load_ohlcv_for_pead(ticker)
+    if df.empty:
+        pytest.skip(f"No OHLCV cache for {ticker}")
+
+    expected_raw = compute_yoy_surprise_signal(ticker, df, as_of)
+    expected = expected_raw if expected_raw else {}
+
+    actual = {}
+    inject_earnings_surprise_yoy_signals(actual, ticker, df, as_of)
+
+    for key in expected:
+        assert key in actual, f"B928 PARITY FAIL: key '{key}' missing"
+        assert actual[key] == expected[key], (
+            f"B928 PARITY FAIL: key '{key}' mismatch for {ticker} @ {as_of}"
+        )
+
+    extra = set(actual.keys()) - set(expected.keys())
+    assert not extra, f"B928 PARITY FAIL: extra keys {extra}"
+
+
+def test_b928_yoy_handles_missing_producer_gracefully():
+    """YoY producer raising must not propagate."""
+    import pandas as pd
+    signals = {}
+    try:
+        inject_earnings_surprise_yoy_signals(signals, "NONEXISTENT", pd.DataFrame(), date(2024, 6, 30))
+    except Exception as e:
+        pytest.fail(f"B928 yoy raised on missing data: {e!r}")
 
 
 def test_b927_signal_loader_pead_handles_missing_producer_gracefully():
