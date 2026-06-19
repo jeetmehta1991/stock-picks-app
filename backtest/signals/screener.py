@@ -7935,16 +7935,12 @@ def screen_instrument(
             signals.update(si_signal)
     except Exception as _e:
         _log_silent_producer_failure("short_interest", _e)
-    # Batch 222: insider buying cluster signals (Quiver SEC Form 4).
-    # No-op when global insiders parquet missing or ticker has no
-    # qualifying transactions in lookback.
-    try:
-        from backtest.signals.insider_buying import compute_insider_cluster_signals
-        insider = compute_insider_cluster_signals(ticker, as_of)
-        if insider:
-            signals.update(insider)
-    except Exception as _e:
-        _log_silent_producer_failure("insider_buying", _e)
+    # B923 (2026-06-19) engine path unification per Council 39+41 commit 3/5:
+    # insider buying cluster signal injection extracted into signal_loader.
+    # Pattern carried forward from B921 institutional extraction (parity tests
+    # confirm byte-identical to canonical screener inline binding).
+    from backtest.data.signal_loader import inject_insider_buying_signals
+    inject_insider_buying_signals(signals, ticker, as_of)
     # Batch 332 (2026-05-25 owner-approved Path C Wave 3 classification_change):
     # inject recent-classification-change signals into per-ticker signals
     # dict. Reads sector_history.csv via universe.get_classification_change_signals.

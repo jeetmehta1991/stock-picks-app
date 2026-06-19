@@ -127,3 +127,66 @@ def test_b921_signal_loader_handles_missing_producer_gracefully():
         pytest.fail(
             f"B921 signal_loader raised on non-existent ticker (expected silent failure): {e!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# B923 (2026-06-19) P0 commit 3/5: insider_buying extraction parity
+# ---------------------------------------------------------------------------
+
+from backtest.data.signal_loader import inject_insider_buying_signals
+from backtest.signals.insider_buying import compute_insider_cluster_signals
+
+
+def _canonical_screener_insider_logic(insider: dict) -> dict:
+    """Mirror screener.py:7944-7945 insider-cluster binding logic.
+
+    Pre-B923 inline:
+        insider = compute_insider_cluster_signals(ticker, as_of)
+        if insider:
+            signals.update(insider)
+
+    The binding is a passthrough `signals.update(insider)` so canonical
+    output is just the producer output dict.
+    """
+    return insider if insider else {}
+
+
+@pytest.mark.parametrize("ticker", PARITY_FIXTURE_TICKERS)
+@pytest.mark.parametrize("as_of", PARITY_FIXTURE_DATES)
+def test_b923_signal_loader_insider_matches_canonical_screener(ticker, as_of):
+    """B923 engine path parity: insider buying signal_loader output equals canonical screener binding."""
+    insider = compute_insider_cluster_signals(ticker, as_of)
+    expected = _canonical_screener_insider_logic(insider)
+
+    actual = {}
+    inject_insider_buying_signals(actual, ticker, as_of)
+
+    # All canonical keys must match exactly (passthrough binding)
+    for key in expected:
+        assert key in actual, (
+            f"B923 PARITY FAIL: key '{key}' missing from signal_loader output "
+            f"for {ticker} @ {as_of}. Producer returned: {insider!r}"
+        )
+        assert actual[key] == expected[key], (
+            f"B923 PARITY FAIL: key '{key}' value mismatch for {ticker} @ {as_of}. "
+            f"Canonical: {expected[key]!r}, signal_loader: {actual[key]!r}."
+        )
+
+    # No extra keys
+    extra = set(actual.keys()) - set(expected.keys())
+    assert not extra, (
+        f"B923 PARITY FAIL: signal_loader injected unexpected keys {extra} "
+        f"for {ticker} @ {as_of}."
+    )
+
+
+def test_b923_signal_loader_insider_handles_missing_producer_gracefully():
+    """Insider producer raising must not propagate; signals dict left unchanged."""
+    signals = {}
+    try:
+        inject_insider_buying_signals(signals, "NONEXISTENT_TICKER_XYZ123", date(2024, 6, 30))
+    except Exception as e:
+        pytest.fail(
+            f"B923 signal_loader insider raised on non-existent ticker "
+            f"(expected silent failure): {e!r}"
+        )

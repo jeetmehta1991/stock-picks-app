@@ -70,6 +70,43 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_insider_buying_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    as_of: date,
+) -> dict[str, Any]:
+    """Inject Form-4 insider buying cluster signals into per-ticker signals dict.
+
+    B923 (2026-06-19) P0 commit 3/5: extracted from screener.py:7941-7947
+    (Batch 222 wiring). Council 41 sequence; highest-leverage extraction
+    after institutional_signal because ~10 strategies consume the keys
+    `insider_cluster_active` + `insider_director_buyers_30d` +
+    `insider_officer_buyers_30d`.
+
+    Produces signal keys:
+        insider_cluster_active              bool (>=2 unique insiders bought
+                                            open-market in last 30 days)
+        insider_unique_buyers_30d           int  (count of unique insiders)
+        insider_total_shares_bought_30d     float (sum of Shares)
+        insider_director_buyers_30d         int  (subset isDirector=True)
+        insider_officer_buyers_30d          int  (subset isOfficer=True)
+
+    Failure mode: producer raises -> log at WARNING + leave signals dict
+    unchanged. Strategy gates default False via s.get(key, False).
+
+    PIT semantics: insider_cluster_signals applies 30-day rolling lookback
+    from as_of. Producer is per-(ticker, as_of) pure.
+    """
+    try:
+        from backtest.signals.insider_buying import compute_insider_cluster_signals
+        insider = compute_insider_cluster_signals(ticker, as_of)
+        if insider:
+            signals.update(insider)
+    except Exception as _e:
+        _log_silent_producer_failure("insider_buying", _e)
+    return signals
+
+
 def inject_institutional_signals(
     signals: dict[str, Any],
     ticker: str,
