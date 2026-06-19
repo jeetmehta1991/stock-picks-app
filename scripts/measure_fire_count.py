@@ -749,7 +749,7 @@ def _precompute_signals_for_ticker(
             # commit 2/5 sequence. Currently wires institutional_signal only
             # (B921 extraction); insider + classification follow in commits 3-4.
             if include_tier2_producers:
-                # B921 + B923 + B924 + B927 + B928 (2026-06-19): TIER 2
+                # B921 + B923 + B924 + B927 + B928 + B929 (2026-06-19): TIER 2
                 # producer-level injection via canonical signal_loader.
                 # Order matches screener.py inline order for parity.
                 from backtest.data.signal_loader import (
@@ -758,12 +758,14 @@ def _precompute_signals_for_ticker(
                     inject_insider_buying_signals,
                     inject_institutional_signals,
                     inject_pead_signals,
+                    inject_search_volume_signals,
                 )
                 inject_pead_signals(signals, ticker, sub_df, bar_date)
                 inject_earnings_surprise_yoy_signals(signals, ticker, sub_df, bar_date)
                 inject_insider_buying_signals(signals, ticker, bar_date)
                 inject_classification_change_signals(signals, ticker, bar_date)
                 inject_institutional_signals(signals, ticker, bar_date)
+                inject_search_volume_signals(signals, ticker, bar_date)
         out.append((bar_date, signals))
     return out
 

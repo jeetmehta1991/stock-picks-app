@@ -70,6 +70,37 @@ def _log_silent_producer_failure(producer_name: str, exc: BaseException) -> None
     )
 
 
+def inject_search_volume_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    as_of: date,
+) -> dict[str, Any]:
+    """Inject Google Trends search-volume signals (Batch 471 P13).
+
+    B929 (2026-06-19) P0 commit 8/11: extracted from screener.py:8100-8105
+    (Batch 471 wiring per Da-Engelberg-Gao 2011 RFS attention effect).
+    Council 43 sequence "boring next" position. 2-arg signature
+    (no df dependency).
+
+    Produces signal keys (per pytrends per-ticker cache):
+        search_volume_index_recent      float (0..100; raw context)
+        search_volume_pct_change_7d     float
+        search_volume_spike             bool
+        retail_attention_score          float
+
+    Failure mode: producer raises -> log at WARNING + leave signals
+    unchanged. Reads `data_prefetch/pytrends/` per-ticker parquet.
+    """
+    try:
+        from backtest.signals.search_volume import compute_search_volume_signals
+        sv_out = compute_search_volume_signals(ticker, as_of)
+        if sv_out:
+            signals.update(sv_out)
+    except Exception as _e:
+        _log_silent_producer_failure("search_volume", _e)
+    return signals
+
+
 def inject_earnings_surprise_yoy_signals(
     signals: dict[str, Any],
     ticker: str,

@@ -299,21 +299,19 @@ def test_b927_count_pinned_remaining_tier2_producers():
     src = screener_path.read_text(encoding="utf-8")
     # Match unextracted TIER 2 producer-level try blocks
     # Already-extracted: institutional_signal (B921), insider_buying (B923),
-    # classification_change (B924), pead (B927), earnings_surprise_yoy (B928)
+    # classification_change (B924), pead (B927), yoy (B928), search_volume (B929)
     # Remaining sentinels (these patterns should disappear as each extracts):
     remaining_sentinels = {
-        "search_volume": r"from backtest\.signals\.search_volume import compute_search_volume_signals",
         "short_interest": r"from backtest\.signals\.short_interest import compute_short_interest_signals",
         "institutional_persistence": r"from backtest\.signals\.institutional_persistence_consumer import",
         "news_sentiment": r"from backtest\.signals\.news_sentiment import compute_news_sentiment_signals",
     }
     found = [k for k, pattern in remaining_sentinels.items() if re.search(pattern, src)]
-    assert len(found) == 4, (
-        f"B928 COUNT-PIN: expected exactly 4 TIER 2 producers still inline in "
-        f"screener.py (search_volume + short_interest + institutional_"
-        f"persistence + news_sentiment); found {len(found)}: {found!r}. "
-        f"If a new producer was added, update this test + Council 43 sequence. "
-        f"If one was extracted, update the sentinels dict above."
+    assert len(found) == 3, (
+        f"B929 COUNT-PIN: expected exactly 3 TIER 2 producers still inline in "
+        f"screener.py (short_interest + institutional_persistence + news_sentiment); "
+        f"found {len(found)}: {found!r}. If a new producer was added, update "
+        f"this test + Council 43 sequence. If one was extracted, update sentinels."
     )
 
 
@@ -438,6 +436,40 @@ def test_b928_signal_loader_yoy_matches_canonical_screener(ticker, as_of):
 
     extra = set(actual.keys()) - set(expected.keys())
     assert not extra, f"B928 PARITY FAIL: extra keys {extra}"
+
+
+# ---------------------------------------------------------------------------
+# B929 (2026-06-19) P0 commit 8/11: search_volume extraction parity
+# ---------------------------------------------------------------------------
+
+from backtest.data.signal_loader import inject_search_volume_signals
+from backtest.signals.search_volume import compute_search_volume_signals
+
+
+@pytest.mark.parametrize("ticker", PARITY_FIXTURE_TICKERS)
+@pytest.mark.parametrize("as_of", PARITY_FIXTURE_DATES)
+def test_b929_signal_loader_search_volume_matches_canonical_screener(ticker, as_of):
+    """B929 engine path parity: search_volume signal_loader equals canonical screener binding."""
+    expected_raw = compute_search_volume_signals(ticker, as_of)
+    expected = expected_raw if expected_raw else {}
+
+    actual = {}
+    inject_search_volume_signals(actual, ticker, as_of)
+
+    for key in expected:
+        assert key in actual, f"B929 PARITY FAIL: key '{key}' missing"
+        assert actual[key] == expected[key], f"B929 PARITY FAIL: key '{key}' mismatch"
+
+    extra = set(actual.keys()) - set(expected.keys())
+    assert not extra, f"B929 PARITY FAIL: extra keys {extra}"
+
+
+def test_b929_search_volume_handles_missing_producer_gracefully():
+    signals = {}
+    try:
+        inject_search_volume_signals(signals, "NONEXISTENT", date(2024, 6, 30))
+    except Exception as e:
+        pytest.fail(f"B929 search_volume raised: {e!r}")
 
 
 def test_b928_yoy_handles_missing_producer_gracefully():

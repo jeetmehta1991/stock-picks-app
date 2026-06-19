@@ -8074,14 +8074,10 @@ def screen_instrument(
             signals.update(news_out)
     except Exception as _e:
         _log_silent_producer_failure("news_sentiment", _e)
-    # Batch 471 (P13): Google Trends search-volume signals.
-    try:
-        from backtest.signals.search_volume import compute_search_volume_signals
-        sv_out = compute_search_volume_signals(ticker, as_of)
-        if sv_out:
-            signals.update(sv_out)
-    except Exception as _e:
-        _log_silent_producer_failure("search_volume", _e)
+    # B929 (2026-06-19) engine path unification per Council 43 commit 8/11:
+    # Google Trends search-volume signals extracted into signal_loader.
+    from backtest.data.signal_loader import inject_search_volume_signals
+    inject_search_volume_signals(signals, ticker, as_of)
     # Batch 472 (P11): CFTC COT macro positioning (universe-wide).
     try:
         from backtest.signals.cot_positioning import get_all_cot_signals
