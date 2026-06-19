@@ -1278,25 +1278,40 @@ def test_b918_screener_institutional_new_positions_wiring():
     # Producer reads it correctly -> screener must also bind it correctly.
     np_count = inst["new_positions"]
     assert np_count >= 1, f"3 new-position funds should set count >= 1, got {np_count}"
-    # Static source-of-truth assertion: screener.py:7979 must read the SAME key
-    # that institutional_signal() returns. The actual bug was a typo on this line.
+    # Static source-of-truth assertion: the binding line must read the SAME
+    # key that institutional_signal() returns. The actual bug was a typo on
+    # this line. Post-B921 (engine path unification per Council 39), the
+    # binding moved from screener.py:7979 -> signal_loader.py
+    # inject_institutional_signals(). Both source-paths checked so test
+    # remains valid if binding moves again.
     import re
     from pathlib import Path
-    screener_path = Path(__file__).resolve().parent.parent / "signals" / "screener.py"
-    src = screener_path.read_text(encoding="utf-8")
-    # Find the binding line - must use 'new_positions' (plural).
-    binding = re.search(
-        r'signals\["institutional_new_positions"\]\s*=\s*int\(inst\.get\("(\w+)"',
-        src,
+    candidates = [
+        Path(__file__).resolve().parent.parent / "data" / "signal_loader.py",
+        Path(__file__).resolve().parent.parent / "signals" / "screener.py",
+    ]
+    found = []
+    for path in candidates:
+        if not path.exists():
+            continue
+        src = path.read_text(encoding="utf-8")
+        for match in re.finditer(
+            r'signals\["institutional_new_positions"\]\s*=\s*int\(inst\.get\("(\w+)"',
+            src,
+        ):
+            found.append((path.name, match.group(1)))
+    assert found, (
+        "institutional_new_positions binding pattern not found in either "
+        "signal_loader.py or screener.py. Has the binding been moved again?"
     )
-    assert binding is not None, "screener.py binding pattern not found"
-    bound_key = binding.group(1)
-    assert bound_key == "new_positions", (
-        f"screener.py:7979 binds institutional_new_positions <- inst.get({bound_key!r}); "
-        f"must be 'new_positions' (plural). Producer never returns {bound_key!r}; "
-        f"this is the exact B918 bug pattern."
-    )
-    print(f"[OK] B918 screener wires inst.get('new_positions') -> institutional_new_positions")
+    for source_file, bound_key in found:
+        assert bound_key == "new_positions", (
+            f"{source_file} binds institutional_new_positions <- inst.get({bound_key!r}); "
+            f"must be 'new_positions' (plural). Producer never returns {bound_key!r}; "
+            f"this is the exact B918 bug pattern."
+        )
+    locations = ", ".join(f"{src}" for src, _ in found)
+    print(f"[OK] B918 binding correct in: {locations}")
 
 
 def test_bug273_institutional_signal_respects_45day_lag():

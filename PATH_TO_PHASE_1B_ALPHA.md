@@ -437,6 +437,130 @@ class StrategyStatus(str, Enum):
 
 **If miss >= 3 targets:** R5 INSUFFICIENT verdict; owner-gated diagnostic loop reopens P1-P4. R5 result REPLACES P0 platform validation; verdict feeds Council 40.
 
+#### 13.8.1 PASS Criteria Detail (Concrete Threshold Stack)
+
+**OVERALL PASS** = strategy clears ALL 14 canonical hard gates + ALL 9 AUTO-FAIL screens. **Per-regime PASS** = strategy passes per-regime thresholds in >=1 regime per DEC-611.
+
+**Group A — Trade Distribution Quality (4 hard gates):**
+
+| # | Criterion | Overall threshold | Per-regime threshold |
+|---|---|---|---|
+| 1 | win_rate | >=0.55 (HV sectors 0.50; defensive 0.58) | >=0.45 |
+| 2 | profit_factor | >=1.3 | >=1.2 |
+| 3 | expected_value | >0 | >0 |
+| 4 | win_loss_ratio | >=1.0 | >=1.0 |
+
+**Group B — Risk-Adjusted Quality (4 hard gates; NOT mutually redundant):**
+
+| # | Criterion | Overall | Per-regime | Why not redundant |
+|---|---|---|---|---|
+| 5 | Sharpe ratio | >=1.0 | >=0.7 | Industry-canonical "decent"; penalizes upside vol too |
+| 6 | Sortino ratio | >=1.0 | >=0.7 | Correct for R:R>=2.0 skewed dists (Sharpe over-penalizes wins) |
+| 7 | Calmar (CAGR/maxDD) | >=0.5 | >=0.5 | PATH-AWARE (Sharpe is path-blind) |
+| 8 | DSR (Deflated Sharpe) | >=0.95 | >=0.95 | Multi-testing-corrected; ANTI-OVERFITTING gate |
+
+**Group C — Drawdown & ROI (2 hard gates):**
+
+| # | Criterion | Threshold |
+|---|---|---|
+| 9 | max_drawdown | <=25% (HV 25%; defensive 20%) |
+| 10 | total_roi | >0% |
+
+**Group D — Sample-Size Power (1 hard gate; 2 sub-thresholds):**
+
+| # | Criterion | Threshold |
+|---|---|---|
+| 11 | min_trades | >=100 overall / >=30 per-regime (matches DEC-426 5-Gate min_trades_per_cell) |
+
+**Group F — Per-Regime Verdict (1 hard gate; DEC-611 ratified):**
+
+| # | Criterion | Threshold |
+|---|---|---|
+| 12 | min_regimes_passing | >=1 of 7 regimes (CLAUDE.md canonical; was code drift to 2; DEC-611 reverted) |
+
+**Group H — Smart Money + Macro (2 hard gates):**
+
+| # | Criterion | Threshold |
+|---|---|---|
+| 13 | smart_money_lift | >=3pp WR diff (with vs without smart-money signal) |
+| 14 | macro_correlation | >=5pp WR diff (favorable vs unfavorable macro regime) |
+
+**AUTO-FAIL Screens (9 screens; 3 shipped B890-B891 + 6 NEW Council 38):**
+
+| # | Screen | Threshold | Status |
+|---|---|---|---|
+| AF1 | Cost-sensitivity (DEC-612) | `sharpe_at_20bps / sharpe_at_0bps >= 0.5` | B890 SHIPPED |
+| AF2 | Chow break-point (DEC-613) | p>=0.05 OR post-break Sharpe>=0.3 | B890 SHIPPED |
+| AF3 | ADF stationarity (DEC-614, mean-rev only) | p>=0.10 | B890 SHIPPED |
+| AF4 | DSR multiplicative gate (Council 38 DEC #1) | DSR>=0.95 (was soft-score ingredient; now hard gate) | DEC #1 surface pending |
+| AF5 | Cost-sens multiplicative gate (Council 38 DEC #1) | cost_sens>=0.5 (was soft-score; now hard gate) | DEC #1 surface pending |
+| AF6 | Dispersion gate (Council 38 DEC #2) | `iqr(sharpe_26)/median<=1.5`; null-distribution calibrated | DEC #2 surface pending |
+| AF7 | PSR per-strategy (Council 38 DEC #6) | PSR>0.95 small-N companion to DSR | DEC #6 surface pending |
+| AF8 | Exit profitability fraction (Council 38 dossier #15) | `count(sharpe_exit>0)/26 >= 0.4` (>=40% exits profitable) | P0 build pending |
+| AF9 | Negative-control canary (Council 38 dossier #16) | Strategy NOT among 5 injected nulls | P0 build pending |
+
+**Target rationale (factor-zoo base rate anchored; per Quant + Outsider):**
+
+- McLean-Pontiff 2016: of ~400 published factors, ~30-50 survive proper OOS = **~10-13% survival**
+- For 219 strategies hand-selected from literature (not random): **~15-20% survival -> 33-44 overall PASS**
+- **25-40 is honest target.** 70 was sales-pitch from Council 36; rejected by Council 38
+- Per-regime PASS broader: 100-140 of 219 (~46-64%)
+
+#### 13.8.2 CORE / EDGE / DIVERSIFY Portfolio Architecture
+
+**Per Council 38 Expansionist advisor.** Purpose: Phase 1B-alpha agents specialize -> 3 portfolios -> 3 agent profiles -> 3 reward functions -> 3 simultaneous Phase 1B-alpha launches.
+
+**CORE Portfolio (~30 strategies; 60% capital):**
+
+| Property | Value |
+|---|---|
+| Definition | Intersection of all 5 soft-score rankings (Sharpe-ranked + Calmar-ranked + PF-ranked + DSR-ranked + cost-sens-ranked) |
+| Selection criteria | Top quartile on ALL 5 rankings simultaneously |
+| Characteristic | Highest individual conviction; robust across metrics |
+| Agent role | "Consensus alpha agents" - Phase 1B-alpha validates lift >= +0.2 Sharpe over rules-baseline (per DEC-131) |
+| Example | Strategy with Sharpe=1.4, Calmar=0.8, PF=1.6, DSR=0.97, cost_sens=0.7 passes ALL 5 rankings in top quartile |
+
+**EDGE Portfolio (~30 strategies; 25% capital):**
+
+| Property | Value |
+|---|---|
+| Definition | Top performers on SPECIALIST metrics that CORE rankings don't see |
+| Specialist metrics | CVaR_5 (5% Conditional VaR), Kelly-fraction-adjusted Sharpe (sizing-aware), event-window-conditional Sharpe (event-driven), time-in-market-adjusted return (capital efficiency) |
+| Characteristic | STRUCTURAL diversifiers; bring DIFFERENT alpha than CORE |
+| Agent role | "Specialist alpha agents" - trained to recognize event-window patterns + tail-risk shapes |
+| Example | PEAD strategy with mediocre overall Sharpe=0.6 (fails CORE) BUT event-window-conditional Sharpe=2.5 (top EDGE); fires only after positive earnings surprises |
+
+**DIVERSIFY Portfolio (~15 strategies; 15% capital):**
+
+| Property | Value |
+|---|---|
+| Definition | Selected by LOW CORRELATION to CORE on trade-day overlap (Jaccard<0.3), regardless of absolute soft-score |
+| Selection algorithm | `for strategy in (ALL_PASS - CORE - EDGE): overlap = jaccard(strategy.trade_days, CORE.trade_days); if overlap < 0.3 and strategy.sharpe > 0.5: DIVERSIFY.add(strategy)` then top-15 by lowest overlap |
+| Characteristic | Reduce portfolio variance through ORTHOGONALITY; individually lower Sharpe but improve portfolio Sharpe via decorrelation |
+| Agent role | "Portfolio construction overlay agents" - variance minimization at portfolio level |
+| Example | Bear-regime mean-reversion strategy with Sharpe=0.7 (would fail CORE) BUT trades on DIFFERENT days than CORE (jaccard=0.15) - reduces portfolio drawdown during bull-regime corrections |
+
+**Failure handling per portfolio:**
+
+| Portfolio | Min size to deploy | If miss | Capital reallocation |
+|---|---|---|---|
+| CORE | >=15 | If <15: project's "edge premise" failed -> STOP gate | Defer Phase 1B-alpha |
+| EDGE | >=10 | If <10: specialist metrics not surfacing edge -> deploy as CORE supplement | EDGE -> CORE (85% capital) |
+| DIVERSIFY | >=5 | If <5: portfolio decorrelation impossible -> deploy CORE+EDGE only | DIVERSIFY -> CORE+EDGE (100% capital) |
+
+**Total deployment: 75 strategies** (30 CORE + 30 EDGE + 15 DIVERSIFY) as subset of the 30-60 unique winners post-cluster-dedup (Section 13.8). Remaining winners (15-30 not selected) become AGENT-CANDIDATE pool for Phase 1B-alpha decision-support overlay.
+
+**Why three portfolios (Expansionist rationale):**
+
+| Aspect | CORE | EDGE | DIVERSIFY |
+|---|---|---|---|
+| Selection criteria | Intersection of 5 rankings | Specialist metrics | Low correlation to CORE |
+| Conviction | Highest individual | High specialist | Lower individual; high portfolio |
+| Diversification | Cross-metric | Cross-domain | Cross-trade-day |
+| Agent profile | Consensus | Specialist | Portfolio construction |
+| Capital allocation | 60% | 25% | 15% |
+| Phase 1B-alpha reward function | Consensus Sharpe-lift | Event-window Sharpe-lift | Portfolio variance reduction |
+
 ### 13.9 Bug-Catching Framework (Council 39 5-Advisor Synthesis)
 
 **Owner directive 2026-06-19:** "Bug catching overview is still too high level. Restricting to 4 recent gaps; producer and consumption bugs may still get missed. Need to address everything."

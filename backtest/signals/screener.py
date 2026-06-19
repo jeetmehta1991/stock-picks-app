@@ -7967,22 +7967,13 @@ def screen_instrument(
     # for tier adjustment - NOT for strategy firing.
     # Cohen-Frazzini-Malloy 2008 RFS: institutional new-buys forecast
     # 1-month alpha; Bushee-Goodman 2007 JAR: cluster-buys particularly.
-    try:
-        from backtest.data.smart_money import institutional_signal
-        inst = institutional_signal(ticker, as_of)
-        if inst and isinstance(inst, dict):
-            sig_kind = inst.get("signal", "none")
-            signals["institutional_signal"] = sig_kind
-            signals["institutional_strong_buy"] = sig_kind == "strong_buy"
-            signals["institutional_buy"] = sig_kind in ("buy", "strong_buy")
-            signals["institutional_negative"] = sig_kind == "negative"
-            # B918 (2026-06-19) bug fix: producer returns 'new_positions' (plural);
-            # 'new_pos' (singular) key never existed -> default 0 silenced 7 strategies
-            # from 2026-05-25 to 2026-06-19 incl. R4 (May 31). Owner-approved (a) fix.
-            signals["institutional_new_positions"] = int(inst.get("new_positions", 0) or 0)
-            signals["institutional_increased"] = int(inst.get("increased", 0) or 0)
-    except Exception as _e:
-        _log_silent_producer_failure("institutional_signal", _e)
+    # B921 (2026-06-19) engine path unification per Council 39: institutional
+    # signal injection extracted into backtest.data.signal_loader. Both engines
+    # (screen_instrument + measure_fire_count via opt-in) now share the same
+    # injection logic, eliminating the B919 TIER 2 deferral divergence class
+    # structurally. Engine parity asserted in test_engine_parity_tier2.py.
+    from backtest.data.signal_loader import inject_institutional_signals
+    inject_institutional_signals(signals, ticker, as_of)
     # Batch 344 (333b consumer) 2026-05-25: inject TRUE multi-quarter
     # persistence metrics from the offline precompute at
     # data_prefetch/derived/institutional_persistence_t1a/{YYYY-01-01}.parquet.
