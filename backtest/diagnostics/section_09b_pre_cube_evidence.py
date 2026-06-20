@@ -47,6 +47,11 @@ def _extract_status_tags_from_screener_docstring(strategy: str) -> list[str]:
     - 'MEAN-REV' / 'mean-reversion' (canonical)
     - 'B748d-protected' / 'walk-back protected'
     - 'MAY-REVERT' (B931 institutional_persistence pattern)
+
+    B945 (2026-06-20) Council 49 extensions: PATTERN [A-Z]+ markers
+    (PATTERN W / PATTERN AA / etc per B843-B902 audits) +
+    'EVENT-only' (B615/B620 sleeve markers) + 'SHORT EXPLORATORY' +
+    'Wave \\d' (B330+ Wave 3 13F lineage).
     """
     try:
         from backtest.signals.screener import ALL_STRATEGIES
@@ -67,6 +72,18 @@ def _extract_status_tags_from_screener_docstring(strategy: str) -> list[str]:
         tags.append("MAY_REVERT")
     if re.search(r"mean[- ]rev(ersion)?", doc, re.IGNORECASE):
         tags.append("mean_reversion")
+    # B945 Council 49 extensions
+    if re.search(r"EVENT[- ]only\b", doc, re.IGNORECASE):
+        tags.append("EVENT_only")
+    if re.search(r"SHORT\s+EXPLORATORY", doc):
+        tags.append("SHORT_EXPLORATORY")
+    # PATTERN [A-Z]+ classification (PATTERN W / PATTERN AA / PATTERN F etc.)
+    pattern_matches = re.findall(r"PATTERN\s+([A-Z]{1,3})\b", doc)
+    for p in set(pattern_matches):
+        tags.append(f"PATTERN_{p}")
+    # Wave N (B330+ 13F Wave 3 lineage)
+    if re.search(r"\bWave\s+\d+\b", doc, re.IGNORECASE):
+        tags.append("Wave_lineage")
     return tags
 
 
@@ -104,10 +121,17 @@ def _scrape_walk_batches_from_docstring(strategy: str) -> list[str]:
     if fn is None:
         return []
     doc = inspect.getdoc(fn) or ""
-    # Match "Batch NNN" / "B###" / "Wave N" patterns
+    # Match "Batch NNN" / "B###" / "S4-B###" / "W##" walk patterns
+    # B945 Council 49 extensions: S4-B walk-ticket markers + W## walk markers
     batch_refs = set()
     for m in re.finditer(r"\bB(?:atch\s+)?(\d{3,4})\b", doc):
         batch_refs.add(f"B{m.group(1)}")
+    # B945: Stage 4 walk-ticket markers (e.g., "S4-B754-A-19")
+    for m in re.finditer(r"\bS4-B(\d{3,4})\b", doc):
+        batch_refs.add(f"S4-B{m.group(1)}")
+    # B945: W## walk markers (W5 / W10 / W3 -- Stage 4 cluster walk position)
+    for m in re.finditer(r"\bW(\d{1,2})\b", doc):
+        batch_refs.add(f"W{m.group(1)}")
     return sorted(batch_refs)
 
 
@@ -120,15 +144,32 @@ def _fire_count_projection(strategy: str) -> Optional[dict]:
     audit_dir = REPO / "output_audit"
     if not audit_dir.exists():
         return None
-    # Scan B660 / B907 / b922 / b926 fire-count JSON outputs
-    candidate_patterns = ["b660*.json", "b907*.json", "b922*.json", "b926*.json", "b919*.json"]
+    # B945 Council 49 extension: broader glob to catch all fire-count outputs
+    # incl. b748* / b754* / b830* / b903* / future batches.
+    candidate_patterns = [
+        "b660*.json", "b907*.json", "b922*.json", "b926*.json", "b919*.json",
+        "b913*.json", "b917*.json", "b748*.json", "b754*.json", "b830*.json",
+        "b903*.json", "fire_count*.json",
+    ]
+    seen_files = set()
     for pat in candidate_patterns:
         for f in audit_dir.glob(pat):
+            if f.name in seen_files:
+                continue
+            seen_files.add(f.name)
             try:
                 with open(f) as fh:
                     data = json.load(fh)
             except Exception:
                 continue
+            # B945: handle B907 single-strategy schema (top-level strategy key)
+            if isinstance(data, dict) and data.get("strategy") == strategy:
+                return {
+                    "source_file": f.name,
+                    "fires_per_year_long": data.get("fires_per_year_long") or data.get("projected_fires_per_year"),
+                    "fires_per_year_short": data.get("fires_per_year_short"),
+                    "verdict": data.get("verdict_220") or data.get("verdict"),
+                }
             # Common schemas: {strategies: {strat: {fires_per_year_long: X}}}
             results = data.get("results") or data.get("strategies") or []
             if isinstance(results, list):
