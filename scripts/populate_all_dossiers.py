@@ -58,6 +58,12 @@ def main() -> int:
     from backtest.diagnostics.section_19_closest_neighbor_cluster import populate_section_19_for_dossier
     # B961 addition (Council 66 Section 3 inverse_pair_empirical):
     from backtest.diagnostics.section_03_inverse_pair_empirical import populate_section_03_for_dossier
+    # B962-B966 additions (Council 67; 5-batch P1 completion):
+    from backtest.diagnostics.section_02_gate_stacking_fire_rate import populate_section_02_for_dossier
+    from backtest.diagnostics.section_14_returns_autocorr_correction import populate_section_14_for_dossier
+    from backtest.diagnostics.section_15_exit_profitability_fraction import populate_section_15_for_dossier
+    from backtest.diagnostics.section_16_negative_control_canary import populate_section_16_for_dossier
+    from backtest.diagnostics.section_17_soft_score_weight_calibration import populate_section_17_for_dossier
 
     strategies = list_strategies_for_dossier()
     logger.info("Populating sections 1 / 5 / 6 / 7 / 8 / 9 / 9b / 10 / 11 / 12 / 13 / 18 + r5_inclusion_criterion for %d strategies...", len(strategies))
@@ -83,6 +89,16 @@ def main() -> int:
         "section_13_errors": 0,
         "section_19_populated": 0,
         "section_19_errors": 0,
+        "section_2_populated": 0,
+        "section_2_errors": 0,
+        "section_14_populated": 0,
+        "section_14_errors": 0,
+        "section_15_populated": 0,
+        "section_15_errors": 0,
+        "section_16_populated": 0,
+        "section_16_errors": 0,
+        "section_17_populated": 0,
+        "section_17_errors": 0,
         "section_9_populated": 0,
         "section_9_errors": 0,
         "section_9b_populated": 0,
@@ -154,6 +170,20 @@ def main() -> int:
         except Exception as e:
             stats["section_19_errors"] += 1
             stats["drift_findings"].append(f"section_19:{strat}: {type(e).__name__}: {e}")
+        # B962-B966 additions
+        for sec_num, populate_fn in [
+            ("2", populate_section_02_for_dossier),
+            ("14", populate_section_14_for_dossier),
+            ("15", populate_section_15_for_dossier),
+            ("16", populate_section_16_for_dossier),
+            ("17", populate_section_17_for_dossier),
+        ]:
+            try:
+                populate_fn(strat, dossier_path)
+                stats[f"section_{sec_num}_populated"] += 1
+            except Exception as e:
+                stats[f"section_{sec_num}_errors"] += 1
+                stats["drift_findings"].append(f"section_{sec_num}:{strat}: {type(e).__name__}: {e}")
         try:
             populate_section_09_for_dossier(strat, dossier_path)
             stats["section_9_populated"] += 1
@@ -196,6 +226,8 @@ def main() -> int:
     logger.info("  Section 8:        %d populated / %d errors", stats["section_8_populated"], stats["section_8_errors"])
     logger.info("  Section 13:       %d populated / %d errors", stats["section_13_populated"], stats["section_13_errors"])
     logger.info("  Section 19:       %d populated / %d errors", stats["section_19_populated"], stats["section_19_errors"])
+    for sec_num in ("2", "14", "15", "16", "17"):
+        logger.info("  Section %s:       %d populated / %d errors", sec_num.rjust(2), stats[f"section_{sec_num}_populated"], stats[f"section_{sec_num}_errors"])
     logger.info("  Section 9:        %d populated / %d errors", stats["section_9_populated"], stats["section_9_errors"])
     logger.info("  Section 9b:       %d populated / %d errors", stats["section_9b_populated"], stats["section_9b_errors"])
     logger.info("  Sections 10/11/12/18: %d populated / %d errors", stats["r4_passthrough_populated"], stats["r4_passthrough_errors"])
