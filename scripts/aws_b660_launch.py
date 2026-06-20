@@ -4,8 +4,9 @@ across ticker shards with B694 multiprocessing.
 Pattern adapted from scripts/aws_batch395_launch.py (B395 / 2026-05-27).
 Same Ubuntu 24.04 AMI, same IAM role, same security group, same S3 bucket.
 The difference is the bootstrap (aws_b660_bootstrap.sh) which runs
-measure_fire_count.py with --n-workers + --ticker-subset instead of
-run_phase1a.
+measure_fire_count.py with --n-workers + --ticker-subset (+ B939
+--include-tier2 per Council 47 explicit-intent declaration) instead
+of run_phase1a.
 
 Cost (on c7a.4xlarge spot @ ~$0.40/hr in us-east-1):
   Smoke (1 instance x 30 tickers x 6 months): ~10 min, ~$0.10

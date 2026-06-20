@@ -123,8 +123,15 @@ def diagnose(
     if df is None:
         raise SystemExit(f"OHLCV cache miss for {ticker}")
 
+    # B939 (2026-06-20) Council 47 explicit-intent: diagnose_zero_fires must
+    # include TIER 2 producers to distinguish "zero from gate-stacking" vs
+    # "zero from TIER 2 deferral". Without include_tier2_producers=True, the
+    # diagnostic is structurally unable to answer its own question for ~44
+    # TIER 2-dependent strategies (B919 architectural class).
     signals_by_bar = _precompute_signals_for_ticker(
-        df, ticker, start, end, enable_extended_signals=enable_extended_signals,
+        df, ticker, start, end,
+        enable_extended_signals=enable_extended_signals,
+        include_tier2_producers=True,
     )
     if not signals_by_bar:
         raise SystemExit(f"precompute returned 0 bars for {ticker} in {start}..{end}")

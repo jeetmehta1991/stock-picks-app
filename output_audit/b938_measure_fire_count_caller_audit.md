@@ -107,3 +107,43 @@ B922 fixture inputs; assert output matches pre-B922 baseline parity.
 | (D) | Different direction |
 
 **Council 46 recommendation:** (B) explicit-then-flip. Updates AWS bootstrap to declare intent BEFORE default changes.
+
+---
+
+## B939 RESOLUTION (2026-06-20; owner-approved Option B + Council 47)
+
+Owner chose Option B; Council 47 verdict per-caller flag choices. All HIGH+MEDIUM-risk callers updated this commit.
+
+### Per-caller flag updates SHIPPED (B939)
+
+| Caller | Risk | Flag chosen | Rationale (Council 47) |
+|---|---|---|---|
+| `scripts/aws_b660_bootstrap.sh` | HIGH | `--include-tier2` | Production infrastructure; Phase P1 needs full coverage; TIER 2 IS production reality post-Phase-P0 |
+| `scripts/aws_b660_launch.py` | HIGH | (docstring update) | Launcher; spawns bootstrap which carries flag |
+| `scripts/diagnose_zero_fires.py` | MEDIUM | `include_tier2_producers=True` | Must distinguish "zero from gate-stacking" vs "zero from TIER 2 deferral" — without TIER 2 ON, structurally cannot answer its own question |
+| `scripts/build_fire_bar_matrix.py` | MEDIUM | `include_tier2_producers=True` | Coverage diagnostic; truncating ~44 TIER 2-dependent strategies makes matrix non-representative of production engine path |
+| `scripts/mean_reversion_edge_prior_test.py` | MEDIUM | `include_tier2_producers=False` (EXPLICIT) | STATISTICAL BASELINE artifact; prior computed pre-B922 with TIER 2 deferred; flipping silently re-bases prior + invalidates downstream Bayesian updates. Queue separate ticket to recompute prior with TIER 2 if Phase P1 needs it. |
+
+### LOW-risk callers NOT updated (one-off audit scripts)
+
+`checklist_106_cluster_a_producer_audit.py`, `pit_universe_discipline_audit.py`, `b917_coverage_map_rescue_retest.py` — explicit `--include-tier2` to be added if re-invoked. Per Council 47: defer; non-recurring scripts.
+
+### Reference-only files (no behavior dependency)
+
+CLAUDE.md / CHECKLIST.md / EXECUTION_QUEUE.md / OPEN_INVESTIGATIONS.md / PATH_TO_PHASE_1B_ALPHA.md + test files — documentation/audit only.
+
+### Risk mitigation per Council 47
+
+- **AWS first run = validation gate.** Cannot test pre-launch.
+- **Pre-AWS pre-flight:** `aws_b660_launch.py --dry-run` locally; verify argv assembly + log lines.
+- **Post-AWS Monitor:** intermediate per-shard fire counts; baseline-compare vs prior shard outputs (expect ~44 new strategies contributing); ABORT EARLY if total fires deviate >5× from projection.
+- **Tag:** B939 commit tagged `phase-p1-batch-3-commit-1-aws-tier2-explicit` for forensic recovery.
+
+### B940 NEXT (default-flip)
+
+- Single-LOC argparse change: `--include-tier2` default OFF → ON
+- Optionally rename to `--tier2/--no-tier2` BooleanOptionalAction for cleaner ergonomics
+- Backward-compat test: invoke `measure_fire_count.py --no-tier2 <small-shard>`; assert fire-count matches pre-B922 baseline within tolerance on pinned strategy subset
+- Pyramid green required pre-push
+- Cleanup of redundant `--include-tier2` in B939 callers queued as B941 (separate; do NOT bundle into B940 per Council 47 anti-drift)
+

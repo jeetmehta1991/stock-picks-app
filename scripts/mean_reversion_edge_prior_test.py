@@ -258,10 +258,18 @@ def run_edge_prior_test(
             cache_misses += 1
             continue
         try:
+            # B939 (2026-06-20) Council 47 explicit-intent: mean-reversion
+            # edge prior is a STATISTICAL BASELINE artifact. Its prior was
+            # computed pre-B922 with TIER 2 deferred. Flipping silently
+            # re-bases the prior + invalidates downstream Bayesian updates.
+            # Preserve by EXPLICIT include_tier2_producers=False; queue
+            # separate ticket to recompute prior with TIER 2 if Phase P1
+            # needs it.
             signals_by_bar = _precompute_signals_for_ticker(
                 df, ticker, start, end,
                 as_of_cache=as_of_cache,
                 enable_extended_signals=enable_extended_signals,
+                include_tier2_producers=False,  # B939: preserve B660 v1 baseline semantics
             )
         except Exception as exc:
             logger.warning("Precompute failed for %s: %s", ticker, exc)

@@ -269,10 +269,15 @@ def build_fire_bar_matrix(
     t1 = time.time()
     for i, (ticker, df) in enumerate(sorted(ohlcv_cache.items()), 1):
         try:
+            # B939 (2026-06-20) Council 47 explicit-intent: fire-bar matrix
+            # is a COVERAGE diagnostic; truncating ~44 TIER 2-dependent
+            # strategies makes the matrix non-representative of production
+            # engine path.
             signals_by_bar = _precompute_signals_for_ticker(
                 df, ticker, start, end,
                 as_of_cache=as_of_cache,
                 enable_extended_signals=enable_extended_signals,
+                include_tier2_producers=True,
             )
         except Exception as exc:
             logger.warning("Precompute failed for %s: %s", ticker, exc)
