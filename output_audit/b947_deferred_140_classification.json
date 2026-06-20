@@ -1,0 +1,2717 @@
+{
+  "total_deferred": 140,
+  "bucket_distribution": {
+    "V_walk_doc_mentioned": 140
+  },
+  "next_step_hint_distribution": {
+    "walk_doc_extractor_gap": 140
+  },
+  "classifications": [
+    {
+      "strategy": "52wh_break_retest",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B162",
+          "B291",
+          "B589",
+          "B597",
+          "B598",
+          "B600",
+          "B603",
+          "B605"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B605"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B586"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B588",
+          "B589",
+          "B613"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B613"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B582",
+          "B586",
+          "B587",
+          "B589"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "52w_low_breakdown_pullback_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B586"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "adx_initiation",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B208"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B208"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B208",
+          "B655",
+          "B760",
+          "B766",
+          "B768",
+          "B772",
+          "B779",
+          "B788",
+          "B790"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B609",
+          "B626",
+          "B627"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_B713_ADVERSARIAL_REVIEW.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "break_retest_confluence",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B271",
+          "B291",
+          "B589",
+          "B594",
+          "B596",
+          "B603",
+          "B605",
+          "B606",
+          "B607",
+          "B608",
+          "B609"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "break_retest_volume",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B320",
+          "B608",
+          "B617"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "bullish_engulfing_support",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B617",
+          "B623",
+          "B624",
+          "B628",
+          "B710",
+          "B787",
+          "B879"
+        ],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "cmf_flip",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B252",
+          "B278"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B329",
+          "B605",
+          "B606",
+          "B607",
+          "B683",
+          "B685"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B680",
+          "B682"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B572",
+          "B574"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "doji_at_support",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "donchian_10_breakout",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B320",
+          "B591",
+          "B592"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "donchian_breakdown_retest_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B329",
+          "B591",
+          "B592",
+          "B594",
+          "B596"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "donchian_breakdown_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B591",
+          "B592",
+          "B595"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B589",
+          "B591",
+          "B595"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "donchian_breakout_retest_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B591",
+          "B594",
+          "B596"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "donchian_breakout_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B607",
+          "B618"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "flag_bull_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B252",
+          "B607",
+          "B618"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B329",
+          "B589",
+          "B605",
+          "B606",
+          "B607",
+          "B618"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "force_index_breakout",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B589",
+          "B609",
+          "B623",
+          "B624",
+          "B626"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B254"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B217"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "htf_aligned_breakout_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B217"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "ichimoku_cloud_breakdown",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B222"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B222"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "inside_bar_breakout",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "institutional_buy_momentum_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B330"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_cluster_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B330"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B222",
+          "B333",
+          "B338"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_insider_combo_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B331"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_persistence_breakout_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B337"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_persistence_momentum_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B333",
+          "B336"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B331",
+          "B337"
+        ],
+        "lineage_tags": [
+          "Wave_lineage",
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_persistence_volume_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B337"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B330",
+          "B338"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B338"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B333"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_volume_confirmation_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B331"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_with_directors_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B336"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "institutional_with_officers_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B336"
+        ],
+        "lineage_tags": [
+          "Wave_lineage"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "judas_swing_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B581"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "judas_swing_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_B713_ADVERSARIAL_REVIEW.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "macd_crossover",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "macd_crossover_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "macd_ichimoku",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "mfi_oversold_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "mmbm_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B581"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "mmsm_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "morning_star",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B559",
+          "B639"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B255",
+          "B314"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B211"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "orb_stocks_in_play_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B211"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B253"
+        ],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pairs_mean_reversion_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B253"
+        ],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "parabolic_sar_flip_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pead_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B209"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_B702_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B507",
+          "B682",
+          "B709"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_B702_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pead_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B209"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_B702_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_B713_ADVERSARIAL_REVIEW.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pead_short_negative_yoy_growth",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B507",
+          "B682",
+          "B709"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B222"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pivot_fib_confluence",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B271",
+          "B291",
+          "B628",
+          "B640",
+          "B641",
+          "B710",
+          "B787",
+          "B879"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "ppo_crossover",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "prev_day_high_break",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "prev_day_low_breakdown",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "r1_break_retest",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B162",
+          "B291",
+          "B589",
+          "B594",
+          "B596",
+          "B597",
+          "B598",
+          "B600",
+          "B601",
+          "B603",
+          "B605",
+          "B606"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "roc_burst",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B254"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "shooting_star_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_B713_ADVERSARIAL_REVIEW.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B190",
+          "B519",
+          "B671"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B210",
+          "B273",
+          "B278"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_B719_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B210"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_discount_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216",
+          "B262"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B210"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B210"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_ote_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_ote_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "smc_premium_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B216"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_B713_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "squeeze_breakout_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "stoch_oversold",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B609",
+          "B627"
+        ],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "supertrend_macd_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "tema_dema",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "three_black_crows_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B636"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B636"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B252"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B329",
+          "B605",
+          "B606",
+          "B607",
+          "B683",
+          "B685"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B580",
+          "B616"
+        ],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "turtle_soup_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B580",
+          "B616"
+        ],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_B713_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_SMC_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "value_area_breakout_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B255"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "vix_backwardation_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B254"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B320",
+          "B589",
+          "B591",
+          "B597",
+          "B598"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": "2026-04-17"
+      }
+    },
+    {
+      "strategy": "vol_spike_2x_below_ema_50_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B291",
+          "B670"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B217"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B217"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "week_opening_gap_fill_down",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B581",
+          "B737",
+          "B738"
+        ],
+        "lineage_tags": [
+          "mean_reversion"
+        ],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "week_opening_gap_fill_up",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B738"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_ICT_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B220",
+          "B358",
+          "B655",
+          "B722",
+          "B772",
+          "B779",
+          "B786",
+          "B788"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CLUSTER_WALKS_INDEX.md",
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "xs_momentum_bottom_decile_short",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B220"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    },
+    {
+      "strategy": "xs_quality_top_quintile_long",
+      "bucket": "V_walk_doc_mentioned",
+      "next_step_hint": "walk_doc_extractor_gap",
+      "evidence": {
+        "batch_markers": [
+          "B222"
+        ],
+        "lineage_tags": [],
+        "fire_count_per_year_max": 0.0,
+        "fire_count_source": null,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "docstring_present": true,
+        "first_commit": null
+      }
+    }
+  ]
+}
