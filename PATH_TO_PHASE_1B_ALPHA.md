@@ -328,13 +328,15 @@ Council 36's linear 4-phase A->B->C->D was rejected by all 5 Council 38 advisors
 |---|---|---|---|---|
 | **P0** | Platform spine + wiring + schema pins | `make r5-p0` | `output_audit/r5_p0_blockers.md` | 4-6 |
 | **P1** | Universe diagnostics (Stream E fan-out, parallel 8-way) | `make r5-p1` | `output_audit/r5_p1_summary.md` | 8-12 |
-| **P2** | No-delete reclassification (STRATEGY_STATUS enum apply) | `make r5-p2` | `output_audit/r5_p2_status_proposed.csv` | 6-8 |
+| **P2** | No-delete reclassification (STRATEGY_STATUS enum apply) — **ABSORBS Type 2 Track A consolidation: redundancy_phi_matrix built on R4 cube data; cluster representatives stay ACTIVE; reskins flip to STRATEGY_STATUS=DEPRECATED. Honors B705 (`feedback_no_prior_edge_consolidate_before_tune`).** | `make r5-p2` | `output_audit/r5_p2_status_proposed.csv` | 6-8 |
 | **P3** | Bug-batch fixes (autonomous fix loop, max 50 iterations) | `make r5-p3` | `output_audit/r5_p3_fix_log.md` | 16-24 |
 | **P4** | Per-strategy walks (sampled; 30 stratified by cluster) | `make r5-p4-sample` | `output_audit/r5_p4_walk_outputs.parquet` | 20-30 |
 | **P5** | R5 dry-run (1% sample cube validates pipeline) | `make r5-p5-dryrun` | `output_audit/r5_p5_dryrun_metrics.md` | 4-8 |
 | **P6** | Full R5 launch on AWS (5,694 cells) | `make r5-p6-launch` | `output_r5_final/` | 60-90 (compute) |
+| **P6.5** | Parameter refinement (Type 1 exit-param + Type 2 Track B gate-loosening on survivors) — see §13.15 | `make r5-p65-refine` | `output_audit/r5_p65_refinement_log.md` | 6-10 |
+| **P7** | Stage 3 winner extraction (`scripts/optimize_strategies_from_cube.py`) | `make r5-p7-extract` | `output_audit/r5_p7_winners.md` | 2-4 |
 
-**Total: ~118-178 wall-clock hours; ~30-40 owner-attention hours.**
+**Total: ~126-192 wall-clock hours; ~32-44 owner-attention hours** (incl. P6.5 + P7).
 
 **Makefile-orchestrated (`Makefile.r5` at repo root):** `make -j8` gives free parallelism; phases idempotent; owner can run individual phases.
 
@@ -373,7 +375,7 @@ Each section traces END-TO-END (source -> producer -> binding -> strategy -> eng
 | **DEC #2** | Dispersion gate `iqr(sharpe_26)/median <= 1.5` (15th passing criterion); calibrated from null-distribution | Executor + Quant |
 | **DEC #3** | Coverage-based wiring definition (`coverage run` not grep) | Executor + First Principles |
 | **DEC #4** | OOS seal protocol: 2020-2023 IS / 2024-2026 OOS; hash posted to AUDIT.md before any Stream D; roster freeze; post-seal-trial counting | Executor + Quant + First Principles |
-| **DEC #5** | DSR N=5,694 specification (219 strategies x 26 exits, NOT 218; regime conditional not search) — Council 38 single biggest methodology hole | Quant |
+| **DEC #5** | DSR N=5,694 specification (219 strategies x 26 exits, NOT 218; regime conditional not search) — Council 38 single biggest methodology hole. **B958 AMENDMENT (Council 63):** Phase 6.5 trial budget pre-registered (180 trials = 120 Type 1 + 60 Type 2 Track B); **N_effective = 5,874** for DSR computation post-P6.5. B957 retrospective audit measured walk-era contamination at 1.04x (negligible); pre-registration applies only forward. | Quant |
 | **DEC #6** | PSR small-N companion gate (Bailey-Lopez de Prado 2012) — PSR per-strategy + DSR on family | Quant |
 
 ### 13.5 STRATEGY_STATUS Enum (No-Delete Enforcement)
@@ -421,6 +423,14 @@ class StrategyStatus(str, Enum):
 13. **PSR per-strategy > 0.95** (Quant)
 14. **`seed_registry.json` published + Stream V reproduced 5 random strategies bit-identically** (Quant)
 15. **Planted-bug canary caught by walk methodology** (Council 39 — owner injects bug Claude-blind; if walk doesn't catch it, walk methodology is theater)
+
+**P6.5 ENTRY GATES (added by B958 Council 63):**
+
+16. `r5_trial_log.json` committed to repo (P6 outputs frozen)
+17. `oos_q2_plus_seal_hash` recorded in AUDIT.md (2026-Q2+ slice carved out + hash-pinned; held out for Phase 6.5)
+18. `phase_6_5_trial_budget_remaining == 180` at P6 completion (budget unspent until P6.5 launches)
+19. Council 7 reset DEC-PHASE-6.5-RESET (see §13.16) owner-countersigned
+20. P6.5 trial classification pre-registered (which Type 1 sweeps + which Type 2 Track B qualifiers, before P6.5 fires any cell)
 
 ### 13.8 Honest R5 Targets (Factor-Zoo Base-Rate Anchored)
 
@@ -705,8 +715,12 @@ Per owner directive 2026-06-19 ("Discipline to be enforced strictly! No exceptio
 | Council fatigue (Outsider warning) | Hard moratorium per 13.11 #8 | Owner enforces |
 | Framework rots post-R5 | 90-day predicate-rot detector | Phase 1C item |
 | Stream E script bugs propagate to all 219 dossiers | Self-test on 5 known-good + 5 known-broken BEFORE running on 218 | Executor recommendation |
-| DSR N misspecification | DEC #5 explicit N=5,694 | Quant requirement |
+| DSR N misspecification | DEC #5 explicit N=5,694 (B958 amended to N_effective=5,874 post-P6.5) | Quant requirement |
 | Planted-bug canary missed by walk | R5 launch gate #15 BLOCKS | Independent verifier |
+| **P6.5 trial-budget overrun** | `r5_p65_trial_log.json` row count > 180 | P6.5 hard-abort + manual reset + owner countersign |
+| **OOS-seal-bleed via accidental 2026-Q2+ access** | Pyramid test asserts no read of Q2+ files until P6.5 ends; `oos_q2_seal_hash` re-verified at P6.5 exit | Pre-commit hook + Stream V check |
+| **P6.5 Track B qualifier-creep** (every failed strategy argued into qualifier set) | All 4 gates required (post-Bonferroni Sharpe in [0.55, 0.70] AND t-stat >= 2.0 AND OOS quartile >= 2 AND >=1 edge signal); operationalized as `is_track_b_qualifier(strategy_row)` function | Function-level unit test on synthetic borderline rows |
+| **P6.5 Type 1 sweep beyond natural range** | Only documented literature ranges per parameter (ATR 0.5-2.0x, R:R 1.5-4.0, trail 0.5-3.0%); open-ended search BLOCKED | Pre-registered config; deviation requires DEC |
 
 ### 13.14 Memory Rules Codified This Session
 
@@ -714,5 +728,95 @@ Per owner directive 2026-06-19 ("Discipline to be enforced strictly! No exceptio
 - `feedback_no_surface_level_audits` (2026-06-19) — end-to-end audit traces
 
 Both surface in pre-flight + EOT compliance statement per CHECKLIST #110.
+
+---
+
+### 13.15 Phase 6.5 Design (B958 Council 63 owner-approved 2026-06-20)
+
+**Trigger:** Owner question 2026-06-20 "In any phases will we be undertaking parameter optimization so we improve the performance of the strategies? Council this." Council 61 surfaced PATH terminology hole (param-sweep vs cell-selection) + DSR-contamination fear. Council 62 corrected scope (rejecting owner's 28,500-cell pre-R5 sweep + 730-review FIRE_STARVED loosening as overfitting machines). Council 63 finalized design with B957 reassurance factored in (DSR contamination measured at 1.04x, NEGLIGIBLE).
+
+**Owner's two-type taxonomy:**
+- **Type 1: Exit parameter / gate optimizations** (ATR multiplier, R:R ratios, trail tightness)
+- **Type 2: Strategy gate optimizations** similar to Stage 4 (RSI thresholds, EMA periods, gate add/remove, regime affinity)
+
+**Council 63 Option (beta) two-track architecture:**
+
+| Track | Timing | Phase | Scope |
+|---|---|---|---|
+| **Type 2 Track A — Redundancy consolidation** | **PRE-R5** | Absorbed into **P2 reclassification** | redundancy_phi_matrix (Section 4) built on R4 cube data; cluster representatives stay STRATEGY_STATUS=ACTIVE; reskins flip to DEPRECATED. Honors B705. |
+| **Type 1 — Exit-param sweep** | **POST-R5** | New **P6.5** | 4-variant sweep within winning exit method only; documented literature ranges (ATR 0.5-2.0x; R:R 1.5-4.0; trail 0.5-3.0%); 120 trials cap (30 R5-survivors x 4 ATR variants). |
+| **Type 2 Track B — Gate refinement on borderline survivors** | **POST-R5** | New **P6.5** | Survivor-only; ALL 4 GATES required for qualifier (Contrarian 3 + Outsider edge signal); 60 trials cap (20 borderline-with-edge survivors x 3 gate variants). |
+
+**Total Phase 6.5 trial budget: 180 hard cap.** DEC #5 amended: N_effective = 5,874 for DSR post-P6.5.
+
+**OOS seal preservation method (a):**
+
+- 2026-Q2+ slice carved out at B958 commit; hash-pinned in AUDIT.md
+- Sealed indefinitely; held out from Phase 6.5 refinement
+- R5 (P5+P6) uses 2020-01-01 → 2026-Q1 (~6.25 years; exceeds 5-yr backtest floor)
+- Method (b) "forward-only on post-R5 papertrade" considered + rejected (delays winner extraction >=6 months + introduces papertrade survivorship)
+
+**Track B qualifier (4 gates; ALL required):**
+
+```python
+def is_track_b_qualifier(strategy_row) -> bool:
+    return (
+        0.55 <= strategy_row.post_bonferroni_sharpe <= 0.70
+        and strategy_row.raw_t_stat >= 2.0
+        and strategy_row.oos_quartile_rank >= 2
+        and (
+            strategy_row.smart_money_lift_pp >= 5.0
+            or strategy_row.per_regime_pass_count >= 2
+            or strategy_row.calmar >= 0.75
+        )
+    )
+```
+
+Expected qualifier count from R5: ~15-25 strategies (well under 60 cap).
+
+**Type 1 trigger:** R5-survivor strategy whose winning exit method has documented natural sweep range in literature (ATR multiplier, R:R ratio, trail percent). No open-ended search. 4-variant sweeps only.
+
+**Pre-registered Type 1 parameter ranges:**
+
+| Exit parameter | Variants | Source |
+|---|---|---|
+| ATR multiplier | 0.5x / 1.0x / 1.5x / 2.0x | Wilder 1978 + Chande 1995 |
+| R:R ratio | 1.5R / 2.0R / 3.0R / 4.0R | Van Tharp 1999 |
+| Trail percent | 0.5% / 1.0% / 2.0% / 3.0% | Chandelier 1995 |
+
+**P6.5 workflow:**
+
+1. P6 R5 launch completes → output_r5_final/ frozen + committed
+2. Stream V reproduces 5 random strategies bit-identical (per launch gate #14)
+3. P6.5 entry checklist verified (gates 16-20 above)
+4. Track B qualifiers identified via `is_track_b_qualifier()` over R5 results
+5. Type 1 + Type 2 Track B trial cells fired against 2020-2026-Q1 IS slice (Q2+ sealed)
+6. Refinement results merged with R5 baseline; DSR re-computed at N=5,874
+7. Winner roster diff posted (R5-raw vs P6.5-refined) for owner review
+8. P7 Stage 3 winner extraction runs `scripts/optimize_strategies_from_cube.py` (B388) on refined cube
+
+**Failure-mode guardrails (added to §13.13):** trial-budget overrun, OOS-seal-bleed, Track B qualifier-creep, Type 1 sweep beyond natural range.
+
+### 13.16 DEC-PHASE-6.5-RESET (Council 7 Binding Reset)
+
+**Background:** Council 7 binding (2026-06-12) was: *"R5 → agents → papertrade. No changes."* Interpretation: R5 measures EXISTING parameters; no within-R5 nor post-R5 parameter changes.
+
+**Owner directive 2026-06-20:** Phase 6.5 introduced (per §13.15) — pre-registered, budgeted exception to Council 7 binding. Council 7 status is RESET, not silently overridden.
+
+**DEC-PHASE-6.5-RESET structure:**
+
+1. **Rationale:** R5 produces measurement, not strategy changes (Council 7 default still holds for R5 itself); Phase 6.5 is the pre-registered, budgeted, post-R5 exception. Within-R5 mid-run tuning remains BANNED.
+2. **Scope:** Phase 6.5 only. No within-R5 mid-run tuning. No Phase-7+ re-tuning (winner extraction is selection, not parameter change). No retroactive amendments to P6.5 protocol post-R5.
+3. **Trial budget:** 180 hard cap (allocated 120 Type 1 + 60 Type 2 Track B per §13.15).
+4. **OOS preservation:** 2026-Q2+ carve-out (method a per §13.15); sealed at B958 commit; hash recorded in AUDIT.md.
+5. **Entry gates:** R5 (P6) complete + all 5 P6.5 entry gates (§13.7 gates 16-20) + owner countersign on `output_audit/r5_p65_owner_signoff.json`.
+6. **Exit gates:** Trial log committed (`r5_p65_trial_log.json`) + DSR re-computed at N=5,874 + winner roster diff vs R5-raw posted + Stream V Phase-6.5 reproducibility verified.
+7. **Owner signature workflow:** `output_audit/r5_p65_owner_signoff.json` produced by Phase-6.5 entry script with required fields: timestamp / OOS Q2+ hash / trial budget remaining / Council 63 verdict reference / owner-countersigned flag.
+
+**Pre-flight gate:** Phase 6.5 launch script asserts all of (1)-(6) above; fails on any missing.
+
+**Auditability:** Every Phase 6.5 trial cell logged in `r5_p65_trial_log.json` with (strategy, parameter, variant, before_metric, after_metric, IS-slice-confirmed). Post-hoc audit reproduces from this log + Q2+ seal hash.
+
+**Council 7 LIFTED-FOR-P6.5 status:** logged in AUDIT.md per CHECKLIST #67 doc-sync requirement.
 
 ---
