@@ -94,14 +94,48 @@ STRONG_WALK_PREFIXES = ("S4-B", "W")
 FIRE_COUNT_PASS_THRESHOLD_PER_YEAR = 30.0
 
 
-def _has_strong_evidence(section_9b: dict | None) -> tuple[bool, dict]:
-    """Council 50 strict evidence check.
+def _load_walk_verdict_ledger() -> dict[str, list[dict]]:
+    """B948 (2026-06-20) Council 52: lazy-load walk_verdict_ledger.json.
+
+    Maps strategy_name -> list of walk entries (each with confidence flag).
+    Per Council 52: only high|medium confidence entries count as STRONG.
+    """
+    from pathlib import Path
+    import json
+    REPO_PATH = Path(__file__).resolve().parent.parent.parent
+    ledger_path = REPO_PATH / "output_audit" / "walk_verdict_ledger.json"
+    if not ledger_path.exists():
+        return {}
+    try:
+        with open(ledger_path) as f:
+            data = json.load(f)
+        return data.get("ledger", {})
+    except Exception:
+        return {}
+
+
+_WALK_VERDICT_LEDGER_CACHE: dict[str, list[dict]] | None = None
+
+
+def _walk_verdict_ledger_entries(strategy: str) -> list[dict]:
+    """Get high|medium confidence walk entries for strategy from ledger."""
+    global _WALK_VERDICT_LEDGER_CACHE
+    if _WALK_VERDICT_LEDGER_CACHE is None:
+        _WALK_VERDICT_LEDGER_CACHE = _load_walk_verdict_ledger()
+    entries = _WALK_VERDICT_LEDGER_CACHE.get(strategy, [])
+    # Filter to high|medium confidence per Council 52
+    return [e for e in entries if e.get("confidence") in ("high", "medium")]
+
+
+def _has_strong_evidence(section_9b: dict | None, strategy: str | None = None) -> tuple[bool, dict]:
+    """Council 50 + B948 Council 52 strict evidence check.
 
     Returns (passes_strong_check, evidence_breakdown).
     Evidence is STRONG if AT LEAST ONE OF:
-      A. Walk batches include S4-B### or W## marker (Stage 4 walk ticket)
+      A. Walk batches include S4-B### or W## marker (Stage 4 walk ticket; docstring)
       B. Fire-count projection >= 30/yr per direction (long OR short)
       C. Status tags include any of STRONG_STATUS_TAGS
+      D. (B948 Council 52) walk_verdict_ledger has high|medium confidence entry
 
     PATTERN_X tags (PATTERN_AA, PATTERN_W, etc.) are LINEAGE-only and
     REJECTED. mean_reversion docstring tag is REJECTED in favor of
@@ -129,6 +163,9 @@ def _has_strong_evidence(section_9b: dict | None) -> tuple[bool, dict]:
         t for t in tags
         if t in LINEAGE_ONLY_TAGS or t.startswith("PATTERN_")
     ]
+    # D. B948 Council 52: walk_verdict_ledger high|medium confidence entries
+    walk_ledger_entries = _walk_verdict_ledger_entries(strategy) if strategy else []
+    has_ledger_walk = bool(walk_ledger_entries)
     breakdown = {
         "strong_walk_markers": strong_walks,
         "fire_count_per_year_max": fpy_max,
@@ -136,12 +173,16 @@ def _has_strong_evidence(section_9b: dict | None) -> tuple[bool, dict]:
         "fire_count_threshold": FIRE_COUNT_PASS_THRESHOLD_PER_YEAR,
         "strong_status_tags": strong_tags,
         "rejected_lineage_tags": rejected_lineage,
-        "passes_strong_check": bool(strong_walks) or fire_pass or bool(strong_tags),
+        "walk_verdict_ledger_entries_count": len(walk_ledger_entries),
+        "walk_verdict_ledger_entries": walk_ledger_entries[:3],  # truncated for size
+        "passes_strong_check": (
+            bool(strong_walks) or fire_pass or bool(strong_tags) or has_ledger_walk
+        ),
     }
     return breakdown["passes_strong_check"], breakdown
 
 
-def compute_r5_inclusion_criterion(dossier: dict[str, Any]) -> dict[str, Any]:
+def compute_r5_inclusion_criterion(dossier: dict[str, Any], strategy: str | None = None) -> dict[str, Any]:
     """Compute r5_inclusion_criterion + rationale from populated sections.
 
     Returns:
@@ -212,7 +253,7 @@ def compute_r5_inclusion_criterion(dossier: dict[str, Any]) -> dict[str, Any]:
             }
         # B946 Council 50 STRONG-EVIDENCE fallback (replaces permissive
         # has_pre_cube_evidence check): require strict markers per Council 50
-        strong_pass, evidence_breakdown = _has_strong_evidence(section_9b)
+        strong_pass, evidence_breakdown = _has_strong_evidence(section_9b, strategy)
         if strong_pass:
             return {
                 "value": "pre_cube_evidence_sufficient",
@@ -239,7 +280,7 @@ def compute_r5_inclusion_criterion(dossier: dict[str, Any]) -> dict[str, Any]:
 
     # Track 2: post-R4 addition
     if track == 2:
-        strong_pass, evidence_breakdown = _has_strong_evidence(section_9b)
+        strong_pass, evidence_breakdown = _has_strong_evidence(section_9b, strategy)
         if strong_pass:
             return {
                 "value": "pre_cube_evidence_sufficient",
@@ -274,7 +315,10 @@ def set_r5_inclusion_criterion_for_dossier(dossier_path: Path) -> dict[str, Any]
         raise FileNotFoundError(f"Dossier not initialized: {dossier_path}")
     with open(dossier_path) as f:
         dossier = json.load(f)
-    criterion = compute_r5_inclusion_criterion(dossier)
+    # B948: pass strategy name from dossier so _has_strong_evidence can
+    # query the walk_verdict_ledger
+    strategy = dossier.get("strategy")
+    criterion = compute_r5_inclusion_criterion(dossier, strategy=strategy)
     # Set the dossier field (preserves nested structure under sections)
     dossier["r5_inclusion_criterion"] = criterion["value"]
     dossier["r5_inclusion_criterion_detail"] = criterion
