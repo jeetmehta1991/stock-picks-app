@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "batch": "B957",
+  "council_verdict": "61_critical_finding + 62_unconditional_ship",
+  "scope": "walk-era B500-B956",
+  "n_commits_total": 492,
+  "n_trial_commits": 100,
+  "trial_categories": {
+    "gate_change": 49,
+    "threshold_change": 17,
+    "producer_rewrite": 17,
+    "strategy_deletion": 14,
+    "new_strategy": 8,
+    "state_event_conversion": 7,
+    "regime_affinity": 5,
+    "docstring_only": 5
+  },
+  "trial_count_methodology": {
+    "trial_definition": "Gate change / threshold change / regime affinity / STATE-EVENT / producer rewrite / new strategy / deletion",
+    "non_trial_excluded": [
+      "docstring_only"
+    ],
+    "avg_strategies_affected_per_trial_commit": 2.0
+  },
+  "dec_5_baseline_N": 5694,
+  "estimated_walk_era_added_trials": 200,
+  "n_effective_total_estimate": 5894,
+  "inflation_factor": 1.0351246926589392,
+  "estimated_trials_per_strategy_avg": 0.91324200913242,
+  "dsr_threshold_inflation_factor": 1.0019941504404093,
+  "interpretation": "Walk-era B500-B956 added ~200 parameter trials to DEC #5 baseline 5,694. N_effective ~5894 (1.04x inflation). DSR threshold inflation ~1.002x means original 0.95 calibration may correspond to ~0.952 at corrected N. Council 61 mandate: this measurement informs whether R5 PASS verdicts are statistically valid.",
+  "per_strategy_trials_named": {
+    "bollinger_lower": 1,
+    "borrow_ok": 4,
+    "ichimoku_cloud_breakout": 1,
+    "hull_rsi_short": 1,
+    "hull_rsi": 2,
+    "52w_high_breakout": 1,
+    "pivot_r3_blowoff_short": 1,
+    "pivot_s3_capitulation": 1,
+    "morning_star": 1,
+    "three_white_soldiers": 1,
+    "three_black_crows_short": 1,
+    "squeeze_setup_event_only_long": 1
+  },
+  "council_61_recommendation": "If N_effective >> 5694, recalibrate DSR gate OR seal OOS 2026-Q2+ mandatory before R5 PASS honored.",
+  "council_62_phase_6_5_design_anchor": "Phase 6.5 trial budget must include refinement trials. Type 1 POST-R5 narrow (\u00b115% around passing gates) limits new trials to <200. Type 2 Track A (consolidation, pre-R5) adds 0 trials (deletion reduces N). Type 2 Track B (loosening borderline survivors, post-R5) trial-budgeted in DSR."
+}
