@@ -124,19 +124,16 @@ echo "[$(date)] Launching measure_fire_count.py in tmux session b660_shard..."
 tmux new-session -d -s b660_shard bash -lc "
     cd /opt/stock-picks-app
     source .venv/bin/activate
-    # B939 (2026-06-20) Council 47 explicit-intent declaration per
-    # Council 46 Option B sequencing. TIER 2 producer injection enabled
-    # for Phase P1 production fire-count measurements. Adding ~44
-    # TIER 2-dependent strategies that were silenced pre-B922.
-    # Comparability vs B660 v1 outputs: NOT preserved here (B660 v1
-    # was pre-B922 baseline; replay would require --no-tier2).
+    # B941 (2026-06-20) Council 47 cleanup: redundant --include-tier2
+    # removed after B940 default-flip. TIER 2 producer injection is now
+    # default ON; this invocation uses post-B940 default behavior. To
+    # replay B660 v1 pre-B922 baseline semantics, add --no-tier2 here.
     python scripts/measure_fire_count.py \\
         --all \\
         --ticker-subset $TICKERS_SPACE \\
         --n-workers $B660_N_WORKERS \\
         --start $B660_START \\
         --end $B660_END \\
-        --include-tier2 \\
         --output $OUTPUT_FILE \\
         2>&1 | tee /var/log/b660-engine.log
     echo \"[ENGINE-DONE \$?] \$(date)\" >> /var/log/b660-engine.log

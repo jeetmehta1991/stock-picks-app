@@ -128,6 +128,11 @@ def diagnose(
     # "zero from TIER 2 deferral". Without include_tier2_producers=True, the
     # diagnostic is structurally unable to answer its own question for ~44
     # TIER 2-dependent strategies (B919 architectural class).
+    #
+    # B941 (2026-06-20) NOTE: kept this flag explicit because the FUNCTION-
+    # level default of include_tier2_producers in _precompute_signals_for_ticker
+    # is still False. B940 flipped the CLI default only. Removing this line
+    # would silently DISABLE TIER 2 in this diagnostic.
     signals_by_bar = _precompute_signals_for_ticker(
         df, ticker, start, end,
         enable_extended_signals=enable_extended_signals,

@@ -273,6 +273,9 @@ def build_fire_bar_matrix(
             # is a COVERAGE diagnostic; truncating ~44 TIER 2-dependent
             # strategies makes the matrix non-representative of production
             # engine path.
+            # B941 NOTE: kept explicit because FUNCTION-level default of
+            # include_tier2_producers in _precompute_signals_for_ticker is
+            # still False. B940 flipped CLI default only.
             signals_by_bar = _precompute_signals_for_ticker(
                 df, ticker, start, end,
                 as_of_cache=as_of_cache,

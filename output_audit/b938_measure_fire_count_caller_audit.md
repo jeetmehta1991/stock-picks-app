@@ -147,3 +147,37 @@ CLAUDE.md / CHECKLIST.md / EXECUTION_QUEUE.md / OPEN_INVESTIGATIONS.md / PATH_TO
 - Pyramid green required pre-push
 - Cleanup of redundant `--include-tier2` in B939 callers queued as B941 (separate; do NOT bundle into B940 per Council 47 anti-drift)
 
+---
+
+## B941 CLEANUP RESOLUTION (2026-06-20; owner-approved Option A)
+
+Owner chose Option A (cleanup all redundant `--include-tier2` flags).
+
+### B941 SCOPE NARROWED (honest finding)
+
+During B941 execution, discovered that Council 47's "redundant" framing conflated two layers:
+
+1. **CLI flag layer:** `--include-tier2` argparse default flipped to True via B940 resolution logic (`not args.no_tier2`). CLI invocations without flag now default to TIER 2 ON.
+2. **FUNCTION parameter layer:** `_precompute_signals_for_ticker(include_tier2_producers=False)` — **still False at function level**. Removing explicit `True` from direct function calls would silently DISABLE TIER 2.
+
+**B941 cleanup applies ONLY to layer 1 (CLI):**
+
+| Caller | B941 Action | Reason |
+|---|---|---|
+| `scripts/aws_b660_bootstrap.sh` | `--include-tier2` CLI flag REMOVED | Redundant post-B940 CLI default-flip; comment notes `--no-tier2` to restore B660 v1 baseline |
+| `scripts/diagnose_zero_fires.py` | **KEPT** `include_tier2_producers=True` | Function default still False; removing would silently break diagnostic intent |
+| `scripts/build_fire_bar_matrix.py` | **KEPT** `include_tier2_producers=True` | Function default still False; removing would silently break coverage matrix |
+| `scripts/mean_reversion_edge_prior_test.py` | **KEPT** `include_tier2_producers=False` | Explicit escape hatch for statistical baseline preservation per Council 47 |
+
+### B942 OPTIONAL FUTURE WORK (separate batch)
+
+If owner wants function-parameter default also flipped:
+- `_precompute_signals_for_ticker(include_tier2_producers=False)` → default True
+- Worker arg tuple resolution + downstream functions update
+- Direct callers (diagnose_zero_fires + build_fire_bar_matrix) can then drop explicit `True`
+- Mean-rev prior keeps explicit `False`
+- ~15 LOC change across measure_fire_count.py
+- Separate council on whether this drift is worth removing 2 explicit `True` declarations
+
+**Council 47 anti-drift verdict applies:** function-default-flip is its own scope. Defer unless owner explicitly requests.
+
