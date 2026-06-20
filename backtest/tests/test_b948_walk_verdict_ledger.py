@@ -61,14 +61,25 @@ def test_b948_ledger_loaded_in_r5_inclusion_criterion_module():
 
 
 def test_b948_strong_evidence_includes_ledger_entry():
-    """B948: _has_strong_evidence returns True when strategy has ledger entry, even without other markers."""
+    """B948 (B950-updated): _has_strong_evidence returns True for strategy with VERDICT-BEARING ledger entry.
+
+    B950 (2026-06-20) Council 54: LEDGER_REQUIRE_VERDICT_BEARING defaults True;
+    only strategies with verdict_strength in ('strong','medium') count. Updated
+    test fixture to pick such a strategy, preserving the original contract
+    (ledger presence -> strong-evidence-passes) under the new flag default.
+    """
     from backtest.diagnostics.r5_inclusion_criterion import _has_strong_evidence, _load_walk_verdict_ledger
     ledger = _load_walk_verdict_ledger()
     if not ledger:
         pytest.skip("Ledger not built")
-    # Pick a strategy known to be in ledger
-    test_strategy = next(iter(ledger.keys()))
-    # Section 9b with NO other evidence
+    # Pick a strategy WITH STRONG or MEDIUM verdict_strength entry (B950 requirement)
+    test_strategy = None
+    for strat, entries in ledger.items():
+        if any(e.get("verdict_strength") in ("strong", "medium") for e in entries):
+            test_strategy = strat
+            break
+    if test_strategy is None:
+        pytest.skip("No verdict-bearing ledger entry found; cannot test")
     section_9b = {
         "walk_batches": [],
         "fire_count_projection": None,
@@ -76,7 +87,7 @@ def test_b948_strong_evidence_includes_ledger_entry():
     }
     passes, breakdown = _has_strong_evidence(section_9b, strategy=test_strategy)
     assert passes is True, (
-        f"Strategy {test_strategy!r} in walk_verdict_ledger should pass STRONG check"
+        f"Strategy {test_strategy!r} has verdict-bearing ledger entry; should pass STRONG check"
     )
     assert breakdown["walk_verdict_ledger_entries_count"] > 0
 

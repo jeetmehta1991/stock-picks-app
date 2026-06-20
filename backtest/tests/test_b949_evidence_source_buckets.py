@@ -26,7 +26,15 @@ def test_b949_classify_sufficient_d_only_detected():
     ledger = _load_walk_verdict_ledger()
     if not ledger:
         pytest.skip("Ledger not built")
-    test_strategy = next(iter(ledger.keys()))
+    # B950 (2026-06-20) update: with LEDGER_REQUIRE_VERDICT_BEARING=True default,
+    # need a strategy with verdict_strength in ('strong','medium') to detect D source.
+    test_strategy = None
+    for strat, entries in ledger.items():
+        if any(e.get("verdict_strength") in ("strong", "medium") for e in entries):
+            test_strategy = strat
+            break
+    if test_strategy is None:
+        pytest.skip("No verdict-bearing ledger entry")
     # Empty section_9b: only D should fire
     dossier = {
         "sections": {

@@ -1,0 +1,2492 @@
+{
+  "schema_version": "2.0",
+  "batch": "B950",
+  "construction_per_council": "54",
+  "n_strategies_with_walks": 125,
+  "n_with_strong_verdict_strength": 30,
+  "n_with_medium_verdict_strength_only": 2,
+  "n_walked_only": 93,
+  "ledger": {
+    "52w_high_breakout": [
+      {
+        "strategy": "52w_high_breakout",
+        "cluster_id": "BR-1",
+        "batch_refs": [
+          "B586",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 586+589, 52w family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "52w_high_breakout_pullback_long": [
+      {
+        "strategy": "52w_high_breakout_pullback_long",
+        "cluster_id": "BR-2",
+        "batch_refs": [
+          "B586",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 586+590, 52w family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "52w_low_breakdown": [
+      {
+        "strategy": "52w_low_breakdown",
+        "cluster_id": "BR-3",
+        "batch_refs": [
+          "B586",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 586+587+589, 52w family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "52w_low_breakdown_pullback_short": [
+      {
+        "strategy": "52w_low_breakdown_pullback_short",
+        "cluster_id": "BR-4",
+        "batch_refs": [
+          "B586",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 586+590, 52w family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "52wh_break_retest": [
+      {
+        "strategy": "52wh_break_retest",
+        "cluster_id": "BR-5",
+        "batch_refs": [
+          "B605",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 605, 52w-retest family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "52wl_break_retest_short": [
+      {
+        "strategy": "52wl_break_retest_short",
+        "cluster_id": "BR-6",
+        "batch_refs": [
+          "B605",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 605, 52w-retest family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "break_retest_volume": [
+      {
+        "strategy": "break_retest_volume",
+        "cluster_id": "BR-7",
+        "batch_refs": [
+          "B608",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 608+617, generic-retest family, walked B676 \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "dc20_break_retest": [
+      {
+        "strategy": "dc20_break_retest",
+        "cluster_id": "BR-8",
+        "batch_refs": [
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "generic-retest family, walked B676 \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "medium",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "RECOMMENDED",
+          "swap"
+        ],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "donchian_10_breakout": [
+      {
+        "strategy": "donchian_10_breakout",
+        "cluster_id": "BR-9",
+        "batch_refs": [
+          "B591",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 591+592, Donchian family, walked B676 \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "RECOMMENDED"
+        ],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "donchian_breakout_long": [
+      {
+        "strategy": "donchian_breakout_long",
+        "cluster_id": "BR-10",
+        "batch_refs": [
+          "B595",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 595, Donchian family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "donchian_breakdown_short": [
+      {
+        "strategy": "donchian_breakdown_short",
+        "cluster_id": "BR-11",
+        "batch_refs": [
+          "B595",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 595, Donchian family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "donchian_breakout_retest_long": [
+      {
+        "strategy": "donchian_breakout_retest_long",
+        "cluster_id": "BR-12",
+        "batch_refs": [
+          "B596",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 596, Donchian family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "donchian_breakdown_retest_short": [
+      {
+        "strategy": "donchian_breakdown_retest_short",
+        "cluster_id": "BR-13",
+        "batch_refs": [
+          "B596",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "Batch 596, Donchian family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "volume_spike_breakout": [
+      {
+        "strategy": "volume_spike_breakout",
+        "cluster_id": "BR-14",
+        "batch_refs": [
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "E vol-spike family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "volume_spike_breakout_retest": [
+      {
+        "strategy": "volume_spike_breakout_retest",
+        "cluster_id": "BR-15",
+        "batch_refs": [
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "E vol-spike family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "DELETE candidate"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "force_index_breakout": [
+      {
+        "strategy": "force_index_breakout",
+        "cluster_id": "BR-16",
+        "batch_refs": [
+          "B626",
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "F misc family, walked B676 \u2014 DUAL, B626 forensic-fixed",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "swap"
+        ],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "inside_bar_breakout": [
+      {
+        "strategy": "inside_bar_breakout",
+        "cluster_id": "BR-17",
+        "batch_refs": [
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "F misc family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "RECOMMENDED"
+        ],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "prev_day_low_breakdown": [
+      {
+        "strategy": "prev_day_low_breakdown",
+        "cluster_id": "BR-18",
+        "batch_refs": [
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "F misc family, walked B676",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "squeeze_breakout": [
+      {
+        "strategy": "squeeze_breakout",
+        "cluster_id": "BR-19",
+        "batch_refs": [
+          "B676"
+        ],
+        "walk_positions": [],
+        "context": "F misc family, walked B676 \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "morning_star": [
+      {
+        "strategy": "morning_star",
+        "cluster_id": "CC-1",
+        "batch_refs": [
+          "B639"
+        ],
+        "walk_positions": [],
+        "context": "Candle reversal, walked B639",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "DELETED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "three_white_soldiers": [
+      {
+        "strategy": "three_white_soldiers",
+        "cluster_id": "CC-2",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Candle reversal, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "three_black_crows_short": [
+      {
+        "strategy": "three_black_crows_short",
+        "cluster_id": "CC-3",
+        "batch_refs": [
+          "B636"
+        ],
+        "walk_positions": [],
+        "context": "Candle reversal, walked B636",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "shooting_star_short": [
+      {
+        "strategy": "shooting_star_short",
+        "cluster_id": "CC-4",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Candle reversal, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "tighten"
+        ],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      },
+      {
+        "strategy": "shooting_star_short",
+        "cluster_id": "W2",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "bullish_engulfing_support": [
+      {
+        "strategy": "bullish_engulfing_support",
+        "cluster_id": "CC-5",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Candle reversal, walked B683 full-expansion \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "tighten"
+        ],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      },
+      {
+        "strategy": "bullish_engulfing_support",
+        "cluster_id": "CC-5",
+        "batch_refs": [
+          "B678"
+        ],
+        "walk_positions": [],
+        "context": "Candle reversal, walked B678",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      },
+      {
+        "strategy": "bullish_engulfing_support",
+        "cluster_id": "P7",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "doji_at_support": [
+      {
+        "strategy": "doji_at_support",
+        "cluster_id": "CC-6",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Candle doji, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      },
+      {
+        "strategy": "doji_at_support",
+        "cluster_id": "CC-6",
+        "batch_refs": [
+          "B678"
+        ],
+        "walk_positions": [],
+        "context": "Candle doji, walked B678",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "doji_at_resistance_short": [
+      {
+        "strategy": "doji_at_resistance_short",
+        "cluster_id": "CC-7",
+        "batch_refs": [
+          "B572"
+        ],
+        "walk_positions": [],
+        "context": "Candle doji, walked B572",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "cup_and_handle_long": [
+      {
+        "strategy": "cup_and_handle_long",
+        "cluster_id": "CP-1",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern bullish base, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "tighten"
+        ],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "double_bottom_long": [
+      {
+        "strategy": "double_bottom_long",
+        "cluster_id": "CP-2",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern bullish base, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "head_and_shoulders_bottom_long": [
+      {
+        "strategy": "head_and_shoulders_bottom_long",
+        "cluster_id": "CP-3",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern bullish base, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "flag_bull_long": [
+      {
+        "strategy": "flag_bull_long",
+        "cluster_id": "CP-4",
+        "batch_refs": [
+          "B618",
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern flag, walked B683 full-expansion \u2014 B618 PHANTOM-BREAKOUT FIXED",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "flag_bull_retest_long": [
+      {
+        "strategy": "flag_bull_retest_long",
+        "cluster_id": "CP-5",
+        "batch_refs": [
+          "B607",
+          "B618",
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern flag retest, walked B683 full-expansion \u2014 B607+B618 FORENSIC LINEAGE",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "flag_bear_retest_short": [
+      {
+        "strategy": "flag_bear_retest_short",
+        "cluster_id": "CP-6",
+        "batch_refs": [
+          "B607"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern flag retest, walked B607",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "triangle_ascending_long": [
+      {
+        "strategy": "triangle_ascending_long",
+        "cluster_id": "CP-7",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern triangle, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "triangle_ascending_retest_long": [
+      {
+        "strategy": "triangle_ascending_retest_long",
+        "cluster_id": "CP-8",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern triangle retest, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "cup_and_handle_retest_long": [
+      {
+        "strategy": "cup_and_handle_retest_long",
+        "cluster_id": "CP-9",
+        "batch_refs": [
+          "B683"
+        ],
+        "walk_positions": [],
+        "context": "Chart-pattern retest, walked B683 full-expansion",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "news_sentiment_long": [
+      {
+        "strategy": "news_sentiment_long",
+        "cluster_id": "C-13",
+        "batch_refs": [
+          "B253",
+          "B278",
+          "B314"
+        ],
+        "walk_positions": [],
+        "context": "News sentiment cluster, batched B253 + B278 + B314 + B748d",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "loosen",
+          "tighten"
+        ],
+        "source": "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "vix_backwardation_long": [
+      {
+        "strategy": "vix_backwardation_long",
+        "cluster_id": "C-21",
+        "batch_refs": [
+          "B254"
+        ],
+        "walk_positions": [],
+        "context": "Cross-asset + xs_quality, batched B254",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "post_inclusion_drift_long": [
+      {
+        "strategy": "post_inclusion_drift_long",
+        "cluster_id": "C-26",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "Index rebalance event, batched B748d revival",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "pead_long": [
+      {
+        "strategy": "pead_long",
+        "cluster_id": "EV-1",
+        "batch_refs": [
+          "B209",
+          "B677"
+        ],
+        "walk_positions": [],
+        "context": "Batch 209, PEAD family, walked B677",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "pead_short": [
+      {
+        "strategy": "pead_short",
+        "cluster_id": "EV-2",
+        "batch_refs": [
+          "B209",
+          "B677"
+        ],
+        "walk_positions": [],
+        "context": "Batch 209, PEAD family, walked B677",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "pead_long_high_yoy_growth_only": [
+      {
+        "strategy": "pead_long_high_yoy_growth_only",
+        "cluster_id": "EV-3",
+        "batch_refs": [
+          "B507",
+          "B677"
+        ],
+        "walk_positions": [],
+        "context": "Batch 507, PEAD family, walked B677 \u2014 STRICT SUBSET of EV-1",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "RECOMMENDED"
+        ],
+        "source": "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "pead_short_negative_yoy_growth": [
+      {
+        "strategy": "pead_short_negative_yoy_growth",
+        "cluster_id": "EV-4",
+        "batch_refs": [
+          "B507",
+          "B677"
+        ],
+        "walk_positions": [],
+        "context": "Batch 507, PEAD family, walked B677",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "pre_fomc_long_sleeve": [
+      {
+        "strategy": "pre_fomc_long_sleeve",
+        "cluster_id": "EV-5",
+        "batch_refs": [
+          "B224",
+          "B677"
+        ],
+        "walk_positions": [],
+        "context": "Batch 224, Pre-FOMC family, walked B677",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "pre_fomc_quality_momentum_long": [
+      {
+        "strategy": "pre_fomc_quality_momentum_long",
+        "cluster_id": "EV-6",
+        "batch_refs": [
+          "B224",
+          "B677"
+        ],
+        "walk_positions": [],
+        "context": "Batch 224, Pre-FOMC family, walked B677",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "buyback_8k_recent_long": [
+      {
+        "strategy": "buyback_8k_recent_long",
+        "cluster_id": "EV-7",
+        "batch_refs": [
+          "B224",
+          "B677"
+        ],
+        "walk_positions": [],
+        "context": "Batch 224, 8-K family, walked B677",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "loosen"
+        ],
+        "source": "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "po3_bullish": [
+      {
+        "strategy": "po3_bullish",
+        "cluster_id": "ICT-1",
+        "batch_refs": [
+          "B217",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 217, PO3 family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "po3_bearish": [
+      {
+        "strategy": "po3_bearish",
+        "cluster_id": "ICT-2",
+        "batch_refs": [
+          "B217",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 217, PO3 family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "po3_htf_aligned_long": [
+      {
+        "strategy": "po3_htf_aligned_long",
+        "cluster_id": "ICT-3",
+        "batch_refs": [
+          "B217",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 217, PO3+HTF family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "po3_htf_aligned_short": [
+      {
+        "strategy": "po3_htf_aligned_short",
+        "cluster_id": "ICT-4",
+        "batch_refs": [
+          "B217",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 217, PO3+HTF family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "mmbm_long": [
+      {
+        "strategy": "mmbm_long",
+        "cluster_id": "ICT-5",
+        "batch_refs": [
+          "B581",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 581, MMBM family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "mmsm_short": [
+      {
+        "strategy": "mmsm_short",
+        "cluster_id": "ICT-6",
+        "batch_refs": [
+          "B581",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 581, MMSM family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "turtle_soup_long": [
+      {
+        "strategy": "turtle_soup_long",
+        "cluster_id": "ICT-7",
+        "batch_refs": [
+          "B580",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 580, Turtle Soup family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "turtle_soup_short": [
+      {
+        "strategy": "turtle_soup_short",
+        "cluster_id": "ICT-8",
+        "batch_refs": [
+          "B580",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 580, Turtle Soup family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "judas_swing_long": [
+      {
+        "strategy": "judas_swing_long",
+        "cluster_id": "ICT-9",
+        "batch_refs": [
+          "B581",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 581, Judas Swing family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "judas_swing_short": [
+      {
+        "strategy": "judas_swing_short",
+        "cluster_id": "ICT-10",
+        "batch_refs": [
+          "B581",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 581, Judas Swing family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "week_opening_gap_fill_down": [
+      {
+        "strategy": "week_opening_gap_fill_down",
+        "cluster_id": "ICT-11",
+        "batch_refs": [
+          "B581",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 581, Week-Opening Gap family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "week_opening_gap_fill_up": [
+      {
+        "strategy": "week_opening_gap_fill_up",
+        "cluster_id": "ICT-12",
+        "batch_refs": [
+          "B581",
+          "B675"
+        ],
+        "walk_positions": [],
+        "context": "Batch 581, Week-Opening Gap family, walked B675",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_ICT_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "rsi_oversold": [
+      {
+        "strategy": "rsi_oversold",
+        "cluster_id": "A-1",
+        "batch_refs": [
+          "B206",
+          "B630",
+          "B663"
+        ],
+        "walk_positions": [],
+        "context": "Connors stack, mean_reversion, batched B206 + B663 + B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "ppo_crossover": [
+      {
+        "strategy": "ppo_crossover",
+        "cluster_id": "A-15",
+        "batch_refs": [
+          "B630"
+        ],
+        "walk_positions": [],
+        "context": "PPO + ADX, momentum, batched B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "avwap_50_reclaim": [
+      {
+        "strategy": "avwap_50_reclaim",
+        "cluster_id": "A-22",
+        "batch_refs": [
+          "B208",
+          "B630",
+          "B663"
+        ],
+        "walk_positions": [],
+        "context": "AVWAP-50 + MACD, vwap, batched B208 + B663 + B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "rsi_overbought_short": [
+      {
+        "strategy": "rsi_overbought_short",
+        "cluster_id": "A-2",
+        "batch_refs": [
+          "B630"
+        ],
+        "walk_positions": [],
+        "context": "RSI overbought sell-rally, mean_reversion, batched B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "tighten"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "rsi9_extreme": [
+      {
+        "strategy": "rsi9_extreme",
+        "cluster_id": "A-3",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "RSI-9 extreme oversold + uptrend, mean_reversion, LONG-only",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "rsi21_slow": [
+      {
+        "strategy": "rsi21_slow",
+        "cluster_id": "A-4",
+        "batch_refs": [
+          "B630"
+        ],
+        "walk_positions": [],
+        "context": "Slow RSI-21 mean-reversion, dual, batched B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "rsi_volume_200ema": [
+      {
+        "strategy": "rsi_volume_200ema",
+        "cluster_id": "A-5",
+        "batch_refs": [
+          "B320",
+          "B630"
+        ],
+        "walk_positions": [],
+        "context": "RSI + volume + 200-EMA confluence, dual, batched B320 + B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "loosen"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "stoch_oversold": [
+      {
+        "strategy": "stoch_oversold",
+        "cluster_id": "A-6",
+        "batch_refs": [
+          "B627"
+        ],
+        "walk_positions": [],
+        "context": "Stochastic K/D cross + EMA-20, LONG-only as registered, batched B627",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "stochrsi_oversold": [
+      {
+        "strategy": "stochrsi_oversold",
+        "cluster_id": "A-7",
+        "batch_refs": [
+          "B206",
+          "B663"
+        ],
+        "walk_positions": [],
+        "context": "StochRSI cross + RSI gate + 200-EMA, dual, batched B206 + B663",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "stochrsi_overbought_short": [
+      {
+        "strategy": "stochrsi_overbought_short",
+        "cluster_id": "A-8",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "StochRSI overbought SHORT",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "williams_r_oversold": [
+      {
+        "strategy": "williams_r_oversold",
+        "cluster_id": "A-9",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "Williams %R + Connors RSI(2",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep",
+          "loosen",
+          "tighten"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "ultimate_oscillator": [
+      {
+        "strategy": "ultimate_oscillator",
+        "cluster_id": "A-10",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "UO + Connors RSI(2",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep",
+          "swap",
+          "tighten"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "mfi_oversold": [
+      {
+        "strategy": "mfi_oversold",
+        "cluster_id": "A-11",
+        "batch_refs": [
+          "B628"
+        ],
+        "walk_positions": [],
+        "context": "MFI + pivot S1/S2 + OBV, dual, batched B628",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "bollinger_lower": [
+      {
+        "strategy": "bollinger_lower",
+        "cluster_id": "A-12",
+        "batch_refs": [
+          "B204",
+          "B663"
+        ],
+        "walk_positions": [],
+        "context": "BB 20,2 touch + Connors stack + VIX-conditional thresholds + ADX, dual, batched B204 + B663",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "loosen",
+          "tighten"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "bollinger_tight": [
+      {
+        "strategy": "bollinger_tight",
+        "cluster_id": "A-13",
+        "batch_refs": [
+          "B204",
+          "B663"
+        ],
+        "walk_positions": [],
+        "context": "BB 1.5\u03c3 + 2\u03c3 touch + Connors + VIX-conditional, dual, batched B204 + B663",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "bollinger_upper_short": [
+      {
+        "strategy": "bollinger_upper_short",
+        "cluster_id": "A-14",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "BB upper + RSI>70 + shooting_star SHORT-only",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "keltner_lower": [
+      {
+        "strategy": "keltner_lower",
+        "cluster_id": "A-16",
+        "batch_refs": [
+          "B628"
+        ],
+        "walk_positions": [],
+        "context": "KC touch + candle + OBV, dual, batched B628",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "camarilla_r4_breakout": [
+      {
+        "strategy": "camarilla_r4_breakout",
+        "cluster_id": "A-17",
+        "batch_refs": [
+          "B641"
+        ],
+        "walk_positions": [],
+        "context": "Camarilla R4/S4 + vol spike, dual, **CRITICAL B641 RENAME**",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "swap"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "camarilla_rsi_obv": [
+      {
+        "strategy": "camarilla_rsi_obv",
+        "cluster_id": "A-18",
+        "batch_refs": [
+          "B628",
+          "B629"
+        ],
+        "walk_positions": [],
+        "context": "Camarilla S3/R3 + RSI + OBV + CMF confluence, dual, batched B628 + B629",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "camarilla_rsi_obv_short": [
+      {
+        "strategy": "camarilla_rsi_obv_short",
+        "cluster_id": "A-19",
+        "batch_refs": [
+          "B628",
+          "B629"
+        ],
+        "walk_positions": [],
+        "context": "Camarilla R3 + RSI overbought + OBV + CMF SHORT-only, batched B628 + B629",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "cpr_narrow_momentum": [
+      {
+        "strategy": "cpr_narrow_momentum",
+        "cluster_id": "A-20",
+        "batch_refs": [
+          "B358",
+          "B718"
+        ],
+        "walk_positions": [],
+        "context": "CPR-narrow-tight + above_cpr + RSI + MACD + 200-EMA, dual, batched B358 + B718",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep",
+          "swap"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "cpr_narrow_momentum_short": [
+      {
+        "strategy": "cpr_narrow_momentum_short",
+        "cluster_id": "A-21",
+        "batch_refs": [
+          "B718"
+        ],
+        "walk_positions": [],
+        "context": "CPR-narrow-tight + below_cpr + RSI<50 + MACD bearish SHORT-only, batched B718",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "swap"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "avwap_252_breakout": [
+      {
+        "strategy": "avwap_252_breakout",
+        "cluster_id": "A-23",
+        "batch_refs": [
+          "B208",
+          "B630"
+        ],
+        "walk_positions": [],
+        "context": "AVWAP-252-low reclaim + volume + RSI, dual, batched B208 + B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "avwap_20high_rejection_short": [
+      {
+        "strategy": "avwap_20high_rejection_short",
+        "cluster_id": "A-24",
+        "batch_refs": [
+          "B208",
+          "B630"
+        ],
+        "walk_positions": [],
+        "context": "AVWAP-20-high rejection + bearish candle + volume + 200-EMA SHORT-only, batched B208 + B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "awesome_oscillator": [
+      {
+        "strategy": "awesome_oscillator",
+        "cluster_id": "A-25",
+        "batch_refs": [
+          "B627"
+        ],
+        "walk_positions": [],
+        "context": "AO zero-line cross + EMA-20, dual, batched B627",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "cmf_flip": [
+      {
+        "strategy": "cmf_flip",
+        "cluster_id": "A-26",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "CMF zero-line cross + RSI mid-threshold, dual",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "roc_burst": [
+      {
+        "strategy": "roc_burst",
+        "cluster_id": "A-27",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "ROC turn + volume spike, dual",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "keep"
+        ],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "williams_stoch_dual": [
+      {
+        "strategy": "williams_stoch_dual",
+        "cluster_id": "A-28",
+        "batch_refs": [
+          "B729"
+        ],
+        "walk_positions": [],
+        "context": "Williams %R + Stoch K/D EVENT + pivot, dual, batched B729 STATE\u2192EVENT redesign",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "prev_day_low_bounce": [
+      {
+        "strategy": "prev_day_low_bounce",
+        "cluster_id": "A-29",
+        "batch_refs": [
+          "B629"
+        ],
+        "walk_positions": [],
+        "context": "Previous-day low + hammer + CMF, dual, batched B629",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "bb_squeeze_volume": [
+      {
+        "strategy": "bb_squeeze_volume",
+        "cluster_id": "A-30",
+        "batch_refs": [
+          "B634"
+        ],
+        "walk_positions": [],
+        "context": "BB squeeze + 2\u00d7 volume + VWAP confluence, dual, batched B634",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "pivot_s1_bounce": [
+      {
+        "strategy": "pivot_s1_bounce",
+        "cluster_id": "P1",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "SHIPPED"
+        ],
+        "verdict_keywords_medium": [
+          "swap"
+        ],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "pivot_s2_bounce": [
+      {
+        "strategy": "pivot_s2_bounce",
+        "cluster_id": "P2",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "pivot_s3_capitulation": [
+      {
+        "strategy": "pivot_s3_capitulation",
+        "cluster_id": "P3",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "SHIPPED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "cpr_narrow_bullish": [
+      {
+        "strategy": "cpr_narrow_bullish",
+        "cluster_id": "P4",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "medium",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "keep",
+          "tighten"
+        ],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "supertrend_macd": [
+      {
+        "strategy": "supertrend_macd",
+        "cluster_id": "F3",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      },
+      {
+        "strategy": "supertrend_macd",
+        "cluster_id": "T10",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "pivot_r1_breakout": [
+      {
+        "strategy": "pivot_r1_breakout",
+        "cluster_id": "W6",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "pivot_r2_continuation": [
+      {
+        "strategy": "pivot_r2_continuation",
+        "cluster_id": "W7",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "short_borrow_trap_avoid": [
+      {
+        "strategy": "short_borrow_trap_avoid",
+        "cluster_id": "SM-5",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "tighten"
+        ],
+        "source": "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md",
+        "source_method": "table_row"
+      }
+    ],
+    "smc_fvg_retest_long": [
+      {
+        "strategy": "smc_fvg_retest_long",
+        "cluster_id": "SMC-1",
+        "batch_refs": [
+          "B216",
+          "B673"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, FVG family, walked B673",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_fvg_retest_short": [
+      {
+        "strategy": "smc_fvg_retest_short",
+        "cluster_id": "SMC-2",
+        "batch_refs": [
+          "B216",
+          "B673"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, FVG family, walked B673",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_inverse_fvg": [
+      {
+        "strategy": "smc_inverse_fvg",
+        "cluster_id": "SMC-3",
+        "batch_refs": [
+          "B216",
+          "B262",
+          "B673"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216 + B262 forensic-fixed, FVG family, walked B673 \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_breaker_block_short": [
+      {
+        "strategy": "smc_breaker_block_short",
+        "cluster_id": "SMC-4",
+        "batch_refs": [
+          "B216",
+          "B673"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, OB family, walked B673",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_breaker_block_long": [
+      {
+        "strategy": "smc_breaker_block_long",
+        "cluster_id": "SMC-5",
+        "batch_refs": [
+          "B216",
+          "B673"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, OB family, walked B673",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_mitigation_block_long": [
+      {
+        "strategy": "smc_mitigation_block_long",
+        "cluster_id": "SMC-6",
+        "batch_refs": [
+          "B216",
+          "B673"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, OB family, walked B673",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_mitigation_block_short": [
+      {
+        "strategy": "smc_mitigation_block_short",
+        "cluster_id": "SMC-7",
+        "batch_refs": [
+          "B216",
+          "B673"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, OB family, walked B673",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_discount_long": [
+      {
+        "strategy": "smc_discount_long",
+        "cluster_id": "SMC-8",
+        "batch_refs": [
+          "B216"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, dealing-range family, walked B673b",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_premium_short": [
+      {
+        "strategy": "smc_premium_short",
+        "cluster_id": "SMC-9",
+        "batch_refs": [
+          "B216"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, dealing-range family, walked B673b",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_ote_long": [
+      {
+        "strategy": "smc_ote_long",
+        "cluster_id": "SMC-10",
+        "batch_refs": [
+          "B216"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, OTE family, walked B673b",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_ote_short": [
+      {
+        "strategy": "smc_ote_short",
+        "cluster_id": "SMC-11",
+        "batch_refs": [
+          "B216"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, OTE family, walked B673b",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_equal_highs_sweep_short": [
+      {
+        "strategy": "smc_equal_highs_sweep_short",
+        "cluster_id": "SMC-12",
+        "batch_refs": [
+          "B216"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, liquidity-sweep family, walked B673c",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_equal_lows_sweep_long": [
+      {
+        "strategy": "smc_equal_lows_sweep_long",
+        "cluster_id": "SMC-13",
+        "batch_refs": [
+          "B216"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, liquidity-sweep family, walked B673c",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_bos_retest_entry": [
+      {
+        "strategy": "smc_bos_retest_entry",
+        "cluster_id": "SMC-14",
+        "batch_refs": [
+          "B216"
+        ],
+        "walk_positions": [],
+        "context": "Batch 216, structural family, walked B673c \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "loosen"
+        ],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_bos_continuation": [
+      {
+        "strategy": "smc_bos_continuation",
+        "cluster_id": "SMC-15",
+        "batch_refs": [
+          "B210",
+          "B278"
+        ],
+        "walk_positions": [],
+        "context": "Batch 210 + B278 forensic-fixed, structural family, walked B673c \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "tighten"
+        ],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_choch_reversal": [
+      {
+        "strategy": "smc_choch_reversal",
+        "cluster_id": "SMC-16",
+        "batch_refs": [
+          "B210"
+        ],
+        "walk_positions": [],
+        "context": "Batch 210, structural family, walked B673d \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_order_block_bounce": [
+      {
+        "strategy": "smc_order_block_bounce",
+        "cluster_id": "SMC-17",
+        "batch_refs": [
+          "B210"
+        ],
+        "walk_positions": [],
+        "context": "Batch 210, structural family, walked B673d \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "smc_liquidity_sweep_reversal": [
+      {
+        "strategy": "smc_liquidity_sweep_reversal",
+        "cluster_id": "SMC-18",
+        "batch_refs": [
+          "B210"
+        ],
+        "walk_positions": [],
+        "context": "Batch 210, liquidity-sweep family, walked B673d \u2014 DUAL",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_SMC_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "macd_crossover": [
+      {
+        "strategy": "macd_crossover",
+        "cluster_id": "T1",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "macd_fast_crossover": [
+      {
+        "strategy": "macd_fast_crossover",
+        "cluster_id": "T2",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "kept"
+        ],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "hull_rsi": [
+      {
+        "strategy": "hull_rsi",
+        "cluster_id": "T3",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "swap"
+        ],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "parabolic_sar_flip": [
+      {
+        "strategy": "parabolic_sar_flip",
+        "cluster_id": "T4",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "kept"
+        ],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "parabolic_sar_flip_short": [
+      {
+        "strategy": "parabolic_sar_flip_short",
+        "cluster_id": "T5",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "tema_dema": [
+      {
+        "strategy": "tema_dema",
+        "cluster_id": "T6",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "RECOMMENDED"
+        ],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "ichimoku_tk_cross": [
+      {
+        "strategy": "ichimoku_tk_cross",
+        "cluster_id": "T7",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "RECOMMENDED"
+        ],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "ichimoku_cloud_breakout": [
+      {
+        "strategy": "ichimoku_cloud_breakout",
+        "cluster_id": "T8",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "adx_initiation": [
+      {
+        "strategy": "adx_initiation",
+        "cluster_id": "T9",
+        "batch_refs": [],
+        "walk_positions": [],
+        "context": "",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [
+          "RECOMMENDED"
+        ],
+        "source": "STAGE_4_TREND_CLUSTER_WALKS.md",
+        "source_method": "section_header_no_hyphen"
+      }
+    ],
+    "golden_cross_50_200": [
+      {
+        "strategy": "golden_cross_50_200",
+        "cluster_id": "B-3",
+        "batch_refs": [
+          "B718"
+        ],
+        "walk_positions": [],
+        "context": "MA-cross trend, batched B718",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "supertrend_ichimoku_adx": [
+      {
+        "strategy": "supertrend_ichimoku_adx",
+        "cluster_id": "B-13",
+        "batch_refs": [
+          "B630"
+        ],
+        "walk_positions": [],
+        "context": "Confluence, batched B630",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "walked_only",
+        "verdict_keywords_strong": [],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ],
+    "xs_low_beta_long": [
+      {
+        "strategy": "xs_low_beta_long",
+        "cluster_id": "B-29",
+        "batch_refs": [
+          "B220",
+          "B358"
+        ],
+        "walk_positions": [],
+        "context": "Factor / BAB, batched B220 + B358 cell-audit",
+        "verdict": "walked",
+        "confidence": "high",
+        "verdict_strength": "strong",
+        "verdict_keywords_strong": [
+          "VERIFIED"
+        ],
+        "verdict_keywords_medium": [],
+        "source": "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md",
+        "source_method": "section_header_hyphen"
+      }
+    ]
+  }
+}

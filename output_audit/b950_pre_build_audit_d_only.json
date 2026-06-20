@@ -1,0 +1,685 @@
+{
+  "schema_version": "1.0",
+  "batch": "B950_pre_build",
+  "council_verdict": "54_UNANIMOUS_option_epsilon",
+  "n_d_only_strategies": 75,
+  "n_with_strong_keyword": 16,
+  "n_with_2_medium_keywords": 7,
+  "n_no_evidence": 52,
+  "n_with_evidence_total": 23,
+  "pct_with_evidence": 30.666666666666668,
+  "council_54_abort_threshold_lt": 20,
+  "council_54_safe_threshold_gt": 50,
+  "verdict": "SHIP_INSTRUMENTED",
+  "audit_results": [
+    {
+      "strategy": "52wh_break_retest",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "swap"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "52w_low_breakdown_pullback_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "keep"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [
+        "DELETED"
+      ],
+      "medium_keywords_found": [
+        "keep"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [
+        "DELETE candidate",
+        "DELETED"
+      ],
+      "medium_keywords_found": [
+        "keep",
+        "loosen",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [
+        "VERIFIED"
+      ],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "keep",
+        "swap"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [
+        "DELETE candidate",
+        "SHIPPED"
+      ],
+      "medium_keywords_found": [
+        "keep",
+        "kept"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "break_retest_volume",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [
+        "VERIFIED"
+      ],
+      "medium_keywords_found": [
+        "loosen"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "bullish_engulfing_support",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "keep"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "cmf_flip",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "keep"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "tighten"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [
+        "VERIFIED"
+      ],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "loosen",
+        "swap"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "tighten"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "doji_at_support",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "donchian_10_breakout",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "swap"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "donchian_breakdown_retest_short",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "donchian_breakdown_short",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "donchian_breakout_retest_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "flag_bull_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "force_index_breakout",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [
+        "SHIPPED"
+      ],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "loosen",
+        "swap",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "keep",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "inside_bar_breakout",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "judas_swing_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "judas_swing_short",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "mmbm_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "mmsm_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "morning_star",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [
+        "DELETED",
+        "SHIPPED"
+      ],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "pead_long",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [
+        "DELETED"
+      ],
+      "medium_keywords_found": [
+        "loosen"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [
+        "DELETED"
+      ],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "pead_short",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "pead_short_negative_yoy_growth",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "keep"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "ppo_crossover",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [
+        "DELETE candidate",
+        "VERIFIED"
+      ],
+      "medium_keywords_found": [
+        "keep",
+        "loosen",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [
+        "DELETE candidate"
+      ],
+      "medium_keywords_found": [
+        "keep",
+        "kept"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "prev_day_low_breakdown",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "roc_burst",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "keep"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "shooting_star_short",
+      "mentioning_docs_count": 4,
+      "strong_keywords_found": [
+        "SHIPPED"
+      ],
+      "medium_keywords_found": [
+        "loosen"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "tighten"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_discount_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "keep"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "loosen",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "loosen",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_ote_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_ote_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "smc_premium_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "stoch_oversold",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [
+        "DELETE candidate",
+        "VERIFIED"
+      ],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "keep",
+        "swap",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "three_black_crows_short",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [
+        "DELETED"
+      ],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "turtle_soup_short",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "vix_backwardation_long",
+      "mentioning_docs_count": 2,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "keep"
+      ],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [
+        "RECOMMENDED",
+        "swap"
+      ],
+      "has_evidence_for_b": true
+    },
+    {
+      "strategy": "week_opening_gap_fill_down",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "week_opening_gap_fill_up",
+      "mentioning_docs_count": 1,
+      "strong_keywords_found": [],
+      "medium_keywords_found": [],
+      "has_evidence_for_b": false
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "mentioning_docs_count": 3,
+      "strong_keywords_found": [
+        "VERIFIED"
+      ],
+      "medium_keywords_found": [
+        "keep",
+        "loosen",
+        "tighten"
+      ],
+      "has_evidence_for_b": true
+    }
+  ]
+}

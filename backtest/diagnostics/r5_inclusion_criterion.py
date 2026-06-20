@@ -95,36 +95,62 @@ FIRE_COUNT_PASS_THRESHOLD_PER_YEAR = 30.0
 
 
 def _load_walk_verdict_ledger() -> dict[str, list[dict]]:
-    """B948 (2026-06-20) Council 52: lazy-load walk_verdict_ledger.json.
+    """B948 Council 52 + B950 (2026-06-20) Council 54: lazy-load ledger.
 
-    Maps strategy_name -> list of walk entries (each with confidence flag).
+    Preference order:
+      1. walk_verdict_ledger_v2.json (B950; parser-extended + verdict_strength fields)
+      2. walk_verdict_ledger.json (B948; original)
+
+    Maps strategy_name -> list of walk entries.
     Per Council 52: only high|medium confidence entries count as STRONG.
+    Per Council 54: when LEDGER_REQUIRE_VERDICT_BEARING enabled, only entries
+    with verdict_strength in ('strong', 'medium') count as STRONG.
     """
     from pathlib import Path
     import json
     REPO_PATH = Path(__file__).resolve().parent.parent.parent
-    ledger_path = REPO_PATH / "output_audit" / "walk_verdict_ledger.json"
-    if not ledger_path.exists():
-        return {}
-    try:
-        with open(ledger_path) as f:
-            data = json.load(f)
-        return data.get("ledger", {})
-    except Exception:
-        return {}
+    # Prefer v2 if available
+    for ledger_path in (
+        REPO_PATH / "output_audit" / "walk_verdict_ledger_v2.json",
+        REPO_PATH / "output_audit" / "walk_verdict_ledger.json",
+    ):
+        if not ledger_path.exists():
+            continue
+        try:
+            with open(ledger_path) as f:
+                data = json.load(f)
+            return data.get("ledger", {})
+        except Exception:
+            continue
+    return {}
 
 
 _WALK_VERDICT_LEDGER_CACHE: dict[str, list[dict]] | None = None
 
+# B950 Council 54 feature flag: require verdict-bearing keyword evidence in
+# the walk-section body (strong/medium classification) for the ledger entry
+# to count as STRONG. Default True per Council 54 ship-conditional verdict
+# (A+B counterfactual: 90 sufficient / 127 deferred within 80-150 sweet spot).
+LEDGER_REQUIRE_VERDICT_BEARING = True
+
 
 def _walk_verdict_ledger_entries(strategy: str) -> list[dict]:
-    """Get high|medium confidence walk entries for strategy from ledger."""
+    """Get high|medium confidence walk entries for strategy from ledger.
+
+    Per Council 54 B950 LEDGER_REQUIRE_VERDICT_BEARING flag:
+      True (default): only verdict_strength in ('strong','medium') count
+      False: any high|medium confidence entry counts (B948 behavior)
+    """
     global _WALK_VERDICT_LEDGER_CACHE
     if _WALK_VERDICT_LEDGER_CACHE is None:
         _WALK_VERDICT_LEDGER_CACHE = _load_walk_verdict_ledger()
     entries = _WALK_VERDICT_LEDGER_CACHE.get(strategy, [])
     # Filter to high|medium confidence per Council 52
-    return [e for e in entries if e.get("confidence") in ("high", "medium")]
+    entries = [e for e in entries if e.get("confidence") in ("high", "medium")]
+    # B950 Council 54: optionally require verdict_strength bearing
+    if LEDGER_REQUIRE_VERDICT_BEARING:
+        entries = [e for e in entries if e.get("verdict_strength") in ("strong", "medium")]
+    return entries
 
 
 def _has_strong_evidence(section_9b: dict | None, strategy: str | None = None) -> tuple[bool, dict]:
