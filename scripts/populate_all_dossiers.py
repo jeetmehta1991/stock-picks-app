@@ -56,6 +56,8 @@ def main() -> int:
     )
     # B960 addition (Council 65 Section 19 closest_neighbor_cluster):
     from backtest.diagnostics.section_19_closest_neighbor_cluster import populate_section_19_for_dossier
+    # B961 addition (Council 66 Section 3 inverse_pair_empirical):
+    from backtest.diagnostics.section_03_inverse_pair_empirical import populate_section_03_for_dossier
 
     strategies = list_strategies_for_dossier()
     logger.info("Populating sections 1 / 5 / 6 / 7 / 8 / 9 / 9b / 10 / 11 / 12 / 13 / 18 + r5_inclusion_criterion for %d strategies...", len(strategies))
@@ -67,6 +69,8 @@ def main() -> int:
         "section_1_errors": 0,
         "section_6_populated": 0,
         "section_6_errors": 0,
+        "section_3_populated": 0,
+        "section_3_errors": 0,
         "section_4_populated": 0,
         "section_4_errors": 0,
         "section_5_populated": 0,
@@ -108,6 +112,12 @@ def main() -> int:
         except Exception as e:
             stats["section_6_errors"] += 1
             stats["drift_findings"].append(f"section_6:{strat}: {type(e).__name__}: {e}")
+        try:
+            populate_section_03_for_dossier(strat, dossier_path)
+            stats["section_3_populated"] += 1
+        except Exception as e:
+            stats["section_3_errors"] += 1
+            stats["drift_findings"].append(f"section_3:{strat}: {type(e).__name__}: {e}")
         try:
             populate_section_04_for_dossier(strat, dossier_path)
             stats["section_4_populated"] += 1
@@ -178,6 +188,7 @@ def main() -> int:
 
     logger.info("Population COMPLETE:")
     logger.info("  Section 1:        %d populated / %d errors", stats["section_1_populated"], stats["section_1_errors"])
+    logger.info("  Section 3:        %d populated / %d errors", stats["section_3_populated"], stats["section_3_errors"])
     logger.info("  Section 4:        %d populated / %d errors", stats["section_4_populated"], stats["section_4_errors"])
     logger.info("  Section 5:        %d populated / %d errors", stats["section_5_populated"], stats["section_5_errors"])
     logger.info("  Section 6:        %d populated / %d errors", stats["section_6_populated"], stats["section_6_errors"])
