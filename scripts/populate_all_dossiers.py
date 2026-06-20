@@ -48,9 +48,11 @@ def main() -> int:
     from backtest.diagnostics.section_05_regime_affinity_lineage import populate_section_05_for_dossier
     # B954 addition (Council 58 Section 13 exit axis best):
     from backtest.diagnostics.section_13_exit_axis_best import populate_section_13_for_dossier
+    # B955 addition (Council 59 Section 8 data source asymmetry):
+    from backtest.diagnostics.section_08_data_source_asymmetry import populate_section_08_for_dossier
 
     strategies = list_strategies_for_dossier()
-    logger.info("Populating sections 1 / 5 / 6 / 7 / 9 / 9b / 10 / 11 / 12 / 13 / 18 + r5_inclusion_criterion for %d strategies...", len(strategies))
+    logger.info("Populating sections 1 / 5 / 6 / 7 / 8 / 9 / 9b / 10 / 11 / 12 / 13 / 18 + r5_inclusion_criterion for %d strategies...", len(strategies))
 
     from collections import Counter
     stats = {
@@ -63,6 +65,8 @@ def main() -> int:
         "section_5_errors": 0,
         "section_7_populated": 0,
         "section_7_errors": 0,
+        "section_8_populated": 0,
+        "section_8_errors": 0,
         "section_13_populated": 0,
         "section_13_errors": 0,
         "section_9_populated": 0,
@@ -107,6 +111,12 @@ def main() -> int:
             stats["section_7_errors"] += 1
             stats["drift_findings"].append(f"section_7:{strat}: {type(e).__name__}: {e}")
         try:
+            populate_section_08_for_dossier(strat, dossier_path)
+            stats["section_8_populated"] += 1
+        except Exception as e:
+            stats["section_8_errors"] += 1
+            stats["drift_findings"].append(f"section_8:{strat}: {type(e).__name__}: {e}")
+        try:
             populate_section_13_for_dossier(strat, dossier_path)
             stats["section_13_populated"] += 1
         except Exception as e:
@@ -149,6 +159,7 @@ def main() -> int:
     logger.info("  Section 5:        %d populated / %d errors", stats["section_5_populated"], stats["section_5_errors"])
     logger.info("  Section 6:        %d populated / %d errors", stats["section_6_populated"], stats["section_6_errors"])
     logger.info("  Section 7:        %d populated / %d errors", stats["section_7_populated"], stats["section_7_errors"])
+    logger.info("  Section 8:        %d populated / %d errors", stats["section_8_populated"], stats["section_8_errors"])
     logger.info("  Section 13:       %d populated / %d errors", stats["section_13_populated"], stats["section_13_errors"])
     logger.info("  Section 9:        %d populated / %d errors", stats["section_9_populated"], stats["section_9_errors"])
     logger.info("  Section 9b:       %d populated / %d errors", stats["section_9b_populated"], stats["section_9b_errors"])
