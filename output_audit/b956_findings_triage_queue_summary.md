@@ -25,7 +25,7 @@ Per Council 60 UNANIMOUS verdict: PIVOT from infrastructure-building to findings
 | Finding Type | Count | Severity | Action |
 |---|---|---|---|
 | SIGNAL_ORPHAN | 146 | MEDIUM | Verify orphan signals are actually unused OR wire producer; check for silent-gap |
-| FIRE_STARVED | 137 | HIGH | EXPLORATORY tag OR delete-recommendation OR L1c review |
+| FIRE_STARVED | 146 (B660 SoT; 137 in B956 due to passes_floor=False AND verdict!='UNKNOWN' joint filter) | HIGH | EXPLORATORY tag OR delete-recommendation OR L1c review (B968 amendment per Council 62) |
 | DEFERRED_OWNER_TRIAGE | 127 | HIGH | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_pe |
 | EARNINGS_BLACKOUT_LOOKAHEAD_RISK | 25 | HIGH | CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline |
 | INVERSE_UNSAFE_CHECK_NEEDED | 25 | MEDIUM | Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mi |

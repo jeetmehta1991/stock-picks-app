@@ -1,5 +1,8 @@
 # Stock Picks & Automated Trading System
 **Stage:** 2 — Strategy Validation | **Phase:** 0A → 1A (launch day 2026-05-15; Pass 53 Day 9+ Batch 178)
+
+**P1 Stream E:** COMPLETE 2026-06-20 (20/20 per-strategy dossier sections built + populated for 217 strategies; commits B933-B967; tracker `output_audit/b956_findings_triage_queue_summary.md` + PATH §13.3 row inventory). **P1 ≠ R5-launchable** per PATH §13.17 META-FINDING — R5 gated on entire-execution-queue resolution (Stage 5 / TIER 2 wireup / #4 BH-FDR / 18 pyramid items / Stream V / DEC #1 / B906 / DEC-PHASE-6.5-RESET), NOT P1 alone.
+
 **Repo:** jeetmehta1991/stock-picks-app
 **Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons) | `VERIFICATION_MATRIX.md` (engine-consumption ground truth, coverage-driven - replaces the `wired=yes` grep heuristic that produced ~150 false-positive RESOLVED-IMPLEMENTED claims; regenerate via `scripts/build_verification_matrix.py` after a canonical backtest under `coverage run`) | **`STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md`** (Pass 53 Day 9+ 2026-05-19 canonical post-Phase-1A-alpha build plan: summary table + 10-day plan + winners-only Phase 1B-alpha architecture) | **`PATH_TO_PHASE_1B_ALPHA.md`** (B894 standalone canonical: B888 Council 14 synthesis + B889 Council 15 corrections + B890+B891 DEC-611/612/613/614 implementation; 6-day R5-to-Phase-1B-alpha path + threshold taxonomy + soft-score winner ID + R4-R5 delta + dashboard consolidation + metrics.py promotion plan)
 

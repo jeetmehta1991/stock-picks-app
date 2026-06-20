@@ -1524,4 +1524,30 @@ Batch 158 2026-05-13: RESOLVED-DECIDED — Slippage deducted in apply_transactio
 | **BUG-198** | (NEW) CRITICAL -- No structural PIT data loader; each data source uses ad-hoc PIT filters. Batch 147 2026-05-13: RESOLVED-DECIDED -- DEC-504 `resolve_tier_precedence(ticker, as_of)` + `get_tier_params(ticker, as_of)` provide the structural multi-tier PIT precedence resolver (backtest/data/universe.py). Per-source ad-hoc PIT filters (congressional 45-day lag BUG-83, AAII pub-lag BUG-235, cache index start/end/rows BUG-73) are accepted as source-specific; a single monolithic PIT loader is Sprint 0A.10+ scope. | INLINE-ONLY | RESOLVED-DECIDED | - |
 
 ---
-*Regenerated April 2026 after Pass 51.*
+
+## P1 Stream E artifact appendix (B950-B968; 2026-06-20 doc-sync per Council 68)
+
+Per-batch pointers for the Phase P1 STREAM E sweep (B933-B968; 36 commits). Content NOT duplicated; pointers only. Source-of-truth = commit bodies + `output_audit/b95*` + `output_audit/b96*` files + PATH §13.
+
+| Batch | Artifact pointer | Council |
+|---|---|---|
+| B950 | walk_verdict_ledger_v2.json + criterion verdict-bearing flag | 54 |
+| B951 | Section 1 wiring_trace_coverage extractor | 55 |
+| B952 | Section 7 temporal_coverage_probe extractor | 56 |
+| B953 | Section 5 regime_affinity_lineage extractor | 57 |
+| B954 | Section 13 exit_axis_best extractor | 58 |
+| B955 | Section 8 data_source_asymmetry extractor (25 INVERSE_UNSAFE) | 59 |
+| B956 | findings_triage_queue (460 actionable findings) | 60 PIVOT |
+| B957 | retrospective_trial_count_audit (N_eff ~5,894; 1.04x) | 61+62 |
+| B958 | PATH §13.15 + §13.16 Phase 6.5 + DEC-PHASE-6.5-RESET | 63 |
+| B959 | Section 4 redundancy_phi_matrix (HONEST: 0 Track A candidates) | 64 |
+| B960 | Section 19 closest_neighbor_cluster (119 with cluster_id) | 65 |
+| B961 | Section 3 inverse_pair_empirical (25/83/83/26 distribution) | 66 |
+| B962-B966 | Sections 2/14/15/16/17 (Stream E completion) | 67 |
+| B967 | populate_all_dossiers wired all 20 sections | - |
+| B968 | doc-sync discipline-restoration (queue + index + PATH §13.17 + CLAUDE.md + B956 amend) | 68 |
+
+**META-FINDING (Council 66; promoted by Council 68 to standalone ticket):** Per CLAUDE.md R5 is gated on entire-execution-queue resolution (Stage 4 walks DONE per B883, but TIER 2 producer wireup + #4 BH-FDR + 18 pyramid items + Stream V outstanding), NOT on P1 dossier completeness alone. See PATH §13.17 for explicit gate statement.
+
+---
+*Regenerated April 2026 after Pass 51. B968 appendix appended 2026-06-20 per Council 68.*

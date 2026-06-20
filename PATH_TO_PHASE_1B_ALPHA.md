@@ -731,6 +731,33 @@ Both surface in pre-flight + EOT compliance statement per CHECKLIST #110.
 
 ---
 
+### 13.17 META-FINDING (Council 66 + 68 promoted 2026-06-20)
+
+**HARD GATE:** R5 launch is gated on **entire-execution-queue resolution** per CLAUDE.md banner, **NOT on P1 dossier completeness alone**.
+
+P1 STREAM E 20/20 sections shipped (B933-B967) is **NECESSARY but NOT SUFFICIENT** for R5 launch. The following outstanding queue items remain blockers per CLAUDE.md "Phase 1A-β R5 next status" banner (2026-06-16):
+
+| Outstanding item | Status |
+|---|---|
+| Stage 4 per-change approval on 351 R4 atomic rows | RESOLVED-VIA-STAGE-4-WALK-OUTPUTS B883 2026-06-17 |
+| Stage 5 implementation batches (≥5 approvals/batch) | PENDING owner triage |
+| TIER 2 producer wireup completion (smart-money / event-driven / cross-sectional) | PENDING |
+| Strategy-side EVENT rollouts + AA EXPLORATORY 18-strategy sweep + S mean-rev SHORT EXPLORATORY tags + BB news_sentiment vendor SPOF sentinel | PENDING |
+| #4 BH-FDR vs Bonferroni methodology decision | PENDING owner decision |
+| 18 substantive pyramid items (B586/B533/B465 + 15 singletons) | PENDING |
+| Stream V reproducibility verification | PENDING per §13.7 launch gate #14 |
+| DEC #1 4th ingredient decision (sortino / win_rate / psr / expectancy) | PENDING owner decision per B966 |
+| B931 institutional_persistence MAY-REVERT | PENDING B906 owner decision |
+| DEC-PHASE-6.5-RESET owner countersign | PENDING at P6 completion per §13.16 |
+
+**Implication for "is Phase P1 done?":** Yes (STREAM E 20/20 dossier sections built + populated for 217 strategies). **But:** R5 launch readiness requires draining the entire-execution-queue + Stream V verification first. Future Claude sessions reading this PATH doc must NOT interpret "P1 complete" as "R5 launchable".
+
+**Council 68 verdict 2026-06-20:** "P1 dossier completeness is necessary but not sufficient for R5 launch." Promoted from buried commit-body mentions (B961, B967) to standalone PATH §13.17 status.
+
+**Recurring trap to avoid:** Future Claude sessions may pattern-match "P1 done = next phase P2" and skip the queue-drain prerequisite. The owner explicit gate from CLAUDE.md is binding regardless of how complete P1 looks.
+
+---
+
 ### 13.15 Phase 6.5 Design (B958 Council 63 owner-approved 2026-06-20)
 
 **Trigger:** Owner question 2026-06-20 "In any phases will we be undertaking parameter optimization so we improve the performance of the strategies? Council this." Council 61 surfaced PATH terminology hole (param-sweep vs cell-selection) + DSR-contamination fear. Council 62 corrected scope (rejecting owner's 28,500-cell pre-R5 sweep + 730-review FIRE_STARVED loosening as overfitting machines). Council 63 finalized design with B957 reassurance factored in (DSR contamination measured at 1.04x, NEGLIGIBLE).
