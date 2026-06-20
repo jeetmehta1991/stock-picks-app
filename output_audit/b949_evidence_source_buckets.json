@@ -1,0 +1,3461 @@
+{
+  "schema_version": "1.0",
+  "batch": "B949",
+  "council_verdict": "53_UNANIMOUS_option_epsilon_hybrid_beta_delta",
+  "n_sufficient": 152,
+  "n_deferred": 65,
+  "sufficient_source_combinations": {
+    "D": 75,
+    "A+D": 4,
+    "C": 22,
+    "C+D": 17,
+    "A+C": 18,
+    "A": 10,
+    "A+C+D": 6
+  },
+  "deferred_buckets": {
+    "II_in_walk_doc_no_structured_header": 65
+  },
+  "d_only_metric": {
+    "count": 75,
+    "pct_of_sufficient": 49.3421052631579,
+    "council_53_over_permissive_threshold_count": 40,
+    "council_53_over_permissive_threshold_pct": 26.3,
+    "verdict": "OVER_PERMISSIVE"
+  },
+  "bucket_i_metric": {
+    "count": 0,
+    "pct_of_deferred": 0.0,
+    "council_53_legitimate_deferral_dominance_threshold": 40,
+    "verdict": "PARSER_OR_MIXED"
+  },
+  "sufficient_records": [
+    {
+      "strategy": "52wh_break_retest",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "52w_high_breakout",
+      "sources_active": [
+        "A",
+        "D"
+      ],
+      "source_combination_key": "A+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B693"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "52w_low_breakdown_pullback_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "activist_13d_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "bollinger_lower",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "bollinger_tight",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "bollinger_upper_short",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "break_retest_volume",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "bullish_engulfing_support",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 2
+      }
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "sources_active": [
+        "A",
+        "D"
+      ],
+      "source_combination_key": "A+D",
+      "details": {
+        "A_walk_markers": [
+          "W10",
+          "W9"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "classification_change_breakout_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_from_tech_short",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_momentum_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_oversold_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_to_defensive_short",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_to_tech_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_volume_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_with_insider_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "classification_change_with_institutional_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "cmf_flip",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "sources_active": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source_combination_key": "A+C+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717",
+          "S4-B754",
+          "W8"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "cpr_narrow_momentum_short",
+      "sources_active": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source_combination_key": "A+C+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717",
+          "S4-B754",
+          "W8"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "death_cross_50_200_volume",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "doji_at_support",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 2
+      }
+    },
+    {
+      "strategy": "donchian_10_breakout",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "donchian_breakdown_retest_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "donchian_breakdown_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "donchian_breakout_retest_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "double_bottom_long",
+      "sources_active": [
+        "A",
+        "D"
+      ],
+      "source_combination_key": "A+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B700",
+          "W1"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "dxy_headwind_multinational_short",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "DISABLED_MISSING_PRODUCER"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "flag_bull_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "force_index_breakout",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "golden_cross_volume",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717",
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W3",
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "head_and_shoulders_bottom_long",
+      "sources_active": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source_combination_key": "A+C+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B699"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "head_and_shoulders_top_short",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "hull_rsi",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "W8"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "ichimoku_cloud_breakout",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "inside_bar_breakout",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEASUREMENT_DISPUTED"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "institutional_committed_growth_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEASUREMENT_DISPUTED"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "inverted_cup_and_handle_short",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "judas_swing_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "judas_swing_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "keltner_lower",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEAN_REVERSION_STRATEGIES",
+          "MEASUREMENT_DISPUTED"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "mfi_oversold",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "mmbm_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "mmsm_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "monthly_bias_momentum_long",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717",
+          "W6"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "morning_star",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected",
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "news_momentum_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "news_momentum_short",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "news_reversal_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "news_reversal_short",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "news_sentiment_long",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected",
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "news_sentiment_shift_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "pead_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "pead_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "pead_short_negative_yoy_growth",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "pivot_r1_breakout",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "pivot_r2_continuation",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "pivot_r3_blowoff_short",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEASUREMENT_DISPUTED"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "pivot_s3_capitulation",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEASUREMENT_DISPUTED"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "po3_bearish",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "po3_bullish",
+      "sources_active": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source_combination_key": "A+C+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B705",
+          "S4-B720",
+          "W1"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "poc_magnet_long",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "post_inclusion_reversal_short",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEASUREMENT_DISPUTED"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "ppo_crossover",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "prev_day_low_breakdown",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "pre_fomc_long_sleeve",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "pre_fomc_quality_momentum_long",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "pre_holiday_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "risk_off_bond_equity_short",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "roc_burst",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "rsi21_slow",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "rsi9_extreme",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "rsi_oversold",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "rsi_volume_200ema",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "shooting_star_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "simple_below_ema_50_short",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_discount_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_ote_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_ote_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "smc_premium_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "squeeze_setup_long",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "B748d_walk_back_protected"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "stochrsi_overbought_short",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "sources_active": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source_combination_key": "A+C+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B752"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "stoch_oversold",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "supertrend_ichimoku_adx",
+      "sources_active": [
+        "A",
+        "C",
+        "D"
+      ],
+      "source_combination_key": "A+C+D",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "supertrend_macd",
+      "sources_active": [
+        "A"
+      ],
+      "source_combination_key": "A",
+      "details": {
+        "A_walk_markers": [
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "three_black_crows_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "totm_long",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717",
+          "W5"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "triangle_descending_short",
+      "sources_active": [
+        "A",
+        "C"
+      ],
+      "source_combination_key": "A+C",
+      "details": {
+        "A_walk_markers": [
+          "S4-B699"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "turtle_soup_short",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "ultimate_oscillator",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "vix_backwardation_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "week_opening_gap_fill_down",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "week_opening_gap_fill_up",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "williams_r_oversold",
+      "sources_active": [
+        "C",
+        "D"
+      ],
+      "source_combination_key": "C+D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY",
+          "MEAN_REVERSION_STRATEGIES"
+        ],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "sources_active": [
+        "A",
+        "D"
+      ],
+      "source_combination_key": "A+D",
+      "details": {
+        "A_walk_markers": [
+          "S4-B717"
+        ],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "xs_combined_momentum_low_ivol",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "sources_active": [
+        "D"
+      ],
+      "source_combination_key": "D",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [],
+        "D_ledger_entry_count": 1
+      }
+    },
+    {
+      "strategy": "xs_momentum_quality_combined",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "sources_active": [
+        "C"
+      ],
+      "source_combination_key": "C",
+      "details": {
+        "A_walk_markers": [],
+        "B_fire_count_per_year_max": 0.0,
+        "C_strong_status_tags": [
+          "EXPLORATORY"
+        ],
+        "D_ledger_entry_count": 0
+      }
+    }
+  ],
+  "deferred_records": [
+    {
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B588",
+          "B589",
+          "B613"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B613"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "adx_initiation",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "break_retest_confluence",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B271",
+          "B291",
+          "B589",
+          "B594",
+          "B596",
+          "B603",
+          "B605",
+          "B606",
+          "B607",
+          "B608",
+          "B609"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B617",
+          "B623",
+          "B624",
+          "B628",
+          "B710",
+          "B787",
+          "B879"
+        ],
+        "all_status_tags": [
+          "mean_reversion"
+        ]
+      }
+    },
+    {
+      "strategy": "donchian_breakout_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B254"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B217"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "htf_aligned_breakout_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B217"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "ichimoku_cloud_breakdown",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B222"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B222"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "institutional_buy_momentum_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B330"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_cluster_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B330"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B222",
+          "B333",
+          "B338"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_insider_combo_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B331"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_persistence_breakout_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B337"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_persistence_momentum_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B333",
+          "B336"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B331",
+          "B337"
+        ],
+        "all_status_tags": [
+          "Wave_lineage",
+          "mean_reversion"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_persistence_volume_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B337"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B330",
+          "B338"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B338"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B333"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_volume_confirmation_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B331"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_with_directors_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B336"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "institutional_with_officers_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B336"
+        ],
+        "all_status_tags": [
+          "Wave_lineage"
+        ]
+      }
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "macd_crossover",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "macd_crossover_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_OSCILLATOR_MEAN_REVERSION_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "macd_ichimoku",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "mfi_oversold_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B255",
+          "B314"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B211"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "orb_stocks_in_play_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B211"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B253"
+        ],
+        "all_status_tags": [
+          "mean_reversion"
+        ]
+      }
+    },
+    {
+      "strategy": "pairs_mean_reversion_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [
+          "B253"
+        ],
+        "all_status_tags": [
+          "mean_reversion"
+        ]
+      }
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "parabolic_sar_flip_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B222"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_EVENT_DRIVEN_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "pivot_fib_confluence",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CHART_PATTERN_AND_CANDLE_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_B710_ADVERSARIAL_REVIEW.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B271",
+          "B291",
+          "B628",
+          "B640",
+          "B641",
+          "B710",
+          "B787",
+          "B879"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "prev_day_high_break",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "r1_break_retest",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_PIVOT_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B162",
+          "B291",
+          "B589",
+          "B594",
+          "B596",
+          "B597",
+          "B598",
+          "B600",
+          "B601",
+          "B603",
+          "B605",
+          "B606"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": true,
+        "all_walk_batches": [],
+        "all_status_tags": [
+          "mean_reversion"
+        ]
+      }
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B254"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B190",
+          "B519",
+          "B671"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "squeeze_breakout_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_BREAKOUT_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "supertrend_macd_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "tema_dema",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "value_area_breakout_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B255"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "vol_spike_2x_below_ema_50_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B291",
+          "B670"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B217"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B217"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "xs_momentum_bottom_decile_short",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B220"
+        ],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": false,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [],
+        "all_status_tags": []
+      }
+    },
+    {
+      "strategy": "xs_quality_top_quintile_long",
+      "bucket": "II_in_walk_doc_no_structured_header",
+      "details": {
+        "in_walk_doc": true,
+        "walk_doc_refs": [
+          "STAGE_4_CONTEXT_EVENT_CALENDAR_CLUSTER_WALKS.md",
+          "STAGE_4_SMART_MONEY_CLUSTER_WALKS.md",
+          "STAGE_4_TREND_CONFLUENCE_CHART_PATTERN_RESIDUAL_CLUSTER_WALKS.md"
+        ],
+        "has_ledger_entry": false,
+        "has_generic_b_only": true,
+        "has_lineage_tags_only": false,
+        "all_walk_batches": [
+          "B222"
+        ],
+        "all_status_tags": []
+      }
+    }
+  ]
+}
