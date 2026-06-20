@@ -11,6 +11,13 @@ build/
 # Cache — intentionally tracked (see backtest/.gitignore)
 # data/cache/ is NOT excluded here — we want it committed
 
+# B942 (2026-06-20) Phase P1 Stream E generated dossiers + evidence store.
+# Reproducible from scripts/populate_all_dossiers.py + dossier_build.py;
+# do not bloat repo with 219 generated JSONs. Re-run locally for fresh
+# dossiers; commit only Stream E SCRIPTS + extractors (not outputs).
+output_audit/dossiers/
+evidence_store/
+
 # Logs
 *.log
 
