@@ -1284,16 +1284,24 @@ def main(argv: Optional[list[str]] = None) -> int:
         ]
         logger.info("Loaded %d tickers from %s", len(ticker_subset), subset_path)
 
-    # B938 (2026-06-19) Council 46 escape hatch: --no-tier2 overrides --include-tier2.
+    # B940 (2026-06-20) Phase P1 batch 3 commit 2 DEFAULT FLIP per Council 46+47:
+    # Default behavior changed from TIER 2 OFF (pre-B922) to TIER 2 ON.
     # Resolution order:
-    #   - --no-tier2 set: TIER 2 disabled regardless of --include-tier2
-    #   - --include-tier2 set + no --no-tier2: TIER 2 enabled
-    #   - Neither set: default behavior (currently OFF; will flip to ON in batch 3)
-    include_tier2_resolved = (args.include_tier2 and not args.no_tier2)
+    #   - --no-tier2 set: TIER 2 disabled (B938 escape hatch; preserves pre-B922
+    #     behavior for callers like mean_reversion_edge_prior_test that need it)
+    #   - --no-tier2 NOT set: TIER 2 enabled (NEW DEFAULT post-B940)
+    # --include-tier2 becomes redundant but harmless (legacy explicit-intent flag
+    # for B939 callers; B941 will clean up redundant invocations).
+    include_tier2_resolved = not args.no_tier2
     if args.no_tier2 and args.include_tier2:
         logger.warning(
             "B938: both --no-tier2 and --include-tier2 passed; --no-tier2 takes precedence "
             "(TIER 2 producers disabled). Per output_audit/b938_measure_fire_count_caller_audit.md."
+        )
+    if not args.include_tier2 and not args.no_tier2:
+        logger.info(
+            "B940: TIER 2 producer injection ENABLED by default (post-Phase-P0 production "
+            "engine path). Pass --no-tier2 to preserve pre-B922 baseline behavior."
         )
 
     output = measure_strategies(
