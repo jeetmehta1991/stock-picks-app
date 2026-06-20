@@ -61,6 +61,86 @@ logger = logging.getLogger(__name__)
 VALID_CRITERIA = ("r4_metrics_passed", "pre_cube_evidence_sufficient", "deferred")
 
 
+# B946 (2026-06-20) Council 50 STRONG-EVIDENCE refinement:
+# Replace permissive 'has_pre_cube_evidence=True' check with strict evidence
+# subset. Owner-approved status tags carry weight; lineage tags do not.
+STRONG_STATUS_TAGS = frozenset({
+    # From canonical backtest/config.py sets
+    "MEASUREMENT_DISPUTED",
+    "MEAN_REVERSION_STRATEGIES",
+    "DISABLED_MISSING_PRODUCER",
+    # From owner-approved docstring markers
+    "EXPLORATORY",
+    "DORMANT",
+    "B748d_walk_back_protected",
+    "MAY_REVERT",
+})
+
+# Lineage-only tags are descriptive, not owner-approval evidence.
+# Explicitly REJECTED from STRONG_STATUS_TAGS per Council 50 verdict:
+LINEAGE_ONLY_TAGS = frozenset({
+    "EVENT_only",
+    "SHORT_EXPLORATORY",
+    "Wave_lineage",
+    "mean_reversion",  # docstring scrape; canonical set membership is the proof
+    # PATTERN_X tags (PATTERN_AA, PATTERN_W, etc.) handled via prefix check
+})
+
+# Stage 4 walk-ticket prefixes; B883 ledger-bearing per Council 10.
+# Generic 'B###' rejected (could be any incidental commit).
+STRONG_WALK_PREFIXES = ("S4-B", "W")
+
+# CLAUDE.md criterion #9 per-regime min_trades; codified power floor.
+FIRE_COUNT_PASS_THRESHOLD_PER_YEAR = 30.0
+
+
+def _has_strong_evidence(section_9b: dict | None) -> tuple[bool, dict]:
+    """Council 50 strict evidence check.
+
+    Returns (passes_strong_check, evidence_breakdown).
+    Evidence is STRONG if AT LEAST ONE OF:
+      A. Walk batches include S4-B### or W## marker (Stage 4 walk ticket)
+      B. Fire-count projection >= 30/yr per direction (long OR short)
+      C. Status tags include any of STRONG_STATUS_TAGS
+
+    PATTERN_X tags (PATTERN_AA, PATTERN_W, etc.) are LINEAGE-only and
+    REJECTED. mean_reversion docstring tag is REJECTED in favor of
+    canonical MEAN_REVERSION_STRATEGIES config set membership.
+    """
+    if not section_9b:
+        return False, {"reason": "section_9b_missing"}
+    # A. Stage 4 walk markers
+    walks = section_9b.get("walk_batches", []) or []
+    strong_walks = [w for w in walks if w.startswith(STRONG_WALK_PREFIXES)]
+    # B. Fire-count threshold
+    fc = section_9b.get("fire_count_projection")
+    fpy_long = (fc or {}).get("fires_per_year_long") or 0
+    fpy_short = (fc or {}).get("fires_per_year_short") or 0
+    try:
+        fpy_max = max(float(fpy_long or 0), float(fpy_short or 0))
+    except (TypeError, ValueError):
+        fpy_max = 0
+    fire_pass = fpy_max >= FIRE_COUNT_PASS_THRESHOLD_PER_YEAR
+    # C. Owner-approved status tags
+    tags = section_9b.get("status_tags", []) or []
+    strong_tags = [t for t in tags if t in STRONG_STATUS_TAGS]
+    # PATTERN_X tags are lineage-only; explicitly do not count
+    rejected_lineage = [
+        t for t in tags
+        if t in LINEAGE_ONLY_TAGS or t.startswith("PATTERN_")
+    ]
+    breakdown = {
+        "strong_walk_markers": strong_walks,
+        "fire_count_per_year_max": fpy_max,
+        "fire_count_passes_threshold": fire_pass,
+        "fire_count_threshold": FIRE_COUNT_PASS_THRESHOLD_PER_YEAR,
+        "strong_status_tags": strong_tags,
+        "rejected_lineage_tags": rejected_lineage,
+        "passes_strong_check": bool(strong_walks) or fire_pass or bool(strong_tags),
+    }
+    return breakdown["passes_strong_check"], breakdown
+
+
 def compute_r5_inclusion_criterion(dossier: dict[str, Any]) -> dict[str, Any]:
     """Compute r5_inclusion_criterion + rationale from populated sections.
 
@@ -130,45 +210,52 @@ def compute_r5_inclusion_criterion(dossier: dict[str, Any]) -> dict[str, Any]:
                 "auto_fail_gates": gates,
                 "evidence_used": evidence_used,
             }
-        # Fallback to pre-cube evidence for R4-included-but-failed
-        if section_9b and section_9b.get("has_pre_cube_evidence"):
+        # B946 Council 50 STRONG-EVIDENCE fallback (replaces permissive
+        # has_pre_cube_evidence check): require strict markers per Council 50
+        strong_pass, evidence_breakdown = _has_strong_evidence(section_9b)
+        if strong_pass:
             return {
                 "value": "pre_cube_evidence_sufficient",
                 "rationale": (
                     f"In R4 cube but criterion failed (passes_all={passes_all!r}; "
-                    f"gates={gates}); fallback to Section 9b pre-cube evidence."
+                    f"gates={gates}); fallback to Section 9b STRONG evidence per Council 50."
                 ),
                 "track": 1,
                 "auto_fail_gates": gates,
                 "evidence_used": evidence_used + ["section_20_pre_cube_evidence_9b"],
+                "strong_evidence_breakdown": evidence_breakdown,
             }
         return {
             "value": "deferred",
             "rationale": (
                 f"In R4 cube but criterion failed (passes_all={passes_all!r}; "
-                f"gates={gates}); no Section 9b fallback evidence."
+                f"gates={gates}); no STRONG evidence in Section 9b per Council 50."
             ),
             "track": 1,
             "auto_fail_gates": gates,
             "evidence_used": evidence_used,
+            "strong_evidence_breakdown": evidence_breakdown,
         }
 
     # Track 2: post-R4 addition
     if track == 2:
-        if section_9b and section_9b.get("has_pre_cube_evidence"):
+        strong_pass, evidence_breakdown = _has_strong_evidence(section_9b)
+        if strong_pass:
             return {
                 "value": "pre_cube_evidence_sufficient",
-                "rationale": "Post-R4 addition with walk-batch / status-tag / fire-count evidence.",
+                "rationale": "Post-R4 addition with STRONG evidence per Council 50 (S4-walk OR fire-count>=30 OR owner-approved status tag).",
                 "track": 2,
                 "auto_fail_gates": {},
                 "evidence_used": ["section_09", "section_20_pre_cube_evidence_9b"],
+                "strong_evidence_breakdown": evidence_breakdown,
             }
         return {
             "value": "deferred",
-            "rationale": "Post-R4 addition with no pre-cube evidence (no walks / no status / no fire-count).",
+            "rationale": "Post-R4 addition without STRONG evidence per Council 50 (lineage tags + generic batch refs are insufficient).",
             "track": 2,
             "auto_fail_gates": {},
             "evidence_used": ["section_09"],
+            "strong_evidence_breakdown": evidence_breakdown,
         }
 
     # Track 0 (CSV missing or unexpected)

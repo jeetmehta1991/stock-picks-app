@@ -121,3 +121,71 @@ Residual is 0; recommendation pivots:
 ## R5 Status
 
 🔴 **BLOCKED till Phase P6 per CHECKLIST #114 STOP #1.**
+
+---
+
+## B946 AMENDMENT (2026-06-20; Council 50 STRONG-EVIDENCE refinement)
+
+Owner approved Option A from B945 report (refine criterion to require STRONGER evidence). Council 50 UNANIMOUS verdict spec executed in single commit B946 (Outsider anti-iteration mandate).
+
+### B946 STRONG-EVIDENCE definition (in r5_inclusion_criterion.py)
+
+Evidence is STRONG if AT LEAST ONE OF:
+
+A. **Walk batches include S4-B### or W## marker** (Stage 4 walk ticket per B883 ledger)
+   - REJECTED: generic B### (could be any incidental commit)
+
+B. **Fire-count projection >= 30/yr per direction** (long OR short)
+   - Threshold: 30/yr matches CLAUDE.md criterion #9 (min_trades per-regime power floor)
+   - REJECTED: fire-count below threshold
+
+C. **Owner-approved status tag** in canonical set:
+   - From config.py sets: MEASUREMENT_DISPUTED, MEAN_REVERSION_STRATEGIES, DISABLED_MISSING_PRODUCER
+   - From docstring scrape: EXPLORATORY, DORMANT, B748d_walk_back_protected, MAY_REVERT
+   - REJECTED (lineage-only): PATTERN_X, Wave_lineage, EVENT_only, SHORT_EXPLORATORY, mean_reversion docstring
+
+### Post-B946 r5_inclusion_criterion distribution (217 of 219 strategies)
+
+| Verdict | Count | % |
+|---|---|---|
+| `pre_cube_evidence_sufficient` | 77 | 35.2% |
+| `deferred` | 140 | 63.9% |
+| `r4_metrics_passed` | 0 | 0.0% |
+
+(2 strategies missing dossiers due to test-fixture cleanup pattern; recovered on next `--init-all` re-run.)
+
+### Council 50 Outsider validation
+
+Outsider verdict: "If `deferred` lands 80-150, criterion is working. If >180, over-strict. If <20, extractor still leaks."
+
+**Result: 140 deferred WITHIN 80-150 sweet spot.** Criterion discrimination restored.
+
+### What changed in compute_r5_inclusion_criterion
+
+1. Replaced permissive `has_pre_cube_evidence=True` check with `_has_strong_evidence()` helper
+2. Helper enforces 3 STRONG criteria above
+3. Returns `strong_evidence_breakdown` dict in result (for audit trail)
+4. Track 1 fallback path RETAINED (per Council 50 Q5): R4-included-but-failed + STRONG evidence -> sufficient
+5. Schema unchanged: 3-value enum preserved
+6. B944 test fixtures updated to use STRONG evidence (S4-B walks / fire-count>=30 / EXPLORATORY tags); 6 new B946 tests added
+
+### Future investigation suggestion (per Outsider)
+
+The 0% `r4_metrics_passed` rate is a separate signal worth flagging:
+- All 102 R4-included strategies failed canonical PASSING_CRITERIA + DEC-612/613/614 gates
+- Either: gates are too strict for R4 baseline OR Track 1 plumbing has a bug
+- NOT in scope for B946; surface for future batch investigation
+
+### Phase P1 Batch 6 EXIT
+
+**B946:** 1 commit shipped (criterion refinement + 6 new tests + amended B945 doc)
+**Cumulative session commits:** 26
+**Phase P1 verdict bit:** 3-valued (no schema change)
+**Discrimination:** restored per Outsider 80-150 expected band
+
+### Owner decision needed for next batch
+
+- (A) Investigate the 140 deferred strategies (cross-reference Stage 4 walks for genuine gaps)
+- (B) Investigate 0% r4_metrics_passed (gate-logic audit; verify R4 plumbing)
+- (C) Continue Phase P1 batch 7 (next sections 4/5/7/8)
+- (D) Different direction
