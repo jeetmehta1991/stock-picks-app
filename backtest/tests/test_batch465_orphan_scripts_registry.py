@@ -353,8 +353,9 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "Batch 956 Council 60 STRATEGIC PIVOT findings triage queue builder "
         "(scans 217 dossiers across 12 built sections; enumerates 6 finding "
         "types). RECURRING tool: re-run after each dossier population to "
-        "refresh owner-triage queue. Needs cron/launcher wiring to populate_"
-        "all_dossiers.py end-of-run hook.",
+        "refresh owner-triage queue. WIRED B975 (2026-06-21 Council 77 P1 "
+        "Bucket A A9) as end-of-run hook in scripts/populate_all_dossiers.py "
+        "(non-fatal try/except). Tests in test_b975_a9_b956_cron_wired.py.",
     ),
     "scripts/b957_audit_retrospective_trial_counts.py": (
         "a",

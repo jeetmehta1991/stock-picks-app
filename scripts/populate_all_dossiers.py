@@ -241,6 +241,28 @@ def main() -> int:
             logger.warning("  %s", finding)
         if len(stats["drift_findings"]) > 20:
             logger.warning("  ... and %d more", len(stats["drift_findings"]) - 20)
+
+    # B975 (2026-06-21 Council 77 P1 Bucket A A9 wiring): end-of-run hook
+    # to b956_build_findings_triage_queue. After full-roster population,
+    # findings dependencies (sections 1/6/7/8/13/14/15/16/17/19 + r5_inclusion_
+    # criterion) are freshly written. B956 consumes those exact sections to
+    # enumerate FIRE_STARVED / SIGNAL_ORPHAN / INVERSE_UNSAFE / STATE_OVERCLAIM
+    # / EARNINGS_BLACKOUT / DEFERRED_OWNER_TRIAGE findings into a flat queue.
+    # Wiring here closes B971 'c' classification for b956 cron + ensures the
+    # triage queue is always in sync with the latest dossier population.
+    # Failure is non-fatal: triage queue is a SURFACING artifact, not gate.
+    try:
+        from scripts.b956_build_findings_triage_queue import main as _b956_main
+        logger.info("B975 A9 wiring: invoking b956_build_findings_triage_queue.main()")
+        _b956_rc = _b956_main()
+        if _b956_rc != 0:
+            logger.warning("B956 triage queue builder returned non-zero: %s", _b956_rc)
+        else:
+            logger.info("B956 triage queue builder OK (output_audit/b956_findings_triage_queue.json refreshed)")
+    except Exception as _e_b956:
+        logger.warning("B975 A9 wiring: b956 cron failed (non-fatal): %s: %s",
+                       type(_e_b956).__name__, _e_b956)
+
     return 0 if all(stats[k] == 0 for k in ("section_6_errors", "section_9_errors", "section_9b_errors")) else 1
 
 
