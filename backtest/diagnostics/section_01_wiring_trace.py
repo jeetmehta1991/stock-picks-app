@@ -60,18 +60,35 @@ def _expand_fstring_with_bindings(
       f"above_avwap_{key}" with bindings={"key": ["20high", "20low"]}
       -> ["above_avwap_20high", "above_avwap_20low"]
     """
-    # Collect ordered list of segments: (kind, value) where kind in {"literal", "var"}.
-    segments: list[tuple[str, str]] = []
+    # B985 (2026-06-21) Council 89 Option-5 honest-finding pivot
+    # owner-approved per directive 'Approve your recommendation. Proceed
+    # council this.' Walk-1 Sub-B SIGNAL_ORPHAN findings for 6 BB
+    # strategies were 100% FALSE POSITIVE per source-verification of
+    # technical.py::compute_bollinger lines 1280-1351. Pattern: loop
+    # `for period, std_m in [(20,2.0),(20,1.5),(10,2.0)]:` followed by
+    # `key = f"bb_{period}_{str(std_m).replace('.','')}"`. The previous
+    # helper rejected `str(X).replace(A, B)` method-chain at the
+    # FormattedValue level; extension handles this conservatively.
+    #
+    # Collect ordered list of segments: (kind, value_or_callable).
+    segments: list[tuple[str, object]] = []
     for v in joined.values:
         if isinstance(v, ast.Constant) and isinstance(v.value, str):
             segments.append(("literal", v.value))
         elif isinstance(v, ast.FormattedValue):
-            # Only handle simple Name references (no format spec, no method calls).
+            # (1) Simple Name reference
             if isinstance(v.value, ast.Name):
                 varname = v.value.id
                 if varname not in bindings:
                     return []
                 segments.append(("var", varname))
+            # (2) B985 EXTENSION: str(NAME).replace(LIT, LIT) chain
+            #     Pattern: Call(Attribute(Call(Name('str'),[Name(X)]),'replace'),[Const(A),Const(B)])
+            elif isinstance(v.value, ast.Call):
+                resolved_transform = _try_resolve_str_method_chain(v.value, bindings)
+                if resolved_transform is None:
+                    return []
+                segments.append(("xform", resolved_transform))
             else:
                 return []
         else:
@@ -81,8 +98,68 @@ def _expand_fstring_with_bindings(
     for kind, val in segments:
         if kind == "literal":
             results = [r + val for r in results]
-        else:
+        elif kind == "var":
             results = [r + b for r in results for b in bindings[val]]
+        elif kind == "xform":
+            # val is a list of transformed strings (already expanded for the loop var)
+            results = [r + b for r in results for b in val]
+    return results
+
+
+def _try_resolve_str_method_chain(
+    call_node: ast.Call, bindings: dict[str, list[str]]
+) -> list[str] | None:
+    """Resolve a `str(X).replace(literal, literal)` chain over loop-var bindings.
+
+    Pattern (and chained variants):
+      ast.Call(
+        func=ast.Attribute(
+          value=ast.Call(func=ast.Name(id='str'), args=[ast.Name(id='X')]),
+          attr='replace'),
+        args=[ast.Constant(str), ast.Constant(str)])
+
+    Returns list of resolved literal values (e.g. for std_m in [2.0, 1.5]:
+    str(std_m).replace('.', '') -> ['20', '15']). Returns None on
+    unrecognized pattern (caller must fall through to existing reject).
+    """
+    # Innermost: must be Call(Name('str'), [Name(X)])
+    def _peel_str_call(node: ast.AST) -> str | None:
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "str":
+            if len(node.args) == 1 and isinstance(node.args[0], ast.Name):
+                return node.args[0].id
+        return None
+
+    # Iteratively peel .replace(A, B) / .lower() / .upper() etc.
+    current = call_node
+    transforms: list = []
+    while isinstance(current, ast.Call) and isinstance(current.func, ast.Attribute):
+        method = current.func.attr
+        if method == "replace" and len(current.args) == 2:
+            if not all(isinstance(a, ast.Constant) and isinstance(a.value, str) for a in current.args):
+                return None
+            transforms.append(("replace", current.args[0].value, current.args[1].value))
+        elif method in ("lower", "upper") and len(current.args) == 0:
+            transforms.append((method,))
+        else:
+            return None
+        current = current.func.value
+
+    var_name = _peel_str_call(current)
+    if var_name is None or var_name not in bindings:
+        return None
+
+    # Apply transforms in reverse (innermost-first)
+    results = []
+    for v in bindings[var_name]:
+        s = str(v)
+        for t in reversed(transforms):
+            if t[0] == "replace":
+                s = s.replace(t[1], t[2])
+            elif t[0] == "lower":
+                s = s.lower()
+            elif t[0] == "upper":
+                s = s.upper()
+        results.append(s)
     return results
 
 

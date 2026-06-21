@@ -4,21 +4,21 @@
   "council": "83_OPTION_3_SCRIPT_PLUS_RECOMMEND",
   "owner_directive": "Approve your recommendations. Proceed council this. (2026-06-21)",
   "source_queue": "output_audit/b956_findings_triage_queue.json",
-  "n_findings_in_source": 323,
+  "n_findings_in_source": 317,
   "n_findings_in_top_n_per_type": {
-    "SIGNAL_ORPHAN": 11,
+    "SIGNAL_ORPHAN": 5,
     "INVERSE_UNSAFE_CHECK_NEEDED": 5,
     "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": 5,
     "DEFERRED_OWNER_TRIAGE": 10,
     "FIRE_STARVED": 10
   },
-  "total_enumerated": 41,
+  "total_enumerated": 35,
   "pool_counts_per_type": {
     "DEFERRED_OWNER_TRIAGE": 125,
     "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": 25,
     "FIRE_STARVED": 137,
     "INVERSE_UNSAFE_CHECK_NEEDED": 25,
-    "SIGNAL_ORPHAN": 11
+    "SIGNAL_ORPHAN": 5
   },
   "council_83_walk_1_recommendation": "SIGNAL_ORPHAN",
   "council_83_walk_1_rationale": "Smallest set (11 findings; closes-fully-in-1-batch); bug-impact severity (code-wiring breaks block engine consumption per B970+1 precedent); already 88%-reduced via B970+1 (146 -> 11 = hard cases remain); batch-walk authorized per owner standing pattern for small bug-impact sets.",
@@ -86,25 +86,6 @@
         }
       },
       {
-        "strategy": "bollinger_tight",
-        "finding_type": "SIGNAL_ORPHAN",
-        "source_section": "section_01_wiring_trace_coverage",
-        "severity": "MEDIUM",
-        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-        "owner_decision_required": true,
-        "source_batch": "B951",
-        "evidence": {
-          "n_signals_orphan": 4,
-          "signals_orphan": [
-            "bb_20_15_reclaim_from_lower_recent_3d",
-            "bb_20_15_reclaim_from_upper_recent_3d",
-            "bb_20_20_reclaim_from_lower_recent_3d",
-            "bb_20_20_reclaim_from_upper_recent_3d"
-          ],
-          "wiring_coverage_pct": 60.0
-        }
-      },
-      {
         "strategy": "activist_13d_long",
         "finding_type": "SIGNAL_ORPHAN",
         "source_section": "section_01_wiring_trace_coverage",
@@ -116,38 +97,6 @@
           "n_signals_orphan": 1,
           "signals_orphan": [
             "sc_13d_filed_within_30d"
-          ],
-          "wiring_coverage_pct": 66.66666666666667
-        }
-      },
-      {
-        "strategy": "bollinger_tight_with_smart_money_long",
-        "finding_type": "SIGNAL_ORPHAN",
-        "source_section": "section_01_wiring_trace_coverage",
-        "severity": "MEDIUM",
-        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-        "owner_decision_required": true,
-        "source_batch": "B951",
-        "evidence": {
-          "n_signals_orphan": 1,
-          "signals_orphan": [
-            "bb_20_20_squeeze"
-          ],
-          "wiring_coverage_pct": 66.66666666666667
-        }
-      },
-      {
-        "strategy": "bollinger_upper_short",
-        "finding_type": "SIGNAL_ORPHAN",
-        "source_section": "section_01_wiring_trace_coverage",
-        "severity": "MEDIUM",
-        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-        "owner_decision_required": true,
-        "source_batch": "B951",
-        "evidence": {
-          "n_signals_orphan": 1,
-          "signals_orphan": [
-            "bb_20_20_touch_upper"
           ],
           "wiring_coverage_pct": 66.66666666666667
         }
@@ -166,55 +115,6 @@
             "cap_band"
           ],
           "wiring_coverage_pct": 66.66666666666667
-        }
-      },
-      {
-        "strategy": "bollinger_lower",
-        "finding_type": "SIGNAL_ORPHAN",
-        "source_section": "section_01_wiring_trace_coverage",
-        "severity": "MEDIUM",
-        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-        "owner_decision_required": true,
-        "source_batch": "B951",
-        "evidence": {
-          "n_signals_orphan": 2,
-          "signals_orphan": [
-            "bb_20_20_reclaim_from_lower_recent_3d",
-            "bb_20_20_reclaim_from_upper_recent_3d"
-          ],
-          "wiring_coverage_pct": 77.77777777777777
-        }
-      },
-      {
-        "strategy": "hammer_at_support_long",
-        "finding_type": "SIGNAL_ORPHAN",
-        "source_section": "section_01_wiring_trace_coverage",
-        "severity": "MEDIUM",
-        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-        "owner_decision_required": true,
-        "source_batch": "B951",
-        "evidence": {
-          "n_signals_orphan": 1,
-          "signals_orphan": [
-            "bb_20_20_touch_lower"
-          ],
-          "wiring_coverage_pct": 80.0
-        }
-      },
-      {
-        "strategy": "shooting_star_short",
-        "finding_type": "SIGNAL_ORPHAN",
-        "source_section": "section_01_wiring_trace_coverage",
-        "severity": "MEDIUM",
-        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-        "owner_decision_required": true,
-        "source_batch": "B951",
-        "evidence": {
-          "n_signals_orphan": 1,
-          "signals_orphan": [
-            "bb_20_20_touch_upper"
-          ],
-          "wiring_coverage_pct": 80.0
         }
       }
     ],

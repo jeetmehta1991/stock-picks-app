@@ -17,23 +17,23 @@ Per Council 60 UNANIMOUS verdict: PIVOT from infrastructure-building to findings
 ## Summary
 
 - Total dossiers scanned: 217
-- Total actionable findings: **331**
-- Strategies with findings: 191
+- Total actionable findings: **317**
+- Strategies with findings: 188
 
 ## Findings by Type
 
 | Finding Type | Count | Severity | Action |
 |---|---|---|---|
 | FIRE_STARVED | 137 | HIGH | EXPLORATORY tag OR delete-recommendation OR L1c review |
-| DEFERRED_OWNER_TRIAGE | 127 | HIGH | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_pe |
+| DEFERRED_OWNER_TRIAGE | 125 | HIGH | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_pe |
 | EARNINGS_BLACKOUT_LOOKAHEAD_RISK | 25 | HIGH | CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline |
 | INVERSE_UNSAFE_CHECK_NEEDED | 25 | MEDIUM | Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mi |
-| SIGNAL_ORPHAN | 17 | MEDIUM | Verify orphan signals are actually unused OR wire producer; check for silent-gap |
+| SIGNAL_ORPHAN | 5 | MEDIUM | Verify orphan signals are actually unused OR wire producer; check for silent-gap |
 
 ## Findings by Severity
 
-- HIGH: 289
-- MEDIUM: 42
+- HIGH: 287
+- MEDIUM: 30
 - LOW: 0
 
 ## Top-20 HIGH-Severity Findings (action-ready for owner walk)
@@ -55,11 +55,11 @@ Per Council 60 UNANIMOUS verdict: PIVOT from infrastructure-building to findings
 | `bullish_engulfing_support` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
 | `camarilla_s3_bounce` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
 | `cmf_flip` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
-| `cup_and_handle_long` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
 | `cup_and_handle_retest_long` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
 | `doji_at_resistance_short` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
 | `doji_at_support` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
 | `donchian_10_breakout` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
+| `donchian_breakdown_retest_short` | DEFERRED_OWNER_TRIAGE | r5_inclusion_criterion (B946+B950) | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + fe |
 
 ## Parallel Pending Items (re-surfaced per Council 60 Contrarian mandate)
 
