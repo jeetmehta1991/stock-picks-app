@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.0",
+  "batch": "B987",
+  "council": "91_OPTION_6_HYBRID + 92_TRANCHE_2",
+  "owner_directive": "Approve your recommendation. Proceed council this. (2026-06-21)",
+  "source_dir": "output_optimization_candidates_R4_2026_06_16",
+  "sharpe_band": [
+    0.2,
+    0.3
+  ],
+  "n_strategies_total_scanned": 104,
+  "n_already_overridden_excluded": 18,
+  "n_candidates_raw_in_band": 73,
+  "n_candidates_post_filter": 19,
+  "n_five_gate_pass": 0,
+  "verdict": "TRANCHE_2_VIABLE",
+  "narrative": "19 candidates surfaced; >=5 batch threshold met.",
+  "tranche_2_candidates": [
+    {
+      "strategy": "po3_htf_aligned_short",
+      "exit_method": "fixed_4r_2r",
+      "n": 211,
+      "sharpe": 0.2986,
+      "pf": 1.3201,
+      "wr": 0.4028,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "exit_method": "ma_exit_ema9",
+      "n": 344,
+      "sharpe": 0.2983,
+      "pf": 1.2808,
+      "wr": 0.3314,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "ppo_crossover",
+      "exit_method": "chandelier_3x",
+      "n": 296,
+      "sharpe": 0.2942,
+      "pf": 1.3562,
+      "wr": 0.0912,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "exit_method": "time_stop_20d",
+      "n": 205,
+      "sharpe": 0.2862,
+      "pf": 1.3834,
+      "wr": 0.4927,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "exit_method": "time_stop_20d",
+      "n": 77,
+      "sharpe": 0.2748,
+      "pf": 1.3361,
+      "wr": 0.5325,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "pre_fomc_long_sleeve",
+      "exit_method": "earnings_blackout",
+      "n": 229,
+      "sharpe": 0.2748,
+      "pf": 1.7365,
+      "wr": 0.5153,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "exit_method": "earnings_blackout",
+      "n": 49,
+      "sharpe": 0.2743,
+      "pf": 2.1196,
+      "wr": 0.4286,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "camarilla_r3_breakout",
+      "exit_method": "next_pivot_target",
+      "n": 260,
+      "sharpe": 0.2653,
+      "pf": 1.2163,
+      "wr": 0.5962,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "exit_method": "r_multiple_3r",
+      "n": 134,
+      "sharpe": 0.2594,
+      "pf": 1.1562,
+      "wr": 0.306,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "supertrend_macd",
+      "exit_method": "hybrid_50pct_target",
+      "n": 520,
+      "sharpe": 0.2543,
+      "pf": 1.2679,
+      "wr": 0.4788,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "morning_star",
+      "exit_method": "next_pivot_target",
+      "n": 228,
+      "sharpe": 0.2507,
+      "pf": 1.1736,
+      "wr": 0.75,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "exit_method": "time_stop_10d",
+      "n": 155,
+      "sharpe": 0.2484,
+      "pf": 1.1758,
+      "wr": 0.5226,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "ichimoku_cloud_breakout",
+      "exit_method": "breakeven_plus_trail",
+      "n": 384,
+      "sharpe": 0.2381,
+      "pf": 1.2954,
+      "wr": 0.3464,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "exit_method": "earnings_blackout",
+      "n": 97,
+      "sharpe": 0.2358,
+      "pf": 1.7666,
+      "wr": 0.5258,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "exit_method": "chandelier_3x",
+      "n": 190,
+      "sharpe": 0.2313,
+      "pf": 1.247,
+      "wr": 0.3211,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "lead_lag_sector_rotation",
+      "exit_method": "breakeven_plus_trail",
+      "n": 356,
+      "sharpe": 0.2156,
+      "pf": 25.48,
+      "wr": 0.2191,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "hull_rsi",
+      "exit_method": "r_multiple_3r",
+      "n": 360,
+      "sharpe": 0.2105,
+      "pf": 1.1296,
+      "wr": 0.2722,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "po3_htf_aligned_long",
+      "exit_method": "hybrid_50pct_target",
+      "n": 198,
+      "sharpe": 0.2033,
+      "pf": 1.2152,
+      "wr": 0.4747,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "exit_method": "fixed_4r_2r",
+      "n": 179,
+      "sharpe": 0.2019,
+      "pf": 1.2145,
+      "wr": 0.3966,
+      "psr_pass": true,
+      "verdict": "FAIL",
+      "five_gate_pass": false
+    }
+  ],
+  "honest_finding_pre_flight": "Tranche 1 #71+#72 ALREADY SHIPPED via B835 (git log c340df6be + backtest/config.py:306+309). CLAUDE.md banner stale; Council 91 Option-6 'ship #71+#72' is moot. Tranche 2 launch proceeds per Council 91 path-forward portion.",
+  "memory_rule_reference": "Council 76 banner-verification precedent + Council 89/90 honest-finding pivot + feedback_audit_recommendations_against_existing_directives + feedback_path_c_min_batch_size + project_no_apriori_strategy_pruning + DO-NOT-DELETE."
+}
