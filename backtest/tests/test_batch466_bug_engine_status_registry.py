@@ -66,10 +66,10 @@ EXPECTED_STATUS: dict[str, str] = {
     "BUG-014": "N/A",
     "BUG-015": "PARTIAL-ORPHAN",  # B815: build_dashboard_stage_2.py is CLI script not library module; false-positive orphan
     "BUG-016": "N/A",
-    "BUG-018": "FUNC-DEAD",  # KNOWN gap; Bonferroni code not in canonical backtest
+    "BUG-018": "PARTIAL-ORPHAN",  # B972: drift FUNC-DEAD->PARTIAL-ORPHAN; same KNOWN_GAPS root cause (Bonferroni in scripts/optimize_strategies_from_cube.py not canonical backtest; primary helper has no live importer in canonical AAPL run)
     "BUG-022": "PARTIAL-ORPHAN",  # B815: same as BUG-015; build_dashboard_stage_2.py CLI script orphan-detection false-positive
     "BUG-023": "YES",
-    "BUG-133": "YES",
+    "BUG-133": "FUNC-DEAD",  # B972: DECISION-018 cooldown-after-stop-out PENDING owner (A/B/C/D); engine has no cooldown code path; FUNC-DEAD reflects unresolved design decision
 }
 
 
@@ -121,6 +121,20 @@ KNOWN_GAPS: dict[str, str] = {
         "positive; script remains engine-active via owner manual run. "
         "The orphan-detection methodology improvement (recognize manual-"
         "CLI scripts as non-orphan) is queued separately."
+    ),
+    "BUG-133": (
+        "B972 (2026-06-21) Council 75 A1-2: DECISION-018 cooldown-after-"
+        "stop-out is PENDING owner per AUDIT.md (4 options A/B/C/D on "
+        "cooldown methodology: A no-cooldown / B 5-day all stop-outs / "
+        "C 5-day stop-loss-only / D variable 5-day-stop-0-trail-0-target; "
+        "recommendation D pending owner decision since AUDIT.md DECISION-"
+        "018 entry). Engine has NO cooldown code path; FUNC-DEAD status "
+        "correctly reflects unresolved owner-design-gated decision -- "
+        "NOT a regression. Same Bucket B owner-attention pattern as "
+        "BUG-018 Bonferroni: status will flip YES when owner picks "
+        "option + Claude implements. KNOWN_GAPS entry preserves "
+        "visibility without falsely claiming 'fix worked' per "
+        "feedback_wired_means_engine_consumed."
     ),
 }
 
