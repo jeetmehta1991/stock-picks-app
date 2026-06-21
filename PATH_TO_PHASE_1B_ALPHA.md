@@ -744,7 +744,7 @@ P1 STREAM E 20/20 sections shipped (B933-B967) is **NECESSARY but NOT SUFFICIENT
 | TIER 2 producer wireup completion (smart-money / event-driven / cross-sectional) | PENDING |
 | Strategy-side EVENT rollouts + AA EXPLORATORY 18-strategy sweep + S mean-rev SHORT EXPLORATORY tags + BB news_sentiment vendor SPOF sentinel | PENDING |
 | #4 BH-FDR vs Bonferroni methodology decision | PENDING owner decision |
-| 18 substantive pyramid items (B586/B533/B465 + 15 singletons) | PENDING |
+| 18 substantive pyramid items (B586/B533/B465 + 15 singletons) | **RESOLVED B973 2026-06-21** (Council 76 honest-finding pivot; B907+B971+B972 explicit + 8 verified-passing-silently in current pytest) |
 | Stream V reproducibility verification | PENDING per §13.7 launch gate #14 |
 | DEC #1 4th ingredient decision (sortino / win_rate / psr / expectancy) | PENDING owner decision per B966 |
 | B931 institutional_persistence MAY-REVERT | PENDING B906 owner decision |
