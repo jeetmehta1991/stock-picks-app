@@ -121,57 +121,190 @@ def _compute_pairwise_jaccard_matrix() -> dict[str, dict[str, float]]:
     return matrix
 
 
+# B980 (2026-06-21) Council 82 Option-g HYBRID additions
+# (signal-overlap + family-cluster AND-gate for Track A candidate).
+SIGNAL_OVERLAP_TRACK_A_THRESHOLD = 0.50  # B709 phi=0.297 deemed NOT-redundant; 0.50 = honest middle
+
+
+@lru_cache(maxsize=1)
+def _load_strategy_signal_sets() -> dict[str, frozenset]:
+    """Per-strategy signal-key set from B970+1 Section 1 producer_index.
+
+    Reuses _parse_screener_for_strategy_signal_deps which parses
+    screener.py AST and returns {strategy: [signal_keys]}.
+    """
+    try:
+        from backtest.diagnostics.section_01_wiring_trace import (
+            _parse_screener_for_strategy_signal_deps,
+        )
+    except Exception as e:
+        logger.warning("Could not import Section 1 signal deps: %s", e)
+        return {}
+    deps = _parse_screener_for_strategy_signal_deps()
+    return {strat: frozenset(sigs) for strat, sigs in deps.items()}
+
+
+@lru_cache(maxsize=1)
+def _compute_pairwise_signal_overlap_jaccard() -> dict[str, dict[str, float]]:
+    """Compute pairwise signal-key Jaccard from Section 1 producer_index.
+
+    Returns {strategy_a: {strategy_b: signal_jaccard, ...}}
+    Memoized; symmetric matrix.
+    """
+    sig_sets = _load_strategy_signal_sets()
+    strategies = sorted(sig_sets.keys())
+    matrix: dict[str, dict[str, float]] = {s: {} for s in strategies}
+    logger.info("Computing pairwise signal-overlap Jaccard for %d strategies (B980)...", len(strategies))
+    for i, sa in enumerate(strategies):
+        a = sig_sets[sa]
+        if not a:
+            continue
+        for sb in strategies[i + 1:]:
+            b = sig_sets[sb]
+            if not b:
+                continue
+            j = _jaccard(a, b)
+            if j > 0:
+                matrix[sa][sb] = j
+                matrix[sb][sa] = j
+    logger.info("B980 signal-overlap matrix complete.")
+    return matrix
+
+
+@lru_cache(maxsize=1)
+def _load_cluster_id_map() -> dict[str, str]:
+    """Per-strategy cluster_id from B948 walk_verdict_ledger v2.
+
+    Returns {strategy: cluster_id} (e.g., 'BR-1', 'CC-2', 'SM-3').
+    Strategies not in ledger -> absent (no cluster).
+    """
+    ledger_path = REPO / "output_audit" / "walk_verdict_ledger_v2.json"
+    if not ledger_path.exists():
+        return {}
+    try:
+        data = json.load(open(ledger_path))
+    except Exception:
+        return {}
+    ledger = data.get("ledger") or data.get("strategies") or {}
+    result: dict[str, str] = {}
+    for strat, entries in ledger.items():
+        if not isinstance(entries, list) or not entries:
+            continue
+        cluster_id = entries[0].get("cluster_id")
+        if cluster_id:
+            result[strat] = cluster_id
+    return result
+
+
 def extract_section_04_for_strategy(strategy: str) -> dict[str, Any]:
     """Extract Section 4 redundancy data for a single strategy.
 
-    Returns dict for Section 4 dossier slot. method='pairwise_trade_day_jaccard'.
-    Strategies not in R4 (post-R4 additions) return method='not_in_r4_cube'.
+    B980 (2026-06-21) Council 82 Option-g HYBRID: combines two epistemic
+    sources of redundancy:
+      Axis 1 - structural: signal-overlap Jaccard from Section 1
+        producer_index (>=0.50 threshold per B709 phi precedent)
+      Axis 2 - curated: B948 walk_verdict_ledger cluster_id (shared
+        cluster = walk-doc-curated redundancy)
+      Axis 3 (B959): fire-bar Jaccard (preserved as supplementary;
+        max_jaccard=0.0 across R4 cube proved degenerate at this scale)
+
+    Track-A candidate gate (AND-gated for conservatism per
+    project_no_apriori_strategy_pruning + B709 phi=0.297 false-positive
+    precedent):
+      signal_overlap_jaccard >= 0.50 AND shared cluster_id
+
+    Strategies not in R4 (post-R4 additions) still get signal-overlap +
+    cluster_id (Axis 1+2 available pre-R5); only Axis 3 fire-bar requires
+    R4 cube data.
     """
     sets = _load_strategy_fire_sets()
     matrix = _compute_pairwise_jaccard_matrix()
+    signal_matrix = _compute_pairwise_signal_overlap_jaccard()
+    cluster_map = _load_cluster_id_map()
     fire_set = sets.get(strategy)
-    if fire_set is None:
-        return {
-            "n_fires_in_r4": 0,
-            "top_5_neighbors": [],
-            "max_jaccard_neighbor": None,
-            "max_jaccard_value": None,
-            "track_a_candidate": False,
-            "method": "not_in_r4_cube",
-            "source": "output_batch395_final/trade_exit_detail.csv",
-            "threshold": TRACK_A_THRESHOLD,
-            "memory_rule_reference": (
-                "feedback_no_prior_edge_consolidate_before_tune (B705); Council 63 P2 Track A; "
-                "Strategy not in R4 cube (post-R4 addition); redundancy diagnosis pending R5 launch."
-            ),
-        }
-    neighbors = matrix.get(strategy, {})
-    # Sort by jaccard descending
-    sorted_neighbors = sorted(neighbors.items(), key=lambda x: x[1], reverse=True)[:5]
-    top_5 = [
+    in_r4_cube = fire_set is not None
+    self_cluster = cluster_map.get(strategy)
+
+    # Axis 1 - signal-overlap top-5
+    signal_neighbors_raw = signal_matrix.get(strategy, {})
+    signal_top_5 = sorted(signal_neighbors_raw.items(), key=lambda x: x[1], reverse=True)[:5]
+    signal_top_5_list = [
         {
             "strategy": s,
-            "jaccard": round(j, 4),
-            "track_a_consolidation_candidate": j >= TRACK_A_THRESHOLD,
+            "signal_overlap_jaccard": round(j, 4),
+            "shared_cluster_id": cluster_map.get(s) == self_cluster if self_cluster else False,
         }
-        for s, j in sorted_neighbors
+        for s, j in signal_top_5
     ]
-    max_neighbor = sorted_neighbors[0] if sorted_neighbors else None
-    max_jaccard_value = max_neighbor[1] if max_neighbor else None
+
+    # Axis 2 - shared cluster_id peers (excluding self)
+    cluster_peers = [s for s, c in cluster_map.items() if c == self_cluster and s != strategy] if self_cluster else []
+
+    # Hybrid Track-A candidates: AND-gate per Council 82
+    hybrid_track_a_candidates = [
+        s for s, j in signal_neighbors_raw.items()
+        if j >= SIGNAL_OVERLAP_TRACK_A_THRESHOLD
+        and self_cluster is not None
+        and cluster_map.get(s) == self_cluster
+    ]
+
+    # Axis 3 - B959 fire-bar Jaccard (preserved as supplementary)
+    fire_bar_top_5 = []
+    fire_bar_max_jaccard = None
+    fire_bar_max_neighbor = None
+    if in_r4_cube:
+        neighbors = matrix.get(strategy, {})
+        sorted_neighbors = sorted(neighbors.items(), key=lambda x: x[1], reverse=True)[:5]
+        fire_bar_top_5 = [{"strategy": s, "fire_bar_jaccard": round(j, 4)} for s, j in sorted_neighbors]
+        if sorted_neighbors:
+            fire_bar_max_neighbor = sorted_neighbors[0][0]
+            fire_bar_max_jaccard = round(sorted_neighbors[0][1], 4)
+
+    if fire_set is None:
+        # Post-R5 addition: Axis 1+2 still available; Axis 3 absent
+        return {
+            "n_fires_in_r4": 0,
+            "in_r4_cube": False,
+            "self_cluster_id": self_cluster,
+            "n_cluster_peers": len(cluster_peers),
+            "cluster_peers": cluster_peers[:10],
+            "axis_1_signal_overlap_top_5": signal_top_5_list,
+            "axis_2_shared_cluster_peers": cluster_peers[:10],
+            "axis_3_fire_bar_top_5": [],
+            "axis_3_max_jaccard_neighbor": None,
+            "axis_3_max_jaccard_value": None,
+            "hybrid_track_a_candidates": hybrid_track_a_candidates,
+            "track_a_candidate": len(hybrid_track_a_candidates) > 0,
+            "method": "hybrid_signal_overlap_plus_cluster_id_axis_3_unavailable_post_r5",
+            "source": "Section 1 producer_index + B948 walk_verdict_ledger_v2 + R4 cube (Axis 3 unavailable for post-R5)",
+            "threshold": SIGNAL_OVERLAP_TRACK_A_THRESHOLD,
+            "memory_rule_reference": (
+                "B980 Council 82 Option-g HYBRID: AND-gate signal_overlap_jaccard >= 0.50 "
+                "AND shared cluster_id per project_no_apriori_strategy_pruning + B709 "
+                "phi=0.297 false-positive precedent + DO-NOT-DELETE preservation."
+            ),
+        }
     return {
         "n_fires_in_r4": len(fire_set),
-        "top_5_neighbors": top_5,
-        "max_jaccard_neighbor": max_neighbor[0] if max_neighbor else None,
-        "max_jaccard_value": round(max_jaccard_value, 4) if max_jaccard_value is not None else None,
-        "track_a_candidate": (max_jaccard_value or 0) >= TRACK_A_THRESHOLD,
-        "method": "pairwise_trade_day_jaccard",
-        "source": "output_batch395_final/trade_exit_detail.csv",
-        "threshold": TRACK_A_THRESHOLD,
+        "in_r4_cube": True,
+        "self_cluster_id": self_cluster,
+        "n_cluster_peers": len(cluster_peers),
+        "cluster_peers": cluster_peers[:10],
+        "axis_1_signal_overlap_top_5": signal_top_5_list,
+        "axis_2_shared_cluster_peers": cluster_peers[:10],
+        "axis_3_fire_bar_top_5": fire_bar_top_5,
+        "axis_3_max_jaccard_neighbor": fire_bar_max_neighbor,
+        "axis_3_max_jaccard_value": fire_bar_max_jaccard,
+        "hybrid_track_a_candidates": hybrid_track_a_candidates,
+        "track_a_candidate": len(hybrid_track_a_candidates) > 0,
+        "method": "hybrid_signal_overlap_plus_cluster_id_with_fire_bar_supplementary",
+        "source": "Section 1 producer_index + B948 walk_verdict_ledger_v2 + output_batch395_final/trade_exit_detail.csv",
+        "threshold": SIGNAL_OVERLAP_TRACK_A_THRESHOLD,
         "memory_rule_reference": (
-            "feedback_no_prior_edge_consolidate_before_tune (B705); Council 63 P2 Track A: "
-            "max_jaccard >= 0.70 flags strategy as redundancy-consolidation candidate. "
-            "Cluster representative stays ACTIVE; this strategy may flip to DEPRECATED if "
-            "reskin per P2 reclassification phase."
+            "B980 Council 82 Option-g HYBRID (signal-overlap + cluster-id AND-gate); B959 fire-bar "
+            "Jaccard preserved as Axis 3 supplementary (max_jaccard=0.0 across R4 = degenerate metric at "
+            "this scale per B959 honest finding); per project_no_apriori_strategy_pruning + B709 "
+            "phi=0.297 false-positive precedent + DO-NOT-DELETE preservation."
         ),
     }
 

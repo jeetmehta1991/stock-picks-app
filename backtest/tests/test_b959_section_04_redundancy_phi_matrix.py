@@ -80,40 +80,56 @@ def test_b959_extract_in_r4_strategy_returns_neighbors():
         pytest.skip("R4 not present")
     test_strategy = next(iter(sets.keys()))
     result = extract_section_04_for_strategy(test_strategy)
-    assert result["method"] == "pairwise_trade_day_jaccard"
+    # B980 hybrid schema: method names updated per Council 82 Option-g HYBRID
+    assert result["method"] in (
+        "hybrid_signal_overlap_plus_cluster_id_with_fire_bar_supplementary",
+        "hybrid_signal_overlap_plus_cluster_id_axis_3_unavailable_post_r5",
+    )
     assert result["n_fires_in_r4"] > 0
-    assert result["threshold"] == 0.70
-    # top_5_neighbors should be a list (may be empty if no overlaps)
-    assert isinstance(result["top_5_neighbors"], list)
-    assert len(result["top_5_neighbors"]) <= 5
+    # B980: threshold is now signal-overlap (0.50 per B709 phi precedent), not fire-bar (0.70)
+    assert result["threshold"] == 0.50
+    # B980 hybrid axes
+    assert isinstance(result["axis_1_signal_overlap_top_5"], list)
+    assert isinstance(result["axis_2_shared_cluster_peers"], list)
+    assert isinstance(result["axis_3_fire_bar_top_5"], list)
 
 
-def test_b959_extract_unknown_strategy_returns_not_in_r4():
-    """B959: strategy not in R4 returns method='not_in_r4_cube'."""
+def test_b959_extract_unknown_strategy_returns_post_r5_method():
+    """B959+B980: strategy not in R4 returns hybrid method with axis_3_unavailable."""
     from backtest.diagnostics.section_04_redundancy_phi_matrix import extract_section_04_for_strategy
     result = extract_section_04_for_strategy("nonexistent_strategy_xyz_b959")
-    assert result["method"] == "not_in_r4_cube"
+    assert result["method"] == "hybrid_signal_overlap_plus_cluster_id_axis_3_unavailable_post_r5"
     assert result["n_fires_in_r4"] == 0
-    assert result["track_a_candidate"] is False
-    assert result["top_5_neighbors"] == []
+    assert result["in_r4_cube"] is False
+    # Hybrid still produces axis_1 + axis_2 even pre-R5; axis_3 is empty list
+    assert result["axis_3_fire_bar_top_5"] == []
 
 
-def test_b959_schema_keys_complete():
-    """B959: extract returns expected schema keys."""
+def test_b959_b980_schema_keys_complete():
+    """B959+B980: extract returns expected hybrid schema keys."""
     from backtest.diagnostics.section_04_redundancy_phi_matrix import extract_section_04_for_strategy
     result = extract_section_04_for_strategy("any_strategy")
     expected_keys = {
-        "n_fires_in_r4", "top_5_neighbors", "max_jaccard_neighbor",
-        "max_jaccard_value", "track_a_candidate", "method", "source",
-        "threshold", "memory_rule_reference",
+        "n_fires_in_r4", "in_r4_cube",
+        "self_cluster_id", "n_cluster_peers", "cluster_peers",
+        "axis_1_signal_overlap_top_5", "axis_2_shared_cluster_peers",
+        "axis_3_fire_bar_top_5", "axis_3_max_jaccard_neighbor",
+        "axis_3_max_jaccard_value", "hybrid_track_a_candidates",
+        "track_a_candidate", "method", "source", "threshold",
+        "memory_rule_reference",
     }
     assert set(result.keys()) == expected_keys
 
 
-def test_b959_track_a_threshold_documented():
-    """B959: track_a_candidate flagged when max_jaccard >= 0.70 (B709 PEAD precedent)."""
-    from backtest.diagnostics.section_04_redundancy_phi_matrix import TRACK_A_THRESHOLD
+def test_b959_b980_track_a_thresholds_documented():
+    """B959+B980: signal-overlap threshold 0.50 (B980 Council 82) + B709 phi precedent."""
+    from backtest.diagnostics.section_04_redundancy_phi_matrix import (
+        TRACK_A_THRESHOLD, SIGNAL_OVERLAP_TRACK_A_THRESHOLD,
+    )
+    # B959 fire-bar threshold preserved as Axis 3 reference
     assert TRACK_A_THRESHOLD == 0.70
+    # B980 hybrid Axis 1 signal-overlap threshold
+    assert SIGNAL_OVERLAP_TRACK_A_THRESHOLD == 0.50
 
 
 def test_b959_populate_writes_to_dossier(tmp_path):
@@ -132,5 +148,7 @@ def test_b959_populate_writes_to_dossier(tmp_path):
         updated = json.load(f)
     assert "section_04_redundancy_phi_matrix" in updated["sections"]
     section = updated["sections"]["section_04_redundancy_phi_matrix"]
-    assert section["threshold"] == 0.70
-    assert "feedback_no_prior_edge_consolidate_before_tune" in section["memory_rule_reference"]
+    # B980 hybrid: threshold = signal-overlap 0.50 (not fire-bar 0.70)
+    assert section["threshold"] == 0.50
+    # B980 hybrid memory rule reference includes Council 82 Option-g
+    assert "B980 Council 82" in section["memory_rule_reference"]

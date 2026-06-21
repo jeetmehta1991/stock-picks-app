@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "batch": "B980",
+  "council": "82_OPTION_G_HYBRID",
+  "method": "hybrid_signal_overlap_plus_cluster_id_AND_gate",
+  "signal_overlap_threshold": 0.5,
+  "n_strategies_total": 219,
+  "n_strategies_with_cluster_id": 125,
+  "n_track_a_pairs": 0,
+  "n_strategies_in_track_a_pairs": 0,
+  "pairs_per_cluster": {},
+  "verdict": "TERMINAL_HONEST_FINDING_PER_COUNCIL_82_FALLBACK",
+  "narrative": "ZERO Track A consolidation candidates surface under hybrid (signal_overlap >= 0.50 AND shared cluster_id) gate. Per Council 82 fallback: escalate to Option-f terminal acknowledgment + defer consolidation to post-R5 Sharpe-signature clustering (Section 19 Axis 4 when R5 data lands).",
+  "track_a_candidate_pairs": []
+}
