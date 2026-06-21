@@ -371,7 +371,7 @@ Each section traces END-TO-END (source -> producer -> binding -> strategy -> eng
 
 | DEC | Description | Source |
 |---|---|---|
-| **DEC #1** | Soft-score reweight to 0.35/0.30/0.23/0.12 + DSR/cost-sens promoted from soft-ingredients to MULTIPLICATIVE GATES | First Principles + Quant |
+| **DEC #1** | Soft-score reweight to **0.40 sharpe / 0.34 calmar / 0.26 profit_factor** (3 ingredients; renormalized from 0.35/0.30/0.23 with 4th-ingredient 0.12 slot REMOVED per B969 Council 70+71 owner-approved 2026-06-21). DSR/cost-sens promoted from soft-ingredients to MULTIPLICATIVE GATES (preserved). **4th ingredient post-R5 only** -- observer columns for sharpe-stability / ulcer-index / tail-ratio / k-ratio shipped in R5 cube for empirical comparison; 4th weight + 4th ingredient identity derived JOINTLY from null-distribution variance per Council 38 Quant directive in single post-R5 calibration pass (ticket S5-NULL-CALIB-SOFT-SCORE-4TH-INGREDIENT). No winner-selection role for observer columns until that ticket closes. | First Principles + Quant |
 | **DEC #2** | Dispersion gate `iqr(sharpe_26)/median <= 1.5` (15th passing criterion); calibrated from null-distribution | Executor + Quant |
 | **DEC #3** | Coverage-based wiring definition (`coverage run` not grep) | Executor + First Principles |
 | **DEC #4** | OOS seal protocol: 2020-2023 IS / 2024-2026 OOS; hash posted to AUDIT.md before any Stream D; roster freeze; post-seal-trial counting | Executor + Quant + First Principles |

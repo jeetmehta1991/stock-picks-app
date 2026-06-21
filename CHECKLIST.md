@@ -1833,3 +1833,25 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **First application:** B907 PILOT (Option B per Council 29) + B908 R5 HALT pending explicit $-approval.
 
      **R5 STOP #1 REINFORCEMENT (owner directive 2026-06-19 B911):** R5 launch is BLOCKED until **explicit owner mention** of "launch R5" or equivalent verbal go-directive. This is stricter than prior Dec-4(b) "after Dec 5 + pyramid GREEN" gate-clearance interpretation. **Even if Dec 5 + pyramid GREEN both clear, R5 does NOT auto-launch** -- requires explicit owner GO directive. Apply same rule pattern to any subsequent AWS-spend cube runs (R5.1, R5.2, etc.) until owner removes this constraint. Per-turn STOP #1 check must verify: did owner explicitly say "launch R5" THIS session? If no, R5 stays HALT regardless of other technical gates.
+
+115. **HARD RULE -- Council MUST ENUMERATE options + RECOMMEND final choice. BOTH required.** (Owner directive 2026-06-21 B969: "Council this. Approve council recommendations. Council is supposed to enumerate and provide final recommendation. Both are needed. Ensure compliance going forward.")
+
+     Council outputs must end with TWO sections (not one):
+
+     1. **OPTIONS ENUMERATED:** numbered/labeled set of considered options (alpha/beta/gamma/delta OR A/B/C/D OR named per context). Show the full search space the council considered. Bare list acceptable; no need to argue each in conclusion if reasoning was shown per-advisor above.
+     2. **RECOMMEND: [ONE CHOICE].** Single recommendation extracted from the option set with explicit justification. Format: `RECOMMEND: [option name + brief justification]. Awaiting owner approval.`
+
+     **Workflow:** council recommends -> owner approves OR redirects to a specific alternative from the enumerated options OR counter-proposes new option. Claude executes on approval.
+
+     **Anti-patterns to reject:**
+     - "OWNER DECISION REQUIRED: pick A/B/C/D" (enumeration-only; council punts the decision)
+     - "RECOMMEND: X" without enumerating what was considered (recommendation-only; owner cannot see what was rejected and why)
+     - "Council split; owner picks" (council MUST converge unless escalation to 5-advisor or owner override needed)
+
+     **Past failure pattern:** Council 69 (2026-06-21) ended with `OWNER DECISION REQUIRED A/B/C/D/E/F` enumeration without final pick. Owner corrected: council must give final recommendation. Council 70 (same turn) recovered with single final rec, but did not enumerate the considered options. Owner B969 clarification: BOTH parts needed. Council 71 (B969) ships the corrected format.
+
+     **Compliance check (single-question version):** At end of every council output, ask: "Did I enumerate the options considered AND give one final recommendation?" If either is missing, the council output is non-compliant per B969 owner directive.
+
+     **Recovery protocol when miss detected by owner:** the FIRST council after the lapse must (a) acknowledge format failure, (b) re-issue prior council with proper enumerate+recommend format, (c) codify rule (this entry), (d) update LEARNINGS if new meta-pattern surfaced. B969 applies this protocol to Council 69 -> Council 70 -> Council 71 chain.
+
+     **Edge case -- 5+ option search space:** when enumeration would be unwieldy (10+ options), council MAY group into 3-4 strategic clusters with one representative per cluster, then recommend the cluster-winner. Document the clustering in the enumeration section so owner sees the compression rationale.

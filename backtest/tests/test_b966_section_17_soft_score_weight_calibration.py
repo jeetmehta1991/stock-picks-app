@@ -2,6 +2,8 @@
 
 # Source: PATH_TO_PHASE_1B_ALPHA.md Section 13.3 row 17 + DEC #1 + Council 67
 # verdict per owner directive 2026-06-20 autonomous mandate per CHECKLIST #77.
+# B969 (2026-06-21) AMENDED for Council 70+71 DEFER + RENORMALIZE verdict:
+# 3-ingredient 0.40/0.34/0.26 (4th post-R5 from null calibration).
 """
 from __future__ import annotations
 
@@ -14,19 +16,27 @@ def test_b966_section_17_extractor_importable():
     assert hasattr(mod, "extract_section_17_for_strategy")
     assert hasattr(mod, "populate_section_17_for_dossier")
     assert hasattr(mod, "DEC_1_WEIGHTS")
+    assert hasattr(mod, "OBSERVER_COLUMNS")
 
 
-def test_b966_dec_1_weights_match_path_canonical():
-    """B966: DEC #1 weights match PATH Section 13.4: 0.35/0.30/0.23/0.12."""
+def test_b966_dec_1_weights_renormalized_3_ingredient_b969():
+    """B966+B969: DEC #1 weights renormalized to 0.40/0.34/0.26 (3 ingredients).
+
+    B969 Council 70+71 owner-approved 2026-06-21: DEFER + RENORMALIZE
+    (4th ingredient post-R5 null calibration).
+    """
     from backtest.diagnostics.section_17_soft_score_weight_calibration import DEC_1_WEIGHTS
-    assert DEC_1_WEIGHTS["sharpe"] == 0.35
-    assert DEC_1_WEIGHTS["calmar"] == 0.30
-    assert DEC_1_WEIGHTS["profit_factor"] == 0.23
-    assert DEC_1_WEIGHTS["fourth_ingredient_unspecified"] == 0.12
+    assert DEC_1_WEIGHTS["sharpe"] == 0.40
+    assert DEC_1_WEIGHTS["calmar"] == 0.34
+    assert DEC_1_WEIGHTS["profit_factor"] == 0.26
+    # 4th ingredient slot REMOVED (was 0.12)
+    assert "fourth_ingredient_unspecified" not in DEC_1_WEIGHTS
+    # Exactly 3 ingredients
+    assert len(DEC_1_WEIGHTS) == 3
 
 
 def test_b966_dec_1_weights_sum_to_1():
-    """B966: DEC #1 weights sum to 1.0 exactly."""
+    """B966: DEC #1 weights sum to 1.0 (within float precision)."""
     from backtest.diagnostics.section_17_soft_score_weight_calibration import (
         DEC_1_WEIGHTS, _weights_sum,
     )
@@ -34,32 +44,57 @@ def test_b966_dec_1_weights_sum_to_1():
     assert abs(sum(DEC_1_WEIGHTS.values()) - 1.0) < 1e-6
 
 
-def test_b966_placeholder_flag_machine_readable():
-    """B966 Contrarian hardening: placeholder=True + do_not_use_for_winner_selection=True."""
+def test_b966_b969_no_placeholder_flag():
+    """B969 amendment: placeholder=True + do_not_use flags REMOVED post-renormalization.
+
+    The 3-ingredient renormalized weights ARE the canonical pre-R5 spec
+    (not a placeholder); winner-selection can proceed using these 3 +
+    DSR/cost-sens gates. Observer columns are separate from the
+    weighted soft-score.
+    """
     from backtest.diagnostics.section_17_soft_score_weight_calibration import extract_section_17_for_strategy
     result = extract_section_17_for_strategy("any_strategy")
-    assert result["placeholder"] is True
-    assert result["do_not_use_for_winner_selection"] is True
+    assert "placeholder" not in result
+    assert "do_not_use_for_winner_selection" not in result
+    assert result["n_ingredients"] == 3
+    assert result["is_renormalized_from_4_ingredient_draft"] is True
 
 
-def test_b966_calibration_status_pre_r5():
-    """B966: pre-R5 calibration_status string is explicit."""
+def test_b966_b969_calibration_status_renormalized():
+    """B969: calibration_status reflects 3-ingredient renormalized + post-R5 pending."""
     from backtest.diagnostics.section_17_soft_score_weight_calibration import extract_section_17_for_strategy
     result = extract_section_17_for_strategy("any_strategy")
-    assert result["calibration_status"] == "pre_r5_static_weights_pending_null_calibration"
+    assert result["calibration_status"] == "3_ingredient_renormalized_post_r5_null_calibration_pending"
     assert result["calibration_method_pending"] == "null_distribution_variance_inverse"
 
 
-def test_b966_fourth_ingredient_status_documented():
-    """B966: 4th ingredient is documented as unspecified pending owner decision."""
+def test_b966_b969_fourth_ingredient_deferred_status():
+    """B969: 4th ingredient status documents deferral per Council 70+71."""
     from backtest.diagnostics.section_17_soft_score_weight_calibration import extract_section_17_for_strategy
     result = extract_section_17_for_strategy("any_strategy")
-    assert result["fourth_ingredient_status"] == "unspecified_per_DEC_1_pending_owner_decision"
-    assert isinstance(result["fourth_ingredient_candidates"], list)
-    assert len(result["fourth_ingredient_candidates"]) > 0
-    # All candidates from canonical CLAUDE.md metrics
-    expected = {"sortino", "win_rate", "psr", "expectancy"}
-    assert set(result["fourth_ingredient_candidates"]) == expected
+    assert "deferred_post_r5" in result["fourth_ingredient_status"]
+    assert "council_70" in result["fourth_ingredient_status"].lower()
+
+
+def test_b966_b969_observer_columns_emitted():
+    """B969: 4 observer columns shipped for empirical 4th-ingredient comparison."""
+    from backtest.diagnostics.section_17_soft_score_weight_calibration import (
+        extract_section_17_for_strategy, OBSERVER_COLUMNS,
+    )
+    result = extract_section_17_for_strategy("any_strategy")
+    expected_observers = {"sharpe_stability", "ulcer_index", "tail_ratio", "k_ratio"}
+    assert set(OBSERVER_COLUMNS) == expected_observers
+    assert set(result["fourth_ingredient_observer_columns"]) == expected_observers
+    # Pre-R5: all observer values are None
+    assert result["observer_column_status"] == "pending_r5_cube_launch"
+    assert all(v is None for v in result["observer_column_values"].values())
+
+
+def test_b966_b969_post_r5_ticket_documented():
+    """B969: post-R5 calibration ticket explicitly named."""
+    from backtest.diagnostics.section_17_soft_score_weight_calibration import extract_section_17_for_strategy
+    result = extract_section_17_for_strategy("any_strategy")
+    assert result["post_r5_ticket"] == "S5-NULL-CALIB-SOFT-SCORE-4TH-INGREDIENT"
 
 
 def test_b966_calibration_dependency_links_to_section_16():
@@ -75,7 +110,6 @@ def test_b966_payload_identical_across_strategies():
     r1 = extract_section_17_for_strategy("rsi_oversold_long")
     r2 = extract_section_17_for_strategy("smc_bos_continuation")
     r3 = extract_section_17_for_strategy("null_random_long_p05")
-    # All three return identical payloads (framework-level state)
     assert r1 == r2 == r3
 
 
@@ -86,15 +120,17 @@ def test_b966_phase_1c_revisit_method_bayesian():
     assert result["phase_1c_revisit_method"] == "bayesian_posterior"
 
 
-def test_b966_schema_keys_complete():
-    """B966: extract returns expected schema keys."""
+def test_b966_b969_schema_keys_complete():
+    """B966+B969: extract returns expected schema keys for renormalized 3-ingredient."""
     from backtest.diagnostics.section_17_soft_score_weight_calibration import extract_section_17_for_strategy
     result = extract_section_17_for_strategy("any_strategy")
     expected_keys = {
-        "weights", "weights_sum", "weight_source", "placeholder",
-        "do_not_use_for_winner_selection", "calibration_method_pending",
-        "calibration_status", "fourth_ingredient_status",
-        "fourth_ingredient_candidates", "calibration_dependency",
+        "weights", "weights_sum", "weight_source",
+        "n_ingredients", "is_renormalized_from_4_ingredient_draft",
+        "calibration_method_pending", "calibration_status",
+        "fourth_ingredient_status", "fourth_ingredient_observer_columns",
+        "observer_column_status", "observer_column_values",
+        "calibration_dependency", "post_r5_ticket",
         "phase_1c_revisit_method", "method", "source", "limitation",
         "memory_rule_reference",
     }
