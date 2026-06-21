@@ -379,7 +379,9 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "Output (walk_verdict_ledger_v2.json) consumed by r5_inclusion_"
         "criterion.py _load_walk_verdict_ledger() per B948+B950 wiring. "
         "RECURRING per-batch: re-run when STAGE_4_*CLUSTER_WALKS.md docs "
-        "change. Needs cron/launcher wiring to STAGE_4 walk doc edits.",
+        "change. WIRED B976 (2026-06-21 Council 77 P1 Bucket A A8) as "
+        "end-of-run hook in scripts/populate_all_dossiers.py (non-fatal "
+        "try/except). Tests in test_b976_a6_a7_a8_wired.py.",
     ),
     "scripts/classify_deferred_140.py": (
         "a",
@@ -393,8 +395,11 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "c",
         "Batch 934 Council 45 dossier-build self-test framework (9 KNOWN-"
         "GOOD strategies validation). Pre-Stream-E-population sanity check. "
-        "Needs CI/pre-commit hook wiring before next Stream E re-run to catch "
-        "schema drift early.",
+        "WIRED B976 (2026-06-21 Council 77 P1 Bucket A A6) as PRE-FLIGHT "
+        "gate in scripts/populate_all_dossiers.py - runs BEFORE "
+        "list_strategies_for_dossier per Council 38 Outsider mandate "
+        "(non-fatal try/except - soft-gate). Tests in "
+        "test_b976_a6_a7_a8_wired.py.",
     ),
     "scripts/refresh_sector_history.py": (
         "c",
@@ -407,9 +412,11 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "c",
         "Batch 970 Council 72 Stream V reproducibility verifier (PATH "
         "Section 13.7 launch gate #14 satisfied; 70/70 bit-identical on 5 "
-        "deterministic strategies x 14 Stream E extractors). Needs wiring "
-        "as pre-R5-launch gate-check + post-each-Stream-E-extractor-change "
-        "regression guard.",
+        "deterministic strategies x 14 Stream E extractors). WIRED B976 "
+        "(2026-06-21 Council 77 P1 Bucket A A7) as post-Stream-E "
+        "regression hook in scripts/populate_all_dossiers.py (runs AFTER "
+        "populate loop; non-fatal try/except). Tests in "
+        "test_b976_a6_a7_a8_wired.py.",
     ),
 }
 

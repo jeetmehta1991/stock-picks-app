@@ -65,6 +65,30 @@ def main() -> int:
     from backtest.diagnostics.section_16_negative_control_canary import populate_section_16_for_dossier
     from backtest.diagnostics.section_17_soft_score_weight_calibration import populate_section_17_for_dossier
 
+    # B976 (2026-06-21 Council 77 P1 Bucket A A6 wiring): PRE-FLIGHT
+    # dossier_self_test gate. Per Council 38 Outsider mandate the self-test
+    # must run BEFORE Stream E on full roster - if known-good/known-broken
+    # canaries fail, abort to prevent contaminated dossier population.
+    # Closes B971 'c' classification for dossier_self_test.py.
+    # SOFT-GATE design: log + continue on failure (per RECURRING-tool
+    # contract; full block-on-failure would require owner-decided severity
+    # gate). Council 38 Outsider mandate satisfied by visibility, not block.
+    try:
+        from scripts.dossier_self_test import main as _dossier_self_test_main
+        logger.info("B976 A6 wiring PRE-FLIGHT: invoking dossier_self_test.main()")
+        _self_test_rc = _dossier_self_test_main()
+        if _self_test_rc != 0:
+            logger.warning("Dossier self-test PRE-FLIGHT returned non-zero: %s "
+                           "(continuing population; Outsider mandate notes "
+                           "should be addressed before next R5 gate-check)",
+                           _self_test_rc)
+        else:
+            logger.info("Dossier self-test PRE-FLIGHT OK - safe to populate full roster")
+    except Exception as _e_self_test:
+        logger.warning("B976 A6 wiring: dossier self-test PRE-FLIGHT failed "
+                       "(non-fatal): %s: %s",
+                       type(_e_self_test).__name__, _e_self_test)
+
     strategies = list_strategies_for_dossier()
     logger.info("Populating sections 1 / 5 / 6 / 7 / 8 / 9 / 9b / 10 / 11 / 12 / 13 / 18 + r5_inclusion_criterion for %d strategies...", len(strategies))
 
@@ -262,6 +286,49 @@ def main() -> int:
     except Exception as _e_b956:
         logger.warning("B975 A9 wiring: b956 cron failed (non-fatal): %s: %s",
                        type(_e_b956).__name__, _e_b956)
+
+    # B976 (2026-06-21 Council 77 P1 Bucket A A8 wiring): end-of-run hook
+    # to build_walk_verdict_ledger_v2. STAGE_4 cluster walk doc edits feed
+    # the walk-verdict ledger v2 (Council 54 verdict-bearing-keyword scan).
+    # Wiring here per same cadence as A9 b956 cron - populate_all_dossiers
+    # is the post-walk batch trigger that warrants verdict-ledger refresh.
+    # Closes B971 'c' classification for build_walk_verdict_ledger_v2.py.
+    # Failure is non-fatal: ledger v2 is a SURFACING artifact, not gate.
+    try:
+        from scripts.build_walk_verdict_ledger_v2 import main as _ledger_v2_main
+        logger.info("B976 A8 wiring: invoking build_walk_verdict_ledger_v2.main()")
+        _ledger_v2_rc = _ledger_v2_main()
+        if _ledger_v2_rc != 0:
+            logger.warning("Ledger v2 builder returned non-zero: %s", _ledger_v2_rc)
+        else:
+            logger.info("Ledger v2 builder OK (output_audit/walk_verdict_ledger_v2.json refreshed)")
+    except Exception as _e_ledger_v2:
+        logger.warning("B976 A8 wiring: ledger v2 cron failed (non-fatal): %s: %s",
+                       type(_e_ledger_v2).__name__, _e_ledger_v2)
+
+    # B976 (2026-06-21 Council 77 P1 Bucket A A7 wiring): end-of-run hook
+    # to stream_v_verify_reproducibility. Stream V is the verification layer
+    # that double-runs all Stream E extractors on 5 sampled strategies +
+    # asserts bit-identical output. PATH Section 13.7 R5 launch gate #14
+    # requires Stream V passing pre-R5. Natural wiring: run Stream V after
+    # populate_all_dossiers (Stream E) completes - so any extractor change
+    # that breaks determinism surfaces immediately, not weeks later at
+    # pre-R5 gate-check. Closes B971 'c' classification for
+    # stream_v_verify_reproducibility.py.
+    # Failure is non-fatal: Stream V is a SURFACING verification, not gate
+    # (R5 launch gate is a separate manual checklist that consults the
+    # latest Stream V report).
+    try:
+        from scripts.stream_v_verify_reproducibility import main as _stream_v_main
+        logger.info("B976 A7 wiring: invoking stream_v_verify_reproducibility.main()")
+        _stream_v_rc = _stream_v_main()
+        if _stream_v_rc != 0:
+            logger.warning("Stream V reproducibility verifier returned non-zero: %s", _stream_v_rc)
+        else:
+            logger.info("Stream V verifier OK (output_audit/b970_stream_v_reproducibility_report.json refreshed)")
+    except Exception as _e_stream_v:
+        logger.warning("B976 A7 wiring: Stream V cron failed (non-fatal): %s: %s",
+                       type(_e_stream_v).__name__, _e_stream_v)
 
     return 0 if all(stats[k] == 0 for k in ("section_6_errors", "section_9_errors", "section_9b_errors")) else 1
 
