@@ -64,9 +64,12 @@ def test_all_strategies_count_is_202_after_sm1_plus_m6_plus_p15():
 # SM1 fire-condition semantics
 # ----------------------------------------------------------------------
 def test_bollinger_tight_sleeve_fires_with_smart_money():
+    # B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): bb_squeeze ->
+    # bb_20_20_squeeze key-mismatch silent-gap fix. Producer compute_bollinger
+    # emits per-band keys (no bare 'bb_squeeze').
     from backtest.signals.screener import strat_bollinger_tight_with_smart_money_long
     s = {
-        "bb_squeeze": True, "close_above_open": True,
+        "bb_20_20_squeeze": True, "close_above_open": True,
         "price_above_ema_200": True, "insider_cluster_active": True,
     }
     assert strat_bollinger_tight_with_smart_money_long(s)["fires"] is True
@@ -75,7 +78,7 @@ def test_bollinger_tight_sleeve_fires_with_smart_money():
 def test_bollinger_tight_sleeve_misses_without_smart_money():
     from backtest.signals.screener import strat_bollinger_tight_with_smart_money_long
     s = {
-        "bb_squeeze": True, "close_above_open": True,
+        "bb_20_20_squeeze": True, "close_above_open": True,
         "price_above_ema_200": True,
         # No smart-money signal
     }

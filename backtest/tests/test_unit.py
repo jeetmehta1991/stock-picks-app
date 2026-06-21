@@ -7453,15 +7453,19 @@ def test_batch278_cup_and_handle_blocks_unconfirmed_breakouts():
 
 def test_batch278_smc_bos_continuation_requires_volume_and_momentum():
     """Batch 278: smc_bos_continuation now requires volume confirm
-    (vol_spike_2x OR force_index_breakout) + momentum confirm
-    (RSI direction-aligned)."""
+    (vol_spike_2x OR force_index_cross_up) + momentum confirm
+    (RSI direction-aligned).
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): vol_confirms
+    now reads force_index_cross_up instead of force_index_breakout
+    (the latter was a silent-gap key never produced)."""
     from backtest.signals.screener import strat_smc_bos_continuation
     # Stale BOS signal (from 90 bars ago) without volume confirm -> block
     signals_stale = {
         "smc_bos_bullish":        True,
         "price_above_ema_200":    True,
         "vol_spike_2x":           False,
-        "force_index_breakout":   False,
+        "force_index_cross_up":   False,
         "rsi_14":                 60,
     }
     res = strat_smc_bos_continuation(signals_stale)
@@ -8919,10 +8923,13 @@ def test_batch216_smc_inverse_fvg_handles_both_directions():
     # on `(not above_200)` deriving True from `price_above_ema_200=False`;
     # post-B663 the strategy reads `below_ema_200` directly which fails
     # to True without the key set.
+    # B975 fixture update: vol_confirms now reads force_index_cross_up
+    # (B975 Council 77 P1 Bucket A A5 C1 key-mismatch fix - prior
+    # 'force_index_breakout' was never produced by compute_force_index).
     s = {
         "smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": True,
         "price_above_ema_200": False, "below_ema_200": True,
-        "force_index_breakout": True,
+        "force_index_cross_up": True,
     }
     r = strat_smc_inverse_fvg(s)
     assert r["fires"] is True and r["direction"] == "short"
@@ -10574,21 +10581,25 @@ def test_batch373_e1_doc_count_pin_against_code():
         f"F-002 drift: DEPRECATED_STRATEGIES expected 0 (Batch 316a empty); "
         f"got {len(DEPRECATED_STRATEGIES)}."
     )
-    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 1, (
-        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 1 "
-        f"(Batch 372 disabled dxy_headwind_multinational_short); got "
+    # B975 (2026-06-21 Council 77 P1 Bucket A A5 C2 fix): disabled count
+    # 1 -> 2 (naked_poc_retest_long added per dxy precedent; producer
+    # naked_poc_count + naked_poc_nearest_distance_pct never implemented
+    # in volume_profile.py).
+    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 2, (
+        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 2 "
+        f"(Batch 372 dxy_headwind + B975 naked_poc_retest_long); got "
         f"{len(STRATEGIES_DISABLED_MISSING_PRODUCER)}."
     )
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    # B899 (2026-06-18) migration: B874 deleted 2 strategies (S4-B754-A-19
-    # Pattern W council 5-lens option A2: camarilla_rsi_obv dual + standalone
-    # short) reducing 221 -> 219 registered / 218 active.
-    assert active == 218, (
-        f"F-002 drift: active strategy count expected 218 (219 registered "
-        f"minus 1 disabled dxy_headwind_multinational_short); B874 deletions "
-        f"took 221 -> 219; got {active}."
+    # B899 (2026-06-18) migration: B874 deleted 2 strategies reducing
+    # 221 -> 219 registered / 218 active. B975 (2026-06-21) disabled
+    # naked_poc_retest_long -> 217 active.
+    assert active == 217, (
+        f"F-002 drift: active strategy count expected 217 (219 registered "
+        f"minus 2 disabled dxy_headwind + naked_poc_retest_long); got "
+        f"{active}."
     )
 
     # F-004 exit method count
@@ -10598,12 +10609,11 @@ def test_batch373_e1_doc_count_pin_against_code():
         f"{len(EXIT_STRATEGIES)}. Update doc count references."
     )
 
-    # Cube cells = active strategies x exits
-    expected_cells = 197 * 26
-    assert expected_cells == 5122, (
-        f"Phase 1A-beta cube cells: expected 5,122 (197 active x 26 exits "
-        f"per Batch 487 SM1+SM2 adding 10 smart-money sleeves + 1 exit "
-        f"method); got {expected_cells}."
+    # Cube cells = active strategies x exits (B975: 217 active x 26 = 5642)
+    expected_cells = 217 * 26
+    assert expected_cells == 5642, (
+        f"Phase 1A-beta cube cells: expected 5,642 (217 active x 26 exits "
+        f"post-B975 naked_poc_retest_long disablement); got {expected_cells}."
     )
 
 
@@ -10673,30 +10683,38 @@ def test_batch372_dxy_headwind_disabled_missing_producer():
     )
     from backtest.signals.screener import ALL_STRATEGIES
 
+    # B975 (2026-06-21 Council 77 P1 Bucket A A5 C2 fix): naked_poc_retest_long
+    # added per dxy precedent (naked POC producer never implemented in
+    # volume_profile.py). Set is now {dxy_headwind, naked_poc_retest_long}.
     assert STRATEGIES_DISABLED_MISSING_PRODUCER == {
-        "dxy_headwind_multinational_short"
+        "dxy_headwind_multinational_short",
+        "naked_poc_retest_long",
     }, (
-        f"Batch 372: STRATEGIES_DISABLED_MISSING_PRODUCER must contain only "
-        f"'dxy_headwind_multinational_short'; got "
+        f"Batch 372 + B975: STRATEGIES_DISABLED_MISSING_PRODUCER must contain "
+        f"dxy_headwind_multinational_short + naked_poc_retest_long; got "
         f"{STRATEGIES_DISABLED_MISSING_PRODUCER}"
     )
-    # Strategy stays in ALL_STRATEGIES (function body preserved for future
-    # re-enable). Active count drops by 1.
+    # Strategies stay in ALL_STRATEGIES (function bodies preserved for future
+    # re-enable). Active count drops by 2.
     assert "dxy_headwind_multinational_short" in ALL_STRATEGIES, (
-        "Batch 372: strategy must remain in ALL_STRATEGIES (filter happens "
-        "at screener loop, not registry deletion)"
+        "Batch 372: dxy_headwind must remain in ALL_STRATEGIES (filter "
+        "happens at screener loop, not registry deletion)"
+    )
+    assert "naked_poc_retest_long" in ALL_STRATEGIES, (
+        "B975: naked_poc_retest_long must remain in ALL_STRATEGIES (filter "
+        "happens at screener loop, not registry deletion)"
     )
     # Semantically distinct from literature-pruning set
     assert not (DEPRECATED_STRATEGIES & STRATEGIES_DISABLED_MISSING_PRODUCER), (
-        "Batch 372: missing-producer disablement must NOT overlap "
+        "Batch 372 + B975: missing-producer disablement must NOT overlap "
         "literature-null deprecation"
     )
     # Active count for Phase 1A-beta = total - blocked
     blocked = DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     active = sum(1 for k in ALL_STRATEGIES if k not in blocked)
-    assert active == len(ALL_STRATEGIES) - 1, (
-        f"Batch 372: active count must equal total - 1 "
-        f"(deprecated=0 + missing_producer=1); got total={len(ALL_STRATEGIES)} "
+    assert active == len(ALL_STRATEGIES) - 2, (
+        f"Batch 372 + B975: active count must equal total - 2 "
+        f"(deprecated=0 + missing_producer=2); got total={len(ALL_STRATEGIES)} "
         f"active={active}"
     )
 

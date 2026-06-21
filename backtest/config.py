@@ -1049,7 +1049,7 @@ DEPRECATED_STRATEGIES: set[str] = set()
 # (b) what data source would supply it, (c) why it's not implementable
 # "now" (Sprint dependency).
 #
-# Current entries (Batch 372):
+# Current entries (Batch 372, B975 +1):
 #   dxy_headwind_multinational_short - missing foreign_rev_pct producer
 #     Strategy gate: usd_strengthening AND foreign_rev_pct > 40.
 #     usd_strengthening fires correctly (UUP-proxy DXY in cache).
@@ -1064,8 +1064,20 @@ DEPRECATED_STRATEGIES: set[str] = set()
 #     Owner directive 2026-05-26: disable via this set until the
 #     producer lands; clean Stage 2 boundary preferred over hand-
 #     curated CSV.
+#
+#   naked_poc_retest_long - missing naked_poc_count + naked_poc_nearest_distance_pct
+#     producers (B975 2026-06-21 Council 77 P1 Bucket A A5 C2 fix).
+#     Strategy gate: naked_poc_count > 0 AND naked_poc_nearest_distance_pct
+#     < 0.02 AND price_above_ema_200. Producer keys never implemented in
+#     volume_profile.py (line 69 docstring mentions vp_naked_poc_distance
+#     but no concrete code). Strategy compares to safe defaults (0, 1.0)
+#     so silent-gap (always returns False). Disable via this set per dxy
+#     precedent until implementation lands. Implementation scope: compute
+#     naked POCs (period POCs never re-touched after formation) + emit
+#     count + nearest-distance keys in volume_profile.compute_volume_profile.
 STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
     "dxy_headwind_multinational_short",
+    "naked_poc_retest_long",
 }
 
 

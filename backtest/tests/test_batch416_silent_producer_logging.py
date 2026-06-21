@@ -94,11 +94,22 @@ def test_log_silent_producer_empty_rate_limits_same_producer(caplog):
 
 
 def test_screener_call_sites_use_helpers_not_silent_pass():
-    """Source-grep regression: ensure the three Batch 416 call sites
-    actually invoke the helpers, not the pre-Batch-416 `except: pass`."""
+    """Source-grep regression: ensure the Batch 416 call sites actually
+    invoke the helpers, not the pre-Batch-416 `except: pass`.
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 incidental test-stale fix):
+    classification_change + institutional_signal call sites moved from
+    screener.py to backtest/data/signal_loader.py during B927-B928 engine
+    path unification (commits 6/11 + 7/11 of the Council 43 sequence).
+    Assertions split across both files to follow the moved code."""
     from pathlib import Path
-    src = Path(scr.__file__).read_text(encoding="utf-8")
-    assert "_log_silent_producer_failure(\"classification_change\"" in src
-    assert "_log_silent_producer_failure(\"institutional_signal\"" in src
-    assert "_log_silent_producer_failure(\"smc_ict\"" in src
-    assert "_log_silent_producer_empty(\"smc_ict.compute_smc_signals\")" in src
+    src_screener = Path(scr.__file__).read_text(encoding="utf-8")
+    # smc_ict pair still in screener.py
+    assert "_log_silent_producer_failure(\"smc_ict\"" in src_screener
+    assert "_log_silent_producer_empty(\"smc_ict.compute_smc_signals\")" in src_screener
+    # classification_change + institutional_signal now in signal_loader.py
+    # per B927-B928 extraction.
+    from backtest.data import signal_loader as sl
+    src_loader = Path(sl.__file__).read_text(encoding="utf-8")
+    assert "_log_silent_producer_failure(\"classification_change\"" in src_loader
+    assert "_log_silent_producer_failure(\"institutional_signal\"" in src_loader

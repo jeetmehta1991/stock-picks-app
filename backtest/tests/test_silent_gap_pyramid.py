@@ -2894,15 +2894,32 @@ def test_batch330_institutional_distribution_short():
 
 def test_batch330_screener_injects_institutional_signal():
     """Wave 3 (Batch 330): screen_instrument call must include the
-    institutional_signal producer block. Source-level pin."""
+    institutional_signal producer block. Source-level pin.
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 incidental test-stale fix):
+    institutional_signal injection was extracted from screen_instrument
+    into backtest/data/signal_loader.inject_institutional_signals per
+    B921-B928 engine path unification sequence (Council 43 commit 4/11+).
+    screen_instrument now calls inject_institutional_signals indirectly;
+    the producer-side import lives in signal_loader.py. Assertions split:
+    screen_instrument must CALL the injector + signal_loader must IMPORT
+    the producer + key emission preserved end-to-end."""
     import inspect
+    from pathlib import Path
     from backtest.signals.screener import screen_instrument
+    from backtest.data import signal_loader as sl
     src = inspect.getsource(screen_instrument)
-    assert "from backtest.data.smart_money import institutional_signal" in src, (
-        "Wave 3: screen_instrument must import institutional_signal"
+    # screen_instrument calls the injector helper (post-B921 unification).
+    assert "inject_institutional_signals(signals, ticker, as_of)" in src, (
+        "Wave 3 + B975: screen_instrument must call inject_institutional_signals"
     )
-    assert "institutional_strong_buy" in src, (
-        "Wave 3: screen_instrument must inject institutional_strong_buy key"
+    # The producer import + key emission live in signal_loader.py now.
+    src_loader = Path(sl.__file__).read_text(encoding="utf-8")
+    assert "from backtest.data.smart_money import institutional_signal" in src_loader, (
+        "Wave 3 + B975: signal_loader must import institutional_signal producer"
+    )
+    assert "institutional_strong_buy" in src_loader, (
+        "Wave 3 + B975: signal_loader must emit institutional_strong_buy key"
     )
 
 

@@ -1,0 +1,225 @@
+{
+  "batch": "B974",
+  "council": "Council 77 (Contrarian / Executor / First Principles / Outsider)",
+  "phase": "P1",
+  "bucket": "A",
+  "item": "A5-SIGNAL-ORPHAN-17",
+  "owner_directive": "2026-06-21: 'Continue automatically. Council This. Complete all autonomous work in Bucket A without stopping unless input needed from me.'",
+  "source": "B956 findings triage queue + B970+1 producer_index AST fix (146 SIGNAL_ORPHAN -> 17 residual)",
+  "total_findings": 22,
+  "unique_strategies_affected": 17,
+  "category_counts": {
+    "C4_AST_BLIND_SPOT": 6,
+    "C4_AST_BLIND_SPOT_PLUS_SCAFFOLD": 2,
+    "C1_TRUE_WIRING_GAP_KEY_MISMATCH": 7,
+    "C2_TRUE_WIRING_GAP_NO_PRODUCER": 1,
+    "C3_KNOWN_DISABLED_MISSING_PRODUCER": 1
+  },
+  "category_summary": {
+    "C4_AST_BLIND_SPOT": [
+      "bollinger_lower | bb_20_20_reclaim_from_lower_recent_3d,bb_20_20_reclaim_from_upper_recent_3d",
+      "bollinger_tight | bb_20_15_reclaim_from_lower_recent_3d,bb_20_15_reclaim_from_upper_recent_3d,bb_20_20_reclaim_from_lower_recent_3d,bb_20_20_reclaim_from_upper_recent_3d",
+      "bollinger_upper_short | bb_20_20_touch_upper",
+      "hammer_at_support_long | bb_20_20_touch_lower",
+      "shooting_star_short | bb_20_20_touch_upper",
+      "january_effect_small_cap_long | cap_band"
+    ],
+    "C4_AST_BLIND_SPOT_PLUS_SCAFFOLD": [
+      "activist_13d_long | sc_13d_filed_within_30d",
+      "m_and_a_target_long | 8k_item_1_01_filed_within_30d"
+    ],
+    "C1_TRUE_WIRING_GAP_KEY_MISMATCH": [
+      "bollinger_tight_with_smart_money_long | bb_squeeze",
+      "macd_bullish_with_smart_money_long | macd_bullish_cross",
+      "mfi_oversold_with_smart_money_long | mfi_14_oversold",
+      "squeeze_breakout_with_smart_money_long | squeeze_on_release",
+      "xs_low_beta_with_smart_money_long | xs_low_beta_top_quintile",
+      "smc_bos_continuation | force_index_breakout",
+      "smc_inverse_fvg | force_index_breakout"
+    ],
+    "C2_TRUE_WIRING_GAP_NO_PRODUCER": [
+      "naked_poc_retest_long | naked_poc_count,naked_poc_nearest_distance_pct"
+    ],
+    "C3_KNOWN_DISABLED_MISSING_PRODUCER": [
+      "dxy_headwind_multinational_short | foreign_rev_pct"
+    ]
+  },
+  "classification_methodology": "Per (strategy, orphan_signal) pair: (1) grep producer modules backtest/signals/*.py + backtest/data/*.py for literal key, dynamic f-string emit, and intermediate-var assigns. (2) Cross-reference with screener.py strategy read site. (3) Classify into C1 (key-mismatch fix), C2 (no producer), C3 (already-disabled), C4 (AST blind spot false-positive).",
+  "findings_detail": [
+    {
+      "strategy": "bollinger_lower",
+      "signals": [
+        "bb_20_20_reclaim_from_lower_recent_3d",
+        "bb_20_20_reclaim_from_upper_recent_3d"
+      ],
+      "category": "C4_AST_BLIND_SPOT",
+      "evidence": "technical.py:1343-1344 emits f'{key}_reclaim_from_lower_recent_3d' inside loop `for period, std_m in [(20,2.0),(20,1.5),(10,2.0)]` where key=f'bb_{period}_{str(std_m).replace(.,)}'. AST extractor cannot resolve str(2.0).replace('.','') -> '20' (method call on non-Constant).",
+      "action": "FALSE_POSITIVE - signal IS produced; wiring trace methodology blind spot. Document limitation in extractor."
+    },
+    {
+      "strategy": "bollinger_tight",
+      "signals": [
+        "bb_20_15_reclaim_from_lower_recent_3d",
+        "bb_20_15_reclaim_from_upper_recent_3d",
+        "bb_20_20_reclaim_from_lower_recent_3d",
+        "bb_20_20_reclaim_from_upper_recent_3d"
+      ],
+      "category": "C4_AST_BLIND_SPOT",
+      "evidence": "Same loop pattern as bollinger_lower; technical.py:1343-1344 produces all 4 keys including bb_20_15 variant.",
+      "action": "FALSE_POSITIVE - signal IS produced."
+    },
+    {
+      "strategy": "bollinger_upper_short",
+      "signals": [
+        "bb_20_20_touch_upper"
+      ],
+      "category": "C4_AST_BLIND_SPOT",
+      "evidence": "technical.py:1300 emits f'{key}_touch_upper' inside same loop. Loop binding str(2.0).replace('.','') opaque to AST.",
+      "action": "FALSE_POSITIVE - signal IS produced."
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "signals": [
+        "bb_20_20_touch_lower"
+      ],
+      "category": "C4_AST_BLIND_SPOT",
+      "evidence": "technical.py:1299 emits f'{key}_touch_lower'; same blind spot.",
+      "action": "FALSE_POSITIVE - signal IS produced."
+    },
+    {
+      "strategy": "shooting_star_short",
+      "signals": [
+        "bb_20_20_touch_upper"
+      ],
+      "category": "C4_AST_BLIND_SPOT",
+      "evidence": "Same as bollinger_upper_short.",
+      "action": "FALSE_POSITIVE - signal IS produced."
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "signals": [
+        "cap_band"
+      ],
+      "category": "C4_AST_BLIND_SPOT",
+      "evidence": "Producer is INSIDE screener.py (line 7895 signals['cap_band'] = cap_band_from_market_cap(...)). AST extractor SKIPS screener.py by design (section_01_wiring_trace.py line 202: if py.name == 'screener.py': continue). Producer exists in _compute_signals_for_ticker orchestrator.",
+      "action": "FALSE_POSITIVE - cap_band IS produced. Wiring trace methodology limitation: producers in screener.py orchestrator are unscanned."
+    },
+    {
+      "strategy": "activist_13d_long",
+      "signals": [
+        "sc_13d_filed_within_30d"
+      ],
+      "category": "C4_AST_BLIND_SPOT_PLUS_SCAFFOLD",
+      "evidence": "Producer sec_edgar_extractor.py:226,230 emits f'sc_13d_filed_within_{lookback_days}d' where lookback_days is FUNCTION ARG. AST extractor only resolves loop-bindings + intermediate-var assigns; cannot resolve function parameter values. compute_sec_edgar_signals at line 327 calls with lookback_days=30. ADDITIONAL FINDING: compute_sec_edgar_signals docstring says 'NOT WIRED into screen_instrument in Batch 522 -- producer ships SCAFFOLD-ONLY'. Both issues: AST blind spot + scaffold not wired.",
+      "action": "(1) FALSE_POSITIVE on AST trace. (2) Verify post-B522 batches actually wired compute_sec_edgar_signals into screen_instrument (separate ticket if not)."
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "signals": [
+        "8k_item_1_01_filed_within_30d"
+      ],
+      "category": "C4_AST_BLIND_SPOT_PLUS_SCAFFOLD",
+      "evidence": "Same as activist_13d_long; sec_edgar_extractor.py:265 emits via function-arg f-string. Same SCAFFOLD-NOT-WIRED status from B522.",
+      "action": "Same as activist_13d_long."
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "signals": [
+        "bb_squeeze"
+      ],
+      "category": "C1_TRUE_WIRING_GAP_KEY_MISMATCH",
+      "evidence": "Strategy reads 'bb_squeeze' (screener.py:7007). Producer technical.py:1301 emits f'{key}_squeeze' = 'bb_20_20_squeeze' / 'bb_20_15_squeeze' / 'bb_10_20_squeeze'. NO bare 'bb_squeeze' key. Strategy has been firing on default=False forever -> silent-gap.",
+      "action": "FIX: change s.get('bb_squeeze', False) -> s.get('bb_20_20_squeeze', False) to align with bb_squeeze_volume sister strategy convention."
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "signals": [
+        "macd_bullish_cross"
+      ],
+      "category": "C1_TRUE_WIRING_GAP_KEY_MISMATCH",
+      "evidence": "Strategy reads 'macd_bullish_cross' (screener.py:7192). Searched all backtest/signals/*.py: NO key 'macd_bullish_cross' produced anywhere. Silent-gap: strategy always False since wired.",
+      "action": "FIX: either (a) add 'macd_bullish_cross' production to compute_macd in technical.py, OR (b) change strategy to use existing macd signal such as 'macd_histogram_positive' / 'macd_above_signal'."
+    },
+    {
+      "strategy": "mfi_oversold_with_smart_money_long",
+      "signals": [
+        "mfi_14_oversold"
+      ],
+      "category": "C1_TRUE_WIRING_GAP_KEY_MISMATCH",
+      "evidence": "Strategy reads 'mfi_14_oversold' (screener.py:7023). Producer emits 'mfi_oversold' (technical.py:1650), NOT 'mfi_14_oversold'. Sister strategy strat_mfi_oversold (line 1652) correctly reads 'mfi_oversold'. Smart-money sleeve clone introduced naming drift.",
+      "action": "FIX: change s.get('mfi_14_oversold', False) -> s.get('mfi_oversold', False) to match base strat_mfi_oversold."
+    },
+    {
+      "strategy": "squeeze_breakout_with_smart_money_long",
+      "signals": [
+        "squeeze_on_release"
+      ],
+      "category": "C1_TRUE_WIRING_GAP_KEY_MISMATCH",
+      "evidence": "Strategy reads 'squeeze_on_release' (screener.py:7134). Producer compute_squeeze (technical.py:1488-1492) emits squeeze_in/squeeze_momentum/squeeze_positive/squeeze_fire_up/squeeze_fire_dn. NO 'squeeze_on_release' key. Silent-gap.",
+      "action": "FIX: change s.get('squeeze_on_release', False) -> s.get('squeeze_fire_up', False) - the canonical Lazy Bear squeeze-fire-up breakout signal."
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "signals": [
+        "xs_low_beta_top_quintile"
+      ],
+      "category": "C1_TRUE_WIRING_GAP_KEY_MISMATCH",
+      "evidence": "Strategy reads 'xs_low_beta_top_quintile' (screener.py:7163). Producer cross_sectional.py:193 emits 'xs_low_beta_decile' (decile <=2 = top 20% = top quintile). Naming asymmetry: xs_quality_top_quintile EXISTS (line 391) - smart-money sleeve copied that pattern without adding xs_low_beta_top_quintile.",
+      "action": "FIX OPTION A: change strategy to read s.get('xs_low_beta_decile', False). FIX OPTION B (preferred for symmetry): add out[ticker]['xs_low_beta_top_quintile'] = (d <= 2) to producer (parallel with xs_quality_top_quintile semantics)."
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "signals": [
+        "force_index_breakout"
+      ],
+      "category": "C1_TRUE_WIRING_GAP_KEY_MISMATCH",
+      "evidence": "Strategy reads 'force_index_breakout'. Producer technical.py:1658-1660 emits force_index_positive / force_index_cross_up / force_index_cross_dn. NO 'force_index_breakout' key. Likely intent: force_index_cross_up.",
+      "action": "FIX: change to s.get('force_index_cross_up', False)."
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "signals": [
+        "force_index_breakout"
+      ],
+      "category": "C1_TRUE_WIRING_GAP_KEY_MISMATCH",
+      "evidence": "Same key-mismatch as smc_bos_continuation; shared bug.",
+      "action": "FIX: change to s.get('force_index_cross_up', False)."
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "signals": [
+        "naked_poc_count",
+        "naked_poc_nearest_distance_pct"
+      ],
+      "category": "C2_TRUE_WIRING_GAP_NO_PRODUCER",
+      "evidence": "Strategy reads 'naked_poc_count' + 'naked_poc_nearest_distance_pct' (screener.py:6407-6408). volume_profile.py line 69 docstring mentions vp_naked_poc_distance but NO actual implementation. Strategy compares to safe defaults (0, 1.0) so fires only on success - silent-gap, never fires.",
+      "action": "FIX: Producer implementation needed in volume_profile.py - compute naked POCs (periods where POC never re-touched) + emit naked_poc_count + naked_poc_nearest_distance_pct. OR mark strategy STRATEGIES_DISABLED_MISSING_PRODUCER like dxy_headwind precedent."
+    },
+    {
+      "strategy": "dxy_headwind_multinational_short",
+      "signals": [
+        "foreign_rev_pct"
+      ],
+      "category": "C3_KNOWN_DISABLED_MISSING_PRODUCER",
+      "evidence": "CLAUDE.md explicitly documents: STRATEGIES_DISABLED_MISSING_PRODUCER = 1 -- 'dxy_headwind_multinational_short' foreign_rev_pct producer absent. Already classified at Batch 372.",
+      "action": "NO-OP at strategy level - already in STRATEGIES_DISABLED_MISSING_PRODUCER. Optional: remove from active wiring trace target list so it stops appearing as SIGNAL_ORPHAN finding."
+    }
+  ],
+  "resolution_summary": {
+    "C1_TRUE_WIRING_GAP_KEY_MISMATCH": "7 strategies need 1-line fixes to use existing producer key names; silent-gap means these strategies have been returning False forever since respective wireup batches. PRIORITY: HIGH (real silent-gap bugs).",
+    "C2_TRUE_WIRING_GAP_NO_PRODUCER": "1 strategy (naked_poc_retest_long) needs new producer OR disable. PRIORITY: MEDIUM (single strategy, can be disabled per dxy precedent).",
+    "C3_KNOWN_DISABLED_MISSING_PRODUCER": "1 strategy (dxy_headwind_multinational_short) already-disabled. PRIORITY: LOW (registry-only cleanup; optional).",
+    "C4_AST_BLIND_SPOT": "8 strategies (12 signal-rows) = false-positive orphans. Producers DO emit the keys via dynamic patterns AST cannot trace. PRIORITY: LOW (extractor methodology, not silent-gap)."
+  },
+  "wiring_trace_methodology_gaps_identified": [
+    "BLIND-SPOT-1: For-loops over tuples with method-call expressions (e.g., `for period, std_m in [(20,2.0),...]` with `key = f'bb_{period}_{str(std_m).replace(.,)}'`). The .replace() method call is opaque to static AST.",
+    "BLIND-SPOT-2: F-string emits inside helper functions with parameter-driven values (lookback_days, item_code). AST sees function signature but not call-site arg binding.",
+    "BLIND-SPOT-3: Producers in screener.py orchestrator (signals['cap_band'] = ...) are skipped by extractor design (line 202: if py.name == 'screener.py': continue)."
+  ],
+  "council_77_recommendation": "P1 Bucket A item A5 single-batch scope: CLASSIFY ONLY (this artifact). C1 fixes shipped as Batch 975+ next - 7 one-line strategy edits + 1 cross-sectional producer addition + 1 STRATEGIES_DISABLED registry update for naked_poc_retest. Wiring trace AST upgrades for BLIND-SPOT-1/2/3 deferred to coverage.py upgrade (PATH 13.3 supersedes).",
+  "stop_condition_check": {
+    "no_aws_call": "OK - classification + write artifact only",
+    "no_passing_criteria_change": "OK - 14-criterion set unchanged",
+    "pyramid_status": "TBD - run after artifact write"
+  }
+}

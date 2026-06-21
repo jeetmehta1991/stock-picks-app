@@ -192,6 +192,19 @@ def compute_cross_sectional_features(
                                 out[ticker]["xs_beta_decile"] = d
                                 out[ticker]["xs_low_beta_decile"] = (d <= 2)
                                 out[ticker]["xs_high_beta_decile"] = (d >= 9)
+                                # B975 (2026-06-21 Council 77 P1 Bucket A A5
+                                # C1 fix): add xs_low_beta_top_quintile +
+                                # xs_low_beta_bottom_quintile keys for
+                                # symmetry with xs_quality_top_quintile /
+                                # xs_quality_bottom_quintile (this file
+                                # line ~391). Closes silent-gap on
+                                # strat_xs_low_beta_with_smart_money_long
+                                # which read xs_low_beta_top_quintile but no
+                                # producer key existed. Decile <=2 = top
+                                # quintile by lowest-beta (Frazzini-Pedersen
+                                # 2014 betting-against-beta canonical bin).
+                                out[ticker]["xs_low_beta_top_quintile"] = (d <= 2)
+                                out[ticker]["xs_low_beta_bottom_quintile"] = (d >= 9)
                                 # B788 #55(b) EVENT-on-rank-crossing: fires only
                                 # when ticker NEWLY entered bottom-2-decile within
                                 # last 5 days. Reduces 71K/yr STATE to ~3-10K/yr

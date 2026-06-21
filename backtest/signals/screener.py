@@ -3905,9 +3905,15 @@ def strat_smc_inverse_fvg(s):
     # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer) replaces (not above_200)
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)
-    # Volume confirmation: vol_spike_2x (2x ADV) OR force_index_breakout
-    # signals institutional follow-through on the role-flip
-    vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_breakout", False)
+    # Volume confirmation: vol_spike_2x (2x ADV) OR force_index_cross_up
+    # signals institutional follow-through on the role-flip.
+    #
+    # B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
+    # silent-gap repair. Previously read 'force_index_breakout' but
+    # producer technical.py:1658-1660 emits force_index_positive /
+    # force_index_cross_up / force_index_cross_dn (NO _breakout). Aligned
+    # with force_index_cross_up for bullish-direction Force Index event.
+    vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_cross_up", False)
     fl = fl_base and above_200 and vol_confirms
     fs = fs_base and below_200 and vol_confirms and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "smc",
@@ -4101,10 +4107,15 @@ def strat_smc_bos_continuation(s):
     cause: Batch 273's event_recency_bars=90 means BOS signal stays True
     for up to 90 bars, so entries fire on stale structural breaks where
     trend may have already reversed. Added: vol_confirms (vol_spike_2x OR
-    force_index_breakout) + momentum confirm (RSI direction-aligned) to
+    force_index_cross_up) + momentum confirm (RSI direction-aligned) to
     require institutional follow-through on the BOS bar.
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
+    silent-gap repair. Previously read 'force_index_breakout' but producer
+    technical.py:1658-1660 emits force_index_positive / force_index_cross_up
+    / force_index_cross_dn (NO _breakout). Aligned with force_index_cross_up.
     """
-    vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_breakout", False)
+    vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_cross_up", False)
     rsi = s.get("rsi_14", 50)
     fl = (
         s.get("smc_bos_bullish", False)
@@ -7002,30 +7013,44 @@ def _has_smart_money_buy(s) -> bool:
 def strat_bollinger_tight_with_smart_money_long(s):
     """Bollinger-tight squeeze + smart-money confirmation. Sleeve variant
     of bollinger_tight base; smart-money signal validates the squeeze
-    is fundamentally backed rather than technical-only."""
+    is fundamentally backed rather than technical-only.
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
+    silent-gap repair. Strategy previously read 'bb_squeeze' (default=False)
+    but producer compute_bollinger (technical.py:1301) emits per-band keys
+    like 'bb_20_20_squeeze' / 'bb_20_15_squeeze' / 'bb_10_20_squeeze' via
+    f'{key}_squeeze'. NO bare 'bb_squeeze' key exists -> strategy returned
+    False forever. Aligned with bb_squeeze_volume sister-strategy convention
+    of consuming bb_20_20_squeeze."""
     base_fires = (
-        s.get("bb_squeeze", False)
+        s.get("bb_20_20_squeeze", False)
         and s.get("close_above_open", True)
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["bb_squeeze", "close_above_open", "price_above_ema_200",
+        ["bb_20_20_squeeze", "close_above_open", "price_above_ema_200",
          "smart_money_buy"],
-        ["Bollinger band squeeze tight", "Above 200 EMA",
+        ["Bollinger band squeeze tight (20,2.0)", "Above 200 EMA",
          "Smart-money buy confirmation"])
 
 
 def strat_mfi_oversold_with_smart_money_long(s):
     """MFI oversold + smart-money buy. Money-flow oversold often precedes
-    a bounce; smart-money buy raises confidence the bounce is real."""
+    a bounce; smart-money buy raises confidence the bounce is real.
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
+    silent-gap repair. Strategy previously read 'mfi_14_oversold' but
+    producer technical.py:1650 emits 'mfi_oversold' (mfi_v < 20). NO
+    'mfi_14_oversold' key produced anywhere. Sister strategy strat_mfi_oversold
+    correctly reads 'mfi_oversold' - this sleeve clone introduced naming drift."""
     base_fires = (
-        s.get("mfi_14_oversold", False)
+        s.get("mfi_oversold", False)
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["mfi_14_oversold", "price_above_ema_200", "smart_money_buy"],
+        ["mfi_oversold", "price_above_ema_200", "smart_money_buy"],
         ["MFI(14) oversold", "Above 200 EMA",
          "Smart-money buy confirmation"])
 
@@ -7129,14 +7154,21 @@ def strat_52w_high_breakout_with_smart_money_vol_below_long(s):
 
 def strat_squeeze_breakout_with_smart_money_long(s):
     """Squeeze breakout + smart-money buy. Volatility-contraction trade
-    with institutional sponsor."""
+    with institutional sponsor.
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
+    silent-gap repair. Strategy previously read 'squeeze_on_release' but
+    producer compute_squeeze (technical.py:1488-1492) emits
+    squeeze_in/squeeze_momentum/squeeze_positive/squeeze_fire_up/squeeze_fire_dn.
+    NO 'squeeze_on_release' key. Aligned with canonical Lazy Bear
+    squeeze-fire-up breakout signal."""
     base_fires = (
-        s.get("squeeze_on_release", False)
+        s.get("squeeze_fire_up", False)
         and s.get("close_above_open", True)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["squeeze_on_release", "close_above_open", "smart_money_buy"],
+        ["squeeze_fire_up", "close_above_open", "smart_money_buy"],
         ["TTM squeeze releasing", "Bullish candle",
          "Smart-money buy confirmation"])
 
@@ -7187,15 +7219,22 @@ def strat_donchian_breakout_with_smart_money_long(s):
 
 def strat_macd_bullish_with_smart_money_long(s):
     """MACD bullish cross + smart-money buy. Momentum-onset signal with
-    institutional/insider sponsor."""
+    institutional/insider sponsor.
+
+    B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
+    silent-gap repair. Strategy previously read 'macd_bullish_cross' (no
+    such key produced anywhere). Producer compute_macd (technical.py:597-632)
+    emits per-MACD-tuple keys via f'{key}_crossover_up' where key=
+    f'macd_{fast}_{slow}_{sig}'. Aligned with canonical (12,26,9) MACD
+    crossover_up signal."""
     base_fires = (
-        s.get("macd_bullish_cross", False)
+        s.get("macd_12_26_9_crossover_up", False)
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["macd_bullish_cross", "price_above_ema_200", "smart_money_buy"],
-        ["MACD bullish cross", "Above 200 EMA",
+        ["macd_12_26_9_crossover_up", "price_above_ema_200", "smart_money_buy"],
+        ["MACD(12,26,9) bullish cross", "Above 200 EMA",
          "Smart-money buy confirmation"])
 
 
