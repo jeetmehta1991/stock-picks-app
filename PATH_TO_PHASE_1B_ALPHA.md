@@ -741,7 +741,7 @@ P1 STREAM E 20/20 sections shipped (B933-B967) is **NECESSARY but NOT SUFFICIENT
 |---|---|
 | Stage 4 per-change approval on 351 R4 atomic rows | RESOLVED-VIA-STAGE-4-WALK-OUTPUTS B883 2026-06-17 |
 | Stage 5 implementation batches (≥5 approvals/batch) | PENDING owner triage |
-| TIER 2 producer wireup completion (smart-money / event-driven / cross-sectional) | PENDING |
+| TIER 2 producer wireup completion (smart-money / event-driven / cross-sectional) | **RESOLVED B978 2026-06-21** (Council 78 A2-AUDIT-FIRST: 9 of 9 inject_* wired + producers present + data paths populated; banner stale since Phase P0 signal_loader.py extraction) |
 | Strategy-side EVENT rollouts + AA EXPLORATORY 18-strategy sweep + S mean-rev SHORT EXPLORATORY tags + BB news_sentiment vendor SPOF sentinel | PENDING |
 | #4 BH-FDR vs Bonferroni methodology decision | PENDING owner decision |
 | 18 substantive pyramid items (B586/B533/B465 + 15 singletons) | **RESOLVED B973 2026-06-21** (Council 76 honest-finding pivot; B907+B971+B972 explicit + 8 verified-passing-silently in current pytest) |

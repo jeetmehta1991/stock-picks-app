@@ -1,0 +1,195 @@
+{
+  "schema_version": "1.0",
+  "batch": "B978",
+  "council": "78_UNANIMOUS_A2_AUDIT_FIRST",
+  "summary": {
+    "n_inject_fns": 9,
+    "n_wired_in_screener": 9,
+    "n_producer_modules_present": 9,
+    "n_producer_modules_importable": 9,
+    "n_data_paths_present": 9,
+    "n_data_paths_missing": 0,
+    "fully_wired_count": 9,
+    "gaps_by_family": {
+      "smart-money": [],
+      "event-driven": [],
+      "cross-sectional": []
+    },
+    "verdict": "RESOLVED_BANNER_STALE",
+    "narrative": "All 9 inject_* functions are wired in screener.py + producer modules present + importable + data paths populated. CLAUDE.md banner 'TIER 2 producer wireup completion' is STALE bookkeeping similar to PYRAMID-CLEANUP-ENV B973 precedent. Honest-finding pivot: update banner to RESOLVED."
+  },
+  "per_inject_fn": {
+    "inject_news_sentiment_signals": {
+      "family": "event-driven",
+      "wired_in_screener": {
+        "called": true,
+        "line": 8096,
+        "snippet": "from backtest.data.signal_loader import inject_news_sentiment_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 1927,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    },
+    "inject_institutional_persistence_signals": {
+      "family": "smart-money",
+      "wired_in_screener": {
+        "called": true,
+        "line": 7998,
+        "snippet": "from backtest.data.signal_loader import inject_institutional_persistence_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 5,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    },
+    "inject_short_interest_signals": {
+      "family": "smart-money",
+      "wired_in_screener": {
+        "called": true,
+        "line": 7954,
+        "snippet": "from backtest.data.signal_loader import inject_short_interest_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 1926,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    },
+    "inject_search_volume_signals": {
+      "family": "cross-sectional",
+      "wired_in_screener": {
+        "called": true,
+        "line": 8100,
+        "snippet": "from backtest.data.signal_loader import inject_search_volume_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 1417,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    },
+    "inject_earnings_surprise_yoy_signals": {
+      "family": "event-driven",
+      "wired_in_screener": {
+        "called": true,
+        "line": 7950,
+        "snippet": "from backtest.data.signal_loader import inject_earnings_surprise_yoy_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 1937,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    },
+    "inject_pead_signals": {
+      "family": "event-driven",
+      "wired_in_screener": {
+        "called": true,
+        "line": 7945,
+        "snippet": "from backtest.data.signal_loader import inject_pead_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 1937,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    },
+    "inject_classification_change_signals": {
+      "family": "event-driven",
+      "wired_in_screener": {
+        "called": true,
+        "line": 7965,
+        "snippet": "from backtest.data.signal_loader import inject_classification_change_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 4342,
+        "parent_exists": true,
+        "method": "rglob_count"
+      },
+      "fully_wired": true
+    },
+    "inject_insider_buying_signals": {
+      "family": "smart-money",
+      "wired_in_screener": {
+        "called": true,
+        "line": 7960,
+        "snippet": "from backtest.data.signal_loader import inject_insider_buying_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 1,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    },
+    "inject_institutional_signals": {
+      "family": "smart-money",
+      "wired_in_screener": {
+        "called": true,
+        "line": 7980,
+        "snippet": "from backtest.data.signal_loader import inject_institutional_signals"
+      },
+      "producer_module_state": {
+        "exists": true,
+        "importable": true
+      },
+      "data_path_state": {
+        "data_present": true,
+        "n_files": 1,
+        "parent_exists": true,
+        "method": "glob_match"
+      },
+      "fully_wired": true
+    }
+  },
+  "memory_rule_reference": "Council 76 PYRAMID-CLEANUP-ENV banner-verification precedent (B973) + feedback_audit_recommendations_against_existing_directives + feedback_no_surface_level_audits."
+}
