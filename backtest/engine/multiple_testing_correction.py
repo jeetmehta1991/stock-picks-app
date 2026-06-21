@@ -5,7 +5,9 @@ Batch 667 (2026-06-09 owner-approved per MULTIPLE_TESTING_METHODOLOGY.md
 Deflated Sharpe + Hansen 2005 SPA + Benjamini-Hochberg FDR sanity check.
 
 The 6 owner-approved policy decisions:
-  1. COMPOSE (deflated-Sharpe + SPA + BH-FDR sanity check)
+  1. COMPOSE (deflated-Sharpe + SPA + BH-FDR HARD GATE per B982
+     2026-06-21 Council 85 Option-3 owner-approved; promoted from
+     sanity-check to gate per Bucket B B3 closure)
   2. Family-size N = deployable strategies only (excludes EXPLORATORY /
      DO-NOT-DEPLOY via the cube_eligible_for_multiple_testing flag)
   3. Per-regime AND overall, independently corrected
@@ -13,6 +15,18 @@ The 6 owner-approved policy decisions:
      cube scoring
   5. Per-direction families: LONG and SHORT corrected separately
   6. C2 + R8 sequenced separately, R8 second
+
+B982 (2026-06-21) AMENDMENT TO DECISION 1:
+  BH-FDR was previously a sanity-check (computed but not gated). Per
+  Council 85 Option-3 owner-approved 2026-06-21: BH-FDR PROMOTED to
+  HARD GATE. passes_compose now requires:
+    deflated_sharpe > 0 AND deflated_p < alpha AND spa_p < alpha AND
+    bh_fdr_significant.
+  Justification: Benjamini-Hochberg 1995 + Storey 2003 q-value is
+  canonical FDR-control standard at N>1000 (our N_effective=5,874
+  per DEC #5). FWER (Bonferroni) would destroy power. Decisions 2-6
+  unchanged. Reversibility: one-line revert by removing
+  `and r.bh_fdr_significant` if R5 over-tightens.
 
 The 3 strategy states post-B667:
   REGISTERED + SCORED + COUNTED (deployable - default)
@@ -434,10 +448,21 @@ def cube_select_with_multiple_testing(
             )
         # If SPA can't run, leave per-strategy spa_pvalue at 1.0 sentinel
 
-        # BH-FDR sanity check on deflated p-values
+        # B982 (2026-06-21) Council 85 Option-3 owner-approved 2026-06-21
+        # per directive 'Approve your recommendations. Proceed council
+        # this.': BH-FDR PROMOTED FROM SANITY-CHECK TO HARD GATE.
+        # B667 Decision 1 framing updated; Decisions 2-6 unchanged.
+        # Per Benjamini-Hochberg 1995 + Storey 2003 q-value canonical
+        # FDR-control standard at N>1000 (N_effective=5,874 per DEC #5).
+        # Per project_no_apriori_strategy_pruning: FDR is appropriate at
+        # discovery-mode N-scale; FWER (Bonferroni) would destroy power
+        # (alpha/5,874 = 8.5e-6 per cell rejecting true positives).
+        # Reversibility: one-line `and r.bh_fdr_significant` revert if
+        # over-tightens R5.
         bh_significant = benjamini_hochberg_fdr(deflated_pvalues, alpha=alpha)
 
-        # Apply SPA + BH-FDR to each result
+        # Apply SPA + BH-FDR to each result (BH-FDR is now a HARD GATE
+        # per B982 + Council 85 Option-3; previously sanity-check only).
         for r, bh_sig in zip(partial, bh_significant):
             if spa_p is not None:
                 r.spa_pvalue = spa_p
@@ -446,6 +471,7 @@ def cube_select_with_multiple_testing(
                 r.deflated_sharpe > 0
                 and r.deflated_sharpe_pvalue < alpha
                 and r.spa_pvalue < alpha
+                and r.bh_fdr_significant  # B982 promoted to hard gate
             )
 
         results.extend(partial)
