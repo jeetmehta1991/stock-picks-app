@@ -1537,7 +1537,7 @@ Per-batch pointers for the Phase P1 STREAM E sweep (B933-B968; 36 commits). Cont
 | B953 | Section 5 regime_affinity_lineage extractor | 57 |
 | B954 | Section 13 exit_axis_best extractor | 58 |
 | B955 | Section 8 data_source_asymmetry extractor (25 INVERSE_UNSAFE) | 59 |
-| B956 | findings_triage_queue (460 actionable findings) | 60 PIVOT |
+| B956 | findings_triage_queue (460 -> 331 actionable findings post B970+1; SIGNAL_ORPHAN 146 -> 17) | 60 PIVOT |
 | B957 | retrospective_trial_count_audit (N_eff ~5,894; 1.04x) | 61+62 |
 | B958 | PATH §13.15 + §13.16 Phase 6.5 + DEC-PHASE-6.5-RESET | 63 |
 | B959 | Section 4 redundancy_phi_matrix (HONEST: 0 Track A candidates) | 64 |
@@ -1546,6 +1546,7 @@ Per-batch pointers for the Phase P1 STREAM E sweep (B933-B968; 36 commits). Cont
 | B962-B966 | Sections 2/14/15/16/17 (Stream E completion) | 67 |
 | B967 | populate_all_dossiers wired all 20 sections | - |
 | B968 | doc-sync discipline-restoration (queue + index + PATH §13.17 + CLAUDE.md + B956 amend) | 68 |
+| B970+1 | Section 1 producer_index f-string + intermediate-var expansion (Council 73 kappa-a; SIGNAL_ORPHAN 146 -> 17 = 88% reduction; 1088 -> 1144 keys; 460 -> 331 total B956 findings) | 73 |
 
 **META-FINDING (Council 66; promoted by Council 68 to standalone ticket):** Per CLAUDE.md R5 is gated on entire-execution-queue resolution (Stage 4 walks DONE per B883, but TIER 2 producer wireup + #4 BH-FDR + 18 pyramid items + Stream V outstanding), NOT on P1 dossier completeness alone. See PATH §13.17 for explicit gate statement.
 
