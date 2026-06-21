@@ -10585,21 +10585,27 @@ def test_batch373_e1_doc_count_pin_against_code():
     # 1 -> 2 (naked_poc_retest_long added per dxy precedent; producer
     # naked_poc_count + naked_poc_nearest_distance_pct never implemented
     # in volume_profile.py).
-    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 2, (
-        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 2 "
-        f"(Batch 372 dxy_headwind + B975 naked_poc_retest_long); got "
-        f"{len(STRATEGIES_DISABLED_MISSING_PRODUCER)}."
+    # B984 (2026-06-21 Council 88 walk-1 Sub-A): disabled count 2 -> 3
+    # (m_and_a_target_long added per CLAUDE.md EV-7 buyback_8k_recent_
+    # long DELETED precedent + Batch 372 / B975 missing-producer
+    # taxonomy; signal `8k_item_1_01_filed_within_30d` never reliable
+    # per M&A Item 1.01 SM-4 feasibility-failure carry).
+    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 3, (
+        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 3 "
+        f"(Batch 372 dxy_headwind + B975 naked_poc + B984 m_and_a_target_long); "
+        f"got {len(STRATEGIES_DISABLED_MISSING_PRODUCER)}."
     )
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
     # B899 (2026-06-18) migration: B874 deleted 2 strategies reducing
     # 221 -> 219 registered / 218 active. B975 (2026-06-21) disabled
-    # naked_poc_retest_long -> 217 active.
-    assert active == 217, (
-        f"F-002 drift: active strategy count expected 217 (219 registered "
-        f"minus 2 disabled dxy_headwind + naked_poc_retest_long); got "
-        f"{active}."
+    # naked_poc_retest_long -> 217 active. B984 (2026-06-21) disabled
+    # m_and_a_target_long -> 216 active.
+    assert active == 216, (
+        f"F-002 drift: active strategy count expected 216 (219 registered "
+        f"minus 3 disabled dxy_headwind + naked_poc + m_and_a_target_long); "
+        f"got {active}."
     )
 
     # F-004 exit method count
@@ -10685,14 +10691,18 @@ def test_batch372_dxy_headwind_disabled_missing_producer():
 
     # B975 (2026-06-21 Council 77 P1 Bucket A A5 C2 fix): naked_poc_retest_long
     # added per dxy precedent (naked POC producer never implemented in
-    # volume_profile.py). Set is now {dxy_headwind, naked_poc_retest_long}.
+    # volume_profile.py).
+    # B984 (2026-06-21 Council 88 walk-1 Sub-A): m_and_a_target_long added
+    # per CLAUDE.md EV-7 8-K Item 1.01 SM-4 feasibility-failure carry +
+    # Batch 372 / B975 precedent.
     assert STRATEGIES_DISABLED_MISSING_PRODUCER == {
         "dxy_headwind_multinational_short",
         "naked_poc_retest_long",
+        "m_and_a_target_long",
     }, (
-        f"Batch 372 + B975: STRATEGIES_DISABLED_MISSING_PRODUCER must contain "
-        f"dxy_headwind_multinational_short + naked_poc_retest_long; got "
-        f"{STRATEGIES_DISABLED_MISSING_PRODUCER}"
+        f"Batch 372 + B975 + B984: STRATEGIES_DISABLED_MISSING_PRODUCER must "
+        f"contain dxy_headwind_multinational_short + naked_poc_retest_long + "
+        f"m_and_a_target_long; got {STRATEGIES_DISABLED_MISSING_PRODUCER}"
     )
     # Strategies stay in ALL_STRATEGIES (function bodies preserved for future
     # re-enable). Active count drops by 2.
@@ -10710,11 +10720,13 @@ def test_batch372_dxy_headwind_disabled_missing_producer():
         "literature-null deprecation"
     )
     # Active count for Phase 1A-beta = total - blocked
+    # B984 (2026-06-21 Council 88 walk-1 Sub-A): missing_producer 2 -> 3
+    # (m_and_a_target_long added per EV-7 8-K precedent).
     blocked = DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     active = sum(1 for k in ALL_STRATEGIES if k not in blocked)
-    assert active == len(ALL_STRATEGIES) - 2, (
-        f"Batch 372 + B975: active count must equal total - 2 "
-        f"(deprecated=0 + missing_producer=2); got total={len(ALL_STRATEGIES)} "
+    assert active == len(ALL_STRATEGIES) - 3, (
+        f"Batch 372 + B975 + B984: active count must equal total - 3 "
+        f"(deprecated=0 + missing_producer=3); got total={len(ALL_STRATEGIES)} "
         f"active={active}"
     )
 

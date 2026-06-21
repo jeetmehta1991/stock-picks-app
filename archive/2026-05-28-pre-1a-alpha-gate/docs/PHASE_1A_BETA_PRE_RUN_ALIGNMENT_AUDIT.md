@@ -12,11 +12,11 @@
 |---|---|---|
 | `strategy_total` | 219 | code/trade-log |
 | `deprecated_count` | 0 | code/trade-log |
-| `missing_producer_count` | 2 | code/trade-log |
-| `missing_producer_list` | ['dxy_headwind_multinational_short', 'naked_poc_retest_long'] | code/trade-log |
-| `strategy_active` | 217 | code/trade-log |
+| `missing_producer_count` | 3 | code/trade-log |
+| `missing_producer_list` | ['dxy_headwind_multinational_short', 'm_and_a_target_long', 'naked_poc_retest_long'] | code/trade-log |
+| `strategy_active` | 216 | code/trade-log |
 | `exit_method_total` | 26 | code/trade-log |
-| `cube_cells_active` | 5642 | code/trade-log |
+| `cube_cells_active` | 5616 | code/trade-log |
 | `strategy_exit_override_count` | 18 | code/trade-log |
 | `agent_count_dec_057` | 11 | code/trade-log |
 | `regime_count` | 4 | code/trade-log |
@@ -27,7 +27,7 @@
 | `phase_1a_beta_aws_pool_workers_per_instance` | 12 | code/trade-log |
 | `phase_1a_beta_aws_per_instance_compute_hours` | 3.0 | code/trade-log |
 | `phase_1a_beta_actual_wall_hours_note` | 10.5h = Hetzner single-machine baseline 2026-05-24 (run_phase1a --phase 1a-beta full T1a x 4yr without multiprocessing pool). Distinct from AWS R4 run 2026-05-31 (output_batch395_final/) which was 5 c7a.4xlarge spot instances x ~3h each = ~3h wall-clock (parallel) at ~$7.80 cost per B884 instance-type decision. For R5 planning use AWS keys not actual_wall_hours. | code/trade-log |
-| `tests_collected` | 5089 | code/trade-log |
+| `tests_collected` | 5111 | code/trade-log |
 
 ## 2. Drift summary by document
 

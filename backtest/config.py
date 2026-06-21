@@ -1088,6 +1088,15 @@ DEPRECATED_STRATEGIES: set[str] = set()
 STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
     "dxy_headwind_multinational_short",
     "naked_poc_retest_long",
+    # B984 (2026-06-21) Council 88 walk-1 Sub-A owner-approved per
+    # directive 'Approve your recommendation. Proceed council this.'
+    # SIGNAL_ORPHAN #1: `8k_item_1_01_filed_within_30d` producer never
+    # reliably implemented (CLAUDE.md EV-7 buyback_8k_recent_long
+    # DELETED per CC-B 8-K population-mixing M&A Item 1.01 SM-4
+    # feasibility-failure carry). Same precedent as Batch 372
+    # foreign_rev_pct + B975 naked_poc producers. DO-NOT-DELETE
+    # compliant (strategy preserved; disabled at producer-missing).
+    "m_and_a_target_long",
 }
 
 
