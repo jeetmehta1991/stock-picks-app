@@ -214,13 +214,8 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "One-time / ad-hoc operator tool. Archive candidate; not part of "
         "automated workflow.",
     ),
-    "scripts/mean_reversion_edge_prior_test.py": (
-        "c",
-        "Batch 758 mean-reversion edge-prior test script (B709-style "
-        "conditional-add-test methodology). Diagnostic test consumed by "
-        "Pattern S empirical validation (B768). Needs documented re-run "
-        "trigger condition for any mean-reversion strategy walk.",
-    ),
+    # B971 (2026-06-21) Council 74: scripts/mean_reversion_edge_prior_test.py
+    # REMOVED -- now externally-referenced (no longer orphan per AU9 scanner).
     "scripts/mfi_obv_anti_selection_test.py": (
         "c",
         "Batch 789 MFI x OBV anti-selection conditional-add-test (B709-"
@@ -301,6 +296,119 @@ CLASSIFICATION: dict[str, tuple[str, str]] = {
         "Batch 757/758 trigger-followthrough validation consumer (post-"
         "B756 fire-bar matrix smoke). Documented validation procedure for "
         "Pattern W candidate testing. Retain in scripts/.",
+    ),
+    # ------------------------------------------------------------------
+    # B971 (2026-06-21) Council 74 A1-1 additions: 15 new orphan scripts
+    # surfaced by AU9 scanner across B914-B970 session work.
+    # ------------------------------------------------------------------
+    "scripts/b914_cohort_audit_13f_fwd_returns.py": (
+        "a",
+        "Batch 914 13F cohort fwd-returns audit; one-shot pre-R5 "
+        "diagnostic. Audited 13F holdings cohort vs forward-return "
+        "distributions for archetype-1 dispose-before-diagnose check. "
+        "Done; archive candidate once owner reviews findings.",
+    ),
+    "scripts/b916_archetype1_diagnose_before_dispose.py": (
+        "a",
+        "Batch 916 archetype-1 diagnose-before-dispose protocol script "
+        "(Council 32-era audit). One-shot pre-R5 archetype investigation; "
+        "owner-approved disposition methodology lives in B917+B918 outputs. "
+        "Archive candidate.",
+    ),
+    "scripts/b917_coverage_map_rescue_retest.py": (
+        "a",
+        "Batch 917 coverage-map rescue-retest one-shot script. Archetype-1 "
+        "broad-sample micropilot; output in output_audit/b917_*.json. "
+        "Done; archive candidate.",
+    ),
+    "scripts/b918_arch1_per_gate_bottleneck.py": (
+        "a",
+        "Batch 918 archetype-1 per-gate bottleneck audit. One-shot pre-R5 "
+        "diagnostic isolating which gate caused FAIL_FIRE_STARVED for arch-1 "
+        "cohort. Output in output_audit/b918_*.json. Archive candidate.",
+    ),
+    "scripts/b949_investigate_evidence_source_buckets.py": (
+        "a",
+        "Batch 949 Council 53 evidence-source bucket investigation (D-only "
+        "75/49.3% OVER-PERMISSIVE finding + 65 Bucket II parser gap). "
+        "One-shot pre-R5 investigation; informed B950 ledger refinement. "
+        "Archive candidate.",
+    ),
+    "scripts/b950_measure_counterfactuals.py": (
+        "a",
+        "Batch 950 Council 54 in-process counterfactual measurement "
+        "(A-only/B-only/A+B distributions before ship-decision). One-shot "
+        "ledger v2 calibration tool. Output informed Council 54 ship verdict. "
+        "Archive candidate.",
+    ),
+    "scripts/b950_pre_build_audit_d_only.py": (
+        "a",
+        "Batch 950 Council 54 Contrarian pre-build audit on 75 D-only "
+        "entries (23/75 = 30.7% with evidence = SHIP_INSTRUMENTED verdict). "
+        "One-shot audit; informed Council 54 ship-conditional decision. "
+        "Archive candidate.",
+    ),
+    "scripts/b956_build_findings_triage_queue.py": (
+        "c",
+        "Batch 956 Council 60 STRATEGIC PIVOT findings triage queue builder "
+        "(scans 217 dossiers across 12 built sections; enumerates 6 finding "
+        "types). RECURRING tool: re-run after each dossier population to "
+        "refresh owner-triage queue. Needs cron/launcher wiring to populate_"
+        "all_dossiers.py end-of-run hook.",
+    ),
+    "scripts/b957_audit_retrospective_trial_counts.py": (
+        "a",
+        "Batch 957 Council 61+62 retrospective trial-count audit "
+        "(N_effective approx 5,894 = 1.04x baseline; DSR threshold inflation "
+        "approx 1.002x NEGLIGIBLE). One-shot pre-R5 audit; informed "
+        "Council 63 Phase 6.5 design. Archive candidate.",
+    ),
+    "scripts/build_walk_verdict_ledger.py": (
+        "a",
+        "Batch 948 Council 52 walk_verdict_ledger v1 builder (108 strategies; "
+        "section-header pattern only). SUPERSEDED by build_walk_verdict_"
+        "ledger_v2.py (B950 Council 54 added table-row pattern + verdict-"
+        "strength scanner). Retain for now as v1 baseline; archive once v2 "
+        "stable post-R5.",
+    ),
+    "scripts/build_walk_verdict_ledger_v2.py": (
+        "c",
+        "Batch 950 Council 54 walk_verdict_ledger v2 builder (125 strategies; "
+        "section-header + table-row patterns + verdict-strength scanner). "
+        "Output (walk_verdict_ledger_v2.json) consumed by r5_inclusion_"
+        "criterion.py _load_walk_verdict_ledger() per B948+B950 wiring. "
+        "RECURRING per-batch: re-run when STAGE_4_*CLUSTER_WALKS.md docs "
+        "change. Needs cron/launcher wiring to STAGE_4 walk doc edits.",
+    ),
+    "scripts/classify_deferred_140.py": (
+        "a",
+        "Batch 947 Council 51 deferred-140 classifier (priority-ordered "
+        "disjoint buckets V > IV > III > II > I; HONEST FINDING: 140/140 = "
+        "100% Bucket V walk-doc-mentioned cross-reference too permissive). "
+        "SUPERSEDED by B948+B949+B950 ledger + criterion refinement. "
+        "Archive candidate.",
+    ),
+    "scripts/dossier_self_test.py": (
+        "c",
+        "Batch 934 Council 45 dossier-build self-test framework (9 KNOWN-"
+        "GOOD strategies validation). Pre-Stream-E-population sanity check. "
+        "Needs CI/pre-commit hook wiring before next Stream E re-run to catch "
+        "schema drift early.",
+    ),
+    "scripts/refresh_sector_history.py": (
+        "c",
+        "Sector history refresh utility (monthly cadence likely). Currently "
+        "no cron/scheduler reference. Needs documented monthly-trigger "
+        "wiring (GH Actions or laptop cron per CLAUDE.md universe refresh "
+        "pattern).",
+    ),
+    "scripts/stream_v_verify_reproducibility.py": (
+        "c",
+        "Batch 970 Council 72 Stream V reproducibility verifier (PATH "
+        "Section 13.7 launch gate #14 satisfied; 70/70 bit-identical on 5 "
+        "deterministic strategies x 14 Stream E extractors). Needs wiring "
+        "as pre-R5-launch gate-check + post-each-Stream-E-extractor-change "
+        "regression guard.",
     ),
 }
 
