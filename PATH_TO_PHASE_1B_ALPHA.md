@@ -420,7 +420,7 @@ class StrategyStatus(str, Enum):
 10. `EXECUTION_QUEUE.open_items_blocking_r5 == 0`
 11. **Stream V pyramid green on every Stream E generator** (Executor)
 12. **OOS seal hash posted >=24h pre-Stream-D first batch** (Executor)
-13. **PSR per-strategy > 0.95** (Quant)
+13. **PSR per-strategy > 0.95** (Quant) — **RESOLVED B983 2026-06-21** (Council 86 Option-7 PSR-SEPARATE + INSUFFICIENT-SAMPLE-PASS owner-approved; `passes_psr` gate wired in compute_strategy_metrics; PSR=None auto-PASSES per `feedback_minimum_fire_count_gate_before_cube`; separate from B982 DSR family-level gate per DEC #6 literal reading)
 14. **`seed_registry.json` published + Stream V reproduced 5 random strategies bit-identically** (Quant)
 15. **Planted-bug canary caught by walk methodology** (Council 39 — owner injects bug Claude-blind; if walk doesn't catch it, walk methodology is theater)
 

@@ -2534,6 +2534,14 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         # None means insufficient sample - auto-passes to avoid double-penalty
         # with the n>=30 / trade_count gates already in place.
         "deflated_sharpe":    (dsr_value is None) or (dsr_value >= pc.get("min_deflated_sharpe", 0.95)),
+        # B983 (2026-06-21) Council 86 Option-7 owner-approved 2026-06-21
+        # DEC #6 PSR companion gate (Bailey-Lopez de Prado 2012): per-
+        # strategy Pr(SR > 0). SEPARATE from DSR family-level gate per
+        # DEC #6 literal reading ('PSR per-strategy + DSR on family').
+        # PSR=None (n_trades < 30) auto-PASSES per `feedback_minimum_fire
+        # _count_gate_before_cube` (defers to canonical criterion #9
+        # n>=30; no double-penalty). Closes Bucket B B1 = 5-of-5 closure.
+        "psr":                (psr_dict.get("psr") is None) or (psr_dict.get("psr") >= pc.get("min_psr", 0.95)),
         # Batch 221 NEW gates (Sortino + Calmar). None auto-passes (insufficient sample).
         "sortino":            (sortino_val is None) or (sortino_val >= pc.get("min_sortino_overall", 1.0)),
         "calmar":             (calmar_val is None) or (calmar_val >= pc.get("min_calmar", 0.5)),

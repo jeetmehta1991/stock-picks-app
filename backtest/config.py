@@ -481,6 +481,16 @@ PASSING_CRITERIA = {
     "macro_correlation":       False,  # was True; now per-strategy opt-in via uses_macro_signal attribute
     "min_trades":              100,    # minimum 100 trades for statistical validity
     "min_deflated_sharpe":     0.95,   # NEW Batch 186: DSR-based stat significance (multi-testing-corrected PSR)
+    # B983 (2026-06-21) Council 86 Option-7 owner-approved 2026-06-21 per
+    # directive 'Approve your recommendation. Proceed council this.':
+    # DEC #6 PSR companion gate (Bailey-Lopez de Prado 2012). PSR per-
+    # strategy = Pr(SR > 0) given finite sample + non-normality. Separate
+    # from passes_compose (B982 BH-FDR family-level gate) per DEC #6
+    # literal reading 'PSR per-strategy + DSR on family'. PSR=None
+    # (n_trades < 30) PASSES per `feedback_minimum_fire_count_gate_before
+    # _cube` (defers to canonical n>=30 criterion #9; no double-penalty).
+    # Closes Bucket B B1 (5-of-5 closure target).
+    "min_psr":                 0.95,   # B983: DEC #6 PSR companion gate threshold
     # BUG-33 RESOLVED-IMPLEMENTED Batch 110 2026-05-12 (owner-approved
     # option C 2026-05-12): tiered Sharpe ratio passing criterion. Per-
     # regime threshold lower because per-regime trade samples are smaller
