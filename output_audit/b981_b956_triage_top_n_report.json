@@ -1,0 +1,670 @@
+{
+  "schema_version": "1.0",
+  "batch": "B981",
+  "council": "83_OPTION_3_SCRIPT_PLUS_RECOMMEND",
+  "owner_directive": "Approve your recommendations. Proceed council this. (2026-06-21)",
+  "source_queue": "output_audit/b956_findings_triage_queue.json",
+  "n_findings_in_source": 323,
+  "n_findings_in_top_n_per_type": {
+    "SIGNAL_ORPHAN": 11,
+    "INVERSE_UNSAFE_CHECK_NEEDED": 5,
+    "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": 5,
+    "DEFERRED_OWNER_TRIAGE": 10,
+    "FIRE_STARVED": 10
+  },
+  "total_enumerated": 41,
+  "pool_counts_per_type": {
+    "DEFERRED_OWNER_TRIAGE": 125,
+    "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": 25,
+    "FIRE_STARVED": 137,
+    "INVERSE_UNSAFE_CHECK_NEEDED": 25,
+    "SIGNAL_ORPHAN": 11
+  },
+  "council_83_walk_1_recommendation": "SIGNAL_ORPHAN",
+  "council_83_walk_1_rationale": "Smallest set (11 findings; closes-fully-in-1-batch); bug-impact severity (code-wiring breaks block engine consumption per B970+1 precedent); already 88%-reduced via B970+1 (146 -> 11 = hard cases remain); batch-walk authorized per owner standing pattern for small bug-impact sets.",
+  "council_83_walk_2_owner_picks_from": [
+    "INVERSE_UNSAFE_CHECK_NEEDED",
+    "EARNINGS_BLACKOUT_LOOKAHEAD_RISK",
+    "DEFERRED_OWNER_TRIAGE",
+    "FIRE_STARVED"
+  ],
+  "ordering_methodology": {
+    "base": "severity ordinal HIGH=3 / MEDIUM=2 / LOW=1 (x10)",
+    "SIGNAL_ORPHAN_adjustment": "+ max(0, 10 - wiring_coverage_pct/10)",
+    "FIRE_STARVED_adjustment": "+ max(0, 30 - |30 - annualized_fires|)",
+    "tie_break": "alphabetical by strategy name"
+  },
+  "top_n_by_type": {
+    "SIGNAL_ORPHAN": [
+      {
+        "strategy": "m_and_a_target_long",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "8k_item_1_01_filed_within_30d"
+          ],
+          "wiring_coverage_pct": 0.0
+        }
+      },
+      {
+        "strategy": "naked_poc_retest_long",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 2,
+          "signals_orphan": [
+            "naked_poc_count",
+            "naked_poc_nearest_distance_pct"
+          ],
+          "wiring_coverage_pct": 33.333333333333336
+        }
+      },
+      {
+        "strategy": "dxy_headwind_multinational_short",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "foreign_rev_pct"
+          ],
+          "wiring_coverage_pct": 50.0
+        }
+      },
+      {
+        "strategy": "bollinger_tight",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 4,
+          "signals_orphan": [
+            "bb_20_15_reclaim_from_lower_recent_3d",
+            "bb_20_15_reclaim_from_upper_recent_3d",
+            "bb_20_20_reclaim_from_lower_recent_3d",
+            "bb_20_20_reclaim_from_upper_recent_3d"
+          ],
+          "wiring_coverage_pct": 60.0
+        }
+      },
+      {
+        "strategy": "activist_13d_long",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "sc_13d_filed_within_30d"
+          ],
+          "wiring_coverage_pct": 66.66666666666667
+        }
+      },
+      {
+        "strategy": "bollinger_tight_with_smart_money_long",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "bb_20_20_squeeze"
+          ],
+          "wiring_coverage_pct": 66.66666666666667
+        }
+      },
+      {
+        "strategy": "bollinger_upper_short",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "bb_20_20_touch_upper"
+          ],
+          "wiring_coverage_pct": 66.66666666666667
+        }
+      },
+      {
+        "strategy": "january_effect_small_cap_long",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "cap_band"
+          ],
+          "wiring_coverage_pct": 66.66666666666667
+        }
+      },
+      {
+        "strategy": "bollinger_lower",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 2,
+          "signals_orphan": [
+            "bb_20_20_reclaim_from_lower_recent_3d",
+            "bb_20_20_reclaim_from_upper_recent_3d"
+          ],
+          "wiring_coverage_pct": 77.77777777777777
+        }
+      },
+      {
+        "strategy": "hammer_at_support_long",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "bb_20_20_touch_lower"
+          ],
+          "wiring_coverage_pct": 80.0
+        }
+      },
+      {
+        "strategy": "shooting_star_short",
+        "finding_type": "SIGNAL_ORPHAN",
+        "source_section": "section_01_wiring_trace_coverage",
+        "severity": "MEDIUM",
+        "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
+        "owner_decision_required": true,
+        "source_batch": "B951",
+        "evidence": {
+          "n_signals_orphan": 1,
+          "signals_orphan": [
+            "bb_20_20_touch_upper"
+          ],
+          "wiring_coverage_pct": 80.0
+        }
+      }
+    ],
+    "INVERSE_UNSAFE_CHECK_NEEDED": [
+      {
+        "strategy": "activist_13d_long",
+        "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
+        "source_section": "section_08_data_source_asymmetry",
+        "severity": "MEDIUM",
+        "proposed_action": "Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mirror on long-only data source",
+        "owner_decision_required": true,
+        "source_batch": "B955",
+        "evidence": {
+          "asymmetric_sources": [
+            "13D"
+          ],
+          "signals_triggering": {
+            "13D": [
+              "sc_13d_filed_within_30d",
+              "sc_13d_latest_filer_identity",
+              "sc_13d_latest_percent_owned"
+            ]
+          }
+        }
+      },
+      {
+        "strategy": "classification_change_with_insider_long",
+        "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
+        "source_section": "section_08_data_source_asymmetry",
+        "severity": "MEDIUM",
+        "proposed_action": "Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mirror on long-only data source",
+        "owner_decision_required": true,
+        "source_batch": "B955",
+        "evidence": {
+          "asymmetric_sources": [
+            "insider_buy"
+          ],
+          "signals_triggering": {
+            "insider_buy": [
+              "insider_cluster_active"
+            ]
+          }
+        }
+      },
+      {
+        "strategy": "classification_change_with_institutional_long",
+        "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
+        "source_section": "section_08_data_source_asymmetry",
+        "severity": "MEDIUM",
+        "proposed_action": "Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mirror on long-only data source",
+        "owner_decision_required": true,
+        "source_batch": "B955",
+        "evidence": {
+          "asymmetric_sources": [
+            "13F"
+          ],
+          "signals_triggering": {
+            "13F": [
+              "institutional_buy"
+            ]
+          }
+        }
+      },
+      {
+        "strategy": "insider_cluster_long",
+        "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
+        "source_section": "section_08_data_source_asymmetry",
+        "severity": "MEDIUM",
+        "proposed_action": "Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mirror on long-only data source",
+        "owner_decision_required": true,
+        "source_batch": "B955",
+        "evidence": {
+          "asymmetric_sources": [
+            "insider_buy"
+          ],
+          "signals_triggering": {
+            "insider_buy": [
+              "insider_cluster_active",
+              "insider_unique_buyers_30d"
+            ]
+          }
+        }
+      },
+      {
+        "strategy": "insider_cluster_with_director_long",
+        "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
+        "source_section": "section_08_data_source_asymmetry",
+        "severity": "MEDIUM",
+        "proposed_action": "Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mirror on long-only data source",
+        "owner_decision_required": true,
+        "source_batch": "B955",
+        "evidence": {
+          "asymmetric_sources": [
+            "insider_buy"
+          ],
+          "signals_triggering": {
+            "insider_buy": [
+              "insider_cluster_active",
+              "insider_unique_buyers_30d"
+            ]
+          }
+        }
+      }
+    ],
+    "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": [
+      {
+        "strategy": "bollinger_tight",
+        "finding_type": "EARNINGS_BLACKOUT_LOOKAHEAD_RISK",
+        "source_section": "section_13_exit_axis_best_26",
+        "severity": "HIGH",
+        "proposed_action": "CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline",
+        "owner_decision_required": true,
+        "source_batch": "B954",
+        "evidence": {
+          "best_exit_method": "earnings_blackout",
+          "best_exit_total_pnl_pct": 1663.2849,
+          "best_exit_n_trades": 380
+        }
+      },
+      {
+        "strategy": "break_retest_volume",
+        "finding_type": "EARNINGS_BLACKOUT_LOOKAHEAD_RISK",
+        "source_section": "section_13_exit_axis_best_26",
+        "severity": "HIGH",
+        "proposed_action": "CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline",
+        "owner_decision_required": true,
+        "source_batch": "B954",
+        "evidence": {
+          "best_exit_method": "earnings_blackout",
+          "best_exit_total_pnl_pct": 843.8966,
+          "best_exit_n_trades": 329
+        }
+      },
+      {
+        "strategy": "bullish_engulfing_support",
+        "finding_type": "EARNINGS_BLACKOUT_LOOKAHEAD_RISK",
+        "source_section": "section_13_exit_axis_best_26",
+        "severity": "HIGH",
+        "proposed_action": "CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline",
+        "owner_decision_required": true,
+        "source_batch": "B954",
+        "evidence": {
+          "best_exit_method": "earnings_blackout",
+          "best_exit_total_pnl_pct": 108.9879,
+          "best_exit_n_trades": 23
+        }
+      },
+      {
+        "strategy": "cmf_flip",
+        "finding_type": "EARNINGS_BLACKOUT_LOOKAHEAD_RISK",
+        "source_section": "section_13_exit_axis_best_26",
+        "severity": "HIGH",
+        "proposed_action": "CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline",
+        "owner_decision_required": true,
+        "source_batch": "B954",
+        "evidence": {
+          "best_exit_method": "earnings_blackout",
+          "best_exit_total_pnl_pct": 4234.2725,
+          "best_exit_n_trades": 636
+        }
+      },
+      {
+        "strategy": "double_bottom_long",
+        "finding_type": "EARNINGS_BLACKOUT_LOOKAHEAD_RISK",
+        "source_section": "section_13_exit_axis_best_26",
+        "severity": "HIGH",
+        "proposed_action": "CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline",
+        "owner_decision_required": true,
+        "source_batch": "B954",
+        "evidence": {
+          "best_exit_method": "earnings_blackout",
+          "best_exit_total_pnl_pct": 226.46840000000003,
+          "best_exit_n_trades": 53
+        }
+      }
+    ],
+    "DEFERRED_OWNER_TRIAGE": [
+      {
+        "strategy": "52w_high_breakout_pullback_long",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "52w_high_breakout_with_smart_money_long",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "52w_low_breakdown",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "52w_low_breakdown_pullback_short",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "52wh_break_retest",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "52wl_break_retest_short",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "adx_initiation",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "bb_squeeze_volume",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      },
+      {
+        "strategy": "bollinger_tight_with_smart_money_long",
+        "finding_type": "DEFERRED_OWNER_TRIAGE",
+        "source_section": "r5_inclusion_criterion (B946+B950)",
+        "severity": "HIGH",
+        "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+        "owner_decision_required": true,
+        "source_batch": "B946 + B950",
+        "evidence": {
+          "r5_inclusion_criterion": "deferred"
+        }
+      }
+    ],
+    "FIRE_STARVED": [
+      {
+        "strategy": "52w_high_breakout",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "52w_high_breakout_with_smart_money_long",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "52w_low_breakdown",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "activist_13d_long",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "avwap_20high_rejection_short",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 21.8,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "bollinger_tight_with_smart_money_long",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "classification_change_breakout_long",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "classification_change_from_tech_short",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      },
+      {
+        "strategy": "classification_change_momentum_long",
+        "finding_type": "FIRE_STARVED",
+        "source_section": "section_07_temporal_coverage_probe",
+        "severity": "HIGH",
+        "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+        "owner_decision_required": true,
+        "source_batch": "B660 measurement + B952 extractor",
+        "evidence": {
+          "verdict": "FAIL_FIRE_STARVED",
+          "fires_per_year_long": 0.0,
+          "fires_per_year_short": 0.0,
+          "min_trades_floor": 30
+        }
+      }
+    ]
+  },
+  "memory_rule_reference": "Council 83 Option-3 SCRIPT-PLUS-RECOMMEND per B978/B980 batch-shape precedent + feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak + feedback_council_enumerate_plus_recommend + CHECKLIST #115 + CSV-first/data-first CLAUDE.md HARD RULE."
+}
