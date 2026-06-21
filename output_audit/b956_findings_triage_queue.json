@@ -3,18 +3,18 @@
   "batch": "B956",
   "council_verdict": "60_UNANIMOUS_strategic_pivot_findings_addressing_mode",
   "n_dossiers_scanned": 217,
-  "n_findings_total": 317,
+  "n_findings_total": 315,
   "n_strategies_with_findings": 188,
   "findings_by_type": {
     "DEFERRED_OWNER_TRIAGE": 125,
     "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": 25,
     "FIRE_STARVED": 137,
     "INVERSE_UNSAFE_CHECK_NEEDED": 25,
-    "SIGNAL_ORPHAN": 5
+    "SIGNAL_ORPHAN": 3
   },
   "findings_by_severity": {
     "HIGH": 287,
-    "MEDIUM": 30
+    "MEDIUM": 28
   },
   "findings": [
     {
@@ -4428,22 +4428,6 @@
       }
     },
     {
-      "strategy": "activist_13d_long",
-      "finding_type": "SIGNAL_ORPHAN",
-      "source_section": "section_01_wiring_trace_coverage",
-      "severity": "MEDIUM",
-      "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-      "owner_decision_required": true,
-      "source_batch": "B951",
-      "evidence": {
-        "n_signals_orphan": 1,
-        "signals_orphan": [
-          "sc_13d_filed_within_30d"
-        ],
-        "wiring_coverage_pct": 66.66666666666667
-      }
-    },
-    {
       "strategy": "dxy_headwind_multinational_short",
       "finding_type": "SIGNAL_ORPHAN",
       "source_section": "section_01_wiring_trace_coverage",
@@ -4457,22 +4441,6 @@
           "foreign_rev_pct"
         ],
         "wiring_coverage_pct": 50.0
-      }
-    },
-    {
-      "strategy": "january_effect_small_cap_long",
-      "finding_type": "SIGNAL_ORPHAN",
-      "source_section": "section_01_wiring_trace_coverage",
-      "severity": "MEDIUM",
-      "proposed_action": "Verify orphan signals are actually unused OR wire producer; check for silent-gap risk",
-      "owner_decision_required": true,
-      "source_batch": "B951",
-      "evidence": {
-        "n_signals_orphan": 1,
-        "signals_orphan": [
-          "cap_band"
-        ],
-        "wiring_coverage_pct": 66.66666666666667
       }
     },
     {

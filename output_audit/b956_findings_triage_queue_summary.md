@@ -17,7 +17,7 @@ Per Council 60 UNANIMOUS verdict: PIVOT from infrastructure-building to findings
 ## Summary
 
 - Total dossiers scanned: 217
-- Total actionable findings: **317**
+- Total actionable findings: **315**
 - Strategies with findings: 188
 
 ## Findings by Type
@@ -28,12 +28,12 @@ Per Council 60 UNANIMOUS verdict: PIVOT from infrastructure-building to findings
 | DEFERRED_OWNER_TRIAGE | 125 | HIGH | Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_pe |
 | EARNINGS_BLACKOUT_LOOKAHEAD_RISK | 25 | HIGH | CHECKLIST #44 look-ahead audit on earnings_blackout exit; verify PIT discipline |
 | INVERSE_UNSAFE_CHECK_NEEDED | 25 | MEDIUM | Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mi |
-| SIGNAL_ORPHAN | 5 | MEDIUM | Verify orphan signals are actually unused OR wire producer; check for silent-gap |
+| SIGNAL_ORPHAN | 3 | MEDIUM | Verify orphan signals are actually unused OR wire producer; check for silent-gap |
 
 ## Findings by Severity
 
 - HIGH: 287
-- MEDIUM: 30
+- MEDIUM: 28
 - LOW: 0
 
 ## Top-20 HIGH-Severity Findings (action-ready for owner walk)

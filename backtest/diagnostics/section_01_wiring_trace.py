@@ -252,6 +252,47 @@ def _walk_with_for_context(node: ast.AST, for_stack: list[ast.For]):
         yield from _walk_with_for_context(child, for_stack)
 
 
+# B986 (2026-06-21) Council 90 Option-6 HYBRID owner-approved per
+# directive 'Approve your recommendation. Proceed council this.':
+# WIRED_VIA_CALL_GRAPH curated annotation set for signals wired via
+# patterns Section 1 static AST audit doesn't trace (call-graph + dict-
+# update + parquet-load + in-place assign in skipped screener.py).
+#
+# Same auditable-taxonomy pattern as MEASUREMENT_DISPUTED + STRATEGIES_
+# DISABLED_MISSING_PRODUCER + EXPLORATORY_STRATEGIES per Contrarian
+# lens (Council 90). Explicit, grep-able, test-pinnable.
+#
+# Each entry = signal_key -> (producer_module, evidence_anchor).
+# Pre-flight verification REQUIRED before adding entries (smoke test on
+# real ticker confirming signal fires).
+WIRED_VIA_CALL_GRAPH = {
+    # B986: sc_13d_filed_within_30d wired via compute_sec_edgar_signals
+    # called from screener.py:8170-8176; smoke verified XRX/BEN/NEXT
+    # 2026-06-21 (all fire True with documented SC 13D activist
+    # filings). Producer at sec_edgar_extractor.py:206
+    # (sc_13d_filed_within_days with lookback_days=30 kwarg via
+    # compute_sec_edgar_signals line 327). Data path data_prefetch/
+    # sec_edgar_decoded/SC_13D/*.parquet. Section 1 detection gap:
+    # f-string emission uses function-parameter binding which AST
+    # audit doesn't trace through cross-module call chain.
+    "sc_13d_filed_within_30d": (
+        "sec_edgar_extractor.py",
+        "compute_sec_edgar_signals (B531 wire-in; screener.py:8170-8176)",
+    ),
+    # B986: cap_band wired via cap_band_from_market_cap at
+    # screener.py:219; in-place assign at screener.py:7934
+    # (signals["cap_band"] = cap_band_from_market_cap(info.get(
+    # "market_cap"))). Strategy consumes at screener.py:6520
+    # (strat_january_effect_long s.get("cap_band") check). Section 1
+    # detection gap: producer lives IN screener.py which is explicitly
+    # skipped (line 279) to avoid self-referencing audit cycles.
+    "cap_band": (
+        "screener.py",
+        "cap_band_from_market_cap (BUG-290 Batch 314; screener.py:7934)",
+    ),
+}
+
+
 @lru_cache(maxsize=1)
 def _load_signal_producer_index() -> dict[str, str]:
     """Build static index: signal_key -> producer_module that emits it.
@@ -348,6 +389,11 @@ def _load_signal_producer_index() -> dict[str, str]:
                     expanded = _expand_fstring_with_bindings(tgt.slice, bindings)
                     for key in expanded:
                         index.setdefault(key, py.name)
+    # B986 (2026-06-21) Council 90 Option-6: fold curated WIRED_VIA_
+    # CALL_GRAPH entries into index. Each entry is explicitly auditable
+    # per Contrarian lens; pre-flight smoke-verified before addition.
+    for key, (producer_module, _evidence) in WIRED_VIA_CALL_GRAPH.items():
+        index.setdefault(key, producer_module)
     return index
 
 
