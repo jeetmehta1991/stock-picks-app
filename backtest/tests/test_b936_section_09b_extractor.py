@@ -37,13 +37,26 @@ def test_b936_smc_breaker_has_walk_batch_references():
     )
 
 
-def test_b936_b906_measurement_disputed_strategy_has_status_tag():
-    """B936: institutional_persistent_holders_long (B906 MEASUREMENT_DISPUTED) must surface that tag."""
+def test_b936_b979_owner_approved_exploratory_strategy_has_status_tag():
+    """B936+B979: institutional_persistent_holders_long EXPLORATORY tag surfaces.
+
+    B906 MEASUREMENT_DISPUTED -> B979 Option-F EXPLORATORY (per Council 80
+    + owner directive 2026-06-21 'Approve all recommendations. Proceed.'
+    B906 removal protocol clause (c): EXPLORATORY supersedes
+    MEASUREMENT_DISPUTED. R4=6 + B660-extended=0.00/yr fire-starved below
+    cube validity per feedback_minimum_fire_count_gate_before_cube +
+    feedback_signal_temporality_event_vs_state (13F is STATE not EVENT).
+    """
     from backtest.diagnostics.section_09b_pre_cube_evidence import extract_section_09b
     result = extract_section_09b("institutional_persistent_holders_long")
-    assert "MEASUREMENT_DISPUTED" in result["status_tags"], (
-        f"institutional_persistent_holders_long must surface MEASUREMENT_DISPUTED tag; "
+    assert "EXPLORATORY" in result["status_tags"], (
+        f"institutional_persistent_holders_long must surface EXPLORATORY tag post-B979; "
         f"got tags: {result['status_tags']!r}"
+    )
+    # MEASUREMENT_DISPUTED tag REMOVED per Option-F clause (c)
+    assert "MEASUREMENT_DISPUTED" not in result["status_tags"], (
+        "MEASUREMENT_DISPUTED tag should be absent post-B979 (EXPLORATORY "
+        "supersedes per B906 removal protocol clause (c))"
     )
 
 
@@ -84,7 +97,8 @@ def test_b936_populate_section_09b_round_trip():
             dossier = json.load(f)
         section_9b = dossier["sections"]["section_20_pre_cube_evidence_9b"]
         assert section_9b is not None, "Section 9b not populated"
-        assert "MEASUREMENT_DISPUTED" in section_9b["status_tags"]
+        # B979 (2026-06-21) Council 80 Option-F: EXPLORATORY supersedes MEASUREMENT_DISPUTED
+        assert "EXPLORATORY" in section_9b["status_tags"]
     finally:
         test_dir = DOSSIERS_DIR / test_strategy
         if test_dir.exists():

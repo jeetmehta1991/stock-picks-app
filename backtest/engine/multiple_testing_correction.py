@@ -57,6 +57,15 @@ EXPLORATORY_STRATEGIES = frozenset({
     "pivot_s3_capitulation",
     "pivot_r3_blowoff_short",
     "cup_and_handle_long",  # B685 owner-approved per B683 self-critique CP-1
+    # B979 (2026-06-21) owner-approved Council 80 Option-F per directive
+    # 'Approve all recommendations. Proceed.' Resolves B931/B906 MAY-REVERT
+    # via removal protocol clause (c): EXPLORATORY supersedes MEASUREMENT_
+    # DISPUTED. R4=6 fires + B660-extended=0.00/yr = fire-starved below
+    # cube validity per feedback_minimum_fire_count_gate_before_cube.
+    # Per feedback_signal_temporality_event_vs_state (B611): 13F-persistent
+    # is STATE signal (zero timing alpha at bar of fire). DO-NOT-DELETE
+    # compliant; B901 re-measurement hook preserves empirical-restore path.
+    "institutional_persistent_holders_long",
 })
 
 

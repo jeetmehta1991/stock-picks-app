@@ -747,7 +747,7 @@ P1 STREAM E 20/20 sections shipped (B933-B967) is **NECESSARY but NOT SUFFICIENT
 | 18 substantive pyramid items (B586/B533/B465 + 15 singletons) | **RESOLVED B973 2026-06-21** (Council 76 honest-finding pivot; B907+B971+B972 explicit + 8 verified-passing-silently in current pytest) |
 | Stream V reproducibility verification | PENDING per §13.7 launch gate #14 |
 | DEC #1 4th ingredient decision (sortino / win_rate / psr / expectancy) | PENDING owner decision per B966 |
-| B931 institutional_persistence MAY-REVERT | PENDING B906 owner decision |
+| B931 institutional_persistence MAY-REVERT | **RESOLVED B979 2026-06-21** (Council 80 Option-F HYBRID: EXPLORATORY tag NOW + B901 re-measurement hook; owner-approved per directive 'Approve all recommendations. Proceed.') |
 | DEC-PHASE-6.5-RESET owner countersign | PENDING at P6 completion per §13.16 |
 
 **Implication for "is Phase P1 done?":** Yes (STREAM E 20/20 dossier sections built + populated for 217 strategies). **But:** R5 launch readiness requires draining the entire-execution-queue + Stream V verification first. Future Claude sessions reading this PATH doc must NOT interpret "P1 complete" as "R5 launchable".

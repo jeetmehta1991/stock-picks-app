@@ -1152,7 +1152,13 @@ MEASUREMENT_DISPUTED: set[str] = {
     # post-B901 SMC fix re-measurement.
     "institutional_oversold_long",                # R4=1, B660-ext=0.00/yr
     "institutional_breakout_confirmation_long",   # R4=3, B660-ext=0.00/yr
-    "institutional_persistent_holders_long",      # R4=6, B660-ext=0.00/yr
+    # B979 (2026-06-21) owner-approved Council 80 Option-F: REMOVED
+    # institutional_persistent_holders_long from MEASUREMENT_DISPUTED via
+    # removal protocol clause (c) -- EXPLORATORY tag now applied in
+    # backtest/engine/multiple_testing_correction.py EXPLORATORY_STRATEGIES.
+    # Resolves B931/B906 MAY-REVERT (was pending owner decision since B906
+    # Council 28). B901 re-measurement hook preserved as
+    # B901-INSTITUTIONAL-PERSISTENT-HOLDERS-RE-MEASUREMENT queue ticket.
     "keltner_lower",                              # R4=1, B660-ext=17.93/yr -- MEASUREMENT DISAGREEMENT
     "post_inclusion_reversal_short",              # R4=7, B660-ext=0.00/yr
     "pivot_s2_bounce",                            # R4=10, B660-ext=28.38/yr -- BORDERLINE

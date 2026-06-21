@@ -88,7 +88,16 @@ def _extract_status_tags_from_screener_docstring(strategy: str) -> list[str]:
 
 
 def _config_status_tags(strategy: str) -> list[str]:
-    """Cross-reference strategy against canonical backtest/config.py status sets."""
+    """Cross-reference strategy against canonical config status sets.
+
+    B979 (2026-06-21) Council 80 Option-F scope expansion: now ALSO reads
+    EXPLORATORY_STRATEGIES from `backtest.engine.multiple_testing_
+    correction` so EXPLORATORY tag surfaces in dossier alongside config.py
+    sets. Previously only MEASUREMENT_DISPUTED / MEAN_REVERSION_STRATEGIES /
+    DISABLED_MISSING_PRODUCER were cross-referenced; this missed the
+    canonical EXPLORATORY set used by multiple-testing correction +
+    B906 removal-protocol clause (c) flag.
+    """
     tags = []
     try:
         from backtest.config import (
@@ -104,6 +113,13 @@ def _config_status_tags(strategy: str) -> list[str]:
         tags.append("MEAN_REVERSION_STRATEGIES")
     if strategy in STRATEGIES_DISABLED_MISSING_PRODUCER:
         tags.append("DISABLED_MISSING_PRODUCER")
+    # B979 (2026-06-21) Council 80 Option-F: EXPLORATORY set cross-ref.
+    try:
+        from backtest.engine.multiple_testing_correction import EXPLORATORY_STRATEGIES
+        if strategy in EXPLORATORY_STRATEGIES:
+            tags.append("EXPLORATORY")
+    except Exception:
+        pass
     return tags
 
 
