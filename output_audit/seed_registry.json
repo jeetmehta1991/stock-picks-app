@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "batch": "B970",
+  "council": "72 RECOMMEND zeta",
+  "purpose": "Stream V reproducibility verification per PATH Section 13.7 launch gate #14",
+  "as_of": "2026-06-21",
+  "seed_int": 13371337,
+  "seed_hex": "0xCCBE791",
+  "sampling_method": "random.Random(13371337).sample(sorted(ALL_STRATEGIES.keys()), 5)",
+  "strategies_sampled": [
+    "prev_day_low_breakdown",
+    "ppo_crossover",
+    "tema_dema",
+    "52w_high_breakout_with_smart_money_vol_below_long",
+    "insider_cluster_with_director_long"
+  ],
+  "stream_e_extractors_validated": [
+    "section_01_wiring_trace_coverage",
+    "section_02_gate_stacking_fire_rate",
+    "section_03_inverse_pair_empirical",
+    "section_04_redundancy_phi_matrix",
+    "section_05_regime_affinity_lineage",
+    "section_06_producer_state_event",
+    "section_07_temporal_coverage_probe",
+    "section_08_data_source_asymmetry",
+    "section_09_r4_cube_metrics",
+    "section_09b_pre_cube_evidence",
+    "section_10_cost_sensitivity_ratio",
+    "section_11_chow_break_point",
+    "section_12_adf_p_value",
+    "section_13_exit_axis_best_26",
+    "section_14_returns_autocorr_correction",
+    "section_15_exit_profitability_fraction",
+    "section_16_negative_control_canary",
+    "section_17_soft_score_weight_calibration",
+    "section_18_per_regime_sharpe_dispersion",
+    "section_19_closest_neighbor_cluster"
+  ],
+  "reproducibility_method": "bit_identical_json_serialization_double_run",
+  "downstream_consumers": [
+    "scripts/stream_v_verify_reproducibility.py"
+  ],
+  "memory_rule_reference": "PATH Section 13.7 launch gate #14 + Council 39 (5-advisor bug-catching) + Council 72 verdict B970"
+}
