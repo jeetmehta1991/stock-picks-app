@@ -106,7 +106,9 @@
               "sc_13d_latest_percent_owned"
             ]
           }
-        }
+        },
+        "walk_3_disposition": "HONEST-PIVOT-ASYMMETRIC-DATA-SOURCE",
+        "walk_3_rationale": "SC 13D filings: SEC rule = LONG-only. 13D filed when accumulating >5% stake with intent to influence. No SEC structural SHORT equivalent. Per B611. No mirror possible; no proposal needed."
       },
       {
         "strategy": "classification_change_with_insider_long",
@@ -125,7 +127,9 @@
               "insider_cluster_active"
             ]
           }
-        }
+        },
+        "walk_3_disposition": "CLOSE-NO-NEW-PROPOSAL-COVERED-BY-EXISTING-DEFERRED-TICKET",
+        "walk_3_rationale": "insider_buy (Form 4) source. SHORT mirror already tracked via S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW DEFERRED-OWNER-DECISION queue ticket (strat_insider_cluster_concentrated_sell_short per B662; narrow >50% threshold per feedback_asymmetric_data_sources_break_mechanical_inverse). No new proposal needed."
       },
       {
         "strategy": "classification_change_with_institutional_long",
@@ -144,7 +148,9 @@
               "institutional_buy"
             ]
           }
-        }
+        },
+        "walk_3_disposition": "HONEST-PIVOT-ASYMMETRIC-DATA-SOURCE",
+        "walk_3_rationale": "13F filings: SEC rule = LONG-only (13F filings are long positions only). No SEC structural SHORT equivalent. Per B611. No mirror possible; no proposal needed."
       },
       {
         "strategy": "insider_cluster_long",
@@ -164,7 +170,9 @@
               "insider_unique_buyers_30d"
             ]
           }
-        }
+        },
+        "walk_3_disposition": "CLOSE-NO-NEW-PROPOSAL-COVERED-BY-EXISTING-DEFERRED-TICKET",
+        "walk_3_rationale": "insider_buy source. SHORT mirror tracked by S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW DEFERRED ticket. Director sub-class inherits concentrated_sell narrow-threshold semantics."
       },
       {
         "strategy": "insider_cluster_with_director_long",
@@ -184,7 +192,9 @@
               "insider_unique_buyers_30d"
             ]
           }
-        }
+        },
+        "walk_3_disposition": "CLOSE-NO-NEW-PROPOSAL-COVERED-BY-EXISTING-DEFERRED-TICKET",
+        "walk_3_rationale": "insider_buy (director sub-class). SHORT mirror covered by same S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW DEFERRED ticket; director-specific SHORT would inherit concentrated_sell narrow-threshold per B662."
       }
     ],
     "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": [
@@ -547,5 +557,17 @@
   "memory_rule_reference": "Council 83 Option-3 SCRIPT-PLUS-RECOMMEND per B978/B980 batch-shape precedent + feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak + feedback_council_enumerate_plus_recommend + CHECKLIST #115 + CSV-first/data-first CLAUDE.md HARD RULE.",
   "council_94_walk_2_disposition": "OPTION-6-SURFACE-INV-DEFER",
   "council_94_owner_approved": "2026-06-22",
-  "walk_2_complete": true
+  "walk_2_complete": true,
+  "council_95_walk_3_disposition": "OPTION-A-INVERSE-UNSAFE-5-DEEP-DIVE",
+  "council_95_owner_approved": "2026-06-22",
+  "walk_3_complete": true,
+  "walk_3_summary": {
+    "HONEST-PIVOT-ASYMMETRIC-DATA-SOURCE": 2,
+    "CLOSE-NO-NEW-PROPOSAL-COVERED-BY-EXISTING-DEFERRED-TICKET": 3,
+    "total_resolved": 5,
+    "code_changes": 0,
+    "cross_referenced_existing_tickets": [
+      "S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW"
+    ]
+  }
 }
