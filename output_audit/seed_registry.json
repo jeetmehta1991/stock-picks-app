@@ -8,11 +8,11 @@
   "seed_hex": "0xCCBE791",
   "sampling_method": "random.Random(13371337).sample(sorted(ALL_STRATEGIES.keys()), 5)",
   "strategies_sampled": [
-    "prev_day_low_breakdown",
-    "ppo_crossover",
-    "tema_dema",
+    "prev_day_low_bounce",
+    "post_inclusion_reversal_short",
+    "supertrend_macd_short",
     "52w_high_breakout_with_smart_money_vol_below_long",
-    "insider_cluster_with_director_long"
+    "insider_cluster_long"
   ],
   "stream_e_extractors_validated": [
     "section_01_wiring_trace_coverage",
@@ -40,5 +40,6 @@
   "downstream_consumers": [
     "scripts/stream_v_verify_reproducibility.py"
   ],
-  "memory_rule_reference": "PATH Section 13.7 launch gate #14 + Council 39 (5-advisor bug-catching) + Council 72 verdict B970"
+  "memory_rule_reference": "PATH Section 13.7 launch gate #14 + Council 39 (5-advisor bug-catching) + Council 72 verdict B970",
+  "_b1012_note": "Re-sampled 2026-06-22 post-B1010 strategy addition (219 -> 220); deterministic per seed_int + sorted(ALL_STRATEGIES)"
 }
