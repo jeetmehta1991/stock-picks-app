@@ -167,4 +167,4 @@ def test_batch596_all_strategies_count_post_b599():
     Subsequent batches: B603 +2 -> 219; B605 +1 -> 220; B607 +1 -> 221;
     B610 +1 -> 222; B611 -1 -> 221. Current count = 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

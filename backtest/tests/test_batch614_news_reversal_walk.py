@@ -231,4 +231,4 @@ def test_batch614_short_threshold_d_loosened():
 def test_batch614_all_strategies_count_unchanged_at_221():
     """Pin (13): pure refactor; no add/delete strategies."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

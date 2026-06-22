@@ -1,5 +1,5 @@
 {
-  "strategy_total": 219,
+  "strategy_total": 220,
   "deprecated_count": 0,
   "missing_producer_count": 3,
   "missing_producer_list": [
@@ -7,9 +7,9 @@
     "m_and_a_target_long",
     "naked_poc_retest_long"
   ],
-  "strategy_active": 216,
+  "strategy_active": 217,
   "exit_method_total": 26,
-  "cube_cells_active": 5616,
+  "cube_cells_active": 5642,
   "strategy_exit_override_count": 18,
   "agent_count_dec_057": 11,
   "regime_count": 4,
@@ -20,5 +20,5 @@
   "phase_1a_beta_aws_pool_workers_per_instance": 12,
   "phase_1a_beta_aws_per_instance_compute_hours": 3.0,
   "phase_1a_beta_actual_wall_hours_note": "10.5h = Hetzner single-machine baseline 2026-05-24 (run_phase1a --phase 1a-beta full T1a x 4yr without multiprocessing pool). Distinct from AWS R4 run 2026-05-31 (output_batch395_final/) which was 5 c7a.4xlarge spot instances x ~3h each = ~3h wall-clock (parallel) at ~$7.80 cost per B884 instance-type decision. For R5 planning use AWS keys not actual_wall_hours.",
-  "tests_collected": 5111
+  "tests_collected": 5128
 }

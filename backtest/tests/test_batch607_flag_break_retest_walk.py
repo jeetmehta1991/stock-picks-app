@@ -225,4 +225,4 @@ def test_batch607_regime_default_short_bear_crisis_neutral():
 def test_batch607_all_strategies_count_after_b607():
     """Pin (9): +1 from B607 g (flag_bear_retest_short)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

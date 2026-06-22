@@ -220,4 +220,4 @@ def test_batch630_supertrend_ichimoku_adx_short_fires():
 def test_batch630_all_strategies_count_unchanged():
     """Pin (14): pure refactor + producer-additive; no add/delete."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

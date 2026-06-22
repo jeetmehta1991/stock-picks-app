@@ -3479,6 +3479,49 @@ def strat_insider_cluster_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+def strat_insider_cluster_concentrated_sell_short(s):
+    """B1010 (2026-06-22) Class 7 NEW per Council 103 Option-6 owner-
+    approved 'Approve all proceed council this.' SHORT-only mirror of
+    insider_cluster_long sleeves using `concentrated_sell` (>50% of
+    insider's holdings dumped per smart_money.py:601-635) — the only
+    economically-defensible SHORT mirror per B662 SM-1 walk +
+    `feedback_asymmetric_data_sources_break_mechanical_inverse`.
+
+    Why concentrated_sell, NOT generic cluster_sell:
+      Generic cluster_sell is dominated by diversification / tax-
+      planning / option-lockup-expiry noise (Lakonishok-Lee 2001 RFS
+      + Marin-Olivier 2008 RFS). concentrated_sell at >50% threshold
+      filters to genuine high-conviction insider exits where the
+      insider liquidates a material portion of holdings — a signal
+      qualitatively distinct from routine sales.
+
+    Why SHORT side asymmetric to LONG side (per
+    feedback_asymmetric_data_sources_break_mechanical_inverse +
+    feedback_structural_symmetry_not_economic_symmetry):
+      Insider buying is a fundamentally cleaner signal than insider
+      selling. Buying is voluntary positive-EV bet on private info.
+      Selling has confounded motives (tax / diversification / lockup
+      / charitable giving / lifestyle). concentrated_sell at >50%
+      mitigates the noise-dominated routine-sell population.
+
+    Source: B662 SM-1 walk (2026-06-09) + Council 95 walk-3 cross-ref
+      + Council 103 Option-6 owner-approved 2026-06-22 + smart_money.py
+      concentrated_sell producer (B613 narrow-scope per
+      feedback_narrow_scope_blast_radius).
+    """
+    fires = (
+        s.get("concentrated_sell", False)
+        and s.get("below_ema_200", False)
+    )
+    return _strat(fires, "short", "event_driven",
+        ["concentrated_sell", "below_ema_200"],
+        [
+            "Insider concentrated_sell: >50% of insider holdings dumped "
+            "(B613 narrow-threshold variant)",
+            "Below 200 EMA (regime gate; symmetric to LONG ema_200 gate)",
+        ])
+
+
 def strat_insider_cluster_with_director_long(s):
     """Batch 222: Higher-conviction insider variant - cluster requires
     at least 1 DIRECTOR (board member) as a buyer. Director purchases
@@ -7313,6 +7356,14 @@ ALL_STRATEGIES = {
     # Event-driven + quality factor (5 - Batch 222 2026-05-18 owner-approved)
     "insider_cluster_long":                strat_insider_cluster_long,
     "insider_cluster_with_director_long":  strat_insider_cluster_with_director_long,
+    # B1010 (2026-06-22) Class 7 NEW per Council 103 Option-6 owner-approved
+    # 'Approve all proceed council this'. SHORT-only mirror per B662 SM-1
+    # walk + Council 95 walk-3 cross-reference + feedback_asymmetric_data_
+    # sources_break_mechanical_inverse (concentrated_sell narrow-threshold
+    # at >50% is the ONLY economically-defensible SHORT mirror of insider
+    # buying; generic cluster_sell dominated by diversification/tax-planning/
+    # lockup-expiry noise per Lakonishok-Lee 2001 RFS).
+    "insider_cluster_concentrated_sell_short": strat_insider_cluster_concentrated_sell_short,
     "xs_quality_top_quintile_long":        strat_xs_quality_top_quintile_long,
     "xs_momentum_quality_combined":        strat_xs_momentum_quality_combined,
     "pead_with_insider_confirmation_long": strat_pead_with_insider_confirmation_long,

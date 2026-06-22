@@ -10572,9 +10572,15 @@ def test_batch373_e1_doc_count_pin_against_code():
     #       (phi correlation = 0.297 on 29 T1a tickers 2020-2026; 70% of EV-3 fires are
     #       a distinct population EV-1 misses entirely; B682 deletion empirically wrong).
     #       222 -> 224.
-    assert len(ALL_STRATEGIES) == 219, (
-        f"F-002 drift: ALL_STRATEGIES expected 221 post-B722 deletions + EXPLORATORY "
-        f"(hull_rsi_short Pattern W + 2 po3_htf_aligned Pattern F = -3); "
+    # B1010 (2026-06-22 Council 103 Option-6 owner-approved): strategy
+    # count 219 -> 220 via Class 7 NEW addition of
+    # strat_insider_cluster_concentrated_sell_short per B662 SM-1 walk +
+    # Council 95 walk-3 cross-reference. Narrow-threshold concentrated_sell
+    # SHORT mirror (>50% threshold) per feedback_asymmetric_data_sources_
+    # break_mechanical_inverse + B613 narrow-scope precedent.
+    assert len(ALL_STRATEGIES) == 220, (
+        f"F-002 drift: ALL_STRATEGIES expected 220 post-B1010 Class 7 NEW + "
+        f"B722/B874/B975/B984 prior changes; "
         f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10601,9 +10607,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     # B899 (2026-06-18) migration: B874 deleted 2 strategies reducing
     # 221 -> 219 registered / 218 active. B975 (2026-06-21) disabled
     # naked_poc_retest_long -> 217 active. B984 (2026-06-21) disabled
-    # m_and_a_target_long -> 216 active.
-    assert active == 216, (
-        f"F-002 drift: active strategy count expected 216 (219 registered "
+    # m_and_a_target_long -> 216 active. B1010 (2026-06-22 Council 103
+    # Option-6) added Class 7 NEW strat_insider_cluster_concentrated_
+    # sell_short -> 220 registered / 217 active.
+    assert active == 217, (
+        f"F-002 drift: active strategy count expected 217 (220 registered "
         f"minus 3 disabled dxy_headwind + naked_poc + m_and_a_target_long); "
         f"got {active}."
     )

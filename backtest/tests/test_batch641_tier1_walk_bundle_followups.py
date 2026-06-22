@@ -386,4 +386,4 @@ def test_batch641_all_strategies_count_now_222_post_b645():
     fix) is also net-zero count change. B823 updated: B682-4 + B685+3
     + B686+1 + B709+2 - B722-3 = 221 current trajectory."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

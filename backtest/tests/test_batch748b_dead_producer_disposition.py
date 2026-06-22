@@ -119,6 +119,6 @@ def test_b748b_pin6_strategy_count_unchanged_at_221():
     strategies remain registered. ALL_STRATEGIES count must stay at 221.
     """
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219, (
+    assert len(ALL_STRATEGIES) == 220, (
         f"strategy count drifted to {len(ALL_STRATEGIES)}; expected 221"
     )

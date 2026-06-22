@@ -107,4 +107,4 @@ def test_batch615_original_strategy_preserved():
 def test_batch615_all_strategies_count_221_post_b620():
     """Pin (8) updated for B620 deletion: 222 -> 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

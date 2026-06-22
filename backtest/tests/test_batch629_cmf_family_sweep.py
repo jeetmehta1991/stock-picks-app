@@ -177,4 +177,4 @@ def test_batch629_cmf_family_sweep_complete():
 def test_batch629_all_strategies_count_unchanged():
     """Pin (10)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

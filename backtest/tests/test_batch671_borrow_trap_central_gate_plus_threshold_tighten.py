@@ -244,4 +244,4 @@ def test_batch671_strategy_count_unchanged():
     """Pin (14) B821 UPDATED: count was 222 post-B670; B685 +3 + B686 +1
     + B709 +2 - B722 -3 = 221 current trajectory."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

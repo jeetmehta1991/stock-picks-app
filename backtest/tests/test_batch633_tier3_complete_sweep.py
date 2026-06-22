@@ -212,4 +212,4 @@ def test_batch633_all_not_s_get_patterns_eliminated():
 def test_batch633_all_strategies_count_unchanged():
     """Pin (12): pure refactor + producer-additive; no add/delete."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

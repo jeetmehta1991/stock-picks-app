@@ -135,7 +135,7 @@ def test_batch610_regime_default_long_bull_neutral():
 def test_batch611_all_strategies_count_after_b611_delete():
     """B611 reverted B610's Class 7 NEW addition - count back to 221."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219, (
+    assert len(ALL_STRATEGIES) == 220, (
         f"Expected 221 post-B611 (B610 added 1, B611 deleted same-day); "
         f"got {len(ALL_STRATEGIES)}"
     )

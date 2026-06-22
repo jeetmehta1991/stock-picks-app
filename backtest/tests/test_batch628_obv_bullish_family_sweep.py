@@ -176,4 +176,4 @@ def test_batch628_obv_bullish_family_sweep_complete():
 def test_batch628_all_strategies_count_unchanged():
     """Pin (14): pure refactor; no add/delete."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

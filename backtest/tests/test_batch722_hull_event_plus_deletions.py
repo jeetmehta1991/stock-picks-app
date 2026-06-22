@@ -132,7 +132,7 @@ def test_b722_pin7_strat_hull_rsi_short_consumes_event_signal():
 def test_b722_pin8_all_strategies_count_decreased_by_three():
     """ALL_STRATEGIES must be 221 post-B722 (was 224 pre-B722; -3 deletions)."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219, (
+    assert len(ALL_STRATEGIES) == 220, (
         f"Expected ALL_STRATEGIES == 221 post-B722; got {len(ALL_STRATEGIES)}. "
         f"Either B722 deletions incomplete or another concurrent change shifted count."
     )

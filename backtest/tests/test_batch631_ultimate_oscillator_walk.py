@@ -167,4 +167,4 @@ def test_batch631_all_strategies_count_unchanged():
     """Pin (10): pure refactor + producer-signal symmetry polish + bar
     gate; no add/delete."""
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220

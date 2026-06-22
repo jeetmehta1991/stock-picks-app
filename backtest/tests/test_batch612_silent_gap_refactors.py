@@ -282,4 +282,4 @@ def test_batch612_all_strategies_count_post_b682_at_218():
     218 + B685+3 + B686+1 + B709+2 - B722-3 = 221.
     """
     from backtest.signals.screener import ALL_STRATEGIES
-    assert len(ALL_STRATEGIES) == 219
+    assert len(ALL_STRATEGIES) == 220
