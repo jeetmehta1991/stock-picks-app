@@ -115,7 +115,7 @@ scripts/
   validate_phase1b_data.py     # pre-run data completeness check
 PROJECT_PLAN.md   # comprehensive reference — read first
 CHECKLIST.md      # pre-action checklist — 21 items including universe refresh
-LEARNINGS.md      # 89 lessons — L88: no Wikipedia, L89: universe staleness
+LEARNINGS.md      # 81 lesson sections (35 ## + 46 ###; highest L163; B1005 audit 2026-06-22) — L88: no Wikipedia, L89: universe staleness
 ```
 
 ---
