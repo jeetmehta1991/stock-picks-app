@@ -415,7 +415,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "Gate-stack (7 signals) too restrictive; producer healthy; L+S fires=0.0/yr; B979 Option-F precedent."
       },
       {
         "strategy": "52w_high_breakout_with_smart_money_long",
@@ -430,7 +432,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "OVERLAP with DEFERRED_OWNER_TRIAGE per B991 audit; smart-money confluence + 52w near-high rare event; producer healthy."
       },
       {
         "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
@@ -445,7 +449,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "OVERLAP per B991 audit; B779 vol_below_avg variant rare; producer healthy."
       },
       {
         "strategy": "52w_low_breakdown",
@@ -460,7 +466,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "OVERLAP per B991 audit; break_52w_low + vol_spike_17x + sector_underperforming confluence rare; producer healthy."
       },
       {
         "strategy": "activist_13d_long",
@@ -475,7 +483,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "CLOSE-RESOLVED-VIA-UPSTREAM-WALK-3",
+        "walk_4_rationale": "Walk-3 already closed as HONEST-PIVOT-ASYMMETRIC-DATA-SOURCE (13D LONG-only per SEC). FIRE_STARVED is downstream symptom; HONEST-PIVOT encompasses. No new action."
       },
       {
         "strategy": "avwap_20high_rejection_short",
@@ -490,7 +500,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 21.8,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "ACCEPT-BELOW-30",
+        "walk_4_rationale": "S_fires=21.8/yr close to 30 threshold; rare-but-strong signal per W5/W5m precedent (B652/B645). Cube can measure; PSR=None auto-passes per B983 PSR companion gate. NOT EXPLORATORY; ACTIVE for cube."
       },
       {
         "strategy": "bollinger_tight_with_smart_money_long",
@@ -505,7 +517,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "OVERLAP per B991 audit; bb_20_20_squeeze + smart-money + ema_200 confluence rare; producer healthy (B985 verified)."
       },
       {
         "strategy": "classification_change_breakout_long",
@@ -520,7 +534,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "Sector reclassification (Russell/S&P) genuinely rare event; structural rarity not gate-stack; producer wired per DEC-500."
       },
       {
         "strategy": "classification_change_from_tech_short",
@@ -535,7 +551,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "Tech reclassification structural rarity; producer wired."
       },
       {
         "strategy": "classification_change_momentum_long",
@@ -550,7 +568,9 @@
           "fires_per_year_long": 0.0,
           "fires_per_year_short": 0.0,
           "min_trades_floor": 30
-        }
+        },
+        "walk_4_disposition": "EXPLORATORY",
+        "walk_4_rationale": "Sector reclass + MACD/EMA momentum confluence rare; producer wired."
       }
     ]
   },
@@ -589,5 +609,16 @@
     "live_unique_walk_4_candidates_estimated": 15,
     "verdict": "NO_PHANTOMS_BLIND_WALK_NOT_RISKED_AUDIT_INFORMS_PRIORITY",
     "recommendation_for_council_97": "FIRE_STARVED-10 first: 4 of 10 are root cause of overlap candidates; closing FIRE_STARVED disposition (DELETE/DISABLE/EXPLORATORY/ACCEPT) automatically resolves DEFERRED downstream symptom for those 4. After FIRE_STARVED-10 closes, walk-5 = DEFERRED_OWNER_TRIAGE remainder (estimated 6 strategies post-overlap-resolution)."
+  },
+  "council_97_walk_4_disposition": "OPTION-6-HYBRID-DEEP-DIVE-AUDIT-LEVERAGE",
+  "council_97_owner_approved": "2026-06-22",
+  "walk_4_complete": true,
+  "walk_4_summary": {
+    "EXPLORATORY": 8,
+    "CLOSE-RESOLVED-VIA-UPSTREAM-WALK-3": 1,
+    "ACCEPT-BELOW-30": 1,
+    "total_resolved": 10,
+    "code_changes": "EXPLORATORY_STRATEGIES frozenset extended 4 -> 12 (8 new entries)",
+    "producer_health_check": "all 10 producers verified healthy; DISABLE-MISSING-PRODUCER not applicable"
   }
 }

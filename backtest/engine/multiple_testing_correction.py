@@ -80,6 +80,23 @@ EXPLORATORY_STRATEGIES = frozenset({
     # is STATE signal (zero timing alpha at bar of fire). DO-NOT-DELETE
     # compliant; B901 re-measurement hook preserves empirical-restore path.
     "institutional_persistent_holders_long",
+    # B992 (2026-06-22) owner-approved Council 97 Option-6 per directive
+    # 'Approve your recommendation. Proceed council this.' Walk-4
+    # FIRE_STARVED-10 disposition: 8 strategies tagged EXPLORATORY per
+    # B660 measured L_fires=0.0 + S_fires=0.0 (below 30/yr cube-validity
+    # threshold). Producers verified healthy via B992 walk-4 producer-
+    # health check (no DISABLE-MISSING-PRODUCER applicable). Per
+    # feedback_minimum_fire_count_gate_before_cube + B979 Option-F
+    # precedent + project_no_apriori_strategy_pruning. B901-style post-R5
+    # re-measurement hook preserved if/when measurement improves.
+    "52w_high_breakout",  # gate-stack restrictiveness (7 signals)
+    "52w_high_breakout_with_smart_money_long",  # OVERLAP per B991 audit; smart-money confluence rare
+    "52w_high_breakout_with_smart_money_vol_below_long",  # OVERLAP per B991 audit; B779 variant
+    "52w_low_breakdown",  # OVERLAP per B991 audit; 3-signal confluence rare
+    "bollinger_tight_with_smart_money_long",  # OVERLAP per B991 audit; BB squeeze + smart-money rare
+    "classification_change_breakout_long",  # sector reclass (Russell/S&P) genuinely rare event
+    "classification_change_from_tech_short",  # tech reclass structural rarity
+    "classification_change_momentum_long",  # sector reclass + MACD/EMA confluence rare
 })
 
 
