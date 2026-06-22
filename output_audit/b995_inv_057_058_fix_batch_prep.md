@@ -93,6 +93,14 @@ Available date columns: `filing_date`, `end_date`, `period_of_report_date` (ofte
 - IF Finnhub provides `announce_date` (B999 T2 result) → Option-c; INV-058 fix becomes data-source swap (clean)
 - ELSE → Option-b; INV-058 fix uses `end_date + 30 days` proxy (more stable than `filing_date - 30 days` since end_date is fiscal-calendar-known)
 
+**B999 (2026-06-22 Council 100 T2/5) RESULT: Finnhub `/stock/earnings` endpoint does NOT provide `announce_date` either.**
+
+Finnhub schema (data_prefetch/finnhub/earnings/*.parquet; 1,938 files): canonical columns = `actual, estimate, period, quarter, surprise, surprisePercent, symbol, year`. The `period` field is the fiscal-period-end-date (e.g., AAPL 2026-03-31 for Q2 2026) — same semantics as Polygon `end_date`. NO native `announce_date` field.
+
+**Option-c (Finnhub fallback) ALSO NOT VIABLE per local cache constraints.**
+
+**B996 INV-058 fix scope finalized: Option-d (`end_date + 30 days` proxy).** Cleanest implementation; works with both Polygon and Finnhub; matches empirical filing-gap median (~32 days across 8 sampled tickers). Honest acknowledgment in producer docstring that this is a proxy approximation of actual earnings-announce-date.
+
 **Updated fix diff (Option-c conditional on Finnhub availability):**
 
 ```python
