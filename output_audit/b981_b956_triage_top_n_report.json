@@ -290,7 +290,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "AWAIT-R5-CUBE-DATA",
+        "walk_5_rationale": "B660-extended fires/yr L=1268.24 S=0.0 both ABOVE 30/yr cube-validity threshold. NOT fire-starved. r5_inclusion_criterion (B946+B950) flagged DEFERRED_OWNER_TRIAGE because no R5 cube measurements yet. Per B988 Tranche 2 DEFERRED-POST-R5 precedent: strategy stays ACTIVE; R5 cube measures; verdict post-R5."
       },
       {
         "strategy": "52w_high_breakout_with_smart_money_long",
@@ -302,7 +304,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "RESOLVED-VIA-WALK-4-OVERLAP-EXPLORATORY",
+        "walk_5_rationale": "OVERLAP candidate per B991 audit; walk-4 dispositioned EXPLORATORY in B992; DEFERRED_OWNER_TRIAGE finding-type symptom resolved via FIRE_STARVED root-cause closure."
       },
       {
         "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
@@ -314,7 +318,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "RESOLVED-VIA-WALK-4-OVERLAP-EXPLORATORY",
+        "walk_5_rationale": "OVERLAP candidate per B991 audit; walk-4 dispositioned EXPLORATORY in B992; DEFERRED_OWNER_TRIAGE finding-type symptom resolved via FIRE_STARVED root-cause closure."
       },
       {
         "strategy": "52w_low_breakdown",
@@ -326,7 +332,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "RESOLVED-VIA-WALK-4-OVERLAP-EXPLORATORY",
+        "walk_5_rationale": "OVERLAP candidate per B991 audit; walk-4 dispositioned EXPLORATORY in B992; DEFERRED_OWNER_TRIAGE finding-type symptom resolved via FIRE_STARVED root-cause closure."
       },
       {
         "strategy": "52w_low_breakdown_pullback_short",
@@ -338,7 +346,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "AWAIT-R5-CUBE-DATA",
+        "walk_5_rationale": "B660-extended fires/yr L=0.0 S=622.11 both ABOVE 30/yr cube-validity threshold. NOT fire-starved. r5_inclusion_criterion (B946+B950) flagged DEFERRED_OWNER_TRIAGE because no R5 cube measurements yet. Per B988 Tranche 2 DEFERRED-POST-R5 precedent: strategy stays ACTIVE; R5 cube measures; verdict post-R5."
       },
       {
         "strategy": "52wh_break_retest",
@@ -350,7 +360,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "AWAIT-R5-CUBE-DATA",
+        "walk_5_rationale": "B660-extended fires/yr L=1058.94 S=0.0 both ABOVE 30/yr cube-validity threshold. NOT fire-starved. r5_inclusion_criterion (B946+B950) flagged DEFERRED_OWNER_TRIAGE because no R5 cube measurements yet. Per B988 Tranche 2 DEFERRED-POST-R5 precedent: strategy stays ACTIVE; R5 cube measures; verdict post-R5."
       },
       {
         "strategy": "52wl_break_retest_short",
@@ -362,7 +374,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "AWAIT-R5-CUBE-DATA",
+        "walk_5_rationale": "B660-extended fires/yr L=0.0 S=205.08 both ABOVE 30/yr cube-validity threshold. NOT fire-starved. r5_inclusion_criterion (B946+B950) flagged DEFERRED_OWNER_TRIAGE because no R5 cube measurements yet. Per B988 Tranche 2 DEFERRED-POST-R5 precedent: strategy stays ACTIVE; R5 cube measures; verdict post-R5."
       },
       {
         "strategy": "adx_initiation",
@@ -374,7 +388,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "AWAIT-R5-CUBE-DATA",
+        "walk_5_rationale": "B660-extended fires/yr L=709.13 S=817.68 both ABOVE 30/yr cube-validity threshold. NOT fire-starved. r5_inclusion_criterion (B946+B950) flagged DEFERRED_OWNER_TRIAGE because no R5 cube measurements yet. Per B988 Tranche 2 DEFERRED-POST-R5 precedent: strategy stays ACTIVE; R5 cube measures; verdict post-R5."
       },
       {
         "strategy": "bb_squeeze_volume",
@@ -386,7 +402,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "AWAIT-R5-CUBE-DATA",
+        "walk_5_rationale": "B660-extended fires/yr L=65.03 S=70.18 both ABOVE 30/yr cube-validity threshold. NOT fire-starved. r5_inclusion_criterion (B946+B950) flagged DEFERRED_OWNER_TRIAGE because no R5 cube measurements yet. Per B988 Tranche 2 DEFERRED-POST-R5 precedent: strategy stays ACTIVE; R5 cube measures; verdict post-R5."
       },
       {
         "strategy": "bollinger_tight_with_smart_money_long",
@@ -398,7 +416,9 @@
         "source_batch": "B946 + B950",
         "evidence": {
           "r5_inclusion_criterion": "deferred"
-        }
+        },
+        "walk_5_disposition": "RESOLVED-VIA-WALK-4-OVERLAP-EXPLORATORY",
+        "walk_5_rationale": "OVERLAP candidate per B991 audit; walk-4 dispositioned EXPLORATORY in B992; DEFERRED_OWNER_TRIAGE finding-type symptom resolved via FIRE_STARVED root-cause closure."
       }
     ],
     "FIRE_STARVED": [
@@ -620,5 +640,36 @@
     "total_resolved": 10,
     "code_changes": "EXPLORATORY_STRATEGIES frozenset extended 4 -> 12 (8 new entries)",
     "producer_health_check": "all 10 producers verified healthy; DISABLE-MISSING-PRODUCER not applicable"
+  },
+  "council_98_walk_5_disposition": "OPTION-6-HYBRID-DEEP-DIVE-AUDIT-LEVERAGE",
+  "council_98_owner_approved": "2026-06-22",
+  "walk_5_complete": true,
+  "walk_5_summary": {
+    "AWAIT-R5-CUBE-DATA": 6,
+    "RESOLVED-VIA-WALK-4-OVERLAP-EXPLORATORY": 4,
+    "total_resolved": 10,
+    "code_changes": "NONE (all 6 walk-5 stay ACTIVE; cube measures; verdict post-R5)",
+    "honest_finding_pivot_8": "Walk-4 EXPLORATORY-default does NOT apply; fires/yr all ABOVE 30 threshold",
+    "pattern_match_with_b988_tranche_2": "DEFERRED-POST-R5 disposition same shape"
+  },
+  "ALL_WALKS_COMPLETE": true,
+  "all_walks_summary": {
+    "walk_1_SIGNAL_ORPHAN": 11,
+    "walk_2_EARNINGS_BLACKOUT": 5,
+    "walk_3_INVERSE_UNSAFE": 5,
+    "walk_4_FIRE_STARVED": 10,
+    "walk_5_DEFERRED_OWNER_TRIAGE": 10,
+    "total_findings_resolved": 41,
+    "batches_shipped": [
+      "B984",
+      "B985",
+      "B986",
+      "B989",
+      "B990",
+      "B991",
+      "B992",
+      "B993"
+    ],
+    "honest_finding_pivots_or_equivalents": 8
   }
 }
