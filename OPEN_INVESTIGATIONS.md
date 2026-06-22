@@ -932,3 +932,30 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   - (D) `pivot_s2_bounce` may simply need cube measurement; defer judgment.
 - **Joint:** B902-D defer council 27 verdict; B901 SMC root-cause fix; `feedback_minimum_fire_count_gate_before_cube`; DEC-614 MEAN_REVERSION_STRATEGIES taxonomy pattern.
 - **Status:** OPEN -- 7 strategies on MEASUREMENT_DISPUTED gate pending B907 post-fix re-measure.
+
+## INV-057 -- exit_earnings_blackout `as_of` not passed to `fetch_earnings_dates` (Council 94 + B989 2026-06-22)
+- **Observed:** `backtest/engine/exit_strategies.py:507` calls `fetch_earnings_dates(ticker)` WITHOUT the `as_of` parameter. `backtest/data/fetcher.py:236-263` signature is `fetch_earnings_dates(ticker, as_of=None)`. When `as_of=None`, line 257-258 (`if as_of:`) skips the PIT filter and returns the FULL earnings calendar 2020-2026. The exit method (lines 523-538) then computes "next earnings after entry_date" using the full future calendar — at backtest time TODAY (2026-06-22), this includes 6+ years of forward-looking earnings dates not knowable at entry_date.
+- **Lookahead bias direction:** POSITIVE (knows future scheduled earnings); affects exit timing on bar before next-earnings. Surfaced via B954 EARNINGS_BLACKOUT_LOOKAHEAD_RISK detector + B989 walk-2 #44(b) investigate-why per Council 94 owner-approved 2026-06-22.
+- **Affected strategies (B981 walk-2 EARNINGS_BLACKOUT_LOOKAHEAD_RISK-5 disposition `DEFERRED-FIXED-IN-INV-057+INV-058`):**
+  - `bollinger_tight` (cube best_exit total_pnl 1663%; n=380)
+  - `break_retest_volume` (cube best_exit total_pnl 844%; n=329)
+  - `bullish_engulfing_support` (cube best_exit total_pnl 109%; n=23)
+  - `cmf_flip` (cube best_exit total_pnl 4234%; n=636 — extreme cell PnL consistent with lookahead artifact)
+  - `double_bottom_long` (cube best_exit total_pnl 226%; n=53)
+  - Plus any other strategy x earnings_blackout cell in R4/R5 cubes
+- **Recommended action:** Fix in dedicated batch `S5-EARNINGS-BLACKOUT-LOOKAHEAD-FIX-BATCH` (EXECUTION_QUEUE; owner-gated). Scope: (1) Pass `as_of=entry_date` to `fetch_earnings_dates` call at exit_strategies.py:507. (2) Pyramid + new unit test verifying PIT filter applied. (3) Bundle with INV-058 fix for clean attribution per `feedback_sequence_or_split_when_stacking_changes`. (4) Owner-approved cube re-measurement plan for affected earnings_blackout cells.
+- **R5 contamination acknowledgement:** R5 cube cells x earnings_blackout carry this bias until fix lands. Phase 1B-α gating excludes earnings_blackout cells from gating subset pending INV-057+058 closure.
+- **Joint:** Council 94 + B989 walk-2 + `feedback_audit_recommendations_against_existing_directives` + `feedback_narrow_scope_blast_radius` (infra-fix at exit-method level, not per-strategy walk).
+- **Status:** OPEN — 5 walk-2 strategies + any other earnings_blackout consumers pending dedicated fix batch.
+
+## INV-058 -- `filing_date` ≠ `earnings_announce_date` semantic gap in `fetch_earnings_dates` (Council 94 + B989 2026-06-22)
+- **Observed:** `backtest/data/fetcher.py:255` derives earnings dates via `df["earnings_date"] = pd.to_datetime(df["filing_date"])`. `filing_date` in Polygon financials parquet is the 10-Q/10-K filing date — which occurs ~1-30 days AFTER the actual earnings announcement date. The exit method (`exit_earnings_blackout` lines 530-536) then exits on the bar BEFORE `next_earn` (treating `filing_date` as the earnings event). Result: the "blackout exit" actually triggers on bar before FILING, which is AFTER the earnings announcement event — defeating the blackout purpose (which is to be FLAT for the actual earnings event, not the filing).
+- **Bias direction:** Late exit relative to actual earnings announcement. Strategy holds through the earnings announcement and exits ~1-30 days later when the filing posts. Captures post-earnings PnL drift in the exit cell, inflating Sharpe estimate of "earnings_blackout" as a deployable exit method.
+- **Affected strategies:** Same 5 walk-2 strategies (B981 EARNINGS_BLACKOUT_LOOKAHEAD_RISK-5) + any other strategy × earnings_blackout cube cell. Per Council 94 + Council 89/90/91 honest-finding precedent: exit-method-level finding, not per-strategy.
+- **Recommended action:** Fix in dedicated `S5-EARNINGS-BLACKOUT-LOOKAHEAD-FIX-BATCH` (bundled with INV-057 per `feedback_sequence_or_split_when_stacking_changes`). Scope options:
+  - (a) Investigate Polygon financials parquet for separate `earnings_announce_date` / `earnings_call_date` field. If available, use it.
+  - (b) If only `filing_date` available, apply approximate shift (e.g., `-30 trading days` from filing_date as proxy for actual announce date). Document the proxy explicitly + add unit test for shift correctness.
+  - (c) Alternatively integrate Finnhub earnings endpoint (already available per data_prefetch/finnhub/earnings/) if it provides actual announce dates.
+- **R5 contamination acknowledgement:** Same as INV-057. Phase 1B-α gating exclusion applies jointly.
+- **Joint:** Council 94 + B989 walk-2 + `feedback_audit_recommendations_against_existing_directives` + B954 LOOKAHEAD_RISK detector + `project_no_apriori_strategy_pruning` (empirical: cube PnL 4234% on cmf_flip × earnings_blackout consistent with semantic-gap artifact).
+- **Status:** OPEN — bundled with INV-057 fix batch.
