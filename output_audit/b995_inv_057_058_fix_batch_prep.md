@@ -83,6 +83,39 @@ print("Columns:", list(df.columns))
 # date_filed, period_of_report, etc.
 ```
 
+**B998 (2026-06-22 Council 100 T1/5) RESULT: Polygon parquet does NOT have `announce_date` or `earnings_release_date` column.**
+
+Available date columns: `filing_date`, `end_date`, `period_of_report_date` (often NULL), `start_date`. Across 8 sampled tickers (AAPL/MSFT/GOOGL/AMZN/TSLA/JPM/WMT/JNJ): filing_date - end_date gap = 26-40 days (mean ~32, median ~32). Total files: 1,937.
+
+**Option-a (column swap) NOT VIABLE.** B996 fix must use Option-b (proxy) or Option-c (Finnhub). T2 (B999) Finnhub investigation will determine final scope.
+
+**B998 finding refines B996 fix scope:**
+- IF Finnhub provides `announce_date` (B999 T2 result) → Option-c; INV-058 fix becomes data-source swap (clean)
+- ELSE → Option-b; INV-058 fix uses `end_date + 30 days` proxy (more stable than `filing_date - 30 days` since end_date is fiscal-calendar-known)
+
+**Updated fix diff (Option-c conditional on Finnhub availability):**
+
+```python
+# backtest/data/fetcher.py (proposed B996 with Finnhub source):
+def fetch_earnings_dates(ticker, as_of=None):
+    """B996 INV-058 fix: prefer Finnhub announce_date if available,
+    else fall back to Polygon end_date + 30 days proxy (B998 verified
+    no native announce_date column in Polygon financials parquet).
+    """
+    # Try Finnhub first (cleanest source per B999 T2 verification)
+    finnhub_path = Path(...) / "data_prefetch/finnhub/earnings" / f"{ticker}.parquet"
+    if finnhub_path.exists():
+        df = pd.read_parquet(finnhub_path)
+        if "announce_date" in df.columns:
+            df["earnings_date"] = pd.to_datetime(df["announce_date"])
+            # ... PIT filter + return
+    # Fallback: Polygon end_date + 30 days
+    polygon_path = Path(...) / "data_prefetch/polygon/financials" / f"{ticker}.parquet"
+    df = pd.read_parquet(polygon_path)
+    df["earnings_date"] = pd.to_datetime(df["end_date"]) + pd.Timedelta(days=30)
+    # ... PIT filter + return
+```
+
 Decision tree:
 - IF Polygon has separate `announce_date` column → Option (a); swap `filing_date` → `announce_date`
 - ELIF Finnhub earnings provides per-ticker announce dates → Option (c); pivot data source
