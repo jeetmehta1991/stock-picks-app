@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "batch": "B1011",
+  "purpose": "PATH §13.7 R5 Launch Gates #8 + #12 — OOS slice integrity seal + hash posted >=24h pre-Stream-D first batch",
+  "source": "Council 104 Option-6 MULTI-BATCH-PHASE-A-FIRST Phase 1 A4 prep per CHECKLIST #77",
+  "_INSTRUCTIONS_FOR_OWNER": [
+    "1. Verify 2026-Q2+ slice (2026-04-01 through 2026-06-22) has NOT been touched in code/data/strategy changes since seal date.",
+    "2. Run: python -c \"import hashlib, json, os; from pathlib import Path; q2_files = sorted(Path('data_prefetch/polygon/ohlcv_daily').rglob('*.parquet')); print(hashlib.sha256(''.join(str(f.stat().st_mtime) for f in q2_files).encode()).hexdigest())\" — or equivalent OOS-slice hash command per DEC #4 OOS Seal Protocol",
+    "3. Write the computed hash to oos_q2_plus_seal_hash below.",
+    "4. Sign owner_countersign_signature (typed initials + timestamp).",
+    "5. Save as output_audit/oos_seal_hash.json (drop _template suffix).",
+    "6. Commit + push >=24h BEFORE Stream-D first batch fires."
+  ],
+  "oos_q2_plus_seal_hash": "<TBD-OWNER-COMPUTE>",
+  "oos_slice_date_range": {
+    "start": "2026-04-01",
+    "end_inclusive": "2026-06-22"
+  },
+  "seal_methodology": "DEC #4 OOS Seal Protocol per PATH §13.6",
+  "seal_date_iso": "<TBD-OWNER-DATE>",
+  "owner_countersign_signature": "<TBD-OWNER-INITIALS>",
+  "owner_countersign_timestamp_iso": "<TBD-OWNER-TIMESTAMP>",
+  "stream_d_first_batch_eta_iso": "<TBD-OWNER-ETA-MUST-BE-AT-LEAST-24H-AFTER-SEAL-TIMESTAMP>",
+  "audit_log": {
+    "seal_method": "hash of file modification timestamps + content hashes",
+    "tampering_detection": "any modification to OOS-slice files post-seal invalidates the hash",
+    "post_p65_seal_verification": "Phase 6.5 exit gate verifies hash unchanged"
+  },
+  "memory_rule_reference": "feedback_audit_recommendations_against_existing_directives + DEC #4 OOS Seal Protocol + PATH §13.6 + Council 104 Phase 1 A4 prep",
+  "council_104_phase_1_a4_status": "TEMPLATE-PREPARED-B1011-AWAITING-OWNER-COUNTERSIGN"
+}
