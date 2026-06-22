@@ -740,14 +740,16 @@ P1 STREAM E 20/20 sections shipped (B933-B967) is **NECESSARY but NOT SUFFICIENT
 | Outstanding item | Status |
 |---|---|
 | Stage 4 per-change approval on 351 R4 atomic rows | RESOLVED-VIA-STAGE-4-WALK-OUTPUTS B883 2026-06-17 |
-| Stage 5 implementation batches (≥5 approvals/batch) | PENDING owner triage |
+| Stage 5 implementation batches (≥5 approvals/batch) | **RESOLVED B987/B988 2026-06-21** (Council 91 honest-finding pivot: Tranche 1 #71+#72 ALREADY SHIPPED via B835 + #73-75 B886 = 5-of-5; Tranche 2 19 candidates DEFERRED-POST-R5 per Council 92 Option-7 per DEC-426 5-Gate 0/19 PSR pass) |
 | TIER 2 producer wireup completion (smart-money / event-driven / cross-sectional) | **RESOLVED B978 2026-06-21** (Council 78 A2-AUDIT-FIRST: 9 of 9 inject_* wired + producers present + data paths populated; banner stale since Phase P0 signal_loader.py extraction) |
-| Strategy-side EVENT rollouts + AA EXPLORATORY 18-strategy sweep + S mean-rev SHORT EXPLORATORY tags + BB news_sentiment vendor SPOF sentinel | PENDING |
-| #4 BH-FDR vs Bonferroni methodology decision | PENDING owner decision |
+| Strategy-side EVENT rollouts + AA EXPLORATORY 18-strategy sweep + S mean-rev SHORT EXPLORATORY tags + BB news_sentiment vendor SPOF sentinel | **RESOLVED B994 2026-06-22** (Council 99 audit-pass: AA ✅ B830 + BB ✅ B832 + S Pattern ✅ B803 partial + Pattern Q-Cluster A/B ✅ PARTIAL + Pattern Z ✅ DEFERRED-POST-R5) |
+| #4 BH-FDR vs Bonferroni methodology decision | **RESOLVED B982 2026-06-21** (Council 85 Option-3 PROMOTE BH-FDR FROM SANITY-CHECK TO HARD GATE owner-approved; critical finding: Bonferroni NEVER WIRED in B667 implementation; actual COMPOSE was deflated-Sharpe + SPA + BH-FDR sanity-check; B982 promoted BH-FDR to gate per Benjamini-Hochberg 1995 + Storey 2003 canonical FDR-control at N>1000) |
 | 18 substantive pyramid items (B586/B533/B465 + 15 singletons) | **RESOLVED B973 2026-06-21** (Council 76 honest-finding pivot; B907+B971+B972 explicit + 8 verified-passing-silently in current pytest) |
-| Stream V reproducibility verification | PENDING per §13.7 launch gate #14 |
-| DEC #1 4th ingredient decision (sortino / win_rate / psr / expectancy) | PENDING owner decision per B966 |
+| Stream V reproducibility verification | **RESOLVED B970 2026-06-20** (PATH §13.7 launch gate #14: `output_audit/b970_stream_v_reproducibility_report.json` 70/70 PASS; double-call bit-identical verification across 5 strategies × 14 sections) |
+| DEC #1 4th ingredient decision (sortino / win_rate / psr / expectancy) | **RESOLVED B969 2026-06-21** (Council 70/71 single-batch RESOLVED via DEFER + RENORMALIZE; 3-ingredient soft-score 0.40 sharpe / 0.34 calmar / 0.26 profit_factor; 4th slot REMOVED post-R5 deferred per Council 38 Quant mandate) |
 | B931 institutional_persistence MAY-REVERT | **RESOLVED B979 2026-06-21** (Council 80 Option-F HYBRID: EXPLORATORY tag NOW + B901 re-measurement hook; owner-approved per directive 'Approve all recommendations. Proceed.') |
+| **S5-EARNINGS-BLACKOUT-LOOKAHEAD-FIX-BATCH (NEW; surfaced B989)** | **PENDING owner approval** (dedicated infra-fix batch for INV-057+058; B995 readiness package + B998/B999 pre-flight investigation + B1001 INV doc-sync complete; B996 fix scope finalized: Option-d `end_date + 30 days` proxy; owner-pre-approval-gated per Council 94 + B989) |
+| **S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW (NEW; surfaced walk-3 B990)** | **PENDING owner approval** (Class 7 NEW SHORT strategy `strat_insider_cluster_concentrated_sell_short` per B662 narrow-threshold; engine-level change per `feedback_local_changes_default_global_needs_approval`) |
 | DEC-PHASE-6.5-RESET owner countersign | PENDING at P6 completion per §13.16 |
 
 **Implication for "is Phase P1 done?":** Yes (STREAM E 20/20 dossier sections built + populated for 217 strategies). **But:** R5 launch readiness requires draining the entire-execution-queue + Stream V verification first. Future Claude sessions reading this PATH doc must NOT interpret "P1 complete" as "R5 launchable".
