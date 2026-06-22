@@ -250,9 +250,28 @@ def fetch_earnings_dates(
         return pd.DataFrame()
     try:
         df = pd.read_parquet(fin_path)
-        if df.empty or "filing_date" not in df.columns:
+        if df.empty:
             return pd.DataFrame()
-        df["earnings_date"] = pd.to_datetime(df["filing_date"])
+        # B1009 INV-058 fix (2026-06-22 Council 103 Option-6 owner-approved
+        # 'Approve all proceed council this'): use end_date + 30 days as
+        # proxy for actual earnings_announce_date (NOT filing_date which
+        # is ~30 days AFTER announce per B998 multi-ticker analysis:
+        # AAPL 31.2d / MSFT 26.5d / GOOGL 29.3d / AMZN 29.0d / TSLA 35.5d
+        # / JPM 39.0d / WMT 38.9d / JNJ 35.9d; median gap ~32d).
+        # B998 verified Polygon parquet has NO announce_date column.
+        # B999 verified Finnhub /stock/earnings has NO announce_date
+        # field either. Option-d (end_date + 30 days proxy) finalized
+        # per B995/B998/B999/B1001 readiness package.
+        # Prior behavior: filing_date was used directly = late exit
+        # (post-earnings event), defeating blackout purpose.
+        if "end_date" in df.columns:
+            df["earnings_date"] = pd.to_datetime(df["end_date"]) + pd.Timedelta(days=30)
+        elif "filing_date" in df.columns:
+            # Fallback: filing_date - 30 days (less stable; uses post-
+            # event filing-delay variance)
+            df["earnings_date"] = pd.to_datetime(df["filing_date"]) - pd.Timedelta(days=30)
+        else:
+            return pd.DataFrame()
         df = df.dropna(subset=["earnings_date"])
         if as_of:
             df = df[df["earnings_date"].dt.date <= as_of]

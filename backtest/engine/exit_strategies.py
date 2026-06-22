@@ -504,7 +504,14 @@ def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
     if earnings_dates is None and ticker:
         try:
             from backtest.data.fetcher import fetch_earnings_dates
-            df_e = fetch_earnings_dates(ticker)
+            # B1009 INV-057 fix (2026-06-22 Council 103 Option-6 owner-
+            # approved 'Approve all proceed council this'): pass
+            # as_of=entry_date for PIT compliance. fetcher.py:255-258
+            # applies PIT filter only when as_of is provided; previously
+            # passing None returned the FULL earnings calendar 2020-2026
+            # at backtest time = positive lookahead bias. Per Council
+            # 94 + B989 INV-057 + B995-B1001 readiness package.
+            df_e = fetch_earnings_dates(ticker, as_of=entry_date)
             if df_e is not None and not df_e.empty:
                 earnings_dates = pd.to_datetime(
                     df_e["earnings_date"]
