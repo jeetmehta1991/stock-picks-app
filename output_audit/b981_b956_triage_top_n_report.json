@@ -569,5 +569,25 @@
     "cross_referenced_existing_tickets": [
       "S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW"
     ]
+  },
+  "b991_audit": {
+    "audit_date": "2026-06-22",
+    "council": "96_OPTION_G_HYBRID_AUDIT_FIRST",
+    "phantoms_already_resolved": 0,
+    "phantoms_via_tagging_disabled_deprecated_exploratory": 0,
+    "cross_walk_closure_with_walk_3": [
+      "activist_13d_long"
+    ],
+    "overlap_deferred_and_fire_starved": [
+      "52w_high_breakout_with_smart_money_long",
+      "52w_high_breakout_with_smart_money_vol_below_long",
+      "52w_low_breakdown",
+      "bollinger_tight_with_smart_money_long"
+    ],
+    "overlap_count": 4,
+    "root_cause_attribution": "Overlap candidates share smart-money/52w-breakout/bollinger-tight confluence pattern. FIRE_STARVED is upstream root cause (fire<30/yr); DEFERRED_OWNER_TRIAGE is downstream symptom (no R5 verdict pending data). Resolving FIRE_STARVED disposition for these 4 strategies informs DEFERRED disposition automatically.",
+    "live_unique_walk_4_candidates_estimated": 15,
+    "verdict": "NO_PHANTOMS_BLIND_WALK_NOT_RISKED_AUDIT_INFORMS_PRIORITY",
+    "recommendation_for_council_97": "FIRE_STARVED-10 first: 4 of 10 are root cause of overlap candidates; closing FIRE_STARVED disposition (DELETE/DISABLE/EXPLORATORY/ACCEPT) automatically resolves DEFERRED downstream symptom for those 4. After FIRE_STARVED-10 closes, walk-5 = DEFERRED_OWNER_TRIAGE remainder (estimated 6 strategies post-overlap-resolution)."
   }
 }
