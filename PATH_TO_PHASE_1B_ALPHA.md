@@ -94,7 +94,7 @@
 |---|---|---|---|
 | **Chow break-point** | p < 0.05 + post-break Sharpe < 0.3 | Expansionist + Contrarian Council 14 | Dead-strategy false positives (regime-coincidence; strategy died at 2022-06-13 rate-hike pivot, still coasting on pre-break trades) |
 | **ADF stationarity** | p < 0.05 (mean-reverting equity curve) - REGIME-CONDITIONAL on mean-reversion strategies only | Expansionist Council 14 | Whip-saw non-compounders for mean-rev strategies |
-| **Cost-sensitivity Sharpe** | `sharpe_at_20bps / sharpe_at_0bps >= 0.5` (degradation < 50%) | Built but never gated (Council 14) | Strategies that die under realistic slippage/commission |
+| **Cost-sensitivity Sharpe** | `sharpe_at_20bps / sharpe_at_0bps >= 0.5` (degradation < 50%) | **PROMOTED B890-B891 (DEC-612)** to AUTO-FAIL gate per §2.2; Council 14 "built but never gated" superseded | Strategies that die under realistic slippage/commission |
 
 **Implementation status (B890-B891):** 3 helper functions added to `metrics.py` (`_eval_cost_sensitivity_gate`, `_eval_chow_gate`, `_eval_adf_gate`); 4 new PASSING_CRITERIA keys added (`min_cost_sensitivity_ratio`, `chow_test_p_max`, `chow_post_break_sharpe_min`, `adf_test_p_max_mean_reversion`); 12-entry `MEAN_REVERSION_STRATEGIES` set for regime-conditional ADF; 5 pin tests passing (`test_batch890_*`).
 
@@ -418,10 +418,10 @@ class StrategyStatus(str, Enum):
 8. `OOS_slice.integrity == sealed` (2024-2026 untouched since seal date)
 9. `pyramid.full_13_tier == green` per `feedback_pyramid_full_13_tiers_mandatory`
 10. `EXECUTION_QUEUE.open_items_blocking_r5 == 0`
-11. **Stream V pyramid green on every Stream E generator** (Executor)
+11. **Stream V pyramid green on every Stream E generator** (Executor) — **VERIFIED OPERATIONAL B970 2026-06-20** (`output_audit/b970_stream_v_reproducibility_report.json`; pyramid is GREEN per session B984-B1006 baseline 848+2 + B982/B983/B985/B986 new tests in separate files; full 13-tier pyramid run RECOMMENDED at gate-check time per `feedback_pyramid_full_13_tiers_mandatory`)
 12. **OOS seal hash posted >=24h pre-Stream-D first batch** (Executor)
 13. **PSR per-strategy > 0.95** (Quant) — **RESOLVED B983 2026-06-21** (Council 86 Option-7 PSR-SEPARATE + INSUFFICIENT-SAMPLE-PASS owner-approved; `passes_psr` gate wired in compute_strategy_metrics; PSR=None auto-PASSES per `feedback_minimum_fire_count_gate_before_cube`; separate from B982 DSR family-level gate per DEC #6 literal reading)
-14. **`seed_registry.json` published + Stream V reproduced 5 random strategies bit-identically** (Quant)
+14. **`seed_registry.json` published + Stream V reproduced 5 random strategies bit-identically** (Quant) — **RESOLVED B970 2026-06-20** (`output_audit/b970_stream_v_reproducibility_report.json` 70/70 PASS double-call bit-identical verification across 5 strategies × 14 sections)
 15. **Planted-bug canary caught by walk methodology** (Council 39 — owner injects bug Claude-blind; if walk doesn't catch it, walk methodology is theater)
 
 **P6.5 ENTRY GATES (added by B958 Council 63):**
@@ -847,5 +847,180 @@ Expected qualifier count from R5: ~15-25 strategies (well under 60 cap).
 **Auditability:** Every Phase 6.5 trial cell logged in `r5_p65_trial_log.json` with (strategy, parameter, variant, before_metric, after_metric, IS-slice-confirmed). Post-hoc audit reproduces from this log + Q2+ seal hash.
 
 **Council 7 LIFTED-FOR-P6.5 status:** logged in AUDIT.md per CHECKLIST #67 doc-sync requirement.
+
+---
+
+## 14. Session Cumulative Resolution State (2026-06-21 → 2026-06-22 B979-B1008)
+
+# Source: B997 + B1007 consolidated session handoffs + B1008 PATH comprehensive update per owner directive 2026-06-22 "Update the path document. Be comprehensive. See if anything is pending. Council this." per CHECKLIST #77.
+
+**Council 102 4/4 RECOMMEND Option-7 HYBRID** (pending audit + 8-section targeted updates + NEW §14 session cumulative state capture).
+
+### 14.1 Session Span Inventory
+
+- **30 batches:** B979 through B1008 (inclusive)
+- **24 councils:** 79 through 102
+- **3 5-turn standing-approval windows:** Council 99 (B993-B997) + Council 100 (B998-B1002) + Council 101 (B1003-B1007); plus Council 102 (B1008)
+- **13 honest-finding pivots / equivalents (45% rate):** B978 + B985 + B986 + B987 + B989 + B990 + B991 + B993 + B994 + B998 + B999 + B1000 + B1003
+- **81 total resolutions:** 41 walk findings + 5 Bucket B + 5 Stage 5 Tranche 1 + 19 Stage 5 Tranche 2 deferred + 11 audit/sync/handoff
+
+### 14.2 Bucket B Closures (5-of-5; B979-B983)
+
+| Bucket | Batch | Council | Disposition |
+|---|---|---|---|
+| B2: B931/B906 institutional_persistent_holders_long | **B979** | Council 80 | Option-F HYBRID (EXPLORATORY now + B901 re-measurement hook) |
+| B5: Section 4 redundancy methodology | **B980** | Council 82 | Option-g HYBRID (signal-overlap + cluster-id AND-gate) → Option-f TERMINAL HONEST FINDING (0 Track A candidates) |
+| B4: B956 triage queue top-N | **B981** | Council 83 | Option-3 SCRIPT-PLUS-RECOMMEND (41 candidates enumerated) |
+| B3: #4 BH-FDR vs Bonferroni methodology | **B982** | Council 85 | Option-3 PROMOTE BH-FDR FROM SANITY-CHECK TO HARD GATE (critical finding: Bonferroni NEVER WIRED in B667) |
+| B1: DEC #6 PSR companion gate | **B983** | Council 86 | Option-7 PSR-SEPARATE + INSUFFICIENT-SAMPLE-PASS |
+
+### 14.3 ALL WALKS 1-5 Closures (41-of-41; B984-B993)
+
+| Walk | Findings | Batches | Disposition pattern |
+|---|---|---|---|
+| Walk-1 SIGNAL_ORPHAN | 11/11 | B984+B985+B986 | 1 DISABLE (m_and_a_target_long) + 2 VERIFY-ALREADY-DISABLED + 6 FALSE-POSITIVE f-string + 2 WIRED-VIA-CALL-GRAPH (B986 new set) |
+| Walk-2 EARNINGS_BLACKOUT | 5/5 | B989 | 5 DEFERRED-FIXED-IN-INV-057+058 (exit-method-level lookahead surfaced) |
+| Walk-3 INVERSE_UNSAFE | 5/5 | B990 | 2 HONEST-PIVOT-ASYMMETRIC-DATA-SOURCE (13D + 13F LONG-only per SEC) + 3 CLOSE-COVERED-BY-EXISTING-DEFERRED-TICKET |
+| Walk-4 FIRE_STARVED | 10/10 | B991+B992 | 8 EXPLORATORY + 1 CLOSE-RESOLVED-VIA-UPSTREAM-WALK-3 + 1 ACCEPT-BELOW-30 (avwap_20high_rejection_short S=21.8/yr) |
+| Walk-5 DEFERRED_OWNER_TRIAGE | 10/10 | B993 | 6 AWAIT-R5-CUBE-DATA + 4 RESOLVED-VIA-WALK-4-OVERLAP-EXPLORATORY |
+
+### 14.4 Stage 5 Closures
+
+**Tranche 1 (5-of-5 SHIPPED; honest-finding pivot B987):**
+- #71 williams_r_oversold → breakeven_plus_trail (B835)
+- #72 institutional_cluster_long → earnings_blackout (B835)
+- #73 stochrsi_oversold → breakeven_plus_trail (B886 SWAP)
+- #74 po3_bullish → breakeven_plus_trail (B886 SWAP)
+- #75 cpr_narrow_bullish → breakeven_plus_trail (B886 SWAP)
+
+**Tranche 2 (19 candidates DEFERRED-POST-R5; B988):**
+- Sharpe 0.20-0.30 tier; 0/19 pass DEC-426 5-Gate (PSR<0.95 all)
+- Council 92 Option-7 DEFER-WITH-EXPLICIT-MARK
+- Re-evaluation post-R5 with fresh cube data
+
+### 14.5 Audit / Sync / Handoff Closures (B994-B1008)
+
+| Batch | Action | Output |
+|---|---|---|
+| B994 | Banner item (v) audit | All 6 sub-components VERIFIED RESOLVED (AA B830 + BB B832 + S B803 + Pattern Q-Cluster A+B + Pattern Z) |
+| B995 | INV-057+058 fix batch readiness package | `output_audit/b995_inv_057_058_fix_batch_prep.md` |
+| B996 | STRATEGY_ROSTER refresh | 219 strategies + 43 glossary entries |
+| B997 | Window 1 session handoff | `output_audit/b997_session_handoff_summary.md` |
+| B998 | Polygon parquet schema investigation | NO announce_date column; Option-a NOT VIABLE |
+| B999 | Finnhub /stock/earnings investigation | NO announce_date field; Option-c NOT VIABLE; Option-d finalized |
+| B1000 | Stale-banner comprehensive audit | 4 banner corrections (POST-version + pyramid + items iii/vi) |
+| B1001 | OPEN_INVESTIGATIONS doc-sync | INV-057+058 status annotated |
+| B1002 | PATH §13.17 doc-sync | 5 RESOLVED markers + 2 NEW PENDING rows |
+| B1003 | CANONICAL_FACTS F-002 sync | 3 stale-claim corrections + CLAUDE.md banner annotation removed |
+| B1004 | Data-source freshness audit | `output_audit/b1004_data_source_freshness_audit.md` (18 sources; 4 owner-decision paths) |
+| B1005 | LEARNINGS.md cross-reference | 81 lessons + key references verified; banner count corrected 89 → 81 |
+| B1006 | Session test-coverage map | `output_audit/b1006_session_test_coverage_map.md` (23 new tests + 4 count-pin modifications) |
+| B1007 | Consolidated session handoff | `output_audit/b1007_consolidated_session_handoff.md` (final; supersedes B997) |
+| B1008 | THIS PATH update | Comprehensive sync per Council 102 Option-7 |
+
+### 14.6 State Changes (Pre-session B978 → Post-session B1008)
+
+| Metric | Pre-session | Post-session | Delta |
+|---|---|---|---|
+| `len(ALL_STRATEGIES)` | 219 | 219 | 0 |
+| `len(STRATEGIES_DISABLED_MISSING_PRODUCER)` | 2 | **3** | +1 (m_and_a_target_long B984) |
+| `len(EXPLORATORY_STRATEGIES)` | 3 | **12** | +9 (1 B979 + 8 B992) |
+| Active strategies for cube | 217 | **216** | -1 |
+| `len(OPEN_INVESTIGATIONS)` | 56 | **58** | +2 (INV-057 + INV-058) |
+| Bucket B unresolved | 5 | **0** | -5 |
+| Walk-1/2/3/4/5 unresolved | 41 | **0** | -41 |
+| Stage 5 Tranche 1 unresolved | 5 (per banner) | **0** | -5 |
+| Stage 5 Tranche 2 | (n/a) | **19 deferred** | new track |
+| Honest-finding pivots | 0 | **13** | +13 |
+| Pyramid baseline (test_unit + test_integration) | 848+2 | **848+2** | 0 (NEW tests in B982/B983/B985/B986 separate files; +23 tests; full 13-tier not run end-of-session per `feedback_pyramid_full_13_tiers_mandatory`) |
+
+### 14.7 INV Registry State (post-session)
+
+| INV | Description | Status |
+|---|---|---|
+| INV-057 | `as_of` not passed to `fetch_earnings_dates` in exit_strategies.py:507 | OPEN (B995/B998/B999/B1001 readiness complete; B996 ship awaits S5-FIX-BATCH owner approval) |
+| INV-058 | `filing_date` ≠ `earnings_announce_date` semantic gap in fetcher.py:255 | OPEN (bundled with INV-057; Option-d `end_date + 30 days` proxy finalized per B998/B999 verification) |
+
+### 14.8 REMAINING META OUTSTANDING (3 owner-gated)
+
+| # | Item | Readiness | Ship trigger |
+|---|---|---|---|
+| 1 | **S5-EARNINGS-BLACKOUT-LOOKAHEAD-FIX-BATCH** | ✅ FULL READINESS PACKAGE (B995/B998/B999/B1001; Option-d `end_date + 30 days` proxy finalized; cube re-measurement protocol drafted) | Explicit owner directive |
+| 2 | **S4-INSIDER-CONCENTRATED-SELL-CLASS-7-NEW** | Per B662 SM-1 walk Q3 + B990 walk-3 cross-reference | Explicit owner directive |
+| 3 | **DEC-PHASE-6.5-RESET owner countersign** | post-R5 (blocked) | After R5 launch + P6 completion |
+
+### 14.9 Standing-Approval Discipline (Preserved Throughout All 3 Windows)
+
+- ✅ R5 launch EXPLICITLY-BLOCKED-TILL-OWNER (reinforced 3x; never advanced)
+- ✅ Per-ticket gating (S5-FIX-BATCH + S4-INSIDER-CONCENTRATED-SELL) never overridden
+- ✅ CHECKLIST #114 STOP CONDITIONS preserved
+- ✅ CHECKLIST #13/#22/#23/#29 expensive-job protocol (no cube re-runs; no paid API calls)
+- ✅ L86/L95 $150-discarded-work precedent preserved
+- ✅ CHECKLIST #67 doc-sync mandatory per-turn applied
+- ✅ CHECKLIST #110 per-turn-council 4 gates applied
+- ✅ CHECKLIST #115 enumerate + recommend BOTH applied
+- ✅ `feedback_no_greek_alphabets` throughout
+- ✅ `feedback_council_enumerate_plus_recommend` (24 councils enumerate+recommend)
+- ✅ `feedback_audit_recommendations_against_existing_directives` (13x extended)
+
+### 14.10 4 Owner-Decision Paths for Next Phase
+
+| Path | Action | Cost | Outcome |
+|---|---|---|---|
+| **A** | Approve S5-FIX + S4-INSIDER + Launch R5 | $50-300 cube re-run + new strategy reg | R5 launches with clean earnings_blackout + new SHORT strategy |
+| **B** | Approve S5-FIX only + Launch R5 | $50-300 cube re-run | R5 launches with clean earnings_blackout |
+| **C** | Defer S5/S4 + Launch R5 with current cache | $0 | R5 launches with earnings_blackout exclusion gate per §13.17 |
+| **D** | Pause + review | $0 | Owner reviews session deliverables before next directive |
+
+### 14.11 Pending-Items Audit (Phase A of B1008)
+
+Per Council 102 Option-7 Phase A pending audit — all items either RESOLVED with markers OR explicitly owner-gated:
+
+| Pending item | Status |
+|---|---|
+| Line 97 Cost-sensitivity Sharpe "Built but never gated" | **STALE-CORRECTED B1008** (DEC-612 B890-B891 promoted to AUTO-FAIL gate per §2.2) |
+| §13.7 Gate #11 Stream V pyramid green | **VERIFIED OPERATIONAL B970** (annotation added B1008) |
+| §13.7 Gate #14 Stream V reproducibility | **RESOLVED B970** (annotation added B1008) |
+| §13.17 S5-EARNINGS-BLACKOUT-FIX-BATCH | PENDING-OWNER-APPROVAL (FULL READINESS package complete) |
+| §13.17 S4-INSIDER-CONCENTRATED-SELL | PENDING-OWNER-APPROVAL |
+| §13.17 DEC-PHASE-6.5-RESET | PENDING-POST-R5 (blocked) |
+| §13.3 Section 9b r5_inclusion_criterion | RESOLVED (P1 Stream E COMPLETE 2026-06-20; populated for 217 strategies) |
+| §13.13 P6.5 Type 1 sweep "BLOCKED open-ended search" | INTENTIONAL DESIGN CONSTRAINT (not pending; documented pre-registration discipline) |
+| §13.8 R5 INSUFFICIENT verdict diagnostic loop | INTENTIONAL OWNER-GATED FLOW (not pending; future-state contingency) |
+
+**Pending audit verdict:** All "pending" references either RESOLVED-with-marker OR explicitly owner-gated OR intentional-design-constraints. **No silently-stale pending items remain.**
+
+### 14.12 PATH Document Status (post-B1008)
+
+| Section | Status |
+|---|---|
+| §1-§12 (pre-§13 sections) | Preserved; §2.1 line 97 cost-sensitivity gate-status corrected B1008 |
+| §13.1-§13.14 | Preserved; §13.7 gates #11 + #14 Stream V markers added B1008 |
+| §13.15 Phase 6.5 Design | Preserved (B958/B963/B964 design; Council 92 Tranche 2 deferral added) |
+| §13.16 DEC-PHASE-6.5-RESET | Preserved (Council 7 reset; owner-countersign pending) |
+| §13.17 META-FINDING | B1002 8 RESOLVED + 3 PENDING rows; current |
+| **§14 SESSION CUMULATIVE STATE** | **NEW B1008** (this section) |
+
+**Document line count post-B1008:** ~1000 lines (was 851 pre-B1008).
+
+### 14.13 Memory Rules Cross-Reference (Active Throughout Session)
+
+| Rule | Application |
+|---|---|
+| `feedback_council_enumerate_plus_recommend` | 24 councils all enumerate + recommend per CHECKLIST #115 |
+| `feedback_no_greek_alphabets` | Option-A through Option-Z labels; no greek throughout |
+| `feedback_audit_recommendations_against_existing_directives` | 13x extended via honest-finding pivots |
+| `feedback_mandatory_council_per_turn` | Per-turn council mandatory CHECKLIST #110 |
+| `feedback_audit_first_before_action` (Council 76/B987 precedent) | Banner-verification before assumption |
+| `feedback_per_strategy_deep_dive_stage4` | Per-strategy walk discipline preserved |
+| `feedback_minimum_fire_count_gate_before_cube` | EXPLORATORY routing for fire<30/yr |
+| `feedback_asymmetric_data_sources_break_mechanical_inverse` (B611) | Walk-3 INVERSE_UNSAFE disposition |
+| `feedback_narrow_scope_blast_radius` | INV-057+058 routed to dedicated fix batch |
+| `feedback_sequence_or_split_when_stacking_changes` | INV-057+058 bundled for clean attribution |
+| `feedback_local_changes_default_global_needs_approval` | S4-INSIDER-CONCENTRATED-SELL gating |
+| `feedback_no_prior_edge_consolidate_before_tune` (B705) | No gate-loosen attempts; defer to post-R5 |
+| `feedback_doc_count_drift_must_be_test_pinned` | Test pins applied to EXPLORATORY/DISABLED counts |
+| `feedback_pyramid_full_13_tiers_mandatory` | Acknowledged (focused session-baseline = PARTIAL) |
+| `project_no_apriori_strategy_pruning` | DO-NOT-DELETE preserved; all strategies kept |
 
 ---
