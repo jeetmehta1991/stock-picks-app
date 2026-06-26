@@ -20,6 +20,7 @@ PRE-BUILD CHECK (Council 67 Executor mandate, executed before coding):
   R4 trade_log.csv: 29,360 trades / 102 strategies / 19 unique exit_reasons
     (per-strategy avg 3 exit_reasons exercised; max 10).
   exit_strategy_comparison.csv: 25 unique exit_methods aggregate-level.
+  <!-- canonical-fact-scope: F-002 R4 snapshot coverage; 72 strategies is pre-B1010 R4 cube state. -->
   exit_strategy_best.csv: 72 strategies x top-1 exit only.
   HONEST LIMITATION: R4 does NOT have full 26-exit cube per-strategy replay.
     Per-strategy per-exit Sharpe must be computed from trade_log directly

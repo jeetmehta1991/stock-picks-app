@@ -3512,13 +3512,16 @@ def strat_insider_cluster_concentrated_sell_short(s):
     fires = (
         s.get("concentrated_sell", False)
         and s.get("below_ema_200", False)
+        and not _short_borrow_trap_active(s)
     )
     return _strat(fires, "short", "event_driven",
-        ["concentrated_sell", "below_ema_200"],
+        ["concentrated_sell", "below_ema_200", "borrow_ok"],
         [
             "Insider concentrated_sell: >50% of insider holdings dumped "
             "(B613 narrow-threshold variant)",
             "Below 200 EMA (regime gate; symmetric to LONG ema_200 gate)",
+            "borrow_ok: short-borrow trap gate (B740/B741 mandatory for "
+            "all pure-short strategies; B1014 retrofit post-B1010 lint catch)",
         ])
 
 

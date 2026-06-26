@@ -56,9 +56,12 @@ def test_b744_pin2_short_strategy_count_matches_b718b_cohort():
     dual = [s for s in rep.short_strategies if s.is_dual]
     # B899 migration: B874 deleted camarilla_rsi_obv_short (pure-short)
     # + camarilla_rsi_obv (dual). 51->50 pure, 61->60 dual, 112->110 total.
-    assert len(pure) == 50, f"expected 50 pure-short (B740+B741 post-B874); got {len(pure)}"
+    # B1010 (2026-06-22): Added strat_insider_cluster_concentrated_sell_short
+    # per Council 103 Option-6 (Class 7 NEW pure-short). 50->51 pure,
+    # 60 dual unchanged, 110->111 total.
+    assert len(pure) == 51, f"expected 51 pure-short (B740+B741 post-B874+B1010); got {len(pure)}"
     assert len(dual) == 60, f"expected 60 dual _strat3 (B742+B743 post-B874); got {len(dual)}"
-    assert len(rep.short_strategies) == 110
+    assert len(rep.short_strategies) == 111
 
 
 def test_b744_pin3_synthetic_missing_gate_caught(tmp_path):

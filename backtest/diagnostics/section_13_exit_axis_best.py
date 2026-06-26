@@ -14,6 +14,7 @@ PRE-BUILD CHECK (Council 56+58 Executor mandate, executed):
   R4 output dir: output_batch395_final/
   exit_strategy_best.csv schema: strategy, exit_method, total_pnl_pct, n,
     win_rate (5 columns)
+  <!-- canonical-fact-scope: F-002 R4 snapshot coverage; 72 strategies / 219 was pre-B1010 cube state. -->
   Coverage: 72 strategies (of 219 in current roster)
   Distinct exit methods present: 7 (breakeven_plus_trail, chandelier_3x,
     class_time_stop, earnings_blackout, fixed_4r_2r, next_pivot_target,
@@ -21,6 +22,7 @@ PRE-BUILD CHECK (Council 56+58 Executor mandate, executed):
   Ranking metric: total_pnl_pct (NOT Sharpe per CLAUDE.md #10)
 
 HONEST FRAMING (Council 58 First Principles mandate):
+  <!-- canonical-fact-scope: F-002 R4 snapshot delta; 147 not-in-R4 + 72 in-R4 = 219 pre-B1010 cube state. -->
   - 147 strategies (of 219) have NULL Section 13 - not in R4 CSV
   - 'Best' is ranked by total_pnl_pct; Sharpe per-cell not in this CSV
   - Only 7 of 26 exit methods appear as winners (other 19 lost or no fires)
