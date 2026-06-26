@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "batch": "B1019",
+  "purpose": "F2 STRUCTURED-LOG-SCHEMA per Council 108 Option-5 Modified Enhancement F2",
+  "source": "Council 108 4/4 RECOMMEND Option-5 Modified per owner directive 2026-06-26 'Approve all 7' per CHECKLIST #77",
+  "log_file": "output_audit/phase_1_monitor_log.jsonl",
+  "schema_per_checkpoint_line": {
+    "timestamp_iso": "ISO 8601 UTC timestamp at checkpoint emit",
+    "batch": "B1019",
+    "day_n": "Simulated day number (1-indexed)",
+    "cells_completed": "Cube cells completed so far (int)",
+    "total_cells": "Total cube cells planned (217 * 26 = 5642 for Phase 1)",
+    "pct_cells": "Cells percentage 0.0-1.0",
+    "pct_days": "Days percentage 0.0-1.0",
+    "cumulative_trades": "Total trades in trade_log so far (int)",
+    "cumulative_win_rate": "Cumulative win rate 0.0-1.0 (or null if no trades)",
+    "per_strategy_fire_rate_anomaly_count": "A1 anomaly count (> 2x baseline deviation)",
+    "schema_invariant_violation_count": "B2 violation count (schema spec)",
+    "runtime_min": "Wall-clock minutes since monitor armed",
+    "eta_min": "Projected minutes remaining",
+    "memory_rss_mb": "Process RSS memory MB (optional; defer-impl)",
+    "tier": "STOP-S3 tier classification: OK / LOG-MEDIUM / WARN-HIGH / HALT-CRITICAL",
+    "tier_reasons": "List of human-readable reasons for tier (empty if OK)",
+    "a1_anomalies_top_5": "Top 5 strategies with highest deviation ratio",
+    "b2_violations_list": "List of schema violations (e.g., 'missing_column_strategy')"
+  },
+  "stop_tier_definitions": {
+    "OK": "All checks pass; continue",
+    "LOG-MEDIUM": "Single-strategy outlier / non-required NaN; log + continue",
+    "WARN-HIGH": "Fire-count >2x baseline OR cumulative-WR delta >5pp OR fires/day >2x; warn first occurrence + halt at 2nd consecutive",
+    "HALT-CRITICAL": "Runtime error / segfault / corruption / NaN propagation / schema violation / writer failure; INSTANT HALT"
+  },
+  "post_hoc_grep_examples": {
+    "find_all_critical_halts": "grep '\"tier\": \"HALT-CRITICAL\"' output_audit/phase_1_monitor_log.jsonl",
+    "find_high_warn_events": "grep '\"tier\": \"WARN-HIGH\"' output_audit/phase_1_monitor_log.jsonl",
+    "extract_anomaly_strategies": "jq '.a1_anomalies_top_5[]' output_audit/phase_1_monitor_log.jsonl",
+    "extract_eta_curve": "jq -c '{day: .day_n, eta_min: .eta_min}' output_audit/phase_1_monitor_log.jsonl"
+  },
+  "memory_rule_references": [
+    "feedback_monitor_intermediate_counts (B358) - 2x deviation threshold",
+    "feedback_strategy_x_exit_cell_analysis - D2 dimension rollup",
+    "CHECKLIST #114 STOP CONDITIONS",
+    "Council 108 verdict",
+    "BUG-271/272/273 silent-gap (A1 catches)",
+    "L143 data drift (B2 catches)",
+    "B358 trade-count 20x drop (A1 + D1 catches)",
+    "B1014 Windows STATUS_ACCESS_VIOLATION (D1 ETA catches)"
+  ]
+}
