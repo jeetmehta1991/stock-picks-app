@@ -29,13 +29,13 @@
 # COST CAP: hard ceiling at $2 (B1019 monitor halts at >10x baseline cost)
 set -euo pipefail
 
-BUCKET_NAME="${1:-stock-picks-phase-1-aws}"
-AMI_ID="${AMI_ID:-ami-CHANGEME}"
+BUCKET_NAME="${1:-stock-picks-batch395-jm-7421}"
+AMI_ID="${AMI_ID:-ami-08f44e8eca9095668}"
 INSTANCE_TYPE="c6a.4xlarge"
-IAM_INSTANCE_PROFILE="${IAM_INSTANCE_PROFILE:-stock-picks-phase-1-role}"
-SUBNET_ID="${SUBNET_ID:-subnet-CHANGEME}"
-KEY_NAME="${KEY_NAME:-stock-picks-phase-1-key}"
-SECURITY_GROUP_ID="${SECURITY_GROUP_ID:-sg-CHANGEME}"
+IAM_INSTANCE_PROFILE="${IAM_INSTANCE_PROFILE:-batch395-instance-role}"
+SUBNET_ID="${SUBNET_ID:-subnet-0c24265a68a460ce7}"
+KEY_NAME="${KEY_NAME:-batch395}"
+SECURITY_GROUP_ID="${SECURITY_GROUP_ID:-sg-0de62cd41561ebc6b}"
 
 PHASE_1_TICKER="${PHASE_1_TICKER:-NVDA}"
 PHASE_1_OUTPUT_DIR="output_phase_1_aws"
