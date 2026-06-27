@@ -8013,6 +8013,17 @@ def screen_instrument(
     # confirm byte-identical to canonical screener inline binding).
     from backtest.data.signal_loader import inject_insider_buying_signals
     inject_insider_buying_signals(signals, ticker, as_of)
+    # B1034 (2026-06-27) Council 128 Option-6 silent-gap fix per W1 wiring
+    # audit: inject smart_money.insider_signal() keys (concentrated_sell,
+    # cfo_buy, large_dollar_buy, ceo_buy, director_only_buy). B1010 Class 7
+    # NEW strat_insider_cluster_concentrated_sell_short consumes
+    # concentrated_sell but smart_money.insider_signal() was never called
+    # in screen_instrument path -> strategy could not fire. This injection
+    # closes that gap. Compatible with existing insider_buying.compute_
+    # insider_cluster_signals which produces insider_cluster_active +
+    # insider_*_buyers_30d (orthogonal signal set).
+    from backtest.data.signal_loader import inject_insider_signal_keys
+    inject_insider_signal_keys(signals, ticker, as_of)
     # B924 (2026-06-19) engine path unification per Council 39+41 commit 4/5:
     # classification_change injection extracted into signal_loader. Pattern
     # carried forward from B921/B923 (parity tests confirm byte-identical).

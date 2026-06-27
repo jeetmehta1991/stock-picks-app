@@ -354,6 +354,52 @@ def inject_insider_buying_signals(
     return signals
 
 
+def inject_insider_signal_keys(
+    signals: dict[str, Any],
+    ticker: str,
+    as_of: date,
+) -> dict[str, Any]:
+    """B1034 silent-gap fix: inject smart_money.insider_signal() keys.
+
+    Council 128 Option-6 fix per W1 wiring audit finding (2026-06-27):
+    B1010 strat_insider_cluster_concentrated_sell_short (owner-approved
+    Council 103 Class 7 NEW) consumes s.get("concentrated_sell", False)
+    but smart_money.insider_signal() (which produces "concentrated_sell"
+    key) was NEVER CALLED in screen_instrument path. Result: B1010
+    strategy could not fire because concentrated_sell always False.
+
+    Same silent-gap class: cfo_buy, large_dollar_buy, ceo_buy,
+    director_only_buy — all produced by smart_money.insider_signal()
+    but not injected.
+
+    Produces signal keys (consumed by B1010 + downstream):
+        concentrated_sell    bool (>50% of insider holdings dumped;
+                             B1010 consumer)
+        cfo_buy              bool (CFO present among buyers)
+        large_dollar_buy     bool (any single buy >$1M)
+        ceo_buy              bool (CEO present among buyers)
+        director_only_buy    bool (only director purchases, no exec)
+        cluster_buy          bool (multiple insiders buying)
+        signal               str  (overall insider_signal classification)
+        buy_count            int  (raw buy count)
+        sell_count           int  (raw sell count)
+
+    Failure mode: producer raises -> log WARNING + leave signals dict
+    unchanged. Strategy gates default False via s.get(key, False).
+
+    PIT semantics: smart_money.insider_signal() applies as_of cutoff
+    internally per smart_money.py:519+ insider_signal() docstring.
+    """
+    try:
+        from backtest.data.smart_money import insider_signal
+        result = insider_signal(ticker, as_of)
+        if result and isinstance(result, dict):
+            signals.update(result)
+    except Exception as _e:
+        _log_silent_producer_failure("insider_signal_keys", _e)
+    return signals
+
+
 def inject_institutional_signals(
     signals: dict[str, Any],
     ticker: str,
