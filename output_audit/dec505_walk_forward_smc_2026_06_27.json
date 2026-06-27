@@ -1,0 +1,1111 @@
+{
+  "spec": "DEC-505 4-fold walk-forward (B1038/B1039)",
+  "council": "132 Option-5/6 sub-agent #5",
+  "phase_gate": "smartmoneyconcepts Phase B canary",
+  "smc_phase_flag": "PRODUCTION (in-memory monkey-patch only)",
+  "ticker": "NVDA",
+  "hold_bars": 5,
+  "smoke": false,
+  "fold_count": 4,
+  "warmup_window": "2021-05-05 -> 2022-05-05",
+  "generated_at": "2026-06-27T16:49:23.667254Z",
+  "total_trades": 856,
+  "strategies": {
+    "smc_bos_continuation": {
+      "total_trades": 22,
+      "oos_pass_count_of_4": 1,
+      "oos_folds_with_n_gte_5": 2,
+      "verdict": "WEAK",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": {
+            "n": 10,
+            "sharpe": 0.1746,
+            "sharpe_ann": 2.772,
+            "win_rate": 0.5,
+            "profit_factor": 1.554,
+            "mean_pnl_pct": 0.01524,
+            "total_pnl_pct": 0.15242
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 11,
+            "sharpe": 0.3139,
+            "sharpe_ann": 4.983,
+            "win_rate": 0.5455,
+            "profit_factor": 2.216,
+            "mean_pnl_pct": 0.03042,
+            "total_pnl_pct": 0.33458
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 12,
+            "sharpe": 0.3689,
+            "sharpe_ann": 5.856,
+            "win_rate": 0.5833,
+            "profit_factor": 2.504,
+            "mean_pnl_pct": 0.03448,
+            "total_pnl_pct": 0.41374
+          },
+          "oos": {
+            "n": 7,
+            "sharpe": -0.0455,
+            "sharpe_ann": -0.722,
+            "win_rate": 0.4286,
+            "profit_factor": 0.887,
+            "mean_pnl_pct": -0.00215,
+            "total_pnl_pct": -0.01504
+          },
+          "oos_over_is_sharpe_ratio": -0.123
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 19,
+            "sharpe": 0.2621,
+            "sharpe_ann": 4.16,
+            "win_rate": 0.5263,
+            "profit_factor": 1.977,
+            "mean_pnl_pct": 0.02098,
+            "total_pnl_pct": 0.3987
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_choch_reversal": {
+      "total_trades": 29,
+      "oos_pass_count_of_4": 0,
+      "oos_folds_with_n_gte_5": 1,
+      "verdict": "INSUFFICIENT_OOS_DATA",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": null,
+          "oos": {
+            "n": 24,
+            "sharpe": -0.113,
+            "sharpe_ann": -1.794,
+            "win_rate": 0.4583,
+            "profit_factor": 0.776,
+            "mean_pnl_pct": -0.01129,
+            "total_pnl_pct": -0.27093
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 28,
+            "sharpe": -0.0966,
+            "sharpe_ann": -1.533,
+            "win_rate": 0.4643,
+            "profit_factor": 0.796,
+            "mean_pnl_pct": -0.00894,
+            "total_pnl_pct": -0.25045
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_order_block_bounce": {
+      "total_trades": 88,
+      "oos_pass_count_of_4": 1,
+      "oos_folds_with_n_gte_5": 4,
+      "verdict": "WEAK",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": {
+            "n": 38,
+            "sharpe": -0.4265,
+            "sharpe_ann": -6.771,
+            "win_rate": 0.3684,
+            "profit_factor": 0.333,
+            "mean_pnl_pct": -0.02634,
+            "total_pnl_pct": -1.00091
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 38,
+            "sharpe": -0.4265,
+            "sharpe_ann": -6.771,
+            "win_rate": 0.3684,
+            "profit_factor": 0.333,
+            "mean_pnl_pct": -0.02634,
+            "total_pnl_pct": -1.00091
+          },
+          "oos": {
+            "n": 8,
+            "sharpe": -0.0628,
+            "sharpe_ann": -0.998,
+            "win_rate": 0.5,
+            "profit_factor": 0.864,
+            "mean_pnl_pct": -0.0027,
+            "total_pnl_pct": -0.0216
+          },
+          "oos_over_is_sharpe_ratio": 0.147
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 46,
+            "sharpe": -0.3755,
+            "sharpe_ann": -5.96,
+            "win_rate": 0.3913,
+            "profit_factor": 0.384,
+            "mean_pnl_pct": -0.02223,
+            "total_pnl_pct": -1.02251
+          },
+          "oos": {
+            "n": 25,
+            "sharpe": 0.4907,
+            "sharpe_ann": 7.79,
+            "win_rate": 0.64,
+            "profit_factor": 3.621,
+            "mean_pnl_pct": 0.03848,
+            "total_pnl_pct": 0.96206
+          },
+          "oos_over_is_sharpe_ratio": -1.307
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 71,
+            "sharpe": -0.0118,
+            "sharpe_ann": -0.187,
+            "win_rate": 0.4789,
+            "profit_factor": 0.97,
+            "mean_pnl_pct": -0.00085,
+            "total_pnl_pct": -0.06045
+          },
+          "oos": {
+            "n": 17,
+            "sharpe": -0.0926,
+            "sharpe_ann": -1.47,
+            "win_rate": 0.6471,
+            "profit_factor": 0.779,
+            "mean_pnl_pct": -0.00762,
+            "total_pnl_pct": -0.12949
+          },
+          "oos_over_is_sharpe_ratio": 7.861
+        }
+      }
+    },
+    "smc_liquidity_sweep_reversal": {
+      "total_trades": 30,
+      "oos_pass_count_of_4": 1,
+      "oos_folds_with_n_gte_5": 1,
+      "verdict": "INSUFFICIENT_OOS_DATA",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": null,
+          "oos": {
+            "n": 30,
+            "sharpe": 0.2007,
+            "sharpe_ann": 3.186,
+            "win_rate": 0.5667,
+            "profit_factor": 1.594,
+            "mean_pnl_pct": 0.01575,
+            "total_pnl_pct": 0.47252
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 30,
+            "sharpe": 0.2007,
+            "sharpe_ann": 3.186,
+            "win_rate": 0.5667,
+            "profit_factor": 1.594,
+            "mean_pnl_pct": 0.01575,
+            "total_pnl_pct": 0.47252
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_fvg_retest_long": {
+      "total_trades": 31,
+      "oos_pass_count_of_4": 1,
+      "oos_folds_with_n_gte_5": 3,
+      "verdict": "WEAK",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": {
+            "n": 6,
+            "sharpe": 0.3788,
+            "sharpe_ann": 6.013,
+            "win_rate": 0.6667,
+            "profit_factor": 2.842,
+            "mean_pnl_pct": 0.02514,
+            "total_pnl_pct": 0.15086
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 7,
+            "sharpe": 0.5152,
+            "sharpe_ann": 8.178,
+            "win_rate": 0.7143,
+            "profit_factor": 3.821,
+            "mean_pnl_pct": 0.03301,
+            "total_pnl_pct": 0.23107
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 11,
+            "sharpe": 0.6149,
+            "sharpe_ann": 9.761,
+            "win_rate": 0.7273,
+            "profit_factor": 5.326,
+            "mean_pnl_pct": 0.0336,
+            "total_pnl_pct": 0.36964
+          },
+          "oos": {
+            "n": 11,
+            "sharpe": -0.109,
+            "sharpe_ann": -1.73,
+            "win_rate": 0.3636,
+            "profit_factor": 0.737,
+            "mean_pnl_pct": -0.00897,
+            "total_pnl_pct": -0.09871
+          },
+          "oos_over_is_sharpe_ratio": -0.177
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 22,
+            "sharpe": 0.172,
+            "sharpe_ann": 2.731,
+            "win_rate": 0.5455,
+            "profit_factor": 1.589,
+            "mean_pnl_pct": 0.01232,
+            "total_pnl_pct": 0.27093
+          },
+          "oos": {
+            "n": 9,
+            "sharpe": 0.0191,
+            "sharpe_ann": 0.304,
+            "win_rate": 0.4444,
+            "profit_factor": 1.053,
+            "mean_pnl_pct": 0.00078,
+            "total_pnl_pct": 0.00704
+          },
+          "oos_over_is_sharpe_ratio": 0.111
+        }
+      }
+    },
+    "smc_fvg_retest_short": {
+      "total_trades": 11,
+      "oos_pass_count_of_4": 1,
+      "oos_folds_with_n_gte_5": 1,
+      "verdict": "INSUFFICIENT_OOS_DATA",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": {
+            "n": 11,
+            "sharpe": 0.2843,
+            "sharpe_ann": 4.514,
+            "win_rate": 0.6364,
+            "profit_factor": 2.588,
+            "mean_pnl_pct": 0.02485,
+            "total_pnl_pct": 0.2733
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 11,
+            "sharpe": 0.2843,
+            "sharpe_ann": 4.514,
+            "win_rate": 0.6364,
+            "profit_factor": 2.588,
+            "mean_pnl_pct": 0.02485,
+            "total_pnl_pct": 0.2733
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 11,
+            "sharpe": 0.2843,
+            "sharpe_ann": 4.514,
+            "win_rate": 0.6364,
+            "profit_factor": 2.588,
+            "mean_pnl_pct": 0.02485,
+            "total_pnl_pct": 0.2733
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 11,
+            "sharpe": 0.2843,
+            "sharpe_ann": 4.514,
+            "win_rate": 0.6364,
+            "profit_factor": 2.588,
+            "mean_pnl_pct": 0.02485,
+            "total_pnl_pct": 0.2733
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_inverse_fvg": {
+      "total_trades": 65,
+      "oos_pass_count_of_4": 2,
+      "oos_folds_with_n_gte_5": 4,
+      "verdict": "WEAK",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": {
+            "n": 13,
+            "sharpe": 0.1995,
+            "sharpe_ann": 3.167,
+            "win_rate": 0.5385,
+            "profit_factor": 1.67,
+            "mean_pnl_pct": 0.021,
+            "total_pnl_pct": 0.27306
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 15,
+            "sharpe": 0.1721,
+            "sharpe_ann": 2.733,
+            "win_rate": 0.5333,
+            "profit_factor": 1.535,
+            "mean_pnl_pct": 0.02004,
+            "total_pnl_pct": 0.30064
+          },
+          "oos": {
+            "n": 17,
+            "sharpe": 0.5635,
+            "sharpe_ann": 8.946,
+            "win_rate": 0.7647,
+            "profit_factor": 4.46,
+            "mean_pnl_pct": 0.02563,
+            "total_pnl_pct": 0.43575
+          },
+          "oos_over_is_sharpe_ratio": 3.273
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 32,
+            "sharpe": 0.2712,
+            "sharpe_ann": 4.306,
+            "win_rate": 0.6562,
+            "profit_factor": 2.07,
+            "mean_pnl_pct": 0.02301,
+            "total_pnl_pct": 0.7364
+          },
+          "oos": {
+            "n": 21,
+            "sharpe": -0.0728,
+            "sharpe_ann": -1.156,
+            "win_rate": 0.4762,
+            "profit_factor": 0.838,
+            "mean_pnl_pct": -0.00486,
+            "total_pnl_pct": -0.10204
+          },
+          "oos_over_is_sharpe_ratio": -0.268
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 53,
+            "sharpe": 0.1521,
+            "sharpe_ann": 2.414,
+            "win_rate": 0.5849,
+            "profit_factor": 1.481,
+            "mean_pnl_pct": 0.01197,
+            "total_pnl_pct": 0.63436
+          },
+          "oos": {
+            "n": 12,
+            "sharpe": -0.0498,
+            "sharpe_ann": -0.791,
+            "win_rate": 0.5,
+            "profit_factor": 0.883,
+            "mean_pnl_pct": -0.00224,
+            "total_pnl_pct": -0.02692
+          },
+          "oos_over_is_sharpe_ratio": -0.328
+        }
+      }
+    },
+    "smc_breaker_block_short": {
+      "total_trades": 177,
+      "oos_pass_count_of_4": 0,
+      "oos_folds_with_n_gte_5": 1,
+      "verdict": "INSUFFICIENT_OOS_DATA",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": {
+            "n": 5,
+            "sharpe": 0.0607,
+            "sharpe_ann": 0.964,
+            "win_rate": 0.4,
+            "profit_factor": 1.177,
+            "mean_pnl_pct": 0.00548,
+            "total_pnl_pct": 0.0274
+          },
+          "oos": {
+            "n": 169,
+            "sharpe": -0.0705,
+            "sharpe_ann": -1.12,
+            "win_rate": 0.4379,
+            "profit_factor": 0.843,
+            "mean_pnl_pct": -0.0059,
+            "total_pnl_pct": -0.99723
+          },
+          "oos_over_is_sharpe_ratio": -1.162
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 174,
+            "sharpe": -0.0667,
+            "sharpe_ann": -1.058,
+            "win_rate": 0.4368,
+            "profit_factor": 0.851,
+            "mean_pnl_pct": -0.00557,
+            "total_pnl_pct": -0.96982
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 174,
+            "sharpe": -0.0667,
+            "sharpe_ann": -1.058,
+            "win_rate": 0.4368,
+            "profit_factor": 0.851,
+            "mean_pnl_pct": -0.00557,
+            "total_pnl_pct": -0.96982
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 177,
+            "sharpe": -0.0958,
+            "sharpe_ann": -1.52,
+            "win_rate": 0.4294,
+            "profit_factor": 0.793,
+            "mean_pnl_pct": -0.00816,
+            "total_pnl_pct": -1.44502
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_breaker_block_long": {
+      "total_trades": 241,
+      "oos_pass_count_of_4": 1,
+      "oos_folds_with_n_gte_5": 2,
+      "verdict": "WEAK",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": {
+            "n": 22,
+            "sharpe": -0.4898,
+            "sharpe_ann": -7.776,
+            "win_rate": 0.2727,
+            "profit_factor": 0.316,
+            "mean_pnl_pct": -0.04382,
+            "total_pnl_pct": -0.96393
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 22,
+            "sharpe": -0.4898,
+            "sharpe_ann": -7.776,
+            "win_rate": 0.2727,
+            "profit_factor": 0.316,
+            "mean_pnl_pct": -0.04382,
+            "total_pnl_pct": -0.96393
+          },
+          "oos": {
+            "n": 12,
+            "sharpe": -0.6659,
+            "sharpe_ann": -10.571,
+            "win_rate": 0.25,
+            "profit_factor": 0.215,
+            "mean_pnl_pct": -0.01903,
+            "total_pnl_pct": -0.2283
+          },
+          "oos_over_is_sharpe_ratio": 1.359
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 34,
+            "sharpe": -0.4725,
+            "sharpe_ann": -7.5,
+            "win_rate": 0.2647,
+            "profit_factor": 0.299,
+            "mean_pnl_pct": -0.03507,
+            "total_pnl_pct": -1.19223
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 34,
+            "sharpe": -0.4725,
+            "sharpe_ann": -7.5,
+            "win_rate": 0.2647,
+            "profit_factor": 0.299,
+            "mean_pnl_pct": -0.03507,
+            "total_pnl_pct": -1.19223
+          },
+          "oos": {
+            "n": 207,
+            "sharpe": 0.145,
+            "sharpe_ann": 2.302,
+            "win_rate": 0.5604,
+            "profit_factor": 1.448,
+            "mean_pnl_pct": 0.00631,
+            "total_pnl_pct": 1.30716
+          },
+          "oos_over_is_sharpe_ratio": -0.307
+        }
+      }
+    },
+    "smc_mitigation_block_long": {
+      "total_trades": 3,
+      "oos_pass_count_of_4": 0,
+      "oos_folds_with_n_gte_5": 0,
+      "verdict": "INSUFFICIENT_OOS_DATA",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_mitigation_block_short": {
+      "total_trades": 1,
+      "oos_pass_count_of_4": 0,
+      "oos_folds_with_n_gte_5": 0,
+      "verdict": "INSUFFICIENT_OOS_DATA",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_discount_long": {
+      "total_trades": 86,
+      "oos_pass_count_of_4": 3,
+      "oos_folds_with_n_gte_5": 3,
+      "verdict": "ROBUST",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": {
+            "n": 24,
+            "sharpe": 0.7277,
+            "sharpe_ann": 11.552,
+            "win_rate": 0.75,
+            "profit_factor": 5.78,
+            "mean_pnl_pct": 0.03744,
+            "total_pnl_pct": 0.8985
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 24,
+            "sharpe": 0.7277,
+            "sharpe_ann": 11.552,
+            "win_rate": 0.75,
+            "profit_factor": 5.78,
+            "mean_pnl_pct": 0.03744,
+            "total_pnl_pct": 0.8985
+          },
+          "oos": {
+            "n": 38,
+            "sharpe": 0.0534,
+            "sharpe_ann": 0.847,
+            "win_rate": 0.5263,
+            "profit_factor": 1.138,
+            "mean_pnl_pct": 0.00316,
+            "total_pnl_pct": 0.11993
+          },
+          "oos_over_is_sharpe_ratio": 0.073
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 62,
+            "sharpe": 0.2816,
+            "sharpe_ann": 4.47,
+            "win_rate": 0.6129,
+            "profit_factor": 1.961,
+            "mean_pnl_pct": 0.01643,
+            "total_pnl_pct": 1.01843
+          },
+          "oos": {
+            "n": 24,
+            "sharpe": 0.0783,
+            "sharpe_ann": 1.243,
+            "win_rate": 0.5,
+            "profit_factor": 1.216,
+            "mean_pnl_pct": 0.00347,
+            "total_pnl_pct": 0.0833
+          },
+          "oos_over_is_sharpe_ratio": 0.278
+        }
+      }
+    },
+    "smc_premium_short": {
+      "total_trades": 2,
+      "oos_pass_count_of_4": 0,
+      "oos_folds_with_n_gte_5": 0,
+      "verdict": "INSUFFICIENT_OOS_DATA",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        }
+      }
+    },
+    "smc_ote_long": {
+      "total_trades": 19,
+      "oos_pass_count_of_4": 2,
+      "oos_folds_with_n_gte_5": 2,
+      "verdict": "WEAK",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": {
+            "n": 7,
+            "sharpe": 0.8585,
+            "sharpe_ann": 13.628,
+            "win_rate": 0.7143,
+            "profit_factor": 11.836,
+            "mean_pnl_pct": 0.02548,
+            "total_pnl_pct": 0.17836
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 7,
+            "sharpe": 0.8585,
+            "sharpe_ann": 13.628,
+            "win_rate": 0.7143,
+            "profit_factor": 11.836,
+            "mean_pnl_pct": 0.02548,
+            "total_pnl_pct": 0.17836
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 8,
+            "sharpe": 0.2981,
+            "sharpe_ann": 4.732,
+            "win_rate": 0.625,
+            "profit_factor": 2.184,
+            "mean_pnl_pct": 0.0132,
+            "total_pnl_pct": 0.10561
+          },
+          "oos": {
+            "n": 11,
+            "sharpe": 0.3583,
+            "sharpe_ann": 5.687,
+            "win_rate": 0.6364,
+            "profit_factor": 2.33,
+            "mean_pnl_pct": 0.01709,
+            "total_pnl_pct": 0.18799
+          },
+          "oos_over_is_sharpe_ratio": 1.202
+        }
+      }
+    },
+    "smc_ote_short": {
+      "_note": "no fires",
+      "folds": {}
+    },
+    "smc_equal_highs_sweep_short": {
+      "total_trades": 19,
+      "oos_pass_count_of_4": 0,
+      "oos_folds_with_n_gte_5": 2,
+      "verdict": "OVERFIT_OR_FAIL",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": null,
+          "oos": {
+            "n": 10,
+            "sharpe": -0.9174,
+            "sharpe_ann": -14.563,
+            "win_rate": 0.2,
+            "profit_factor": 0.059,
+            "mean_pnl_pct": -0.05301,
+            "total_pnl_pct": -0.53007
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 10,
+            "sharpe": -0.9174,
+            "sharpe_ann": -14.563,
+            "win_rate": 0.2,
+            "profit_factor": 0.059,
+            "mean_pnl_pct": -0.05301,
+            "total_pnl_pct": -0.53007
+          },
+          "oos": null,
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 10,
+            "sharpe": -0.9174,
+            "sharpe_ann": -14.563,
+            "win_rate": 0.2,
+            "profit_factor": 0.059,
+            "mean_pnl_pct": -0.05301,
+            "total_pnl_pct": -0.53007
+          },
+          "oos": {
+            "n": 9,
+            "sharpe": -0.2746,
+            "sharpe_ann": -4.359,
+            "win_rate": 0.4444,
+            "profit_factor": 0.524,
+            "mean_pnl_pct": -0.01063,
+            "total_pnl_pct": -0.09565
+          },
+          "oos_over_is_sharpe_ratio": 0.299
+        }
+      }
+    },
+    "smc_equal_lows_sweep_long": {
+      "_note": "no fires",
+      "folds": {}
+    },
+    "smc_bos_retest_entry": {
+      "total_trades": 32,
+      "oos_pass_count_of_4": 4,
+      "oos_folds_with_n_gte_5": 4,
+      "verdict": "ROBUST",
+      "folds": {
+        "fold_1": {
+          "is_window": "2021-05-05 -> 2022-05-05",
+          "oos_window": "2022-05-05 -> 2023-05-05",
+          "is": null,
+          "oos": {
+            "n": 6,
+            "sharpe": 0.2976,
+            "sharpe_ann": 4.725,
+            "win_rate": 0.5,
+            "profit_factor": 2.058,
+            "mean_pnl_pct": 0.02775,
+            "total_pnl_pct": 0.16648
+          },
+          "oos_over_is_sharpe_ratio": null
+        },
+        "fold_2": {
+          "is_window": "2021-05-05 -> 2023-05-05",
+          "oos_window": "2023-05-05 -> 2024-05-05",
+          "is": {
+            "n": 6,
+            "sharpe": 0.2976,
+            "sharpe_ann": 4.725,
+            "win_rate": 0.5,
+            "profit_factor": 2.058,
+            "mean_pnl_pct": 0.02775,
+            "total_pnl_pct": 0.16648
+          },
+          "oos": {
+            "n": 7,
+            "sharpe": 0.1999,
+            "sharpe_ann": 3.173,
+            "win_rate": 0.5714,
+            "profit_factor": 1.691,
+            "mean_pnl_pct": 0.01606,
+            "total_pnl_pct": 0.11245
+          },
+          "oos_over_is_sharpe_ratio": 0.672
+        },
+        "fold_3": {
+          "is_window": "2021-05-05 -> 2024-05-05",
+          "oos_window": "2024-05-05 -> 2025-05-05",
+          "is": {
+            "n": 13,
+            "sharpe": 0.2585,
+            "sharpe_ann": 4.104,
+            "win_rate": 0.5385,
+            "profit_factor": 1.872,
+            "mean_pnl_pct": 0.02146,
+            "total_pnl_pct": 0.27893
+          },
+          "oos": {
+            "n": 5,
+            "sharpe": 0.4969,
+            "sharpe_ann": 7.889,
+            "win_rate": 0.8,
+            "profit_factor": 3.044,
+            "mean_pnl_pct": 0.04353,
+            "total_pnl_pct": 0.21765
+          },
+          "oos_over_is_sharpe_ratio": 1.922
+        },
+        "fold_4": {
+          "is_window": "2021-05-05 -> 2025-05-05",
+          "oos_window": "2025-05-05 -> 2026-05-05",
+          "is": {
+            "n": 18,
+            "sharpe": 0.3353,
+            "sharpe_ann": 5.322,
+            "win_rate": 0.6111,
+            "profit_factor": 2.164,
+            "mean_pnl_pct": 0.02759,
+            "total_pnl_pct": 0.49658
+          },
+          "oos": {
+            "n": 14,
+            "sharpe": 0.1797,
+            "sharpe_ann": 2.853,
+            "win_rate": 0.5714,
+            "profit_factor": 1.544,
+            "mean_pnl_pct": 0.00766,
+            "total_pnl_pct": 0.10727
+          },
+          "oos_over_is_sharpe_ratio": 0.536
+        }
+      }
+    }
+  }
+}
