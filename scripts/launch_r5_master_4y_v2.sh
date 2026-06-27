@@ -305,11 +305,17 @@ TICKERS_PHASE_3=\$(python -c "ts='\${MASTER_TICKERS}'.split(','); n=len(ts); ste
 START_DATE="2022-05-05"
 END_DATE="2026-05-05"
 
-# B1043 F-07: invoke preflight before Phase 1 (was orphan script).
+# B1043 F-07 + B1049 PIVOT #29 fix: invoke preflight before Phase 1.
+# B1049: PHASE_DIR was undefined at this point (set only inside run_phase
+# function called later). Under set -u, bash errored on unbound var ->
+# preflight never ran -> B1019_PREFLIGHT_FAIL sentinel fired via ||
+# fallback -> Phase D HALTED at cost ~\$0.50. Fix: use literal output_phase_1
+# since this preflight is Phase 1-specific.
 echo "=== B1019 PREFLIGHT: Phase 1 coverage check ==="
+mkdir -p output_phase_1
 python scripts/b1019_a5_phase_1_preflight_coverage_check.py \\
     --ticker NVDA --start \${START_DATE} --end \${END_DATE} \\
-    --output \${PHASE_DIR}/b1019_a5_preflight_report.json 2>&1 | head -50 || {
+    --output output_phase_1/b1019_a5_preflight_report.json 2>&1 | head -50 || {
     echo "B1019_PREFLIGHT_FAIL \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/B1019_PREFLIGHT_FAIL
     aws s3 cp /tmp/sentinels/B1019_PREFLIGHT_FAIL s3://\${BUCKET}/\${RUN_ID}/B1019_PREFLIGHT_FAIL --quiet
     sudo shutdown -h +5
