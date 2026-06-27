@@ -1948,3 +1948,124 @@ State compliance visibly: "Checklist: ✅ [each item]"
      Owner's first question was the verification signal; the second question caught Council 117's wrong T1a verdict BEFORE the $0.10 launch.
 
      **Cross-references.** L170, `feedback_ask_before_relaunching_corrected_version`, `feedback_audit_recommendations_against_existing_directives`, L86/L95 cost discipline precedent.
+
+121. **HARD RULE -- MONITOR-ARMED-IN-USER-DATA pre-launch verification.** (B1028 R5 launch failure 2026-06-27; Council 126 Tier 1.)
+
+     Pre-launch verification gate for any cube / long-running / autonomous AWS execution MUST include explicit check that monitor is operationally armed in user-data, not just present in repo.
+
+     **Verification command:**
+     ```bash
+     grep -q "b1019_phase_1_runtime_monitor" user-data.sh && echo ARMED || { echo MONITOR-MISSING; exit 1; }
+     ```
+
+     If MONITOR-MISSING, FAIL launch. Do NOT proceed without monitor.
+
+     **Why HARD rule:** B1028 R5 launch (i-0940a53c75d049381) ran engine via `python -m backtest.run_phase1a` DIRECTLY without wrapping in B1019 runtime monitor. Result: once Phase 1 RUNNING sentinel emitted, system went BLIND for 1h 38m until owner asked "Has phase 1 landed?" Owner's correction: "If the monitor is armed, why is it being flagged after owner enquiry? Such instances are the exact purpose of the monitor."
+
+     The B1019 Monitor package was DESIGNED by Council 108. The artifact existed in `scripts/`. The integration didn't happen in B1028 user-data. Verification gates (Council 110 / 114 / 119 / 121) checked AMI / S3 / IAM / spot price / DRY-RUN / universe scope — but NEVER asked "is the monitor operationally armed?"
+
+     **Both armament types are required (neither alone is sufficient):**
+     - **User-data monitor** (writes engine progress to S3 every 60s)
+     - **Bash Monitor tool** (tails the S3-synced log + emits chat notifications)
+
+     **Verification checklist:** every "monitor armed" claim requires (a) grep proof in user-data, (b) S3 path where monitor writes, (c) Claude-side Monitor tool armed on local mirror.
+
+     **Cross-references.** L176, `feedback_monitor_design_vs_operational_gap`, `feedback_monitor_arm_at_event_not_pre_launch` (#117 companion: when to arm), B1028 failure.
+
+122. **HARD RULE -- SILENT-FAILURE-PAIRING: every `|| true` requires paired explicit verification step.** (B1028 pandas-ta silent failure session 2026-06-27; Council 126 Tier 1.)
+
+     Every `|| true` / `|| :` / `|| echo` in user-data or shell scripts MUST be paired with an explicit success-verification step within 10 lines.
+
+     **Pattern (WRONG vs RIGHT):**
+     ```bash
+     # WRONG
+     pip install -q pandas-ta 2>&1 | tail -3 || true
+     # (failure swallowed; downstream code assumes pandas-ta present)
+
+     # RIGHT
+     pip install -q pandas-ta 2>&1 | tail -3 || true
+     python -c "import pandas_ta" || { echo "FAIL pandas-ta missing"; exit 1; }
+     ```
+
+     **Rules per dep type:**
+     - **Mandatory deps:** NO `|| true`. Use `set -e` + explicit error + exit. Fail loud.
+     - **Optional deps:** `|| true` OK but pair with verification + downstream branch:
+       ```bash
+       pip install -q optional-dep || true
+       python -c "import optional_dep" 2>/dev/null && HAS_OPTIONAL=1 || HAS_OPTIONAL=0
+       echo "optional-dep available: $HAS_OPTIONAL" >> /tmp/sentinels/dep_status
+       aws s3 cp /tmp/sentinels/dep_status s3://${BUCKET}/${RUN_ID}/dep_status
+       ```
+
+     **Audit pre-launch:** `grep -nE '\|\| (true|:|echo)' user-data.sh` — every match must have a paired verification within 10 lines.
+
+     **Why HARD rule:** B1028 user-data had `pip install -q pandas-ta ... || true`. The pandas-ta install FAILED (Python 3.13 incompat). Engine then ran with pandas-ta MISSING. Engine fell back to manual implementations per `backtest/signals/technical.py` docstring, but specific strategy signals that depend on pandas-ta may have hung or returned wrong values. Contributed to Phase 1 hanging at <5% CPU.
+
+     **Cross-references.** L176, `feedback_silent_failure_pairing_rule`, B1028 pandas-ta failure.
+
+123. **HARD RULE -- PHASE-LADDER-TIMING-VALIDATION: smoke wall-clock target ≤ 15 min.** (B1028 R5 timing assumption failure 2026-06-27; Council 126 Tier 1.)
+
+     Smoke / Phase-1 wall-clock estimates must be EMPIRICALLY VALIDATED before cascade approval. If smoke phase estimate exceeds 15 min, cascade automation is invalid until calibrated.
+
+     **Smoke timing rules:**
+
+     1. **Smoke wall-clock target ≤ 15 min**: if Phase 1 (single ticker, smallest dimension) estimate exceeds 15 min, engine is too slow for cascade automation. Identify bottleneck FIRST.
+
+     2. **If estimate > 15 min, validate before cascade**: run smoke STANDALONE (not cascaded into multi-phase). Measure actual wall-clock. Update estimate. Re-decide cascade approval.
+
+     3. **If smoke runs > 2× estimate, HALT cascade**: per `feedback_monitor_intermediate_counts` B358 ABORT-EARLY pattern. Smoke is the calibration; if calibration fails, cascade is invalid.
+
+     4. **For NEW engine / NEW infrastructure / NEW ticker count**: run smoke first time MANUALLY (not in cascade). Establish timing baseline. THEN automate.
+
+     **Why HARD rule:** B1028 cascaded Phase 1 → Phase 2 → Phase 3 → R5 based on assumed 30-min Phase 1 NVDA timing. Actual Phase 1 hung; cascade never started Phase 2. $2 sunk. Smoke standalone would have caught this in 1h 38m with no cascade commitment.
+
+     **Cross-references.** L176, `feedback_phase_ladder_timing_validation`, `feedback_monitor_intermediate_counts` (B358 2× threshold), CHECKLIST #113 (ETA cache invalidation).
+
+124. **HARD RULE -- IAM-SSM-PRECONDITION: SSM access verified on instance role before launch.** (B1028 SSM-blocked mid-run inspection 2026-06-27; Council 126 Tier 1.)
+
+     SSM access must be verified on instance IAM role BEFORE launching long-running cube / autonomous AWS execution. SSM access enables mid-run inspection via SSM Run Command without needing SSH access.
+
+     **Pre-launch verification:**
+     ```bash
+     # Verify role has AmazonSSMManagedInstanceCore policy attached
+     aws iam list-attached-role-policies --role-name batch395-instance-role \
+       --query 'AttachedPolicies[?PolicyName==`AmazonSSMManagedInstanceCore`]' --output text
+     # If empty: ATTACH policy before launch
+     ```
+
+     **Mid-run inspection capability:**
+     ```bash
+     # If SSM enabled, can inspect engine state without SSH
+     aws ssm send-command --instance-ids i-XXXX \
+       --document-name "AWS-RunShellScript" \
+       --parameters 'commands=["ps -ef | grep python", "tail -50 /home/ec2-user/stock-picks-app/output_phase_1/phase_1_engine.log"]'
+     ```
+
+     **Why HARD rule:** B1028 instance i-0940a53c75d049381 console showed "SSM Agent unable to acquire credentials: Systems Manager's instance management role is not configured for account: 739685920493". When CPU dropped to <5% sustained, Claude could NOT use SSM to inspect engine state — only console output (cut at 180s) was available. Result: no forensic data on why engine was hung. HALT decision had to be made blind.
+
+     **Cross-references.** L176, B1028 SSM-blocked forensics, related to #121 (monitor armament) and #117 (monitor timing).
+
+125. **HARD RULE -- ENGINE-PROGRESS-EMIT: engine must emit per-checkpoint progress to S3.** (B1028 invisible engine state 2026-06-27; Council 126 Tier 1.)
+
+     Engine MUST emit per-checkpoint progress to S3 mid-run, not just memory-internal checkpoints.
+
+     **Engine state requirements:**
+
+     1. **Per-checkpoint progress sentinel**: every 100 simulated days, emit `engine_progress.json` to S3 with:
+        - Current simulated day
+        - Cumulative trades
+        - Cumulative win-rate
+        - Per-strategy fire counts (top 10)
+        - Memory RSS
+        - Wall-clock elapsed
+        - ETA projection
+
+     2. **60s S3 sync of engine log**: background process syncs `engine.log` to S3 every 60s. Allows Claude-side Monitor to tail it.
+
+     3. **STOP-S3 sentinel check**: if any STOP-S3 critical signal (NaN propagation, schema violation, runtime error), emit immediate S3 sentinel.
+
+     **Why HARD rule:** B1028 engine ran for 1h 38m with NO intermediate S3 emission. Per `engine/backtest.py:138`, engine has `multiprocessing.Pool` + 100-day checkpoint pattern internally — but checkpoints are memory-only, NOT synced to S3 mid-run. Result: even if engine was working slowly, Claude / owner had zero visibility into progress between phase-boundary sentinels.
+
+     This is the engine-side companion to #121 (monitor armament). Both required for end-to-end visibility.
+
+     **Cross-references.** L176, `feedback_monitor_design_vs_operational_gap`, engine/backtest.py:138 multiprocessing.Pool design, B1028 invisible-engine-state failure.

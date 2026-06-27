@@ -2225,3 +2225,33 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 **Cross-references.** All 6 patterns above were instrumental in surfacing the failures captured as L164-L173 and the 9 new memory rules saved this session. Without these patterns the session would have lost much more than $1.41. Preserve discipline.
 
 ---
+
+## L176 — B1028 R5 launch failure: monitor design-operational gap + 12 specific bugs (2026-06-27 Council 126)
+
+**The meta-bug.** Owner correction 2026-06-27: "If the monitor is armed, why is it being flagged after owner enquiry? Such instances are the exact purpose of the monitor." This is the central lesson of B1028's failure. The B1019 Monitor package (Council 108 Option-5 Modified 7-enhancement bundle) was DESIGNED, implemented, and exists at `scripts/b1019_phase_1_runtime_monitor.py`. But B1028's user-data ran the engine DIRECTLY via `python -m backtest.run_phase1a --tickers NVDA ...` without wrapping the engine call in the monitor. Once Phase 1 RUNNING sentinel emitted, the system went BLIND until either PHASE_1_PASS / PHASE_1_FAIL / timeout. Owner had to ASK 1h 38m later: "Has phase 1 landed?" That was the moment that should have been Monitor-emitted, not owner-asked.
+
+**Root cause: design vs operational gap.** B1019 designed in one batch (Council 108); B1028 launch was another batch (Council 119-121). The verification gates (Council 110 Option-AWS-5 Phase 0 + Council 114 Option-7 pre-flight) checked AMI / S3 / IAM / spot price / DRY-RUN / universe scope — but NEVER asked "is the monitor operationally armed in user-data?" The artifact existed in `scripts/`; the integration didn't happen.
+
+**12 specific bugs that contributed:**
+1. **pandas-ta install silent failure** — Python 3.13 on AL2023 incompat with pandas-ta (Requires-Python <3.11 for v1.x, >=3.12 for v2.x; both ruled out by 3.13); user-data `|| true` swallowed the failure
+2. **No real-time engine monitoring** — engine output tee'd to local file; not synced to S3 until function ends
+3. **B1019 runtime_monitor.py NOT integrated into user-data** — existed but unused
+4. **Bash Monitor tool denied by owner earlier** + no replacement armed
+5. **SSM not enabled on batch395-instance-role IAM** — cannot use SSM Run Command for mid-run inspection
+6. **Console output buffer cut at 180s** — engine progress invisible via `aws ec2 get-console-output` API
+7. **CPU <10% sustained on 64-vCPU instance** — root cause unclear without engine logs
+8. **$5 CloudWatch alarm fired silently** — no SNS subscription, no notification mechanism
+9. **4y window timing assumption wrong** — Council 110/119/121 estimated NVDA 1-ticker = 30 min; actual >1h 38m hung
+10. **Phase ladder design flaw** — 1-ticker smoke should complete in 5-10 min; if not, cascade invalid
+11. **No engine-progress emit** — engine has incremental checkpoints per engine/backtest.py:138 but they're memory-only, not S3-synced mid-run
+12. **Cascade approval lacked monitor-armed precondition** — autonomy directive granted, but cascade had no monitor-armament check
+
+**Cost discipline check.** $2.00 sunk on B1028 (1.93 hr × $0.99/hr). Within $5 CloudWatch alarm + $12 Council 110 cap. Cumulative session AWS spend: $1.41 sunk B1024-B1027 + $2.00 sunk B1028 = $3.41. Still under $5 alarm; well under $150 L86/L95 precedent. STOP-S3 HALT activated correctly when owner asked — the protocol worked once the question was asked. The defect was that the protocol didn't auto-fire.
+
+**Fix applied this turn (Phase A only; Phases B/C/D owner-gated):**
+- 3 memory rules: `feedback_monitor_design_vs_operational_gap`, `feedback_silent_failure_pairing_rule`, `feedback_phase_ladder_timing_validation`
+- 5 CHECKLIST items: #121 monitor-armed-in-user-data, #122 silent-failure-pairing, #123 phase-ladder-timing-validation, #124 IAM-SSM-precondition, #125 engine-progress-emit
+- This L176 entry
+- B1032 EXECUTION_QUEUE entry with 12-bug catalog tickets
+
+**Cross-references.** Council 126 verdict (Option-6 Phase A only), `feedback_monitor_design_vs_operational_gap`, `feedback_silent_failure_pairing_rule`, `feedback_phase_ladder_timing_validation`, CHECKLIST #121-#125, B1028 sunk cost ($2.00), Council 124 mistake-codification pattern applied to live failure (B1028 is the meta-example).
