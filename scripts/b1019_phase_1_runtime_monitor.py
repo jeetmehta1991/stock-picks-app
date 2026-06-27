@@ -48,8 +48,10 @@ def main() -> int:
                         help="Engine state JSON path (incremental checkpoint output)")
     parser.add_argument("--trade-log", required=True,
                         help="Trade log parquet path")
-    parser.add_argument("--baseline", default="output_audit/b660_fire_count_measured.json",
-                        help="B660 per-strategy fire-rate baseline JSON")
+    parser.add_argument("--baseline",
+                        default="output_audit/fire_count_measured_b660_full_universe.json",
+                        help="B660 per-strategy fire-rate baseline JSON "
+                             "(B1043 F-03: corrected default path)")
     parser.add_argument("--checkpoint-cadence", type=int, default=100,
                         help="Days between checkpoints (default 100)")
     parser.add_argument("--total-days", type=int, default=1610,
@@ -101,12 +103,43 @@ def main() -> int:
 
 
 def _load_baseline(path: Path) -> dict[str, float]:
+    """B1043 Council 138 F-03 fix: dispatch by actual baseline schema.
+
+    Original code assumed `per_strategy` top-level dict {strategy: {fires_per_year: N}}.
+    Actual B660 file (fire_count_measured_b660_full_universe.json) uses
+    `results` top-level list [{strategy, n_fires_long, n_fires_short, ...,
+    calendar_year_span}]. Compute fires_per_year per strategy: total fires
+    (long+short+avoid) / calendar_year_span.
+
+    Falls back to per_strategy legacy schema if results key absent (forward-
+    compat). Both schemas produce {strategy_name: fires_per_year_float}.
+
+    Source: B1043 Sub-A adversarial review F-03 BLOCK finding.
+    """
     if not path.exists():
         print(f"WARN: baseline not found at {path}; A1 fire-rate checks degraded")
         return {}
     try:
         with open(path) as f:
             data = json.load(f)
+        # B660 schema: top-level `results` list
+        if "results" in data and isinstance(data["results"], list):
+            out: dict[str, float] = {}
+            for row in data["results"]:
+                if not isinstance(row, dict):
+                    continue
+                strat = row.get("strategy")
+                if not strat:
+                    continue
+                total_fires = (
+                    int(row.get("n_fires_long", 0)) +
+                    int(row.get("n_fires_short", 0)) +
+                    int(row.get("n_fires_avoid", 0))
+                )
+                yspan = float(row.get("calendar_year_span", 1.0)) or 1.0
+                out[strat] = total_fires / yspan
+            return out
+        # Legacy per_strategy fallback
         return {k: float(v.get("fires_per_year", 0))
                 for k, v in data.get("per_strategy", {}).items()}
     except Exception as exc:
@@ -136,7 +169,22 @@ def _check_a1_fire_rate(trade_log_path: Path, baseline: dict[str, float],
         if not trade_log_path.exists():
             result["status"] = "PENDING-no-trade-log"
             return result
-        df = pd.read_parquet(trade_log_path)
+        # B1043 Council 138 F-04 fix: dispatch reader by file extension.
+        # Engine emits trade_log_checkpoint.csv (not parquet). Previous
+        # hardcoded pd.read_parquet() threw ArrowInvalid every poll +
+        # _classify_tier upgraded to false HALT-CRITICAL.
+        # Source: B1043 Sub-A adversarial review F-04 BLOCK finding.
+        suffix = str(trade_log_path).lower()
+        if suffix.endswith(".csv"):
+            df = pd.read_csv(trade_log_path)
+        elif suffix.endswith(".parquet"):
+            df = pd.read_parquet(trade_log_path)
+        else:
+            # Try parquet first, fall back to csv (defensive default)
+            try:
+                df = pd.read_parquet(trade_log_path)
+            except Exception:
+                df = pd.read_csv(trade_log_path)
         if "strategy" not in df.columns:
             result["status"] = "ERROR-schema-missing-strategy-column"
             return result
@@ -169,7 +217,17 @@ def _check_b2_schema(trade_log_path: Path) -> dict[str, Any]:
         if not trade_log_path.exists():
             result["status"] = "PENDING-no-trade-log"
             return result
-        df = pd.read_parquet(trade_log_path)
+        # B1043 Council 138 F-04 fix: dispatch reader by extension (csv or parquet)
+        suffix = str(trade_log_path).lower()
+        if suffix.endswith(".csv"):
+            df = pd.read_csv(trade_log_path)
+        elif suffix.endswith(".parquet"):
+            df = pd.read_parquet(trade_log_path)
+        else:
+            try:
+                df = pd.read_parquet(trade_log_path)
+            except Exception:
+                df = pd.read_csv(trade_log_path)
         required = ["strategy", "ticker", "entry_date", "exit_date", "exit_method"]
         for col in required:
             if col not in df.columns:

@@ -571,24 +571,38 @@ class BacktestEngine:
                 except Exception:
                     pass
 
-            # B1042 (2026-06-28) Council 136 Option-7 Layer 1: engine_state.json
-            # emission every 100 sim-days for B1019 runtime_monitor consumption.
-            # Source: feedback_monitor_design_vs_operational_gap (CHECKLIST #121)
-            # B1019 monitor consumes engine_state.json via --engine-state arg;
-            # without producer, monitor sleeps forever (DESIGNED != ARMED).
-            # Atomic write via .tmp + os.replace to prevent partial-state reads.
-            if i > 0 and i % 100 == 0:
+            # B1042 (2026-06-28) Council 136 Option-7 Layer 1 + B1043 Council 138
+            # Sub-A F-01/F-05 fix: engine_state.json emission with SCHEMA MATCHING
+            # b1019_phase_1_runtime_monitor.py reader (simulated_day +
+            # cells_completed + status). Source: feedback_monitor_design_vs_
+            # operational_gap (CHECKLIST #121) per Sub-A adversarial review B1043.
+            #
+            # B1043 FIXES:
+            #   F-01: Monitor-expected key names (simulated_day NOT sim_day_index;
+            #         cells_completed NOT trades_so_far). Backwards-compat keys
+            #         retained for debugging.
+            #   F-05: First emit at day 50 (was day 100 = ~50 min vs Phase 1
+            #         MAX_MIN=30 = 30 min => never emitted). Add i==50 case.
+            #
+            # Atomic write via .tmp + os.replace prevents partial-state reads.
+            if i > 0 and (i == 50 or i % 100 == 0):
                 try:
                     import json as _json
                     import os as _os
                     import time as _time
+                    _trades = len(self.closed_trades)
+                    _open = len(getattr(self, "open_positions", []) or [])
                     state = {
+                        # B1043 F-01 monitor-expected keys:
+                        "simulated_day": i,
+                        "cells_completed": _trades,
+                        "status": "running",
+                        # Backwards-compat + debugging fields:
                         "sim_date": str(as_of),
                         "sim_day_index": i,
                         "tickers_processed": len(getattr(self, "_last_universe", []) or []),
-                        "trades_so_far": len(self.closed_trades),
-                        "open_trades": len(getattr(self, "open_positions", []) or []),
-                        "status": "running",
+                        "trades_so_far": _trades,
+                        "open_trades": _open,
                         "timestamp": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime()),
                         "pid": _os.getpid(),
                     }
@@ -598,8 +612,7 @@ class BacktestEngine:
                     _os.replace(state_tmp, state_path)
                     logger.info(
                         "CHECKPOINT day=%d sim_date=%s trades=%d open=%d",
-                        i, as_of, len(self.closed_trades),
-                        len(getattr(self, "open_positions", []) or []),
+                        i, as_of, _trades, _open,
                     )
                 except Exception as _e:
                     logger.warning("engine_state.json emit failed: %s", _e)

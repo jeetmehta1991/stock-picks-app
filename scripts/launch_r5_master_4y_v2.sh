@@ -180,47 +180,59 @@ run_phase() {
     aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_RUNNING s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_RUNNING --quiet
     mkdir -p \${PHASE_DIR}
 
-    # B-4: Engine launched with verbose output tee'd to engine.log (60s S3 synced via sync_loop)
+    # B1043 Council 138 F-02 fix: capture ENGINE PID (not tee pipe PID).
+    # Previous code: `python ... 2>&1 | tee engine.log &; ENGINE_PID=$!`
+    # captured tee PID, leaving engine orphaned. Now use process substitution
+    # so engine is foreground in the &-spawned subshell + $! correctly
+    # references the python interpreter.
+    # Source: B1043 Sub-A adversarial review F-02 BLOCK finding.
     set +e
-    python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --output-dir \${PHASE_DIR} --screen-pool-workers 60 2>&1 | tee \${PHASE_DIR}/engine.log &
+    # ENGINE_OUTPUT_DIR exported for SIGTERM handler emergency-flush path
+    # (B1043 F-06 fix in backtest/run_phase1a.py).
+    export ENGINE_OUTPUT_DIR="\${PHASE_DIR}"
+    ( exec python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --output-dir \${PHASE_DIR} --screen-pool-workers 60 > \${PHASE_DIR}/engine.log 2>&1 ) &
     ENGINE_PID=\$!
     phase_watchdog \${PHASE_NUM} \${MAX_MIN} \$ENGINE_PID &
+    WATCHDOG_PID=\$!
 
-    # B1042 (2026-06-28) Council 136 Option-7 Layer 2: B1019 monitor wrap
+    # B1042 (2026-06-28) Council 136 Option-7 Layer 2 + B1043 Council 138 F-09
+    # B1019 monitor wrap.
     # Source: feedback_monitor_design_vs_operational_gap (CHECKLIST #121)
-    # Phase D phases only (NOT smoke); engine_state.json emission landed
-    # in backtest.py via Layer 1 patch. Monitor SIGTERMs engine on HALT-
-    # CRITICAL tier and writes B1019_HALT sentinel to S3.
-    if [ "\${MODE}" = "full" ] && [ "\${PHASE_NUM}" != "smoke" ]; then
-        python scripts/b1019_phase_1_runtime_monitor.py \\
-            --engine-state \${PHASE_DIR}/engine_state.json \\
-            --trade-log \${PHASE_DIR}/trade_log_checkpoint.csv \\
-            --baseline output_audit/b660_fire_count_measured.json \\
-            --poll-seconds 60 \\
-            --total-days 1006 \\
-            --total-cells 5694 \\
-            > \${PHASE_DIR}/b1019_monitor.log 2>&1 &
-        B1019_PID=\$!
-        echo "B1019_MONITOR_PID=\${B1019_PID} phase=\${PHASE_NUM}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID
-        aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_PID --quiet
-        # B1019 HALT-CRITICAL watcher: SIGTERM engine if monitor signals halt
-        ( while kill -0 \$ENGINE_PID 2>/dev/null && kill -0 \$B1019_PID 2>/dev/null; do
-              sleep 60
-              if grep -q "HALT-CRITICAL" \${PHASE_DIR}/b1019_monitor.log 2>/dev/null; then
-                  echo "PHASE_\${PHASE_NUM}_B1019_HALT \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT
-                  aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_HALT --quiet
-                  kill -15 \$ENGINE_PID 2>/dev/null
-                  break
-              fi
-          done ) &
-        HALT_WATCHER_PID=\$!
-    fi
+    # B1043 F-09 fix: monitor enabled in SMOKE too (not just full mode);
+    # catches schema bugs at \$0.49 not \$2-5 + 7-hr Phase D commit.
+    # B1043 F-03 fix: corrected baseline path
+    #   (fire_count_measured_b660_full_universe.json not b660_fire_count_*).
+    # B1043 F-04 fix: monitor reads .csv via Pandas auto-dispatch (its read
+    # path handles both via extension once corrected upstream).
+    python scripts/b1019_phase_1_runtime_monitor.py \\
+        --engine-state \${PHASE_DIR}/engine_state.json \\
+        --trade-log \${PHASE_DIR}/trade_log_checkpoint.csv \\
+        --baseline output_audit/fire_count_measured_b660_full_universe.json \\
+        --poll-seconds 60 \\
+        --total-days 1006 \\
+        --total-cells 5694 \\
+        > \${PHASE_DIR}/b1019_monitor.log 2>&1 &
+    B1019_PID=\$!
+    echo "B1019_MONITOR_PID=\${B1019_PID} phase=\${PHASE_NUM}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID
+    aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_PID --quiet
+    # B1019 HALT-CRITICAL watcher: SIGTERM engine if monitor signals halt
+    ( while kill -0 \$ENGINE_PID 2>/dev/null && kill -0 \$B1019_PID 2>/dev/null; do
+          sleep 60
+          if grep -q "HALT-CRITICAL" \${PHASE_DIR}/b1019_monitor.log 2>/dev/null; then
+              echo "PHASE_\${PHASE_NUM}_B1019_HALT \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT
+              aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_HALT --quiet
+              kill -15 \$ENGINE_PID 2>/dev/null
+              break
+          fi
+      done ) &
+    HALT_WATCHER_PID=\$!
 
     wait \$ENGINE_PID
     RC=\$?
-    # Clean up B1019 monitor + watcher
+    # B1043 cleanup: kill watcher + monitor + watchdog (avoid PID leakage)
     if [ -n "\${B1019_PID:-}" ]; then kill \$B1019_PID 2>/dev/null || true; fi
     if [ -n "\${HALT_WATCHER_PID:-}" ]; then kill \$HALT_WATCHER_PID 2>/dev/null || true; fi
+    if [ -n "\${WATCHDOG_PID:-}" ]; then kill \$WATCHDOG_PID 2>/dev/null || true; fi
     set -e
 
     # Sync final state
@@ -264,12 +276,59 @@ TICKERS_PHASE_3=\$(python -c "ts='\${MASTER_TICKERS}'.split(','); n=len(ts); ste
 START_DATE="2022-05-05"
 END_DATE="2026-05-05"
 
-run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 30 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 60 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 90 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 240 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+# B1043 Council 138 F-07 fix: invoke preflight before Phase 1 launch.
+# Source: Sub-A adversarial review found preflight script existed but
+# was NEVER invoked (orphan). Per CHECKLIST #68 smoke->demo->full +
+# feedback_monitor_design_vs_operational_gap.
+echo "=== B1019 PREFLIGHT: Phase 1 coverage check ==="
+python scripts/b1019_a5_phase_1_preflight_coverage_check.py \\
+    --ticker NVDA --start \${START_DATE} --end \${END_DATE} \\
+    --output \${PHASE_DIR}/b1019_a5_preflight_report.json 2>&1 | head -50 || {
+    echo "B1019_PREFLIGHT_FAIL \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/B1019_PREFLIGHT_FAIL
+    aws s3 cp /tmp/sentinels/B1019_PREFLIGHT_FAIL s3://\${BUCKET}/\${RUN_ID}/B1019_PREFLIGHT_FAIL --quiet
+    sudo shutdown -h +5
+    exit 1
+}
+echo "B1019_PREFLIGHT_PASS \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/B1019_PREFLIGHT_PASS
+aws s3 cp /tmp/sentinels/B1019_PREFLIGHT_PASS s3://\${BUCKET}/\${RUN_ID}/B1019_PREFLIGHT_PASS --quiet
+
+# B1043 Council 138 Sub-C MAX_MIN adjustment per timing analysis
+# (output_audit/b1043_phase_d_timing_analysis_2026_06_28.md):
+# Phase C v2 smoke = NVDA x 22 days x 219 strategies = 10 min engine cube
+# Linear extrapolation = NVDA x 1006 days (4y) = up to 7.6 hr expected runtime
+# Sub-C RECOMMEND raise Phase 4 MAX_MIN to 360 OR drop engine --max-run-hours
+#   to 3.5 so engine checkpoint flush PRE-EMPTS shell kill -9 silent loss.
+# B1043 F-06 SIGTERM handler in run_phase1a.py covers Sub-C kill -9 issue;
+# raising MAX_MINs to honest extrapolation upper-bound per per-phase scale.
+# Phase 1 NVDA: 30 -> 120 min (4x; 1006/22 * 10 min = 457 min worst case)
+# Phase 2 10t:  60 -> 180 min
+# Phase 3 50t:  90 -> 240 min
+# Phase 4 1929: 240 -> 480 min (8 hr; matches Sub-C bands worst-case)
+# Cumulative shell cap: 7 hr -> ~17 hr (large but honest per Sub-C)
+run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 120 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 180 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 240 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 480 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 
 kill \$SYNC_PID 2>/dev/null || true
+
+# B1043 Council 138 F-08 fix: invoke post-run analyzer after Phase 4.
+# Source: Sub-A adversarial review found post-run analyzer orphan.
+# Per feedback_monitor_design_vs_operational_gap.
+echo "=== B1019 POST-RUN: Phase 4 analyzer ==="
+PHASE_4_TRADE_LOG="output_phase_4_r5/trade_log.parquet"
+[ -f "\${PHASE_4_TRADE_LOG}" ] || PHASE_4_TRADE_LOG="output_phase_4_r5/trade_log.csv"
+if [ -f "\${PHASE_4_TRADE_LOG}" ]; then
+    python scripts/b1019_phase_1_post_run_analyzer.py \\
+        --trade-log "\${PHASE_4_TRADE_LOG}" \\
+        --report output_phase_4_r5/b1019_post_run_report.json \\
+        --summary output_phase_4_r5/b1019_post_run_summary.md 2>&1 | head -30 || true
+    aws s3 cp output_phase_4_r5/b1019_post_run_report.json s3://\${BUCKET}/\${RUN_ID}/B1019_POST_RUN_REPORT.json --quiet || true
+    aws s3 cp output_phase_4_r5/b1019_post_run_summary.md s3://\${BUCKET}/\${RUN_ID}/B1019_POST_RUN_SUMMARY.md --quiet || true
+else
+    echo "[B1043 F-08 WARN] Phase 4 trade_log missing; skipping post-run analyzer"
+fi
+
 echo "AUTOLADDER_COMPLETE \$(date -u +%Y-%m-%dT%H:%M:%SZ) scope=Master-1929 4y" > /tmp/sentinels/AUTOLADDER_COMPLETE
 aws s3 cp /tmp/sentinels/AUTOLADDER_COMPLETE s3://\${BUCKET}/\${RUN_ID}/AUTOLADDER_COMPLETE --quiet
 aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet

@@ -136,7 +136,43 @@ def phase1a_quality_gate(engine: BacktestEngine) -> bool:
     return passed
 
 
+def _install_sigterm_handler():
+    """B1043 Council 138 F-06 fix: install SIGTERM handler so kill -15 from
+    phase_watchdog OR B1019 HALT-CRITICAL flushes checkpoint before exit.
+
+    Source: Sub-A adversarial review found kill -15 + kill -9 both lose
+    checkpoint flush + partial cube. Per feedback_silent_failure_pairing_rule
+    + feedback_monitor_design_vs_operational_gap.
+
+    Engine writes a TERMINATE sentinel so writer can detect graceful kill
+    and flush in-memory trades to trade_log_checkpoint_emergency.csv.
+    """
+    import signal as _signal
+    import os as _os
+    def _handler(signum, frame):
+        try:
+            from pathlib import Path as _Path
+            # Best-effort emergency flush; uses CWD as fallback if output_dir
+            # not in scope (signal handlers run outside engine instance scope).
+            sentinel_dir = _Path(_os.environ.get("ENGINE_OUTPUT_DIR", "."))
+            sentinel_dir.mkdir(parents=True, exist_ok=True)
+            (sentinel_dir / "ENGINE_SIGTERM_RECEIVED").write_text(
+                f"signal={signum} pid={_os.getpid()}\n"
+            )
+            print(f"[B1043 F-06] SIGTERM received pid={_os.getpid()} -- "
+                  "engine flushing checkpoint + exiting clean")
+        except Exception:
+            pass
+        raise SystemExit(143)  # 128 + SIGTERM(15)
+    try:
+        _signal.signal(_signal.SIGTERM, _handler)
+        _signal.signal(_signal.SIGINT, _handler)
+    except (ValueError, AttributeError):
+        pass  # not in main thread; skip silently
+
+
 def main():
+    _install_sigterm_handler()
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run",    action="store_true")
     p.add_argument("--no-agents",  action="store_true")
@@ -307,6 +343,34 @@ def main():
         start  = date.fromisoformat(args.start) if args.start else BACKTEST_START
         end    = date.fromisoformat(args.end)   if args.end   else BACKTEST_END
         agents = not args.no_agents
+
+        # B1043 Council 138 Sub-B BLOCK fix: wire M4 holdout_guard.
+        # Source: B1043 Sub-B audit found assert_no_holdout_intrusion was
+        # NEVER INVOKED by engine entry - M4 OOS holdout (2026-01-01..2026-
+        # 06-30) was structurally unenforced (honor-system). Per feedback_
+        # monitor_design_vs_operational_gap. CHECKLIST #77.
+        try:
+            from backtest.util.holdout_guard import (
+                assert_no_holdout_intrusion as _assert_no_holdout,
+                is_in_holdout as _is_in_holdout,
+                FINAL_OOS_HOLDOUT_START, FINAL_OOS_HOLDOUT_END,
+            )
+            from datetime import timedelta as _td
+            # Generate sample dates across the [start, end] window for
+            # holdout intrusion check. For Phase 1A-beta windows that
+            # legitimately span the holdout, owner must wrap caller in
+            # HoldoutUnlock() context (final-gate evaluation only).
+            _check_dates = [start + _td(days=i) for i in range(0, (end - start).days + 1, 30)]
+            _assert_no_holdout(_check_dates, caller_name="run_phase1a.main")
+            if any(_is_in_holdout(d) for d in _check_dates):
+                print(f"[B1043 Sub-B] HOLDOUT-UNLOCKED window includes "
+                      f"{FINAL_OOS_HOLDOUT_START}..{FINAL_OOS_HOLDOUT_END}")
+        except ImportError:
+            print("[B1043 Sub-B WARN] holdout_guard not importable; "
+                  "M4 OOS protection inactive this run")
+        except Exception as _holdout_exc:
+            # HoldoutViolationError or other - re-raise to HALT engine
+            raise
 
         # --tickers flag: override universe with specific tickers (for batch tests)
         if args.tickers:
