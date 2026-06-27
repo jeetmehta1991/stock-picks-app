@@ -1,6 +1,6 @@
 preliminary_tier,confidence_tier,trades,win_rate,upgraded,downgraded
-HIGH,HIGH,11,0.5454545454545454,False,False
-LOW,LOW,48,0.20833333333333334,False,False
-MEDIUM,MEDIUM,3,0.0,False,False
-MEDIUM_HIGH,MEDIUM_HIGH,4,0.5,False,False
+HIGH,HIGH,10,0.6,False,False
+LOW,LOW,51,0.17647058823529413,False,False
+MEDIUM,MEDIUM,3,0.6666666666666666,False,False
+MEDIUM_HIGH,MEDIUM_HIGH,4,0.25,False,False
 VERY_HIGH,VERY_HIGH,1,1.0,False,False

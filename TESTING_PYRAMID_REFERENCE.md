@@ -1,5 +1,7 @@
 # Testing Pyramid Reference
 
+> **B1029 UPDATE 2026-06-27 doc-sync:** **220 strategies registered / 217 active** (was 219 pre-B1010). B1010 added `strat_insider_cluster_concentrated_sell_short` per Council 103. B975/B984 disabled `naked_poc_retest_long` + `m_and_a_target_long`. Pyramid baseline 859-861 passed + 2 skipped on focused `test_unit + test_integration` (B984-B998 lineage; B985 f-string + B986 WIRED_VIA_CALL_GRAPH + B982 BH-FDR + B983 PSR tests added). R5 LAUNCHED 2026-06-27 B1028.
+
 **Status:** Canonical source-of-truth for the 13-tier test pyramid.
 **Owner:** mandatory per DEC-503 + CHECKLIST #69 + feedback_pyramid_full_13_tiers_mandatory.md
 **Created:** Batch 345 2026-05-25 in response to owner directive to "Create a new testing pyramid reference md document".

@@ -3,7 +3,7 @@
   "checksum_sample": {
     "file_path": "scripts\\build_verification_matrix.py",
     "sha256": "d8059b912ed252b7fbb382b373536107edc11d11002285f5c3f4de4d70b95567",
-    "last_validated_iso": "2026-06-16T07:27:02.294092",
+    "last_validated_iso": "2026-06-22T18:19:31.277066",
     "row_count": null,
     "size_bytes": 38095,
     "note": "ok"

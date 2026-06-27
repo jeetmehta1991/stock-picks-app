@@ -1,5 +1,8 @@
 # Stage 4 SMC (Smart Money Concepts) Pure Price-Action Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B1029 STATUS BANNER 2026-06-27 doc-sync:** ALL WALKS 1-5 41-of-41 RESOLVED B984-B993 per CLAUDE.md banner. Cluster walks across 220 strategies CLOSED (B722 -3 + B874 -2 + B1010 +1 = 220 / 217 active). R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 (Master 1929 ops x 4y window 2022-05-05 to 2026-05-05). Banners below indicating PENDING/RUNNING/DEFER status from B691-B750-era are HISTORICAL.
+
+
 > **B719 STATUS BANNER (2026-06-12) — 6TH ADVERSARIAL REVIEW + LINE-BY-LINE METHOD APPLIED PROSPECTIVELY.** Output: [STAGE_4_SMC_CLUSTER_B719_ADVERSARIAL_REVIEW.md](STAGE_4_SMC_CLUSTER_B719_ADVERSARIAL_REVIEW.md). First cluster review where I applied `feedback_line_by_line_ticket_extraction_before_synthesis` (memory rule codified B715 after owner correction) PROSPECTIVELY -- extracted 18 actionable reviewer sentences to discrete tickets BEFORE writing the synthesis doc. **Four reviewer claims source-verified at line-number level**: `event_recency_bars=90` ([smc_ict.py:81](backtest/signals/smc_ict.py#L81)), `liquidity_range_pct=0.01` ([smc_ict.py:79](backtest/signals/smc_ict.py#L79)), `dealing_range_lookback=50` + `ohlc.tail(50)` ([smc_ict.py:80, 407-414](backtest/signals/smc_ict.py#L80)), B555 OPT-C SMC panel-cache layer exists with EXPLICITLY DOCUMENTED PIT-risk caveat ([smc_panel_cache.py:24-30](backtest/signals/smc_panel_cache.py)).
 >
 > **THREE HEADLINE FINDINGS (re-ranked per reviewer; doc currently treats as mid-priority among 7 patterns):**

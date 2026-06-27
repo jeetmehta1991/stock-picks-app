@@ -2000,3 +2000,38 @@ The actual runtime profile was:
 **Recovery when overrun >5x detected.** KILL the job (not "let it finish"). The opportunity cost (~6 days blocking R5 launch this week) dominates the salvageable work (12.2h sunk).
 
 **Cross-references.** CHECKLIST #113 (codified rule), feedback_powershell_authoritative_for_windows_process_truth, feedback_check_existing_pids_before_long_background_launch, feedback_monitor_intermediate_counts (related: early-abort pattern), B896 recovery batch (instantiation).
+
+---
+
+## L164 — Pre-Phase-4+ launch readiness MUST verify universe scope (3-way reconciliation) (B1028 R5 launch session 2026-06-27)
+
+**Rule.** Pre-Phase-4 / R5 / R-N expensive-job launches MUST perform 3-way universe-scope reconciliation BEFORE owner approval gate. Reconcile: (a) PROJECT_PLAN.md scope spec (authoritative), (b) Master Dedup CSV cardinality (`wc -l Backtesting universe/master_dedup.csv`), (c) S3 OHLCV cache cardinality (`aws s3 ls .../ohlcv_daily/ | wc -l`). Discrepancies MUST be surfaced + resolved BEFORE launch. Do NOT default to CLAUDE.md banner status indicators or Council artifact chain assumptions — PROJECT_PLAN is the source of truth for scope decisions.
+
+**Why.** B1024-B1027 HALT-chain wasted $1.41 + multi-hour wall-clock launching R5 on wrong universe scope across 3 attempts:
+- B1024: 8 GB disk failure (CAV-081); $0.26 wasted
+- B1026: Used `aws s3 ls` pattern-match (1930 tickers ≈ Master); wrong because didn't reconcile with PROJECT_PLAN spec or filter delistings; $1.05 wasted
+- B1027: Council 117 over-corrected to T1a 503 (CLAUDE.md banner illustrative reference treated as scope spec); $0.10 wasted
+
+Owner had to ask "what is the universe for which r5 is being run?" and "dont we need r5 on full master list?" to surface the issue. PROJECT_PLAN.md line 193 had the AUTHORITATIVE answer (Master 1937 per DEC-504) the whole time. Council artifact chain (Councils 107/110/113-117) propagated a groupthink T1a assumption from CLAUDE.md banner status indicator. Owner correction 2026-06-27: "this universe issue should have been caught by you before r5 launch as a part of your readiness audit."
+
+**Pattern (the groupthink trap).** Council artifact chains can propagate ASSUMPTIONS across multiple verdicts without ever reconciling to the AUTHORITATIVE source. The chain of councils referenced T1a illustratively → each subsequent council inherited the assumption → cost-estimates / launch-readiness / pre-flight audits all assumed T1a → only the owner's external question forced reconciliation. Per `feedback_audit_recommendations_against_existing_directives` Pass 53 mandate: Council chains are NOT authoritative; PROJECT_PLAN.md is the source of truth.
+
+**How to apply.**
+- Add universe-scope reconciliation to standard pre-launch audit (Council 110 Option-AWS-5 Phase 0 + Council 114 Option-7 pre-flight dry-run pattern)
+- CHECKLIST candidate: "pre-expensive-job universe-scope verification (PROJECT_PLAN + Master CSV + S3 cache 3-way reconciliation)"
+- Memory rule saved: `feedback_readiness_audit_must_verify_universe_scope`
+- Honest-finding pivots #17 (B1026 wrong universe) + #18 (Council chain T1a groupthink) documented this session
+
+**Cross-references.** CAV-082 (universe-scope verification gap caveat), CAV-083 (53-day stale universe), `feedback_readiness_audit_must_verify_universe_scope`, `feedback_audit_recommendations_against_existing_directives` (Pass 53 contradiction-detection mandate), PROJECT_PLAN.md line 193 (authoritative Master 1937 spec), B1028 R5 launch (first under new memory rule).
+
+---
+
+## L165 — c6a.4xlarge default 8 GB EBS root insufficient for Python data-science bootstrap (B1024 disk-fail 2026-06-27)
+
+**Rule.** AWS EC2 c6a.* default 8 GB root volume is insufficient for any launch that needs Python venv + pandas + pandas-ta + scipy + ib_async + openbb + pyarrow + S3-synced data prefetch. Always specify `--block-device-mappings 'DeviceName=/dev/xvda,Ebs={VolumeSize=50,VolumeType=gp3,DeleteOnTermination=true}'` for any cube/backtest workload.
+
+**Why.** B1024 Phase 1 launch failed at ~3 min bootstrap with `OSError [Errno 28] No space left on device`. Disk requirement was ~10-11 GB (AL2023 base 3 + git/python/aws-cli 1-2 + venv/pip 2-3 + data_prefetch sync 2.84) vs 8 GB default. Cost $0.26 wasted before HALT-CRITICAL detection.
+
+**How to apply.** All Phase-4+ AWS launch scripts include `--block-device-mappings` with 50 GB gp3 (cost +$0.003/run within budget). CAV-081 documents the caveat. Future c6a.* launches must include same parameter.
+
+**Cross-references.** CAV-081, B1024 HALT incident, B1028 R5 launch (50 GB applied).

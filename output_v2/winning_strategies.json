@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-16T18:35:11.939213",
+  "generated_at": "2026-06-18T20:08:46.826572",
   "total_winners": 0,
   "passing_criteria": {
     "min_win_rate": "0.45",
@@ -14,24 +14,32 @@
     "min_deflated_sharpe": "0.95",
     "min_sharpe_overall": "1.0",
     "min_sharpe_per_regime": "0.7",
+    "min_sortino_overall": "1.0",
+    "min_sortino_per_regime": "0.7",
+    "min_calmar": "0.5",
+    "min_regimes_passing": "1",
     "min_profit_factor_overall": "1.3",
-    "min_trades_per_regime": "30"
+    "min_trades_per_regime": "30",
+    "min_cost_sensitivity_ratio": "0.5",
+    "chow_test_p_max": "0.05",
+    "chow_post_break_sharpe_min": "0.3",
+    "adf_test_p_max_mean_reversion": "0.1"
   },
   "survivorship_info": {
-    "gross_roi": 1213.534,
-    "adjusted_roi": 804.877,
-    "haircut_pct": 408.657,
-    "years": 4.0
+    "gross_roi": 24.575,
+    "adjusted_roi": 9.829,
+    "haircut_pct": 14.746,
+    "years": 0.49
   },
   "bonferroni": {
-    "n_strategies": 77,
+    "n_strategies": 219,
     "base_significance": 0.05,
-    "adjusted_significance": 0.000649,
+    "adjusted_significance": 0.000228,
     "min_win_rate": 0.55,
     "min_trades_required": 500,
-    "false_positive_prob_uncorrected": 0.981,
+    "false_positive_prob_uncorrected": 1.0,
     "false_positive_prob_corrected": 0.05,
-    "recommendation": "With 77 strategies tested, require at least 500 trades per strategy for statistical validity (Bonferroni-corrected at p=0.0006)"
+    "recommendation": "With 219 strategies tested, require at least 500 trades per strategy for statistical validity (Bonferroni-corrected at p=0.0002)"
   },
   "strategies": []
 }

@@ -1,5 +1,8 @@
 # Stage 4 Pivot Cluster Walks — Post-Reviewer-Audit Status
 
+> **B1029 STATUS BANNER 2026-06-27 doc-sync:** ALL WALKS 1-5 41-of-41 RESOLVED B984-B993 per CLAUDE.md banner. Cluster walks across 220 strategies CLOSED (B722 -3 + B874 -2 + B1010 +1 = 220 / 217 active). R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 (Master 1929 ops x 4y window 2022-05-05 to 2026-05-05). Banners below indicating PENDING/RUNNING/DEFER status from B691-B750-era are HISTORICAL.
+
+
 > **B731 STATUS BANNER (2026-06-12) — C1 TIMEFRAME OWNER-DECISION RESOLVED: HONEST REFRAME (NOT INTRADAY) APPROVED FOR ALL 3 PIVOT FAMILIES.** Owner-approved 2026-06-12 per Decision 2 Group A (B726 → all-recs approval). Closes 4-cycle deferral on the cluster's largest structural debt per B710 reviewer Phase 2.
 >
 > **REFRAME APPLIES TO ALL 3 FAMILIES:**

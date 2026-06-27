@@ -2,59 +2,23 @@
   "schema_version": "1.0",
   "batch": "B956",
   "council_verdict": "60_UNANIMOUS_strategic_pivot_findings_addressing_mode",
-  "n_dossiers_scanned": 217,
-  "n_findings_total": 315,
-  "n_strategies_with_findings": 188,
+  "n_dossiers_scanned": 220,
+  "n_findings_total": 317,
+  "n_strategies_with_findings": 191,
   "findings_by_type": {
-    "DEFERRED_OWNER_TRIAGE": 125,
+    "DEFERRED_OWNER_TRIAGE": 123,
     "EARNINGS_BLACKOUT_LOOKAHEAD_RISK": 25,
-    "FIRE_STARVED": 137,
-    "INVERSE_UNSAFE_CHECK_NEEDED": 25,
+    "FIRE_STARVED": 139,
+    "INVERSE_UNSAFE_CHECK_NEEDED": 27,
     "SIGNAL_ORPHAN": 3
   },
   "findings_by_severity": {
     "HIGH": 287,
-    "MEDIUM": 28
+    "MEDIUM": 30
   },
   "findings": [
     {
       "strategy": "52w_high_breakout_pullback_long",
-      "finding_type": "DEFERRED_OWNER_TRIAGE",
-      "source_section": "r5_inclusion_criterion (B946+B950)",
-      "severity": "HIGH",
-      "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
-      "owner_decision_required": true,
-      "source_batch": "B946 + B950",
-      "evidence": {
-        "r5_inclusion_criterion": "deferred"
-      }
-    },
-    {
-      "strategy": "52w_high_breakout_with_smart_money_long",
-      "finding_type": "DEFERRED_OWNER_TRIAGE",
-      "source_section": "r5_inclusion_criterion (B946+B950)",
-      "severity": "HIGH",
-      "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
-      "owner_decision_required": true,
-      "source_batch": "B946 + B950",
-      "evidence": {
-        "r5_inclusion_criterion": "deferred"
-      }
-    },
-    {
-      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
-      "finding_type": "DEFERRED_OWNER_TRIAGE",
-      "source_section": "r5_inclusion_criterion (B946+B950)",
-      "severity": "HIGH",
-      "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
-      "owner_decision_required": true,
-      "source_batch": "B946 + B950",
-      "evidence": {
-        "r5_inclusion_criterion": "deferred"
-      }
-    },
-    {
-      "strategy": "52w_low_breakdown",
       "finding_type": "DEFERRED_OWNER_TRIAGE",
       "source_section": "r5_inclusion_criterion (B946+B950)",
       "severity": "HIGH",
@@ -115,18 +79,6 @@
     },
     {
       "strategy": "bb_squeeze_volume",
-      "finding_type": "DEFERRED_OWNER_TRIAGE",
-      "source_section": "r5_inclusion_criterion (B946+B950)",
-      "severity": "HIGH",
-      "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
-      "owner_decision_required": true,
-      "source_batch": "B946 + B950",
-      "evidence": {
-        "r5_inclusion_criterion": "deferred"
-      }
-    },
-    {
-      "strategy": "bollinger_tight_with_smart_money_long",
       "finding_type": "DEFERRED_OWNER_TRIAGE",
       "source_section": "r5_inclusion_criterion (B946+B950)",
       "severity": "HIGH",
@@ -450,6 +402,18 @@
       }
     },
     {
+      "strategy": "insider_cluster_concentrated_sell_short",
+      "finding_type": "DEFERRED_OWNER_TRIAGE",
+      "source_section": "r5_inclusion_criterion (B946+B950)",
+      "severity": "HIGH",
+      "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+      "owner_decision_required": true,
+      "source_batch": "B946 + B950",
+      "evidence": {
+        "r5_inclusion_criterion": "deferred"
+      }
+    },
+    {
       "strategy": "insider_cluster_long",
       "finding_type": "DEFERRED_OWNER_TRIAGE",
       "source_section": "r5_inclusion_criterion (B946+B950)",
@@ -487,6 +451,18 @@
     },
     {
       "strategy": "institutional_cluster_long",
+      "finding_type": "DEFERRED_OWNER_TRIAGE",
+      "source_section": "r5_inclusion_criterion (B946+B950)",
+      "severity": "HIGH",
+      "proposed_action": "Stage 4 walk per feedback_per_strategy_deep_dive_stage4 + feedback_no_rushing_per_strategy_tweak (1-per-turn)",
+      "owner_decision_required": true,
+      "source_batch": "B946 + B950",
+      "evidence": {
+        "r5_inclusion_criterion": "deferred"
+      }
+    },
+    {
+      "strategy": "institutional_high_conviction_long",
       "finding_type": "DEFERRED_OWNER_TRIAGE",
       "source_section": "r5_inclusion_criterion (B946+B950)",
       "severity": "HIGH",
@@ -2438,6 +2414,21 @@
       }
     },
     {
+      "strategy": "institutional_high_conviction_long",
+      "finding_type": "FIRE_STARVED",
+      "source_section": "section_07_temporal_coverage_probe",
+      "severity": "HIGH",
+      "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+      "owner_decision_required": true,
+      "source_batch": "B660 measurement + B952 extractor",
+      "evidence": {
+        "verdict": "FAIL_FIRE_STARVED",
+        "fires_per_year_long": 0.0,
+        "fires_per_year_short": 0.0,
+        "min_trades_floor": 30
+      }
+    },
+    {
       "strategy": "institutional_increased_with_directors_long",
       "finding_type": "FIRE_STARVED",
       "source_section": "section_07_temporal_coverage_probe",
@@ -2544,6 +2535,21 @@
     },
     {
       "strategy": "institutional_persistence_volume_long",
+      "finding_type": "FIRE_STARVED",
+      "source_section": "section_07_temporal_coverage_probe",
+      "severity": "HIGH",
+      "proposed_action": "EXPLORATORY tag OR delete-recommendation OR L1c review",
+      "owner_decision_required": true,
+      "source_batch": "B660 measurement + B952 extractor",
+      "evidence": {
+        "verdict": "FAIL_FIRE_STARVED",
+        "fires_per_year_long": 0.0,
+        "fires_per_year_short": 0.0,
+        "min_trades_floor": 30
+      }
+    },
+    {
+      "strategy": "institutional_persistent_holders_long",
       "finding_type": "FIRE_STARVED",
       "source_section": "section_07_temporal_coverage_probe",
       "severity": "HIGH",
@@ -4100,6 +4106,25 @@
       }
     },
     {
+      "strategy": "institutional_high_conviction_long",
+      "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
+      "source_section": "section_08_data_source_asymmetry",
+      "severity": "MEDIUM",
+      "proposed_action": "Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mirror on long-only data source",
+      "owner_decision_required": true,
+      "source_batch": "B955",
+      "evidence": {
+        "asymmetric_sources": [
+          "13F"
+        ],
+        "signals_triggering": {
+          "13F": [
+            "institutional_new_positions"
+          ]
+        }
+      }
+    },
+    {
       "strategy": "institutional_increased_with_directors_long",
       "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
       "source_section": "section_08_data_source_asymmetry",
@@ -4238,6 +4263,25 @@
     },
     {
       "strategy": "institutional_persistence_volume_long",
+      "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
+      "source_section": "section_08_data_source_asymmetry",
+      "severity": "MEDIUM",
+      "proposed_action": "Review any active Class 7 NEW_STRATEGY mirror proposal; retract if mechanical mirror on long-only data source",
+      "owner_decision_required": true,
+      "source_batch": "B955",
+      "evidence": {
+        "asymmetric_sources": [
+          "13F"
+        ],
+        "signals_triggering": {
+          "13F": [
+            "institutional_increased"
+          ]
+        }
+      }
+    },
+    {
+      "strategy": "institutional_persistent_holders_long",
       "finding_type": "INVERSE_UNSAFE_CHECK_NEEDED",
       "source_section": "section_08_data_source_asymmetry",
       "severity": "MEDIUM",

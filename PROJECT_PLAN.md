@@ -1,7 +1,11 @@
 # Stock Picks & Automated Trading System — PROJECT_PLAN
 
-**Version:** Pass 53 Day 9+ Batch 178 (refreshed 2026-05-15 launch day)
-**Status:** Phase 0A complete → Phase 1A launch day. 0 strict blockers. 1882 tests passing / 0 failed. 3 live dashboards on GitHub Pages. Matrix stable 731 (no oscillation).
+**Version:** Pass 53 Day 9+ Batch B1028 (refreshed 2026-06-27 R5 launch day)
+**Status:** Phase 0A complete → Phase 1A-β R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381. 220 strategies registered / 217 active / 12 EXPLORATORY / 3 DISABLED. 15/15 PATH §13.7 launch gates READY pre-launch (A4 OOS seal + A5 planted-bug canary owner-completed B1017-area). Pyramid baseline 859-861+2 focused. 18 honest-finding pivots this session (#17 + #18 most recent: B1026 wrong-universe + Council chain T1a groupthink corrected to Master 1937 per Council 119/120/121 + this line §6.3 line 193).
+
+> **B1029 DOC-SYNC FRESHNESS BANNER (2026-06-27 owner-mandated comprehensive sweep):** R5 LAUNCH config = Master 1929 ops-intersection (PROJECT_PLAN line 193 spec = Master 1937; S3 OHLCV cache = 1930; intersection = 1929) × 4y window 2022-05-05 → 2026-05-05 × 217 active × 26 exits = 5,642 cells/ticker. Cube launched on c6a.16xlarge spot us-east-1f. Sunk cost B1024-B1027 HALT-chain = $1.41; B1028 expected $1.20-2.70. Memory rule SAVED: `feedback_readiness_audit_must_verify_universe_scope` mandates 3-way reconciliation (PROJECT_PLAN spec + Master CSV + S3 cache) pre-Phase-4+ launch. POST-R5 ACTIONS QUEUED: P1-UNIVERSE-REFRESH-POST-R5 (53-day-stale Master CSV refresh; blocks Phase 1B-α but NOT R5) + P1-DRR-DELTA-TICKERS-POST-REFRESH (informs Phase 1B-α gate).
+
+**Historical anchor:** Pass 53 Day 9+ Batch 178 (2026-05-15 launch day) — Phase 0A complete → Phase 1A launch day. 0 strict blockers. 1882 tests passing / 0 failed. 3 live dashboards on GitHub Pages. Matrix stable 731 (no oscillation).
 **Supersedes:** PROJECT_PLAN_v1_outdated.md (April 2026 version, marked outdated post-Pass-52)
 **Historical archive:** PROJECT_PLAN_ARCHIVE.md (pre-April-2026 reference)
 **Companion:** TRADING_RULES_AND_INFORMATION.md (canonical thresholds + criteria reference)

@@ -1,4 +1,13 @@
 {
+  "break_retest_volume": [
+    {
+      "ticker": "SPY",
+      "pnl_pct": -9.404633333333333,
+      "entry_date": "2023-08-22",
+      "exit_date": "2023-12-14",
+      "regime": "bull"
+    }
+  ],
   "cmf_flip": [
     {
       "ticker": "AMZN",
@@ -75,6 +84,13 @@
   ],
   "macd_fast_crossover": [
     {
+      "ticker": "AMZN",
+      "pnl_pct": -11.10093650793651,
+      "entry_date": "2023-08-02",
+      "exit_date": "2023-08-04",
+      "regime": "bull"
+    },
+    {
       "ticker": "SPY",
       "pnl_pct": -10.956888888888889,
       "entry_date": "2023-10-19",
@@ -103,8 +119,23 @@
       "regime": "bull"
     }
   ],
-  "mmbm_long": [],
+  "mmbm_long": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -10.99955238095238,
+      "entry_date": "2023-10-23",
+      "exit_date": "2023-10-26",
+      "regime": "bear"
+    }
+  ],
   "mmsm_short": [
+    {
+      "ticker": "GOOGL",
+      "pnl_pct": -11.494233333333334,
+      "entry_date": "2023-08-10",
+      "exit_date": "2023-12-20",
+      "regime": "bull"
+    },
     {
       "ticker": "AMZN",
       "pnl_pct": -10.732444444444445,
@@ -113,16 +144,9 @@
       "regime": "bull"
     },
     {
-      "ticker": "GOOGL",
-      "pnl_pct": -9.409788888888889,
-      "entry_date": "2023-08-09",
-      "exit_date": "2023-12-20",
-      "regime": "bull"
-    },
-    {
       "ticker": "SPY",
-      "pnl_pct": -6.1185,
-      "entry_date": "2023-08-31",
+      "pnl_pct": -9.533855555555556,
+      "entry_date": "2023-08-24",
       "exit_date": "2023-12-14",
       "regime": "bull"
     },
@@ -139,6 +163,13 @@
       "entry_date": "2023-07-14",
       "exit_date": "2023-08-03",
       "regime": "bull"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -0.007574603174603206,
+      "entry_date": "2023-12-06",
+      "exit_date": "2023-12-29",
+      "regime": "bull"
     }
   ],
   "morning_star": [
@@ -154,22 +185,6 @@
       "pnl_pct": -6.389266666666667,
       "entry_date": "2023-07-20",
       "exit_date": "2023-12-14",
-      "regime": "bull"
-    }
-  ],
-  "naked_poc_retest_long": [
-    {
-      "ticker": "GOOGL",
-      "pnl_pct": -11.491282539682539,
-      "entry_date": "2023-10-16",
-      "exit_date": "2023-10-26",
-      "regime": "bull"
-    },
-    {
-      "ticker": "AMZN",
-      "pnl_pct": -1.2752380952380953,
-      "entry_date": "2023-07-06",
-      "exit_date": "2023-09-22",
       "regime": "bull"
     }
   ],
@@ -247,7 +262,15 @@
       "regime": "bull"
     }
   ],
-  "parabolic_sar_flip": [],
+  "parabolic_sar_flip": [
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -11.164282539682539,
+      "entry_date": "2023-07-10",
+      "exit_date": "2023-08-04",
+      "regime": "bull"
+    }
+  ],
   "pead_long_high_yoy_growth_only": [
     {
       "ticker": "NVDA",
@@ -257,12 +280,13 @@
       "regime": "bull"
     }
   ],
+  "pivot_s1_bounce": [],
   "po3_bullish": [
     {
-      "ticker": "GOOGL",
-      "pnl_pct": -1.8297301587301589,
-      "entry_date": "2023-11-28",
-      "exit_date": "2023-12-18",
+      "ticker": "AAPL",
+      "pnl_pct": -10.858304761904762,
+      "entry_date": "2023-07-06",
+      "exit_date": "2023-08-18",
       "regime": "bull"
     }
   ],
@@ -294,7 +318,7 @@
     }
   ],
   "smc_breaker_block_long": [],
-  "squeeze_breakout": [],
+  "smc_inverse_fvg": [],
   "stochrsi_overbought_short": [
     {
       "ticker": "AMZN",
@@ -312,34 +336,18 @@
     },
     {
       "ticker": "AAPL",
-      "pnl_pct": -1.307777777777778,
-      "entry_date": "2023-09-01",
-      "exit_date": "2023-11-14",
+      "pnl_pct": -3.6556888888888888,
+      "entry_date": "2023-11-13",
+      "exit_date": "2023-12-29",
       "regime": "bull"
     }
   ],
   "stochrsi_oversold": [
     {
-      "ticker": "SPY",
-      "pnl_pct": -1.3488507936507936,
-      "entry_date": "2023-08-10",
-      "exit_date": "2023-08-21",
-      "regime": "bull"
-    },
-    {
       "ticker": "AMZN",
-      "pnl_pct": -0.31174603174603177,
+      "pnl_pct": -1.03,
       "entry_date": "2023-07-25",
-      "exit_date": "2023-08-02",
-      "regime": "bull"
-    }
-  ],
-  "supertrend_macd": [
-    {
-      "ticker": "AAPL",
-      "pnl_pct": -8.71551111111111,
-      "entry_date": "2023-08-07",
-      "exit_date": "2023-11-22",
+      "exit_date": "2023-09-26",
       "regime": "bull"
     }
   ],
@@ -365,6 +373,13 @@
       "pnl_pct": -8.306099999999999,
       "entry_date": "2023-09-06",
       "exit_date": "2023-12-14",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AAPL",
+      "pnl_pct": -2.175244444444444,
+      "entry_date": "2023-11-27",
+      "exit_date": "2023-12-29",
       "regime": "bull"
     }
   ],

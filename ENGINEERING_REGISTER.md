@@ -1,6 +1,8 @@
 # Engineering Register — Implementation Tracking
 
-**2026-05-15 Batch 178 status:** Live tracking superseded by https://jeetmehta1991.github.io/stock-picks-app/dashboard_stage_2/ (decision/bug status + engine-consumption verification per the coverage-driven verification matrix). Pyramid: 1882 / 14s / 5xf / 0 failed. Phase 1A launch unblocked.
+**2026-06-27 post-B1028 R5-launch status:** Live tracking on dashboard_stage_2. Pyramid baseline 859-861+2 (focused test_unit + test_integration). **220 strategies / 217 active / cube 217×26 = 5,642 per ticker.** R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381. NEW infrastructure post-2026-05-15 (must add Sprint 10 below): `multiprocessing.get_context('spawn').Pool` in `backtest/engine/backtest.py` with `--screen-pool-workers` CLI flag; run_phase1a.py flags `--tickers / --no-git / --no-walk-forward / --output-dir`; S3 bucket `stock-picks-batch395-jm-7421` (1930 OHLCV cached); AWS direct execution via Bash tool with `batch395-runner` IAM; B1019 Council 108 7-enhancement Monitor (A5 preflight + runtime + post-run); Phase 1A-β scope = Master 1937 × 4y per PROJECT_PLAN line 193.
+
+**2026-05-15 historical anchor:** Live tracking superseded by dashboard_stage_2 (decision/bug + engine-consumption per coverage-driven matrix). Pyramid: 1882 / 14s / 5xf / 0 failed. Phase 1A launch unblocked.
 
 **Generated:** Pass 52 turn 42
 **Purpose:** Per-sub-decision tracking from audit-decided to engineering-implemented

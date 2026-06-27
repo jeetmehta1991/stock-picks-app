@@ -38,7 +38,12 @@
       "PowerShell(aws ec2 get-console-output --instance-id i-03db583a7ba98b2bb --query Output --output text 2>&1 | Out-File -FilePath C:\\\\tmp\\\\console.txt -Encoding utf8; Test-Path C:\\\\tmp\\\\console.txt; if \\(Test-Path C:\\\\tmp\\\\console.txt\\) { \\(Get-Item C:\\\\tmp\\\\console.txt\\).Length; Get-Content C:\\\\tmp\\\\console.txt -Tail 100 })",
       "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; $env:PYTHONUTF8=\"1\"; aws ec2 get-console-output --instance-id i-03db583a7ba98b2bb --query Output --output text > C:\\\\tmp\\\\console.txt 2>$null; \\(Get-Item C:\\\\tmp\\\\console.txt\\).Length; Get-Content C:\\\\tmp\\\\console.txt -Tail 80 -Encoding utf8)",
       "PowerShell(Get-Process -Id 9988 -ErrorAction SilentlyContinue)",
-      "PowerShell(Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.StartTime -gt \\(Get-Date\\).AddHours\\(-2\\) } | Select-Object Id, StartTime, CPU, WS | Format-Table -AutoSize)"
+      "PowerShell(Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.StartTime -gt \\(Get-Date\\).AddHours\\(-2\\) } | Select-Object Id, StartTime, CPU, WS | Format-Table -AutoSize)",
+      "PowerShell(Get-Process -Name python -ErrorAction SilentlyContinue | Where-Object {$_.StartTime -gt \\(Get-Date\\).AddMinutes\\(-5\\)} | Select-Object Id, StartTime, CPU, WorkingSet | Format-Table)",
+      "PowerShell(Get-Process -Name python -ErrorAction SilentlyContinue | Where-Object {$_.StartTime -gt \\(Get-Date\\).AddMinutes\\(-3\\)} | ForEach-Object { Stop-Process -Id $_.Id -Force; Write-Output \"Killed PID $\\($_.Id\\)\" })",
+      "PowerShell(Get-Process -Id 391618 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process -Name python -ErrorAction SilentlyContinue | Where-Object {$_.StartTime -gt \\(Get-Date\\).AddHours\\(-2\\)} | Select-Object Id, StartTime, CPU, WorkingSet | Sort-Object StartTime | Format-Table)",
+      "PowerShell(Get-Process python -ErrorAction SilentlyContinue)"
     ]
   }
 }

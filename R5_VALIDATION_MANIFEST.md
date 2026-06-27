@@ -2,7 +2,7 @@
 
 **Purpose**: single canonical list of items that have been DEFERRED-STAGE-5 across recent batches and require empirical validation when the R5 cube next runs. Each item references the source batch, the deferred decision, and the validation success criterion.
 
-**R5 status**: PAUSED per `feedback_r5_paused_pending_stage4_completion` (owner directive 2026-06-04). This manifest is the staging ground — when R5 launches, every item below gets validated against fresh direction-aware cube output.
+**R5 status**: 🚀 **LAUNCHED 2026-06-27 B1028** on AWS i-0940a53c75d049381 (c6a.16xlarge spot us-east-1f). Config: Master 1929 ops-intersection (PROJECT_PLAN line 193 spec = Master 1937; intersect S3 OHLCV); 4y window 2022-05-05 → 2026-05-05; 217 active strategies × 26 exits = 5,642 cells/ticker. Pre-launch: A4 OOS seal + A5 planted-bug canary owner-completed; 15/15 PATH §13.7 gates READY. Sunk cost B1024-B1027 = $1.41 (HALT-chain); B1028 expected $1.20-2.70. Pre-launch readiness governed by `feedback_readiness_audit_must_verify_universe_scope` (memory rule per owner correction). This manifest is the staging ground — every item below gets validated against B1028 R5 cube output. Prior status: PAUSED per `feedback_r5_paused_pending_stage4_completion` (owner directive 2026-06-04; gate LIFTED 2026-06-16 per Stage 4 walks complete).
 
 **Living document**: append-only across batches that produce R5-deferred work. Each new deferral adds a row; resolved items move to a "RESOLVED" section with the R5 batch that closed them.
 

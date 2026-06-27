@@ -1,5 +1,7 @@
 # AUDIT_BACKLOG.md — Master Implementation Backlog (Pass 53 Review-Cycle)
 
+> **STALE BANNER 2026-06-27:** Last meaningful update 2026-05-15 (43 days). Document covers Pass 53 review-cycle which CLOSED per DEC-589. Subsequent Phase 1A-β R4 + Stage 4 walks (B984-B993 ALL WALKS 1-5 RESOLVED) + B978-B1028 R5 launch work tracked in **PATH_TO_PHASE_1B_ALPHA.md §13 + EXECUTION_QUEUE.md + CLAUDE.md banner**, NOT here. INV-046 (only OPEN item, line 42) RESOLVED per Council 78 B978 honest-finding pivot (TIER 2 wireup verified). Recommend archival to `archive/` post-R5 verdict. Active execution: B1028 R5 LAUNCHED 2026-06-27 on AWS i-0940a53c75d049381.
+
 ## Pass 53 Day 9+ Batch 178 (2026-05-15 launch day) — 0 strict blockers
 
 Session 2026-05-15 closed Batches 166-178. Highlights:

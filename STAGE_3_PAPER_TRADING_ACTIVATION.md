@@ -1,5 +1,7 @@
 # Stage 3 — Paper Trading Activation Runbook (G22)
 
+> **B1029 doc-sync 2026-06-27:** Prerequisite `winners.parquet` = **BLOCKED-PENDING-R5-COMPLETE**. R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 (Master 1929 ops × 4y window). Activation gated on R5 cube completion + verdict. ETA per cube wall-clock estimate ~3-4 hr post-launch.
+
 **Created:** Batch 345 2026-05-25 (owner directive "Implement D and G now").
 
 ## Status

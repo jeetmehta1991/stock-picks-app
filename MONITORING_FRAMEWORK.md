@@ -2,6 +2,8 @@
 
 **Created 2026-05-28** (owner directive: "Document monitoring framework in a separate md file"; CHECKLIST #92 explicit approval given).
 
+> **B1029 doc-sync 2026-06-27:** New monitoring components SHIPPED post-B1019 (Council 108 Option-5 Modified 7-enhancement bundle owner-approved): (1) `scripts/b1019_a5_phase_1_preflight_coverage_check.py` — A5 PRE-FLIGHT signal-coverage completeness; (2) `scripts/b1019_phase_1_runtime_monitor.py` — A1 per-strategy fire-rate vs B660 baseline + B2 schema-invariant sentinel + D1 cube-cell completion ETA + F1 periodic owner-chatback; (3) `scripts/b1019_phase_1_post_run_analyzer.py` — D2 dimension-rollup + F2 structured JSON report; (4) `output_audit/b1019_f2_structured_log_schema.json` — F2 schema spec. Plus AWS direct-execution monitoring: persistent Bash `Monitor` polls S3 sentinels (`PHASE_N_RUNNING/PASS/FAIL` + `AUTOLADDER_BOOT/COMPLETE`) every 90s; CloudWatch billing alarms at $5/$10/$20 (`batch395-phase1-cost-5usd` + `batch395-autoladder-cost-10usd` + `batch395-autoladder-cost-20usd`); instance `AutoTerminateAt=launch+10hr` tag for lifetime cap. R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 using this monitoring stack.
+
 **Status.** Canonical reference for every monitor / heartbeat / health-check / watchdog / forensic check that runs across Phase 1A-β (cube), Phase 1A-α (rules-only deployment), Phase 1B-α (agent overlay), Stage 3 paper-trading, and Stage 4 live trading. Single source of truth for what each monitor does, where it lives, what it ACTS ON, and who consumes its output. Maintained per `feedback_no_write_only_md_files.md` — every entry below has a documented consumer or action-path.
 
 ---

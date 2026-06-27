@@ -1,4 +1,4 @@
-# API_ENDPOINT_INVENTORY.md - Definitive endpoint catalog (Pass 53 Day-9 v8h+1)
+# API_ENDPOINT_INVENTORY.md - Definitive endpoint catalog (Pass 53 Day-9 v8h+1; last probe 2026-05-08; B1029 doc-sync 2026-06-27 freshness banner: NO new API endpoints added post-B1019; AWS Direct execution + S3 caching layer is separate infrastructure not API change; re-probe queued at next quarter refresh)
 
 **Method per CHECKLIST #76 column-(b) + #77:** every row sourced from canonical API docs (where fetchable) AND probe verification (`scripts/probe_api_catalog.py`) hitting actual endpoints with our keys at 2026-05-08. Probe report: `API_ENDPOINT_PROBE_REPORT.json`.
 

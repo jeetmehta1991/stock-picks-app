@@ -709,6 +709,46 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Reconsider triggers:** none; this is permanent. SEC XBRL + Polygon financials are structurally superior data sources.
 **Forward-link:** DEC-606 (this exclusion); CAV-075 (delisting confirms 246-ticker SEC-unfileable ceiling); test_contract_finnhub_earnings_shape (Finnhub `earnings` endpoint, NOT `financials_reported`, remains valid).
 
+### CAV-083 — Universe 53 days stale (Master CSV 2026-05-05 anchor; today 2026-06-27)
+
+**Source:** 2026-06-27 B1028 R5 launch pre-flight audit + Council 120 verdict.
+**Status:** ACTIVE - operational staleness; refresh QUEUED post-R5.
+**Caveat:** Master Dedup CSV `Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv` was built 2026-05-05 (53 days stale vs 2026-06-27). PIT-correct for as_of ≤ 2026-05-05. May miss IPOs/spinoffs/momentum changes in the 53-day delta window. R5 launch B1028 documented this caveat in run_metadata.
+**Operational impact:** B1028 R5 cube empirical patterns are statistically valid (N=1929 breadth dwarfs 0.5-1% staleness noise) but post-cube DRR (Differential Re-Run) against refresh-delta tickers gates Phase 1B-α promotion.
+**Forward-link:** P1-UNIVERSE-REFRESH-POST-R5 (queued) + P1-DRR-DELTA-TICKERS-POST-REFRESH (queued).
+
+---
+
+### CAV-082 — Universe-scope verification gap (B1026 honest-finding pivot #18 + memory rule)
+
+**Source:** 2026-06-27 B1026 wrong-universe HALT incident; owner correction; saved as memory rule `feedback_readiness_audit_must_verify_universe_scope`.
+**Status:** ACTIVE - process gap (now mitigated by mandatory 3-way reconciliation).
+**Caveat:** Pre-Phase-4+ launches MUST verify universe scope via 3-way reconciliation: (a) PROJECT_PLAN.md spec authority, (b) Master Dedup CSV cardinality, (c) S3 OHLCV cache cardinality. Council artifact chain assumption is NOT authoritative (Council 107/110/113-117 propagated wrong T1a 503 assumption groupthink before PROJECT_PLAN line 193 was reconciled).
+**Operational impact:** B1024-B1027 HALT-chain cost $1.41 sunk on wrong-universe attempts before authoritative spec reconciliation. Future Phase-4+ launches must avoid same pattern.
+**Forward-link:** B1028 R5 launch (corrected scope; first under new memory rule); `feedback_readiness_audit_must_verify_universe_scope.md`.
+
+---
+
+### CAV-081 — c6a.4xlarge default 8 GB EBS root insufficient for full bootstrap (B1024 HALT)
+
+**Source:** 2026-06-27 B1024 disk-exhaustion incident.
+**Status:** RESOLVED via migration to 50 GB gp3 root in B1028.
+**Caveat:** AWS c6a.4xlarge default EBS root = 8 GB. Bootstrap requires ~10-11 GB (AL2023 base 3 + git/python/aws-cli 1-2 + venv/pip pandas-ta/scipy/ib_async/openbb/pyarrow 2-3 + data_prefetch sync 2.84 GB). Resulted in `OSError [Errno 28] No space left on device` at ~3 min into bootstrap. Historical AWS Phase 1A launches pre-B1024 may have silently truncated outputs.
+**Operational impact:** B1024 $0.26 wasted before HALT-CRITICAL detection.
+**Fix applied:** B1028 launch added `--block-device-mappings 'DeviceName=/dev/xvda,Ebs={VolumeSize=50,VolumeType=gp3,DeleteOnTermination=true}'`. Future c6a.* launches must include same parameter.
+
+---
+
+### CAV-080 — AWS spot interruption risk on long-running cube runs
+
+**Source:** 2026-06-27 B1028 R5 launch infrastructure design.
+**Status:** ACTIVE - mitigated by cost cap + sentinel architecture.
+**Caveat:** AWS spot instances can be terminated with 2-minute notice. R5 cube run on c6a.16xlarge spot for 3-6 hours has non-zero interruption probability. Mitigated by: (a) $5/$10/$20 CloudWatch billing alarms, (b) `AutoTerminateAt=launch+10hr` instance lifetime tag, (c) per-phase S3 sentinel files allowing partial-state recovery, (d) spot ceiling $1.50/hr capping cost per hour.
+**Operational impact:** If interrupted mid-run, sentinel state allows owner to inspect partial-phase output in S3 and decide re-launch from last-PASS phase.
+**Forward-link:** B1028 run metadata; `feedback_monitor_intermediate_counts`.
+
+---
+
 ### CAV-079 — H1 OHLCV Master Dedup prefetch: 8 historically-delisted tickers fail to fetch (DEC-609 H1.b)
 
 **Source:** Pass 53 v8h+1 owner-approved 2026-05-10 (DEC-609 H1.b BG completion).

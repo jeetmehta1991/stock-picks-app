@@ -1,4 +1,5 @@
 strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,actual_fire_rate,composite_score,recommended
-mmsm_short,next_pivot_target,5,1.0,999.0,0.693,3.4651,0.0,6.0,1.0,100.0,True
+mmsm_short,next_pivot_target,6,1.0,999.0,0.4456,2.6737,0.0,8.2,0.8333,100.0,True
+macd_fast_crossover,next_pivot_target,5,0.8,0.2044,-1.7192,-8.5958,0.0,4.0,1.0,62.0,True
 pairs_mean_reversion_long,next_pivot_target,6,1.0,999.0,2.8599,17.1596,0.0,24.8,1.0,100.0,True
 pairs_mean_reversion_short,r_multiple_2r,7,0.4286,1.8844,1.2443,8.7101,-9.8483,8.0,1.0,58.9,True

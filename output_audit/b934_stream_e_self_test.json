@@ -44,7 +44,7 @@
         "institutional_persistent_holders_long": {
           "canary_type": "b906_measurement_disputed",
           "checks": {
-            "in_measurement_disputed": true,
+            "in_measurement_disputed": false,
             "in_all_strategies": true
           }
         },

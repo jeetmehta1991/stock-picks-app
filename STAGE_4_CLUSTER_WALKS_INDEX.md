@@ -1,6 +1,8 @@
 # Stage 4 Cluster Walks — Master Index
 
-> **B898 FRESHNESS UPDATE (2026-06-18 B895-DEFER-A tranche 2 per CHECKLIST #111):** B828 banner below references "221-strategy registry"; post-B828 B874 deleted 2 strategies. **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219-strategy registry / 218 active. B722 -3 + B874 -2 reduced 224 → 219. Walks-complete status UNCHANGED — Stage 4 cluster walks across 219 registered strategies are DONE per owner B828 confirmation, with B874 deletions being walk-derived (Pattern W deterministic-duplicate verdicts).
+> **B1029 FRESHNESS UPDATE 2026-06-27:** ALL WALKS 1-5 41-of-41 RESOLVED B984-B993; walks-complete status confirmed per CLAUDE.md banner. **LIVE COUNTS as of B1010:** **220-strategy registry / 217 active / 12 EXPLORATORY / 3 DISABLED**. B722 -3 + B874 -2 + B1010 +1 brought 222 → 220. R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 (Master 1929 ops × 4y window). Cluster docs below preserved as walk-snapshots; all banners showing "PENDING" / "RUNNING" / "DEFER" status from B691-B750-era are HISTORICAL.
+>
+> **B898 FRESHNESS UPDATE (2026-06-18 B895-DEFER-A tranche 2):** B828 banner below references "221-strategy registry"; post-B828 B874 deleted 2 strategies. As of 2026-06-18 = 219 / 218 active. B722 -3 + B874 -2 reduced 224 → 219.
 >
 > **B828 STATUS BANNER (2026-06-16) — STAGE 4 WALKS DONE per owner confirmation.**
 >

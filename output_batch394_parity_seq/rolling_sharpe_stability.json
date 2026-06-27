@@ -71,14 +71,6 @@
     "windows_below_zero": 0,
     "stability_verdict": "INSUFFICIENT_DATA"
   },
-  "naked_poc_retest_long": {
-    "rolling_sharpe_mean": 0.0,
-    "rolling_sharpe_std": 0.0,
-    "rolling_sharpe_min": 0.0,
-    "rolling_sharpe_max": 0.0,
-    "windows_below_zero": 0,
-    "stability_verdict": "INSUFFICIENT_DATA"
-  },
   "pairs_mean_reversion_long": {
     "rolling_sharpe_mean": 0.0,
     "rolling_sharpe_std": 0.0,
@@ -144,6 +136,14 @@
     "stability_verdict": "INSUFFICIENT_DATA"
   },
   "smc_breaker_block_long": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "smc_order_block_bounce": {
     "rolling_sharpe_mean": 0.0,
     "rolling_sharpe_std": 0.0,
     "rolling_sharpe_min": 0.0,

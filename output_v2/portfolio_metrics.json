@@ -1,13 +1,13 @@
 {
   "starting_capital": 100000.0,
-  "n_equity_points": 1044,
-  "portfolio_total_return_pct": 34.5204,
-  "portfolio_sharpe": 0.9971,
-  "portfolio_max_drawdown_pct": -9.1621,
-  "benchmark_total_return_pct": 75.1492,
-  "alpha_annualized_pct": 2.4234,
-  "beta_to_benchmark": 0.3421,
-  "tracking_error_pct": 12.3011,
-  "information_ratio": -0.6358,
+  "n_equity_points": 130,
+  "portfolio_total_return_pct": 0.4627,
+  "portfolio_sharpe": 2.9097,
+  "portfolio_max_drawdown_pct": -0.0833,
+  "benchmark_total_return_pct": 16.4014,
+  "alpha_annualized_pct": 0.6065,
+  "beta_to_benchmark": 0.0106,
+  "tracking_error_pct": 14.4862,
+  "information_ratio": -2.1572,
   "note": "BUG-95: portfolio metrics from Portfolio.equity_curve"
 }

@@ -1,16 +1,16 @@
 {
   "proportions": {
-    "bull": 0.7555555555555555,
+    "bull": 0.75,
     "neutral": 0.0,
-    "bear": 0.24444444444444444,
+    "bear": 0.25,
     "crisis": 0.0,
     "calm": 0.0,
     "volatile": 0.0
   },
-  "n_train": 32,
+  "n_train": 31,
   "n_test": 13,
   "per_regime": {
-    "bull": 24,
+    "bull": 23,
     "bull_test": 10,
     "bull_status": "INSUFFICIENT_SAMPLE",
     "neutral": 0,

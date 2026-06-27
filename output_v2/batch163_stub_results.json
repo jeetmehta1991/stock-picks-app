@@ -109,8 +109,8 @@
   "compute_freshness_banner_DEC287": {
     "state": "WARN",
     "last_updated_display": "2026-05-13 12:00 ET",
-    "age_hours": 74.59,
-    "banner_message": "Data is 75h old; awaiting next refresh."
+    "age_hours": 877.65,
+    "banner_message": "Data is 878h old; awaiting next refresh."
   },
   "institutional_price_level_DEC352": {
     "cost_basis_delta_pct": 0.1,
@@ -148,7 +148,7 @@
     "oldest_within_window_days": null
   },
   "time_of_day_slippage_DEC227": 1.0,
-  "get_cache_size_gb_DEC227": 0.12136783357709646,
+  "get_cache_size_gb_DEC227": 0.12135449890047312,
   "cache_size_alert_level_DEC227": {
     "size_gb": 5.0,
     "pct_of_disk": 0.05,

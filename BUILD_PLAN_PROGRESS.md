@@ -1,5 +1,7 @@
 # BUILD_PLAN_PROGRESS.md
 
+> **B1029 STATUS UPDATE 2026-06-27 doc-sync:** R5 LAUNCHED on AWS i-0940a53c75d049381 (Master 1929 ops × 4y window 2022-05-05 → 2026-05-05). All Day 1 [PARTIAL] items absorbed into RESOLVED-VIA-WALK-OUTPUTS per B883 Council 10 + B984-B993 walks 1-5 closures (41 findings). Strategy count 219 → 220 (B1010 +1) / 217 active / 12 EXPLORATORY / 3 DISABLED. 39 councils 79-121 + 18 honest-finding pivots this session. No further day-by-day updates pre-R5-cube-completion; tracking continues in EXECUTION_QUEUE.md + CLAUDE.md banner + PATH §13.
+
 **Purpose:** Live tracker of `STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md` commitments vs reality. Created 2026-05-24 (Batch 311) per owner directive to prevent further drift between plan and execution.
 
 **Rule:** Every batch that closes a gap below MUST update this file in the same commit. Items move from `[MISSING]` -> `[PARTIAL]` -> `[DONE]` with evidence (file path / commit hash). No silent re-prioritization without updating this tracker.

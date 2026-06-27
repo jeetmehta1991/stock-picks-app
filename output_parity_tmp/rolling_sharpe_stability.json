@@ -1,4 +1,12 @@
 {
+  "break_retest_volume": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
   "cmf_flip": {
     "rolling_sharpe_mean": 0.0,
     "rolling_sharpe_std": 0.0,
@@ -79,14 +87,6 @@
     "windows_below_zero": 0,
     "stability_verdict": "INSUFFICIENT_DATA"
   },
-  "naked_poc_retest_long": {
-    "rolling_sharpe_mean": 0.0,
-    "rolling_sharpe_std": 0.0,
-    "rolling_sharpe_min": 0.0,
-    "rolling_sharpe_max": 0.0,
-    "windows_below_zero": 0,
-    "stability_verdict": "INSUFFICIENT_DATA"
-  },
   "pairs_mean_reversion_long": {
     "rolling_sharpe_mean": 0.0,
     "rolling_sharpe_std": 0.0,
@@ -112,6 +112,14 @@
     "stability_verdict": "INSUFFICIENT_DATA"
   },
   "pead_long_high_yoy_growth_only": {
+    "rolling_sharpe_mean": 0.0,
+    "rolling_sharpe_std": 0.0,
+    "rolling_sharpe_min": 0.0,
+    "rolling_sharpe_max": 0.0,
+    "windows_below_zero": 0,
+    "stability_verdict": "INSUFFICIENT_DATA"
+  },
+  "pivot_s1_bounce": {
     "rolling_sharpe_mean": 0.0,
     "rolling_sharpe_std": 0.0,
     "rolling_sharpe_min": 0.0,
@@ -159,7 +167,7 @@
     "windows_below_zero": 0,
     "stability_verdict": "INSUFFICIENT_DATA"
   },
-  "squeeze_breakout": {
+  "smc_inverse_fvg": {
     "rolling_sharpe_mean": 0.0,
     "rolling_sharpe_std": 0.0,
     "rolling_sharpe_min": 0.0,
@@ -176,14 +184,6 @@
     "stability_verdict": "INSUFFICIENT_DATA"
   },
   "stochrsi_oversold": {
-    "rolling_sharpe_mean": 0.0,
-    "rolling_sharpe_std": 0.0,
-    "rolling_sharpe_min": 0.0,
-    "rolling_sharpe_max": 0.0,
-    "windows_below_zero": 0,
-    "stability_verdict": "INSUFFICIENT_DATA"
-  },
-  "supertrend_macd": {
     "rolling_sharpe_mean": 0.0,
     "rolling_sharpe_std": 0.0,
     "rolling_sharpe_min": 0.0,

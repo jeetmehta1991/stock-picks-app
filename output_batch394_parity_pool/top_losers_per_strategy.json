@@ -74,25 +74,9 @@
       "entry_date": "2023-09-29",
       "exit_date": "2023-10-19",
       "regime": "bull"
-    },
-    {
-      "ticker": "AMZN",
-      "pnl_pct": -0.6846126984126985,
-      "entry_date": "2023-12-14",
-      "exit_date": "2024-01-03",
-      "regime": "bull"
     }
   ],
   "morning_star": [],
-  "naked_poc_retest_long": [
-    {
-      "ticker": "GOOGL",
-      "pnl_pct": -11.491282539682539,
-      "entry_date": "2023-10-16",
-      "exit_date": "2023-10-26",
-      "regime": "bull"
-    }
-  ],
   "pairs_mean_reversion_long": [
     {
       "ticker": "NVDA",
@@ -145,9 +129,16 @@
     },
     {
       "ticker": "GOOGL",
-      "pnl_pct": -1.8297301587301589,
+      "pnl_pct": -2.0953809523809523,
       "entry_date": "2023-11-28",
-      "exit_date": "2023-12-18",
+      "exit_date": "2024-01-05",
+      "regime": "bull"
+    },
+    {
+      "ticker": "AMZN",
+      "pnl_pct": -0.6958126984126984,
+      "entry_date": "2023-12-11",
+      "exit_date": "2024-01-05",
       "regime": "bull"
     }
   ],
@@ -210,6 +201,7 @@
     }
   ],
   "smc_breaker_block_long": [],
+  "smc_order_block_bounce": [],
   "stochrsi_overbought_short": [
     {
       "ticker": "AAPL",

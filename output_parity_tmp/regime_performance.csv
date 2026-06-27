@@ -1,9 +1,9 @@
 strategy,regime,trades,win_rate,avg_pnl,total_roi
 cmf_flip,bull,4,0.5,2.4049,9.6197
-macd_fast_crossover,bull,4,0.0,-8.1029,-32.4114
-mmsm_short,bull,5,0.0,-5.5634,-27.8172
+macd_fast_crossover,bull,5,0.0,-8.7025,-43.5124
+mmsm_short,bull,6,0.0,-5.5541,-33.3246
 pairs_mean_reversion_long,bull,6,0.5,2.0746,12.4474
 pairs_mean_reversion_short,bull,6,0.0,-5.9977,-35.9859
-po3_bullish,bull,3,0.6667,0.1925,0.5774
-stochrsi_overbought_short,bull,3,0.0,-7.3298,-21.9894
-williams_r_oversold,bull,4,0.75,1.8968,7.5871
+smc_breaker_block_long,bull,3,1.0,7.0369,21.1108
+stochrsi_overbought_short,bull,3,0.0,-8.1124,-24.3373
+williams_r_oversold,bull,3,0.6667,-0.4956,-1.4867

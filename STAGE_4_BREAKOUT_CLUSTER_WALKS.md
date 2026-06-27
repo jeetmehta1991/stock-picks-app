@@ -1,5 +1,8 @@
 # Stage 4 Breakout Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B1029 STATUS BANNER 2026-06-27 doc-sync:** ALL WALKS 1-5 41-of-41 RESOLVED B984-B993 per CLAUDE.md banner. Cluster walks across 220 strategies CLOSED (B722 -3 + B874 -2 + B1010 +1 = 220 / 217 active). R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 (Master 1929 ops x 4y window 2022-05-05 to 2026-05-05). Banners below indicating PENDING/RUNNING/DEFER status from B691-B750-era are HISTORICAL.
+
+
 > **B696 PENDING SUMMARY (2026-06-11) — what's STILL OPEN from the external reviewer's recommendations.**
 >
 > Below is the cluster-wide status of EVERY reviewer recommendation as of commit `ab5daee6c`. The pattern: **tools shipped, evidence not yet gathered, no per-strategy parameter changes made.** Per project rule *"Never change rules, filters, thresholds, or parameters without approval"*, every per-strategy fix below is owner-gated.

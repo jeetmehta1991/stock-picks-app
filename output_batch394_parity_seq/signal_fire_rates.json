@@ -14,8 +14,8 @@
       "alert": null
     },
     "insider_signal": {
-      "fired_count": 8,
-      "fire_rate": 0.186,
+      "fired_count": 9,
+      "fire_rate": 0.2093,
       "expected_min_rate": 0.05,
       "alert": null
     },
@@ -26,14 +26,14 @@
       "alert": null
     },
     "macro_score": {
-      "fired_count": 28,
-      "fire_rate": 0.6512,
+      "fired_count": 29,
+      "fire_rate": 0.6744,
       "expected_min_rate": 0.3,
       "alert": null
     },
     "sentiment_score": {
-      "fired_count": 35,
-      "fire_rate": 0.814,
+      "fired_count": 34,
+      "fire_rate": 0.7907,
       "expected_min_rate": 0.3,
       "alert": null
     }

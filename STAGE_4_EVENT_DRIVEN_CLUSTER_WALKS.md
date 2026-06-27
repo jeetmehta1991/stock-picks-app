@@ -1,5 +1,8 @@
 # Stage 4 Event-Driven Cluster Walks — Per-Strategy Deep-Dive Audit
 
+> **B1029 STATUS BANNER 2026-06-27 doc-sync:** ALL WALKS 1-5 41-of-41 RESOLVED B984-B993 per CLAUDE.md banner. Cluster walks across 220 strategies CLOSED (B722 -3 + B874 -2 + B1010 +1 = 220 / 217 active). R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 (Master 1929 ops x 4y window 2022-05-05 to 2026-05-05). Banners below indicating PENDING/RUNNING/DEFER status from B691-B750-era are HISTORICAL.
+
+
 > **B702 STATUS BANNER (2026-06-11) — ADVERSARIAL REVIEW OF EXTERNAL REVIEWER'S PROPOSAL — NOT TRUST-BLIND.** Owner directive: *"Dont trust blindly. Do another review of the suggestions and provide your own adverserial feedback against current status. Then provide an implementation plan."*. Output: [STAGE_4_EVENT_DRIVEN_CLUSTER_B702_ADVERSARIAL_REVIEW.md](STAGE_4_EVENT_DRIVEN_CLUSTER_B702_ADVERSARIAL_REVIEW.md). **Headline B702 verdicts** (source-verified against `pead.py`, `screener.py:_process_day`, `data_prefetch/polygon/financials/*.parquet`):
 >
 > - **H1 (announcement-date re-anchor)**: LARGELY REFUTED — Polygon `filing_date` is SEC EDGAR submission, immutable. Reviewer's hazard targets Finnhub-like calendars; `finnhub` NOT imported by any `backtest/signals/*.py` module.

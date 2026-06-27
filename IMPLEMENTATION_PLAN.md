@@ -1,5 +1,7 @@
 # IMPLEMENTATION_PLAN.md — Post-Batch-225 pending + backlog implementation
 
+> **B1028 R5-LAUNCH UPDATE 2026-06-27:** R5 LAUNCHED on AWS i-0940a53c75d049381 (Master 1929 ops × 4y). All 15/15 PATH §13.7 launch gates READY pre-B1028. Track post-launch state in CLAUDE.md banner + EXECUTION_QUEUE.md. 220 strategies / 217 active / 12 EXPLORATORY / 3 DISABLED. 39 councils 79-121. Memory rule: `feedback_readiness_audit_must_verify_universe_scope`.
+>
 > **B909 SUPERSEDED-BY-NOTICE (2026-06-19 per owner directive Dec-2 update in place):** This doc was authored Batch 234 (2026-05-18) for post-B225 implementation detail at T0-T7 track granularity. **Multiple supersession layers added since:**
 > - **Architecture + cost + universe + timeframe canonical table:** [STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md](STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md) (existing pointer from B240; preserved)
 > - **Phase 1B-α path canonical (B888 Council 14 + B891 DEC-611-614 + B894 standalone):** [PATH_TO_PHASE_1B_ALPHA.md](PATH_TO_PHASE_1B_ALPHA.md)

@@ -2,6 +2,8 @@
 
 # Source: per CHECKLIST #77 — canonical sources are data_prefetch/*/ filesystem state + API_ENDPOINT_INVENTORY.md row-by-row + dashboard_sprint0a/data.json runtime catalog.
 
+> **B1029 doc-sync 2026-06-27 update:** **220 registered / 217 active** (was 219 pre-B1010). B978 verified TIER 2 producer wireup (smart-money + event-driven + cross-sectional 9-of-9 `inject_*` WIRED in screener.py) per Council 78 A2-AUDIT-FIRST. Per L146 wiring-matrix rule, this is the integration-deliverable confirmation. R5 LAUNCHED 2026-06-27 B1028 on AWS i-0940a53c75d049381 (Master 1929 ops × 4y).
+
 **2026-05-15 Day 9+ Batch 178 status:** Phase 1A runs `--no-agents` (rules + smart money baseline). Agent toolkit data feeds for Phase 1B+: Technical (Polygon OHLCV ✅), Fundamentals (Polygon financials 1937 + SEC XBRL 1937 + Polygon Benzinga earnings ✅), News (Polygon news 1927 + Polygon Benzinga analyst_insights 1937 ✅), Risk (FRED 90 series + ALFRED 80 series + CFTC 73 contract-datasets ✅), Sentiment (AAII + CNN F&G + Apewisdom + StockTwits + pytrends ✅; Polygon news Phase 1B wire-up pending per L146 wiring-matrix rule). All Phase 1B data prerequisites cached. Live dashboard cross-reference: https://jeetmehta1991.github.io/stock-picks-app/dashboard_sprint0a/
 
 > **B898 FRESHNESS NOTE (2026-06-18 B895-DEFER-A tranche 2 per CHECKLIST #111):** This doc contains MAY-26-ERA strategy counts at lines 138 ("186 active strategies fire") + 230 ("186-strategy roster"). **LIVE COUNTS as of 2026-06-18 (source `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"` = 219):** 219 registered / 218 active strategies on T1a + T2 + T3 universe. Toolkit data feeds + wiring methodology unchanged.
