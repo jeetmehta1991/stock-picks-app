@@ -2035,3 +2035,193 @@ Owner had to ask "what is the universe for which r5 is being run?" and "dont we 
 **How to apply.** All Phase-4+ AWS launch scripts include `--block-device-mappings` with 50 GB gp3 (cost +$0.003/run within budget). CAV-081 documents the caveat. Future c6a.* launches must include same parameter.
 
 **Cross-references.** CAV-081, B1024 HALT incident, B1028 R5 launch (50 GB applied).
+
+---
+
+## L166 — AWS EC2 user-data 16 KB limit applies AFTER base64 encoding (B1028 R5 launch session 2026-06-27)
+
+**Rule.** AWS EC2 `user-data` is bounded at 16 KB (16,384 bytes) on the BASE64-ENCODED form. Pre-flight check before every launch: `RAW=$(wc -c < user_data.sh)` AND `B64=$(base64 -w0 user_data.sh | wc -c)`. If `RAW > 12000` OR `B64 > 16000`, externalize large constants (ticker lists, config blobs, embedded data) to S3 + use `aws s3 cp s3://... -` fetch-at-bootstrap pattern.
+
+**Why.** B1028 first launch attempt failed with `aws: [ERROR] An error occurred (InvalidParameterValue) when calling the RunInstances operation: User data is limited to 16384 bytes`. Raw user-data was 12,740 bytes (under 16 KB raw) but `base64 -w0` produced 16,988 bytes (over 16 KB encoded). Required emergency externalization: uploaded `master_ops_tickers.txt` (1929 tickers, 8682 bytes) to S3 + reduced user-data to fetch-from-S3 pattern. Final: 4,117 raw / 5,492 base64. Under limit.
+
+**Pattern.** Base64 encoding has predictable ~33% size expansion (4/3 ratio per RFC 4648). Any user-data approaching 12 KB raw is at risk. Don't trust raw size alone — verify encoded size.
+
+**Cross-references.** CHECKLIST #116, `feedback_aws_user_data_size_preflight`, B1028 R5 launch (corrected version after externalization).
+
+---
+
+## L167 — Monitor tool timing must match async-AWS / cube wall-clock; arm AT event boundary (Session B1019-B1024 2026-06-27)
+
+**Rule.** Monitor tool with default 1-hour `timeout_ms` does NOT match async-AWS event delays (5-15 min bootstrap) or cube wall-clock (3-6 hr). Arm AT the event boundary (after instance state = running OR first S3 sentinel lands), not pre-launch. For long-running cascades > 2 hr, use `persistent: true` and stop via TaskStop.
+
+**Why.** Across session B1019-B1028 the Monitor armament pattern failed multiple times:
+- B1021 armed Monitor pre-launch; expired 1 hr later before B1024 instance launched
+- B1024 retry armed Monitor; expired during 3-day pyramid run
+- R5 wait required multiple re-arms
+
+The default timeout (3600000 ms = 1 hr) was designed for small ops. Cube / AWS bootstrap operates on different time scales.
+
+**Pattern.** Three rules:
+1. Arm AT the event — wait for upstream signal (instance running OR first sentinel) BEFORE arming
+2. Match timeout to wall-clock × 1.5 buffer (4 hr cube → 6 hr Monitor)
+3. Use `persistent: true` for cascades > 2 hr; stop via TaskStop when done
+
+**Cross-references.** CHECKLIST #117, `feedback_monitor_arm_at_event_not_pre_launch`, `feedback_monitor_intermediate_counts` (B358; complementary: what-to-monitor vs when-to-arm), B1021/B1024/R5 wait sequence.
+
+---
+
+## L168 — Per-strategy lint sub-pyramid runs same-turn as Class 7 NEW_STRATEGY wire (B1010 borrow-gate omission session 2026-06-27)
+
+**Rule.** When wiring a Class 7 NEW_STRATEGY same-turn (per `feedback_wire_new_strategies_on_the_spot`), run category-specific lint sub-pyramid BEFORE end-of-turn — not just `test_unit + test_integration` baseline.
+
+**Why.** B1010 added `strat_insider_cluster_concentrated_sell_short` (Class 7 NEW SHORT mirror). Focused pyramid for ship verification ran `test_unit + test_integration + B1009 + B970 + count-pin tests` = 860 + 2 PASS. But `test_batch744_borrow_gate_lint.py::test_b744_pin6_format_report_runs_on_live_and_synthetic` was NOT in the focused subset. That test catches missing `_short_borrow_trap_active()` gates (mandatory for all pure-short strategies per B740/B741 lint). B1010 shipped without the gate. Caught 3 days later when the full 13-tier pyramid (bbtd18s8b) completed — honest-finding pivot #14, B1014 retrofit.
+
+**Pattern.** Different strategy categories have different lint pre-requisites:
+- SHORT strategies → `test_batch744_borrow_gate_lint.py`
+- Signal-consumer strategies → `test_silent_gap_pyramid.py`
+- STATE-vs-EVENT classification → relevant temporal tests
+- Class 7 NEW → relevant family-specific lints
+
+**Cross-references.** CHECKLIST #118, `feedback_per_strategy_gate_audit_at_wire_time`, `feedback_wire_new_strategies_on_the_spot`, B1014 retrofit (honest-finding pivot #14).
+
+---
+
+## L169 — Council verdict dependency verification before execute (B1026 Council 116 Option-A pivot 2026-06-27)
+
+**Rule.** When Council verdict has prerequisite (IAM perm / cache state / file presence / AMI ready / quota), verify dependency BEFORE execute. If dependency UNVERIFIABLE, document honest-finding pivot and execute fallback option.
+
+**Why.** Council 116 RECOMMENDED Option-B CASCADING for B1026 autoladder (per-phase user-data launches Phase N+1 via AWS-CLI on PASS). Implementing required `batch395-instance-role` IAM profile to have `ec2:RunInstances` permission — a dependency Claude couldn't verify in real-time without burning AWS quota. Claude correctly PIVOTED to Option-A SINGLE-LARGE-INSTANCE per simpler-is-safer reasoning (honest-finding pivot #16 documented in B1026 commit). Pattern worked correctly; codifying for future use.
+
+**Pattern.** Three-step protocol:
+1. Identify dependency list during Council brief (enumerate prerequisites explicitly)
+2. Pre-execute dependency verification (IAM dry-run / S3 ls / file check / `--dry-run` AWS commands / quota check)
+3. If UNVERIFIABLE: document honest-finding pivot per Council 76 banner-verification precedent. Pivot to fallback option with documented rationale.
+
+**Cross-references.** CHECKLIST #119, `feedback_verify_council_verdict_dependencies_pre_execute`, `feedback_audit_recommendations_against_existing_directives` (Pass 53 contradiction-detection), `feedback_council_enumerate_plus_recommend`.
+
+---
+
+## L170 — Ask before relaunching corrected version after HALT (B1027 T1a auto-relaunch session 2026-06-27)
+
+**Rule.** After HALT on owner question OR auto-detected scope-issue, do NOT auto-relaunch corrected version. Surface correction + ask explicit owner approval BEFORE re-launch. Even small re-launches ($0.10-$1.00 range) compound under L86/L95.
+
+**Why.** B1026 → B1027 sequence:
+1. B1026 launched on Master-wrong S3-ls universe (1930 tickers; pivot #17)
+2. Owner asked "what is the universe for r5?"
+3. Council 117 corrected to T1a 503
+4. Claude IMMEDIATELY launched B1027 T1a-corrected
+5. Owner replied "Dont we need r5 on full master list and not just t1a?"
+6. Claude HALTED B1027 (~$0.10 wasted)
+7. Council 119/120/121 reconciled to Master 1937 per PROJECT_PLAN
+8. B1028 finally launched on correct Master 1929
+
+Owner's first question was the verification signal; the second question would have caught Council 117's wrong T1a verdict BEFORE the $0.10 launch. Auto-relaunching skipped the verification step.
+
+**Pattern.** Post-HALT correction protocol:
+1. If HALT was triggered by owner question → surface corrected interpretation + ask explicit owner approval BEFORE re-launch
+2. If HALT was triggered by auto-detected issue → surface auto-correction + estimated cost + brief Council on corrected scope. Wait for owner ACK
+3. DO NOT auto-launch corrected version on assumption Council got it right second time. Council artifact chain CAN propagate wrong assumptions.
+
+**Cross-references.** CHECKLIST #120, `feedback_ask_before_relaunching_corrected_version`, `feedback_audit_recommendations_against_existing_directives`, L86/L95 cost discipline precedent.
+
+---
+
+## L171 — AWS infrastructure counts are operational cardinality, not project-scope authority (B1026 wrong-universe 2026-06-27)
+
+**Rule.** AWS infrastructure counts (S3 ls / cache file counts / cluster sizes / EBS volume counts) are OPERATIONAL CARDINALITY only. They are NOT project-scope authority. For scope decisions defer to PROJECT_PLAN.md + DEC-NNN + CANONICAL_FACTS.
+
+**Why.** B1026 used `aws s3 ls .../ohlcv_daily/ | wc -l` = 1930 as Master Dedup proxy. Approximated (Master 1937 ≈ S3 1930). Treated this AWS-side count as project-scope authority. Wrong. PROJECT_PLAN.md line 193 says Master 1937; S3 cache was operational artifact slightly out of sync (8 delisted M&A missing + 1 ETF extra UUP). Pattern-match-without-verification cost $1.05.
+
+**Pattern.** AWS-side counts drift from project-spec for valid reasons:
+- Cache builds happen periodically; counts age
+- Delistings remove tickers from operational caches but project-spec keeps PIT history
+- Manual additions (UUP DXY-proxy) appear in cache but not Master CSV
+- Network failures / prefetch errors create silent gaps
+
+**Cross-references.** `feedback_aws_artifact_count_not_proxy_for_project_scope`, `feedback_readiness_audit_must_verify_universe_scope` (L164 3-way reconciliation), CAV-082 in LIMITATIONS_CAVEATS_ASSUMPTIONS.md, honest-finding pivot #17.
+
+---
+
+## L172 — AWS observability requires explicit setup (CloudWatch alarms B1024-B1028 session 2026-06-27)
+
+**Rule.** AWS observability (CloudWatch billing alarms, instance lifetime tags, S3 sentinel-based monitoring) requires EXPLICIT setup steps per launch. None of it is auto-included. Bake observability into the launch protocol.
+
+**Why.** Across B1024-B1028 session multiple observability components needed explicit setup:
+- `$5 / $10 / $20` CloudWatch billing alarms (3 separate `aws cloudwatch put-metric-alarm` calls)
+- `AutoTerminateAt=launch+10hr` instance lifetime tag (per-launch tag-spec)
+- S3 sentinel-based phase tracking (PHASE_N_RUNNING/PASS/FAIL in user-data)
+- Background poll loop syncing S3 log to local mirror
+- Claude Monitor tool armed on local mirror
+
+Without these, the B1024 disk-fail would not have been detected for hours (CloudWatch alarm at $5 detected before $1.41 budget breach). The B1026 wrong-universe HALT was only possible because S3 sentinels existed and Claude polled them.
+
+**Pattern.** Pre-launch observability checklist (every Phase-4+ launch):
+1. CloudWatch billing alarms (3 thresholds: $5/$10/$20)
+2. Instance lifetime tag (AutoTerminateAt = launch + max-runtime + buffer)
+3. User-data writes S3 sentinels at each phase boundary
+4. Background process syncs S3 → local for Claude visibility
+5. Claude Monitor armed on local mirror with appropriate timeout (per L167)
+
+**Cross-references.** Council 110 Option-AWS-5 (B1020 audit), Council 114 Option-7 (B1024 pre-flight), B1019 Monitor enhancement package, MONITORING_FRAMEWORK.md.
+
+---
+
+## L173 — Do NOT launch multiple full pyramid runs simultaneously (B1014-B1016 triple-parallel 2026-06-27)
+
+**Rule.** Do NOT have multiple full pyramid runs (`pytest backtest/tests/`) executing simultaneously. Test resource contention (tmp_path / yfinance cache / Polygon prefetch dirs / network sockets) produces transient failures that mask real findings.
+
+**Why.** B1014-B1016 sequence accidentally had 3 simultaneous 3-day pyramid runs due to background-launch + retry + timeout-re-launch pattern. Results:
+- bbtd18s8b: 17 failed + 2 ERRORS
+- bzmfr9ybo: 22 failed + 0 ERRORS
+- bzx3s46au: 21 failed + **88 ERRORS** (yfinance/fetch_info_bulk family)
+
+ALL failures verified transient via standalone retries. Real B1010 borrow-gate finding (honest-finding pivot #14) was nearly obscured.
+
+**Pattern.** Before launching full pyramid:
+1. Check for existing pyramid processes: `ps -ef | grep pytest | grep -v grep`
+2. If background-launch with notification, use TaskOutput / pid lookup before re-launching on timeout (don't re-launch blindly)
+3. Resource-contention signatures: test_batch301* / test_batch296_fire_rate / test_silent_gap test_batch330 / test_unit test_bug_077 — if multiple appear, suspect parallel contention
+4. Verify by standalone retry: if standalone PASS → environmental; if standalone FAIL → real
+
+**Cross-references.** CHECKLIST applies + `feedback_no_parallel_pyramid_runs`, `feedback_pyramid_full_13_tiers_mandatory`, `feedback_check_existing_pids_before_long_background_launch`, B1014-B1016 commits.
+
+---
+
+## L174 — Pre-action scope estimation must be verified, not assumed (Council 122 doc-sync 2026-06-27)
+
+**Rule.** When Council estimates scope for an action (doc count, ticker count, batch count, cost, time), verify the estimate against ground truth BEFORE planning execution. Estimation drift is real.
+
+**Why.** Council 122 estimated 196 non-archive .md docs to sweep. Actual count after correct exclusion (.venv/.claude/archive/.archive/vendored): 113 docs. Council had over-estimated by 73% based on initial `find . -name "*.md"` without proper exclusion. Result: Council 122 defensively chose Option-7 HYBRID (Tier 1+2+3 + inventory) when Option-D (HYBRID-COMPREHENSIVE) would have been viable at the true 113-doc scope.
+
+The over-estimation did NOT cause execution failure (Option-7 worked) but constrained the recommendation space. Counter-example to over-confidence-in-estimation pattern.
+
+**Pattern.** Pre-Council estimation verification:
+1. Run the ground-truth query (`find` with proper exclusions, `wc -l`, `aws ec2 describe-*`, etc.) BEFORE briefing Council
+2. Include verified count in Council brief, not estimated count
+3. If estimate is unverifiable, document the uncertainty range in the brief
+
+**Cross-references.** Council 122 (B1029 doc-sync briefing), L86/L95 cost discipline (over-estimation is opportunity cost too), `feedback_audit_recommendations_against_existing_directives` (verify before recommending).
+
+---
+
+## L175 — Positive patterns that held under stress B979-B1030 session (49 batches; preserve for future reference)
+
+**Rule.** When session retrospective surfaces what FAILED, also surface what WORKED so the pattern is preserved. Counter-balances the negative-finding focus that retrospectives tend toward.
+
+**Why.** Session B979-B1030 (50 batches + 41 councils + 18 honest-finding pivots) had real failures (L164-L173 above) but also had patterns that worked correctly under stress:
+
+**P-1 STOP-S3 HALT-CRITICAL fired correctly on every wrong-scope launch** — saved $1.41 from becoming $20+ via instant termination. CHECKLIST #114 STOP CONDITIONS proved effective.
+
+**P-2 L86/L95 cost discipline preserved across all batches** — sunk cost stayed at $1.41 << $5 alarm << $12 cap << $150 historical precedent. The mandatory cost-cap pattern with CloudWatch alarms is the right shape.
+
+**P-3 Council enumerate+recommend pattern (Council 99/103/112/121) worked perfectly** — under standing-approval-window directives, the enumerate-then-recommend pattern (per `feedback_council_enumerate_plus_recommend`) consistently produced honest verdicts.
+
+**P-4 `feedback_audit_recommendations_against_existing_directives` properly enforced** — blanket "Approve all" and "Proceed" directives consistently DID NOT lift explicit R5-gate (7x reinforcement maintained). Pattern recognition for ambiguous-vs-explicit directives held.
+
+**P-5 Owner caught universe-scope drift via plain question** ("what is the universe for r5?") — even when Claude couldn't catch the Council artifact chain T1a groupthink (M-1/M-3 above), owner's question surfaced it. Owner-as-final-verification pattern (per CLAUDE.md HARD RULE "ALL decisions need explicit owner approval") functioned.
+
+**P-6 50% reduction in AWS estimate via U3 cache size check** — Council 110 audit found 3 GB cache vs Council 109 estimate of 50-200 GB. Verified-before-recommend (per L174) saved 50% of estimated cost. The verification pattern works when applied.
+
+**Cross-references.** All 6 patterns above were instrumental in surfacing the failures captured as L164-L173 and the 9 new memory rules saved this session. Without these patterns the session would have lost much more than $1.41. Preserve discipline.
+
+---

@@ -1855,3 +1855,96 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Recovery protocol when miss detected by owner:** the FIRST council after the lapse must (a) acknowledge format failure, (b) re-issue prior council with proper enumerate+recommend format, (c) codify rule (this entry), (d) update LEARNINGS if new meta-pattern surfaced. B969 applies this protocol to Council 69 -> Council 70 -> Council 71 chain.
 
      **Edge case -- 5+ option search space:** when enumeration would be unwieldy (10+ options), council MAY group into 3-4 strategic clusters with one representative per cluster, then recommend the cluster-winner. Document the clustering in the enumeration section so owner sees the compression rationale.
+
+116. **HARD RULE -- AWS EC2 user-data 16KB limit applies AFTER base64 encoding.** (B1028 R5 launch session 2026-06-27; Council 124 Tier 1.)
+
+     **Pre-flight check BEFORE every AWS EC2 launch:**
+     ```bash
+     RAW=$(wc -c < user_data.sh)
+     B64=$(base64 -w0 user_data.sh | wc -c)
+     ```
+     If `RAW > 12000` OR `B64 > 16000`: STOP. Externalize large constants (ticker lists, config blobs, embedded data) to S3 + use `aws s3 cp s3://... -` fetch-at-bootstrap pattern in user-data.
+
+     **Why HARD rule:** B1028 first attempt failed with `InvalidParameterValue: User data is limited to 16384 bytes`. Raw was 12,740 bytes (under 16 KB raw) but `base64 -w0` produced 16,988 bytes (over 16 KB encoded). Required emergency externalization mid-launch. Base64 expansion is ~33% per RFC 4648; any user-data approaching 12 KB raw is at risk.
+
+     **Externalization pattern (proven B1028):** Upload large data to S3 (e.g., `s3://bucket/run-id/master_ops_tickers.txt`) BEFORE launch. User-data fetches with `aws s3 cp s3://${BUCKET}/${RUN_ID}/master_ops_tickers.txt /tmp/master_ops_tickers.txt --quiet`. Final B1028 raw = 4,117 bytes / base64 = 5,492 bytes. Under all limits.
+
+     **Cross-references.** L166, `feedback_aws_user_data_size_preflight`, B1028 R5 launch (corrected version).
+
+117. **HARD RULE -- Monitor tool timing must match async-AWS / cube wall-clock; arm AT event boundary not pre-launch.** (B1019-B1024 session 2026-06-27; Council 124 Tier 1.)
+
+     **Three rules:**
+
+     1. **Arm AT the event:** wait until you have confirmation upstream event is in flight (instance state = running OR first S3 sentinel lands) BEFORE arming Monitor. Premature arming wastes timeout window on bootstrap delay.
+
+     2. **Match timeout to wall-clock x 1.5 buffer:** if cube run estimate is 4 hr, Monitor `timeout_ms` >= 6 hr (21,600,000 ms). The default 1hr (3,600,000 ms) only matches small ops.
+
+     3. **Use `persistent: true` for long-running cascades:** for cube runs > 2hr, set `persistent: true` (session-length watch) instead of `timeout_ms`. Stop via TaskStop when work completes.
+
+     **Why HARD rule:** Across session B1019-B1028 multiple Monitor armaments failed: B1021 pre-launch (expired 1hr later before B1024 instance launched), B1024 retry (expired during 3-day pyramid), R5 wait (multiple re-arms). The default timeout was designed for small ops; AWS bootstrap (5-15 min) + cube wall-clock (3-6 hr) operate on different time scales.
+
+     **Cross-references.** L167, `feedback_monitor_arm_at_event_not_pre_launch`, `feedback_monitor_intermediate_counts` (B358 complementary).
+
+118. **HARD RULE -- Per-strategy lint sub-pyramid runs same-turn as Class 7 NEW_STRATEGY wire.** (B1010 borrow-gate omission session 2026-06-27; Council 124 Tier 1.)
+
+     When wiring a Class 7 NEW_STRATEGY same-turn (per `feedback_wire_new_strategies_on_the_spot`), run category-specific lint sub-pyramid BEFORE end-of-turn — not just `test_unit + test_integration` baseline.
+
+     **Category-specific lint tests (required additions beyond baseline):**
+     - SHORT strategies → `test_batch744_borrow_gate_lint.py` (catches missing `_short_borrow_trap_active()` gates)
+     - Signal-consumer strategies → `test_silent_gap_pyramid.py` (catches signal-orphan + missing-producer)
+     - STATE-vs-EVENT classification → relevant temporal coverage tests
+     - Class 7 NEW (any) → relevant family-specific lints
+
+     **Pre-commit verification:** Before commit, confirm category-specific lint test was IN the focused subset. If not → run it standalone → fix any drift BEFORE commit.
+
+     **Why HARD rule:** B1010 added `strat_insider_cluster_concentrated_sell_short` (Class 7 NEW SHORT). Focused pyramid for ship verification (test_unit + test_integration + B1009 + B970 + count-pin) was GREEN but did NOT include `test_batch744_borrow_gate_lint.py`. B1010 shipped without the `_short_borrow_trap_active()` gate. Caught 3 days later (B1014 honest-finding pivot #14) when full 13-tier pyramid completed.
+
+     **Cross-references.** L168, `feedback_per_strategy_gate_audit_at_wire_time`, `feedback_wire_new_strategies_on_the_spot`, B1014 retrofit.
+
+119. **HARD RULE -- Verify Council verdict dependencies BEFORE execute; document honest-finding pivot if uncertain.** (B1026 Council 116 Option-A pivot session 2026-06-27; Council 124 Tier 1.)
+
+     When Council verdict has prerequisite (IAM perm / cache state / file presence / AMI ready / quota), verify dependency BEFORE execute. If dependency UNVERIFIABLE, document honest-finding pivot and execute fallback option.
+
+     **Three-step protocol:**
+
+     1. **Identify dependency list during Council brief:** Council briefing must enumerate prerequisites explicitly (IAM perms / cache state / AMI availability / quota / file presence / external service status).
+
+     2. **Pre-execute dependency verification:**
+        - IAM: `aws iam get-role-policy ...` OR `--dry-run` test of intended action
+        - Cache: `aws s3 ls` / `wc -l` / file existence check
+        - AMI: `aws ec2 describe-images` for state=available
+        - Quota: `aws service-quotas get-service-quota` OR equivalent
+
+     3. **If dependency UNVERIFIABLE:** document honest-finding pivot per Council 76 banner-verification precedent. Pivot to fallback option with documented rationale. Do NOT blindly execute against unknown dependency state.
+
+     **Why HARD rule:** Council 116 RECOMMENDED Option-B CASCADING for B1026. Required `batch395-instance-role` IAM to have `ec2:RunInstances` perm — unverifiable in real-time without burning AWS quota. Claude PIVOTED to Option-A SINGLE-LARGE-INSTANCE per simpler-is-safer reasoning (honest-finding pivot #16 in B1026 commit). Pattern worked; codifying for future use.
+
+     **Cross-references.** L169, `feedback_verify_council_verdict_dependencies_pre_execute`, `feedback_audit_recommendations_against_existing_directives`, Council 76 banner-verification precedent.
+
+120. **HARD RULE -- Ask before relaunching corrected version after HALT.** (B1027 T1a auto-relaunch session 2026-06-27; Council 124 Tier 1.)
+
+     After HALT triggered by owner question OR auto-detected scope-issue, do NOT auto-relaunch corrected version. Surface correction + ask explicit owner approval BEFORE re-launch. Even small re-launches ($0.10-$1.00 range) compound under L86/L95.
+
+     **Post-HALT correction protocol:**
+
+     1. **If HALT was triggered by owner question:** surface corrected interpretation + ask explicit owner approval BEFORE re-launch. Owner question is the verification signal — honor it.
+
+     2. **If HALT was triggered by auto-detected issue:** surface auto-correction + estimated cost + brief Council on corrected scope. Wait for owner ACK before re-launch.
+
+     3. **DO NOT auto-launch corrected version on assumption Council got it right second time.** Council artifact chain CAN propagate wrong assumptions (per L164 + #109).
+
+     4. **Cost-discipline rationale:** Even small re-launches compound. B1024 + B1026 + B1027 = $1.41 cumulative sunk — all auto-relaunched after partial corrections without owner ACK. Single owner-confirmation step would have saved $0.10 - $1.05.
+
+     **Why HARD rule:** B1026 → B1027 sequence:
+     - B1026 launched on Master-wrong S3-ls universe (pivot #17)
+     - Owner asked "what is the universe for r5?"
+     - Council 117 corrected to T1a 503
+     - Claude IMMEDIATELY launched B1027 T1a-corrected
+     - Owner replied "Dont we need r5 on full master list?"
+     - Claude HALTED B1027 (~$0.10 wasted)
+     - Council 119/120/121 reconciled to Master 1937 per PROJECT_PLAN
+     - B1028 finally launched correctly
+
+     Owner's first question was the verification signal; the second question caught Council 117's wrong T1a verdict BEFORE the $0.10 launch.
+
+     **Cross-references.** L170, `feedback_ask_before_relaunching_corrected_version`, `feedback_audit_recommendations_against_existing_directives`, L86/L95 cost discipline precedent.
