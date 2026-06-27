@@ -1,0 +1,82 @@
+{
+  "comment": "Pre-launch evidence artifact per CHECKLIST #126 + Council 143 Option-4. Persisted BEFORE aws ec2 run-instances per feedback_designed_vs_verified_requires_evidence_artifact + #127 self-application.",
+  "launch_batch": "B1048",
+  "run_id": "r5_full_20260627_191205",
+  "bucket": "stock-picks-batch395-jm-7421",
+  "user_data_s3": "s3://stock-picks-batch395-jm-7421/r5_full_20260627_191205/user-data.sh",
+  "user_data_local": "/tmp/r5_full_20260627_191205_bootstrap.sh",
+  "user_data_size_raw_bytes": 17215,
+  "user_data_size_base64_bytes": 22956,
+  "user_data_externalized": true,
+  "bootstrap_loader_size_raw_bytes": 829,
+  "bootstrap_loader_size_base64_bytes": 1108,
+  "ami_id": "ami-08f44e8eca9095668",
+  "instance_type": "c6a.16xlarge",
+  "spot_ceiling": "1.50",
+  "iam_instance_profile": "batch395-instance-role",
+  "az_failover_order": ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"],
+  "az_subnets": {
+    "us-east-1a": "subnet-06ac2ee437b17a641",
+    "us-east-1b": "subnet-0301c630e4693bae6",
+    "us-east-1c": "subnet-082635ccb7752b1c1",
+    "us-east-1d": "subnet-0941615be21e2e7af",
+    "us-east-1e": "subnet-05ce84d50e8ddfa17",
+    "us-east-1f": "subnet-0c24265a68a460ce7"
+  },
+  "pre_launch_checklist_compliance": {
+    "checklist_25": "owner explicit Launch phase D directive",
+    "checklist_45": "pre-flight visible",
+    "checklist_110": "4 per-turn gates",
+    "checklist_115": "Council 143 enumerate+recommend Option-3+4",
+    "checklist_116": "user-data 22956 base64 > 16384 -> externalized to S3 + 1108-byte bootstrap loader",
+    "checklist_117": "polling arms AT aws ec2 run-instances event",
+    "checklist_121": "IAM SSM verified",
+    "checklist_122": "every paired with verification",
+    "checklist_126": "this file IS the pre-launch evidence artifact",
+    "checklist_127": "Phase C v2.5b PASS evidence persisted (phase_c_v2_5b_smoke_pass_2026_06_28.txt) gates this launch",
+    "feedback_ask_before_relaunching_corrected_version": "owner explicit Launch phase D this turn"
+  },
+  "phase_ladder_config": {
+    "phase_1": {"tickers": "NVDA", "max_min": 120, "expected_wall_clock_min": "30-90"},
+    "phase_2": {"tickers": "NVDA,AAPL,MSFT,GOOGL,META,XLF,UUP,COIN,SOFI,IONQ", "max_min": 180, "expected_wall_clock_min": "60-150"},
+    "phase_3": {"ticker_count_expected": 50, "max_min": 240, "expected_wall_clock_min": "90-210"},
+    "phase_4_r5": {"ticker_count_expected": 1929, "max_min": 480, "expected_wall_clock_min": "84-168 (Sub-C pool-init-dominates est)"}
+  },
+  "cumulative_max_min_cap": 17,
+  "expected_total_wall_clock_hr": "5-12",
+  "expected_total_cost_usd": "7-15",
+  "structural_fixes_validated_pre_launch": [
+    "B1039 AWS install fix (SMARTMONEYCONCEPTS_STATUS=1)",
+    "B1041 SMC_PHASE=PRODUCTION (no ModuleNotFoundError)",
+    "B1042 Layer 1 engine_state.json emit (B1043 F-01 schema match)",
+    "B1042 Layer 2 B1019 monitor wrap (PHASE_smoke_B1019_PID sentinel)",
+    "B1043 9 BLOCKERS (F-01 to F-09 all engine-armed via v2.5b PASS)",
+    "B1045 HoldoutUnlock fix (engine ran with holdout window)",
+    "B1046 9 WARN fixes (F-10 to F-43)",
+    "B1046 setsid + kill -15 -PID process-group SIGTERM (F-24)",
+    "B1046 guarded_kill helper (F-21)",
+    "B1046 nohup + disown SIGHUP-safe watcher (F-34)",
+    "B1044 S3-externalization fallback (CHECKLIST #116 fix)",
+    "Producer-consumer registry 42 rows + 52 schema-contract tests (CHECKLIST #126 enforcement)"
+  ],
+  "polling_spec": {
+    "interval_minutes": 5,
+    "watches": ["PHASE_1_PASS", "PHASE_1_FAIL", "PHASE_2_PASS", "PHASE_2_FAIL", "PHASE_3_PASS", "PHASE_3_FAIL", "PHASE_4_PASS", "PHASE_4_FAIL", "PHASE_*_B1019_HALT", "PHASE_*_TIMEOUT_HALT", "AUTOLADDER_COMPLETE", "B1019_PREFLIGHT_FAIL"],
+    "task_notification_on": "each phase boundary OR HALT detection OR AUTOLADDER_COMPLETE OR 17-hr cap"
+  },
+  "council_lineage": [
+    "Council 110/119/121 R5 scope approved",
+    "Council 138 Step C-E gating (Phase C smoke required)",
+    "Council 139 Option-8 HYBRID structural fix",
+    "Council 140 Option-5 PARALLEL Phase 2 + WARN disposition",
+    "Council 141 Option-6 9 WARN + orphan + Phase D doc + smoke launch",
+    "Council 142 retrospective engine-armed audit (B1047 verdict 13/16 + 2 caveat + 1 RESOLVED)",
+    "Council 143 LAUNCH-NOW Option-3+4 (this batch)"
+  ],
+  "honest_caveats": [
+    "S1 DEC-505 walk-forward proves SMC primitives not engine end-to-end (Council 142 verdict; CAVEAT-NOT-BLOCKER)",
+    "S2 18/18 PIT-CLEAN H2 hazard masked only by engine boundary slicing (Council 142 verdict; CAVEAT-NOT-BLOCKER)",
+    "Sub-C timing extrapolation upper-bound is 130 hr worst-case linear; expected 5-12 hr per pool-init-dominates model; if exceeds MAX_MIN, phase_watchdog SIGTERMs + B1043 F-06 SIGTERM handler flushes checkpoint",
+    "Spot interruption probability ~2%; falls back to retry"
+  ]
+}
