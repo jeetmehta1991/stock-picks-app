@@ -180,30 +180,16 @@ run_phase() {
     aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_RUNNING s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_RUNNING --quiet
     mkdir -p \${PHASE_DIR}
 
-    # B1043 Council 138 F-02 fix: capture ENGINE PID (not tee pipe PID).
-    # Previous code: `python ... 2>&1 | tee engine.log &; ENGINE_PID=$!`
-    # captured tee PID, leaving engine orphaned. Now use process substitution
-    # so engine is foreground in the &-spawned subshell + $! correctly
-    # references the python interpreter.
-    # Source: B1043 Sub-A adversarial review F-02 BLOCK finding.
+    # B1043 F-02 + F-06: process substitution captures engine PID (not tee).
     set +e
-    # ENGINE_OUTPUT_DIR exported for SIGTERM handler emergency-flush path
-    # (B1043 F-06 fix in backtest/run_phase1a.py).
     export ENGINE_OUTPUT_DIR="\${PHASE_DIR}"
     ( exec python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --output-dir \${PHASE_DIR} --screen-pool-workers 60 > \${PHASE_DIR}/engine.log 2>&1 ) &
     ENGINE_PID=\$!
     phase_watchdog \${PHASE_NUM} \${MAX_MIN} \$ENGINE_PID &
     WATCHDOG_PID=\$!
 
-    # B1042 (2026-06-28) Council 136 Option-7 Layer 2 + B1043 Council 138 F-09
-    # B1019 monitor wrap.
-    # Source: feedback_monitor_design_vs_operational_gap (CHECKLIST #121)
-    # B1043 F-09 fix: monitor enabled in SMOKE too (not just full mode);
-    # catches schema bugs at \$0.49 not \$2-5 + 7-hr Phase D commit.
-    # B1043 F-03 fix: corrected baseline path
-    #   (fire_count_measured_b660_full_universe.json not b660_fire_count_*).
-    # B1043 F-04 fix: monitor reads .csv via Pandas auto-dispatch (its read
-    # path handles both via extension once corrected upstream).
+    # B1042 Layer 2 + B1043 F-03/F-04/F-09: B1019 monitor wrap with corrected
+    # baseline path + csv/parquet dispatch + active in smoke too.
     python scripts/b1019_phase_1_runtime_monitor.py \\
         --engine-state \${PHASE_DIR}/engine_state.json \\
         --trade-log \${PHASE_DIR}/trade_log_checkpoint.csv \\
@@ -276,10 +262,7 @@ TICKERS_PHASE_3=\$(python -c "ts='\${MASTER_TICKERS}'.split(','); n=len(ts); ste
 START_DATE="2022-05-05"
 END_DATE="2026-05-05"
 
-# B1043 Council 138 F-07 fix: invoke preflight before Phase 1 launch.
-# Source: Sub-A adversarial review found preflight script existed but
-# was NEVER invoked (orphan). Per CHECKLIST #68 smoke->demo->full +
-# feedback_monitor_design_vs_operational_gap.
+# B1043 F-07: invoke preflight before Phase 1 (was orphan script).
 echo "=== B1019 PREFLIGHT: Phase 1 coverage check ==="
 python scripts/b1019_a5_phase_1_preflight_coverage_check.py \\
     --ticker NVDA --start \${START_DATE} --end \${END_DATE} \\
@@ -292,19 +275,8 @@ python scripts/b1019_a5_phase_1_preflight_coverage_check.py \\
 echo "B1019_PREFLIGHT_PASS \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/B1019_PREFLIGHT_PASS
 aws s3 cp /tmp/sentinels/B1019_PREFLIGHT_PASS s3://\${BUCKET}/\${RUN_ID}/B1019_PREFLIGHT_PASS --quiet
 
-# B1043 Council 138 Sub-C MAX_MIN adjustment per timing analysis
-# (output_audit/b1043_phase_d_timing_analysis_2026_06_28.md):
-# Phase C v2 smoke = NVDA x 22 days x 219 strategies = 10 min engine cube
-# Linear extrapolation = NVDA x 1006 days (4y) = up to 7.6 hr expected runtime
-# Sub-C RECOMMEND raise Phase 4 MAX_MIN to 360 OR drop engine --max-run-hours
-#   to 3.5 so engine checkpoint flush PRE-EMPTS shell kill -9 silent loss.
-# B1043 F-06 SIGTERM handler in run_phase1a.py covers Sub-C kill -9 issue;
-# raising MAX_MINs to honest extrapolation upper-bound per per-phase scale.
-# Phase 1 NVDA: 30 -> 120 min (4x; 1006/22 * 10 min = 457 min worst case)
-# Phase 2 10t:  60 -> 180 min
-# Phase 3 50t:  90 -> 240 min
-# Phase 4 1929: 240 -> 480 min (8 hr; matches Sub-C bands worst-case)
-# Cumulative shell cap: 7 hr -> ~17 hr (large but honest per Sub-C)
+# B1043 Sub-C: MAX_MIN raised per timing extrapolation (Phase 1 30->120;
+# Phase 2 60->180; Phase 3 90->240; Phase 4 240->480; cumulative 7hr->17hr).
 run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 120 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 180 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 240 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
@@ -312,9 +284,7 @@ run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 4
 
 kill \$SYNC_PID 2>/dev/null || true
 
-# B1043 Council 138 F-08 fix: invoke post-run analyzer after Phase 4.
-# Source: Sub-A adversarial review found post-run analyzer orphan.
-# Per feedback_monitor_design_vs_operational_gap.
+# B1043 F-08: invoke post-run analyzer (was orphan script).
 echo "=== B1019 POST-RUN: Phase 4 analyzer ==="
 PHASE_4_TRADE_LOG="output_phase_4_r5/trade_log.parquet"
 [ -f "\${PHASE_4_TRADE_LOG}" ] || PHASE_4_TRADE_LOG="output_phase_4_r5/trade_log.csv"
@@ -349,8 +319,30 @@ RAW_SIZE=$(wc -c < "$USER_DATA_FILE")
 B64_SIZE=$(base64 -w0 "$USER_DATA_FILE" | wc -c)
 echo "  user-data raw: $RAW_SIZE bytes; base64: $B64_SIZE bytes (limit 16384)"
 if [ "$B64_SIZE" -gt 16000 ]; then
-    echo "FAIL: user-data exceeds 16KB base64 limit"
-    exit 1
+    # B1045 (2026-06-28) Council 140 + feedback_aws_user_data_size_preflight:
+    # externalize full user-data to S3 + use thin bootstrap loader (~500 bytes).
+    echo "  user-data exceeds 16KB base64 limit -- externalizing to S3"
+    USER_DATA_S3="s3://${BUCKET_NAME}/${RUN_ID}/user-data.sh"
+    aws s3 cp "$USER_DATA_FILE" "$USER_DATA_S3" --quiet
+    BOOTSTRAP_FILE="/tmp/${RUN_ID}_bootstrap.sh"
+    cat > "$BOOTSTRAP_FILE" <<BOOTSTRAP_EOF
+#!/bin/bash
+set -uxo pipefail
+exec > >(tee /var/log/r5_v2_bootstrap_loader.log) 2>&1
+echo "BOOTSTRAP_LOADER $(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/BOOTSTRAP_LOADER
+aws s3 cp /tmp/BOOTSTRAP_LOADER s3://${BUCKET_NAME}/${RUN_ID}/BOOTSTRAP_LOADER --quiet
+aws s3 cp ${USER_DATA_S3} /tmp/user_data.sh --quiet
+chmod +x /tmp/user_data.sh
+bash /tmp/user_data.sh
+BOOTSTRAP_EOF
+    USER_DATA_FILE="$BOOTSTRAP_FILE"
+    BOOT_RAW=$(wc -c < "$USER_DATA_FILE")
+    BOOT_B64=$(base64 -w0 "$USER_DATA_FILE" | wc -c)
+    echo "  bootstrap loader raw: $BOOT_RAW; base64: $BOOT_B64"
+    if [ "$BOOT_B64" -gt 16000 ]; then
+        echo "FAIL: bootstrap loader still exceeds 16KB; manual intervention needed"
+        exit 1
+    fi
 fi
 
 echo ""

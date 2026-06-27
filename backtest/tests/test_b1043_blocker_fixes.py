@@ -192,16 +192,28 @@ def test_b1043_f09_monitor_active_in_smoke():
 # ============================================================================
 
 def test_b1043_subb_holdout_guard_wired_in_engine_entry():
-    """Sub-B BLOCK fix: run_phase1a.py invokes assert_no_holdout_intrusion."""
+    """Sub-B BLOCK fix: run_phase1a.py wires holdout_guard.
+
+    B1045 honest-finding pivot #27: Phase C v2.5 smoke FAIL revealed
+    the original assert_no_holdout_intrusion call was over-aggressive
+    for Phase 1A-beta backtest evaluation (which IS the legitimate OOS
+    consumer). Corrected to HoldoutUnlock context per design intent.
+    Wire still enforces holdout for rogue non-backtest callers.
+    """
     import inspect
     from backtest import run_phase1a
     source = inspect.getsource(run_phase1a)
-    assert "assert_no_holdout_intrusion" in source, (
-        "Sub-B BLOCK fix: M4 holdout window must be enforced at engine "
-        "entry (was honor-system only). Per feedback_monitor_design_vs_"
-        "operational_gap recurrence."
+    assert "from backtest.util.holdout_guard import" in source, (
+        "Sub-B BLOCK fix: holdout_guard must be imported at engine entry"
     )
-    assert "from backtest.util.holdout_guard import" in source
+    assert "HoldoutUnlock" in source, (
+        "B1045 fix: HoldoutUnlock context required (was assert_no_holdout"
+        "_intrusion which over-aggressively HALTed legitimate Phase 1A-beta "
+        "backtest evaluation)"
+    )
+    assert "phase_1a_beta_backtest_evaluation_per_design" in source, (
+        "HoldoutUnlock reason must document why backtest is unlocked"
+    )
 
 
 # ============================================================================

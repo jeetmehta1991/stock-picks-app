@@ -2091,3 +2091,31 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Registry mandate.** Every producer-consumer pair (engine emits artifact X, consumer reads artifact X) MUST be in `docs/PRODUCER_CONSUMER_PAIRS.md` with schema-contract test in pyramid. Schema drift = pyramid fail = silent miss caught at test-time NOT runtime. The registry is the SINGLE SOURCE OF TRUTH; both sides reference it.
 
      **Cross-references.** `feedback_designed_vs_verified_requires_evidence_artifact`, `feedback_monitor_design_vs_operational_gap` (codified bug class), `feedback_silent_failure_pairing_rule` (paired verification pattern), B1043 9 BLOCKERS catalog + Council 137 + 138 + 139 verdict.
+
+127. **HARD RULE -- AWS-SMOKE-MANDATORY-GATE-BEFORE-FULL-CUBE-AFTER-MONITOR-WRAPPER-INTEGRATION-CHANGE.** (Council 140 Option-5 sub-agent C deliverable 2026-06-28; Phase 2 mandate from Council 139; institutionalizes Phase C v2.5 smoke-before-scale pattern as standing rule.)
+
+     Any change to monitor / wrapper / integration code (the producer-consumer boundary) REQUIRES an AWS smoke run on actual EC2 with sentinel log BEFORE the change is considered SHIPPED + before any full-scale cube run depends on it.
+
+     **Why HARD rule:** owner should never have to demand "smoke before scale" again. B1024-B1027 HALT-chain sunk $1.41 because integration code was promoted SHIPPED on local-pyramid evidence alone; B1028 added a further $1.20-2.70 spot burn on the same class of failure. Cost arithmetic: ~$0.49 per smoke (12 min wall-clock + auto-terminate) is the insurance premium vs $1.41 sunk + $2-5 Phase D silent-failure recurrence risk. Local pyramid catches in-process correctness; only real EC2 catches cloud-init / IAM / S3 round-trip / pip-resolve / wrapper-PID semantics.
+
+     **When the rule fires (smoke MANDATORY):**
+     - **Producer-side change**: `backtest/engine/backtest.py` emit cadence/schema, `backtest/results/writer.py` output format, `backtest/signals/signal_loader.py` inject function signature, any new S3 sentinel emission point
+     - **Consumer-side change**: monitor reader (`scripts/b1019_phase_1_runtime_monitor*`), schema validator, dashboard parser, any S3 sentinel consumer
+     - **Wrapper change**: launch script PID capture, watchdog logic, monitor wrap, `nohup`/`setsid`/`disown` lifecycle, user-data inline assembly
+     - **Integration change**: new producer-consumer pair added to `docs/PRODUCER_CONSUMER_PAIRS.md`; any new schema-contract test inserted in the pyramid
+
+     **When the rule does NOT fire (exempt):**
+     - Pure unit test additions (no producer/consumer source code touched)
+     - Pure doc / registry / markdown updates (CLAUDE.md, AUDIT.md, LEARNINGS.md, PROJECT_PLAN.md narrative-only changes)
+     - Bug fixes scoped to existing tested call-paths already covered by pyramid (e.g., off-by-one inside a function whose schema-contract test PASSES)
+
+     **Evidence artifact format (per #126 acceptable-artifact tier 2):**
+     - S3 sentinel directory `s3://<bucket>/<RUN_ID>/` containing `PHASE_smoke_PASS` sentinel
+     - Linked in commit message body OR EXECUTION_QUEUE row, OR both
+     - Sentinel must include: RUN_ID, instance-id, wall-clock, engine.log tail proving wrapper PID captured + monitor emitted at least one heartbeat + producer wrote at least one consumer-readable artifact
+
+     **Failure mode if rule violated:** 3 recurrences of design-vs-armed in 24hr already on record (B1028 + Council 139 sub-agent polling + B1042 schema mismatch). Each recurrence costs owner's time + AWS spot burn + sunk-cost emotional load + erodes trust in CHECKLIST gates themselves. Per `feedback_audit_recommendations_against_existing_directives`: this rule does NOT contradict CHECKLIST #13/#22/#23/#29 (small-test-before-scale) — it OPERATIONALIZES them at the integration-boundary level for the specific producer-consumer class that local pyramid cannot catch.
+
+     **Self-reflexive default.** Per #126 two-tier discipline: this rule itself is `DESIGNED-NOT-VERIFIED` until Phase C v2.5 smoke output lands as the evidence artifact promoting it to `OPERATIONALLY-VERIFIED`.
+
+     **Cross-references.** CHECKLIST #126 (evidence-artifact rule — this is the tier-2 specialization), CHECKLIST #121 (monitor-armed-in-user-data — smoke proves the armament fired), CHECKLIST #116 (user-data 16KB limit — smoke catches base64-expansion overflow at cloud-init time), CHECKLIST #13/#22/#23/#29 (small-test-before-scale lineage L86/L95), `feedback_designed_vs_verified_requires_evidence_artifact`, `feedback_monitor_design_vs_operational_gap`, `feedback_silent_failure_pairing_rule`, Council 139 Phase 2 mandate + Council 140 Option-5 PARALLEL-FAN-OUT sub-agent C verdict.

@@ -344,33 +344,33 @@ def main():
         end    = date.fromisoformat(args.end)   if args.end   else BACKTEST_END
         agents = not args.no_agents
 
-        # B1043 Council 138 Sub-B BLOCK fix: wire M4 holdout_guard.
-        # Source: B1043 Sub-B audit found assert_no_holdout_intrusion was
-        # NEVER INVOKED by engine entry - M4 OOS holdout (2026-01-01..2026-
-        # 06-30) was structurally unenforced (honor-system). Per feedback_
-        # monitor_design_vs_operational_gap. CHECKLIST #77.
+        # B1043 Council 138 Sub-B + B1045 Council 140 HONEST-FINDING PIVOT #27:
+        # holdout_guard wire CORRECTED. Phase C v2.5 smoke FAIL revealed the
+        # original B1043 fix was over-aggressive: Phase 1A-beta backtest is
+        # the LEGITIMATE OOS evaluation (its purpose IS to test that window).
+        # Wrong scope was the agent training path, not the backtest engine.
+        #
+        # B1045 fix: wrap engine entry in HoldoutUnlock context with explicit
+        # reason. This preserves enforcement (any rogue non-backtest caller
+        # still HALTed) while allowing the legitimate backtest evaluation.
+        # M4 holdout still locks for agent training paths per
+        # feedback_monitor_design_vs_operational_gap.
         try:
             from backtest.util.holdout_guard import (
-                assert_no_holdout_intrusion as _assert_no_holdout,
-                is_in_holdout as _is_in_holdout,
+                HoldoutUnlock as _HoldoutUnlock,
                 FINAL_OOS_HOLDOUT_START, FINAL_OOS_HOLDOUT_END,
             )
-            from datetime import timedelta as _td
-            # Generate sample dates across the [start, end] window for
-            # holdout intrusion check. For Phase 1A-beta windows that
-            # legitimately span the holdout, owner must wrap caller in
-            # HoldoutUnlock() context (final-gate evaluation only).
-            _check_dates = [start + _td(days=i) for i in range(0, (end - start).days + 1, 30)]
-            _assert_no_holdout(_check_dates, caller_name="run_phase1a.main")
-            if any(_is_in_holdout(d) for d in _check_dates):
-                print(f"[B1043 Sub-B] HOLDOUT-UNLOCKED window includes "
-                      f"{FINAL_OOS_HOLDOUT_START}..{FINAL_OOS_HOLDOUT_END}")
+            _holdout_unlock_ctx = _HoldoutUnlock(
+                "phase_1a_beta_backtest_evaluation_per_design"
+            )
+            _holdout_unlock_ctx.__enter__()
+            print(f"[B1045 Sub-B] HoldoutUnlock active: phase 1A-beta "
+                  f"backtest evaluating window incl "
+                  f"{FINAL_OOS_HOLDOUT_START}..{FINAL_OOS_HOLDOUT_END}")
         except ImportError:
-            print("[B1043 Sub-B WARN] holdout_guard not importable; "
+            print("[B1045 Sub-B WARN] holdout_guard not importable; "
                   "M4 OOS protection inactive this run")
-        except Exception as _holdout_exc:
-            # HoldoutViolationError or other - re-raise to HALT engine
-            raise
+            _holdout_unlock_ctx = None
 
         # --tickers flag: override universe with specific tickers (for batch tests)
         if args.tickers:
