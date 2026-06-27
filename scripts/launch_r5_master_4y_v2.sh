@@ -117,6 +117,20 @@ if [ "\$HAS_PANDAS_TA" = "0" ]; then
 fi
 
 pip install -q -r requirements.txt 2>&1 | tail -3 || true
+
+# B1039 Council 132 Item: vendored smartmoneyconcepts install (B416 H1 fix)
+# Phase C smoke 2026-06-27 confirmed: ModuleNotFoundError: No module named
+# 'smartmoneyconcepts'. Root cause: vendored/smartmoneyconcepts/ exists in
+# repo but never installed in AWS user-data. This line fixes that.
+# Paired verification per CHECKLIST #122.
+pip install -q -e vendored/smartmoneyconcepts/ 2>&1 | tail -3 || true
+python -c "from smartmoneyconcepts import smc; assert hasattr(smc, 'swing_highs_lows')" 2>/dev/null && HAS_SMC=1 || HAS_SMC=0
+echo "SMARTMONEYCONCEPTS_STATUS=\${HAS_SMC}" > /tmp/sentinels/SMARTMONEYCONCEPTS_STATUS
+aws s3 cp /tmp/sentinels/SMARTMONEYCONCEPTS_STATUS s3://\${BUCKET}/\${RUN_ID}/SMARTMONEYCONCEPTS_STATUS --quiet
+if [ "\$HAS_SMC" = "0" ]; then
+    echo "WARN: smartmoneyconcepts unavailable; 18 SMC strategies will short-circuit per SMC_PHASE=B-CANARY"
+fi
+
 python -c "from backtest.signals.screener import ALL_STRATEGIES; print(f'STRATEGIES={len(ALL_STRATEGIES)}')" || { echo "STRATEGY_IMPORT_FAIL" > /tmp/sentinels/STRATEGY_IMPORT_FAIL; aws s3 cp /tmp/sentinels/STRATEGY_IMPORT_FAIL s3://\${BUCKET}/\${RUN_ID}/STRATEGY_IMPORT_FAIL --quiet; sudo shutdown -h +5; exit 1; }
 
 mkdir -p data_prefetch output_phase_smoke output_phase_1 output_phase_2 output_phase_3 output_phase_4_r5
