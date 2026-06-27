@@ -1400,6 +1400,18 @@ Multiple-testing correction (downstream):
 
 ## Active queue (top = next; RESOLVED items sink to the bottom of this table, not removed)
 
+### B1044 / Council 139 — STRUCTURAL FIX for design-vs-armed recurrence (2026-06-28)
+
+Per Council 139 Option-8 HYBRID verdict per owner directive "How will we address the misses in design vs armed? I don't want to keep demanding adversarial reviews." 3 recurrences in 24hr (B1028 + sub-agent polling + B1042 schema mismatch) = systemic bug class requiring structural not procedural fix.
+
+| # | Slug | Item | Status | Notes |
+|---|---|---|---|---|
+| D9-PRODUCER-CONSUMER-REGISTRY | `b1044-producer-consumer-pairs-registry-phase-2-expand` | NEW `docs/PRODUCER_CONSUMER_PAIRS.md` registry seeded with 15 pairs. Phase 2: sweep codebase for remaining ~25 pairs (signal-loader inject_* per-source contracts; exit manager → trade outcome; regime classifier → daily sequence; dashboard data feeds; engine env-check stubs). Target ~40 pairs total. | OPERATIONALLY-VERIFIED-PHASE-1 / DESIGNED-NOT-VERIFIED-PHASE-2 | Source: Council 139 Layer A. Schema-contract tests auto-derive from registry. |
+| D10-SCHEMA-CONTRACT-PYRAMID | `b1044-schema-contract-test-pyramid-expand-phase-2` | NEW `backtest/tests/test_schema_contracts.py` with 3 seed contracts (engine_state.json + B660 baseline + trade_log_checkpoint). Phase 2: expand to all 40 registry rows. | OPERATIONALLY-VERIFIED-PHASE-1 / DESIGNED-NOT-VERIFIED-PHASE-2 | Source: Council 139 Layer B. Pyramid GREEN required. |
+| D11-AWS-SMOKE-MANDATORY-GATE | `b1044-aws-smoke-mandatory-gate-monitor-changes` | Council 139 Layer C: NEW HARD RULE that any change to monitor/wrapper/integration code requires AWS smoke run with sentinel log BEFORE shipping. ~$0.49/change cost accepted as insurance premium against $1.41-class sunk costs. Ships naturally with Phase C v2.5. | DESIGNED-NOT-VERIFIED | Source: Council 139 Phase 2 deliverable. |
+| D12-CHECKLIST-126-EVIDENCE-ARTIFACT | `b1044-checklist-126-designed-vs-verified-evidence-artifact` | NEW CHECKLIST #126 (Hard Rule): claiming WIRED/ARMED/INTEGRATED/RESOLVED-IMPLEMENTED requires linked evidence artifact (smoke output / schema-contract test PASS / AWS sentinel). Default status DESIGNED-NOT-VERIFIED; promote only with evidence. Code-presence grep ALONE INSUFFICIENT. | OPERATIONALLY-VERIFIED | Source: Council 139 Layer E. Memory rule `feedback_designed_vs_verified_requires_evidence_artifact` saved. |
+| D13-PHASE-C-V2-5-SMOKE-LAUNCH | `b1044-phase-c-v25-smoke-with-monitor-armed-NEW-config` | Phase C v2.5 smoke on AWS WITH B1043 monitor fixes armed + new MAX_MIN config (Phase 1 30->120 min). NVDA 1-month; ~$0.49. Validates F-01 schema match + F-02 PID capture + F-03 baseline + F-04 parser dispatch + F-09 monitor-in-smoke end-to-end. | DESIGNED-NOT-VERIFIED-GATING-PHASE-D | Council 138 Step C prerequisite. After PASS: re-audit (Step D) then Phase D launch (Step E owner go). |
+
 ### B1042 / Council 136 — POST-PHASE-C-V2 OWNER-DECISIONS (2026-06-28)
 
 Per Council 136 Option-7 audit findings (Audit-A/B/C/D) + B1042 Layer 1+2 ship + Phase C v2 PASS verdict. 5 owner-decisions surfaced for disposition BEFORE Phase D R5 launch.

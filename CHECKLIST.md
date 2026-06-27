@@ -2069,3 +2069,25 @@ State compliance visibly: "Checklist: ✅ [each item]"
      This is the engine-side companion to #121 (monitor armament). Both required for end-to-end visibility.
 
      **Cross-references.** L176, `feedback_monitor_design_vs_operational_gap`, engine/backtest.py:138 multiprocessing.Pool design, B1028 invisible-engine-state failure.
+
+126. **HARD RULE -- DESIGNED-VS-VERIFIED: claiming WIRED/ARMED/INTEGRATED/RESOLVED-IMPLEMENTED requires LINKED EVIDENCE ARTIFACT, not code-presence grep.** (B1028 + sub-agent polling + B1042 schema mismatch = 3 recurrences of design-vs-armed in 24hr 2026-06-28; Council 139 Tier 1 STRUCTURAL fix per owner directive "I don't want to keep demanding adversarial reviews.")
+
+     The recurring meta-bug class. Claude has shipped 3 times in 24 hours claiming operational armament that was actually broken end-to-end. CHECKLIST #121 (monitor-armed grep) failed because the grep matched loose proxies (`sync_loop|phase_watchdog`) while B1019 monitor invocation was just a COMMENT. The check itself was design-vs-armed.
+
+     **Two-tier status discipline:**
+     - `DESIGNED-NOT-VERIFIED` (default): code shipped but operational contract not proven via evidence artifact
+     - `OPERATIONALLY-VERIFIED`: schema-contract test in pyramid PASS + linked evidence artifact (smoke output / AWS sentinel / integration test PASS)
+
+     **Acceptable evidence artifacts (in increasing strength):**
+     1. **Schema-contract test PASS** — `backtest/tests/test_schema_contracts.py` derives tests from `docs/PRODUCER_CONSUMER_PAIRS.md` registry; catches F-01 schema mismatch class
+     2. **AWS smoke sentinel** — runtime evidence from S3 sentinel emission proving the wrap fired in production; catches F-02 PID-semantics class
+     3. **End-to-end output artifact** — actual output file consumed downstream; catches F-04 parser-mismatch + F-09 silent-pass class
+
+     **Forbidden:**
+     - Banner claims of ARMED/RESOLVED-IMPLEMENTED/WIRED without evidence artifact
+     - CHECKLIST satisfaction via loose-proxy grep (e.g., greping `sync_loop` to satisfy "monitor armed")
+     - Status promotion from prior batch claims without re-verifying current code
+
+     **Registry mandate.** Every producer-consumer pair (engine emits artifact X, consumer reads artifact X) MUST be in `docs/PRODUCER_CONSUMER_PAIRS.md` with schema-contract test in pyramid. Schema drift = pyramid fail = silent miss caught at test-time NOT runtime. The registry is the SINGLE SOURCE OF TRUTH; both sides reference it.
+
+     **Cross-references.** `feedback_designed_vs_verified_requires_evidence_artifact`, `feedback_monitor_design_vs_operational_gap` (codified bug class), `feedback_silent_failure_pairing_rule` (paired verification pattern), B1043 9 BLOCKERS catalog + Council 137 + 138 + 139 verdict.
