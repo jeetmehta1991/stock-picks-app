@@ -185,8 +185,42 @@ run_phase() {
     python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --output-dir \${PHASE_DIR} --screen-pool-workers 60 2>&1 | tee \${PHASE_DIR}/engine.log &
     ENGINE_PID=\$!
     phase_watchdog \${PHASE_NUM} \${MAX_MIN} \$ENGINE_PID &
+
+    # B1042 (2026-06-28) Council 136 Option-7 Layer 2: B1019 monitor wrap
+    # Source: feedback_monitor_design_vs_operational_gap (CHECKLIST #121)
+    # Phase D phases only (NOT smoke); engine_state.json emission landed
+    # in backtest.py via Layer 1 patch. Monitor SIGTERMs engine on HALT-
+    # CRITICAL tier and writes B1019_HALT sentinel to S3.
+    if [ "\${MODE}" = "full" ] && [ "\${PHASE_NUM}" != "smoke" ]; then
+        python scripts/b1019_phase_1_runtime_monitor.py \\
+            --engine-state \${PHASE_DIR}/engine_state.json \\
+            --trade-log \${PHASE_DIR}/trade_log_checkpoint.csv \\
+            --baseline output_audit/b660_fire_count_measured.json \\
+            --poll-seconds 60 \\
+            --total-days 1006 \\
+            --total-cells 5694 \\
+            > \${PHASE_DIR}/b1019_monitor.log 2>&1 &
+        B1019_PID=\$!
+        echo "B1019_MONITOR_PID=\${B1019_PID} phase=\${PHASE_NUM}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID
+        aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_PID --quiet
+        # B1019 HALT-CRITICAL watcher: SIGTERM engine if monitor signals halt
+        ( while kill -0 \$ENGINE_PID 2>/dev/null && kill -0 \$B1019_PID 2>/dev/null; do
+              sleep 60
+              if grep -q "HALT-CRITICAL" \${PHASE_DIR}/b1019_monitor.log 2>/dev/null; then
+                  echo "PHASE_\${PHASE_NUM}_B1019_HALT \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT
+                  aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_HALT --quiet
+                  kill -15 \$ENGINE_PID 2>/dev/null
+                  break
+              fi
+          done ) &
+        HALT_WATCHER_PID=\$!
+    fi
+
     wait \$ENGINE_PID
     RC=\$?
+    # Clean up B1019 monitor + watcher
+    if [ -n "\${B1019_PID:-}" ]; then kill \$B1019_PID 2>/dev/null || true; fi
+    if [ -n "\${HALT_WATCHER_PID:-}" ]; then kill \$HALT_WATCHER_PID 2>/dev/null || true; fi
     set -e
 
     # Sync final state

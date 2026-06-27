@@ -570,6 +570,39 @@ class BacktestEngine:
                     logger.debug("Checkpoint: %d trades -> %s", len(self.closed_trades), checkpoint_path)
                 except Exception:
                     pass
+
+            # B1042 (2026-06-28) Council 136 Option-7 Layer 1: engine_state.json
+            # emission every 100 sim-days for B1019 runtime_monitor consumption.
+            # Source: feedback_monitor_design_vs_operational_gap (CHECKLIST #121)
+            # B1019 monitor consumes engine_state.json via --engine-state arg;
+            # without producer, monitor sleeps forever (DESIGNED != ARMED).
+            # Atomic write via .tmp + os.replace to prevent partial-state reads.
+            if i > 0 and i % 100 == 0:
+                try:
+                    import json as _json
+                    import os as _os
+                    import time as _time
+                    state = {
+                        "sim_date": str(as_of),
+                        "sim_day_index": i,
+                        "tickers_processed": len(getattr(self, "_last_universe", []) or []),
+                        "trades_so_far": len(self.closed_trades),
+                        "open_trades": len(getattr(self, "open_positions", []) or []),
+                        "status": "running",
+                        "timestamp": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime()),
+                        "pid": _os.getpid(),
+                    }
+                    state_path = self.output_dir / "engine_state.json"
+                    state_tmp = self.output_dir / "engine_state.json.tmp"
+                    state_tmp.write_text(_json.dumps(state, indent=2))
+                    _os.replace(state_tmp, state_path)
+                    logger.info(
+                        "CHECKPOINT day=%d sim_date=%s trades=%d open=%d",
+                        i, as_of, len(self.closed_trades),
+                        len(getattr(self, "open_positions", []) or []),
+                    )
+                except Exception as _e:
+                    logger.warning("engine_state.json emit failed: %s", _e)
             try:
                 self._process_day(as_of)
             except Exception as exc:
