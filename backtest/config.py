@@ -1107,6 +1107,38 @@ STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
 }
 
 
+# B1038 (2026-06-27) Council 130 + Council 131 Option-A owner-approved
+# per directive 'Category C and phase C execute' + 'Option-A' confirmation.
+# DEC-508 Phase B canary gate for smartmoneyconcepts library.
+#
+# Status: doc-vs-reality drift surfaced via W3 wiring audit (B1033).
+#   vendored/MANIFEST.md declares Phase A IN PROGRESS / Phase B + C
+#     NOT STARTED.
+#   But 18 SMC strategies (smc_*) were firing live in screener.py.
+#   Phase B -> C owner-approval gate per DEC-508 was NEVER CROSSED.
+#
+# B416 root cause CONFIRMED via Phase C smoke 2026-06-27 (Council 131):
+#   Engine log: "component=smc_ict.import_smartmoneyconcepts
+#     exception=ModuleNotFoundError: No module named 'smartmoneyconcepts'"
+#   vendored/smartmoneyconcepts/ exists in repo BUT NOT INSTALLED in
+#     AWS user-data (no pip install -e vendored/smartmoneyconcepts/).
+#   Producer compute_smc_signals returns {} for all bars.
+#   Result: 18 SMC strategies are de-facto disabled in production
+#     (Phase A coverage proves they CAN run; production simply lacks
+#     the library install).
+#
+# Owner Decision (Option-A): formalize de-facto state via explicit
+#   SMC_PHASE flag. Default "B-CANARY" short-circuits 18 SMC strategy
+#   classes. One-line flip to "PRODUCTION" when owner approves Phase
+#   C promotion per C-1 declaration doc's 8 sign-off items.
+#
+# Per `feedback_narrow_scope_blast_radius`: single config flag; reverse-
+#   able one-line edit. Per `feedback_no_a_priori_strategy_pruning`:
+#   this is a DEC-508 Phase B canary gate, NOT pruning (cube still
+#   computes signals + records counts; strategies short-circuit only).
+SMC_PHASE: str = "B-CANARY"  # "B-CANARY" | "PRODUCTION"
+
+
 # DEC-614 (B890 owner-approved 2026-06-18) ADF mean-reversion taxonomy.
 # Per Council 16 Contrarian "explicit auditable taxonomy file" demand:
 # rather than infer mean-reversion classification via regex / name-pattern,

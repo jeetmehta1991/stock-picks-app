@@ -9014,10 +9014,17 @@ def test_batch216_smc_bos_retest_handles_both_directions():
     assert r2["fires"] is True and r2["direction"] == "short"
 
 
-def test_batch216_compute_smc_signals_emits_new_keys():
+def test_batch216_compute_smc_signals_emits_new_keys(monkeypatch):
     """Batch 216: compute_smc_signals must emit the new Batch 216 keys
     when given 260+ daily bars (the SMC library's swing-detection
-    history threshold is exceeded)."""
+    history threshold is exceeded).
+
+    B1038 (2026-06-27): monkeypatch SMC_PHASE='PRODUCTION' to bypass
+    the Council 131 Option-A B-CANARY short-circuit since this test
+    exercises compute_smc_signals semantics, not the canary gate.
+    """
+    import backtest.config as _cfg
+    monkeypatch.setattr(_cfg, "SMC_PHASE", "PRODUCTION")
     import io, contextlib, pandas as pd, numpy as np
     from backtest.signals.smc_ict import compute_smc_signals
     rng = np.random.default_rng(7)
@@ -9730,13 +9737,20 @@ def test_batch273_smc_most_recent_event_within():
     assert _most_recent_event_within(s, current_idx=100, recency_bars=50) == -1
 
 
-def test_batch273_smc_base_signals_fire_with_default_params():
+def test_batch273_smc_base_signals_fire_with_default_params(monkeypatch):
     """Batch 273: after the fix (swing_length=20 + event_recency_bars=90
     defaults), SMC base signals like smc_bos_bullish must fire at least
     occasionally on real OHLCV data. The bug being fixed: all 15 of 16
     SMC strategies (everything except smc_inverse_fvg) fired zero
     candidates in the T1a 4y backtest because of detection-lag +
-    tail-slice mismatch."""
+    tail-slice mismatch.
+
+    B1038 (2026-06-27): monkeypatch SMC_PHASE='PRODUCTION' to bypass
+    the Council 131 Option-A B-CANARY short-circuit since this test
+    exercises compute_smc_signals semantics.
+    """
+    import backtest.config as _cfg
+    monkeypatch.setattr(_cfg, "SMC_PHASE", "PRODUCTION")
     import numpy as np
     import pandas as pd
     from backtest.signals.smc_ict import compute_smc_signals, _SMC_AVAILABLE

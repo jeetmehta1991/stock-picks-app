@@ -114,6 +114,20 @@ def compute_smc_signals(
       - smc_bos_retest_long / smc_bos_retest_short: bool (price within
         0.5% of a recently-broken BOS level)
     """
+    # B1038 (2026-06-27) Council 131 Option-A: SMC_PHASE B-CANARY short-
+    # circuit. Per DEC-508 + C-1 declaration: 18 SMC strategies are de-
+    # facto disabled in production (vendored smartmoneyconcepts not
+    # installed in AWS user-data; B416 root cause H1 confirmed via Phase
+    # C smoke 2026-06-27). Flag formalizes the state. Owner promotes
+    # to "PRODUCTION" via single-line edit when Phase C 8 sign-off items
+    # complete (per C-1 declaration doc).
+    try:
+        from backtest.config import SMC_PHASE
+        if SMC_PHASE != "PRODUCTION":
+            return {}
+    except Exception:
+        # Fail-safe: config missing -> behave as B-CANARY
+        return {}
     if not _SMC_AVAILABLE or ohlc is None or ohlc.empty:
         return {}
     required = {"open", "high", "low", "close"}
