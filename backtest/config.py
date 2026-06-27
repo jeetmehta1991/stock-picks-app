@@ -1075,28 +1075,35 @@ DEPRECATED_STRATEGIES: set[str] = set()
 #     producer lands; clean Stage 2 boundary preferred over hand-
 #     curated CSV.
 #
-#   naked_poc_retest_long - missing naked_poc_count + naked_poc_nearest_distance_pct
-#     producers (B975 2026-06-21 Council 77 P1 Bucket A A5 C2 fix).
-#     Strategy gate: naked_poc_count > 0 AND naked_poc_nearest_distance_pct
-#     < 0.02 AND price_above_ema_200. Producer keys never implemented in
-#     volume_profile.py (line 69 docstring mentions vp_naked_poc_distance
-#     but no concrete code). Strategy compares to safe defaults (0, 1.0)
-#     so silent-gap (always returns False). Disable via this set per dxy
-#     precedent until implementation lands. Implementation scope: compute
-#     naked POCs (period POCs never re-touched after formation) + emit
-#     count + nearest-distance keys in volume_profile.compute_volume_profile.
+#   naked_poc_retest_long - REVERSED B1035 (2026-06-27) Council 129
+#     Option-6 owner-approved per directive 'Approve all recs council
+#     this. Has everything been implemented from wiring audit'. F2
+#     sub-agent runtime probe on AAPL 2024-06-30 confirmed producer
+#     EXISTS at screener.py:8257-8272 (inline orchestrator block
+#     calling volume_profile.compute_period_pocs); emits
+#     naked_poc_count=6 + naked_poc_nearest_distance_pct=0.079 on
+#     real bars. B975 disablement was a FALSE-POSITIVE driven by
+#     BLIND-SPOT-3 in b974_classify_signal_orphan_17.py extractor
+#     (skips screener.py orchestrator by design per line 202). Per
+#     feedback_no_a_priori_strategy_pruning: producer works ->
+#     re-enable + let cube empirically measure. NOT in this set.
+#
+#   m_and_a_target_long - REVERSED B1035 (2026-06-27) Council 129
+#     Option-6 owner-approved. F3 sub-agent reconcile of B984 vs
+#     B748d found: producer EXISTS-RELIABLE at sec_edgar_extractor.py
+#     :239-344 (compute_sec_edgar_signals reads
+#     data_prefetch/sec_edgar_decoded/8_K/<TICKER>.parquet with
+#     populated item_codes). B748d pin test 8 (test_batch748d_
+#     audit_script_fix.py:144-153) verified AAL 2026-03-16 returns
+#     8k_item_1_01_filed_within_30d=True. B984 "CC-B 8-K population-
+#     mixing carry" rationale was a citation slip - EV-7 deletion
+#     (screener.py:3454-3456) explicitly distinguishes itself from
+#     properly-parsed Item 1.01 strategies. Re-enable as
+#     EXPLORATORY pending SM-4 feasibility cube verdict
+#     (S4-B673-SM4-FEASIBILITY-FAILURE-RECLASSIFICATION ticket
+#     tracks separately). NOT in this set.
 STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
     "dxy_headwind_multinational_short",
-    "naked_poc_retest_long",
-    # B984 (2026-06-21) Council 88 walk-1 Sub-A owner-approved per
-    # directive 'Approve your recommendation. Proceed council this.'
-    # SIGNAL_ORPHAN #1: `8k_item_1_01_filed_within_30d` producer never
-    # reliably implemented (CLAUDE.md EV-7 buyback_8k_recent_long
-    # DELETED per CC-B 8-K population-mixing M&A Item 1.01 SM-4
-    # feasibility-failure carry). Same precedent as Batch 372
-    # foreign_rev_pct + B975 naked_poc producers. DO-NOT-DELETE
-    # compliant (strategy preserved; disabled at producer-missing).
-    "m_and_a_target_long",
 }
 
 

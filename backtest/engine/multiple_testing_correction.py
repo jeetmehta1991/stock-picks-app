@@ -97,6 +97,21 @@ EXPLORATORY_STRATEGIES = frozenset({
     "classification_change_breakout_long",  # sector reclass (Russell/S&P) genuinely rare event
     "classification_change_from_tech_short",  # tech reclass structural rarity
     "classification_change_momentum_long",  # sector reclass + MACD/EMA confluence rare
+    # B1035 (2026-06-27) Council 129 Option-6 owner-approved per directive
+    # 'Approve all recs council this'. F3 sub-agent reconcile of B984 vs
+    # B748d: producer EXISTS-RELIABLE at sec_edgar_extractor.py:239-344
+    # + B748d pin test 8 verified AAL 2026-03-16 fires; B984 disablement
+    # rationale (CC-B 8-K population-mixing carry) was citation-slip from
+    # EV-7 deletion which screener.py:3454-3456 explicitly distinguishes.
+    # Re-enabled but EXPLORATORY pending SM-4 feasibility cube verdict
+    # (S4-B673-SM4-FEASIBILITY-FAILURE-RECLASSIFICATION ticket):
+    # engine enters next-day-open AFTER the 20-40% M&A gap, capturing
+    # only 2-5% merger-arb spread + deal-break tail risk. Cube measures
+    # whether the residual spread is positive expectancy net of friction.
+    # Per project_no_apriori_strategy_pruning + B652 W5m EXPLORATORY
+    # precedent (cube measurement only, no production deployment
+    # regardless of verdict until SM-4 feasibility re-evaluated).
+    "m_and_a_target_long",
 })
 
 

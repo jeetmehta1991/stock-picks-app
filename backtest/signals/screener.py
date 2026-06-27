@@ -4805,6 +4805,21 @@ def strat_m_and_a_target_long(s):
     2024-09-09 (mid-window). The B748b+B748c EXPLORATORY rationale was
     based on path-discovery bug in B745 audit (now fixed B748d per
     CHECKLIST #106). Producer + data work end-to-end.
+
+    Status lineage:
+    - B984 (2026-06-21) Council 88 walk-1 Sub-A: added to
+      STRATEGIES_DISABLED_MISSING_PRODUCER citing EV-7 8-K population-
+      mixing carry (CITATION SLIP - rationale contradicted B748d).
+    - B1035 (2026-06-27) Council 129 Option-6 owner-approved per
+      directive 'Approve all recs council this': REVERSED B984 after
+      F3 sub-agent reconcile confirmed producer EXISTS-RELIABLE +
+      B748d pin test 8 still passes. Marked EXPLORATORY (not DISABLED)
+      pending SM-4 feasibility cube verdict via S4-B673 ticket:
+      engine enters next-day-open AFTER the 20-40% M&A gap, capturing
+      only 2-5% merger-arb spread + deal-break tail risk. Cube will
+      empirically measure whether residual spread is positive net
+      of friction; deployment gate requires both cube PASS and SM-4
+      feasibility re-evaluation regardless of cube verdict.
     """
     fires = bool(s.get("8k_item_1_01_filed_within_30d", False))
     return _strat(fires, "long", "sec_edgar_sleeve",

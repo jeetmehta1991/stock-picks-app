@@ -10596,10 +10596,14 @@ def test_batch373_e1_doc_count_pin_against_code():
     # long DELETED precedent + Batch 372 / B975 missing-producer
     # taxonomy; signal `8k_item_1_01_filed_within_30d` never reliable
     # per M&A Item 1.01 SM-4 feasibility-failure carry).
-    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 3, (
-        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 3 "
-        f"(Batch 372 dxy_headwind + B975 naked_poc + B984 m_and_a_target_long); "
-        f"got {len(STRATEGIES_DISABLED_MISSING_PRODUCER)}."
+    # B1035 (2026-06-27 Council 129 Option-6 owner-approved): disabled
+    # count 3 -> 1 (naked_poc + m_and_a both REVERSED after F2/F3
+    # sub-agent runtime probes confirmed producers EXIST; B975 was
+    # BLIND-SPOT-3 false-positive; B984 was citation-slip from EV-7).
+    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 1, (
+        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 1 "
+        f"(Batch 372 dxy_headwind only; B1035 reversed B975 naked_poc + "
+        f"B984 m_and_a_target_long); got {len(STRATEGIES_DISABLED_MISSING_PRODUCER)}."
     )
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
@@ -10609,11 +10613,12 @@ def test_batch373_e1_doc_count_pin_against_code():
     # naked_poc_retest_long -> 217 active. B984 (2026-06-21) disabled
     # m_and_a_target_long -> 216 active. B1010 (2026-06-22 Council 103
     # Option-6) added Class 7 NEW strat_insider_cluster_concentrated_
-    # sell_short -> 220 registered / 217 active.
-    assert active == 217, (
-        f"F-002 drift: active strategy count expected 217 (220 registered "
-        f"minus 3 disabled dxy_headwind + naked_poc + m_and_a_target_long); "
-        f"got {active}."
+    # sell_short -> 220 registered / 217 active. B1035 (2026-06-27)
+    # re-enabled naked_poc + m_and_a -> 219 active.
+    assert active == 219, (
+        f"F-002 drift: active strategy count expected 219 (220 registered "
+        f"minus 1 disabled dxy_headwind; B1035 re-enabled naked_poc + "
+        f"m_and_a); got {active}."
     )
 
     # F-004 exit method count
@@ -10623,11 +10628,11 @@ def test_batch373_e1_doc_count_pin_against_code():
         f"{len(EXIT_STRATEGIES)}. Update doc count references."
     )
 
-    # Cube cells = active strategies x exits (B975: 217 active x 26 = 5642)
-    expected_cells = 217 * 26
-    assert expected_cells == 5642, (
-        f"Phase 1A-beta cube cells: expected 5,642 (217 active x 26 exits "
-        f"post-B975 naked_poc_retest_long disablement); got {expected_cells}."
+    # Cube cells = active strategies x exits (B1035: 219 active x 26 = 5694)
+    expected_cells = 219 * 26
+    assert expected_cells == 5694, (
+        f"Phase 1A-beta cube cells: expected 5,694 (219 active x 26 exits "
+        f"post-B1035 naked_poc + m_and_a re-enable); got {expected_cells}."
     )
 
 
@@ -10697,44 +10702,48 @@ def test_batch372_dxy_headwind_disabled_missing_producer():
     )
     from backtest.signals.screener import ALL_STRATEGIES
 
-    # B975 (2026-06-21 Council 77 P1 Bucket A A5 C2 fix): naked_poc_retest_long
-    # added per dxy precedent (naked POC producer never implemented in
-    # volume_profile.py).
-    # B984 (2026-06-21 Council 88 walk-1 Sub-A): m_and_a_target_long added
-    # per CLAUDE.md EV-7 8-K Item 1.01 SM-4 feasibility-failure carry +
-    # Batch 372 / B975 precedent.
+    # B975 (2026-06-21) added naked_poc_retest_long; REVERSED B1035 (2026-06-27)
+    # Council 129 Option-6 owner-approved after F2 sub-agent runtime probe
+    # confirmed producer exists at screener.py:8257-8272 (inline orchestrator).
+    # B984 (2026-06-21) added m_and_a_target_long; REVERSED B1035 same batch
+    # after F3 sub-agent reconcile confirmed producer EXISTS-RELIABLE at
+    # sec_edgar_extractor.py:239-344 + B748d pin test 8 still passes.
+    # Both re-enables proceed per feedback_no_a_priori_strategy_pruning;
+    # cube empirically measures (m_and_a marked EXPLORATORY pending SM-4
+    # feasibility verdict via S4-B673 ticket).
     assert STRATEGIES_DISABLED_MISSING_PRODUCER == {
         "dxy_headwind_multinational_short",
-        "naked_poc_retest_long",
-        "m_and_a_target_long",
     }, (
-        f"Batch 372 + B975 + B984: STRATEGIES_DISABLED_MISSING_PRODUCER must "
-        f"contain dxy_headwind_multinational_short + naked_poc_retest_long + "
-        f"m_and_a_target_long; got {STRATEGIES_DISABLED_MISSING_PRODUCER}"
+        f"Batch 372 + B1035 reversals: STRATEGIES_DISABLED_MISSING_PRODUCER "
+        f"must contain dxy_headwind_multinational_short only; "
+        f"got {STRATEGIES_DISABLED_MISSING_PRODUCER}"
     )
     # Strategies stay in ALL_STRATEGIES (function bodies preserved for future
-    # re-enable). Active count drops by 2.
+    # re-enable). Active count drops by 1 (only dxy).
     assert "dxy_headwind_multinational_short" in ALL_STRATEGIES, (
         "Batch 372: dxy_headwind must remain in ALL_STRATEGIES (filter "
         "happens at screener loop, not registry deletion)"
     )
     assert "naked_poc_retest_long" in ALL_STRATEGIES, (
-        "B975: naked_poc_retest_long must remain in ALL_STRATEGIES (filter "
-        "happens at screener loop, not registry deletion)"
+        "B1035: naked_poc_retest_long re-enabled but must remain in "
+        "ALL_STRATEGIES regardless"
+    )
+    assert "m_and_a_target_long" in ALL_STRATEGIES, (
+        "B1035: m_and_a_target_long re-enabled but must remain in "
+        "ALL_STRATEGIES regardless"
     )
     # Semantically distinct from literature-pruning set
     assert not (DEPRECATED_STRATEGIES & STRATEGIES_DISABLED_MISSING_PRODUCER), (
-        "Batch 372 + B975: missing-producer disablement must NOT overlap "
+        "Batch 372 + B1035: missing-producer disablement must NOT overlap "
         "literature-null deprecation"
     )
     # Active count for Phase 1A-beta = total - blocked
-    # B984 (2026-06-21 Council 88 walk-1 Sub-A): missing_producer 2 -> 3
-    # (m_and_a_target_long added per EV-7 8-K precedent).
+    # B1035 (2026-06-27): missing_producer 3 -> 1 (B975 + B984 reversed).
     blocked = DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     active = sum(1 for k in ALL_STRATEGIES if k not in blocked)
-    assert active == len(ALL_STRATEGIES) - 3, (
-        f"Batch 372 + B975 + B984: active count must equal total - 3 "
-        f"(deprecated=0 + missing_producer=3); got total={len(ALL_STRATEGIES)} "
+    assert active == len(ALL_STRATEGIES) - 1, (
+        f"Batch 372 + B1035: active count must equal total - 1 "
+        f"(deprecated=0 + missing_producer=1); got total={len(ALL_STRATEGIES)} "
         f"active={active}"
     )
 
