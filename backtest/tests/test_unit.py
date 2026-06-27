@@ -12172,3 +12172,145 @@ def test_batch804_checklist_106_audit_numpy_bool_pin():
     # np scalar types other than bool_ must NOT count
     assert _signal_is_true_observation(np.float64(1.0)) is False, "np.float64 must NOT count"
     assert _signal_is_true_observation(np.int64(1)) is False, "np.int64 must NOT count"
+
+
+def test_b1046_f15_monitor_handles_partial_csv_write_pin():
+    """B1046 F-15 fix pin: B1019 monitor _check_b2_schema and _check_a1_fire_rate
+    must not throw uncaught exceptions when fed a truncated CSV that would result
+    from a non-atomic write mid-flight. F-11 atomic-write fix at engine side
+    closes the partial-write window; this test verifies the monitor side handles
+    the truncated input gracefully (returns ERROR status not crash).
+
+    Source: B1045 disposition F-15 PARTIAL-RESOLVED + B1046 fixes F-11 + F-15.
+    """
+    import tempfile
+    from pathlib import Path as _P
+    from scripts.b1019_phase_1_runtime_monitor import (
+        _check_b2_schema, _check_a1_fire_rate,
+    )
+
+    # Write a deliberately truncated CSV (header + half-row)
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
+        f.write("strategy,ticker,entry_date,exit_date,exit_method,trade_id\n")
+        f.write("test_strat,AAPL,2024-01-01,2024-02-01,atr_trail_")  # truncated
+        truncated_path = _P(f.name)
+
+    try:
+        b2 = _check_b2_schema(truncated_path)
+        assert "status" in b2, "B1046 F-15 pin: _check_b2_schema must return status key"
+        # Pandas tolerates trailing truncated lines (silently drops); status should be OK or VIOLATION,
+        # never crash. The key invariant: no uncaught exception propagates.
+        assert isinstance(b2.get("violations", []), list), (
+            "B1046 F-15 pin: violations must be list-typed"
+        )
+
+        # A1 fire-rate also reads the same file
+        a1 = _check_a1_fire_rate(truncated_path, {"some_strat": 5.0}, current_day=100)
+        assert "status" in a1, "B1046 F-15 pin: _check_a1_fire_rate must return status key"
+        assert isinstance(a1.get("anomalies", []), list), (
+            "B1046 F-15 pin: anomalies must be list-typed"
+        )
+    finally:
+        try:
+            truncated_path.unlink()
+        except OSError:
+            pass
+
+    # Bonus: missing file -> PENDING-no-trade-log (not crash)
+    missing = _P(tempfile.gettempdir()) / "b1046_definitely_missing_file.csv"
+    if missing.exists():
+        missing.unlink()
+    b2_missing = _check_b2_schema(missing)
+    assert b2_missing.get("status", "").startswith("PENDING"), (
+        "B1046 F-15 pin: missing file must yield PENDING-no-trade-log status"
+    )
+
+
+# -----------------------------------------------------------------------------
+# B1045 Council 141 Audit-B - Row 34 wire: dec_constants_verification.json
+# consumer.
+#
+# Producer: backtest/results/writer.py:1063 emits a dict mapping
+# DEC_NAME__DEC-NNN -> type(value).__name__ for ~62 canonical DEC constants
+# imported from backtest.config + backtest.engine.improvements +
+# backtest.data.smart_money. Pre-B1045 the producer ran on every backtest
+# but had NO automated reader (CALLED-BUT-OUTPUT-ORPHAN per B1043 Cat D /
+# test_batch464 class-b). The producer's try/except logged WARNING on
+# ImportError without aborting the engine, so a future deletion / rename
+# of a DEC constant would only surface in dec_constants_verification.json
+# rather than fail the pyramid.
+#
+# This test promotes the JSON from forensic-only to pyramid pre-flight gate
+# by asserting: (1) the import block at writer.py:962-999 is structurally
+# parseable, (2) every DEC constant it imports actually resolves to a
+# non-None value via real import path - i.e., the live source-of-truth
+# (writer.py import block) and the runtime (backtest.config et al.) agree.
+# If a DEC constant gets renamed in config.py without the writer.py import
+# block being updated, this test fails BEFORE the pyramid completes,
+# closing the "warning-only" silent-gap.
+# -----------------------------------------------------------------------------
+
+def test_b1045_dec_constants_verification_imports_resolve():
+    """B1045 Row 34 consumer: assert writer.py DEC-constants import block
+    resolves to live values. Drift-gate for CLAUDE.md DEC-NNN references."""
+    import ast
+    import importlib
+
+    writer_path = Path(__file__).resolve().parents[1] / "results" / "writer.py"
+    src = writer_path.read_text(encoding="utf-8")
+    tree = ast.parse(src)
+
+    # Find every `from backtest.X import Y, Z, ...` statement in writer.py
+    # that imports DEC-constant style names (UPPER_SNAKE_CASE).
+    imported = {}  # name -> module
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module and \
+                node.module.startswith("backtest."):
+            for alias in node.names:
+                # DEC constants are UPPER_SNAKE_CASE; ignore lowercase
+                # (compute_* helpers etc).
+                if alias.name.isupper() or (
+                    "_" in alias.name and alias.name.upper() == alias.name
+                ):
+                    imported[alias.name] = node.module
+
+    # Filter to names actually referenced in the
+    # `_dec_constants_verify` dict (line ~1000-1062).
+    refs_in_dict = set()
+    for name in imported:
+        # Quick text-grep gate: name must appear inside the dict body.
+        if f"type({name})" in src:
+            refs_in_dict.add(name)
+
+    assert len(refs_in_dict) >= 40, (
+        f"B1045 Row 34: expected >=40 DEC constants in dec_constants_verify "
+        f"dict; got {len(refs_in_dict)}. Producer at writer.py:1000-1062 may "
+        f"have been gutted - investigate."
+    )
+
+    # Resolve each name through the live import path. If a DEC constant
+    # was renamed / deleted in backtest.config without the writer.py
+    # import block being updated, this raises ImportError or AttributeError.
+    unresolved = []
+    for name in sorted(refs_in_dict):
+        module_name = imported[name]
+        try:
+            mod = importlib.import_module(module_name)
+            value = getattr(mod, name)
+            if value is None:
+                unresolved.append(f"{name} (None)")
+        except (ImportError, AttributeError) as exc:
+            unresolved.append(f"{name} ({type(exc).__name__}: {exc})")
+
+    assert not unresolved, (
+        f"B1045 Row 34 DEC-constants drift gate: {len(unresolved)} DEC "
+        f"constants from writer.py import block do not resolve at runtime: "
+        f"{unresolved[:10]}... If a constant was renamed/deleted in "
+        f"backtest/config.py, update the writer.py import + dict + this "
+        f"test's expected minimum together. Prevents silent-warning gap "
+        f"in producer's try/except (writer.py:1067)."
+    )
+    print(
+        f"[OK] B1045 Row 34 wire: {len(refs_in_dict)} DEC constants resolved "
+        f"via live import path"
+    )

@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "batch": "B1045",
+  "council": "141 PARALLEL-FAN-OUT sub-agent B",
+  "audit_lineage": "B1042 Audit-C + B1043 deep-audit orphan registry + feedback_monitor_design_vs_operational_gap",
+  "owner_directive": "Address all orphan findings by wiring and arming them (2026-06-28)",
+  "as_of": "2026-06-28",
+  "method": "L86/L95 runtime probe (no source mutation beyond Row 34 wire); pre-flight PID check + PowerShell-aware verification per feedback_powershell_authoritative_for_windows_process_truth + feedback_check_existing_pids_before_long_background_launch",
+  "rows": [
+    {
+      "registry_row": "Row 34 - dec_constants_verification.json",
+      "audit_source": "b1042_audit_c_orphan_tests_sentinels_2026_06_28.md Section 6A line 57 + b1043_wired_but_not_activated_deep_audit_2026_06_28.md Cat D line 84",
+      "prior_status": "CALLED-BUT-OUTPUT-ORPHAN (class-b per test_batch464; failure logs WARNING does not abort engine)",
+      "producer_path": "backtest/results/writer.py:962-1066 (try/except import block + dict serialization)",
+      "consumer_path": "backtest/tests/test_unit.py::test_b1045_dec_constants_verification_imports_resolve (NEW B1045 wire)",
+      "probe_result": "PASS",
+      "evidence_snippet": "[OK] B1045 Row 34 wire: 61 DEC constants resolved via live import path (pytest 1 passed in 2.13s)",
+      "promoted_status": "WIRED-TO-PYRAMID",
+      "promotion_notes": "Test gates the producer's silent-WARNING-only failure mode: writer.py:1067 catches ImportError + logs warning without halting engine. New test asserts >=40 constants present + all resolve via ast.parse + importlib.import_module + getattr. If a DEC constant is renamed in backtest/config.py without writer.py import update, pyramid fails BEFORE engine launch. Closes B1043 Cat D / Cat H finding."
+    },
+    {
+      "registry_row": "Row 39 - t1a_correlation_matrix.parquet",
+      "audit_source": "scripts/build_t1a_correlation_matrix.py (Sprint 7 B-3 producer); VERIFICATION_MATRIX.md correlation_filter consumer",
+      "prior_status": "PRODUCER-EXISTS-NO-IN-ENGINE-CONSUMER (correlation_filter callable but never invoked from engine main loop)",
+      "producer_path": "scripts/build_t1a_correlation_matrix.py:72-141 (writes data_prefetch/derived/correlation_matrix_t1a/<YYYY-MM-DD>.parquet)",
+      "consumer_path": "backtest/engine/improvements.py:369-409 correlation_filter (FUNCTION DEFINED, NOT CALLED) + backtest/agents/toolkits/our_risk_toolkit.py:137 get_correlation_to_existing_positions (scaffold; returns max_correlation=None deferred)",
+      "probe_result": "ARTIFACT_PRESENT_BUT_CONSUMER_DISABLED_BY_DESIGN",
+      "evidence_snippet": "5 parquet snapshots present (2022-01-01..2026-01-01); sample 2022-01-01.parquet 15,110 rows; columns=[ticker_a, ticker_b, pearson_r, n_obs, window_days]; pearson_r range -0.5015..0.9945. correlation_filter callable with (candidate_ticker, open_positions, corr_matrix, max_correlation=0.7, max_same_sector=3, sector_map) signature.",
+      "promoted_status": "ORPHAN-BY-DESIGN",
+      "promotion_notes": "CLAUDE.md 'Approved Rules' table line 174 owner-directive: 'Correlation filter | Removed from backtest'. Sprint 7 B-3 producer was built to support Phase 1B+ agent-toolkit consumption (OurRiskToolkit.get_correlation_to_existing_positions documented as Sprint 7 follow-on). Per feedback_no_a_priori_strategy_pruning + B1010 Council 103 precedent for deferred-by-design artifacts, wiring this into Stage 2 engine main loop would REVERSE an owner directive without approval. Producer cadence (5 annual snapshots) + consumer scaffold both correct for Phase 1B+ wiring path. Surfaced as ORPHAN-BY-DESIGN; queued as S6-CORRELATION-FILTER-PHASE-1B-ACTIVATION ticket for future toolkit wiring (Phase 1B agent path)."
+    },
+    {
+      "registry_row": "B1042 Audit-C 6C row - B832 news_sentiment SPOF (designed/wired-at-code; runtime not yet verified)",
+      "audit_source": "b1042_audit_c_orphan_tests_sentinels_2026_06_28.md Section 6C line 85",
+      "prior_status": "WIRED-AT-CODE-LEVEL (3-counter + _spof_record + rate-limited WARNING) - runtime existence not probed",
+      "producer_path": "backtest/signals/news_sentiment.py:50-91 (_SPOF_EMPTY_RETURNS / _SPOF_ZERO_SCORE_RETURNS / _SPOF_RULE_FALLBACK_ONLY counters + _spof_record helper)",
+      "consumer_path": "Engine log scraper grep 'B832 SPOF SENTINEL' (log-channel consumer)",
+      "probe_result": "PASS",
+      "evidence_snippet": "importlib.import_module('backtest.signals.news_sentiment') -> _SPOF_EMPTY_RETURNS exists=True initial=0; _SPOF_ZERO_SCORE_RETURNS exists=True initial=0; _SPOF_RULE_FALLBACK_ONLY exists=True initial=0; _spof_record callable=True",
+      "promoted_status": "OPERATIONALLY-VERIFIED",
+      "promotion_notes": "All 3 SPOF counters + record helper resolve at runtime via live import. Initial values are correctly zero (counters increment on producer-side empty/zero/fallback events). Log-channel consumer pattern matches Audit-C 6C classification."
+    },
+    {
+      "registry_row": "B1042 Audit-C 6C row - B901 raw-signal fire counter (env-flag gated)",
+      "audit_source": "b1042_audit_c_orphan_tests_sentinels_2026_06_28.md Section 6C line 86 + b1043_wired_but_not_activated_deep_audit_2026_06_28.md Cat D line 67",
+      "prior_status": "WIRED-AT-CODE-LEVEL (env EMIT_RAW_SIGNAL_FIRES=1 gates) - runtime existence not probed",
+      "producer_path": "backtest/signals/screener.py:64 _RAW_SIGNAL_FIRE_COUNTER + emit_raw_signal_fire_counts; backtest/results/writer.py:111 emit hook",
+      "consumer_path": "scripts/merge_batch_outputs.py sum-aggregator (R5 AWS launches set EMIT_RAW_SIGNAL_FIRES=1 in bootstrap)",
+      "probe_result": "PASS",
+      "evidence_snippet": "importlib.import_module('backtest.signals.screener') -> _RAW_SIGNAL_FIRE_COUNTER exists=True type=Counter; emit_raw_signal_fire_counts callable=True",
+      "promoted_status": "OPERATIONALLY-VERIFIED",
+      "promotion_notes": "Counter is collections.Counter type (zero-initialized); emit function importable. Env-flag gating + R5 bootstrap setter pair already documented in CLAUDE.md banner + LEARNINGS B901. No new wiring needed; the wired-at-code claim survives operational probe."
+    }
+  ],
+  "summary": {
+    "rows_processed": 4,
+    "WIRED-TO-PYRAMID": 1,
+    "OPERATIONALLY-VERIFIED": 2,
+    "ORPHAN-BY-DESIGN": 1,
+    "evidence_artifact": "output_audit/b1045_orphan_armament_evidence_2026_06_28.json (this file)",
+    "test_wired": "backtest/tests/test_unit.py::test_b1045_dec_constants_verification_imports_resolve (1 new test; 61 DEC constants asserted resolve via live import path)"
+  },
+  "memory_rule_references": [
+    "feedback_monitor_design_vs_operational_gap (B1019 design-vs-armed lineage)",
+    "feedback_narrow_scope_blast_radius (minimal local edits)",
+    "feedback_no_write_only_md_files (single artifact JSON; no new .md docs)",
+    "feedback_check_existing_pids_before_long_background_launch (tasklist probe pre-flight cleared)",
+    "feedback_no_a_priori_strategy_pruning (Row 39 ORPHAN-BY-DESIGN cite, not unwired-bug)",
+    "feedback_powershell_authoritative_for_windows_process_truth (probe via tasklist)"
+  ],
+  "open_followup_tickets": [
+    "S6-CORRELATION-FILTER-PHASE-1B-ACTIVATION (Row 39 producer waits for Phase 1B agent-toolkit wiring per OurRiskToolkit.get_correlation_to_existing_positions Sprint 7 follow-on)"
+  ]
+}

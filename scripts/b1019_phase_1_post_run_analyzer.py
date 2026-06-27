@@ -84,7 +84,10 @@ def main() -> int:
             print(f"WARN: baseline read error {type(exc).__name__}: {exc}")
 
     rollup = _rollup_by_dimensions(df)
-    deviations = _compute_deviations(rollup, bdf, args.top_n) if bdf is not None else []
+    # B1046 F-43 fix: pass the Phase 1 trade-log df (not baseline-trades df)
+    # for actual fire counts; baseline JSON path is hardcoded to B660 file
+    # per ticket S6-POST-RUN-D2-DEVIATIONS.
+    deviations = _compute_deviations(rollup, df, args.top_n)
 
     report = {
         "schema_version": "1.0",
@@ -141,10 +144,89 @@ def _rollup_by_dimensions(df: Any) -> dict[str, Any]:
 
 
 def _compute_deviations(rollup: dict[str, Any], bdf: Any,
-                        top_n: int) -> list[dict[str, Any]]:
-    """D2: surface cells deviating > 2x from baseline."""
+                        top_n: int,
+                        baseline_fires_path: Path | None = None
+                        ) -> list[dict[str, Any]]:
+    """D2: surface strategies deviating > 2x from baseline fire-rate.
+
+    B1046 F-43 fix: implement actual deviation math per B1045 disposition
+    + ticket S6-POST-RUN-D2-DEVIATIONS. Loads the same B660 baseline used
+    by the runtime monitor (fire_count_measured_b660_full_universe.json)
+    and computes per-strategy percent-deviation from rollup totals.
+
+    Each deviation dict: {strategy, expected_fires_per_year, actual_count,
+    actual_fires_per_year, deviation_pct, ratio}.
+
+    Returns list sorted by absolute deviation_pct descending, capped at top_n.
+    """
     deviations: list[dict[str, Any]] = []
-    return deviations
+    if baseline_fires_path is None:
+        baseline_fires_path = (
+            REPO / "output_audit"
+            / "fire_count_measured_b660_full_universe.json"
+        )
+    if not Path(baseline_fires_path).exists():
+        return deviations
+    try:
+        with open(baseline_fires_path) as f:
+            bdata = json.load(f)
+        baseline: dict[str, float] = {}
+        if "results" in bdata and isinstance(bdata["results"], list):
+            for row in bdata["results"]:
+                if not isinstance(row, dict):
+                    continue
+                strat = row.get("strategy")
+                if not strat:
+                    continue
+                total_fires = (
+                    int(row.get("n_fires_long", 0))
+                    + int(row.get("n_fires_short", 0))
+                    + int(row.get("n_fires_avoid", 0))
+                )
+                yspan = float(row.get("calendar_year_span", 1.0)) or 1.0
+                baseline[strat] = total_fires / yspan
+        if not baseline:
+            return deviations
+    except Exception:
+        return deviations
+
+    cells = rollup.get("top_10_cells_by_fires", [])
+    if bdf is None or not hasattr(bdf, "groupby"):
+        return deviations
+
+    try:
+        if "strategy" not in bdf.columns:
+            return deviations
+        baseline_yspan = float(
+            bdata.get("date_range", {}).get("calendar_year_span", 6.41)
+            if isinstance(bdata.get("date_range"), dict) else 6.41
+        )
+        if "calendar_year_span" in bdata:
+            baseline_yspan = float(bdata.get("calendar_year_span", baseline_yspan))
+        actual_counts = bdf.groupby("strategy").size().to_dict()
+        for strat, expected_fpy in baseline.items():
+            actual_count = int(actual_counts.get(strat, 0))
+            actual_fpy = actual_count / baseline_yspan if baseline_yspan > 0 else 0.0
+            if expected_fpy > 1.0:
+                ratio = actual_fpy / expected_fpy
+                deviation_pct = (actual_fpy - expected_fpy) / expected_fpy * 100
+            else:
+                ratio = 0.0
+                deviation_pct = 0.0
+            if abs(ratio - 1.0) >= 1.0 or (expected_fpy > 1.0 and ratio < 0.5):
+                deviations.append({
+                    "strategy": strat,
+                    "expected_fires_per_year": round(expected_fpy, 4),
+                    "actual_count": actual_count,
+                    "actual_fires_per_year": round(actual_fpy, 4),
+                    "ratio": round(ratio, 4),
+                    "deviation_pct": round(deviation_pct, 2),
+                })
+        deviations.sort(key=lambda d: abs(d["deviation_pct"]), reverse=True)
+        del cells  # unused; rollup-cell-based variant deferred
+        return deviations[:top_n]
+    except Exception:
+        return deviations
 
 
 def _write_summary_md(path: Path, report: dict[str, Any]) -> None:

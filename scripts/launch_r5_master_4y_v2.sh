@@ -139,6 +139,11 @@ echo "DATA_SYNC_DONE \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/DATA_SYNC
 aws s3 cp /tmp/sentinels/DATA_SYNC_DONE s3://\${BUCKET}/\${RUN_ID}/DATA_SYNC_DONE --quiet
 
 # B-3/B-4/B-6: 60s S3 sync background loop (engine-progress equivalent)
+# B1046 F-10 fix: atomic-snapshot read is enforced jointly by
+#   (i) engine-side os.replace atomicity for engine_state.json + trade_log_
+#       checkpoint.csv (backtest.py F-11/F-28 fixes), AND
+#   (ii) --exclude '*.tmp' on the sync source side here.
+# Together these guarantee monitors/sync never see partial-write states.
 sync_loop() {
     while true; do
         aws s3 sync /home/ec2-user/stock-picks-app/output_phase_smoke/ s3://\${BUCKET}/\${RUN_ID}/output_phase_smoke/ --quiet --exclude '*.tmp' 2>/dev/null
@@ -151,6 +156,26 @@ sync_loop() {
 }
 sync_loop &
 SYNC_PID=\$!
+
+# B1046 F-21 helper: guarded kill with empty-PID visibility.
+# Source: B1045 F-21 + CHECKLIST #122 silent-failure-pairing.
+guarded_kill() {
+    local pid_var="\$1"
+    local label="\$2"
+    if [ -n "\${pid_var:-}" ]; then
+        kill "\${pid_var}" 2>/dev/null || echo "WARN: kill \${label} pid=\${pid_var} failed (already exited)"
+    else
+        echo "WARN: \${label} PID empty -- skip kill (silent-failure-pairing visibility per F-21)"
+    fi
+}
+
+# B1046 F-33 helper: paired-verification S3 cp for CRITICAL sentinels.
+# Source: B1045 F-33 + CHECKLIST #122. Non-critical sentinels (progress,
+# heartbeat) use `|| echo WARN`; critical (PASS/FAIL/COMPLETE) use this.
+s3_cp_or_warn() {
+    local src="\$1"; local dst="\$2"
+    aws s3 cp "\${src}" "\${dst}" --quiet || echo "WARN: S3_CP_FAIL src=\${src} dst=\${dst}"
+}
 echo "SYNC_LOOP_PID=\${SYNC_PID}" > /tmp/sentinels/SYNC_LOOP_PID
 aws s3 cp /tmp/sentinels/SYNC_LOOP_PID s3://\${BUCKET}/\${RUN_ID}/SYNC_LOOP_PID --quiet
 
@@ -181,9 +206,13 @@ run_phase() {
     mkdir -p \${PHASE_DIR}
 
     # B1043 F-02 + F-06: process substitution captures engine PID (not tee).
+    # B1046 F-24 fix: launch engine via setsid -> new process group so a
+    # negative-PID kill (kill -TERM -\${ENGINE_PID}) propagates SIGTERM to
+    # all 60 screen_pool worker subprocesses. Source: B1045 F-24 +
+    # CHECKLIST #122 silent-failure-pairing rule.
     set +e
     export ENGINE_OUTPUT_DIR="\${PHASE_DIR}"
-    ( exec python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --output-dir \${PHASE_DIR} --screen-pool-workers 60 > \${PHASE_DIR}/engine.log 2>&1 ) &
+    setsid python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --output-dir \${PHASE_DIR} --screen-pool-workers 60 > \${PHASE_DIR}/engine.log 2>&1 &
     ENGINE_PID=\$!
     phase_watchdog \${PHASE_NUM} \${MAX_MIN} \$ENGINE_PID &
     WATCHDOG_PID=\$!
@@ -201,24 +230,32 @@ run_phase() {
     B1019_PID=\$!
     echo "B1019_MONITOR_PID=\${B1019_PID} phase=\${PHASE_NUM}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID
     aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_PID --quiet
-    # B1019 HALT-CRITICAL watcher: SIGTERM engine if monitor signals halt
-    ( while kill -0 \$ENGINE_PID 2>/dev/null && kill -0 \$B1019_PID 2>/dev/null; do
+    # B1019 HALT-CRITICAL watcher: SIGTERM engine if monitor signals halt.
+    # B1046 F-34 fix: nohup + disown -h detaches subshell from session so
+    # SIGHUP on parent exit does not orphan-kill watcher mid-poll. Source:
+    # B1045 F-34 per CHECKLIST #122. Also F-24: send SIGTERM to engine
+    # process-GROUP via negative-PID (kill -15 -\$ENGINE_PID) so all 60
+    # screen_pool workers receive teardown signal too.
+    nohup bash -c "while kill -0 \$ENGINE_PID 2>/dev/null && kill -0 \$B1019_PID 2>/dev/null; do
           sleep 60
-          if grep -q "HALT-CRITICAL" \${PHASE_DIR}/b1019_monitor.log 2>/dev/null; then
-              echo "PHASE_\${PHASE_NUM}_B1019_HALT \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT
-              aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_HALT --quiet
-              kill -15 \$ENGINE_PID 2>/dev/null
+          if grep -q 'HALT-CRITICAL' \${PHASE_DIR}/b1019_monitor.log 2>/dev/null; then
+              echo \"PHASE_\${PHASE_NUM}_B1019_HALT \$(date -u +%Y-%m-%dT%H:%M:%SZ)\" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT
+              aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_HALT s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_B1019_HALT --quiet || echo \"WARN: S3_CP_FAIL PHASE_\${PHASE_NUM}_B1019_HALT\"
+              kill -15 -\$ENGINE_PID 2>/dev/null || kill -15 \$ENGINE_PID 2>/dev/null
               break
           fi
-      done ) &
+      done" >/dev/null 2>&1 &
     HALT_WATCHER_PID=\$!
+    disown -h \$HALT_WATCHER_PID 2>/dev/null || true
 
     wait \$ENGINE_PID
     RC=\$?
-    # B1043 cleanup: kill watcher + monitor + watchdog (avoid PID leakage)
-    if [ -n "\${B1019_PID:-}" ]; then kill \$B1019_PID 2>/dev/null || true; fi
-    if [ -n "\${HALT_WATCHER_PID:-}" ]; then kill \$HALT_WATCHER_PID 2>/dev/null || true; fi
-    if [ -n "\${WATCHDOG_PID:-}" ]; then kill \$WATCHDOG_PID 2>/dev/null || true; fi
+    # B1043 cleanup: kill watcher + monitor + watchdog (avoid PID leakage).
+    # B1046 F-21 fix: each kill is guarded with explicit empty-PID WARN log
+    # for silent-failure-pairing visibility per CHECKLIST #122.
+    if [ -n "\${B1019_PID:-}" ]; then kill \$B1019_PID 2>/dev/null || echo "WARN: kill B1019_PID=\${B1019_PID} failed (already exited)"; else echo "WARN: B1019_PID empty -- skip kill (F-21 visibility)"; fi
+    if [ -n "\${HALT_WATCHER_PID:-}" ]; then kill \$HALT_WATCHER_PID 2>/dev/null || echo "WARN: kill HALT_WATCHER_PID=\${HALT_WATCHER_PID} failed"; else echo "WARN: HALT_WATCHER_PID empty -- skip kill (F-21)"; fi
+    if [ -n "\${WATCHDOG_PID:-}" ]; then kill \$WATCHDOG_PID 2>/dev/null || echo "WARN: kill WATCHDOG_PID=\${WATCHDOG_PID} failed"; else echo "WARN: WATCHDOG_PID empty -- skip kill (F-21)"; fi
     set -e
 
     # Sync final state
@@ -243,7 +280,8 @@ run_phase() {
 if [ "\${MODE}" = "smoke" ]; then
     run_phase smoke "${SMOKE_TICKER:-NVDA}" output_phase_smoke "${SMOKE_START:-2026-04-01}" "${SMOKE_END:-2026-05-01}" \${MAX_PHASE_MIN}
     SMOKE_RC=\$?
-    kill \$SYNC_PID 2>/dev/null || true
+    # B1046 F-21 fix: guarded SYNC_PID kill with explicit empty-PID WARN log.
+    if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: kill SYNC_PID=\${SYNC_PID} failed (already exited)"; else echo "WARN: SYNC_PID empty -- skip kill (F-21 visibility)"; fi
     # Final sync
     aws s3 sync output_phase_smoke/ s3://\${BUCKET}/\${RUN_ID}/output_phase_smoke/ --quiet
     if [ \$SMOKE_RC -eq 0 ]; then
@@ -255,7 +293,12 @@ if [ "\${MODE}" = "smoke" ]; then
 fi
 
 # FULL MODE (Phase D): full ladder Phase 1 -> 2 -> 3 -> R5
-aws s3 cp s3://\${BUCKET}/r5_master_20260627_064008/master_ops_tickers.txt /tmp/master_ops_tickers.txt --quiet
+# B1046 F-33 fix: CRITICAL PUT/GET pairs explicit error-check per CHECKLIST
+# #122. Master tickers download is highest-criticality (Phase D inputs).
+# Non-critical sentinel uploads (PHASE_RUNNING, PASS heartbeats) keep the
+# implicit success pattern; high-criticality download paths get paired check.
+aws s3 cp s3://\${BUCKET}/r5_master_20260627_064008/master_ops_tickers.txt /tmp/master_ops_tickers.txt --quiet || { echo "S3_CP_FAIL_CRITICAL: master_ops_tickers.txt download failed (F-33)"; aws s3 cp /tmp/sentinels/AUTOLADDER_COMPLETE s3://\${BUCKET}/\${RUN_ID}/MASTER_TICKERS_DOWNLOAD_FAIL --quiet 2>/dev/null; sudo shutdown -h +5; exit 1; }
+if [ ! -s /tmp/master_ops_tickers.txt ]; then echo "S3_CP_FAIL_CRITICAL: master_ops_tickers.txt empty after download (F-33)"; sudo shutdown -h +5; exit 1; fi
 MASTER_TICKERS=\$(cat /tmp/master_ops_tickers.txt)
 TICKERS_PHASE_2="NVDA,AAPL,MSFT,GOOGL,META,XLF,UUP,COIN,SOFI,IONQ"
 TICKERS_PHASE_3=\$(python -c "ts='\${MASTER_TICKERS}'.split(','); n=len(ts); step=max(1,n//50); print(','.join(ts[::step][:50]))")
@@ -277,12 +320,14 @@ aws s3 cp /tmp/sentinels/B1019_PREFLIGHT_PASS s3://\${BUCKET}/\${RUN_ID}/B1019_P
 
 # B1043 Sub-C: MAX_MIN raised per timing extrapolation (Phase 1 30->120;
 # Phase 2 60->180; Phase 3 90->240; Phase 4 240->480; cumulative 7hr->17hr).
-run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 120 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 180 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 240 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 480 || { kill \$SYNC_PID 2>/dev/null; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+# B1046 F-21 fix: each || branch guards SYNC_PID kill with empty-check + WARN.
+run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 120 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 180 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 240 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 480 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 
-kill \$SYNC_PID 2>/dev/null || true
+# B1046 F-21 fix: final SYNC_PID kill guarded with empty-check + WARN log.
+if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID=\${SYNC_PID} kill failed (already exited)"; else echo "WARN: SYNC_PID empty -- skip kill (F-21 visibility)"; fi
 
 # B1043 F-08: invoke post-run analyzer (was orphan script).
 echo "=== B1019 POST-RUN: Phase 4 analyzer ==="
@@ -323,15 +368,18 @@ if [ "$B64_SIZE" -gt 16000 ]; then
     # externalize full user-data to S3 + use thin bootstrap loader (~500 bytes).
     echo "  user-data exceeds 16KB base64 limit -- externalizing to S3"
     USER_DATA_S3="s3://${BUCKET_NAME}/${RUN_ID}/user-data.sh"
-    aws s3 cp "$USER_DATA_FILE" "$USER_DATA_S3" --quiet
+    # B1046 F-33 fix: CRITICAL upload (user-data bootstrap requires it); paired error check.
+    aws s3 cp "$USER_DATA_FILE" "$USER_DATA_S3" --quiet || { echo "S3_CP_FAIL_CRITICAL: user-data upload to ${USER_DATA_S3} failed (F-33)"; exit 1; }
     BOOTSTRAP_FILE="/tmp/${RUN_ID}_bootstrap.sh"
     cat > "$BOOTSTRAP_FILE" <<BOOTSTRAP_EOF
 #!/bin/bash
 set -uxo pipefail
 exec > >(tee /var/log/r5_v2_bootstrap_loader.log) 2>&1
 echo "BOOTSTRAP_LOADER $(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/BOOTSTRAP_LOADER
-aws s3 cp /tmp/BOOTSTRAP_LOADER s3://${BUCKET_NAME}/${RUN_ID}/BOOTSTRAP_LOADER --quiet
-aws s3 cp ${USER_DATA_S3} /tmp/user_data.sh --quiet
+aws s3 cp /tmp/BOOTSTRAP_LOADER s3://${BUCKET_NAME}/${RUN_ID}/BOOTSTRAP_LOADER --quiet || echo "WARN: BOOTSTRAP_LOADER sentinel upload failed (F-33 non-critical)"
+# B1046 F-33 fix: bootstrap user-data download is CRITICAL; paired error check.
+aws s3 cp ${USER_DATA_S3} /tmp/user_data.sh --quiet || { echo "S3_CP_FAIL_CRITICAL: user_data.sh download failed -- cannot boot (F-33)"; sudo shutdown -h +5; exit 1; }
+[ -s /tmp/user_data.sh ] || { echo "S3_CP_FAIL_CRITICAL: user_data.sh empty after download (F-33)"; sudo shutdown -h +5; exit 1; }
 chmod +x /tmp/user_data.sh
 bash /tmp/user_data.sh
 BOOTSTRAP_EOF

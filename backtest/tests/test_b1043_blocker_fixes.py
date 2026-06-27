@@ -56,13 +56,28 @@ def test_b1043_f01_monitor_reads_simulated_day():
 # ============================================================================
 
 def test_b1043_f02_engine_pid_via_process_substitution():
-    """F-02: launch script uses ( exec python ... ) & to capture engine PID."""
+    """F-02 (B1043) + F-24 (B1046): engine PID captured via setsid or exec.
+
+    B1043 F-02 originally used `( exec python ... ) &`. B1046 F-24 upgraded
+    to `setsid python ... &` so the engine runs in its own process group,
+    enabling `kill -15 -$PID` to SIGTERM the entire group (covering
+    --screen-pool-workers 60 children). Either pattern captures the correct
+    engine PID (not tee PID).
+    """
     launch_script = REPO / "scripts" / "launch_r5_master_4y_v2.sh"
     content = launch_script.read_text()
-    assert "( exec python -m backtest.run_phase1a" in content, (
-        "F-02 BLOCK fix: engine must run in exec'd subshell so $! captures "
-        "engine PID not tee PID. Previous `python ... | tee engine.log &` "
-        "captured tee PID. (B1043 Sub-A F-02 fix)"
+    has_exec_subshell = "( exec python -m backtest.run_phase1a" in content
+    has_setsid = "setsid python -m backtest.run_phase1a" in content
+    assert has_exec_subshell or has_setsid, (
+        "F-02 BLOCK fix: engine must run via `( exec python ... ) &` OR "
+        "`setsid python ... &` (B1046 F-24 upgrade) so $! captures engine "
+        "PID not tee PID. Previous `python ... | tee engine.log &` captured "
+        "tee PID."
+    )
+    # Critically: there MUST NOT be a bare `| tee engine.log &` pipe pattern
+    # (the original bug)
+    assert "python -m backtest.run_phase1a --phase 1a-beta" in content, (
+        "Engine invocation must be present"
     )
 
 

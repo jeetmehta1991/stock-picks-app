@@ -563,10 +563,17 @@ class BacktestEngine:
             # write cost on uncapped Phase 1A-beta runs (20K-50K trades).
             if i > 0 and i % 100 == 0 and self.closed_trades:
                 try:
+                    # B1046 F-11 fix: atomic write via tempfile + os.replace
+                    # prevents partial-CSV reads by monitor (F-15 false HALT).
+                    # Source: B1045 disposition F-11 + ticket S6-ATOMIC-CSV-
+                    # WRITE-PATTERN per CHECKLIST #122.
+                    import os as _os
                     import pandas as _pd
                     checkpoint_path = self.output_dir / "trade_log_checkpoint.csv"
+                    checkpoint_tmp = self.output_dir / "trade_log_checkpoint.csv.tmp"
                     _pd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
-                        checkpoint_path, index=False)
+                        checkpoint_tmp, index=False)
+                    _os.replace(checkpoint_tmp, checkpoint_path)
                     logger.debug("Checkpoint: %d trades -> %s", len(self.closed_trades), checkpoint_path)
                 except Exception:
                     pass
@@ -613,6 +620,19 @@ class BacktestEngine:
                     logger.info(
                         "CHECKPOINT day=%d sim_date=%s trades=%d open=%d",
                         i, as_of, _trades, _open,
+                    )
+                except OSError as _ose:
+                    # B1046 F-28 fix: disk-full (errno 28) is HALT-CRITICAL;
+                    # transient OSErrors (EINTR, EAGAIN) treated as warnings.
+                    # Source: B1045 disposition F-28 per CHECKLIST #122
+                    # silent-failure-pairing rule.
+                    import errno as _errno
+                    if _ose.errno == _errno.ENOSPC:
+                        logger.error("engine_state.json emit FAILED disk-full (ENOSPC); raising")
+                        raise
+                    logger.warning(
+                        "engine_state.json emit transient OSError errno=%s: %s",
+                        _ose.errno, _ose,
                     )
                 except Exception as _e:
                     logger.warning("engine_state.json emit failed: %s", _e)
