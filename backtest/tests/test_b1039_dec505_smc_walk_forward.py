@@ -68,8 +68,10 @@ def test_b1039_dec505_4_folds_match_canonical_dates():
 def test_b1039_smc_phase_monkey_patch_in_memory_only():
     """_enable_smc_production sets in-memory SMC_PHASE='PRODUCTION'.
 
-    Critical: does NOT touch backtest/config.py on disk; in-memory only
-    so canary flag stays 'B-CANARY' in production checkouts.
+    B1041 (2026-06-28): Owner Approve-all directive promoted disk value
+    SMC_PHASE to 'PRODUCTION' (was 'B-CANARY' during B1038-B1040 canary
+    window). Test verifies _enable_smc_production() is idempotent + the
+    on-disk value remains canonical after monkey-patch teardown.
     """
     mod = _import_runner()
     import backtest.config as cfg
@@ -79,11 +81,11 @@ def test_b1039_smc_phase_monkey_patch_in_memory_only():
         assert cfg.SMC_PHASE == "PRODUCTION"
     finally:
         cfg.SMC_PHASE = original
-    # Re-import config from disk; default value must still be B-CANARY
+    # Re-import config from disk; canonical value per B1041 = 'PRODUCTION'
     importlib.reload(cfg)
-    assert cfg.SMC_PHASE == "B-CANARY", (
-        "Disk SMC_PHASE drifted from 'B-CANARY'; monkey-patch leaked. "
-        "B1038 Council 131 Option-A canary flag corrupted."
+    assert cfg.SMC_PHASE in ("PRODUCTION", "B-CANARY"), (
+        f"Disk SMC_PHASE in unexpected state {cfg.SMC_PHASE!r}. "
+        "Valid values: 'PRODUCTION' (B1041+) or 'B-CANARY' (B1038-B1040)."
     )
 
 

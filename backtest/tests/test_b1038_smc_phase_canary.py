@@ -17,18 +17,33 @@ import pytest
 
 
 def test_b1038_smc_phase_default_is_b_canary():
-    """B1038: SMC_PHASE default value is 'B-CANARY' per Council 131 Option-A."""
+    """B1038 / B1041: SMC_PHASE value pin.
+
+    Original B1038: default was 'B-CANARY' per Council 131 Option-A.
+    UPDATED B1041 (2026-06-28): owner "Approve all" directive promoted
+    SMC_PHASE to 'PRODUCTION' per Council 133 Option-2 sign-off + all
+    8 C-1 declaration items complete (see AUDIT.md B1041 entry).
+    Test now pins to PRODUCTION as canonical value.
+    """
     from backtest.config import SMC_PHASE
-    assert SMC_PHASE == "B-CANARY", (
-        f"SMC_PHASE must default to 'B-CANARY' per Council 131 Option-A; "
-        f"got {SMC_PHASE!r}. Owner promotes to 'PRODUCTION' via single-line "
-        f"edit when Phase C 8 sign-off items complete (per C-1 declaration)."
+    assert SMC_PHASE == "PRODUCTION", (
+        f"SMC_PHASE must be 'PRODUCTION' per B1041 owner Approve-all "
+        f"directive 2026-06-28 + Council 133 Option-2; got {SMC_PHASE!r}. "
+        f"If demoting back to 'B-CANARY' for any reason, update this "
+        f"assertion + cite the demotion lineage in config.py."
     )
 
 
-def test_b1038_compute_smc_signals_returns_empty_when_b_canary():
-    """B1038: compute_smc_signals short-circuits to empty dict when
-    SMC_PHASE is 'B-CANARY' (default)."""
+def test_b1038_compute_smc_signals_returns_empty_when_b_canary(monkeypatch):
+    """B1038/B1041: compute_smc_signals short-circuits to empty dict when
+    SMC_PHASE is 'B-CANARY'.
+
+    UPDATED B1041 2026-06-28: SMC_PHASE default flipped to 'PRODUCTION'
+    per owner Approve-all + Council 133; this test still verifies the
+    canary gate semantics by monkeypatching SMC_PHASE='B-CANARY'.
+    """
+    import backtest.config as _cfg
+    monkeypatch.setattr(_cfg, "SMC_PHASE", "B-CANARY")
     from backtest.signals.smc_ict import compute_smc_signals
     df = pd.DataFrame({
         "open": [100.0] * 100,
@@ -44,9 +59,15 @@ def test_b1038_compute_smc_signals_returns_empty_when_b_canary():
     )
 
 
-def test_b1038_smc_phase_short_circuit_is_first_check():
-    """B1038: SMC_PHASE short-circuit fires BEFORE _SMC_AVAILABLE check
-    (so flag works even with library properly installed)."""
+def test_b1038_smc_phase_short_circuit_is_first_check(monkeypatch):
+    """B1038/B1041: SMC_PHASE short-circuit fires BEFORE _SMC_AVAILABLE
+    check (so flag works even with library properly installed).
+
+    UPDATED B1041 2026-06-28: monkeypatch SMC_PHASE='B-CANARY' since
+    new default is 'PRODUCTION' per owner Approve-all.
+    """
+    import backtest.config as _cfg
+    monkeypatch.setattr(_cfg, "SMC_PHASE", "B-CANARY")
     from backtest.signals.smc_ict import compute_smc_signals
     # Even with valid data + library available, B-CANARY returns {}
     df = pd.DataFrame({

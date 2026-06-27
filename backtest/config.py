@@ -1136,7 +1136,17 @@ STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
 #   able one-line edit. Per `feedback_no_a_priori_strategy_pruning`:
 #   this is a DEC-508 Phase B canary gate, NOT pruning (cube still
 #   computes signals + records counts; strategies short-circuit only).
-SMC_PHASE: str = "B-CANARY"  # "B-CANARY" | "PRODUCTION"
+#
+# B1041 (2026-06-28) Council 133 Option-2 owner Approve-all directive:
+# Promoted SMC_PHASE from "B-CANARY" to "PRODUCTION" per owner sign-off.
+# All 6 outstanding decisions APPROVED via "Approve all":
+#   (a) 75% coverage waiver
+#   (b) Dashboard 2 waiver
+#   (c) AUDIT.md sign-off (B1041 entry at AUDIT.md:9-79)
+#   (d) Sub-agent #5 single-ticker harness-proof scope
+#   (e) SMC_PHASE='PRODUCTION' + Phase C v2 smoke
+#   (f) Phase D R5 Phase 1 ladder launch (gated on Phase C v2 PASS)
+SMC_PHASE: str = "PRODUCTION"  # "B-CANARY" | "PRODUCTION"
 
 
 # DEC-614 (B890 owner-approved 2026-06-18) ADF mean-reversion taxonomy.
