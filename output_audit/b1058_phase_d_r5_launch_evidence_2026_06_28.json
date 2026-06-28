@@ -1,0 +1,84 @@
+{
+  "comment": "Pre-launch evidence artifact per CHECKLIST #126 + Council 157 Option-3 LAUNCH-+-COMPREHENSIVE-MONITOR. Persisted at launch time per feedback_designed_vs_verified_requires_evidence_artifact.",
+  "launch_batch": "B1058",
+  "run_id": "r5_full_20260628_085759",
+  "instance_id": "i-0434ba0eba781a2ae",
+  "az": "us-east-1b",
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ami_id": "ami-08f44e8eca9095668",
+  "iam_instance_profile": "batch395-instance-role",
+  "az_failover_order": ["us-east-1b", "us-east-1c", "us-east-1d", "us-east-1a", "us-east-1f"],
+  "az_chosen_first_try": "us-east-1b",
+  "user_data": {
+    "raw_bytes": 18672,
+    "base64_bytes": 24896,
+    "externalized_to_s3": true,
+    "bootstrap_loader_bytes": 1108
+  },
+  "per_phase_pool_config": {
+    "phase_1": {"tickers": "NVDA", "pool_workers": 0, "max_min": 120, "extrapolated_wall_clock_min": 32, "expected_amortization": "sequential wins NVDA scale (v2.5e empirical)"},
+    "phase_2": {"tickers": "NVDA,AAPL,MSFT,GOOGL,META,XLF,UUP,COIN,SOFI,IONQ", "pool_workers": 0, "max_min": 180, "extrapolated_wall_clock_min": 75, "expected_amortization": "sequential wins 10x scale (Phase 2 mini-smoke empirical)"},
+    "phase_3": {"ticker_count": 50, "pool_workers": 8, "max_min": 240, "extrapolated_wall_clock_min": 167, "expected_amortization": "UNTESTED - small pool crossover at 50 tickers"},
+    "phase_4_r5": {"ticker_count": 1929, "pool_workers": 60, "max_min": 480, "extrapolated_wall_clock_min": "UNKNOWN", "expected_amortization": "UNTESTED at full scale; pool=60 original design for 1929-ticker amortization"}
+  },
+  "evidence_artifacts_validating_launch": [
+    "output_audit/phase_c_v2_5c_smoke_pass_2026_06_28.txt (B1041+B1052 baseline)",
+    "v2.5e sequential baseline NVDA pool=0: 38 sec engine cube (11.6x faster than pool=60)",
+    "Phase 2 mini-smoke 10 tickers pool=0: ~1m40s engine cube (PASS at 10x scale)",
+    "Pyramid 886+3 baseline; 36/36 subset verified post-B1057"
+  ],
+  "structural_fixes_validated_pre_launch": [
+    "B1039 AWS install fix (SMARTMONEYCONCEPTS_STATUS=1)",
+    "B1041 SMC_PHASE=PRODUCTION",
+    "B1042 Layer 1 engine_state.json + Layer 2 B1019 monitor wrap",
+    "B1043 9 BLOCKERS (F-01 to F-09)",
+    "B1045 HoldoutUnlock fix (PIVOT #27)",
+    "B1046 9 WARN fixes (F-10 to F-43)",
+    "B1049 PHASE_DIR fix (PIVOT #29)",
+    "B1052 --no-agents fix (PIVOT #30)",
+    "B1055 pool init pre-warm (PIVOT #32; partial)",
+    "B1057 B fix: dataset naming bug (PIVOT #34) + C fix: PHASE_TIMING instrumentation",
+    "B1057 per-phase pool config (PIVOT #35 mitigation)"
+  ],
+  "monitoring_armament": {
+    "layer_1_aws_b1019_monitor": "ARMED - per-phase wraps engine subprocess; reads engine_state.json; emits HALT-CRITICAL sentinel on anomaly",
+    "layer_2_engine_log_info_logging": "ARMED - PHASE_TIMING markers (B1057 C-fix); Progress lines every 20 days; 60s S3 sync",
+    "layer_3_aws_s3_sentinels": "ARMED - per-phase RUNNING/PASS/FAIL/B1019_PID/POOL_WORKERS + HALT-CRITICAL (TIMEOUT_HALT, B1019_HALT) + terminal AUTOLADDER_COMPLETE",
+    "layer_4_claude_bash_polling": "ARMED THIS TURN - 5-min interval; 17-hr cap; phase-boundary task-notifications + terminal sentinel + HALT detection",
+    "layer_5_ssm_mid_run": "UNAVAILABLE - batch395-runner lacks ssm:SendCommand permission per earlier session diagnostic",
+    "layer_6_phase_boundary_notification": "ARMED - polling surfaces intermediate Phase 1/2/3 PASS sentinels as they land"
+  },
+  "halt_critical_response_plan": {
+    "auto_action": "pull engine.log tail + last engine_state.json from S3; classify HALT class (timeout/B1019/boot/pool); surface to owner with options",
+    "no_auto_relaunch": true,
+    "per_rule": "feedback_ask_before_relaunching_corrected_version + CHECKLIST #120"
+  },
+  "expected_outcomes": {
+    "bootstrap_min": 17,
+    "preflight_min": 1,
+    "phase_1_min": 32,
+    "phase_2_min": 75,
+    "phase_3_min": 167,
+    "phase_4_min": "UNKNOWN (1929 tickers pool=60 first empirical test)",
+    "post_run_min": 3,
+    "total_expected_hr": "5-10",
+    "hard_cap_hr": 17,
+    "expected_cost_usd": "5-12"
+  },
+  "honest_caveats": [
+    "Phase 3 (50 tickers pool=8) UNTESTED empirically; pool=8 is interpolation between Phase 2 (pool=0) and Phase 4 (pool=60)",
+    "Phase 4 (Master 1929 tickers pool=60) UNTESTED at full scale; pool=60 original design point for amortization but never empirically validated at 1929-ticker scale",
+    "If Phase 3 or Phase 4 fails: B1043 F-06 SIGTERM handler flushes checkpoint; PHASE_N_TIMEOUT_HALT surfaces root cause; B1019 monitor catches anomaly mid-run",
+    "Spot interruption probability ~2%; falls back to retry on owner direction"
+  ],
+  "pivot_count_session": 35,
+  "council_lineage": [
+    "Council 155 per-phase pool config verdict",
+    "Council 156 commit + Phase 2 mini-smoke gate",
+    "Council 157 LAUNCH + COMPREHENSIVE MONITOR (this batch)"
+  ],
+  "polling_id": "PENDING (armed next step)",
+  "launched_at_utc": "2026-06-28T08:58Z"
+}
