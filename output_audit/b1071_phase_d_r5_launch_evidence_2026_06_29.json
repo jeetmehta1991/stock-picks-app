@@ -1,0 +1,106 @@
+{
+  "comment": "B1071 Phase D R5 launch evidence post-Council-182 audit closure + Phase 2 smoke PASS. All 4 BLOCKERS closed + 17 B1070 fixes engine-verified + 850/852 pyramid GREEN.",
+  "launch_batch": "B1071",
+  "previous_attempts_summary": {
+    "B1024-B1028": "HALT-chain (PIVOT #18 wrong universe; Council 126 12-bug catalog)",
+    "B1054": "Phase 1 TIMEOUT 120 min at v2.5d 60-worker pool",
+    "B1058": "Phase 1 HALT b2_viol=1 missing_column_exit_method (PIVOT #37)",
+    "B1060": "Phase 1 HALT same b2_viol=1 (B1059 wrong-attribution)",
+    "B1063": "Phase 1 PASS + Phase 2 PASS + Phase 3 terminated for B1070 patch chain"
+  },
+  "run_id": "r5_full_20260628_165935",
+  "instance_id": "i-06eb7250e755f775b",
+  "az": "us-east-1b",
+  "az_consecutive_first_try_success": 7,
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ami_id": "ami-08f44e8eca9095668",
+  "iam_instance_profile": "batch395-instance-role",
+  "ebs": {
+    "volume_id": "vol-0335e27938f880f03",
+    "size_gb": 100,
+    "volume_type": "gp3",
+    "block_1_enforced_via": "scripts/b1070_phase_d_launch_helper.sh (was 50 pre-Council-182)"
+  },
+  "user_data": {
+    "raw_bytes": 20438,
+    "base64_bytes": 27252,
+    "externalized_to_s3": true,
+    "bootstrap_loader_bytes": 1108
+  },
+  "council_lineage": [
+    "Council 175 RECOMMEND Option-4 BATCH-PER-STAGE-+-FULL-PYRAMID-AT-END (B1070 execution)",
+    "Council 176 Option 4 STRICT-PLUS-PHASE-2-SMOKE (Stage B engine-verify)",
+    "Council 177 Option 1 STAGE-C-SERIAL-FULL (schema + cube re-derive)",
+    "Council 178 Option 6 INSPECT-+-MANUAL-EXTRACT-COMBO (B395 cube re-derive)",
+    "Council 179 Option 2 F-9.2 + F-8.1 lighter mitigation",
+    "Council 180 Option 4 ITEMS-1-4-COMMIT-PHASE-2-SMOKE-OWNER-GATE-COMBO",
+    "Council 181 Option 4 SUB-AGENT-PLUS-MAIN-THREAD-PARALLEL-AUDIT",
+    "Council 182 Option 5 PARALLEL-FIXES-WITH-SMOKE-WAIT (4 BLOCKERS closed)",
+    "Council 183 Option 4 HELPER-+-LAYER-4-MONITOR (THIS LAUNCH)"
+  ],
+  "b1070_fixes_summary": {
+    "stage_a_sub_c_5_producer_p0": "584b8b64a (adx close-vs-ADX + avwap silent continue + volume NameError + SMC + lobbying)",
+    "stage_b_sub_b_3_pass_path_p0": "819b28ebf (F-1.1 status=complete + F-2.1 cube imap_unordered + F-7.1/F-10.1 pool=16 + MAX_MIN=1200)",
+    "stage_c_item_1_schema": "8d972aab1 (exit_method column + resolver; 18 OVERRIDE)",
+    "stage_c_item_2_cube_re_derive": "57074bb77 (+23 OVERRIDE from B395 cube; 41 total)",
+    "stage_d_sub_b_2_high": "929ad24f4 (F-9.2 A1 sim_day>=200 gate + F-8.1 regime drift warning)",
+    "stage_e_checklist_pyramid_banner": "beda9086d (#128-132 codified + 850+2 FULL pyramid + banner refresh)",
+    "council_182_audit_closure": "86c5972f7 (4 BLOCKERS closed + 73-batch queue debt closed + 31 new tickets)"
+  },
+  "phase_2_smoke_validation": {
+    "instance_id": "i-0bed28caa41e8ac18",
+    "smoke_pass_ts": "2026-06-28T20:13:30Z",
+    "engine_state_status_complete": true,
+    "monitor_log_complete_line_emitted": true,
+    "f_8_1_drift_warning_fired": "6.2yr drift warning emitted correctly",
+    "b1059_a1_baseline_scaled": "0.019881 (10/503 = 2%)",
+    "b1067_g_impl_buffer_fix_validated": "monitor.log non-empty (was 0 bytes pre-B1067)"
+  },
+  "per_phase_config": {
+    "phase_1_nvda": {"tickers": 1, "pool_workers": 0, "max_min": 120, "expected_wall_clock_min": 18},
+    "phase_2_10_tickers": {"tickers": 10, "pool_workers": 0, "max_min": 180, "expected_wall_clock_min": 52},
+    "phase_3_50_tickers": {"tickers": 50, "pool_workers": 8, "max_min": 240, "expected_wall_clock_min": "untested"},
+    "phase_4_r5_master_1929": {"tickers": 1929, "pool_workers": 16, "max_min": 1200, "expected_wall_clock_min": "16-20hr; first empirical test at 1929-ticker scale"}
+  },
+  "expected_outcomes": {
+    "bootstrap_min": 17,
+    "phase_1_min": 18,
+    "phase_2_min": 52,
+    "phase_3_min": 167,
+    "phase_4_min_low": 960,
+    "phase_4_min_high": 1200,
+    "post_run_min": 5,
+    "total_expected_hr_low": 16,
+    "total_expected_hr_high": 20,
+    "hard_cap_hr": 17,
+    "expected_cost_usd_low": 5,
+    "expected_cost_usd_high": 10,
+    "session_cumulative_post_launch_usd": "19-24"
+  },
+  "monitoring_armament": {
+    "layer_1_aws_b1019_monitor": "ARMED + B1070 F-9.2 sim_day>=200 gate + F-8.1 drift warning + B1059 A1 scaled per phase + B1062 b2 schema fixed",
+    "layer_2_engine_log_phase_timing": "ARMED (B1057 C-fix)",
+    "layer_3_aws_s3_sentinels": "ARMED",
+    "layer_4_claude_bash_polling": "ARMED THIS TURN (5-min cadence; 17-hr cap; phase boundaries + HALT auto-pull + terminal + 30-min snapshots; per CHECKLIST #117 armed AT post-launch event boundary)",
+    "layer_5_ssm_mid_run": "UNAVAILABLE",
+    "layer_6_phase_boundary_notification": "ARMED"
+  },
+  "halt_critical_response_plan": {
+    "auto_action": "pull engine.log + monitor.log + sentinel state from S3; classify HALT class; surface to owner",
+    "no_auto_relaunch": true,
+    "per_rule": "feedback_ask_before_relaunching_corrected_version + CHECKLIST #120"
+  },
+  "honest_caveats": [
+    "Phase 3 (50 tickers + pool=8) UNTESTED at scale; Council 174 b414 cube re-derive used B395 historical data not Phase 3 empirical",
+    "Phase 4 (Master 1929 + pool=16) UNTESTED at full scale; pool=16 reduced from 60 per B1070 F-7.1 to mitigate memory + watchdog timeout risk",
+    "31 B1072+ tickets queued (Sub-C 22 + Sub-B 12 + Sub-A 6 - overlap) - none blocking but documented as deferred work",
+    "Spot interruption probability ~2pct over 16-20hr"
+  ],
+  "pivot_count_session": 38,
+  "phase_d_attempt_number": 8,
+  "phase_d_completed_attempts": 0,
+  "session_aws_spend_pre_b1071_usd": 14.09,
+  "launched_at_utc": "2026-06-28T20:59Z"
+}
