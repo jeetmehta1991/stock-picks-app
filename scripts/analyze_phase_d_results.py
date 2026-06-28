@@ -128,10 +128,16 @@ def summarize_cube_cells(output_dir: Path) -> str:
     if state_file.exists():
         with open(state_file) as f:
             state = json.load(f)
-        lines.append(f"engine_state.json present; last update: {state.get('as_of', 'unknown')}")
-        lines.append(f"cells completed: {state.get('cells_complete', 'unknown')}")
-        lines.append(f"total cells: {state.get('total_cells', 'unknown')}")
-        lines.append(f"trade_count: {state.get('trade_count', 'unknown')}")
+        # B1064 fix: correct key names per actual engine_state.json schema
+        # (verified against B1063 Phase 1 output)
+        lines.append(f"status: {state.get('status', 'unknown')}")
+        lines.append(f"sim_date: {state.get('sim_date', 'unknown')}")
+        lines.append(f"timestamp: {state.get('timestamp', 'unknown')}")
+        lines.append(f"simulated_day: {state.get('simulated_day', 'unknown')}")
+        lines.append(f"cells_completed: {state.get('cells_completed', 'unknown')}")
+        lines.append(f"trades_so_far: {state.get('trades_so_far', 'unknown')}")
+        lines.append(f"open_trades: {state.get('open_trades', 'unknown')}")
+        lines.append(f"pid: {state.get('pid', 'unknown')}")
     else:
         lines.append("engine_state.json not found")
     return "\n".join(lines)
