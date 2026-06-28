@@ -8469,7 +8469,17 @@ _WORKER_INFO: dict | None = None
 
 def _pool_init(ohlcv_dict: dict, info_dict: dict) -> None:
     """Process-pool initializer. Each worker stores ohlcv_dict + info_dict
-    in module-level globals so per-call work-tuples stay small."""
+    in module-level globals so per-call work-tuples stay small.
+
+    B1055 (2026-06-28) HONEST-FINDING PIVOT #32 fix: Phase D B1054 Phase 1
+    hit 120-min watchdog with engine.log showing repeated 'Loaded Quiver
+    bulk feed insiders: 1000000 rows' + 'sec13fchanges: 500000 rows' per
+    sim_day. Root cause: pool workers' _BULK_CACHE was empty at first
+    call -> cache miss -> ~10-15 sec parquet read per worker per dataset.
+    Fix: pre-warm smart_money bulk feeds + universe ETFs alongside
+    insider_buying + index_rebalance. Per Council 150 Option B + 151
+    Option-3.
+    """
     global _WORKER_OHLCV, _WORKER_INFO
     _WORKER_OHLCV = ohlcv_dict
     _WORKER_INFO = info_dict
@@ -8483,6 +8493,20 @@ def _pool_init(ohlcv_dict: dict, info_dict: dict) -> None:
     try:
         from backtest.signals.index_rebalance import _load_events
         _load_events()
+    except Exception:
+        pass
+    # B1055 PIVOT #32 fix: pre-warm Quiver bulk feeds + ETF universe
+    try:
+        from backtest.data.smart_money import _load_quiver_bulk
+        _load_quiver_bulk("insidertrading")
+        _load_quiver_bulk("sec13f")
+    except Exception:
+        pass
+    try:
+        # Triggers universe.py module load which fires ETFS_FULL =
+        # get_etfs_full() at module level -> "Loaded 28 Tier 1 ETFs" log
+        # ONCE per worker spawn instead of per sim_day call site.
+        from backtest.data.universe import ETFS_FULL  # noqa: F401
     except Exception:
         pass
 
