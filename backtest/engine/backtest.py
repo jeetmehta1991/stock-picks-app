@@ -880,6 +880,16 @@ class BacktestEngine:
         return days
 
     def _process_day(self, as_of: date):
+        # B1057 C-instrumentation (PIVOT #33 forensics enabler):
+        # Phase-timing logs for per-day wall-clock decomposition. Smoke
+        # v2.5d engine.log forensics revealed ~92% of per-day cost is
+        # in unaccounted silent gaps. These markers let next forensics
+        # decompose where the gap actually lives. Per Council 153/154 +
+        # CHECKLIST #126 evidence-artifact rule. INFO-level so visible
+        # without log-level flags.
+        import time as _b1057_time
+        _b1057_t_start = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s start", as_of)
         # -- 1. Slice OHLCV to point-in-time using year-appropriate liquid universe --
         liquid_this_year = self._get_liquid_universe_for_date(as_of)
         ohlcv_pit = {}
@@ -890,6 +900,9 @@ class BacktestEngine:
             sliced = df[df.index.date <= as_of]
             if len(sliced) >= 30:
                 ohlcv_pit[t] = sliced
+        _b1057_t_after_pit = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s ohlcv_pit_built dur=%.3fs tickers=%d",
+                    as_of, _b1057_t_after_pit - _b1057_t_start, len(ohlcv_pit))
 
         # -- 1b. BUG-287 fix (Batch 308 2026-05-24): include OHLCV for any
         # ticker with an OPEN trade, even if it dropped out of the annual
@@ -1067,12 +1080,20 @@ class BacktestEngine:
                     _vix_history_for_exits = _sliced.tolist()
         except Exception:
             _vix_history_for_exits = None
+        # B1057 C-instrumentation: PHASE_TIMING decomposition checkpoint
+        _b1057_t_pre_exits = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s pre_exits dur=%.3fs",
+                    as_of, _b1057_t_pre_exits - _b1057_t_after_pit)
         closed_today, self.open_trades = process_day_exits(
             self.open_trades, ticker_bars, as_of,
             vix, regime, active_signals, self.circuit_breaker_log,
             vix_history=_vix_history_for_exits,
         )
         self.closed_trades.extend(closed_today)
+        _b1057_t_after_exits = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s exits_done dur=%.3fs closed=%d",
+                    as_of, _b1057_t_after_exits - _b1057_t_pre_exits,
+                    len(closed_today))
 
         # BUG-95 sub-batch 2: remove closed positions from portfolio state
         # (mirror trade exits into Portfolio.cash credit + position removal).
@@ -1125,14 +1146,27 @@ class BacktestEngine:
         # init time; per-day calls carry only the work-tuple per ticker.
         if self.screen_pool_workers > 0 and self._screen_pool is None:
             self._init_screen_pool()
+        # B1057 C-instrumentation: PHASE_TIMING screen_universe
+        _b1057_t_pre_screen = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s pre_screen dur=%.3fs",
+                    as_of, _b1057_t_pre_screen - _b1057_t_after_exits)
         candidates     = screen_universe(
             ohlcv_pit, self.info_dict, as_of, regime,
             vix_value=_vix_today_for_screen,
             vix_history=_vix_history_for_screen,
             pool=self._screen_pool,  # None when sequential mode
         )
+        _b1057_t_after_screen = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s screen_done dur=%.3fs candidates=%d",
+                    as_of, _b1057_t_after_screen - _b1057_t_pre_screen,
+                    len(candidates))
         active_signals = {c["ticker"]: c for c in candidates}
         sent           = sentiment_snapshot(as_of)
+        _b1057_t_after_sentiment = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s sentiment_done dur=%.3fs total=%.3fs",
+                    as_of,
+                    _b1057_t_after_sentiment - _b1057_t_after_screen,
+                    _b1057_t_after_sentiment - _b1057_t_start)
 
         # -- 5.5 DEC-515 Level 6 portfolio DD-from-peak circuit breaker --
         # (Pass 53 Day-9-evening v5 engine wiring per DEC-594)

@@ -8495,11 +8495,30 @@ def _pool_init(ohlcv_dict: dict, info_dict: dict) -> None:
         _load_events()
     except Exception:
         pass
-    # B1055 PIVOT #32 fix: pre-warm Quiver bulk feeds + ETF universe
+    # B1055 PIVOT #32 fix + B1057 PIVOT #34 NAMING BUG fix:
+    # B1055 originally pre-warmed "insidertrading" (PHANTOM dataset; no
+    # call site uses it) and "sec13f" (called only at line 1807, not the
+    # hot path). B1056 forensics revealed:
+    #   smart_money.py:498  calls insiders     (1M rows; HOT)
+    #   smart_money.py:675  calls sec13fchanges (500k rows; HOT)
+    #   smart_money.py:701  calls sec13fchanges (HOT)
+    #   smart_money.py:1640 calls insiders     (HOT)
+    #   smart_money.py:1726 calls patentmomentum
+    #   smart_money.py:1764 calls corporatedonors
+    #   smart_money.py:1807 calls sec13f
+    # B1057 fix: pre-warm ALL real datasets. The dataset NAME matters;
+    # B1055 had a string typo (used Quiver API endpoint path 'insidertrading'
+    # instead of cache key 'insiders'). Per HONEST-FINDING PIVOT #34 +
+    # Council 153/154 + feedback_audit_recommendations_against_existing_
+    # directives.
     try:
         from backtest.data.smart_money import _load_quiver_bulk
-        _load_quiver_bulk("insidertrading")
-        _load_quiver_bulk("sec13f")
+        for _ds in ("insiders", "sec13fchanges", "sec13f",
+                    "patentmomentum", "corporatedonors"):
+            try:
+                _load_quiver_bulk(_ds)
+            except Exception:
+                pass
     except Exception:
         pass
     try:
