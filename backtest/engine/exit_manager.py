@@ -162,6 +162,15 @@ class ClosedTrade:
     cnn_fg_label:         str = "Neutral"
     # DEC-493 (Pass 53 Sprint 2): unique trade_id propagated from OpenTrade
     trade_id:             Optional[str] = None
+    # B1070 Stage C ITEM 1 (Council 172/174/177): exit_method column.
+    # Distinct from exit_reason: exit_reason = WHICH exit triggered
+    # (runtime); exit_method = WHICH method was DEPLOYED per
+    # STRATEGY_EXIT_OVERRIDE config (config-time selection). For strategies
+    # not in OVERRIDE: defaults to "trailing_stop" (engine fall-through).
+    # Per owner directive 2026-06-28 (c) schema + Council 174 c-Opt-A
+    # single column add. Engine threads STRATEGY_EXIT_OVERRIDE.get(strategy,
+    # {}).get("exit_method", "trailing_stop") into trade dict at close time.
+    exit_method:          str = "trailing_stop"
 
 
 def _pnl(entry, exit_p, direction, hold_days=0):
@@ -688,7 +697,27 @@ def close_trade(
         cnn_fg_label=trade.cnn_fg_label,
         # DEC-493 (Pass 53 Sprint 2): propagate trade_id from OpenTrade
         trade_id=trade.trade_id,
+        # B1070 Stage C ITEM 1 (Council 172/174/177): exit_method = which
+        # method was DEPLOYED per STRATEGY_EXIT_OVERRIDE config (config-time
+        # selection). Distinct from exit_reason (which exit TRIGGERED).
+        # For strategies not in OVERRIDE: defaults to "trailing_stop"
+        # (engine fall-through).
+        exit_method=_b1070_resolve_exit_method(trade.strategy),
     )
+
+
+def _b1070_resolve_exit_method(strategy: str) -> str:
+    """B1070 Stage C ITEM 1: resolve exit_method per STRATEGY_EXIT_OVERRIDE.
+
+    Returns the configured exit_method for strategy, defaulting to
+    'trailing_stop' (engine fall-through). Per Council 174 c-Opt-A
+    single column add + owner directive 2026-06-28 (c).
+    """
+    try:
+        from backtest.config import STRATEGY_EXIT_OVERRIDE as _SEO
+        return _SEO.get(strategy, {}).get("exit_method", "trailing_stop")
+    except Exception:
+        return "trailing_stop"
 
 
 def process_day_exits(
