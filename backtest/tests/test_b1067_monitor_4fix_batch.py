@@ -174,10 +174,13 @@ def test_b1067_classify_tier_a1_mass_anomaly_halt_integration():
           "eta_min": 0, "runtime_min": 5}
     e_new = {"halt": False}
     f_new = {"regime_gaps": 0}
-    tier = mod._classify_tier(a1, b2, d1, e_new=e_new, f_new=f_new)
+    # B1070 F-9.2 update: A1-PROMOTION HALT now gated on
+    # current_day >= 200; pass sim_day=250 to assert HALT fires.
+    tier = mod._classify_tier(a1, b2, d1, e_new=e_new, f_new=f_new,
+                              current_day=250)
     assert tier == "HALT-CRITICAL", (
-        f"B1067 FIX 2: 60/88 anomalies (68pct > 50pct threshold) must "
-        f"HALT-CRITICAL, got {tier}"
+        f"B1067 FIX 2 (post-B1070 F-9.2): 60/88 anomalies (68pct > 50pct) "
+        f"at sim_day 250 (>=200) must HALT-CRITICAL, got {tier}"
     )
 
 

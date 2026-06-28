@@ -258,6 +258,10 @@ run_phase() {
         --total-cells 5694 \\
         --total-tickers-active \${NCNT} \\
         --baseline-universe-size 503 \\
+        --baseline-window-start 2020-01-01 \\
+        --baseline-window-end 2026-01-01 \\
+        --phase-window-start \${START_DATE} \\
+        --phase-window-end \${END_DATE} \\
         > \${PHASE_DIR}/b1019_monitor.log 2>&1 &
     B1019_PID=\$!
     echo "B1019_MONITOR_PID=\${B1019_PID} phase=\${PHASE_NUM}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID

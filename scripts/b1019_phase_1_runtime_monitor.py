@@ -84,7 +84,51 @@ def main() -> int:
                              "(default 503 = T1a). Used as denominator in "
                              "A1 scaling: expected_fpy_scaled = expected_fpy "
                              "* (total_tickers_active / baseline_universe_size).")
+    # B1070 F-8.1 FIX (Council 179 Sub-B): regime-mix drift visibility
+    # args. B660 baseline measured 2020-2026 (mixed bull+crisis+bear+
+    # neutral). If Phase window differs by >2yr, regime mix may drift
+    # and A1 scaling (universe-size only) doesn't correct for it.
+    # Emits WARNING; full B660 re-measurement on Phase window deferred
+    # to B1072.
+    parser.add_argument("--baseline-window-start", type=str,
+                        default="2020-01-01",
+                        help="B660 baseline measurement window start "
+                             "(default 2020-01-01). If Phase window start "
+                             "differs by >2yr, regime-mix drift warning "
+                             "emitted.")
+    parser.add_argument("--baseline-window-end", type=str,
+                        default="2026-01-01",
+                        help="B660 baseline measurement window end "
+                             "(default 2026-01-01).")
+    parser.add_argument("--phase-window-start", type=str, default=None,
+                        help="Phase window start (e.g. 2022-05-05); if "
+                             "provided, B1070 F-8.1 regime-drift warning "
+                             "emitted when |phase_start - baseline_start| "
+                             "> 2 years.")
+    parser.add_argument("--phase-window-end", type=str, default=None,
+                        help="Phase window end (e.g. 2026-05-05).")
     args = parser.parse_args()
+
+    # B1070 F-8.1 FIX emit regime-drift warning per Council 179:
+    if args.phase_window_start:
+        try:
+            from datetime import datetime as _dt_b1070
+            _bs = _dt_b1070.strptime(args.baseline_window_start, "%Y-%m-%d")
+            _ps = _dt_b1070.strptime(args.phase_window_start, "%Y-%m-%d")
+            _drift_years = abs((_ps - _bs).days) / 365.25
+            if _drift_years > 2.0:
+                print(
+                    f"WARNING: DEFER-IF-MIXED-REGIME (B1070 F-8.1) -- "
+                    f"Phase window {args.phase_window_start}..{args.phase_window_end} "
+                    f"differs from baseline window "
+                    f"{args.baseline_window_start}..{args.baseline_window_end} "
+                    f"by {_drift_years:.1f} years; A1 scaling (universe-size "
+                    f"only) does NOT correct for regime-mix drift. "
+                    f"A1-PROMOTION may emit false positives. "
+                    f"See B1072 for B660 re-measurement on Phase window."
+                )
+        except Exception as _e_b1070:
+            print(f"B1070 F-8.1: regime-drift check skipped ({_e_b1070})")
 
     baseline = _load_baseline(REPO / args.baseline)
     # B1059 PIVOT #36 fix: scale A1 baseline by ticker ratio.
@@ -135,7 +179,11 @@ def main() -> int:
         # B1067 FIX 4 F-NEW: per-regime coverage (LOG-MEDIUM only)
         f_new = _check_f_new_regime_coverage(REPO / args.trade_log)
 
-        tier = _classify_tier(a1, b2, d1, e_new, f_new)
+        # B1070 F-9.2 FIX: pass current_day so A1-PROMOTION HALT-CRITICAL
+        # gates on sim_day >= 200 (Sub-B finding: early sim_day false
+        # positives before fires accumulate).
+        tier = _classify_tier(a1, b2, d1, e_new, f_new,
+                              current_day=current_day)
         print(_format_checkpoint_line(tier, current_day, a1, b2, d1,
                                       e_new=e_new, f_new=f_new))
 
@@ -350,30 +398,39 @@ def _check_d1_progress(state: dict[str, Any], total_cells: int,
 def _classify_tier(a1: dict[str, Any], b2: dict[str, Any],
                    d1: dict[str, Any],
                    e_new: dict[str, Any] | None = None,
-                   f_new: dict[str, Any] | None = None) -> str:
+                   f_new: dict[str, Any] | None = None,
+                   current_day: int = 0) -> str:
     """STOP-S3 severity tier classification.
 
     B1067 Council 167 expansions:
     - FIX 2 A1-PROMOTION: A1 mass-anomaly (>50pct of expected-firing
       strategies anomalous) now HALT-CRITICAL. Previously WARN-only.
-      Catches B1063-class issue where 87 of 88 expected-firing
-      strategies were silent but monitor only emitted WARN.
     - FIX 3 E-NEW: silent-strategy floor at sim_day >= 500.
-      Distinct from A1 (per-strategy ratio); E checks absolute mass
-      silence over time.
     - FIX 4 F-NEW: regime coverage gap LOG-MEDIUM only (no HALT).
+
+    B1070 Stage D Council 179 calibrations:
+    - F-9.2 FIX: A1-PROMOTION HALT-CRITICAL now gated on
+      current_day >= 200 to avoid spurious false positives in first
+      200 sim_days (strategies legitimately haven't fired setups yet).
+      Below 200 emits WARN-HIGH (still visible; doesn't HALT engine).
+      E-NEW silent_floor (sim_day >= 500) remains terminal escalation.
     """
     # B2 schema violations: hardest signal (data integrity)
     if str(b2.get("status", "")).startswith("ERROR"):
         return "HALT-CRITICAL"
     if b2.get("violations"):
         return "HALT-CRITICAL"
-    # B1067 FIX 2 A1-PROMOTION: mass-anomaly -> HALT
+    # B1067 FIX 2 A1-PROMOTION + B1070 F-9.2 FIX: mass-anomaly HALT
+    # gated on current_day >= 200 (Sub-B finding: early sim_day A1
+    # false positives before fires accumulate; B1067 threshold too
+    # eager pre-day-200). Below 200: WARN-HIGH retains visibility.
     a1_anom = a1.get("anomaly_count", 0)
     a1_expected = a1.get("expected_firing_count", 0)
-    if a1_expected > 0 and a1_anom > 0.5 * a1_expected:
+    if (a1_expected > 0 and a1_anom > 0.5 * a1_expected
+            and current_day >= 200):
         return "HALT-CRITICAL"
-    # B1067 FIX 3 E-NEW: silent-strategy floor
+    # B1067 FIX 3 E-NEW: silent-strategy floor (terminal escalation
+    # at sim_day >= 500)
     if e_new and e_new.get("halt", False):
         return "HALT-CRITICAL"
     if a1_anom >= 5:
