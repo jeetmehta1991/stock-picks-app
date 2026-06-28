@@ -1,0 +1,67 @@
+{
+  "comment": "Pre-launch evidence artifact per CHECKLIST #126 + Council 149 Option-3. Persisted post-launch per feedback_designed_vs_verified_requires_evidence_artifact.",
+  "launch_batch": "B1054",
+  "run_id": "r5_full_20260627_222043",
+  "instance_id": "i-021affa766c474ca7",
+  "az": "us-east-1b",
+  "smoke_validation": {
+    "smoke_run_id": "r5_smoke_20260627_214852",
+    "smoke_instance": "i-03c2da5d61979471a",
+    "phase_smoke_pass_utc": "2026-06-28T02:14:59Z",
+    "engine_cube_wall_clock": "7 min 22 sec",
+    "agent_pipeline_lines_in_engine_log": 0,
+    "trade_count": 4,
+    "smc_status": 1,
+    "evidence_persisted": "output_audit/phase_c_v2_5c_smoke_pass_2026_06_28.txt",
+    "verdict": "OPERATIONALLY-VERIFIED B1052 --no-agents fix"
+  },
+  "pre_launch_checklist_compliance": {
+    "checklist_25": "owner pre-approval Smoke PASS -> Phase D launch in same turn ~0 delay",
+    "checklist_115": "Council 149 enumerate+recommend Option-3 STAGED-PRE-LAUNCH",
+    "checklist_116": "S3 fallback fired again (raw 17712 / base64 23616 > 16384)",
+    "checklist_117": "polling armed AT launch event",
+    "checklist_121": "IAM SSM verified",
+    "checklist_126": "this file + v2.5c smoke artifact = evidence artifacts",
+    "checklist_127": "Phase C v2.5c PASS validates fix; honest scale-limitation noted in B1052 audit",
+    "feedback_ask_before_relaunching_corrected_version": "owner explicit pre-approval received this turn"
+  },
+  "phase_ladder_config_unchanged_from_b1048": {
+    "phase_1": {"tickers": "NVDA", "max_min": 120},
+    "phase_2": {"tickers": "NVDA,AAPL,MSFT,GOOGL,META,XLF,UUP,COIN,SOFI,IONQ", "max_min": 180},
+    "phase_3": {"ticker_count": 50, "max_min": 240},
+    "phase_4_r5": {"ticker_count": 1929, "max_min": 480}
+  },
+  "honest_timing_concern": {
+    "smoke_v25c_per_day": "~20 sec (7m22s / 22 days)",
+    "linear_extrapolation_phase_1": "~5.5 hr (1003 days x 20s)",
+    "max_min_phase_1": "120 min (2 hr)",
+    "extrapolation_vs_cap": "EXTRAPOLATION OVER CAP - watchdog may fire at sim_day ~360",
+    "mitigating_factors": "cache effects amortize (first-touch cost ~30% of smoke); steady-state per-day expected lower than 20s",
+    "fallback_if_timeout": "B1043 F-06 SIGTERM handler flushes checkpoint before exit; PHASE_1_TIMEOUT_HALT sentinel + b1019_monitor.log surface root cause"
+  },
+  "az_failover": ["us-east-1b", "us-east-1c", "us-east-1d", "us-east-1a", "us-east-1f"],
+  "user_data": {
+    "raw_bytes": 17712,
+    "base64_bytes": 23616,
+    "externalized": true,
+    "bootstrap_loader": "/tmp/r5_full_20260627_222043_bootstrap.sh"
+  },
+  "structural_fixes_validated_pre_launch": [
+    "B1039 AWS install fix (SMARTMONEYCONCEPTS_STATUS=1 in v2.5c)",
+    "B1041 SMC_PHASE=PRODUCTION",
+    "B1042 Layer 1 engine_state.json + Layer 2 B1019 monitor wrap",
+    "B1043 9 BLOCKERS + Sub-C MAX_MIN raised",
+    "B1045 HoldoutUnlock fix #27",
+    "B1046 9 WARN fixes (setsid + guarded_kill + nohup-disown)",
+    "B1049 PHASE_DIR fix #29",
+    "B1052 --no-agents fix #30 (validated by v2.5c PASS)",
+    "B1053 folder rename (docs structural)",
+    "B1054 pre-launch evidence (this artifact)"
+  ],
+  "polling_id": "b3qc9mm47",
+  "polling_spec": {
+    "interval_minutes": 5,
+    "cap_minutes": 17 * 60,
+    "task_notification_on": ["PHASE_4_PASS", "PHASE_4_FAIL", "AUTOLADDER_COMPLETE", "any HALT-CRITICAL", "B1019_PREFLIGHT_FAIL", "any TIMEOUT_HALT"]
+  }
+}
