@@ -1,0 +1,104 @@
+{
+  "comment": "B1063 Phase D R5 relaunch evidence post B1062 PIVOT #37 fix. Council 163 Option-5.",
+  "launch_batch": "B1063",
+  "previous_attempts": {
+    "B1058": "i-0434ba0eba781a2ae HALTed at Phase 1 sim_day 100 by b2_viol=1 (driven by missing_column_exit_method); cost $0.66; B1059 fixed a1_anom 88->56 (wrong attribution)",
+    "B1060": "i-01029121213800f76 HALTed at Phase 1 sim_day 100 SAME pattern b2_viol=1; cost $0.75; confirmed b2_viol=1 was actual HALT driver since B1059 fixed a1 but b2 still fired"
+  },
+  "run_id": "r5_full_20260628_111001",
+  "instance_id": "i-05e26af3963feca9c",
+  "az": "us-east-1b",
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ami_id": "ami-08f44e8eca9095668",
+  "iam_instance_profile": "batch395-instance-role",
+  "az_failover_order": ["us-east-1b", "us-east-1c", "us-east-1d", "us-east-1a", "us-east-1f"],
+  "az_chosen_first_try": "us-east-1b",
+  "az_consecutive_first_try_success": 5,
+  "user_data": {
+    "raw_bytes": 18889,
+    "base64_bytes": 25188,
+    "externalized_to_s3": true,
+    "bootstrap_loader_bytes": 1108
+  },
+  "council_lineage": [
+    "Council 158 B1059 PIVOT #36 a1 baseline scaling (real fix; wrong attribution disclosed Council 162)",
+    "Council 160 B660 baseline universe verification (503 confirmed)",
+    "Council 162 B1062 PIVOT #37 b2 schema fix (actual HALT driver)",
+    "Council 163 B1063 RELAUNCH Option-5 LAUNCH-+-COMPREHENSIVE-MONITOR-+-SNAPSHOTS"
+  ],
+  "b1062_pivot_37_fix_validated": {
+    "commit": "26349b5e1",
+    "fix_spec": "monitor _check_b2_schema required column changed from 'exit_method' to 'exit_reason'",
+    "pin_test_pyramid": "5/5 PASS (test_b1062_monitor_schema_contract.py)",
+    "writer_py_audit": "exit_reason canonical at writer.py:50, 516, 519; exit_method only in downstream cube aggregates (exit_method_multi_dim_cube.csv etc); NO drift in trade_log emission",
+    "honest_disclosure": "B1059 (PIVOT #36) was REAL fix but WRONG ATTRIBUTION; a1_anom 88->56 reduction was genuine (2nd-order regime/selection effects) but b2_viol=1 was actual HALT driver per _classify_tier:307; both B1058+B1060 would have HALTed regardless of B1059 fix"
+  },
+  "b660_baseline_verification": {
+    "comment": "Council 160 Option-2 verification (still valid for B1063)",
+    "file": "output_audit/fire_count_measured_b660_full_universe.json",
+    "universe": "T1a_PIT_canonical",
+    "n_tickers_sampled": 503,
+    "projection_scale_factor": 1.0,
+    "verdict": "B1059 baseline-universe-size=503 assumption VERIFIED VALID"
+  },
+  "per_phase_pool_config": {
+    "phase_1": {"tickers_active": 1, "pool_workers": 0, "max_min": 120, "scale_factor": 0.002, "expected_wall_clock_min": 10, "validation": "v2.5e empirical 38s"},
+    "phase_2": {"tickers_active": 10, "pool_workers": 0, "max_min": 180, "scale_factor": 0.02, "expected_wall_clock_min": 30, "validation": "Phase 2 mini-smoke ~1m40s"},
+    "phase_3": {"tickers_active": 50, "pool_workers": 8, "max_min": 240, "scale_factor": 0.099, "expected_wall_clock_min": 167, "validation": "UNTESTED"},
+    "phase_4_r5": {"tickers_active": 1929, "pool_workers": 60, "max_min": 480, "scale_factor": 3.834, "expected_wall_clock_min": "UNKNOWN", "validation": "UNTESTED at full scale"}
+  },
+  "structural_fixes_validated": [
+    "B1039 AWS install fix",
+    "B1041 SMC_PHASE=PRODUCTION",
+    "B1042 Layer 1+2 monitor wrap",
+    "B1043 9 BLOCKERS",
+    "B1045 HoldoutUnlock PIVOT #27",
+    "B1046 9 WARN F-10 to F-43",
+    "B1049 PHASE_DIR PIVOT #29",
+    "B1052 --no-agents PIVOT #30",
+    "B1055 pool init pre-warm PIVOT #32",
+    "B1057 PIVOT #34 dataset naming + PIVOT #35 pool IPC + per-phase pool config",
+    "B1059 PIVOT #36 A1 baseline scaling (real-but-wrong-attribution)",
+    "B1061 doc-sync + post-completion analyzer",
+    "B1062 PIVOT #37 b2 schema fix (THIS RELAUNCH)"
+  ],
+  "monitoring_armament_layer_1_to_6": {
+    "layer_1_aws_b1019_monitor": "ARMED + A1 baseline scaled per phase (B1059) + b2 schema fixed (B1062)",
+    "layer_2_engine_log_PHASE_TIMING": "ARMED (B1057 C-fix)",
+    "layer_3_aws_s3_sentinels": "ARMED",
+    "layer_4_claude_bash_polling": "ARMED THIS TURN (5-min, 17-hr cap, snapshots every 30 min, HALT auto-detect)",
+    "layer_5_ssm_mid_run": "UNAVAILABLE",
+    "layer_6_phase_boundary_notification": "ARMED"
+  },
+  "halt_critical_response_plan": {
+    "auto_action": "pull engine.log + monitor.log + sentinel state; classify HALT class (PIVOT #38 candidate?); surface to owner",
+    "no_auto_relaunch": true,
+    "per_rule": "feedback_ask_before_relaunching_corrected_version + CHECKLIST #120"
+  },
+  "expected_outcomes": {
+    "bootstrap_min": 17,
+    "phase_1_min": 10,
+    "phase_2_min": 30,
+    "phase_3_min": 167,
+    "phase_4_min": "UNKNOWN",
+    "post_run_min": 3,
+    "total_expected_hr": "3-5",
+    "hard_cap_hr": 17,
+    "expected_cost_usd": "3-7",
+    "session_cumulative_post_relaunch_usd": "13-17"
+  },
+  "honest_caveats": [
+    "Phase 3 (50 tickers + pool=8) UNTESTED",
+    "Phase 4 (Master 1929 + pool=60) UNTESTED at full scale",
+    "B1062 b2 schema fix addresses ACTUAL HALT driver from B1058/B1060",
+    "B1059 a1_anom scaling captures dominant 1st-order ticker-count effect",
+    "If HALT recurs from new violation source: PIVOT #38 candidate (no current evidence)"
+  ],
+  "pivot_count_session": 37,
+  "phase_d_attempt_number": 7,
+  "phase_d_completed_attempts": 0,
+  "session_aws_spend_pre_b1063_usd": 10.59,
+  "launched_at_utc": "2026-06-28T15:10Z"
+}
