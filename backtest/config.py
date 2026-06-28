@@ -240,6 +240,71 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     #   (updated B886).
     "cpr_narrow_bullish":          {"exit_method": "breakeven_plus_trail"},
 
+    # ----- Batch 1070 Stage C ITEM 2 (2026-06-29 owner-approved per Council 174/177/178) -----
+    # Source: B395 cube (output_batch395_final/trade_exit_detail.csv;
+    #   729,500 rows). Re-derived from B414 precedent + Batch 266
+    #   fire_rate>=0.95 guardrail per Council 178 Option 6 INSPECT-+-
+    #   MANUAL-EXTRACT-COMBO.
+    # Criteria: N>=100 per (strategy, exit_method) cell + Sharpe>=0.3 +
+    #   WR>=0.45 + fire_rate>=0.95 (Batch 266 exit-method-actually-
+    #   triggers guardrail). Best exit_method per strategy selected by
+    #   Sharpe.
+    # Filters: in current ALL_STRATEGIES + NOT in existing STRATEGY_EXIT
+    #   _OVERRIDE + NOT in DEPRECATED_STRATEGIES + NOT in STRATEGIES_
+    #   DISABLED_MISSING_PRODUCER. Strategies added post-B414 lacking
+    #   cube history are absent from B395 (auto-skipped).
+    # Honest-finding caveat: PSR<0.95 means statistically suggestive but
+    #   not high-confidence (B414 precedent same caveat). Walk-forward
+    #   (DEC-505) is the next-Stage gate; Phase 4 cube will produce
+    #   universe-scale verdicts for B1072 refinement.
+    # Cube evidence (Sharpe / n / WR / fire_rate per B395):
+    #   htf_aligned_breakout_long       4.09 / 190  / 0.526 / 1.000
+    #   avwap_252_breakout              2.97 / 179  / 0.508 / 0.989
+    #   pre_fomc_long_sleeve            2.59 / 229  / 0.515 / 1.000
+    #   institutional_buy_momentum_long 2.54 / 126  / 0.492 / 1.000
+    #   morning_star                    2.45 / 228  / 0.539 / 1.000
+    #   williams_stoch_dual             2.19 / 134  / 0.858 / 1.000
+    #   squeeze_breakout                1.94 / 252  / 0.520 / 1.000
+    #   orb_stocks_in_play_long         1.90 / 205  / 0.473 / 1.000
+    #   macd_fast_crossover             1.86 / 256  / 0.520 / 1.000
+    #   supertrend_macd                 1.73 / 520  / 0.462 / 1.000
+    #   golden_cross_9_21               1.71 / 155  / 0.671 / 1.000
+    #   ultimate_oscillator             1.46 / 462  / 0.519 / 1.000
+    #   ppo_crossover                   1.45 / 296  / 0.534 / 1.000
+    #   tema_dema                       1.04 / 406  / 0.727 / 1.000
+    #   cpr_narrow_momentum             0.76 / 283  / 0.502 / 1.000
+    #   three_white_soldiers            0.67 / 344  / 0.753 / 1.000
+    #   break_retest_volume             0.65 / 329  / 0.492 / 1.000
+    #   macd_crossover                  0.61 / 144  / 0.500 / 1.000
+    #   awesome_oscillator              0.61 / 212  / 0.524 / 1.000
+    #   stochrsi_overbought_short       0.57 / 353  / 0.535 / 1.000
+    #   hull_rsi                        0.52 / 360  / 0.733 / 1.000
+    #   parabolic_sar_flip              0.49 / 338  / 0.654 / 1.000
+    #   pead_short                      0.37 / 453  / 0.508 / 1.000
+    "htf_aligned_breakout_long":       {"exit_method": "earnings_blackout"},
+    "avwap_252_breakout":              {"exit_method": "breakeven_plus_trail"},
+    "pre_fomc_long_sleeve":            {"exit_method": "earnings_blackout"},
+    "institutional_buy_momentum_long": {"exit_method": "earnings_blackout"},
+    "morning_star":                    {"exit_method": "time_stop_10d"},
+    "williams_stoch_dual":             {"exit_method": "next_pivot_target"},
+    "squeeze_breakout":                {"exit_method": "earnings_blackout"},
+    "orb_stocks_in_play_long":         {"exit_method": "earnings_blackout"},
+    "macd_fast_crossover":             {"exit_method": "earnings_blackout"},
+    "supertrend_macd":                 {"exit_method": "earnings_blackout"},
+    "golden_cross_9_21":               {"exit_method": "next_pivot_target"},
+    "ultimate_oscillator":             {"exit_method": "earnings_blackout"},
+    "ppo_crossover":                   {"exit_method": "class_time_stop"},
+    "tema_dema":                       {"exit_method": "next_pivot_target"},
+    "cpr_narrow_momentum":             {"exit_method": "time_stop_10d"},
+    "three_white_soldiers":            {"exit_method": "next_pivot_target"},
+    "break_retest_volume":             {"exit_method": "earnings_blackout"},
+    "macd_crossover":                  {"exit_method": "time_stop_10d"},
+    "awesome_oscillator":              {"exit_method": "earnings_blackout"},
+    "stochrsi_overbought_short":       {"exit_method": "class_time_stop"},
+    "hull_rsi":                        {"exit_method": "next_pivot_target"},
+    "parabolic_sar_flip":              {"exit_method": "next_pivot_target"},
+    "pead_short":                      {"exit_method": "regime_flip"},
+
     # ----- Legacy Batch 284/285 entries RETAINED for backward-compat -----
     # These entries STAY in the dict but their strategies are in
     # PHASE_1B_ALPHA_DISABLED_STRATEGIES, so screener.py skips them BEFORE
