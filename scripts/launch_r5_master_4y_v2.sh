@@ -219,12 +219,19 @@ run_phase() {
     # Phase3 = 8 (small pool, 50 tickers); Phase4 R5 = 60 (full pool,
     # 1929 tickers - original design point for amortization).
     # Env var SMOKE_POOL_WORKERS overrides for smoke testing.
+    # B1070 F-7.1+F-10.1 FIX (Council 172/175/176 Sub-B): Phase 4
+    # pool=60 untested at 1929-ticker scale. B1068 panel-blackout fix
+    # added compute_ema_sma at 25ms/ticker/day = 13.5 HOURS just for
+    # ema_sma at 1929 tickers x 1006 days. Phase 4 wall-clock projection
+    # 16-20 hr vs old 8 hr watchdog = guaranteed PHASE_4_TIMEOUT_HALT.
+    # Fix: pool 60 -> 16 + watchdog MAX_MIN 480 -> 1200 (20 hr cap).
+    # Per feedback_silent_failure_pairing_rule + CHECKLIST #122.
     case "\${PHASE_NUM}" in
         smoke) POOL_WORKERS=\${SMOKE_POOL_WORKERS:-0} ;;
         1)     POOL_WORKERS=0 ;;
         2)     POOL_WORKERS=0 ;;
         3)     POOL_WORKERS=8 ;;
-        4)     POOL_WORKERS=60 ;;
+        4)     POOL_WORKERS=16 ;;
         *)     POOL_WORKERS=0 ;;
     esac
     echo "PHASE_\${PHASE_NUM}_POOL_WORKERS=\${POOL_WORKERS}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_POOL_WORKERS
@@ -355,7 +362,7 @@ aws s3 cp /tmp/sentinels/B1019_PREFLIGHT_PASS s3://\${BUCKET}/\${RUN_ID}/B1019_P
 run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 120 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 180 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 240 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 480 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 1200 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 
 # B1046 F-21 fix: final SYNC_PID kill guarded with empty-check + WARN log.
 if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID=\${SYNC_PID} kill failed (already exited)"; else echo "WARN: SYNC_PID empty -- skip kill (F-21 visibility)"; fi

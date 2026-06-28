@@ -592,6 +592,10 @@ class BacktestEngine:
             #         MAX_MIN=30 = 30 min => never emitted). Add i==50 case.
             #
             # Atomic write via .tmp + os.replace prevents partial-state reads.
+            # B1070 F-1.1 track latest sim_day + sim_date so final emit
+            # (post _finalize_open_trades) has correct values.
+            self._last_sim_day_index = i
+            self._last_sim_date = as_of
             if i > 0 and (i == 50 or i % 100 == 0):
                 try:
                     import json as _json
@@ -679,6 +683,43 @@ class BacktestEngine:
         logger.info("Backtest complete. Open=%d Closed=%d Skipped=%d (finalized %d at end-of-backtest)",
                     len(self.open_trades), len(self.closed_trades),
                     len(self.skipped_trades), n_finalized)
+
+        # B1070 F-1.1 FIX (Council 172/175/176 Sub-B): emit status='complete'
+        # to engine_state.json so B1019 monitor's PASS-exit conditions
+        # (monitor.py lines 119-122, 146-148 poll for status=='complete')
+        # actually fire. Pre-fix: lines 595-619 only wrote 'running'; never
+        # re-written after _finalize_open_trades -> monitor hangs indefinitely
+        # on PASS path. Same bug class as B1067 G-IMPL (buffer flush masked
+        # by HALT path SIGTERM). Atomic .tmp + os.replace ensures monitor
+        # never reads a half-written file. Per CHECKLIST #122 + #124 +
+        # feedback_adversarial_review_must_check_successful_path_output.
+        try:
+            import json as _json_b1070
+            import os as _os_b1070
+            import time as _time_b1070
+            _state_path = self.output_dir / "engine_state.json"
+            _state_tmp = self.output_dir / "engine_state.json.tmp"
+            _final_state = {
+                "simulated_day": int(getattr(self, "_last_sim_day_index", 0)),
+                "cells_completed": int(len(self.closed_trades)),
+                "status": "complete",
+                "sim_date": str(getattr(self, "_last_sim_date", "")),
+                "sim_day_index": int(getattr(self, "_last_sim_day_index", 0)),
+                "tickers_processed": int(len(getattr(self, "_last_universe", []) or [])),
+                "trades_so_far": int(len(self.closed_trades)),
+                "open_trades": int(len(self.open_trades)),
+                "timestamp": _time_b1070.strftime("%Y-%m-%dT%H:%M:%SZ", _time_b1070.gmtime()),
+                "pid": _os_b1070.getpid(),
+                "finalized_open_trades": int(n_finalized),
+            }
+            _state_tmp.write_text(_json_b1070.dumps(_final_state, indent=2))
+            _os_b1070.replace(_state_tmp, _state_path)
+            logger.info("B1070 F-1.1: emitted status='complete' to %s", _state_path)
+        except Exception as _e_b1070:
+            # Per CHECKLIST #122 silent-failure-pairing: log + propagate context
+            # so structural bugs surface; engine still exits cleanly via outer
+            # save_all_outputs call.
+            logger.warning("B1070 F-1.1: status='complete' emit failed: %s", _e_b1070)
 
         # Batch 394 (2026-05-27): defer pool teardown to save_all_outputs so
         # the same spawn pool services both screen + cube replay.  Calling
@@ -2606,19 +2647,38 @@ class BacktestEngine:
         trade_detail_frames = []
         if (self._screen_pool is not None and self.screen_pool_workers > 0
                 and strategy_tasks):
+            # B1070 F-2.1 FIX (Council 172/175/176 Sub-B): pool.starmap
+            # materializes results list = 5-20GB resident at Phase 4 scale
+            # (220 strategies x 30-50K trades x per-trade entry_context
+            # pickled to N workers). 64GB instance OOM risk. Fix: use
+            # imap_unordered + stream-collect so memory peaks at single-
+            # result-pair instead of full materialized list. Per
+            # feedback_designed_vs_verified_requires_evidence_artifact +
+            # CHECKLIST #124. Same parallelism + same semantics; lower
+            # peak memory.
             logger.info(
-                "Batch 394: parallel cube replay across %d strategies on "
-                "%d pool workers", len(strategy_tasks),
-                self.screen_pool_workers,
+                "B1070 F-2.1 (was Batch 394): streaming parallel cube replay "
+                "across %d strategies on %d pool workers via imap_unordered",
+                len(strategy_tasks), self.screen_pool_workers,
             )
+            results = []
             try:
-                results = self._screen_pool.starmap(
-                    _pool_cube_replay_worker, strategy_tasks,
-                )
+                # imap_unordered yields results as workers complete; we
+                # consume them in a generator-loop so full result list is
+                # NOT held in memory simultaneously.
+                # Note: starmap takes iterable of arg-tuples; imap_unordered
+                # takes single-arg callable. Wrap _pool_cube_replay_worker.
+                def _b1070_starmap_wrapper(args):
+                    return _pool_cube_replay_worker(*args)
+                for _result_pair in self._screen_pool.imap_unordered(
+                    _b1070_starmap_wrapper, strategy_tasks,
+                    chunksize=1,
+                ):
+                    results.append(_result_pair)
             except Exception as exc:
                 logger.warning(
-                    "Batch 394: pool cube replay failed (%s); falling back "
-                    "to sequential", exc,
+                    "B1070 F-2.1: streaming pool cube replay failed (%s); "
+                    "falling back to sequential per-strategy", exc,
                 )
                 results = [_pool_cube_replay_worker(s, td)
                            for s, td in strategy_tasks]
