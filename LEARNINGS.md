@@ -2255,3 +2255,39 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 - B1032 EXECUTION_QUEUE entry with 12-bug catalog tickets
 
 **Cross-references.** Council 126 verdict (Option-6 Phase A only), `feedback_monitor_design_vs_operational_gap`, `feedback_silent_failure_pairing_rule`, `feedback_phase_ladder_timing_validation`, CHECKLIST #121-#125, B1028 sunk cost ($2.00), Council 124 mistake-codification pattern applied to live failure (B1028 is the meta-example).
+
+---
+
+## L177 — Phantom dataset names in pre-warm hide as partial-success (B1055 → B1057 PIVOT #34 2026-06-28)
+
+**What went wrong:** B1055 added `_load_quiver_bulk("insidertrading")` to `_pool_init` to pre-warm Quiver bulk feed datasets (so all 60 pool workers wouldn't reload 1M-row dataset). The smoke v2.5d showed BOUNDED bulk-feed loads (152 vs unbounded) suggesting partial success — but per-day timing was UNCHANGED at ~20 sec/day. Sub-agent forensics on v2.5d engine.log revealed the smoking gun: `"insidertrading"` is a PHANTOM dataset name — Quiver API endpoint path (`/insidertrading`) NOT the cache key (`insiders`). Pre-warm loaded a dataset that NO consumer ever queries. The actual hot consumers per `smart_money.py:498/675/1640/1807`: `insiders` (1M rows; HOT) + `sec13fchanges` (500k rows; HOT) + `sec13f` + `patentmomentum` + `corporatedonors`.
+
+**Universal principle:** *Naming-bug fixes that produce partial-success metrics ("loads bounded") hide that they targeted the wrong key.* The success metric was "fewer bulk loads" → met. But the goal was "amortize the hot path" → not met. Partial-success on a proxy metric is not validation of the actual fix target.
+
+**Rule:** When fixing a "load X" type bug, grep all consumer call sites BEFORE choosing the key to pre-warm. Names that look canonical (API endpoint path, schema doc key) may not match the cache key. Verify with `grep -n 'load_quiver_bulk' backtest/` or equivalent. Pyramid test must assert the EXACT keys used by consumers, not the keys used by the fix.
+
+**Cross-references:** B1057 commit `4a1d4a110`, `backtest/signals/screener.py:8470` `_pool_init`, B1056 sub-agent forensics report `output_audit/b1056_v25d_per_day_timing_decomposition_2026_06_28.md`, `feedback_designed_vs_verified_requires_evidence_artifact`, CHECKLIST #126.
+
+---
+
+## L178 — Pool IPC is the 92% silent gap at small ticker counts (v2.5e finding 2026-06-28 PIVOT #35)
+
+**What went wrong:** v2.5d 60-worker pool ran 22-day NVDA cube in 7m 20s (~19.4 sec/day). v2.5e sequential baseline (--screen-pool-workers 0) ran the SAME 22-day cube in **38 seconds** (~1.9 sec/day). **11.6× speedup from removing the pool.** Root cause: at NVDA-only scale (1 ticker), per-screen_universe work is ~10ms; pool dispatch + 60-worker bulk-feed loads (1.5M rows per worker × 60 = 90M row-loads) dominates. The pool was designed for Phase 4 Master 1929 amortization but was applied universally including small-ticker smokes where it's strictly slower than sequential.
+
+**Universal principle:** *Parallelization overhead has a fixed cost (IPC dispatch + worker initialization) and a variable cost (per-unit work). When per-unit work is small enough, fixed cost dominates and parallelization is SLOWER than sequential.* Multi-processing pools assume the per-task work amortizes the worker spawn cost. For pool=60 with NVDA-only smoke, per-day work (~10ms) cannot amortize 60-worker bulk-feed loads (~hundreds of ms each).
+
+**Rule:** Pool worker count must scale with the ticker count being processed. Use a per-phase config: `pool_workers = max(0, min(60, ticker_count // 30))`. For ticker_count < 30, prefer sequential. For ticker_count > 1000, use full pool. Empirically validate the crossover point with a smoke at each phase scale before committing to a setting. Never assume "more workers = faster"; benchmark.
+
+**Cross-references:** B1057 commit `4a1d4a110`, `scripts/launch_r5_master_4y_v2.sh:215` per-phase pool config, v2.5e engine.log evidence (38s @ 22 days), Phase 2 mini-smoke confirmation (10 tickers ~1m40s @ 22 days), `feedback_phase_ladder_timing_validation`.
+
+---
+
+## L179 — Monitor baseline must scale with active-vs-baseline universe ratio (B1059 PIVOT #36 2026-06-28)
+
+**What went wrong:** B1019 monitor's A1 fire-rate check compared per-strategy fires/year in the running cube against the B660 baseline (measured at T1a 503 tickers). Phase D B1058 launched Phase 1 NVDA-only (1 ticker). At sim_day 100 (2 min runtime), A1 flagged 88 strategies as anomalous (ratio < 0.5) and SIGTERMed the engine via `PHASE_1_B1019_HALT`. **Engine was healthy — monitor was structurally invalid at single-ticker scale.** Per-strategy universe-wide fires/year scales linearly with ticker count (at NVDA-only, expected_fpy = baseline * 1/503 = 0.2% of full); the A1 check needed to apply this scaling but didn't.
+
+**Universal principle:** *Statistical monitors that compare a measurement to a baseline must explicitly handle scale invariance. A baseline measured at universe size N₀ cannot be compared directly to a measurement at universe size N₁ when N₀ ≠ N₁ — without scale correction, the monitor fires false positives in proportion to the scale mismatch.*
+
+**Rule:** Every monitor that uses a baseline must accept both an `active_size` and `baseline_size` parameter and apply the correct scaling (linear, sqrt, or other) for the underlying invariance. For universe-wide fire rates, linear scaling: `expected_scaled = expected * (active / baseline)`. Pyramid test must include (a) scaling-correctness test and (b) regression guard that scaling is skipped when active == baseline (backward-compat). Document the scale assumption (linear here) so future-readers know what 2nd-order effects (regime drift, ticker selection) are NOT captured.
+
+**Cross-references:** B1059 commit `12027a7bd`, `scripts/b1019_phase_1_runtime_monitor.py` `--total-tickers-active` + `--baseline-universe-size` args, B660 baseline metadata (`universe=T1a_PIT_canonical`, `n_tickers_sampled=503`, `projection_scale_factor=1.0`), Council 158 + 160 verdicts, `backtest/tests/test_b1059_a1_baseline_scaling.py`, `feedback_monitor_baseline_must_scale_with_active_universe`.
