@@ -60,9 +60,35 @@ def main() -> int:
                         help="Total cube cells (default 217 strategies * 26 exits)")
     parser.add_argument("--poll-seconds", type=int, default=30,
                         help="Poll interval seconds (default 30)")
+    # B1059 PIVOT #36 fix: scale A1 baseline by active-vs-baseline ticker ratio
+    parser.add_argument("--total-tickers-active", type=int, default=503,
+                        help="Active tickers in current run (Phase 1=1, "
+                             "Phase 2=10, Phase 3=50, Phase 4=503). Used to "
+                             "scale A1 fire-rate baseline. Default 503 = full "
+                             "T1a (no scaling).")
+    parser.add_argument("--baseline-universe-size", type=int, default=503,
+                        help="Universe size of B660 baseline measurement "
+                             "(default 503 = T1a). Used as denominator in "
+                             "A1 scaling: expected_fpy_scaled = expected_fpy "
+                             "* (total_tickers_active / baseline_universe_size).")
     args = parser.parse_args()
 
     baseline = _load_baseline(REPO / args.baseline)
+    # B1059 PIVOT #36 fix: scale A1 baseline by ticker ratio.
+    # Phase D B1058 HALTed at Phase 1 sim_day 100 (2 min runtime) because
+    # A1 fire-rate compared single-ticker NVDA Phase 1 fires to B660 full-
+    # universe (503-ticker) baseline. 88 strategies flagged as anomalous
+    # (ratio < 0.5) -> HALT-CRITICAL fire. Engine was healthy (~0.6 sec/day).
+    # Fix: scale expected_fpy by ratio (active / baseline_universe). For
+    # Phase 1 NVDA: ratio = 1/503 = 0.002 -> baseline scales to ~0.2pct of
+    # full-universe rate, matching what NVDA-only would emit.
+    # Per Council 158 Option-1.
+    if args.total_tickers_active != args.baseline_universe_size and baseline:
+        scale = float(args.total_tickers_active) / float(args.baseline_universe_size)
+        baseline = {k: v * scale for k, v in baseline.items()}
+        print(f"B1059 PIVOT #36: A1 baseline scaled by {scale:.6f} "
+              f"({args.total_tickers_active}/{args.baseline_universe_size}); "
+              f"effective per-strategy fpy reduced by this factor")
     last_checkpoint_day = -1
     start_ts = time.time()
 

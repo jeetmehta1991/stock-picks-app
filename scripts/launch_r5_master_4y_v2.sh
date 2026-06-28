@@ -236,13 +236,17 @@ run_phase() {
 
     # B1042 Layer 2 + B1043 F-03/F-04/F-09: B1019 monitor wrap with corrected
     # baseline path + csv/parquet dispatch + active in smoke too.
-    python scripts/b1019_phase_1_runtime_monitor.py \\
+    # B1059 PIVOT #36 fix: pass active ticker count so A1 baseline scales
+    # against B660 full-universe (503-ticker) baseline.
+    setsid python scripts/b1019_phase_1_runtime_monitor.py \\
         --engine-state \${PHASE_DIR}/engine_state.json \\
         --trade-log \${PHASE_DIR}/trade_log_checkpoint.csv \\
         --baseline output_audit/fire_count_measured_b660_full_universe.json \\
         --poll-seconds 60 \\
         --total-days 1006 \\
         --total-cells 5694 \\
+        --total-tickers-active \${NCNT} \\
+        --baseline-universe-size 503 \\
         > \${PHASE_DIR}/b1019_monitor.log 2>&1 &
     B1019_PID=\$!
     echo "B1019_MONITOR_PID=\${B1019_PID} phase=\${PHASE_NUM}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_B1019_PID
