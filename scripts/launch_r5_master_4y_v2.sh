@@ -238,7 +238,11 @@ run_phase() {
     # baseline path + csv/parquet dispatch + active in smoke too.
     # B1059 PIVOT #36 fix: pass active ticker count so A1 baseline scales
     # against B660 full-universe (503-ticker) baseline.
-    setsid python scripts/b1019_phase_1_runtime_monitor.py \\
+    # B1067 FIX 1 G-IMPL: 'python -u' forces unbuffered stdio so monitor.log
+    # is written incrementally not block-buffered. Without this, monitor.log =
+    # 0 bytes on PASS path (HALT path forces flush at exit; PASS path doesn't).
+    # Belt-and-suspenders with monitor.py sys.stdout.reconfigure(line_buffering).
+    setsid python -u scripts/b1019_phase_1_runtime_monitor.py \\
         --engine-state \${PHASE_DIR}/engine_state.json \\
         --trade-log \${PHASE_DIR}/trade_log_checkpoint.csv \\
         --baseline output_audit/fire_count_measured_b660_full_universe.json \\

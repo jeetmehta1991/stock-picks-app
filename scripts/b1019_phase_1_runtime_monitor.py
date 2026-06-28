@@ -41,6 +41,19 @@ from typing import Any
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+# B1067 FIX 1 G-IMPL (Council 167): force line-buffered stdout so
+# monitor.log is written incrementally not block-buffered. Without
+# this, monitor.log = 0 bytes when redirected to file in launch script
+# (Python print() is block-buffered on non-TTY). The bug was masked in
+# B1058+B1060 because HALT-CRITICAL forced final buffer flush at exit;
+# only on PASS path (B1063 Phase 1) did the empty-log issue surface.
+# Source: feedback_adversarial_review_must_check_successful_path_output
+# + B1066 monitor design audit.
+try:
+    sys.stdout.reconfigure(line_buffering=True)
+except AttributeError:
+    pass  # Python < 3.7 fallback; launch script also uses python -u
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -115,9 +128,16 @@ def main() -> int:
         b2 = _check_b2_schema(REPO / args.trade_log)
         d1 = _check_d1_progress(state, args.total_cells, args.total_days,
                                 current_day, start_ts)
+        # B1067 FIX 3 E-NEW: silent-strategy floor at sim_day >= 500
+        e_new = _check_e_new_silent_floor(a1, current_day,
+                                          silent_floor_day=500,
+                                          silent_pct_threshold=0.5)
+        # B1067 FIX 4 F-NEW: per-regime coverage (LOG-MEDIUM only)
+        f_new = _check_f_new_regime_coverage(REPO / args.trade_log)
 
-        tier = _classify_tier(a1, b2, d1)
-        print(_format_checkpoint_line(tier, current_day, a1, b2, d1))
+        tier = _classify_tier(a1, b2, d1, e_new, f_new)
+        print(_format_checkpoint_line(tier, current_day, a1, b2, d1,
+                                      e_new=e_new, f_new=f_new))
 
         if tier == "HALT-CRITICAL":
             print(f"HALT-CRITICAL: stopping monitor at day={current_day}")
@@ -216,19 +236,39 @@ def _check_a1_fire_rate(trade_log_path: Path, baseline: dict[str, float],
             return result
         years_elapsed = max(current_day / 251.0, 0.01)
         fires_so_far = df.groupby("strategy").size().to_dict()
+        # B1067 FIX 2 A1-PROMOTION: track expected-firing strategy count
+        # so _classify_tier can compute mass-anomaly ratio (>50% = HALT).
+        # B1067 also lowers threshold from expected_fpy > 1.0 to >= 0.001
+        # so post-B1059 scaling at NVDA (0.002 scale factor) still detects
+        # silent strategies that B660 baseline expects to fire.
+        expected_firing = 0
+        silent_with_expectation = 0
         for strat, expected_fpy in baseline.items():
             actual = fires_so_far.get(strat, 0)
             actual_fpy = actual / years_elapsed
-            if expected_fpy > 1.0:
-                ratio = actual_fpy / expected_fpy
-                if ratio > 2.0 or ratio < 0.5:
+            if expected_fpy >= 0.001:
+                expected_firing += 1
+                if actual == 0:
+                    silent_with_expectation += 1
                     result["anomaly_count"] += 1
                     result["anomalies"].append({
                         "strategy": strat,
                         "expected_fpy": expected_fpy,
-                        "actual_fpy": actual_fpy,
-                        "ratio": ratio,
+                        "actual_fpy": 0.0,
+                        "ratio": 0.0,
                     })
+                else:
+                    ratio = actual_fpy / expected_fpy
+                    if ratio > 2.0 or ratio < 0.5:
+                        result["anomaly_count"] += 1
+                        result["anomalies"].append({
+                            "strategy": strat,
+                            "expected_fpy": expected_fpy,
+                            "actual_fpy": actual_fpy,
+                            "ratio": ratio,
+                        })
+        result["expected_firing_count"] = expected_firing
+        result["silent_with_expectation"] = silent_with_expectation
         result["status"] = "OK" if result["anomaly_count"] == 0 else "ANOMALY"
     except Exception as exc:
         result["status"] = f"ERROR-{type(exc).__name__}-{exc}"
@@ -308,29 +348,154 @@ def _check_d1_progress(state: dict[str, Any], total_cells: int,
 
 
 def _classify_tier(a1: dict[str, Any], b2: dict[str, Any],
-                   d1: dict[str, Any]) -> str:
-    """STOP-S3 severity tier classification."""
+                   d1: dict[str, Any],
+                   e_new: dict[str, Any] | None = None,
+                   f_new: dict[str, Any] | None = None) -> str:
+    """STOP-S3 severity tier classification.
+
+    B1067 Council 167 expansions:
+    - FIX 2 A1-PROMOTION: A1 mass-anomaly (>50pct of expected-firing
+      strategies anomalous) now HALT-CRITICAL. Previously WARN-only.
+      Catches B1063-class issue where 87 of 88 expected-firing
+      strategies were silent but monitor only emitted WARN.
+    - FIX 3 E-NEW: silent-strategy floor at sim_day >= 500.
+      Distinct from A1 (per-strategy ratio); E checks absolute mass
+      silence over time.
+    - FIX 4 F-NEW: regime coverage gap LOG-MEDIUM only (no HALT).
+    """
+    # B2 schema violations: hardest signal (data integrity)
     if str(b2.get("status", "")).startswith("ERROR"):
         return "HALT-CRITICAL"
     if b2.get("violations"):
         return "HALT-CRITICAL"
-    if a1.get("anomaly_count", 0) >= 5:
+    # B1067 FIX 2 A1-PROMOTION: mass-anomaly -> HALT
+    a1_anom = a1.get("anomaly_count", 0)
+    a1_expected = a1.get("expected_firing_count", 0)
+    if a1_expected > 0 and a1_anom > 0.5 * a1_expected:
+        return "HALT-CRITICAL"
+    # B1067 FIX 3 E-NEW: silent-strategy floor
+    if e_new and e_new.get("halt", False):
+        return "HALT-CRITICAL"
+    if a1_anom >= 5:
         return "WARN-HIGH"
-    if a1.get("anomaly_count", 0) > 0:
+    if a1_anom > 0:
+        return "LOG-MEDIUM"
+    # B1067 FIX 4 F-NEW: regime-coverage gap (LOG-MEDIUM only per
+    # owner priority classification 2026-06-28)
+    if f_new and f_new.get("regime_gaps", 0) > 0:
         return "LOG-MEDIUM"
     return "OK"
 
 
 def _format_checkpoint_line(tier: str, day: int, a1: dict[str, Any],
-                            b2: dict[str, Any], d1: dict[str, Any]) -> str:
-    """F1: structured periodic owner-chatback line."""
+                            b2: dict[str, Any], d1: dict[str, Any],
+                            **kwargs) -> str:
+    """F1: structured periodic owner-chatback line.
+
+    B1067: extended with e_new + f_new metrics for monitor visibility.
+    """
+    e_new = kwargs.get("e_new") or {}
+    f_new = kwargs.get("f_new") or {}
     return (
         f"{tier} day={day} cells={d1['cells_completed']}/{d1['total_cells']} "
         f"pct={d1['pct_cells']:.1%} eta_min={d1['eta_min']:.1f} "
         f"a1_anom={a1.get('anomaly_count', 0)} "
+        f"a1_expected_firing={a1.get('expected_firing_count', 0)} "
         f"b2_viol={len(b2.get('violations', []))} "
+        f"e_silent_pct={e_new.get('silent_pct', 0):.2f} "
+        f"f_regime_gaps={f_new.get('regime_gaps', 0)} "
         f"runtime_min={d1['runtime_min']:.1f}"
     )
+
+
+def _check_e_new_silent_floor(a1: dict[str, Any], current_day: int,
+                               silent_floor_day: int = 500,
+                               silent_pct_threshold: float = 0.5
+                               ) -> dict[str, Any]:
+    """B1067 FIX 3 E-NEW: silent-strategy floor check.
+
+    HALT-CRITICAL when:
+      - sim_day >= silent_floor_day (default 500)
+      - silent_with_expectation / expected_firing_count > silent_pct_threshold (default 0.5)
+
+    Distinct from A1 (per-strategy fire-rate ratio); E measures absolute
+    mass silence over time. Catches B1063-class issue where engine ran
+    1000+ days but 87 of 88 expected-firing strategies stayed at 0 fires.
+    """
+    expected = a1.get("expected_firing_count", 0)
+    silent = a1.get("silent_with_expectation", 0)
+    silent_pct = silent / expected if expected > 0 else 0.0
+    halt = (current_day >= silent_floor_day
+            and silent_pct > silent_pct_threshold)
+    return {
+        "check": "e_new_silent_floor",
+        "current_day": current_day,
+        "silent_floor_day": silent_floor_day,
+        "silent_count": silent,
+        "expected_count": expected,
+        "silent_pct": silent_pct,
+        "halt": halt,
+        "status": "HALT" if halt else "OK",
+    }
+
+
+def _check_f_new_regime_coverage(trade_log_path: Path) -> dict[str, Any]:
+    """B1067 FIX 4 F-NEW: per-strategy regime coverage check.
+
+    LOG-MEDIUM (does not HALT per owner LOW classification 2026-06-28)
+    when fired strategies have 0 trades in expected regime per
+    STRATEGY_REGIME_AFFINITY config.
+
+    This is a soft-signal check: regime coverage gaps can indicate
+    threshold issues or missing regime mappings, but are not necessarily
+    bugs (regime conditions may not have occurred in window).
+    """
+    result = {"check": "f_new_regime_coverage", "regime_gaps": 0,
+              "gap_details": []}
+    try:
+        if not trade_log_path.exists():
+            result["status"] = "PENDING-no-trade-log"
+            return result
+        import pandas as pd
+        try:
+            from backtest.config import STRATEGY_REGIME_AFFINITY
+        except Exception:
+            result["status"] = "DEGRADED-no-affinity-config"
+            return result
+        suffix = str(trade_log_path).lower()
+        if suffix.endswith(".csv"):
+            df = pd.read_csv(trade_log_path)
+        elif suffix.endswith(".parquet"):
+            df = pd.read_parquet(trade_log_path)
+        else:
+            try:
+                df = pd.read_parquet(trade_log_path)
+            except Exception:
+                df = pd.read_csv(trade_log_path)
+        if "strategy" not in df.columns or "regime" not in df.columns:
+            result["status"] = "DEGRADED-schema-missing"
+            return result
+        for strat, expected_regimes in STRATEGY_REGIME_AFFINITY.items():
+            strat_trades = df[df["strategy"] == strat]
+            if len(strat_trades) == 0:
+                continue  # Silent strategies handled by A1/E-NEW
+            actual_regimes = set(strat_trades["regime"].unique())
+            expected_set = set(expected_regimes) if isinstance(
+                expected_regimes, (list, set, tuple)) else {expected_regimes}
+            missing = expected_set - actual_regimes
+            if missing:
+                result["regime_gaps"] += 1
+                if len(result["gap_details"]) < 10:
+                    result["gap_details"].append({
+                        "strategy": strat,
+                        "expected_regimes": sorted(expected_set),
+                        "actual_regimes": sorted(actual_regimes),
+                        "missing": sorted(missing),
+                    })
+        result["status"] = "OK" if result["regime_gaps"] == 0 else "GAPS"
+    except Exception as exc:
+        result["status"] = f"ERROR-{type(exc).__name__}-{exc}"
+    return result
 
 
 if __name__ == "__main__":
