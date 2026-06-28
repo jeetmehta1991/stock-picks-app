@@ -297,7 +297,7 @@ fi
 # #122. Master tickers download is highest-criticality (Phase D inputs).
 # Non-critical sentinel uploads (PHASE_RUNNING, PASS heartbeats) keep the
 # implicit success pattern; high-criticality download paths get paired check.
-aws s3 cp s3://\${BUCKET}/r5_master_20260627_064008/master_ops_tickers.txt /tmp/master_ops_tickers.txt --quiet || { echo "S3_CP_FAIL_CRITICAL: master_ops_tickers.txt download failed (F-33)"; aws s3 cp /tmp/sentinels/AUTOLADDER_COMPLETE s3://\${BUCKET}/\${RUN_ID}/MASTER_TICKERS_DOWNLOAD_FAIL --quiet 2>/dev/null; sudo shutdown -h +5; exit 1; }
+aws s3 cp s3://\${BUCKET}/r5_master_20260627_064008/master_ops_tickers.txt /tmp/master_ops_tickers.txt --quiet || { echo "S3_CP_FAIL_CRITICAL: master_ops_tickers.txt download failed (F-33)"; echo "MASTER_TICKERS_DOWNLOAD_FAIL \$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/sentinels/MASTER_TICKERS_DOWNLOAD_FAIL; aws s3 cp /tmp/sentinels/MASTER_TICKERS_DOWNLOAD_FAIL s3://\${BUCKET}/\${RUN_ID}/MASTER_TICKERS_DOWNLOAD_FAIL --quiet 2>/dev/null; sudo shutdown -h +5; exit 1; }
 if [ ! -s /tmp/master_ops_tickers.txt ]; then echo "S3_CP_FAIL_CRITICAL: master_ops_tickers.txt empty after download (F-33)"; sudo shutdown -h +5; exit 1; fi
 MASTER_TICKERS=\$(cat /tmp/master_ops_tickers.txt)
 TICKERS_PHASE_2="NVDA,AAPL,MSFT,GOOGL,META,XLF,UUP,COIN,SOFI,IONQ"
