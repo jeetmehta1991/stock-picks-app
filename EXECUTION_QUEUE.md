@@ -2052,3 +2052,76 @@ Council 19 (Contrarian + Executor) verdict: SHIP K with evidence + DEFER N-K wit
 - `PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md` — locked 6-stage workflow.
 - `archive/cube_rounds/rounds.json` — round-by-round registry (Batch 443) consumed by Tabs 17 + 18.
 - `CLAUDE.md` HARD RULES — owner approval, no-new-md-without-approval (`feedback_no_write_only_md_files`), full-pyramid mandate (CHECKLIST #69/#93).
+
+## B1063→B1070 + AUDIT BATCH-APPEND (2026-06-29 Council 182 audit closure)
+
+**Context:** Council 182 audit (af99193f6da44e921) identified EXECUTION_QUEUE.md stale at B997 (73 batches no append). This batch-append closes per `feedback_execution_queue_mandatory_per_turn` + CHECKLIST #94 HARD RULE.
+
+### B1063-B1070 batch ledger entries:
+
+- 2026-06-28 — `b1063-phase-d-r5-7th-attempt-phase-1-pass-phase-2-pass-phase-3-terminated` — i-05e26af3963feca9c Phase 1 NVDA PASS 15:43:06Z, Phase 2 10t PASS 16:35:27Z, Phase 3 RUNNING when terminated 16:49Z; sub-agent investigations launched.
+- 2026-06-28 — `b1065-phase-1-strategy-coverage-audit` — Sub-A 30-strat investigation; PIVOT #38 falsely surfaced (RETRACTED B1066: cube replay IS working via `_pool_cube_replay_worker` post-engine). PIVOT #39 119 SUSPECT SILENT real.
+- 2026-06-28 — `b1066-monitor-design-audit` — 4 fixes specified; all SHIPPED in B1067 (G-IMPL stdout buffer + A1 mass-anomaly HALT promotion + E-NEW silent-strategy floor + F-NEW regime coverage LOG).
+- 2026-06-28 — `b1067-monitor-4fix-batch` — 5c384fa8a SHIPPED B1066 4 fixes + 13 pyramid tests + `feedback_adversarial_review_must_check_successful_path_output` memory rule.
+- 2026-06-28 — `b1068-pivot-39-panel-blackout-fix` — f6c40ba01 SHIPPED Council 168 Option E (remove ema_sma from skip + drift-guard pyramid) — 20 of 60 SUSPECT SILENT resolved (33%).
+- 2026-06-28 — `b1069-sub-agent-batch-investigations` — Sub-A 89→33 + Sub-B PASS-path 21 findings + Sub-C producer 25 findings; reports in `output_audit/b1069_*`.
+- 2026-06-29 — `b1070-stage-a-sub-c-5-producer-p0` — 584b8b64a SHIPPED (P0-1 adx + P0-2 avwap + P0-3 volume + P0-4 SMC ALREADY-LOGGED + P0-5 lobbying logger-warning).
+- 2026-06-29 — `b1070-stage-b-sub-b-3-pass-path-p0` — 819b28ebf SHIPPED (F-1.1 status=complete atomic emit + F-2.1 cube imap_unordered streaming + F-7.1+F-10.1 Phase 4 pool=60→16 + MAX_MIN=480→1200).
+- 2026-06-29 — `b1070-stage-c-item-1-exit-method-schema` — 8d972aab1 SHIPPED (ClosedTrade.exit_method field + `_b1070_resolve_exit_method` helper; writer auto-emits via vars()).
+- 2026-06-29 — `b1070-stage-c-item-2-cube-derived-override-23-new` — 57074bb77 SHIPPED 23 new STRATEGY_EXIT_OVERRIDE entries (18→41) from B395 cube re-derive per B414+Batch266 criteria; 12 of 23 pair with earnings_blackout.
+- 2026-06-29 — `b1070-stage-d-sub-b-2-high-calibrations` — 929ad24f4 SHIPPED (F-9.2 A1-PROMOTION sim_day≥200 gate + F-8.1 baseline regime-drift warning).
+- 2026-06-29 — `b1070-stage-e-checklist-128-132-pyramid-banner` — beda9086d SHIPPED CHECKLIST #128 PASS-PATH-OUTPUT-VERIFICATION + #129 RESOURCE-SCALING-EMPIRICAL-VALIDATION + #130 REGIME-MIX-DRIFT-AUDIT + #131 EBS-DISK-SIZING-PREFLIGHT + #132 ENGINE-ACTIVATED-PER-FIX-VERIFY codified; FULL pyramid 850+2 PASS; CLAUDE.md banner refresh.
+- 2026-06-29 — `b1070-phase-2-engine-verify-smoke-PASS` — i-0bed28caa41e8ac18 PHASE_smoke_PASS 20:13:30Z; engine_state.json `status=complete` verified; monitor.log COMPLETE line emitted (validates F-1.1); DEFER-IF-MIXED-REGIME warning fires (validates F-8.1).
+- 2026-06-29 — `b1070-council-182-audit-closure` — 4 BLOCKERS surfaced + addressed: Block-1 EBS resize helper script + Block-2 Sub-B 21-finding catalog persisted + Block-3 this queue batch-append + Block-4 silent-list helper (next).
+
+### NEW TICKETS from Council 182 audit (Sub-C 22 producer findings):
+
+**P0 NOT-ACTED (recommend pre-B1071 OR B1072):**
+- `S5-B1072-SMC-PRIMITIVE-SENTINEL-EMIT` — promote SMC `log_silent_failure` to consumer-visible `smc_<primitive>_producer_failed` sentinel (Sub-C P0-4; Stage A noted ALREADY-LOGGED but no sentinel promotion)
+- `S5-B1072-SHORT-INTEREST-FINRA-PREFETCH-OR-MARK-4-EXPLORATORY` — 4 strategies fire on default-zero gates (squeeze_setup_long, short_borrow_trap_avoid, etc.) per Sub-C P0-7
+
+**P1 NOT-ACTED-NO-TICKET (11):**
+- `S5-B1072-MACD-PANDAS-TA-COL-INDEX-LATENT-GUARD` (P1-1; latent unless pandas-ta installed)
+- `S5-B1072-PANEL-PARITY-ORDER-OR-ASSERT` (P1-2; panel.update() runs after compute_all_signals so panel still wins overlap)
+- `S5-B1072-B795-RSI-CROSS-WIRE-OR-DELETE` (P1-3; 16 keys 0 consumers)
+- `S5-B1072-WILLIAMS-R-GUARD-PERIOD-PLUS-2` (P1-4; wr.iloc[-2] NaN edge)
+- `S5-B1072-CHART-PATTERNS-LOG-SILENT-PROMOTE` (P1-5; 9 try/except pass-only across 15 chart strategies)
+- `S5-B1072-CHART-PATTERNS-FALSE-KEYED-CONSISTENT` (P1-6; insufficient lookback returns {} not False-keyed)
+- `S5-B1072-VOLUME-PROFILE-BARE-EXCEPT-PROMOTE` (P1-7; L148-149)
+- `S5-B1072-SMART-MONEY-DEBUG-TO-WARN-PROMOTE` (P1-8; 8 sites debug→warn)
+- `S5-B1072-CONGRESSIONAL-SIGNAL-RECONCILE` (P1-9; dead producer OR name DRIFT)
+- `S5-B1072-NEWS-SENTIMENT-LEGACY-CACHE-PURGE-OR-FAIL-LOUD` (P1-10; L146 recurrence risk)
+- `S5-B1072-SEC-EDGAR-SILENT-SWALLOW-PROMOTE` (P1-11; 4× sequential bare try/except pass + _load_decoded bare except)
+
+**P2 NOT-ACTED-NO-TICKET (9):**
+- `S5-B1073-CAPITULATION-LOOKBACK-GUARD-LOOSEN` (P2-1; len(df)<200 for 5-bar lookback = 14× over-restrictive)
+- bundled `S5-B1073-CAPITULATION-LOOKBACK-GUARD-LOOSEN` (P2-2; compute_blowoff_lookback same)
+- `S5-B1073-VOL-AVG20-RECENT-SLICE-FIX` (P2-3)
+- `S5-B1073-DESIGNED-NOT-WIRED-BATCH-AUDIT` (P2-4..8; AO twin_peaks, DEMA/TEMA 5 keys, psar_bullish, hull_flip_up/dn)
+- `S5-B1073-NAKED-POC-DOC-DRIFT-FIX` (P2-9)
+
+### NEW TICKETS from Council 182 Sub-B catalog (12; per b1070_sub_b_21_findings_catalog.md):
+
+- `S5-B1072-EXIT-STRATEGIES-DEBUG-LOG-PROMOTE-TO-WARN` (F-2.3 HIGH)
+- `S5-B1072-SENTINEL-EMIT-AWS-SYNC-EXIT-CHECK` (F-3.1 HIGH per CHECKLIST #122)
+- `S5-B1072-SYNC-LOOP-FINAL-SYNC-DEDUP` (F-4.1 HIGH)
+- `S5-B1072-SYNC-LOOP-LIFECYCLE-EXTEND-POST-ANALYZER` (F-5.1 HIGH)
+- `S5-B1072-WATCHDOG-COMPLETION-RACE-ATOMIC-SENTINEL` (F-6.1 HIGH)
+- `S5-B1072-POOL-INIT-SHARED-MEMORY-QUIVER-BULK` (F-7.2 HIGH; further reduce 9.6GB)
+- `S5-B1072-ENGINE-STATE-PER-DAY-TAIL-WRITE` (F-1.3 MEDIUM)
+- `S5-B1072-AUTOLADDER-COMPLETE-RETRY-WRAP` (F-3.2 MEDIUM)
+- `S5-B1072-SHUTDOWN-EXTEND-FOR-MULTI-GB-SYNC` (F-5.2 MEDIUM)
+- `S5-B1072-E-NEW-CONFIG-PARAM` (F-9.3+F-9.4 MEDIUM; configurable silent_floor threshold)
+- `S5-B1072-CUBE-REPLAY-POOL-MEMORY-FURTHER-OPTIMIZATION` (F-2.2 HIGH partial)
+- `S5-B1072-RAW-SIGNAL-FIRES-SHARED-WRITER` (F-11.2 LOW)
+- `S5-B1073-SPA-BOOTSTRAP-PARALLELIZE` (F-2.4 MEDIUM; P2 optimization)
+- `S5-B1073-RESUME-FROM-CHECKPOINT` (F-12.1+F-13.1 LOW architectural)
+
+### NEW TICKETS from Sub-A findings (Council 182):
+
+- `S5-B1072-SILENT-LIST-GENERATOR-FILTER-DELETED-DISABLED` — 10-LOC helper for b1019 monitor + b1065/b1068/b1069 audit scripts to honor ALL_STRATEGIES ∩ baseline filter (Stage E ITEM 1 marked "no-op" but recurs); Block-4 in progress
+- `S5-B1072-WOULD-FIRE-SMOKE-LOGGER-OTH-7-STRATEGIES` — 7 OTH JOINT_TRUE_BUT_ZERO_TRADES (macd_crossover_short, three_white_soldiers, camarilla_r4_breakout, donchian_breakdown_short, prev_day_low_breakdown, ichimoku_cloud_breakdown, camarilla_s3_bounce SHORT)
+- `S5-B1072-NVDA-BORROW-TRAP-STATUS-PROBE` — _short_borrow_trap_active not probed on NVDA window
+- `S5-B1072-XS-PAIRS-SINGLE-TICKER-FIRE-BUG-INVESTIGATE` — pairs_mean_reversion_long/short + xs_momentum_quality_combined firing on NVDA-only Phase 1 (cross-sectional shouldn't fire with 1 ticker)
+- `S5-POST-PHASE-4-EXPLORATORY-TAG-SWEEP` — process post-Phase-4 trade log; tag any strategy <30/regime fires as EXPLORATORY per B644/B652/B772/B773 precedent
+- `S5-B1072-SUB-C-ARCHITECTURE-HARDENING` — 4 Sub-C recommendations: parity assertion, library import emit, log_silent standardization, producer-consumer dashboard

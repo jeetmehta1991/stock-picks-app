@@ -249,6 +249,14 @@ run_phase() {
     # is written incrementally not block-buffered. Without this, monitor.log =
     # 0 bytes on PASS path (HALT path forces flush at exit; PASS path doesn't).
     # Belt-and-suspenders with monitor.py sys.stdout.reconfigure(line_buffering).
+    # B1070 Block-1 NOTE (Council 182 audit 2026-06-29): EBS volume size
+    # in the EC2 run-instances call (run-time invocation site, NOT this
+    # script's responsibility -- the calling shell command provides
+    # --block-device-mappings VolumeSize) must be >= 100GB for Phase 4
+    # per CHECKLIST #131 EBS-DISK-SIZING-PREFLIGHT (Sub-B F-11.1: Phase 4
+    # ~35-50GB output on 50GB EBS = OOM-disk risk). Caller responsibility
+    # to set VolumeSize=100 in run-instances. This script asserts/warns
+    # by checking df -h pre-launch in calling code if applicable.
     setsid python -u scripts/b1019_phase_1_runtime_monitor.py \\
         --engine-state \${PHASE_DIR}/engine_state.json \\
         --trade-log \${PHASE_DIR}/trade_log_checkpoint.csv \\
