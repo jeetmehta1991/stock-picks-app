@@ -2119,3 +2119,84 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Self-reflexive default.** Per #126 two-tier discipline: this rule itself is `DESIGNED-NOT-VERIFIED` until Phase C v2.5 smoke output lands as the evidence artifact promoting it to `OPERATIONALLY-VERIFIED`.
 
      **Cross-references.** CHECKLIST #126 (evidence-artifact rule — this is the tier-2 specialization), CHECKLIST #121 (monitor-armed-in-user-data — smoke proves the armament fired), CHECKLIST #116 (user-data 16KB limit — smoke catches base64-expansion overflow at cloud-init time), CHECKLIST #13/#22/#23/#29 (small-test-before-scale lineage L86/L95), `feedback_designed_vs_verified_requires_evidence_artifact`, `feedback_monitor_design_vs_operational_gap`, `feedback_silent_failure_pairing_rule`, Council 139 Phase 2 mandate + Council 140 Option-5 PARALLEL-FAN-OUT sub-agent C verdict.
+
+128. **HARD RULE -- PASS-PATH-OUTPUT-VERIFICATION.** (B1067 G-IMPL + Council 167 + B1070 Sub-B F-1.1 evidence; codifies happy-path output artifact check missing from prior adversarial reviews per `feedback_adversarial_review_must_check_successful_path_output`.)
+
+     For every monitor / logger / sentinel / state-emitter in the codebase, adversarial review must include a happy-path output artifact check (does the log have content? does the file exist? is the size > 0? does it contain >=1 expected line?), not just HALT/error-path code logic. The B1067 G-IMPL (block-buffered print -> 0-byte monitor.log) and B1070 F-1.1 (engine never emits status=complete -> monitor hangs indefinitely) are the same SUCCESSFUL-PATH-NEVER-TESTED bug class.
+
+     **Why HARD rule:** B1024-B1062 chain had 4 adversarial reviews (Council 138/9/167/162) all testing HALT scenarios which forced buffer flush at exit, masking PASS-path bugs. Only B1063 (first Phase PASS in 7 attempts) surfaced the 0-byte log; only B1067 monitor + F-1.1 + Sub-B PASS-path review caught the status=complete emit gap.
+
+     **When the rule fires (PASS-path check MANDATORY):**
+     - Any monitor / logger / state-emitter modification
+     - Any sentinel emission point change
+     - Any adversarial review of monitor/logger/wrapper code
+     - Pyramid test for any new monitor must include integration test asserting non-empty output after success scenario
+
+     **Verification format:** runtime smoke OR synthesized happy-path test + `cat <log> | wc -l` >=1 + grep expected line in output
+
+     **Cross-references.** B1067 G-IMPL (block-buffered print fix), B1070 F-1.1 (status=complete emit), `feedback_adversarial_review_must_check_successful_path_output`, `feedback_monitor_design_vs_operational_gap`, CHECKLIST #121 (monitor-armed-in-user-data), CHECKLIST #124 (DESIGNED vs OPERATIONALLY-VERIFIED), Sub-B PASS-path adversarial review.
+
+129. **HARD RULE -- RESOURCE-SCALING-EMPIRICAL-VALIDATION.** (B1070 Sub-B F-7.1+F-10.1 + Council 176 + 179; pool-config + watchdog timing must be empirically validated at same ticker scale as production.)
+
+     Any pool worker count + watchdog timeout config must be empirically validated at the SAME ticker scale as production. Extrapolating from N-ticker smoke to 1929-ticker Phase 4 is the FAILURE MODE that B1070 F-7.1 + F-10.1 surfaced: pool=60 was untested at 1929-ticker scale; B1068 ema_sma cost not factored into MAX_MIN=480 watchdog -> would have GUARANTEED Phase 4 TIMEOUT_HALT.
+
+     **Why HARD rule:** B1063 Phase 4 launch would have failed at the 8 hr watchdog after 16-20 hr wall-clock if Sub-B hadn't surfaced the math. Catching at code review is cheaper than catching at $5-10 AWS spend.
+
+     **When the rule fires (empirical scaling check MANDATORY):**
+     - Per-phase pool config decisions (Council 155 + 175 + 179 precedent)
+     - MAX_MIN watchdog setting per phase
+     - Memory budget claims for cube replay
+     - Any "if N tickers takes M time, then K tickers takes M*K/N" extrapolation
+
+     **Verification format:** empirical timing data per phase scale OR explicit "UNTESTED-AT-SCALE" honest-finding pivot in commit message
+
+     **Cross-references.** B1070 F-7.1+F-10.1, B1057 per-phase pool config, v2.5e + Phase 2 mini-smoke empirical baselines, Council 155 + 175 + 179.
+
+130. **HARD RULE -- REGIME-MIX-DRIFT-AUDIT.** (B1070 Sub-B F-8.1 + Council 179; baselines measured over different time windows must be regime-overlap audited.)
+
+     Baselines measured over time windows W1 cannot be applied to live data over different time windows W2 without explicit regime-mix overlap audit. B1059 PIVOT #36 scaled A1 baseline by universe size BUT NOT by regime-mix distribution; B660 baseline (2020-2026 mixed regimes) vs Phase 4 window (2022-2026 bear-start) differ by 2.3 years which exceeds 2-yr drift threshold.
+
+     **Why HARD rule:** universe-size scaling (B1059) only corrects for ticker count; regime distribution differences cause A1-PROMOTION false positives at scale. B1070 F-8.1 added DEFER-IF-MIXED-REGIME warning; B1072 will run B660 re-measurement on Phase 4 window.
+
+     **When the rule fires (regime drift check MANDATORY):**
+     - Any baseline file used in monitor / metric / verdict computation
+     - Window comparison: if |baseline_window_start - data_window_start| > 2 years -> drift warning required
+     - Re-measurement deferred only with explicit owner approval + B1072+ ticket
+
+     **Verification format:** monitor emits DEFER-IF-MIXED-REGIME warning OR re-measurement evidence artifact
+
+     **Cross-references.** B1070 F-8.1, B660 baseline 2020-2026, Phase 4 window 2022-2026, B1059 PIVOT #36 (size scaling only), B1072 future re-measurement ticket.
+
+131. **HARD RULE -- EBS-DISK-SIZING-PREFLIGHT.** (B1070 Sub-B F-11.1 + Council 176; AWS launch must size EBS volume = output_estimate * 2 + prefetch cache + system.)
+
+     Any AWS launch producing >10GB output requires explicit EBS volume sizing preflight: disk = output_estimate * 2 + prefetch cache + system. B1063 Phase 4 risk: trade_exit_detail.csv (5-15GB) + cube CSVs + 60 worker raw_signal_fires (6GB) + ~20GB data_prefetch cache = ~35-50GB on 50GB EBS = OOM-disk risk.
+
+     **Why HARD rule:** Phase 4 cube replay can produce multi-GB outputs; running out of disk mid-cube replay is silent + catastrophic. Better to oversize at launch ($0.10 EBS overhead) than discover mid-run.
+
+     **When the rule fires (EBS sizing preflight MANDATORY):**
+     - Any AWS launch producing >10GB output
+     - Phase 4 R5 cube launch
+     - Long-running (>4hr) AWS jobs
+
+     **Verification format:** launch script EBS size config visible + cited in commit message; sentinel for free-space check at launch
+
+     **Cross-references.** B1070 F-11.1, B1063 Phase 4 50GB EBS, AWS spot c6a.16xlarge default size, Council 176 Option 4.
+
+132. **HARD RULE -- ENGINE-ACTIVATED-PER-FIX-VERIFY.** (B1070 owner directive 2026-06-29 'Ensure thats its engine implemented. No silent misses.'; codifies the engine-verify Step 4-6 of `feedback_wired_means_engine_consumed` per-fix.)
+
+     Every code fix must complete engine-activation Steps 1-7 BEFORE commit:
+     - Step 1: code change with lineage comment
+     - Step 2: unit pyramid test (positive + negative assertions)
+     - Step 3: integration test (call-path invocation)
+     - Step 4: runtime smoke (invoke real engine + verify output artifact)
+     - Step 5: cross-reference engine output (log/CSV/parquet shows fix)
+     - Step 6: promote DESIGNED -> OPERATIONALLY-VERIFIED in commit
+     - Step 7: NO-SILENT-MISS check (grep for bare except / || true / pass swallow)
+
+     **Why HARD rule:** owner directive after B1067 monitor errors + B1024-B1062 design-vs-armed chain. Per `feedback_wired_means_engine_consumed`: "wired=yes grep heuristic produced ~150 false-positive RESOLVED-IMPLEMENTED claims." Engine-activation must be runtime-validated per fix, not grep-claimed.
+
+     **When the rule fires:** every code fix that touches engine call-path
+
+     **Verification format:** commit message includes ENGINE-VERIFY block citing runtime probe output + pyramid test + cross-reference to engine artifact
+
+     **Cross-references.** B1070 all 5 stages + 17 fixes engine-verified per protocol, `feedback_wired_means_engine_consumed`, CHECKLIST #124 (DESIGNED vs OPERATIONALLY-VERIFIED), CHECKLIST #122 (silent-failure-pairing), owner directive 2026-06-29 'Ensure engine implemented + no silent misses'.
