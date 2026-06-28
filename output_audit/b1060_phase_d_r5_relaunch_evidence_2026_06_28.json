@@ -1,0 +1,102 @@
+{
+  "comment": "B1060 Phase D R5 relaunch evidence post B1059 PIVOT #36 fix. Council 159 Option-4 + Council 160 Option-2 verify-and-execute.",
+  "launch_batch": "B1060",
+  "previous_attempt": "B1058 i-0434ba0eba781a2ae HALTed at Phase 1 sim_day 100 by B1019 A1 false-positive ($0.66 cost)",
+  "run_id": "r5_full_20260628_100512",
+  "instance_id": "i-01029121213800f76",
+  "az": "us-east-1b",
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ami_id": "ami-08f44e8eca9095668",
+  "iam_instance_profile": "batch395-instance-role",
+  "az_failover_order": ["us-east-1b", "us-east-1c", "us-east-1d", "us-east-1a", "us-east-1f"],
+  "az_chosen_first_try": "us-east-1b",
+  "user_data": {
+    "raw_bytes": 18889,
+    "base64_bytes": 25188,
+    "externalized_to_s3": true,
+    "bootstrap_loader_bytes": 1108
+  },
+  "council_lineage": [
+    "Council 158 RECOMMEND Option-1 SCALE-+-PYRAMID (B1059 PIVOT #36 fix)",
+    "Council 159 RECOMMEND Option-4 COMPREHENSIVE-MONITOR-+-PERIODIC-SNAPSHOTS",
+    "Council 160 RECOMMEND Option-2 EXECUTE-+-LOG-BASELINE-VERIFICATION"
+  ],
+  "b1059_pivot_36_fix_validated": {
+    "commit": "12027a7bd",
+    "pyramid_pass": "42/42 + 1 skip (B1059 + B1057 + B1055 + B1052 + B1051 + B1049 + B1043 subset)",
+    "monitor_args_added": ["--total-tickers-active", "--baseline-universe-size"],
+    "scaling_formula": "expected_fpy_scaled = expected_fpy * (active / baseline_universe)",
+    "phase_4_regression_safe": "scaling only fires when active != baseline (Phase 4 active=503 baseline=503 -> no scaling; B1060 may scale up for Master 1929)",
+    "lineage_in_code": "PIVOT #36 + B1059 referenced in monitor.py + pyramid test docstring"
+  },
+  "b660_baseline_verification": {
+    "comment": "Council 160 Option-2 dominant-1st-order assumption verification",
+    "file": "output_audit/fire_count_measured_b660_full_universe.json",
+    "universe": "T1a_PIT_canonical",
+    "n_tickers_sampled": 503,
+    "n_tickers_full_t1a_pit_active": 503,
+    "projection_scale_factor": 1.0,
+    "date_range_start": "2020-01-01",
+    "date_range_end": "2026-05-31",
+    "calendar_year_span": 6.41,
+    "verdict": "B1059 baseline-universe-size=503 assumption VERIFIED VALID"
+  },
+  "per_phase_pool_config": {
+    "phase_1": {"tickers_active": 1, "pool_workers": 0, "max_min": 120, "scale_factor": 0.002, "expected_wall_clock_min": 10, "validation": "v2.5e empirical 38s engine cube"},
+    "phase_2": {"tickers_active": 10, "pool_workers": 0, "max_min": 180, "scale_factor": 0.02, "expected_wall_clock_min": 30, "validation": "Phase 2 mini-smoke empirical ~1m40s"},
+    "phase_3": {"tickers_active": 50, "pool_workers": 8, "max_min": 240, "scale_factor": 0.099, "expected_wall_clock_min": 167, "validation": "UNTESTED - pool=8 interpolation"},
+    "phase_4_r5": {"tickers_active": 1929, "pool_workers": 60, "max_min": 480, "scale_factor": 3.834, "expected_wall_clock_min": "UNKNOWN", "validation": "UNTESTED at full scale"}
+  },
+  "structural_fixes_validated": [
+    "B1039 AWS install fix",
+    "B1041 SMC_PHASE=PRODUCTION",
+    "B1042 Layer 1+2 monitor wrap",
+    "B1043 9 BLOCKERS F-01 to F-09",
+    "B1045 HoldoutUnlock PIVOT #27",
+    "B1046 9 WARN F-10 to F-43",
+    "B1049 PHASE_DIR PIVOT #29",
+    "B1052 --no-agents PIVOT #30",
+    "B1055 pool init pre-warm PIVOT #32",
+    "B1057 B fix dataset naming PIVOT #34 + C fix PHASE_TIMING + per-phase pool config",
+    "B1059 PIVOT #36 A1 baseline scaling (THIS RELAUNCH)"
+  ],
+  "monitoring_armament": {
+    "layer_1_aws_b1019_monitor": "ARMED - per-phase engine_state.json polling + A1 baseline NOW SCALED PER PHASE",
+    "layer_2_engine_log_info_logging": "ARMED - PHASE_TIMING markers (B1057 C-fix) + Progress lines + 60s S3 sync",
+    "layer_3_aws_s3_sentinels": "ARMED - per-phase RUNNING/PASS/FAIL/B1019_PID/POOL_WORKERS + HALT-CRITICAL + AUTOLADDER_COMPLETE",
+    "layer_4_claude_bash_polling": "ARMED THIS TURN - 5-min interval; 17-hr cap; phase boundaries + HALT + terminal + 30-min snapshots every 6 polls",
+    "layer_5_ssm_mid_run": "UNAVAILABLE - batch395-runner lacks ssm:SendCommand permission",
+    "layer_6_phase_boundary_notification": "ARMED - intermediate Phase 1/2/3 PASS sentinels surface as they land"
+  },
+  "halt_critical_response_plan": {
+    "auto_action": "pull engine.log tail + monitor.log + sentinel state from S3; classify HALT class; surface to owner",
+    "no_auto_relaunch": true,
+    "per_rule": "feedback_ask_before_relaunching_corrected_version + CHECKLIST #120"
+  },
+  "expected_outcomes": {
+    "bootstrap_min": 17,
+    "preflight_min": 1,
+    "phase_1_min": 10,
+    "phase_2_min": 30,
+    "phase_3_min": 167,
+    "phase_4_min": "UNKNOWN",
+    "post_run_min": 3,
+    "total_expected_hr": "3-5",
+    "hard_cap_hr": 17,
+    "expected_cost_usd": "3-7",
+    "session_cumulative_post_relaunch_usd": "12-16"
+  },
+  "honest_caveats": [
+    "Phase 3 (50 tickers + pool=8) UNTESTED empirically; pool=8 is interpolation",
+    "Phase 4 (Master 1929 + pool=60) UNTESTED at full scale; pool=60 original design point + B1059 scaled baseline (3.83x) for 1929 active",
+    "B1059 PIVOT #36 fix corrects A1 1st-order ticker-count effect; 2nd-order regime-drift effects acknowledged as residual risk",
+    "Spot interruption probability ~2%; will surface and ask for direction"
+  ],
+  "pivot_count_session": 36,
+  "phase_d_attempt_number": 6,
+  "phase_d_completed_attempts": 0,
+  "session_aws_spend_pre_b1060_usd": 9.09,
+  "launched_at_utc": "2026-06-28T14:05Z"
+}
