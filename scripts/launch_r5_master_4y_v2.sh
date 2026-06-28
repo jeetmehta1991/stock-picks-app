@@ -212,7 +212,7 @@ run_phase() {
     # CHECKLIST #122 silent-failure-pairing rule.
     set +e
     export ENGINE_OUTPUT_DIR="\${PHASE_DIR}"
-    setsid python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --output-dir \${PHASE_DIR} --screen-pool-workers 60 > \${PHASE_DIR}/engine.log 2>&1 &
+    setsid python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --no-agents --output-dir \${PHASE_DIR} --screen-pool-workers 60 > \${PHASE_DIR}/engine.log 2>&1 &
     ENGINE_PID=\$!
     phase_watchdog \${PHASE_NUM} \${MAX_MIN} \$ENGINE_PID &
     WATCHDOG_PID=\$!
