@@ -1357,7 +1357,11 @@ def get_lobbying(ticker: str, as_of: date, lookback_days: int = 365) -> dict:
             "signal": signal,
         }
     except Exception as exc:
-        logger.debug("get_lobbying(%s): %s", ticker, exc)
+        # B1070 P0-5 FIX (Council 172/174/175 Sub-C + owner directive
+        # 'no silent misses'): promoted from logger.debug -> logger.warning
+        # so repeated failures surface in default log config (most setups
+        # filter DEBUG). Per CHECKLIST #122 silent-failure-pairing.
+        logger.warning("get_lobbying(%s): %s", ticker, exc)
         return result
 
 

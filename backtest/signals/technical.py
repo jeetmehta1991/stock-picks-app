@@ -396,7 +396,24 @@ def compute_vwap(df: pd.DataFrame) -> dict:
             continue
         # Slice from anchor forward
         post = df.iloc[anchor_pos:]
+        # B1070 P0-2 FIX (Council 172/174/175 Sub-C): when TODAY is the
+        # new anchor (e.g. fresh 20-high breakout bar), len(post) == 1
+        # which previously triggered silent continue -> entire above/below
+        # _avwap_{key} family absent on the EXACT BAR breakout strategies
+        # need them. Direct hit: volume_spike_breakout SHORT (consumes
+        # below_avwap_20high per B612). Fix: degenerate single-bar window
+        # uses bar's typical price as avwap anchor (cumulative VWAP of one
+        # bar = that bar's TP). Per feedback_silent_failure_pairing_rule
+        # + CHECKLIST #122 no-silent-miss.
         if len(post) < 2:
+            tp_today = (df["high"].iloc[-1] + df["low"].iloc[-1] +
+                        df["close"].iloc[-1]) / 3.0
+            avwap = _safe_float(tp_today)
+            if avwap <= 0:
+                continue
+            out[f"avwap_{key}"]              = round(avwap, 4)
+            out[f"above_avwap_{key}"]        = close > avwap
+            out[f"below_avwap_{key}"]        = close < avwap
             continue
         tp_post = (post["high"] + post["low"] + post["close"]) / 3
         vol_post = post["volume"]
@@ -840,6 +857,14 @@ def compute_adx(df: pd.DataFrame, period: int = 14) -> dict:
             return {}
         cols = a.columns.tolist()
         adx_v  = _safe_float(a[cols[0]].iloc[-1])
+        # B1070 P0-1 FIX (Council 172/174/175 Sub-C): padx must be PRIOR
+        # bar's ADX value, NOT prior bar's CLOSE PRICE. Original bug at
+        # this line read df["close"].iloc[-2] -> for all tickers priced
+        # >$25, adx_cross_up was permanently False (close-price-as-ADX-
+        # value structural type confusion). Direct hit: adx_initiation
+        # (B1068 SUSPECT SILENT). Per feedback_wired_means_engine_consumed
+        # + CHECKLIST #124 OPERATIONALLY-VERIFIED via runtime probe.
+        padx = _safe_float(a[cols[0]].iloc[-2]) if len(a) > 1 else adx_v
         dip    = _safe_float(a[cols[1]].iloc[-1] if len(cols)>1 else 0)
         dim    = _safe_float(a[cols[2]].iloc[-1] if len(cols)>2 else 0)
     else:
@@ -852,9 +877,11 @@ def compute_adx(df: pd.DataFrame, period: int = 14) -> dict:
         dip = 100*dmp.ewm(alpha=1/period,adjust=False).mean()/atr.replace(0,np.nan)
         dim = 100*dmm.ewm(alpha=1/period,adjust=False).mean()/atr.replace(0,np.nan)
         dx  = 100*(dip-dim).abs()/(dip+dim).replace(0,np.nan)
-        adx_v = _safe_float(dx.ewm(alpha=1/period,adjust=False).mean().iloc[-1])
+        adx_series = dx.ewm(alpha=1/period,adjust=False).mean()
+        adx_v = _safe_float(adx_series.iloc[-1])
+        # B1070 P0-1 FIX (manual branch): same as ta-branch above.
+        padx = _safe_float(adx_series.iloc[-2]) if len(adx_series) > 1 else adx_v
         dip,dim = _safe_float(dip.iloc[-1]),_safe_float(dim.iloc[-1])
-    padx = _safe_float(df["close"].iloc[-2]) if len(df)>1 else adx_v
     return {
         "adx":           round(adx_v,2),
         "adx_di_plus":   round(dip,2),
@@ -1564,6 +1591,13 @@ def compute_volume(df: pd.DataFrame) -> dict:
     #                   today close > today open)
     # Mirror for SHORT: blowoff = (vol_spike_2x on UP-day last 3d) AND
     # (drying volume on today's TURN-down).
+    # B1070 P0-3 FIX (Council 172/174/175 Sub-C): c_today was used in
+    # drying_vol_on_*_turn before its definition at line 1637 -> NameError
+    # silently swallowed by bare 'except Exception' -> 6 keys deterministically
+    # False. Fix (per CHECKLIST #122 silent-failure-pairing): (1) define
+    # c_today inside try-block before use; (2) tighten except to specific
+    # data errors (IndexError, ZeroDivisionError, ValueError, KeyError)
+    # so structural bugs like NameError NO LONGER hide.
     try:
         n_lookback = 3
         c_recent = c.iloc[-(n_lookback + 1):]  # today + 3 prior
@@ -1581,17 +1615,20 @@ def compute_volume(df: pd.DataFrame) -> dict:
         vol_spike_2x_on_up = bool(
             ((prior_close_change > 0) & (prior_vol >= 2.0 * prior_avg20)).any()
         )
-        # Today's turn:
+        # Today's turn (B1070 P0-3: define c_today + o_today HERE before use):
+        c_today_b1070 = _safe_float(c.iloc[-1])
         o_today = _safe_float(df["open"].iloc[-1])
-        drying_vol_on_up_turn = (today_v < avg20) and (c_today > o_today)
-        drying_vol_on_down_turn = (today_v < avg20) and (c_today < o_today)
+        drying_vol_on_up_turn = (today_v < avg20) and (c_today_b1070 > o_today)
+        drying_vol_on_down_turn = (today_v < avg20) and (c_today_b1070 < o_today)
         result["vol_spike_2x_on_down_day_recent_3d"] = vol_spike_2x_on_down
         result["vol_spike_2x_on_up_day_recent_3d"]   = vol_spike_2x_on_up
         result["drying_volume_on_up_turn"]           = bool(drying_vol_on_up_turn)
         result["drying_volume_on_down_turn"]         = bool(drying_vol_on_down_turn)
         result["capitulation_recent_3d"]             = bool(vol_spike_2x_on_down and drying_vol_on_up_turn)
         result["blowoff_recent_3d"]                  = bool(vol_spike_2x_on_up and drying_vol_on_down_turn)
-    except Exception:
+    except (IndexError, ZeroDivisionError, ValueError, KeyError):
+        # B1070 P0-3 FIX: only swallow data-shape errors; NameError/AttributeError
+        # propagate so structural bugs surface in pyramid not in production.
         result["vol_spike_2x_on_down_day_recent_3d"] = False
         result["vol_spike_2x_on_up_day_recent_3d"]   = False
         result["drying_volume_on_up_turn"]           = False
