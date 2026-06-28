@@ -7987,7 +7987,17 @@ def screen_instrument(
         # the panel results upfront. Net: same final signal set, 1 panel
         # op replaces 388 per-ticker function calls.
         if panel_signals:
-            skip = {"rsi", "ema_sma", "simple_returns"}
+            # B1068 PIVOT #39 FIX (Council 168 Option E):
+            # 'ema_sma' REMOVED from skip set. Previously
+            # technical_panel.compute_panel_signals_for_as_of
+            # substituted for compute_ema_sma but never emitted
+            # the post-B609/B634/B721/B722 signals: below_ema_X
+            # (122 consumers), *_break_recent_5d (18), ema_X_Y_bearish
+            # (4). Panel-blackout = 30pct of PIVOT #39 SUSPECT SILENT
+            # per b1068_pivot_39_suspect_silent_investigation.md
+            # sub-agent finding. compute_ema_sma cost: +25ms/ticker/day.
+            # Drift-guard pyramid test prevents future re-introduction.
+            skip = {"rsi", "simple_returns"}
             signals = compute_all_signals(df, skip_indicators=skip)
             signals.update(panel_signals)
         else:

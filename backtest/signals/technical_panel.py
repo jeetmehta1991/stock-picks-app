@@ -4,6 +4,17 @@ Source: per CHECKLIST #77 + owner directive 2026-06-01 "execute a b c d
 sequentially".
 Queue: EXECUTION_QUEUE.md OPT-B (cross-ticker vectorization).
 
+# B1068 PIVOT #39 BLACKOUT WARNING (Council 168 2026-06-28):
+# This panel does NOT emit the post-B609/B634/B721/B722 EMA-family
+# signals: below_ema_{9,20,21,50,200} (122 consumer strategies),
+# *_break_recent_5d (18 consumers), ema_{9_21,20_50,50_200}_bearish (4).
+# DO NOT re-enable skip='ema_sma' in screener.py until this panel is
+# extended to emit these signals OR the consumer strategies are migrated.
+# The blackout caused 30% of PIVOT #39 SUSPECT SILENT strategies on B1063
+# Phase 1 NVDA (sub-agent investigation report:
+# output_audit/b1068_pivot_39_suspect_silent_investigation.md).
+# Future panel-extension work tracked as B1069+ EXECUTION_QUEUE item.
+
 CURRENT (per-ticker, technical.py):
     For each (ticker, as_of):
         df = ohlcv up to as_of for one ticker        # slice per call
