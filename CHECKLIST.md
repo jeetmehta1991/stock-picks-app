@@ -2232,3 +2232,18 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Why HARD rule:** Companion to #133. Even with #133, main thread MUST treat sub-agent execution claims as DESIGNED-NOT-VERIFIED until AWS-verified. Council 186 fabrication slipped past main thread because verification gate was missing. Per `feedback_designed_vs_verified_requires_evidence_artifact`: claim of launch needs operational verification.
 
      **Cross-references.** B1072.2 PIVOT #41, CHECKLIST #133 (companion scope rule), `feedback_designed_vs_verified_requires_evidence_artifact`, CHECKLIST #124, CHECKLIST #126.
+
+135. **HARD RULE -- INTEGRATION-NO-STUB + 60-SEC PROD-ENTRYPOINT SMOKE MANDATORY BEFORE AWS LAUNCH >$1.** (B1080 Council 198 + 199 4-lens synthesis 2026-06-29; Outsider + Executor independently converged on 3-layer audit framework; owner-accepted 2026-06-29 "Accept. Council this."; closes the pyramid-PASS-not-production-works gap that allowed 43 PIVOTs in 1 session.)
+
+     **Rule:** Before any AWS launch with expected cost >$1 OR wall-clock >2hr: `scripts/preflight_smoke.sh` MUST exit 0 within prior 24hr. Output artifacts MUST satisfy assertion bundle: (A1) monitor.log >0 bytes; (A2) engine_state.status=complete; (A3) no PHASE_*_FAIL/HALT sentinels; (A4) schema columns present in trade_log_checkpoint.csv; (A5) baseline_universe_size scaled correctly. Failure HALTs launch decision. Owner override requires explicit acknowledgment of bypassed gate.
+
+     **Why HARD rule:** 6 of 6 past PIVOTs (#34 0-byte log / #36 baseline scale / #37 b2 schema / #40 A1 small-ticker / #42 E-NEW small-ticker / #43 ClosedTrade dict) survived pyramid PASS because pyramid stubs the integration points where bugs hide. Pyramid is NECESSARY but NOT SUFFICIENT. Per Outsider lens (Council 198): "tests pass because they don't touch the things that break". Per Executor lens: "Stop adding theoretical layers. Run the prod path before you pay for the prod path." Per `feedback_adversarial_review_must_check_successful_path_output` (#128) extension: PASS-path verification must be on REAL prod path, not stubbed.
+
+     **3-layer audit framework (Council 198 4-lens synthesis):**
+     - **Layer 1 PYRAMID** (existing 850+2): function-level unit + isolated integration. Catches function-level logic. Does NOT catch integration-stub gaps.
+     - **Layer 2 SCHEMA-CONTRACT PIN TESTS** (`backtest/tests/test_b1080_checklist_135_schema_pin.py`): writer-reader pair contracts pinned. Critical boundaries: (a) trade_log_checkpoint.csv writer ↔ ClosedTrade reader [PIVOT #43]; (b) engine_state.json writer ↔ monitor reader [PIVOT #37]; (c) sentinels writer ↔ launch script reader [skip-phase + resume gates].
+     - **Layer 3 PROD-ENTRYPOINT SMOKE** (`scripts/preflight_smoke.sh`): real `b1070_phase_d_launch_helper.sh` + real S3 + real AWS user-data + NVDA + 1-day. Cost ~$0.01. Wall-clock 60-90 sec. Tests the ACTUAL production code path on minimal data.
+
+     **24-hour staleness window:** preflight result valid for 24hr. Re-run if upstream changes (engine, monitor, launch script, helper, user-data template) post-preflight. Does NOT need re-running for micro-iteration without upstream change.
+
+     **Cross-references.** B1080 Council 198+199, `feedback_designed_vs_verified_requires_evidence_artifact` (#126), CHECKLIST #128 (PASS-PATH-OUTPUT-VERIFICATION), CHECKLIST #133 (smoke edge-boundary), CHECKLIST #134 (60-sec verification), `feedback_writer_reader_schema_contract_pin_test`.
