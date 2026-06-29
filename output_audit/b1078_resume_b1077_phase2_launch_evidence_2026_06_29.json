@@ -1,0 +1,91 @@
+{
+  "comment": "B1078 FIRST REAL USE of B1076 resume infra. Owner-approved Option A (resume B1077 Phase 2 partial). Council 194 RECOMMEND Option 1 MODIFY-LAUNCH-SCRIPT-RESUME-MODE. Resume from B1077 r5_full_20260629_113009 prefix: SKIP Phase 1 (B1077 PASS sentinel) + Phase 2 resume from sim_day=300 + Phase 3+4 fresh. CHECKLIST #134 verified state=running within 60 sec. AZ=us-east-1d (3rd AZ after 1b+1c spot interruption pattern).",
+  "launch_batch": "B1078",
+  "owner_directive_chain_2026_06_29": [
+    "C council this -> Council 191 Option 1 SIMPLE-RESUME-MVP shipped B1076",
+    "A council this -> literal Option A resume B1075 partial",
+    "A2 council this -> Council 192 Option 2 FRESH B1077 (interrupted Phase 2)",
+    "A council this -> Resume B1077 Phase 2 via B1076 (Council 194 Option 1 launch script wiring)"
+  ],
+  "supersedes_b1077": {
+    "b1077_instance": "i-08cbc67f4dbf4a95d us-east-1c SPOT-INTERRUPTED 2026-06-29T~16:28Z",
+    "b1077_phase_progress": "Phase 1 PASS + Phase 2 interrupted sim_day=300/1006",
+    "b1077_disposition": "S3 prefix r5_full_20260629_113009/ used as RESUME_FROM_RUN_ID for B1078"
+  },
+  "resume_mode_active": {
+    "RESUME_FROM_RUN_ID": "r5_full_20260629_113009",
+    "SKIP_PHASES": "1",
+    "skip_logic": "Phase 1 sentinel verified PRESENT in B1077 prefix; output_phase_1/ synced from S3",
+    "phase_2_resume": "B1077 Phase 2 engine_state status='running' simulated_day=300 trades_so_far=136 open_trades=0; --resume-from-checkpoint output_phase_2 passed to engine; main loop skips i<=300",
+    "phase_3_fresh": "no prior checkpoint; runs fresh",
+    "phase_4_fresh": "no prior checkpoint; runs fresh"
+  },
+  "council_lineage_b1078_specific": [
+    "Council 192 (Option 2 FRESH+ARMED)",
+    "Council 193 (B1077 standard launch + spot interruption HALT trigger codification)",
+    "Council 194 (Option 1 MODIFY-LAUNCH-SCRIPT-RESUME-MODE)"
+  ],
+  "code_changes_b1078": {
+    "launch_r5_master_4y_v2.sh": "Block: RESUME_FROM_RUN_ID + SKIP_PHASES env var injection into user-data; run_phase function: skip-phase mode (sentinel-gated S3 sync) + resume-checkpoint mode (status='running' detection + S3 sync + --resume-from-checkpoint engine arg)",
+    "pyramid": "backtest/tests/test_b1078_launch_script_resume_mode.py 11 tests PASS"
+  },
+  "spot_interruption_pattern_observed": {
+    "b1075_az_1b": "102 min before spot reclaim",
+    "b1077_az_1c": "58 min before spot reclaim",
+    "b1078_az_1d": "untested; tried 3rd AZ to test capacity-event scope",
+    "implication": "AWS-wide c6a.16xlarge capacity stress; spot mitigation deferred per Council 194 (separate decision per feedback_audit_recommendations_against_existing_directives)"
+  },
+  "run_id": "r5_full_20260629_140815",
+  "instance_id": "i-04d34fc49dc27a5f4",
+  "volume_id": "vol-07af94bb10ecacae4",
+  "az": "us-east-1d",
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ebs": {
+    "size_gb": 100,
+    "volume_type": "gp3"
+  },
+  "checklist_134_verification": {
+    "verified_within_60_sec": true,
+    "instance_state": "running",
+    "ebs_size_confirmed": "100GB gp3 in-use",
+    "az_verified": "us-east-1d (capacity-event mitigation by trying 3rd AZ)"
+  },
+  "expected_outcomes": {
+    "phase_1_skip_min": "~5 (S3 sync only)",
+    "phase_2_resume_min": "~115 (from sim_day=300 to 1006 at 10-ticker pool=0)",
+    "phase_3_fresh_min": "~167",
+    "phase_4_fresh_min": "16-20hr",
+    "total_expected_hr": "16-19 (vs 16-20 fresh)",
+    "expected_cost_usd": "4-8"
+  },
+  "polling_task_id": "bts8yvqzo",
+  "cost_state": {
+    "session_pre_b1078_usd": 18.64,
+    "b1078_expected_usd": "4-8",
+    "session_post_b1078_projection_usd": "22.64-26.64",
+    "25_usd_warn_cap_breach_expected": true,
+    "30_usd_hard_ceiling": false,
+    "owner_pre_accepted_via_A_chain": true
+  },
+  "halt_triggers_autonomous_mode": {
+    "PHASE_N_HALT_FAIL": "pull diagnostics + surface; do NOT auto-relaunch",
+    "spot_interruption": "surface; B1079 = re-invoke B1078 logic with latest run_id",
+    "NEW_PIVOT_class": "surface (Council 189 audit confirms PIVOT #42 was LAST small-ticker false-positive)",
+    "cost_warning_25_usd": "emit awareness + continue",
+    "cost_hard_ceiling_30_usd": "HALT",
+    "owner_question": "respond"
+  },
+  "session_state": {
+    "batches": 107,
+    "councils": 101,
+    "pivot_count_session": 42,
+    "phase_d_attempts": 12,
+    "phase_d_completed_attempts": 0,
+    "phase_d_partial_pass_b1075_b1077": 2,
+    "session_aws_spend_pre_b1078_usd": 18.64
+  },
+  "launched_at_utc": "2026-06-29T18:10:00Z",
+  "expected_completion_utc": "2026-06-30T10:00-13:00Z"
+}

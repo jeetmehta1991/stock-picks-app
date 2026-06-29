@@ -81,6 +81,14 @@ BUCKET=${BUCKET_NAME}
 RUN_ID="${RUN_ID}"
 MODE="${MODE}"
 MAX_PHASE_MIN=${MAX_PHASE_MIN:-360}
+# B1078 Council 194 Option 1: resume-mode env vars threaded from host
+# shell into user-data. Used by run_phase function for SKIP_PHASES +
+# RESUME_FROM_RUN_ID logic. Empty defaults preserve original B1075
+# behavior when not in resume mode.
+RESUME_FROM_RUN_ID="${RESUME_FROM_RUN_ID:-}"
+SKIP_PHASES="${SKIP_PHASES:-}"
+export RESUME_FROM_RUN_ID SKIP_PHASES
+echo "B1078 RESUME_FROM_RUN_ID=\${RESUME_FROM_RUN_ID} SKIP_PHASES=\${SKIP_PHASES}"
 
 mkdir -p /tmp/sentinels
 echo "BOOT \$(date -u +%Y-%m-%dT%H:%M:%SZ) mode=\${MODE}" > /tmp/sentinels/BOOT
@@ -200,7 +208,53 @@ run_phase() {
     END_DATE=\$5
     MAX_MIN=\$6
     NCNT=\$(echo "\${TICKERS}" | tr ',' '\n' | wc -l)
-    echo "=== PHASE \${PHASE_NUM} START: \${NCNT} tickers window=\${START_DATE}..\${END_DATE} max=\${MAX_MIN}min ==="
+
+    # B1078 Council 194 Option 1: SKIP_PHASES + RESUME_FROM_RUN_ID support.
+    # SKIP_PHASES comma-list (e.g. "1") => skip this phase entirely, copy
+    # prior run's output_phase_N/ from S3 to local PHASE_DIR so downstream
+    # phases see the artifacts. Defensive: ONLY skip if prior PHASE_N_PASS
+    # sentinel exists in RESUME_FROM_RUN_ID prefix.
+    # RESUME_FROM_RUN_ID with checkpoint for this phase => download S3
+    # output_phase_N/ to PHASE_DIR + pass --resume-from-checkpoint to
+    # backtest engine. Engine reads engine_state.simulated_day + closed
+    # trades from CSV + skips main loop iterations <= resume_sim_day.
+    if [ -n "\${SKIP_PHASES:-}" ] && [ -n "\${RESUME_FROM_RUN_ID:-}" ] && \\
+       echo "\${SKIP_PHASES}" | tr ',' '\n' | grep -qx "\${PHASE_NUM}"; then
+        # Verify prior PHASE_N_PASS sentinel exists (defensive)
+        if aws s3 ls "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/PHASE_\${PHASE_NUM}_PASS" >/dev/null 2>&1; then
+            echo "=== PHASE \${PHASE_NUM} SKIP: B1078 resume mode; copying prior output from \${RESUME_FROM_RUN_ID} ==="
+            mkdir -p \${PHASE_DIR}
+            aws s3 sync "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/" "\${PHASE_DIR}/" --quiet || {
+                echo "PHASE_\${PHASE_NUM}_SKIP_SYNC_FAIL"; return 1
+            }
+            echo "PHASE_\${PHASE_NUM}_PASS \$(date -u +%Y-%m-%dT%H:%M:%SZ) skipped=B1078_resume n=\${NCNT}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_PASS
+            aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_PASS s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_PASS --quiet
+            return 0
+        else
+            echo "PHASE_\${PHASE_NUM}_SKIP_SENTINEL_MISSING: cannot find PHASE_\${PHASE_NUM}_PASS in \${RESUME_FROM_RUN_ID}; running fresh"
+        fi
+    fi
+
+    # B1078 Council 194 Option 1: resume-checkpoint download (if RESUME_FROM_RUN_ID set
+    # AND prior run has checkpoint for this phase AND not skip-listed).
+    RESUME_ARG=""
+    if [ -n "\${RESUME_FROM_RUN_ID:-}" ] && \\
+       ! ( [ -n "\${SKIP_PHASES:-}" ] && echo "\${SKIP_PHASES}" | tr ',' '\n' | grep -qx "\${PHASE_NUM}" ); then
+        # Check if prior run has checkpoint for this phase (status=running)
+        PRIOR_STATE_JSON=\$(aws s3 cp "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/engine_state.json" - 2>/dev/null || echo "")
+        if [ -n "\${PRIOR_STATE_JSON}" ] && echo "\${PRIOR_STATE_JSON}" | grep -q '"status": "running"'; then
+            echo "=== PHASE \${PHASE_NUM} B1078 RESUME: prior checkpoint found in \${RESUME_FROM_RUN_ID} ==="
+            mkdir -p \${PHASE_DIR}
+            aws s3 sync "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/" "\${PHASE_DIR}/" --quiet || {
+                echo "PHASE_\${PHASE_NUM}_RESUME_SYNC_FAIL"; return 1
+            }
+            RESUME_ARG="--resume-from-checkpoint \${PHASE_DIR}"
+            echo "PHASE_\${PHASE_NUM}_RESUME_ARGS=\${RESUME_ARG}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_ARGS
+            aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_ARGS s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_RESUME_ARGS --quiet
+        fi
+    fi
+
+    echo "=== PHASE \${PHASE_NUM} START: \${NCNT} tickers window=\${START_DATE}..\${END_DATE} max=\${MAX_MIN}min \${RESUME_ARG:+RESUME=\${RESUME_ARG}} ==="
     echo "PHASE_\${PHASE_NUM}_RUNNING \$(date -u +%Y-%m-%dT%H:%M:%SZ) n=\${NCNT}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_RUNNING
     aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_RUNNING s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_RUNNING --quiet
     mkdir -p \${PHASE_DIR}
@@ -236,7 +290,7 @@ run_phase() {
     esac
     echo "PHASE_\${PHASE_NUM}_POOL_WORKERS=\${POOL_WORKERS}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_POOL_WORKERS
     aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_POOL_WORKERS s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_POOL_WORKERS --quiet
-    setsid python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --no-agents --output-dir \${PHASE_DIR} --screen-pool-workers \${POOL_WORKERS} > \${PHASE_DIR}/engine.log 2>&1 &
+    setsid python -m backtest.run_phase1a --phase 1a-beta --tickers "\${TICKERS}" --start \${START_DATE} --end \${END_DATE} --no-news --no-git --no-walk-forward --no-agents --output-dir \${PHASE_DIR} --screen-pool-workers \${POOL_WORKERS} \${RESUME_ARG} > \${PHASE_DIR}/engine.log 2>&1 &
     ENGINE_PID=\$!
     phase_watchdog \${PHASE_NUM} \${MAX_MIN} \$ENGINE_PID &
     WATCHDOG_PID=\$!
