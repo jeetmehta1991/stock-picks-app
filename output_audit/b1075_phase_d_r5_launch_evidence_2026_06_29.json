@@ -1,0 +1,101 @@
+{
+  "comment": "B1075 Phase D R5 launch evidence. All B1070+B1072+B1074 fixes applied + 30-month NVDA smoke validated BOTH sim_day=200 (Option F PIVOT #40) AND sim_day=500 (E-NEW PIVOT #42) boundaries. Autonomous mode launch per owner directive 'Continue automatically and autonomously'. CHECKLIST #134 verification PASSED within 60 sec.",
+  "launch_batch": "B1075",
+  "previous_phase_d_attempts": {
+    "B1024_B1028": "PIVOT #18 wrong universe + Council 126 12-bug catalog",
+    "B1054": "Phase 1 TIMEOUT 120 min",
+    "B1058": "Phase 1 HALT b2_viol=1 (PIVOT #37 fixed B1062)",
+    "B1060": "same b2_viol=1 (B1059 wrong attribution)",
+    "B1063": "Phase 1+2 PASS; Phase 3 terminated for B1070 patch chain",
+    "B1071": "Phase 1 HALT A1-PROMOTION sim_day=200 (PIVOT #40 fixed B1072)",
+    "B1073": "Phase 1 HALT E-NEW silent_floor sim_day=500 (PIVOT #42 fixed B1074)"
+  },
+  "smoke_validation_evidence": {
+    "smoke_instance": "i-07bbec64c70f6b6fe",
+    "smoke_run_id": "r5_smoke_20260629_072803",
+    "smoke_pass_ts": "2026-06-29T11:56:14Z",
+    "smoke_window": "NVDA 2023-11-01 to 2026-05-01 (30 months; crosses sim_day=200 AND sim_day=500)",
+    "engine_state_status_complete": true,
+    "engine_state_final_sim_day": 625,
+    "engine_state_finalized_open_trades": 14,
+    "monitor_log_validates_both_pivots": {
+      "sim_day_100": "WARN-HIGH a1_anom=87/88 e_silent_pct=0.99",
+      "sim_day_200": "WARN-HIGH a1_anom=88/88 e_silent_pct=0.91 (Option F PIVOT #40 gate holds)",
+      "sim_day_300": "WARN-HIGH a1_anom=88/88 e_silent_pct=0.88",
+      "sim_day_400": "WARN-HIGH a1_anom=84/88 e_silent_pct=0.80",
+      "sim_day_500": "WARN-HIGH a1_anom=85/88 e_silent_pct=0.78 (E-NEW PIVOT #42 gate WORKS)",
+      "sim_day_600": "WARN-HIGH a1_anom=85/88 e_silent_pct=0.77",
+      "summary": "Both Option F PIVOT #40 (sim_day=200) AND E-NEW PIVOT #42 (sim_day=500) gates working; NO HALT-CRITICAL at NVDA single-ticker scale; CHECKLIST #128 SMOKE-EDGE-BOUNDARY-VERIFICATION fully satisfied"
+    },
+    "f_8_1_drift_warning_fired": "3.8 years"
+  },
+  "run_id": "r5_full_20260629_075932",
+  "instance_id": "i-07b5adc9f1324ab27",
+  "volume_id": "vol-0019b45c306dc987c",
+  "az": "us-east-1b",
+  "az_consecutive_first_try_success": 11,
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ebs": {
+    "size_gb": 100,
+    "volume_type": "gp3",
+    "via_helper": "scripts/b1070_phase_d_launch_helper.sh (Block-1 enforcement)"
+  },
+  "checklist_134_verification": {
+    "verified_within_60_sec": true,
+    "instance_state": "pending",
+    "ebs_size_confirmed": "100GB gp3 in-use",
+    "launched_via": "main thread direct (CHECKLIST #133+#134 enforced; sub-agent NOT used)"
+  },
+  "council_lineage_complete": [
+    "Council 175-180 (B1070 5-stage)",
+    "Council 182 audit closure (4 BLOCKERS)",
+    "Council 183 B1071 launch",
+    "Council 184 PIVOT #40 fix",
+    "Council 185 (HALT analysis)",
+    "Council 186 fabricated (PIVOT #41 retracted)",
+    "Council 187 autonomous mode",
+    "Council 188 CHECKLIST #133+#134 codify",
+    "Council 189 comprehensive audit + PIVOT #42 fix"
+  ],
+  "all_fixes_summary_pre_launch": {
+    "B1057": "per-phase pool config",
+    "B1059": "PIVOT #36 A1 baseline scaling",
+    "B1062": "PIVOT #37 b2 schema (exit_reason canonical)",
+    "B1067": "4 monitor fixes (G-IMPL + A1-PROMOTION + E-NEW + F-NEW)",
+    "B1068": "PIVOT #39 panel-blackout (ema_sma removed from skip)",
+    "B1070_A_E": "17 fixes (5 producer + 3 PASS-path + schema + 23 OVERRIDE + 2 HIGH + checklist)",
+    "B1072": "PIVOT #40 Option F active_tickers gate (A1-PROMOTION)",
+    "B1072.2": "PIVOT #41 sub-agent fabrication retraction + CHECKLIST #133+#134",
+    "B1074": "PIVOT #42 E-NEW active_tickers gate (companion to Option F)"
+  },
+  "per_phase_config": {
+    "phase_1_nvda": {"tickers": 1, "pool": 0, "max_min": 120, "expected_min": 18},
+    "phase_2_10_tickers": {"tickers": 10, "pool": 0, "max_min": 180, "expected_min": 52},
+    "phase_3_50_tickers": {"tickers": 50, "pool": 8, "max_min": 240, "expected_min": 167},
+    "phase_4_r5_master_1929": {"tickers": 1929, "pool": 16, "max_min": 1200, "expected_min": "16-20hr"}
+  },
+  "polling_task_id": "bpco4qd2p",
+  "expected_outcomes": {
+    "total_expected_hr": "16-20",
+    "expected_cost_usd": "5-10",
+    "session_cumulative_post_launch_usd": "22-27 (may breach $25 cap; HALT trigger surfaces)"
+  },
+  "halt_triggers": {
+    "PHASE_N_HALT_FAIL": "pull diagnostics + surface",
+    "NEW_PIVOT_CLASS": "surface (PIVOT #42 was LAST known small-ticker false-positive per Council 189 audit)",
+    "cost_cap_25_usd_breach": "expected at $5-10 B1075; HALT + surface",
+    "owner_question": "respond"
+  },
+  "session_state": {
+    "batches": 104,
+    "councils": 97,
+    "pivot_count_session": 42,
+    "phase_d_attempts": 10,
+    "phase_d_completed_attempts": 0,
+    "session_aws_spend_pre_b1075_usd": 16.34,
+    "expected_post_b1075_usd": "22-27"
+  },
+  "launched_at_utc": "2026-06-29T12:00:00Z"
+}
