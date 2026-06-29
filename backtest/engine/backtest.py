@@ -78,7 +78,11 @@ class BacktestEngine:
         no_event_suppression:   bool  = False, # Batch 384 owner 2026-05-26 Gate 3 opt: bypass DEC-348 event suppression (FOMC/CPI/NFP/earnings) for Phase 1A-beta cube. Cube needs event-day data to measure strategy robustness through events. Re-engaged Phase 1B-alpha.
         warn_run_hours:         Optional[float] = None, # Batch 394 owner 2026-05-27: WARN once when run exceeds this wall-time. None = disabled.
         max_run_hours:          Optional[float] = None, # Batch 394 owner 2026-05-27: hard sys.exit(1) at this wall-time after flushing checkpoint. None = disabled.
+        resume_from_checkpoint: Optional[str] = None, # B1076 Council 191 Option 1: local dir with engine_state.json + trade_log_checkpoint.csv from prior interrupted run.
     ):
+        self.resume_from_checkpoint = resume_from_checkpoint
+        self._resume_sim_day = -1  # set by _load_resume_checkpoint when active
+        self._resumed_closed_trades_count = 0  # idempotency check
         self.no_portfolio_cap = bool(no_portfolio_cap)
         self.no_dd_halt = bool(no_dd_halt)
         self.no_regime_affinity = bool(no_regime_affinity)
@@ -389,6 +393,109 @@ class BacktestEngine:
             return fallback
 
     # ----------------------------------------------------------------------
+    # B1076 RESUME-FROM-CHECKPOINT (Council 191 Option 1 MVP)
+    # ----------------------------------------------------------------------
+
+    def _load_resume_checkpoint(self):
+        """B1076 Council 191 Option 1: load engine_state.json +
+        trade_log_checkpoint.csv from self.resume_from_checkpoint dir.
+
+        Sets:
+          self._resume_sim_day = engine_state["simulated_day"] - 1 (so
+            main loop skips iterations i <= resume_sim_day; resumes at
+            resume_sim_day + 1 which == simulated_day in the prior run)
+          self._resumed_closed_trades_count = engine_state["trades_so_far"]
+
+        Per CHECKLIST #124 + #128 schema-contract: HALT on:
+          - missing engine_state.json
+          - engine_state["status"] == "complete" (nothing to resume)
+          - engine_state["simulated_day"] <= 0
+          - trade_log_checkpoint.csv row count != trades_so_far (B1062
+            schema-contract per PIVOT #37 lineage)
+
+        Open trades at interruption point are DROPPED with WARNING
+        (acknowledged caveat; B1075 had 0 open at interruption per
+        engine_state.json).
+        """
+        import json
+        from pathlib import Path
+        resume_dir = Path(self.resume_from_checkpoint)
+        state_path = resume_dir / "engine_state.json"
+        log_path = resume_dir / "trade_log_checkpoint.csv"
+        if not state_path.exists():
+            raise FileNotFoundError(
+                f"B1076 resume: engine_state.json not found at {state_path}"
+            )
+        with open(state_path) as f:
+            state = json.load(f)
+        if state.get("status") == "complete":
+            raise ValueError(
+                "B1076 resume: prior run status=complete; nothing to resume. "
+                "Remove --resume-from-checkpoint flag for fresh run."
+            )
+        resume_sim_day = int(state.get("simulated_day", 0))
+        trades_so_far = int(state.get("trades_so_far", 0))
+        if resume_sim_day <= 0:
+            raise ValueError(
+                f"B1076 resume: simulated_day={resume_sim_day} invalid; "
+                f"engine never advanced past day 0"
+            )
+        # Reload closed trades from CSV
+        if log_path.exists() and log_path.stat().st_size > 0:
+            try:
+                df = pd.read_csv(log_path)
+                # B1062 PIVOT #37 schema-contract: row count must match
+                # engine_state.trades_so_far. Mismatch indicates checkpoint
+                # corruption or torn write.
+                csv_rows = len(df)
+                if csv_rows != trades_so_far:
+                    raise ValueError(
+                        f"B1076 resume schema-contract: trade_log "
+                        f"row_count={csv_rows} != engine_state.trades_so_far"
+                        f"={trades_so_far}; HALT per CHECKLIST #124+#128"
+                    )
+                # Reconstitute closed_trades list
+                self.closed_trades = df.to_dict(orient="records")
+            except pd.errors.EmptyDataError:
+                if trades_so_far > 0:
+                    raise ValueError(
+                        f"B1076 resume: trade_log_checkpoint.csv empty but "
+                        f"engine_state.trades_so_far={trades_so_far}; HALT"
+                    )
+                self.closed_trades = []
+        else:
+            if trades_so_far > 0:
+                raise FileNotFoundError(
+                    f"B1076 resume: trade_log_checkpoint.csv missing at "
+                    f"{log_path} but engine_state.trades_so_far={trades_so_far}"
+                )
+            self.closed_trades = []
+        # Set resume marker; main loop skips i <= self._resume_sim_day.
+        # Prior run last completed simulated_day == N; resume at N+1.
+        # Engine writes simulated_day = self._last_sim_day_index (0-indexed
+        # iteration count). To skip the FIRST N iterations: skip i < N.
+        # Equivalently: continue if i <= self._resume_sim_day where
+        # self._resume_sim_day = N - 1.
+        self._resume_sim_day = resume_sim_day  # skip i <= this index
+        self._resumed_closed_trades_count = trades_so_far
+        # B1076 open-trades caveat (acknowledged):
+        open_at_resume = int(state.get("open_trades", 0))
+        if open_at_resume > 0:
+            logger.warning(
+                "B1076 RESUME open-trades DROPPED count=%d at resume_sim_day=%d. "
+                "Open positions from prior interrupted run are NOT restored; "
+                "engine starts fresh portfolio at resume point. This is the "
+                "acknowledged MVP caveat (Council 191 Option 1). To handle "
+                "open trades, implement full state pickle (deferred Council "
+                "follow-up). For B1075 (0 open trades), this is no-op.",
+                open_at_resume, resume_sim_day,
+            )
+        logger.info(
+            "B1076 RESUME: resume_sim_day=%d closed_trades=%d (from %s)",
+            resume_sim_day, trades_so_far, resume_dir,
+        )
+
+    # ----------------------------------------------------------------------
     # MAIN LOOP
     # ----------------------------------------------------------------------
 
@@ -464,7 +571,20 @@ class BacktestEngine:
                 "watchdog backup)", self.warn_run_hours, self.max_run_hours,
             )
 
+        # B1076 Council 191 Option 1 (MVP): resume-from-checkpoint hydration.
+        # Sub-B F-13.1 + S5-B1073-RESUME-FROM-CHECKPOINT ticket. Loaded
+        # state: sim_day_index + closed_trades_count from prior interrupted
+        # run. Main loop skips iterations where i <= self._resume_sim_day.
+        # Open trades at interruption point are DROPPED (acknowledged
+        # caveat; documented in CLI help). HALT on schema mismatch.
+        if self.resume_from_checkpoint:
+            self._load_resume_checkpoint()
+
         for i, as_of in enumerate(trading_days):
+            # B1076 Council 191 Option 1: skip iterations already completed
+            # by prior interrupted run. Continue from sim_day = resume + 1.
+            if self._resume_sim_day >= 0 and i <= self._resume_sim_day:
+                continue
             # Batch 394: year-boundary milestone telemetry.  Detect when
             # calendar year flips between consecutive trading days.
             cur_year = as_of.year if hasattr(as_of, "year") else None

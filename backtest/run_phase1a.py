@@ -242,6 +242,19 @@ def main():
                         "watchdog backs this up at +5min. AUTO-SET to "
                         "6.0 for --phase=1a-beta. None=disabled.")
     p.add_argument("--output-dir", type=str, default="output_v2")
+    # B1076 Council 191 Option 1: resume-from-checkpoint MVP (Sub-B F-13.1
+    # + S5-B1073 ticket). Local directory containing engine_state.json +
+    # trade_log_checkpoint.csv from prior interrupted run. Engine skips
+    # to last completed sim_day + 1. Open trades at interruption point
+    # dropped (acknowledged caveat; B1075 had 0 open at interruption).
+    p.add_argument("--resume-from-checkpoint", type=str, default=None,
+                   help="B1076 Council 191 Option 1: Local directory "
+                        "containing engine_state.json + trade_log_checkpoint.csv "
+                        "from prior interrupted run. Engine reads sim_day_index + "
+                        "trades_so_far + closed trades; skips sim_day loop up to "
+                        "resume_sim_day + 1; continues from there. Open trades "
+                        "dropped (warned). Operator: aws s3 sync prior RUN_ID "
+                        "output_phase_N/ <local-dir>/ pre-launch.")
     p.add_argument("--vectorized-cube-exits", action="store_true",
                    help="Batch 412 (owner 2026-05-28 owner-approved): activate "
                         "the numpy-vectorized cube-exit fast path "
@@ -423,6 +436,7 @@ def main():
         no_event_suppression=args.no_event_suppression, # Batch 384 Gate 3
         warn_run_hours=args.warn_run_hours,             # Batch 394 WARN at 4h
         max_run_hours=args.max_run_hours,               # Batch 394 KILL at 6h
+        resume_from_checkpoint=args.resume_from_checkpoint, # B1076 Council 191
     )
     if args.no_git:
         import os
