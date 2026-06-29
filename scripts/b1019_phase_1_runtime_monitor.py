@@ -182,8 +182,19 @@ def main() -> int:
         # B1070 F-9.2 FIX: pass current_day so A1-PROMOTION HALT-CRITICAL
         # gates on sim_day >= 200 (Sub-B finding: early sim_day false
         # positives before fires accumulate).
+        # B1072 PIVOT #40 (Council 184 Option F): also pass active_tickers
+        # so A1-PROMOTION HALT-CRITICAL additionally gates on
+        # active_tickers >= 1000. Below 1000 (Phase 1 NVDA=1, Phase 2=10,
+        # Phase 3=50), the universe is too small for 88-strategy fire-rate
+        # baseline to be statistically actionable -- B1071 Phase 2 smoke
+        # false-positive (10 tickers, 60 of 88 strategies silent ->
+        # HALT-CRITICAL at sim_day 250) traced to this missing gate.
+        # PASS-path gap: smoke window 2026-04-01..2026-05-01 (1 month, 21
+        # sim_days) never crossed sim_day=200 boundary so F-9.2 gate
+        # masked the scale-gap finding until Phase 2 production-scale ran.
         tier = _classify_tier(a1, b2, d1, e_new, f_new,
-                              current_day=current_day)
+                              current_day=current_day,
+                              active_tickers=args.total_tickers_active)
         print(_format_checkpoint_line(tier, current_day, a1, b2, d1,
                                       e_new=e_new, f_new=f_new))
 
@@ -399,7 +410,8 @@ def _classify_tier(a1: dict[str, Any], b2: dict[str, Any],
                    d1: dict[str, Any],
                    e_new: dict[str, Any] | None = None,
                    f_new: dict[str, Any] | None = None,
-                   current_day: int = 0) -> str:
+                   current_day: int = 0,
+                   active_tickers: int = 0) -> str:
     """STOP-S3 severity tier classification.
 
     B1067 Council 167 expansions:
@@ -414,20 +426,34 @@ def _classify_tier(a1: dict[str, Any], b2: dict[str, Any],
       200 sim_days (strategies legitimately haven't fired setups yet).
       Below 200 emits WARN-HIGH (still visible; doesn't HALT engine).
       E-NEW silent_floor (sim_day >= 500) remains terminal escalation.
+
+    B1072 PIVOT #40 (Council 184 Option F): A1-PROMOTION HALT-CRITICAL
+    now ADDITIONALLY gated on active_tickers >= 1000. Lower-scale phases
+    (Phase 1 NVDA=1, Phase 2=10, Phase 3=50) have too-small universes
+    for 88-strategy fire-rate baseline to be statistically actionable;
+    B1071 Phase 2 smoke false-positive surfaced this gap (60 of 88
+    silent at sim_day 250 -> HALT, but expected-fires-per-strategy at
+    10-ticker scale = 0.02/yr -- well below 1-fire-detection floor at
+    that window). Below 1000: WARN-HIGH retains visibility.
     """
     # B2 schema violations: hardest signal (data integrity)
     if str(b2.get("status", "")).startswith("ERROR"):
         return "HALT-CRITICAL"
     if b2.get("violations"):
         return "HALT-CRITICAL"
-    # B1067 FIX 2 A1-PROMOTION + B1070 F-9.2 FIX: mass-anomaly HALT
-    # gated on current_day >= 200 (Sub-B finding: early sim_day A1
-    # false positives before fires accumulate; B1067 threshold too
-    # eager pre-day-200). Below 200: WARN-HIGH retains visibility.
+    # B1067 FIX 2 A1-PROMOTION + B1070 F-9.2 FIX + B1072 PIVOT #40:
+    # mass-anomaly HALT gated on BOTH current_day >= 200 AND
+    # active_tickers >= 1000. Either gate failing -> WARN-HIGH only.
+    # Sub-B finding: early sim_day A1 false positives before fires
+    # accumulate (B1067 threshold too eager pre-day-200); Council 184
+    # finding: small-universe A1 false positives at Phase 1-3 scale
+    # (baseline scaling per B1059 corrects for size but per-strategy
+    # expected-fpy still rounds to ~0 at 10-ticker x 1-yr windows).
     a1_anom = a1.get("anomaly_count", 0)
     a1_expected = a1.get("expected_firing_count", 0)
     if (a1_expected > 0 and a1_anom > 0.5 * a1_expected
-            and current_day >= 200):
+            and current_day >= 200
+            and active_tickers >= 1000):
         return "HALT-CRITICAL"
     # B1067 FIX 3 E-NEW: silent-strategy floor (terminal escalation
     # at sim_day >= 500)

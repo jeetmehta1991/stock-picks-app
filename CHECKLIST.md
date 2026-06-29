@@ -2200,3 +2200,19 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Verification format:** commit message includes ENGINE-VERIFY block citing runtime probe output + pyramid test + cross-reference to engine artifact
 
      **Cross-references.** B1070 all 5 stages + 17 fixes engine-verified per protocol, `feedback_wired_means_engine_consumed`, CHECKLIST #124 (DESIGNED vs OPERATIONALLY-VERIFIED), CHECKLIST #122 (silent-failure-pairing), owner directive 2026-06-29 'Ensure engine implemented + no silent misses'.
+
+133. **HARD RULE -- SMOKE-EDGE-BOUNDARY-VERIFICATION.** (B1071 Phase 2 false-positive HALT + Council 184 4/4 RECOMMEND per owner directive 2026-06-29 'Approve all council this'; codifies the PASS-path edge-threshold-crossing gap in smoke validation per `feedback_phase_ladder_timing_validation` precedent.)
+
+     Every smoke run must empirically exercise EACH edge threshold in every monitor / gate / classifier in the engine path. The B1071 Phase 2 false-positive HALT happened because smoke window 2026-04-01..2026-05-01 (~21 sim_days) never crossed the sim_day=200 boundary that gates A1-PROMOTION HALT-CRITICAL; the small-universe scale-gap (10-ticker mass-anomaly false positive) only surfaced once Phase 2 production ran past the gate. Per CHECKLIST #128 (PASS-path output verification) this is the same bug-class extended to edge-threshold-crossing: smoke must validate the gate IS CROSSED, not just that the engine ran.
+
+     **Why HARD rule:** five sequential edge-threshold gates exist in `_classify_tier` (b2_violation -> HALT-CRITICAL; a1_anom_count > 0.5*expected AND current_day >= 200 AND active_tickers >= 1000 -> HALT-CRITICAL; e_new_silent_floor at sim_day >= 500 -> HALT-CRITICAL; a1_anom >= 5 -> WARN-HIGH; a1_anom > 0 -> LOG-MEDIUM). Any of these can silently mask a logic bug if smoke never crosses the threshold. B1071 cost: ~$0.50 + cascading B1072/B1073 delays = wall-clock 1+ day from a missing edge-crossing test.
+
+     **When the rule fires (smoke edge-crossing MANDATORY):**
+     - Any new monitor edge threshold (sim_day gate, anomaly count, schema boundary, universe-size gate, time-window gate)
+     - Any modification to a tier-classifier function (e.g., `_classify_tier`)
+     - Any pre-AWS-launch smoke validation for a multi-phase ladder
+     - Pyramid test alone is not sufficient; smoke runtime must exercise the path
+
+     **Verification format:** smoke window parameters explicitly chosen to cross each edge threshold (e.g., 22-month NVDA smoke to cross sim_day=200 + sim_day=500 boundaries) OR explicit honest-finding pivot in commit message marking the threshold as DEFERRED-TO-PRODUCTION-RUN with named risk owner.
+
+     **Cross-references.** B1071 Phase 2 smoke false-positive HALT lineage, B1072 PIVOT #40 active_tickers >= 1000 gate addition, Council 184 4/4 RECOMMEND, CHECKLIST #128 (PASS-path output verification), CHECKLIST #123 (phase-ladder timing validation), `feedback_phase_ladder_timing_validation`, `feedback_designed_vs_verified_requires_evidence_artifact`, owner directive 2026-06-29 'Approve all council this'.

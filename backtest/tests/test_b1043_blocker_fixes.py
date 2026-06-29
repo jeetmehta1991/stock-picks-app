@@ -187,13 +187,20 @@ def test_b1043_f08_post_run_analyzer_invoked():
 # ============================================================================
 
 def test_b1043_f09_monitor_active_in_smoke():
-    """F-09: monitor invocation has no MODE='full' guard (active in smoke)."""
+    """F-09: monitor invocation has no MODE='full' guard (active in smoke).
+
+    B1067 G-IMPL update: invocation pattern is now `setsid python -u
+    scripts/b1019_...` (line-buffered stdio for PASS-path log visibility).
+    """
     launch_script = REPO / "scripts" / "launch_r5_master_4y_v2.sh"
     content = launch_script.read_text()
     # The B1019 monitor wrap should NOT be inside if MODE=full guard
     # i.e. the launch script invokes monitor unconditionally per phase
-    monitor_invoke_idx = content.find("python scripts/b1019_phase_1_runtime_monitor.py")
-    assert monitor_invoke_idx > 0
+    monitor_invoke_idx = content.find("scripts/b1019_phase_1_runtime_monitor.py")
+    assert monitor_invoke_idx > 0, (
+        "F-09 BLOCK: monitor script invocation must be present in launch "
+        "script"
+    )
     # Verify no MODE=full guard wraps the invocation immediately
     pre_context = content[max(0, monitor_invoke_idx - 200):monitor_invoke_idx]
     assert 'if [ "\\${MODE}" = "full" ] && [ "\\${PHASE_NUM}" != "smoke" ]' not in pre_context, (
@@ -237,13 +244,17 @@ def test_b1043_subb_holdout_guard_wired_in_engine_entry():
 
 def test_b1043_subc_phase_max_min_raised():
     """Sub-C BLOCK fix: per-phase MAX_MIN raised per empirical extrapolation
-    from Phase C smoke (NVDA x 22 days = 10 min; x 1006 days = ~7.6 hr)."""
+    from Phase C smoke (NVDA x 22 days = 10 min; x 1006 days = ~7.6 hr).
+
+    B1070 F-10.1 update: Phase 4 raised again from 480 -> 1200 (20 hr cap)
+    to absorb B1068 panel-blackout fix wall-clock at 1929-ticker scale.
+    """
     launch_script = REPO / "scripts" / "launch_r5_master_4y_v2.sh"
     content = launch_script.read_text()
     # Phase 1: was 30, now 120 (min)
     assert "run_phase 1 \"NVDA\" output_phase_1 \\${START_DATE} \\${END_DATE} 120" in content
-    # Phase 4: was 240, now 480 (min)
-    assert "run_phase 4 \"\\${MASTER_TICKERS}\" output_phase_4_r5 \\${START_DATE} \\${END_DATE} 480" in content
+    # Phase 4: was 240 -> 480 (B1043) -> 1200 (B1070 F-10.1 per CHECKLIST #129)
+    assert "run_phase 4 \"\\${MASTER_TICKERS}\" output_phase_4_r5 \\${START_DATE} \\${END_DATE} 1200" in content
 
 
 # ============================================================================

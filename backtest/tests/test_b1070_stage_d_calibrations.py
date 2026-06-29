@@ -49,7 +49,10 @@ def test_b1070_f_9_2_a1_promotion_no_halt_below_sim_day_200():
 
 
 def test_b1070_f_9_2_a1_promotion_halt_at_sim_day_200():
-    """B1070 F-9.2: A1 mass-anomaly at sim_day >= 200 must HALT."""
+    """B1070 F-9.2: A1 mass-anomaly at sim_day >= 200 must HALT.
+
+    B1072 PIVOT #40 update: also requires active_tickers >= 1000;
+    fixture pins Master-scale (1929) to isolate F-9.2 gate semantics."""
     mod = _load_monitor()
     a1 = {"anomaly_count": 60, "expected_firing_count": 88,
           "silent_with_expectation": 60}
@@ -59,15 +62,18 @@ def test_b1070_f_9_2_a1_promotion_halt_at_sim_day_200():
     e_new = {"halt": False}
     f_new = {"regime_gaps": 0}
     tier = mod._classify_tier(a1, b2, d1, e_new=e_new, f_new=f_new,
-                              current_day=250)
+                              current_day=250, active_tickers=1929)
     assert tier == "HALT-CRITICAL", (
-        f"B1070 F-9.2: A1 mass-anomaly at sim_day 250 (>=200) "
-        f"must HALT-CRITICAL, got {tier}"
+        f"B1070 F-9.2: A1 mass-anomaly at sim_day 250 (>=200) + "
+        f"active_tickers=1929 (Master scale) must HALT-CRITICAL, got {tier}"
     )
 
 
 def test_b1070_f_9_2_a1_promotion_boundary_at_sim_day_199():
-    """B1070 F-9.2 boundary: sim_day 199 still WARN, sim_day 200 HALT."""
+    """B1070 F-9.2 boundary: sim_day 199 still WARN, sim_day 200 HALT.
+
+    B1072 PIVOT #40 update: pin active_tickers=1929 (Master scale) to
+    isolate F-9.2 sim_day gate semantics from F-40 universe-size gate."""
     mod = _load_monitor()
     a1 = {"anomaly_count": 60, "expected_firing_count": 88,
           "silent_with_expectation": 60}
@@ -77,9 +83,9 @@ def test_b1070_f_9_2_a1_promotion_boundary_at_sim_day_199():
     e_new = {"halt": False}
     f_new = {"regime_gaps": 0}
     tier_199 = mod._classify_tier(a1, b2, d1, e_new=e_new, f_new=f_new,
-                                  current_day=199)
+                                  current_day=199, active_tickers=1929)
     tier_200 = mod._classify_tier(a1, b2, d1, e_new=e_new, f_new=f_new,
-                                  current_day=200)
+                                  current_day=200, active_tickers=1929)
     assert tier_199 == "WARN-HIGH", f"sim_day 199 must WARN, got {tier_199}"
     assert tier_200 == "HALT-CRITICAL", f"sim_day 200 must HALT, got {tier_200}"
 
