@@ -1,0 +1,92 @@
+{
+  "comment": "B1079 PIVOT #43 fix validation launch. Owner-approved A (fix + relaunch). Council 196 RECOMMEND Option 4 (reconstruct ClosedTrade + integration + smoke). 11/11 B1079 pyramid + 81/81 cumulative B1067-B1079 PASS. Resume from B1077 r5_full_20260629_113009 (same as B1078). CHECKLIST #134 verified state=running within 60 sec; us-east-1d (no AZ change needed; B1078 also ran 1d cleanly).",
+  "launch_batch": "B1079",
+  "supersedes_b1078": {
+    "b1078_instance": "i-04d34fc49dc27a5f4 us-east-1d PHASE_2_FAIL rc=1 2026-06-29T19:06:45Z",
+    "b1078_failure_class": "PIVOT #43 - B1076 reloaded closed_trades as dicts; engine consumed as dataclass at line 1583 (AttributeError) + line 2615 (TypeError on asdict)",
+    "b1078_validation_gained": "Phase 1 SKIP logic PROVEN works (PHASE_1_PASS skipped=B1078_resume synced from B1077); Phase 2 sim_day skip PROVEN works (engine ran to sim_day=1006); resume infra structurally correct except for ClosedTrade reconstruction"
+  },
+  "pivot_43_fix_summary": {
+    "root_cause": "backtest/engine/backtest.py line 458: self.closed_trades = df.to_dict(orient='records') returned plain dicts",
+    "fix": "_csv_row_to_closed_trade staticmethod reconstructs ClosedTrade dataclass with type coercion (date.fromisoformat, ast.literal_eval, NaN->None, forward-compat defaults)",
+    "validation": "11/11 B1079 pyramid PASS including 3 integration tests that exercise EXACT crash sites (DEC-088 ct.ticker + asdict get_trade_log)",
+    "regression": "81/81 cumulative B1067-B1079 PASS"
+  },
+  "council_lineage_pivot_43": [
+    "Council 190 Option C (resume infra FIRST)",
+    "Council 191 Option 1 (SIMPLE-RESUME-MVP - B1076 ship)",
+    "Council 192 Option 2 (FRESH-B1077-+-ARMED)",
+    "Council 193 Option 1 (STANDARD-LAUNCH B1077)",
+    "Council 194 Option 1 (LAUNCH-SCRIPT-RESUME-MODE - B1078 ship)",
+    "Council 195 Option a (STATUS-QUO B1078 in-flight)",
+    "Council 196 Option 4 (PIVOT #43 RECONSTRUCT + INTEGRATION + SMOKE)"
+  ],
+  "owner_directive_chain": [
+    "2026-06-29 C council this -> B1076 ship",
+    "2026-06-29 A council this -> literal resume B1075 partial",
+    "2026-06-29 A2 council this -> fresh B1077 + armed",
+    "2026-06-29 A council this -> resume B1077 (B1078)",
+    "2026-06-29 A council this -> PIVOT #43 fix + relaunch (B1079)"
+  ],
+  "resume_mode_b1079_active": {
+    "RESUME_FROM_RUN_ID": "r5_full_20260629_113009",
+    "SKIP_PHASES": "1",
+    "skip_logic": "Phase 1 PASS in B1077 -> SKIP via S3 sync",
+    "phase_2_resume": "B1077 checkpoint sim_day=300, trades=136, open_trades=0; engine reconstructs ClosedTrade dataclass instances via PIVOT #43 helper; continues at sim_day=301",
+    "phase_3_fresh": "50-ticker pool=8",
+    "phase_4_fresh": "1929-ticker pool=16 16-20hr"
+  },
+  "run_id": "r5_full_20260629_155837",
+  "instance_id": "i-089258a391c43ce7b",
+  "volume_id": "vol-09a3b7900c3b3d1f2",
+  "az": "us-east-1d",
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ebs": {
+    "size_gb": 100,
+    "volume_type": "gp3"
+  },
+  "checklist_134_verification": {
+    "verified_within_60_sec": true,
+    "instance_state": "running",
+    "ebs_size_confirmed": "100GB gp3 in-use",
+    "az_continuity": "us-east-1d (B1078 ran 87 min in 1d before non-spot fail; capacity OK)"
+  },
+  "expected_outcomes": {
+    "phase_1_skip_min": "~5",
+    "phase_2_resume_min": "~115",
+    "phase_3_fresh_min": "~167",
+    "phase_4_fresh_min": "16-20hr",
+    "total_expected_hr": "16-19",
+    "expected_cost_usd": "4-8"
+  },
+  "polling_task_id": "b064z69j5",
+  "cost_state": {
+    "session_pre_b1079_usd": 19.87,
+    "b1079_expected_usd": "4-8",
+    "session_post_b1079_projection_usd": "23.87-27.87",
+    "25_usd_warn_cap_breach_expected": true,
+    "30_usd_hard_ceiling": false,
+    "owner_pre_accepted_via_A_chain": true
+  },
+  "halt_triggers_autonomous_mode": {
+    "PHASE_N_HALT_FAIL": "pull diagnostics + surface; do NOT auto-relaunch",
+    "spot_interruption": "surface + offer B1080 resume from B1079's checkpoint",
+    "NEW_PIVOT_class": "surface",
+    "cost_warning_25_usd": "emit awareness + continue",
+    "cost_hard_ceiling_30_usd": "HALT",
+    "owner_question": "respond"
+  },
+  "session_state": {
+    "batches": 108,
+    "councils": 103,
+    "pivot_count_session": 43,
+    "phase_d_attempts": 13,
+    "phase_d_completed_attempts": 0,
+    "phase_d_partial_pass_b1075_b1077_b1078": 3,
+    "session_aws_spend_pre_b1079_usd": 19.87
+  },
+  "launched_at_utc": "2026-06-29T20:00:00Z",
+  "expected_completion_utc": "2026-06-30T12:00-16:00Z"
+}
