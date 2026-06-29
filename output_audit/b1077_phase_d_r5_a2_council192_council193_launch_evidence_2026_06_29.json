@@ -1,0 +1,110 @@
+{
+  "comment": "B1077 Phase D R5 launch evidence. Owner-approved A2 (Council 192 Option 2 FRESH + RESUME-INFRA-ARMED) post-B1075 spot interruption + B1076 resume infra ship. AZ-failover us-east-1b -> us-east-1c due to InsufficientInstanceCapacity. CHECKLIST #134 verification PASSED state=running within 60 sec.",
+  "launch_batch": "B1077",
+  "owner_directive_chain_2026_06_29": [
+    "C council this -> Council 191 Option 1 SIMPLE-RESUME-MVP shipped B1076",
+    "A council this -> literal Option A resume B1075 partial",
+    "A2 council this -> accepted Council 192 Option 2 FRESH + RESUME-INFRA-ARMED"
+  ],
+  "council_lineage": [
+    "Council 190 Option C (resume infra FIRST)",
+    "Council 191 Option 1 SIMPLE-RESUME-MVP (B1076 ship)",
+    "Council 192 Option 2 FRESH-B1077-+-RESUME-INFRA-ARMED (deviation from literal A; owner approved A2)",
+    "Council 193 Option 1 STANDARD-LAUNCH-+-PHASE-BOUNDARY-MONITOR"
+  ],
+  "supersedes_b1075": {
+    "b1075_instance": "i-07b5adc9f1324ab27 SPOT-INTERRUPTED 2026-06-29T13:42:08Z",
+    "b1075_phase_progress": "Phase 1 PASS + Phase 2 PASS + Phase 3 interrupted sim_day=300/1006",
+    "b1075_validation_gained": "All 42 pivot fixes ENGINE-VERIFIED at NVDA + 10-ticker scale; Phase 3 + Phase 4 untested at scale",
+    "b1075_disposition": "S3 prefix r5_full_20260629_075932/ archived for forensic; not deleted",
+    "phase_1_2_re_run_in_b1077": "free regression check after CHECKLIST #128-134 codification"
+  },
+  "az_failover_event": {
+    "first_attempt_az": "us-east-1b",
+    "first_attempt_error": "InsufficientInstanceCapacity for c6a.16xlarge",
+    "aws_suggested_alternatives": ["us-east-1a", "us-east-1c", "us-east-1d", "us-east-1f"],
+    "second_attempt_az": "us-east-1c",
+    "second_attempt_outcome": "LAUNCHED state=running within 60 sec",
+    "az_failover_pattern": "11 consecutive us-east-1b first-try successes broken by capacity event 2026-06-29 ~13:30Z; helper script Block-1 EBS=100GB enforcement worked correctly on retry"
+  },
+  "run_id": "r5_full_20260629_113009",
+  "instance_id": "i-08cbc67f4dbf4a95d",
+  "volume_id": "vol-0d039b3ac0ca3cfbd",
+  "az": "us-east-1c",
+  "instance_type": "c6a.16xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 1.50,
+  "ebs": {
+    "size_gb": 100,
+    "volume_type": "gp3",
+    "via_helper": "scripts/b1070_phase_d_launch_helper.sh Block-1 enforcement"
+  },
+  "checklist_134_verification": {
+    "verified_within_60_sec": true,
+    "instance_state": "running",
+    "ebs_size_confirmed": "100GB gp3 in-use",
+    "launched_via": "main thread direct (NOT sub-agent per CHECKLIST #133+#134)"
+  },
+  "all_fixes_applied_pre_launch": {
+    "B1057": "per-phase pool config",
+    "B1059_PIVOT_36": "A1 baseline scaling",
+    "B1062_PIVOT_37": "b2 schema (exit_reason canonical)",
+    "B1067": "4 monitor fixes (G-IMPL + A1-PROMOTION + E-NEW + F-NEW)",
+    "B1068_PIVOT_39": "panel-blackout fix",
+    "B1070_A_E": "17 fixes (5 producer + 3 PASS-path + schema + 23 OVERRIDE + 2 HIGH)",
+    "B1072_PIVOT_40": "Option F A1-PROMOTION active_tickers gate",
+    "B1072_2_PIVOT_41": "sub-agent fabrication retraction + CHECKLIST #133+#134",
+    "B1074_PIVOT_42": "E-NEW silent_floor active_tickers gate",
+    "B1076": "resume-from-checkpoint MVP (Council 191 Option 1)"
+  },
+  "per_phase_config": {
+    "phase_1_nvda": {"tickers": 1, "pool": 0, "max_min": 120, "expected_min": 18},
+    "phase_2_10_tickers": {"tickers": 10, "pool": 0, "max_min": 180, "expected_min": 52},
+    "phase_3_50_tickers": {"tickers": 50, "pool": 8, "max_min": 240, "expected_min": 167},
+    "phase_4_r5_master_1929": {"tickers": 1929, "pool": 16, "max_min": 1200, "expected_min": "16-20hr"}
+  },
+  "resume_infra_armed_for_phase_4_interruption": {
+    "operator_workflow_on_interrupt": "aws s3 sync s3://stock-picks-batch395-jm-7421/r5_full_20260629_113009/output_phase_N/ ./resume_state/ + relaunch Phase N via --resume-from-checkpoint",
+    "tested_via_pyramid": "B1076 13/13 + 59/59 regression PASS",
+    "resume_cost_per_recovery_usd": "1-2 vs $5-10 full re-run",
+    "phase_4_interruption_probability_pct": "5-15 (Sub-B F-12.1)",
+    "expected_recovery_value_usd": "0.25-1.50 amortized"
+  },
+  "halt_triggers_autonomous_mode": {
+    "PHASE_N_HALT_FAIL": "pull diagnostics + surface; do NOT auto-relaunch",
+    "spot_interruption": "surface; offer B1078 operator-path resume",
+    "NEW_PIVOT_class": "surface (Council 189 audit confirms PIVOT #42 was LAST small-ticker false-positive)",
+    "cost_warning_25_usd": "emit awareness + continue (owner pre-accepted via A2)",
+    "cost_hard_ceiling_30_usd": "HALT (per Council 193 hard ceiling)",
+    "owner_question": "respond"
+  },
+  "polling_task_id": "bcazlr1rt",
+  "polling_features": [
+    "5-min cadence",
+    "20-hr cap",
+    "Phase 1/2/3 boundary detection (real-time event)",
+    "Phase 4 terminal sentinels (PASS/FAIL/HALT/AUTOLADDER_COMPLETE)",
+    "30-min instance-state snapshots",
+    "Spot-interruption detection (state=terminated without AUTOLADDER_COMPLETE)",
+    "StateReason capture on early termination"
+  ],
+  "cost_state": {
+    "session_pre_b1077_usd": 17.79,
+    "b1077_expected_usd": "5-10",
+    "session_post_b1077_projection_usd": "22.79-27.79",
+    "25_usd_cap_breach_expected": true,
+    "30_usd_hard_ceiling_per_council_193": true,
+    "cap_breach_already_accepted_via_A2": true
+  },
+  "session_state": {
+    "batches": 106,
+    "councils": 100,
+    "pivot_count_session": 42,
+    "phase_d_attempts": 11,
+    "phase_d_completed_attempts": 0,
+    "phase_d_partial_pass": 1,
+    "session_aws_spend_pre_b1077_usd": 17.79
+  },
+  "launched_at_utc": "2026-06-29T13:30:00Z",
+  "expected_completion_utc": "2026-06-30T05:30:00Z-09:30:00Z"
+}
