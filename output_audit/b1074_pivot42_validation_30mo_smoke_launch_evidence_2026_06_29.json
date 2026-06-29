@@ -1,0 +1,86 @@
+{
+  "comment": "B1074 PIVOT #42 validation smoke - 30-month NVDA window crosses BOTH sim_day=200 (Option F) AND sim_day=500 (E-NEW gate) boundaries per CHECKLIST #128 SMOKE-EDGE-BOUNDARY-VERIFICATION. Council 189 comprehensive monitor audit + Option-2 verdict.",
+  "launch_batch": "B1074_SMOKE",
+  "council_lineage": [
+    "Council 184/185 (Option F + extended smoke + CHECKLIST #133)",
+    "Council 186 fabricated (PIVOT #41 retracted B1072.2)",
+    "Council 187 (autonomous mode)",
+    "Council 188 (CHECKLIST #133+#134 codify)",
+    "Council 189 (comprehensive audit + PIVOT #42 E-NEW gate)"
+  ],
+  "supersedes": {
+    "B1073": "i-0f8e5be924424b2ab HALTed at sim_day=500 by E-NEW silent_floor (PIVOT #42 root cause)",
+    "B1072.2_smoke": "22-month window crossed sim_day=200 but NOT sim_day=500; CHECKLIST #128 partial only"
+  },
+  "real_launch": {
+    "run_id": "r5_smoke_20260629_072803",
+    "instance_id": "i-07bbec64c70f6b6fe",
+    "volume_id": "vol-0956534b36211fdf9",
+    "az": "us-east-1b",
+    "az_consecutive_first_try_success": 10,
+    "instance_type": "c6a.16xlarge",
+    "market": "spot",
+    "ebs": {
+      "size_gb": 100,
+      "volume_type": "gp3",
+      "via_helper": "scripts/b1070_phase_d_launch_helper.sh enforces VolumeSize=100 per CHECKLIST #131"
+    },
+    "verification_134": "aws ec2 describe-instances within 60sec: state=pending; volume 100GB gp3 in-use; main thread launched + verified (NOT sub-agent execution per CHECKLIST #133+#134)"
+  },
+  "smoke_parameters": {
+    "smoke_ticker": "NVDA",
+    "smoke_start": "2023-11-01",
+    "smoke_end": "2026-05-01",
+    "window_months": 30,
+    "trading_days_estimate": 630,
+    "crosses_sim_day_200_boundary": true,
+    "crosses_sim_day_500_boundary": true,
+    "pool_workers": 0,
+    "expected_wall_clock_min": 50,
+    "expected_cost_usd": 0.75
+  },
+  "pass_criteria_per_checklist_128_pass_path_output_verification": {
+    "sim_day_100_must_be_WARN_HIGH": true,
+    "sim_day_200_must_be_WARN_HIGH": "Option F gate (PIVOT #40) holds; active_tickers=1 < 1000",
+    "sim_day_300_must_be_WARN_HIGH": true,
+    "sim_day_400_must_be_WARN_HIGH": true,
+    "sim_day_500_must_be_WARN_HIGH": "PIVOT #42 fix holds; active_tickers=1 < 1000; E-NEW gated, NOT HALT",
+    "sim_day_600_must_be_WARN_HIGH": "E-NEW gate still suppressing",
+    "no_PHASE_smoke_FAIL_or_B1019_HALT": true,
+    "engine_state_status_complete": "F-1.1 validation",
+    "SMOKE_COMPLETE_sentinel": true
+  },
+  "polling_task_id": "be0vtfnb4",
+  "owner_directive": "2026-06-29 'Approve all council this' (Council 189 comprehensive audit + extended smoke + B1075) + 'Continue automatically and autonomously without asking me unless necessary' standing directive",
+  "autonomous_mode_active": true,
+  "auto_launch_b1075_on_smoke_pass": true,
+  "halt_triggers": {
+    "SMOKE_FAIL or B1019_HALT": "pull diagnostics + surface; do NOT auto-launch B1075",
+    "NEW_PIVOT_CLASS": "surface (PIVOT #42 was the LAST known small-ticker false-positive site per Council 189 audit)",
+    "cost_cap_breach_25_usd": "projected to hit $25 boundary post-B1075 launch; surface awareness",
+    "owner_direct_question": "respond"
+  },
+  "all_b1070_b1072_b1074_fixes_summary": {
+    "Stage_A_5_producer_p0": "584b8b64a",
+    "Stage_B_3_pass_path_p0": "819b28ebf",
+    "Stage_C_item_1_schema": "8d972aab1",
+    "Stage_C_item_2_cube_re_derive": "57074bb77",
+    "Stage_D_2_high": "929ad24f4",
+    "Stage_E_checklist_pyramid_banner": "beda9086d",
+    "council_182_audit_closure": "86c5972f7",
+    "B1072_option_f_pivot_40": "3b4a7a680",
+    "B1072_2_pivot_41_retraction": "daebdf151",
+    "B1074_pivot_42_e_new_gate": "e9320ee23"
+  },
+  "session_state": {
+    "batches": 102,
+    "councils": 97,
+    "pivot_count_session": 42,
+    "phase_d_attempts": 9,
+    "phase_d_completed_attempts": 0,
+    "session_aws_spend_pre_smoke_usd": 15.59,
+    "expected_post_smoke_usd": 16.34,
+    "expected_post_b1075_usd": "21.34-26.34"
+  },
+  "launched_at_utc": "2026-06-29T11:28:00Z"
+}
