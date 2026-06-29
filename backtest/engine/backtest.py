@@ -394,7 +394,145 @@ class BacktestEngine:
 
     # ----------------------------------------------------------------------
     # B1076 RESUME-FROM-CHECKPOINT (Council 191 Option 1 MVP)
+    # B1079 PIVOT #43 fix (Council 196 Option 4): _csv_row_to_closed_trade
     # ----------------------------------------------------------------------
+
+    @staticmethod
+    def _csv_row_to_closed_trade(row: dict) -> "ClosedTrade":
+        """B1079 PIVOT #43 fix (Council 196 Option 4): reconstruct
+        ClosedTrade dataclass instance from CSV row dict.
+
+        Root cause: B1076 reloaded closed_trades via df.to_dict(records)
+        producing plain dicts. Engine consumes self.closed_trades as
+        ClosedTrade instances at line 1583 (ct.ticker access for DEC-088
+        stopout cooldown filter) and line 2615 (asdict for get_trade_log).
+
+        CSV serialization via vars(t) preserves field names but coerces:
+          date -> str like '2023-07-15'
+          dict -> str like \"{'key': 'val'}\" (python repr, NOT JSON)
+          list -> str like \"['a', 'b']\"
+          NaN for missing optionals
+
+        This helper inverts that coercion per ClosedTrade dataclass spec
+        (backtest/engine/exit_manager.py:100-173). Missing columns -> field
+        defaults (forward-compat for schema additions).
+        """
+        import ast
+        from datetime import date as _date
+        from dataclasses import fields as _fields
+        import math as _math
+
+        def _is_nan(v):
+            try:
+                return isinstance(v, float) and _math.isnan(v)
+            except Exception:
+                return False
+
+        def _parse_date(v):
+            if v is None or _is_nan(v):
+                return None
+            if isinstance(v, _date):
+                return v
+            return _date.fromisoformat(str(v).split(" ")[0])
+
+        def _parse_literal(v, default):
+            if v is None or _is_nan(v):
+                return default
+            if isinstance(v, (dict, list)):
+                return v
+            try:
+                return ast.literal_eval(str(v))
+            except (ValueError, SyntaxError):
+                return default
+
+        def _parse_bool(v):
+            if isinstance(v, bool):
+                return v
+            if _is_nan(v):
+                return False
+            return str(v).strip().lower() in ("true", "1", "yes")
+
+        def _parse_int(v, default):
+            if v is None or _is_nan(v):
+                return default
+            try:
+                return int(float(v))
+            except (ValueError, TypeError):
+                return default
+
+        def _parse_float(v, default):
+            if v is None or _is_nan(v):
+                return default
+            try:
+                return float(v)
+            except (ValueError, TypeError):
+                return default
+
+        def _parse_str(v, default):
+            if v is None or _is_nan(v):
+                return default
+            return str(v)
+
+        def _parse_optional(v):
+            if v is None or _is_nan(v) or (isinstance(v, str) and v.strip() == ""):
+                return None
+            return v
+
+        # Build kwargs honoring ClosedTrade field types + defaults
+        kwargs = {
+            "ticker": _parse_str(row.get("ticker"), ""),
+            "entry_date": _parse_date(row.get("entry_date")),
+            "exit_date": _parse_date(row.get("exit_date")),
+            "direction": _parse_str(row.get("direction"), "long"),
+            "strategy": _parse_str(row.get("strategy"), ""),
+            "category": _parse_str(row.get("category"), ""),
+            "sector": _parse_str(row.get("sector"), ""),
+            "confidence_tier": _parse_str(row.get("confidence_tier"), "MEDIUM"),
+            "regime": _parse_str(row.get("regime"), "neutral"),
+            "exit_reason": _parse_str(row.get("exit_reason"), ""),
+            "entry_price": _parse_float(row.get("entry_price"), 0.0),
+            "exit_price": _parse_float(row.get("exit_price"), 0.0),
+            "initial_stop": _parse_float(row.get("initial_stop"), 0.0),
+            "highest_close": _parse_float(row.get("highest_close"), 0.0),
+            "trailing_stop_at_exit": _parse_float(row.get("trailing_stop_at_exit"), 0.0),
+            "pnl_pct": _parse_float(row.get("pnl_pct"), 0.0),
+            "pnl_dollar": _parse_float(row.get("pnl_dollar"), 0.0),
+            "win": _parse_bool(row.get("win")),
+            "hold_days": _parse_int(row.get("hold_days"), 0),
+            "max_adverse_excursion": _parse_float(row.get("max_adverse_excursion"), 0.0),
+            "max_favourable_excursion": _parse_float(row.get("max_favourable_excursion"), 0.0),
+            "signals_at_entry": _parse_literal(row.get("signals_at_entry"), {}),
+            "context_bullets": _parse_literal(row.get("context_bullets"), []),
+            "context_paragraph": _parse_str(row.get("context_paragraph"), ""),
+            "fail_reason": _parse_str(row.get("fail_reason"), ""),
+            "smart_money_score": _parse_int(row.get("smart_money_score"), 0),
+            "macro_score": _parse_int(row.get("macro_score"), 0),
+            "sentiment_score": _parse_int(row.get("sentiment_score"), 0),
+            "conversion_pair_id": _parse_optional(row.get("conversion_pair_id")),
+            "circuit_breaker_level": (_parse_int(row.get("circuit_breaker_level"), None)
+                                      if not _is_nan(row.get("circuit_breaker_level")) and row.get("circuit_breaker_level") is not None
+                                      else None),
+            "days_to_earnings": (_parse_int(row.get("days_to_earnings"), None)
+                                 if not _is_nan(row.get("days_to_earnings")) and row.get("days_to_earnings") is not None
+                                 else None),
+            "preliminary_tier": _parse_str(row.get("preliminary_tier"), "MEDIUM"),
+            "agent_reasoning": _parse_literal(row.get("agent_reasoning"), {}),
+            "congressional_signal": _parse_str(row.get("congressional_signal"), "none"),
+            "insider_signal": _parse_str(row.get("insider_signal"), "none"),
+            "institutional_signal": _parse_str(row.get("institutional_signal"), "none"),
+            "aaii_bullish": _parse_float(row.get("aaii_bullish"), 0.0),
+            "aaii_bearish": _parse_float(row.get("aaii_bearish"), 0.0),
+            "aaii_signal": _parse_str(row.get("aaii_signal"), "neutral"),
+            "cnn_fg_score": _parse_float(row.get("cnn_fg_score"), 50.0),
+            "cnn_fg_label": _parse_str(row.get("cnn_fg_label"), "Neutral"),
+            "trade_id": _parse_optional(row.get("trade_id")),
+            "exit_method": _parse_str(row.get("exit_method"), "trailing_stop"),
+        }
+        # Filter kwargs to only valid ClosedTrade fields (forward-compat
+        # if CSV has extra columns from older schema)
+        valid_fields = {f.name for f in _fields(ClosedTrade)}
+        kwargs = {k: v for k, v in kwargs.items() if k in valid_fields}
+        return ClosedTrade(**kwargs)
 
     def _load_resume_checkpoint(self):
         """B1076 Council 191 Option 1: load engine_state.json +
@@ -454,8 +592,16 @@ class BacktestEngine:
                         f"row_count={csv_rows} != engine_state.trades_so_far"
                         f"={trades_so_far}; HALT per CHECKLIST #124+#128"
                     )
-                # Reconstitute closed_trades list
-                self.closed_trades = df.to_dict(orient="records")
+                # Reconstitute closed_trades list as ClosedTrade dataclass
+                # instances (B1079 PIVOT #43 fix Council 196 Option 4).
+                # Engine consumes closed_trades as dataclass at line 1583
+                # (ct.ticker DEC-088 cooldown) + line 2615 (asdict for
+                # get_trade_log). Plain dicts from df.to_dict crash both
+                # sites - see B1078 i-04d34fc49dc27a5f4 PHASE_2_FAIL.
+                self.closed_trades = [
+                    self._csv_row_to_closed_trade(r)
+                    for r in df.to_dict(orient="records")
+                ]
             except pd.errors.EmptyDataError:
                 if trades_so_far > 0:
                     raise ValueError(
