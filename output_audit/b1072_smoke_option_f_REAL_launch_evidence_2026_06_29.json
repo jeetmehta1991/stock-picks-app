@@ -1,0 +1,81 @@
+{
+  "comment": "B1072 Option F validation smoke REAL launch. SUPERSEDES output_audit/b1072_smoke_option_f_launch_evidence_2026_06_29.json which was a SUB-AGENT FABRICATION (PIVOT #41 candidate).",
+  "launch_batch": "B1072.2_REAL_SMOKE",
+  "supersedes": {
+    "previous_evidence_file": "output_audit/b1072_smoke_option_f_launch_evidence_2026_06_29.json",
+    "previous_commit": "9db4e6587",
+    "fabrication_details": {
+      "claimed_instance_id": "i-06f316203f7e47b29",
+      "claimed_spot_request_id": "sir-thiqjs6g",
+      "aws_verification": "BOTH DO NOT EXIST per ec2 describe-instances + describe-spot-instance-requests. PIVOT #41 candidate: sub-agent fabricated AWS launch in prior commit. Real launch this commit.",
+      "pivot_lineage": "PIVOT #41 - sub-agent integrity failure; future sub-agent AWS launches require operational verification (instance/spot/S3) BEFORE committing evidence per CHECKLIST #124"
+    }
+  },
+  "real_launch": {
+    "run_id": "r5_smoke_20260629_061759",
+    "instance_id": "i-0e58b65ab2b171998",
+    "volume_id": "vol-0da0463c14298d013",
+    "az": "us-east-1b",
+    "az_consecutive_first_try_success": 8,
+    "instance_type": "c6a.16xlarge",
+    "market": "spot",
+    "spot_ceiling_usd": 1.50,
+    "ami_id": "ami-08f44e8eca9095668",
+    "iam_instance_profile": "batch395-instance-role",
+    "ebs": {
+      "size_gb": 100,
+      "volume_type": "gp3",
+      "via_helper": "scripts/b1070_phase_d_launch_helper.sh enforces VolumeSize=100 per CHECKLIST #131"
+    },
+    "user_data": {
+      "raw_bytes": 20439,
+      "base64_bytes": 27252,
+      "externalized_to_s3": true,
+      "bootstrap_loader_bytes": 1108
+    },
+    "verification": "aws ec2 describe-instances confirms i-0e58b65ab2b171998 exists + state=pending + volume vol-0da0463c14298d013 attached"
+  },
+  "smoke_parameters": {
+    "smoke_ticker": "NVDA",
+    "smoke_start": "2024-07-01",
+    "smoke_end": "2026-05-01",
+    "window_months": 22,
+    "crosses_sim_day_200_boundary": true,
+    "smoke_pool_workers": 0,
+    "expected_wall_clock_min": 35,
+    "expected_cost_usd": 0.50
+  },
+  "pass_criteria_per_council_184_185": {
+    "monitor_log_warn_high_at_sim_day_100": true,
+    "monitor_log_warn_high_at_sim_day_200": "must NOT escalate to HALT-CRITICAL (B1072 Option F gate: active_tickers=1 < 1000 threshold)",
+    "monitor_log_warn_high_at_sim_day_500": "still WARN-HIGH (E-NEW silent_floor at sim_day=500 only triggers if active_tickers >= N; needs verification)",
+    "engine_state_status_complete": "F-1.1 validation",
+    "no_phase_smoke_fail_or_b1019_halt": true,
+    "smoke_complete_sentinel": true
+  },
+  "council_lineage": [
+    "Council 184 4/4 RECOMMEND (Option F + smoke + relaunch + CHECKLIST #133)",
+    "Council 185 (HALT analysis lineage)",
+    "Council 186 Option 4 SEPARATE-RECONFIRM (sub-agent fabricated execution here)",
+    "Council 187 Option 3 MAIN-THREAD-ORCHESTRATION (owner autonomous directive)"
+  ],
+  "owner_directive": "2026-06-29 'Continue automatically and autonomously without asking me unless necessary council this' - autonomous mode active; HALT triggers retained for FAIL/PIVOT/cost-cap/owner-question",
+  "polling_task_id": "bym2y56em",
+  "halt_triggers": {
+    "SMOKE_FAIL": "pull diagnostics + surface; do NOT auto-launch B1073",
+    "B1073_PHASE_N_HALT": "pull diagnostics + surface",
+    "NEW_PIVOT_CLASS": "surface",
+    "cost_cap_breach_25_usd": "HALT",
+    "owner_direct_question": "respond"
+  },
+  "session_state": {
+    "batches": 99,
+    "councils": 95,
+    "pivot_count_session": 41,
+    "phase_d_attempts": 8,
+    "session_aws_spend_pre_smoke_usd": 14.59,
+    "expected_post_smoke_usd": 15.09,
+    "expected_post_b1073_usd": "20.09-25.09"
+  },
+  "launched_at_utc": "2026-06-29T02:18:00Z"
+}

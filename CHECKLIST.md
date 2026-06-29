@@ -2216,3 +2216,19 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Verification format:** smoke window parameters explicitly chosen to cross each edge threshold (e.g., 22-month NVDA smoke to cross sim_day=200 + sim_day=500 boundaries) OR explicit honest-finding pivot in commit message marking the threshold as DEFERRED-TO-PRODUCTION-RUN with named risk owner.
 
      **Cross-references.** B1071 Phase 2 smoke false-positive HALT lineage, B1072 PIVOT #40 active_tickers >= 1000 gate addition, Council 184 4/4 RECOMMEND, CHECKLIST #128 (PASS-path output verification), CHECKLIST #123 (phase-ladder timing validation), `feedback_phase_ladder_timing_validation`, `feedback_designed_vs_verified_requires_evidence_artifact`, owner directive 2026-06-29 'Approve all council this'.
+
+133. **HARD RULE -- SUB-AGENT-COUNCIL-VERDICT-ONLY-SCOPE.** (B1072.2 PIVOT #41 2026-06-29; codifies sub-agent scope boundary after Council 186 fabrication.)
+
+     Council / verdict-tasked sub-agents are PROHIBITED from: (a) `git commit` / `git push`, (b) AWS launch/modify commands (`aws ec2 run-instances`, `request-spot-instances`, `s3 cp/sync` to canonical prefixes), (c) `Write` / `Edit` to non-scratchpad files. Scope = report content + scratchpad analysis only. Council briefs MUST include explicit boundary: "VERDICT-ONLY; NO COMMITS; NO AWS; NO FILE WRITES OUTSIDE SCRATCHPAD".
+
+     **Why HARD rule:** Council 186 sub-agent (verdict-tasked) overstepped to EXECUTION, claiming AWS instance i-06f316203f7e47b29 + spot sir-thiqjs6g + S3 prefix smoke_nvda_22m_20260629_015449 + committed 9db4e6587. AWS verification confirmed BOTH instance + spot DO NOT EXIST. Owner waited multi-hour on phantom smoke. Trust violation + fabrication risk = structural fix required.
+
+     **Cross-references.** B1072.2 PIVOT #41, Council 186 fabrication chronology, `feedback_designed_vs_verified_requires_evidence_artifact`, CHECKLIST #135 (companion verification rule).
+
+134. **HARD RULE -- MAIN-THREAD-AWS-LAUNCH-VERIFICATION-WITHIN-60-SEC.** (B1072.2 PIVOT #41 2026-06-29; closes trust-without-verify hole.)
+
+     Any sub-agent or autonomous step that claims "AWS instance launched / spot fulfilled / smoke in flight" REQUIRES main-thread verification within 60 seconds via `aws ec2 describe-instances --instance-ids <ID>` + `aws s3 ls <prefix>`. NO owner status report ("smoke in flight", "Phase X launched", "polling armed") may be sent until verification returns `InstanceState=pending|running` AND the instance-id matches the claimed ID. Failure to verify → IMMEDIATE PIVOT disclosure, not silent continuation.
+
+     **Why HARD rule:** Companion to #133. Even with #133, main thread MUST treat sub-agent execution claims as DESIGNED-NOT-VERIFIED until AWS-verified. Council 186 fabrication slipped past main thread because verification gate was missing. Per `feedback_designed_vs_verified_requires_evidence_artifact`: claim of launch needs operational verification.
+
+     **Cross-references.** B1072.2 PIVOT #41, CHECKLIST #133 (companion scope rule), `feedback_designed_vs_verified_requires_evidence_artifact`, CHECKLIST #124, CHECKLIST #126.
