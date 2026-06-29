@@ -87,16 +87,23 @@ def test_b1067_fix3_e_new_silent_floor_function_exists():
 
 
 def test_b1067_fix3_e_new_halts_above_threshold():
-    """B1067 FIX 3 E-NEW: silent_pct > 50pct at sim_day >= 500 must HALT."""
+    """B1067 FIX 3 E-NEW: silent_pct > 50pct at sim_day >= 500 must HALT.
+
+    B1073 PIVOT #42 update: also requires active_tickers >= 1000 (Master
+    scale) to engage HALT. This test now passes active_tickers=1929
+    (Master ops intersection) to validate the full-universe HALT path
+    that B1067 FIX 3 was originally designed for.
+    """
     mod = _load_monitor()
     # Synthesize a1 dict with mass silence
     a1 = {"expected_firing_count": 88, "silent_with_expectation": 87}
     e_result = mod._check_e_new_silent_floor(
         a1, current_day=600, silent_floor_day=500,
-        silent_pct_threshold=0.5
+        silent_pct_threshold=0.5, active_tickers=1929,  # B1073 PIVOT #42 gate
     )
     assert e_result["halt"] is True, (
-        "B1067 FIX 3: 87/88 silent at sim_day 600 must HALT"
+        "B1067 FIX 3: 87/88 silent at sim_day 600 + active_tickers=1929 "
+        "(Master scale) must HALT"
     )
 
 

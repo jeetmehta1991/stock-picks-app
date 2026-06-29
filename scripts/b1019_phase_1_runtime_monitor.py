@@ -173,9 +173,18 @@ def main() -> int:
         d1 = _check_d1_progress(state, args.total_cells, args.total_days,
                                 current_day, start_ts)
         # B1067 FIX 3 E-NEW: silent-strategy floor at sim_day >= 500
+        # B1073 PIVOT #42 (Council 185 Option 2): pass active_tickers so
+        # E-NEW HALT additionally gates on active_tickers >= 1000. Same
+        # bug class as A1-PROMOTION (PIVOT #40): cross-sectional
+        # strategies structurally cannot fire at Phase 1 NVDA=1 / Phase
+        # 2=10 / Phase 3=50 scales; silent_pct hits 50%+ floor naturally
+        # at small universes regardless of engine health. Comprehensive
+        # monitor audit confirmed this is the ONLY remaining small-ticker
+        # false-positive HALT site in _classify_tier.
         e_new = _check_e_new_silent_floor(a1, current_day,
                                           silent_floor_day=500,
-                                          silent_pct_threshold=0.5)
+                                          silent_pct_threshold=0.5,
+                                          active_tickers=args.total_tickers_active)
         # B1067 FIX 4 F-NEW: per-regime coverage (LOG-MEDIUM only)
         f_new = _check_f_new_regime_coverage(REPO / args.trade_log)
 
@@ -493,23 +502,50 @@ def _format_checkpoint_line(tier: str, day: int, a1: dict[str, Any],
 
 def _check_e_new_silent_floor(a1: dict[str, Any], current_day: int,
                                silent_floor_day: int = 500,
-                               silent_pct_threshold: float = 0.5
+                               silent_pct_threshold: float = 0.5,
+                               active_tickers: int = 0
                                ) -> dict[str, Any]:
     """B1067 FIX 3 E-NEW: silent-strategy floor check.
 
     HALT-CRITICAL when:
       - sim_day >= silent_floor_day (default 500)
       - silent_with_expectation / expected_firing_count > silent_pct_threshold (default 0.5)
+      - active_tickers >= 1000 (B1073 PIVOT #42 universe-scale gate)
 
     Distinct from A1 (per-strategy fire-rate ratio); E measures absolute
     mass silence over time. Catches B1063-class issue where engine ran
     1000+ days but 87 of 88 expected-firing strategies stayed at 0 fires.
+
+    B1073 PIVOT #42 (Council 185 Option 2 comprehensive monitor audit):
+    active_tickers >= 1000 gate added to prevent small-ticker false-
+    positive HALT identical to A1-PROMOTION pattern (PIVOT #40 in B1072).
+    Cross-sectional strategies (relative-strength, sector-rank, breadth)
+    STRUCTURALLY cannot fire on N=1 ticker; silent_pct hits 50%+ floor
+    naturally at Phase 1 NVDA / Phase 2 10-ticker / Phase 3 50-ticker
+    scales regardless of engine health. Below 1000 tickers: HALT
+    suppressed (still emits informational status); at full universe
+    (1000+): HALT engages as designed. Status field reflects gate state.
     """
     expected = a1.get("expected_firing_count", 0)
     silent = a1.get("silent_with_expectation", 0)
     silent_pct = silent / expected if expected > 0 else 0.0
+    # B1073 PIVOT #42: gate HALT on active_tickers >= 1000 (universe-scale
+    # awareness; matches B1072 Option F A1-PROMOTION pattern).
     halt = (current_day >= silent_floor_day
-            and silent_pct > silent_pct_threshold)
+            and silent_pct > silent_pct_threshold
+            and active_tickers >= 1000)
+    # Status distinguishes "would-HALT-but-gated" (informational at small
+    # ticker scales) from genuine HALT (full universe). Catches the case
+    # where pattern triggers structurally but gate suppresses to avoid
+    # false-positive HALT-CRITICAL.
+    if halt:
+        status = "HALT"
+    elif (current_day >= silent_floor_day
+          and silent_pct > silent_pct_threshold
+          and active_tickers < 1000):
+        status = "GATED-small-universe"
+    else:
+        status = "OK"
     return {
         "check": "e_new_silent_floor",
         "current_day": current_day,
@@ -517,8 +553,9 @@ def _check_e_new_silent_floor(a1: dict[str, Any], current_day: int,
         "silent_count": silent,
         "expected_count": expected,
         "silent_pct": silent_pct,
+        "active_tickers": active_tickers,
         "halt": halt,
-        "status": "HALT" if halt else "OK",
+        "status": status,
     }
 
 
