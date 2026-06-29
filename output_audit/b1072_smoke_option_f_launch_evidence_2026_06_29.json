@@ -1,0 +1,81 @@
+{
+  "comment": "B1072 Option F validation smoke launch evidence. Council 186 Option-4 SEPARATE-RECONFIRM. 22-month NVDA window crossing sim_day=200 boundary to empirically validate Option F triple-gated A1-PROMOTION fix before B1073 Phase D R5 relaunch.",
+  "launch_batch": "B1072_SMOKE",
+  "council_lineage": [
+    "Council 184 4/4 RECOMMEND Option-2 (Option F + smoke + relaunch + CHECKLIST #133)",
+    "Council 185 (HALT analysis lineage)",
+    "Council 186 Option-4 SEPARATE-RECONFIRM (this smoke launch)"
+  ],
+  "owner_directive": "2026-06-29 'Approve all council this' - reconfirmed Council 184 4-item plan; per CHECKLIST #120 each AWS spend boundary requires per-event approval. Option-4 honors the per-spend gate.",
+  "run_id": "smoke_nvda_22m_20260629_015449",
+  "instance_id": "i-06f316203f7e47b29",
+  "spot_request_id": "sir-thiqjs6g",
+  "az": "us-east-1b",
+  "az_consecutive_first_try_success": 8,
+  "instance_type": "c6a.4xlarge",
+  "market": "spot",
+  "spot_ceiling_usd": 0.50,
+  "ami_id": "ami-08f44e8eca9095668",
+  "iam_instance_profile": "batch395-instance-role",
+  "ebs": {
+    "size_gb": 50,
+    "volume_type": "gp3",
+    "rationale": "smoke=1 ticker x 22mo; CHECKLIST #131 100GB requirement is for Phase 4 r5 master (1929 tickers); smoke output ~1-2GB"
+  },
+  "user_data": {
+    "raw_bytes": 3031,
+    "base64_bytes": 4044,
+    "aws_16kb_limit_after_b64": 16384,
+    "within_inline_limit": true,
+    "no_externalization_needed": true,
+    "checklist_116_aws_user_data_size_preflight": "PASS"
+  },
+  "smoke_window": {
+    "ticker": "NVDA",
+    "start": "2024-07-01",
+    "end": "2026-05-01",
+    "trading_days": 460,
+    "rationale": "crosses sim_day=200 boundary (Phase 1 Option F structural condition); empirically validates triple-gate ((a1_anom>0.5*expected) AND (current_day>=200) AND (active_tickers>=1000)) - 1 ticker means active_tickers<1000 -> WARN-HIGH not HALT expected"
+  },
+  "expected_outcomes": {
+    "cost_usd_low": 0.40,
+    "cost_usd_high": 0.60,
+    "wall_clock_min_low": 30,
+    "wall_clock_min_high": 45,
+    "monitor_warn_high_at_sim_days": [100, 200, 500],
+    "no_halt_expected": true,
+    "no_phase_smoke_FAIL_expected": true,
+    "engine_state_status_complete_expected": true,
+    "smoke_complete_sentinel_expected": true
+  },
+  "pass_criteria_per_council_184": [
+    "monitor.log shows WARN-HIGH at sim_day 100, 200, 500 (NO HALT)",
+    "no PHASE_smoke_FAIL or B1019_HALT",
+    "engine_state.json status=complete (F-1.1 validation)",
+    "SMOKE_COMPLETE sentinel emitted to S3"
+  ],
+  "monitoring_armament": {
+    "layer_1_b1019_monitor_in_instance": "ARMED (engine bootstrap step 5; total-tickers-active=1)",
+    "layer_2_s3_sentinel_sync": "ARMED (60s cadence; sentinel_started + sentinel_complete + runtime_monitor.log + engine_state.json)",
+    "layer_3_claude_monitor_polling": "ARMED THIS TURN (5-min cadence; 60-min cap per smoke wall-clock; SMOKE_COMPLETE OR SMOKE_FAIL OR B1019_HALT terminal grep; per CHECKLIST #117 armed AT smoke-completion event boundary)"
+  },
+  "halt_response_plan": {
+    "auto_action": "pull engine.log + monitor.log + sentinel state from S3; classify outcome; surface to owner with explicit B1073 ask",
+    "no_auto_relaunch_b1073": true,
+    "per_rule": [
+      "feedback_ask_before_relaunching_corrected_version (B1071 HALT was auto-detected -> B1073 corrected version NOT auto-launched)",
+      "CHECKLIST #120 (per-spend boundary gate)",
+      "L86/L95 small-batch-test-first lineage"
+    ]
+  },
+  "honest_caveats": [
+    "smoke at 1 ticker means active_tickers=1 << 1000 floor; per Option F design A1-PROMOTION should NOT fire HALT - this is the empirical test of the fix",
+    "B1071 HALT was at Phase 2 (10 tickers) which is also < 1000 floor; B1072 Option F should fix both cases",
+    "if smoke HALTs at sim_day=200 boundary -> Option F gate logic wrong -> HALT for owner direction (NOT B1073 launch)"
+  ],
+  "phase_d_attempt_number_for_b1073": 9,
+  "session_aws_spend_pre_smoke_usd": 19.09,
+  "expected_session_spend_post_smoke_usd": "19.49-19.69",
+  "expected_session_spend_post_b1073_usd": "24.49-29.69",
+  "launched_at_utc": "2026-06-29T01:55:45Z"
+}
