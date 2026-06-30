@@ -165,6 +165,15 @@ class BacktestEngine:
                                if max_run_hours is not None else None)
         self._run_start_time      = None  # set at start of run()
         self._warn_fired          = False
+        # B1089 Council 215 Fix 1 owner directive 2026-06-30 "Progress and
+        # data to be saved every 30 minutes": time-based checkpoint cadence
+        # in addition to sim_day-based (B1081 PIVOT #44 fix). Paired-writer
+        # block at backtest.py:838+873 fires on EITHER trigger; timestamp
+        # resets ONLY after both writers succeed (atomic-pair semantics per
+        # Council 214). 1800s = 30 min per owner.
+        import time as _time_init
+        self._last_checkpoint_time = _time_init.time()
+        self._checkpoint_interval_seconds = 1800  # 30 min per owner B1089
         # Batch 394: year-boundary detector; set in day loop.
         self._last_seen_year      = None
         # Batch 394: 100-day milestone telemetry baseline for per-100d
@@ -835,7 +844,20 @@ class BacktestEngine:
             # infra (B1076) then HALTs on FileNotFoundError or schema-contract
             # mismatch. Writer-reader cadence must be paired per `feedback_
             # writer_reader_schema_contract_pin_test`.
-            if i > 0 and (i == 50 or i % 100 == 0) and self.closed_trades:
+            # B1089 Council 215 Fix 1 owner directive 2026-06-30 "Progress and
+            # data to be saved every 30 minutes": ADD time-based trigger
+            # (1800s) on top of sim_day cadence. Either trigger fires the
+            # paired-writer block. _last_checkpoint_time resets ONLY after
+            # BOTH writers succeed (atomic-pair semantics per Council 214).
+            import time as _time_chkpt
+            _now_chkpt = _time_chkpt.time()
+            _sim_day_trigger = (i > 0 and (i == 50 or i % 100 == 0))
+            _time_trigger = (i > 0 and (_now_chkpt - self._last_checkpoint_time)
+                             >= self._checkpoint_interval_seconds)
+            _should_checkpoint = _sim_day_trigger or _time_trigger
+            _csv_written = False
+            _engine_state_written = False
+            if _should_checkpoint and self.closed_trades:
                 try:
                     # B1046 F-11 fix: atomic write via tempfile + os.replace
                     # prevents partial-CSV reads by monitor (F-15 false HALT).
@@ -849,6 +871,7 @@ class BacktestEngine:
                         checkpoint_tmp, index=False)
                     _os.replace(checkpoint_tmp, checkpoint_path)
                     logger.debug("Checkpoint: %d trades -> %s", len(self.closed_trades), checkpoint_path)
+                    _csv_written = True  # B1089 atomic-pair tracking
                 except Exception:
                     pass
 
@@ -870,7 +893,10 @@ class BacktestEngine:
             # (post _finalize_open_trades) has correct values.
             self._last_sim_day_index = i
             self._last_sim_date = as_of
-            if i > 0 and (i == 50 or i % 100 == 0):
+            # B1089 Council 215 Fix 1: gate by same _should_checkpoint flag
+            # as paired-writer CSV block above. Either sim_day OR 30-min
+            # time trigger fires both writers.
+            if _should_checkpoint:
                 try:
                     import json as _json
                     import os as _os
@@ -895,9 +921,12 @@ class BacktestEngine:
                     state_tmp = self.output_dir / "engine_state.json.tmp"
                     state_tmp.write_text(_json.dumps(state, indent=2))
                     _os.replace(state_tmp, state_path)
+                    _engine_state_written = True  # B1089 atomic-pair tracking
                     logger.info(
-                        "CHECKPOINT day=%d sim_date=%s trades=%d open=%d",
+                        "CHECKPOINT day=%d sim_date=%s trades=%d open=%d "
+                        "trigger=%s",
                         i, as_of, _trades, _open,
+                        "sim_day" if _sim_day_trigger else "time_30min",
                     )
                 except OSError as _ose:
                     # B1046 F-28 fix: disk-full (errno 28) is HALT-CRITICAL;
@@ -914,6 +943,20 @@ class BacktestEngine:
                     )
                 except Exception as _e:
                     logger.warning("engine_state.json emit failed: %s", _e)
+            # B1089 Council 215 Fix 1: atomic-pair timestamp reset.
+            # Only reset _last_checkpoint_time if BOTH writers succeeded
+            # (per Council 214 "Reset timestamp ONLY after both writers
+            # succeed (atomic-pair semantics)"). If either failed, the
+            # 30-min timer keeps ticking and next iteration retries.
+            # Edge case: if closed_trades empty (CSV writer skipped),
+            # we still consider checkpoint successful when engine_state
+            # writes (degenerate-pair: trades=0 has no CSV to write).
+            if _should_checkpoint:
+                _pair_ok = _engine_state_written and (
+                    _csv_written or not self.closed_trades
+                )
+                if _pair_ok and _time_trigger:
+                    self._last_checkpoint_time = _now_chkpt
             try:
                 self._process_day(as_of)
             except Exception as exc:

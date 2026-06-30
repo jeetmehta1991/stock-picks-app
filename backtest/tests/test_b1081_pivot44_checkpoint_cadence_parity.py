@@ -38,40 +38,68 @@ BACKTEST_PY = REPO / "backtest" / "engine" / "backtest.py"
 
 def test_b1081_pivot44_checkpoint_cadence_parity():
     """B1081 PIVOT #44: trade_log_checkpoint.csv write condition must
-    match engine_state.json write condition. Both must include i==50."""
+    match engine_state.json write condition. Both must include i==50.
+
+    B1089 evolution: paired-writer block now uses _should_checkpoint flag
+    computed ONCE from (sim_day OR time) triggers. The i==50 cadence is
+    in _sim_day_trigger expression; both writers gated by same flag =
+    parity preserved (even stronger than B1081 original)."""
     content = BACKTEST_PY.read_text()
-    # Engine state cadence (line ~865) must include 'i == 50'
+    # B1081 invariant: sim_day cadence 'i == 50 or i % 100 == 0' MUST
+    # appear in source (either as direct condition OR as _sim_day_trigger
+    # expression per B1089 refactor).
     engine_state_pattern = r"(i\s*==\s*50\s+or\s+i\s*%\s*100\s*==\s*0)"
     engine_state_matches = re.findall(engine_state_pattern, content)
-    assert len(engine_state_matches) >= 2, (
-        f"B1081 PIVOT #44: expected BOTH trade_log_checkpoint write + "
-        f"engine_state.json write to use 'i == 50 or i % 100 == 0' "
-        f"cadence; found {len(engine_state_matches)} match(es). "
-        f"Cadence drift = silent data loss on early-interrupt (B1079 "
-        f"Phase 4 lost 610 trades at sim_day=50)."
+    assert len(engine_state_matches) >= 1, (
+        f"B1081 PIVOT #44 (B1089-compatible): sim_day cadence "
+        f"'i == 50 or i % 100 == 0' MUST appear in source "
+        f"(now as _sim_day_trigger per B1089 paired-writer refactor); "
+        f"found {len(engine_state_matches)} match(es). "
+        f"Cadence drift = silent data loss on early-interrupt."
     )
+    # B1089 evolution check: both writers must gate by SAME flag
+    if "_should_checkpoint" in content:
+        # Post-B1089: both writers gated by _should_checkpoint
+        should_checkpoint_uses = content.count("if _should_checkpoint")
+        assert should_checkpoint_uses >= 2, (
+            f"B1089 paired-writer invariant: both CSV + engine_state writers "
+            f"must gate on _should_checkpoint; found {should_checkpoint_uses} usages"
+        )
 
 
 def test_b1081_pivot44_trade_log_checkpoint_includes_i50():
     """B1081 PIVOT #44: trade_log_checkpoint.csv write block specifically
-    must include i==50 cadence."""
+    must include i==50 cadence (directly OR via _sim_day_trigger per B1089).
+    """
     content = BACKTEST_PY.read_text()
-    # Find the block that writes trade_log_checkpoint.csv
-    # Look for the 'if' guard immediately before checkpoint_path =
-    # output_dir / "trade_log_checkpoint.csv"
     lines = content.splitlines()
     found_trade_log_block = False
     for idx, line in enumerate(lines):
         if 'trade_log_checkpoint.csv' in line and 'checkpoint_path' in line:
             # Walk backward to find the gating if statement
-            for back_idx in range(idx, max(0, idx - 20), -1):
-                if lines[back_idx].lstrip().startswith("if i > 0"):
-                    assert "i == 50" in lines[back_idx], (
-                        f"B1081 PIVOT #44: trade_log_checkpoint.csv write "
-                        f"block at line {back_idx + 1} must include 'i == 50' "
-                        f"in its gating condition. Found: "
-                        f"{lines[back_idx].strip()}"
-                    )
+            for back_idx in range(idx, max(0, idx - 30), -1):
+                stripped = lines[back_idx].lstrip()
+                if stripped.startswith("if i > 0") or \
+                   stripped.startswith("if _should_checkpoint"):
+                    # B1089-compatible: either direct cadence OR
+                    # _should_checkpoint flag (which is computed from
+                    # _sim_day_trigger that uses i==50 cadence)
+                    gating_line = stripped
+                    if "_should_checkpoint" in gating_line:
+                        # Verify _sim_day_trigger uses i==50 in nearby code
+                        nearby = "\n".join(lines[max(0, back_idx - 20):back_idx])
+                        assert "i == 50" in nearby, (
+                            f"B1081 PIVOT #44 + B1089: when CSV gates on "
+                            f"_should_checkpoint, _sim_day_trigger must "
+                            f"include i==50 in nearby code. Not found in "
+                            f"lines {back_idx - 20}-{back_idx}"
+                        )
+                    elif "i == 50" not in gating_line:
+                        raise AssertionError(
+                            f"B1081 PIVOT #44: CSV write block at line "
+                            f"{back_idx + 1} missing i==50 cadence. "
+                            f"Found: {gating_line}"
+                        )
                     found_trade_log_block = True
                     break
             break
