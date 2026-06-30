@@ -2125,3 +2125,26 @@ Council 19 (Contrarian + Executor) verdict: SHIP K with evidence + DEFER N-K wit
 - `S5-B1072-XS-PAIRS-SINGLE-TICKER-FIRE-BUG-INVESTIGATE` — pairs_mean_reversion_long/short + xs_momentum_quality_combined firing on NVDA-only Phase 1 (cross-sectional shouldn't fire with 1 ticker)
 - `S5-POST-PHASE-4-EXPLORATORY-TAG-SWEEP` — process post-Phase-4 trade log; tag any strategy <30/regime fires as EXPLORATORY per B644/B652/B772/B773 precedent
 - `S5-B1072-SUB-C-ARCHITECTURE-HARDENING` — 4 Sub-C recommendations: parity assertion, library import emit, log_silent standardization, producer-consumer dashboard
+
+## B1075-B1083 RESUME-INFRA + PROCESS RESTRUCTURE (2026-06-29 Council 191-203)
+
+### B1075-B1081 R5 attempt + resume infra ledger:
+- 2026-06-29 — `b1075-phase-d-spot-interrupted-phase-3-sim-day-300` — i-07b5adc9f1324ab27 us-east-1b Phase 1+2 PASS, Phase 3 interrupted at sim_day 300/1006 by spot reclaim
+- 2026-06-29 — `b1076-resume-infra-mvp-shipped` — 89cba5a24 SHIPPED Council 191 Option 1 SIMPLE-RESUME-MVP (CLI --resume-from-checkpoint + engine _load_resume_checkpoint + 13/13 pyramid)
+- 2026-06-29 — `b1077-phase-d-spot-interrupted-phase-2-sim-day-300` — i-08cbc67f4dbf4a95d us-east-1c (AZ-failover 1b InsufficientInstanceCapacity); Phase 1 PASS, Phase 2 interrupted by spot reclaim
+- 2026-06-29 — `b1078-launch-script-resume-mode-shipped` — 4d8349745 SHIPPED Council 194 Option 1 (RESUME_FROM_RUN_ID + SKIP_PHASES env vars + 11/11 pyramid); FIRST REAL USE i-04d34fc49dc27a5f4 PHASE_2_FAIL rc=1 (PIVOT #43 discovered)
+- 2026-06-29 — `b1079-pivot-43-fix-shipped` — 38fb683e2 SHIPPED Council 196 Option 4 ClosedTrade dataclass reconstruction + 11/11 pyramid + integration tests; AWS i-089258a391c43ce7b Phase 1 SKIP + Phase 2 RESUME PASS (651 trades = +515 NEW post-resume; PIVOT #43 fix VALIDATED), Phase 3 PASS (2015 trades), Phase 4 interrupted at sim_day=50 by spot reclaim (PIVOT #44 discovered)
+- 2026-06-29 — `b1080-audit-framework-shipped` — 94af776e9 SHIPPED Council 198+199 3-layer (Pyramid + Schema-pin + 60-sec prod smoke) + CHECKLIST #135; MISSED PIVOT #44 within 2 hours of ship
+- 2026-06-29 — `b1081-pivot-44-fix-shipped` — 86cd21175 SHIPPED Council 200 framework-first checkpoint cadence parity (1-line backtest.py:830 + 5/5 pin tests)
+
+### B1082-B1083 process restructure (owner-approved 2026-06-29 "Accept. Council this." + "B then A" + "Approved"):
+- 2026-06-29 — `b1082-checklist-136-anti-audit-theater-guard-shipped` — 022b1644a SHIPPED CHECKLIST #136 (new audit layers MUST demonstrate retroactive coverage of last 3 PIVOTs or be rejected) + CLAUDE.md banner restructure (43-PIVOT pattern acknowledged + retired confidence language)
+- 2026-06-29 — `b1083-batch-discipline-rollback-posture-shipped` — THIS COMMIT — CLAUDE.md "Batch Discipline & Rollback Posture" section (batch-cap ≤3 fixes per batch + resume-infra-as-default-rollback + smaller-phase Phase 4 4-chunk strategy-band design) + CHECKLIST #136 scope clarification (process directives vs audit gates)
+- `S5-PHASE-4-CHUNK-IMPLEMENTATION` — wire chunk 4A/4B/4C/4D into `scripts/launch_r5_master_4y_v2.sh` (currently runs Phase 4 monolithic at lines 374-377; needs per-chunk run_phase invocations with strategy-band filter + inter-chunk sentinel sync + per-chunk pyramid gate). Deferred until owner confirms next launch direction (LITE / Phase 4 chunked / Pause).
+- `S5-PIVOT-43-FIX-VALIDATED-EMPIRICALLY` — RESOLVED-IMPLEMENTED B1079 Phase 2 RESUME PASS (651 trades = +515 NEW post-resume; ClosedTrade reconstruction works on real engine path)
+
+### B1083 #136 self-review (per #136 retroactive coverage requirement):
+- Batch-cap ≤3: 0/3 last PIVOTs (#42/#43/#44) prevented — culture rule not coverage gate
+- Resume-as-default: marginal 2/3 (#43+#44 surfaced when resume tested) — culture rule
+- Smaller-phase: partial 1/3 (#44 cadence surfaced sooner) — culture rule
+- ALL 3 are PROCESS CULTURE directives, NOT audit gates; per CHECKLIST #136 scope clarification, codified in CLAUDE.md "Critical Rules" rather than CHECKLIST

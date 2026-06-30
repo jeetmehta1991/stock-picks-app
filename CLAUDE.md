@@ -245,6 +245,25 @@ Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys (`min_*
 - **Past violations being corrected:** `ETFS_FULL` hardcoded in `universe.py` → `Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (DEC-494 / commit `e257d160`). `etf_sectors` dict in `universe.py:get_sector_map()` → migrate to read from `Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` Sector column (queued). `SECTOR_OVERRIDES` dict in `scripts/refresh_sp500_universe.py` → could move to CSV (queued).
 - **Apply when:** writing new modules that introduce hardcoded ticker lists / sector dicts / event calendars / known-good outputs; reviewing existing modules during sprint planning; adding new universe tiers or strategy categories. If you find yourself typing a Python list of tickers or a dict of attributes longer than 5 entries, stop and put it in a CSV instead.
 
+### Batch Discipline & Rollback Posture (B1083 — Council 201 restructure 2026-06-29)
+
+**Source:** 44 PIVOTs in 1 session despite 7 CHECKLIST audit additions all failing to prevent next bug. Council 197 + 201 Outsider lens verdict: "Eight layers is the smell, not the cure. 43 PIVOTs/session means batch cadence is the bug." Owner-approved restructure 2026-06-29 ("B then A" + "Approved").
+
+- **Batch-cap rule: ≤3 substantive fixes per batch.** Larger fix-sets split into sequenced batches (B1070's 17-fix Stage A-E pattern explicitly retired). Each batch ships with independent pyramid + smoke. Rationale: large bundled batches mask root-cause attribution; smaller batches preserve cause-effect traceability + enable fast rollback. Exception: bundled batch IS the fix (e.g., schema migration touching N modules).
+
+- **Resume-infra-as-default-rollback.** Every long-running launch (Phase 2+, cube run, prefetch) ships with B1076+B1078+B1081 resume checkpoints as PRIMARY rollback mechanism. Re-launch from scratch is the fallback only. Resume infra empirically proven at B1079 Phase 2 RESUME (trades 651 = +515 NEW post-resume); cost-per-recovery $1-2 vs $5-10 full re-run. Mental model shift: spot interruption + resume = NORMAL operations, not emergency.
+
+- **Smaller-phase increments (Phase 4 chunking).** Phase 4 (16-20hr monolith) decomposed into 4 chunks of ~4hr each via **strategy-band partitioning** (NOT ticker, NOT date — preserves per-(strategy, exit) cube cell integrity + walk-forward + regime continuity). Per Council 203 design:
+  - **Chunk 4A:** Strategies 1-55 (Layer 1 baseline + Layer 2 ICT first half)
+  - **Chunk 4B:** Strategies 56-110 (Layer 2 ICT second half + Layer 2D)
+  - **Chunk 4C:** Strategies 111-165 (Layer 3 chart-pattern/categories)
+  - **Chunk 4D:** Strategies 166-219 (Layer 3 remainder + EXPLORATORY)
+  - **Inter-chunk checkpoint:** `phase4_chunk_<N>_complete.json` sentinel + cube-partial parquet; chunk N+1 reads + appends. Pyramid GREEN gate between chunks.
+  - **Resume granularity:** per-strategy within chunk (B1070 F-2.1 imap_unordered streaming preserved). Mid-chunk failure resumes at last-completed strategy, not chunk start.
+  - **Wall-clock:** 4 × 4hr = 16hr serial OR 4 × 4hr parallel-instance = 4hr equivalent. Cost ~same as monolith; **spot-interrupt loss bounded to ≤4hr per chunk** (vs 16-20hr monolith loss).
+
+- **Retired language (consciously omitted):** "OPERATIONALLY-VERIFIED", "comprehensive audit", "this time is different", "last instance of bug class", "comprehensive patch" — replaced with "shipped + monitoring" / numeric status. Per Council 197 Outsider verdict.
+
 ### Universe Management
 - `Current Snapshot_SP500 Tickers_May 2026.csv` must be refreshed quarterly (CHECKLIST item 19). If last commit >90 days old, flag before any run.
 - New spinoffs above $5B market cap → add to Tier 2 immediately, don't wait for S&P 500 inclusion (SNDK waited 9 months — L89).
