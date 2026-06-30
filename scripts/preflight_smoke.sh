@@ -38,6 +38,44 @@ PREFLIGHT_END="${PREFLIGHT_END:-2026-05-01}"
 BUCKET="stock-picks-batch395-jm-7421"
 REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
+# B1085 Council 207 --per-az flag: run preflight in each of 4 AZs in
+# parallel (us-east-1a/c/d/f) for stratified verification before Phase 4
+# parallel launch. Per owner directive 2026-06-29 'Dec 3 4' interpreted
+# by Outsider + Executor lens convergence as '4 = 1 per AZ stratified'.
+if [ "${1:-}" = "--per-az" ]; then
+    echo "=== PREFLIGHT --per-az (B1085 Council 207 4-AZ stratified) ==="
+    PER_AZ_LIST="us-east-1a us-east-1c us-east-1d us-east-1f"
+    PER_AZ_PIDS=()
+    PER_AZ_LOGS=()
+    PER_AZ_AZS=()
+    for AZ in $PER_AZ_LIST; do
+        LOG="/tmp/b1085_preflight_${AZ}.log"
+        echo "Launching preflight in ${AZ} (log: ${LOG})..."
+        # Recursive call without --per-az; inherits PREFLIGHT_TICKER + window
+        PREFLIGHT_AZ="$AZ" bash "$0" --no-launch > "$LOG" 2>&1 &
+        PER_AZ_PIDS+=("$!")
+        PER_AZ_LOGS+=("$LOG")
+        PER_AZ_AZS+=("$AZ")
+    done
+    echo "Waiting for all 4 per-AZ preflights (parallel)..."
+    FAIL=0
+    for i in "${!PER_AZ_PIDS[@]}"; do
+        if wait "${PER_AZ_PIDS[$i]}"; then
+            echo "  ${PER_AZ_AZS[$i]}: PASS"
+        else
+            echo "  ${PER_AZ_AZS[$i]}: FAIL (log: ${PER_AZ_LOGS[$i]})"
+            FAIL=$((FAIL + 1))
+        fi
+    done
+    echo ""
+    if [ $FAIL -gt 0 ]; then
+        echo "PREFLIGHT_PER_AZ_OVERALL_FAIL: ${FAIL} of 4 AZs failed"
+        exit 1
+    fi
+    echo "PREFLIGHT_PER_AZ_OVERALL_PASS: 4/4 AZs PASS"
+    exit 0
+fi
+
 echo "=== PREFLIGHT SMOKE (CHECKLIST #135 / Council 199 Layer 3) ==="
 echo "Ticker: ${PREFLIGHT_TICKER}"
 echo "Window: ${PREFLIGHT_START} to ${PREFLIGHT_END}"
