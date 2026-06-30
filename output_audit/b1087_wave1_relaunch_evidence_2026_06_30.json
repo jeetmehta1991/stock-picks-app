@@ -1,0 +1,57 @@
+{
+  "comment": "B1087 wave-1 relaunch evidence with PIVOT #47 fix (PHASE_4_ONLY=1 + writer-pair validation) + Council 211 A+B+C. All 6 chunks launched in us-east-1f after AZ rotation (c6a.4xlarge capacity dried in 1c+1d at launch time). CHECKLIST #134 verified all running.",
+  "owner_directive_chain_2026_06_30": [
+    "Option 1 council this",
+    "We do not need phase 2 and 3 anymore at this stage",
+    "Why wasnt this bug caught in testing"
+  ],
+  "council_211_decisions": {
+    "A_csv_validation_before_resume": "SHIPPED B1087",
+    "B_layer_2_writer_pair_pin_test": "SHIPPED B1087 (7 tests)",
+    "C_strip_phase_2_3_invocations": "SHIPPED B1087 (PHASE_4_ONLY env)",
+    "D_test_gap_honest_acknowledgment": "owner-facing per prior turn"
+  },
+  "wave_1_chunks": {
+    "A": {"instance": "i-017bc3ee7143ab02f", "az": "us-east-1f", "run_id": "r5_full_20260630_082106"},
+    "B": {"instance": "i-01db101db72ccc5e4", "az": "us-east-1f", "run_id": "r5_full_20260630_082123"},
+    "C": {"instance": "i-0361ff940d2d7d27a", "az": "us-east-1f", "run_id": "r5_full_20260630_082140"},
+    "D": {"instance": "i-0c9e1bee6741934b4", "az": "us-east-1f", "run_id": "r5_full_20260630_082157"},
+    "E": {"instance": "i-0156eb97996262237", "az": "us-east-1f", "run_id": "r5_full_20260630_082214"},
+    "F": {"instance": "i-06bd0a34ac0819a64", "az": "us-east-1f", "run_id": "r5_full_20260630_082231"}
+  },
+  "instance_type": "c6a.4xlarge",
+  "spot_market": true,
+  "spot_ceiling_usd": 1.50,
+  "vcpu_per_instance": 16,
+  "total_vcpu_used": 96,
+  "vcpu_quota_us_east_1": 96,
+  "quota_saturated": true,
+  "concentration_risk": "All 6 in single AZ (us-east-1f) due to capacity availability; spot interruption in 1f would affect all chunks simultaneously",
+  "phase_4_only_mode": true,
+  "no_phase_1_2_3_invocations": true,
+  "resume_inheritance": "none (chunks run Phase 4 FRESH per chunk)",
+  "checklist_134_verified": true,
+  "all_6_state_running": true,
+  "pivot_46_quota_resolution": "c6a.4xlarge x 6 = 96 vCPU (exactly quota; no headroom for wave 2 in parallel)",
+  "pivot_47_fix_applied": "writer-pair invariant validation + PHASE_4_ONLY=1 sidesteps resume entirely",
+  "expected_wall_clock_hr": 3,
+  "expected_cost_usd": {
+    "wave_1_6_x_3hr_x_0.144": 2.59,
+    "wave_2_2_x_2hr_x_0.144": 0.58,
+    "total_session_post_complete": 27.94
+  },
+  "hard_cap_usd": 40,
+  "cap_headroom_usd": 12.06,
+  "test_gap_lessons_documented": [
+    "B1080 Layer 2 schema-pin tests checked column contracts; did NOT check writer-pair file presence invariant",
+    "B1080 Layer 3 preflight smoke FRESH-only; never exercised B1078 resume against broken state",
+    "B1081 PIVOT #44 fix forward-only; did not add defensive check for prior runs"
+  ],
+  "session_state_at_launch": {
+    "batches": 115,
+    "councils": 109,
+    "pivot_count_session": 47,
+    "session_aws_spend_pre_relaunch_usd": 24.77
+  },
+  "launched_at_utc": "2026-06-30T08:22:48Z"
+}
