@@ -39,7 +39,7 @@ SUBNET="${AZ_SUBNET[$AZ]:?Unknown AZ $AZ}"
 #   TOTAL: ~35-50GB; 100GB provides 2x safety margin per CHECKLIST #131.
 aws ec2 run-instances \
     --image-id ami-08f44e8eca9095668 \
-    --instance-type c6a.16xlarge \
+    --instance-type "${INSTANCE_TYPE:-c6a.16xlarge}" \
     --key-name batch395 \
     --security-group-ids sg-0de62cd41561ebc6b \
     --subnet-id "$SUBNET" \

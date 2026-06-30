@@ -1,0 +1,59 @@
+{
+  "comment": "B1086 wave-1 Phase 4 chunk launch evidence. 6 c6a.4xlarge spot instances launched in parallel within 96 vCPU AWS quota (May 28 partial approval). Council 209 Option 2: chunk A on c6a.16xlarge terminated; 6 chunks (A-F) wave 1 parallel; chunks G+H wave 2 sequential after wave 1 PASS. PIVOT #45 fix (preflight stagger) + PIVOT #46 quota constraint addressed via instance-type downsizing.",
+  "owner_directive_chain_2026_06_30": [
+    "Continue. Launch.",
+    "Owner B 8 chunks within $40 cap",
+    "AWS quota screenshot (96 vCPU us-east-1)",
+    "Go council this (terminate A + Option 2)"
+  ],
+  "council_lineage": [
+    "Council 209 (Option 2 c6a.4xlarge 6 parallel + 2 sequential)",
+    "Council 197 trust-loss protocol (no auto-claims)",
+    "Council 201 batch-cap (3 fixes per batch honored in B1086 prep)"
+  ],
+  "wave_1_chunks": {
+    "A": {"instance": "i-0295e2e473e5fe24b", "az": "us-east-1d", "run_id": "r5_full_20260630_063404"},
+    "B": {"instance": "i-0f023eb7a2de9f3b4", "az": "us-east-1c", "run_id": "r5_full_20260630_063419"},
+    "C": {"instance": "i-08631873934b4858f", "az": "us-east-1c", "run_id": "r5_full_20260630_055911"},
+    "D": {"instance": "i-014587bee309bfe64", "az": "us-east-1c", "run_id": "r5_full_20260630_063215_or_similar"},
+    "E": {"instance": "i-0c75f5e7e4832121f", "az": "us-east-1c", "run_id": "r5_full_20260630_063433"},
+    "F": {"instance": "i-047e99e0bf18862d8", "az": "us-east-1c", "run_id": "r5_full_20260630_063448"}
+  },
+  "instance_type": "c6a.4xlarge",
+  "spot_market": true,
+  "spot_ceiling_usd": 1.50,
+  "vcpu_per_instance": 16,
+  "total_vcpu_used": 96,
+  "vcpu_quota_us_east_1": 96,
+  "quota_saturated": true,
+  "ebs_per_instance_gb": 100,
+  "ebs_volume_type": "gp3",
+  "checklist_134_verified": true,
+  "resume_source": "r5_full_20260629_155837",
+  "resume_phases_skipped": "1,2,3",
+  "chunk_a_initial_c6a_16xlarge_terminated": "i-0dad4dc6ce7400acf",
+  "expected_per_chunk_wall_clock_hr": 3,
+  "expected_wave_1_total_hr": 3,
+  "expected_wave_2_total_hr": 2,
+  "expected_total_wall_clock_hr": 5,
+  "expected_cost_usd": {
+    "preflight": 0.08,
+    "chunk_a_sunk": 0.45,
+    "wave_1_6_instances_3hr_each": 2.59,
+    "wave_2_2_instances_2hr_each": 0.58,
+    "total_session_post_complete": 27.21
+  },
+  "hard_cap_usd": 40,
+  "cap_headroom_usd": 12.79,
+  "pivot_46_resolution": "instance-type downsize from c6a.16xlarge (64 vCPU; 1 max) to c6a.4xlarge (16 vCPU; 6 max in 96 quota)",
+  "pivot_45_already_fixed": "B1086 commit 9338dffc6 (preflight stagger + per-AZ tmp log)",
+  "session_state_at_launch": {
+    "batches": 113,
+    "councils": 109,
+    "pivot_count_session": 46,
+    "phase_d_r5_attempts": 15,
+    "phase_d_completed_attempts": 0,
+    "session_aws_spend_pre_wave1_usd": 23.81
+  },
+  "launched_at_utc": "2026-06-30T10:34:48Z"
+}
