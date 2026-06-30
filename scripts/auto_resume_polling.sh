@@ -126,22 +126,12 @@ for POLL in $(seq 1 $MAX_CAP); do
                 "$NEW_RUN" "$AZ" "$USER_DATA_B64" "phase4_chunk_${CHUNK}_b1089_autoresume" 2>&1 | tail -1)
             if [[ "$RES" =~ ^i- ]]; then
                 echo "  Auto-resume CHUNK $CHUNK NEW_INSTANCE=$RES az=$AZ run_id=$NEW_RUN"
-                # Update chunks file with new instance
-                python3 -c "
-import csv
-fname = '$CHUNKS_FILE'
-rows = []
-with open(fname) as f:
-    for r in csv.reader(f):
-        if r and r[0] == '$CHUNK':
-            rows.append(['$CHUNK', '$RES', '$AZ', '$NEW_RUN'])
-        elif r:
-            rows.append(r)
-with open(fname, 'w', newline='') as f:
-    w = csv.writer(f)
-    for r in rows:
-        w.writerow(r)
-"
+                # B1090 PIVOT #49 fix (Council 217): replace inline Python
+                # CSV update with sed (bash-native; no subshell path drift).
+                # Council 217 Contrarian: use | delimiter not / to avoid
+                # special-char escaping issues in instance IDs.
+                # Pattern: match line starting with CHUNK, replace entire line.
+                sed -i "s|^${CHUNK},.*|${CHUNK},${RES},${AZ},${NEW_RUN}|" "$CHUNKS_FILE"
                 break
             fi
         done
