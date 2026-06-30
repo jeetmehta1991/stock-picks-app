@@ -827,7 +827,15 @@ class BacktestEngine:
             # from 100-day cadence cited across LEARNINGS.md / CHECKLIST
             # references.  100-day balances salvage frequency against CSV
             # write cost on uncapped Phase 1A-beta runs (20K-50K trades).
-            if i > 0 and i % 100 == 0 and self.closed_trades:
+            # B1081 PIVOT #44 fix (Council 200 framework-first): match the
+            # engine_state.json write cadence at line 865 (i==50 OR i%100==0).
+            # Pre-fix mismatch caused B1079 Phase 4 spot interrupt at i=50 to
+            # leave trades_so_far=610 reported in engine_state.json but the
+            # trade_log_checkpoint.csv never written (i=50 != i%100==0). Resume
+            # infra (B1076) then HALTs on FileNotFoundError or schema-contract
+            # mismatch. Writer-reader cadence must be paired per `feedback_
+            # writer_reader_schema_contract_pin_test`.
+            if i > 0 and (i == 50 or i % 100 == 0) and self.closed_trades:
                 try:
                     # B1046 F-11 fix: atomic write via tempfile + os.replace
                     # prevents partial-CSV reads by monitor (F-15 false HALT).
