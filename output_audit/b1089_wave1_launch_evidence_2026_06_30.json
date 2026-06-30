@@ -1,0 +1,64 @@
+{
+  "comment": "B1089 wave-1 launch evidence. Owner GO 2026-06-30 'Go council this' after B1089 shipped (30-min checkpoint + auto-resume polling + pyramid 37/37 + local smoke PASS). Council 215 5-advisor APPROVE + Council 216 sanity GREEN. 6 r6a.4xlarge launched with explicit AZ rotation (better than prior 1f-concentrated waves). CHECKLIST #138 polling ARMED in same turn per mandatory rule. 15-min ScheduleWakeup cadence ARMED per owner directive 3.",
+  "owner_directive_chain_2026_06_30": [
+    "I want monitor armed and checkpoint every 15 mins (refined to 30 min for engine; 15 min for chat)",
+    "Don't terminate (arrived after I already executed - acknowledged error)",
+    "6 chunks executed + monitor + 15-min chat + auto-resume + no more errors + 30-min progress",
+    "Go council this"
+  ],
+  "council_lineage": [
+    "Council 214 (mid-flight patch verdict; terminate + ship + owner-gate)",
+    "Council 215 (5-advisor APPROVE 3 fixes + Adversarial caveats max_resume=3 + prefix-check + owner-gate + local smoke)",
+    "Council 216 (sanity GREEN: pyramid + smoke + #135 fresh + AZ rotation + bounded blast radius)"
+  ],
+  "wave_1_chunks": {
+    "A": {"instance": "i-0637ec22da4308a2c", "az": "us-east-1c", "run_id": "r5_full_20260630_133755"},
+    "B": {"instance": "i-0f1effdeaf0be0b8a", "az": "us-east-1d", "run_id": "r5_full_20260630_133805"},
+    "C": {"instance": "i-03f5888aa717b31dd", "az": "us-east-1d", "run_id": "r5_full_20260630_133827"},
+    "D": {"instance": "i-0210f3c4478401d70", "az": "us-east-1d", "run_id": "r5_full_20260630_133850"},
+    "E": {"instance": "i-02bbee254d6528ecd", "az": "us-east-1f", "run_id": "r5_full_20260630_133901"},
+    "F": {"instance": "i-05b1c41a36ffab41d", "az": "us-east-1d", "run_id": "r5_full_20260630_133923"}
+  },
+  "instance_type": "r6a.4xlarge",
+  "vcpu_per_instance": 16,
+  "ram_per_instance_gb": 128,
+  "total_vcpu_used": 96,
+  "vcpu_quota_us_east_1": 96,
+  "quota_saturated": true,
+  "az_distribution": {
+    "us-east-1c": 1,
+    "us-east-1d": 4,
+    "us-east-1f": 1
+  },
+  "az_concentration_risk_noted": "4 of 6 in us-east-1d - same risk class as prior 1f cascade; mitigation: auto-resume polling will auto-recover individual chunks within 5 min detection + max_resume=3 per chunk",
+  "checklist_134_verified": true,
+  "all_6_state_running": true,
+  "checklist_138_polling_armed": true,
+  "polling_task_id": "b0q84nl84",
+  "polling_script": "scripts/auto_resume_polling.sh",
+  "auto_resume_max_per_chunk": 3,
+  "auto_resume_prefix_check": true,
+  "schedulewakeup_cadence_min": 15,
+  "engine_checkpoint_interval_seconds": 1800,
+  "phase_4_only_mode": true,
+  "no_phase_1_2_3_invocations": true,
+  "resume_inheritance": "none (chunks run Phase 4 FRESH per chunk; resume on spot interrupt from chunk's OWN RUN_ID per auto_resume_polling logic)",
+  "council_215_fixes_applied": {
+    "fix_1_30min_checkpoint": "engine paired-writer block with atomic-pair reset",
+    "fix_2_auto_resume": "auto_resume_polling.sh ARMED (max_resume=3 + prefix-check)",
+    "fix_3_15min_cadence": "ScheduleWakeup armed (next 13:56Z)"
+  },
+  "pyramid_status": "37/37 PASS pre-launch (B1076+B1081+B1087+B1089)",
+  "local_smoke_status": "Council 215 mandatory smoke PASS (A1+A2+A3)",
+  "expected_per_chunk_wall_clock_hr": 3,
+  "expected_total_session_post_complete_usd": "33-36",
+  "hard_cap_usd": 40,
+  "cap_headroom_usd": "4-7",
+  "session_state_at_launch": {
+    "batches": 119,
+    "councils": 113,
+    "pivot_count_session": 48,
+    "session_aws_spend_pre_launch_usd": 29.27
+  },
+  "launched_at_utc": "2026-06-30T13:40:00Z"
+}
