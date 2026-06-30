@@ -2259,3 +2259,27 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Scope clarification (B1083 amendment 2026-06-29):** This rule applies to AUDIT GATES claiming retroactive PIVOT coverage. It does NOT apply to PROCESS / CULTURE directives (batch sizing, rollback defaults, phase chunking, language retirement) which shape work CADENCE rather than test SURFACE. Process directives belong in CLAUDE.md "Critical Rules" / "HARD RULES" sections, not in this CHECKLIST. The distinction: audit claims "this will catch bug class X"; culture rule shapes "how we work." B1083 (CLAUDE.md Batch Discipline & Rollback Posture section) is the canonical example — culture rule, not audit, so #136 not triggered.
 
      **Cross-references.** Council 197 verdict (`feedback_audit_recommendations_against_existing_directives`), Council 201 verdict (Outsider lens: "Eight layers is the smell"), CHECKLIST #135 (the LAST audit layer that triggered this guard), B1082 banner update acknowledging 43-PIVOT pattern.
+
+137. **HARD RULE -- PHASE-4-DIRECT-TARGET: chunks SHOULD skip Phase 1/2/3 invocations when only Phase 4 cube needed.** (B1087 Council 211 Fix C + owner directive 2026-06-30 "We do not need phase 2 and 3 anymore at this stage".)
+
+     **Rule:** When `PHASE_4_ONLY=1` env var is set (or equivalent), `scripts/launch_r5_master_4y_v2.sh` MUST skip `run_phase 1`, `run_phase 2`, `run_phase 3` invocations entirely. Phase 4 runs FRESH for the chunk's strategy band (or with `--resume-from-checkpoint` if checkpoint exists per CHECKLIST #135 writer-pair invariant). Reduces wrapper surface area + removes timing-cascade risk from intermediate-phase sentinel-sync failures.
+
+     **Retroactive coverage demo (per #136 ANTI-AUDIT-THEATER):** This is a PROCESS directive (work cadence), not an audit gate. Per #136 scope clarification: not triggered.
+
+     **Cross-references.** B1087 Council 211 Fix C, CLAUDE.md Batch Discipline & Rollback Posture section, CHECKLIST #135 (Layer 3 preflight gate).
+
+138. **HARD RULE -- MANDATORY POLLING TASK PER AWS LAUNCH: every AWS spot/on-demand launch (initial OR re-launch) MUST arm a background Bash polling task in the same turn.** (B1088 Council 212 verdict 2026-06-30 + owner META question "Why didn't you notify automatically?" after 2.5-hr blind window on B1087 wave-1 spot reclamation cascade.)
+
+     **Rule:** Within the SAME turn as an AWS launch via `aws ec2 run-instances` (direct OR via helper `b1070_phase_d_launch_helper.sh` OR wrapper `launch_phase4_parallel.sh`):
+     (a) MUST `Bash` with `run_in_background: true` a polling task that calls `aws ec2 describe-instances` + `aws s3 ls <RUN_ID-prefix>/` every 5-15 min;
+     (b) Polling task MUST emit task-notification on: instance state change (running → terminated/stopped), PHASE_N_FAIL sentinel, PHASE_N_B1019_HALT sentinel, spot-interruption detection (state=terminated + StateReason=Server.SpotInstanceTermination);
+     (c) Turn MUST NOT end before polling task armed; verify via TaskList before turn-end;
+     (d) Re-launches DO NOT inherit polling from prior launches — each launch arms its OWN polling task tied to its OWN RUN_ID(s).
+
+     **Why HARD rule:** B1087 wave-1 cascade (6 chunks reclaimed 13:13-13:33Z in us-east-1f) went undetected for ~2.5 hr because ScheduleWakeup-based 15-min cadence only fires on IDLE conversation; active back-and-forth (PIVOT #47 fix work + owner messages) suppressed cadence firing. Background Bash polling fires REGARDLESS of conversation activity. Prior launches B1075/77/78/79/86-wave-1 all had background polling armed (`bpco4qd2p` / `bcazlr1rt` / `bts8yvqzo` / `b064z69j5` / `b6vfw38ze`); B1087 wave-1 relaunch FORGOT to arm — inconsistent infrastructure use.
+
+     **Retroactive coverage demo (per #136 ANTI-AUDIT-THEATER):** Would armed background polling have caught PIVOT #44 (B1079 spot interrupt)? YES. PIVOT #45 (preflight race)? NO (race detected during sequential run; not a launch monitoring issue). PIVOT #46 (quota exhaustion)? NO (quota fail detected at launch time; not post-launch). PIVOT #47 (resume crash)? NO (engine crash, would have caught via PHASE_4_FAIL sentinel polling). B1087 wave-1 spot reclamation (this incident)? YES. 2 of last 3 spot/state-change incidents → passes #136 retroactive coverage threshold for a NEW HARD RULE.
+
+     **Acceptable exceptions:** smoke launches <$1 expected cost where wall-clock <5 min (e.g., `preflight_smoke.sh --per-az` 4 t3.micros) — these self-terminate within polling window; manual polling sufficient.
+
+     **Cross-references.** Council 212 verdict, B1087 wave-1 cascade evidence (`output_audit/b1087_wave1_relaunch_evidence_2026_06_30.json`), CHECKLIST #134 (60-sec-launch-verification companion), CHECKLIST #135 (preflight gate companion), `feedback_designed_vs_verified_requires_evidence_artifact`.
