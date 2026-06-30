@@ -1,0 +1,61 @@
+{
+  "comment": "B1088 r6a.4xlarge wave-1 launch evidence. PIVOT #48 fix (memory pressure on c6a.4xlarge with pool=16 + 8.4M Quiver bulk-feed rows requires 128GB RAM not 32GB). Owner directive 2026-06-30 'B council this' + '1 and A+B+C' approval. r6a.4xlarge = 16 vCPU x 128GB RAM each; 6 fit 96 vCPU quota.",
+  "owner_directive_chain_2026_06_30": [
+    "1 and A+B+C (Option 1 resume from checkpoint NOT VIABLE - no checkpoints existed; switched to fresh r6a launch)",
+    "B council this (r6a.4xlarge for memory headroom)"
+  ],
+  "council_lineage": [
+    "Council 211 (PIVOT #47 + Fix C drove #137)",
+    "Council 212 (monitoring gap drove #138)",
+    "Council 213 partial (Outsider + Executor confirmed GO + AZ rotate)"
+  ],
+  "wave_1_chunks": {
+    "A": {"instance": "i-05952006afa4a0b76", "az": "us-east-1f", "run_id": "r5_full_20260630_123155"},
+    "B": {"instance": "i-0b99c5e73f9fdca3c", "az": "us-east-1c", "run_id": "r5_full_20260630_123208"},
+    "C": {"instance": "i-02e97b0abfedc7127", "az": "us-east-1d", "run_id": "r5_full_20260630_123219"},
+    "D": {"instance": "i-019267d122d13a395", "az": "us-east-1f", "run_id": "r5_full_20260630_123243"},
+    "E": {"instance": "i-0921837b4569ed4dc", "az": "us-east-1f", "run_id": "r5_full_20260630_123309"},
+    "F": {"instance": "i-0e04caa334fba62b7", "az": "us-east-1f", "run_id": "r5_full_20260630_123322"}
+  },
+  "instance_type": "r6a.4xlarge",
+  "vcpu_per_instance": 16,
+  "ram_per_instance_gb": 128,
+  "spot_market": true,
+  "spot_ceiling_usd": 1.50,
+  "spot_price_per_hour_estimate_usd": 0.18,
+  "total_vcpu_used": 96,
+  "vcpu_quota_us_east_1": 96,
+  "quota_saturated": true,
+  "az_distribution": {
+    "us-east-1f": 4,
+    "us-east-1c": 1,
+    "us-east-1d": 1
+  },
+  "az_concentration_risk": "4 of 6 in us-east-1f - same AZ that had B1086/B1087 wave-1 cascade. AZ rotation logic tried 1f-1c-1d-1b-1a but only 1c/1d/1f had r6a.4xlarge capacity at launch time.",
+  "checklist_134_verified": true,
+  "all_6_state_running": true,
+  "pivot_48_fix_applied": "instance type upgrade c6a.4xlarge (32GB RAM) -> r6a.4xlarge (128GB RAM); 4x memory headroom for pool=16 bulk-feed loading",
+  "checklist_138_polling_armed": true,
+  "polling_task_id": "bhdfck53o",
+  "polling_cadence_min": 5,
+  "polling_cap_hr": 20,
+  "expected_per_chunk_wall_clock_hr": 3,
+  "expected_wave_1_total_hr": 3,
+  "expected_cost_usd": {
+    "wave_1_6_x_3hr_x_0.18": 3.24,
+    "wave_2_2_x_2hr_x_0.18": 0.72,
+    "total_session_post_complete": 33.05
+  },
+  "hard_cap_usd": 40,
+  "cap_headroom_usd": 6.95,
+  "phase_4_only_mode": true,
+  "no_phase_1_2_3_invocations": true,
+  "resume_inheritance": "none (PIVOT #47 + #48 = fresh Phase 4 per chunk)",
+  "session_state_at_launch": {
+    "batches": 117,
+    "councils": 110,
+    "pivot_count_session": 48,
+    "session_aws_spend_pre_launch_usd": 29.09
+  },
+  "launched_at_utc": "2026-06-30T12:33:35Z"
+}
