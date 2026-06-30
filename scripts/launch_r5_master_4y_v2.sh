@@ -87,8 +87,13 @@ MAX_PHASE_MIN=${MAX_PHASE_MIN:-360}
 # behavior when not in resume mode.
 RESUME_FROM_RUN_ID="${RESUME_FROM_RUN_ID:-}"
 SKIP_PHASES="${SKIP_PHASES:-}"
-export RESUME_FROM_RUN_ID SKIP_PHASES
-echo "B1078 RESUME_FROM_RUN_ID=\${RESUME_FROM_RUN_ID} SKIP_PHASES=\${SKIP_PHASES}"
+# B1084 Council 205+206: PHASE_4_CHUNK env var (A-H = 8 chunks of
+# strategy-band; 27-28 strategies per chunk; sum=220 verified by
+# B1084 pin tests). When set, screener.py + run_phase1a.py filter
+# ALL_STRATEGIES to chunk subset. Empty = original full-220 behavior.
+PHASE_4_CHUNK="${PHASE_4_CHUNK:-}"
+export RESUME_FROM_RUN_ID SKIP_PHASES PHASE_4_CHUNK
+echo "B1078 RESUME_FROM_RUN_ID=\${RESUME_FROM_RUN_ID} SKIP_PHASES=\${SKIP_PHASES} B1084 PHASE_4_CHUNK=\${PHASE_4_CHUNK}"
 
 mkdir -p /tmp/sentinels
 echo "BOOT \$(date -u +%Y-%m-%dT%H:%M:%SZ) mode=\${MODE}" > /tmp/sentinels/BOOT

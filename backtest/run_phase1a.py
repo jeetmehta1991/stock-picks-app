@@ -27,6 +27,21 @@ logger = logging.getLogger("phase1a_v2")
 from backtest.config import BACKTEST_START, BACKTEST_END, UNIVERSE, PASSING_CRITERIA
 from backtest.engine.backtest import BacktestEngine
 from backtest.signals.screener import ALL_STRATEGIES
+# B1084 Council 206: Phase 4 strategy-band chunk filter (8 chunks A-H).
+# When PHASE_4_CHUNK env var set, narrows ALL_STRATEGIES to chunk subset
+# via screener.get_strategy_chunk(idx). Leaves ALL_STRATEGIES unmodified
+# at module level; engine uses what run_phase1a passes to it. Sum across
+# 8 chunks = full 220 (sum-verified by B1084 pin test).
+import backtest.signals.screener as _screener_mod
+_chunk_idx = _screener_mod.get_chunk_index_from_env()
+if _chunk_idx is not None:
+    _chunk_strategies = _screener_mod.get_strategy_chunk(_chunk_idx, n_chunks=8)
+    print(f"[B1084 Council 206] PHASE_4_CHUNK={_chunk_idx} (chunk {chr(65 + _chunk_idx)}): "
+          f"filtered {len(_chunk_strategies)}/{len(ALL_STRATEGIES)} strategies")
+    # Replace module-level ALL_STRATEGIES with chunk subset (in-place
+    # so engine + screen_universe see filtered dict).
+    _screener_mod.ALL_STRATEGIES = _chunk_strategies
+    ALL_STRATEGIES = _chunk_strategies  # rebind local import
 
 
 def validate_env():

@@ -3483,7 +3483,7 @@ def strat_insider_cluster_concentrated_sell_short(s):
     """B1010 (2026-06-22) Class 7 NEW per Council 103 Option-6 owner-
     approved 'Approve all proceed council this.' SHORT-only mirror of
     insider_cluster_long sleeves using `concentrated_sell` (>50% of
-    insider's holdings dumped per smart_money.py:601-635) — the only
+    insider's holdings dumped per smart_money.py:601-635) -- the only
     economically-defensible SHORT mirror per B662 SM-1 walk +
     `feedback_asymmetric_data_sources_break_mechanical_inverse`.
 
@@ -3492,7 +3492,7 @@ def strat_insider_cluster_concentrated_sell_short(s):
       planning / option-lockup-expiry noise (Lakonishok-Lee 2001 RFS
       + Marin-Olivier 2008 RFS). concentrated_sell at >50% threshold
       filters to genuine high-conviction insider exits where the
-      insider liquidates a material portion of holdings — a signal
+      insider liquidates a material portion of holdings -- a signal
       qualitatively distinct from routine sales.
 
     Why SHORT side asymmetric to LONG side (per
@@ -8685,3 +8685,61 @@ def screen_universe(
     logger.info("screen_universe [%s] regime=%s: %d/%d passed (incl. %d lead-lag)",
                 as_of, regime, len(candidates), len(ohlcv_dict), len(lead_lag))
     return candidates
+
+
+# ----------------------------------------------------------------------
+# B1084 Council 206 -- Phase 4 strategy-band chunking (8-chunk parallel)
+# ----------------------------------------------------------------------
+
+def get_strategy_chunk(chunk_idx: int, n_chunks: int = 8) -> dict:
+    """B1084 Council 205+206: return subset of ALL_STRATEGIES for the
+    specified chunk index (0-based; chunk_idx in [0, n_chunks-1]).
+
+    Strategy-band partitioning per B1083 CLAUDE.md spec (NOT ticker, NOT
+    date -- preserves per-(strategy, exit) cube cell integrity + walk-
+    forward + regime continuity).
+
+    Council 206 caveat (chunk-H slice fix): for N=220 strategies / K=8
+    chunks (220/8 = 27.5), naive `[idx*27:(idx+1)*27]` orphans 4
+    strategies in last chunk. This helper uses ceil-size with last-
+    chunk truncation, sum-verified.
+
+    Distribution (N=220, K=8):
+      chunk 0: ALL_STRATEGIES[0:28]    = 28 strategies
+      chunk 1: ALL_STRATEGIES[28:56]   = 28 strategies
+      ... (chunks 2-6 also 28)
+      chunk 7: ALL_STRATEGIES[196:224] -> truncated to [196:220] = 24
+      Total: 7*28 + 24 = 220 (sum-verified by pin test)
+
+    Returns: dict subset with same key/value ordering as ALL_STRATEGIES.
+    """
+    if chunk_idx < 0 or chunk_idx >= n_chunks:
+        raise ValueError(
+            f"B1084 chunk_idx={chunk_idx} out of range [0, {n_chunks - 1}]"
+        )
+    total = len(ALL_STRATEGIES)
+    chunk_size = (total + n_chunks - 1) // n_chunks  # ceil division
+    start = chunk_idx * chunk_size
+    end = min((chunk_idx + 1) * chunk_size, total)
+    # Preserve insertion order (dict is ordered in Python 3.7+)
+    items = list(ALL_STRATEGIES.items())
+    return dict(items[start:end])
+
+
+def get_chunk_index_from_env() -> int | None:
+    """B1084 Council 206: read PHASE_4_CHUNK env var; map A-H -> 0-7."""
+    import os
+    val = os.environ.get("PHASE_4_CHUNK", "").strip().upper()
+    if not val:
+        return None
+    if val in "ABCDEFGH":
+        return ord(val) - ord("A")
+    try:
+        idx = int(val)
+        if 0 <= idx <= 7:
+            return idx
+    except ValueError:
+        pass
+    raise ValueError(
+        f"B1084 PHASE_4_CHUNK={val!r} invalid; expect A-H or 0-7"
+    )
