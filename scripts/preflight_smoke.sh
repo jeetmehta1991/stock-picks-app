@@ -48,6 +48,11 @@ if [ "${1:-}" = "--per-az" ]; then
     PER_AZ_PIDS=()
     PER_AZ_LOGS=()
     PER_AZ_AZS=()
+    # B1086 PIVOT #45 fix: stagger spawns by 2s to ensure unique
+    # RUN_ID timestamps (launch_r5_master_4y_v2.sh uses second-resolution
+    # date +%Y%m%d_%H%M%S; same-second invocation = RUN_ID collision +
+    # user-data file collision). Empirically failed in first run b4ov0q2ss:
+    # us-east-1a + us-east-1c both failed user-data gen due to collision.
     for AZ in $PER_AZ_LIST; do
         LOG="/tmp/b1085_preflight_${AZ}.log"
         echo "Launching preflight in ${AZ} (log: ${LOG})..."
@@ -56,6 +61,8 @@ if [ "${1:-}" = "--per-az" ]; then
         PER_AZ_PIDS+=("$!")
         PER_AZ_LOGS+=("$LOG")
         PER_AZ_AZS+=("$AZ")
+        # B1086 PIVOT #45 fix: 2s stagger between spawns
+        sleep 2
     done
     echo "Waiting for all 4 per-AZ preflights (parallel)..."
     FAIL=0
@@ -89,19 +96,19 @@ SMOKE_START="${PREFLIGHT_START}" \
 SMOKE_END="${PREFLIGHT_END}" \
 SMOKE_POOL_WORKERS=0 \
 MODE=smoke \
-  bash scripts/launch_r5_master_4y_v2.sh > /tmp/preflight_gen.log 2>&1
+  bash scripts/launch_r5_master_4y_v2.sh > /tmp/preflight_gen_${PREFLIGHT_AZ}.log 2>&1
 
 if [ $? -ne 0 ]; then
-    echo "PREFLIGHT_FAIL: user-data generation failed; see /tmp/preflight_gen.log"
+    echo "PREFLIGHT_FAIL: user-data generation failed; see /tmp/preflight_gen_${PREFLIGHT_AZ}.log"
     exit 2
 fi
 
-RUN_ID=$(grep "Run ID:" /tmp/preflight_gen.log | awk '{print $3}')
-BOOTSTRAP_FILE=$(grep "User-data ready at:" /tmp/preflight_gen.log | awk '{print $NF}')
+RUN_ID=$(grep "Run ID:" /tmp/preflight_gen_${PREFLIGHT_AZ}.log | awk '{print $3}')
+BOOTSTRAP_FILE=$(grep "User-data ready at:" /tmp/preflight_gen_${PREFLIGHT_AZ}.log | awk '{print $NF}')
 
 if [ -z "$RUN_ID" ] || [ -z "$BOOTSTRAP_FILE" ] || [ ! -f "$BOOTSTRAP_FILE" ]; then
     echo "PREFLIGHT_FAIL: RUN_ID=${RUN_ID} BOOTSTRAP=${BOOTSTRAP_FILE} invalid"
-    cat /tmp/preflight_gen.log | tail -30
+    cat /tmp/preflight_gen_${PREFLIGHT_AZ}.log | tail -30
     exit 2
 fi
 
