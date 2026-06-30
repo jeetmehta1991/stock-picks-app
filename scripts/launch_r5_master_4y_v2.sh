@@ -92,8 +92,12 @@ SKIP_PHASES="${SKIP_PHASES:-}"
 # B1084 pin tests). When set, screener.py + run_phase1a.py filter
 # ALL_STRATEGIES to chunk subset. Empty = original full-220 behavior.
 PHASE_4_CHUNK="${PHASE_4_CHUNK:-}"
-export RESUME_FROM_RUN_ID SKIP_PHASES PHASE_4_CHUNK
-echo "B1078 RESUME_FROM_RUN_ID=\${RESUME_FROM_RUN_ID} SKIP_PHASES=\${SKIP_PHASES} B1084 PHASE_4_CHUNK=\${PHASE_4_CHUNK}"
+# B1087 Council 211 Fix C + owner directive 2026-06-30 'We do not need
+# phase 2 and 3 anymore at this stage': PHASE_4_ONLY=1 short-circuits
+# the phase ladder to Phase 4 only. Used by launch_phase4_parallel.sh.
+PHASE_4_ONLY="${PHASE_4_ONLY:-}"
+export RESUME_FROM_RUN_ID SKIP_PHASES PHASE_4_CHUNK PHASE_4_ONLY
+echo "B1078 RESUME_FROM_RUN_ID=\${RESUME_FROM_RUN_ID} SKIP_PHASES=\${SKIP_PHASES} B1084 PHASE_4_CHUNK=\${PHASE_4_CHUNK} B1087 PHASE_4_ONLY=\${PHASE_4_ONLY}"
 
 mkdir -p /tmp/sentinels
 echo "BOOT \$(date -u +%Y-%m-%dT%H:%M:%SZ) mode=\${MODE}" > /tmp/sentinels/BOOT
@@ -242,20 +246,35 @@ run_phase() {
 
     # B1078 Council 194 Option 1: resume-checkpoint download (if RESUME_FROM_RUN_ID set
     # AND prior run has checkpoint for this phase AND not skip-listed).
+    # B1087 PIVOT #47 fix (Council 211 A): validate BOTH engine_state.json
+    # AND trade_log_checkpoint.csv exist before treating resume as eligible.
+    # Root cause: B1079 spot-interrupted at sim_day=50 BEFORE B1081 PIVOT #44
+    # cadence fix shipped; engine_state.json written but CSV never was.
+    # Result: chunks resuming Phase 4 from B1079 inherited a corrupted state
+    # (engine_state present + CSV absent) that crashes B1076 _load_resume_checkpoint
+    # with FileNotFoundError -> PHASE_4_FAIL. This fix detects the missing-CSV
+    # case and falls through to FRESH run instead of broken-resume.
     RESUME_ARG=""
     if [ -n "\${RESUME_FROM_RUN_ID:-}" ] && \\
        ! ( [ -n "\${SKIP_PHASES:-}" ] && echo "\${SKIP_PHASES}" | tr ',' '\n' | grep -qx "\${PHASE_NUM}" ); then
         # Check if prior run has checkpoint for this phase (status=running)
         PRIOR_STATE_JSON=\$(aws s3 cp "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/engine_state.json" - 2>/dev/null || echo "")
         if [ -n "\${PRIOR_STATE_JSON}" ] && echo "\${PRIOR_STATE_JSON}" | grep -q '"status": "running"'; then
-            echo "=== PHASE \${PHASE_NUM} B1078 RESUME: prior checkpoint found in \${RESUME_FROM_RUN_ID} ==="
-            mkdir -p \${PHASE_DIR}
-            aws s3 sync "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/" "\${PHASE_DIR}/" --quiet || {
-                echo "PHASE_\${PHASE_NUM}_RESUME_SYNC_FAIL"; return 1
-            }
-            RESUME_ARG="--resume-from-checkpoint \${PHASE_DIR}"
-            echo "PHASE_\${PHASE_NUM}_RESUME_ARGS=\${RESUME_ARG}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_ARGS
-            aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_ARGS s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_RESUME_ARGS --quiet
+            # B1087 PIVOT #47 fix: writer-pair consistency check
+            PRIOR_CSV_SIZE=\$(aws s3 ls "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/trade_log_checkpoint.csv" 2>/dev/null | awk '{print \$3}')
+            if [ -z "\${PRIOR_CSV_SIZE}" ] || [ "\${PRIOR_CSV_SIZE}" = "0" ]; then
+                echo "PHASE_\${PHASE_NUM}_RESUME_INVALID_B1087: engine_state.json present (status=running) but trade_log_checkpoint.csv missing or empty in \${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/. Writer-pair invariant violated (B1081 PIVOT #44 lineage). Falling through to FRESH phase run." | tee /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_INVALID_B1087
+                aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_INVALID_B1087 s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_RESUME_INVALID_B1087 --quiet
+            else
+                echo "=== PHASE \${PHASE_NUM} B1078 RESUME: prior checkpoint found in \${RESUME_FROM_RUN_ID} (CSV size=\${PRIOR_CSV_SIZE}) ==="
+                mkdir -p \${PHASE_DIR}
+                aws s3 sync "s3://\${BUCKET}/\${RESUME_FROM_RUN_ID}/\${PHASE_DIR}/" "\${PHASE_DIR}/" --quiet || {
+                    echo "PHASE_\${PHASE_NUM}_RESUME_SYNC_FAIL"; return 1
+                }
+                RESUME_ARG="--resume-from-checkpoint \${PHASE_DIR}"
+                echo "PHASE_\${PHASE_NUM}_RESUME_ARGS=\${RESUME_ARG}" > /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_ARGS
+                aws s3 cp /tmp/sentinels/PHASE_\${PHASE_NUM}_RESUME_ARGS s3://\${BUCKET}/\${RUN_ID}/PHASE_\${PHASE_NUM}_RESUME_ARGS --quiet
+            fi
         fi
     fi
 
@@ -430,9 +449,19 @@ aws s3 cp /tmp/sentinels/B1019_PREFLIGHT_PASS s3://\${BUCKET}/\${RUN_ID}/B1019_P
 # B1043 Sub-C: MAX_MIN raised per timing extrapolation (Phase 1 30->120;
 # Phase 2 60->180; Phase 3 90->240; Phase 4 240->480; cumulative 7hr->17hr).
 # B1046 F-21 fix: each || branch guards SYNC_PID kill with empty-check + WARN.
-run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 120 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 180 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
-run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 240 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+# B1087 Council 211 Fix C + owner directive 2026-06-30 'We do not need
+# phase 2 and 3 anymore at this stage': PHASE_4_ONLY env var skips
+# Phase 1/2/3 invocations entirely (no skip-mode sentinel-sync; pure
+# Phase 4 chunked target). Removes wrapper surface area + timing-cascade
+# risk per Council 211 stated reasons. Default unset = original 4-phase
+# ladder.
+if [ -z "\${PHASE_4_ONLY:-}" ]; then
+    run_phase 1 "NVDA" output_phase_1 \${START_DATE} \${END_DATE} 120 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+    run_phase 2 "\${TICKERS_PHASE_2}" output_phase_2 \${START_DATE} \${END_DATE} 180 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+    run_phase 3 "\${TICKERS_PHASE_3}" output_phase_3 \${START_DATE} \${END_DATE} 240 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
+else
+    echo "PHASE_4_ONLY=1 set (B1087 Council 211 Fix C); skipping Phase 1/2/3 invocations"
+fi
 run_phase 4 "\${MASTER_TICKERS}" output_phase_4_r5 \${START_DATE} \${END_DATE} 1200 || { if [ -n "\${SYNC_PID:-}" ]; then kill \$SYNC_PID 2>/dev/null || echo "WARN: SYNC_PID kill failed"; else echo "WARN: SYNC_PID empty (F-21)"; fi; aws s3 sync /tmp/sentinels/ s3://\${BUCKET}/\${RUN_ID}/sentinels/ --quiet; sudo shutdown -h +5; exit 1; }
 
 # B1046 F-21 fix: final SYNC_PID kill guarded with empty-check + WARN log.

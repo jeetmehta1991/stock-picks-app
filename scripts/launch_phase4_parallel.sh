@@ -72,9 +72,12 @@ for CHUNK in A B C D E F G H; do
     echo ""
     echo "=== Launching chunk ${CHUNK} (primary AZ: ${CHUNK_AZ[$CHUNK]}) ==="
 
-    # Generate user-data with chunk + resume env vars
-    RESUME_FROM_RUN_ID="${RESUME_FROM_RUN_ID}" \
-    SKIP_PHASES="1,2,3" \
+    # B1087 Council 211 Fix C + owner directive 2026-06-30: PHASE_4_ONLY=1
+    # skips Phase 1/2/3 invocations entirely. Phase 4 sole target per
+    # chunk's strategy band (PHASE_4_CHUNK). RESUME_FROM_RUN_ID no longer
+    # required for Phase 1+2+3 sentinel-sync (no skip-mode); also not used
+    # for Phase 4 resume since each chunk's Phase 4 starts fresh.
+    PHASE_4_ONLY=1 \
     PHASE_4_CHUNK="${CHUNK}" \
     MODE=full \
         bash "${REPO_ROOT}/scripts/launch_r5_master_4y_v2.sh" \
