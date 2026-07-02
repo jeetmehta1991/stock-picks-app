@@ -200,6 +200,11 @@ def main():
                    help="Disable per-run walk-forward (use for parallel-batch mode; merge recomputes on combined trade log)")
     p.add_argument("--no-news",    action="store_true",  help="Disable news sentiment (for A/B comparison)")
     p.add_argument("--tickers",    type=str, default=None, help="Comma-separated list of tickers for batch test")
+    p.add_argument("--tickers-file", type=str, default=None,
+                   help="Path to file containing comma-separated OR newline-separated tickers. "
+                        "Council 224 mandate 2026-07-01: bypasses Windows cmd.exe 8191-char limit "
+                        "for large ticker sets (e.g., Batch B 1787 tickers = 8051 chars). "
+                        "Mutually exclusive with --tickers; takes precedence if both given.")
     p.add_argument("--phase",      type=str, default="1a", choices=["1a","1a-beta","1b","1c","1d"])
     p.add_argument("--start",      type=str)
     p.add_argument("--end",        type=str)
@@ -313,14 +318,22 @@ def main():
     # Batch 394 (owner 2026-05-27): auto-set 4h warn / 6h hard-kill for 1a-beta.
     # Defense-in-depth pairs with the external monitor watchdog (+5min backup).
     if args.phase == "1a-beta" and args.warn_run_hours is None:
-        print("[Batch 394] Phase 1a-beta detected -> auto-set --warn-run-hours=4.0 "
-              "(WARN emitted once at 4h wall-time; pass explicit value to override).")
-        args.warn_run_hours = 4.0
+        print("[Batch 394] Phase 1a-beta detected -> auto-set --warn-run-hours=40.0 "
+              "(WARN emitted once at 40h wall-time; pass explicit value to override).")
+        args.warn_run_hours = 40.0
     if args.phase == "1a-beta" and args.max_run_hours is None:
-        print("[Batch 394] Phase 1a-beta detected -> auto-set --max-run-hours=6.0 "
-              "(engine flushes checkpoint and sys.exit(1) at 6h; monitor watchdog "
-              "backs up at +5min if engine hangs).")
-        args.max_run_hours = 6.0
+        # Batch 1093 (Council 227 Q3 fix 2026-07-02): auto-set raised 6.0 -> 48.0
+        # after Batch A guard-kill at day=720/1044 (68.9%). Original 6.0 was designed
+        # for AWS runaway-cost prevention (Batch 394 owner 2026-05-27); on laptop with
+        # no per-hour cost, 6.0 kills legitimate 8-20 hr runs. 48.0 still catches
+        # infinite-loop bugs while accommodating single-shot laptop batches
+        # (A: 8-9 hr, single-machine cube ~16-20 hr). Batch B (80-100 hr) still
+        # requires explicit --max-run-hours 120.0 override.
+        print("[Batch 1093] Phase 1a-beta detected -> auto-set --max-run-hours=48.0 "
+              "(engine flushes checkpoint and sys.exit(1) at 48h; monitor watchdog "
+              "backs up at +5min if engine hangs). Batch B (>48h projected) MUST "
+              "override via --max-run-hours 120.0.")
+        args.max_run_hours = 48.0
 
     # Batch 412: opt-in vectorized cube-exit fast path. Default OFF preserves
     # byte-identical scalar fallback - flip via --vectorized-cube-exits when
@@ -400,10 +413,20 @@ def main():
                   "M4 OOS protection inactive this run")
             _holdout_unlock_ctx = None
 
+        # Council 224 laptop-execution 2026-07-01: --tickers-file bypasses
+        # Windows cmd.exe 8191-char limit. Takes precedence over --tickers.
+        # Accepts comma-separated OR newline-separated tickers.
+        if args.tickers_file:
+            with open(args.tickers_file, "r") as _tf:
+                _raw = _tf.read().strip()
+            # Handle both comma and newline separators (any mix)
+            _parts = [p.strip() for p in _raw.replace("\n", ",").split(",") if p.strip()]
+            universe = _parts
+            print(f"\nBATCH TEST MODE (file): {start} -> {end} | {len(universe)} tickers from {args.tickers_file}")
         # --tickers flag: override universe with specific tickers (for batch tests)
-        if args.tickers:
+        elif args.tickers:
             universe = [t.strip() for t in args.tickers.split(",")]
-            print(f"\nBATCH TEST MODE: {start} -> {end} | {len(universe)} tickers: {universe}")
+            print(f"\nBATCH TEST MODE: {start} -> {end} | {len(universe)} tickers: {universe[:10]}{'...' if len(universe) > 10 else ''}")
         # Phase 1A-beta: full 1937-ticker Master Dedup (DEC-504 5-tier resolved precedence)
         # Owner-approved 2026-05-15 Batch 181 - supersedes the legacy 67-ticker
         # config.UNIVERSE for the production-scale validation run.
