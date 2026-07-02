@@ -2302,3 +2302,46 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Acceptable exceptions:** re-launches in the SAME environment with the SAME instance type + config as a prior launch that completed successfully — the env is already validated; audit not required.
 
      **Cross-references.** Council 227 Q4 verdict, Batch A recovery lineage (B1093 auto-set 6.0→48.0 + explicit CLI overrides in `laptop_launch_batch_a.ps1` / `laptop_launch_batch_b.ps1` / `laptop_resume_batch_a_detached.ps1`), `feedback_banner_is_status_not_scope_authority` (analogous drift pattern between docs and code), CHECKLIST #128 (ANTI-AUDIT-THEATER precedent), CHECKLIST #124 (DESIGNED vs OPERATIONALLY-VERIFIED — env defaults are DESIGNED for one env, OPERATIONALLY-VERIFIED in another only after this audit).
+
+140. **HARD RULE -- CUBE EXIT FAN-OUT EQUALS count(EXIT_STRATEGIES) PER CLOSED TRADE.** (Owner directive 2026-07-02 Council 231.)
+
+     **Rule:** For every cube-mode batch completion (Phase 1A-β or similar), `trade_exit_detail.csv` row count MUST equal exactly `closed_trades × count(EXIT_STRATEGIES)`. Not "≥ N methods". Not "≥ N rows". EXACT equality. Only exception: trades still open at engine end (not-yet-exited) — those legitimately have no cube fan-out.
+
+     **Enforcement:**
+     - Post-batch verification MUST compute: `expected = closed_trades × len(EXIT_STRATEGIES)`; `actual = len(trade_exit_detail_df)`; verify `abs(expected - actual) == 0`.
+     - Currently `count(EXIT_STRATEGIES) = 26` (Batch 487 SM2 smart_money_reversal); test-pin per CHECKLIST #74 doc-count-drift rule.
+     - Open trades excluded via `df_closed = df_trades[df_trades["status"] == "closed"]` OR equivalent — count only closed.
+     - If actual < expected → cube fan-out silently drops (producer/registration bug). HALT + investigate.
+     - If actual > expected → duplicate emission bug. HALT + investigate.
+
+     **Why HARD rule:** Cube purpose is per-(strategy × exit × regime) empirical measurement of the 14 passing criteria. If ANY exit method silently drops for ANY trade, affected cells have artificially small sample size → statistical verdicts unreliable → Phase 1B-α winner selection made on incomplete evidence. Weaker thresholds (≥N methods, ≥N% rows) hide silent-drop bugs that only surface post-4-day-Batch-B when recovery cost is maximal. Owner correction 2026-07-02 Council 231 after Council 230 audit set "≥15 exit methods" threshold: "If condition is greater than 15 exit methods, its incorrect. Needs to be equal to the count all exit methods for each trade. No exceptions."
+
+     **Retroactive coverage demo (per #136 ANTI-AUDIT-THEATER):** Would EQUAL-count rule have caught prior PIVOTs? PIVOT #34 (block-buffered print silent PASS-path)? NO (different bug class). PIVOT #37 (writer-reader schema exit_reason vs exit_method)? YES — schema mismatch would surface as cube emission failures reducing actual < expected. PIVOT #50 (Batch 394 6-hr guard)? NO (different bug class). 1-of-3 → passes #136 retroactive threshold for a NEW HARD RULE targeting a specific bug class (cube emission integrity).
+
+     **Acceptable exceptions:** none for closed trades. Only open-trades at engine end.
+
+     **Cross-references.** `feedback_cube_exit_count_must_equal_registered`, `feedback_strategy_x_exit_cell_analysis` (aggregate meaningless — precursor rule), `project_phase_1a_beta_is_exit_cube` (owner-directive origin 2026-05-25 that "every entry must simulate every exit"), Council 231 verdict, CHECKLIST #74 (count-drift test-pin), CHECKLIST #131 (companion fire-count validation).
+
+141. **HARD RULE -- FIRE-COUNT VALIDATION IN EVERY BATCH GATE.** (Owner directive 2026-07-02 Council 231.)
+
+     **Rule:** Every batch completion gate MUST include per-strategy fire-count validation against B660 baseline (`output_audit/fire_count_measured_b660_full_universe.json`), scaled by universe ratio and window length. Trade counts + cube completeness are necessary but NOT sufficient — silent producer failures require fire-count-vs-baseline reconciliation.
+
+     **Formula per strategy:**
+     - `expected = baseline_projected_fires_per_year × window_years × (batch_tickers / 503)`
+     - `actual = unique trade entries in trade_log for this strategy` (NOT the cube exit-fan-out rows)
+
+     **Classification:**
+     - **SILENT_FLAG:** actual < 0.5 × expected AND expected > 30 (producer or gate silently broken)
+     - **OVER_FIRING_FLAG:** actual > 2.0 × expected (gate too loose OR possible look-ahead bias)
+     - **HEALTHY:** 0.5 × expected ≤ actual ≤ 2.0 × expected
+     - **INSUFFICIENT_BASELINE:** expected ≤ 30 (report; can't statistically validate; don't fail)
+
+     **Gate:** `N_SILENT_FLAG > 10 OR N_OVER_FIRING_FLAG > 5 → HALT + investigate before advancing to next batch`.
+
+     **Why HARD rule:** A strategy that fires 0 times over 4 years may be either (a) genuinely gated-out (correct behavior) or (b) silently broken (producer not wired, schema drift, PIVOT-#37-class). Trade counts + cube completeness don't distinguish these. B660 baseline gives an empirical expectation per strategy across the full T1a universe. Comparing scaled actual vs expected surfaces silent-gap PIVOTS before they contaminate cube verdicts. Owner correction 2026-07-02: "Verification also needs to be on fire counts. Needs to be expanded."
+
+     **Retroactive coverage demo (per #136 ANTI-AUDIT-THEATER):** Would fire-count validation have caught PIVOT #34 (silent PASS-path)? NO (that was monitor-log path, not producer). PIVOT #37 (writer-reader schema)? YES — schema drift would show up as strategies with actual=0 vs expected>>0 for affected exits. PIVOT #38 (retracted) and pre-B1068 panel-blackout? YES — 30%+ silent strategies would have surfaced. PIVOT #50 (Batch 394 guard-kill)? NO. 2-of-4 recent PIVOTs → passes #136 retroactive threshold for a NEW HARD RULE.
+
+     **Acceptable exceptions:** strategies with `expected ≤ 30` (INSUFFICIENT_BASELINE) reported but don't count toward HALT threshold. Ticker-universe drift between baseline and batch (T1a vs Master, delisted names) accepted as noise within 0.5-2.0× band.
+
+     **Cross-references.** `feedback_batch_gate_includes_fire_count_validation`, `feedback_monitor_intermediate_counts` (in-run version), `feedback_data_consumption_audit_must_apply_checklist_44b` (silent-empty investigation), B660 baseline artifact, CHECKLIST #130 (companion cube completeness rule).
