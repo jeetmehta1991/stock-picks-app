@@ -55,6 +55,19 @@ from backtest.data.fetcher import days_to_next_earnings
 logger = logging.getLogger(__name__)
 
 
+# Council 233 Bug A fix (2026-07-02): module-level wrapper for pool.imap_unordered.
+# Previously defined as closure inside BacktestEngine.save_all_outputs which
+# multiprocessing spawn (Windows default) cannot pickle -- silently caused
+# cube fan-out to fall back to a broken sequential path (Bug B) producing
+# empty trade_exit_detail.csv. Council 231 CHECKLIST #130 EQUAL-count gate
+# will now catch this class of bug pre-Batch-B.
+def _b1070_starmap_wrapper(args):
+    """Module-level unpacker so multiprocessing.Pool.imap_unordered can pickle
+    it on Windows spawn. Delegates to _pool_cube_replay_worker with unpacked args."""
+    from backtest.engine.exit_strategies import _pool_cube_replay_worker
+    return _pool_cube_replay_worker(*args)
+
+
 class BacktestEngine:
 
     def __init__(
@@ -2980,25 +2993,43 @@ class BacktestEngine:
             )
             results = []
             try:
-                # imap_unordered yields results as workers complete; we
-                # consume them in a generator-loop so full result list is
-                # NOT held in memory simultaneously.
-                # Note: starmap takes iterable of arg-tuples; imap_unordered
-                # takes single-arg callable. Wrap _pool_cube_replay_worker.
-                def _b1070_starmap_wrapper(args):
-                    return _pool_cube_replay_worker(*args)
+                # Council 233 Bug A fix: use module-level _b1070_starmap_wrapper
+                # (defined at top of this file) so multiprocessing spawn (Windows
+                # default) can pickle it. Previously a closure -> silent pickle
+                # failure -> fallback to broken sequential path (Bug B).
+                # imap_unordered yields results as workers complete; we consume
+                # them in a generator-loop so full result list is NOT held in
+                # memory simultaneously.
                 for _result_pair in self._screen_pool.imap_unordered(
                     _b1070_starmap_wrapper, strategy_tasks,
                     chunksize=1,
                 ):
                     results.append(_result_pair)
             except Exception as exc:
+                # Council 233 Bug B fix: when pool imap fails, DO NOT call
+                # _pool_cube_replay_worker from main process (it requires
+                # screener._WORKER_OHLCV which is only set by pool initializer).
+                # Instead use the same main-process reconstruction as the
+                # pool-disabled ELSE branch below: pull df from
+                # self.ohlcv_dict + call run_exit_comparison directly.
                 logger.warning(
                     "B1070 F-2.1: streaming pool cube replay failed (%s); "
-                    "falling back to sequential per-strategy", exc,
+                    "falling back to sequential per-strategy with main-process "
+                    "df reconstruction (Council 233 Bug B fix 2026-07-02)", exc,
                 )
-                results = [_pool_cube_replay_worker(s, td)
-                           for s, td in strategy_tasks]
+                from backtest.engine.exit_strategies import run_exit_comparison
+                results = []
+                for strategy_name, trades_data_lite in strategy_tasks:
+                    trades_data_full = []
+                    for t in trades_data_lite:
+                        df_full = self.ohlcv_dict.get(t["ticker"])
+                        if df_full is None:
+                            continue
+                        trades_data_full.append({**t, "df": df_full})
+                    if trades_data_full:
+                        results.append(
+                            run_exit_comparison(strategy_name, trades_data_full)
+                        )
         else:
             # Sequential fallback -- workers can't run; reconstruct df
             # inline since _WORKER_OHLCV is not set in main process.
