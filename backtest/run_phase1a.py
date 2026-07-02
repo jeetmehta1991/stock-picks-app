@@ -317,23 +317,46 @@ def main():
         args.max_cands = 200
     # Batch 394 (owner 2026-05-27): auto-set 4h warn / 6h hard-kill for 1a-beta.
     # Defense-in-depth pairs with the external monitor watchdog (+5min backup).
-    if args.phase == "1a-beta" and args.warn_run_hours is None:
-        print("[Batch 394] Phase 1a-beta detected -> auto-set --warn-run-hours=40.0 "
-              "(WARN emitted once at 40h wall-time; pass explicit value to override).")
-        args.warn_run_hours = 40.0
+    # Batch 1094-B Q3-v2 (Council 229 Option A owner-approved 2026-07-02):
+    # FAIL-LOUD replaces prior auto-set behavior. Batch 394 6.0-hr auto-set was
+    # designed as AWS cost guard 2026-05-27; on laptop (no per-hour cost) it
+    # killed Batch A at day=720/1044 = 68.9% (PIVOT #50). Owner rejected raised
+    # auto-set (48.0 was proposed then rejected as still-a-time-bomb) in favor
+    # of fail-loud: every phase=1a-beta invocation MUST pass --max-run-hours
+    # explicitly. Prevents silent inheritance of wrong-env defaults; enforces
+    # per-invocation conscious choice per CHECKLIST #129 env-config-drift audit.
     if args.phase == "1a-beta" and args.max_run_hours is None:
-        # Batch 1093 (Council 227 Q3 fix 2026-07-02): auto-set raised 6.0 -> 48.0
-        # after Batch A guard-kill at day=720/1044 (68.9%). Original 6.0 was designed
-        # for AWS runaway-cost prevention (Batch 394 owner 2026-05-27); on laptop with
-        # no per-hour cost, 6.0 kills legitimate 8-20 hr runs. 48.0 still catches
-        # infinite-loop bugs while accommodating single-shot laptop batches
-        # (A: 8-9 hr, single-machine cube ~16-20 hr). Batch B (80-100 hr) still
-        # requires explicit --max-run-hours 120.0 override.
-        print("[Batch 1093] Phase 1a-beta detected -> auto-set --max-run-hours=48.0 "
-              "(engine flushes checkpoint and sys.exit(1) at 48h; monitor watchdog "
-              "backs up at +5min if engine hangs). Batch B (>48h projected) MUST "
-              "override via --max-run-hours 120.0.")
-        args.max_run_hours = 48.0
+        print(
+            "\nERROR: --max-run-hours is REQUIRED for --phase=1a-beta.\n"
+            "\n"
+            "  Prior behavior (auto-set) removed 2026-07-02 (Council 229 Option A)\n"
+            "  after Batch A PIVOT #50 (6.0-hr AWS guard silently killed laptop\n"
+            "  run at 68.9%).\n"
+            "\n"
+            "  Recommended values by environment:\n"
+            "    Laptop, small batch (<200 tickers, <8hr projected):  24.0\n"
+            "    Laptop, medium batch (150-500 tickers, <24hr):       48.0\n"
+            "    Laptop, full universe (1500+ tickers, ~100hr):      120.0-168.0\n"
+            "    AWS spot instance (cost-controlled):                   6.0\n"
+            "    AWS on-demand r6a.4xlarge single run:                  24.0\n"
+            "\n"
+            "  Also pass --warn-run-hours (auto-derived to 80% of --max-run-hours\n"
+            "  if omitted).\n"
+            "\n"
+            "  Example: --max-run-hours 120.0 --warn-run-hours 100.0\n",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+    if args.phase == "1a-beta" and args.warn_run_hours is None:
+        # Auto-derive warn as 80% of max (max already validated non-None above).
+        # This is safe because warn is INFO-tier (logs once, does not kill), so
+        # a sensible default preserves owner ergonomics without silent time-bombs.
+        args.warn_run_hours = round(0.8 * args.max_run_hours, 1)
+        print(
+            f"[Batch 1094-B] --warn-run-hours not set -> auto-derived to "
+            f"{args.warn_run_hours} (80% of --max-run-hours={args.max_run_hours}). "
+            f"Pass explicit value to override."
+        )
 
     # Batch 412: opt-in vectorized cube-exit fast path. Default OFF preserves
     # byte-identical scalar fallback - flip via --vectorized-cube-exits when

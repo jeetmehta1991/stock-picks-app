@@ -2283,3 +2283,22 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Acceptable exceptions:** smoke launches <$1 expected cost where wall-clock <5 min (e.g., `preflight_smoke.sh --per-az` 4 t3.micros) — these self-terminate within polling window; manual polling sufficient.
 
      **Cross-references.** Council 212 verdict, B1087 wave-1 cascade evidence (`output_audit/b1087_wave1_relaunch_evidence_2026_06_30.json`), CHECKLIST #134 (60-sec-launch-verification companion), CHECKLIST #135 (preflight gate companion), `feedback_designed_vs_verified_requires_evidence_artifact`.
+
+139. **HARD RULE -- ENV-CONFIG-DRIFT AUDIT: when execution environment changes, audit engine argparse auto-sets + env var defaults for environment-specific behavior.** (B1093 Council 227 Q4 verdict 2026-07-02 + Batch A PIVOT #50 wall-time guard kill.)
+
+     **Rule:** Before launching a batch/run in a NEW or CHANGED execution environment (AWS→laptop, laptop→AWS, cloud→CI, container→VM, one instance type→another with different memory/CPU profile), MUST audit `backtest/run_phase1a.py` argparse auto-sets + any relevant env vars for environment-mismatched defaults. Specifically verify:
+     (a) **Wall-time guards** (`--max-run-hours`, `--warn-run-hours`) — cloud runs may auto-set aggressive caps for cost control; laptop runs need higher caps or explicit CLI override.
+     (b) **Memory limits** (`--memory-cap-mb`, DEC-179) — instance-specific; must exceed peak observed on new environment.
+     (c) **Parallelism defaults** (`--screen-pool-workers`) — pool=16 on 4-vCPU laptop is contention; pool=1 on 32-vCPU is under-utilization.
+     (d) **Log rotation / disk quotas** — cloud has ephemeral disk; laptop has 1 TB but log dirs grow fast.
+     (e) **Cost guards** (`--max-cost-usd` when present) — designed for AWS; irrelevant on laptop but may reject-early.
+
+     **Enforcement:** every batch launch in a NEW environment MUST include a pre-flight block explicitly enumerating each of (a)-(e) with the value in effect + verification against expected wall-clock / memory / cost profile. Missing enumeration → HALT before launch.
+
+     **Why HARD rule:** Batch A on laptop (2026-07-01) hit `--max-run-hours=6.0` auto-set at run_phase1a.py:320-328 (designed as Batch 394 AWS runaway-cost guard 2026-05-27) and self-killed at day=720/1044 (68.9%). Owner had asked "why wasn't this flagged in reviews and audits" — because no CHECKLIST item covered env-config drift. All 3 recent councils (224 Path B batching, 225 health check cadence, 226 recovery path) audited data-quality + throughput + memory but NOT engine argparse defaults. Same audit-theater pattern as CHECKLIST #128 warns against: new checks that don't retroactively catch prior PIVOTs.
+
+     **Retroactive coverage demo (per #136 ANTI-AUDIT-THEATER):** Would env-config-drift audit have caught PIVOT #48 (c6a.4xlarge memory pressure)? YES — instance type change laptop→c6a would have surfaced (b) memory + (c) parallelism defaults mismatch. PIVOT #49 (CSV update bug in auto_resume_polling.sh)? NO — script bug, not env-config drift. PIVOT #50 (Batch 394 6-hr guard on laptop)? YES — this rule targets it directly. 2 of last 3 PIVOTs → passes #136 retroactive coverage threshold for a NEW HARD RULE.
+
+     **Acceptable exceptions:** re-launches in the SAME environment with the SAME instance type + config as a prior launch that completed successfully — the env is already validated; audit not required.
+
+     **Cross-references.** Council 227 Q4 verdict, Batch A recovery lineage (B1093 auto-set 6.0→48.0 + explicit CLI overrides in `laptop_launch_batch_a.ps1` / `laptop_launch_batch_b.ps1` / `laptop_resume_batch_a_detached.ps1`), `feedback_banner_is_status_not_scope_authority` (analogous drift pattern between docs and code), CHECKLIST #128 (ANTI-AUDIT-THEATER precedent), CHECKLIST #124 (DESIGNED vs OPERATIONALLY-VERIFIED — env defaults are DESIGNED for one env, OPERATIONALLY-VERIFIED in another only after this audit).
