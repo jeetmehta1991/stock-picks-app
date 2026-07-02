@@ -7,11 +7,11 @@ Gate 1 (CHECKLIST #130): CUBE COMPLETENESS
   trade_exit_detail.csv rows == closed_trades x count(EXIT_STRATEGIES)
   EXACT equality; only exception is still-open trades.
 
-Gate 2 (CHECKLIST #131): FIRE-COUNT VALIDATION
-  Per-strategy actual fires vs B660 baseline scaled by universe + window.
-  SILENT_FLAG: actual < 0.5 x expected AND expected > 30
-  OVER_FIRING_FLAG: actual > 2.0 x expected
-  HALT if N_SILENT > 10 OR N_OVER_FIRING > 5
+Gate 2 (CHECKLIST #131, Council 232 standalone): FIRE-COUNT VALIDATION
+  STANDALONE - no external baseline. Per-strategy vs PASSING_CRITERIA thresholds
+  + intrinsic coverage (regime, direction, temporal).
+  SILENT: 0 fires; STARVED: 1..min_per_regime-1; MARGINAL: min_per_regime..min_overall-1; VIABLE: >=min_overall.
+  HALT if SILENT (excl known-disabled) > 10 OR TEMPORAL_CLUSTERED > 5 OR DIRECTION_MISMATCH > 0.
 
 Gate 3 (CHECKLIST #132 / feedback_strategy_x_exit_cell_analysis): CELL-LEVEL PASS COUNT
   Per (strategy, exit_method, regime) cell with >=30 trades, compute all
@@ -24,8 +24,7 @@ Exit codes:
   2 = script error / missing inputs
 
 Usage:
-  python scripts/verify_batch_completion.py --batch-dir output_batch_A_150 \
-      [--batch-tickers 150] [--window-years 4] [--baseline output_audit/fire_count_measured_b660_full_universe.json]
+  python scripts/verify_batch_completion.py --batch-dir output_batch_A_150
 """
 from __future__ import annotations
 
@@ -120,107 +119,199 @@ def gate_1_cube_completeness(df_trades: pd.DataFrame, df_cube: pd.DataFrame | No
     return len(issues) == 0, issues
 
 
-def gate_2_fire_count(df_trades: pd.DataFrame, baseline_path: Path, batch_tickers: int, window_years: float) -> tuple[bool, list[str], dict]:
-    """CHECKLIST #131: per-strategy fires vs B660 baseline scaled by universe + window.
-    Filters strategies deleted post-baseline via ALL_STRATEGIES current registration."""
+def gate_2_fire_count(df_trades: pd.DataFrame) -> tuple[bool, list[str], dict]:
+    """CHECKLIST #131 (Council 232 standalone redesign): per-strategy fire-count
+    validation intrinsic to the batch. NO external baseline comparison.
+
+    Layer 1 - Fire-count classification vs PASSING_CRITERIA thresholds:
+      SILENT   = 0 fires
+      STARVED  = 1 .. min_trades_per_regime-1     (cannot populate any regime cell)
+      MARGINAL = min_trades_per_regime .. min_trades_overall-1 (some cells populatable)
+      VIABLE   = >= min_trades_overall            (multiple cells + potential overall PASS)
+
+    Layer 2 - Coverage checks intrinsic to batch data:
+      Regime coverage:    strategy fires in regimes present in window
+      Direction coverage: LONG fires long, SHORT fires short, dual fires both
+      Temporal coverage:  fires not clustered in single quarter (>80%)
+
+    Layer 3 - HALT gate:
+      N_SILENT (excluding known-disabled) > 10 OR
+      N_TEMPORAL_CLUSTERED > 5 OR
+      N_DIRECTION_MISMATCH > 0
+    """
     issues = []
-    with open(baseline_path) as f:
-        baseline = json.load(f)
+    per_strat_report = {}
 
-    baseline_universe = baseline.get("n_tickers_full_t1a_pit_active", 503)
-    scale = batch_tickers / baseline_universe
-    print(f"  Baseline universe: {baseline_universe} tickers; batch universe: {batch_tickers}; scale: {scale:.4f}")
-    print(f"  Window: {window_years} years")
-
-    per_strategy_baseline = {}
-    for entry in baseline.get("results", []):
-        strat = entry.get("strategy")
-        fires_per_year = entry.get("projected_fires_per_calendar_year_total_full_t1a", 0.0) or 0.0
-        per_strategy_baseline[strat] = fires_per_year
-
-    # Current registered strategies (filters post-baseline deletions)
-    try:
-        from backtest.signals.screener import ALL_STRATEGIES
-        current_registered = set()
-        for s in ALL_STRATEGIES:
-            # ALL_STRATEGIES entries may be classes or instances; extract name field
-            name = getattr(s, "name", None) or getattr(s, "__name__", None) or str(s)
-            # Strip "strat_" prefix if present (baseline uses bare names)
-            if name.startswith("strat_"):
-                name = name[len("strat_"):]
-            current_registered.add(name)
-        print(f"  Currently registered strategies: {len(current_registered)}")
-    except Exception as e:
-        current_registered = None
-        print(f"  WARN: could not import ALL_STRATEGIES ({e}); post-baseline-deleted strategies won't be filtered")
-
-    # Actual fires per strategy (unique trade entries; not exit fan-out)
     if "strategy" not in df_trades.columns:
         issues.append("trade log missing 'strategy' column")
         return False, issues, {}
-    actual_by_strategy = df_trades["strategy"].value_counts().to_dict()
 
-    silent_flags = []
-    over_firing_flags = []
-    healthy = 0
-    insufficient = 0
-    unregistered = []
-    deleted_post_baseline = []
+    from backtest.config import PASSING_CRITERIA
+    min_per_regime = int(PASSING_CRITERIA.get("min_trades_per_regime", 30))
+    min_overall = int(PASSING_CRITERIA.get("min_trades", PASSING_CRITERIA.get("min_trades_overall", 100)))
+    print(f"  Fire-count thresholds (from PASSING_CRITERIA):")
+    print(f"    min_trades_per_regime = {min_per_regime}")
+    print(f"    min_trades_overall    = {min_overall}")
 
-    all_strategies = set(per_strategy_baseline.keys()) | set(actual_by_strategy.keys())
-    per_strat_report = {}
-    for strat in sorted(all_strategies):
-        baseline_fpy = per_strategy_baseline.get(strat, 0.0)
-        expected = baseline_fpy * window_years * scale
-        actual = actual_by_strategy.get(strat, 0)
-        classification = "?"
-        # Filter: if strategy is in baseline but NOT in current registration, it was deleted post-baseline
-        if strat in per_strategy_baseline and current_registered is not None and strat not in current_registered:
-            classification = "DELETED_POST_BASELINE"
-            deleted_post_baseline.append(strat)
-        elif strat not in per_strategy_baseline:
-            classification = "UNREGISTERED_IN_BASELINE"
-            unregistered.append(strat)
-        elif expected <= 30:
-            classification = "INSUFFICIENT_BASELINE"
-            insufficient += 1
-        elif actual < 0.5 * expected:
-            classification = "SILENT_FLAG"
-            silent_flags.append((strat, actual, expected))
-        elif actual > 2.0 * expected:
-            classification = "OVER_FIRING_FLAG"
-            over_firing_flags.append((strat, actual, expected))
-        else:
-            classification = "HEALTHY"
-            healthy += 1
-        per_strat_report[strat] = {
-            "expected": round(expected, 1),
-            "actual": actual,
-            "ratio": round(actual / expected, 3) if expected > 0 else None,
-            "class": classification,
+    # Currently registered strategies + known disabled + directional declarations
+    current_registered = set()
+    known_disabled = set()
+    strategy_directions = {}  # strategy_name -> 'long' | 'short' | 'dual'
+    try:
+        from backtest.signals.screener import ALL_STRATEGIES
+        from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER
+        for s in ALL_STRATEGIES:
+            name = getattr(s, "name", None) or getattr(s, "__name__", None) or str(s)
+            if name.startswith("strat_"):
+                name = name[len("strat_"):]
+            current_registered.add(name)
+            # Attempt to infer direction from name suffix
+            if name.endswith("_short"):
+                strategy_directions[name] = "short"
+            elif name.endswith("_long"):
+                strategy_directions[name] = "long"
+            else:
+                strategy_directions[name] = "dual"
+        for s in STRATEGIES_DISABLED_MISSING_PRODUCER:
+            name = s.name if hasattr(s, "name") else str(s)
+            if name.startswith("strat_"):
+                name = name[len("strat_"):]
+            known_disabled.add(name)
+        print(f"  Currently registered: {len(current_registered)} strategies")
+        print(f"  Known disabled (STRATEGIES_DISABLED_MISSING_PRODUCER): {len(known_disabled)}")
+    except Exception as e:
+        print(f"  WARN: could not import ALL_STRATEGIES/STRATEGIES_DISABLED_MISSING_PRODUCER ({e})")
+
+    # Aggregate per strategy
+    fires_by_strat = df_trades["strategy"].value_counts().to_dict()
+    regimes_present = sorted(df_trades["regime"].unique()) if "regime" in df_trades.columns else []
+    print(f"  Regimes present in trade log: {regimes_present}")
+
+    # Prep temporal analysis (quarter-level)
+    df = df_trades.copy()
+    if "entry_date" in df.columns:
+        df["entry_date_ts"] = pd.to_datetime(df["entry_date"], errors="coerce")
+        df["quarter"] = df["entry_date_ts"].dt.to_period("Q").astype(str)
+    else:
+        df["quarter"] = "unknown"
+
+    # Classify each currently-registered strategy
+    silent = []
+    starved = []
+    marginal = []
+    viable = []
+    temporal_clustered = []
+    direction_mismatch = []
+    regime_gap = []
+
+    # Universe of strategies to consider: current registered + any in trade log
+    all_to_check = current_registered | set(fires_by_strat.keys())
+
+    for strat in sorted(all_to_check):
+        n_fires = int(fires_by_strat.get(strat, 0))
+        entry = {
+            "n_fires": n_fires,
+            "class": None,
+            "flags": [],
         }
 
-    print(f"  Strategies HEALTHY: {healthy}")
-    print(f"  Strategies INSUFFICIENT_BASELINE (expected<=30): {insufficient}")
-    print(f"  Strategies UNREGISTERED_IN_BASELINE (added post-B660): {len(unregistered)}")
-    print(f"  Strategies DELETED_POST_BASELINE (removed from ALL_STRATEGIES since B660): {len(deleted_post_baseline)}")
-    print(f"  Strategies SILENT_FLAG (currently registered, actual < 50% expected, expected > 30): {len(silent_flags)}")
-    print(f"  Strategies OVER_FIRING_FLAG (actual > 200% expected): {len(over_firing_flags)}")
+        # Layer 1: fire-count class
+        if n_fires == 0:
+            entry["class"] = "SILENT"
+            if strat not in known_disabled:
+                silent.append(strat)
+            else:
+                entry["flags"].append("known_disabled")
+        elif n_fires < min_per_regime:
+            entry["class"] = "STARVED"
+            starved.append(strat)
+        elif n_fires < min_overall:
+            entry["class"] = "MARGINAL"
+            marginal.append(strat)
+        else:
+            entry["class"] = "VIABLE"
+            viable.append(strat)
 
-    if silent_flags:
-        print("  Top 10 SILENT_FLAG (worst first by ratio):")
-        for s, a, e in sorted(silent_flags, key=lambda x: x[1] / x[2] if x[2] > 0 else 999)[:10]:
-            print(f"    {s}: actual={a} expected={e:.0f} ratio={(a/e):.2f}")
+        if n_fires > 0:
+            strat_df = df[df["strategy"] == strat]
 
-    if over_firing_flags:
-        print("  Top 10 OVER_FIRING_FLAG (worst first by ratio):")
-        for s, a, e in sorted(over_firing_flags, key=lambda x: -(x[1] / x[2] if x[2] > 0 else 0))[:10]:
-            print(f"    {s}: actual={a} expected={e:.0f} ratio={(a/e):.2f}")
+            # Layer 2a: regime coverage
+            fired_regimes = set(strat_df["regime"].unique()) if "regime" in strat_df.columns else set()
+            entry["fired_regimes"] = sorted(fired_regimes)
+            if regimes_present and set(regimes_present) - fired_regimes:
+                # Missing at least one regime present in window
+                missing = sorted(set(regimes_present) - fired_regimes)
+                entry["flags"].append(f"regime_gap:{','.join(missing)}")
+                if n_fires >= min_overall:
+                    regime_gap.append((strat, missing, n_fires))
 
-    if len(silent_flags) > 10:
-        issues.append(f"SILENT_FLAG count {len(silent_flags)} > 10 threshold")
-    if len(over_firing_flags) > 5:
-        issues.append(f"OVER_FIRING_FLAG count {len(over_firing_flags)} > 5 threshold")
+            # Layer 2b: direction coverage
+            if "direction" in strat_df.columns:
+                fired_dirs = set(strat_df["direction"].unique())
+                entry["fired_directions"] = sorted(fired_dirs)
+                declared = strategy_directions.get(strat)
+                if declared == "long" and "short" in fired_dirs:
+                    entry["flags"].append("direction_mismatch_long_declared_short_fired")
+                    direction_mismatch.append((strat, declared, fired_dirs))
+                elif declared == "short" and "long" in fired_dirs:
+                    entry["flags"].append("direction_mismatch_short_declared_long_fired")
+                    direction_mismatch.append((strat, declared, fired_dirs))
+
+            # Layer 2c: temporal clustering
+            if "quarter" in strat_df.columns and n_fires >= 20:
+                q_counts = strat_df["quarter"].value_counts()
+                top_q_share = q_counts.iloc[0] / n_fires if len(q_counts) > 0 else 0
+                entry["top_quarter_share"] = round(float(top_q_share), 3)
+                if top_q_share > 0.8:
+                    entry["flags"].append(f"temporal_clustered:{q_counts.index[0]}={q_counts.iloc[0]}")
+                    temporal_clustered.append((strat, str(q_counts.index[0]), int(q_counts.iloc[0]), n_fires))
+
+        per_strat_report[strat] = entry
+
+    # Print summary
+    print()
+    print("  === Fire-count classification ===")
+    print(f"  VIABLE   (>= {min_overall} fires): {len(viable)}")
+    print(f"  MARGINAL ({min_per_regime}-{min_overall-1} fires): {len(marginal)}")
+    print(f"  STARVED  (1-{min_per_regime-1} fires): {len(starved)}")
+    print(f"  SILENT   (0 fires, excluding {len(known_disabled)} known-disabled): {len(silent)}")
+
+    if silent:
+        print(f"  SILENT strategies (currently registered, expected to fire):")
+        for s in sorted(silent)[:20]:
+            print(f"    {s}")
+        if len(silent) > 20:
+            print(f"    ... and {len(silent) - 20} more")
+
+    if starved:
+        print(f"  STARVED strategies (1-{min_per_regime-1} fires; cannot populate per-regime):")
+        for s in sorted(starved)[:10]:
+            n = per_strat_report[s]["n_fires"]
+            print(f"    {s}: {n} fires")
+        if len(starved) > 10:
+            print(f"    ... and {len(starved) - 10} more")
+
+    print()
+    print("  === Coverage findings ===")
+    print(f"  REGIME_GAP (VIABLE strategies missing regime coverage): {len(regime_gap)}")
+    for s, missing, n in regime_gap[:10]:
+        print(f"    {s}: {n} fires; missing regimes {missing}")
+
+    print(f"  TEMPORAL_CLUSTERED (>80% fires in single quarter, n>=20): {len(temporal_clustered)}")
+    for s, q, count, total in temporal_clustered[:10]:
+        print(f"    {s}: {count}/{total} fires in {q}")
+
+    print(f"  DIRECTION_MISMATCH (declared vs fired direction inconsistent): {len(direction_mismatch)}")
+    for s, declared, fired in direction_mismatch[:10]:
+        print(f"    {s}: declared={declared} fired={sorted(fired)}")
+
+    # Layer 3: HALT gate
+    if len(silent) > 10:
+        issues.append(f"SILENT count {len(silent)} > 10 threshold (excludes {len(known_disabled)} known-disabled)")
+    if len(temporal_clustered) > 5:
+        issues.append(f"TEMPORAL_CLUSTERED count {len(temporal_clustered)} > 5 threshold")
+    if len(direction_mismatch) > 0:
+        issues.append(f"DIRECTION_MISMATCH count {len(direction_mismatch)} > 0 threshold (correctness bug)")
 
     return len(issues) == 0, issues, per_strat_report
 
@@ -310,25 +401,17 @@ def gate_3_cell_pass(df_cube: pd.DataFrame | None) -> tuple[bool, list[str]]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--batch-dir", required=True)
-    ap.add_argument("--batch-tickers", type=int, required=True, help="Universe size for this batch (e.g., 150 for A, 1787 for B)")
-    ap.add_argument("--window-years", type=float, default=4.0)
-    ap.add_argument("--baseline", type=str, default="output_audit/fire_count_measured_b660_full_universe.json")
+    # Council 232 standalone: --batch-tickers, --window-years, --baseline all removed.
+    # Gate 2 uses PASSING_CRITERIA thresholds + intrinsic coverage; no external ref.
     args = ap.parse_args()
 
     batch_dir = Path(args.batch_dir)
-    baseline_path = Path(args.baseline)
     if not batch_dir.exists():
         print(f"ERROR: {batch_dir} not found", file=sys.stderr)
         return 2
-    if not baseline_path.exists():
-        print(f"ERROR: {baseline_path} not found", file=sys.stderr)
-        return 2
 
-    print(f"=== Batch completion 3-gate verification ===")
-    print(f"Batch dir:    {batch_dir}")
-    print(f"Batch tickers: {args.batch_tickers}")
-    print(f"Window years: {args.window_years}")
-    print(f"Baseline:     {baseline_path}")
+    print(f"=== Batch completion 3-gate verification (Council 232 standalone Gate 2) ===")
+    print(f"Batch dir: {batch_dir}")
     print()
 
     try:
@@ -365,7 +448,7 @@ def main() -> int:
     print("=" * 70)
     print("GATE 2: FIRE-COUNT VALIDATION (CHECKLIST #131)")
     print("=" * 70)
-    ok2, issues2, per_strat = gate_2_fire_count(df_trades, baseline_path, args.batch_tickers, args.window_years)
+    ok2, issues2, per_strat = gate_2_fire_count(df_trades)
     if ok2:
         print("  [PASS] PASS")
     else:

@@ -2322,26 +2322,31 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** `feedback_cube_exit_count_must_equal_registered`, `feedback_strategy_x_exit_cell_analysis` (aggregate meaningless — precursor rule), `project_phase_1a_beta_is_exit_cube` (owner-directive origin 2026-05-25 that "every entry must simulate every exit"), Council 231 verdict, CHECKLIST #74 (count-drift test-pin), CHECKLIST #131 (companion fire-count validation).
 
-141. **HARD RULE -- FIRE-COUNT VALIDATION IN EVERY BATCH GATE.** (Owner directive 2026-07-02 Council 231.)
+141. **HARD RULE -- FIRE-COUNT VALIDATION IN EVERY BATCH GATE (STANDALONE).** (Owner directive 2026-07-02 Council 231 + Council 232 standalone revision.)
 
-     **Rule:** Every batch completion gate MUST include per-strategy fire-count validation against B660 baseline (`output_audit/fire_count_measured_b660_full_universe.json`), scaled by universe ratio and window length. Trade counts + cube completeness are necessary but NOT sufficient — silent producer failures require fire-count-vs-baseline reconciliation.
+     **Rule:** Every batch completion gate MUST include per-strategy fire-count validation that is STANDALONE - intrinsic to the batch, NO external baseline comparison. Prior draft used B660 baseline; owner rejected 2026-07-02 Council 232: "Check 2 needs to be changed. Nothing on comparison to a baseline. Needs to be standalone." External baseline is stale + universe-mismatched; intrinsic validation against PASSING_CRITERIA thresholds + coverage checks is the correct standard.
 
-     **Formula per strategy:**
-     - `expected = baseline_projected_fires_per_year × window_years × (batch_tickers / 503)`
-     - `actual = unique trade entries in trade_log for this strategy` (NOT the cube exit-fan-out rows)
+     **Layer 1 - Fire-count classification (vs PASSING_CRITERIA thresholds):**
+     - `n_fires` = unique trade entries per strategy in trade_log
+     - **SILENT:** n_fires == 0
+     - **STARVED:** 1 <= n_fires < min_trades_per_regime (currently 30) - cannot populate any per-regime cell
+     - **MARGINAL:** min_trades_per_regime <= n_fires < min_trades_overall (currently 100) - some cells populatable, overall PASS impossible
+     - **VIABLE:** n_fires >= min_trades_overall - multiple cells populatable, potential overall PASS
 
-     **Classification:**
-     - **SILENT_FLAG:** actual < 0.5 × expected AND expected > 30 (producer or gate silently broken)
-     - **OVER_FIRING_FLAG:** actual > 2.0 × expected (gate too loose OR possible look-ahead bias)
-     - **HEALTHY:** 0.5 × expected ≤ actual ≤ 2.0 × expected
-     - **INSUFFICIENT_BASELINE:** expected ≤ 30 (report; can't statistically validate; don't fail)
+     **Layer 2 - Coverage checks (intrinsic to batch data):**
+     - **Regime coverage:** for each regime present in trade log's regime column, VIABLE strategies should have >= 1 fire (or be per-regime affinity restricted).
+     - **Direction coverage:** strategies with `_long` suffix must fire long-only; `_short` suffix short-only; dual-suffix any. Mismatch = correctness bug.
+     - **Temporal coverage:** for strategies with n_fires >= 20, verify no single quarter has > 80% of fires (indicator of intermittent producer or gate flip).
 
-     **Gate:** `N_SILENT_FLAG > 10 OR N_OVER_FIRING_FLAG > 5 → HALT + investigate before advancing to next batch`.
+     **Layer 3 - HALT gate:**
+     - `N_SILENT (excluding STRATEGIES_DISABLED_MISSING_PRODUCER) > 10` -> HALT
+     - `N_TEMPORAL_CLUSTERED > 5` -> HALT
+     - `N_DIRECTION_MISMATCH > 0` -> HALT (correctness bug)
 
-     **Why HARD rule:** A strategy that fires 0 times over 4 years may be either (a) genuinely gated-out (correct behavior) or (b) silently broken (producer not wired, schema drift, PIVOT-#37-class). Trade counts + cube completeness don't distinguish these. B660 baseline gives an empirical expectation per strategy across the full T1a universe. Comparing scaled actual vs expected surfaces silent-gap PIVOTS before they contaminate cube verdicts. Owner correction 2026-07-02: "Verification also needs to be on fire counts. Needs to be expanded."
+     **Why HARD rule:** A strategy that fires 0 times over the batch window may be either (a) genuinely disabled or (b) silently broken (producer not wired, schema drift, PIVOT-#37-class). Standalone validation using PASSING_CRITERIA thresholds distinguishes fire-count adequacy for the very metrics the cube will compute, and intrinsic coverage checks (regime, direction, temporal) surface producer + gate issues without needing an external reference file that decays over time as strategies + universes drift. Owner correction 2026-07-02 Council 232: baseline-based check "Nothing on comparison to a baseline. Needs to be standalone."
 
-     **Retroactive coverage demo (per #136 ANTI-AUDIT-THEATER):** Would fire-count validation have caught PIVOT #34 (silent PASS-path)? NO (that was monitor-log path, not producer). PIVOT #37 (writer-reader schema)? YES — schema drift would show up as strategies with actual=0 vs expected>>0 for affected exits. PIVOT #38 (retracted) and pre-B1068 panel-blackout? YES — 30%+ silent strategies would have surfaced. PIVOT #50 (Batch 394 guard-kill)? NO. 2-of-4 recent PIVOTs → passes #136 retroactive threshold for a NEW HARD RULE.
+     **Retroactive coverage demo (per #136 ANTI-AUDIT-THEATER):** Would standalone fire-count validation have caught PIVOT #37 (writer-reader schema)? YES - schema drift shows as strategies with n_fires=0 for affected exits. PIVOT #38 (retracted) and pre-B1068 panel-blackout? YES - 30%+ silent strategies would have surfaced without needing baseline. PIVOT #48 (c6a memory pressure)? NO. PIVOT #50 (Batch 394 guard-kill)? NO. 2-of-4 recent PIVOTs -> passes #136 retroactive threshold for a NEW HARD RULE.
 
-     **Acceptable exceptions:** strategies with `expected ≤ 30` (INSUFFICIENT_BASELINE) reported but don't count toward HALT threshold. Ticker-universe drift between baseline and batch (T1a vs Master, delisted names) accepted as noise within 0.5-2.0× band.
+     **Acceptable exceptions:** strategies explicitly listed in `STRATEGIES_DISABLED_MISSING_PRODUCER` count as SILENT but do NOT contribute to HALT threshold. STARVED and MARGINAL strategies are reported but don't fail; those are legitimate cube-mode observations of low-fire strategies.
 
-     **Cross-references.** `feedback_batch_gate_includes_fire_count_validation`, `feedback_monitor_intermediate_counts` (in-run version), `feedback_data_consumption_audit_must_apply_checklist_44b` (silent-empty investigation), B660 baseline artifact, CHECKLIST #130 (companion cube completeness rule).
+     **Cross-references.** `feedback_batch_gate_includes_fire_count_validation` (updated to standalone), Council 232 verdict, `feedback_monitor_intermediate_counts` (in-run version), `feedback_data_consumption_audit_must_apply_checklist_44b` (silent-empty investigation), CHECKLIST #130 (companion cube completeness rule), `PASSING_CRITERIA` config source of thresholds.
