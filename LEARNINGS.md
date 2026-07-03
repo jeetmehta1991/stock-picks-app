@@ -2381,3 +2381,27 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 
 **Cross-references:** B1124 commit; Council 197 Outsider verdict cited in CLAUDE.md B1082 restructure; `feedback_designed_vs_verified_requires_evidence_artifact`; `feedback_adversarial_review_must_check_successful_path_output` (CHECKLIST #128); test file `backtest/tests/test_b1124_producer_smoke_contract.py` line 65-77 as canonical example.
 
+
+---
+
+## L187 — Testing pyramid must be MULTI-TIER, not single-tier (B1127 2026-07-03 Council 246)
+
+**What surfaced:** Council 197 Outsider verdict (B1082 restructure): "Eight layers is the smell, not the cure. Tests pass because they don't touch the things that break." Prior pyramid was single-tier (unit + integration). Analysis of 3-4 session mistake catalog (44+ R5 PIVOTs + Batch A + this session) revealed mistakes fell into 10 distinct classes each requiring its own test tier:
+
+  Tier 1 Structural (file/function presence)         - existing
+  Tier 2 Contract (schema/signature)                  - partial (B1080+B1124-8)
+  Tier 3 Behavioral (runtime output shape)            - ad-hoc only
+  Tier 4 Empirical (canonical fixture computation)    - MISSING as mandatory
+  Tier 5 Scale-invariance (N0 vs N1, pool scaling)    - MISSING (caused L179)
+  Tier 6 Writer/reader schema-boundary                - MISSING (caused L180)
+  Tier 7 Config arm (designed vs operational)         - MISSING (caused CHECKLIST #124)
+  Tier 8 Wall-clock empirical                         - MISSING (caused CHECKLIST #123)
+  Tier 9 Silent-failure paired                        - MISSING (caused CHECKLIST #122)
+  Tier 10 Retroactive PIVOT coverage                  - MISSING (caused 43+ PIVOTs)
+
+**Universal principle:** *A single-tier pyramid tests only one dimension of correctness. Mistakes classes are distinct - scale-invariance failures don't look like schema drift failures don't look like config-arm failures. Each mistake CLASS requires its own test tier. When adding a new test file, first ask: which mistake CLASS does this catch? If the answer is "same class as existing test", the file is theater. If the answer is "new class surfaced by recent PIVOT", the file is genuine coverage.*
+
+**Rule:** Test files must be organized by mistake CLASS (10-tier framework above), not by feature area. Every substantive PIVOT triggers pyramid extension in the corresponding tier. Retroactive gate: every code change must pass the FULL expanded pyramid, not just new tests + baseline. When a PIVOT surfaces a mistake in a tier that doesn't exist yet, that tier is added same-batch as the fix.
+
+**Cross-references:** B1127 commit; Council 197 Outsider verdict; L177 L179 L180 L181 L184 L185 L186; CHECKLIST #67 #75 #117 #121 #122 #123 #124 #128 #136; `feedback_pyramid_no_exceptions`; `feedback_pyramid_full_13_tiers_mandatory`.
+

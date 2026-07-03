@@ -46,7 +46,10 @@ def test_short_strategy_registry_count_bounded():
 
     csv = REPO / "output_batch_A_150" / "phase_1_quiet_fire_investigation.csv"
     if not csv.exists():
-        pytest.skip("CSV missing")
+        pytest.skip(
+            "CSV artifact missing at output_batch_A_150/phase_1_quiet_fire_investigation.csv - "
+            "run Batch A first OR restore from backup. CTA: this test unblocks when CSV exists."
+        )
         return
     df = pd.read_csv(csv)
     short_count = (df["direction"] == "short").sum()
@@ -86,7 +89,10 @@ def test_ichimoku_breakdown_short_pattern_in_csv():
 
     csv = REPO / "output_batch_A_150" / "phase_1_quiet_fire_investigation.csv"
     if not csv.exists():
-        pytest.skip("CSV missing")
+        pytest.skip(
+            "CSV artifact missing at output_batch_A_150/phase_1_quiet_fire_investigation.csv - "
+            "run Batch A first OR restore from backup. CTA: this test unblocks when CSV exists."
+        )
         return
     df = pd.read_csv(csv)
     row = df[df["strategy_name"] == "ichimoku_cloud_breakdown"]
