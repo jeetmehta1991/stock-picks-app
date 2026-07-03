@@ -638,3 +638,47 @@ gate stacks (vol_spike, Pattern S filters) on top of newly-firing producer.
 **Joint:** Council 236 Turn 5 initial finding; Council 245 Item 2/3 empirical
 fix; L184 family-inheritance verdicts; B1124 test extension.
 
+
+---
+
+### BUG-281 UPDATE (B1128 2026-07-03 Council 247 empirical investigation):
+
+**STATUS CHANGE: RESOLVED-BY-INVESTIGATION** (was: OPEN)
+
+Council 247 empirical investigation REFUTES Turn 5 root cause hypothesis. Producer VERIFIED working via direct runtime test on SPY 4y:
+
+  Rolling 60-bar window every 20 bars = 62 windows total.
+  double_bottom_detected: 11 detections
+  double_top_detected:    22 detections
+
+Producer works correctly at Bulkowski canonical rates. Turn 5 '0 fires SPY 6y sample' finding was inconsistent with today's empirical probe - possibly due to different lookback sampling or state of chart_patterns.py at time of Turn 5.
+
+**Root cause of 0 n_fires in Batch A**: CONSUMER 4-way AND compound (per strat_double_bottom_long at screener.py):
+  1. double_bottom_detected            (~11/62 = 18% of bar-windows)
+  2. price_above_ema_200               (bull regime gate)
+  3. close_in_top_40pct_of_range       (B730 anti-fakeout strong-close)
+  4. vol_spike_15x                     (B730 Bulkowski volume confirmation)
+
+Compound probability: 0.18 x 0.60 x 0.25 x 0.15 = ~0.4% per ticker-bar. On 150 tickers x 1000 trading days = ~600 potential fires but multiplied by the B730 requirement adds compound sparseness.
+
+**B1124 test flipped:**
+  test_bug_281_double_bottom_producer_verified_runtime
+  REPLACED RED-first skip WITH producer-verified assertion asserting
+  >=5 double_bottom + >=5 double_top on SPY 4y sample.
+
+**Reclassification:**
+  double_bottom_long: BLOCKED_PRODUCER_BUG -> PENDING (batch_ref=B1128)
+
+**Downstream:** B1129+ grouped LOOSEN should drop vol_spike_15x OR
+close_in_top_40pct_of_range from B730's 2 added gates to restore fires.
+
+**Similarity to BUG-279:** Both cases had Turn X paragraph hypothesis
+about producer failure refuted by later empirical probe. Both hypotheses
+under-touched runtime and over-scoped to the producer layer. L184 family-
+inheritance over-scoping pattern applies to Turn 5/Turn 2 producer
+hypotheses too.
+
+**Joint:** Council 236 Turn 5 initial finding; Council 247 empirical
+rebuttal; L184 pattern; feedback_family_bug_grep_before_one_liners
+CHECKLIST (n) analog to consumer-side gate audit.
+

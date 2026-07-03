@@ -111,19 +111,51 @@ def test_bug_277_triangle_producer_fires_on_spy_canonical():
     )
 
 
-def test_bug_281_double_bottom_producer_registered_but_underfires():
-    """BUG-281 RED-FIRST: detect_double_top_bottom 0% fire rate SPY 6y.
+def test_bug_281_double_bottom_producer_verified_runtime():
+    """BUG-281 RESOLVED-BY-INVESTIGATION (B1128 Council 247).
 
-    Same class as BUG-277. When fixed, replace skip with fire rate assertion.
+    Empirical runtime probe REFUTES Turn 5 hypothesis. Producer verified
+    working: 11 double_bottom + 22 double_top detections on SPY 4y sample
+    (rolling 60-bar windows every 20 bars).
+
+    Root cause of 0 fires in Batch A is CONSUMER 4-way AND (B730 added
+    vol_spike_15x + close_in_top_40pct_of_range on top of double_bottom
+    + price_above_ema_200) - producer works but compound gates starve.
+
+    Similar honest-finding pivot to BUG-279 halloween @lru_cache.
     """
-    from backtest.signals import chart_patterns
+    import pandas as pd
+    from backtest.signals.chart_patterns import detect_double_top_bottom
 
-    assert hasattr(chart_patterns, "detect_double_top_bottom"), (
-        "detect_double_top_bottom should exist"
+    spy_path = REPO / "data_prefetch" / "polygon" / "ohlcv_daily" / "SPY.parquet"
+    if not spy_path.exists():
+        pytest.skip(f"SPY OHLCV parquet missing at {spy_path}")
+        return
+
+    spy = pd.read_parquet(spy_path)
+    spy["date"] = pd.to_datetime(spy["date"])
+    spy = spy.set_index("date").sort_index()
+
+    db_count = 0
+    dt_count = 0
+    for i in range(60, len(spy), 20):
+        window = spy.iloc[i - 60 : i]
+        if len(window) < 60:
+            continue
+        result = detect_double_top_bottom(window)
+        if result.get("double_bottom_detected"):
+            db_count += 1
+        if result.get("double_top_detected"):
+            dt_count += 1
+
+    assert db_count >= 5, (
+        f"BUG-281 REGRESSION: double_bottom_detected fired {db_count} times "
+        f"on SPY 4y; expected >=5 per B1128 empirical verification. "
+        f"If below 5, producer regressed."
     )
-    pytest.skip(
-        "BUG-281 RED-FIRST: detect_double_top_bottom known 0-fire on SPY 6y. "
-        "See BUG_REGISTER.md BUG-281."
+    assert dt_count >= 5, (
+        f"BUG-281 REGRESSION: double_top_detected fired {dt_count} times; "
+        f"expected >=5."
     )
 
 

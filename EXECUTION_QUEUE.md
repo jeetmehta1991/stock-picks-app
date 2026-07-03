@@ -2511,3 +2511,61 @@ FROM B1128 ONWARD: every code change must pass the FULL expanded pyramid (all 95
 
 Council 246 explicitly targets the mistake CLASSES that Council 197 identified. Each new test tier catches a specific historical failure mode. 10 skip-with-CTA markers document RED-first states with explicit unblock actions per L186.
 
+
+### B1128 (2026-07-03 Council 247 Item 3/3 - BUG-281 RESOLVED-BY-INVESTIGATION):
+
+- 2026-07-03 — `b1128-bug-281-resolved-by-investigation` — Empirical runtime probe of chart_patterns.py detect_double_top_bottom on SPY 4y (62 windows, default params) REFUTES Turn 5 '0 fires' hypothesis. Producer VERIFIED working: 11 double_bottom + 22 double_top detections. Root cause of 0 n_fires in Batch A is CONSUMER 4-way AND compound (B730 vol_spike_15x + close_in_top_40pct + double_bottom + price_above_ema_200), NOT producer.
+
+### Council 247 empirical evidence:
+
+  detect_double_top_bottom(window) on SPY 4y sampling every 20 bars:
+    62 windows total
+    52 windows with 2+ swing pairs identified
+    Top diff median 1.40%, Bot diff median 2.58%
+    double_bottom_detected: 11 detections
+    double_top_detected:    22 detections
+
+Consumer strat_double_bottom_long (screener.py) 4-way AND:
+  double_bottom_detected + price_above_ema_200 + close_in_top_40pct_of_range + vol_spike_15x
+
+B730 (2026-06-12) added vol_spike_15x + close_in_top_40pct_of_range per Bulkowski + reviewer S4-B700-CP-2 recommendation. These 2 gates on top of the already-strict double_bottom_detected + price_above_ema_200 compound-starve fires.
+
+### CSV reclassification (B1128):
+
+  double_bottom_long: BLOCKED_PRODUCER_BUG -> PENDING (batch_ref=B1128)
+
+### BUG_REGISTER status change:
+
+  BUG-281 OPEN -> RESOLVED-BY-INVESTIGATION
+
+### B1124 test update:
+
+  test_bug_281_double_bottom_producer_verified_runtime
+  REPLACED RED-first skip WITH producer-verified assertion
+  (>=5 double_bottom + >=5 double_top on SPY 4y sample).
+
+### Execution status distribution (post-B1128):
+
+  BLOCKED_DATA_MISSING    4 (only BUG-278 index rebalance still blocked)
+  BLOCKED_PRODUCER_BUG    0 (was 1; BUG-281 resolved by investigation)
+  DONE_B1126              3 (triangle family)
+  PENDING               185
+
+**MILESTONE: All producer-side BLOCKS cleared.** Only 4 BLOCKED_DATA_MISSING remain (BUG-278 index rebalance parquet - Sprint 5 dependency).
+
+### Council 197 Outsider verdict compliance (second application):
+
+Both BUG-279 and BUG-281 initial paragraph hypotheses about producer failure were empirically refuted. L184 family-inheritance over-scoping applies to Turn X producer-attribution hypotheses too - not just family verdicts.
+
+### Expanded pyramid retroactive gate (B1127 policy):
+
+FULL 952-test expanded pyramid ran pre-commit. GREEN.
+
+### Council 245 sequenced remediation - Items 1-3 complete:
+
+  Item 1/3 B1125: BUG-279 halloween @lru_cache -> RESOLVED-BY-INVESTIGATION
+  Item 2/3 B1126: BUG-277 detect_triangle -> RESOLVED-IMPLEMENTED (tolerance widened)
+  Item 3/3 B1128: BUG-281 detect_double_top_bottom -> RESOLVED-BY-INVESTIGATION
+
+Downstream: B1129+ grouped LOOSEN batches for consumer-side gates (halloween/totm/pre_holiday/triangle/double_bottom_long/etc.).
+
