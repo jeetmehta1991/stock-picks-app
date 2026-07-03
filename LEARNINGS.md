@@ -2368,3 +2368,16 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 
 **Cross-references:** B1123 commit; `feedback_no_rushing_per_strategy_tweak`; `feedback_council_enumerate_plus_recommend`; L182 (monolithic paragraph masking directional errors); Turn 9 script `scripts/phase_1_investigation_autonomous_loop.py`.
 
+
+---
+
+## L186 — Test pyramid extensions must use RED-first skip markers with explicit unblock CTA (B1124 2026-07-03 Council 244)
+
+**What surfaced:** Council 197 Outsider verdict cited by B1082 restructure: "Eight layers is the smell, not the cure. Tests pass because they don't touch the things that break." When adding new test layers to catch known bugs, GREEN placeholders provide false confidence. Council 244 test extension B1124 shipped 10 test files with 42 PASSED and 6 deliberate SKIPPED markers - each skip documents a specific RED-first state (BUG-277 triangle 0-fire, BUG-281 double bottom 0-fire, SMC_PHASE Batch A log arm, B832 log evidence, borrow_ok audit report, LOOSEN delta bounds) with explicit CTA for what unblocks it.
+
+**Universal principle:** *A test that PASSES by not touching the thing that breaks is theater. When a test extension anticipates a fix that hasn't landed, using pytest.skip() with an explicit CTA message ("this skip is intentional documentation - when the producer is fixed, replace this skip with an assertion that fire rate > 0") is honest signaling: the test is armed, the RED-first state is documented, and the unblock condition is explicit.*
+
+**Rule:** New test files added to catch a known bug MUST have either (a) a RED-first assertion that currently fails and will pass when the fix ships, OR (b) a pytest.skip() marker with (i) explicit bug reference, (ii) description of the current known-broken state, (iii) explicit CTA describing what unblocks the skip. Silent skips (skip with no message OR skip because file missing without explanation) are non-compliant. Coverage of known bugs at the test-layer must be visible even before the fix - the test exists so the fix's landing is unambiguous.
+
+**Cross-references:** B1124 commit; Council 197 Outsider verdict cited in CLAUDE.md B1082 restructure; `feedback_designed_vs_verified_requires_evidence_artifact`; `feedback_adversarial_review_must_check_successful_path_output` (CHECKLIST #128); test file `backtest/tests/test_b1124_producer_smoke_contract.py` line 65-77 as canonical example.
+

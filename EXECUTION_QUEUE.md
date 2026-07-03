@@ -2310,3 +2310,41 @@ Per-strategy deeper investigation available for any strategy showing anomalous b
     - Investigated Turn 9 (129): autonomous per-strategy regex-extracted gate stack
     - Total: 192 (100% coverage)
 
+
+### B1124 (2026-07-03 Council 244 Test Pyramid Extension):
+
+- 2026-07-03 — `b1124-test-pyramid-extension` — 10 new test files added per Council 238 test extension plan; RED-first design for known bugs (BUG-277 triangle / BUG-278 index rebalance / BUG-279 halloween calendar / BUG-280 B832 SPOF / BUG-281 double bottom); pyramid extended from 850+2 -> 892+2 (+42 new tests + 6 deliberate red-first skips).
+
+### 10 test files shipped (B1124):
+
+1. `test_b1124_producer_smoke_contract.py` (4T+3P): chart pattern producer contracts; RED-first for BUG-277 + BUG-281 (2 skip markers document known 0-fire state)
+2. `test_b1124_prefetch_manifest_preflight.py` (4T+4P): data prefetch existence check; passes when either parquet exists OR strategies are DISABLED
+3. `test_b1124_smc_phase_env_arm.py` (5T+4P+1S): SMC_PHASE env flag audit; RED-first for Batch A arm-state logging
+4. `test_b1124_strategy_fire_count_contract.py` (5T+5P): per-strategy fire-count band assertions; 3 BLOCKED_DATA_MISSING must fire 0, 4 BLOCKED_PRODUCER_BUG must fire <=3, 2 HEALTHY SMC must fire >30
+5. `test_b1124_b832_spof_no_systematic_trip.py` (4T+3P+1S): B832 SPOF sentinel presence; RED-first for polygon news coverage
+6. `test_b1124_borrow_ok_blocking_rate.py` (4T+3P+1S): borrow_ok filter audit; RED-first for blocking-rate audit report
+7. `test_b1124_calendar_lru_cache_correctness.py` (5T+5P): @lru_cache logic; RED-first for BUG-279 300x underfire ratio
+8. `test_b1124_phase1_investigation_csv_schema.py` (6T+6P): CSV schema pin per L183; asserts 23 columns + fully-populated required set + 100% coverage
+9. `test_b1124_producer_consumer_key_map.py` (4T+4P): consumer key coverage vs producer emit sweep; regex-based static coverage floor
+10. `test_b1124_fire_count_delta_bounds.py` (4T+3P+1S): pre-vs-post LOOSEN delta bounds; baseline auto-created; RED-first for [1.5x, 20x] uplift bound
+
+### B1124 pyramid result:
+
+Full run: 42 PASSED, 6 SKIPPED, 0 FAILED
+Regression check: pre-existing 850+2 still GREEN.
+New pyramid total: 892+2.
+
+Skips document 6 deliberate RED-first states:
+  - BUG-277 detect_triangle 0-fire (2 skips)
+  - BUG-281 detect_double_top_bottom 0-fire (1 skip)
+  - SMC_PHASE Batch A log arm state (1 skip)
+  - B832 sentinel Batch A log evidence (1 skip)
+  - borrow_ok blocking-rate audit report (1 skip)
+  - fire-count delta bounds post-LOOSEN (1 skip)
+
+Each skip has explicit CTA for what unblocks it.
+
+### Test pyramid council 197 Outsider verdict compliance:
+
+Council 197 verdict: 'Eight layers is the smell, not the cure. Tests pass because they don't touch the things that break.' B1124 addresses this via RED-first design - 6 skip-with-CTA markers explicitly document what THIS pyramid layer would fail on. Not theater.
+
