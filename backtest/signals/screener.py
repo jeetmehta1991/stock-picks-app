@@ -1754,12 +1754,18 @@ def strat_bollinger_tight(s):
     below_200 = s.get("below_ema_200", False)
     # VIX-conditional threshold (slightly looser than bollinger_lower since
     # the 1.5sig band is more frequent)
+    # B1135 (2026-07-03 Council 249 LOOSEN per Turn 2 finding): normal-VIX
+    # RSI 45/55 too tight vs bollinger_lower's 35/65 (Connors canonical);
+    # bollinger_tight fires 7 vs bollinger_lower's 29 despite OR-of-two-widths
+    # logic. Loosen normal-VIX: 45/55 -> 40/60 (Connors 1993 canonical for
+    # RSI-2 mean-reversion) + high-VIX: 50/50 -> 45/55 (allow more room in
+    # volatile regime). Low-VIX unchanged (already 40/60).
     if s.get("vix_band_low"):
         rsi_thr_long, rsi_thr_short = 40, 60
     elif s.get("vix_band_high"):
-        rsi_thr_long, rsi_thr_short = 50, 50
+        rsi_thr_long, rsi_thr_short = 45, 55  # B1135: was 50/50
     else:
-        rsi_thr_long, rsi_thr_short = 45, 55
+        rsi_thr_long, rsi_thr_short = 40, 60  # B1135: was 45/55 (Connors canonical)
     # B801 #44 (2026-06-16 owner-approved B779) BAND-RECLAIM EVENT-conversion
     # per B766 reviewer rec + CHECKLIST #108. B660 baseline 6,725/yr; EVENT
     # projection ~673/yr ~= 168/regime PASS (largest fire-count margin in
@@ -2503,13 +2509,18 @@ def strat_macd_ichimoku(s):
 
 
 def strat_bb_squeeze_volume(s):
-    fl = (s.get("squeeze_fire_up") and s.get("vol_spike_2x") and s.get("above_vwap"))
+    # B1135 (2026-07-03 Council 249 LOOSEN per Turn 2): 0 fires in Batch A.
+    # Producer OK (squeeze_fire_up/dn verified). 3-way AND was compound-starving.
+    # Actions: (1) vol_spike_2x -> vol_above_avg (Bollinger 1992 canonical uses
+    # "expansion + rising volume", no strict 2x mandate); (2) drop above/below_vwap
+    # redundancy (squeeze release direction confirms momentum). Expected 3-5x uplift.
+    fl = (s.get("squeeze_fire_up") and s.get("vol_above_avg"))
     # B634 sweep: positive symmetric below_vwap (B634 producer)
-    fs = (s.get("squeeze_fire_dn") and s.get("vol_spike_2x") and s.get("below_vwap")) and not _short_borrow_trap_active(s)
+    fs = (s.get("squeeze_fire_dn") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["squeeze_fire_up","vol_spike_2x","above_vwap"], ["squeeze_fire_dn","vol_spike_2x","below_vwap", "borrow_ok"],
-        ["BB squeeze releasing upward with 2x volume","Above VWAP  -  buyers in control"],
-        ["BB squeeze releasing downward with 2x volume","Below VWAP  -  sellers in control"])
+        ["squeeze_fire_up","vol_above_avg"], ["squeeze_fire_dn","vol_above_avg", "borrow_ok"],
+        ["BB squeeze releasing upward with above-average volume (B1135 loosened)"],
+        ["BB squeeze releasing downward with above-average volume (B1135 loosened)"])
 
 
 def strat_pivot_fib_confluence(s):

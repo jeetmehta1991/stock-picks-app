@@ -2836,3 +2836,56 @@ ALL AUDITS COMPLETE. Next per Council 238: B1133+ grouped LOOSEN batches.
 Next per Council 249 grouped LOOSEN loop:
   B1135: BB/Squeeze family LOOSEN (bb_squeeze_volume + bollinger_tight + squeeze_breakout)
 
+
+### B1135 (2026-07-03 Council 249 Grouped LOOSEN 3/N - BB/Squeeze family):
+
+- 2026-07-03 — `b1135-bb-squeeze-loosen` — 3 BB/Squeeze strategies handled per Council 236 Turn 2 verdicts (2 code changes + 1 STATUS_QUO). FULL expanded pyramid 955+7 GREEN.
+
+### 3 strategies handled:
+
+**Strategy 1: strat_bb_squeeze_volume (screener.py:2505)**
+  Council 236 Turn 2 verdict: PRODUCER_OK + LOOSEN vol_2x + drop VWAP
+  Batch A n_fires: 0 (LONG); 0 (SHORT)
+  Actions:
+    (1) vol_spike_2x -> vol_above_avg (Bollinger 1992 canonical)
+    (2) Drop above_vwap / below_vwap (squeeze release confirms direction)
+  Expected: 3-5x uplift
+
+**Strategy 2: strat_bollinger_tight (screener.py:1743)**
+  Council 236 Turn 2 verdict: PRODUCER_OK + THRESHOLD_INTERACTION_SUSPECT
+  Batch A n_fires: 7 (LONG); ? (SHORT)
+  Actions (VIX-conditional RSI threshold widening per Connors 1993):
+    Normal-VIX: 45/55 -> 40/60
+    High-VIX:   50/50 -> 45/55
+    Low-VIX:    unchanged at 40/60
+  Rationale: bollinger_tight fires 7 vs bollinger_lower's 29 (4x deficit
+  despite tight uses OR-of-two-BB-widths); RSI thresholds were tighter
+  than bollinger_lower's 35/65. B1135 tightens the gap.
+  Expected: 2-3x uplift
+
+**Strategy 3: strat_squeeze_breakout (screener.py:1872)**
+  Council 236 Turn 2 verdict: PRODUCER_OK + STRUCTURAL_LOW_FIRE
+  Batch A n_fires: 39 (above marginal boundary)
+  Action: STATUS_QUO - single-gate structural low-fire rate is intrinsic
+  to LazyBear TTM squeeze. Universe expansion primary lever.
+
+### CSV reclassifications (B1135):
+
+  bb_squeeze_volume:  PENDING -> DONE_B1135
+  bollinger_tight:    PENDING -> DONE_B1135
+  squeeze_breakout:   PENDING -> DONE_B1135_STATUS_QUO
+
+### Expanded pyramid retroactive gate: 955+7 GREEN.
+
+### Execution status distribution (post-B1135):
+
+  BLOCKED_DATA_MISSING       4
+  DONE_B1126                 3 (triangle producer fix)
+  DONE_B1133                 3 (chart pattern LOOSEN)
+  DONE_B1134                 3 (Ichimoku LOOSEN)
+  DONE_B1135                 2 (BB/Squeeze LOOSEN)
+  DONE_B1135_STATUS_QUO      1 (squeeze_breakout)
+  PENDING                  176 (was 179)
+
+Next: B1136 News/PEAD family LOOSEN.
+
