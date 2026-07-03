@@ -2148,3 +2148,41 @@ Council 19 (Contrarian + Executor) verdict: SHIP K with evidence + DEFER N-K wit
 - Resume-as-default: marginal 2/3 (#43+#44 surfaced when resume tested) — culture rule
 - Smaller-phase: partial 1/3 (#44 cadence surfaced sooner) — culture rule
 - ALL 3 are PROCESS CULTURE directives, NOT audit gates; per CHECKLIST #136 scope clarification, codified in CLAUDE.md "Critical Rules" rather than CHECKLIST
+
+---
+
+### B1094-B1119 backfill (2026-07-03 B1119 Council 238 doc-sweep):
+
+- 2026-07-02 — `b1094-a-batch-b-launch-infra` — Batch B (T3 1787 tickers) launch infrastructure (Council 228 I1+I4)
+- 2026-07-02 — `b1094-b-fail-loud-env-config-drift` — fd4a94fb2 fail-loud env-config-drift enforcement (Council 227 Q4 + Council 229)
+- 2026-07-02 — `b1094-c-cube-fire-count-codification` — 86ee74c68 CHECKLIST #130 + #131 + verify script (Council 231)
+- 2026-07-02 — `b1094-d-standalone-gate-no-baseline` — 5f35b093c Gate 2 STANDALONE redesign no baseline (Council 232)
+- 2026-07-02 — `b1095-cube-fanout-bug-fix` — 910c0fac3 Council 233 cube fan-out Bug A + Bug B fix + recompute helper
+- 2026-07-02 — `b1096-quiet-fire-investigation-csv` — 4c5b39791 Phase 1 quiet-fire investigation CSV baseline + Council 233 recompute complete
+- 2026-07-02 — `b1096.1-archive-stale-output-dirs` — bea25c1a4 archive 9 stale output dirs
+- 2026-07-02 — `b1096.2-master-catalog-csvs` — 9c999a9ac master catalog CSVs (strategies + exits + cube universe)
+- 2026-07-02 — `b1097-b1109-council-235-per-strategy-analysis-192-of-192` — 13 turns; 192/192 quiet-fire strategies analyzed with pre-investigation recommendation column
+- 2026-07-02 — `b1110-vol-spike-naming-correction` — 45f1965ed 13 recommendations rewritten (vol_spike_15x = 1.5×, NOT 15×)
+- 2026-07-02 — `b1111-technical-py-signal-audit-correction` — bc391dd5e 6 additional signal-name errors corrected via technical.py grep
+- 2026-07-02-B1112-B1117 — `council-236-producer-investigations-46-of-46` — 6 turns; 46/46 strategies received `post_investigation_verdict` + `post_investigation_recommendation` columns
+- 2026-07-03 — `b1118-final-recommended-actions-column` — dbe9ab58d 192 rows tagged [PRIORITY] [ACTION_CLASS] directive; Council 237
+- 2026-07-03 — `b1119-doc-sweep-backfill` — THIS BATCH — 22-batch doc-sync backfill (AUDIT_INDEX + BUG_REGISTER + LEARNINGS + EXECUTION_QUEUE + CLAUDE.md banner)
+
+### Council 236 new tickets from producer investigations (unassigned; queued for B1120-B1133 execution):
+
+- `S1120-TEST-PYRAMID-EXTENSION` — 10 new test files (producer smoke contract, data manifest preflight, SMC_PHASE env arm, per-strategy fire-count range, B832 SPOF non-trip, borrow_ok blocking rate, calendar @lru_cache correctness, CSV artifact schema pin, producer-consumer key contract, fire-count delta bounds). Council 238 gate before B1121+ producer fixes.
+- `S1121-HALLOWEEN-LRU-CACHE-BUG-FIX` — BUG-279; runtime probe Batch A trade_log for calendar strategy fires on 2022/2023/2024/2025 halloween-first-days; discriminate cache-invalidation vs strategy-gate root cause.
+- `S1122-DETECT-TRIANGLE-PRODUCER-FIX` — BUG-277; widen detect_triangle flat-top tolerance OR restrict scope to small-cap subset; producer smoke test proving fire rate uplift.
+- `S1123-B832-SPOF-DATA-AUDIT` — BUG-280; audit `data_prefetch/polygon/news/` coverage across Batch A tickers; refresh via Polygon Stocks Starter if gaps found.
+- `S1124-SMC-PHASE-ENV-ARM-VERIFICATION` — latent risk audit; assert `SMC_PHASE='PRODUCTION'` at launch + verify 14 SMC strategies see non-zero signals in Batch A output.
+- `S1125-BORROW-OK-BLOCKING-RATE-AUDIT` — 13 SHORT strategies systemically underfire (Ichimoku breakdown 0 fires + macd_crossover_short 11 fires ~10× underfire); measure `_short_borrow_trap_active` blocking rate + owner decision on policy.
+- `S1126-B1131-GROUPED-LOOSEN-BATCHES` — 176 LOOSEN_GATE + LOOSEN_THRESHOLD + DROP_REDUNDANT actions grouped by producer module; ≤3 substantive changes per batch per Council 201; ~6-8 grouped batches.
+- `S1132-MICRO-CUBE-VALIDATION-5-TICKER` — pre-Batch-A-rerun 5-ticker × changed-strategy validation; fire-count uplift ≥2× baseline gate.
+- `S1133-BATCH-A-RERUN-150-TICKER` — full 150-ticker Batch A re-run with loosened strategies; empirical uplift measurement; owner GO gate for Batch B.
+
+### Council 237 execution ledger (192 rows in phase_1_quiet_fire_investigation.csv):
+
+Distribution across `final_recommended_actions` column:
+- PRIORITY_TIER: CRITICAL 60 / HIGH 76 / MED 29 / MARGINAL 27
+- ACTION_CLASS: LOOSEN_GATE 160 / UNIVERSE_EXPAND 42 / LOOSEN_THRESHOLD 16 / AUDIT_DATA 16 / FIX_PRODUCER 13 / DROP_REDUNDANT 7 / DISABLED_PENDING_DATA 1
+

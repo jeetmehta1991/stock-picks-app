@@ -464,3 +464,84 @@ T3 row idx 1134 had `Symbol=NaN, Company=NaN, Sector=Unknown, added_date=2025-09
 
 **Joint:** DEC-104/364 (T3 momentum methodology), DEC-496 (T3 SCREENER architecture).
 
+
+---
+
+### BUG-277  -  detect_triangle producer 0-fire (Council 236 Turn 5 finding B1116 2026-07-03)
+
+**Severity:** HIGH  -  blocks 3 chart-pattern strategies (`triangle_ascending_long`, `triangle_ascending_retest_long`, plus one dependent)
+**Module:** `backtest/signals/chart_patterns.py:347 detect_triangle`
+
+**Description:**
+Empirical fire rate: 0/57 SPY samples 2020-2026 (every-20-bar sampling). Bulkowski 2005 cites ~5-15 triangle events/yr per ticker; expected 150 tickers × 4y × 10/yr = 6,000 signal-events. Actual: 0 fires in Batch A output. `triangle_ascending_detected` and its dependent `compute_triangle_apex_break_retest_signals` are consumer-blocked.
+
+**Root cause hypothesis:**
+Detector's flat-top + rising-lows criterion too strict OR SPY is smooth-trending bull-market that doesn't form clean ascending triangles. Discriminate via: run detector on 20-ticker Batch A subset with mid-cap tickers; if universe-wide 0-1 fires, PRODUCER IS BROKEN.
+
+**Fix (pending B1121):**
+Widen flat-top tolerance from strict-flat to 'nearly-flat within N%'. Restrict scope to small-cap/mid-cap if flat-top strictness is intentional. Producer smoke test to be added B1120 (`test_producer_smoke_contract.py`).
+
+**Joint:** Council 236 Turn 5 (B1116); `chart_patterns.py:347`; downstream `compute_triangle_apex_break_retest_signals:624`.
+
+---
+
+### BUG-278  -  index_rebalance_events.parquet MISSING (Council 236 Turn 6 finding B1117 2026-07-03)
+
+**Severity:** HIGH  -  4 strategies get 0 signals (`post_deletion_drift_short`, `post_inclusion_drift_long`, `post_inclusion_reversal_short`, `pre_rebalance_long`)
+**Module:** `backtest/signals/index_rebalance.py compute_index_rebalance_signals`
+
+**Description:**
+Producer file exists at `backtest/signals/index_rebalance.py:87` and reads from expected parquet path `data_prefetch/derived/index_rebalance_events.parquet`. Parquet file DOES NOT EXIST. Producer gracefully no-ops per docstring: "Graceful no-op when prefetch missing (strategies fire 0 trades until Sprint 5 data lands)". This is by-design behavior for missing data but strategies were still in the ACTIVE registry contributing to Council 236 Turn 6 analysis.
+
+**Root cause:**
+Data prefetch never implemented. Sprint 5 DEC-380 corp actions Polygon feed dependency.
+
+**Fix (owner decision required, B1121 or Sprint 5):**
+Owner decision: (a) implement Sprint 5 DEC-380 corp actions prefetch pre-Batch-B; OR (b) mark 4 strategies as DISABLED-PENDING-DATA and skip cube-run until Sprint 5.
+
+**Joint:** Council 236 Turn 6 (B1117); Sprint 5 DEC-380; `STRATEGIES_DISABLED_MISSING_PRODUCER` registry (currently only `dxy_headwind_multinational_short`).
+
+---
+
+### BUG-279  -  halloween_seasonal_long 300x underfire suggests calendar_effects @lru_cache plumbing bug (Council 236 Turn 2 finding B1113 2026-07-03)
+
+**Severity:** HIGH  -  family-wide risk affecting ALL B723-converted calendar strategies (halloween_seasonal_long + totm_long + all is_pre_holiday consumers)
+**Module:** `backtest/signals/calendar_effects.py:136-197 compute_calendar_signals` + `screener.py:6500 _cached_calendar_signals @lru_cache(str(as_of))`
+
+**Description:**
+Halloween_seasonal_long producer VERIFIED CORRECT via `calendar_effects.py:196`: `out["is_halloween_period_first_day"] = bool(as_of.month == 11 and tdm == 1)`. Test coverage exists via `test_batch723_calendar_state_to_event.py`. BUT actual behavior severely inconsistent: expected ~300 fires (4 halloween-first-days × 150 tickers × ~50% EMA200 pass), actual 1 fire = 300x underfire. Same 300-400x pattern on `totm_long` (12 vs ~4300 expected) which uses same B723 calendar EVENT signals.
+
+**Root cause hypotheses (ordered by likelihood):**
+(a) `@lru_cache` on `_cached_calendar_signals(str(as_of))` returning stale/wrong values across per-day fan-out
+(b) `tdm` (trading day of month) calculation edge case around US holidays or DST transitions
+(c) Calendar signals silently dropped for tickers where per-day `as_of` differs from expected trading day boundary
+(d) Signal fires correctly but cube fan-out drops these trades (similar to B1095 cube fan-out Bug A + Bug B)
+
+**Fix (pending B1121):**
+Runtime probe on Batch A trade_log.csv for ANY strategy fires on 2022-11-01, 2023-11-01, 2024-11-01, 2025-11-03. If ZERO calendar strategies fired = plumbing broken (BLOCKS Batch B). If some fired = strategy-specific gate issue. B1120 to add `test_calendar_lru_cache_correctness.py`.
+
+**Joint:** Council 236 Turn 2 (B1113); B723 STATE→EVENT conversion; B1095 cube fan-out precedent.
+
+---
+
+### BUG-280  -  B832 SPOF sentinels systemically tripped during Batch A execution (Council 236 Turn 4 finding B1115 2026-07-03)
+
+**Severity:** MED-HIGH  -  degraded signal quality for 5+ news_* strategies during Batch A
+**Module:** `backtest/data/news_sentiment.py` B832 SPOF sentinels
+
+**Description:**
+Batch A resume log 2026-07-01 shows all 3 SPOF thresholds breached:
+- 17:46:23 — 'Polygon-sentiment-absent (rule-fallback only) for 100 returns'
+- 17:47:05 — 'returned EMPTY for 50 consecutive calls'
+- 17:47:15 — 'zero-score for 30 returns despite article-count>0'
+
+Producer VERIFIED WORKING on live test (AAPL 2024-11-15 emits 13 keys populated non-zero) but Batch A execution significantly degraded. Producer works when data present but B832 SPOF sentinels indicate significant portion of ticker×date pairs returned degraded signal (rule-fallback OR empty OR zero).
+
+**Root cause:**
+`data_prefetch/polygon/news/` coverage gaps or stale parquets across Batch A ticker set. B832 was designed as MONITORING sentinel not PREVENTIVE gate; sentinels ARM but don't HALT.
+
+**Fix (pending B1123):**
+Audit `data_prefetch/polygon/news/` coverage across all Batch A tickers. If systematically absent for many T1a names, refresh via Polygon Stocks Starter or add pre-flight parquet-coverage assertion. B1120 to add `test_b832_spof_no_systematic_trip.py`.
+
+**Joint:** Council 236 Turn 4 (B1115); B832 SPOF sentinel commit; Polygon Stocks Starter cache.
+

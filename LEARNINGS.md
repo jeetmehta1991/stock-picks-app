@@ -2305,3 +2305,40 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 **Process lesson (B1059 wrong-attribution):** Pre-flight fix-target identification needs the FULL violation source enumeration. The HALT logic was `if b2.get("violations"): return "HALT-CRITICAL"` — single violation triggers HALT. The highest-cardinality metric (a1_anom=88) was visible but was not the trigger. Future protocol: when a monitor emits multiple anomaly counters, grep the HALT decision logic for which counter ACTUALLY triggers HALT, then prioritize that source for the fix.
 
 **Cross-references:** B1062 commit `26349b5e1`, `scripts/b1019_phase_1_runtime_monitor.py:257` (now `"exit_reason"`), `backtest/tests/test_b1062_monitor_schema_contract.py` (5 pin tests including 4-column required-list invariant), `backtest/results/writer.py:50/516/519` (canonical `exit_reason`), `_classify_tier:307` HALT decision logic, `feedback_phantom_name_fixes_hide_as_partial_success` (analog at cache↔consumer boundary), `feedback_monitor_baseline_must_scale_with_active_universe` (L179 — related but distinct issue at same monitor).
+
+---
+
+## L181 — Investigation-only work-turns still require CHECKLIST #67 per-turn doc sweep (B1119 2026-07-03 Council 238)
+
+**What went wrong:** Between B1097 and B1118 (22 consecutive batches; 2026-07-02 → 2026-07-03), every commit changed only `output_batch_A_150/phase_1_quiet_fire_investigation.csv` + `scripts/phase_1_*.py`. Zero updates to AUDIT_INDEX.md / BUG_REGISTER.md / CHECKLIST.md / LEARNINGS.md / EXECUTION_QUEUE.md / CLAUDE.md banner / PROJECT_PLAN.md. Zero new tests added despite Council 236 surfacing 4 producer/data bugs (triangle detector 0-fire / index_rebalance parquet missing / halloween @lru_cache 300x underfire / B832 SPOF sentinels systemically tripped). CHECKLIST #67 explicitly states "per-turn document sync sweep — no exceptions" and `feedback_per_turn_doc_sweep_no_exceptions` memory codifies this. The work pattern silently drifted away from CHECKLIST #67 because investigation turns felt purely-analytical rather than change-producing.
+
+**Universal principle:** *Investigation-only turns produce FINDINGS which are exactly the material canonical docs (AUDIT_INDEX bug lineage / BUG_REGISTER new bugs / LEARNINGS new lessons / CHECKLIST new items / EXECUTION_QUEUE new tickets) exist to capture. The turn's file-change footprint (CSV updates only) is misleading; the finding-change footprint is the material one for doc-sync purposes.*
+
+**Rule:** Doc-sync sweep applies to every turn that produces (a) new findings, (b) new decisions, (c) new plans, (d) new bugs, or (e) new cross-references — REGARDLESS of code-file-change footprint. Investigation turns that surface bugs MUST register those bugs in BUG_REGISTER same-turn. Investigation turns that reach verdicts MUST index them in AUDIT_INDEX same-turn. Turn compliance is measured by finding-to-doc coverage, not by file-change count. Add `feedback_investigation_only_turns_still_require_doc_sweep` memory.
+
+**Cross-references:** B1119 doc-sweep commit; CHECKLIST #67; `feedback_per_turn_doc_sweep_no_exceptions`; Council 238 20-turn audit finding.
+
+---
+
+## L182 — Monolithic paragraph recommendations mask directional errors until adversarial audit (B1110-B1111 corrections 2026-07-02)
+
+**What went wrong:** Council 235 Phase 1 quiet-fire per-strategy analysis (13 turns / 192 strategies) produced recommendation paragraphs of the form "LOOSEN: vol_spike_17x -> vol_spike_2x. Expected uplift 2-4x." The vol_spike naming convention is DECIMAL-SHIFTED (`vol_spike_15x` = 1.5×, `vol_spike_17x` = 1.7×; only `vol_spike_2x` and `vol_spike_3x` are true integer multiples). Recommendation direction was inverted: `1.7× → 2.0×` is TIGHTENING, not loosening. 13 identical errors across 13 turns. Owner catch on turn-14 "1.7× vs 17×" question required B1110 + B1111 correction batches (26 recommendations rewritten). Root cause: individual recommendations too dense to spot-check per turn; canonical producer file (`technical.py:1568-1583 volume signals`) not verified against every recommendation.
+
+**Universal principle:** *Dense paragraph recommendations that reference specific signal names or thresholds must be checked against canonical producer source per recommendation, not per turn. Directional-verb errors (LOOSEN vs TIGHTEN, DROP vs ADD, EVENT vs STATE) are silent until adversarial audit because paragraph readers pattern-match on the verb without re-verifying the target.*
+
+**Rule:** For every recommendation that references (a) a specific signal name (`vol_spike_15x`, `bb_20_20_reclaim_from_lower_recent_3d`), (b) a specific threshold (`rsi_14 < 30`), or (c) a specific gate direction (LOOSEN / TIGHTEN / EVENT / STATE), verify against canonical producer source (`technical.py`, `chart_patterns.py`, etc.) via one of: (i) grep + read the emitter line; (ii) `feedback_vol_spike_naming_convention` memory lookup; (iii) reject-if-ambiguous stance ("verify direction before recommending"). Pre-flight CHECKLIST #128 (adversarial reviews check happy-path artifacts) applies to recommendation text just as it applies to code.
+
+**Cross-references:** B1110 commit `45f1965ed`; B1111 commit `bc391dd5e`; `feedback_vol_spike_naming_convention`; `feedback_signal_temporality_event_vs_state`; `feedback_never_use_NOT_s_get_pattern`.
+
+---
+
+## L183 — CSV artifact schema needs explicit pin test when new columns are added (B1118 2026-07-03 Council 237)
+
+**What went wrong:** B1118 added `final_recommended_actions` column to `output_batch_A_150/phase_1_quiet_fire_investigation.csv` (192 rows). No pin test asserts column presence or all-rows-populated. Prior columns `post_investigation_verdict` + `post_investigation_recommendation` (added B1112 doc-fix Turn 1) also lack pin tests. Consumer scripts (`scripts/phase_1_investigation_turn_{2..6}_*.py`) hand-write the column names; a rename or reorder would silently break downstream analysis.
+
+**Universal principle:** *CSV / Parquet artifacts that grow columns over multiple batches need schema pin tests same-batch as the column addition. Investigation-heavy CSVs (analysis ledgers, triage queues, walk outputs) are frequently multi-batch grown targets and are exactly the class most likely to silently drift schema.*
+
+**Rule:** Any new column added to a shared CSV artifact must be paired with a pin test asserting (a) column presence, (b) column position or explicit non-positional access via header, (c) all rows non-empty if the column is meant to be fully populated. Add `test_phase1_investigation_csv_schema.py` (B1120) as canonical example.
+
+**Cross-references:** B1118 commit `dbe9ab58d`; `output_batch_A_150/phase_1_quiet_fire_investigation.csv`; `test_b1080_checklist_135_schema_pin.py` (existing precedent); `feedback_writer_reader_schema_contract_pin_test`.
+

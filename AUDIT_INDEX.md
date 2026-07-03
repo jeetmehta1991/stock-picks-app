@@ -1552,3 +1552,39 @@ Per-batch pointers for the Phase P1 STREAM E sweep (B933-B968; 36 commits). Cont
 
 ---
 *Regenerated April 2026 after Pass 51. B968 appendix appended 2026-06-20 per Council 68.*
+---
+
+## Council 227-238 Backfill (B1119 doc-sweep 2026-07-03)
+
+Retroactive index of Council 227-238 batches during 22-batch doc-sync suspension (B1097-B1118). Source: commit bodies + `output_batch_A_150/phase_1_quiet_fire_investigation.csv`.
+
+| Council | Batches | Scope | Artifact |
+|---------|---------|-------|----------|
+| 227-229 | B1094-A/B/C | Batch B launch infra + fail-loud env-config-drift + fire-count codification (CHECKLIST #130 + #131) | `scripts/verify_fire_count_gate.py` |
+| 230 | B1094-D | Gate 2 STANDALONE redesign (no baseline) per owner directive | `feedback_batch_gate_includes_fire_count_validation` |
+| 231 | B1094-C | Cube exit count MUST equal count(EXIT_STRATEGIES) per closed trade (CHECKLIST #130) | `feedback_cube_exit_count_must_equal_registered` |
+| 232 | B1094-D | STANDALONE gate no-baseline architecture | (memory) |
+| 233 | B1095-B1096 | Cube fan-out Bug A + Bug B fix + recompute helper; quiet-fire investigation CSV baseline | `scripts/recompute_cube_from_trade_log.py` |
+| 234 | B1096.1-B1096.2 | Archive 9 stale output dirs + master catalog CSVs (strategies + exits + cube universe) | `output_batch_A_150/{strategies,exits,cube_universe}.csv` |
+| 235 | B1097-B1109 | Phase 1 quiet-fire per-strategy analysis 192/192 (13 turns) | `output_batch_A_150/phase_1_quiet_fire_investigation.csv` |
+| (corrections) | B1110-B1111 | vol_spike naming convention + technical.py signal name audit (13+6 corrections) | `feedback_vol_spike_naming_convention` |
+| 236 | B1112-B1117 | Producer investigation 46/46 across 6 turns (Ichimoku + BB/Squeeze/Halloween + SMC + News/PEAD + Chart Pattern + Index/AVWAP/Donchian/MISC) | `post_investigation_verdict` + `post_investigation_recommendation` columns |
+| 237 | B1118 | `final_recommended_actions` column added; 192 rows tagged with [PRIORITY] [ACTION_CLASS] directive | `scripts/phase_1_add_final_actions_column.py` |
+| 238 | B1119 | 22-batch doc-sweep backfill + execution plan council (this batch) | (this AUDIT_INDEX entry) |
+
+**Key DECs from this window (no numeric assignment yet — DEFERRED to next batch when DEC counter increments):**
+- `DEC-CUBE-FANOUT-BUGA-BUGB-FIX` — B1095 (Council 233)
+- `DEC-BATCH-B-LAUNCH-INFRA` — B1094-A (Council 228)
+- `DEC-FAIL-LOUD-ENV-CONFIG-DRIFT` — B1094-B (Council 229)
+- `DEC-STANDALONE-GATE-NO-BASELINE` — B1094-D (Council 232)
+- `DEC-QUIET-FIRE-192-ANALYSIS-COMPLETE` — B1109 (Council 235)
+- `DEC-46-PRODUCER-INVESTIGATIONS-COMPLETE` — B1117 (Council 236)
+- `DEC-FINAL-RECOMMENDED-ACTIONS-COLUMN` — B1118 (Council 237)
+
+**Cross-references:**
+- `output_batch_A_150/phase_1_quiet_fire_investigation.csv` (19 columns; 192 rows; final `final_recommended_actions` column consumers B1120-B1133 loosening plan)
+- `output_batch_A_150/{strategies.csv, exits.csv, cube_universe.csv}` (B1096.2 master catalog)
+- Investigation scripts `scripts/phase_1_investigation_turn_{1..6}_*.py` (46 verdicts)
+- Analysis scripts `scripts/phase_1_analysis_turn_{1..13}.py` (192 pre-investigation recommendations)
+- Correction scripts `scripts/phase_1_correction_{vol_spike_naming, direction_and_signal_errors}.py`
+
