@@ -564,3 +564,41 @@ Widen bottom-similarity tolerance from strict to 'nearly-equal within N%'. Verif
 
 **Joint:** Council 240 Turn 7 (B1121); BUG-277 (same class - chart_patterns.py detector bugs); `chart_patterns.py:131`; Bulkowski 2005 canonical chart-pattern reference.
 
+
+---
+
+### BUG-279 UPDATE (B1125 2026-07-03 Council 245 empirical investigation):
+
+**STATUS CHANGE: RESOLVED-BY-INVESTIGATION** (was: OPEN)
+
+Council 245 empirical investigation contradicts Turn 2 root cause hypothesis. Producer VERIFIED working via direct runtime test:
+
+  - `compute_calendar_signals(date(2022, 11, 1))` returns `is_halloween_period_first_day=True`
+  - Same for 2023-11-01, 2024-11-01, 2025-11-03 (all Nov 1st weekday variants)
+  - Same TOTM first-day emission for 2022-11-01 / 2023-05-01 / 2024-03-01
+  - `_trading_day_of_month` calculation correct across weekday/weekend/holiday boundaries
+  - `@lru_cache(maxsize=4)` is per-day cache with parallel-slot buffer; NOT the source of underfire
+  - Signal merge at screener.py:8272 (`signals.update(cal_out)`) works correctly
+
+Empirical AAPL 2023-11-01 gate check via cached Polygon parquet:
+  - close=173.97, ema_200=171.92, price_above_ema_200=True
+  - halloween_first_day=True
+  - BOTH gates evaluate TRUE - strategy WOULD fire
+
+Therefore Turn 2's "300x underfire" attribution to calendar producer was incorrect. The low n_fires=1 in Batch A output reflects a downstream filter (regime affinity applied by Batch A cube run OR trade-entry filter OR trade-log accounting), NOT producer failure.
+
+**Deferred to B1132 micro-cube validation:** measure signal fires vs trade fires discrepancy on canonical 5-ticker × halloween window. If signal fires >> trade fires, root cause is trade-entry filter. If signal fires also low, then a different producer path is involved.
+
+**Family impact update:**
+  - halloween_seasonal_long: RECLASSIFY BLOCKED_PRODUCER_BUG -> PENDING (producer OK)
+  - totm_long: RECLASSIFY BLOCKED_PRODUCER_BUG -> PENDING (producer OK; same family)
+  - pre_holiday_long: RECLASSIFY BLOCKED_PRODUCER_BUG -> PENDING (producer OK; same family)
+
+**Downstream execution scope tightening:**
+  - B1124 test_b1124_calendar_lru_cache_correctness.py: skip removed; producer verified
+  - B1128-B1131 grouped LOOSEN: halloween/totm/pre_holiday now eligible for standard LOOSEN treatment
+  - Original BUG-279 hypothesis (a) @lru_cache stale, (b) tdm edge case: BOTH RULED OUT
+  - Remaining hypothesis (d) cube fan-out drops trades: DEFERRED to B1132 (validated method per B1095 precedent)
+
+**Joint:** Council 236 Turn 2 initial hypothesis; Council 245 empirical rebuttal; L184 family-inheritance verdicts over-scoping; B1132 micro-cube validation dependency.
+

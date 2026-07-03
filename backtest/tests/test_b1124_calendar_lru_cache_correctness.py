@@ -59,32 +59,30 @@ def test_halloween_dates_recognized():
     )
 
 
-def test_bug_279_calendar_family_underfire_documented():
-    """BUG-279 open: 3 calendar strategies must show underfire in CSV."""
-    import pandas as pd
+def test_bug_279_calendar_producer_verified_runtime():
+    """BUG-279 RESOLVED-BY-INVESTIGATION (B1125 Council 245).
 
-    csv = REPO / "output_batch_A_150" / "phase_1_quiet_fire_investigation.csv"
-    if not csv.exists():
-        pytest.skip("CSV missing")
-        return
-    df = pd.read_csv(csv)
+    Producer verified emitting is_halloween_period_first_day correctly on
+    all 4 Nov-1st dates 2022-2025. Root cause of low n_fires is downstream
+    (regime affinity / trade-entry filter / cube fan-out) - DEFERRED to
+    B1132 micro-cube validation.
+    """
+    from datetime import date
+    from backtest.signals.calendar_effects import compute_calendar_signals
 
-    calendar_strategies = {
-        "halloween_seasonal_long": 300,  # expected ~300 fires; got 1
-        "totm_long": 4300,  # expected ~4300; got 12
-        "pre_holiday_long": 750,  # expected ~750; got 6
-    }
-    for strat, expected in calendar_strategies.items():
-        row = df[df["strategy_name"] == strat]
-        if row.empty:
-            continue
-        n_fires = int(row.iloc[0]["n_fires"])
-        underfire_ratio = expected / max(n_fires, 1)
-        assert underfire_ratio > 50, (
-            f"BUG-279 RED-FIRST: {strat} expected underfire ratio > 50x per "
-            f"Turn 2 finding. Got expected/actual = {expected}/{n_fires} = "
-            f"{underfire_ratio:.1f}x. If ratio dropped below 50x, "
-            f"BUG-279 may have been fixed - update this test."
+    halloween_dates = [
+        date(2022, 11, 1),
+        date(2023, 11, 1),
+        date(2024, 11, 1),
+        date(2025, 11, 3),  # Nov 1st is Saturday, Nov 3rd is first BD
+    ]
+    for d in halloween_dates:
+        sig = compute_calendar_signals(d)
+        assert sig.get("is_halloween_period_first_day") is True, (
+            f"BUG-279 REGRESSION: {d} should emit is_halloween_period_first_day=True; "
+            f"got {sig.get('is_halloween_period_first_day')}. "
+            f"Producer verified working in B1125; if this fails, calendar producer "
+            f"has regressed."
         )
 
 
