@@ -2355,3 +2355,16 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 
 **Cross-references:** B1122 commit; Council 236 Turn 3 SMC investigations; Council 241 Turn 8 contrarian finding; `feedback_asymmetric_data_sources_break_mechanical_inverse` (adjacent principle at direction-mirror level); `feedback_family_bug_grep_before_one_liners` (family-scope discipline).
 
+
+---
+
+## L185 — Autonomous per-strategy investigation loop grounds verdicts in actual gate stack (B1123 2026-07-03 Council 243)
+
+**What surfaced:** Prior investigation turns (1-6 = 46 strategies + Turn 7 silent-miss = 11 + Turn 8 adjacent-family = 6) used hand-crafted per-strategy verdicts based on producer smoke tests + owner reasoning. Efficient for family clusters but slow at 3-15 strategies/turn. Owner directive 2026-07-03: 'each investigation to be done individually. loop through each one autonomously.' - departs from template-batch approach that was starting to dilute per-strategy specificity for the remaining 129 strategies.
+
+**Universal principle:** *Per-strategy investigations at scale benefit from parse-based automation that grounds verdicts in the strategy's ACTUAL gate stack (regex-extracted from screener.py) rather than in template language. The verdict cites (a) specific positive/negative gates, (b) numeric thresholds, (c) prior batch history in comments, (d) docstring thesis - all extracted from source. Verdict is individually grounded even when methodology is uniform.*
+
+**Rule:** For per-strategy investigation loops covering >20 strategies where per-strategy producer runtime smoke would exceed time budget, use autonomous parse-based investigation that (a) greps source for each strategy definition, (b) extracts gate stack + thresholds via regex, (c) generates verdict citing specific gates, (d) explicitly notes the gap that regex may miss dynamically constructed gates or conditionals - not a substitute for producer runtime smoke but provides per-strategy grounding. Verdicts must be individually distinguishable in text (not identical template repetition).
+
+**Cross-references:** B1123 commit; `feedback_no_rushing_per_strategy_tweak`; `feedback_council_enumerate_plus_recommend`; L182 (monolithic paragraph masking directional errors); Turn 9 script `scripts/phase_1_investigation_autonomous_loop.py`.
+

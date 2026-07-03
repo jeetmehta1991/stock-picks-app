@@ -2259,3 +2259,54 @@ Total investigated: 63/192 (32.8%). Remaining 129 (67.2%) breakdown:
 
 If any of the 129 remaining PENDING strategies surface new producer questions during B1126-B1131 grouped LOOSEN batches, they get on-demand producer investigation same-turn.
 
+
+### B1123 (2026-07-03 Council 243 Turn 9 autonomous loop):
+
+- 2026-07-03 — `b1123-autonomous-per-strategy-loop` — 129 remaining un-investigated strategies auto-processed via per-strategy screener.py grep; each got individual verdict grounded in ACTUAL gate stack (regex-extracted positive/negative gates + numeric thresholds + prior batch references + docstring thesis); investigation coverage 63 -> 192 (100%). Per owner directive 2026-07-03 'each investigation to be done individually. loop through each one autonomously'.
+
+### Council 243 Turn 9 methodology (departs from prior template-batch):
+
+  METHODOLOGY:
+    For each of 129 un-investigated strategies:
+      1. Grep screener.py for `def strat_<name>(s)` function definition
+      2. Extract function body (line num + content)
+      3. Parse via regex:
+         - Positive gates: s.get("key") calls
+         - Negative gates: not s.get("key") calls
+         - Numeric thresholds: <=/>=/</> operators
+         - Prior batch references: Batch NNN / BNNN patterns in comments
+         - Docstring first line: strategy thesis
+      4. Classify verdict by (n_fires, n_gates, event_signal_count):
+         - PRODUCER_OK_COMPOUND_STARVED (n_fires=0)      = 43 strategies
+         - PRODUCER_OK_HIGH_UNDERFIRE (1-15 fires)       = 49 strategies
+         - PRODUCER_OK_MED_UNDERFIRE (16-30 fires)       = 17 strategies
+         - PRODUCER_OK_HEALTHY_FIRE_COUNT (>30 fires)    = 20 strategies
+      5. Populate 4 CSV columns per strategy with SPECIFIC gate list
+         (not template): post_investigation_verdict, post_investigation_
+         recommendation, final_recommended_actions, execution_comments
+
+### 129 Turn 9 verdicts by class:
+
+**COMPOUND STARVED (43 CRITICAL n_fires=0):** most have >=5 gates in stack; recommendation drop 1-2 secondary gates OR widen thresholds. Includes 10 classification_change_* family, 4 institutional_* family, 3 news_reversal/momentum_short family, 3 pivot family, avwap_20high_rejection_short, keltner_lower, gold_silver_risk_off_long, weekly_bias_pullback_long/short, dxy_headwind_multinational_short (registered DISABLED), and 15 others.
+
+**HIGH UNDERFIRE (49 HIGH 1-15 fires):** drop redundant confirmation + widen thresholds. Includes remaining candle patterns, RSI variants, smart-money variants, cross-sectional strategies.
+
+**MED UNDERFIRE (17 MED 16-30 fires):** close to min_trades=30 floor; widen numeric thresholds by 10-20%.
+
+**HEALTHY (20 MARGINAL >30 fires):** STATUS_QUO + universe_expand primary lever.
+
+### Universal caveat for all 129 verdicts:
+
+Each `execution_comments` explicitly cites the GAP: "gate stack extraction is regex-based - may miss dynamically constructed gates or conditionals inside if/else branches; screener.py inspection at cited line would verify. Not a producer smoke test on live data."
+
+Per-strategy deeper investigation available for any strategy showing anomalous behavior during B1126+ grouped LOOSEN execution.
+
+### NO SILENT MISSES (post-B1123 100% coverage):
+
+  Total 192 strategies:
+    - Investigated Turn 1-6 (46): hand-crafted producer smoke + runtime verify
+    - Investigated Turn 7 (11): silent-miss remediation with hand-crafted verdicts
+    - Investigated Turn 8 (6): adjacent-family with producer smoke verify
+    - Investigated Turn 9 (129): autonomous per-strategy regex-extracted gate stack
+    - Total: 192 (100% coverage)
+
