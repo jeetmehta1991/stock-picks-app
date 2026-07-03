@@ -2660,3 +2660,66 @@ audit. Same pattern as BUG-279 and BUG-281 - paragraph diagnosis without
 runtime probe is audit-theater. Empirical verification MANDATORY per
 Council 246 Tier-4 principle.
 
+
+### B1132 (2026-07-03 Council 248 Data Audit Item 4/4 - borrow_ok blocking-rate audit):
+
+- 2026-07-03 — `b1132-borrow-ok-blocking-rate-audit` — Empirical blocking-rate audit of `_short_borrow_trap_active` filter across 149 Batch A tickers. Verdict: STATUS_QUO on DTC>5.0 threshold.
+
+### Council 248 Item 4/4 empirical evidence (output_audit/borrow_ok_blocking_rate_audit.json):
+
+  Tickers analyzed: 149 / 150 Batch A target (only BF-B missing per hyphen convention)
+  
+  DTC (days-to-cover) distribution across tickers:
+    Median across tickers: 2.80
+    25%ile: 2.20
+    75%ile: 4.28
+    Max:    15.62
+  
+  Blocking rate (bars with DTC > 5.0 threshold):
+    Mean:   23.5%
+    Median: 11.0%
+    Max:    100.0%
+  
+  Tickers with >50% blocking rate: 25 / 149 = 16.8%
+  Tickers with 0% blocking rate:   39 / 149 = 26.2%
+
+### Verdict: ACCEPTABLE_BELOW_70_THRESHOLD
+
+Mean 23.5% blocking is WELL BELOW 70% concern threshold. `_short_borrow_
+trap_active` filter at DTC>5.0 (B718a canonical) is NOT overly restrictive.
+
+### Turn 1 hypothesis revised:
+
+Original: borrow filter is PRIMARY driver of SHORT strategy underfire.
+Council 248 empirical: filter is PARTIAL contributor - blocks 23.5%
+mean of bars. Compound consumer gate stacks are the primary driver
+(similar pattern to BUG-281 double_bottom_long where 4-way AND
+compound-starves despite producer working).
+
+### CSV updates:
+
+All SHORT strategies (direction='short') got B1132 audit note in
+execution_comments confirming STATUS_QUO on DTC threshold.
+
+### Downstream implications:
+
+  B1133+ grouped LOOSEN should focus on CONSUMER gate simplification
+  for SHORT strategies (drop 1-2 secondary gates per Council 235 turns 5-9
+  recommendations), NOT threshold change on borrow filter.
+
+### B1127 test_borrow_ok_audit_report_documented_when_present:
+
+Now GREEN - audit report artifact exists at output_audit/borrow_ok_
+blocking_rate_audit.json with blocking_rate 0.235 < 0.70 assertion.
+
+### Council 245 sequenced remediation status:
+
+  B1125: BUG-279 RESOLVED-BY-INVESTIGATION (halloween)
+  B1126: BUG-277 RESOLVED-IMPLEMENTED (triangle)
+  B1128: BUG-281 RESOLVED-BY-INVESTIGATION (double_bottom)
+  B1129: SMC_PHASE arm verified WORKING
+  B1130: BUG-280 COVERAGE-VERIFIED (Polygon news 100%, FINRA 99.3%)
+  B1132: borrow_ok STATUS_QUO verified (mean 23.5% << 70%)
+
+ALL AUDITS COMPLETE. Next per Council 238: B1133+ grouped LOOSEN batches.
+

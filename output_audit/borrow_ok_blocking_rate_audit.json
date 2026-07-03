@@ -1,0 +1,13 @@
+{
+  "batch": "B1132",
+  "council": "248",
+  "audit_type": "borrow_ok_blocking_rate",
+  "tickers_analyzed": 149,
+  "batch_a_target": 150,
+  "blocking_rate_mean_pct": 23.513492687897845,
+  "blocking_rate_median_pct": 10.975609756097562,
+  "tickers_high_block_gt_50pct": 25,
+  "tickers_never_blocked": 39,
+  "threshold_used": 5.0,
+  "verdict": "ACCEPTABLE_BELOW_70_THRESHOLD"
+}
