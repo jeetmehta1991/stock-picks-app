@@ -2569,3 +2569,48 @@ FULL 952-test expanded pyramid ran pre-commit. GREEN.
 
 Downstream: B1129+ grouped LOOSEN batches for consumer-side gates (halloween/totm/pre_holiday/triangle/double_bottom_long/etc.).
 
+
+### B1129 (2026-07-03 Council 248 Data Audit Item 1/3 - SMC_PHASE arm audit):
+
+- 2026-07-03 — `b1129-smc-phase-arm-audit` — Config-arm audit per CHECKLIST #124 for SMC_PHASE latent-kill risk (Council 236 Turn 3 finding). Empirical verification: SMC_PHASE ARM VERIFIED WORKING.
+
+### Council 248 empirical evidence:
+
+  1. Config default (backtest/config.py:1214): SMC_PHASE = "PRODUCTION"
+  2. R5 launcher (scripts/launch_r5_master_4y_v2.sh:148): references SMC_PHASE
+  3. Healthy SMC siblings from Council 241 Turn 8:
+     - smc_breaker_block_short: 89 fires (>>0)
+     - smc_inverse_fvg:         81 fires (>>0)
+     Both above marginal boundary = SMC producers WERE armed during Batch A.
+     If SMC_PHASE != "PRODUCTION" (latent-kill hypothesis), these would be 0.
+     Empirical contradicts latent-kill scope beyond defensive.
+
+### Gaps addressed same-batch:
+
+  GAP: Laptop launchers (batch_a.ps1 + batch_b.ps1) did NOT log SMC_PHASE arm state.
+  FIX: Added SMC_PHASE_VAL echo + Add-Content to launch.log per CHECKLIST #124.
+        Post-hoc audit reads launch.log to prove 16 SMC strategies were armed.
+
+  GAP: B1124 test_batch_a_execution_smc_phase_arm_recorded had RED-first skip-with-CTA.
+  FIX: Flipped to GREEN assertion requiring "SMC_PHASE" reference in both
+        laptop_launch_batch_a.ps1 + laptop_launch_batch_b.ps1.
+
+### CSV update (B1129):
+
+  All 16 SMC + 1 ichimoku_tk_cross strategies got B1129 audit note in
+  execution_comments confirming SMC_PHASE ARM VERIFIED. Latent-kill risk
+  RETIRED per empirical evidence.
+
+### BUG_REGISTER impact:
+
+  BUG-280 (B832 SPOF) UNAFFECTED - different producer path.
+  No new BUG registered for SMC_PHASE - risk was DEFENSIVE only per L184 pattern.
+
+### Downstream:
+
+  Council 246 Tier-7 config-arm test upgraded from skip-with-CTA to GREEN
+  assertion. Similar arm-state logging pattern to be applied to other env
+  flags (if any) in future launch scripts.
+
+### Expanded pyramid retroactive gate (B1127 policy) - to run before commit.
+

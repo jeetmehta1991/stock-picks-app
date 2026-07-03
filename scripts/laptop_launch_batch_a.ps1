@@ -20,6 +20,14 @@ if (-not (Test-Path $TICKERS_FILE)) {
     exit 1
 }
 
+# B1129 Council 248 config-arm audit: log SMC_PHASE arm state per CHECKLIST #124
+# (WIRED/ARMED requires linked evidence artifact). Default 'PRODUCTION' from
+# backtest.config. If SMC_PHASE env override set, log it. Post-hoc audit
+# reads this line from launch.log to prove 16 SMC strategies were armed.
+$SMC_PHASE_VAL = if ($env:SMC_PHASE) { $env:SMC_PHASE } else { "PRODUCTION_DEFAULT_FROM_CONFIG" }
+Write-Host "SMC_PHASE arm state at launch: $SMC_PHASE_VAL" -ForegroundColor Cyan
+Add-Content -Path $LOG_FILE -Value "SMC_PHASE=$SMC_PHASE_VAL (B1129 arm-state log)"
+
 $FREE_MB = (Get-Counter '\Memory\Available MBytes').CounterSamples.CookedValue
 Write-Host "Free memory: $FREE_MB MB" -ForegroundColor Yellow
 if ($FREE_MB -lt 6500) {

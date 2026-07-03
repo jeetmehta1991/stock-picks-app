@@ -24,6 +24,13 @@ if (-not (Test-Path "$BATCH_A_DIR\backtest_results.json")) {
     exit 1
 }
 
+# B1129 Council 248 config-arm audit: log SMC_PHASE arm state per CHECKLIST #124
+# Default 'PRODUCTION' from backtest.config. Post-hoc audit reads launch.log
+# to prove 16 SMC strategies were armed at execution time.
+$SMC_PHASE_VAL = if ($env:SMC_PHASE) { $env:SMC_PHASE } else { "PRODUCTION_DEFAULT_FROM_CONFIG" }
+Write-Host "SMC_PHASE arm state at launch: $SMC_PHASE_VAL" -ForegroundColor Cyan
+Add-Content -Path $LOG_FILE -Value "SMC_PHASE=$SMC_PHASE_VAL (B1129 arm-state log)"
+
 # Pre-flight: verify merge dry-run was run
 Write-Host "PRE-FLIGHT: Did the merge dry-run PASS on Batch A output? (y/n)" -ForegroundColor Yellow
 $mergeOK = Read-Host

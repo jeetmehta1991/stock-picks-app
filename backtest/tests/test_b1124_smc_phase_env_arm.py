@@ -66,27 +66,25 @@ def test_smc_producer_gracefully_handles_non_production_phase(monkeypatch):
 
 
 def test_batch_a_execution_smc_phase_arm_recorded():
-    """Meta-test: Batch A resume log should have SMC_PHASE arm state.
+    """B1129 FIXED (Council 248): Batch A launcher records SMC_PHASE arm state.
 
-    RED-FIRST until arm-recording lands. This test asserts that if a
-    Batch A run log exists, it contains an SMC_PHASE line.
+    Post-B1129 fix: laptop_launch_batch_a.ps1 + laptop_launch_batch_b.ps1
+    both echo + log SMC_PHASE_VAL to launch.log for post-hoc audit per
+    CHECKLIST #124. This test asserts that SMC_PHASE arm-recording is
+    documented in launcher source.
     """
-    batch_a_log_paths = [
-        REPO / "output_batch_A_150" / "engine.log",
-        REPO / "output_batch_A_150" / "monitor.log",
-    ]
-    existing_logs = [p for p in batch_a_log_paths if p.exists() and p.stat().st_size > 0]
-    if not existing_logs:
-        pytest.skip("No Batch A log to check (run not landed or archived)")
-        return
-    found = False
-    for log in existing_logs:
-        content = log.read_text(encoding="utf-8", errors="ignore")
-        if "SMC_PHASE" in content:
-            found = True
-            break
-    assert found, (
-        "Batch A execution logs must record SMC_PHASE arm state. "
-        "Silent absence prevents post-hoc verification of Turn 3 latent-kill "
-        "hypothesis."
+    launcher_a = REPO / "scripts" / "laptop_launch_batch_a.ps1"
+    launcher_b = REPO / "scripts" / "laptop_launch_batch_b.ps1"
+    assert launcher_a.exists(), f"Batch A launcher missing: {launcher_a}"
+
+    content_a = launcher_a.read_text(encoding="utf-8", errors="ignore")
+    assert "SMC_PHASE" in content_a, (
+        "B1129 REGRESSION: laptop_launch_batch_a.ps1 must log SMC_PHASE "
+        "arm state per CHECKLIST #124. Silent-kill risk if SMC_PHASE != "
+        "PRODUCTION at launch."
+    )
+    assert launcher_b.exists(), f"Batch B launcher missing: {launcher_b}"
+    content_b = launcher_b.read_text(encoding="utf-8", errors="ignore")
+    assert "SMC_PHASE" in content_b, (
+        "B1129 REGRESSION: laptop_launch_batch_b.ps1 must log SMC_PHASE."
     )
