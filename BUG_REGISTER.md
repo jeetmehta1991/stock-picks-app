@@ -545,3 +545,22 @@ Audit `data_prefetch/polygon/news/` coverage across all Batch A tickers. If syst
 
 **Joint:** Council 236 Turn 4 (B1115); B832 SPOF sentinel commit; Polygon Stocks Starter cache.
 
+
+---
+
+### BUG-281  -  detect_double_top_bottom producer 0-fire (Council 240 Turn 7 finding B1121 2026-07-03)
+
+**Severity:** HIGH  -  same class as BUG-277 detect_triangle producer bug; blocks `double_bottom_long`
+**Module:** `backtest/signals/chart_patterns.py:131 detect_double_top_bottom`
+
+**Description:**
+Empirical fire rate: 0/57 SPY samples 2020-2026 (every-20-bar sampling; same probe methodology as Turn 5 that surfaced BUG-277 for detect_triangle). Bulkowski 2005 cites ~10-20 double bottom events/yr per ticker in bull markets. Expected 150 tickers × 4y × 10/yr = 6,000 signal-events. Actual: 0 fires in Batch A output. Was chat-surfaced in Turn 5 investigation but was NOT included in Turn 5 investigation script (silent miss caught by Council 238 audit; investigated in Turn 7 B1121).
+
+**Root cause hypothesis:**
+Same class as BUG-277: detector's bottom-similarity + neckline criterion too strict OR SPY is smooth-trending bull-market that doesn't form clean double bottoms. Discriminate via: run detector on 20-ticker Batch A subset with volatile mid-cap names; if universe-wide 0-1 fires = PRODUCER BROKEN.
+
+**Fix (pending B1122):**
+Widen bottom-similarity tolerance from strict to 'nearly-equal within N%'. Verify neckline calculation. Producer smoke test to be added B1121 as part of `test_producer_smoke_contract.py` (Council 238 test extension plan).
+
+**Joint:** Council 240 Turn 7 (B1121); BUG-277 (same class - chart_patterns.py detector bugs); `chart_patterns.py:131`; Bulkowski 2005 canonical chart-pattern reference.
+

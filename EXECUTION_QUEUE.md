@@ -2186,3 +2186,36 @@ Distribution across `final_recommended_actions` column:
 - PRIORITY_TIER: CRITICAL 60 / HIGH 76 / MED 29 / MARGINAL 27
 - ACTION_CLASS: LOOSEN_GATE 160 / UNIVERSE_EXPAND 42 / LOOSEN_THRESHOLD 16 / AUDIT_DATA 16 / FIX_PRODUCER 13 / DROP_REDUNDANT 7 / DISABLED_PENDING_DATA 1
 
+
+### B1120-B1121 (2026-07-03 Council 239 + Council 240):
+
+- 2026-07-03 — `b1120-execution-status-columns` — ddcd1b859 Council 239 execution_status + execution_batch_ref columns added; 10 strategies pre-classified BLOCKED (4 DATA_MISSING + 6 PRODUCER_BUG family)
+- 2026-07-03 — `b1121-silent-miss-turn-7` — 11 silent-miss strategies investigated (Council 240; totm_long + double_bottom_long + 3 index rebalance + 4 SMC + pre_holiday_long + triangle_descending_short); new column `execution_comments` added; all 192 rows populated with execution_comments; investigation coverage 46 -> 57 (+11); BUG-281 registered for double_bottom_long detector 0-fire (same class as BUG-277)
+
+### Council 240 new Turn 7 verdicts (11 strategies + BUG-281):
+
+**FAMILY INHERITANCE VERDICTS (6):**
+- `triangle_descending_short`  -> BLOCKED_PRODUCER_BUG (BUG-277 family; triangle detector)
+- `totm_long`                  -> BLOCKED_PRODUCER_BUG (BUG-279 family; calendar @lru_cache)
+- `pre_holiday_long`           -> BLOCKED_PRODUCER_BUG (BUG-279 family)
+- `post_inclusion_drift_long`  -> BLOCKED_DATA_MISSING (BUG-278; index rebalance parquet)
+- `post_inclusion_reversal_short` -> BLOCKED_DATA_MISSING (BUG-278; ANOMALY: 9 fires vs producer no-op - gate stack probe pending B1121)
+- `pre_rebalance_long`         -> BLOCKED_DATA_MISSING (BUG-278)
+
+**FRESH PRODUCER INVESTIGATIONS (5):**
+- `double_bottom_long`         -> BLOCKED_PRODUCER_BUG (NEW BUG-281; detect_double_top_bottom 0-fire same class as BUG-277)
+- `smc_ote_long`               -> PENDING (PRODUCER_OK + SMC_PHASE_LATENT_RISK; loosen Fib band 62-79% -> 60-82%)
+- `smc_ote_short`              -> PENDING (PRODUCER_OK + SMC_PHASE + Pattern S; borrow_ok audit)
+- `smc_premium_short`          -> PENDING (PRODUCER_OK + SMC_PHASE + Pattern S; loosen dealing_range_pct)
+- `smc_fvg_retest_short`       -> PENDING (PRODUCER_OK + SMC_PHASE + Pattern S; anomaly SHORT > LONG for 2022-2026 bearish window)
+
+**REMAINING GAPS (transparent surfacing per no-silent-misses rule):**
+- `flag_bear_retest_short` (n=3) - adjacent to flag_bull_retest_long (Turn 5); not investigated
+- `inverted_cup_and_handle_short` (n=1) - adjacent to cup_and_handle (Turn 5); not investigated
+- `supertrend_ichimoku_adx` (n=0) - Ichimoku family adjacent (Turn 1); not investigated
+- `macd_ichimoku` (n=5) - Ichimoku family adjacent (Turn 1); not investigated
+- `smc_breaker_block_short` (n=89) - SMC; above marginal boundary but Council 235 already flagged; not investigated
+- `smc_inverse_fvg` (n=81) - SMC; above marginal boundary; not investigated
+
+Total remaining un-investigated: 135 of 192 (146 - 11 Turn 7). Most await either B1126-B1131 grouped LOOSEN or B1122+ producer fixes.
+
