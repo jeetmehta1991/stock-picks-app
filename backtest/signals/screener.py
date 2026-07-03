@@ -5090,19 +5090,25 @@ def strat_double_bottom_long(s):
     `feedback_no_rushing_per_strategy_tweak`. This B730 ships the 2
     consumer-side gates that can be added without producer change.
     """
+    # B1133 (2026-07-03 Council 249 LOOSEN per Turn 5 + B1128 empirical):
+    # Producer VERIFIED per B1128 (11 double_bottom + 22 double_top on SPY 4y).
+    # Root cause of 0 fires in Batch A = 4-way AND compound. Drop vol_spike_15x
+    # (B730 Bulkowski volume - loosest constraint) per feedback_narrow_scope_
+    # blast_radius. Retain close_in_top_40pct_of_range (B730 anti-fakeout is
+    # empirically-justified strong-close pattern). Expected 3-5x uplift.
     fires = (
         s.get("double_bottom_detected", False)
         and s.get("price_above_ema_200", False)
-        and s.get("close_in_top_40pct_of_range", False)  # B730 anti-fakeout strong-close
-        and s.get("vol_spike_15x", False)  # B730 Bulkowski volume confirmation
+        and s.get("close_in_top_40pct_of_range", False)  # B730 anti-fakeout strong-close (retained)
+        # B1133 dropped: vol_spike_15x (loosest B730 gate per Council 249)
     )
     return _strat(fires, "long", "chart_pattern",
         ["double_bottom_detected", "price_above_ema_200",
-         "close_in_top_40pct_of_range", "vol_spike_15x"],
+         "close_in_top_40pct_of_range"],  # B1133 dropped vol_spike_15x
         ["Double-bottom pattern detected (2 lows at same level + trough)",
          "Above 200 EMA (regime gate)",
-         "Close in top 40% of range (B730 strong-close anti-fakeout)",
-         "Vol spike >=1.5x avg (B730 Bulkowski neckline-break volume confirmation)"])
+         "Close in top 40% of range (B730 strong-close anti-fakeout; retained)"])
+         # B1133 dropped: Vol spike 1.5x avg (loosest B730 gate; Council 249 empirical)
 
 
 def strat_inverted_cup_and_handle_short(s):
@@ -5151,20 +5157,23 @@ def strat_inverted_cup_and_handle_short(s):
     handle patterns indicate ~5-15/yr per universe; inverted variant
     likely similar or rarer in upward-drift equity).
     """
+    # B1133 (2026-07-03 Council 249 LOOSEN per Turn 8 finding, symmetric to
+    # B1133 cup_and_handle_long): vol_spike_2x -> vol_above_avg + drop
+    # rsi_14>30 (redundant with EMA trend). Pattern S SHORT + borrow_ok gate
+    # retained. Expected 10-20x uplift symmetric to CP-1 LONG.
     fires = (
         s.get("inverted_cup_handle_detected", False)
         and s.get("below_ema_200", False)  # B630 producer-additive
-        and s.get("vol_spike_2x", False)
+        and s.get("vol_above_avg", False)  # B1133 loosened from vol_spike_2x
         and s.get("below_ema_50", False)  # B630 producer-additive (symmetric to CP-1 ema_50 gate)
-        and s.get("rsi_14", 50) > 30
+        # B1133 dropped: rsi_14>30 (redundant with EMA trend stack)
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "chart_pattern",
         ["inverted_cup_handle_detected", "below_ema_200",
-         "vol_spike_2x", "below_ema_50", "rsi_14>30", "borrow_ok"],
+         "vol_above_avg", "below_ema_50", "borrow_ok"],
         ["Inverted cup-and-handle pattern detected (Bulkowski 2005 rounded top with handle)",
-         "Bearish breakdown + 2x volume confirmation (symmetric to CP-1 B278 fix)",
-         "Below 200 + 50 EMA (dual trend gate)",
-         "RSI not oversold (avoid late-stage entries; symmetric to CP-1 not-overbought)"])
+         "Bearish breakdown + above-average volume confirmation (B1133 loosened)",
+         "Below 200 + 50 EMA (dual trend gate)"])
 
 
 def strat_cup_and_handle_long(s):
@@ -5177,21 +5186,27 @@ def strat_cup_and_handle_long(s):
     it, the breakout is unconfirmed and often fails. Added: vol_spike_2x
     + above 50-EMA (intermediate trend filter) + RSI < 70 (not overbought,
     avoid late-stage entries).
+
+    Batch 1133 (2026-07-03 Council 249 LOOSEN per Turn 5 finding):
+    Producer verified WORKING (cup_handle_detected fires 19% on SPY 4y per
+    Turn 5). Compound gate stack was starving (0 fires in Batch A). Actions:
+    (1) vol_spike_2x -> vol_above_avg (O'Neil CANSLIM canonical uses "above
+    average", not strict 2x); (2) drop rsi_14<70 (redundant with EMA trend
+    stack per feedback_avwap_redundant precedent). Expected 10-20x uplift.
     """
     fires = (
         s.get("cup_handle_detected", False)
         and s.get("price_above_ema_200", False)
-        and s.get("vol_spike_2x", False)
+        and s.get("vol_above_avg", False)  # B1133 loosened from vol_spike_2x
         and s.get("price_above_ema_50", False)
-        and s.get("rsi_14", 50) < 70
+        # B1133 dropped: rsi_14<70 (redundant with EMA trend stack)
     )
     return _strat(fires, "long", "chart_pattern",
         ["cup_handle_detected", "price_above_ema_200",
-         "vol_spike_2x", "price_above_ema_50", "rsi_14<70"],
+         "vol_above_avg", "price_above_ema_50"],
         ["Cup-and-handle pattern detected (O'Neil 1988)",
-         "CANSLIM breakout + 2x volume confirmation (canonical)",
-         "Above 200 EMA + 50 EMA (dual trend gate)",
-         "RSI not overbought (avoid late-stage entries)"])
+         "CANSLIM breakout + above-average volume confirmation (B1133 loosened)",
+         "Above 200 EMA + 50 EMA (dual trend gate)"])
 
 
 def strat_flag_bull_long(s):

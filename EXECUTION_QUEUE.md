@@ -2723,3 +2723,69 @@ blocking_rate_audit.json with blocking_rate 0.235 < 0.70 assertion.
 
 ALL AUDITS COMPLETE. Next per Council 238: B1133+ grouped LOOSEN batches.
 
+
+### B1133 (2026-07-03 Council 249 Grouped LOOSEN 1/N - chart pattern family 3 strategies):
+
+- 2026-07-03 — `b1133-chart-pattern-loosen` — 3 chart pattern strategies loosened per Council 236 verdicts + B1128 empirical. First grouped LOOSEN batch per Council 238 sequenced plan. FULL expanded pyramid 955+7 GREEN.
+
+### 3 strategies loosened (Council 201 batch-cap ≤3 fixes):
+
+**Strategy 1: strat_cup_and_handle_long (screener.py:5170)**
+  Council 236 Turn 5 verdict: PRODUCER_OK + COMPOUND_GATE_STARVING
+  Empirical: cup_handle_detected fires 19% on SPY 4y
+  Batch A n_fires: 0
+  Actions applied:
+    (1) vol_spike_2x -> vol_above_avg (O'Neil CANSLIM canonical)
+    (2) drop rsi_14<70 (redundant with EMA trend stack)
+  Expected uplift: 10-20x
+
+**Strategy 2: strat_inverted_cup_and_handle_short (screener.py:5108)**
+  Council 236 Turn 8 verdict: PRODUCER_OK + COMPOUND_GATE_STARVING + PATTERN_S
+  Batch A n_fires: 1
+  Actions applied (symmetric to CP-1 LONG):
+    (1) vol_spike_2x -> vol_above_avg
+    (2) drop rsi_14>30 (redundant with EMA trend)
+  Retained: below_ema_200 + below_ema_50 + borrow_ok gate
+  Expected uplift: 10-20x (with Pattern S SHORT asymmetric caveat)
+
+**Strategy 3: strat_double_bottom_long (screener.py:5070)**
+  Council 236 Turn 5 verdict + B1128 empirical rebuttal:
+    Producer VERIFIED WORKING (11 double_bottom on SPY 4y)
+    Root cause = 4-way AND compound with B730 gates
+  Batch A n_fires: 0
+  Actions applied:
+    (1) Drop vol_spike_15x (loosest B730 gate per feedback_narrow_scope_blast_radius)
+  Retained: close_in_top_40pct_of_range (B730 anti-fakeout empirically-justified)
+  Expected uplift: 3-5x
+
+### Test updates same-batch:
+
+  test_batch278_cup_and_handle_blocks_unconfirmed_breakouts: fixture
+    updated to use vol_above_avg instead of vol_spike_2x. Removed
+    rsi_14 requirement. Test still validates that missing volume gate
+    blocks fire.
+
+### Expanded pyramid retroactive gate (B1127 policy):
+
+  Pre-B1133 baseline: 955 passed + 7 skip-with-CTA
+  Post-B1133 result:  955 passed + 7 skip-with-CTA
+  Zero regression - only 1 test signature updated (B278 cup_and_handle)
+
+### CSV reclassifications (B1133):
+
+  cup_and_handle_long:            PENDING -> DONE_B1133
+  inverted_cup_and_handle_short:  PENDING -> DONE_B1133
+  double_bottom_long:             PENDING -> DONE_B1133
+
+### Execution status distribution (post-B1133):
+
+  BLOCKED_DATA_MISSING    4 (BUG-278 index rebalance)
+  DONE_B1126              3 (triangle producer fix)
+  DONE_B1133              3 (chart pattern LOOSEN)
+  PENDING               182 (was 185; -3)
+
+### Downstream:
+
+  B1134 next: Ichimoku family LOOSEN (ichimoku_cloud_breakout/breakdown/
+  tk_cross + supertrend_ichimoku_adx + macd_ichimoku).
+

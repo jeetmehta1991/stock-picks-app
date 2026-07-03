@@ -7425,30 +7425,31 @@ def test_batch278_news_sentiment_blocks_loose_signals():
 
 
 def test_batch278_cup_and_handle_blocks_unconfirmed_breakouts():
-    """Batch 278: cup_and_handle now requires vol_spike_2x + above_ema_50
-    + RSI<70 (O'Neil CANSLIM canonical breakout requires volume)."""
+    """Batch 278 baseline + Batch 1133 loosen: cup_and_handle now requires
+    vol_above_avg (was vol_spike_2x pre-B1133) + above_ema_50 (was + RSI<70
+    pre-B1133). O'Neil CANSLIM canonical uses 'above average' not strict 2x
+    per Council 249 empirical Turn 5 finding (producer works 19% but 4-way
+    AND compound-starves)."""
     from backtest.signals.screener import strat_cup_and_handle_long
     # Pattern detected but no volume confirm -> should NOT fire
     signals_no_vol = {
         "cup_handle_detected":   True,
         "price_above_ema_200":   True,
         "price_above_ema_50":    True,
-        "rsi_14":                60,
-        "vol_spike_2x":          False,
+        "vol_above_avg":         False,  # B1133: was vol_spike_2x
     }
     res = strat_cup_and_handle_long(signals_no_vol)
     assert not res["fires"], "cup_and_handle must NOT fire without volume confirm"
 
-    # All gates met -> should fire
+    # All gates met -> should fire (B1133: no more rsi_14<70 required)
     signals_ok = {
         "cup_handle_detected":   True,
         "price_above_ema_200":   True,
         "price_above_ema_50":    True,
-        "rsi_14":                60,
-        "vol_spike_2x":          True,
+        "vol_above_avg":         True,  # B1133: was vol_spike_2x
     }
     res_ok = strat_cup_and_handle_long(signals_ok)
-    assert res_ok["fires"], "cup_and_handle must fire when all gates met"
+    assert res_ok["fires"], "cup_and_handle must fire when all gates met (post-B1133 loosen)"
 
 
 def test_batch278_smc_bos_continuation_requires_volume_and_momentum():
