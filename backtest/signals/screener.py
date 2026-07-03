@@ -1330,12 +1330,18 @@ def strat_ichimoku_tk_cross(s):
     # cloud" (in-cloud no longer fires). Minor tightening matches the
     # strategy's "TK cross + trend confirmation" intent - in-cloud is
     # ambiguous/neutral, not confirming.
-    fl = (s.get("ichi_tk_cross_up") and s.get("ichi_above_cloud"))
-    fs = (s.get("ichi_tk_cross_dn") and s.get("ichi_below_cloud")) and not _short_borrow_trap_active(s)
+    #
+    # B1134 (2026-07-03 Council 249 LOOSEN per Turn 1): 17 fires in Batch A.
+    # 2-gate compound with cloud position filter. TK cross itself carries
+    # direction; cloud position is a redundant regime gate. Drop cloud gate
+    # to increase fires. TK cross EVENT is 5d-recency-anchored so retains
+    # timeliness. Expected 2-3x uplift.
+    fl = s.get("ichi_tk_cross_up")  # B1134 dropped: ichi_above_cloud (redundant)
+    fs = s.get("ichi_tk_cross_dn") and not _short_borrow_trap_active(s)  # B1134 dropped: ichi_below_cloud
     return _strat3(fl, fs, "trend",
-        ["ichi_tk_cross_up","not_below_cloud"], ["ichi_tk_cross_dn","ichi_below_cloud", "borrow_ok"],
-        ["Ichimoku Tenkan crossed above Kijun  -  TK cross bullish","Not below cloud"],
-        ["Ichimoku Tenkan crossed below Kijun  -  TK cross bearish","Below cloud confirms downtrend"])
+        ["ichi_tk_cross_up"], ["ichi_tk_cross_dn", "borrow_ok"],
+        ["Ichimoku Tenkan crossed above Kijun - TK cross bullish (B1134 self-sufficient)"],
+        ["Ichimoku Tenkan crossed below Kijun - TK cross bearish (B1134 self-sufficient)"])
 
 
 def strat_ichimoku_cloud_breakout(s):
@@ -1393,24 +1399,31 @@ def strat_ichimoku_cloud_breakout(s):
     # break_recent_5d). Other 3 confluence gates (tk_bullish, adx_
     # trending, weekly Kumo) retained as confirmation. Expected B655
     # precedent: ~95% reduction.
+    # B1134 (2026-07-03 Council 249 LOOSEN per Turn 1): 5 fires in Batch A.
+    # Producer OK per B725 EVENT (verified Turn 1). 4-way EVENT+STATE AND is
+    # too strict. Drop adx_trending secondary gate - tk_bullish/bearish already
+    # confirms momentum + 5d EVENT window confirms recency. Weekly Kumo gate
+    # retained (B657 D closed silent-gap). Expected 2-3x uplift.
     fl = (
         s.get("ichi_above_cloud_break_recent_5d") and s.get("ichi_tk_bullish")
-        and s.get("adx_trending") and weekly_long_ok
+        # B1134 dropped: adx_trending (redundant with tk_cross confirmation)
+        and weekly_long_ok
     )
     fs = (
         s.get("ichi_below_cloud_break_recent_5d") and s.get("ichi_tk_bearish")
-        and s.get("adx_trending") and weekly_short_ok
+        # B1134 dropped: adx_trending (redundant)
+        and weekly_short_ok
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "trend",
-        ["ichi_above_cloud_break_recent_5d", "ichi_tk_bullish", "adx_trending",
+        ["ichi_above_cloud_break_recent_5d", "ichi_tk_bullish",
          "ichi_weekly_above_cloud"],
-        ["ichi_below_cloud_break_recent_5d", "ichi_tk_bearish", "adx_trending",
+        ["ichi_below_cloud_break_recent_5d", "ichi_tk_bearish",
          "ichi_weekly_below_cloud", "borrow_ok"],
         ["Price JUST broke above Ichimoku Cloud (within last 5 bars; B725 EVENT)",
-         "Tenkan above Kijun", "ADX confirms",
+         "Tenkan above Kijun",
          "Weekly Kumo also above cloud (multi-TF regime confirm)"],
         ["Price JUST broke below Ichimoku Cloud (within last 5 bars; B725 EVENT)",
-         "Tenkan below Kijun", "ADX confirms",
+         "Tenkan below Kijun",
          "Weekly Kumo also below cloud (multi-TF regime confirm)"])
 
 
@@ -2677,14 +2690,20 @@ def strat_supertrend_macd_short(s):
 
 
 def strat_ichimoku_cloud_breakdown(s):
+    # B1134 (2026-07-03 Council 249 LOOSEN per Turn 1): 0 fires in Batch A.
+    # Producer OK (compute_ichimoku emits ichi_below_cloud + tk_cross_dn correctly
+    # post-B725 EVENT semantics). 3-way EVENT AND with adx_trending compound-
+    # starves. Drop adx_trending - EVENT-based ichi_tk_cross_dn already implies
+    # momentum. borrow_ok gate retained (B1132 audit: 23.5% mean blocking OK).
+    # Pattern S SHORT caveat + Turn 1 borrow_ok suspect finding.
     fires = (s.get("ichi_below_cloud") and
              s.get("ichi_tk_cross_dn") and
-             s.get("adx_trending") and not _short_borrow_trap_active(s))
+             # B1134 dropped: adx_trending (redundant with tk_cross EVENT)
+             not _short_borrow_trap_active(s))
     return _strat(fires, "short", "trend",
-        ["ichi_below_cloud", "ichi_tk_cross_dn", "adx_trending", "borrow_ok"],
+        ["ichi_below_cloud", "ichi_tk_cross_dn", "borrow_ok"],
         ["Price broke below Ichimoku Cloud  -  full bearish structure",
-         "Tenkan crossed below Kijun  -  short-term momentum confirming",
-         "ADX trending  -  downtrend has strength"])
+         "Tenkan crossed below Kijun  -  short-term momentum confirming (B1134 self-sufficient)"])
 
 
 def strat_parabolic_sar_flip_short(s):

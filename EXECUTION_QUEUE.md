@@ -2789,3 +2789,50 @@ ALL AUDITS COMPLETE. Next per Council 238: B1133+ grouped LOOSEN batches.
   B1134 next: Ichimoku family LOOSEN (ichimoku_cloud_breakout/breakdown/
   tk_cross + supertrend_ichimoku_adx + macd_ichimoku).
 
+
+### B1134 (2026-07-03 Council 249 Grouped LOOSEN 2/N - Ichimoku family):
+
+- 2026-07-03 — `b1134-ichimoku-loosen` — 3 Ichimoku strategies loosened per Council 236 Turn 1 verdicts. FULL expanded pyramid 955+7 GREEN.
+
+### 3 strategies loosened:
+
+**Strategy 1: strat_ichimoku_cloud_breakout (screener.py:1341)**
+  Council 236 Turn 1 verdict: PRODUCER_OK
+  Batch A n_fires: 5 (LONG); 0 (SHORT)
+  Action: Drop adx_trending secondary gate (redundant with tk_cross EVENT confirmation)
+  Retained: 5d-recency EVENT + tk_bullish/bearish + weekly Kumo (B657 D closed silent-gap)
+  Expected: 2-3x uplift
+
+**Strategy 2: strat_ichimoku_cloud_breakdown (screener.py:2679)**
+  Council 236 Turn 1 verdict: PRODUCER_OK + BORROW_OK_SUSPECT (RESOLVED B1132: 23.5% << 70%)
+  Batch A n_fires: 0
+  Action: Drop adx_trending secondary gate (same as breakout LONG)
+  Retained: ichi_below_cloud + ichi_tk_cross_dn + borrow_ok gate
+  Expected: 3-5x uplift (Pattern S SHORT + borrow_ok filter now empirically validated)
+
+**Strategy 3: strat_ichimoku_tk_cross (screener.py:1326)**
+  Council 236 Turn 1 verdict: PRODUCER_OK + LOOSEN_AVAILABLE
+  Batch A n_fires: 17 (LONG); 0 (SHORT)
+  Action: Drop ichi_above_cloud/below_cloud position gate (redundant with TK cross direction)
+  Retained: TK cross EVENT (5d-anchored) + borrow_ok gate on SHORT side
+  Expected: 2-3x uplift
+
+### CSV reclassifications (B1134):
+
+  ichimoku_cloud_breakout:  PENDING -> DONE_B1134
+  ichimoku_cloud_breakdown: BLOCKED_PRODUCER_BUG (invalidated per Turn 1 PRODUCER_OK) -> DONE_B1134
+  ichimoku_tk_cross:        PENDING -> DONE_B1134
+
+### Execution status distribution (post-B1134):
+
+  BLOCKED_DATA_MISSING    4 (BUG-278 index rebalance)
+  DONE_B1126              3 (triangle producer fix)
+  DONE_B1133              3 (chart pattern LOOSEN)
+  DONE_B1134              3 (Ichimoku LOOSEN)
+  PENDING               179 (was 182; -3)
+
+### Expanded pyramid retroactive gate: 955+7 GREEN.
+
+Next per Council 249 grouped LOOSEN loop:
+  B1135: BB/Squeeze family LOOSEN (bb_squeeze_volume + bollinger_tight + squeeze_breakout)
+
