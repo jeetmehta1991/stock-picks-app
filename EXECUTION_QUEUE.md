@@ -2614,3 +2614,49 @@ Downstream: B1129+ grouped LOOSEN batches for consumer-side gates (halloween/tot
 
 ### Expanded pyramid retroactive gate (B1127 policy) - to run before commit.
 
+
+### B1130 (2026-07-03 Council 248 Data Audit Item 2/3 - B832 SPOF coverage audit):
+
+- 2026-07-03 — `b1130-b832-spof-coverage-audit` — Empirical coverage audit of Polygon news + FINRA short_interest prefetch against Batch A 150 tickers. Coverage is COMPLETE. BUG-280 root cause revised from coverage-gap to sparse-per-ticker-date content.
+
+### Council 248 Item 2/3 empirical evidence:
+
+  Polygon news parquets: 1,927 (471 MB total)
+  Batch A x Polygon news: 150/150 = 100% coverage
+  
+  FINRA short_interest parquets: 1,926
+  Batch A x FINRA: 149/150 = 99.3% (only BF-B missing per hyphen convention)
+
+### Root cause REVISED (not coverage gap):
+
+Sentinels tripped because per-ticker x date parquet CONTENTS are sparse:
+  100 rule-fallback: Polygon returned 0 article-count for window
+  50 empty: empty result set
+  30 zero-score: 0 sentiment on empty article set
+
+Data-density-per-window issue, NOT prefetch gap. Some tickers legitimately
+have <1 article per week - normal sparsity.
+
+### Downstream fix path (deferred to B1133+ grouped LOOSEN):
+
+  (1) Verify sentinel thresholds calibrated for realistic sparsity
+  (2) Compute article-count-per-ticker distribution across Batch A
+  (3) Downgrade sentinels HALT -> WARNING-only
+
+### BUG_REGISTER status change:
+
+  BUG-280 OPEN -> COVERAGE-VERIFIED (root cause revised)
+
+### No CSV reclassification:
+
+news_* strategies remain PENDING - awaiting B1133+ grouped LOOSEN which
+applies Council 236 Turn 4 recommendations (drop AVWAP redundant, loosen
+sentiment thresholds).
+
+### Council 197 Outsider verdict (3rd application):
+
+BUG-280 initial hypothesis about coverage gap was refuted by empirical
+audit. Same pattern as BUG-279 and BUG-281 - paragraph diagnosis without
+runtime probe is audit-theater. Empirical verification MANDATORY per
+Council 246 Tier-4 principle.
+

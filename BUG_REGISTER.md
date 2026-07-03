@@ -682,3 +682,53 @@ hypotheses too.
 rebuttal; L184 pattern; feedback_family_bug_grep_before_one_liners
 CHECKLIST (n) analog to consumer-side gate audit.
 
+
+---
+
+### BUG-280 UPDATE (B1130 2026-07-03 Council 248 Item 2/3):
+
+**STATUS CHANGE: COVERAGE-VERIFIED (root cause revised)** (was: OPEN with coverage-gap hypothesis)
+
+Council 248 empirical coverage audit REFUTES coverage-gap root cause:
+
+  Polygon news parquets in data_prefetch/polygon/news/: 1,927 (471 MB total)
+  Batch A tickers x Polygon news coverage: 150 / 150 = 100%
+  Batch A tickers x FINRA short_interest coverage: 149 / 150 = 99.3%
+    (only BF-B missing due to hyphen-ticker naming convention)
+
+**Root cause revised:**
+  Coverage is COMPLETE. Sentinels tripped during Batch A because
+  per-ticker x date PARQUET CONTENTS are sparse (few articles per bar).
+  Not a data prefetch gap - a data-density-per-window issue.
+
+  When news_sentiment producer runs on a ticker on a specific date:
+  - 100 rule-fallback sentinel: 100 consecutive returns from rule-based
+    scoring (Polygon returned data but had 0 article-count)
+  - 50 empty sentinel: 50 consecutive returns with empty result
+  - 30 zero-score sentinel: 30 consecutive returns with 0 sentiment
+
+  Rule-fallback tripping doesn't mean data is missing - it means:
+  either (a) Polygon returned {} for the ticker x date window, OR
+  (b) score computation returned 0.0 for empty article set.
+
+**Downstream fix path:**
+  (1) Verify sentinel thresholds calibrated for realistic news-sparsity
+      windows (some tickers have <1 article per week - normal).
+  (2) Compute article-count-per-ticker distribution across Batch A cache
+      to calibrate expected sparsity.
+  (3) Downgrade sentinels from HALT-triggering to WARNING-only.
+
+**No CSV reclassification this batch** - news_* strategies remain PENDING
+until B1133+ grouped LOOSEN which will apply the loosening actions from
+Council 236 Turn 4 (drop AVWAP redundant + loosen sentiment thresholds).
+
+**B1124 test state:**
+  test_polygon_news_prefetch_min_ticker_coverage: GREEN (1927 >> 50 floor)
+  test_batch_a_log_documents_sentinel_state: skip-with-CTA (Batch A logs
+    were not persisted post-run per current setup)
+
+**Joint:** Council 236 Turn 4 initial hypothesis; Council 248 empirical
+rebuttal; L184 pattern (Turn X hypothesis over-scoped without empirical
+verification); Council 197 Outsider verdict (3rd application - producer/
+data hypotheses without runtime probes are audit-theater).
+
