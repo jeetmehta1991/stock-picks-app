@@ -2219,3 +2219,43 @@ Distribution across `final_recommended_actions` column:
 
 Total remaining un-investigated: 135 of 192 (146 - 11 Turn 7). Most await either B1126-B1131 grouped LOOSEN or B1122+ producer fixes.
 
+
+### B1122 (2026-07-03 Council 241 Turn 8):
+
+- 2026-07-03 — `b1122-adjacent-family-turn-8` — 6 adjacent-family silent-miss strategies investigated (Council 241; flag_bear_retest_short + inverted_cup_and_handle_short + supertrend_ichimoku_adx + macd_ichimoku + smc_breaker_block_short + smc_inverse_fvg); investigation coverage 57 -> 63 (+6); no new BUGs registered; **contrarian finding surfaced: SMC_PHASE_LATENT_RISK was OVER-SCOPED in Turn 3** (see below).
+
+### Council 241 Turn 8 verdicts (6 strategies):
+
+**CHART PATTERN FAMILY (2):**
+- `flag_bear_retest_short` (n=3) -> PRODUCER_OK + COMPOUND_STRUCTURAL + PATTERN_S (same fix path as flag_bull_retest_long Turn 5)
+- `inverted_cup_and_handle_short` (n=1) -> PRODUCER_OK + COMPOUND_GATE_STARVING + PATTERN_S (same LOOSEN path as cup_and_handle_long Turn 5)
+
+**ICHIMOKU CONFLUENCE FAMILY (2):**
+- `supertrend_ichimoku_adx` (n=0) -> PRODUCER_OK + 3_WAY_EVENT_COMPOUND_STARVED (LOOSEN to 2-of-3 confluence OR narrow-scope STATE revert)
+- `macd_ichimoku` (n=5) -> PRODUCER_OK + 2_WAY_EVENT_COMPOUND (same-bar AND -> 5-day OR window)
+
+**SMC ABOVE-MARGINAL (2):**
+- `smc_breaker_block_short` (n=89) -> PRODUCER_OK + HEALTHY_FIRE_COUNT + PATTERN_S (STATUS_QUO + universe_expand)
+- `smc_inverse_fvg` (n=81) -> PRODUCER_OK + HEALTHY_FIRE_COUNT (STATUS_QUO + universe_expand)
+
+### CONTRARIAN FINDING (Turn 8 honest-finding pivot per Council 241):
+
+**Turn 3 SMC_PHASE_LATENT_RISK framing was over-scoped.**
+
+If `SMC_PHASE != 'PRODUCTION'` were silent-killing SMC producers (as Turn 3 hypothesized for all 10 investigated quiet-fire SMC strategies), then smc_breaker_block_short (89 fires) + smc_inverse_fvg (81 fires) would also be at 0. They aren't. Therefore SMC_PHASE audit is still WARRANTED but is NOT the primary underfire driver for the 10 quiet-fire SMC strategies. The actual discriminator is strategy-specific consumer gates + Fibonacci/zone thresholds.
+
+**Scope tightening for downstream execution:**
+- B1123 SMC_PHASE audit (Council 238 plan) becomes DEFENSIVE not primary
+- Primary SMC loosening becomes strategy-specific: OTE Fib band 62-79% -> 60-82%; discount/premium dealing_range_pct threshold widening; FVG un-mitigated zone entry tolerance widening
+- Turn 3 SMC recommendations updated implicitly to prioritize strategy-specific loosening over env-flag audit
+
+### TRANSPARENT REMAINING GAPS (post-B1122 per no-silent-misses rule):
+
+Total investigated: 63/192 (32.8%). Remaining 129 (67.2%) breakdown:
+- 22 PENDING with concrete final_recommended_actions ready for B1126-B1131 grouped LOOSEN execution (no producer investigation needed - Council 235 pre-investigation analysis sufficient)
+- 84 PENDING with pre-investigation recommendation from Council 235 turns 1-13 (may need investigation if uplift underperforms in B1132 micro-cube)
+- 12 EXPLORATORY (per registry - not counted as quiet-fire)
+- 11 above-marginal but flagged for owner_review_notes tracking
+
+If any of the 129 remaining PENDING strategies surface new producer questions during B1126-B1131 grouped LOOSEN batches, they get on-demand producer investigation same-turn.
+

@@ -2342,3 +2342,16 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 
 **Cross-references:** B1118 commit `dbe9ab58d`; `output_batch_A_150/phase_1_quiet_fire_investigation.csv`; `test_b1080_checklist_135_schema_pin.py` (existing precedent); `feedback_writer_reader_schema_contract_pin_test`.
 
+
+---
+
+## L184 — Family-inheritance verdicts can over-scope when siblings behave differently (B1122 2026-07-03 Council 241 Turn 8)
+
+**What went wrong:** Council 236 Turn 3 investigated 10 quiet-fire SMC strategies and hypothesized `SMC_PHASE != 'PRODUCTION'` env-flag silent-kill as PRIMARY driver of all 10 underfires (verdict pattern: `PRODUCER_OK + SMC_PHASE_LATENT_RISK`). Extension logic implied ALL SMC strategies share the same latent kill switch. Council 241 Turn 8 investigated 2 above-marginal SMC strategies (`smc_breaker_block_short` n=89 + `smc_inverse_fvg` n=81) that CONTRADICT this hypothesis: if SMC_PHASE were killing SMC producers, these 2 would also be at 0. They aren't. Therefore SMC_PHASE audit remains WARRANTED but is NOT the primary underfire driver for the 10 quiet-fires; strategy-specific consumer gates + zone thresholds are.
+
+**Universal principle:** *Family-inheritance verdicts (a strategy inherits a sibling's producer-level diagnosis) implicitly assume the family shares the failure mode across ALL siblings. This assumption must be tested against siblings that behave DIFFERENTLY from the pattern. If any sibling contradicts the hypothesis, the family-level attribution is over-scoped and should be tightened to strategy-specific factors.*
+
+**Rule:** When applying a family-inheritance verdict, first enumerate siblings that DO NOT match the primary failure mode. If such siblings exist (e.g., healthy-fire strategies in a family whose quiet-fires are attributed to producer-level failure), the family verdict must explicitly caveat: "audit remains warranted BUT is not the primary driver". Downstream execution scope tightens accordingly. This applies to any family binding: producer-family (chart pattern detectors), env-config family (SMC_PHASE), data-source family (Polygon news SPOF), calendar-family (B723 EVENT conversion).
+
+**Cross-references:** B1122 commit; Council 236 Turn 3 SMC investigations; Council 241 Turn 8 contrarian finding; `feedback_asymmetric_data_sources_break_mechanical_inverse` (adjacent principle at direction-mirror level); `feedback_family_bug_grep_before_one_liners` (family-scope discipline).
+
