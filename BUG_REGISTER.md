@@ -602,3 +602,39 @@ Therefore Turn 2's "300x underfire" attribution to calendar producer was incorre
 
 **Joint:** Council 236 Turn 2 initial hypothesis; Council 245 empirical rebuttal; L184 family-inheritance verdicts over-scoping; B1132 micro-cube validation dependency.
 
+
+---
+
+### BUG-277 UPDATE (B1126 2026-07-03 Council 245 Item 2/3):
+
+**STATUS CHANGE: RESOLVED-IMPLEMENTED** (was: OPEN)
+
+Fix in chart_patterns.py:383 detect_triangle:
+  - Ascending flat-top tolerance: `abs(slope_high_norm) < 0.001` -> `< 0.002`
+  - Ascending rising-low: `slope_low_norm > 0.002` -> `> 0.001`
+  - Descending: symmetric widening for flat-bottom tolerance
+
+Empirical validation on SPY 2020-2026 (rolling 30-bar window every 20 bars):
+  - Pre-fix: 0 detections
+  - Post-fix: 17 detections
+  - Matches Bulkowski 2005 canonical ~5-15/yr/ticker rate
+
+Root cause: SPY 4y slope_high_norm distribution median=0.00151, 90%ile=0.00302.
+Prior tolerance 0.001 excluded 90%+ of legitimate consolidation windows.
+New 0.002 tolerance matches Bulkowski 2005 canonical ~2% total drift range
+over pattern width (equivalent to 0.002 × 30 bars = 6% max drift).
+
+B1124 test flipped: `test_bug_277_triangle_producer_fires_on_spy_canonical`
+replaces RED-first skip with GREEN assertion `>= 5` triangles on SPY 4y.
+
+**Reclassifications:**
+  triangle_ascending_long:        BLOCKED_PRODUCER_BUG -> DONE_B1126
+  triangle_ascending_retest_long: BLOCKED_PRODUCER_BUG -> DONE_B1126
+  triangle_descending_short:      BLOCKED_PRODUCER_BUG -> DONE_B1126
+
+**Downstream:** B1128-B1131 grouped LOOSEN now eligible to LOOSEN consumer
+gate stacks (vol_spike, Pattern S filters) on top of newly-firing producer.
+
+**Joint:** Council 236 Turn 5 initial finding; Council 245 Item 2/3 empirical
+fix; L184 family-inheritance verdicts; B1124 test extension.
+

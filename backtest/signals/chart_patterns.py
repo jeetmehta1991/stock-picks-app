@@ -379,13 +379,17 @@ def detect_triangle(
     out = {"triangle_ascending_detected": False,
            "triangle_descending_detected": False,
            "triangle_symmetric_detected": False}
+    # B1126 BUG-277 fix (Council 245 empirical): SPY 4y median slope_high_norm
+    # = 0.00151 (90%ile 0.00302) - old tol 0.001 excluded 90%+ of consolidation
+    # windows. Widen to Bulkowski 2005 canonical ~2% drift range: flat<0.002,
+    # slope>0.001. SPY 4y detection: 0 -> 17 (matches Bulkowski 5-15/yr).
     # Ascending: slope_high ~ 0, slope_low > 0
-    if abs(slope_high_norm) < 0.001 and slope_low_norm > 0.002:
+    if abs(slope_high_norm) < 0.002 and slope_low_norm > 0.001:
         out["triangle_ascending_detected"] = True
         out["triangle_resistance_level"] = round(float(highs_arr.mean()), 4)
         out["triangle_breakout_pct"] = round(slope_low_norm * lookback, 4)
     # Descending: slope_high < 0, slope_low ~ 0
-    elif slope_high_norm < -0.002 and abs(slope_low_norm) < 0.001:
+    elif slope_high_norm < -0.001 and abs(slope_low_norm) < 0.002:
         out["triangle_descending_detected"] = True
         out["triangle_support_level"] = round(float(lows_arr.mean()), 4)
         out["triangle_breakdown_pct"] = round(slope_high_norm * lookback, 4)

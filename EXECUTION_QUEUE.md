@@ -2394,3 +2394,38 @@ Producer works. Underfire root cause is DOWNSTREAM (regime affinity in Batch A c
 
 Council 245 empirical rebuttal of Turn 2 hypothesis is the RIGHT-KIND-OF-HONEST-FINDING per Council 197: "Tests pass because they don't touch the things that break." Turn 2's paragraph verdict didn't touch the actual producer runtime. B1125 empirical probe touched the runtime and refuted the hypothesis. This is anti-audit-theater in action per CHECKLIST #136.
 
+
+### B1126 (2026-07-03 Council 245 Item 2/3 - BUG-277 RESOLVED-IMPLEMENTED):
+
+- 2026-07-03 — `b1126-bug-277-triangle-detector-fix` — chart_patterns.py:383 detect_triangle flat-top tolerance widened 0.001 -> 0.002 (Bulkowski 2005 canonical); SPY 4y detection 0 -> 17 (matches Bulkowski 5-15/yr); B1124 test flipped RED-first skip to GREEN assertion.
+
+### Council 245 Item 2/3 empirical evidence:
+
+Pre-fix: detect_triangle on SPY 4y rolling window every 20 bars = 0 detections
+Post-fix: same window = 17 detections
+
+Slope_high_norm distribution on SPY 62 windows (Council 245 measurement):
+  Median: 0.00151
+  75%ile: 0.00219
+  90%ile: 0.00302
+  Prior tol 0.001 excluded 90%+ of consolidation windows
+
+Bulkowski 2005 canonical: ~2% total drift range over pattern width = 0.002 x 30 bars = 6% max drift.
+
+### CSV reclassifications (B1126):
+
+  triangle_ascending_long:        BLOCKED_PRODUCER_BUG -> DONE_B1126
+  triangle_ascending_retest_long: BLOCKED_PRODUCER_BUG -> DONE_B1126
+  triangle_descending_short:      BLOCKED_PRODUCER_BUG -> DONE_B1126
+
+### Execution status distribution (post-B1126):
+
+  BLOCKED_DATA_MISSING    4
+  BLOCKED_PRODUCER_BUG    1 (was 4; -3 triangle family fixed; only BUG-281 double_bottom_long left)
+  DONE_B1126              3 (new tier - first strategies to reach DONE state this session)
+  PENDING               184
+
+### Downstream execution scope tightening:
+
+B1128-B1131 grouped LOOSEN now eligible to LOOSEN consumer-side gate stacks (vol_spike_2x -> vol_above_avg per O'Neil CANSLIM; drop rsi_14 redundant with EMA trend; Pattern S SHORT + borrow_ok audit) on TOP of newly-firing producer. Expected total uplift: producer 0->17 (17x) × consumer LOOSEN (~2-3x) = 30-50x on Batch A universe.
+

@@ -74,25 +74,40 @@ def test_producer_function_exists_and_callable(contract):
     assert callable(fn), f"{contract.function_name} is not callable"
 
 
-def test_bug_277_triangle_producer_registered_but_underfires():
-    """BUG-277 RED-FIRST: detect_triangle exists but 0% fire rate SPY 6y.
+def test_bug_277_triangle_producer_fires_on_spy_canonical():
+    """BUG-277 FIXED (B1126 Council 245): detect_triangle now fires >=5 on SPY 4y.
 
-    This test documents the KNOWN BUG. When BUG-277 is fixed, this test
-    should be updated to expect >0 fires on canonical fixture.
+    B1126 widened flat-top tolerance 0.001 -> 0.002 (Bulkowski 2005
+    canonical). Empirical: SPY 4y detection went 0 -> 17 with widened
+    tolerance. Test asserts >=5 detections on canonical rolling window.
     """
-    from backtest.signals import chart_patterns
+    import numpy as np
+    import pandas as pd
+    from pathlib import Path
+    from backtest.signals.chart_patterns import detect_triangle
 
-    fn = chart_patterns.detect_triangle
-    sig = inspect.signature(fn)
-    assert "df" in sig.parameters or len(sig.parameters) >= 1, (
-        "detect_triangle should accept a DataFrame argument"
-    )
+    spy_path = REPO / "data_prefetch" / "polygon" / "ohlcv_daily" / "SPY.parquet"
+    if not spy_path.exists():
+        pytest.skip(f"SPY OHLCV parquet missing at {spy_path}")
+        return
 
-    pytest.skip(
-        "BUG-277 RED-FIRST: detect_triangle known 0-fire on SPY 6y sample. "
-        "This skip is intentional documentation - when the producer is fixed, "
-        "replace this skip with an assertion that fire rate > 0 on canonical fixture. "
-        "See BUG_REGISTER.md BUG-277."
+    spy = pd.read_parquet(spy_path)
+    spy["date"] = pd.to_datetime(spy["date"])
+    spy = spy.set_index("date").sort_index()
+
+    detections = 0
+    for i in range(30, len(spy), 20):
+        window = spy.iloc[i - 30 : i]
+        if len(window) < 30:
+            continue
+        result = detect_triangle(window)
+        if result.get("triangle_ascending_detected") or result.get("triangle_descending_detected"):
+            detections += 1
+
+    assert detections >= 5, (
+        f"BUG-277 REGRESSION: detect_triangle detected {detections} triangles "
+        f"on SPY 4y sample (rolling 30-bar every 20 bars); expected >=5 per "
+        f"B1126 widened tolerance fix. If below 5, producer regressed."
     )
 
 
