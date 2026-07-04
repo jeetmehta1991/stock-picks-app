@@ -3500,17 +3500,21 @@ def strat_orb_stocks_in_play_long(s):
 
 def strat_orb_stocks_in_play_short(s):
     """Batch 211: Symmetric short for gap-down stocks-in-play.
-    Daily-bar proxy: gap_dn_pct > 2%, close < open, 2x volume, below
-    200-EMA regime gate."""
+    Daily-bar proxy: gap_dn_pct > 1.5% (B1178 loosened), close < open, 2x volume,
+    below 200-EMA regime gate."""
+    # B1178 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    # gap_dn_2pct -> gap_dn_1_5pct per CSV rec "mirror of Turn 6 orb_long".
+    # Producer-additive gap_dn_1_5pct added in technical.py; narrow-scope
+    # (other gap_dn_2pct consumers unchanged).
     fires = (
-        s.get("gap_dn_2pct", False)
+        s.get("gap_dn_1_5pct", False)
         and s.get("close_below_open", False)
         and s.get("vol_spike_2x", False)
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))
     gap = s.get("gap_dn_pct", 0.0)
     return _strat(fires, "short", "orb",
-        ["gap_dn_pct>2", "close_below_open", "vol_spike_2x", "below_ema_200", "borrow_ok"],
+        ["gap_dn_pct>1.5", "close_below_open", "vol_spike_2x", "below_ema_200", "borrow_ok"],
         [f"Gap down -{gap:.1f}% - in-play catalyst",
          "Close below open - intraday momentum negative",
          "Volume 2x ADV(20) - institutional participation",
@@ -3968,16 +3972,21 @@ def strat_po3_bearish(s):
 def strat_htf_aligned_breakout_long(s):
     """Batch 217: Multi-timeframe-aligned daily breakout. Daily breakout
     above prev-day high + weekly + monthly biases both bullish. Triple-
-    timeframe confluence per Brian Shannon discipline."""
+    timeframe confluence per Brian Shannon discipline.
+
+    B1179 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    vol_spike_15x (1.5x) -> vol_above_avg (1.0x) per rec "Shannon canonical
+    'above-average volume'". Narrow-scope; other consumers unchanged.
+    """
     fires = (
         s.get("above_prev_high", False)
-        and s.get("vol_spike_15x", False)
+        and s.get("vol_above_avg", False)
         and s.get("htf_aligned_bull", False)
     )
     return _strat(fires, "long", "multi_timeframe",
-        ["above_prev_high", "vol_spike_15x", "htf_aligned_bull"],
+        ["above_prev_high", "vol_above_avg", "htf_aligned_bull"],
         ["Price broke above previous day's high",
-         "Volume 1.5x ADV(20) - institutional participation",
+         "Volume above average - Shannon 'above-average volume' (loosened per B1179)",
          "Weekly + Monthly bias both bullish - HTF aligned"])
 
 

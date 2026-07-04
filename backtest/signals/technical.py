@@ -169,6 +169,11 @@ def compute_pivots(df: pd.DataFrame) -> dict:
         "gap_dn_pct":      round((C - df["open"].iloc[-1]) / C * 100, 3) if C else 0.0,
         "gap_up_2pct":     ((df["open"].iloc[-1] - C) / C) > 0.02 if C else False,
         "gap_dn_2pct":     ((C - df["open"].iloc[-1]) / C) > 0.02 if C else False,
+        # B1178 (2026-07-04 Council 275): 1.5% variants for orb_stocks_in_play
+        # LONG/SHORT loosening per CSV rec "gap_dn_2pct -> gap_dn_1_5pct".
+        # Producer-additive; 2pct variants unchanged.
+        "gap_up_1_5pct":   ((df["open"].iloc[-1] - C) / C) > 0.015 if C else False,
+        "gap_dn_1_5pct":   ((C - df["open"].iloc[-1]) / C) > 0.015 if C else False,
         "close_above_open": today > df["open"].iloc[-1],
         "close_below_open": today < df["open"].iloc[-1],
     }

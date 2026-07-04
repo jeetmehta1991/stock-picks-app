@@ -7035,11 +7035,10 @@ def test_batch211_orb_long_requires_gap_volume_and_regime():
 
 def test_batch211_orb_short_symmetric():
     """Batch 211: orb_stocks_in_play_short symmetric on gap-down.
-    B630 sweep update: strategy swapped to positive symmetric
-    below_ema_200."""
+    B1178 loosening: gap_dn_2pct -> gap_dn_1_5pct per CSV rec."""
     from backtest.signals.screener import strat_orb_stocks_in_play_short
     s = {
-        "gap_dn_2pct": True, "gap_dn_pct": 3.5,
+        "gap_dn_1_5pct": True, "gap_dn_pct": 2.5,
         "close_below_open": True,
         "vol_spike_2x": True,
         "below_ema_200": True,         # B630: bear regime (positive symmetric)
@@ -8852,10 +8851,10 @@ def test_batch217_po3_bullish_strategy_requires_regime_gate():
 
 
 def test_batch217_htf_aligned_breakout_long_requires_triple_confluence():
-    """Batch 217: htf_aligned_breakout_long needs prev_high break + 1.5x
-    volume + htf_aligned_bull."""
+    """Batch 217 (post-B1179 owner-approved LOOSEN): htf_aligned_breakout_long
+    needs prev_high break + vol_above_avg (was 1.5x pre-B1179) + htf_aligned_bull."""
     from backtest.signals.screener import strat_htf_aligned_breakout_long
-    s = {"above_prev_high": True, "vol_spike_15x": True,
+    s = {"above_prev_high": True, "vol_above_avg": True,
          "htf_aligned_bull": True}
     assert strat_htf_aligned_breakout_long(s)["fires"] is True
     s["htf_aligned_bull"] = False

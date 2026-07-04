@@ -4106,3 +4106,17 @@ FLAGGED for owner decision:
 
 Pyramid 850+2 GREEN (no code change).
 
+
+### B1178-B1179 (2026-07-04 Council 275 FAIL_PYRAMID 1-2/2):
+
+B1178 orb_stocks_in_play_short: gap_dn_2pct -> gap_dn_1_5pct
+- Added producer-additive gap_dn_1_5pct + gap_up_1_5pct in technical.py
+- Strategy switched to gap_dn_1_5pct
+- test_batch211_orb_short_symmetric fixture updated (gap_dn_2pct -> gap_dn_1_5pct)
+
+B1179 htf_aligned_breakout_long: vol_spike_15x -> vol_above_avg
+- Per rec "Shannon canonical 'above-average volume'"
+- test_batch217_htf_aligned_breakout_long_requires_triple_confluence fixture updated
+
+Pyramid 850+2 GREEN.
+
