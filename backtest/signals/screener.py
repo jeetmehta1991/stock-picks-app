@@ -2352,18 +2352,30 @@ def strat_morning_star(s):
 
 def strat_bullish_engulfing_support(s):
     # B628 F1 family-sweep: positive symmetric obv_bearish.
-    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
-    # B1158 invention (hammer sub for piercing_line + SHORT symmetric expansion)
-    # reverted per owner directive. piercing_line signal does not exist in
-    # producer; awaits producer-side work.
-    fl = (s.get("bullish_engulfing") and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
-    fs = (s.get("bearish_engulfing") and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
+    # B1175 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    # Widen candle set per rec "bullish_engulfing OR piercing_line OR
+    # bullish_pin_bar OR morning_star". piercing_line SKIPPED per CHECKLIST
+    # #150(a) - signal does not exist in producer. Applied 3 verified signals
+    # for LONG + symmetric SHORT (bearish_engulfing OR bearish_pin_bar OR
+    # evening_star). Nison 1991 canonical bullish-reversal family.
+    bullish_candle = (
+        s.get("bullish_engulfing")
+        or s.get("bullish_pin_bar")
+        or s.get("morning_star")
+    )
+    bearish_candle = (
+        s.get("bearish_engulfing")
+        or s.get("bearish_pin_bar")
+        or s.get("evening_star")
+    )
+    fl = (bullish_candle and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
+    fs = (bearish_candle and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
           and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "candle",
-        ["bullish_engulfing","at_support","obv_bullish"],
-        ["bearish_engulfing","at_resistance","obv_bearish", "borrow_ok"],
-        ["Bullish engulfing at support - two systems confirming","OBV rising"],
-        ["Bearish engulfing at resistance - two systems confirming","OBV falling (B628 F1)"])
+        ["bullish_reversal_family","at_support","obv_bullish"],
+        ["bearish_reversal_family","at_resistance","obv_bearish", "borrow_ok"],
+        ["Bullish reversal (engulfing/pin_bar/morning_star) at support - widened per B1175","OBV rising"],
+        ["Bearish reversal (engulfing/pin_bar/evening_star) at resistance - widened per B1175","OBV falling (B628 F1)"])
 
 
 def strat_hammer_at_support_long(s):

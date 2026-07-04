@@ -4067,3 +4067,14 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1175 (2026-07-04 Council 275 REVERT 6/8): bullish_engulfing_support
+
+CSV final_recommended_actions: widen candle set (bullish_engulfing OR piercing_line OR bullish_pin_bar OR morning_star)
+
+Applied:
+- LONG: (bullish_engulfing OR bullish_pin_bar OR morning_star) [piercing_line SKIPPED per CHECKLIST #150(a) - producer does not emit it]
+- SHORT: symmetric (bearish_engulfing OR bearish_pin_bar OR evening_star)
+
+Pyramid 850+2 GREEN.
+
