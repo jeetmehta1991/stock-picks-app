@@ -2395,7 +2395,7 @@ def strat_doji_at_support(s):
     # the narrow 0.3pct near_s1/at_key_fib stay unchanged.
     fires = (s.get("doji") and
              (s.get("near_s1_wide") or s.get("near_s2_wide") or s.get("at_key_fib_wide")) and
-             s.get("vol_spike_15x"))
+             s.get("vol_spike_12x"))
     return _strat(fires, "long", "candle",
         ["doji","at_support_wide_1.5pct","vol_spike_15x"],
         ["Doji candle at support  -  indecision after downmove",
