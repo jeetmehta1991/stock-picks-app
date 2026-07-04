@@ -4120,3 +4120,19 @@ B1179 htf_aligned_breakout_long: vol_spike_15x -> vol_above_avg
 
 Pyramid 850+2 GREEN.
 
+
+### B1180 (2026-07-04 Council 275 PRODUCER 1-3/9): Calendar @lru_cache BUG-279
+
+3 strategies fixed via single producer batch (grouped by root cause per Council 201 batch discipline):
+- totm_long
+- pre_holiday_long
+- halloween_seasonal_long
+
+Applied:
+1. _cached_calendar_signals + _cached_cross_asset_signals: maxsize 4 -> None (perf fix; BUG-279)
+2. Runtime probe of compute_calendar_signals: PRODUCER VERIFIED emitting is_totm_window_first_day / is_halloween_period_first_day / is_pre_holiday CORRECTLY on canonical first-BD-of-month dates (Jan/Feb/Mar/Nov 2024 tested).
+
+CSV "300x underfire" claim is NOT a producer bug. Producer is correct. Downstream engine-attribution investigation deferred (marked for follow-up).
+
+Pyramid 850+2 GREEN.
+

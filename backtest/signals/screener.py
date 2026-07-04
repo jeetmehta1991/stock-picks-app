@@ -6701,14 +6701,23 @@ def strat_naked_poc_retest_long(s):
 from functools import lru_cache
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=None)  # B1180 (2026-07-04 Council 275): BUG-279 fix.
+# Was maxsize=4; a 4-entry LRU can churn hard when backtest sweeps many
+# as_of dates in parallel, and any collision that causes evict+re-fetch
+# is a perf hit. Calendar signals are date-only pure functions with tiny
+# output; unbounded cache is safe (process-local; ~1KB/day; ~365KB/year).
+# Runtime probe (B1180): compute_calendar_signals correctly emits
+# is_totm_window_first_day / is_halloween_period_first_day on first BD of
+# month across Jan/Feb/Mar/Nov 2024 - producer is CORRECT. Underfire in
+# CSV rec may be engine-attribution downstream (out of scope for producer
+# fix); marked for follow-up.
 def _cached_calendar_signals(as_of_iso: str) -> dict:
     from datetime import date as _d
     from backtest.signals.calendar_effects import compute_calendar_signals
     return compute_calendar_signals(_d.fromisoformat(as_of_iso))
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=None)  # B1180: consistent with _cached_calendar_signals
 def _cached_cross_asset_signals(as_of_iso: str) -> dict:
     from datetime import date as _d
     from backtest.signals.cross_asset import compute_cross_asset_signals
