@@ -3841,3 +3841,17 @@ Pyramid 955+7 GREEN.
 
 CUMULATIVE POST-B1163: DONE 129 (67.2%), SKIP 57.
 
+
+### B1164 (2026-07-04 Council 269 Manual Review - 3 loosen + 1 status_quo):
+
+Per CHECKLIST #148 tier-verified (all n <= 30).
+
+1. vix_backwardation_long (n=19 MED): xs_quality_decile 8 -> 7
+2. institutional_multi_quarter_persistence_long (n=15 HIGH): persistent_holders_4q >= 5 (Yan-Zhang 2009)
+3. orb_stocks_in_play_long (n=15 HIGH): gap_up_pct > 1.5% (test fixture updated)
+4. insider_cluster_concentrated_sell_short (n=16 MED): STATUS_QUO (Lakonishok-Lee structural)
+
+Pyramid 955+7 GREEN.
+
+CUMULATIVE POST-B1164: DONE 133 (69.3%), SKIP 53.
+

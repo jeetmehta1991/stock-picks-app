@@ -7004,20 +7004,26 @@ def test_batch211_orb_strategies_registered_and_gap_signals():
 
 
 def test_batch211_orb_long_requires_gap_volume_and_regime():
-    """Batch 211: orb_stocks_in_play_long requires gap_up_2pct +
-    close_above_open + vol_spike_2x + price_above_ema_200."""
+    """Batch 211 + Batch 1164 (Council 269 LOOSEN): orb_stocks_in_play_long
+    requires gap_up_pct > 1.5% (was gap_up_2pct >= 2%) + close_above_open +
+    vol_spike_2x + price_above_ema_200. B1164 widened gap threshold per CSV."""
     from backtest.signals.screener import strat_orb_stocks_in_play_long
-    # All conditions met
+    # All conditions met (post-B1164: gap > 1.5%)
     s = {
-        "gap_up_2pct": True, "gap_up_pct": 3.5,
+        "gap_up_pct": 3.5,  # > 1.5% B1164 threshold
         "close_above_open": True,
         "vol_spike_2x": True,
         "price_above_ema_200": True,
     }
     r = strat_orb_stocks_in_play_long(s)
     assert r["fires"] is True and r["direction"] == "long"
-    # Missing each requirement individually -> no fire
-    for missing_key in ("gap_up_2pct", "close_above_open", "vol_spike_2x"):
+    # Gap below 1.5% -> no fire
+    s_copy = dict(s); s_copy["gap_up_pct"] = 1.0
+    assert strat_orb_stocks_in_play_long(s_copy)["fires"] is False, (
+        "B1164: ORB long must NOT fire when gap_up_pct <= 1.5%"
+    )
+    # Missing close_above_open OR vol_spike_2x individually -> no fire
+    for missing_key in ("close_above_open", "vol_spike_2x"):
         s_copy = dict(s); s_copy[missing_key] = False
         assert strat_orb_stocks_in_play_long(s_copy)["fires"] is False, (
             f"Batch 211: ORB long must NOT fire when {missing_key}=False"

@@ -3460,13 +3460,16 @@ def strat_orb_stocks_in_play_long(s):
         participation as a primary edge)
       - 200-EMA regime gate (long-only buy bias)
     """
+    # B1164 (2026-07-04 Council 269 manual LOOSEN per CSV rec; tier n=15 HIGH verified):
+    # gap_up_pct > +2% -> > +1.5% (broader gap-and-go zone). Inline check on
+    # gap_up_pct numeric signal replaces gap_up_2pct boolean threshold.
+    gap = s.get("gap_up_pct", 0.0)
     fires = (
-        s.get("gap_up_2pct", False)
+        gap > 1.5  # B1164: was s.get("gap_up_2pct", False) (>=2.0)
         and s.get("close_above_open", False)
         and s.get("vol_spike_2x", False)
         and s.get("price_above_ema_200", False)
     )
-    gap = s.get("gap_up_pct", 0.0)
     return _strat(fires, "long", "orb",
         ["gap_up_pct>2", "close_above_open", "vol_spike_2x", "price_above_ema_200"],
         [f"Gap up +{gap:.1f}% - in-play catalyst",
@@ -6315,8 +6318,11 @@ def strat_institutional_multi_quarter_persistence_long(s):
     470 of 503 T1a tickers (the snapshot covers a T1a-stable subset;
     coverage gap on the other 33 is expected, not a producer bug).
     """
+    # B1164 (2026-07-04 Council 269 manual LOOSEN per CSV rec; tier n=15 HIGH verified):
+    # persistent_holders_4q >=10 -> >=5 (Yan-Zhang 2009 canonical threshold varies).
+    # Direct threshold check replaces institutional_persistence_strong (implicit >=10).
     fires = (
-        s.get("institutional_persistence_strong", False)
+        s.get("persistent_holders_4q", 0) >= 5  # B1164: was institutional_persistence_strong (>=10)
         and s.get("price_above_ema_200", False)
     )
     p4q = s.get("persistent_holders_4q", 0)
@@ -6811,9 +6817,12 @@ def strat_risk_off_bond_equity_short(s):
 def strat_vix_backwardation_long(s):
     """Batch 254: long quality when VIX > VIX3M (stress regime).
     Cheng 2019 JFE: short-vol unwinds; convexity for longs."""
+    # B1164 (2026-07-04 Council 269 manual LOOSEN per CSV rec; tier n=19 MED verified):
+    # xs_quality_decile >= 8 -> >= 7 (top-quintile broader). Retain backwardation
+    # gate (alpha hypothesis).
     fires = (
         s.get("vix_term_backwardation", False)
-        and s.get("xs_quality_decile", 0) >= 8
+        and s.get("xs_quality_decile", 0) >= 7  # B1164: was >= 8
     )
     return _strat(fires, "long", "cross_asset",
         ["vix_term_backwardation", "xs_quality_decile>=8"],
