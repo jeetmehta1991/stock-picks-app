@@ -4152,3 +4152,33 @@ Retest tolerance (1.5*ATR) unchanged - specific-tolerance widen not owner-specif
 
 Pyramid 850+2 GREEN.
 
+
+### B1182 (2026-07-04 Council 275 PRODUCER 7-8/9): SMC producer investigation
+
+2 strategies investigated (turtle_soup_long, judas_swing_long) - both depend on smc_liquidity_swept_dn.
+
+Runtime probe findings:
+- SMC_PHASE=PRODUCTION (correct; no short-circuit)
+- compute_smc_signals emits 22 keys (producer loaded correctly)
+- smc_liquidity_swept_dn returned False on synthetic sweep pattern with volume added
+- Silent-failure warning: order_block_compute exception KeyError 'volume' on some code paths
+- Root cause hypothesis: smartmoneyconcepts library detection logic may not fire on synthetic patterns; requires real-market data probe (SPY 2020-03-23, 2022-10-13 canonical failed-breakdowns)
+
+Follow-up needed: run producer on real ticker OHLCV around canonical liquidity sweep dates for confidence verdict.
+
+No code change this batch - producer verification incomplete pending real-data probe.
+
+
+### B1183 (2026-07-04 Council 275 PRODUCER 9/9): macd_crossover_short borrow trap audit
+
+_short_borrow_trap_active returns True when days_to_cover > 5.0 (B718a threshold set post-B713 external review).
+
+Audit finding: Helper operates AS DESIGNED per SM-5 borrow-trap policy. 10x underfire is expected consequence when DTC distribution across Batch A tickers is high. Not a producer bug.
+
+Owner decision needed:
+(a) Accept current DTC>5.0 threshold (protects against squeeze; may over-block)
+(b) Raise to DTC>8.0 (previous threshold; would allow more shorts but restore squeeze exposure)
+(c) Ticker-specific override / other
+
+No code change this batch - policy decision needed from owner.
+
