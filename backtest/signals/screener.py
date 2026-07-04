@@ -4443,7 +4443,6 @@ def strat_judas_swing_short(s):
     fires = (
         s.get("smc_liquidity_swept_up", False)
         and s.get("near_pivot", False)
-        and s.get("close_below_open", False)
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "ict",
         ["smc_liquidity_swept_up", "near_pivot", "close_below_open", "borrow_ok"],
