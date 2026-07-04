@@ -6239,7 +6239,7 @@ def strat_institutional_recent_init_volume_long(s):
     sponsorship is broad-market not just smart-money private positioning."""
     fires = (
         s.get("institutional_new_positions", 0) >= 2
-        and s.get("vol_spike_2x", False)
+        and s.get("vol_above_avg", False)
         and s.get("price_above_ema_50", False)
     )
     n_new = s.get("institutional_new_positions", 0)
