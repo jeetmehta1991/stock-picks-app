@@ -3278,3 +3278,19 @@ Strategies:
 
 No code change - CSV directive fulfilled by prior audit batches.
 
+
+### B1147 (2026-07-03 Council 258 Grouped LOOSEN 13/N - MED-tier top 3):
+
+- 2026-07-03 — `b1147-med-loosen-top3` — 3 highest-fire SKIP_GENERIC_TEMPLATE strategies handled per CSV directive "widen numeric thresholds by 10-20%; loosen strictest gate". Pyramid 955+7 GREEN.
+
+**Strategies (all MED tier, n=29-30):**
+1. strat_rsi_oversold: rsi_2 5->7, rsi_14 35->40 (LONG); 95->93, 65->60 (SHORT)
+2. strat_dc20_break_retest: Drop adx_trending (redundant with retest thesis)
+3. strat_bollinger_lower: adx_ok <30 -> <35 + VIX RSI thresholds 10-20% wider
+
+TEST UPDATES SAME-BATCH:
+  test_b1124_phase1_investigation_csv_schema: added SKIP_ + FAIL_ to valid prefixes
+  test_b1127_investigation_coverage_audit: same addition
+
+CSV: 3 PENDING -> DONE_B1147. Pyramid 955+7 GREEN.
+

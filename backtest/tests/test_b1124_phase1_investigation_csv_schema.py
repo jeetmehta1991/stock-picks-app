@@ -111,7 +111,11 @@ def test_investigation_coverage_100_percent(csv_df):
 
 def test_execution_status_values_bounded(csv_df):
     """execution_status values must be from bounded set."""
-    valid_status_prefixes = ("PENDING", "IN_PROGRESS_B", "DONE_B", "SKIPPED_", "BLOCKED_", "SUPERSEDED_B")
+    valid_status_prefixes = (
+        "PENDING", "IN_PROGRESS_B", "DONE_B", "SKIPPED_", "BLOCKED_", "SUPERSEDED_B",
+        "SKIP_",  # B1145 autonomous executor SKIP prefixes
+        "FAIL_",  # B1145 pyramid failure prefixes
+    )
     for val in csv_df["execution_status"].fillna("").unique():
         if not val:
             continue

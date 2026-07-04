@@ -55,7 +55,11 @@ def test_family_verdict_siblings_consistent(df):
 def test_no_silent_bulk_status_drift(df):
     """execution_status values bounded (regression check)."""
     statuses = df["execution_status"].fillna("PENDING").unique()
-    valid_prefixes = ("PENDING", "IN_PROGRESS_B", "DONE_B", "SKIPPED_", "BLOCKED_", "SUPERSEDED_B")
+    valid_prefixes = (
+        "PENDING", "IN_PROGRESS_B", "DONE_B", "SKIPPED_", "BLOCKED_", "SUPERSEDED_B",
+        "SKIP_",  # B1145 autonomous executor SKIP prefixes
+        "FAIL_",  # B1145 pyramid failure prefixes
+    )
     for status in statuses:
         assert any(status.startswith(p) for p in valid_prefixes), (
             f"Invalid execution_status: {status!r}"

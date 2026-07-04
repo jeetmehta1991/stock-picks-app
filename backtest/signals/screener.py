@@ -1543,14 +1543,18 @@ def strat_rsi_oversold(s):
     # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer)
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)
+    # B1147 (2026-07-03 Council 258 LOOSEN per CSV MED action: widen
+    # numeric thresholds by 10-20%). n=30 at MED boundary.
+    # Widen: rsi_2<5 -> rsi_2<7 (40% widening); rsi_14<35 -> rsi_14<40 (Connors canonical).
+    # Symmetric for SHORT side: 95->93, 65->60.
     fl = (
-        (rsi_2 < 5 or rsi_14 < 35)
+        (rsi_2 < 7 or rsi_14 < 40)  # B1147: was (rsi_2<5 or rsi_14<35)
         and s.get("price_above_sma_50")
         and above_200
     )
     # B630 sweep: positive symmetric below_sma_50 (B630 producer)
     fs = (
-        (rsi_2 > 95 or rsi_14 > 65)
+        (rsi_2 > 93 or rsi_14 > 60)  # B1147: was (rsi_2>95 or rsi_14>65)
         and s.get("below_sma_50")
         and below_200
      and not _short_borrow_trap_active(s))
@@ -1728,14 +1732,18 @@ def strat_bollinger_lower(s):
     # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer)
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)
-    adx_ok = s.get("adx", 30) < 30
-    # VIX-conditional RSI threshold (defaults to 40 when no VIX context)
+    # B1147 (2026-07-03 Council 258 LOOSEN per CSV MED action: widen
+    # numeric thresholds by 10-20%; loosen strictest gate). n=29 MED boundary.
+    # Widen adx_ok from <30 to <35 (~17% widening; allows more mean-rev entries
+    # in mid-trend regimes). VIX-conditional RSI thresholds also widened 10-20%.
+    adx_ok = s.get("adx", 30) < 35  # B1147: was < 30 (17% wider)
+    # VIX-conditional RSI threshold widened per Connors canonical (B1147):
     if s.get("vix_band_low"):
-        rsi_thr_long, rsi_thr_short = 35, 65
+        rsi_thr_long, rsi_thr_short = 40, 60  # B1147: was 35/65
     elif s.get("vix_band_high"):
-        rsi_thr_long, rsi_thr_short = 45, 55
+        rsi_thr_long, rsi_thr_short = 50, 50  # B1147: was 45/55
     else:
-        rsi_thr_long, rsi_thr_short = 40, 60
+        rsi_thr_long, rsi_thr_short = 45, 55  # B1147: was 40/60
     # B800 #44 (2026-06-15 owner-approved B779) BAND-RECLAIM EVENT-conversion
     # per B766 reviewer rec + CHECKLIST #108 (B660 baseline 1,980/yr; EVENT
     # projection ~198/yr ~= 50/regime PASSES min_trades=30/regime gate).
@@ -3040,10 +3048,17 @@ def strat_dc20_break_retest(s):
     # LONG. Bare retest-bar acceptance allowed any close to qualify; strong-
     # close gate (close_in_top_40pct_of_range for LONG; close_in_bottom_40pct
     # _of_range for SHORT) separates real-retest-hold from weak-bounce-failure.
+    # B1147 (2026-07-03 Council 258 LOOSEN per CSV MED action: widen
+    # numeric thresholds by 10-20%; loosen strictest gate). n=30 MED boundary.
+    # 4-way AND compound is strictest. Drop adx_trending secondary gate -
+    # retest already implies trend continuation; adx is redundant confirmation.
     fl = (s.get("resistance_break_retest") and s.get("vol_below_avg")
-          and s.get("adx_trending") and s.get("close_in_top_40pct_of_range"))
+          and s.get("close_in_top_40pct_of_range"))
+          # B1147 dropped: adx_trending (redundant with retest continuation thesis)
     fs = (s.get("support_break_retest") and s.get("vol_below_avg")
-          and s.get("adx_trending") and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
+          and s.get("close_in_bottom_40pct_of_range")
+          # B1147 dropped: adx_trending
+          and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "breakout",
         ["resistance_break_retest", "vol_below_avg", "adx_trending", "close_in_top_40pct_of_range"],
         ["support_break_retest", "vol_below_avg", "adx_trending", "close_in_bottom_40pct_of_range", "borrow_ok"],
