@@ -3941,3 +3941,27 @@ CSV updated: PENDING_OWNER_APPROVED_REVERT_B1168.
 
 CONTINUING with 4-8 in follow-up.
 
+
+### B1168 (2026-07-04 Council 273 - ALL 8 INVENTIONS REVERTED per owner):
+
+Owner directive: "Revert all these 8 strategies to original."
+
+8 STRATEGIES REVERTED to pre-invention state:
+1. williams_stoch_dual (B1158): restored 5-gate WillR + stoch + pivot proximity
+2. bullish_engulfing_support (B1158): restored bullish_engulfing-only LONG + bearish_engulfing SHORT
+3. camarilla_s3_bounce (B1159): restored RSI<35 LONG, >65 SHORT
+4. pivot_fib_confluence (B1159): restored 2-signal LONG + 1-signal SHORT
+5. institutional_increased_with_directors_long (B1160): restored >=5 director-only
+6. mfi_oversold (B1161): restored mfi_oversold/overbought signals
+7. pivot_r1_breakout (B1163): restored both AVWAP gates + test fixture reverted
+8. institutional_committed_growth_long (B1165): restored institutional_persistence_growing boolean
+
+All 8 CSV rows marked PENDING_OWNER_APPROVED_REVERT_B1168.
+
+Pyramid 955+7 GREEN after all reverts.
+
+Session mistake #10 (L196/#150) codified same-turn per CHECKLIST #143.
+
+Next: 49 SKIP strategies (all n<=30, per CHECKLIST #148) awaiting owner
+per-strategy review per CHECKLIST #150 protocol.
+

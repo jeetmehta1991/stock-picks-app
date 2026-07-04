@@ -615,19 +615,18 @@ def strat_pivot_r1_breakout(s):
     """
     # B659: symmetric default-False on BOTH directions (was asymmetric
     # default-True LONG + default-False SHORT per pre-B659 hardcoded asymmetry).
-    # B1163 (2026-07-04 Council 268 manual LOOSEN per CSV rec; tier check MED n=21):
-    # Drop AVWAP-from-252-day-low gate (redundant institutional reference vs R1
-    # break). Retain R1 break + vol + MACD. Same pattern as pivot_r2 dropped in B1143.
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1163 invention (dropped BOTH AVWAP gates) reverted. CSV said drop only
+    # 252low but I dropped both. Restored both AVWAP composite gates.
+    avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)
+    avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
     fl = (
         s.get("above_r1") and s.get("vol_spike_15x")
-        and s.get("macd_12_26_9_bullish")
-        # B1163 dropped: avwap_long_ok (redundant with R1 break institutional reference)
+        and s.get("macd_12_26_9_bullish") and avwap_long_ok
     )
-    # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer)
-    # B1163 symmetric: drop avwap_short_ok
     fs = (
         s.get("below_s1") and s.get("vol_spike_15x")
-        and s.get("macd_12_26_9_bearish")
+        and s.get("macd_12_26_9_bearish") and avwap_short_ok
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["above_r1", "vol_spike_15x", "macd_12_26_9_bullish",
@@ -1705,11 +1704,11 @@ def strat_mfi_oversold(s):
     priori.
     """
     # B791 REVERT-OF-B789: restored obv gates per demo evidence.
-    # B1161 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
-    # n=1 CRITICAL. MFI threshold <20 -> <30 (broader oversold; same widening
-    # pattern as rsi_9_extreme B1140 + rsi_21_slow B1140). Inline mfi check.
-    fl = (s.get("mfi", 50) < 30 and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))  # B1161: was mfi_oversold (<20)
-    fs = (s.get("mfi", 50) > 70 and (s.get("near_r1") or s.get("near_r2"))  # B1161: was mfi_overbought (>80)
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1161 invention (MFI 20->30 LONG + SHORT symmetric 80->70) reverted.
+    # CSV said LONG-only; SHORT symmetric widening was NOT stated.
+    fl = (s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
+    fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2"))
           and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
         ["mfi_oversold","at_support","obv_bullish"],
@@ -2595,14 +2594,12 @@ def strat_bb_squeeze_volume(s):
 
 
 def strat_pivot_fib_confluence(s):
-    # B1159 (2026-07-04 Council 267 manual LOOSEN per CSV recommendation):
-    # n=2 CRITICAL tier. Rec: "widen candle set (hammer OR bullish_engulfing OR
-    # bullish_pin_bar OR piercing_line) for LONG; symmetric for SHORT".
-    fl = ((s.get("near_s1") or s.get("near_s2")) and s.get("at_key_fib") and
-          (s.get("hammer") or s.get("bullish_engulfing") or s.get("bullish_pin_bar") or s.get("morning_star")))  # B1159 widened
-    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and
-          (s.get("bearish_engulfing") or s.get("shooting_star") or s.get("bearish_pin_bar") or s.get("evening_star"))  # B1159 widened
-          ) and not _short_borrow_trap_active(s)
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1159 invention (morning_star sub for piercing_line + SHORT expansion)
+    # reverted per owner directive. piercing_line signal does not exist;
+    # awaits producer-side work.
+    fl = ((s.get("near_s1") or s.get("near_s2")) and s.get("at_key_fib") and (s.get("hammer") or s.get("bullish_engulfing")))
+    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and s.get("bearish_engulfing")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["at_pivot_support","at_key_fib","bullish_candle"], ["at_pivot_resistance","at_key_fib","bearish_engulfing", "borrow_ok"],
         ["Pivot support + Fibonacci + bullish candle  -  two systems at same level bullish"],
@@ -6342,11 +6339,11 @@ def strat_institutional_committed_growth_long(s):
     strat_institutional_multi_quarter_persistence_long; see that
     docstring for empirical evidence.
     """
-    # B1165 (2026-07-04 Council 269 manual LOOSEN per CSV rec; tier n=10 HIGH verified):
-    # committed_growth_holders >=5 -> >=3 (Cohen-Malloy-Pomorski cluster canonical).
-    # Direct threshold check replaces institutional_persistence_growing (implicit >=5).
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1165 invention (boolean->direct-threshold mapping assumed >=5 semantics)
+    # reverted per owner directive. Awaits owner-approved specific action.
     fires = (
-        s.get("committed_growth_holders", 0) >= 3  # B1165: was institutional_persistence_growing (>=5)
+        s.get("institutional_persistence_growing", False)
         and s.get("price_above_ema_200", False)
     )
     n_grow = s.get("committed_growth_holders", 0)
@@ -6364,13 +6361,12 @@ def strat_institutional_increased_with_directors_long(s):
     2024 RFS director-premium). Triple validation: existing funds growing,
     new funds entering (implicit via cluster signal), AND board-level
     insider conviction."""
-    # B1160 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
-    # n=2 CRITICAL. institutional_increased >=5 -> >=3 (Cohen-Malloy canonical)
-    # + widen insider_director to any insider (director OR officer).
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1160 invention (>=5 -> >=3 + director OR officer) reverted per owner directive.
+    # CSV said "any insider" - ambiguous; awaits owner-approved specific action.
     fires = (
-        s.get("institutional_increased", 0) >= 3  # B1160: was >= 5
-        and (s.get("insider_director_buyers_30d", 0) >= 1
-             or s.get("insider_officer_buyers_30d", 0) >= 1)  # B1160: was director-only
+        s.get("institutional_increased", 0) >= 5
+        and s.get("insider_director_buyers_30d", 0) >= 1
         and s.get("price_above_ema_200", False)
     )
     n_incr = s.get("institutional_increased", 0)
