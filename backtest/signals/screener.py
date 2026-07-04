@@ -3922,7 +3922,7 @@ def strat_htf_aligned_breakout_short(s):
     """Batch 217: Symmetric short on prev-day low break + HTF bearish."""
     fires = (
         s.get("below_prev_low", False)
-        and s.get("vol_spike_15x", False)
+        and s.get("vol_above_avg", False)
         and s.get("htf_aligned_bear", False)
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "multi_timeframe",
