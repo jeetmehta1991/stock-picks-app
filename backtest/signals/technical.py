@@ -892,6 +892,12 @@ def compute_adx(df: pd.DataFrame, period: int = 14) -> dict:
         # B634 producer-additive: symmetric adx_di_bear
         "adx_di_bear":   dip < dim,
         "adx_cross_up":  adx_v > 25 and padx <= 25,
+        # B1138 (2026-07-03 Council 252 LOOSEN per Turn 6 verdict):
+        # adx_cross_up_20 = producer-additive narrow-scope loosening.
+        # Turn 6: "adx>25 -> adx>20 broader trend initiation". Keep original
+        # adx_cross_up for other consumers per feedback_narrow_scope_blast_radius;
+        # only strat_adx_initiation uses this wider variant.
+        "adx_cross_up_20":  adx_v > 20 and padx <= 20,
     }
 
 
@@ -1852,8 +1858,14 @@ def compute_volume(df: pd.DataFrame) -> dict:
     #
     # SHORT mirror uses year_low_pre30 + symmetric filters.
     try:
-        breakout_window_days = 30
-        retest_tolerance = 0.03
+        # B1138 (2026-07-03 Council 252 LOOSEN per Turn 6 verdict):
+        # retest_tolerance 0.03 -> 0.05 (widen proximity band from 3% to 5%).
+        # Turn 6 auto-loop mentioned "1% -> 2%" but current code already at 3%;
+        # widen to 5% as the legitimate LOOSEN. Also breakout_window_days
+        # 30 -> 45 (Turn 6 "10d -> 20d" was stale; current 30d loosen to 45d).
+        # Affects: near_52w_high_retest_long + near_52w_low_retest_short.
+        breakout_window_days = 45  # B1138: was 30
+        retest_tolerance = 0.05  # B1138: was 0.03
         today_c = _safe_float(c.iloc[-1])
         today_o = _safe_float(df["open"].iloc[-1])
         # Pre-breakout reference: 252-day window ending breakout_window_days

@@ -3011,3 +3011,67 @@ Next: B1137 SMC family LOOSEN (smc_ote_long/short + smc_premium_short + smc_disc
 
 Next: B1138 AVWAP + 52w families LOOSEN.
 
+
+### B1138 (2026-07-03 Council 252 Grouped LOOSEN 6/N - Golden Cross + 52w + ADX):
+
+- 2026-07-03 — `b1138-golden-52w-adx-loosen` — 3 strategies loosened per Council 236 Turn 6 verdicts. FULL expanded pyramid 955+7 GREEN.
+
+### 3 strategies loosened (+1 side-effect):
+
+**Strategy 1: strat_golden_cross_20_50 (screener.py:1297)**
+  Council 236 Turn 6 verdict: PRODUCER_OK + REDUNDANT_200EMA_GATE
+  Batch A n_fires: 6 (LONG); 0 (SHORT)
+  Action: Drop 200-EMA regime gate (redundant with 20/50 cross direction)
+  Rationale: EMA 20/50 cross IS trend-direction signal; requiring price_
+    above_ema_200 additionally is redundant per feedback_avwap_redundant_
+    with_ema_trend precedent. Same principle applied.
+  Expected: 3-5x uplift on both LONG and SHORT
+
+**Strategy 2: strat_52w_high_breakout_pullback_long (technical.py:1855)**
+  Council 236 Turn 6 verdict: PRODUCER_OK + PRODUCER_RARE_EVENT
+  Batch A n_fires: 8
+  Actions (PRODUCER-side changes):
+    (1) retest_tolerance: 0.03 -> 0.05 (proximity band 3% -> 5%)
+    (2) breakout_window_days: 30 -> 45 (recency window)
+  Rationale: Turn 6 verdict mentioned "1% -> 2%" but current code was 3%;
+    widened to 5% (legitimate LOOSEN). Also extended recency 30d -> 45d.
+    Affects near_52w_high_retest_long producer.
+  Expected: 2-3x uplift
+  SIDE EFFECT: 52w_low_breakdown_pullback_short shares producer thresholds
+    (near_52w_low_retest_short). Reclassified DONE_B1138_SECONDARY.
+
+**Strategy 3: strat_adx_initiation (screener.py:1430)**
+  Council 236 Turn 6 verdict: PRODUCER_OK + EVENT_STRUCTURAL_RARE
+  Batch A n_fires: 2
+  Action: Producer-additive adx_cross_up_20 (threshold adx>20 instead of >25)
+    - narrow-scope loosening per feedback_narrow_scope_blast_radius
+    - adx_cross_up (25 threshold) preserved for OTHER consumers
+    - Only strat_adx_initiation uses new adx_cross_up_20
+  Expected: 3-5x uplift
+
+### CSV reclassifications (B1138):
+
+  golden_cross_20_50:              PENDING -> DONE_B1138
+  52w_high_breakout_pullback_long: PENDING -> DONE_B1138
+  52w_low_breakdown_pullback_short: PENDING -> DONE_B1138_SECONDARY
+  adx_initiation:                  PENDING -> DONE_B1138
+
+### Execution status distribution (post-B1138):
+
+  BLOCKED_DATA_MISSING       4
+  DONE_B1126                 3
+  DONE_B1133                 3
+  DONE_B1134                 3
+  DONE_B1135                 2
+  DONE_B1135_STATUS_QUO      1
+  DONE_B1136                 3
+  DONE_B1136_SECONDARY       1
+  DONE_B1137                 6
+  DONE_B1138                 3
+  DONE_B1138_SECONDARY       1
+  PENDING                  162 (was 166)
+
+### Expanded pyramid retroactive gate: 955+7 GREEN.
+
+Next: B1139 MACD + AVWAP + 52w_high_breakout family LOOSEN.
+

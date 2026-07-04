@@ -1295,13 +1295,18 @@ def strat_golden_cross_9_21(s):
 
 
 def strat_golden_cross_20_50(s):
-    fl = (s.get("ema_20_50_golden_cross") and s.get("price_above_ema_200"))
-    # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
-    fs = (s.get("ema_20_50_death_cross") and s.get("below_ema_200")) and not _short_borrow_trap_active(s)
+    # B1138 (2026-07-03 Council 252 LOOSEN per Turn 6 verdict):
+    # Drop 200-EMA regime gate. EMA 20/50 cross IS the trend-direction signal;
+    # requiring price_above_ema_200 additionally is redundant per
+    # feedback_avwap_redundant_with_ema_trend_filter precedent. Turn 6 verdict:
+    # "Drop 200-EMA regime gate; expect 3-5x uplift". borrow_ok gate retained
+    # on SHORT side (empirically OK per B1132 audit 23.5% << 70%).
+    fl = s.get("ema_20_50_golden_cross")  # B1138 dropped: price_above_ema_200 (redundant)
+    fs = s.get("ema_20_50_death_cross") and not _short_borrow_trap_active(s)  # B1138 dropped: below_ema_200
     return _strat3(fl, fs, "trend",
-        ["ema_20_50_golden_cross","price_above_ema_200"], ["ema_20_50_death_cross","below_ema_200", "borrow_ok"],
-        ["EMA-20 crossed above EMA-50  -  medium-term trend bullish","Above 200 EMA confirms"],
-        ["EMA-20 crossed below EMA-50  -  medium-term trend bearish","Below 200 EMA confirms"])
+        ["ema_20_50_golden_cross"], ["ema_20_50_death_cross", "borrow_ok"],
+        ["EMA-20 crossed above EMA-50 - medium-term trend bullish (B1138 self-sufficient)"],
+        ["EMA-20 crossed below EMA-50 - medium-term trend bearish (B1138 self-sufficient)"])
 
 
 def strat_parabolic_sar_flip(s):
@@ -1429,11 +1434,15 @@ def strat_ichimoku_cloud_breakout(s):
 
 def strat_adx_initiation(s):
     # B634 sweep: positive symmetric adx_di_bear (B634 producer)
-    fl = (s.get("adx_cross_up") and s.get("adx_di_bull"))
-    fs = (s.get("adx_cross_up") and s.get("adx_di_bear")) and not _short_borrow_trap_active(s)
+    # B1138 (2026-07-03 Council 252 LOOSEN per Turn 6): use adx_cross_up_20
+    # (producer-additive at 20 threshold) instead of adx_cross_up (25 threshold).
+    # Narrow-scope loosening per feedback_narrow_scope_blast_radius - other
+    # consumers of adx_cross_up unaffected.
+    fl = (s.get("adx_cross_up_20") and s.get("adx_di_bull"))  # B1138: was adx_cross_up
+    fs = (s.get("adx_cross_up_20") and s.get("adx_di_bear")) and not _short_borrow_trap_active(s)  # B1138: was adx_cross_up
     return _strat3(fl, fs, "trend",
-        ["adx_cross_up","adx_di_bull"], ["adx_cross_up","adx_di_bear", "borrow_ok"],
-        ["ADX crossed above 25  -  trend initiating","DI+ above DI-  -  bullish direction"],
+        ["adx_cross_up_20","adx_di_bull"], ["adx_cross_up_20","adx_di_bear", "borrow_ok"],
+        ["ADX crossed above 20 - trend initiating (B1138 loosened from 25)","DI+ above DI-  -  bullish direction"],
         ["ADX crossed above 25  -  trend initiating","DI- above DI+  -  bearish direction"])
 
 
