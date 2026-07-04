@@ -3348,3 +3348,78 @@ from s.get() and s[] patterns, negative gates from `not s.get()`).
     - Batch attribution (execution_batch_ref)
     - Applied action rationale (execution_comments)
 
+
+### B1149 (2026-07-03 Council 260 - RESTORE specific actions + FIX autonomous executor):
+
+- 2026-07-03 — `b1149-restore-actions-fix-executor` — Owner-diagnosed bug: Turn 9 auto-loop had overwritten final_recommended_actions with generic templates for 129 strategies, LOSING the specific actions from recommendation column (e.g., 52wh_break_retest lost "drop vol_below_avg AND above_avwap_20low"). Restored 60 specific actions + fixed autonomous executor sub-process bug + retried failed strategies + refreshed diff columns.
+
+### Council 260 root cause diagnosis:
+
+Owner example: 52wh_break_retest
+  recommendation column:            "LOOSEN: drop vol_below_avg AND above_avwap_20low. 5-gate core... uplift 5-10x"
+  final_recommended_actions BEFORE: "[CRITICAL] [LOOSEN_GATE] Drop 1-2 secondary gates from 7-gate stack" (GENERIC)
+  Trace:
+    B1117 Council 235: recommendation column populated with SPECIFIC actions
+    B1118 Council 237: final_recommended_actions extracted from recommendation
+    B1123 Council 243 Turn 9: OVERWROTE final_recommended_actions for 129 un-investigated strategies with gate-count-based generic template.
+
+### Fixes applied (B1149):
+
+**Fix 1: restore_final_recommended_actions_from_recommendation.py**
+  For strategies in SKIP_GENERIC_TEMPLATE_B1145 / SKIP_UNCLASSIFIED_B1145:
+    - Re-extract specific action from `recommendation` column
+    - Preserve tier prefix [CRITICAL]/[HIGH]/[MED]/[MARGINAL]
+    - Reset execution_status to PENDING for autonomous re-attempt
+  Result: 60 specific actions restored (52wh_break_retest, 52wl_break_retest_short, avwap_20high_rejection_short, etc.)
+  Excluded: hand-crafted verdicts from Turn 1-8 (post_investigation_verdict without "Turn 9 autonomous" marker).
+
+**Fix 2: Enhanced autonomous executor parser (Council 260 enhancement)**
+  Added DROP_SIGNAL_BY_NAME rule: handles "Drop X AND Y AND Z" patterns.
+  Extracts full comma/AND separated signal name list after "drop:".
+  Filters to valid signal names (lowercase snake_case, min length).
+
+**Fix 3: Autonomous executor sub-process bug**
+  scripts/apply_csv_loosen_autonomous.py run_pyramid() was using bare "python"
+  which resolved to system Python (no pytest installed) - all 8 first-attempt
+  FAILURES had "No module named pytest" error, causing WRONG revert of valid edits.
+  Fix: use sys.executable to ensure venv Python runs pytest.
+
+### Re-run results (autonomous executor with all 3 fixes):
+
+Processed 60 restored PENDING strategies:
+  SPECIFIC_DONE: 7 strategies successfully applied + pyramid GREEN + committed + pushed
+  FAIL_PYRAMID:  1 strategy (orb_stocks_in_play_short - legitimate test regression)
+  SKIP_UNCLASSIFIED: 52 (action text still not matching known specific patterns)
+
+52wh_break_retest FINAL VERIFICATION:
+  execution_status:            DONE_B1145
+  updated_producer_signals:    close_above_open, close_in_top_40pct_of_range, near_52w_high, price_above_ema_200, year_high_break_retest_long (5-GATE TEXTBOOK CORE!)
+  change_from_original:        REMOVED: [above_avwap_20low, vol_below_avg]
+  Matches recommendation column intent EXACTLY.
+
+### CSV state post-B1149 (final refresh):
+
+  DONE strategies: 92 (47.9%)
+  SKIP strategies: 95 (49.5%)
+  FAIL:             1
+  BLOCKED:          4
+  Total:          192
+
+Change from pre-B1149:
+  DONE: 85 -> 92 (+7 from B1149 autonomous re-execution)
+
+### Owner benefit:
+
+The specific action "drop vol_below_avg AND above_avwap_20low" that owner
+pointed out was in recommendation column has now been:
+  1. RESTORED to final_recommended_actions
+  2. APPLIED via autonomous executor
+  3. VERIFIED in updated_producer_signals column (5-gate textbook core)
+  4. DOCUMENTED in change_from_original column (REMOVED: [above_avwap_20low, vol_below_avg])
+Full audit trail preserved.
+
+### Assets shipped:
+
+  scripts/restore_final_recommended_actions_from_recommendation.py (new)
+  scripts/apply_csv_loosen_autonomous.py (enhanced: DROP_SIGNAL_BY_NAME rule + venv Python fix)
+

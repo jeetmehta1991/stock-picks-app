@@ -150,6 +150,27 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
     for match in re.finditer(r"drop\s+(above|below)_avwap_\w+", action_text, re.IGNORECASE):
         edits.append({"type": "DROP_AVWAP_GATE", "gate": match.group(0).replace("drop ", "").strip().lower()})
 
+    # B1149 (Council 260 enhancement): "Drop X AND Y AND Z" or "drop X and Y"
+    # Extract full comma/AND separated signal name list after "drop:"
+    # Match `drop <signal>[( and | AND | , )<signal>]+`
+    for drop_match in re.finditer(
+        r"drop[:\s]+((?:[a-z_0-9]+(?:\s+(?:and|AND|,)\s+)?)+)",
+        action_text,
+        re.IGNORECASE,
+    ):
+        signal_list_str = drop_match.group(1)
+        # Split by "and" / "AND" / ","
+        signals = re.split(r"\s+(?:and|AND|,)\s+", signal_list_str)
+        for sig in signals:
+            sig = sig.strip().lower()
+            # Filter: must look like a signal name (not English word)
+            if (
+                len(sig) >= 4
+                and re.match(r"^[a-z][a-z_0-9]+$", sig)
+                and sig not in ("and", "loosen", "drop", "gate", "gates", "the", "one", "two", "core")
+            ):
+                edits.append({"type": "DROP_SIGNAL_BY_NAME", "signal": sig})
+
     if edits:
         return ("SPECIFIC", edits)
 
@@ -219,14 +240,31 @@ def apply_edits_to_body(body: str, edits: list[dict]) -> tuple[str, list[str]]:
             if re.search(pattern, new_body):
                 new_body = re.sub(pattern, "", new_body)
                 applied.append(f"DROP {gate}")
+        elif etype == "DROP_SIGNAL_BY_NAME":
+            # B1149 generic drop by signal name (handles "Drop X AND Y" pattern)
+            signal = edit["signal"]
+            # Match `and s.get("signal", ...)` or `s.get("signal", ...) and`
+            pattern = rf'\s*and\s+s\.get\(\s*["\']({re.escape(signal)})["\'][^)]*\)'
+            if re.search(pattern, new_body):
+                new_body = re.sub(pattern, "", new_body)
+                applied.append(f"DROP {signal}")
+            else:
+                # Try matching at start of expr: `s.get("signal") and`
+                pattern2 = rf's\.get\(\s*["\']({re.escape(signal)})["\'][^)]*\)\s+and\s+'
+                if re.search(pattern2, new_body):
+                    new_body = re.sub(pattern2, "", new_body)
+                    applied.append(f"DROP {signal}")
     return new_body, applied
 
 
 def run_pyramid() -> tuple[bool, str]:
-    """Run FULL expanded pyramid. Return (passed, output_tail)."""
+    """Run FULL expanded pyramid. Return (passed, output_tail).
+
+    B1149 fix: use sys.executable to ensure venv Python (not system) runs pytest.
+    """
     result = subprocess.run(
         [
-            "python",
+            sys.executable,  # B1149: was "python" (which resolved to system Python without pytest)
             "-m",
             "pytest",
             "backtest/tests/test_unit.py",
