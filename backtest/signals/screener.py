@@ -1110,8 +1110,8 @@ def strat_williams_r_oversold(s):
 
 
 def strat_roc_burst(s):
-    fl = (s.get("roc_turning_up") and s.get("vol_spike_15x"))
-    fs = (s.get("roc_turning_dn") and s.get("vol_spike_15x")) and not _short_borrow_trap_active(s)
+    fl = (s.get("roc_turning_up") and s.get("vol_spike_12x"))
+    fs = (s.get("roc_turning_dn") and s.get("vol_spike_12x")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "momentum",
         ["roc_turning_up","vol_spike_15x"], ["roc_turning_dn","vol_spike_15x", "borrow_ok"],
         ["ROC-12 flipped positive  -  early momentum shift up","Volume confirms"],
