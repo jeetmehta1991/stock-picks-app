@@ -2949,3 +2949,65 @@ Next: B1136 News/PEAD family LOOSEN.
 
 Next: B1137 SMC family LOOSEN (smc_ote_long/short + smc_premium_short + smc_discount_long + smc_fvg_retest_long/short).
 
+
+### B1137 (2026-07-03 Council 251 Grouped LOOSEN 5/N - SMC family producer):
+
+- 2026-07-03 — `b1137-smc-loosen` — 3 producer-side threshold widenings in smc_ict.py affecting 6 SMC strategies (LONG+SHORT sides). Council 236 Turn 3 verdicts. FULL expanded pyramid 955+7 GREEN.
+
+### 3 producer threshold changes:
+
+**Change 1: OTE Fib band widening (smc_ict.py:411)**
+  Council 236 Turn 3 verdict: PRODUCER_OK + SMC_PHASE_LATENT_RISK
+  B1129 update: SMC_PHASE arm VERIFIED (healthy siblings 89f+81f prove active)
+  Batch A n_fires: smc_ote_long=14, smc_ote_short=11
+  Change: `in_ote = 62.0 <= cur_ret <= 79.0` -> `60.0 <= cur_ret <= 82.0`
+  Rationale: ICT canonical variance - Michael J. Huddleston narrow uses
+    61.8-78.6%; wider variants use 60-82%. Widen to wider variant.
+  Affected: smc_ote_long + smc_ote_short (symmetric mirror)
+  Expected: 1.5-2x uplift each
+
+**Change 2: Discount/Premium zone thresholds (smc_ict.py:429-430)**
+  Council 236 Turn 3 verdicts (for discount + premium):
+    smc_discount_long: LOOSEN dealing_range_pct < 0.5 -> < 0.6
+    smc_premium_short: symmetric mirror (premium widens 0.5 -> 0.4)
+  Batch A n_fires: smc_discount_long=14, smc_premium_short=10
+  Change: strict 0.5 boundary -> asymmetric wider (discount<0.6, premium>0.4)
+  Rationale: overlap 0.4-0.6 = transition zone; original strict midpoint
+    excluded near-midpoint prices from both zones. Widen for BOTH.
+  Expected: 3-5x uplift on both LONG + SHORT
+
+**Change 3: FVG un-mitigated zone entry tolerance (smc_ict.py:202)**
+  Council 236 Turn 3 verdict: PRODUCER_OK + FVG_ZONE_STRUCTURAL_RARE
+  Batch A n_fires: smc_fvg_retest_long=1, smc_fvg_retest_short=8
+  Change: strict `bot <= close <= top` -> 20% padding each side
+  Rationale: Original strict zone matches were rare; widening captures
+    near-zone retests that ICT canonical counts.
+  Affected: smc_fvg_retest_long + smc_fvg_retest_short
+  Expected: 2-3x uplift each
+
+### CSV reclassifications (B1137):
+
+  smc_ote_long:         PENDING -> DONE_B1137
+  smc_ote_short:        PENDING -> DONE_B1137
+  smc_discount_long:    PENDING -> DONE_B1137
+  smc_premium_short:    PENDING -> DONE_B1137
+  smc_fvg_retest_long:  PENDING -> DONE_B1137
+  smc_fvg_retest_short: PENDING -> DONE_B1137
+
+### Execution status distribution (post-B1137):
+
+  BLOCKED_DATA_MISSING       4
+  DONE_B1126                 3
+  DONE_B1133                 3
+  DONE_B1134                 3
+  DONE_B1135                 2
+  DONE_B1135_STATUS_QUO      1
+  DONE_B1136                 3
+  DONE_B1136_SECONDARY       1
+  DONE_B1137                 6 (SMC producer LOOSEN)
+  PENDING                  166 (was 172)
+
+### Expanded pyramid retroactive gate: 955+7 GREEN.
+
+Next: B1138 AVWAP + 52w families LOOSEN.
+

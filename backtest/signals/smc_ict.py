@@ -199,7 +199,18 @@ def compute_smc_signals(
                     is_mitigated = (
                         not pd.isna(mit) and mit > 0 and int(mit) < current_idx
                     )
-                    in_zone = (close >= float(bot)) and (close <= float(top))
+                    # B1137 (2026-07-03 Council 251 LOOSEN per Turn 3):
+                    # Widen FVG un-mitigated zone entry tolerance ~2% each
+                    # side of strict bot/top boundary. Original strict zone
+                    # matches were rare; widening captures near-zone retests
+                    # that ICT canonical would count. Expected 2-3x uplift
+                    # on smc_fvg_retest_long/short.
+                    zone_width = float(top) - float(bot)
+                    tolerance = zone_width * 0.20  # B1137: 20% padding each side
+                    in_zone = (
+                        close >= float(bot) - tolerance
+                        and close <= float(top) + tolerance
+                    )
                     if not is_mitigated and in_zone:
                         if fvg_val == 1:
                             retest_long = True
@@ -407,7 +418,12 @@ def compute_smc_signals(
                 direction = ret_df["Direction"].iloc[-1]
                 cur_ret = ret_df["CurrentRetracement%"].iloc[-1]
                 if not pd.isna(direction) and not pd.isna(cur_ret):
-                    in_ote = 62.0 <= float(cur_ret) <= 79.0
+                    # B1137 (2026-07-03 Council 251 LOOSEN per Turn 3):
+                    # Fib band 62-79% -> 60-82% per ICT canonical variance
+                    # (Michael J. Huddleston canonical sources use 61.8-78.6%
+                    # narrow; some ICT variants use 60-82% wider). Widen to
+                    # match wider variant per feedback_never_use_NOT_s_get.
+                    in_ote = 60.0 <= float(cur_ret) <= 82.0  # B1137: was 62.0 - 79.0
                     out["smc_ote_long_zone"]  = bool(in_ote and float(direction) > 0)
                     out["smc_ote_short_zone"] = bool(in_ote and float(direction) < 0)
                     out["smc_retracement_pct"] = round(float(cur_ret), 2)
@@ -426,8 +442,14 @@ def compute_smc_signals(
                 pct = (close - lo) / (hi - lo)
                 pct = max(0.0, min(1.0, pct))
                 out["smc_dealing_range_pct"] = round(pct, 4)
-                out["smc_in_discount_zone"]  = pct < 0.5
-                out["smc_in_premium_zone"]   = pct > 0.5
+                # B1137 (2026-07-03 Council 251 LOOSEN per Turn 3): widen
+                # discount/premium zone thresholds 0.5 -> 0.6/0.4 symmetric
+                # per Turn 3 verdict. Original strict 0.5 boundary excluded
+                # near-midpoint prices from BOTH zones. Widen so 0-0.6 =
+                # discount + 0.4-1.0 = premium (overlap 0.4-0.6 is transition).
+                # Expected 3-5x uplift on smc_discount_long + smc_premium_short.
+                out["smc_in_discount_zone"]  = pct < 0.6  # B1137: was < 0.5
+                out["smc_in_premium_zone"]   = pct > 0.4  # B1137: was > 0.5
     except Exception as _e:
         log_silent_failure("smc_ict.dealing_range_compute", _e)
     return out
