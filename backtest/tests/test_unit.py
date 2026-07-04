@@ -9467,30 +9467,26 @@ def test_batch205_compute_vwap_emits_anchored_vwap_signals():
     assert out["avwap_50low"]  > 0
 
 
-def test_batch205_pivot_r1_requires_avwap_gate():
-    """Batch 205: strat_pivot_r1_breakout must require above_avwap_252low
-    AND above_avwap_50low for long entries. AVWAP gate filters out R1
-    breakouts that occur below the institutional reference (failed
-    breakouts more likely)."""
+def test_batch205_pivot_r1_no_avwap_gate_post_b1163():
+    """Batch 205 + Batch 1163 (Council 268 LOOSEN): strat_pivot_r1_breakout
+    B1163 dropped AVWAP gates per CSV recommendation. R1 break carries the
+    institutional reference by itself; AVWAP gate was redundant. Test now
+    verifies strategy fires without AVWAP gate."""
     from backtest.signals.screener import strat_pivot_r1_breakout
-    # All entry conditions met EXCEPT AVWAP
+    # B1163 post-loosen: R1 + vol + MACD alone should fire (no AVWAP required)
     s = {
         "above_r1": True, "below_s1": False,
         "vol_spike_15x": True,
         "macd_12_26_9_bullish": True,
-        "above_avwap_252low": False,  # below institutional reference
-        "above_avwap_50low": False,
     }
     r = strat_pivot_r1_breakout(s)
-    assert not r["fires"] or r["direction"] != "long", (
-        "Batch 205: pivot_r1 long must NOT fire when below AVWAP"
-    )
-    # All conditions met INCLUDING AVWAP
-    s["above_avwap_252low"] = True
-    s["above_avwap_50low"]  = True
+    assert r["fires"] is True
+    assert r["direction"] == "long"
+
+    # Without R1 break -> should NOT fire (base gate)
+    s["above_r1"] = False
     r2 = strat_pivot_r1_breakout(s)
-    assert r2["fires"] is True
-    assert r2["direction"] == "long"
+    assert not r2["fires"] or r2["direction"] != "long"
 
 
 def test_batch205_pivot_r2_requires_2x_volume():

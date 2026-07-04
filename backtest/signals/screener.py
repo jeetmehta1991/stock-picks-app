@@ -615,17 +615,19 @@ def strat_pivot_r1_breakout(s):
     """
     # B659: symmetric default-False on BOTH directions (was asymmetric
     # default-True LONG + default-False SHORT per pre-B659 hardcoded asymmetry).
-    avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)
-    # B633 sweep: positive symmetric below_avwap_252low/50low (B612 producers)
-    avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
+    # B1163 (2026-07-04 Council 268 manual LOOSEN per CSV rec; tier check MED n=21):
+    # Drop AVWAP-from-252-day-low gate (redundant institutional reference vs R1
+    # break). Retain R1 break + vol + MACD. Same pattern as pivot_r2 dropped in B1143.
     fl = (
         s.get("above_r1") and s.get("vol_spike_15x")
-        and s.get("macd_12_26_9_bullish") and avwap_long_ok
+        and s.get("macd_12_26_9_bullish")
+        # B1163 dropped: avwap_long_ok (redundant with R1 break institutional reference)
     )
     # B630 sweep: positive symmetric macd_12_26_9_bearish (B609 producer)
+    # B1163 symmetric: drop avwap_short_ok
     fs = (
         s.get("below_s1") and s.get("vol_spike_15x")
-        and s.get("macd_12_26_9_bearish") and avwap_short_ok
+        and s.get("macd_12_26_9_bearish")
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["above_r1", "vol_spike_15x", "macd_12_26_9_bullish",
@@ -6194,8 +6196,10 @@ def strat_institutional_persistence_breakout_long(s):
     """Wave 3 (Batch 337): institutional persistence + post-break retest.
     5+ funds growing position + technical breakout retest = institutional-
     sponsored breakout (Sias 2004 herding + Bulkowski retest)."""
+    # B1163 (2026-07-04 Council 268 manual LOOSEN per CSV rec; tier check MED n=19):
+    # institutional_increased >=5 -> >=3 (Cohen-Malloy canonical, same as momentum sister).
     fires = (
-        s.get("institutional_increased", 0) >= 5
+        s.get("institutional_increased", 0) >= 3  # B1163: was >= 5
         and s.get("resistance_break_retest", False)
         and s.get("price_above_ema_200", False)
     )
@@ -6556,8 +6560,10 @@ def strat_institutional_persistence_momentum_long(s):
     50-EMA trend. Single-quarter persistence proxy (per Batch 333) combined
     with price-trend confirmation. Distinct from Batch 333's persistent_holders
     by requiring MACD bullish (momentum confluence, not just regime gate)."""
+    # B1163 (2026-07-04 Council 268 manual LOOSEN per CSV rec; tier check MED n=26):
+    # institutional_increased >=5 -> >=3 (Cohen-Malloy-Pomorski canonical cluster threshold).
     fires = (
-        s.get("institutional_increased", 0) >= 5
+        s.get("institutional_increased", 0) >= 3  # B1163: was >= 5
         and s.get("macd_12_26_9_bullish", False)
         and s.get("price_above_ema_50", False)
     )

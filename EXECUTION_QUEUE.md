@@ -3825,3 +3825,19 @@ CUMULATIVE POST-B1162: DONE 125 (65.1%), SKIP 61.
 61 REMAINING SKIPs (all n <= 30, eligible for loosening):
   CRITICAL: 18, HIGH: 31, MED: 12
 
+
+### B1163 (2026-07-04 Council 268 Manual Review - Round 1 Batch 6 tier-verified):
+
+Per CHECKLIST #148: verified n<=30 for each strategy before loosening.
+
+1. institutional_persistence_momentum_long (n=26 MED): >=5->>=3 Cohen-Malloy
+2. institutional_persistence_breakout_long (n=19 MED): same Cohen-Malloy pattern
+3. pivot_r1_breakout (n=21 MED): dropped AVWAP gates + test fixture update
+4. pre_fomc_long_sleeve (n=21 MED): STATUS_QUO (EXPLORATORY per B738)
+
+Test fixture updated: test_batch205_pivot_r1 renamed to reflect no-avwap post-B1163.
+
+Pyramid 955+7 GREEN.
+
+CUMULATIVE POST-B1163: DONE 129 (67.2%), SKIP 57.
+
