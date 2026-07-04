@@ -84,6 +84,14 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
        action_text.strip().upper().startswith("[HIGH] [FIX_PRODUCER]"):
         return ("SKIP_PRODUCER_SIDE", [])
 
+    # B1167 (Council 270): investigate/verify producer keywords indicate producer-side
+    if re.search(r"investigate\s+producer|verify\s+producer|producer\s+family", action_text, re.IGNORECASE):
+        return ("SKIP_PRODUCER_SIDE", [])
+
+    # B1167 (Council 270): "CORRECTED direction-wrong" notes = complex human judgment
+    if re.search(r"corrected 2026.*(?:direction[- ]wrong|tighten|correction)", action_text, re.IGNORECASE):
+        return ("SKIP_DIRECTION_CORRECTED", [])
+
     # SKIP: primary action is AUDIT_DATA (already completed B1129-B1132)
     if action_text.strip().upper().startswith("[CRITICAL] [AUDIT_DATA]") or \
        action_text.strip().upper().startswith("[HIGH] [AUDIT_DATA]"):
@@ -169,7 +177,7 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
     for match in re.finditer(r"drop\s+(above|below)_avwap_\w+", action_text, re.IGNORECASE):
         edits.append({"type": "DROP_AVWAP_GATE", "gate": match.group(0).replace("drop ", "").strip().lower()})
 
-    # B1166 (Council 270 enhancement) STATUS_QUO detection - broader phrases
+    # B1166 (Council 270) + B1167 (Council 270) STATUS_QUO detection - broader phrases
     status_quo_phrases = [
         r"accept as structural",
         r"structurally? rare",
@@ -180,6 +188,14 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
         r"empirically justified",
         r"empirically dead",
         r"deliberate outcome",
+        # B1167 additions per Council 270 audit of remaining 49 SKIPs:
+        r"keep\s+exploratory\s+per",
+        r"council\s+235\s+option\s+b",
+        r"non[- ]deletion marker",
+        r"do\s+not\s+deploy",
+        r"pre[- ]cube marker",
+        r"exploratory\s+pending",
+        r"exploratory\s+status",
     ]
     for phrase in status_quo_phrases:
         if re.search(phrase, action_text, re.IGNORECASE):
@@ -538,11 +554,18 @@ def main() -> int:
         # short-circuit. Original code did `continue` on SKIP_* classifications
         # before fallback code, so SKIP_UNCLASSIFIED cases where recommendation
         # column had specific patterns never got re-parsed. Move fallback FIRST.
+        # B1167 fix (Council 270): also promote rec-column classification
+        # when it detects STATUS_QUO / no-code-change class (which returns
+        # empty edits). Original code only replaced classification when edits2
+        # was non-empty.
         rec_text = str(row.get("recommendation", ""))
         if rec_text and len(rec_text) > 20 and classification != "SPECIFIC":
             classification2, edits2 = classify_action(rec_text)
-            if edits2:  # recommendation column had specific edits
+            if edits2:
                 edits = edits2
+                classification = classification2
+            elif classification2 in ("STATUS_QUO", "UNIVERSE_EXPAND_DEFERRED", "DISABLED_PENDING_DATA"):
+                # B1167: rec column detected no-code-change class - promote it
                 classification = classification2
 
         # No code change classes
