@@ -3582,3 +3582,46 @@ author (myself or successors) must:
   FAIL:      1
   BLOCKED:   4
 
+
+### B1154 (2026-07-03 Council 264 - Diff column merged-change-summary):
+
+Owner diagnostic: "why was widen abs(pct_from_avwap) < 1% -> < 2% not implemented and only volume loosening?"
+
+Answer: BOTH were implemented. Diff column display was misleading.
+
+SOURCE VERIFICATION:
+  abs(pct_from_20h) < 2.0    (from B1152 - widen threshold)
+  s.get("vol_spike_12x", ...) (from B1153 - signal replacement)
+
+BUG DIAGNOSIS:
+  compute_change_summary() in add_updated_producer_signals_columns.py had
+  PRIORITY LOGIC:
+    (a) If signal set changes exist -> show ADDED/REMOVED
+    (b) If DONE_B* with no signal change -> show "numeric threshold widened"
+    (c) Otherwise no change
+  When BOTH happened together (a suppressed b) - numeric change hidden.
+
+FIX (B1154):
+  Enhanced compute_change_summary to read WIDEN threshold X% -> Y% patterns
+  from execution_comments field and APPEND them to the diff string alongside
+  ADDED/REMOVED signals. No priority - all change types merged.
+
+VERIFICATION:
+  avwap_20high_rejection_short change_from_original NOW shows:
+    "ADDED: [vol_spike_12x]; REMOVED: [vol_spike_15x]; WIDENED THRESHOLD: 1% (1.0) -> 2% (2.0)"
+  Both changes visible.
+
+### CHECKLIST codification (per #143 standing rule):
+
+Added #145 - HARD RULE: Diff/audit columns must merge all change types
+Added L191 - Diff columns must merge ALL change types (companion to #145)
+
+### Cumulative post-B1154:
+  DONE:    100 (52.1%)
+  SKIP:     87 (45.3%)
+  FAIL:      1
+  BLOCKED:   4
+
+Owner benefit: any strategy with multiple change types now has complete
+diff visibility in change_from_original column.
+

@@ -2452,3 +2452,18 @@ The bug was invisible until owner spotted the specific-vs-generic discrepancy 5 
 
 **Cross-references:** B1153 commit; Council 263; CHECKLIST #144; L188 (related: autonomous scripts must add not overwrite); `apply_csv_loosen_autonomous.py` truncation fallback.
 
+
+---
+
+## L191 — Diff columns must merge ALL change types, not prioritize one over another (B1154 2026-07-03 Council 264)
+
+**What went wrong:** `change_from_original` column had priority logic: if signal set changes exist -> show ADDED/REMOVED only; else if DONE_B* -> show "numeric threshold widened". When BOTH signal changes AND numeric changes happened together, only signal change was shown. Numeric change hidden.
+
+Concrete case: avwap_20high_rejection_short had BOTH `vol_spike_15x -> vol_spike_12x` (signal replacement) AND `abs(pct_from_20h) < 1.0 -> < 2.0` (numeric widen). Diff column showed only signal replacement. Owner asked "why was widen abs(pct_from_avwap) < 1% -> < 2% not implemented and only volume loosening?" - implementation WAS applied, but diff column was misleading.
+
+**Universal principle:** *Diff/audit columns must merge ALL detected change types (signal set + threshold + producer-side + config) into a single composite view. Prioritizing one change type hides others, misleading owner audit.*
+
+**Rule:** For every derived diff/audit column: (a) detect all change types independently; (b) concatenate all detected changes; (c) never suppress one change type because another is present.
+
+**Cross-references:** B1154 commit; Council 264; CHECKLIST #145 (new); `add_updated_producer_signals_columns.py` merged-change-summary logic.
+

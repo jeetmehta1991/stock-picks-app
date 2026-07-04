@@ -2408,3 +2408,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** Council 263 B1153; `apply_csv_loosen_autonomous.py` fallback rule; L190 (pending).
 
+
+145. **HARD RULE -- DIFF/AUDIT COLUMNS MUST MERGE ALL CHANGE TYPES.** (Owner directive 2026-07-03 Council 264.)
+
+     **Trigger.** Every derived diff/audit column generator author (or reviewer) must verify BEFORE run.
+
+     **Rule.** Diff columns that report changes to source code / config / data must:
+       (a) Detect ALL change types independently (signal ADD/REMOVE, numeric threshold widening/narrowing, producer-side changes, config-arm changes)
+       (b) Concatenate all detected changes into single composite view
+       (c) NEVER suppress one change type because another is present
+       (d) Include applied-edits detail from execution_comments when available
+
+     **Rationale.** Owner audit depends on complete diff visibility. If diff column shows only signal changes when both signal AND threshold changed, owner infers threshold change was NOT applied.
+
+     **Root cause history.** avwap_20high_rejection_short had BOTH vol_spike_15x -> vol_spike_12x replacement (B1153) AND abs(pct_from_20h) < 1.0 -> < 2.0 widening (B1152). Diff column showed only signal replacement. Owner asked "why was widen abs(pct_from_avwap) < 1% -> < 2% not implemented" - was implemented, diff column misled.
+
+     **Retroactive coverage demo (per #136).** Would this rule have caught the B1152 partial-visibility bug? YES - rule requires enumerate-all-change-types.
+
+     **Enforcement.** Diff column generators must have a merged-summary logic. Test with sample rows that have MULTIPLE change types applied.
+
+     **Cross-references.** L191; Council 264 B1154; `add_updated_producer_signals_columns.py`; L188/L189/L190 (related autonomous-script rules).
+

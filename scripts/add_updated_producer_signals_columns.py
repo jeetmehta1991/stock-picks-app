@@ -108,6 +108,7 @@ def compute_change_summary(
     current_thresholds: dict[str, str],
     status: str,
     batch_ref: str,
+    execution_comments: str = "",
 ) -> tuple[str, str]:
     """Return (updated_producer_signals_str, change_from_original_str)."""
     current_all = current_positive | current_negative
@@ -140,6 +141,19 @@ def compute_change_summary(
         parts.append(f"ADDED: [{', '.join(sorted(added))}]")
     if removed:
         parts.append(f"REMOVED: [{', '.join(sorted(removed))}]")
+
+    # B1154 (Council 264 fix): also include numeric threshold changes from
+    # execution_comments (WIDEN threshold X% -> Y% patterns). Without this,
+    # strategies with both signal changes AND threshold widening only showed
+    # signal diff, hiding the numeric change.
+    import re as _re
+    widen_matches = _re.findall(
+        r"WIDEN threshold ([0-9]+%[^-]*) -> ([0-9]+%[^']+)",
+        execution_comments,
+    )
+    if widen_matches:
+        for old_pct, new_pct in widen_matches:
+            parts.append(f"WIDENED THRESHOLD: {old_pct.strip()} -> {new_pct.strip()}")
 
     # Threshold changes only visible in current source (not tracked in producer_signals)
     if current_thresholds:
@@ -215,6 +229,7 @@ def main() -> int:
             continue
 
         positive, negative, thresholds = extract_gate_stack(body)
+        exec_comments = str(row.get("execution_comments", ""))
         updated_str, change_str = compute_change_summary(
             original=original_signals,
             current_positive=positive,
@@ -222,6 +237,7 @@ def main() -> int:
             current_thresholds=thresholds,
             status=status,
             batch_ref=batch_ref,
+            execution_comments=exec_comments,
         )
 
         df.at[idx, "updated_producer_signals"] = updated_str
