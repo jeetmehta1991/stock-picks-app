@@ -2887,7 +2887,7 @@ def strat_donchian_breakout_long(s):
     on Batch 291 direction-aware default (LONG -> {bull, neutral}).
     """
     fires = (s.get("dc10_breakout_up")
-             and s.get("vol_spike_15x")
+             and s.get("vol_spike_12x")
              and s.get("macd_12_26_9_bullish")
              and s.get("close_above_open")
              and s.get("close_in_top_40pct_of_range"))
