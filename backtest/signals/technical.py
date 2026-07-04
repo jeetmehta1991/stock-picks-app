@@ -1692,6 +1692,12 @@ def compute_volume(df: pd.DataFrame) -> dict:
         result["mfi"]            = round(mfi_v,2)
         result["mfi_oversold"]   = mfi_v < 20
         result["mfi_overbought"] = mfi_v > 80
+        # B1170 (2026-07-04 Council 275): narrow-scope broader-band variants
+        # for strat_mfi_oversold per CSV rec "widen MFI threshold from strict
+        # oversold (<20) to broader (<30)". Producer-additive; original
+        # mfi_oversold/mfi_overbought unchanged for other consumers.
+        result["mfi_broad_oversold"]   = mfi_v < 30
+        result["mfi_broad_overbought"] = mfi_v > 70
 
     # Force Index
     fi    = c.diff()*v

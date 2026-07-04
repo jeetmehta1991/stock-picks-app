@@ -4003,3 +4003,18 @@ Session mistake ledger: #11 CSV column drift (L197 / CHECKLIST #151-153).
 
 Next: Execute REVERTED 8/8 + FAIL_PYRAMID 2/2 + PRODUCER 9/9 individually.
 
+
+### B1170 (2026-07-04 Council 275 REVERT 1/8): mfi_oversold
+
+Owner directive: "For reverted - approve all final recommended actions. Implement now."
+
+CSV final_recommended_actions: [HIGH] [LOOSEN_GATE] LOOSEN MFI threshold from strict oversold (<20) to broader (<30)
+
+Applied:
+- backtest/signals/technical.py: added producer-additive mfi_broad_oversold (mfi<30) + mfi_broad_overbought (mfi>70). Original mfi_oversold(<20)/mfi_overbought(>80) unchanged for narrow-scope.
+- backtest/signals/screener.py strat_mfi_oversold: swap mfi_oversold->mfi_broad_oversold + mfi_overbought->mfi_broad_overbought.
+
+Other MFI consumers (strat_mfi_oversold_with_smart_money_long) retain strict boolean per feedback_narrow_scope_blast_radius.
+
+Pyramid 850+2 GREEN.
+

@@ -1707,8 +1707,11 @@ def strat_mfi_oversold(s):
     # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
     # B1161 invention (MFI 20->30 LONG + SHORT symmetric 80->70) reverted.
     # CSV said LONG-only; SHORT symmetric widening was NOT stated.
-    fl = (s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
-    fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2"))
+    # B1170 (2026-07-04 Council 275 per CSV rec): widen from strict oversold
+    # (<20) to broader (<30) via producer-additive mfi_broad_oversold/overbought.
+    # Narrow-scope: other MFI consumers keep strict thresholds.
+    fl = (s.get("mfi_broad_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
+    fs = (s.get("mfi_broad_overbought") and (s.get("near_r1") or s.get("near_r2"))
           and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
         ["mfi_oversold","at_support","obv_bullish"],
