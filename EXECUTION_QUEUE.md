@@ -3157,3 +3157,15 @@ Next: B1140 continue with additional families (RSI + Institutional + Classificat
 
 CSV reclassifications: 3 strategies PENDING -> DONE_B1140. Pyramid 955+7 GREEN.
 
+
+### B1141 (2026-07-03 Council 254 Grouped LOOSEN 9/N - Institutional family):
+
+- 2026-07-03 — `b1141-institutional-loosen` — 3 institutional strategies loosened. FULL pyramid 955+7 GREEN.
+
+**Strategies:**
+1. strat_institutional_oversold_long: RSI-14 oversold 35 -> 40 (Connors canonical)
+2. strat_institutional_persistence_volume_long: institutional_increased 5 -> 3, vol_spike_2x -> vol_above_avg
+3. strat_institutional_volume_confirmation_long: vol_spike_2x -> vol_above_avg (Lo-Wang 2000 canonical)
+
+CSV: 3 strategies PENDING -> DONE_B1141. Pyramid 955+7 GREEN.
+

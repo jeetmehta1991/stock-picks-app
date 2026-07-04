@@ -5679,15 +5679,17 @@ def strat_institutional_oversold_long(s):
     overreaction: institutional accumulation during oversold pullback
     is the classic Schwed 'cash on the sidelines' setup. Distinct from
     Batch 330's momentum variant - this is the COUNTER-TREND entry."""
+    # B1141 (2026-07-03 Council 254 LOOSEN per Turn 9): 0 fires. Widen
+    # RSI-14 oversold 35 -> 40 (Connors canonical) for more mean-rev entries.
     fires = (
         s.get("institutional_buy", False)
-        and s.get("rsi_14", 50) < 35
+        and s.get("rsi_14", 50) < 40  # B1141: was < 35
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "smart_money_13f",
-        ["institutional_buy","rsi_14<35","price_above_ema_200"],
+        ["institutional_buy","rsi_14<40","price_above_ema_200"],  # B1141 loosened
         ["13F new/increased institutional positions",
-         "RSI<35 oversold (counter-trend mean-rev entry)",
+         "RSI<40 oversold (counter-trend mean-rev entry; B1141 loosened)",
          "Above 200 EMA (regime gate - filter out falling-knife)"])
 
 
@@ -6145,9 +6147,12 @@ def strat_institutional_persistence_volume_long(s):
     """Wave 3 (Batch 337): institutional persistence + volume spike. 5+
     funds growing + retail tape participating = broad-market price
     discovery on the institutional position."""
+    # B1141 (2026-07-03 Council 254 LOOSEN): 0 fires. Loosen thresholds:
+    # (1) institutional_increased >= 5 -> >= 3 (broader participation counted)
+    # (2) vol_spike_2x -> vol_above_avg (canonical broad-market participation)
     fires = (
-        s.get("institutional_increased", 0) >= 5
-        and s.get("vol_spike_2x", False)
+        s.get("institutional_increased", 0) >= 3  # B1141: was >= 5
+        and s.get("vol_above_avg", False)  # B1141: was vol_spike_2x
         and s.get("price_above_ema_50", False)
     )
     return _strat(fires, "long", "institutional_persistence",
@@ -6498,13 +6503,13 @@ def strat_institutional_volume_confirmation_long(s):
     filings (45-day reporting lag)."""
     fires = (
         s.get("institutional_buy", False)
-        and s.get("vol_spike_2x", False)
+        and s.get("vol_above_avg", False)  # B1141: was vol_spike_2x (Lo-Wang canonical broad-participation)
         and s.get("price_above_ema_50", False)
     )
     return _strat(fires, "long", "smart_money_13f",
-        ["institutional_buy","vol_spike_2x","price_above_ema_50"],
+        ["institutional_buy","vol_above_avg","price_above_ema_50"],  # B1141 loosened
         ["13F institutional new/increased positions",
-         "Volume 2x ADV(20) - retail tape confirming",
+         "Volume above 20d avg - retail tape confirming (B1141 loosened from 2x)",
          "Above 50 EMA (intermediate trend agrees)"])
 
 
