@@ -6225,9 +6225,12 @@ def strat_institutional_persistence_oversold_long(s):
     trend entry. Distinct from Batch 331 institutional_oversold_long by
     requiring multi-fund persistence (increased>=5), not just any
     institutional_buy."""
+    # B1160 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
+    # n=1 CRITICAL. institutional_increased >=5 -> >=3 (Cohen-Malloy canonical);
+    # rsi_14<40 -> <45 (Bondt-Thaler broader oversold).
     fires = (
-        s.get("institutional_increased", 0) >= 5
-        and s.get("rsi_14", 50) < 40
+        s.get("institutional_increased", 0) >= 3  # B1160: was >= 5
+        and s.get("rsi_14", 50) < 45  # B1160: was < 40
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "institutional_persistence",
@@ -6348,9 +6351,13 @@ def strat_institutional_increased_with_directors_long(s):
     2024 RFS director-premium). Triple validation: existing funds growing,
     new funds entering (implicit via cluster signal), AND board-level
     insider conviction."""
+    # B1160 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
+    # n=2 CRITICAL. institutional_increased >=5 -> >=3 (Cohen-Malloy canonical)
+    # + widen insider_director to any insider (director OR officer).
     fires = (
-        s.get("institutional_increased", 0) >= 5
-        and s.get("insider_director_buyers_30d", 0) >= 1
+        s.get("institutional_increased", 0) >= 3  # B1160: was >= 5
+        and (s.get("insider_director_buyers_30d", 0) >= 1
+             or s.get("insider_officer_buyers_30d", 0) >= 1)  # B1160: was director-only
         and s.get("price_above_ema_200", False)
     )
     n_incr = s.get("institutional_increased", 0)
@@ -6520,9 +6527,13 @@ def strat_institutional_with_officers_long(s):
     Officers are CEO/CFO/COO buying their own company's stock - direct
     competence and conviction signal. Lower information value than
     directors but still meaningfully higher than 10pct-owner trades."""
+    # B1160 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
+    # n=1 CRITICAL. Widen officer-only to (officer OR director) per
+    # Akbas-Jiang-Koch 2024 (both signal above-baseline).
     fires = (
         s.get("institutional_buy", False)
-        and s.get("insider_officer_buyers_30d", 0) >= 1
+        and (s.get("insider_officer_buyers_30d", 0) >= 1
+             or s.get("insider_director_buyers_30d", 0) >= 1)  # B1160 widened
         and s.get("price_above_ema_200", False)
     )
     n_off = s.get("insider_officer_buyers_30d", 0)

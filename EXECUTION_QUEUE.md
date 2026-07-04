@@ -3777,3 +3777,16 @@ CUMULATIVE POST-B1159:
   DONE:    117 (60.9%)
   SKIP:     69
 
+
+### B1160 (2026-07-04 Council 267 Manual Review Round 1 Batch 3 - Institutional):
+
+3 institutional strategies loosened per CSV Cohen-Malloy + Akbas-Jiang-Koch canonicals:
+
+1. institutional_increased_with_directors_long (n=2): >=5->>=3 + widen director/officer
+2. institutional_persistence_oversold_long (n=1): >=5->>=3 + rsi 40->45
+3. institutional_with_officers_long (n=1): widen officer OR director
+
+Pyramid 955+7 GREEN.
+
+CUMULATIVE POST-B1160: DONE 120 (62.5%), SKIP 66.
+
