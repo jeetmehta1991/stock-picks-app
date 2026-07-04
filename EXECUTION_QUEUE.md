@@ -3294,3 +3294,57 @@ TEST UPDATES SAME-BATCH:
 
 CSV: 3 PENDING -> DONE_B1147. Pyramid 955+7 GREEN.
 
+
+### B1148 (2026-07-03 Council 259 - Add updated_producer_signals + change_from_original columns):
+
+- 2026-07-03 — `b1148-add-diff-columns` — Added 2 new columns to phase_1_quiet_fire_investigation.csv per owner directive. CSV now has 25 columns (was 23). FULL pyramid 955+7 GREEN.
+
+### 2 new columns:
+
+**updated_producer_signals**: comma-separated current gate stack extracted
+from screener.py `def strat_<name>` function body via regex (positive gates
+from s.get() and s[] patterns, negative gates from `not s.get()`).
+
+**change_from_original**: diff summary vs `producer_signals` column:
+  - "ADDED: [...]; REMOVED: [...]" for consumer-side changes
+  - "producer-side change in B<n> (thresholds widened in producer file; consumer gate list unchanged)" for producer-only batches
+  - "no change" for SKIP / PENDING / STATUS_QUO / no-op batches
+
+### Distribution across 192 strategies:
+
+  no_change:              155 (all SKIP + STATUS_QUO + PENDING + BLOCKED)
+  producer_side_batch:     16 (B1137 SMC + B1142 classification producer changes)
+  removed_signals:         12 (drop-only changes; consumer gates)
+  both (added + removed):   8 (signal replacements like vol_spike_2x -> vol_above_avg)
+  added_signals:            1 (single-signal addition)
+
+### Sample diffs (verification):
+
+**Consumer-side (DONE_B1133 cup_and_handle_long):**
+  ORIGINAL: cup_handle_detected, price_above_ema_200, price_above_ema_50, rsi_14, vol_spike_2x
+  UPDATED:  cup_handle_detected, price_above_ema_200, price_above_ema_50, vol_above_avg
+  CHANGE:   ADDED: [vol_above_avg]; REMOVED: [rsi_14, vol_spike_2x]
+
+**Producer-side (DONE_B1137 smc_discount_long):**
+  ORIGINAL == UPDATED (consumer gate list unchanged)
+  CHANGE: producer-side change in B1137 (thresholds widened in producer file)
+
+### CSV schema pin test updated same-batch:
+
+  test_b1124_phase1_investigation_csv_schema.py:
+    REQUIRED_COLUMNS: 23 -> 25 (added updated_producer_signals + change_from_original)
+
+### Script assets:
+
+  scripts/add_updated_producer_signals_columns.py: reusable diff extractor
+  Can be re-run after future LOOSEN batches to refresh diff columns.
+
+### Owner benefit:
+
+  Post-hoc audit visibility: for any strategy, single row shows:
+    - Original gate stack (producer_signals)
+    - Current gate stack (updated_producer_signals)
+    - Explicit diff (change_from_original)
+    - Batch attribution (execution_batch_ref)
+    - Applied action rationale (execution_comments)
+

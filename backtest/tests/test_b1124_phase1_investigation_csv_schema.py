@@ -42,6 +42,8 @@ REQUIRED_COLUMNS = [
     "execution_status",
     "execution_batch_ref",
     "execution_comments",
+    "updated_producer_signals",  # B1148 Council 259
+    "change_from_original",  # B1148 Council 259
 ]
 
 FULLY_POPULATED_COLUMNS = {
