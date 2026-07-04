@@ -2768,7 +2768,7 @@ def strat_ichimoku_cloud_breakdown(s):
 
 
 def strat_parabolic_sar_flip_short(s):
-    fires = (s.get("psar_flip_dn") and s.get("adx_trending")) and not _short_borrow_trap_active(s)
+    fires = (s.get("psar_flip_dn")) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "trend",
         ["psar_flip_dn", "adx_trending", "borrow_ok"],
         ["Parabolic SAR flipped above price  -  trend reversed downward",
