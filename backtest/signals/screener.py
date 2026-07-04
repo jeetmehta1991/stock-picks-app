@@ -839,8 +839,12 @@ def strat_camarilla_s3_bounce(s):
     aware confirmation.
     """
     # B628 F1: positive symmetric (B617 producer)
-    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35 and s.get("obv_bullish"))
-    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
+    # B1159 (2026-07-04 Council 267 manual LOOSEN per CSV recommendation):
+    # n=4 HIGH tier. Rec: "RSI extreme threshold widening (<25 -> <30). Retain
+    # S3 proximity + OBV. Expected fire uplift 2-3x". Widen 35->40 (10 point)
+    # LONG symmetric SHORT 65->60.
+    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 40 and s.get("obv_bullish"))  # B1159: was < 35
+    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 60 and s.get("obv_bearish")) and not _short_borrow_trap_active(s)  # B1159: was > 65
     return _strat3(fl, fs, "pivot",
         ["near_cam_s3","rsi_14<35","obv_bullish"],
         ["near_cam_r3","rsi_14>65","obv_bearish", "borrow_ok"],
@@ -2499,7 +2503,12 @@ def strat_three_black_crows_short(s):
 
 
 def strat_shooting_star_short(s):
-    fires = (s.get("shooting_star") and
+    # B1159 (2026-07-04 Council 267 manual LOOSEN per CSV recommendation):
+    # n=3 CRITICAL tier. Rec: "widen candle set to (shooting_star OR
+    # bearish_pin_bar OR hanging_man OR dark_cloud_cover) - broader
+    # bearish-reversal family per Nison 1991". Same OR-expansion pattern
+    # as B1158 bullish_engulfing_support.
+    fires = ((s.get("shooting_star") or s.get("bearish_pin_bar") or s.get("hanging_man") or s.get("dark_cloud_cover")) and
              (s.get("near_r1") or s.get("near_r2") or
               s.get("bb_20_20_touch_upper")) and
              s.get("rsi_14", 50) > 65 and not _short_borrow_trap_active(s))
@@ -2585,8 +2594,14 @@ def strat_bb_squeeze_volume(s):
 
 
 def strat_pivot_fib_confluence(s):
-    fl = ((s.get("near_s1") or s.get("near_s2")) and s.get("at_key_fib") and (s.get("hammer") or s.get("bullish_engulfing")))
-    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and s.get("bearish_engulfing")) and not _short_borrow_trap_active(s)
+    # B1159 (2026-07-04 Council 267 manual LOOSEN per CSV recommendation):
+    # n=2 CRITICAL tier. Rec: "widen candle set (hammer OR bullish_engulfing OR
+    # bullish_pin_bar OR piercing_line) for LONG; symmetric for SHORT".
+    fl = ((s.get("near_s1") or s.get("near_s2")) and s.get("at_key_fib") and
+          (s.get("hammer") or s.get("bullish_engulfing") or s.get("bullish_pin_bar") or s.get("morning_star")))  # B1159 widened
+    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and
+          (s.get("bearish_engulfing") or s.get("shooting_star") or s.get("bearish_pin_bar") or s.get("evening_star"))  # B1159 widened
+          ) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["at_pivot_support","at_key_fib","bullish_candle"], ["at_pivot_resistance","at_key_fib","bearish_engulfing", "borrow_ok"],
         ["Pivot support + Fibonacci + bullish candle  -  two systems at same level bullish"],

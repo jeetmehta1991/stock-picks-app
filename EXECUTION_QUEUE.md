@@ -3763,3 +3763,17 @@ CUMULATIVE POST-B1158:
   FAIL:      2
   BLOCKED:   4
 
+
+### B1159 (2026-07-04 Council 267 Manual Review Round 1 Batch 2 - WIDEN_COMPLEX):
+
+1. camarilla_s3_bounce (n=4): RSI 35->40 LONG, 65->60 SHORT
+2. shooting_star_short (n=3): expanded candle OR set (Nison 1991 broader bearish-reversal)
+3. pivot_fib_confluence (n=2): widened candle OR set both directions
+4. monthly_bias_momentum_long (n=7): RECLASSIFIED STATUS_QUO (empirically justified)
+
+Pyramid 955+7 GREEN. CSV updated.
+
+CUMULATIVE POST-B1159:
+  DONE:    117 (60.9%)
+  SKIP:     69
+
