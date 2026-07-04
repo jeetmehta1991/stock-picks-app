@@ -2416,7 +2416,7 @@ def strat_doji_at_resistance_short(s):
     """
     fires = (s.get("doji") and
              (s.get("near_r1_wide") or s.get("near_r2_wide") or s.get("at_key_fib_wide")) and
-             s.get("vol_spike_15x") and not _short_borrow_trap_active(s))
+             s.get("vol_spike_12x") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "candle",
         ["doji","at_resistance_wide_1.5pct","vol_spike_15x", "borrow_ok"],
         ["Doji candle at resistance  -  indecision after upmove",
