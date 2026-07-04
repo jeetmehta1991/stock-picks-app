@@ -919,9 +919,9 @@ def strat_camarilla_r4_breakout(s):
 
 
 def strat_prev_day_high_break(s):
-    fl = (s.get("above_prev_high") and s.get("vol_spike_15x") and s.get("above_vwap"))
+    fl = (s.get("above_prev_high") and s.get("vol_spike_12x") and s.get("above_vwap"))
     # B634 sweep: positive symmetric below_vwap (B634 producer)
-    fs = (s.get("below_prev_low") and s.get("vol_spike_15x") and s.get("below_vwap")) and not _short_borrow_trap_active(s)
+    fs = (s.get("below_prev_low") and s.get("vol_spike_12x") and s.get("below_vwap")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
         ["above_prev_high","vol_spike_15x","above_vwap"], ["below_prev_low","vol_spike_15x","below_vwap", "borrow_ok"],
         ["Price broke above previous day's high","Volume confirms participation","Above VWAP  -  buyers in control"],

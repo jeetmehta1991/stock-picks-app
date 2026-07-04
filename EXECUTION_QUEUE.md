@@ -3641,3 +3641,7 @@ per commit (violation caught by test_recent_batches_touch_execution_queue). Back
 
 Going forward B1154+, autonomous executor writes EXECUTION_QUEUE entry per commit per CHECKLIST #146.
 
+
+### B1145 auto-executor: prev_day_high_break DONE
+- Applied edits: ['REPLACE vol_spike_15x -> vol_spike_12x']
+- Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.
