@@ -2427,3 +2427,28 @@ The bug was invisible until owner spotted the specific-vs-generic discrepancy 5 
 
 **Cross-references:** B1149 commit; Council 243 Turn 9 (scripts/phase_1_investigation_autonomous_loop.py); Council 237 B1118 (scripts/phase_1_add_final_actions_column.py); Council 260 restore fix; `feedback_no_silent_misses`; L182 (monolithic paragraph recommendations mask directional errors) - related pattern.
 
+
+---
+
+## L189 — WIDEN_PERCENT parser must try multiple source format representations (B1152 2026-07-03 Council 262)
+
+**What went wrong:** Autonomous parser assumed "1%" in recommendation column always maps to "0.01" (decimal fraction) in source. But avwap_20high_rejection_short used `abs(pct_from_20h) < 1.0` (percent-as-float format). Parser generated `< 0.01` pattern, didn't match, strategy went to SKIP_UNCLASSIFIED despite being fully auto-executable.
+
+**Universal principle:** *Parsers that convert semantic values (e.g., "1%") to source-code patterns must assume MULTIPLE valid source representations exist (0.01, 1.0, 1). Try each format sequentially; first match wins.*
+
+**Rule:** For every semantic-to-syntactic conversion in autonomous scripts, enumerate all plausible source formats. Fail loudly if none match rather than silently skipping.
+
+**Cross-references:** B1152 commit; Council 262; CHECKLIST #144; `apply_csv_loosen_autonomous.py` WIDEN_PERCENT handler.
+
+---
+
+## L190 — Truncation-safe extraction from canonical source columns (B1153 2026-07-03 Council 263)
+
+**What went wrong:** Council 237 B1118 extractor truncated `LOOSEN: vol_spike_15x (1.5x) -> vol_spike_12x (1.2x) OR vol_above_avg AND widen X` at first semicolon inside parenthesis, saving only `vol_spike_15x (1;` in final_recommended_actions. The truncation destroyed the target signal name. Autonomous executor could not apply the vol_spike replacement even though parser was capable of handling the pattern.
+
+**Universal principle:** *Extractors that derive columns from richer source columns must be TRUNCATION-SAFE. Delimiter-based splits inside parenthetical annotations lose meaning. Always fall back to source column when derived text detects truncation markers.*
+
+**Rule:** (a) Extractors never truncate at delimiters inside parentheses; (b) Autonomous executors have a fallback rule: if derived column detects truncation markers, re-parse from source column; (c) Always log truncation events for audit.
+
+**Cross-references:** B1153 commit; Council 263; CHECKLIST #144; L188 (related: autonomous scripts must add not overwrite); `apply_csv_loosen_autonomous.py` truncation fallback.
+

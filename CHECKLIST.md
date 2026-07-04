@@ -2350,3 +2350,61 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Acceptable exceptions:** strategies explicitly listed in `STRATEGIES_DISABLED_MISSING_PRODUCER` count as SILENT but do NOT contribute to HALT threshold. STARVED and MARGINAL strategies are reported but don't fail; those are legitimate cube-mode observations of low-fire strategies.
 
      **Cross-references.** `feedback_batch_gate_includes_fire_count_validation` (updated to standalone), Council 232 verdict, `feedback_monitor_intermediate_counts` (in-run version), `feedback_data_consumption_audit_must_apply_checklist_44b` (silent-empty investigation), CHECKLIST #130 (companion cube completeness rule), `PASSING_CRITERIA` config source of thresholds.
+
+142. **HARD RULE -- AUTONOMOUS SCRIPTS MUST ADD NOT OVERWRITE HAND-CRAFTED WORK.** (Owner directive 2026-07-03 Council 260 + L188.)
+
+     **Trigger.** Every autonomous CSV/doc-updating script author (or reviewer) must verify BEFORE run.
+
+     **Rule.** Autonomous loop scripts that touch multiple CSV columns must classify each target column as:
+       (a) SAFE-TO-WRITE: column this script owns/created (script populates freely)
+       (b) READ-ONLY: column populated by upstream/hand-crafted work (never overwrite)
+       (c) APPEND-ONLY: column mixes hand-crafted + auto content (append new markers only)
+
+     For each write target: verify pre-existing content is NOT more specific than what script produces. If script's output is generic template + column has specific hand-crafted text, DO NOT OVERWRITE.
+
+     **Root cause history.** Council 243 Turn 9 autonomous loop (B1123) overwrote 129 strategies' `final_recommended_actions` column (populated by Council 237 B1118 with specific extractions from `recommendation` column) with generic gate-count-based templates. Bug was silent until owner spotted specific-vs-generic discrepancy 25+ batches later. 87 strategies were then marked SKIP_GENERIC_TEMPLATE by autonomous executor because parseable specificity had been destroyed by the earlier loop.
+
+     **Retroactive coverage demo (per #136).** Would this rule have caught Council 243 Turn 9 overwrite? YES - script would need explicit column classification declaring `final_recommended_actions` READ-ONLY. Would it have caught Council 237 truncation? YES - extractor writes to `final_recommended_actions`, must verify against `recommendation` column length before writing shorter version.
+
+     **Enforcement.** Add pre-flight check to autonomous scripts: sample 3-5 rows before write, verify script output is not shorter/less-specific than existing column content. Log any overwrite attempts to output_audit/.
+
+     **Cross-references.** L188 (LEARNINGS.md); Council 260 diagnostic (B1149); Council 262 (B1152) parser multi-format; Council 263 (B1153) truncation-safe extraction fallback; `feedback_no_silent_misses`.
+
+
+143. **HARD RULE -- SESSION MISTAKES MUST BE CODIFIED IN CHECKLIST SAME-TURN.** (Owner directive 2026-07-03 Council 263.)
+
+     **Trigger.** Every session/turn that produces a MISTAKE (bug, design flaw, silent-miss, wrong assumption caught by owner) must codify the lesson in CHECKLIST as a new numbered item + LEARNINGS.md as new L<N> lesson, SAME TURN.
+
+     **Rule.** After every mistake surfaces (whether via pyramid failure, owner catch, retroactive audit, or self-detection):
+       1. Analyze root cause (Council perspective adversarial + producer author + auditor)
+       2. Add to LEARNINGS.md as L<N> with universal principle + rule + cross-references
+       3. Add to CHECKLIST.md as new numbered item with trigger + rule + retroactive coverage demo + cross-references
+       4. Commit BOTH updates in the same batch as the mistake discovery
+
+     **Rationale.** Without codification, lessons decay. Same mistake pattern repeats next session. Owner-caught mistakes are the highest-signal instances - MUST become permanent checklist items.
+
+     **Retroactive coverage demo.** Would this rule have prevented Council 243 Turn 9 overwrite bug? Not directly (rule didn't exist yet), but with rule in place, PRIOR similar mistakes (L177 phantom-name, L179 baseline scaling, L180 schema drift) each would have generated CHECKLIST items forcing pre-flight checks in future scripts.
+
+     **Session mistakes catalog this session (2026-07-03) codified this turn:**
+       - L188 -> CHECKLIST #142 (Turn 9 auto-loop overwrite)
+       - L189 pending: WIDEN_PERCENT multi-format assumption (Council 262 B1152)
+       - L190 pending: truncation-safe extraction (Council 263 B1153)
+
+     **Cross-references.** L188/L189/L190; Council 260/262/263; `feedback_no_silent_misses`; L181 (investigation-only turns still require doc sweep).
+
+
+144. **HARD RULE -- TRUNCATION-SAFE EXTRACTION FROM CANONICAL SOURCE COLUMNS.** (Owner directive 2026-07-03 Council 263.)
+
+     **Trigger.** Every extractor script that reads from a canonical source column (e.g., `recommendation`, `final_recommended_actions`) and writes a derived column must be TRUNCATION-SAFE.
+
+     **Rule.** Extractors must:
+       (a) NEVER truncate at delimiters that appear inside parenthetical annotations. Example: `LOOSEN: vol_spike_15x (1.5x) -> vol_spike_12x (1.2x) OR vol_above_avg AND widen X` — truncating at "(1;" via naive semicolon-boundary loses the target signal.
+       (b) When splitting by regex, verify the split doesn't cut off mid-clause. Use full-sentence or full-clause boundaries only.
+       (c) When derived column length < source column length, log a warning and preserve original in secondary column for audit.
+
+     **Enforcement.** Autonomous executors must have a FALLBACK RULE: if derived column action text detects truncation markers (e.g., `(\d[.\d]?\s*;\s*(widen|drop))` pattern), re-parse from the original source column.
+
+     **Retroactive coverage demo.** avwap_20high_rejection_short SKIP_UNCLASSIFIED bug (Council 263): Council 237 B1118 truncated `LOOSEN: vol_spike_15x (1.5x) -> vol_spike_12x` at semicolon inside parenthesis, saving only `vol_spike_15x (1;`. Truncation-safe rule + fallback would have caught this + fully auto-executed.
+
+     **Cross-references.** Council 263 B1153; `apply_csv_loosen_autonomous.py` fallback rule; L190 (pending).
+

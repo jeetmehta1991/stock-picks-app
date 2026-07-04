@@ -9229,16 +9229,18 @@ def test_batch208_avwap_50_reclaim_requires_200ema_regime():
 
 
 def test_batch208_avwap_20high_rejection_short_requires_bear_regime():
-    """Batch 208: avwap_20high_rejection_short requires below 200-EMA
-    (bear regime confirmation) + bearish reversal candle.
-    B630 sweep update: positive symmetric below_ema_200."""
+    """Batch 208 + Batch 1153 (2026-07-03 Council 263 LOOSEN):
+    avwap_20high_rejection_short requires below 200-EMA (bear regime confirmation)
+    + bearish reversal candle. B1153 replaced vol_spike_15x -> vol_spike_12x per
+    CSV recommendation column (Lopez-Lira/Shannon canonical). B630 sweep update:
+    positive symmetric below_ema_200."""
     from backtest.signals.screener import strat_avwap_20high_rejection_short
     s = {
         "above_avwap_20high": False,
         "pct_from_avwap_20high": 0.5,
         "shooting_star": True,
         "bearish_engulfing": False,
-        "vol_spike_15x": True,
+        "vol_spike_12x": True,  # B1153: was vol_spike_15x
         "below_ema_200": True,          # B630 positive symmetric
     }
     r = strat_avwap_20high_rejection_short(s)

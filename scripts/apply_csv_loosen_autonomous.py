@@ -108,7 +108,7 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
     # SPECIFIC edits - parse them
     edits = []
 
-    # Rule: signal_A -> signal_B (arrow replacement)
+    # Rule: signal_A -> signal_B (arrow replacement, direct)
     for match in re.finditer(
         r"([a-z_0-9]+)\s*(?:->|\-\->|->)\s*([a-z_0-9]+)", action_text
     ):
@@ -120,6 +120,25 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
         # Only accept if both look like signal names (lower + digits + underscores)
         if len(old) >= 3 and len(new) >= 3:
             edits.append({"type": "REPLACE_SIGNAL", "old": old, "new": new})
+
+    # B1153 (Council 263 enhancement): signal_A (annotation) -> signal_B (annotation)
+    # Handles `vol_spike_15x (1.5x) -> vol_spike_12x (1.2x)` pattern where
+    # parentheses contain annotations. Skip parenthesized text between signals.
+    for match in re.finditer(
+        r"([a-z_0-9]+)\s*\([^)]*\)\s*(?:->|\-\->|->)\s*([a-z_0-9]+)",
+        action_text,
+    ):
+        old = match.group(1)
+        new = match.group(2)
+        if old in ("bar", "n", "gate", "threshold", "-", "or"):
+            continue
+        if len(old) >= 3 and len(new) >= 3:
+            # Deduplicate against existing REPLACE_SIGNAL edits
+            if not any(
+                e.get("type") == "REPLACE_SIGNAL" and e.get("old") == old and e.get("new") == new
+                for e in edits
+            ):
+                edits.append({"type": "REPLACE_SIGNAL", "old": old, "new": new})
 
     # Rule: "Drop rsi_14<XX" or "drop rsi_14>XX" (RSI filter removal)
     for match in re.finditer(
@@ -477,6 +496,20 @@ def main() -> int:
             )
             stats[classification] += 1
             continue
+
+        # B1153 (Council 263 fix): if final_recommended_actions text ends
+        # abruptly mid-clause (truncated by Council 237 extractor), fall
+        # back to recommendation column which has the full text.
+        # Detection: action contains "(N;" or ends with " ( " indicating
+        # truncation at semicolon inside parenthesis.
+        if re.search(r"\(\d[.\d]?\s*;\s*(widen|drop)", action, re.IGNORECASE):
+            rec_text = str(row.get("recommendation", ""))
+            if rec_text and len(rec_text) > len(action):
+                # Re-parse from full recommendation
+                classification2, edits2 = classify_action(rec_text)
+                if edits2 and len(edits2) > len(edits):
+                    edits = edits2
+                    classification = classification2
 
         # SPECIFIC: apply edits
         content = SCREENER_PATH.read_text(encoding="utf-8")

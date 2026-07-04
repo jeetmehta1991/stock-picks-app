@@ -3517,3 +3517,68 @@ Progress: 99 -> 100 (+1 more DONE via B1152 multi-format fix).
 
 Matches recommendation exactly.
 
+
+### B1153 (2026-07-03 Council 263 - Truncation fallback + parser paren-annotation + CHECKLIST codification):
+
+Owner diagnostic: "why cant that be auto executed by you? why is manual review needed for this?"
+
+Answer: NOTHING was blocking auto-execution. Multiple parser bugs were preventing full loosening:
+  1. Council 237 B1118 extractor truncated `LOOSEN: vol_spike_15x (1.5x) -> vol_spike_12x` at semicolon (destroyed target signal)
+  2. Parser signal-replacement regex didn't handle `signal_A (annotation) -> signal_B` pattern
+  3. Test fixture used vol_spike_15x, needed update to vol_spike_12x
+
+3 FIXES SHIPPED:
+
+**Fix 1: Truncation-safe fallback in executor**
+  If action_text detects truncation markers (e.g., `(\d[.\d]?\s*;\s*(widen|drop))`),
+  re-parse from FULL recommendation column instead. Restores lost specificity.
+
+**Fix 2: Parenthetical-annotation parser rule**
+  Added regex `([a-z_0-9]+)\s*\([^)]*\)\s*(?:->|\-\->|->)\s*([a-z_0-9]+)` to
+  handle `signal_A (1.5x) -> signal_B (1.2x)` pattern where parens contain
+  annotations. Dedup vs existing REPLACE_SIGNAL edits.
+
+**Fix 3: Test fixture update (same-batch)**
+  test_batch208_avwap_20high_rejection_short_requires_bear_regime:
+  fixture "vol_spike_15x": True -> "vol_spike_12x": True
+
+VERIFICATION:
+  avwap_20high_rejection_short FINAL state:
+    status:                     DONE_B1145
+    updated_producer_signals:   above_avwap_20high, bearish_engulfing, below_ema_200,
+                                pct_from_avwap_20high, shooting_star, vol_spike_12x
+    change_from_original:       ADDED: [vol_spike_12x]; REMOVED: [vol_spike_15x]
+    Source verification:        `< 2.0` (from B1152) + vol_spike_12x (from B1153) BOTH applied
+
+BOTH parts of the recommendation column intent now applied. Zero manual review needed.
+
+### CHECKLIST codification (owner mandate):
+
+Owner directive 2026-07-03: "L188 lesson - add to checklist. updating checklist with mistakes in each turn/session is mandatory if mistakes are made."
+
+Added to CHECKLIST.md:
+  #142 - HARD RULE: Autonomous scripts must ADD not OVERWRITE hand-crafted work (L188)
+  #143 - HARD RULE: Session mistakes must be codified in CHECKLIST same-turn
+  #144 - HARD RULE: Truncation-safe extraction from canonical source columns
+
+Added to LEARNINGS.md:
+  L189 - WIDEN_PERCENT parser must try multiple source format representations (Council 262)
+  L190 - Truncation-safe extraction from canonical source columns (Council 263)
+
+L188 already present (added B1149).
+
+### Owner benefit for future sessions:
+
+CHECKLIST #142+#143+#144 codified as standing rules. Any future autonomous script
+author (myself or successors) must:
+  1. Classify each target column as SAFE-TO-WRITE / READ-ONLY / APPEND-ONLY
+  2. Never overwrite specific hand-crafted content with generic templates
+  3. Add pre-flight overwrite-detection checks
+  4. Codify EVERY mistake surfaced in a session as CHECKLIST + LEARNINGS same-turn
+
+### Cumulative post-B1153:
+  DONE:    100 (52.1%)
+  SKIP:     87 (45.3%)
+  FAIL:      1
+  BLOCKED:   4
+
