@@ -2526,3 +2526,63 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Retroactive coverage demo (per #136).** Rule catches all 8 inventions.
 
      **Cross-references.** L196; Council 271 B1167; CHECKLIST #142/#143/#149.
+
+
+151. **HARD RULE -- CSV METADATA COLUMNS MUST BE GIT-VERIFIED, NOT STAMPED.** (Owner directive 2026-07-04 Council 274 + L197.)
+
+     **Trigger.** Every enrichment script that populates CSV columns (change_from_original, updated_producer_signals, etc.) claiming reflect code state.
+
+     **Rule.** Before stamping a metadata column with "batch X did Y":
+       (a) Resolve batch_ref -> ALL matching git commits (not just first)
+       (b) For each commit, run git diff against strategy body in target file
+       (c) Only stamp "widened" / "loosened" / "changed" when git-diff shows actual delta
+       (d) Categorize NO-CHANGE cases explicitly (STATUS_QUO, UNIVERSE_EXPAND deferred, AUDIT_COMPLETE, PRODUCER_CASCADE, SECONDARY, MARGINAL_NO_LOOSEN)
+       (e) Distinguish consumer (screener.py) change vs producer (technical.py / smc_ict.py / chart_patterns.py / universe.py / etc.)
+
+     **Rationale.** B1148 Council 259 add_updated_producer_signals_columns.py stamped "numeric threshold widened in {batch}" on ALL DONE_B* rows without git-diff check. Result: 48 of 67 rows FALSE (72% wrong). Owner caught 4 examples (cpr_narrow_momentum, donchian_breakdown_retest_short, smc_choch_reversal, squeeze_setup_long) all UNIVERSE_EXPAND rec but showed "threshold widened" text.
+
+     **Retroactive coverage demo (per #136).** Rule requires git-diff verification -> would have caught all 48 false stamps in B1148 immediately.
+
+     **Enforcement.** Any script populating change_from_original / updated_producer_signals must call git diff-tree per batch_ref, per strategy. No exceptions. See scripts/fix_change_from_original_and_gate_structure.py canonical implementation.
+
+     **Cross-references.** L197; Council 274 B1169; CHECKLIST #67/#128/#136/#150.
+
+
+152. **HARD RULE -- GATE STRUCTURE COLUMN MUST SHOW LOGICAL FORMULA NOT COMMA LIST.** (Owner directive 2026-07-04 Council 274 + L197.)
+
+     **Trigger.** Every CSV column that documents "current strategy gate stack" (updated_producer_signals or equivalent).
+
+     **Rule.** Column value MUST be a logical AND/OR/NOT formula:
+       (a) Extract each `fires = (...)` or `fl = (...) fs = (...)` block from source
+       (b) Substitute s.get("X") -> X, replace `and` -> AND, `or` -> OR, `not` -> NOT
+       (c) Preserve parenthetical grouping (e.g., `A AND (B OR C)`, not `A,B,C`)
+       (d) For dual LONG/SHORT: format as `LONG: (...) | SHORT: (...)`
+       (e) Layered patterns (`layer1_positioning`, `layer2_catalyst`): substitute layer definitions inline
+
+     **Rationale.** CSV comma-list `bearish_engulfing,below_prev_low,recent_blowoff_at_r3,shooting_star,vol_below_avg` HIDES gate structure. Reviewer cannot distinguish 5-AND vs 3-AND-with-OR-composite. Owner example: pivot_r3_blowoff_short shown as 5-comma-list but actually `recent_blowoff_at_r3 AND vol_below_avg AND (bearish_engulfing OR shooting_star OR below_prev_low) AND NOT short_borrow_trap` = 3-gate structure.
+
+     **Retroactive coverage demo (per #136).** Would have surfaced pivot_r3_blowoff_short 2-vs-5 gate confusion in owner review before it reached the CSV column drift stage.
+
+     **Enforcement.** scripts/fix_change_from_original_and_gate_structure.py canonical formula extractor. All future column-population scripts inherit or reference this pattern.
+
+     **Cross-references.** L197; Council 274 B1169; CHECKLIST #150/#151.
+
+
+153. **HARD RULE -- FINAL_RECOMMENDED_ACTIONS MUST ALIGN WITH EXECUTION_STATUS INTENT.** (Owner directive 2026-07-04 Council 274 + L197.)
+
+     **Trigger.** Every DONE / SKIP / PENDING classification decision.
+
+     **Rule.** Action tag semantics MUST match execution_status:
+       (a) [LOOSEN_GATE] / [LOOSEN_THRESHOLD] / [DROP_GATE] -> requires consumer/screener.py code change -> execution_status must show DONE_B<n>_<CHANGE>
+       (b) [UNIVERSE_EXPAND] -> DO NOT execute in Batch A; mark DONE_B<n>_UNIVERSE_EXPAND (no code change)
+       (c) [AUDIT_DATA] -> not a code change; mark DONE_B<n>_AUDIT_COMPLETE with audit-verification batch ref
+       (d) [FIX_PRODUCER] -> producer file change (technical.py / smc_ict.py / etc.); mark DONE_B<n>_PRODUCER_CASCADE
+       (e) Mixed-tag rec (e.g., "[LOOSEN_GATE] + [FIX_PRODUCER] + [UNIVERSE_EXPAND]"): split into ordered sub-actions; execution_comments must enumerate which sub-action was done in which batch
+
+     **Rationale.** Owner surfaced squeeze_setup_long example: final rec was "[CRITICAL] [AUDIT_DATA] URGENT FINRA prefetch coverage across Batch A; [UNIVERSE_EXPAND] Batch B / T3 high-SI names" - marked DONE_B1146_AUDIT_COMPLETE (correct for AUDIT_DATA sub-action) BUT change_from_original stamped as "numeric threshold widened" (FALSE - no code change happened; AUDIT-only fulfillment). Rule requires sub-action tracking to prevent this drift.
+
+     **Retroactive coverage demo (per #136).** Rule would have caught all 48 CHECKLIST #151 mis-stamps by requiring sub-action enumeration per action tag.
+
+     **Enforcement.** CSV populators must decompose action-tag lists into ordered sub-actions BEFORE marking DONE. If any sub-action pending: status is PENDING_SUB_<tag>.
+
+     **Cross-references.** L197; Council 274 B1169; CHECKLIST #150/#151/#152.

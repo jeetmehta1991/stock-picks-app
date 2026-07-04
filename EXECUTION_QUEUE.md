@@ -3965,3 +3965,41 @@ Session mistake #10 (L196/#150) codified same-turn per CHECKLIST #143.
 Next: 49 SKIP strategies (all n<=30, per CHECKLIST #148) awaiting owner
 per-strategy review per CHECKLIST #150 protocol.
 
+
+### B1169 (2026-07-04 Council 274 - CSV METADATA AUDIT + COLUMN FIX):
+
+Owner directive: Detailed audit of DONE strategies + column format enhancements.
+
+CRITICAL FINDING: 48 of 67 rows had FALSE "threshold widened" text (72% wrong).
+Root cause: B1148 (Council 259) script line 181 stamped without git-verification.
+Session mistake #11 codified L197 + CHECKLIST #151/#152/#153.
+
+Fixes applied:
+1. NEW scripts/fix_change_from_original_and_gate_structure.py (canonical git-diff-verified populator)
+2. change_from_original re-populated with actual old->new numeric deltas
+   (e.g., "B1145: rsi_14 <40-><45" vs prior generic "threshold widened")
+3. updated_producer_signals re-populated as logical AND/OR/NOT formula
+   (e.g., "recent_blowoff_at_r3 AND vol_below_avg AND (bearish_engulfing OR
+   shooting_star OR below_prev_low) AND NOT short_borrow_trap" vs prior
+   comma-list "bearish_engulfing,below_prev_low,recent_blowoff_at_r3,...")
+
+Owner questions answered:
+- pivot_r3_blowoff_short: actually 3-gate + borrow filter (neither 2-gate nor
+  5-gate). Both stale column claims wrong.
+- cpr_narrow_momentum: UNIVERSE_EXPAND - NO code change happened. Column
+  metadata false. Corrected to "no code change; UNIVERSE_EXPAND deferred to Batch B".
+- squeeze_setup_long: AUDIT_DATA - NO code change. Column metadata false.
+  Corrected to "no code change; audit-only directive fulfilled".
+- donchian_breakdown_retest_short, smc_choch_reversal: same pattern.
+
+Coverage after fix:
+- 59 verified real code changes (with numeric delta shown)
+- 56 status-quo/admin/no-code-change (properly categorized)
+- 4 structural edits (multi-gate restructures)
+- 10 reverts (previously-stamped invention reverts)
+- 4 blocked / 2 fail / others
+
+Session mistake ledger: #11 CSV column drift (L197 / CHECKLIST #151-153).
+
+Next: Execute REVERTED 8/8 + FAIL_PYRAMID 2/2 + PRODUCER 9/9 individually.
+

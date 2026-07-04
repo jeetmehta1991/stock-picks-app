@@ -2554,3 +2554,86 @@ Owner correction 2026-07-04: "Do not invent anything and dont make assumptions. 
 **Rule:** Before applying ANY edit verify (a) signal name exists (grep), (b) threshold matches source, (c) enumerated set exact, (d) direction explicit. If ANY fails: STOP + ask owner.
 
 **Cross-references:** B1167 commit; Council 271; CHECKLIST #150; B1158-B1165 audit results.
+
+
+## L197 -- CSV METADATA COLUMNS MUST BE GIT-VERIFIED, NOT STAMPED (Council 274 B1169 2026-07-04)
+
+Owner correction 2026-07-04 Council 274:
+  "For cpr_narrow_momentum strategy, final rec was [MED] [UNIVERSE_EXPAND]
+   B718 tightening empirically-justified; Batch B primary lever - however,
+   numeric threshold widened in B1145 (signal set unchanged; see source diff
+   for threshold value) why loosen? Same for donchian_breakdown_retest_short,
+   smc_choch_reversal, strategy. Do an audit and provide specifics for all
+   done strategies."
+  "For squeeze_setup_long, final rec states [UNIVERSE_EXPAND] Batch B / T3
+   high-SI names, post investigation comments column states ACTIONS: (1)
+   URGENT audit FINRA short_interest prefetch coverage across Batch A tickers;
+   (2) universe expansion. however it has been marked as done. Has 1 and 2
+   been done? Only action is numeric threshold widened in B1146. How does
+   this reconcile with post investigation actions?"
+
+**Root cause:** scripts/add_updated_producer_signals_columns.py (Council 259
+B1148) had bug at line 181:
+  ```python
+  if status.startswith("DONE_B"):
+      return updated_str, f"numeric threshold widened in {batch_ref}..."
+  ```
+Every DONE_B* row got stamped "threshold widened" REGARDLESS of whether git
+diff showed actual code change. Result: 48 of 67 rows (72%) had FALSE
+"threshold widened" text on rows where NO threshold change occurred:
+  - 33 STATUS_QUO (rec = keep-as-is; no code change intended)
+  - 4 UNIVERSE_EXPAND (Batch B deferral; no Batch A code change)
+  - 3 AUDIT_COMPLETE (admin cleanup after audit verified)
+  - 4 SECONDARY (cascade from primary batch)
+  - 2 MARGINAL_NO_LOOSEN (owner-constrained no-loosen)
+  - 1 PRODUCER_CASCADE (upstream producer edited)
+  - 1 BLOCKED
+
+**Additional issues surfaced same council:**
+
+Issue B: updated_producer_signals column was comma-list format hiding gate
+structure. Example: pivot_r3_blowoff_short shown as
+  "bearish_engulfing,below_prev_low,recent_blowoff_at_r3,shooting_star,vol_below_avg"
+but actual source is 3-gate structure:
+  "recent_blowoff_at_r3 AND vol_below_avg AND
+   (bearish_engulfing OR shooting_star OR below_prev_low)
+   AND NOT short_borrow_trap"
+Owner asked "Is it 2-gate or 5-gate?" - answer was neither; comma-list
+representation lost the AND/OR structure entirely.
+
+Issue C: SKIP/Unclassified strategies had generic recommendations like
+"Drop 1-2 secondary gates from 5-gate stack" that don't specify which
+gates. Reviewer cannot execute without owner input on WHICH gate.
+
+**Universal principle:** Metadata columns claiming to reflect code state
+must be git-verified. Stamping without diff-check produces false-positive
+"widened" claims that erode trust and mislead reviewers.
+
+**Rule triad:**
+- CHECKLIST #151: git-diff verification before stamping metadata columns
+- CHECKLIST #152: gate structure column must show AND/OR/NOT logical formula
+- CHECKLIST #153: final_recommended_actions tags must align with execution_status intent
+
+**Fix (B1169):** scripts/fix_change_from_original_and_gate_structure.py
+
+Canonical git-diff-verified column populator:
+  - Resolves batch_ref -> ALL matching commits (fixes: previous impl only
+    checked first commit)
+  - Per commit, greps strategy body change
+  - Detects (name, direction) thresholds separately (fixes: previous impl
+    dict-overwrite bug where LONG rsi_14<40 and SHORT rsi_14>60 collided)
+  - Detects producer-side files (technical.py / smc_ict.py / chart_patterns.py
+    / universe.py / pead.py / smart_money.py) and stamps "upstream producer
+    change" instead of forcing consumer-diff assertion
+  - Categorizes STATUS_QUO / UNIVERSE_EXPAND / AUDIT_COMPLETE / SECONDARY /
+    PRODUCER_CASCADE / MARGINAL_NO_LOOSEN each with distinct no-code-change
+    message
+
+**Coverage after fix:** 192 strategies, 59 verified real code changes with
+old->new numeric delta shown, 56 status-quo/admin/no-code-change (properly
+categorized), 0 flagged "NO GIT-VERIFIED CHANGE despite DONE" (previously
+28), remaining rows are reverts / SKIP / BLOCKED / FAIL_PYRAMID (all
+correctly labeled).
+
+**Cross-references:** B1169 commit; Council 274; CHECKLIST #151/#152/#153;
+scripts/fix_change_from_original_and_gate_structure.py.
