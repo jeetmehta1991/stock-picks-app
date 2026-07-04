@@ -4018,3 +4018,14 @@ Other MFI consumers (strat_mfi_oversold_with_smart_money_long) retain strict boo
 
 Pyramid 850+2 GREEN.
 
+
+### B1171 (2026-07-04 Council 275 REVERT 2/8): pivot_r1_breakout
+
+CSV final_recommended_actions: [MED] [LOOSEN_GATE] drop AVWAP-from-252-day-low gate
+
+Applied:
+- screener.py strat_pivot_r1_breakout: dropped above_avwap_252low (LONG) + below_avwap_252high (SHORT). Retained _50low anchor gates per rec "redundant institutional reference vs R1".
+- test_unit.py test_batch205_pivot_r1_requires_avwap_50low_only_post_b1171 renamed + adjusted (now asserts only _50low required).
+
+Pyramid 850+2 GREEN.
+

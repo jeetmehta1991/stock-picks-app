@@ -9473,31 +9473,27 @@ def test_batch205_compute_vwap_emits_anchored_vwap_signals():
     assert out["avwap_50low"]  > 0
 
 
-def test_batch205_pivot_r1_requires_avwap_gate():
-    """Batch 205: strat_pivot_r1_breakout must require above_avwap_252low
-    AND above_avwap_50low for long entries. AVWAP gate filters out R1
-    breakouts that occur below the institutional reference (failed
-    breakouts more likely).
-
-    B1168 (2026-07-04 Council 273 REVERT): B1163 invention dropped both AVWAP
-    gates but CSV only said drop 252low. Reverted per owner directive per
-    CHECKLIST #150."""
+def test_batch205_pivot_r1_requires_avwap_50low_only_post_b1171():
+    """Batch 205 (post-B1171 owner-approved LOOSEN): strat_pivot_r1_breakout
+    must require above_avwap_50low ONLY for long entries. The above_avwap_252low
+    gate was dropped per CSV final_recommended_actions "drop AVWAP-from-252-day-
+    low gate (redundant institutional reference vs R1)". AVWAP-50low retained
+    as short-term anchor.
+    """
     from backtest.signals.screener import strat_pivot_r1_breakout
-    # All entry conditions met EXCEPT AVWAP
+    # All entry conditions met EXCEPT AVWAP-50low
     s = {
         "above_r1": True, "below_s1": False,
         "vol_spike_15x": True,
         "macd_12_26_9_bullish": True,
-        "above_avwap_252low": False,  # below institutional reference
         "above_avwap_50low": False,
     }
     r = strat_pivot_r1_breakout(s)
     assert not r["fires"] or r["direction"] != "long", (
-        "Batch 205: pivot_r1 long must NOT fire when below AVWAP"
+        "post-B1171: pivot_r1 long must NOT fire when below AVWAP-50low"
     )
-    # All conditions met INCLUDING AVWAP
-    s["above_avwap_252low"] = True
-    s["above_avwap_50low"]  = True
+    # All conditions met INCLUDING AVWAP-50low (252low no longer required)
+    s["above_avwap_50low"] = True
     r2 = strat_pivot_r1_breakout(s)
     assert r2["fires"] is True
     assert r2["direction"] == "long"

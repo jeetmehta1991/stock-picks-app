@@ -613,13 +613,13 @@ def strat_pivot_r1_breakout(s):
     fails-safe to no-fire when AVWAP signals are absent rather than
     auto-passing the gate.
     """
-    # B659: symmetric default-False on BOTH directions (was asymmetric
-    # default-True LONG + default-False SHORT per pre-B659 hardcoded asymmetry).
-    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
-    # B1163 invention (dropped BOTH AVWAP gates) reverted. CSV said drop only
-    # 252low but I dropped both. Restored both AVWAP composite gates.
-    avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)
-    avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
+    # B659: symmetric default-False on BOTH directions.
+    # B1171 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    # DROP AVWAP-from-252-day-low gate per CSV rec ("redundant institutional
+    # reference vs R1 breakout"). RETAIN AVWAP-50-day-low (short-term
+    # anchor still relevant). Narrow-scope: only pivot_r1_breakout.
+    avwap_long_ok = s.get("above_avwap_50low", False)
+    avwap_short_ok = s.get("below_avwap_50low", False)
     fl = (
         s.get("above_r1") and s.get("vol_spike_15x")
         and s.get("macd_12_26_9_bullish") and avwap_long_ok
@@ -630,9 +630,9 @@ def strat_pivot_r1_breakout(s):
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
         ["above_r1", "vol_spike_15x", "macd_12_26_9_bullish",
-         "above_avwap_252low", "above_avwap_50low"],
+         "above_avwap_50low"],
         ["below_s1", "vol_spike_15x", "macd_12_26_9_bearish",
-         "below_avwap_252low", "below_avwap_50low", "borrow_ok"],
+         "below_avwap_50low", "borrow_ok"],
         ["Price broke above R1 resistance",
          "Volume 1.5x ADV(20) - institutional buying",
          "MACD positive",
