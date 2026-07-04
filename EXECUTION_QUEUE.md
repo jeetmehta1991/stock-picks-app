@@ -4078,3 +4078,15 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1176 (2026-07-04 Council 275 REVERT 7/8): pivot_fib_confluence
+
+CSV final_recommended_actions: widen candle set (hammer OR bullish_engulfing OR bullish_pin_bar OR piercing_line); symmetric SHORT; widen at_key_fib tolerance if narrow
+
+Applied:
+- LONG: (hammer OR bullish_engulfing OR bullish_pin_bar) [piercing_line skipped per #150(a)]
+- SHORT: symmetric (shooting_star OR bearish_engulfing OR bearish_pin_bar) [all 3 signals verified in producer]
+- at_key_fib tolerance widening SKIPPED per #150(e) - conditional/ambiguous ("if narrow")
+
+Pyramid 850+2 GREEN.
+

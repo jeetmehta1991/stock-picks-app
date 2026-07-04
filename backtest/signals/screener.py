@@ -2609,16 +2609,30 @@ def strat_bb_squeeze_volume(s):
 
 
 def strat_pivot_fib_confluence(s):
-    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
-    # B1159 invention (morning_star sub for piercing_line + SHORT expansion)
-    # reverted per owner directive. piercing_line signal does not exist;
-    # awaits producer-side work.
-    fl = ((s.get("near_s1") or s.get("near_s2")) and s.get("at_key_fib") and (s.get("hammer") or s.get("bullish_engulfing")))
-    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and s.get("bearish_engulfing")) and not _short_borrow_trap_active(s)
+    # B1176 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    # Widen candle set per rec "widen candle set (hammer OR bullish_engulfing
+    # OR bullish_pin_bar OR piercing_line) for LONG; symmetric for SHORT".
+    # piercing_line SKIPPED per CHECKLIST #150(a) - not in producer. Applied
+    # 3 verified LONG signals + symmetric SHORT (shooting_star OR
+    # bearish_engulfing OR bearish_pin_bar). Second rec part "widen at_key_fib
+    # tolerance if narrow" SKIPPED per #150(e) - conditional/ambiguous.
+    bullish_candle = (
+        s.get("hammer")
+        or s.get("bullish_engulfing")
+        or s.get("bullish_pin_bar")
+    )
+    bearish_candle = (
+        s.get("shooting_star")
+        or s.get("bearish_engulfing")
+        or s.get("bearish_pin_bar")
+    )
+    fl = ((s.get("near_s1") or s.get("near_s2")) and s.get("at_key_fib") and bullish_candle)
+    fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and bearish_candle) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["at_pivot_support","at_key_fib","bullish_candle"], ["at_pivot_resistance","at_key_fib","bearish_engulfing", "borrow_ok"],
-        ["Pivot support + Fibonacci + bullish candle  -  two systems at same level bullish"],
-        ["Pivot resistance + Fibonacci + bearish engulfing  -  two systems at same level bearish"])
+        ["at_pivot_support","at_key_fib","bullish_reversal_family"],
+        ["at_pivot_resistance","at_key_fib","bearish_reversal_family", "borrow_ok"],
+        ["Pivot support + Fibonacci + bullish reversal (hammer/engulfing/pin_bar) - widened per B1176"],
+        ["Pivot resistance + Fibonacci + bearish reversal (shooting_star/engulfing/pin_bar) - widened per B1176"])
 
 
 def strat_golden_cross_volume(s):
