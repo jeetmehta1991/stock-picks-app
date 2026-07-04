@@ -9179,17 +9179,16 @@ def test_batch208_avwap_strategies_registered_in_ALL_STRATEGIES():
 
 
 def test_batch208_avwap_252_breakout_long_fires_near_reclaim():
-    """Batch 208 + B802 #47 (2026-06-16 EVENT-conversion): avwap_252_breakout
-    long fires on fresh RECLAIM EVENT (was below AVWAP-252-low within last 3 days,
-    now above) with volume confirmation. B802 EVENT-conversion supersedes the
-    pre-B802 STATE+proximity gate.
+    """Batch 208 + B802 #47 + Batch 1139 (2026-07-03 Council 253 LOOSEN):
+    avwap_252_breakout long fires on fresh RECLAIM EVENT with volume confirmation.
+    B1139 loosened: vol_spike_15x -> vol_above_avg (Shannon 2022 canonical);
+    dropped rsi_14<70 filter.
     """
     from backtest.signals.screener import strat_avwap_252_breakout
-    # B802 EVENT-form: requires avwap_252low_reclaim_recent_3d
+    # B1139 EVENT-form: requires avwap_252low_reclaim_recent_3d + vol_above_avg
     s = {
         "avwap_252low_reclaim_recent_3d": True,
-        "vol_spike_15x": True,
-        "rsi_14": 50.0,
+        "vol_above_avg": True,  # B1139: was vol_spike_15x
     }
     r = strat_avwap_252_breakout(s)
     assert r["fires"] is True and r["direction"] == "long"
@@ -9200,7 +9199,7 @@ def test_batch208_avwap_252_breakout_long_fires_near_reclaim():
 
     # Volume missing -> no fire (even with reclaim)
     s["avwap_252low_reclaim_recent_3d"] = True
-    s["vol_spike_15x"] = False
+    s["vol_above_avg"] = False  # B1139: was vol_spike_15x
     assert strat_avwap_252_breakout(s)["fires"] is False
 
 

@@ -3075,3 +3075,73 @@ Next: B1138 AVWAP + 52w families LOOSEN.
 
 Next: B1139 MACD + AVWAP + 52w_high_breakout family LOOSEN.
 
+
+### B1139 (2026-07-03 Council 253 Grouped LOOSEN 7/N - AVWAP + MACD family):
+
+- 2026-07-03 — `b1139-avwap-macd-loosen` — 3 strategies loosened per Council 236 Turn 6 + Turn 8 + Turn 9 verdicts. FULL expanded pyramid 955+7 GREEN.
+
+### 3 strategies loosened (+1 side-effect):
+
+**Strategy 1: strat_avwap_252_breakout (screener.py:4912)**
+  Council 236 Turn 6 verdict: PRODUCER_OK + STRUCTURAL_RARE_EVENT
+  Batch A n_fires: 32
+  Actions:
+    (1) vol_spike_15x (1.5x avg) -> vol_above_avg (Shannon 2022 canonical)
+    (2) Drop rsi_14<70 filter (LONG); rsi_14>30 filter (SHORT) - RSI extreme
+        is separate concept from AVWAP reclaim; adding double-filters
+  Symmetric LONG+SHORT loosening.
+  Expected: 1.5-2x uplift
+
+**Strategy 2: strat_macd_ichimoku (screener.py:2511)**
+  Council 236 Turn 8 verdict: PRODUCER_OK + 2_WAY_EVENT_COMPOUND
+  Batch A n_fires: 5
+  Action: Drop ichi_above_cloud / ichi_below_cloud position filter
+  Rationale: MACD crossover carries direction; cloud position is redundant.
+    Same pattern as B1138 golden_cross_20_50 (drop 200-EMA regime gate).
+  Expected: 3-5x uplift
+
+**Strategy 3: strat_supertrend_macd (screener.py:1449)**
+  Council 236 Turn 9 auto-verdict: PRODUCER_OK_HIGH_UNDERFIRE
+  Batch A n_fires: 6 (LONG); 2 (SHORT)
+  Action: Drop adx>20 gate (3-way -> 2-way EVENT+STATE)
+  Rationale: MACD 12/26/9 bullish/bearish carries momentum direction;
+    adx>20 is redundant strength gate similar to B1138 adx_initiation.
+  Expected: 2-3x uplift on both LONG and SHORT
+  SIDE EFFECT: supertrend_macd_short shares consumer; reclassified DONE_B1139_SECONDARY.
+
+### Test update same-batch:
+
+  test_batch208_avwap_252_breakout_long_fires_near_reclaim updated:
+    Fixture switched vol_spike_15x -> vol_above_avg to match B1139 gate signature.
+
+### CSV reclassifications (B1139):
+
+  avwap_252_breakout:      PENDING -> DONE_B1139
+  macd_ichimoku:           PENDING -> DONE_B1139
+  supertrend_macd:         PENDING -> DONE_B1139
+  supertrend_macd_short:   PENDING -> DONE_B1139_SECONDARY
+
+### Execution status distribution (post-B1139):
+
+  BLOCKED_DATA_MISSING       4
+  DONE_B1126                 3
+  DONE_B1133                 3
+  DONE_B1134                 3
+  DONE_B1135                 2
+  DONE_B1135_STATUS_QUO      1
+  DONE_B1136                 3
+  DONE_B1136_SECONDARY       1
+  DONE_B1137                 6
+  DONE_B1138                 3
+  DONE_B1138_SECONDARY       1
+  DONE_B1139                 3
+  DONE_B1139_SECONDARY       1
+  PENDING                  158 (was 162)
+
+### Expanded pyramid retroactive gate: 955+7 GREEN.
+
+Council 249 grouped LOOSEN progress: 7 batches shipped covering 34 strategies
+(26 primary + 8 secondary/status_quo). 17.7% of 192 total complete via LOOSEN.
+
+Next: B1140 continue with additional families (RSI + Institutional + Classification change).
+

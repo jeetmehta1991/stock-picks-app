@@ -1498,20 +1498,25 @@ def strat_supertrend_macd(s):
     No B655 change (queue-blocked).
     """
     # B655: EVENT-anchored 5-bar lookback replaces all-STATE composite
+    # B1139 (2026-07-03 Council 253 LOOSEN per Turn 9 auto-verdict): 6 fires
+    # (LONG); 2 fires (SHORT). 3-way compound with adx>20 - MACD 12/26/9
+    # already carries momentum direction; adx>20 is redundant strength gate
+    # (similar to B1138 adx_initiation reasoning). Drop adx>20 gate.
+    # Expected 2-3x uplift.
     fl = (s.get("supertrend_flip_recent_long_5d")
-          and s.get("macd_12_26_9_bullish")
-          and s.get("adx", 0) > 20)
+          and s.get("macd_12_26_9_bullish"))
+          # B1139 dropped: adx>20 (redundant with MACD momentum direction)
     fs = (s.get("supertrend_flip_recent_short_5d")
           and s.get("macd_12_26_9_bearish")
-          and s.get("adx", 0) > 20 and not _short_borrow_trap_active(s))
+          # B1139 dropped: adx>20 (redundant)
+          and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "trend",
-        ["supertrend_flip_recent_long_5d","macd_12_26_9_bullish","adx>20"],
-        ["supertrend_flip_recent_short_5d","macd_12_26_9_bearish","adx>20", "borrow_ok"],
+        ["supertrend_flip_recent_long_5d","macd_12_26_9_bullish"],  # B1139 dropped adx>20
+        ["supertrend_flip_recent_short_5d","macd_12_26_9_bearish", "borrow_ok"],  # B1139 dropped adx>20
         ["Supertrend flip-up within last 5 bars (B655 EVENT-anchored; pre-B655 used always-on supertrend_bullish)",
-         "MACD positive  -  momentum confirms within window",
-         "ADX > 20  -  trend strength confirmed"],
+         "MACD positive  -  momentum confirms within window (B1139 self-sufficient)"],
         ["Supertrend flip-down within last 5 bars",
-         "MACD negative  -  momentum confirms within window",
+         "MACD negative  -  momentum confirms within window (B1139 self-sufficient)",
          "ADX > 20  -  trend strength confirmed"])
 
 
@@ -2509,12 +2514,16 @@ def strat_rsi_volume_200ema(s):
 
 
 def strat_macd_ichimoku(s):
-    fl = (s.get("macd_12_26_9_crossover_up") and s.get("ichi_above_cloud"))
-    fs = (s.get("macd_12_26_9_crossover_dn") and s.get("ichi_below_cloud")) and not _short_borrow_trap_active(s)
+    # B1139 (2026-07-03 Council 253 LOOSEN per Turn 8 finding): 5 fires
+    # in Batch A. 2-way EVENT+STATE AND with cloud position - MACD crossover
+    # already carries direction. Drop cloud position filter per same pattern
+    # as B1138 golden_cross_20_50 (redundant with cross direction).
+    fl = s.get("macd_12_26_9_crossover_up")  # B1139 dropped: ichi_above_cloud (redundant)
+    fs = s.get("macd_12_26_9_crossover_dn") and not _short_borrow_trap_active(s)  # B1139 dropped: ichi_below_cloud
     return _strat3(fl, fs, "confluence",
-        ["macd_crossover_up","ichi_above_cloud"], ["macd_crossover_dn","ichi_below_cloud", "borrow_ok"],
-        ["MACD crossover up + above cloud  -  two systems bullish simultaneously"],
-        ["MACD crossover down + below cloud  -  two systems bearish simultaneously"])
+        ["macd_crossover_up"], ["macd_crossover_dn", "borrow_ok"],  # B1139: dropped cloud position
+        ["MACD crossover up (B1139 self-sufficient)"],
+        ["MACD crossover down (B1139 self-sufficient)"])
 
 
 def strat_bb_squeeze_volume(s):
@@ -4933,29 +4942,32 @@ def strat_avwap_252_breakout(s):
     #   (d) Precedent: B790 #47 strat_avwap_50_reclaim (same producer family).
     reclaim_252_long = s.get("avwap_252low_reclaim_recent_3d", False)
     loss_252_short  = s.get("avwap_252low_loss_recent_3d", False)
-    vol_ok = s.get("vol_spike_15x", False)
+    # B1139 (2026-07-03 Council 253 LOOSEN per Turn 6 verdict):
+    # vol_spike_15x (1.5x avg) -> vol_above_avg (Shannon 2022 canonical uses
+    # "above average" not strict 1.5x). Drop rsi_14<70 filter - RSI extreme
+    # is a separate concept from AVWAP reclaim; adding it double-filters.
+    # Expected 1.5-2x uplift.
+    vol_ok = s.get("vol_above_avg", False)  # B1139: was vol_spike_15x
     rsi_14 = s.get("rsi_14", 50)
-    # Long: fresh reclaim EVENT + volume + RSI not capped
+    # Long: fresh reclaim EVENT + volume (B1139 dropped RSI filter)
     fl = (
         reclaim_252_long
         and vol_ok
-        and rsi_14 < 70
+        # B1139 dropped: rsi_14 < 70 (Shannon canonical doesn't require)
     )
-    # Short: fresh loss EVENT + volume + RSI not capped
+    # Short: fresh loss EVENT + volume (B1139 dropped RSI filter)
     fs = (
         loss_252_short
         and vol_ok
-        and rsi_14 > 30
+        # B1139 dropped: rsi_14 > 30 (symmetric to LONG)
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "vwap",
-        ["avwap_252low_reclaim_recent_3d", "vol_spike_15x", "rsi_14<70"],
-        ["avwap_252low_loss_recent_3d", "vol_spike_15x", "rsi_14>30", "borrow_ok"],
+        ["avwap_252low_reclaim_recent_3d", "vol_above_avg"],  # B1139 loosened
+        ["avwap_252low_loss_recent_3d", "vol_above_avg", "borrow_ok"],  # B1139 loosened
         ["Price reclaimed Anchored VWAP from 252d low - institutional accumulation",
-         "Close to AVWAP inflection (within 2%)", "Volume 1.5x ADV(20)",
-         "RSI not extreme overbought"],
+         "Volume above 20d avg (B1139 loosened from 1.5x)"],
         ["Price lost Anchored VWAP from 252d low - distribution",
-         "Close to AVWAP inflection (within 2%)", "Volume 1.5x ADV(20)",
-         "RSI not extreme oversold"])
+         "Volume above 20d avg (B1139 loosened)"])
 
 
 def strat_avwap_50_reclaim(s):
