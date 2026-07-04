@@ -2497,3 +2497,19 @@ Fix: move fallback BEFORE SKIP short-circuit. Retry yielded +9 SPECIFIC_DONE.
 
 **Cross-references:** B1157 commit; Council 265; CHECKLIST #147; L190/L192 (related autonomous-script rules).
 
+
+---
+
+## L194 — MARGINAL tier strategies must not be loosened (B1162 2026-07-04 Council 268)
+
+**What surfaced:** Owner directive 2026-07-04: "Marginal strategies are not to be loosened". Audit found 2 SKIPs at MARGINAL tier (smc_bos_retest_entry n=56, smc_equal_lows_sweep_long n=41) that were candidates for loosening but should not be. Also found 1 prior LOOSEN of borderline MARGINAL (avwap_252_breakout n=32 in B1139) - 2 fires above MARGINAL boundary; retroactive review recommended.
+
+**Universal principle:** *Strategies already above the MARGINAL tier boundary (n > 30 fires) are firing sufficiently per PASSING_CRITERIA min_trades_per_regime=30 floor. Loosening them = pushing into over-firing / dilution territory / potential false-positive amplification. Preserve MARGINAL as fire-count floor.*
+
+**Rule:** For every loosening decision:
+  (a) Verify strategy tier: CRITICAL (n=0) / HIGH (1-15) / MED (16-30) / MARGINAL (>30)
+  (b) If MARGINAL, reject loosening; mark DONE_B<n>_MARGINAL_NO_LOOSEN (no code change)
+  (c) BORDERLINE MARGINAL (n=31-33): default reject; escalate to owner if edge case
+
+**Cross-references:** B1162 commit; Council 268; CHECKLIST #148; PASSING_CRITERIA (backtest/config.py); Council 237 tier definitions.
+

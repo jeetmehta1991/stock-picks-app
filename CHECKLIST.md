@@ -2464,3 +2464,25 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L193; Council 265 B1157; CHECKLIST #142/#143/#144.
 
+
+148. **HARD RULE -- MARGINAL TIER STRATEGIES MUST NOT BE LOOSENED.** (Owner directive 2026-07-04 Council 268 + L194.)
+
+     **Trigger.** Every loosening/widening/gate-drop decision on a strategy.
+
+     **Rule.** Before applying any loosening edit to a strategy:
+       (1) Read strategy's n_fires from CSV
+       (2) Classify tier: CRITICAL (0) / HIGH (1-15) / MED (16-30) / MARGINAL (>30)
+       (3) If tier == MARGINAL: REJECT loosening; mark DONE_B<n>_MARGINAL_NO_LOOSEN with reason
+       (4) If tier == BORDERLINE (n=31-33): default reject; escalate to owner
+
+     **Rationale.** Strategies above MARGINAL boundary (n > 30) are already firing above PASSING_CRITERIA min_trades_per_regime=30 threshold. Loosening = over-firing / dilution / false-positive amplification.
+
+     **Retroactive coverage demo (per #136).** Would this rule have caught B1139 avwap_252_breakout loosen at n=32 (2 fires above MARGINAL boundary)? YES - rule requires tier check; n=32 = MARGINAL / BORDERLINE.
+
+     **Enforcement.** Autonomous scripts must have tier-check gate before applying LOOSEN edits. Manual review must verify tier per strategy pre-edit.
+
+     **Retroactive concerns to review:**
+       avwap_252_breakout (n=32, DONE_B1139): loosened 2 fires above MARGINAL - owner may want revert
+
+     **Cross-references.** L194; Council 268 B1162; CHECKLIST #67/#143; PASSING_CRITERIA; Council 237 tier definitions.
+

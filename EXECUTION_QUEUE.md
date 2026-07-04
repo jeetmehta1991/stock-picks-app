@@ -3799,3 +3799,29 @@ CUMULATIVE POST-B1160: DONE 120 (62.5%), SKIP 66.
 
 Pyramid 955+7 GREEN. DONE 123 (64.1%).
 
+
+### B1162 (2026-07-04 Council 268 - MARGINAL not loosened + codification):
+
+Owner directive 2026-07-04: "Marginal strategies are not to be loosened".
+
+AUDIT RESULTS:
+- 63 remaining SKIPs by tier:
+    CRITICAL (n=0):   18
+    HIGH (1-15):      31
+    MED (16-30):      12
+    MARGINAL (>30):    2  <-- OWNER CONSTRAINT applies
+- Prior DONE audit: 25 strategies at n>30, but 24 are STATUS_QUO/AUDIT/UNIVERSE_EXPAND/SECONDARY (no code change)
+  - 1 substantive prior loosen: avwap_252_breakout (n=32 = BORDERLINE MARGINAL, B1139)
+
+B1162 ACTIONS:
+1. Reclassified 2 MARGINAL SKIPs as DONE_B1162_MARGINAL_NO_LOOSEN (no code change):
+   - smc_bos_retest_entry (n=56)
+   - smc_equal_lows_sweep_long (n=41)
+2. Codified L194 + CHECKLIST #148 per #143 standing rule
+3. Flagged avwap_252_breakout (n=32) as RETROACTIVE CONCERN for owner review
+
+CUMULATIVE POST-B1162: DONE 125 (65.1%), SKIP 61.
+
+61 REMAINING SKIPs (all n <= 30, eligible for loosening):
+  CRITICAL: 18, HIGH: 31, MED: 12
+
