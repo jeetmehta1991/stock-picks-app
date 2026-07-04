@@ -841,12 +841,11 @@ def strat_camarilla_s3_bounce(s):
     aware confirmation.
     """
     # B628 F1: positive symmetric (B617 producer)
-    # B1159 (2026-07-04 Council 267 manual LOOSEN per CSV recommendation):
-    # n=4 HIGH tier. Rec: "RSI extreme threshold widening (<25 -> <30). Retain
-    # S3 proximity + OBV. Expected fire uplift 2-3x". Widen 35->40 (10 point)
-    # LONG symmetric SHORT 65->60.
-    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 40 and s.get("obv_bullish"))  # B1159: was < 35
-    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 60 and s.get("obv_bearish")) and not _short_borrow_trap_active(s)  # B1159: was > 65
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1159 invention (RSI 35->40 LONG, 65->60 SHORT) reverted per owner directive.
+    # CSV said "RSI<25 -> <30" but source uses <35; discrepancy unresolved.
+    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35 and s.get("obv_bullish"))
+    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
         ["near_cam_s3","rsi_14<35","obv_bullish"],
         ["near_cam_r3","rsi_14>65","obv_bearish", "borrow_ok"],
@@ -2351,15 +2350,12 @@ def strat_morning_star(s):
 
 def strat_bullish_engulfing_support(s):
     # B628 F1 family-sweep: positive symmetric obv_bearish.
-    # B1158 (2026-07-04 Council 266 manual LOOSEN per CSV recommendation):
-    # n=10 HIGH tier. Recommendation: "widen candle set (bullish_engulfing OR
-    # piercing_line OR bullish_pin_bar OR morning_star) - broader bullish-
-    # reversal family per Nison 1991. Expected fire uplift 2-3x".
-    # Also symmetric SHORT: bearish_engulfing OR shooting_star OR bearish_pin_bar OR evening_star.
-    fl = ((s.get("bullish_engulfing") or s.get("hammer") or s.get("bullish_pin_bar") or s.get("morning_star"))
-          and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
-    fs = ((s.get("bearish_engulfing") or s.get("shooting_star") or s.get("bearish_pin_bar") or s.get("evening_star"))
-          and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1158 invention (hammer sub for piercing_line + SHORT symmetric expansion)
+    # reverted per owner directive. piercing_line signal does not exist in
+    # producer; awaits producer-side work.
+    fl = (s.get("bullish_engulfing") and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
+    fs = (s.get("bearish_engulfing") and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
           and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "candle",
         ["bullish_engulfing","at_support","obv_bullish"],
@@ -2735,14 +2731,12 @@ def strat_williams_stoch_dual(s):
     Williams %R gate retained (already constrains to oversold/overbought
     state). Pivot proximity gate retained.
     """
-    # B1158 (2026-07-04 Council 266 manual LOOSEN per CSV recommendation):
-    # n=28 MED tier. Recommendation: "widen pivot proximity from strict
-    # (near_s1/s2/s3) to (within 1 ATR of any pivot support level)".
-    # Simplest local implementation: drop pivot proximity requirement entirely.
-    # Retain WillR + EVENT stoch cross as recommendation says "Retain WillR + EVENT stoch cross".
-    # Expected fire uplift 2-3x per CSV.
-    fl = s.get("williams_r_oversold") and s.get("stoch_bullish_cross")  # B1158 dropped: pivot proximity gate
-    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross")) and not _short_borrow_trap_active(s)  # B1158 dropped: pivot proximity
+    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
+    # B1158 invention (dropped pivot proximity gate) reverted per owner directive.
+    # CSV intent was "widen to within 1 ATR of any pivot support level" but
+    # no such producer signal exists; awaits producer-side work.
+    fl = (s.get("williams_r_oversold") and s.get("stoch_bullish_cross") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3")))
+    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3"))) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["williams_r_oversold","stoch_bullish_cross","at_pivot_support"], ["williams_r_overbought","stoch_bearish_cross","at_pivot_resistance", "borrow_ok"],
         ["Williams %R oversold + Stochastic BULLISH CROSS at pivot support (B729 EVENT) - high conviction long"],

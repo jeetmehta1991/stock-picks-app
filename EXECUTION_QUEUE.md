@@ -3925,3 +3925,19 @@ Codification per CHECKLIST #143 confirmed in docs:
 
 WAITING for owner direction on 8 flagged inventions.
 
+
+### B1168 (2026-07-04 Council 273 - Owner-approved reverts 1-3 of 8):
+
+Per owner protocol: TRUE manual review. Presenting each invention with options; owner decides per strategy.
+
+REVERTED (owner directive):
+1. williams_stoch_dual: B1158 invention (dropped pivot proximity) REVERTED to original 5-gate
+2. bullish_engulfing_support: B1158 invention (hammer sub + SHORT expansion) REVERTED
+3. camarilla_s3_bounce: B1159 invention (RSI 35->40 LONG, 65->60 SHORT) REVERTED
+
+Pyramid 955+7 GREEN after each revert.
+
+CSV updated: PENDING_OWNER_APPROVED_REVERT_B1168.
+
+CONTINUING with 4-8 in follow-up.
+
