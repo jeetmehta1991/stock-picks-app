@@ -3625,3 +3625,19 @@ Added L191 - Diff columns must merge ALL change types (companion to #145)
 Owner benefit: any strategy with multiple change types now has complete
 diff visibility in change_from_original column.
 
+
+### B1145 retroactive auto-commit doc entries (Council 264 CHECKLIST #146 backfill):
+
+The following auto-commits from apply_csv_loosen_autonomous.py did NOT touch EXECUTION_QUEUE.md
+per commit (violation caught by test_recent_batches_touch_execution_queue). Backfilled here:
+
+- avwap_20high_rejection_short (B1145): applied ['WIDEN threshold 1% (1.0) -> 2% (2.0)', 'REPLACE vol_spike_15x -> vol_spike_12x']
+- 52wl_break_retest_short: applied ['DROP vol_below_avg', 'DROP below_avwap_20high']
+- institutional_recent_init_volume_long: applied ['REPLACE vol_spike_2x -> vol_above_avg']
+- rsi_oversold_with_smart_money_long: applied ['REPLACE rsi_14_oversold -> rsi_14']
+- value_area_breakout_long: applied ['REPLACE vol_spike_2x -> vol_above_avg']
+- institutional_breakout_confirmation_long: applied ['DROP vol_below_avg']
+- parabolic_sar_flip_short: applied ['DROP adx_trending']
+
+Going forward B1154+, autonomous executor writes EXECUTION_QUEUE entry per commit per CHECKLIST #146.
+

@@ -389,10 +389,22 @@ def git_checkout_reset(file_path: str) -> None:
     )
 
 
+def _append_execution_queue_entry(batch_num: int, strat: str, applied: list) -> None:
+    """B1154 fix (Council 264): auto-executor must touch EXECUTION_QUEUE per commit per CHECKLIST #67 + #146."""
+    eq_path = _REPO / "EXECUTION_QUEUE.md"
+    entry = (
+        f"\n### B{batch_num} auto-executor: {strat} DONE\n"
+        f"- Applied edits: {applied}\n"
+        f"- Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.\n"
+    )
+    with open(eq_path, "a", encoding="utf-8") as f:
+        f.write(entry)
+
+
 def git_commit_and_push(message: str) -> bool:
     """Commit staged changes and push. Return True on success."""
     add_result = subprocess.run(
-        ["git", "add", "backtest/signals/screener.py", "output_batch_A_150/phase_1_quiet_fire_investigation.csv"],
+        ["git", "add", "backtest/signals/screener.py", "output_batch_A_150/phase_1_quiet_fire_investigation.csv", "EXECUTION_QUEUE.md"],
         capture_output=True,
         text=True,
         cwd=_REPO,
@@ -577,6 +589,9 @@ def main() -> int:
             f"Council 201 batch-cap: 1 strategy = 1 commit (<=3 compliant).\n\n"
             f"Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
         )
+        # B1154 fix (Council 264): auto-executor must touch EXECUTION_QUEUE per commit
+        _append_execution_queue_entry(batch_counter, strat, applied)
+
         pushed = git_commit_and_push(commit_msg)
         print(f"[B{batch_counter}] {strat}: DONE (applied={applied}, pushed={pushed})")
 

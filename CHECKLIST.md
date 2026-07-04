@@ -2429,3 +2429,21 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L191; Council 264 B1154; `add_updated_producer_signals_columns.py`; L188/L189/L190 (related autonomous-script rules).
 
+
+146. **HARD RULE -- AUTONOMOUS SCRIPTS MUST TOUCH EXECUTION_QUEUE.MD PER COMMIT.** (Owner directive 2026-07-03 Council 264 + L192.)
+
+     **Trigger.** Every autonomous script that produces git commits.
+
+     **Rule.** Autonomous scripts that commit changes MUST:
+       (a) Append a brief entry to EXECUTION_QUEUE.md per commit (batch#, strategy, applied edits)
+       (b) Include EXECUTION_QUEUE.md in `git add` for that commit
+       (c) Fail loudly if EXECUTION_QUEUE.md is not writable
+
+     **Rationale.** CHECKLIST #67 per-turn doc sweep applies to EVERY commit. Silent auto-commits without doc entries are per-strategy silent misses.
+
+     **Retroactive coverage demo (per #136).** Would this rule have caught B1145 auto-executor's 10 commits missing doc-sweep? YES - rule requires explicit EXECUTION_QUEUE write per auto-commit.
+
+     **Enforcement.** Regression test test_recent_batches_touch_execution_queue enforces this via git-log commit inspection.
+
+     **Cross-references.** L192; Council 264 B1154; CHECKLIST #67; L181 (investigation-only turns still require doc sweep).
+

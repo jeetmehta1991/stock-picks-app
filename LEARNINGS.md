@@ -2467,3 +2467,16 @@ Concrete case: avwap_20high_rejection_short had BOTH `vol_spike_15x -> vol_spike
 
 **Cross-references:** B1154 commit; Council 264; CHECKLIST #145 (new); `add_updated_producer_signals_columns.py` merged-change-summary logic.
 
+
+---
+
+## L192 — Autonomous scripts must touch canonical doc columns per commit (B1154 2026-07-03 Council 264)
+
+**What went wrong:** apply_csv_loosen_autonomous.py auto-executor committed 10+ strategy edits per run but did NOT append entries to EXECUTION_QUEUE.md per commit. CHECKLIST #67 requires per-turn doc sweep; each auto-commit is a turn. Test test_b1127_doc_sweep_per_batch::test_recent_batches_touch_execution_queue caught this L181 regression.
+
+**Universal principle:** *CHECKLIST #67 per-turn doc sweep applies to EVERY commit including auto-committed ones from autonomous scripts. Silent auto-commits without doc entries are per-strategy silent misses.*
+
+**Rule:** Every autonomous script that produces git commits must append at minimum a brief entry to EXECUTION_QUEUE.md per commit, and MUST include the doc file in `git add`.
+
+**Cross-references:** B1154 commit; L181 (per-turn doc sweep no exceptions); test_b1127_doc_sweep_per_batch; CHECKLIST #146 (new).
+
