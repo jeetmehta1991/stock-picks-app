@@ -7246,7 +7246,7 @@ def strat_rsi_oversold_with_smart_money_long(s):
     """RSI oversold + smart-money buy. Classic mean-reversion entry with
     institutional / insider corroboration."""
     base_fires = (
-        s.get("rsi_14_oversold", False)
+        s.get("rsi_14", False)
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
