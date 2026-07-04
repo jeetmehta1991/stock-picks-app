@@ -3653,3 +3653,7 @@ Going forward B1154+, autonomous executor writes EXECUTION_QUEUE entry per commi
 ### B1147 auto-executor: roc_burst DONE
 - Applied edits: ['REPLACE vol_spike_15x -> vol_spike_12x']
 - Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.
+
+### B1148 auto-executor: volume_spike_breakout DONE
+- Applied edits: ['REPLACE vol_spike_15x -> vol_above_avg']
+- Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.

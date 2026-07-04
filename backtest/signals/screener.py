@@ -1953,14 +1953,14 @@ def strat_volume_spike_breakout(s):
           {bear, crisis, neutral}.
     """
     fl = (s.get("dc20_breakout_up")
-          and s.get("vol_spike_15x")
+          and s.get("vol_above_avg")
           and s.get("above_avwap_20low")
           and s.get("close_above_open")
           and s.get("close_in_top_40pct_of_range"))
     # B612 refactor: NOT s.get(above_avwap_20high) (no default - silent-gap
     # risk) -> positive below_avwap_20high (B612 added).
     fs = (s.get("dc20_breakout_dn")
-          and s.get("vol_spike_15x")
+          and s.get("vol_above_avg")
           and s.get("below_avwap_20high")
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
