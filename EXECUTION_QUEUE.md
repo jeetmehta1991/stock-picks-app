@@ -3868,3 +3868,7 @@ Pyramid 955+7 GREEN.
 
 CUMULATIVE POST-B1165: DONE 136 (70.8%), SKIP 50.
 
+
+### B1145 auto-executor: pivot_s2_bounce DONE
+- Applied edits: ['WIDEN_RSI rsi_14 <40 -> <45']
+- Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.

@@ -335,7 +335,7 @@ def strat_pivot_s2_bounce(s):
     explicitly DROPPED per owner direction. Resolves 4-cycle deferral
     per B710 reviewer + CHECKLIST (r) timeframe-mismatch rule.
     """
-    fl = (s.get("near_s2") and s.get("rsi_14", 50) < 40 and (s.get("hammer") or s.get("bullish_engulfing")))
+    fl = (s.get("near_s2") and s.get("rsi_14", 50) < 45 and (s.get("hammer") or s.get("bullish_engulfing")))
     fs = (s.get("near_r2") and s.get("rsi_14", 50) > 60 and s.get("bearish_engulfing")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
         ["near_s2","rsi_14<40","bullish_candle"], ["near_r2","rsi_14>60","bearish_engulfing", "borrow_ok"],
