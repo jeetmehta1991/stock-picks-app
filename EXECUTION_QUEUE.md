@@ -4056,3 +4056,14 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1174 (2026-07-04 Council 275 REVERT 5/8): institutional_increased_with_directors_long
+
+CSV final_recommended_actions: [HIGH] [LOOSEN_GATE] (a) institutional_increased>=5->>=3; (b) director-only -> any insider
+
+Applied:
+- (a) institutional_increased>=5 -> >=3
+- (b) insider_director_buyers_30d -> insider_unique_buyers_30d (verified: producer signal exists for "any insider" semantics)
+
+Pyramid 850+2 GREEN.
+

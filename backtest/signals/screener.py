@@ -6366,21 +6366,23 @@ def strat_institutional_increased_with_directors_long(s):
     2024 RFS director-premium). Triple validation: existing funds growing,
     new funds entering (implicit via cluster signal), AND board-level
     insider conviction."""
-    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
-    # B1160 invention (>=5 -> >=3 + director OR officer) reverted per owner directive.
-    # CSV said "any insider" - ambiguous; awaits owner-approved specific action.
+    # B1174 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    # (a) LOOSEN institutional_increased >= 5 -> >= 3 (Cohen-Malloy cluster canonical)
+    # (b) Widen insider set from director-only to any insider (unique 30d buyers)
+    # per rec "director-only is too narrow for 2-fire outcome". Signal
+    # insider_unique_buyers_30d exists in producer for "any insider" semantics.
     fires = (
-        s.get("institutional_increased", 0) >= 5
-        and s.get("insider_director_buyers_30d", 0) >= 1
+        s.get("institutional_increased", 0) >= 3
+        and s.get("insider_unique_buyers_30d", 0) >= 1
         and s.get("price_above_ema_200", False)
     )
     n_incr = s.get("institutional_increased", 0)
-    n_dir = s.get("insider_director_buyers_30d", 0)
+    n_ins = s.get("insider_unique_buyers_30d", 0)
     return _strat(fires, "long", "institutional_persistence",
-        ["institutional_increased>=5","insider_director_buyers_30d>=1",
+        ["institutional_increased>=3","insider_unique_buyers_30d>=1",
          "price_above_ema_200"],
-        [f"{n_incr} institutional funds grew position (persistence)",
-         f"{n_dir} director(s) buying open-market in 30d",
+        [f"{n_incr} institutional funds grew position (persistence; loosened >=5 -> >=3 per B1174)",
+         f"{n_ins} unique insider(s) buying open-market in 30d (widened director-only -> any insider per B1174)",
          "Triple smart-money validation",
          "Above 200 EMA"])
 
