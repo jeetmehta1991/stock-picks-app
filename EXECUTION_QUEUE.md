@@ -3145,3 +3145,15 @@ Council 249 grouped LOOSEN progress: 7 batches shipped covering 34 strategies
 
 Next: B1140 continue with additional families (RSI + Institutional + Classification change).
 
+
+### B1140 (2026-07-03 Council 254 Grouped LOOSEN 8/N - RSI family):
+
+- 2026-07-03 — `b1140-rsi-loosen` — 3 RSI strategies loosened. FULL pyramid 955+7 GREEN.
+
+**Strategies:**
+1. strat_rsi21_slow: 35/65 -> 40/60 (Connors 1993 symmetric widening)
+2. strat_rsi9_extreme: drop rsi_9_rising (redundant with extreme_os EVENT)
+3. strat_rsi_overbought_short: 68 -> 65 + drop (bearish_engulfing OR NOT rising) compound
+
+CSV reclassifications: 3 strategies PENDING -> DONE_B1140. Pyramid 955+7 GREEN.
+

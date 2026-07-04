@@ -1560,7 +1560,13 @@ def strat_rsi_oversold(s):
 
 def strat_rsi9_extreme(s):
     # No natural short inverse  -  stays long-only (extreme oversold in uptrend)
-    fires = (s.get("rsi_9_extreme_os") and s.get("price_above_ema_200") and s.get("rsi_9_rising"))
+    # B1140 (2026-07-03 Council 254 LOOSEN per Turn 9 auto-verdict): 0 fires.
+    # 3-way AND with rsi_9_rising is over-conservative. Drop rsi_9_rising
+    # secondary - if rsi_9 is at extreme_os, momentum reversal is likely
+    # imminent whether or not the rising bar has printed yet. Retain
+    # price_above_ema_200 regime gate + rsi_9_extreme_os EVENT.
+    fires = (s.get("rsi_9_extreme_os") and s.get("price_above_ema_200"))
+    # B1140 dropped: rsi_9_rising (redundant with extreme_os for mean-reversion setup)
     return _strat(fires, "long", "mean_reversion",
         ["rsi_9<20","price_above_ema_200","rsi_9_rising"],
         [f"RSI-9 extreme oversold below 20","Above 200 EMA  -  uptrend context","RSI-9 rising  -  recovering"])
@@ -1580,8 +1586,12 @@ def strat_rsi21_slow(s):
     NOT conclude oscillator BROKEN if SHORT fails; DO split off LONG;
     DO NOT delete SHORT a-priori.
     """
-    fl = (s.get("rsi_21", 50) < 35 and s.get("price_above_sma_50"))
-    fs = (s.get("rsi_21", 50) > 65 and s.get("below_sma_50")) and not _short_borrow_trap_active(s)
+    # B1140 (2026-07-03 Council 254 LOOSEN per Turn 9 auto-verdict): 0 fires.
+    # Widen RSI21 thresholds 35/65 -> 40/60 (Connors 1993 canonical range).
+    # 5-point widening on both sides for symmetric mean-reversion coverage.
+    # Retain SMA-50 regime gate (this is mean-reversion, not trend-following).
+    fl = (s.get("rsi_21", 50) < 40 and s.get("price_above_sma_50"))  # B1140: was < 35
+    fs = (s.get("rsi_21", 50) > 60 and s.get("below_sma_50")) and not _short_borrow_trap_active(s)  # B1140: was > 65
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_21<35","price_above_sma_50"], ["rsi_21>65","price_below_sma_50", "borrow_ok"],
         [f"Slow RSI-21 oversold below 35","Above 50 SMA  -  uptrend context"],
@@ -1600,9 +1610,14 @@ def strat_rsi_overbought_short(s):
     misread as oscillator-broken.
     """
     # B630 sweep: positive symmetric below_sma_50 (B630 producer)
-    fires = (s.get("rsi_14", 50) > 68 and
+    # B1140 (2026-07-03 Council 254 LOOSEN per Turn 9): 0 fires.
+    # Widen RSI-14 threshold 68 -> 65 (Connors 1993 canonical). Drop
+    # (bearish_engulfing OR NOT rsi_14_rising) compound - either alone should
+    # confirm; require simpler check. Retain below_sma_50 regime + borrow_ok.
+    fires = (s.get("rsi_14", 50) > 65 and  # B1140: was > 68
              s.get("below_sma_50") and
-             (s.get("bearish_engulfing") or s.get("rsi_14_rising") == False) and not _short_borrow_trap_active(s))
+             # B1140 dropped: (bearish_engulfing OR NOT rsi_14_rising) compound
+             not _short_borrow_trap_active(s))
     # B806 #50 metadata cleanup: bearish_signal shorthand -> canonical compound
     return _strat(fires, "short", "mean_reversion",
         ["rsi_14>68","below_sma_50","bearish_engulfing_or_not_rsi_14_rising", "borrow_ok"],
