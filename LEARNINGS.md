@@ -2480,3 +2480,20 @@ Concrete case: avwap_20high_rejection_short had BOTH `vol_spike_15x -> vol_spike
 
 **Cross-references:** B1154 commit; L181 (per-turn doc sweep no exceptions); test_b1127_doc_sweep_per_batch; CHECKLIST #146 (new).
 
+
+---
+
+## L193 — Fallback code must precede short-circuit exits (B1157 2026-07-04 Council 265)
+
+**What went wrong:** Enhanced apply_csv_loosen_autonomous.py added a "try recommendation column if action is truncated" fallback in B1153/B1156. Placement was AFTER the `if classification.startswith("SKIP"): continue` short-circuit. When classify_action returned "SKIP_UNCLASSIFIED", script did `continue` before fallback ran. Result: strategies with parseable rec-column edits stayed SKIP.
+
+Discovery: manual trace on htf_aligned_breakout_long showed action → SKIP_UNCLASSIFIED with 0 edits, but rec → SPECIFIC with REPLACE_SIGNAL edit. Yet executor kept it SKIP. Fallback code lived AFTER short-circuit.
+
+Fix: move fallback BEFORE SKIP short-circuit. Retry yielded +9 SPECIFIC_DONE.
+
+**Universal principle:** *In autonomous decision pipelines, RESCUE code (fallbacks, retries, alternative parses) must precede EXIT code (short-circuits, continues, returns). Placement determines whether the rescue is ever attempted.*
+
+**Rule:** Every autonomous script with classify → decide → act pipeline must have explicit ordering: (1) primary classify, (2) fallback classify from alternate source, (3) status-based short-circuit, (4) apply. Reviewers verify order in code review.
+
+**Cross-references:** B1157 commit; Council 265; CHECKLIST #147; L190/L192 (related autonomous-script rules).
+

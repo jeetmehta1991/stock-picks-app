@@ -2447,3 +2447,20 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L192; Council 264 B1154; CHECKLIST #67; L181 (investigation-only turns still require doc sweep).
 
+
+147. **HARD RULE -- AUTONOMOUS SCRIPT CONTROL-FLOW MUST TRY RECOMMENDATION-COLUMN FALLBACK BEFORE SKIP SHORT-CIRCUIT.** (Owner directive 2026-07-03 Council 265 + L193.)
+
+     **Trigger.** Every autonomous script that classifies input then applies short-circuit logic based on classification.
+
+     **Rule.** When classify_action() returns SKIP_* class, script MUST attempt recommendation-column fallback (re-classify from richer source) BEFORE any `continue` / short-circuit. Placement of fallback code AFTER SKIP-short-circuit is a silent bug because SKIP cases never reach the fallback.
+
+     **Rationale.** Multiple parser bugs (Council 260/262/263/265) surfaced strategies where action_text was truncated/missing but recommendation column had specific parseable text. Fallback placement matters.
+
+     **Root cause history.** B1156 initial fix placed rec-fallback AFTER SKIP short-circuit (`if classification.startswith("SKIP"): continue`). Fallback never ran for SKIP cases. Bug caught when 9 strategies with parseable rec-column edits remained SKIP after B1156. Moving fallback BEFORE SKIP short-circuit yielded 9 SPECIFIC_DONE in retry.
+
+     **Retroactive coverage demo (per #136).** Would this rule have caught B1156 flow-order bug? YES - rule requires fallback-before-shortcircuit; explicit test.
+
+     **Enforcement.** Autonomous scripts must document control-flow order: (1) initial classify, (2) rec-fallback, (3) status-based short-circuit, (4) apply edits. Any deviation logged for audit.
+
+     **Cross-references.** L193; Council 265 B1157; CHECKLIST #142/#143/#144.
+

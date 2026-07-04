@@ -3677,3 +3677,58 @@ Going forward B1154+, autonomous executor writes EXECUTION_QUEUE entry per commi
 ### B1153 auto-executor: donchian_breakout_long DONE
 - Applied edits: ['REPLACE vol_spike_15x -> vol_spike_12x']
 - Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.
+
+### B1157 (2026-07-04 Council 265 - Flow-order fix + audit yields +9 auto-executed):
+
+Owner directive: audit remaining 87 SKIPs for auto-executable candidates.
+
+CATEGORIZATION of 87 SKIPs:
+  OTHER_COMPLEX:                    32 (patterns not fitting known rules)
+  PRODUCER_SIDE:                    17 (need producer-file edits)
+  WIDEN_COMPLEX:                    14 (widen but non-standard format)
+  SIGNAL_REPLACEMENT_MISSED:        13 (parseable, should auto-execute)
+  CONDITIONAL_DROP:                  6 (drop X OR drop Y patterns)
+  SET_EXPANSION:                     4 (expand set to include Y)
+  NEGATIVE_THRESHOLD:                1 (sentiment <= -0.3)
+
+BUG DISCOVERED (Council 265):
+  Enhanced rec-column fallback code placed AFTER SKIP short-circuit.
+  When classify_action returned SKIP_UNCLASSIFIED, script did `continue`
+  BEFORE fallback ran. Result: parseable SKIPs stayed SKIP.
+
+FIX (B1157):
+  Moved fallback BEFORE SKIP short-circuit. Retry yielded +9 auto-executed:
+    prev_day_high_break              vol_spike_15x -> vol_spike_12x
+    htf_aligned_breakout_short       vol_spike_15x -> vol_above_avg
+    roc_burst                        vol_spike_15x -> vol_spike_12x
+    volume_spike_breakout            vol_spike_15x -> vol_above_avg
+    doji_at_resistance_short         vol_spike_15x -> vol_spike_12x
+    donchian_breakdown_short         vol_spike_15x -> vol_spike_12x
+    prev_day_low_breakdown           vol_spike_15x -> vol_spike_12x
+    doji_at_support                  vol_spike_15x -> vol_spike_12x
+    donchian_breakout_long           vol_spike_15x -> vol_spike_12x
+  1 FAIL_PYRAMID (htf_aligned_breakout_long test regression, correctly reverted).
+
+CODIFICATION per CHECKLIST #143 (session mistakes same-turn):
+  Added #147 - HARD RULE: Fallback must precede SKIP short-circuit
+  Added L193 - Fallback code must precede short-circuit exits
+
+CUMULATIVE POST-B1157:
+  DONE:    109 (56.8%)
+  SKIP:     77 (40.1%)
+  FAIL:      2
+  BLOCKED:   4
+
+Progress: 100 -> 109 (+9 auto-executed via flow-order fix).
+
+77 REMAINING SKIPS BREAKDOWN:
+  Non-parseable patterns:
+    OTHER_COMPLEX (~32)
+    PRODUCER_SIDE (~17)
+    WIDEN_COMPLEX with non-standard format (~14)
+    SET_EXPANSION (~4)
+    NEGATIVE_THRESHOLD (~1)
+    CONDITIONAL_DROP (~6)
+  These need pattern-specific parser rules OR manual review.
+  Owner may proceed to micro-cube validation at 56.8% coverage.
+

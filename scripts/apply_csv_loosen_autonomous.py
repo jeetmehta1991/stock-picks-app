@@ -458,6 +458,17 @@ def main() -> int:
 
         classification, edits = classify_action(action)
 
+        # B1156 fix (Council 265): try recommendation column BEFORE any SKIP
+        # short-circuit. Original code did `continue` on SKIP_* classifications
+        # before fallback code, so SKIP_UNCLASSIFIED cases where recommendation
+        # column had specific patterns never got re-parsed. Move fallback FIRST.
+        rec_text = str(row.get("recommendation", ""))
+        if rec_text and len(rec_text) > 20 and classification != "SPECIFIC":
+            classification2, edits2 = classify_action(rec_text)
+            if edits2:  # recommendation column had specific edits
+                edits = edits2
+                classification = classification2
+
         # No code change classes
         if classification == "STATUS_QUO":
             df.at[idx, "execution_status"] = f"DONE_B{batch_counter}_STATUS_QUO"
@@ -508,20 +519,6 @@ def main() -> int:
             )
             stats[classification] += 1
             continue
-
-        # B1153 (Council 263 fix): if final_recommended_actions text ends
-        # abruptly mid-clause (truncated by Council 237 extractor), fall
-        # back to recommendation column which has the full text.
-        # Detection: action contains "(N;" or ends with " ( " indicating
-        # truncation at semicolon inside parenthesis.
-        if re.search(r"\(\d[.\d]?\s*;\s*(widen|drop)", action, re.IGNORECASE):
-            rec_text = str(row.get("recommendation", ""))
-            if rec_text and len(rec_text) > len(action):
-                # Re-parse from full recommendation
-                classification2, edits2 = classify_action(rec_text)
-                if edits2 and len(edits2) > len(edits):
-                    edits = edits2
-                    classification = classification2
 
         # SPECIFIC: apply edits
         content = SCREENER_PATH.read_text(encoding="utf-8")
