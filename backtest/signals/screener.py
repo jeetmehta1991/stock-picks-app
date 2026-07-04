@@ -5075,7 +5075,7 @@ def strat_avwap_20high_rejection_short(s):
     pct_from_20h = s.get("pct_from_avwap_20high", 0.0)
     fires = (
         not s.get("above_avwap_20high", True)  # below 20-high AVWAP
-        and abs(pct_from_20h) < 1.0
+        and abs(pct_from_20h) < 2.0
         and (s.get("shooting_star") or s.get("bearish_engulfing"))
         and s.get("vol_spike_15x", False)
         and s.get("below_ema_200", False)  # B630 sweep
