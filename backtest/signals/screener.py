@@ -1866,8 +1866,8 @@ def strat_bollinger_upper_short(s):
 
 def strat_keltner_lower(s):
     # B628 F1 family-sweep: positive symmetric obv_bearish.
-    fl = (s.get("kc_touch_lower") and s.get("hammer") and s.get("obv_bullish"))
-    fs = (s.get("kc_touch_upper") and s.get("shooting_star") and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
+    fl = (s.get("kc_touch_lower") and (s.get("hammer", False) or s.get("bullish_engulfing", False) or s.get("bullish_pin_bar", False)) and s.get("obv_bullish"))
+    fs = (s.get("kc_touch_upper") and (s.get("shooting_star", False) or s.get("bearish_engulfing", False) or s.get("bearish_pin_bar", False)) and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
         ["kc_touch_lower","hammer","obv_bullish"],
         ["kc_touch_upper","shooting_star","obv_bearish", "borrow_ok"],
