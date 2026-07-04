@@ -6807,16 +6807,22 @@ def strat_news_sentiment_long(s):
     end-to-end. B748c EXPLORATORY tag was based on path-discovery bug
     in B745 audit (now fixed B748d per CHECKLIST #106).
     """
+    # B1136 (2026-07-03 Council 250 LOOSEN per Turn 4 + B1130 coverage-verified):
+    # 16 fires in Batch A. B278 tightening (0.3->0.5) reduced to 0; B314
+    # partial reversal restored some. Turn 4 verdict: loosen mean 0.5 -> 0.3
+    # (Lopez-Lira-Tang 2023 canonical uses lower magnitudes). B1130 coverage
+    # audit verified polygon news 100% Batch A coverage - loosen safely.
+    # Expected: 3-5x uplift.
     fires = (
-        s.get("news_sentiment_mean", 0.0) > 0.5
+        s.get("news_sentiment_mean", 0.0) > 0.3  # B1136: was > 0.5 (Lopez-Lira-Tang 2023)
         and s.get("news_article_count", 0) >= 3
         and s.get("price_above_ema_200", False)
     )
     sent = s.get("news_sentiment_mean", 0.0)
     return _strat(fires, "long", "news_sentiment",
-        ["news_sentiment_mean>0.5", "news_article_count>=3",
+        ["news_sentiment_mean>0.3", "news_article_count>=3",  # B1136 loosened
          "price_above_ema_200"],
-        [f"7-day mean sentiment +{sent:.2f} (strong positive cluster, >+0.5)",
+        [f"7-day mean sentiment +{sent:.2f} (positive cluster, >+0.3; B1136 canonical Lopez-Lira-Tang)",
          f"{s.get('news_article_count', 0)} articles in window (>=3)",
          "Above 200 EMA (regime gate)"])
 
@@ -6875,29 +6881,36 @@ def strat_news_momentum_long(s):
       dc20_breakout_up + close_above_open + close_in_top_40pct_of_range +
       vol_above_avg + above_avwap_20low
     """
+    # B1136 (2026-07-03 Council 250 LOOSEN per Turn 4 + B1130 coverage-verified):
+    # 0 fires in Batch A. B1130 confirmed polygon news 100% coverage; sparse
+    # per-window content is data-density issue. Loosen consumer gates now that
+    # coverage verified. Actions per Turn 4 verdict:
+    # (1) sentiment >=0.5 -> >=0.3 (Lopez-Lira-Tang 2023 canonical uses lower)
+    # (2) zscore >=1.5 -> >=1.0 (less-strict volume anomaly)
+    # (3) Drop above_avwap_20low (redundant with dc20_breakout + close_above_open
+    #     per feedback_avwap_redundant + feedback_obv_avwap_macd_non_redundancy)
+    # Expected: 5-10x uplift.
     fires = (
-        s.get("news_sentiment_5d", 0.0) >= 0.5
-        and s.get("news_volume_zscore_5d", 0.0) >= 1.5
+        s.get("news_sentiment_5d", 0.0) >= 0.3  # B1136: was >= 0.5
+        and s.get("news_volume_zscore_5d", 0.0) >= 1.0  # B1136: was >= 1.5
         and s.get("dc20_breakout_up", False)
         and s.get("close_above_open", False)
         and s.get("close_in_top_40pct_of_range", False)
         and s.get("vol_above_avg", False)
-        and s.get("above_avwap_20low", False)
+        # B1136 dropped: above_avwap_20low (redundant per feedback_avwap_redundant)
     )
     sent = s.get("news_sentiment_5d", 0.0)
     vz   = s.get("news_volume_zscore_5d", 0.0)
     return _strat(fires, "long", "news_sentiment",
-        ["news_sentiment_5d>=0.5", "news_volume_zscore_5d>=1.5",
+        ["news_sentiment_5d>=0.3", "news_volume_zscore_5d>=1.0",  # B1136 loosened
          "dc20_breakout_up", "close_above_open",
-         "close_in_top_40pct_of_range", "vol_above_avg",
-         "above_avwap_20low"],
-        [f"5d recency-weighted sentiment {sent:.2f} (bullish)",
-         f"News volume z-score {vz:.2f} (unusual coverage)",
+         "close_in_top_40pct_of_range", "vol_above_avg"],  # B1136 dropped above_avwap_20low
+        [f"5d recency-weighted sentiment {sent:.2f} (bullish; B1136 threshold >=0.3)",
+         f"News volume z-score {vz:.2f} (unusual coverage; B1136 threshold >=1.0)",
          "Donchian-20 breakout up (price confirms)",
          "Bullish bar (close above open)",
          "Strong close (top 40pct of range)",
-         "Volume above 20d avg (institutional confirmation)",
-         "Above 20-day swing-low AVWAP (Brian Shannon 2022)"])
+         "Volume above 20d avg (institutional confirmation)"])
 
 
 def strat_news_momentum_short(s):

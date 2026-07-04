@@ -135,7 +135,7 @@ def compute_pead_signals(
     as_of: date,
     drift_window_days: int = 60,
     yoy_growth_threshold: float = 0.0,
-    announcement_return_threshold: float = 0.02,
+    announcement_return_threshold: float = 0.01,  # B1136 loosened 0.02 -> 0.01 per Garfinkel 2024 canonical
 ) -> dict:
     """Compute PEAD signals for a ticker as of a given date.
 

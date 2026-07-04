@@ -2889,3 +2889,63 @@ Next per Council 249 grouped LOOSEN loop:
 
 Next: B1136 News/PEAD family LOOSEN.
 
+
+### B1136 (2026-07-03 Council 250 Grouped LOOSEN 4/N - News/PEAD family):
+
+- 2026-07-03 — `b1136-news-pead-loosen` — 3 news/PEAD strategies loosened per Council 236 Turn 4 verdicts + B1130 polygon news coverage-verified. FULL expanded pyramid 955+7 GREEN.
+
+### 3 strategies loosened (+1 secondary side-effect):
+
+**Strategy 1: strat_news_momentum_long (screener.py:6845)**
+  Council 236 Turn 4 verdict: PRODUCER_OK + B832_SPOF_TRIPPED + THRESHOLDS_TIGHT
+  B1130 update: Polygon news 100% Batch A coverage; sparse-per-window not gap
+  Batch A n_fires: 0
+  Actions:
+    (1) sentiment >=0.5 -> >=0.3 (Lopez-Lira-Tang 2023 canonical)
+    (2) zscore >=1.5 -> >=1.0
+    (3) Drop above_avwap_20low (redundant with dc20_breakout + close_above_open)
+  Expected: 5-10x uplift
+
+**Strategy 2: strat_news_sentiment_long (screener.py:6782)**
+  Council 236 Turn 4 verdict: PRODUCER_OK + B278_B314_HISTORY
+  Batch A n_fires: 16
+  Actions:
+    (1) mean threshold 0.5 -> 0.3 (Lopez-Lira-Tang 2023 canonical)
+  Expected: 3-5x uplift
+
+**Strategy 3: strat_pead_long (screener.py:4482) - PRODUCER-side change**
+  Council 236 Turn 4 verdict: PRODUCER_OK + STRICT_ANN_RETURN_THRESHOLD
+  Batch A n_fires: 9
+  Action: pead.py announcement_return_threshold: 0.02 -> 0.01 (Garfinkel 2024 canonical)
+  Expected: 3-5x uplift
+  SIDE EFFECT: pead_short (n_fires=30, MARGINAL) also uses same producer
+    threshold. Reclassified DONE_B1136_SECONDARY.
+
+### Test updates same-batch:
+
+  test_batch278_news_sentiment_blocks_loose_signals updated:
+    Threshold boundary changed from 0.4 (pre-B1136 to test <0.5) to 0.2
+    (post-B1136 to test <0.3). Test still validates threshold blocks
+    below-boundary signals.
+
+### CSV reclassifications (B1136):
+
+  news_momentum_long:  PENDING -> DONE_B1136
+  news_sentiment_long: PENDING -> DONE_B1136
+  pead_long:           PENDING -> DONE_B1136
+  pead_short:          PENDING -> DONE_B1136_SECONDARY (producer side-effect)
+
+### Execution status distribution (post-B1136):
+
+  BLOCKED_DATA_MISSING       4
+  DONE_B1126                 3
+  DONE_B1133                 3
+  DONE_B1134                 3
+  DONE_B1135                 2
+  DONE_B1135_STATUS_QUO      1
+  DONE_B1136                 3 (news + PEAD long)
+  DONE_B1136_SECONDARY       1 (pead_short side-effect)
+  PENDING                  172 (was 176)
+
+Next: B1137 SMC family LOOSEN (smc_ote_long/short + smc_premium_short + smc_discount_long + smc_fvg_retest_long/short).
+

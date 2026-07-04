@@ -7389,21 +7389,22 @@ def test_batch267_news_sentiment_strat_fires_on_aliased_keys():
 
 
 def test_batch278_news_sentiment_blocks_loose_signals():
-    """Batch 278 + Batch 314 Cat-2 B+C: the mean>0.5 + count>=3 + 200-EMA
-    gates must still BLOCK signals that violate the surviving Batch 278
-    thresholds. Momentum confirmation was REMOVED in Batch 314 (owner-approved
-    2026-05-24) because per-regime backtest showed it suppressed news edge.
-    Article-count threshold relaxed 5 -> 3 in Batch 314 for the same reason.
+    """Batch 278 + Batch 314 + Batch 1136: the mean>0.3 (was >0.5 pre-B1136,
+    Lopez-Lira-Tang 2023 canonical) + count>=3 + 200-EMA gates must still
+    BLOCK signals that violate thresholds. B1136 loosened sentiment threshold
+    from 0.5 to 0.3 per Council 250 Turn 4 finding + B1130 coverage-verified.
+    Momentum confirmation was REMOVED in Batch 314 (owner-approved 2026-05-24).
+    Article-count threshold relaxed 5 -> 3 in Batch 314.
     """
     from backtest.signals.screener import strat_news_sentiment_long
-    # Sentiment too weak: mean=0.4 (<0.5 Batch-278 threshold still in force)
+    # Sentiment too weak: mean=0.2 (<0.3 Batch-1136 threshold)
     signals = {
-        "news_sentiment_mean":      0.4,
+        "news_sentiment_mean":      0.2,  # B1136: was 0.4 (pre-B1136 boundary was 0.5)
         "news_article_count":       5,
         "price_above_ema_200":      True,
     }
     res = strat_news_sentiment_long(signals)
-    assert not res["fires"], "mean=0.4 must NOT fire under threshold >0.5"
+    assert not res["fires"], "mean=0.2 must NOT fire under B1136 threshold >0.3"
 
     # Article count too low: 2 (<3 Batch-314 threshold)
     signals2 = {
