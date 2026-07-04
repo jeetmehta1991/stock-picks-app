@@ -2858,7 +2858,7 @@ def strat_donchian_breakdown_short(s):
     """
     # B612 refactor: NOT s.get(macd_bullish) -> positive macd_bearish (B609 added).
     fires = (s.get("dc10_breakout_dn")
-             and s.get("vol_spike_15x")
+             and s.get("vol_spike_12x")
              and s.get("macd_12_26_9_bearish")
              and s.get("close_below_open")
              and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))

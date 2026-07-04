@@ -3661,3 +3661,7 @@ Going forward B1154+, autonomous executor writes EXECUTION_QUEUE entry per commi
 ### B1149 auto-executor: doji_at_resistance_short DONE
 - Applied edits: ['REPLACE vol_spike_15x -> vol_spike_12x']
 - Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.
+
+### B1150 auto-executor: donchian_breakdown_short DONE
+- Applied edits: ['REPLACE vol_spike_15x -> vol_spike_12x']
+- Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.
