@@ -3169,3 +3169,12 @@ CSV reclassifications: 3 strategies PENDING -> DONE_B1140. Pyramid 955+7 GREEN.
 
 CSV: 3 strategies PENDING -> DONE_B1141. Pyramid 955+7 GREEN.
 
+
+### B1142 (2026-07-03 Council 254 Grouped LOOSEN 10/N - Classification producer):
+
+- 2026-07-03 — `b1142-classification-loosen` — Producer-side widening in backtest/data/universe.py:608 get_classification_change_signals lookback_days 90 -> 180 (Turn 9 verdict). Cascades to all 10 classification_change_* strategies.
+
+**Rationale (per Turn 9 auto-verdict):** Classification events are structurally rare (~1-3/yr per ticker). Doubling the lookback window captures more valid recent-change setups without dilution.
+
+CSV: 3 primary + 7 secondary DONE_B1142/DONE_B1142_SECONDARY. Pyramid 955+7 GREEN.
+

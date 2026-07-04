@@ -605,7 +605,7 @@ def get_sector_pit(ticker: str, as_of: date, fallback: Optional[str] = None) -> 
 def get_classification_change_signals(
     ticker: str,
     as_of: date,
-    lookback_days: int = 90,
+    lookback_days: int = 180,  # B1142: was 90 (Council 254 LOOSEN per Turn 9 - widened for structural rarity)
 ) -> dict:
     """Wave 3 (Batch 332): detect recent GICS classification changes for ticker.
 
