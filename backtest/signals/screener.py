@@ -6342,18 +6342,20 @@ def strat_institutional_committed_growth_long(s):
     strat_institutional_multi_quarter_persistence_long; see that
     docstring for empirical evidence.
     """
-    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
-    # B1165 invention (boolean->direct-threshold mapping assumed >=5 semantics)
-    # reverted per owner directive. Awaits owner-approved specific action.
+    # B1173 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    # LOOSEN committed_growth_holders >= 5 -> >= 3 per rec (Cohen-Malloy-Pomorski
+    # cluster canonical). Narrow-scope inline threshold (not modifying producer
+    # boolean institutional_persistence_growing which stays >=5 for other
+    # consumers).
+    n_grow = s.get("committed_growth_holders", 0)
     fires = (
-        s.get("institutional_persistence_growing", False)
+        n_grow >= 3
         and s.get("price_above_ema_200", False)
     )
-    n_grow = s.get("committed_growth_holders", 0)
     return _strat(fires, "long", "institutional_persistence",
-        ["committed_growth_holders>=5", "price_above_ema_200"],
-        [f"{n_grow} funds grew position over 4+ quarters (>10% growth)",
-         "Frazzini-Lamont 2008 institutional consensus + share growth",
+        ["committed_growth_holders>=3", "price_above_ema_200"],
+        [f"{n_grow} funds grew position over 4+ quarters (>10% growth; loosened >=5 -> >=3 per B1173)",
+         "Cohen-Malloy-Pomorski cluster canonical (>=3)",
          "Above 200 EMA (regime gate)"])
 
 

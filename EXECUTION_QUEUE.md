@@ -4029,3 +4029,30 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1172 (2026-07-04 Council 275 FLAGGED 3/8): camarilla_s3_bounce PENDING_OWNER_ADJUDICATION
+
+CSV rec: [HIGH] [LOOSEN_GATE] LOOSEN: RSI extreme threshold widening (<25 -> <30)
+
+STOPPED per CHECKLIST #150: CSV rec threshold doesn't match source.
+- Current source: rsi_14<35 (LONG) / rsi_14>65 (SHORT) since B628 F1 (never <25)
+- Applying literally (<25 -> <30) would TIGHTEN from <35 to <30 - not a loosening
+- Applying spirit (5-pt widen) = <35 -> <40 = INVENTION per #150
+
+FLAGGED for owner decision:
+(a) accept current <35/>65 (no change; strategy stays at original state)
+(b) widen <35 -> <40 & >65 -> >60 (5-pt shift matching rec spirit)
+(c) other owner-directed
+
+Pyramid 850+2 GREEN (no code change to camarilla).
+
+
+### B1173 (2026-07-04 Council 275 REVERT 4/8): institutional_committed_growth_long
+
+CSV final_recommended_actions: [HIGH] [LOOSEN_GATE] LOOSEN: committed_growth_holders >= 5 -> >= 3
+
+Applied:
+- screener.py: swap boolean institutional_persistence_growing (=>=5) for inline n_grow>=3 threshold. Narrow-scope; producer boolean unchanged for other consumers.
+
+Pyramid 850+2 GREEN.
+
