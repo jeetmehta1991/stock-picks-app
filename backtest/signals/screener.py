@@ -3187,9 +3187,7 @@ def strat_52wh_break_retest(s):
           and s.get("near_52w_high")
           and s.get("price_above_ema_200")
           and s.get("close_above_open")
-          and s.get("close_in_top_40pct_of_range")
-          and s.get("vol_below_avg")
-          and s.get("above_avwap_20low"))
+          and s.get("close_in_top_40pct_of_range"))
     return _strat(fl, "long", "breakout",
         ["year_high_break_retest_long", "near_52w_high",
          "price_above_ema_200", "close_above_open",
