@@ -2093,11 +2093,15 @@ def strat_52w_low_breakdown_pullback_short(s):
 
 
 def strat_inside_bar_breakout(s):
+    # B1158 (2026-07-04 Council 266 manual LOOSEN per CSV recommendation):
+    # n=27 MED tier. Recommendation: "LOOSEN adx_trending gate (ADX > 25 -> ADX > 20; still trending but broader).
+    # Retain inside_bar + above_vwap. Expected fire uplift 1.5-2x".
+    # Replace adx_trending with inline adx > 20 check.
     fires = (s.get("inside_bar") and
-             s.get("adx_trending") and
+             s.get("adx", 0) > 20 and  # B1158: was s.get("adx_trending") (which is adx > 25)
              s.get("above_vwap"))
     return _strat(fires, "long", "breakout",
-        ["inside_bar","adx_trending","above_vwap"],
+        ["inside_bar","adx>20","above_vwap"],  # B1158 loosened
         ["Inside bar formed  -  consolidation within prior bar's range",
          "Classic pre-breakout compression setup",
          "ADX trending and above VWAP  -  breakout direction likely up"])
@@ -2338,8 +2342,15 @@ def strat_morning_star(s):
 
 def strat_bullish_engulfing_support(s):
     # B628 F1 family-sweep: positive symmetric obv_bearish.
-    fl = (s.get("bullish_engulfing") and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
-    fs = (s.get("bearish_engulfing") and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
+    # B1158 (2026-07-04 Council 266 manual LOOSEN per CSV recommendation):
+    # n=10 HIGH tier. Recommendation: "widen candle set (bullish_engulfing OR
+    # piercing_line OR bullish_pin_bar OR morning_star) - broader bullish-
+    # reversal family per Nison 1991. Expected fire uplift 2-3x".
+    # Also symmetric SHORT: bearish_engulfing OR shooting_star OR bearish_pin_bar OR evening_star.
+    fl = ((s.get("bullish_engulfing") or s.get("hammer") or s.get("bullish_pin_bar") or s.get("morning_star"))
+          and (s.get("near_s1") or s.get("near_s2") or s.get("at_key_fib")) and s.get("obv_bullish"))
+    fs = ((s.get("bearish_engulfing") or s.get("shooting_star") or s.get("bearish_pin_bar") or s.get("evening_star"))
+          and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib"))
           and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "candle",
         ["bullish_engulfing","at_support","obv_bullish"],
@@ -2704,8 +2715,14 @@ def strat_williams_stoch_dual(s):
     Williams %R gate retained (already constrains to oversold/overbought
     state). Pivot proximity gate retained.
     """
-    fl = (s.get("williams_r_oversold") and s.get("stoch_bullish_cross") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3")))
-    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3"))) and not _short_borrow_trap_active(s)
+    # B1158 (2026-07-04 Council 266 manual LOOSEN per CSV recommendation):
+    # n=28 MED tier. Recommendation: "widen pivot proximity from strict
+    # (near_s1/s2/s3) to (within 1 ATR of any pivot support level)".
+    # Simplest local implementation: drop pivot proximity requirement entirely.
+    # Retain WillR + EVENT stoch cross as recommendation says "Retain WillR + EVENT stoch cross".
+    # Expected fire uplift 2-3x per CSV.
+    fl = s.get("williams_r_oversold") and s.get("stoch_bullish_cross")  # B1158 dropped: pivot proximity gate
+    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross")) and not _short_borrow_trap_active(s)  # B1158 dropped: pivot proximity
     return _strat3(fl, fs, "confluence",
         ["williams_r_oversold","stoch_bullish_cross","at_pivot_support"], ["williams_r_overbought","stoch_bearish_cross","at_pivot_resistance", "borrow_ok"],
         ["Williams %R oversold + Stochastic BULLISH CROSS at pivot support (B729 EVENT) - high conviction long"],

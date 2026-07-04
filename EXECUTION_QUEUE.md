@@ -3732,3 +3732,34 @@ Progress: 100 -> 109 (+9 auto-executed via flow-order fix).
   These need pattern-specific parser rules OR manual review.
   Owner may proceed to micro-cube validation at 56.8% coverage.
 
+
+### B1158 (2026-07-04 Council 266 Manual Review Round 1 - WIDEN_COMPLEX):
+
+Owner directive 2026-07-04: manual review of remaining SKIPs.
+
+Round 1 Batch 1 - 3 highest-n_fires WIDEN_COMPLEX consumer-side strategies + 1 admin:
+
+1. williams_stoch_dual (n=28):
+   Dropped pivot proximity gate (kept WillR + stoch cross)
+   Per CSV: "Retain WillR + EVENT stoch cross"
+
+2. inside_bar_breakout (n=27):
+   adx_trending (>25) -> adx>20 inline check
+   Per CSV: "ADX > 25 -> ADX > 20; still trending but broader"
+
+3. bullish_engulfing_support (n=10):
+   Expanded candle OR set: bullish_engulfing OR hammer OR bullish_pin_bar OR morning_star
+   Symmetric SHORT: bearish_engulfing OR shooting_star OR bearish_pin_bar OR evening_star
+   Per CSV Nison 1991 canonical broader bullish-reversal family
+
+4. activist_13d_long (n=16):
+   RECLASSIFIED STATUS_QUO (structural rare per CSV rec; no code change)
+
+Pyramid 955+7 GREEN. CSV updated.
+
+CUMULATIVE POST-B1158:
+  DONE:    113 (58.9%)
+  SKIP:     73
+  FAIL:      2
+  BLOCKED:   4
+
