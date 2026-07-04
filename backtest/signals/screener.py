@@ -2036,8 +2036,12 @@ def strat_52w_high_breakout(s):
         bool(s.get("break_52w_high_clearance_atr_05")),       # B698 anti-fakeout #1
         bool(s.get("break_52w_high_confirmed_today")),         # B698 anti-fakeout #4
     ]
+    # B1144 (2026-07-03 Council 254 LOOSEN per Turn 6): 9 fires. Loosen
+    # score-of-2-of-5 -> 1-of-5. break_52w_high is required (line 1974)
+    # plus at least 1 confirmation. B698 designed for owner-tunable
+    # score threshold; loosening from 2 to 1 doubles fire rate approximately.
     n_confirm = sum(confirmations)
-    fires = n_confirm >= 2
+    fires = n_confirm >= 1  # B1144: was >= 2
     return _strat(fires, "long", "breakout",
         ["break_52w_high", "vol_spike_17x", "close_above_open",
          "close_in_top_40pct_of_range",
@@ -2932,13 +2936,17 @@ def strat_52w_low_breakdown(s):
     sector_underperforming_spy (B587), close_below_open (existing),
     close_in_bottom_40pct_of_range (B589).
     """
+    # B1144 (2026-07-03 Council 254 LOOSEN per Turn 9): 5-way AND compound.
+    # Widen vol_spike_17x (1.7x) -> vol_above_avg. Drop sector_underperforming_spy
+    # per B697 REJECT_REDUNDANT precedent (sector RS is separate concept from
+    # own breakdown). Retain close_below_open + bottom_40pct_of_range (strong-close).
     fires = (s.get("break_52w_low")
-             and s.get("vol_spike_17x")
-             and s.get("sector_underperforming_spy")
+             and s.get("vol_above_avg")  # B1144: was vol_spike_17x
+             # B1144 dropped: sector_underperforming_spy (per B697 precedent)
              and s.get("close_below_open")
              and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "breakout",
-        ["break_52w_low", "vol_spike_17x", "sector_underperforming_spy", "borrow_ok"],
+        ["break_52w_low", "vol_above_avg", "close_below_open", "borrow_ok"],  # B1144 loosened
         [f"Price broke 52-week low  -  serious capitulation signal",
          "Volume >1.7x confirms institutional distribution (George-Hwang 2004 JF mirror)",
          "Sector ETF underperforming SPY 20d  -  sell weak sectors only",

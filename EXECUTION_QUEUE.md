@@ -3190,3 +3190,17 @@ CSV: 3 primary + 7 secondary DONE_B1142/DONE_B1142_SECONDARY. Pyramid 955+7 GREE
 
 CSV: 2 DONE_B1143 + 1 STATUS_QUO. Pyramid 955+7 GREEN.
 
+
+### B1144 (2026-07-03 Council 254 Grouped LOOSEN 12/N - 52w breakout family):
+
+- 2026-07-03 — `b1144-52w-loosen` — 2 loosened + 1 STATUS_QUO. FULL pyramid 955+7 GREEN.
+
+**Strategies:**
+1. strat_52w_high_breakout: Score threshold 2-of-5 -> 1-of-5 (B698 designed for owner-tunable)
+2. strat_52w_low_breakdown: vol_spike_17x -> vol_above_avg + drop sector_underperforming_spy (B697 REJECT_REDUNDANT precedent)
+3. strat_golden_cross_50_200: STATUS_QUO (already lean 1-gate)
+
+CSV: 2 DONE_B1144 + 1 STATUS_QUO. Pyramid 955+7 GREEN.
+
+**Cumulative progress:** 12 grouped LOOSEN batches. ~50 strategies handled ~26% of 192.
+
