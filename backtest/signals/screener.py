@@ -3229,9 +3229,7 @@ def strat_52wl_break_retest_short(s):
           and s.get("near_52w_low")
           and s.get("below_ema_200", False)
           and s.get("close_below_open")
-          and s.get("close_in_bottom_40pct_of_range")
-          and s.get("vol_below_avg")
-          and s.get("below_avwap_20high", False) and not _short_borrow_trap_active(s))
+          and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat(fs, "short", "breakout",
         ["year_low_break_retest_short", "near_52w_low",
          "below_ema_200", "close_below_open",
