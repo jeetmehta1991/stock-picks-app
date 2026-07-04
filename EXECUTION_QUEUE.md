@@ -4136,3 +4136,19 @@ CSV "300x underfire" claim is NOT a producer bug. Producer is correct. Downstrea
 
 Pyramid 850+2 GREEN.
 
+
+### B1181 (2026-07-04 Council 275 PRODUCER 4-6/9): Flag pattern K-window widening
+
+3 strategies fixed via single chart_patterns.py fix (root-cause grouped per Council 201):
+- flag_bull_long
+- flag_bull_retest_long
+- flag_bear_retest_short
+
+Applied per Edwards-Magee 1-4wk canonical (5-20 BD):
+- flag_bull_broke / flag_bear_broke: K 1..8 -> 1..15
+- flag_bull_break_retest / flag_bear_break_retest: K 3..12 -> 3..15
+
+Retest tolerance (1.5*ATR) unchanged - specific-tolerance widen not owner-specified.
+
+Pyramid 850+2 GREEN.
+

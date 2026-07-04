@@ -530,8 +530,11 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
         atr = close_arr[-1] * 0.01
     tolerance = 1.5 * atr
 
-    # LONG: search lags 3..12 for a flag that completed K bars ago.
-    for K in range(3, 13):
+    # B1181 (2026-07-04 Council 275 owner-approved final_recommended_actions):
+    # K window widened 3..12 -> 3..15 per Edwards-Magee 1-4wk canonical (5-20 BD).
+    # Applies to flag_bull_break_retest_long AND flag_bear_break_retest_short.
+    # LONG: search lags 3..14 for a flag that completed K bars ago.
+    for K in range(3, 16):
         if K >= n - 30:
             break
         df_at_K = df.iloc[:n - K]
@@ -559,7 +562,8 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
             break
 
     # SHORT mirror: bear flag K bars ago, breakdown, retest from below, today's close still below.
-    for K in range(3, 13):
+    # B1181: K widened 3..12 -> 3..15 (Edwards-Magee 1-4wk canonical).
+    for K in range(3, 16):
         if K >= n - 30:
             break
         df_at_K = df.iloc[:n - K]
@@ -588,7 +592,8 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
     # K bars ago + verify today's close exceeds (LONG) or falls below
     # (SHORT) the historical flag's breakout level. Same PIT-disciplined
     # historical-slice pattern as the retest signals above.
-    for K in range(1, 9):
+    # B1181: K widened 1..8 -> 1..15 (Edwards-Magee 1-4wk canonical).
+    for K in range(1, 16):
         if K >= n - 30:
             break
         df_at_K = df.iloc[:n - K]
@@ -605,7 +610,8 @@ def compute_flag_break_retest_signals(df: 'pd.DataFrame') -> dict:
             out["flag_bull_broke"] = True
             break
 
-    for K in range(1, 9):
+    # B1181: K widened 1..8 -> 1..15 (Edwards-Magee 1-4wk canonical).
+    for K in range(1, 16):
         if K >= n - 30:
             break
         df_at_K = df.iloc[:n - K]
