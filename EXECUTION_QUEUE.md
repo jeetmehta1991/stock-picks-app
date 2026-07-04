@@ -3266,3 +3266,15 @@ CSV: 2 DONE_B1144 + 1 STATUS_QUO. Pyramid 955+7 GREEN.
 
 ### Autonomous executor script: scripts/apply_csv_loosen_autonomous.py
 
+
+### B1146 (2026-07-03 Council 258 admin cleanup - AUDIT_DATA already complete):
+
+- 2026-07-03 — `b1146-audit-cleanup` — 3 strategies whose CSV action was [AUDIT_DATA] verified as already completed in B1129-B1132. Reclassified SKIP_AUDIT_ALREADY_COMPLETE -> DONE_B1146_AUDIT_COMPLETE.
+
+Strategies:
+1. smc_mitigation_block_long: SMC_PHASE arm verified B1129
+2. smc_mitigation_block_short: SMC_PHASE arm verified B1129 + Pattern S caveat
+3. squeeze_setup_long: FINRA short_interest coverage verified B1130
+
+No code change - CSV directive fulfilled by prior audit batches.
+
