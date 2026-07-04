@@ -5792,7 +5792,6 @@ def strat_institutional_breakout_confirmation_long(s):
         and s.get("resistance_break_retest", False)
         and s.get("price_above_ema_200", False)
         and s.get("close_above_open", False)
-        and s.get("vol_below_avg", False)
     )
     return _strat(fires, "long", "smart_money_13f",
         ["institutional_buy","resistance_break_retest","price_above_ema_200",
