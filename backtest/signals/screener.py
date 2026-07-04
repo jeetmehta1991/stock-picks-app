@@ -6348,8 +6348,11 @@ def strat_institutional_committed_growth_long(s):
     strat_institutional_multi_quarter_persistence_long; see that
     docstring for empirical evidence.
     """
+    # B1165 (2026-07-04 Council 269 manual LOOSEN per CSV rec; tier n=10 HIGH verified):
+    # committed_growth_holders >=5 -> >=3 (Cohen-Malloy-Pomorski cluster canonical).
+    # Direct threshold check replaces institutional_persistence_growing (implicit >=5).
     fires = (
-        s.get("institutional_persistence_growing", False)
+        s.get("committed_growth_holders", 0) >= 3  # B1165: was institutional_persistence_growing (>=5)
         and s.get("price_above_ema_200", False)
     )
     n_grow = s.get("committed_growth_holders", 0)

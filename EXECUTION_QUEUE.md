@@ -3855,3 +3855,16 @@ Pyramid 955+7 GREEN.
 
 CUMULATIVE POST-B1164: DONE 133 (69.3%), SKIP 53.
 
+
+### B1165 (2026-07-04 Council 269 - 1 loosen + 2 cascade/status_quo):
+
+Per CHECKLIST #148 tier-verified (all n <= 30).
+
+1. institutional_committed_growth_long (n=10 HIGH): committed_growth_holders >=5 -> >=3
+2. xs_low_beta_with_smart_money_long (n=11 HIGH): STATUS_QUO (universe expansion primary)
+3. pead_with_smart_money_long (n=7 HIGH): PRODUCER_CASCADE (B1136 pead.py 0.02->0.01 applies)
+
+Pyramid 955+7 GREEN.
+
+CUMULATIVE POST-B1165: DONE 136 (70.8%), SKIP 50.
+
