@@ -4090,3 +4090,19 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1177 (2026-07-04 Council 275 FLAGGED 8/8): williams_stoch_dual PENDING_OWNER_ADJUDICATION
+
+CSV rec: [MED] [LOOSEN_GATE] LOOSEN: widen pivot proximity from strict (near_s1/s2/s3) to (within 1 ATR of any pivot support level)
+
+STOPPED per CHECKLIST #150(a): No "within 1 ATR of any pivot" producer signal exists.
+Existing pivot proximity signals: near_s1/s2/s3 (standard), near_s1_wide/s2_wide (1.5pct doji-only), near_cam_s3, near_wood_s1.
+
+FLAGGED for owner decision:
+(a) accept current (near_s1 OR near_s2 OR near_cam_s3) [no change]
+(b) add near_s3 + near_wood_s1 to OR set (existing signals expansion)
+(c) add producer-side compute_atr_pivot_proximity gate (new signal)
+(d) other owner-directed
+
+Pyramid 850+2 GREEN (no code change).
+
