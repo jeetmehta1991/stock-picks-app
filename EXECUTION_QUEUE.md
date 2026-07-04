@@ -3472,3 +3472,48 @@ Recommendation: micro-cube validation on 99 DONE strategies now to measure
 empirical uplift, then decide whether to invest in Step C manual review or
 ship Batch A dry run.
 
+
+### B1152 (2026-07-03 Council 262 - Parser multi-format + diff message improvement):
+
+- 2026-07-03 — `b1152-parser-multiformat-fix` — Council 262 diagnosed avwap_20high_rejection_short SKIP was parser bug: assumed source `< 1%` = `< 0.01` decimal fraction, but actual source uses `< 1.0` (percent-as-float format).
+
+### Owner-directed diagnostic:
+
+Owner asked "is avwap_20high_rejection_short in 57 SKIP_UNCLASSIFIED complex patterns?"
+Investigation traced:
+  recommendation: "widen abs(pct_from_avwap) < 1% -> < 2%"
+  Parser correctly extracted WIDEN_PERCENT edit
+  Application converted "1%" -> "0.01" decimal
+  BUT source used `abs(pct_from_20h) < 1.0` (not 0.01)
+  Pattern didn't match -> applied list empty -> SKIP_UNCLASSIFIED
+
+### 2 fixes shipped:
+
+**Fix 1: WIDEN_PERCENT multi-format parser**
+  Try 3 format representations sequentially:
+    (a) decimal fraction: "1%" -> "0.01"
+    (b) float: "1%" -> "1.0"
+    (c) integer: "1%" -> "1"
+  First match wins.
+  Result: avwap_20high_rejection_short widened `< 1.0` -> `< 2.0` correctly.
+
+**Fix 2: change_from_original message improvement**
+  When DONE_B* status has identical signal set (numeric threshold widen only):
+    Was: "no change (consumer signals identical)" (misleading)
+    Now: "numeric threshold widened in B<N> (signal set unchanged; see source diff for threshold value)"
+
+### Cumulative post-B1152:
+  DONE:    100 (52.1%)
+  SKIP:     87 (45.3%)
+  FAIL:      1
+  BLOCKED:   4
+
+Progress: 99 -> 100 (+1 more DONE via B1152 multi-format fix).
+
+### Verification:
+  avwap_20high_rejection_short source SOURCE DIFF:
+    - abs(pct_from_20h) < 1.0
+    + abs(pct_from_20h) < 2.0
+
+Matches recommendation exactly.
+

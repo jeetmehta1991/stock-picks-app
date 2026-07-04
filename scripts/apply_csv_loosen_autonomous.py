@@ -302,17 +302,25 @@ def apply_edits_to_body(body: str, edits: list[dict]) -> tuple[str, list[str]]:
                 applied.append(f"EXPAND {original} -> ({original} or {' or '.join(additional)})")
         elif etype == "WIDEN_PERCENT":
             # B1151 Council 261: widen numeric percent threshold in comparison
+            # B1152 Council 262: try multiple format representations
+            # (decimal fraction 0.01, integer 1, float 1.0) since source may use any
             sig_expr = edit["signal_expr"]
             old_pct = edit["old_pct"]
             new_pct = edit["new_pct"]
-            # Match `abs(pct_from_avwap) < 0.01` (old_pct/100) format
-            old_decimal = f"{int(old_pct)/100:.4f}".rstrip("0").rstrip(".")
-            new_decimal = f"{int(new_pct)/100:.4f}".rstrip("0").rstrip(".")
-            # Match `s.get("sig") < 0.01` or `abs(...) < 0.01`
-            pattern = rf'<\s*{re.escape(old_decimal)}\b'
-            if re.search(pattern, new_body):
-                new_body = re.sub(pattern, f"< {new_decimal}", new_body)
-                applied.append(f"WIDEN threshold {old_pct}% -> {new_pct}%")
+            old_int = int(old_pct)
+            new_int = int(new_pct)
+            # Try each representation until one matches
+            format_pairs = [
+                (f"{old_int/100:.4f}".rstrip("0").rstrip("."), f"{new_int/100:.4f}".rstrip("0").rstrip(".")),  # 0.01 -> 0.02
+                (f"{old_int}.0", f"{new_int}.0"),  # 1.0 -> 2.0
+                (str(old_int), str(new_int)),  # 1 -> 2
+            ]
+            for old_fmt, new_fmt in format_pairs:
+                pattern = rf'<\s*{re.escape(old_fmt)}\b'
+                if re.search(pattern, new_body):
+                    new_body = re.sub(pattern, f"< {new_fmt}", new_body, count=1)
+                    applied.append(f"WIDEN threshold {old_pct}% ({old_fmt}) -> {new_pct}% ({new_fmt})")
+                    break
     return new_body, applied
 
 

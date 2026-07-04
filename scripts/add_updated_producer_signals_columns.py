@@ -160,6 +160,11 @@ def compute_change_summary(
         producer_side_batches = ("B1137", "B1142")
         if batch_ref in producer_side_batches:
             return updated_str, f"producer-side change in {batch_ref} (thresholds widened in producer file; consumer gate list unchanged)"
+        # B1152 (Council 262): if status is DONE_* but signals identical,
+        # likely a numeric threshold widen (consumer-side threshold change).
+        # Distinguish from truly-no-change SKIP/PENDING states.
+        if status.startswith("DONE_B"):
+            return updated_str, f"numeric threshold widened in {batch_ref} (signal set unchanged; see source diff for threshold value)"
         # Otherwise no change detected
         return updated_str, "no change (consumer signals identical)"
 
