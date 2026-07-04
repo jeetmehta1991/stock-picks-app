@@ -2486,3 +2486,22 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L194; Council 268 B1162; CHECKLIST #67/#143; PASSING_CRITERIA; Council 237 tier definitions.
 
+
+149. **HARD RULE -- ATTEMPT AUTONOMOUS FIRST; MANUAL REVIEW ONLY FOR NOVEL DECISIONS.** (Owner directive 2026-07-04 Council 270 + L195.)
+
+     **Trigger.** Every "manual review" task where each item follows repeatable patterns.
+
+     **Rule.** Before starting manual review:
+       (1) Sample 3-5 items to identify decision templates
+       (2) If patterns are repeatable (numeric widen / signal replace / OR expand / STATUS_QUO): extract to autonomous rules FIRST
+       (3) Manual review is ONLY justified for items requiring novel judgment not fitting any rule
+       (4) After 3 consecutive "manual" batches showing common patterns: STOP + extract to autonomous
+
+     **Rationale.** Manual work masquerading as "review" is often autonomous work not yet extracted. Repetition burns time + introduces inconsistency + violates autonomous-first design.
+
+     **Retroactive coverage demo (per #136).** Would this rule have prevented B1158-B1165 "manual" batches? YES - rule requires 3-batch pattern audit; 4 templates (numeric widen, direct-threshold, OR-expand, STATUS_QUO) would have been extracted after B1160.
+
+     **Enforcement.** When starting a "manual review" round, first log: "sampled N items, distinct patterns observed: [list]". If <=4 patterns and >5 items to process: extract patterns as rules.
+
+     **Cross-references.** L195; Council 270 B1166; CHECKLIST #142/#143/#147; B1158-B1165 batch history.
+

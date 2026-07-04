@@ -169,6 +169,61 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
     for match in re.finditer(r"drop\s+(above|below)_avwap_\w+", action_text, re.IGNORECASE):
         edits.append({"type": "DROP_AVWAP_GATE", "gate": match.group(0).replace("drop ", "").strip().lower()})
 
+    # B1166 (Council 270 enhancement) STATUS_QUO detection - broader phrases
+    status_quo_phrases = [
+        r"accept as structural",
+        r"structurally? rare",
+        r"universe expansion (?:is )?primary lever",
+        r"universe expansion primary",
+        r"keep exploratory",
+        r"structural (?:low|edge)",
+        r"empirically justified",
+        r"empirically dead",
+        r"deliberate outcome",
+    ]
+    for phrase in status_quo_phrases:
+        if re.search(phrase, action_text, re.IGNORECASE):
+            return ("STATUS_QUO", [])
+
+    # B1166 (Council 270): threshold widen pattern `>= N -> >= M`
+    # Matches "institutional_increased >= 5 -> >= 3" style
+    for match in re.finditer(
+        r"([a-z_0-9]+)\s*(?:>=|>)\s*(\d+)\s*(?:->|\-\->|->)\s*(?:>=|>)\s*(\d+)",
+        action_text,
+        re.IGNORECASE,
+    ):
+        signal = match.group(1).lower()
+        old_val = match.group(2)
+        new_val = match.group(3)
+        if signal in ("bar", "n", "gate", "adx", "rsi_14", "rsi_2"):
+            continue
+        if len(signal) >= 3 and old_val != new_val:
+            edits.append({
+                "type": "WIDEN_THRESHOLD_GTE",
+                "signal": signal,
+                "old_val": old_val,
+                "new_val": new_val,
+            })
+
+    # B1166 (Council 270): RSI/MFI widen `rsi_14 < N -> rsi_14 < M`
+    for match in re.finditer(
+        r"(rsi_\d+|mfi)\s*(<|<=)\s*(\d+)\s*(?:->|\-\->|->)\s*(<|<=)\s*(\d+)",
+        action_text,
+        re.IGNORECASE,
+    ):
+        field = match.group(1).lower()
+        old_op = match.group(2)
+        old_val = match.group(3)
+        new_op = match.group(4)
+        new_val = match.group(5)
+        edits.append({
+            "type": "WIDEN_RSI_MFI",
+            "field": field,
+            "op": new_op,
+            "old_val": old_val,
+            "new_val": new_val,
+        })
+
     # B1151 (Council 261 enhancement): "signal_A -> (signal_A OR signal_B OR signal_C)"
     # OR-expansion pattern for widening single-signal to multi-signal gate
     for match in re.finditer(
@@ -319,6 +374,27 @@ def apply_edits_to_body(body: str, edits: list[dict]) -> tuple[str, list[str]]:
                 # Replace only the FIRST occurrence to avoid multi-replace bugs
                 new_body = re.sub(pattern, replacement, new_body, count=1)
                 applied.append(f"EXPAND {original} -> ({original} or {' or '.join(additional)})")
+        elif etype == "WIDEN_THRESHOLD_GTE":
+            # B1166 Council 270: signal >= N -> signal >= M pattern
+            signal = edit["signal"]
+            old_val = edit["old_val"]
+            new_val = edit["new_val"]
+            # Match `s.get("signal", 0) >= N` OR `s.get("signal", 0) > N`
+            pattern = rf's\.get\(\s*["\']({re.escape(signal)})["\'][^)]*\)\s*(>=?|>)\s*{old_val}\b'
+            if re.search(pattern, new_body):
+                new_body = re.sub(pattern, rf's.get("\1", 0) \2 {new_val}', new_body, count=1)
+                applied.append(f"WIDEN_GTE {signal} >={old_val} -> >={new_val}")
+        elif etype == "WIDEN_RSI_MFI":
+            # B1166 Council 270: rsi_14 < 40 -> rsi_14 < 45 pattern
+            field = edit["field"]
+            op = edit["op"]
+            old_val = edit["old_val"]
+            new_val = edit["new_val"]
+            # Match `s.get("rsi_14", 50) < N` or bare `rsi_14 < N`
+            pattern = rf's\.get\(\s*["\']({re.escape(field)})["\'][^)]*\)\s*({re.escape(op)})\s*{old_val}\b'
+            if re.search(pattern, new_body):
+                new_body = re.sub(pattern, rf's.get("\1", 50) \2 {new_val}', new_body, count=1)
+                applied.append(f"WIDEN_RSI {field} {op}{old_val} -> {op}{new_val}")
         elif etype == "WIDEN_PERCENT":
             # B1151 Council 261: widen numeric percent threshold in comparison
             # B1152 Council 262: try multiple format representations
@@ -518,6 +594,20 @@ def main() -> int:
                 + f" B{batch_counter} AUTO-EXECUTOR SKIP: {reason_map.get(classification, 'unknown reason')}"
             )
             stats[classification] += 1
+            continue
+
+        # B1166 (Council 270) CHECKLIST #148 tier check: skip MARGINAL (n>30)
+        n_fires = int(row.get("n_fires", 0) or 0)
+        if n_fires > 30 and classification == "SPECIFIC":
+            df.at[idx, "execution_status"] = f"DONE_B{batch_counter}_MARGINAL_NO_LOOSEN"
+            df.at[idx, "execution_batch_ref"] = f"B{batch_counter}"
+            df.at[idx, "execution_comments"] = (
+                str(df.at[idx, "execution_comments"])
+                + f" B{batch_counter} AUTO-EXECUTOR CHECKLIST #148: MARGINAL tier (n={n_fires}>30); loosening skipped per Council 268."
+            )
+            stats.setdefault("MARGINAL_NO_LOOSEN", 0)
+            stats["MARGINAL_NO_LOOSEN"] += 1
+            df.to_csv(CSV_PATH, index=False)
             continue
 
         # SPECIFIC: apply edits

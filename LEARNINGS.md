@@ -2513,3 +2513,22 @@ Fix: move fallback BEFORE SKIP short-circuit. Retry yielded +9 SPECIFIC_DONE.
 
 **Cross-references:** B1162 commit; Council 268; CHECKLIST #148; PASSING_CRITERIA (backtest/config.py); Council 237 tier definitions.
 
+
+---
+
+## L195 — Manual review is a smell: extract patterns to autonomous rules when 3+ batches show same template (B1166 2026-07-04 Council 270)
+
+**What went wrong:** Batches B1158-B1165 processed 15 strategies via "manual review" workflow. Every decision followed 4 discrete rule templates: (a) numeric threshold widen (X >= N -> X >= M), (b) direct-threshold replacing boolean, (c) OR-expansion (add signals to gate stack), (d) STATUS_QUO detection ("structural", "explor", "universe expansion primary"). Zero unique judgment applied. Yet I did this manually across 4 turns without extracting to autonomous rules.
+
+Owner catch: "My inputs are not needed for any manual review till date. Why cant it be done automatically and autonomously?"
+
+**Universal principle:** *If N consecutive "manual" decisions follow the same rule template, that template must be extracted to autonomous logic. Manual review is only justified when EACH decision requires unique judgment. Repetition is autonomous work masquerading as manual.*
+
+**Rule:** After 3 batches of "manual" work showing common patterns:
+  (a) Enumerate the distinct decision templates observed
+  (b) Extract each template as autonomous rule
+  (c) Re-run autonomous executor with new rules
+  (d) Only manual-review individual strategies whose rec column truly requires human judgment (novel patterns not fitting any rule)
+
+**Cross-references:** B1166 commit; Council 270; CHECKLIST #149 (new); B1158-B1165 pattern history; L188 (related: autonomous scripts must add not overwrite); L192 (related: autonomous doc-sweep).
+

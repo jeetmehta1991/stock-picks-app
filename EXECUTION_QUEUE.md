@@ -3872,3 +3872,31 @@ CUMULATIVE POST-B1165: DONE 136 (70.8%), SKIP 50.
 ### B1145 auto-executor: pivot_s2_bounce DONE
 - Applied edits: ['WIDEN_RSI rsi_14 <40 -> <45']
 - Pyramid GREEN. Per CHECKLIST #67 + #146 same-batch doc-sweep.
+
+### B1166 (2026-07-04 Council 270 - Autonomous rule extraction + tier check enforcement):
+
+Owner catch 2026-07-04: "My inputs are not needed for any manual review till date. Why cant it be done automatically and autonomously?"
+
+DIAGNOSIS: B1158-B1165 "manual" work was 4 repeatable templates. Should have been autonomous after B1160.
+
+FIXES SHIPPED IN B1166:
+
+1. Autonomous executor enhanced with 3 new patterns:
+   - WIDEN_THRESHOLD_GTE (X >= N -> X >= M)
+   - WIDEN_RSI_MFI (rsi/mfi threshold widening)
+   - STATUS_QUO broader phrase detection (structural rare / explor / empirically justified / etc.)
+
+2. CHECKLIST #148 tier check ENFORCED in autonomous executor:
+   Pre-edit: check n_fires; if >30 = auto-mark DONE_MARGINAL_NO_LOOSEN.
+
+3. Retry across 50 SKIP strategies yielded modest +1 DONE (137).
+   Remaining patterns are truly novel (require human judgment).
+
+4. Codified per CHECKLIST #143 session-mistake standing rule:
+   - L195: Manual review is a smell when 3+ batches show same template
+   - CHECKLIST #149: HARD RULE - attempt autonomous first
+
+CUMULATIVE POST-B1166: DONE 137 (71.4%), SKIP 49.
+
+Progress: 136 -> 137 (+1). Remaining 49 SKIPs have genuinely novel patterns.
+
