@@ -2505,3 +2505,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L195; Council 270 B1166; CHECKLIST #142/#143/#147; B1158-B1165 batch history.
 
+
+150. **HARD RULE -- NO INVENTION: AMBIGUOUS CSV RECOMMENDATIONS REQUIRE OWNER APPROVAL.** (Owner directive 2026-07-04 Council 271 + L196.)
+
+     **Trigger.** Every attempt to translate a CSV recommendation into code changes.
+
+     **Rule.** Before applying ANY loosening edit verify:
+       (a) Signal name mentioned in CSV EXISTS in producer output (grep verify)
+       (b) Threshold value in CSV MATCHES actual source value (not close-enough)
+       (c) Enumerated set uses EXACT names from CSV
+       (d) Directional widening (LONG/SHORT symmetric) is EXPLICITLY stated
+       (e) Drop specifies EXACTLY which gate(s) - "1-2" is NOT specific
+
+     If ANY fail: STOP + mark PENDING_OWNER_REVIEW + await approval.
+
+     **Rationale.** "Manual review" is when owner reviews ambiguity, NOT when script or reviewer INVENTS solutions.
+
+     **Root cause history (B1158-B1165):** 8 of 19 strategies had inventions. Full list in L196.
+
+     **Retroactive coverage demo (per #136).** Rule catches all 8 inventions.
+
+     **Cross-references.** L196; Council 271 B1167; CHECKLIST #142/#143/#149.
