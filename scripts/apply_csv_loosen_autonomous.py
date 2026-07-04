@@ -150,6 +150,39 @@ def classify_action(action_text: str) -> tuple[str, list[dict]]:
     for match in re.finditer(r"drop\s+(above|below)_avwap_\w+", action_text, re.IGNORECASE):
         edits.append({"type": "DROP_AVWAP_GATE", "gate": match.group(0).replace("drop ", "").strip().lower()})
 
+    # B1151 (Council 261 enhancement): "signal_A -> (signal_A OR signal_B OR signal_C)"
+    # OR-expansion pattern for widening single-signal to multi-signal gate
+    for match in re.finditer(
+        r"([a-z_0-9]+)\s*->\s*\(\s*\1\s+or\s+([a-z_0-9]+(?:\s+or\s+[a-z_0-9]+)*)\s*\)",
+        action_text,
+        re.IGNORECASE,
+    ):
+        original_sig = match.group(1).lower()
+        or_sigs = re.split(r"\s+or\s+", match.group(2).lower())
+        additional = [s.strip() for s in or_sigs if s.strip() and re.match(r"^[a-z][a-z_0-9]+$", s.strip())]
+        if additional:
+            edits.append({
+                "type": "EXPAND_TO_OR",
+                "original": original_sig,
+                "additional": additional,
+            })
+
+    # B1151: "widen X < Y% -> < Z%" or "widen X 1% -> 2%" (percent threshold)
+    for match in re.finditer(
+        r"widen\s+([a-z_0-9()]+)\s*<\s*(\d+)%\s*->\s*<\s*(\d+)%",
+        action_text,
+        re.IGNORECASE,
+    ):
+        sig = match.group(1).lower()
+        old_pct = match.group(2)
+        new_pct = match.group(3)
+        edits.append({
+            "type": "WIDEN_PERCENT",
+            "signal_expr": sig,
+            "old_pct": old_pct,
+            "new_pct": new_pct,
+        })
+
     # B1149 (Council 260 enhancement): "Drop X AND Y AND Z" or "drop X and Y"
     # Extract full comma/AND separated signal name list after "drop:"
     # Match `drop <signal>[( and | AND | , )<signal>]+`
@@ -254,6 +287,32 @@ def apply_edits_to_body(body: str, edits: list[dict]) -> tuple[str, list[str]]:
                 if re.search(pattern2, new_body):
                     new_body = re.sub(pattern2, "", new_body)
                     applied.append(f"DROP {signal}")
+        elif etype == "EXPAND_TO_OR":
+            # B1151 Council 261: replace s.get("X") with (s.get("X") or s.get("Y") or ...)
+            original = edit["original"]
+            additional = edit["additional"]
+            # Match plain s.get("original") NOT in parenthesized OR already
+            pattern = rf's\.get\(\s*["\']{re.escape(original)}["\'](?:\s*,\s*False)?\s*\)'
+            if re.search(pattern, new_body):
+                # Build OR expansion
+                or_parts = [f's.get("{original}", False)'] + [f's.get("{sig}", False)' for sig in additional]
+                replacement = f'({" or ".join(or_parts)})'
+                # Replace only the FIRST occurrence to avoid multi-replace bugs
+                new_body = re.sub(pattern, replacement, new_body, count=1)
+                applied.append(f"EXPAND {original} -> ({original} or {' or '.join(additional)})")
+        elif etype == "WIDEN_PERCENT":
+            # B1151 Council 261: widen numeric percent threshold in comparison
+            sig_expr = edit["signal_expr"]
+            old_pct = edit["old_pct"]
+            new_pct = edit["new_pct"]
+            # Match `abs(pct_from_avwap) < 0.01` (old_pct/100) format
+            old_decimal = f"{int(old_pct)/100:.4f}".rstrip("0").rstrip(".")
+            new_decimal = f"{int(new_pct)/100:.4f}".rstrip("0").rstrip(".")
+            # Match `s.get("sig") < 0.01` or `abs(...) < 0.01`
+            pattern = rf'<\s*{re.escape(old_decimal)}\b'
+            if re.search(pattern, new_body):
+                new_body = re.sub(pattern, f"< {new_decimal}", new_body)
+                applied.append(f"WIDEN threshold {old_pct}% -> {new_pct}%")
     return new_body, applied
 
 

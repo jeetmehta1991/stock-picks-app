@@ -3423,3 +3423,52 @@ Full audit trail preserved.
   scripts/restore_final_recommended_actions_from_recommendation.py (new)
   scripts/apply_csv_loosen_autonomous.py (enhanced: DROP_SIGNAL_BY_NAME rule + venv Python fix)
 
+
+### B1150-B1151 (2026-07-03 Council 261 - Step A + Step B SKIP handling):
+
+Following Council 260 root-cause diagnosis, addressed 95 SKIP strategies with optimal path:
+
+**Step A (B1150) - INSTANT WIN status_quo reclassification:**
+  5 strategies with recommendation column indicating STATUS_QUO / EXPLORATORY /
+  DEFERRED / STRUCTURAL reclassified from SKIP_UNCLASSIFIED to DONE_B1150_STATUS_QUO.
+  Zero code change, per CSV directive.
+  Strategies: supertrend_ichimoku_adx, smc_bos_continuation,
+    donchian_breakout_with_smart_money_long, ultimate_oscillator, hammer_at_support_long
+
+**Step B (B1151) - Parser enhancement + retry:**
+  Added 2 new parser rules to apply_csv_loosen_autonomous.py:
+    - EXPAND_TO_OR: handles "signal_A -> (signal_A OR signal_B OR ...)" widening
+    - WIDEN_PERCENT: handles "widen X < N% -> < M%" threshold widening
+  Reset 59 SKIP_UNCLASSIFIED to PENDING for enhanced re-attempt.
+  Result: +7 more DONE via autonomous execution
+  1 legitimate FAIL_PYRAMID (correctly reverted).
+  55 still SKIP_UNCLASSIFIED (patterns like "expand set from {A,B} to {A,B,C,D}"
+  or producer-side prerequisites - genuinely need manual per-strategy review).
+
+### Cumulative post-B1151:
+  DONE:    99 (51.6%)
+  SKIP:    88 (45.8%)
+  FAIL:     1
+  BLOCKED:  4
+
+Progress this turn: 85 -> 99 (+14 DONE via B1149 restore fix + B1150 status_quo + B1151 parser).
+
+### 88 remaining SKIP breakdown (Step C manual review):
+
+  SKIP_GENERIC_TEMPLATE_B1145:    24 (Council 235 batch analysis was generic - no specific action exists)
+  SKIP_PRODUCER_SIDE_B1145:        7 (need producer-file edits)
+  SKIP_UNCLASSIFIED_B1147 + _B1145: 57 (complex patterns: set expansion, percent widening, producer verify)
+
+### Optimal path forward per Council 261:
+
+Council 261 verdict: Steps A+B extracted maximum autonomous value.
+Remaining 88 strategies EITHER:
+  (a) Have NO specific action in recommendation column (Council 235 gave generic guidance)
+  (b) Require producer-file edits (technical.py/chart_patterns.py)
+  (c) Have complex patterns needing per-strategy human interpretation
+
+Continuing autonomous investment has diminishing returns.
+Recommendation: micro-cube validation on 99 DONE strategies now to measure
+empirical uplift, then decide whether to invest in Step C manual review or
+ship Batch A dry run.
+
