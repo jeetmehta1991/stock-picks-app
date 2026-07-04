@@ -3790,3 +3790,12 @@ Pyramid 955+7 GREEN.
 
 CUMULATIVE POST-B1160: DONE 120 (62.5%), SKIP 66.
 
+
+### B1161 (2026-07-04 Council 267 Manual Review Round 1 Batch 4 - Mixed):
+
+1. mfi_oversold (n=1): MFI 20->30 (LONG) + 80->70 (SHORT)
+2. bollinger_tight_with_smart_money_long (n=16): expanded BB squeeze OR set
+3. insider_cluster_with_director_long (n=1): widened director OR officer
+
+Pyramid 955+7 GREEN. DONE 123 (64.1%).
+

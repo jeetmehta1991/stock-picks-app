@@ -1704,8 +1704,11 @@ def strat_mfi_oversold(s):
     priori.
     """
     # B791 REVERT-OF-B789: restored obv gates per demo evidence.
-    fl = (s.get("mfi_oversold") and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))
-    fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2"))
+    # B1161 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
+    # n=1 CRITICAL. MFI threshold <20 -> <30 (broader oversold; same widening
+    # pattern as rsi_9_extreme B1140 + rsi_21_slow B1140). Inline mfi check.
+    fl = (s.get("mfi", 50) < 30 and (s.get("near_s1") or s.get("near_s2")) and s.get("obv_bullish"))  # B1161: was mfi_oversold (<20)
+    fs = (s.get("mfi", 50) > 70 and (s.get("near_r1") or s.get("near_r2"))  # B1161: was mfi_overbought (>80)
           and s.get("obv_bearish") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
         ["mfi_oversold","at_support","obv_bullish"],
@@ -3649,9 +3652,12 @@ def strat_insider_cluster_with_director_long(s):
     at least 1 DIRECTOR (board member) as a buyer. Director purchases
     are documented as having higher signal value than purely-officer
     transactions (Lakonishok-Lee 2001 RFS)."""
+    # B1161 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
+    # n=1 CRITICAL. Rec: "widen to (director OR officer + insider_cluster_active)".
     fires = (
         s.get("insider_cluster_active", False)
-        and s.get("insider_director_buyers_30d", 0) >= 1
+        and (s.get("insider_director_buyers_30d", 0) >= 1
+             or s.get("insider_officer_buyers_30d", 0) >= 1)  # B1161: was director-only
         and s.get("price_above_ema_200", False)
     )
     n = s.get("insider_unique_buyers_30d", 0)
@@ -7250,8 +7256,11 @@ def strat_bollinger_tight_with_smart_money_long(s):
     f'{key}_squeeze'. NO bare 'bb_squeeze' key exists -> strategy returned
     False forever. Aligned with bb_squeeze_volume sister-strategy convention
     of consuming bb_20_20_squeeze."""
+    # B1161 (2026-07-04 Council 267 manual LOOSEN per CSV rec):
+    # n=16 MED. Rec: "expand bb_squeeze to (bb_20_20_squeeze OR bb_20_15_squeeze)
+    # - canonical BB squeeze definitions vary (Bollinger 1992 uses 20-period 2-stdev)".
     base_fires = (
-        s.get("bb_20_20_squeeze", False)
+        (s.get("bb_20_20_squeeze", False) or s.get("bb_20_15_squeeze", False))  # B1161: was bb_20_20_squeeze only
         and s.get("close_above_open", True)
         and s.get("price_above_ema_200", False)
     )
