@@ -2405,3 +2405,25 @@ The over-estimation did NOT cause execution failure (Option-7 worked) but constr
 
 **Cross-references:** B1127 commit; Council 197 Outsider verdict; L177 L179 L180 L181 L184 L185 L186; CHECKLIST #67 #75 #117 #121 #122 #123 #124 #128 #136; `feedback_pyramid_no_exceptions`; `feedback_pyramid_full_13_tiers_mandatory`.
 
+
+---
+
+## L188 — Autonomous loop scripts must ADD not OVERWRITE existing hand-crafted work (B1149 2026-07-03 Council 260)
+
+**What went wrong:** Council 243 Turn 9 autonomous loop (B1123) was designed to add per-strategy verdicts to 129 un-investigated strategies. It correctly populated `post_investigation_verdict` and `post_investigation_recommendation` columns. But it ALSO overwrote `final_recommended_actions` column with a generic gate-count-based template ("Drop 1-2 secondary gates from N-gate stack"), destroying the specific actions that had been extracted from the `recommendation` column by Council 237 B1118 (e.g., 52wh_break_retest went from "drop vol_below_avg AND above_avwap_20low" to generic template).
+
+The bug was invisible until owner spotted the specific-vs-generic discrepancy 5 batches later, at which point 87 strategies had been marked SKIP_GENERIC_TEMPLATE by the autonomous executor because parseable specificity had been LOST.
+
+**Universal principle:** *An autonomous loop script that touches multiple CSV columns must distinguish between (a) columns it was designed to populate (safe to write), (b) columns populated by earlier work (must preserve unless explicit override), and (c) columns downstream tools depend on (must preserve exact schema). Overwriting hand-crafted work with generic templates is a silent regression - the code runs "successfully" but destroys value.*
+
+**Rule:** For every autonomous CSV-updating script:
+- List explicit target columns that WILL be written
+- List explicit source columns that WILL be read (never written)
+- For each write target, verify: is this column empty OR does script have a clear mandate to overwrite?
+- If pre-existing content is more specific than what script produces, DO NOT OVERWRITE - append or skip.
+- Add pre-flight check: sample a few rows, verify what would be written matches expected write policy.
+
+**Additionally: retroactive audit for autonomous scripts.** After running an autonomous loop, immediately compare a sample of its output against pre-run state to catch overwrite bugs. B1149 Council 260 audit script pattern should be reused.
+
+**Cross-references:** B1149 commit; Council 243 Turn 9 (scripts/phase_1_investigation_autonomous_loop.py); Council 237 B1118 (scripts/phase_1_add_final_actions_column.py); Council 260 restore fix; `feedback_no_silent_misses`; L182 (monolithic paragraph recommendations mask directional errors) - related pattern.
+
