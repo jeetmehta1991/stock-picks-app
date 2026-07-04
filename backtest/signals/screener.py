@@ -2964,7 +2964,7 @@ def strat_52w_low_breakdown(s):
 def strat_prev_day_low_breakdown(s):
     # B634 sweep: positive symmetric below_vwap (B634 producer)
     fires = (s.get("below_prev_low") and
-             s.get("vol_spike_15x") and
+             s.get("vol_spike_12x") and
              s.get("below_vwap") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "breakout",
         ["below_prev_low", "vol_spike_15x", "below_vwap", "borrow_ok"],
