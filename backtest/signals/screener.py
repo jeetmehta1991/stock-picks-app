@@ -6574,7 +6574,7 @@ def strat_value_area_breakout_long(s):
     Dalton-Jones-Dalton 1990 Market Profile."""
     fires = (
         s.get("vp_above_value_area", False)
-        and s.get("vol_spike_2x", False)
+        and s.get("vol_above_avg", False)
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "volume_profile",
