@@ -3178,3 +3178,15 @@ CSV: 3 strategies PENDING -> DONE_B1141. Pyramid 955+7 GREEN.
 
 CSV: 3 primary + 7 secondary DONE_B1142/DONE_B1142_SECONDARY. Pyramid 955+7 GREEN.
 
+
+### B1143 (2026-07-03 Council 254 Grouped LOOSEN 11/N - Pivot + Weekly bias):
+
+- 2026-07-03 — `b1143-pivot-weekly-loosen` — 2 strategies loosened + 1 status_quo. FULL pyramid 955+7 GREEN.
+
+**Strategies:**
+1. strat_pivot_r2_continuation: Drop AVWAP redundancy (2 gates each side) per feedback_avwap_redundant
+2. strat_weekly_bias_pullback_long: RSI 40 -> 45 + drop reversal candle requirement
+3. strat_weekly_bias_pullback_short: STATUS_QUO (Pattern S SHORT caveat)
+
+CSV: 2 DONE_B1143 + 1 STATUS_QUO. Pyramid 955+7 GREEN.
+

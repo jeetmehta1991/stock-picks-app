@@ -664,16 +664,21 @@ def strat_pivot_r2_continuation(s):
     avwap_long_ok = s.get("above_avwap_252low", False) and s.get("above_avwap_50low", False)
     # B633 sweep: positive symmetric below_avwap_252low/50low (B612 producers)
     avwap_short_ok = s.get("below_avwap_252low", False) and s.get("below_avwap_50low", False)
-    # Stronger volume confirmation for R2 (2x ADV instead of 1.5x)
+    # B1143 (2026-07-03 Council 254 LOOSEN per Turn 9): 5-way compound
+    # was starving. Drop AVWAP redundancy (2 AVWAP gates each side) per
+    # feedback_avwap_redundant when EMA trend gates already present.
+    # Retain: above_r2 + adx_trending + ema_50_200_bullish + volume.
     fl = (
         s.get("above_r2") and s.get("adx_trending")
-        and s.get("ema_50_200_bullish") and avwap_long_ok
+        and s.get("ema_50_200_bullish")
+        # B1143 dropped: avwap_long_ok (redundant with ema_50_200 trend gate)
         and s.get("vol_spike_2x", s.get("vol_spike_15x", False))
     )
     # B634 sweep: positive symmetric ema_50_200_bearish (B634 producer)
     fs = (
         s.get("below_s2") and s.get("adx_trending")
-        and s.get("ema_50_200_bearish") and avwap_short_ok
+        and s.get("ema_50_200_bearish")
+        # B1143 dropped: avwap_short_ok (redundant)
         and s.get("vol_spike_2x", s.get("vol_spike_15x", False))
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "pivot",
@@ -3912,10 +3917,13 @@ def strat_weekly_bias_pullback_long(s):
     """Batch 217: Weekly bull bias + daily pullback (RSI(14)<40) +
     bullish reversal candle = high-quality long. Trades WITH the weekly
     trend after a daily oversold pullback."""
+    # B1143 (2026-07-03 Council 254 LOOSEN per Turn 9): 0 fires. Loosen RSI
+    # threshold 40 -> 45 (looser pullback definition) + drop reversal candle
+    # requirement (weekly bias + RSI oversold are sufficient thesis).
     fires = (
         s.get("weekly_bias_bull", False)
-        and s.get("rsi_14", 50) < 40
-        and (s.get("hammer") or s.get("bullish_engulfing"))
+        and s.get("rsi_14", 50) < 45  # B1143: was < 40
+        # B1143 dropped: (hammer OR bullish_engulfing) reversal candle
     )
     return _strat(fires, "long", "multi_timeframe",
         ["weekly_bias_bull", "rsi_14<40", "bullish_reversal_candle"],
