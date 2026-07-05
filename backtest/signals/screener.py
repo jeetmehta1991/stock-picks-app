@@ -843,8 +843,12 @@ def strat_camarilla_s3_bounce(s):
     # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
     # B1159 invention (RSI 35->40 LONG, 65->60 SHORT) reverted per owner directive.
     # CSV said "RSI<25 -> <30" but source uses <35; discrepancy unresolved.
-    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 35 and s.get("obv_bullish"))
-    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
+    # B1184 (2026-07-04 Council 276 owner-approved option b post-B1172-#150-FLAG):
+    # Widen RSI extremes <35 -> <40 LONG, >65 -> >60 SHORT (5-pt shift matching
+    # CSV rec spirit "extreme threshold widening"). Prior <25->30 rec text
+    # didn't match source; owner picked (b) 5-pt spirit-match.
+    fl = (s.get("near_cam_s3") and s.get("rsi_14", 50) < 40 and s.get("obv_bullish"))
+    fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 60 and s.get("obv_bearish")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
         ["near_cam_s3","rsi_14<35","obv_bullish"],
         ["near_cam_r3","rsi_14>65","obv_bearish", "borrow_ok"],

@@ -4182,3 +4182,12 @@ Owner decision needed:
 
 No code change this batch - policy decision needed from owner.
 
+
+### B1184 (2026-07-04 Council 276 owner post-flag): camarilla_s3_bounce widen RSI
+
+Owner directive "1 b" post-B1172 flag: option (b) 5-pt spirit-match.
+- LONG: rsi_14<35 -> <40
+- SHORT: rsi_14>65 -> >60
+
+Pyramid 850+2 GREEN.
+
