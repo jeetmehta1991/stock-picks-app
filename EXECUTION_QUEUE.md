@@ -4200,3 +4200,25 @@ Owner directive "2 b" post-B1177 flag: option (b) expand-to-existing-signals.
 
 Pyramid 850+2 GREEN.
 
+
+### B1186 (2026-07-04 Council 276 owner post-flag): SMC real-market probe
+
+Owner directive "3 proceed" post-B1182: real-market probe on SPY cache.
+
+Data: backtest/data/cache/ohlcv/SPY.parquet (2021-05-06 to 2026-05-05, 1255 bars). Canonical Covid 2020-03-23 not in cache but CPI 2022-10-13 tested.
+
+Findings:
+- Producer LOADED + emits 22 SMC keys
+- CPI 2022-10-13 canonical low: smc_liquidity_swept_dn=False (library treats it as BOS not sweep); smc_bos_bullish=True 3 days running
+- 3-year fire rates (SPY, sampled every 5 bars):
+  * smc_liquidity_swept_dn: 1.56%
+  * smc_liquidity_swept_up: 0%
+  * smc_choch_bullish: 0%
+  * smc_choch_bearish: 29.69%
+
+VERDICT: PRODUCER WORKS AS DEFINED. smc_liquidity_swept_dn is inherently rare (~4/yr per ticker) per smartmoneyconcepts library definition. turtle_soup_long/judas_swing_long low fire counts are EXPECTED not buggy.
+
+Optional follow-up (not applied this batch): consumer strategies could additionally consume smc_bos_bullish for higher fire rate, but that changes strategy semantics.
+
+No producer code change. Documentation-only resolution.
+
