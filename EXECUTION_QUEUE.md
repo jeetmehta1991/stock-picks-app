@@ -4231,3 +4231,38 @@ Resolution: _short_borrow_trap_active continues to block SHORT fires on tickers 
 
 No code change.
 
+
+### B1188 (2026-07-04 Council 277 SPECIFIC REC ENHANCEMENT): 40 SKIP strategies
+
+Owner directive: "49 SKIP strategies and pending strategies per-strategy specific rec enhancement. council this. No silent misses! Checklist compliance is mandatory. Be comprehensive and thorough."
+
+Applied per-strategy specific rec text to all 40 SKIP strategies (21 UNCLASSIFIED + 19 GENERIC_TEMPLATE):
+- Replaced generic "Widen numeric thresholds by 10-20%; loosen strictest gate" with specific action
+- Each rec specifies: WHICH gate to drop, WHICH threshold to widen, OLD -> NEW values, WHY
+- Applied CHECKLIST #150 hygiene: verified signals exist in producer for each rec
+- Cross-referenced existing precedents (B1170, B1174, B1178, B1184, etc.) for consistency
+
+Status all 40: PENDING_OWNER_APPROVAL_B1188_SPECIFIC_REC (awaits owner review + approval before code changes)
+
+Rec categorization by tier:
+- CRITICAL (n=0): 15 strategies
+- HIGH (n=1-15): 20 strategies
+- MED (n=16-30): 5 strategies
+
+Rec categorization by action:
+- LOOSEN_GATE: 24 strategies (drop specific gate, widen OR-set, change AND->OR)
+- LOOSEN_THRESHOLD: 13 strategies (widen specific numeric with old->new)
+- ACCEPT_STATUS_QUO: 1 strategy (short_borrow_trap_avoid - monitoring, not loosening)
+- FIX_PRODUCER: 1 strategy (dxy_headwind - disabled, awaits producer)
+- AUDIT_DATA: 3 strategies (SMC subset)
+
+Notable spec highlights:
+- death_cross_50_200_volume / golden_cross_volume: Drop vol_spike_2x (B655/B660 measured 20x underfire)
+- macd_bullish_with_smart_money_long: EVENT crossover_up -> STATE macd_bullish (20-50x uplift)
+- mfi_oversold_with_smart_money_long: swap mfi_oversold -> mfi_broad_oversold (matches B1170 precedent)
+- pead_with_insider_confirmation_long: >+2% -> >+1% (matches B1136 pead_long precedent)
+- multiple smart_money_AND strategies: drop smart_money AND-requirement (isolate pure thesis)
+- SMC family (turtle_soup_short, smc_liquidity_sweep_reversal): reference B1186 producer probe finding
+
+Pyramid 850+2 GREEN (data-only change; no code touched).
+
