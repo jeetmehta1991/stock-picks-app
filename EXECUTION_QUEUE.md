@@ -4191,3 +4191,12 @@ Owner directive "1 b" post-B1172 flag: option (b) 5-pt spirit-match.
 
 Pyramid 850+2 GREEN.
 
+
+### B1185 (2026-07-04 Council 276 owner post-flag): williams_stoch_dual widen pivot OR-set
+
+Owner directive "2 b" post-B1177 flag: option (b) expand-to-existing-signals.
+- LONG: near_s1 OR near_s2 OR near_s3 OR near_cam_s3 OR near_wood_s1 (added s3, wood_s1)
+- SHORT: near_r1 OR near_r2 OR near_cam_r3 OR near_wood_r1 (added wood_r1)
+
+Pyramid 850+2 GREEN.
+

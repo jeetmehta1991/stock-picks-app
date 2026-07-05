@@ -2761,12 +2761,18 @@ def strat_williams_stoch_dual(s):
     Williams %R gate retained (already constrains to oversold/overbought
     state). Pivot proximity gate retained.
     """
-    # B1168 (2026-07-04 Council 273 owner REVERT per CHECKLIST #150):
-    # B1158 invention (dropped pivot proximity gate) reverted per owner directive.
-    # CSV intent was "widen to within 1 ATR of any pivot support level" but
-    # no such producer signal exists; awaits producer-side work.
-    fl = (s.get("williams_r_oversold") and s.get("stoch_bullish_cross") and (s.get("near_s1") or s.get("near_s2") or s.get("near_cam_s3")))
-    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3"))) and not _short_borrow_trap_active(s)
+    # B1185 (2026-07-04 Council 276 owner-approved option b post-B1177-#150-FLAG):
+    # Widen pivot proximity OR-set with existing signals near_s3 (floor-trader S3)
+    # + near_wood_s1 (Woodie's S1). CSV rec was "within 1 ATR of any pivot" but
+    # no ATR-pivot signal exists; owner picked (b) expand-to-existing-signals.
+    fl = (s.get("williams_r_oversold") and s.get("stoch_bullish_cross") and (
+        s.get("near_s1") or s.get("near_s2") or s.get("near_s3")
+        or s.get("near_cam_s3") or s.get("near_wood_s1")
+    ))
+    fs = (s.get("williams_r", 0) > -20 and s.get("stoch_bearish_cross") and (
+        s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3")
+        or s.get("near_wood_r1")
+    )) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["williams_r_oversold","stoch_bullish_cross","at_pivot_support"], ["williams_r_overbought","stoch_bearish_cross","at_pivot_resistance", "borrow_ok"],
         ["Williams %R oversold + Stochastic BULLISH CROSS at pivot support (B729 EVENT) - high conviction long"],
