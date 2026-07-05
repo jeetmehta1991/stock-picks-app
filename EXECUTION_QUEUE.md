@@ -4222,3 +4222,12 @@ Optional follow-up (not applied this batch): consumer strategies could additiona
 
 No producer code change. Documentation-only resolution.
 
+
+### B1187 (2026-07-04 Council 276 owner post-flag): macd_crossover_short DTC threshold accepted
+
+Owner directive "4 5" post-B1183: interpreted as "keep DTC threshold at 5.0" (option a).
+
+Resolution: _short_borrow_trap_active continues to block SHORT fires on tickers with days_to_cover > 5.0 per B718a canonical threshold. 10x underfire is expected consequence of squeeze-protection policy operating as designed - not a producer or code bug.
+
+No code change.
+
