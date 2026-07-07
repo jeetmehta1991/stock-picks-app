@@ -5169,3 +5169,15 @@ dashboard_sprint0a/README.md
 
 Pyramid 858+2 GREEN.
 
+
+### B1235 (2026-07-07 Council 287): STRATEGY_ROSTER regeneration
+
+Auto-regenerated per feedback_strategy_roster_doc_maintenance:
+- 219 strategies registered (correct current count post-B1189)
+- 43 glossary entries
+- 349 lines, 128KB
+
+Banner re-applied post-regen noting auto-generation + Council 287 sync context.
+
+Pyramid 858+2 GREEN.
+
