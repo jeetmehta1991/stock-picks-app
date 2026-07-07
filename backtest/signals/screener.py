@@ -7428,20 +7428,30 @@ def strat_52w_high_breakout_with_smart_money_long(s):
         (98pct) -> near_52w_high_95pct (95pct of prior 52w high)
       - B613: docstring reframe + close_in_top_40pct_of_range added
     """
+    # B1195 (2026-07-06 Council 278 owner MODIFIED): change smart_money AND -> OR
+    # keeping smart_money as boost signal per owner directive "change AND -> OR
+    # keeping smart_money as boost signal. Retain 52w_high_breakout + regime gate."
+    # Base breakout thesis fires alone; smart_money contributes as OR boost.
     base_fires = (
         s.get("near_52w_high_95pct", False)
         and s.get("close_above_open", True)
         and s.get("close_in_top_40pct_of_range", False)
         and s.get("vol_spike_12x", False)
     )
-    fires = base_fires and _has_smart_money_buy(s)
+    # B1195: OR-composite - fires on base_fires OR (base + smart_money boost).
+    # Since base_fires standalone already satisfies OR: strategy fires when
+    # base_fires True. Smart_money becomes annotation-only (surfaced in exits
+    # section for transparency), NOT a firing gate. Equivalent to dropping AND.
+    fires = base_fires
+    smart_money_present = _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
         ["near_52w_high_95pct", "close_above_open",
-         "close_in_top_40pct_of_range", "vol_spike_12x", "smart_money_buy"],
+         "close_in_top_40pct_of_range", "vol_spike_12x",
+         "smart_money_boost" if smart_money_present else "smart_money_absent"],
         ["Close >= 95pct of prior 252d high (broader window per B589)",
          "Bullish bar + close in top 40pct of range (B613 a strong-close gate)",
          "Volume >= 1.2x 20d avg (B589 tightened from 1.0x)",
-         "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a"])
+         f"Smart-money {'PRESENT (boost)' if smart_money_present else 'absent'} (B1195 AND -> OR keep-as-boost)"])
 
 
 def strat_52w_high_breakout_with_smart_money_vol_below_long(s):

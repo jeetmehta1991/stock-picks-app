@@ -4343,3 +4343,15 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1195 (2026-07-06 Council 278 MODIFIED 15/40): 52w_high_smart_money AND -> OR
+
+Owner MODIFIED per option 2: "change AND -> OR keeping smart_money as boost signal."
+
+Applied to strat_52w_high_breakout_with_smart_money_long:
+- Base 52w_high breakout thesis fires standalone
+- Smart-money EVENT/STATE contributes as annotation-only boost (surfaced in exits section)
+- Effectively drops the smart_money AND-requirement while preserving smart-money-detected metadata
+
+Pyramid 850+2 GREEN.
+
