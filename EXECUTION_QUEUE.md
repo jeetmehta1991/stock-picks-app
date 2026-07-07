@@ -4928,3 +4928,37 @@ Canonical outputs:
 
 Pyramid 852+2 GREEN.
 
+
+### B1226 (2026-07-07 Council 284): technical + dec513 + ict + pairs_trading formal audits
+
+Sample: 40 tickers for OHLCV-derived; 20 for pairs.
+
+**technical.py (7 functions):**
+- compute_pivots: 40/40 (100%)
+- compute_rsi: 40/40
+- compute_fibonacci: 40/40
+- compute_vwap: 40/40
+- compute_stochastic: 40/40
+- compute_capitulation_lookback: 39/40 (1 ticker insufficient bars)
+- compute_blowoff_lookback: 39/40
+
+**dec513_extended_signals.py (4 functions):**
+- compute_realized_vol: 40/40
+- compute_overnight_intraday_split: 40/40
+- compute_gaps: 40/40
+- compute_extremes: 40/40
+
+**ict_producers.py (remaining):**
+- compute_week_opening_gap_signals: 40/40
+
+**pairs_trading.py (compute_pair_signals_for_ticker):**
+- 20/20 (100%) with proper ticker_close + pairs_dir args
+- Initial 0/20 was call-signature error (fixed)
+- Pairs precompute at data_prefetch/derived/cointegrated_pairs_t1a/ (T1a universe only)
+
+All producers WORKING. Bounded by OHLCV cache availability.
+
+Canonical output: output_audit/ohlcv_remaining_producers_coverage.json (updated with pairs correction).
+
+Pyramid 852+2 GREEN.
+

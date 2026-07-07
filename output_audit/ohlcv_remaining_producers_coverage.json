@@ -1,0 +1,22 @@
+{
+  "batch": "B1226",
+  "council": 284,
+  "sample_size": 40,
+  "producers": {
+    "technical.compute_pivots": "40/40 (100.0%)",
+    "technical.compute_rsi": "40/40 (100.0%)",
+    "technical.compute_fibonacci": "40/40 (100.0%)",
+    "technical.compute_vwap": "40/40 (100.0%)",
+    "technical.compute_stochastic": "40/40 (100.0%)",
+    "technical.compute_capitulation_lookback": "39/40 (97.5%)",
+    "technical.compute_blowoff_lookback": "39/40 (97.5%)",
+    "dec513.compute_realized_vol": "40/40 (100.0%)",
+    "dec513.compute_overnight_intraday_split": "40/40 (100.0%)",
+    "dec513.compute_gaps": "40/40 (100.0%)",
+    "dec513.compute_extremes": "40/40 (100.0%)",
+    "ict.compute_week_opening_gap_signals": "40/40 (100.0%)",
+    "pairs_trading.compute_pair_signals_for_ticker": "20/20 (100.0% with proper ticker_close + pairs_dir args)"
+  },
+  "note": "All remaining OHLCV-derived + per-ticker producers formally audited",
+  "pairs_trading_correction": "B1226 initial call missed ticker_close + pairs_dir args - producer WORKS 100% when called correctly. Pairs precompute available for T1a universe."
+}
