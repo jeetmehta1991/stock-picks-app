@@ -79,6 +79,25 @@ PRODUCERS = {
         "primary_signal": "recent_8k_filed",
         "check": lambda r: bool(r),
     },
+    "search_volume": {
+        "module": "backtest.signals.search_volume",
+        "func": "compute_search_volume_signals",
+        "primary_signal": "search_volume_spike",
+        "check": lambda r: bool(r) and any("search" in k or "trend" in k for k in r),
+    },
+    "index_rebalance": {
+        "module": "backtest.signals.index_rebalance",
+        "func": "compute_index_rebalance_signals",
+        "primary_signal": "index_rebalance_effective",
+        "check": lambda r: bool(r),
+    },
+    "earnings_yoy": {
+        "module": "backtest.signals.earnings_surprise_yoy",
+        "func": "compute_yoy_surprise_signal",
+        "primary_signal": "yoy_growth",
+        "check": lambda r: bool(r) and r.get("yoy_growth") is not None,
+        "needs_ohlcv": True,
+    },
 }
 
 

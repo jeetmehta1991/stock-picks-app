@@ -4774,3 +4774,25 @@ Pyramid 852+2 GREEN.
 
 Pyramid 852+2 GREEN.
 
+
+### B1220 (2026-07-07 Council 283): search_volume + index_rebalance audits
+
+**search_volume (pytrends / Google Trends):**
+- Effective universe: 99.2% (132/133)
+- Only 1 zero-coverage ticker
+- Excellent coverage - producer reliable
+
+**index_rebalance (S&P DJI / Wikipedia scraped events):**
+- Effective universe: 10.5% (14/133)
+- 119 zero-coverage constant across all dates
+- Event-based nature: only fires on tickers with recent rebalance events
+- 14 always_covered tickers = have persistent recent rebalance history in test window
+
+Note: index_rebalance is EVENT-BASED, not data-source gap. Low coverage is expected.
+
+Canonical outputs:
+- output_audit/search_volume_coverage_batch_a.json
+- output_audit/index_rebalance_coverage_batch_a.json
+
+Pyramid 852+2 GREEN.
+
