@@ -355,6 +355,17 @@ def main() -> int:
             continue
 
         # DONE_B* without qualifier - should have actual code change
+        # B1206 (2026-07-07 Council 279 Fix #2): whitelist known non-strategy-body batches
+        # to avoid false-positive NO GIT-VERIFIED CHANGE flags.
+        # - B1180: modified _cached_calendar_signals decorator (not strategy body) for
+        #   totm_long / pre_holiday_long / halloween_seasonal_long (calendar cache fix)
+        # - B1186: SMC producer probe (no code change; documentation-only)
+        # - B1187: DTC threshold accept (no code change; owner decision)
+        DECORATOR_CASCADE_BATCHES = {
+            "B1180": "screener.py lru_cache decorator (calendar cache maxsize fix)",
+            "B1186": "no code change - SMC producer real-market probe (verification only)",
+            "B1187": "no code change - DTC threshold owner decision (accept current 5.0)",
+        }
         commit = find_batch_commit_for_strategy(batch_ref, strat) if batch_ref else None
         if commit:
             changed, summary = strategy_changed_at_commit(strat, commit)
@@ -368,6 +379,11 @@ def main() -> int:
                     change_col.append(
                         f"upstream producer change in {batch_ref} ({', '.join(producer_files)}); "
                         f"consumer gate list unchanged"
+                    )
+                elif batch_ref in DECORATOR_CASCADE_BATCHES:
+                    # B1206: whitelisted non-body change - not a miss
+                    change_col.append(
+                        f"{batch_ref}: {DECORATOR_CASCADE_BATCHES[batch_ref]}"
                     )
                 else:
                     change_col.append(f"NO GIT-VERIFIED CHANGE at {batch_ref} despite DONE status - INVESTIGATE")

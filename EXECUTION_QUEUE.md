@@ -4483,3 +4483,12 @@ Applied (3 doc/data cleanup items):
 
 Pyramid 850+2 GREEN.
 
+
+### B1206 (2026-07-07 Council 279 Fix #2): audit script false-positive whitelist
+
+Fix: added DECORATOR_CASCADE_BATCHES whitelist in scripts/fix_change_from_original_and_gate_structure.py for B1180/B1186/B1187 (non-strategy-body batches). Reduces false-positive NO GIT-VERIFIED CHANGE flags from 4 to 1.
+
+Remaining flag (pead_with_insider_confirmation_long B1197) is LEGITIMATE - matches Fix #7 (pead was marked DONE without direct verification of B1136 threshold applying).
+
+Pyramid 850+2 GREEN.
+
