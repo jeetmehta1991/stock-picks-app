@@ -4617,3 +4617,38 @@ Codified to prevent recurrence of B1204 mega-cap-only misleading audit:
 
 Pyramid 852+2 GREEN.
 
+
+### B1214 (2026-07-07 Council 281): short_interest coverage audit - CRITICAL DATA BUG surfaced
+
+Applied CHECKLIST #154 retroactively to short_interest producer.
+
+MIXED FINDINGS:
+
+**GOOD - days_to_cover coverage: 97.7%**
+- ALWAYS_COVERED (4/4 dates): 126 tickers = 94.7%
+- PARTIAL (1-3/4 dates): 4 = 3.0%
+- ALWAYS_ZERO: 3 tickers = 2.3%
+- Per-date coverage improves 94.7% Q1 -> 97.7% Q4 2024
+- _short_borrow_trap_active(s) which uses days_to_cover is RELIABLE
+
+**CRITICAL BUG - short_interest_pct coverage: 0.0%**
+- Producer NEVER emits short_interest_pct
+- Root cause: shares_outstanding is NULL in FINRA cache (backtest/data/cache/finra_short_interest/)
+- Producer code short_interest.py:132-133 emits short_interest_pct only when so > 0
+- Downstream impact:
+  * strat_squeeze_setup_long requires si_pct >= 0.20 - NEVER FIRES on Batch A (explains n_fires=0)
+  * Any other consumer of short_interest_pct silently gets 0
+- NOT a strategy loosening issue - upstream data gap
+
+FIX REQUIRED (Sprint 5 candidate):
+  S5-B1214-SHARES-OUTSTANDING-DATA-GAP-FIX
+  Priority: HIGH (unblocks strat_squeeze_setup_long fire potential)
+  Options:
+    (a) Populate shares_outstanding in FINRA prefetch (~1-2d work)
+    (b) Alternate source: Polygon /v3/reference/tickers/{ticker} has shares_outstanding_common (recommended - authoritative)
+    (c) Compute from Polygon financials_json (weighted_average_shares_outstanding)
+
+Canonical output: output_audit/short_interest_coverage_batch_a.json.
+
+Pyramid 852+2 GREEN.
+
