@@ -4534,3 +4534,16 @@ Not a producer bug - data source coverage limitation. Could be improved via:
 
 Documented in CSV execution_comments for 3 news strategies.
 
+
+### B1210 (2026-07-07 Council 279 Fix #5+#6+#8+#9): L198 codification of accepted spirit-matches
+
+Owner "Approve" on Council 279 misses #5, #6, #8, #9 means accepting current implementations as documented decisions.
+
+Codified L198 covering:
+- Fix #5: B1195 smart_money boost accepted as annotation-only (architecture lacks confidence-tier boost)
+- Fix #6: B1187 vs B1201 DTC clarified - different strategies, different thresholds - not a timing bug
+- Fix #8: B1201 3 rec-source mismatch spirit-matches accepted (bollinger/pre_fomc/poc_magnet)
+- Fix #9: B1203 institutional_recent_init "OR EMA50" accepted as sister-strategy-precedent spirit-match
+
+Prevents future audits from re-flagging these as CHECKLIST #150 violations.
+

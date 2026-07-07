@@ -2637,3 +2637,63 @@ correctly labeled).
 
 **Cross-references:** B1169 commit; Council 274; CHECKLIST #151/#152/#153;
 scripts/fix_change_from_original_and_gate_structure.py.
+
+
+## L198 -- COUNCIL 278 SPIRIT-MATCH DECISIONS CODIFIED (Council 279 B1210 2026-07-07)
+
+Owner directive 2026-07-07 Council 279 ("Approve council this" on 11 silent
+misses): the 4 rec-source mismatch spirit-match decisions from B1195/B1201/
+B1203 are accepted-in-place as documented interpretations. Codified here for
+future reference so subsequent audits don't re-litigate them.
+
+Accepted spirit-match interpretations:
+
+**Silent miss #5 - B1195 smart_money "boost" semantics accepted-as-annotation**
+- Owner directive: "change AND -> OR keeping smart_money as boost signal"
+- Implementation: smart_money DROPPED from firing logic; contributes annotation only
+- Rationale: Current architecture has no "boost" mechanism (no confidence tier
+  upgrade path from strategy layer). Semantically equivalent to smart_money OR
+  True = base_thesis. Annotation preserves smart-money-detected metadata for
+  post-hoc analysis.
+- Acceptance criteria: If future architecture adds confidence-tier boost signal
+  (e.g., strategies return confidence_boost=True), rewire this strategy to emit
+  boost when smart_money detected.
+
+**Silent miss #6 - B1187 DTC "5" interpretation reconciled with B1201**
+- B1187 owner said "4 5" for macd_crossover_short DTC threshold decision
+- B1187 accepted current DTC>5.0 threshold in `_short_borrow_trap_active` helper
+  (already at 5.0 per B718a); no code change needed
+- B1201 lowered strat_short_borrow_trap_avoid MONITORING SIGNAL from DTC>8.0 to
+  DTC>5.0 per separate owner directive on that strategy
+- Different strategies, different thresholds - not a timing bug
+- Acceptance: both B1187 and B1201 are correct interpretations of separate owner
+  directives
+
+**Silent miss #8 - B1201 rec-source mismatch spirit-matches accepted**
+- `bollinger_upper_short`: rec `rsi_2>95` → source `rsi_14>70` → applied 5-pt shift
+  `rsi_14>65` per B1184 camarilla_s3_bounce precedent
+- `pre_fomc_quality_momentum_long`: rec `xs_quality_decile>=8` → source
+  `xs_momentum_top_decile` → applied `top_quintile` per DEC-321 quintile scaling
+- `poc_magnet_long`: rec "drop volume_below_avg" → source has no such gate →
+  applied `vp_close_near_poc_pct <0.02 -> <0.03` per Dalton 1990 magnet effect
+- All 3 spirit-matches accepted per owner approval
+
+**Silent miss #9 - B1203 institutional_recent_init spirit-match accepted**
+- Rec: "OR institutional_recent_init" (signal doesn't exist)
+- Applied: "OR price_above_ema_50" per sister strategy precedent
+- Accepted: institutional_recent_init could be added as producer signal in future
+  work (currently `institutional_new_positions >= 2` is the canonical cluster
+  signal). EMA50 OR-alternative loosens regime gate as rec spirit intended.
+
+**Universal principle:** When CSV rec text doesn't match source (signal name,
+threshold value, or gate structure), CHECKLIST #150 mandates flagging. When
+owner subsequently approves the spirit-match, CODIFY the decision so future
+audits recognize it as accepted-in-place rather than re-flagging.
+
+**Rule triad:**
+- CHECKLIST #150 catches rec-source mismatches at CSV-to-code translation
+- CHECKLIST #151 catches false-positive stamps at metadata population
+- L198 codifies owner-accepted spirit-match interpretations for future audits
+
+**Cross-references:** B1195/B1201/B1203 code + B1210 codify commit; Council 279
+adversarial review; CHECKLIST #150/#151.
