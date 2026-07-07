@@ -611,6 +611,9 @@ def compute_stochastic(df: pd.DataFrame) -> dict:
     return {
         "stoch_k":             round(k, 2), "stoch_d": round(d, 2),
         "stoch_oversold":      k < 20,      "stoch_overbought": k > 80,
+        # B1199 (2026-07-06 Council 278): producer-additive broad thresholds
+        # for strat_stoch_oversold loosening (< 20 -> < 25 per B1170 mfi precedent).
+        "stoch_broad_oversold":   k < 25,   "stoch_broad_overbought": k > 75,
         "stoch_bullish_cross": k > d and pk <= pd_v,
         "stoch_bearish_cross": k < d and pk >= pd_v,
     }

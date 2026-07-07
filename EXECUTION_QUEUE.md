@@ -4387,3 +4387,16 @@ Both strategies expanded to defensive quartet per Fama-French canonical:
 
 Pyramid 850+2 GREEN.
 
+
+### B1199 (2026-07-06 Council 278 APPROVED 25-28/40): MFI+Stoch+RSI+MACD widening
+
+Producer-additive in technical.py: stoch_broad_oversold (<25), stoch_broad_overbought (>75).
+
+Applied:
+- mfi_oversold_with_smart_money_long: mfi_oversold -> mfi_broad_oversold per B1170
+- stoch_oversold: stoch_oversold -> stoch_broad_oversold (LONG); stoch_overbought -> stoch_broad_overbought (SHORT)
+- rsi_volume_200ema: rsi_14 <35 -> <40 LONG, >65 -> >60 SHORT
+- macd_bullish_with_smart_money_long: crossover_up (EVENT) -> macd_12_26_9_bullish (STATE)
+
+Pyramid 850+2 GREEN.
+

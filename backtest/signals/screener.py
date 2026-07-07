@@ -1919,11 +1919,15 @@ def strat_stoch_oversold(s):
       SHORT: stoch_overbought + stoch_bearish_cross + below_ema_20
              (B627 F1 positive symmetric)
     """
-    fl = (s.get("stoch_oversold")
+    # B1199 (2026-07-06 Council 278 owner-approved): widen Stochastic %K
+    # <20 -> <25 (broader oversold) per B1170 mfi_oversold pattern via
+    # producer-additive stoch_broad_oversold. Retain trend/reversal gates.
+    fl = (s.get("stoch_broad_oversold")  # B1199: was stoch_oversold (<20)
           and s.get("stoch_bullish_cross")
           and s.get("price_above_ema_20"))
     # B627 F1: positive symmetric (B609 producer)
-    fs = (s.get("stoch_overbought")
+    # B1199: symmetric widening SHORT >80 -> >75 via stoch_broad_overbought
+    fs = (s.get("stoch_broad_overbought")  # B1199: was stoch_overbought
           and s.get("stoch_bearish_cross")
           and s.get("below_ema_20") and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "mean_reversion",
@@ -2585,11 +2589,13 @@ def strat_rsi_volume_200ema(s):
     BROKEN if SHORT fails; do split off LONG; do NOT delete SHORT a-
     priori.
     """
-    fl = (s.get("rsi_14", 50) < 35 and s.get("vol_above_avg") and s.get("price_above_ema_200"))
+    # B1199 (2026-07-06 Council 278 owner-approved): widen RSI thresholds
+    # <35 -> <40 LONG, >65 -> >60 SHORT per B1184 camarilla_s3_bounce 5-pt shift.
+    fl = (s.get("rsi_14", 50) < 40 and s.get("vol_above_avg") and s.get("price_above_ema_200"))
     # B630 sweep: positive symmetric below_ema_200 (silent-gap fix; no default=True)
-    fs = (s.get("rsi_14", 50) > 65 and s.get("vol_above_avg") and s.get("below_ema_200")) and not _short_borrow_trap_active(s)
+    fs = (s.get("rsi_14", 50) > 60 and s.get("vol_above_avg") and s.get("below_ema_200")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
-        ["rsi_14<35","vol_above_avg","price_above_ema_200"], ["rsi_14>65","vol_above_avg","below_ema_200", "borrow_ok"],
+        ["rsi_14<40","vol_above_avg","price_above_ema_200"], ["rsi_14>60","vol_above_avg","below_ema_200", "borrow_ok"],
         ["RSI oversold + volume above 20d avg + above 200 EMA  -  triple confluence bullish"],
         ["RSI overbought + volume above 20d avg + below 200 EMA  -  triple confluence bearish"])
 
@@ -7389,14 +7395,17 @@ def strat_mfi_oversold_with_smart_money_long(s):
     producer technical.py:1650 emits 'mfi_oversold' (mfi_v < 20). NO
     'mfi_14_oversold' key produced anywhere. Sister strategy strat_mfi_oversold
     correctly reads 'mfi_oversold' - this sleeve clone introduced naming drift."""
+    # B1199 (2026-07-06 Council 278 owner-approved): swap mfi_oversold (mfi<20)
+    # -> mfi_broad_oversold (mfi<30) per B1170 strat_mfi_oversold precedent.
+    # Retain smart_money AND-gate.
     base_fires = (
-        s.get("mfi_oversold", False)
+        s.get("mfi_broad_oversold", False)  # B1199: mfi<30 producer-additive (B1170)
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["mfi_oversold", "price_above_ema_200", "smart_money_buy"],
-        ["MFI(14) oversold", "Above 200 EMA",
+        ["mfi_broad_oversold", "price_above_ema_200", "smart_money_buy"],
+        ["MFI(14) broad-oversold <30 (B1199: was <20 per B1170 precedent)", "Above 200 EMA",
          "Smart-money buy confirmation"])
 
 
@@ -7588,14 +7597,17 @@ def strat_macd_bullish_with_smart_money_long(s):
     emits per-MACD-tuple keys via f'{key}_crossover_up' where key=
     f'macd_{fast}_{slow}_{sig}'. Aligned with canonical (12,26,9) MACD
     crossover_up signal."""
+    # B1199 (2026-07-06 Council 278 owner-approved): change macd EVENT
+    # (crossover_up ~2-3 fires/yr) -> STATE (macd_12_26_9_bullish ~20-30% of
+    # bars). Retain smart_money AND-gate. Expected fire uplift 20-50x.
     base_fires = (
-        s.get("macd_12_26_9_crossover_up", False)
+        s.get("macd_12_26_9_bullish", False)  # B1199: was macd_12_26_9_crossover_up
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["macd_12_26_9_crossover_up", "price_above_ema_200", "smart_money_buy"],
-        ["MACD(12,26,9) bullish cross", "Above 200 EMA",
+        ["macd_12_26_9_bullish", "price_above_ema_200", "smart_money_buy"],
+        ["MACD(12,26,9) bullish STATE (B1199: EVENT->STATE per rec)", "Above 200 EMA",
          "Smart-money buy confirmation"])
 
 
