@@ -5357,3 +5357,18 @@ Lineage encoded: B1119 doc-sync suspension, PIVOT #41 fabrication, ~150 false wi
 Skill auto-registered; invocable as /execution-discipline. No CHECKLIST addition needed (skill operationalizes existing items #45/#67/#69/#94/#106/#124/#128/#136/#154/#157 — adding a new item would itself be audit theater per #136).
 
 Pyramid: run pre-commit this batch (doc/skill-only change; pyramid still mandatory per feedback_pyramid_no_exceptions).
+
+### B1246 (2026-07-07 Council 293): EXECUTION-DISCIPLINE SKILL ENHANCED (truth standard + unprompted + tripwires)
+
+Owner directives: (2) enhance skill from full mistake history; (3) fabrication/false claims entirely prohibited; (4) compliance mandatory without prompting.
+
+Shipped 3 enhancements to `.claude/skills/execution-discipline/SKILL.md`:
+1. **Standing activation section** — skill applies UNPROMPTED every working turn; non-application is itself a Phase 5 miss. Description frontmatter updated to auto-trigger.
+2. **TRUTH & EVIDENCE STANDARD (cross-cutting, absolute)** — 7 rules: 4 evidence classes (EXECUTED / READ / DERIVED / UNVERIFIED-labeled); sub-agent output UNVERIFIED until spot-checked (PIVOT #41); numbers never silently estimated; earned status vocabulary (DONE/SHIPPED requires pyramid GREEN + commit hash; VERIFIED/WIRED requires evidence artifact per #124; FIXED requires passing pin test); predictions visually separated from observations; visible retraction on any false claim; "I don't know"/"this failed" always compliant.
+3. **TRIPWIRE TABLE** — 18 rows mapping recurring mistake classes to pre-action checks, each with lineage (PIVOT #34/#37/#41, B1019, B1119, L49/L77/L86/L95, L202, Council 197/201, CHECKLIST #122/#124/#128/#136/#157, 8 feedback_* memory rules).
+
+Quick-reference commitments extended 5 -> 7 (added zero-fabrication + unprompted compliance).
+
+Memory `feedback_execution_discipline_skill_every_turn` updated with Council 293 additions.
+
+No CHECKLIST addition (operationalizes existing items; #136 anti-theater guard applied).

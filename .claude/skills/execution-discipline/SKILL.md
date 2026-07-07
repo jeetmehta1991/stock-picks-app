@@ -1,6 +1,6 @@
 ---
 name: execution-discipline
-description: MANDATORY turn protocol for the stock-picks-app repo. Use at the START of every working turn (any turn that produces a recommendation, code change, audit, review, or doc update). Enforces CHECKLIST pre-flight, no-silent-miss disposition ledger, test pyramid on every code change, LEARNINGS feedback loop on every miss, and deep code-verified audits. Also invocable as /execution-discipline.
+description: MANDATORY turn protocol for the stock-picks-app repo — applies UNPROMPTED at the START of every working turn (any turn that produces a recommendation, code change, audit, review, or doc update) per owner directive 2026-07-07; the owner never needs to mention it. Enforces CHECKLIST pre-flight, no-silent-miss disposition ledger, test pyramid on every code change, LEARNINGS feedback loop on every miss, deep code-verified audits, and the absolute anti-fabrication truth standard. Also invocable as /execution-discipline.
 ---
 
 # Execution Discipline — stock-picks-app Turn Protocol
@@ -12,6 +12,54 @@ audits, skipped pyramids, deferred doc-sweeps, and lessons written but not re-re
 
 **Run every phase below, in order, every working turn. Phases are gates, not
 suggestions. A skipped phase makes the turn non-compliant.**
+
+## Standing activation (owner directive 2026-07-07 — Council 292/293)
+
+- This skill applies **UNPROMPTED**. The owner never needs to type
+  `/execution-discipline` or mention compliance. If a turn produces work
+  and this protocol was not applied, the turn is non-compliant — record it
+  as a miss (Phase 5) the moment it is noticed.
+- The Truth & Evidence Standard below is **cross-cutting and absolute**: it
+  binds every phase, every sentence, every number in every response.
+
+---
+
+## TRUTH & EVIDENCE STANDARD (cross-cutting — absolute, zero tolerance)
+
+Fabrication, false claims, invented numbers, and overstated status are
+**entirely prohibited**. This is the highest-priority rule in this skill —
+it wins over speed, over completeness, over looking finished.
+
+1. **Every factual claim carries an evidence class**, and only these four exist:
+   - `EXECUTED` — a command/test/probe run THIS turn, with its actual output.
+   - `READ` — a file read THIS turn, citable as `file:line`.
+   - `DERIVED` — arithmetic/logic from EXECUTED or READ inputs, shown explicitly.
+   - `UNVERIFIED` — anything else (memory, prior-session recall, sub-agent
+     report, extrapolation, expectation). Must be LABELED as such in the
+     response. An UNVERIFIED claim stated as fact is a fabrication.
+2. **Sub-agent and tool-summary outputs are UNVERIFIED until independently
+   spot-checked** (PIVOT #41: a sub-agent fabricated results that were
+   relayed as fact and had to be retracted). Verify at least one concrete
+   artifact from any sub-agent report before repeating its conclusions.
+3. **Numbers are never estimated silently.** A count, coverage %, test total,
+   or fire rate appears in a response only if re-derived THIS turn by running
+   code, or explicitly marked as stale-with-source ("84.2% per B1211").
+4. **Status vocabulary is earned, not chosen:**
+   - `DONE` / `SHIPPED` — requires pyramid GREEN + commit hash in the same message.
+   - `VERIFIED` / `WIRED` / `ARMED` — requires a linked evidence artifact
+     (CHECKLIST #124), never a code-presence grep.
+   - `FIXED` — requires the pin test that reproduces the bug, passing.
+   - Anything not yet earned is `IN-PROGRESS`, `ATTEMPTED`, or `UNVERIFIED`.
+5. **Predictions are framed as predictions.** "Should", "expected", "likely"
+   claims must be visually separated from observed facts — never mixed into
+   a results table.
+6. **On discovering any false claim (own or inherited): retract immediately
+   and visibly** in the next message — state what was claimed, what is
+   actually true, and the evidence. Then Phase 5 (L-entry). A quiet
+   correction is a second fabrication.
+7. **"I don't know" and "this failed" are always compliant answers.**
+   Reporting a failed test, an interrupted run, or an unresolved question
+   accurately is success; dressing it up is the violation.
 
 ---
 
@@ -164,6 +212,32 @@ deferral:
 
 ---
 
+## TRIPWIRE TABLE — recurring mistake classes and their pre-action checks
+
+Before acting, scan this table. If the action matches a row, run the tripwire
+check FIRST. Each row is a real failure that recurred until its check existed.
+
+| If you are about to... | Tripwire check | Lineage |
+|---|---|---|
+| Cite any count (strategies, tests, docs, coverage) | Re-derive it by running code THIS turn | ~150 false RESOLVED; `feedback_doc_count_drift_must_be_test_pinned` |
+| Relay a sub-agent's finding | Independently verify ≥1 concrete artifact from it | PIVOT #41 fabrication |
+| Claim something is "wired" / "consumed" / "integrated" | Runtime probe on the actual call path, not grep | `feedback_wired_means_engine_consumed` |
+| Claim a monitor/job is armed or running | `Get-Process` (Windows truth) + evidence artifact; check existing PIDs before launching | CHECKLIST #121/#124; `feedback_powershell_authoritative_for_windows_process_truth` |
+| Declare an audit/review complete | Did you check the HAPPY-PATH output artifacts (not just failure branches)? Both code AND docs? | CHECKLIST #128 (B1019 0-byte monitor.log) |
+| Interpret a signal/field name | Verify semantics in producer source (vol_spike_15x = 1.5x, NOT 15x) | `feedback_vol_spike_naming_convention` |
+| Check producer coverage | Trace the ACTUAL consumer path + check the actually-emitted key (days_to_cover vs short_interest_pct slip) | CHECKLIST #157 / L202 |
+| Add a gate/threshold change | Owner approval? Prior-deletion reconcile (grep git log)? Blast radius local? | CHECKLIST (k); `feedback_narrow_scope_blast_radius` |
+| Write `\|\| true` or swallow an exception | Pair with an explicit success-check | CHECKLIST #122 |
+| Change a writer OR a reader of shared schema | Pin test on the writer-reader contract | PIVOT #37; `feedback_writer_reader_schema_contract_pin_test` |
+| Bundle >3 fixes into one batch | STOP — split into sequenced batches | Council 201 (44 PIVOTs/session) |
+| Launch anything long-running / costly | Small test → manual review → owner approval → scale; resume infra armed; NEVER auto-launch Batch B | L86/L95 ($150 lost); `feedback_no_auto_launch_batch_b` |
+| Add a new audit layer / checklist item after a miss | #136 anti-theater guard: would it have caught the last 3 misses retroactively? | Council 197 "eight layers is the smell" |
+| Run `git reset --hard` or any destructive git op | `git status` FIRST, always | L49, L77 (data destroyed twice) |
+| Defer doc updates because "the turn was only analysis" | No — CSV/investigation-only turns still sweep | B1119 (22 batches silent suspension) |
+| Treat CLAUDE.md banner as scope authority | Scope lives in PROJECT_PLAN.md + DEC-NNN | `feedback_banner_is_status_not_scope_authority` |
+| Declare partial success on a data/pre-warm fix | Verify the EXACT names/keys landed (phantom-name check) | PIVOT #34 |
+| Skip pyramid because "docs only" | No carve-outs — pyramid every commit | `feedback_pyramid_no_exceptions` |
+
 ## Quick-reference: the five commitments
 
 | # | Commitment | Enforced by |
@@ -173,6 +247,8 @@ deferral:
 | 3 | No silent misses | Phase 1 scope ledger + reconciliation arithmetic + ACKNOWLEDGED-NOT-REMEDIATED heading |
 | 4 | Test pyramid on every code change/commit | Phase 3 (no carve-outs, per-addressal, pin tests) |
 | 5 | Deep audits: code-verified + all docs, never surface | Phase 4 (7-point depth standard) |
+| 6 | Zero fabrication / false claims | Truth & Evidence Standard (4 evidence classes; earned status vocabulary; visible retraction) |
+| 7 | Compliance without prompting | Standing activation section (unprompted, every turn; non-application = a Phase 5 miss) |
 
 ## Failure modes this skill exists to prevent (lineage)
 
