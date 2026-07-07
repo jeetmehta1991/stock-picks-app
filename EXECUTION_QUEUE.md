@@ -4378,3 +4378,12 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1198 (2026-07-06 Council 278 APPROVED 23-24/40): Sector expansion
+
+Both strategies expanded to defensive quartet per Fama-French canonical:
+- sector_rotation_defensive_long: {Utilities, Staples, Health Care} + Real Estate
+- gold_silver_risk_off_long: {Utilities, Staples} + Health Care + Real Estate
+
+Pyramid 850+2 GREEN.
+

@@ -6918,27 +6918,32 @@ def strat_vix_backwardation_long(s):
 def strat_sector_rotation_defensive_long(s):
     """Batch 254: long defensive sectors when defensive_leadership active.
     Conover-Jensen-Johnson-Mercer 2008 JoF."""
+    # B1198 (2026-07-06 Council 278 owner-approved): add Real Estate to defensive
+    # sector set per Fama-French canonical (defensive quartet).
     fires = (
         s.get("defensive_leadership", False)
-        and s.get("sector", "") in ("Utilities", "Consumer Staples", "Health Care")
+        and s.get("sector", "") in ("Utilities", "Consumer Staples", "Health Care", "Real Estate")
     )
     return _strat(fires, "long", "cross_asset",
-        ["defensive_leadership", "sector in defensive"],
-        ["Defensive sectors leading XLU/XLP/XLV vs cyclicals",
+        ["defensive_leadership", "sector in defensive_quartet"],
+        ["Defensive sectors leading XLU/XLP/XLV/XLRE vs cyclicals (B1198: + Real Estate)",
          f"Ticker in defensive sector {s.get('sector', '')}"])
 
 
 def strat_gold_silver_risk_off_long(s):
     """Batch 254: gold-silver ratio rising = risk-off; long defensive
     overlay. Hammoudeh-Yuan 2008 Resources Policy."""
+    # B1198 (2026-07-06 Council 278 owner-approved): expand sector set from
+    # {Utilities, Consumer Staples} to defensive quartet (+ Health Care, Real Estate)
+    # per Fama-French sector rotation canonical.
     fires = (
         s.get("risk_off_regime_gold_signal", False)
-        and s.get("sector", "") in ("Utilities", "Consumer Staples")
+        and s.get("sector", "") in ("Utilities", "Consumer Staples", "Health Care", "Real Estate")
     )
     return _strat(fires, "long", "cross_asset",
-        ["risk_off_regime_gold_signal", "sector in defensive"],
+        ["risk_off_regime_gold_signal", "sector in defensive_quartet"],
         ["Gold/Silver ratio rising (risk-off confirmation)",
-         f"Defensive sector {s.get('sector', '')}"])
+         f"Defensive sector {s.get('sector', '')} (B1198: expanded to quartet Utilities/Staples/Health/RE)"])
 
 
 # B1189 (2026-07-06 Council 278 owner-approved DELETE):
