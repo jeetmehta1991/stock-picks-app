@@ -1,3 +1,43 @@
+<!-- Source: per CHECKLIST #77 canonical-source; Council 287 B1233 2026-07-07 doc-sync sweep -->
+
+<!-- 🟢 COUNCIL 278-287 SYNC BANNER (B1233 2026-07-07) — READ FIRST BEFORE THIS DOC -->
+> **Doc-sync status:** This document may contain references stale as of 2026-06-27 or earlier. The current state below overrides any stale references in the body until the next full-rewrite.
+>
+> **Current canonical values (as of 2026-07-07 B1231):**
+> - `len(ALL_STRATEGIES) = 219` (was 220 pre-B1189 DELETE of dxy_headwind_multinational_short; was 221 pre-B874)
+> - `STRATEGIES_DISABLED_MISSING_PRODUCER = set()` (was `{dxy_headwind_multinational_short}` pre-B1189)
+> - Active strategies for Phase 1A-β cube: 219; cube cells 219×26 = 5,694
+> - Test count: **858 passed, 2 skipped** on `test_unit.py + test_integration.py`
+> - **CHECKLIST items:** #1–#157 (added #151-#157 in Councils 279-285)
+> - **LEARNINGS lessons:** through L202 (added L197-L202 in Councils 279-285)
+> - **Latest batch:** B1231 (Council 285)
+>
+> **Recent Council 278-287 milestones (chronological):**
+> - Council 278 (B1188-B1204): 40 SKIP strategies loosened per CSV recommendations
+> - Council 279 (B1205-B1210): 11 silent misses remediated + L197 + CHECKLIST #151-#153
+> - Council 280 (B1211-B1213): News coverage refined (84.2%) + CHECKLIST #154 codified
+> - Council 281 (B1214-B1216): short_interest_pct producer bug + institutional 30% gap surfaced
+> - Council 282 (B1217-B1219): Cross-audit 192 strategies + CHECKLIST #155
+> - Council 283 (B1220-B1223): 5 more producer audits + comprehensive report
+> - Council 284 (B1224-B1228): All 25+ producers audited + historical 2020-2023 spot-check + L201 + CHECKLIST #156
+> - Council 285 (B1229-B1231): 2 critical bugs FIXED with graceful degradation + L202 + CHECKLIST #157
+> - Council 287 (B1232-B1236 in progress): Stage 4 walks archived + doc-sync sweep
+>
+> **Stage 4 walks: ARCHIVED 2026-07-07 to `archive/2026-07-07-stage-4-walks-complete/`** (Council 121+ 2026-06-27 owner-approved completion). Any `STAGE_4_*.md` reference in this doc now points to archived location.
+>
+> **Producer coverage (all 25+ producers audited Councils 280-284):**
+> - news_sentiment 84.2% / short_interest_dtc 97.7% / **short_interest_pct 0%** (bug; graceful-degradation fix in B1229) / pead 85% / insider 18.8% (event-rarity) / **institutional_signal 85%** (B1230 corrected from B1216's 30% misattribution) / congressional 67.7% / sec_edgar 97.7% / search_volume 99.2% / index_rebalance 10.5% (event) / earnings_yoy 78.9% / cot_positioning 100% / cross_asset 100% (5 fns) / calendar_effects 100% / macro_events 100% / OHLCV-derived (chart_patterns/technical/dec513/multi_timeframe/cross_sectional/ict_producers/volume_profile/smc_ict/pairs_trading) all 100% (bounded by ~84% OHLCV cache)
+> - **Critical historical finding (B1227):** news_sentiment 0% in 2020; short_interest_dtc 0% in 2020; institutional 0% in 2020-2021. Backtest interpretation must annotate producer coverage TIMELINE.
+>
+> **Sprint 5 tickets queued (post-Council 285 priorities):**
+> - S5-B1214-SHARES-OUTSTANDING (HIGH; 1 strategy; 1d) - remove B1229 fallback when data ships
+> - S5-B1216-INSTITUTIONAL-13F (MED after B1230 correction; 1 strategy; 1-2d) - expand T1a persistence file
+> - S5-B1212-SECONDARY-NEWS (MED; 6 strategies; 2d) - Finnhub/AlphaVantage fallback
+>
+> **Comprehensive coverage report:** `output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md`
+
+---
+
 # VERIFICATION_MATRIX.md
 
 **Generated:** see `scripts/build_verification_matrix.py`. Per-item ground truth for ALL visible DECs + BUGs in scope (IMPLEMENTED / DECIDED / DEFERRED / UNKNOWN tiers; SUPERSEDED + OBSOLETE hidden by the dashboard are excluded). Surfaces both engine-consumption gaps AND classification anomalies (DECIDED/DEFERRED items that ARE engine-consumed - either misclassified or accidentally pre-wired).

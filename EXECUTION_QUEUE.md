@@ -5128,3 +5128,32 @@ preserved per L143.
 
 Pyramid 858+2 GREEN.
 
+
+### B1233 (2026-07-07 Council 287): Sync banner to 37 top-level forward-looking docs
+
+Owner directive: "each and every non archived document needs to be updated. no exceptions."
+
+Applied Council 278-287 sync banner (minimally invasive - HTML comment + markdown section at top of each doc) to 37 top-level docs:
+
+Strategic docs: PROJECT_PLAN.md, CANONICAL_FACTS.md, DETAILED_PROJECT_PLAN.md, VERIFICATION_MATRIX.md, R5_VALIDATION_MANIFEST.md, PATH_TO_PHASE_1B_ALPHA.md, IMPLEMENTATION_PLAN.md
+Strategy docs: STRATEGY_ROSTER.md, STRATEGY_REGISTER.md
+Registers: BUG_REGISTER.md, AUDIT_INDEX.md, AUDIT_BACKLOG.md, ENGINEERING_REGISTER.md, DOCUMENTATION_REGISTER.md, OPEN_INVESTIGATIONS.md
+Testing/verification: TESTING_PYRAMID_REFERENCE.md, MULTIPLE_TESTING_METHODOLOGY.md, SURVIVORSHIP_VERIFICATION_METHODOLOGY.md
+Phase docs: PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md, PHASE_1A_BETA_PER_STRAT_EXIT_FORENSIC.md, PHASE_1B_STATE_SCHEMA_DIFF.md, PHASE_1_AWS_HANDOFF.md
+Stage/build: STAGE_2_STAGE_3_STAGE_4_BUILD_PLAN_MAY_29.md, STAGE_3_PAPER_TRADING_ACTIVATION.md, BUILD_PLAN_PROGRESS.md
+Reference: README.md, LIMITATIONS_CAVEATS_ASSUMPTIONS.md, API_ENDPOINT_INVENTORY.md, EXPLANATION.md, PROJECT_PRINCIPLES_M3_GATE_JUSTIFICATION_VS_NO_A_PRIORI_PRUNING.md, TRADINGAGENTS_DATA_AUDIT.md, TRADING_RULES_AND_INFORMATION.md, UNIVERSAL_LEARNINGS.md, WIRING_CATALOG_BATCH_69.md, MONITORING_FRAMEWORK.md, OHLCV_INTEGRITY_REPORT.md, AUDIT.md
+
+Banner content:
+- Current strategy count (219), disabled set (empty), test count (858+2)
+- CHECKLIST items 1-157, LEARNINGS through L202
+- Latest batch B1231, Council 287 in progress
+- Council 278-287 milestones (chronological)
+- Producer coverage snapshot (all 25+ producers)
+- Historical timeline finding (B1227)
+- Sprint 5 tickets with corrected priorities (post-Council 285)
+- Stage 4 walks archive location
+
+37 docs synced. Body content preserved verbatim (banner is prepend-only, non-destructive).
+
+Pyramid 858+2 GREEN.
+
