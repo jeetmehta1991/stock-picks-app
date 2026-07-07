@@ -196,8 +196,20 @@ deferral:
    (`feedback_per_turn_doc_sweep_no_exceptions`). Doc commits are DECOUPLED
    from in-flight long-running jobs (#67.b). CSV-analysis-only and
    investigation-only turns STILL require the sweep (B1119 lesson).
-2. **EXECUTION_QUEUE.md updated every turn** (CHECKLIST #94 —
-   `feedback_execution_queue_mandatory_per_turn`).
+2. **EXECUTION_QUEUE.md updated every turn — the queue is the ANCHOR**
+   (CHECKLIST #94 — `feedback_execution_queue_mandatory_per_turn`;
+   owner directive 2026-07-08):
+   - Every turn gets a batch entry, including analysis-only and
+     parallel-track turns.
+   - **Parallel-track rule:** any detour from queued work (a review, an
+     owner question, an incident) must (a) ticket its own findings into
+     the queue THIS turn, and (b) end by restating where the queue stands
+     — what was interrupted and what resumes next. Work that leaves the
+     queue and never returns is a silent miss.
+   - Findings without tickets don't exist: a bug/gap/idea mentioned in a
+     doc or chat but absent from the queue is a silent miss (the B1248
+     review's 9 findings were initially doc-only — the trigger for this
+     rule).
 3. **Scope ledger closed**: restate the Phase 1 ledger with final dispositions
    and the reconciliation arithmetic.
 4. **Compliance statement** (CHECKLIST #45): enumerate which checklist items
@@ -249,6 +261,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | 5 | Deep audits: code-verified + all docs, never surface | Phase 4 (7-point depth standard) |
 | 6 | Zero fabrication / false claims | Truth & Evidence Standard (4 evidence classes; earned status vocabulary; visible retraction) |
 | 7 | Compliance without prompting | Standing activation section (unprompted, every turn; non-application = a Phase 5 miss) |
+| 8 | Queue is the anchor — every turn, every finding, every detour returns | Phase 6.2 (per-turn entry; parallel-track return rule; findings-without-tickets don't exist) |
 
 ## Failure modes this skill exists to prevent (lineage)
 

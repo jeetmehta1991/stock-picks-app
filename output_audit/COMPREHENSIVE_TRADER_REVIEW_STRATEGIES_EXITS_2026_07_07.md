@@ -1,5 +1,7 @@
-<!-- Source: per CHECKLIST #77 canonical-source; Council 294 B1248 2026-07-07 comprehensive trader review -->
+<!-- Source: per CHECKLIST #77 canonical-source; Council 294 B1248 2026-07-07 comprehensive trader review; B1249 correction 2026-07-08 -->
 # COMPREHENSIVE TRADER REVIEW — 219 Strategies + 26 Exit Methods
+
+> **🔶 B1249 CORRECTION (2026-07-08, Council 295) — Truth-Standard visible retraction.** This review flagged "4 name↔formula mismatches (possible silent gate loss)" and "2 OR-arm thesis-bypass bugs". Source verification (screener.py read, B1249) found **all six are INTENTIONAL owner-approved changes with stale names/labels, not silent losses**: `macd_ichimoku` cloud gates dropped B1139 (Council 253); `xs_quality_top_quintile_long` quintile→tercile B1193; `xs_momentum_with_smart_money_long` SM-gate dropped B1194; `vol_spike_2x_below_ema_50_short` 2x→1.5x B1200; `smc_equal_highs_sweep_short` + `turtle_soup_short` OR-arms added B1202 (all Council 278). The residual issues are (a) stale NAMES pending a rename/doc-sync decision and (b) the design question of whether B1202 OR-arms dilute thesis — answerable from Batch B trade logs sliced by which arm fired. `supertrend_macd_short` STATE-gate inconsistency IS confirmed genuine (still `supertrend_bearish` STATE per B630 while its long sibling was EVENT-converted B655). All findings ticketed in EXECUTION_QUEUE B1249.
 **Date:** 2026-07-07 | **Batch:** B1248 (Council 294) | **Status:** RECOMMENDATIONS ONLY — every change below requires explicit owner approval before implementation (Critical Rule: no strategy/threshold change without sign-off)
 
 ## 0. Evidence base (all numbers EXECUTED this review unless marked otherwise)

@@ -5400,3 +5400,30 @@ Missing strategies: 15 candidates ranked (M1 RS-line vs sector, M2 earnings-anch
 10-lever optimization program + P0-P3 priority queue in doc Section 5-6.
 
 NO code/threshold changes made. Pyramid green pre-commit.
+
+### B1249 (2026-07-08 Council 295): SKILL QUEUE-ANCHOR RULE + B1248 FINDINGS TICKETED (with source-verification corrections)
+
+Owner directives: (1) EXECUTION_QUEUE updated each turn; parallel tracks must return to the queue; no silent misses — codified into execution-discipline skill Phase 6.2 + commitment #8. (2) All bugs from B1248 review ticketed below.
+
+**B1249 CORRECTION (truth-standard visible retraction):** B1248 flagged 4 name-formula mismatches as "possible silent gate loss" + 2 OR-arm "bypass bugs". Source verification (screener.py READ this batch) shows ALL SIX are intentional owner-approved changes with stale names: B1139 (macd_ichimoku cloud gates dropped), B1193 (xs_quality quintile->tercile), B1194 (xs_momentum_with_SM gate dropped), B1200 (vol_spike 2x->1.5x), B1202 x2 (OR-arms added to smc_equal_highs_sweep_short + turtle_soup_short). Review doc banner-corrected same turn.
+
+**TICKET BLOCK — B1248 review findings (status verified at source B1249):**
+
+| Ticket | Finding | Class | Priority |
+|---|---|---|---|
+| S6-B1248-COMPOSITE-EXPECTANCY-REWEIGHT | composite_score() 40% WR weight + PF<1 clipped to 0 -> hybrid_50pct_target recommended 30x at PF 0.735 (exit_strategies.py:1567-1578, VERIFIED at source) | Methodology bug | **P0** |
+| S6-B1248-EARNINGS-BLACKOUT-MAXHOLD | earnings_blackout rides to end-of-data on no_earnings_known (exit_strategies.py:524-528 VERIFIED); median hold 692d / DD -219% contaminates raw-metric views | Methodology bug | **P0** |
+| S6-B1248-SHORT-REGIME-AFFINITY | ~35 standalone SHORTs fire all-regimes; bottom-25 entry edges ~80% SHORT (PF 0.11-0.54, EXECUTED exit_compare) | Design gap | **P0** |
+| S6-B1248-SUPERTREND-SHORT-STATE-EVENT | strat_supertrend_macd_short still gates on STATE supertrend_bearish (screener.py:2837 VERIFIED) while long sibling EVENT-converted B655; B655 audit measured supertrend_bullish 99.19% True | Pair-inconsistency bug (GENUINE) | **P1** |
+| S6-B1248-LEAD-LAG-ORPHAN | lead_lag_sector_rotation: 792 trades in exit_compare.csv, NOT in 219 registry (EXECUTED reconcile) — lineage audit + decide restore-as-M10 or archive artifact | Data-lineage orphan | **P1** |
+| S6-B1248-MAE-CONDITIONAL-NOOP | atr_trail_mae_conditional medians IDENTICAL to atr_trail_1x (0.214/0.42/-24.76, EXECUTED) — MAE branch may never engage; CHECKLIST #106 default-empty class investigation | Suspected silent no-op | **P1** |
+| S6-B1248-REGIME-FLIP-DEGENERACY | regime_flip medians IDENTICAL to time_stop_20d (EXECUTED) — flip path may never trigger inside 20d fallback; verify fire attribution | Suspected degeneracy | **P1** |
+| S6-B1248-BREAKEVEN-1R-BUFFER | break_even_at_1r 8.4% median WR (EXECUTED) — breakeven-at-exactly-1R stop sits at max-touch level; re-tune with +0.2-0.3R buffer | Exit design flaw | P2 |
+| S6-B1248-HNS-NECKLINE-GATE | head_and_shoulders_top_short fires on pattern-detected without neckline-BREAK gate (roster READ); pattern-detected != pattern-completed | Design gap | P2 |
+| S6-B1248-STALE-NAME-SWEEP | 4 stale names from intentional loosenings (macd_ichimoku, xs_quality_top_quintile_long, xs_momentum_with_smart_money_long, vol_spike_2x_below_ema_50_short) — rename vs docstring-annotate decision (renames touch CSVs/tests/roster; owner call) | Stale naming (BENIGN) | P2 |
+| S6-B1248-OR-ARM-ATTRIBUTION | B1202 OR-arms (smc_equal_highs_sweep_short, turtle_soup_short): slice Batch B trade log by which arm fired to answer thesis-dilution question | Post-Batch-B analysis | P3 |
+| S6-B1248-ICHI-BREAKDOWN-ASYMMETRY | ichimoku_cloud_breakdown STATE-cloud+EVENT-cross vs long EVENT-cloud+STATE-tk — asymmetric pair construction (screener.py:2854 VERIFIED); low-priority harmonization | Pair asymmetry (minor) | P3 |
+
+Plus the full 10-lever program + P0-P3 queue already in the review doc Section 5-6 (levers 1-10 reference these tickets where overlapping).
+
+Skill updated: Phase 6.2 queue-anchor rule (per-turn entry + parallel-track return + findings-without-tickets-don't-exist) + commitment #8.
