@@ -4577,3 +4577,24 @@ Impact:
 
 Pyramid 852+2 GREEN.
 
+
+### B1212 (2026-07-07 Council 280): News strategy docstrings + Sprint 5 ticket
+
+Applied B1211 finding to 3 news strategy docstrings:
+- strat_news_momentum_short: added B1211 EFFECTIVE UNIVERSE note (full detail with 21-ticker enumeration)
+- strat_news_reversal_short: added B1211 EFFECTIVE UNIVERSE note (brief; cross-ref canonical output)
+- strat_news_reversal_long: added B1211 EFFECTIVE UNIVERSE note (brief; cross-ref canonical output)
+
+NEW SPRINT 5 TICKET:
+  S5-B1212-SECONDARY-NEWS-SOURCE-FOR-ZERO-COVERAGE-TICKERS
+  Priority: MED (fires news strategies on ~16% more tickers)
+  Scope: Integrate Finnhub or AlphaVantage news API as fallback for 21 zero-coverage
+    tickers (AES/AG/AHR/ALH/ALM/ALMS/AMRZ/ARMK/AS/BG/BORR/BTU/CIFR/CLMT/CRML/ECG/
+    FORM/GPRE/IBRX/IMMX/INBX). Add SecondaryNewsSource class + fallback logic in
+    compute_news_sentiment_signals. Verify coverage via measure_news_coverage_batch_a.py
+    post-integration.
+  Dependencies: none (independent of other Sprint 5 items)
+  Expected impact: effective universe 84.2% -> ~95%+ (if secondary source covers 80% of gap)
+
+Pyramid 852+2 GREEN.
+

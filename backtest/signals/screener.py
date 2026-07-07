@@ -7182,6 +7182,15 @@ def strat_news_momentum_short(s):
     Data state (B748d 2026-06-14 walk-back): same correct-data situation
     as strat_news_sentiment_long; producer reads from polygon/news/.
 
+    B1211 EFFECTIVE UNIVERSE (2026-07-07 Council 280 full audit of 133
+    Batch A tickers x 4 quarterly 2024 dates): effective universe = 84.2%
+    (any-date coverage); zero-coverage tickers = 15.8% (21 tickers never
+    fire this strategy: AES/AG/AHR/ALH/ALM/ALMS/AMRZ/ARMK/AS/BG/BORR/BTU/
+    CIFR/CLMT/CRML/ECG/FORM/GPRE/IBRX/IMMX/INBX - skew: small/growth/
+    energy). Per-date coverage 34-66% (2024 later-quarter data sparser).
+    Fire-count PASS/FAIL criteria should assume ~84% effective universe.
+    See output_audit/news_coverage_batch_a.json for canonical measurement.
+
     Mirror of news_momentum_long. Fires when 5-day recency-weighted
     sentiment is STRONGLY NEGATIVE, unusual news volume confirms
     attention, and price has broken down through the 20-day Donchian
@@ -7234,6 +7243,10 @@ def strat_news_reversal_short(s):
     """Batch 614 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST
     #105 a-j + feedback_sequence_or_split_when_stacking_changes attribution
     tradeoff explicitly accepted by owner): a+b+c+d applied.
+
+    B1211 EFFECTIVE UNIVERSE (2026-07-07 Council 280 full audit): 84.2%
+    of Batch A has any news coverage; 15.8% zero-coverage. See
+    output_audit/news_coverage_batch_a.json for canonical measurement.
 
     Data state (B748d 2026-06-14 walk-back): same correct-data situation
     as strat_news_sentiment_long; producer reads from polygon/news/.
@@ -7292,6 +7305,10 @@ def strat_news_reversal_long(s):
     """Batch 614 (2026-06-07 owner-directed Stage 4 walk per CHECKLIST
     #105 a-j + feedback_sequence_or_split_when_stacking_changes attribution
     tradeoff explicitly accepted by owner): a+b+c+d applied.
+
+    B1211 EFFECTIVE UNIVERSE (2026-07-07 Council 280 full audit): 84.2%
+    of Batch A has any news coverage; 15.8% zero-coverage. See
+    output_audit/news_coverage_batch_a.json for canonical measurement.
 
     Data state (B748d 2026-06-14 walk-back): same correct-data situation
     as strat_news_sentiment_long; producer reads from polygon/news/.
