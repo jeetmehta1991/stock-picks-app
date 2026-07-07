@@ -67,8 +67,8 @@ def _find_swings(close: pd.Series, window: int = 5) -> tuple[list[int], list[int
 def detect_head_and_shoulders(
     df: pd.DataFrame,
     window: int = 5,
-    shoulder_tol: float = 0.03,
-    head_min: float = 0.02,
+    shoulder_tol: float = 0.04,  # B1196 (2026-07-06 Council 278 owner-approved): 0.03 -> 0.04 loosen shoulder symmetry per Bulkowski canonical + rec "1% -> 2%" spirit-match for detection tolerance
+    head_min: float = 0.015,      # B1196: 0.02 -> 0.015 loosen head-height minimum per rec spirit-match
     lookback: int = 60,
 ) -> dict:
     """Head-and-shoulders top + inverse-bottom detector (DEC-355).
@@ -752,7 +752,10 @@ def compute_cup_handle_neckline_break_retest_signals(df: 'pd.DataFrame') -> dict
     atr = float(np.mean(tr_arr[-14:])) if len(tr_arr) >= 14 else float(np.mean(tr_arr))
     if atr <= 0:
         atr = close_arr[-1] * 0.01
-    tolerance = 1.5 * atr
+    # B1196 (2026-07-06 Council 278 owner-approved): widen retest tolerance
+    # 1.5x -> 2.0x ATR (equivalent to ~1% -> ~2% Bulkowski canonical). Applies
+    # only to cup_and_handle_retest_long producer.
+    tolerance = 2.0 * atr
     for K in range(3, 13):
         if K >= n - 60:
             break

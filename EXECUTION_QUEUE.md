@@ -4355,3 +4355,14 @@ Applied to strat_52w_high_breakout_with_smart_money_long:
 
 Pyramid 850+2 GREEN.
 
+
+### B1196 (2026-07-06 Council 278 APPROVED 16-18/40): Chart pattern retest tolerance widening
+
+Applied per Bulkowski canonical (rec "1% -> 2%" spirit-match):
+- chart_patterns.py compute_cup_handle_neckline_break_retest: tolerance 1.5*ATR -> 2.0*ATR (~1% -> ~2%)
+- chart_patterns.py detect_head_and_shoulders: shoulder_tol 0.03 -> 0.04; head_min 0.02 -> 0.015
+
+Affects: cup_and_handle_retest_long, head_and_shoulders_bottom_long, head_and_shoulders_top_short (symmetric).
+
+Pyramid 850+2 GREEN.
+
