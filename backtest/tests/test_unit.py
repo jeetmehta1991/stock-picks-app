@@ -8248,11 +8248,13 @@ def test_batch222_insider_director_variant_requires_director():
 
 
 def test_batch222_quality_top_quintile_long():
-    """Batch 222: top-quintile gross profitability + 200-EMA gate."""
+    """Batch 222 (post-B1193 owner-approved LOOSEN): top-tercile gross
+    profitability + 200-EMA gate. Widened from quintile to tercile per
+    DEC-321 quintile-to-tercile scaling."""
     from backtest.signals.screener import strat_xs_quality_top_quintile_long
-    s = {"xs_quality_top_quintile": True, "price_above_ema_200": True}
+    s = {"xs_quality_top_tercile": True, "price_above_ema_200": True}
     assert strat_xs_quality_top_quintile_long(s)["fires"] is True
-    s["xs_quality_top_quintile"] = False
+    s["xs_quality_top_tercile"] = False
     assert strat_xs_quality_top_quintile_long(s)["fires"] is False
 
 
@@ -8521,17 +8523,17 @@ def test_batch220_xs_low_beta_long_requires_filters():
 
 
 def test_batch220_xs_combined_momentum_low_ivol():
-    """Batch 220: combined momentum + low-IVOL (Asness-Moskowitz-Pedersen
-    2013 quality-momentum). Requires top-decile momentum AND IVOL decile
-    <=3 (bottom 30%) AND 200-EMA gate."""
+    """Batch 220 (post-B1193 owner-approved LOOSEN): combined momentum +
+    low-IVOL. Widened top-decile -> top-quintile per DEC-321; IVOL decile
+    <=3 -> <=4 (bottom 40%)."""
     from backtest.signals.screener import strat_xs_combined_momentum_low_ivol
     s = {
-        "xs_momentum_top_decile": True,
+        "xs_momentum_top_quintile": True,
         "xs_ivol_decile": 2,
         "price_above_ema_200": True,
     }
     assert strat_xs_combined_momentum_low_ivol(s)["fires"] is True
-    # IVOL too high -> no fire
+    # IVOL too high -> no fire (>4 fails post-B1193)
     s["xs_ivol_decile"] = 7
     assert strat_xs_combined_momentum_low_ivol(s)["fires"] is False
 

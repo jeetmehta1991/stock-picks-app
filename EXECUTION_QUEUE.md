@@ -4321,3 +4321,15 @@ Pyramid 850+2 GREEN.
 
 Queued: B1203 audit if news_sentiment_5d producer is firing correctly on Batch A.
 
+
+### B1193 (2026-07-06 Council 278 APPROVED 9-11/40): XS decile/quintile widening
+
+Applied per DEC-321 quintile-to-tercile scaling:
+- cross_sectional.py: added producer-additive xs_momentum_top_quintile, xs_momentum_bottom_quintile, xs_quality_top_tercile
+- xs_quality_top_quintile_long: top_quintile -> top_tercile
+- xs_momentum_quality_combined: (decile + quintile) -> (quintile + quintile)
+- xs_combined_momentum_low_ivol: top_decile -> top_quintile + ivol <=3 -> <=4
+- test fixtures updated (test_batch222 + test_batch220)
+
+Pyramid 850+2 GREEN.
+

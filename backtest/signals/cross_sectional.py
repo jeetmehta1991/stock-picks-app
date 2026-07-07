@@ -134,6 +134,11 @@ def compute_cross_sectional_features(
                         out[ticker]["xs_momentum_decile"] = d
                         out[ticker]["xs_momentum_top_decile"] = (d == 10)
                         out[ticker]["xs_momentum_bottom_decile"] = (d == 1)
+                        # B1193 (2026-07-06 Council 278): producer-additive top/bottom
+                        # quintile signals for xs_combined_momentum_low_ivol +
+                        # xs_momentum_quality_combined loosening (decile -> quintile).
+                        out[ticker]["xs_momentum_top_quintile"] = (d >= 9)
+                        out[ticker]["xs_momentum_bottom_quintile"] = (d <= 2)
         except Exception:
             pass
 
@@ -403,6 +408,9 @@ def compute_quality_factor(
             "xs_quality_decile":               d,
             "xs_quality_top_quintile":         d >= 9,
             "xs_quality_bottom_quintile":      d <= 2,
+            # B1193 (2026-07-06 Council 278): producer-additive top_tercile for
+            # xs_quality_top_quintile_long loosening (quintile -> tercile).
+            "xs_quality_top_tercile":          d >= 7,
         }
     return out
 

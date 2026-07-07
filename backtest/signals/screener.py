@@ -3728,14 +3728,18 @@ def strat_xs_quality_top_quintile_long(s):
     """Batch 222 (quality factor 2026-05-18). Long top-quintile gross
     profitability + 200-EMA gate. Source: Novy-Marx 2013 JFE; Asness-
     Frazzini-Pedersen 2019 RAS 'Quality Minus Junk'. Documented
-    Sharpe 0.8-1.1 standalone; combined with momentum reaches 1.4."""
+    Sharpe 0.8-1.1 standalone; combined with momentum reaches 1.4.
+
+    B1193 (2026-07-06 Council 278 owner-approved): widened top_quintile ->
+    top_tercile per DEC-321 quintile-to-tercile scaling.
+    """
     fires = (
-        s.get("xs_quality_top_quintile", False)
+        s.get("xs_quality_top_tercile", False)  # B1193: was xs_quality_top_quintile
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "factor",
-        ["xs_quality_top_quintile", "price_above_ema_200"],
-        ["Top quintile gross profitability (Novy-Marx 2013)",
+        ["xs_quality_top_tercile", "price_above_ema_200"],
+        ["Top tercile gross profitability (B1193 loosened from quintile per DEC-321)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -3752,15 +3756,17 @@ def strat_xs_momentum_quality_combined(s):
     momentum AND top-quintile gross profitability. Asness-Moskowitz-
     Pedersen 2013 JF documents Sharpe approaches 1.4 in this
     combination. Higher conviction than either factor alone."""
+    # B1193 (2026-07-06 Council 278 owner-approved): widened decile+quintile
+    # -> both top_quintile per DEC-321 (top 10 -> top 20 for both dimensions).
     fires = (
-        s.get("xs_momentum_top_decile", False)
-        and s.get("xs_quality_top_quintile", False)
+        s.get("xs_momentum_top_quintile", False)  # B1193: was top_decile
+        and s.get("xs_quality_top_quintile", False)  # already quintile
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "factor",
-        ["xs_momentum_top_decile", "xs_quality_top_quintile",
+        ["xs_momentum_top_quintile", "xs_quality_top_quintile",
          "price_above_ema_200"],
-        ["Top-decile 12-1 momentum",
+        ["Top-quintile 12-1 momentum (B1193 loosened from decile per DEC-321)",
          "Top-quintile gross profitability",
          "Above 200 EMA - quality-momentum joint signal"])
 
@@ -3888,9 +3894,11 @@ def strat_xs_combined_momentum_low_ivol(s):
     bottom-quintile IVOL (high quality momentum). Asness-Moskowitz-
     Pedersen 2013 JF "Value and Momentum Everywhere" documented Sharpe
     approaches 1.4 when momentum combined with quality/low-vol filter."""
+    # B1193 (2026-07-06 Council 278 owner-approved): decile -> quintile per DEC-321.
+    # xs_momentum_top_decile -> xs_momentum_top_quintile; ivol <=3 -> <=4 (bottom 40%).
     fires = (
-        s.get("xs_momentum_top_decile", False)
-        and s.get("xs_ivol_decile", 5) <= 3   # bottom 30% IVOL = high quality
+        s.get("xs_momentum_top_quintile", False)  # B1193: was top_decile
+        and s.get("xs_ivol_decile", 5) <= 4   # B1193: was <=3; bottom 40% IVOL
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "factor",
