@@ -5103,3 +5103,28 @@ Council 285 Fix summary:
 
 Pyramid 858+2 GREEN.
 
+
+### B1232 (2026-07-07 Council 287): Archive 18 Stage 4 walk docs
+
+Owner directive: "Archive all stage 4 walk docs and then continue. council this"
+
+Rationale: Stage 4 per-strategy cluster walks COMPLETE 2026-06-27 per Council
+121+ owner-approved. All 221 strategies (later 219 post-B874+B1189) walked
+across 8 cluster docs. Owner confirmation 2026-06-16 (B828): "All Stage 4
+per-strategy cluster walks are DONE".
+
+Archived to: archive/2026-07-07-stage-4-walks-complete/
+
+Files moved (18 total, ~1.5MB):
+- 11 cluster walk docs (breakout/chart_pattern/context/event/ict/oscillator/pivot/smart_money/smc/trend/trend_confluence)
+- 6 adversarial review captures (B702/B705/B710/B713/B719)
+- 1 index doc
+
+Archive README added documenting rationale + contents.
+
+Post-archive: forward-looking cluster/strategy work goes to canonical docs
+(CLAUDE.md / PROJECT_PLAN.md / EXECUTION_QUEUE.md). Historical narrative
+preserved per L143.
+
+Pyramid 858+2 GREEN.
+
