@@ -928,12 +928,14 @@ def strat_camarilla_r4_breakout(s):
     C +/- Range*1.1/{12, 6, 4, 2} from yesterday's H/L/C; R4/S4
     are the outermost levels (Range*1.1/2 from C).
     """
-    fl = (s.get("above_cam_r4") and s.get("vol_spike_2x"))
-    fs = (s.get("below_cam_s4") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
+    # B1200 (2026-07-06 Council 278 owner-approved): widen vol_spike_2x ->
+    # vol_above_avg per B1179 htf_aligned_breakout_long precedent (Shannon canonical).
+    fl = (s.get("above_cam_r4") and s.get("vol_above_avg"))
+    fs = (s.get("below_cam_s4") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "pivot",
-        ["above_cam_r4","vol_spike_2x"], ["below_cam_s4","vol_spike_2x", "borrow_ok"],
-        ["Price broke above Camarilla R4  -  breakout level (Slim Khan / Nick Scott; B641 re-anchored from R3 misuse)","Volume 2x confirms institutional buying"],
-        ["Price broke below Camarilla S4  -  breakdown level","Volume 2x confirms institutional selling"])
+        ["above_cam_r4","vol_above_avg"], ["below_cam_s4","vol_above_avg", "borrow_ok"],
+        ["Price broke above Camarilla R4  -  breakout level (Slim Khan / Nick Scott; B641 re-anchored from R3 misuse)","Volume above avg confirms buying (B1200: was 2x per Shannon canonical)"],
+        ["Price broke below Camarilla S4  -  breakdown level","Volume above avg confirms selling (B1200)"])
 
 
 def strat_prev_day_high_break(s):
@@ -6565,13 +6567,15 @@ def strat_vol_spike_2x_below_ema_50_short(s):
 
     Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
     """
+    # B1200 (2026-07-06 Council 278 owner-approved): widen vol_spike_2x ->
+    # vol_spike_15x (2x -> 1.5x) per B1178 gap_dn_2pct -> gap_dn_1_5pct precedent.
     fires = (
-        s.get("vol_spike_2x", False)
+        s.get("vol_spike_15x", False)  # B1200: was vol_spike_2x
         and s.get("below_ema_50", False)
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "momentum_trend",
-        ["vol_spike_2x", "below_ema_50", "borrow_ok"],
-        ["Volume 2x 20-day average -- retail tape participating in dump",
+        ["vol_spike_15x", "below_ema_50", "borrow_ok"],
+        ["Volume 1.5x 20-day average (B1200: was 2x per B1178 precedent) -- retail tape participating in dump",
          "Price below 50 EMA -- downtrend continuation context"])
 
 

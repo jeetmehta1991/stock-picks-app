@@ -4400,3 +4400,11 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1200 (2026-07-06 Council 278 APPROVED 29-30/40): Vol threshold widening
+
+- camarilla_r4_breakout: vol_spike_2x -> vol_above_avg per B1179 Shannon canonical
+- vol_spike_2x_below_ema_50_short: vol_spike_2x -> vol_spike_15x per B1178 precedent
+
+Pyramid 850+2 GREEN.
+
