@@ -2656,3 +2656,23 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Enforcement.** scripts/measure_producer_coverage.py accepts --historical-dates flag (extension pending). Ad-hoc B1227 template for now.
 
      **Cross-references.** L201; Council 284 B1227-B1228; CHECKLIST #154 (representative sampling) + #155 (BLOCKED_UPSTREAM classification); output_audit/historical_dates_producer_spotcheck.json.
+
+
+157. **HARD RULE -- AUDIT-PATH TRACING FOR PRODUCERS WITH MULTIPLE FUNCTIONS.** (Owner directive 2026-07-07 Council 285 + L202.)
+
+     **Trigger.** Every producer coverage audit where the module has 2+ compute_ or detect_ functions that emit signals with similar naming.
+
+     **Rule.** Before running coverage audit, verify the ACTUAL consumer path:
+       (a) Find a strategy that uses the signal
+       (b) Grep for the signal name in signal_loader.py to find the inject_* function
+       (c) Grep for the inject function body to find the compute_* function it calls
+       (d) Audit THAT compute_ function, NOT a similar-named one from the same module
+       (e) Multiple compute_ functions -> multiple audits (one per data path)
+
+     **Rationale.** B1216 audited compute_persistence_signals (30% coverage) but strategies actually use institutional_buy which comes from institutional_signal (via inject_institutional_signals, 85% coverage). Misclassified 19 of 20 strategies as coverage-limited when they were actually fine.
+
+     **Retroactive coverage demo (per #136).** Rule catches: B1216 would have required tracing "institutional_buy" from strategy -> signal_loader.inject_institutional_signals -> smart_money.institutional_signal (bulk + per-ticker), NOT institutional_persistence_consumer.compute_persistence_signals.
+
+     **Enforcement.** Audit report must include "trace_verification" field showing the strategy -> inject_fn -> compute_fn chain.
+
+     **Cross-references.** L202; Council 285 B1230; CHECKLIST #154/#155/#156.

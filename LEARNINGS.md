@@ -2817,3 +2817,39 @@ Owner directive 2026-07-07 Council 284 ("Any silent misses?"): the coverage audi
 **Canonical output:** output_audit/historical_dates_producer_spotcheck.json (B1227)
 
 **Cross-references:** B1211 (2024-only baseline); B1227 historical spot-check; L199 (initial coverage principle); L200 (cross-audit methodology).
+
+
+## L202 -- PRODUCER AUDITS MUST TRACE ACTUAL CONSUMER PATH (Council 285 B1230-B1231 2026-07-07)
+
+Owner directive 2026-07-07 Council 285 ("Address now" for silent misses): B1216 audit tested compute_persistence_signals (T1a-derived) and found 30% coverage. But the ACTUAL signal path consumed by strategies goes through institutional_signal via inject_institutional_signals which has sec13fchanges + per-ticker fallback = 85% coverage.
+
+**Root cause chain (3-audit correction):**
+
+- B1216 (Council 281): audited compute_persistence_signals -> reported 30% coverage
+- B1217 (Council 282): cross-audit classified 20 strategies as COVERAGE_LIMITED_INSTITUTIONAL based on B1216 finding
+- **B1230 (Council 285)**: audited institutional_signal (the actual production path) -> 85% coverage
+- Re-cross-audit: 19 of 20 strategies were MISCLASSIFIED (actually 85% covered); only 1 truly limited
+
+**Root cause:** I audited a producer FUNCTION that shares module namespace with the signals consumed, but strategies consume via a DIFFERENT function that has DIFFERENT data sources with DIFFERENT coverage.
+
+**Universal principle:** Producer coverage audit MUST trace the actual consumer path from strategy back to the exact function that populates the signal. Audit-by-module-name or audit-by-signal-name is insufficient when a module has multiple functions with different data sources.
+
+**Correct audit methodology:**
+1. Find the strategy that uses a signal
+2. Grep for the signal name in signal_loader.py to find the inject_* function
+3. Grep for the inject function to find the compute_* function it wraps
+4. Audit the exact compute_* function, not a similar-named one from same module
+
+**Rule triad:**
+- CHECKLIST #154 requires representative coverage audit
+- CHECKLIST #155 requires BLOCKED_UPSTREAM classification
+- CHECKLIST #156 requires temporal coverage check
+- **CHECKLIST #157 (NEW)** requires audit-path tracing for producer with multiple functions
+
+**Sprint 5 update:** S5-B1216-INSTITUTIONAL-13F-COVERAGE-EXPANSION now scoped narrower:
+- Original: "expand 13F snapshot ingestion for 70% gap"
+- Corrected: "expand T1a persistence file (compute_persistence_signals) for the 15% gap affecting institutional_committed_growth_long specifically"
+- Effort reduced from 2-3 days to 1-2 days
+- Priority reduced from HIGHEST to MED (only 1 strategy affected, not 20)
+
+**Cross-references:** B1216 (initial audit); B1217 (cross-audit); B1230 (correction); L200 (cross-audit framework); CHECKLIST #157 (NEW).

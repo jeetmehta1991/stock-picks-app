@@ -5083,3 +5083,23 @@ Sprint 5 S5-B1216 ticket UPDATED: focus on T1a persistence file expansion (compu
 
 Canonical output: output_audit/institutional_signal_actual_coverage.json
 
+
+### B1231 (2026-07-07 Council 285): L202 + CHECKLIST #157 codification
+
+**L202 (NEW):** Producer audits must trace actual consumer path
+- Root cause: B1216 audited compute_persistence_signals but strategies use institutional_signal (different function, same module namespace)
+- Universal principle: audit BY consumer path, not by module or signal-name similarity
+- Correct methodology: strategy -> signal_loader.inject_* -> exact compute_* function
+
+**CHECKLIST #157 (NEW):** Audit-path tracing for producers with multiple functions
+- Trigger: any producer module with 2+ compute_/detect_ functions
+- Rule: trace strategy -> inject_fn -> compute_fn chain BEFORE running audit
+- Enforcement: audit report must include trace_verification field
+
+Council 285 Fix summary:
+- B1229 short_interest_pct graceful degradation (strat_squeeze_setup_long unblocked)
+- B1230 committed_growth_holders graceful degradation + B1216 correction (19 misclassifications)
+- B1231 L202 + #157 codified
+
+Pyramid 858+2 GREEN.
+
