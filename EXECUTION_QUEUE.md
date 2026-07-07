@@ -5379,3 +5379,24 @@ Owner approved the exact diff shown in B1246 turn ("approve"). Added as FIRST li
 "MANDATORY (owner directive 2026-07-07 B1246): the /execution-discipline skill applies UNPROMPTED at the start of every working turn — 6-phase protocol + Truth & Evidence Standard. Non-application is itself a recordable miss."
 
 Enforcement now triple-redundant: skill description (auto-trigger) + memory feedback_execution_discipline_skill_every_turn (cross-session) + CLAUDE.md Critical Rules (always-in-context).
+
+### B1248 (2026-07-07 Council 294): COMPREHENSIVE TRADER REVIEW — 219 STRATEGIES + 26 EXITS
+
+Owner directive: "comprehensive review of strategies and exit methods... gaps, industry standards, missing strategies, producer/gate optimization... think like a trader, feedback by each strategy and exit method."
+
+Deliverable: `output_audit/COMPREHENSIVE_TRADER_REVIEW_STRATEGIES_EXITS_2026_07_07.md` (529 lines; RECOMMENDATIONS ONLY, all changes owner-gated).
+Coverage verified programmatically: 219/219 strategies + 26/26 exits appear in doc (0 silent misses; check caught 9 initially-missed names, fixed same turn).
+
+Evidence base (all EXECUTED): exit_compare.csv 3,458 cells aggregated; STRATEGY_ROSTER 219 formulas parsed; exit_strategies.py source read; 132 strategies with >=3-trade cells / 87 fire-starved reconciled.
+
+TEN SYSTEMIC FINDINGS headline:
+- P0-1: composite_score() weights 40% WIN RATE, clips PF<1 to 0 -> hybrid_50pct_target "recommended" 30x despite PF 0.735 / ROI -16.4% (expectancy trap). Re-weight rec.
+- P0-2: earnings_blackout = pseudo-buy-and-hold (median hold 692d, DD -219%; rides to end-of-data on no_earnings_known).
+- P0-3: SHORT book bleeds structurally (bottom-25 ~80% SHORT; PF 0.11-0.54); rec hard regime affinity {bear,crisis} for ~35 standalone SHORTs.
+- P0-4: 1x-class trails dead (6 exits ~21% WR / PF 0.42); breakeven_plus_trail is the only exit with positive median ROI (+41.6%, PF 1.89); atr_trail_1x default assumption retired.
+- P1-5..P1-10: 3-gate budget; mean-rev needs Connors SMA5 exit (missing); confluence+institutional block is the real edge; regime affinity unset ~90%; producer-boolean single-gate risk.
+NEW audit findings surfaced: 4 name<->formula mismatches (vol_spike_2x_below_ema_50_short=1.5x gate; xs_quality quintile vs tercile; xs_momentum_with_smart_money NO SM gate in formula; macd_ichimoku no ichimoku legs) + 2 OR-arm thesis-bypass bugs (smc_equal_highs_sweep_short, turtle_soup_short) + STATE-vs-EVENT pair inconsistencies (supertrend_macd_short, ichimoku_cloud_breakdown) + lead_lag_sector_rotation orphan in exit_compare (792 trades, not registered).
+Missing strategies: 15 candidates ranked (M1 RS-line vs sector, M2 earnings-anchored AVWAP, M14 failed-breakout 2B, M15 consecutive-down-days quality...).
+10-lever optimization program + P0-P3 priority queue in doc Section 5-6.
+
+NO code/threshold changes made. Pyramid green pre-commit.
