@@ -193,9 +193,146 @@ def extract_logical_formula(body: str) -> str:
     return expr.strip()
 
 
+# B1238 (2026-07-07 Council 289): SEMANTIC producer categorization for
+# readability. Maps signal name PATTERNS to human-readable categories rather
+# than just file names. Owner directive: "readability and understanding is
+# the focus" + "Producers as technical is highly ambiguous".
+SIGNAL_SEMANTIC_CATEGORIES = [
+    # 52-week / period highs and lows
+    (r"^break_52w|^year_high|^year_low|^near_52w|^52w_", "52w_breakout"),
+    # Pivots (floor-trader / Camarilla / Woodie)
+    (r"^near_s[1-3]|^near_r[1-3]|^near_cam|^near_wood|^near_pivot|^above_r[1-3]|^below_s[1-3]|^above_cam|^below_cam|^above_wood|^below_wood|^above_pivot|^cpr_|^pivot_", "pivots"),
+    # Candlesticks
+    (r"^hammer$|^shooting_star$|^bullish_engulfing|^bearish_engulfing|^morning_star|^evening_star|^doji|^bullish_pin_bar|^bearish_pin_bar|^three_white|^three_black|^piercing_line|^dark_cloud", "candles"),
+    # RSI variants
+    (r"^rsi_|^rsi$", "rsi"),
+    # Stochastic
+    (r"^stoch_|^stochrsi_", "stochastic"),
+    # MACD
+    (r"^macd_", "macd"),
+    # Bollinger Bands
+    (r"^bb_", "bollinger"),
+    # Keltner Channels
+    (r"^kc_", "keltner"),
+    # Volume
+    (r"^vol_spike|^vol_above_avg|^vol_below_avg|^volume_|^gap_(dn|up)", "volume_gaps"),
+    # AVWAP (Anchored VWAP)
+    (r"^above_avwap|^below_avwap|^avwap_", "avwap"),
+    # MA/EMA/SMA trend
+    (r"^price_above_ema|^below_ema|^above_ema|^ema_|^sma_|^price_above_sma|^supertrend|^ichi|^tema|^dema|^hull", "moving_avgs_trend"),
+    # ADX/directional
+    (r"^adx", "adx"),
+    # OBV/CMF/Force Index
+    (r"^obv_|^cmf_|^force_index|^money_flow|^mfi_", "money_flow"),
+    # ATR/volatility
+    (r"^atr|^tr_", "volatility"),
+    # SMC / ICT
+    (r"^smc_|^ict_|^po3_|^judas_|^turtle_|^week_open", "smc_ict"),
+    # Chart patterns
+    (r"^head_shoulders|^cup_handle|^double_top|^double_bottom|^triangle|^flag_bull|^flag_bear|^flag_break|^wedge|^rectangle", "chart_patterns"),
+    # 52w/year breakout retest signals
+    (r"^year_high_break_retest|^year_low_break_retest|^flag_bull_break|^flag_bear_break|^dc20_support|^dc20_resistance", "breakout_retest"),
+    # Donchian
+    (r"^dc\d+_|^donchian_", "donchian"),
+    # Insider (Form 4)
+    (r"^insider_|^cfo_buy|^large_dollar_buy|^director_buy|^officer_buy", "insider_form4"),
+    # Institutional (13F)
+    (r"^institutional_|^persistent_holders|^committed_growth_holders|^total_active_holders|^avg_position_age|^is_smart_money", "institutional_13f"),
+    # Congressional
+    (r"^house_|^senate_|^congressional_", "congressional"),
+    # News sentiment
+    (r"^news_", "news_sentiment"),
+    # PEAD / Earnings
+    (r"^pead_|^within_pead|^days_since_last_earnings|^earnings_|^yoy_|^ann_ret|^announcement_", "pead_earnings"),
+    # Calendar
+    (r"^is_totm|^is_pre_holiday|^is_halloween|^is_january|^is_month|^is_year|^dow$|^days_to_next", "calendar"),
+    # Macro events (FOMC)
+    (r"^pre_fomc|^post_fomc|^days_until_fomc", "macro_events"),
+    # Cross-asset (VIX/DXY/gold/bonds)
+    (r"^vix_|^dxy_|^gold_silver|^bond_equity|^risk_off|^risk_on|^defensive_leadership|^usd_", "cross_asset"),
+    # Sector rotation
+    (r"^sector_", "sector"),
+    # Cross-sectional factors
+    (r"^xs_", "cross_sectional_factor"),
+    # HTF multi-timeframe
+    (r"^htf_|^weekly_|^monthly_|^above_prev_high|^below_prev_low|^above_prev_close|^below_prev_close|^near_prev", "multi_timeframe"),
+    # Volume profile / POC
+    (r"^vp_|^naked_poc|^poc_|^value_area", "volume_profile"),
+    # ORB / gap
+    (r"^gap_up_2pct|^gap_dn_2pct|^gap_up_1_5pct|^gap_dn_1_5pct|^orb_", "orb_gaps"),
+    # SEC filings
+    (r"^\d+k_|^recent_8k|^recent_10k|^8k_item|^sec_", "sec_filings"),
+    # Short interest
+    (r"^short_interest|^days_to_cover|^short_borrow", "short_interest"),
+    # Pairs
+    (r"^pair_", "pairs"),
+    # Index rebalance
+    (r"^index_rebalance|^classification_change", "index_events"),
+    # Regime signals
+    (r"^regime_|^near_all_time_high|^bull_market|^bear_market|^crisis_", "regime"),
+    # Squeeze
+    (r"^squeeze_", "squeeze"),
+    # Miscellaneous close pattern
+    (r"^close_above_open|^close_below_open|^close_in_top|^close_in_bottom", "close_pattern"),
+    # Search volume
+    (r"^search_|^google_trends", "search_volume"),
+    # CFTC COT
+    (r"^cot_", "cot"),
+]
+
+
+def semantic_producer_category(signal: str) -> str:
+    """Map a signal name to a human-readable producer category.
+    B1238: Owner directive 'readability and understanding is the focus'."""
+    for pattern, cat in SIGNAL_SEMANTIC_CATEGORIES:
+        if re.match(pattern, signal):
+            return cat
+    return "other"
+
+
+def get_producers_semantic(signals: list) -> str:
+    """B1238: return comma-sorted-unique semantic categories for a strategy.
+    Example: ['break_52w_high', 'vol_spike_17x', 'close_above_open'] -> '52w_breakout, volume_gaps, close_pattern'
+    """
+    cats = sorted(set(semantic_producer_category(s) for s in signals if s))
+    # Remove 'other' if we have concrete categories
+    if len(cats) > 1 and "other" in cats:
+        cats.remove("other")
+    return ", ".join(cats) if cats else "(see source)"
+
+
 # B1237 (2026-07-07 Council 288): map each signal name to its producer module.
 # Grep-populated from `result[...] = ...` and `out[...] = ...` emissions across
 # all producer modules. Cached at import time.
+# B1238: CSV canonical formula source (loaded once)
+_CSV_FORMULAS = None
+def _load_csv_formulas() -> dict:
+    global _CSV_FORMULAS
+    if _CSV_FORMULAS is not None:
+        return _CSV_FORMULAS
+    _CSV_FORMULAS = {}
+    from pathlib import Path
+    import pandas as pd
+    csv_path = Path(__file__).parent.parent / "output_batch_A_150" / "phase_1_quiet_fire_investigation.csv"
+    if not csv_path.exists():
+        return _CSV_FORMULAS
+    try:
+        df = pd.read_csv(csv_path)
+        for _, r in df.iterrows():
+            n = str(r.get("strategy_name", ""))
+            f = r.get("updated_producer_signals", None)
+            if n and f is not None and str(f).strip() and str(f) != "nan":
+                _CSV_FORMULAS[n] = str(f).strip()
+    except Exception:
+        pass
+    return _CSV_FORMULAS
+
+
+def _lookup_csv_logical_formula(name: str) -> str:
+    """B1238: return the canonical Logical Formula from Batch A CSV if present."""
+    return _load_csv_formulas().get(name, "")
+
+
 _SIGNAL_TO_PRODUCER = None
 def _build_signal_to_producer_map() -> dict:
     global _SIGNAL_TO_PRODUCER
@@ -308,7 +445,13 @@ def extract_strategy_meta(name: str, fn) -> dict:
     # Also derive per-strategy signal set by grep-scanning the body (catches
     # signals used in inline conditionals, not just those declared in _strat call)
     body_signals = sorted(set(re.findall(r's\.get\(\s*["\']([a-z_0-9]+)["\']', src)))
-    logical_formula = extract_logical_formula(src)
+    # B1238 (2026-07-07 Council 289): PRIORITY 1 use CSV updated_producer_signals
+    # as source of truth for strategies in the Batch A investigation CSV. These
+    # were extracted + validated per B1169 canonical script; owner-approved.
+    logical_formula = _lookup_csv_logical_formula(name)
+    # PRIORITY 2 (if not in CSV): use extract_logical_formula
+    if not logical_formula:
+        logical_formula = extract_logical_formula(src)
     # B1237 Fallback D: if wrapper delegates to an underscore-prefixed helper,
     # follow the delegation. Pattern: `return _strat_<name>(s)`.
     if not logical_formula:
@@ -327,9 +470,52 @@ def extract_strategy_meta(name: str, fn) -> dict:
                     body_signals = sorted(set(body_signals) | set(helper_signals))
             except Exception:
                 pass
-    # Producers: derive from body_signals (grep-derived) not signals_used (from
-    # _strat call which may be human-annotated / truncated)
-    producers = get_producers_for_signals(body_signals)
+    # B1238 Fallback E: sum-of-list confirmation pattern (e.g. 52w_high_breakout).
+    # Detect either:
+    #   (a) n_confirm = sum([bool(s.get("X")), bool(s.get("Y")), ...])
+    #   (b) confirmations = [...multiline...]; n_confirm = sum(confirmations); fires = n_confirm >= N
+    if not logical_formula or re.match(r'^\w+>=\d+$', logical_formula):
+        # Try pattern (a) inline
+        items = []
+        m_sum = re.search(r'(\w+)\s*=\s*sum\s*\(\[([\s\S]*?)\]\s*\)', src)
+        if m_sum:
+            items = re.findall(r's\.get\(\s*["\']([a-z_0-9]+)["\']', m_sum.group(2))
+        # Try pattern (b) named-var
+        if not items:
+            m_named = re.search(r'(\w+)\s*=\s*sum\s*\(\s*(\w+)\s*\)', src)
+            if m_named:
+                list_var = m_named.group(2)
+                m_list = re.search(
+                    rf'\b{re.escape(list_var)}\s*=\s*\[([\s\S]*?)\]',
+                    src
+                )
+                if m_list:
+                    items = re.findall(r's\.get\(\s*["\']([a-z_0-9]+)["\']', m_list.group(1))
+        m_fires = re.search(r'fires\s*=\s*([^\n#]+)', src)
+        if items and m_fires:
+            fires_expr = m_fires.group(1).strip()
+            threshold_match = re.search(r'>=\s*(\d+)', fires_expr)
+            n = threshold_match.group(1) if threshold_match else "1"
+            # Extract required prefix (e.g. `if not s.get("KEY"): return _strat(False,...)`)
+            required = []
+            for m in re.finditer(r'if\s+not\s+s\.get\(\s*["\']([a-z_0-9]+)["\']', src):
+                required.append(m.group(1))
+            items_display = " + ".join(items)
+            if required:
+                logical_formula = f"REQUIRED: {' AND '.join(required)} AND (SCORE >= {n} of: [{items_display}])"
+            else:
+                logical_formula = f"(SCORE >= {n} of: [{items_display}])"
+    # B1238 Fallback F: single-signal wrapper strategy pattern
+    # e.g. `fires = s.get("some_producer_signal", False)` - show the producer
+    # dependency clearly rather than the bare signal name.
+    if logical_formula and re.match(r'^[a-z_0-9]+$', logical_formula):
+        # Single signal only - annotate as producer-dependent
+        logical_formula = f"[Producer boolean] {logical_formula} (fires when producer emits True)"
+    # B1238 (2026-07-07 Council 289): use SEMANTIC producer categorization
+    # (candles, pivots, rsi, volume, etc.) for readability instead of file names.
+    # Owner directive: "readability and understanding is the focus" +
+    # "Producers as technical is highly ambiguous".
+    producers = get_producers_semantic(body_signals)
     return {
         "name": name, "direction": direction, "category": category,
         "signals_used": signals_used, "context_bullets": context_bullets,

@@ -5243,3 +5243,39 @@ Banner re-applied post-regen noting Council 288 changes.
 
 Pyramid 858+2 GREEN.
 
+
+### B1238 (2026-07-07 Council 289): STRATEGY_ROSTER quality fix per owner critique
+
+Owner critique on Council 288 output: "some strategies show Producers as technical and Logical Formula as near_52w_high_retest_long. this is highly ambiguous... Logical formula with thresholds is crucial. Alignment with Trigger Conditions (plain) column is mandatory. No more errors for such a basic request."
+
+Applied comprehensive quality fix in scripts/build_strategy_roster.py:
+
+**1. Logical Formula 5-level priority:**
+- (1) CSV updated_producer_signals lookup (canonical from B1169; 191 strategies)
+- (2) source extract_logical_formula (paren/non-paren/layered patterns)
+- (3) NEW sum-of-list expansion for `n_confirm = sum([...])` patterns → `SCORE >= N of: [item1 + item2 + ...]`
+- (4) Delegate wrapper follow (_strat_helper(s) → helper source)
+- (5) NEW single-signal wrapper annotation → `[Producer boolean] name (fires when producer emits True)`
+
+**2. Producers column: SEMANTIC CATEGORIZATION**
+- 40+ signal-name regex patterns mapped to human-readable categories:
+  - candles, pivots, rsi, stochastic, macd, bollinger, keltner, volume_gaps, avwap, moving_avgs_trend, adx, money_flow, volatility, smc_ict, chart_patterns, breakout_retest, donchian, insider_form4, institutional_13f, congressional, news_sentiment, pead_earnings, calendar, macro_events, cross_asset, sector, cross_sectional_factor, multi_timeframe, volume_profile, orb_gaps, sec_filings, short_interest, pairs, index_events, regime, squeeze, close_pattern, search_volume, cot, 52w_breakout, other
+
+**3. Quality metrics post-B1238:**
+- 219/219 strategies have populated Logical Formula
+- 0 bare `n_confirm>=N` (was 8+ pre-B1238)
+- 7 `[Producer boolean]` annotations for single-signal wrappers
+- 1 `SCORE >= N of: [...]` expansion (52w_high_breakout)
+- Producers column shows semantic categories not file names
+
+**Sample verified:**
+- Row 1 `52w_high_breakout`: Producers `52w_breakout, close_pattern, volume_gaps`; Formula `REQUIRED: break_52w_high AND (SCORE >= 1 of: [vol_spike_17x + close_above_open + close_in_top_40pct_of_range + break_52w_high_clearance_atr_05 + break_52w_high_confirmed_today])`
+- Row 100 `m_and_a_target_long`: Producers `sec_filings`; Formula `[Producer boolean] 8k_item_1_01_filed_within_30d (fires when producer emits True)`
+- Row 200 `turtle_soup_short`: Producers `close_pattern, multi_timeframe, smc_ict`; Formula `((smc_liquidity_swept_up OR smc_bos_bearish) AND below_prev_high AND close_below_open AND NOT short_borrow_trap)`
+
+STRATEGY_ROSTER.md: 219 strategies, 349 lines, 186KB.
+
+Council 289 sync banner applied post-regen.
+
+Pyramid 858+2 GREEN.
+
