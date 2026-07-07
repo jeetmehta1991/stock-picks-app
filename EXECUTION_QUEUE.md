@@ -4423,3 +4423,13 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1202 (2026-07-06 Council 278 APPROVED 36-38/40): SMC family widening
+
+Applied per B1186 SPY probe finding (BOS fires when library treats price as break-of-structure not sweep):
+- turtle_soup_short: add smc_bos_bearish OR
+- smc_liquidity_sweep_reversal: add smc_bos_bullish/bearish OR to sweep condition (both LONG and SHORT)
+- smc_equal_highs_sweep_short: add smc_bos_bearish OR to sweep condition
+
+Pyramid 850+2 GREEN.
+

@@ -4312,13 +4312,16 @@ def strat_smc_equal_highs_sweep_short(s):
     """Batch 216: Equal-highs cluster swept (taking out stops above
     cluster) + bearish FVG below = high-conviction reversal short.
     Classic ICT stop-hunt-then-reverse pattern."""
+    # B1202 (2026-07-06 Council 278 owner-approved): loosen with smc_bos_bearish
+    # OR-alternative per B1186 SPY probe finding (increases fire count when
+    # library treats price as break-of-structure not sweep).
     fires = (
-        s.get("smc_equal_highs_swept", False)
+        (s.get("smc_equal_highs_swept", False) or s.get("smc_bos_bearish", False))
         and s.get("smc_fvg_bearish_active", False)
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
-        ["smc_equal_highs_swept", "smc_fvg_bearish_active", "borrow_ok"],
-        ["Equal-highs cluster swept - buy-side liquidity taken",
+        ["(smc_equal_highs_swept OR smc_bos_bearish)", "smc_fvg_bearish_active", "borrow_ok"],
+        ["Equal-highs cluster swept OR bearish BOS (B1202 add per B1186 probe)",
          "Bearish FVG active below - reversal confluence"])
 
 
@@ -4449,20 +4452,24 @@ def strat_smc_liquidity_sweep_reversal(s):
     equal highs/lows (taking out stops), then reverses. Classic ICT
     'stop hunt' pattern. Pairs with CHoCH for additional reversal
     confirmation."""
+    # B1202 (2026-07-06 Council 278 owner-approved "smc_bos_bullish"):
+    # Add smc_bos_bullish/bearish as OR-alternative to smc_liquidity_swept_dn/up
+    # per B1186 SPY probe (BOS fires when library treats price action as
+    # break-of-structure not sweep; increases fire count).
     fl = (
-        s.get("smc_liquidity_swept_dn", False)  # lows swept -> bullish reversal
+        (s.get("smc_liquidity_swept_dn", False) or s.get("smc_bos_bullish", False))
         and (s.get("smc_choch_bullish", False) or s.get("smc_bos_bullish", False))
     )
     fs = (
-        s.get("smc_liquidity_swept_up", False)
+        (s.get("smc_liquidity_swept_up", False) or s.get("smc_bos_bearish", False))
         and (s.get("smc_choch_bearish", False) or s.get("smc_bos_bearish", False))
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
-        ["smc_liquidity_swept_dn", "smc_choch_or_bos_bullish"],
-        ["smc_liquidity_swept_up", "smc_choch_or_bos_bearish", "borrow_ok"],
-        ["Liquidity sweep down (stops taken below low cluster)",
+        ["(smc_liquidity_swept_dn OR smc_bos_bullish)", "smc_choch_or_bos_bullish"],
+        ["(smc_liquidity_swept_up OR smc_bos_bearish)", "smc_choch_or_bos_bearish", "borrow_ok"],
+        ["Liquidity sweep down OR bullish BOS (B1202 add per B1186 probe)",
          "Followed by bullish CHoCH/BOS - reversal confirmed"],
-        ["Liquidity sweep up (stops taken above high cluster)",
+        ["Liquidity sweep up OR bearish BOS (B1202 add per B1186 probe)",
          "Followed by bearish CHoCH/BOS - reversal confirmed"])
 
 
@@ -4521,15 +4528,19 @@ def strat_turtle_soup_short(s):
     `not s.get("above_prev_high", True)` -> `below_prev_high` (B616 NEW
     producer signal symmetric to existing above_prev_high).
     """
+    # B1202 (2026-07-06 Council 278 owner-approved): add smc_bos_bearish as
+    # OR-alternative to smc_liquidity_swept_up per B1186 SPY probe finding
+    # (BOS fires when library treats price action as break-of-structure not
+    # liquidity sweep; increases fire count).
     fires = (
-        s.get("smc_liquidity_swept_up", False)
+        (s.get("smc_liquidity_swept_up", False) or s.get("smc_bos_bearish", False))
         and s.get("below_prev_high", False)     # B616: closed back BELOW prior-day-high
         and s.get("close_below_open", False)    # bearish reversal bar
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "ict",
-        ["smc_liquidity_swept_up", "below_prev_high", "close_below_open", "borrow_ok"],
-        ["Turtle Soup short (Raschke Street Smarts 1996)",
-         "Upside liquidity swept - retail stops taken above resistance",
+        ["(smc_liquidity_swept_up OR smc_bos_bearish)", "below_prev_high", "close_below_open", "borrow_ok"],
+        ["Turtle Soup short (Raschke Street Smarts 1996) - B1202 added smc_bos_bearish OR per B1186 probe",
+         "Upside liquidity swept OR bearish break-of-structure",
          "Price reversed back BELOW prior-day-high - stop-hunt failed",
          "Bearish close below open - rejection of upside breakout"])
 
