@@ -6364,17 +6364,23 @@ def strat_institutional_recent_init_momentum_long(s):
     new_positions >= 2 (smaller cluster than Batch 330) + MACD bullish +
     EMA200 regime. Targets institutional initiations that the market has
     NOT yet priced in - momentum agreement filters for sustained moves."""
+    # B1203 (2026-07-06 Council 278 owner-approved): loosen regime gate
+    # per rec "change AND price_above_ema_200 to AND (EMA200 OR
+    # institutional_recent_init)". institutional_recent_init signal doesn't
+    # exist directly; interpret as OR price_above_ema_50 (sister strategy
+    # institutional_recent_init_volume_long precedent - looser regime for
+    # early institutional initiations before trend fully develops).
     fires = (
         s.get("institutional_new_positions", 0) >= 2
         and s.get("macd_12_26_9_bullish", False)
-        and s.get("price_above_ema_200", False)
+        and (s.get("price_above_ema_200", False) or s.get("price_above_ema_50", False))
     )
     n_new = s.get("institutional_new_positions", 0)
     return _strat(fires, "long", "institutional_persistence",
-        ["institutional_new_positions>=2","macd_12_26_9_bullish","price_above_ema_200"],
+        ["institutional_new_positions>=2","macd_12_26_9_bullish","(price_above_ema_200 OR price_above_ema_50)"],
         [f"{n_new} institutional funds initiated new positions this quarter",
          "MACD bullish - price momentum agrees with smart-money flow",
-         "Above 200 EMA (regime gate)"])
+         "Above 200 EMA OR 50 EMA (B1203: loosened regime for early initiations per sister strategy precedent)"])
 
 
 def strat_institutional_recent_init_volume_long(s):
@@ -7088,8 +7094,11 @@ def strat_news_sentiment_shift_long(s):
     Same correct-data situation as strat_news_sentiment_long; producer
     reads from `data_prefetch/polygon/news/`; works end-to-end.
     """
+    # B1203 (2026-07-06 Council 278 owner-approved): widen sentiment_shift
+    # threshold > 0.4 -> > 0.3 per B1136 news_sentiment_long precedent (rec
+    # cited > +0.5 -> > +0.3 but source is 0.4 - spirit-match at > 0.3).
     fires = (
-        s.get("news_sentiment_shift", 0.0) > 0.4
+        s.get("news_sentiment_shift", 0.0) > 0.3  # B1203: was > 0.4
         and s.get("news_article_count", 0) >= 2
         and s.get("price_above_ema_200", False)
     )

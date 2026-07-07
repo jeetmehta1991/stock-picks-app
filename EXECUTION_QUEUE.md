@@ -4433,3 +4433,17 @@ Applied per B1186 SPY probe finding (BOS fires when library treats price as brea
 
 Pyramid 850+2 GREEN.
 
+
+### B1203 (2026-07-06 Council 278 APPROVED 39-40/40): Final 2 - institutional + news_shift
+
+- institutional_recent_init_momentum_long: price_above_ema_200 -> (EMA200 OR EMA50) per sister strategy precedent
+- news_sentiment_shift_long: sentiment_shift > 0.4 -> > 0.3 per B1136 news family precedent
+
+Pyramid 850+2 GREEN.
+
+40 of 40 strategies from B1188 PENDING_OWNER_APPROVAL_B1188 processed:
+- 39 code changes shipped (B1189-B1203; 14 batches)
+- 1 DELETE (dxy_headwind)
+
+Remaining action: B1204 news_sentiment audit (owner-flagged in B1192 3 news strategies).
+
