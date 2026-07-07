@@ -74,6 +74,163 @@ def _extract_fires_expression(func_source: str) -> str:
     return " \n ".join(captured) if captured else "(predicate not extracted - read source)"
 
 
+# B1237 (2026-07-07 Council 288): canonical logical formula extractor
+# Ported from scripts/fix_change_from_original_and_gate_structure.py (B1169).
+# Handles fires/fl/fs + layered patterns (layer1_positioning etc.) so the
+# STRATEGY_ROSTER table shows AND/OR/NOT formula matching the CSV column
+# `updated_producer_signals`.
+def extract_logical_formula(body: str) -> str:
+    """Extract fires-logic and return logical formula representation.
+
+    Parses the fires = (...) / fl = (...) / fs = (...) / layered constructs
+    to produce: SignalA AND SignalB AND (SignalC OR SignalD) AND borrow_ok
+    """
+    if not body:
+        return ""
+
+    def _extract_paren_expr(text, start):
+        """Extract from open-paren at start through matching close-paren."""
+        depth = 0
+        for i in range(start, len(text)):
+            if text[i] == '(':
+                depth += 1
+            elif text[i] == ')':
+                depth -= 1
+                if depth == 0:
+                    return text[start:i + 1]
+        return text[start:]
+
+    # Priority: fires = (...), fl = (...) fs = (...), layered pattern
+    exprs = []
+    for m in re.finditer(r'\b(fires|fl|fs)\s*=\s*\(', body):
+        var = m.group(1)
+        e = _extract_paren_expr(body, m.end() - 1)
+        exprs.append((var, e))
+
+    if not exprs:
+        # B1237 Fallback A: single-line non-paren pattern
+        # `fires = bool(...)` or `fires = X and Y` or `fl = X and Y`
+        for m in re.finditer(r'^\s*(fires|fl|fs)\s*=\s*([^\n#]+)', body, re.MULTILINE):
+            var = m.group(1)
+            expr = m.group(2).strip()
+            # Handle bool(...) wrapper - unwrap
+            bm = re.match(r'bool\((.*)\)$', expr)
+            if bm:
+                expr = bm.group(1).strip()
+            exprs.append((var, expr))
+
+    if not exprs:
+        # Fallback B: layered pattern (layer1_positioning = (...) ... fires = layer1 and layer2 ...)
+        layer_exprs = {}
+        for m in re.finditer(r'\b([a-z][a-z_0-9]*_(?:positioning|catalyst|confirmation|layer\d+|trigger|filter|base|ok))\s*=\s*\(', body):
+            name = m.group(1)
+            e = _extract_paren_expr(body, m.end() - 1)
+            layer_exprs[name] = e
+        if layer_exprs:
+            fires_line = re.search(r'fires\s*=\s*([^\n#]+)', body)
+            if fires_line:
+                combined = fires_line.group(1).strip()
+                for name, e in layer_exprs.items():
+                    combined = combined.replace(name, e)
+                exprs = [("fires", combined)]
+
+    # B1237 Fallback C: substitute any named intermediate assignments referenced
+    # in fires/fl/fs expressions. Handles patterns like:
+    #   fl_base = s.get(...)
+    #   above_200 = s.get(...)
+    #   fl = fl_base and above_200
+    if exprs:
+        # Collect all `var = <expr>` assignments in body (not just fires/fl/fs)
+        intermediates = {}
+        for m in re.finditer(r'^\s*([a-z][a-z_0-9]*)\s*=\s*([^\n#]+)', body, re.MULTILINE):
+            var = m.group(1)
+            if var in ("fires", "fl", "fs"): continue  # skip primary
+            expr = m.group(2).strip()
+            # Only capture if RHS is a simple expression (contains s.get or logical ops)
+            if 's.get(' in expr or ' and ' in expr or ' or ' in expr or ' not ' in expr:
+                intermediates[var] = expr
+        # Substitute intermediates in expr (bounded to prevent runaway)
+        new_exprs = []
+        for var, expr in exprs:
+            substituted = expr
+            for _ in range(3):  # max 3 passes for nested references
+                changed = False
+                for iname, ivar_expr in intermediates.items():
+                    pattern = r'\b' + re.escape(iname) + r'\b'
+                    if re.search(pattern, substituted) and iname not in ivar_expr:
+                        substituted = re.sub(pattern, f"({ivar_expr})", substituted)
+                        changed = True
+                if not changed: break
+            new_exprs.append((var, substituted))
+        exprs = new_exprs
+
+    if not exprs:
+        return ""
+
+    if len(exprs) == 1 and exprs[0][0] == "fires":
+        expr = exprs[0][1]
+    else:
+        by_var = {v: e for v, e in exprs}
+        parts_out = []
+        if "fl" in by_var:
+            parts_out.append(f"LONG: {by_var['fl']}")
+        if "fs" in by_var:
+            parts_out.append(f"SHORT: {by_var['fs']}")
+        if "fires" in by_var:
+            parts_out.append(f"FIRES: {by_var['fires']}")
+        expr = " | ".join(parts_out)
+
+    # Normalize
+    expr = re.sub(r'#[^\n]*', '', expr)
+    expr = ' '.join(expr.split())
+    expr = re.sub(r's\.get\(\s*["\']([a-z_0-9]+)["\'](?:\s*,\s*[^)]+)?\)', r'\1', expr)
+    expr = re.sub(r's\[\s*["\']([a-z_0-9]+)["\']\s*\]', r'\1', expr)
+    expr = re.sub(r'\bnot\s+', 'NOT ', expr)
+    expr = re.sub(r'_short_borrow_trap_active\(s\)', 'short_borrow_trap', expr)
+    expr = re.sub(r'\s*(<=?|>=?|==)\s*', r'\1', expr)
+    expr = re.sub(r'\band\b', 'AND', expr)
+    expr = re.sub(r'\bor\b', 'OR', expr)
+    return expr.strip()
+
+
+# B1237 (2026-07-07 Council 288): map each signal name to its producer module.
+# Grep-populated from `result[...] = ...` and `out[...] = ...` emissions across
+# all producer modules. Cached at import time.
+_SIGNAL_TO_PRODUCER = None
+def _build_signal_to_producer_map() -> dict:
+    global _SIGNAL_TO_PRODUCER
+    if _SIGNAL_TO_PRODUCER is not None:
+        return _SIGNAL_TO_PRODUCER
+    from pathlib import Path
+    _SIGNAL_TO_PRODUCER = {}
+    signal_dir = Path(__file__).parent.parent / "backtest" / "signals"
+    data_dir = Path(__file__).parent.parent / "backtest" / "data"
+    for py_file in list(signal_dir.glob("*.py")) + list(data_dir.glob("*.py")):
+        try:
+            content = py_file.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        # Pattern A: `result["name"] = ...` / `out["name"] = ...` / etc.
+        for m in re.finditer(
+            r'(?:result|out|signals|per_ticker|per_bar|d|res)\[\s*["\']([a-z_0-9]+)["\']\s*\]\s*=', content):
+            sig = m.group(1)
+            if sig not in _SIGNAL_TO_PRODUCER:
+                _SIGNAL_TO_PRODUCER[sig] = py_file.stem
+        # Pattern B (B1237): return dict literals `"name": value`
+        for m in re.finditer(r'["\']([a-z_][a-z_0-9]+)["\']\s*:\s*(?:bool|int|float|round|True|False|\w+)', content):
+            sig = m.group(1)
+            if len(sig) >= 4 and sig not in _SIGNAL_TO_PRODUCER:
+                _SIGNAL_TO_PRODUCER[sig] = py_file.stem
+    return _SIGNAL_TO_PRODUCER
+
+
+def get_producers_for_signals(signals: list) -> str:
+    """Return sorted-unique producer module names for a list of signals."""
+    m = _build_signal_to_producer_map()
+    producers = sorted(set(m.get(sig, "unknown") for sig in signals if sig))
+    return ", ".join(producers) if producers else ""
+
+
 def _extract_strat_call(func_source: str) -> dict:
     """Extract direction / category / signals_used / context_bullets
     from the _strat(...) or _strat3(...) call inside the function."""
@@ -102,7 +259,7 @@ def textwrap_dedent(s: str) -> str:
 def extract_strategy_meta(name: str, fn) -> dict:
     """Extract per-strategy metadata from the function source.
     Returns dict with direction, category, signals_used, context_bullets,
-    fires_expr, is_dual."""
+    fires_expr, is_dual, logical_formula (B1237), producers (B1237)."""
     try:
         src = inspect.getsource(fn)
     except (TypeError, OSError):
@@ -110,6 +267,7 @@ def extract_strategy_meta(name: str, fn) -> dict:
             "name": name, "direction": "?", "category": "?",
             "signals_used": [], "context_bullets": [],
             "fires_expr": "(not extracted)", "is_dual": False,
+            "logical_formula": "", "producers": "",
         }
     # Dual-direction check
     is_dual = "_strat3" in src and "fl" in src and "fs" in src
@@ -146,10 +304,38 @@ def extract_strategy_meta(name: str, fn) -> dict:
     context_bullets = [b for b in context_bullets if " " in b and len(b) > 20][:5]
     # Trigger expression
     fires_expr = _extract_fires_expression(src)
+    # B1237 (2026-07-07 Council 288): logical formula + producers extraction
+    # Also derive per-strategy signal set by grep-scanning the body (catches
+    # signals used in inline conditionals, not just those declared in _strat call)
+    body_signals = sorted(set(re.findall(r's\.get\(\s*["\']([a-z_0-9]+)["\']', src)))
+    logical_formula = extract_logical_formula(src)
+    # B1237 Fallback D: if wrapper delegates to an underscore-prefixed helper,
+    # follow the delegation. Pattern: `return _strat_<name>(s)`.
+    if not logical_formula:
+        delegate_match = re.search(r'return\s+(_strat_[a-z_0-9]+)\s*\(s\)', src)
+        if delegate_match:
+            helper_name = delegate_match.group(1)
+            # Find helper source in screener.py
+            try:
+                from backtest.signals import screener as _sm
+                helper_fn = getattr(_sm, helper_name, None)
+                if helper_fn is not None:
+                    helper_src = inspect.getsource(helper_fn)
+                    logical_formula = extract_logical_formula(helper_src)
+                    # Also collect body signals from helper
+                    helper_signals = sorted(set(re.findall(r's\.get\(\s*["\']([a-z_0-9]+)["\']', helper_src)))
+                    body_signals = sorted(set(body_signals) | set(helper_signals))
+            except Exception:
+                pass
+    # Producers: derive from body_signals (grep-derived) not signals_used (from
+    # _strat call which may be human-annotated / truncated)
+    producers = get_producers_for_signals(body_signals)
     return {
         "name": name, "direction": direction, "category": category,
         "signals_used": signals_used, "context_bullets": context_bullets,
         "fires_expr": fires_expr, "is_dual": is_dual,
+        "logical_formula": logical_formula, "producers": producers,
+        "body_signals": body_signals,
     }
 
 
@@ -733,29 +919,40 @@ def main() -> int:
     # plain, Trigger code, Signals consumed, Regime affinity, Roster Status.
     # Live cube fire status + S4 status will be re-introduced post-R5 via
     # CHECKLIST #111 freshness audit gate.
-    out_lines.append("| # | Name | Category | Direction | Trigger Conditions (plain) | Trigger (code) | Signals consumed | Regime affinity | Roster Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|---|")
+    # B1237 (2026-07-07 Council 288): added Producers + Logical Formula columns
+    # per owner directive. Producers = producer modules emitting the signals used;
+    # Logical Formula = AND/OR/NOT structure matching CSV updated_producer_signals
+    # column. Also switched Signals consumed from _strat-call-declared list (often
+    # human-truncated) to body-grepped set for accuracy.
+    out_lines.append("| # | Name | Category | Direction | Trigger Conditions (plain) | Trigger (code) | Signals consumed | Producers | Logical Formula | Regime affinity | Roster Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
         if len(trigger) > 250:
             trigger = trigger[:247] + "..."
-        sigs = ", ".join(r["signals_used"]) if r["signals_used"] else "(see source)"
+        # B1237: prefer body-grepped signals (accurate) over _strat-call list (may
+        # be truncated / human-annotated). Falls back to signals_used if body scan empty.
+        body_sigs = r.get("body_signals", []) or r["signals_used"]
+        sigs = ", ".join(body_sigs) if body_sigs else "(see source)"
         if len(sigs) > 120:
             sigs = sigs[:117] + "..."
-        # B586 + B589: plain-language trigger. B589 owner directive
-        # ("comprehensive information for a new reader") raised truncation
-        # cap so detailed signal definitions are not cut.
-        trigger_plain = render_trigger_plain(r["signals_used"], r["fires_expr"])
-        # No truncation - owner wants comprehensive (B589). Long rows wrap
-        # naturally in markdown table renderers; the GitHub Pages dashboard
-        # already handles wide cells.
-        # Escape pipes in plain trigger so they don't break the table
+        # B1237: producers column (grep-derived per-signal producer map)
+        producers = r.get("producers", "") or "(see source)"
+        if len(producers) > 80:
+            producers = producers[:77] + "..."
+        # B1237: logical formula column (AND/OR/NOT structure)
+        logical_formula = r.get("logical_formula", "") or "(see source)"
+        logical_formula = logical_formula.replace("|", "\\|")
+        if len(logical_formula) > 250:
+            logical_formula = logical_formula[:247] + "..."
+        # B586 + B589: plain-language trigger.
+        trigger_plain = render_trigger_plain(body_sigs, r["fires_expr"])
         trigger_plain = trigger_plain.replace("|", "\\|")
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
-            f"{trigger_plain} | `{trigger}` | {sigs} | {r['regime']} | "
-            f"{r['status']} |"
+            f"{trigger_plain} | `{trigger}` | {sigs} | {producers} | "
+            f"{logical_formula} | {r['regime']} | {r['status']} |"
         )
     out_lines.append("")
 

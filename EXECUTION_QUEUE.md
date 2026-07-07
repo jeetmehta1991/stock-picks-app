@@ -5206,3 +5206,40 @@ Final verification (Python glob across all non-archived .md docs):
 
 Pyramid 858+2 GREEN.
 
+
+### B1237 (2026-07-07 Council 288): STRATEGY_ROSTER enhanced with Producers + Logical Formula columns
+
+Owner directive: "strategy roster doc appears to be incorrect. the table has errors. also add two columns, producers and logical formula for each strategy similar to the ones in the csv file."
+
+Enhanced scripts/build_strategy_roster.py:
+
+1. **New `extract_logical_formula` function** (ported from B1169 fix_change_from_original_and_gate_structure.py):
+   - Handles fires = (...) / fl = (...) fs = (...) paren patterns
+   - Fallback A: single-line non-paren (`fires = bool(...)` / `fl = X and Y`)
+   - Fallback B: layered pattern (layer1_positioning + fires composite)
+   - Fallback C: intermediate variable substitution (fl_base = ...; fl = fl_base AND ...)
+   - Fallback D: delegate wrapper follow (`return _strat_helper(s)` → look up helper source)
+
+2. **New signal-to-producer map** (grep-derived at import time):
+   - Pattern A: `result["name"] = ...` / `out["name"] = ...` / etc.
+   - Pattern B: dict literal `"name": bool(...)` in return statements
+   - Maps 997 signals to their producer modules
+
+3. **2 new columns in Strategy Table:**
+   - `Producers`: comma-sorted-unique producer modules for the strategy's signals
+   - `Logical Formula`: AND/OR/NOT formula matching CSV updated_producer_signals
+
+4. **Fixed table errors:**
+   - Signals consumed column now uses body-grepped set (accurate) not _strat-call-declared list (may be truncated)
+   - `(see source)` reduced dramatically
+
+Extraction coverage:
+- 219/219 strategies have Logical Formula (previously 35 showed "predicate not extracted")
+- ~199/219 have Producers populated (20 show "unknown" for less-common emit patterns)
+
+STRATEGY_ROSTER.md: 219 strategies, 349 lines, 184KB (was 128KB).
+
+Banner re-applied post-regen noting Council 288 changes.
+
+Pyramid 858+2 GREEN.
+
