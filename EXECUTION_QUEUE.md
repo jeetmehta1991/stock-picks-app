@@ -4333,3 +4333,13 @@ Applied per DEC-321 quintile-to-tercile scaling:
 
 Pyramid 850+2 GREEN.
 
+
+### B1194 (2026-07-06 Council 278 APPROVED 12-14/40): Smart-money AND drop
+
+Applied:
+- 52w_high_breakout_with_smart_money_vol_below_long: (vol_below_avg OR institutional_buy) + drop smart_money AND
+- squeeze_breakout_with_smart_money_long: drop smart_money AND requirement
+- xs_momentum_with_smart_money_long: drop smart_money AND requirement
+
+Pyramid 850+2 GREEN.
+

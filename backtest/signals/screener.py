@@ -7460,20 +7460,24 @@ def strat_52w_high_breakout_with_smart_money_vol_below_long(s):
     surface the empirical verdict per (strategy x exit) cell. Walker may
     deprecate one twin post-cube based on the result.
     """
+    # B1194 (2026-07-06 Council 278 owner-approved): change vol_below_avg AND
+    # smart_money AND to (vol_below_avg OR institutional_buy) per rec
+    # "retest absorption thesis fires when EITHER condition holds, not both".
     base_fires = (
         s.get("near_52w_high_95pct", False)
         and s.get("close_above_open", True)
         and s.get("close_in_top_40pct_of_range", False)
-        and s.get("vol_below_avg", False)
+        and (s.get("vol_below_avg", False) or s.get("institutional_buy", False))
     )
-    fires = base_fires and _has_smart_money_buy(s)
+    # B1194: smart_money AND-gate DROPPED (was joined via _has_smart_money_buy);
+    # institutional_buy already surfaces as OR-alternative to vol_below_avg above.
+    fires = base_fires
     return _strat(fires, "long", "smart_money_sleeve",
         ["near_52w_high_95pct", "close_above_open",
-         "close_in_top_40pct_of_range", "vol_below_avg", "smart_money_buy"],
+         "close_in_top_40pct_of_range", "(vol_below_avg OR institutional_buy)"],
         ["Close >= 95pct of prior 252d high (broader window per B589)",
          "Bullish bar + close in top 40pct of range (B613 a strong-close gate)",
-         "Volume BELOW 20d avg (B613 b A/B twin: Bulkowski 2005 retest absorption)",
-         "Smart-money EVENT(timing) or STATE(eligibility) buy per B613 F2a"])
+         "(B1194) EITHER vol below 20d avg (Bulkowski 2005 retest absorption) OR institutional_buy (smart-money sponsor)"])
 
 
 # Batch 613 (2026-06-07 owner-directed F3b): SHORT mirror DELETED.
@@ -7495,30 +7499,32 @@ def strat_squeeze_breakout_with_smart_money_long(s):
     squeeze_in/squeeze_momentum/squeeze_positive/squeeze_fire_up/squeeze_fire_dn.
     NO 'squeeze_on_release' key. Aligned with canonical Lazy Bear
     squeeze-fire-up breakout signal."""
-    base_fires = (
+    # B1194 (2026-07-06 Council 278 owner-approved): drop smart_money AND
+    # requirement per rec "isolate squeeze breakout pure thesis; smart_money
+    # over-constrains".
+    fires = (
         s.get("squeeze_fire_up", False)
         and s.get("close_above_open", True)
     )
-    fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["squeeze_fire_up", "close_above_open", "smart_money_buy"],
-        ["TTM squeeze releasing", "Bullish candle",
-         "Smart-money buy confirmation"])
+        ["squeeze_fire_up", "close_above_open"],
+        ["TTM squeeze releasing (B1194: smart_money AND-gate dropped)",
+         "Bullish candle"])
 
 
 def strat_xs_momentum_with_smart_money_long(s):
     """Cross-sectional momentum (top-decile) + smart-money buy. Jegadeesh-
     Titman 12-1 momentum with smart-money corroboration."""
-    base_fires = (
+    # B1194 (2026-07-06 Council 278 owner-approved): drop smart_money AND
+    # requirement per rec "isolate J-T 12-1 top-decile pure thesis".
+    fires = (
         s.get("xs_momentum_top_decile", False)
         and s.get("price_above_ema_200", False)
     )
-    fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
-        ["xs_momentum_top_decile", "price_above_ema_200",
-         "smart_money_buy"],
-        ["XS momentum top decile", "Above 200 EMA",
-         "Smart-money buy confirmation"])
+        ["xs_momentum_top_decile", "price_above_ema_200"],
+        ["XS momentum top decile (B1194: smart_money AND-gate dropped)",
+         "Above 200 EMA"])
 
 
 def strat_xs_low_beta_with_smart_money_long(s):
