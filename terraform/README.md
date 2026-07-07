@@ -1,3 +1,17 @@
+<!-- Source: per CHECKLIST #77 canonical-source; Council 287 B1234 2026-07-07 doc-sync sweep -->
+
+<!-- COUNCIL 278-287 SYNC BANNER (B1234 2026-07-07) - READ FIRST -->
+> **Sync status:** Body may contain refs stale as of 2026-06-27 or earlier. Canonical current state (B1231):
+> - `len(ALL_STRATEGIES) = 219` (post-B1189 DELETE dxy_headwind); `STRATEGIES_DISABLED_MISSING_PRODUCER = set()`
+> - Test count: 858 passed, 2 skipped on test_unit + test_integration
+> - CHECKLIST items #1-#157, LEARNINGS through L202, latest batch B1231
+> - Councils 278-287: 40 strategies loosened + 11 silent misses remediated + 25+ producer coverage audits + historical timeline finding + 2 critical bugs FIXED via graceful degradation
+> - Stage 4 walks: ARCHIVED to `archive/2026-07-07-stage-4-walks-complete/`
+> - Sprint 5 tickets: 3 queued (S5-B1214 HIGH / S5-B1216 MED post-B1230 correction / S5-B1212 MED)
+> - Comprehensive coverage report: `output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md`
+
+---
+
 # Stage 4 LIVE infrastructure (Terraform)
 
 **Status:** SKELETON ONLY — Batch 373 C-2 2026-05-26.

@@ -5157,3 +5157,15 @@ Banner content:
 
 Pyramid 858+2 GREEN.
 
+
+### B1234 (2026-07-07 Council 287): Sync banner to docs/ subdirectory + terraform + dashboard READMEs
+
+Applied Council 278-287 sync banner to 9 subdirectory docs:
+
+docs/: PRODUCER_CONSUMER_PAIRS.md
+docs/r6_workflow_reuse/: AWS_LAUNCH_PLAYBOOK.md, CHECKLIST_INTEGRATION_GUIDE.md, COUNCIL_PATTERN_GUIDE.md, HONEST_FINDING_PIVOT_PATTERN.md, R5_WORKFLOW.md, STRUCTURAL_DEFENSES.md
+terraform/README.md
+dashboard_sprint0a/README.md
+
+Pyramid 858+2 GREEN.
+

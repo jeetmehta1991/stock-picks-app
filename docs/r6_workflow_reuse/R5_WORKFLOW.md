@@ -1,10 +1,24 @@
+<!-- Source: per CHECKLIST #77 canonical-source; Council 287 B1234 2026-07-07 doc-sync sweep -->
+
+<!-- COUNCIL 278-287 SYNC BANNER (B1234 2026-07-07) - READ FIRST -->
+> **Sync status:** Body may contain refs stale as of 2026-06-27 or earlier. Canonical current state (B1231):
+> - `len(ALL_STRATEGIES) = 219` (post-B1189 DELETE dxy_headwind); `STRATEGIES_DISABLED_MISSING_PRODUCER = set()`
+> - Test count: 858 passed, 2 skipped on test_unit + test_integration
+> - CHECKLIST items #1-#157, LEARNINGS through L202, latest batch B1231
+> - Councils 278-287: 40 strategies loosened + 11 silent misses remediated + 25+ producer coverage audits + historical timeline finding + 2 critical bugs FIXED via graceful degradation
+> - Stage 4 walks: ARCHIVED to `archive/2026-07-07-stage-4-walks-complete/`
+> - Sprint 5 tickets: 3 queued (S5-B1214 HIGH / S5-B1216 MED post-B1230 correction / S5-B1212 MED)
+> - Comprehensive coverage report: `output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md`
+
+---
+
 # R5 Workflow - Canonical Launch Reference for R6 Reuse
 
 # Source: B1052 sub-agent Alpha synthesis of B1042-B1051 R5 launch lineage per owner directive 2026-06-28 "Document the current workflow, processes, phases etc for reuse in r6" per CHECKLIST #77.
 
-**Doc A of 6-doc r5_to_r6_reuse bundle.**
+**Doc A of 6-doc r6_workflow_reuse bundle.**
 
-**Cross-link:** companion playbook `docs/r5_to_r6_reuse/AWS_LAUNCH_PLAYBOOK.md` (Doc F) covers AWS-mechanics + AZ failover + spot capacity handling.
+**Cross-link:** companion playbook `docs/r6_workflow_reuse/AWS_LAUNCH_PLAYBOOK.md` (Doc F) covers AWS-mechanics + AZ failover + spot capacity handling.
 
 ---
 
@@ -298,7 +312,7 @@ Each fix below was an R5-session honest-finding pivot. **R6 launch script must p
 - `backtest/run_phase1a.py:main` HoldoutUnlock context (B1045 fix #27)
 
 **Docs:**
-- `docs/r5_to_r6_reuse/AWS_LAUNCH_PLAYBOOK.md` (Doc F - AWS operational mechanics)
+- `docs/r6_workflow_reuse/AWS_LAUNCH_PLAYBOOK.md` (Doc F - AWS operational mechanics)
 - `docs/PRODUCER_CONSUMER_PAIRS.md` (42-row sentinel + output registry)
 - `output_audit/b1046_phase_d_r5_sub_phases_2026_06_28.md` (B1046 source; this doc extends it for R6)
 - `output_audit/b1043_phase_d_timing_analysis_2026_06_28.md` (Sub-C timing math)

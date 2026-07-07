@@ -1,10 +1,24 @@
+<!-- Source: per CHECKLIST #77 canonical-source; Council 287 B1234 2026-07-07 doc-sync sweep -->
+
+<!-- COUNCIL 278-287 SYNC BANNER (B1234 2026-07-07) - READ FIRST -->
+> **Sync status:** Body may contain refs stale as of 2026-06-27 or earlier. Canonical current state (B1231):
+> - `len(ALL_STRATEGIES) = 219` (post-B1189 DELETE dxy_headwind); `STRATEGIES_DISABLED_MISSING_PRODUCER = set()`
+> - Test count: 858 passed, 2 skipped on test_unit + test_integration
+> - CHECKLIST items #1-#157, LEARNINGS through L202, latest batch B1231
+> - Councils 278-287: 40 strategies loosened + 11 silent misses remediated + 25+ producer coverage audits + historical timeline finding + 2 critical bugs FIXED via graceful degradation
+> - Stage 4 walks: ARCHIVED to `archive/2026-07-07-stage-4-walks-complete/`
+> - Sprint 5 tickets: 3 queued (S5-B1214 HIGH / S5-B1216 MED post-B1230 correction / S5-B1212 MED)
+> - Comprehensive coverage report: `output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md`
+
+---
+
 # AWS Launch Playbook - R6 Operational Reference
 
 # Source: B1052 sub-agent Alpha synthesis of B1028-B1051 AWS launch lineage per owner directive 2026-06-28 "Document the current workflow, processes, phases etc for reuse in r6" per CHECKLIST #77.
 
-**Doc F of 6-doc r5_to_r6_reuse bundle.**
+**Doc F of 6-doc r6_workflow_reuse bundle.**
 
-**Cross-link:** companion `docs/r5_to_r6_reuse/R5_WORKFLOW.md` (Doc A) covers per-phase workflow + sentinel contract. **Read Doc A first**; this doc covers AWS-mechanics that are orthogonal to phase logic.
+**Cross-link:** companion `docs/r6_workflow_reuse/R5_WORKFLOW.md` (Doc A) covers per-phase workflow + sentinel contract. **Read Doc A first**; this doc covers AWS-mechanics that are orthogonal to phase logic.
 
 ---
 
@@ -321,7 +335,7 @@ Per `feedback_audit_recommendations_against_existing_directives` + CHECKLIST #12
 - `scripts/b1019_phase_1_runtime_monitor.py` (per-phase monitor wrap)
 
 **Docs:**
-- `docs/r5_to_r6_reuse/R5_WORKFLOW.md` (Doc A - per-phase workflow + sentinels)
+- `docs/r6_workflow_reuse/R5_WORKFLOW.md` (Doc A - per-phase workflow + sentinels)
 - `output_audit/b1050_launch_script_class_a_to_f_audit_2026_06_28.md` (B1050 7-bug class A-F audit)
 - `output_audit/b1043_phase_d_timing_analysis_2026_06_28.md` (Sub-C timing math)
 - `output_audit/b1042_audit_a_monitor_validator_wrapper_2026_06_28.md` (monitor wrapper rationale)
