@@ -12382,3 +12382,51 @@ def test_b1229_squeeze_setup_long_original_path_still_works_when_si_pct_populate
         "B1229 fix: original strict path (si_pct>=0.20 AND dtc>=8) must still "
         "fire when producer emits real si_pct value"
     )
+
+
+
+def test_b1230_institutional_committed_growth_long_graceful_degradation_via_institutional_increased():
+    """B1230 (Council 285 Fix B1216): strat_institutional_committed_growth_long
+    must fire when committed_growth_holders is 0 (T1a persistence gap) AND
+    institutional_increased >= 5 (fallback path). Graceful degradation for
+    compute_persistence_signals coverage limitation on 70% of Batch A.
+    """
+    from backtest.signals.screener import strat_institutional_committed_growth_long
+    # Primary path unavailable (committed_growth_holders=0)
+    # Fallback path activated (institutional_increased=6)
+    s = {
+        "committed_growth_holders": 0,
+        "institutional_increased": 6,
+        "price_above_ema_200": True,
+    }
+    r = strat_institutional_committed_growth_long(s)
+    assert r["fires"] is True, (
+        "B1230 fix: strategy must fire via fallback when committed_growth_holders=0 "
+        "AND institutional_increased>=5"
+    )
+
+
+def test_b1230_institutional_committed_growth_original_path_still_works():
+    """B1230 companion: original strict path (committed_growth_holders>=3)
+    still fires when T1a persistence data available.
+    """
+    from backtest.signals.screener import strat_institutional_committed_growth_long
+    s = {
+        "committed_growth_holders": 5,  # meets B1173 threshold
+        "institutional_increased": 0,
+        "price_above_ema_200": True,
+    }
+    r = strat_institutional_committed_growth_long(s)
+    assert r["fires"] is True
+
+
+def test_b1230_institutional_committed_growth_no_fire_when_both_below_thresholds():
+    """B1230 companion: no fire when NEITHER primary nor fallback met."""
+    from backtest.signals.screener import strat_institutional_committed_growth_long
+    s = {
+        "committed_growth_holders": 2,  # below primary >=3
+        "institutional_increased": 3,   # below fallback >=5
+        "price_above_ema_200": True,
+    }
+    r = strat_institutional_committed_growth_long(s)
+    assert r["fires"] is False

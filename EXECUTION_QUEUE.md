@@ -5047,3 +5047,39 @@ Pyramid 855+2 GREEN (3 new tests).
 
 Sprint 5 S5-B1214 ticket UPDATED: when shares_outstanding data fix ships, remove fallback path.
 
+
+### B1230 (2026-07-07 Council 285 Fix B1216): institutional_committed_growth graceful degradation + B1216 CORRECTION
+
+Owner directive: "Address now" for silent misses.
+
+**MAJOR B1216 CORRECTION:**
+
+B1216 audit tested compute_persistence_signals (T1a-derived, 30% coverage) but ACTUAL production wiring uses institutional_signal via inject_institutional_signals which has sec13fchanges + per-ticker fallback = **85% effective coverage**.
+
+Re-audit finding on 133-ticker Batch A x 4 quarterly 2024 dates:
+- ALWAYS BUY: 99 tickers = 74.4%
+- PARTIAL: 14 = 10.5%
+- ALWAYS NONE: 20 = 15.0%
+- Effective universe: 113/133 = **85.0%**
+
+Re-cross-audit of the 20 flagged "COVERAGE_LIMITED_INSTITUTIONAL" strategies:
+- **19 are ACTUALLY 85% covered** (use institutional_buy / institutional_increased / institutional_new_positions - all from the 85% path)
+- **1 truly limited at 30%**: strat_institutional_committed_growth_long (uses committed_growth_holders from T1a persistence)
+
+Applied graceful-degradation fix:
+- backtest/signals/screener.py strat_institutional_committed_growth_long:
+  - Original: `committed_growth_holders >= 3 AND price_above_ema_200`
+  - Fixed: `(committed_growth_holders >= 3 OR (committed_growth_holders == 0 AND institutional_increased >= 5)) AND price_above_ema_200`
+  - Fallback uses institutional_increased (85% path) as proxy for multi-fund cluster semantics
+- 3 pin tests added (graceful/original/no-fire)
+
+CSV corrections:
+- 19 strategies annotated: actual 85% coverage (was misclassified as 30%)
+- 1 strategy marked DONE_B1230_GRACEFUL_DEGRADATION
+
+Pyramid 858+2 GREEN (3 new tests).
+
+Sprint 5 S5-B1216 ticket UPDATED: focus on T1a persistence file expansion (compute_persistence_signals data source), not the broader institutional 13F data (which is already 85% covered).
+
+Canonical output: output_audit/institutional_signal_actual_coverage.json
+

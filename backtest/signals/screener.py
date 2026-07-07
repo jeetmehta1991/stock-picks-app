@@ -6462,20 +6462,28 @@ def strat_institutional_committed_growth_long(s):
     strat_institutional_multi_quarter_persistence_long; see that
     docstring for empirical evidence.
     """
-    # B1173 (2026-07-04 Council 275 owner-approved final_recommended_actions):
-    # LOOSEN committed_growth_holders >= 5 -> >= 3 per rec (Cohen-Malloy-Pomorski
-    # cluster canonical). Narrow-scope inline threshold (not modifying producer
-    # boolean institutional_persistence_growing which stays >=5 for other
-    # consumers).
+    # B1173 (2026-07-04 Council 275): committed_growth_holders >= 5 -> >= 3.
+    # B1230 (2026-07-07 Council 285 Fix B1216): GRACEFUL DEGRADATION fallback.
+    # committed_growth_holders comes from compute_persistence_signals (T1a-derived,
+    # ~30% coverage on Batch A per B1216 audit). ACTUAL institutional_signal path
+    # covers 85% (per B1230 corrected audit). Add fallback: if committed_growth_holders
+    # not available (T1a persistence gap), use institutional_increased>=5 as proxy
+    # (broader path, same multi-fund cluster semantics per Cohen-Malloy-Pomorski).
+    # When Sprint 5 S5-B1216 ships (T1a persistence coverage expansion), fallback
+    # becomes inactive as primary path always populates.
     n_grow = s.get("committed_growth_holders", 0)
+    n_incr = s.get("institutional_increased", 0)
+    committed_growth_ok = n_grow >= 3 or (n_grow == 0 and n_incr >= 5)
     fires = (
-        n_grow >= 3
+        committed_growth_ok
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "institutional_persistence",
-        ["committed_growth_holders>=3", "price_above_ema_200"],
-        [f"{n_grow} funds grew position over 4+ quarters (>10% growth; loosened >=5 -> >=3 per B1173)",
-         "Cohen-Malloy-Pomorski cluster canonical (>=3)",
+        ["(committed_growth_holders>=3 OR institutional_increased>=5 as fallback)",
+         "price_above_ema_200"],
+        [f"{n_grow} funds grew position over 4+ quarters (>10% growth; loosened >=5 -> >=3 per B1173) "
+         f"OR fallback: {n_incr} institutional_increased (B1230 graceful degradation)",
+         "Cohen-Malloy-Pomorski cluster canonical",
          "Above 200 EMA (regime gate)"])
 
 

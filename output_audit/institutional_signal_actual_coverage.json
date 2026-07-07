@@ -1,0 +1,78 @@
+{
+  "batch": "B1230",
+  "council": 285,
+  "producer": "institutional_signal via inject_institutional_signals",
+  "note": "B1216 audit tested compute_persistence_signals (T1a-derived, 30% coverage). ACTUAL wiring uses institutional_signal (sec13fchanges + per-ticker fallback) with MUCH HIGHER coverage.",
+  "universe_size": 133,
+  "always_buy_count": 99,
+  "partial_count": 14,
+  "always_none_count": 20,
+  "effective_universe_pct": 85.0,
+  "per_date_summary": {
+    "2024-03-15": {
+      "buy_or_strong": 101,
+      "negative": 2,
+      "none": 30
+    },
+    "2024-06-15": {
+      "buy_or_strong": 101,
+      "negative": 2,
+      "none": 30
+    },
+    "2024-09-15": {
+      "buy_or_strong": 107,
+      "negative": 2,
+      "none": 24
+    },
+    "2024-12-15": {
+      "buy_or_strong": 112,
+      "negative": 1,
+      "none": 20
+    }
+  },
+  "always_buy_sample": [
+    "A",
+    "AA",
+    "AAOI",
+    "ABNB",
+    "ACGL",
+    "ACI",
+    "ADM",
+    "ADP",
+    "ADSK",
+    "ADT",
+    "AEE",
+    "AEHR",
+    "AES",
+    "AFRM",
+    "AG",
+    "AIG",
+    "AJG",
+    "AKAM",
+    "ALB",
+    "ALC"
+  ],
+  "always_none_tickers": [
+    "AAPL",
+    "ABBV",
+    "ABT",
+    "ACN",
+    "ADBE",
+    "ADI",
+    "AEP",
+    "ALH",
+    "ALM",
+    "AMAT",
+    "AMD",
+    "AMGN",
+    "AMRZ",
+    "AMT",
+    "AMZN",
+    "APD",
+    "APH",
+    "AXP",
+    "BALL",
+    "ECG"
+  ],
+  "recommendation": "B1216 finding was PARTIALLY WRONG - it audited the T1a persistence file (used by compute_persistence_signals, ~30% coverage) but the ACTUAL institutional_buy signal comes from institutional_signal which has 60-80% effective coverage. The 20 'COVERAGE_LIMITED_INSTITUTIONAL' strategies actually fire on a much broader universe than B1216 suggested."
+}
