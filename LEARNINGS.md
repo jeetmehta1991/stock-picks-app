@@ -2728,3 +2728,48 @@ Each audit's sample selection biased the verdict. Only the full audit produced a
 **Canonical implementation:** scripts/measure_news_coverage_batch_a.py (B1211). Copy pattern for future producer coverage audits.
 
 **Cross-references:** B1204 initial audit (biased); B1209 corrected but still biased; B1211 full audit (honest); B1213 codification; CHECKLIST #154; scripts/measure_news_coverage_batch_a.py; output_audit/news_coverage_batch_a.json.
+
+
+## L200 -- BLOCKED_UPSTREAM CLASSIFICATION FOR DATA-GAP-STRATEGIES (Council 282 B1219 2026-07-07)
+
+Owner directive 2026-07-07 Council 282 ("continue council this" post-Council 281 coverage findings): codify the strategy-vs-producer-coverage cross-audit methodology as HARD RULE.
+
+**Root cause chain:**
+
+Council 278 (B1188-B1203) loosened 40 strategies to lift fire counts. Reasonable interpretation: strategies were STARVED because gates were too tight. But Council 281 (B1214-B1216) found 3 material producer data gaps:
+1. short_interest_pct 0% coverage (shares_outstanding NULL in FINRA cache)
+2. Institutional 30.1% coverage (13F data gap on 70% of Batch A)
+3. Insider 18.8% coverage (partial event-rarity, partial data gap)
+
+Council 282 (B1217) cross-audited: 20 institutional strategies (10% of Batch A) can fire on only ~30% of universe. Loosening these strategies has BOUNDED uplift potential - the effective universe is constrained by upstream data, not by strategy gate strictness.
+
+**Universal principle:** Before loosening a strategy to improve fire counts, verify that upstream producer coverage isn't the actual constraint. Loosening a gate on a strategy whose primary signal doesn't emit (data gap) achieves ZERO uplift.
+
+**Rule triad:**
+- CHECKLIST #154 requires producer coverage audit before "verified" claims
+- CHECKLIST #155 requires strategy classification: BLOCKED_UPSTREAM / COVERAGE_LIMITED / EVENT_RARITY / UNAFFECTED
+- L200 codifies the cross-audit methodology + Sprint 5 prioritization
+
+**Sprint 5 prioritization (data-source expansion tickets ordered by strategy blast radius):**
+
+1. **S5-B1216-INSTITUTIONAL-13F-COVERAGE-EXPANSION** (HIGHEST): affects 20 strategies (10% of Batch A). Options:
+   (a) Additional 13F snapshot ingestion (WhaleWisdom, Fintel, direct EDGAR 13F-HR)
+   (b) Fallback to Polygon /v3/reference/tickers for institutional-holdings
+   Effort: 2-3 days. Impact: 30% -> 80% coverage = 8+ strategies get 2-3x fire uplift.
+
+2. **S5-B1214-SHARES-OUTSTANDING-DATA-GAP-FIX** (HIGH): affects 1 strategy (strat_squeeze_setup_long BLOCKED). Options:
+   (a) Polygon /v3/reference/tickers has shares_outstanding_common (RECOMMENDED)
+   (b) Polygon financials_json weighted_average_shares_outstanding
+   Effort: 1 day. Impact: unblocks strategy entirely.
+
+3. **S5-B1212-SECONDARY-NEWS-SOURCE** (MED): affects 6 strategies. Options:
+   (a) Finnhub news API for 21 zero-coverage tickers
+   (b) AlphaVantage news sentiment
+   Effort: 2 days. Impact: 84% -> ~95% coverage.
+
+**Canonical implementations:**
+- scripts/measure_producer_coverage.py (B1214+B1218 template for producer audits)
+- scripts/cross_audit_strategies_vs_coverage.py (B1217 strategy-vs-coverage matrix)
+- output_audit/strategy_vs_producer_coverage_matrix.json (canonical strategy classifications)
+
+**Cross-references:** B1214/B1215/B1216 producer audits; B1217 cross-audit; B1218 additional audits; B1219 codification; CHECKLIST #155; scripts/cross_audit_strategies_vs_coverage.py.

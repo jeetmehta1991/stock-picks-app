@@ -4754,3 +4754,23 @@ Canonical outputs:
 
 Pyramid 852+2 GREEN.
 
+
+### B1219 (2026-07-07 Council 282): CHECKLIST #155 + L200 codification
+
+**CHECKLIST #155 (NEW):** BLOCKED_UPSTREAM classification for data-gap-strategies
+- Classify strategies per CHECKLIST #154 producer audits into 4 categories
+- Prevents loosening strategies whose fire count is upstream-limited not gate-limited
+- Enforcement: scripts/cross_audit_strategies_vs_coverage.py
+
+**L200 (NEW):** Data-gap-vs-loosening cross-audit methodology
+- Root cause chain: Council 278 loosening + Council 281 gaps = Council 282 cross-audit
+- Universal principle: verify upstream coverage before loosening
+- Sprint 5 prioritization framework included
+
+**Sprint 5 priorities (ordered by blast radius):**
+1. S5-B1216-INSTITUTIONAL-13F-COVERAGE-EXPANSION (20 strategies) - HIGHEST
+2. S5-B1214-SHARES-OUTSTANDING-DATA-GAP-FIX (1 strategy BLOCKED) - HIGH
+3. S5-B1212-SECONDARY-NEWS-SOURCE (6 strategies) - MED
+
+Pyramid 852+2 GREEN.
+

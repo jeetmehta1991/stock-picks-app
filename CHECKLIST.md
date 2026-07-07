@@ -2608,3 +2608,27 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Enforcement.** scripts/measure_news_coverage_batch_a.py is canonical template for new coverage audits. Copy pattern for options/insider/institutional/corporate-action producers.
 
      **Cross-references.** L199; Council 280 B1211-B1213; CHECKLIST #106 (data-consumption audit) + #128 (adversarial happy-path); scripts/measure_news_coverage_batch_a.py; output_audit/news_coverage_batch_a.json.
+
+
+155. **HARD RULE -- BLOCKED_UPSTREAM CLASSIFICATION FOR DATA-GAP-STRATEGIES.** (Owner directive 2026-07-07 Council 282 + L200.)
+
+     **Trigger.** Every strategy whose upstream producer data-source coverage is <30% OR whose primary signal is never emitted (regardless of data existence).
+
+     **Rule.** Classify per strategy:
+       (a) `BLOCKED_UPSTREAM_<PRODUCER>` = producer never emits primary signal (0% coverage). Strategy code correct; upstream data gap prevents firing.
+       (b) `COVERAGE_LIMITED_<PRODUCER>` = producer emits but effective universe <50%. Strategy fires only on subset.
+       (c) `EVENT_RARITY_<PRODUCER>` = producer works but signal inherently rare (Form 4 filings, corporate actions). Not a data bug.
+       (d) `UNAFFECTED` = strategy doesn't depend on audited producer.
+
+     **When to apply:**
+       - After CHECKLIST #154 producer coverage audit
+       - Before assuming a strategy's low fire count is a code-loosening issue
+       - Before recommending strategy changes if upstream data may be the constraint
+
+     **Rationale.** B1188-B1203 Council 278 loosened 40 strategies to improve fire counts. B1217 cross-audit found 20 institutional strategies fire on only ~30% of Batch A due to 13F data gap - loosening these strategies has BOUNDED uplift potential until data gap fixed. squeeze_setup_long marked BLOCKED_UPSTREAM_SHORT_INTEREST_PCT because producer literally can never emit primary signal.
+
+     **Retroactive coverage demo (per #136).** Rule catches: Council 278 loosening of 20 institutional strategies would have been flagged as COVERAGE_LIMITED_INSTITUTIONAL first - owner could have prioritized 13F data fix before loosening.
+
+     **Enforcement.** scripts/cross_audit_strategies_vs_coverage.py canonical implementation. Run after any CHECKLIST #154 producer audit to update strategy classifications.
+
+     **Cross-references.** L200; Council 282 B1217-B1219; CHECKLIST #154; scripts/cross_audit_strategies_vs_coverage.py; output_audit/strategy_vs_producer_coverage_matrix.json.
