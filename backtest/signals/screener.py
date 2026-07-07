@@ -447,6 +447,10 @@ def strat_pivot_s3_capitulation(s):
     PIT-canonical with 111 historical-removed rows, but per-strategy
     adversarial verification has not been run for W5.
     """
+    # B1191 (2026-07-06 Council 278 owner-approved): expand reversal-trigger
+    # OR-set with bullish_pin_bar per rec "set to include bullish_pin_bar".
+    # Retain vol_below_avg (Wyckoff Spring canonical). Producer emits
+    # bullish_pin_bar via technical.py.
     fires = (
         s.get("recent_capitulation_at_s3")
         and s.get("vol_below_avg")  # B650: Wyckoff Spring -- LOW-volume Test bar
@@ -454,6 +458,7 @@ def strat_pivot_s3_capitulation(s):
             s.get("bullish_engulfing")
             or s.get("hammer")
             or s.get("above_prev_high")
+            or s.get("bullish_pin_bar")  # B1191 addition
         )
     )
     return _strat(fires, "long", "pivot",
@@ -570,6 +575,10 @@ def strat_pivot_r3_blowoff_short(s):
     risks (squeezes that aren't in the survivor universe; merger
     arbitrage that puts a floor on shorts of acquisition targets).
     """
+    # B1191 (2026-07-06 Council 278 owner-approved): expand reversal-trigger
+    # OR-set with bearish_pin_bar per rec "set to include bearish_pin_bar.
+    # SKIP vol_below_avg drop". Retain vol_below_avg (Wyckoff Upthrust-Test).
+    # Symmetric to strat_pivot_s3_capitulation same batch.
     fires = (
         s.get("recent_blowoff_at_r3")
         and s.get("vol_below_avg")  # B659: Wyckoff Upthrust-Test -- LOW-volume failed-upthrust bar (mirrors B650 W5 Spring volume condition)
@@ -577,6 +586,7 @@ def strat_pivot_r3_blowoff_short(s):
             s.get("bearish_engulfing")
             or s.get("shooting_star")
             or s.get("below_prev_low")
+            or s.get("bearish_pin_bar")  # B1191 addition
         )
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "pivot",

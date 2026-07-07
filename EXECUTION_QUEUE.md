@@ -4296,3 +4296,14 @@ Applied to:
 
 Pyramid 850+2 GREEN.
 
+
+### B1191 (2026-07-06 Council 278 MODIFIED 4-5/40): Pivot Wyckoff pin_bar addition
+
+Owner MODIFIED my rec: only ADD pin_bar to OR-set; SKIP the vol_below_avg drop (Wyckoff canonical retained).
+
+Applied:
+- strat_pivot_s3_capitulation: reversal-trigger OR-set + bullish_pin_bar
+- strat_pivot_r3_blowoff_short: reversal-trigger OR-set + bearish_pin_bar (symmetric)
+
+Pyramid 850+2 GREEN.
+
