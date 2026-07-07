@@ -1,0 +1,1273 @@
+{
+  "batch": "B1217",
+  "council": 282,
+  "measurement_date": "2026-07-07",
+  "universe_size_strategies": 192,
+  "producer_findings": {
+    "news_sentiment": {
+      "signals": [
+        "news_sentiment_5d",
+        "news_sentiment_mean",
+        "news_sentiment_shift",
+        "news_sentiment_score",
+        "news_article_count",
+        "news_count_5d",
+        "news_volume_zscore_5d"
+      ],
+      "effective_pct": 84.2,
+      "zero_pct": 15.8,
+      "coverage_file": "news_coverage_batch_a.json"
+    },
+    "short_interest_dtc": {
+      "signals": [
+        "days_to_cover"
+      ],
+      "effective_pct": 97.7,
+      "zero_pct": 2.3,
+      "coverage_file": "short_interest_coverage_batch_a.json"
+    },
+    "short_interest_pct": {
+      "signals": [
+        "short_interest_pct"
+      ],
+      "effective_pct": 0.0,
+      "zero_pct": 100.0,
+      "coverage_file": "short_interest_coverage_batch_a.json",
+      "note": "B1214 critical: short_interest_pct NEVER emitted"
+    },
+    "pead": {
+      "signals": [
+        "within_pead_window",
+        "pead_positive_surprise",
+        "pead_negative_surprise",
+        "days_since_last_earnings",
+        "yoy_earnings_growth",
+        "announcement_return"
+      ],
+      "effective_pct": 85.0,
+      "zero_pct": 15.0,
+      "coverage_file": "pead_coverage_batch_a.json"
+    },
+    "insider": {
+      "signals": [
+        "insider_cluster_active",
+        "insider_unique_buyers_30d",
+        "insider_total_shares_bought_30d",
+        "insider_director_buyers_30d",
+        "insider_officer_buyers_30d"
+      ],
+      "effective_pct": 18.8,
+      "zero_pct": 81.2,
+      "coverage_file": "insider_coverage_batch_a.json",
+      "note": "Partly event-rarity (Form 4 filings sporadic)"
+    },
+    "institutional": {
+      "signals": [
+        "institutional_buy",
+        "institutional_increased",
+        "institutional_new_positions",
+        "institutional_persistence_growing",
+        "institutional_persistence_positive_30d",
+        "committed_growth_holders",
+        "institutional_recent_init"
+      ],
+      "effective_pct": 30.1,
+      "zero_pct": 69.9,
+      "coverage_file": "institutional_coverage_batch_a.json",
+      "note": "Data source gap (constant across dates)"
+    }
+  },
+  "impact_stats": {
+    "BLOCKED_UPSTREAM_SHORT_INTEREST_PCT": 1,
+    "COVERAGE_LIMITED_INSTITUTIONAL": 20,
+    "COVERAGE_LIMITED_INSIDER": 4,
+    "COVERAGE_LIMITED_NEWS": 6,
+    "COVERAGE_LIMITED_PEAD": 3,
+    "UNAFFECTED": 157
+  },
+  "strategy_impact": {
+    "52w_low_breakdown": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "52wh_break_retest": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "52wl_break_retest_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "avwap_20high_rejection_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "bb_squeeze_volume": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_breakout_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_from_tech_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_momentum_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_oversold_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_recent_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_to_defensive_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_to_tech_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_volume_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "classification_change_with_insider_long": {
+      "classification": "COVERAGE_LIMITED_INSIDER",
+      "producers_hit": {
+        "insider": {
+          "signals_matched": [
+            "insider_cluster_active"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        }
+      }
+    },
+    "classification_change_with_institutional_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "cup_and_handle_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "death_cross_50_200_volume": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "double_bottom_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "dxy_headwind_multinational_short": {
+      "classification": "NOT_FOUND",
+      "producers": []
+    },
+    "flag_bull_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "flag_bull_retest_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "gold_silver_risk_off_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "golden_cross_volume": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "ichimoku_cloud_breakdown": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_oversold_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "institutional_persistence_volume_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "institutional_recent_init_volume_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_new_positions"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "institutional_volume_confirmation_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "judas_swing_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "keltner_lower": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "macd_bullish_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "mfi_oversold_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "news_momentum_long": {
+      "classification": "COVERAGE_LIMITED_NEWS",
+      "producers_hit": {
+        "news_sentiment": {
+          "signals_matched": [
+            "news_sentiment_5d",
+            "news_volume_zscore_5d"
+          ],
+          "effective_pct": 84.2,
+          "zero_pct": 15.8,
+          "note": ""
+        }
+      }
+    },
+    "news_momentum_short": {
+      "classification": "COVERAGE_LIMITED_NEWS",
+      "producers_hit": {
+        "news_sentiment": {
+          "signals_matched": [
+            "news_sentiment_5d",
+            "news_volume_zscore_5d"
+          ],
+          "effective_pct": 84.2,
+          "zero_pct": 15.8,
+          "note": ""
+        }
+      }
+    },
+    "news_reversal_long": {
+      "classification": "COVERAGE_LIMITED_NEWS",
+      "producers_hit": {
+        "news_sentiment": {
+          "signals_matched": [
+            "news_count_5d",
+            "news_sentiment_5d",
+            "news_sentiment_shift"
+          ],
+          "effective_pct": 84.2,
+          "zero_pct": 15.8,
+          "note": ""
+        }
+      }
+    },
+    "news_reversal_short": {
+      "classification": "COVERAGE_LIMITED_NEWS",
+      "producers_hit": {
+        "news_sentiment": {
+          "signals_matched": [
+            "news_count_5d",
+            "news_sentiment_5d",
+            "news_sentiment_shift"
+          ],
+          "effective_pct": 84.2,
+          "zero_pct": 15.8,
+          "note": ""
+        }
+      }
+    },
+    "pivot_r2_continuation": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pivot_r3_blowoff_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pivot_s3_capitulation": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "post_deletion_drift_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "post_inclusion_drift_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pre_fomc_quality_momentum_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pre_rebalance_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "rsi21_slow": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "rsi9_extreme": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "rsi_overbought_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "rsi_oversold_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "rsi_volume_200ema": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "sector_rotation_defensive_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "short_borrow_trap_avoid": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {
+        "short_interest_dtc": {
+          "signals_matched": [
+            "days_to_cover"
+          ],
+          "effective_pct": 97.7,
+          "zero_pct": 2.3,
+          "note": ""
+        }
+      }
+    },
+    "smc_mitigation_block_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "squeeze_setup_long": {
+      "classification": "BLOCKED_UPSTREAM_SHORT_INTEREST_PCT",
+      "producers_hit": {
+        "news_sentiment": {
+          "signals_matched": [
+            "news_sentiment_shift"
+          ],
+          "effective_pct": 84.2,
+          "zero_pct": 15.8,
+          "note": ""
+        },
+        "short_interest_dtc": {
+          "signals_matched": [
+            "days_to_cover"
+          ],
+          "effective_pct": 97.7,
+          "zero_pct": 2.3,
+          "note": ""
+        },
+        "short_interest_pct": {
+          "signals_matched": [
+            "short_interest_pct"
+          ],
+          "effective_pct": 0.0,
+          "zero_pct": 100.0,
+          "note": "B1214 critical: short_interest_pct NEVER emitted"
+        },
+        "pead": {
+          "signals_matched": [
+            "pead_positive_surprise",
+            "within_pead_window"
+          ],
+          "effective_pct": 85.0,
+          "zero_pct": 15.0,
+          "note": ""
+        },
+        "insider": {
+          "signals_matched": [
+            "insider_cluster_active"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        },
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "supertrend_ichimoku_adx": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "triangle_ascending_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "triangle_ascending_retest_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "triangle_descending_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "value_area_breakout_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "weekly_bias_pullback_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "weekly_bias_pullback_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "xs_combined_momentum_low_ivol": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "bollinger_lower": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "htf_aligned_breakout_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "break_retest_confluence": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "williams_stoch_dual": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "inside_bar_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_persistence_momentum_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "cpr_narrow_momentum": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_recent_init_momentum_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_new_positions"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "smc_bos_continuation": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "turtle_soup_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_equal_highs_sweep_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pivot_r1_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pre_fomc_long_sleeve": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "prev_day_high_break": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "turtle_soup_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_persistence_breakout_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "vix_backwardation_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "htf_aligned_breakout_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "52w_low_breakdown_pullback_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "ichimoku_tk_cross": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "activist_13d_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "bollinger_tight_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "insider_cluster_concentrated_sell_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "news_sentiment_long": {
+      "classification": "COVERAGE_LIMITED_NEWS",
+      "producers_hit": {
+        "news_sentiment": {
+          "signals_matched": [
+            "news_article_count",
+            "news_sentiment_mean"
+          ],
+          "effective_pct": 84.2,
+          "zero_pct": 15.8,
+          "note": ""
+        }
+      }
+    },
+    "smc_liquidity_sweep_reversal": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_multi_quarter_persistence_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "orb_stocks_in_play_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "donchian_breakout_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_breakout_confirmation_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "poc_magnet_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "roc_burst": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_discount_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_ote_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "xs_low_beta_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "head_and_shoulders_top_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "totm_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "macd_crossover_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_ote_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "ultimate_oscillator": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "xs_low_beta_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "bullish_engulfing_support": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_committed_growth_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "committed_growth_holders"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "orb_stocks_in_play_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_premium_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "volume_spike_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "52w_high_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "cup_and_handle_retest_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "doji_at_resistance_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pead_long": {
+      "classification": "COVERAGE_LIMITED_PEAD",
+      "producers_hit": {
+        "pead": {
+          "signals_matched": [
+            "pead_positive_surprise",
+            "within_pead_window"
+          ],
+          "effective_pct": 85.0,
+          "zero_pct": 15.0,
+          "note": ""
+        }
+      }
+    },
+    "post_inclusion_reversal_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "xs_quality_top_quintile_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "52w_high_breakout_pullback_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "golden_cross_50_200": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_fvg_retest_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "vol_spike_2x_below_ema_50_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "bollinger_tight": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "monthly_bias_momentum_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pead_with_smart_money_long": {
+      "classification": "COVERAGE_LIMITED_PEAD",
+      "producers_hit": {
+        "pead": {
+          "signals_matched": [
+            "pead_positive_surprise",
+            "within_pead_window"
+          ],
+          "effective_pct": 85.0,
+          "zero_pct": 15.0,
+          "note": ""
+        }
+      }
+    },
+    "squeeze_breakout_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "xs_momentum_quality_combined": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "xs_momentum_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "donchian_breakdown_retest_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "donchian_breakdown_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "golden_cross_20_50": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pre_holiday_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "prev_day_low_breakdown": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "stoch_oversold": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "supertrend_macd": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "52w_high_breakout_with_smart_money_vol_below_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "hammer_at_support_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "ichimoku_cloud_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "macd_ichimoku": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "news_sentiment_shift_long": {
+      "classification": "COVERAGE_LIMITED_NEWS",
+      "producers_hit": {
+        "news_sentiment": {
+          "signals_matched": [
+            "news_article_count",
+            "news_sentiment_shift"
+          ],
+          "effective_pct": 84.2,
+          "zero_pct": 15.8,
+          "note": ""
+        }
+      }
+    },
+    "52w_high_breakout_with_smart_money_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "camarilla_s3_bounce": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "doji_at_support": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "head_and_shoulders_bottom_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "insider_cluster_long": {
+      "classification": "COVERAGE_LIMITED_INSIDER",
+      "producers_hit": {
+        "insider": {
+          "signals_matched": [
+            "insider_cluster_active",
+            "insider_unique_buyers_30d"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        }
+      }
+    },
+    "institutional_with_directors_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "insider": {
+          "signals_matched": [
+            "insider_unique_buyers_30d"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        },
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "parabolic_sar_flip_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "flag_bear_retest_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "shooting_star_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "adx_initiation": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "bollinger_upper_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "donchian_breakout_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_increased_with_directors_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "insider": {
+          "signals_matched": [
+            "insider_unique_buyers_30d"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        },
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "pivot_fib_confluence": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "supertrend_macd_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "halloween_seasonal_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "insider_cluster_with_director_long": {
+      "classification": "COVERAGE_LIMITED_INSIDER",
+      "producers_hit": {
+        "insider": {
+          "signals_matched": [
+            "insider_cluster_active",
+            "insider_director_buyers_30d",
+            "insider_officer_buyers_30d",
+            "insider_unique_buyers_30d"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        }
+      }
+    },
+    "institutional_insider_combo_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "insider": {
+          "signals_matched": [
+            "insider_cluster_active"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        },
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "institutional_persistence_oversold_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "institutional_with_officers_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "insider": {
+          "signals_matched": [
+            "insider_director_buyers_30d",
+            "insider_officer_buyers_30d"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        },
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "inverted_cup_and_handle_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "january_effect_small_cap_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "judas_swing_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "mfi_oversold": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pead_with_insider_confirmation_long": {
+      "classification": "COVERAGE_LIMITED_INSIDER",
+      "producers_hit": {
+        "pead": {
+          "signals_matched": [
+            "pead_positive_surprise",
+            "within_pead_window"
+          ],
+          "effective_pct": 85.0,
+          "zero_pct": 15.0,
+          "note": ""
+        },
+        "insider": {
+          "signals_matched": [
+            "insider_cluster_active"
+          ],
+          "effective_pct": 18.8,
+          "zero_pct": 81.2,
+          "note": "Partly event-rarity (Form 4 filings sporadic)"
+        }
+      }
+    },
+    "pivot_s2_bounce": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_fvg_retest_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_mitigation_block_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "three_white_soldiers": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_cluster_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased",
+            "institutional_new_positions"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "avwap_50_reclaim": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_breaker_block_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "three_black_crows_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_inverse_fvg": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_buy_momentum_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_buy"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "smc_choch_reversal": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "cpr_narrow_momentum_short": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "awesome_oscillator": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_bos_retest_entry": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "naked_poc_retest_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "donchian_breakout_retest_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "parabolic_sar_flip": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_persistent_holders_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "ppo_crossover": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "institutional_strong_conviction_long": {
+      "classification": "COVERAGE_LIMITED_INSTITUTIONAL",
+      "producers_hit": {
+        "institutional": {
+          "signals_matched": [
+            "institutional_increased",
+            "institutional_new_positions"
+          ],
+          "effective_pct": 30.1,
+          "zero_pct": 69.9,
+          "note": "Data source gap (constant across dates)"
+        }
+      }
+    },
+    "hull_rsi": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "break_retest_volume": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "smc_equal_lows_sweep_long": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pivot_s1_bounce": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "squeeze_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "golden_cross_9_21": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "avwap_252_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "xs_momentum_top_decile": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "donchian_10_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "prev_day_low_bounce": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "camarilla_r4_breakout": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "dc20_break_retest": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    },
+    "pead_short": {
+      "classification": "COVERAGE_LIMITED_PEAD",
+      "producers_hit": {
+        "pead": {
+          "signals_matched": [
+            "pead_negative_surprise",
+            "within_pead_window"
+          ],
+          "effective_pct": 85.0,
+          "zero_pct": 15.0,
+          "note": ""
+        }
+      }
+    },
+    "rsi_oversold": {
+      "classification": "UNAFFECTED",
+      "producers_hit": {}
+    }
+  }
+}

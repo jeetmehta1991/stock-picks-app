@@ -4709,3 +4709,25 @@ Canonical outputs:
 
 Pyramid 852+2 GREEN.
 
+
+### B1217 (2026-07-07 Council 282): Cross-audit strategies vs producer coverage
+
+Mapped 192 Batch A CSV strategies against Council 281 producer coverage findings.
+
+CLASSIFICATION DISTRIBUTION:
+- **UNAFFECTED**: 157 (81.8%) - don't touch audited producers
+- **COVERAGE_LIMITED_INSTITUTIONAL**: 20 (10.4%) - fire on ~30% of Batch A (13F data gap)
+- **COVERAGE_LIMITED_NEWS**: 6 (3.1%) - fire on ~84% of Batch A
+- **COVERAGE_LIMITED_INSIDER**: 4 (2.1%) - partly event-rarity
+- **COVERAGE_LIMITED_PEAD**: 3 (1.6%) - fire on ~85% of Batch A
+- **BLOCKED_UPSTREAM_SHORT_INTEREST_PCT**: 1 (0.5%) - squeeze_setup_long unfireable per B1214
+
+CRITICAL INSIGHT: 20 institutional strategies (10% of all Batch A strategies) fire on only ~30% of universe due to 13F data source gap. This validates B1216 finding and quantifies blast radius.
+
+CSV update:
+- strat_squeeze_setup_long: status changed to BLOCKED_UPSTREAM_SHORT_INTEREST_PCT (was DONE_B1146_AUDIT_COMPLETE which was misleading)
+
+Canonical output: output_audit/strategy_vs_producer_coverage_matrix.json (192-strategy matrix with per-strategy producer dependencies + coverage percentages).
+
+Pyramid 852+2 GREEN.
+
