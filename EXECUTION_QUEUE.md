@@ -4492,3 +4492,14 @@ Remaining flag (pead_with_insider_confirmation_long B1197) is LEGITIMATE - match
 
 Pyramid 850+2 GREEN.
 
+
+### B1207 (2026-07-07 Council 279 Fix #7): pead pin tests
+
+Added 2 pin tests to lock in B1136 pead announcement_return_threshold at 0.01:
+- test_b1207_pead_announcement_return_threshold_pin (exact 0.01 pin)
+- test_b1207_pead_positive_surprise_fires_at_1pct_return (upper bound <=0.015)
+
+Rationale: B1197 marked strat_pead_with_insider_confirmation_long DONE without direct verification of B1136 threshold. These pins ensure downstream consumers know if the producer contract breaks.
+
+Pyramid: 850+2 -> 852+2 GREEN (2 new tests).
+

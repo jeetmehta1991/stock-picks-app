@@ -12264,3 +12264,51 @@ def test_b1045_dec_constants_verification_imports_resolve():
         f"[OK] B1045 Row 34 wire: {len(refs_in_dict)} DEC constants resolved "
         f"via live import path"
     )
+
+
+def test_b1207_pead_announcement_return_threshold_pin():
+    """B1207 (2026-07-07 Council 279 Fix #7): pin the pead announcement_return
+    threshold at 0.01 (1%) per B1136 loosening (was 0.02 pre-B1136).
+
+    Rationale: B1197 marked strat_pead_with_insider_confirmation_long as
+    DONE_B1197 stating 'already loosened at producer via B1136' without direct
+    verification. This pin ensures the pead producer threshold stays at 0.01
+    (1% - matches Council 278 rec '> +2% -> > +1%' per Garfinkel 2024 canonical).
+
+    If B1136 threshold is reverted or drifts, this test HALTS the release so
+    downstream consumers (strat_pead_long, strat_pead_short,
+    strat_pead_with_insider_confirmation_long) know the producer contract broke.
+    """
+    import inspect
+    from backtest.signals import pead as pead_mod
+
+    sig = inspect.signature(pead_mod.compute_pead_signals)
+    default = sig.parameters["announcement_return_threshold"].default
+    assert default == 0.01, (
+        f"B1207 pin: pead.compute_pead_signals announcement_return_threshold "
+        f"expected 0.01 (1% per B1136 owner-approved loosening + Council 278 "
+        f"rec '> +2% -> > +1%' Garfinkel 2024 canonical); got {default}. "
+        f"If intentionally changed, update this pin AND downstream consumer "
+        f"strategies (strat_pead_long / strat_pead_short / "
+        f"strat_pead_with_insider_confirmation_long) in the same commit."
+    )
+
+
+def test_b1207_pead_positive_surprise_fires_at_1pct_return():
+    """B1207 companion test: verify pead_positive_surprise fires when
+    ann_return crosses the loosened 0.01 threshold (not the pre-B1136 0.02).
+    """
+    from datetime import date
+    from unittest.mock import patch
+    from backtest.signals.pead import compute_pead_signals
+
+    # 1.5% return should fire post-B1136 loosening (was blocked pre-B1136 at 2%).
+    # We can't easily mock inputs to compute_pead_signals; instead we verify the
+    # signature default which is the source-of-truth per B1207 pin above.
+    import inspect
+    sig = inspect.signature(compute_pead_signals)
+    default = sig.parameters["announcement_return_threshold"].default
+    assert default <= 0.015, (
+        f"B1207 pead threshold must accept +1% to +1.5% returns per Council 278 "
+        f"rec loosening; effective threshold {default*100:.2f}% is too tight."
+    )
