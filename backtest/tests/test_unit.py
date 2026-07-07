@@ -12425,3 +12425,44 @@ def test_b1230_institutional_committed_growth_no_fire_when_both_below_thresholds
     }
     r = strat_institutional_committed_growth_long(s)
     assert r["fires"] is False
+
+
+
+def test_b1243_news_sentiment_finnhub_fallback_activates_for_polygon_gap_ticker():
+    """B1243 (Council 291 S5-B1212): compute_news_sentiment_signals must fall
+    back to Finnhub company_news when Polygon news window has 0 articles for
+    a ticker (per B1211 audit of 21 zero-coverage tickers).
+    """
+    from datetime import date
+    from backtest.signals.news_sentiment import compute_news_sentiment_signals
+    # AES was in B1211's 21-ticker zero-coverage list for 2024
+    # Test at 2026-04-15 where Finnhub has data
+    r = compute_news_sentiment_signals("AES", date(2026, 4, 15))
+    assert r.get("news_source") == "finnhub_fallback", (
+        f"B1243 fix: news_source must indicate finnhub_fallback for AES on "
+        f"2026-04-15; got {r.get('news_source')}"
+    )
+    assert r.get("news_count_5d", 0) > 0, (
+        "B1243 fix: Finnhub fallback must emit non-zero article count for AES"
+    )
+
+
+def test_b1243_news_sentiment_polygon_preferred_when_available():
+    """B1243 companion: when Polygon has data in the current window, use it
+    over Finnhub (primary source unchanged).
+    """
+    from datetime import date
+    from backtest.signals.news_sentiment import compute_news_sentiment_signals
+    r = compute_news_sentiment_signals("AAPL", date(2026, 4, 15))
+    assert r.get("news_source") == "polygon", (
+        f"B1243: AAPL must use polygon (well-covered mega-cap); got {r.get('news_source')}"
+    )
+
+
+def test_b1243_news_sentiment_returns_empty_when_both_sources_missing():
+    """B1243 companion: return {} when NEITHER Polygon nor Finnhub has data."""
+    from datetime import date
+    from backtest.signals.news_sentiment import compute_news_sentiment_signals
+    # Fake ticker with no data anywhere
+    r = compute_news_sentiment_signals("FAKE_TICKER_NONE", date(2026, 4, 15))
+    assert r == {}, "B1243: must return empty dict when both sources unavailable"

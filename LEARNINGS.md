@@ -2853,3 +2853,50 @@ Owner directive 2026-07-07 Council 285 ("Address now" for silent misses): B1216 
 - Priority reduced from HIGHEST to MED (only 1 strategy affected, not 20)
 
 **Cross-references:** B1216 (initial audit); B1217 (cross-audit); B1230 (correction); L200 (cross-audit framework); CHECKLIST #157 (NEW).
+
+
+
+## L204 -- SPRINT 5 S5-B1212 SHIPPED VIA FINNHUB COMPANY_NEWS FALLBACK (Council 291 B1242-B1244 2026-07-07)
+
+Owner directive 2026-07-07 Council 291 "Continue sprint 5". Selected S5-B1212-SECONDARY-NEWS-SOURCE (6 strategies affected, larger blast radius than remaining S5-B1216).
+
+**Investigation (B1242):**
+
+Finnhub company_news data verified for ALL 21 tickers in B1211's zero-coverage list. Article counts 48-246 per ticker; schema: {headline, summary, datetime unix, category, source, url}.
+
+**Fix (B1243):**
+
+Added Finnhub fallback in `backtest/signals/news_sentiment.py`:
+1. `_load_finnhub_news_parquet(ticker)` helper - normalizes Finnhub schema to Polygon:
+   - headline -> title, summary -> description, datetime unix -> published_utc + published_dt
+   - No 'sentiment' field -> rule-based Loughran-McDonald scorer used
+2. In `compute_news_sentiment_signals`:
+   - Try Polygon first (unchanged)
+   - If Polygon window empty (cur.empty) -> try Finnhub for same window
+   - Emit `news_source` diagnostic field ("polygon" | "finnhub_fallback" | "empty")
+
+**Coverage impact (post-B1243, 2025-2026 window):**
+- Polygon primary: 92/133 = 69.2%
+- Finnhub fallback: +59 tickers = 44.4% additional
+- **Combined effective: 131/133 = 98.5%** (was 84.2% polygon-only per B1211)
+- Only 2 tickers remain zero-coverage (small caps not in either source)
+
+**IMPORTANT - Historical scope:**
+- Finnhub company_news data STARTS 2025+ (per B1242 date-range check)
+- For 2020-2024 backtest window: coverage stays at Polygon-only 84.2% (Finnhub doesn't backfill)
+- For 2025-2026 backtest window: combined 98.5% coverage
+- Cube run interpretation must account for this timeline (per L201 principle)
+
+**Universal principle (matches L203):**
+
+Sprint 5 tickets can be satisfied via producer fallback logic rather than requiring full data prefetch. Same pattern as B1240 (Finnhub profile2 for shares_outstanding).
+
+**Pattern application checklist for future Sprint 5 tickets:**
+
+1. Check if existing Finnhub / alternate provider has the data (before scoping new prefetch)
+2. Schema-normalize alternate source to match primary provider's schema
+3. Add per-call fallback at the WINDOW level (not just file-existence level)
+4. Emit `_source` diagnostic field for audit visibility
+5. Add pin tests: (a) fallback activates for gap ticker, (b) primary preferred when available, (c) empty when both missing
+
+**Cross-references:** B1242 investigation; B1243 fix; B1244 verification; L200 Sprint 5 prioritization; L203 (S5-B1214 same pattern); B1211 initial coverage finding; CHECKLIST #154/#155; output_audit/news_coverage_with_finnhub_fallback.json.

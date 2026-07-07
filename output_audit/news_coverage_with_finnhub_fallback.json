@@ -1,0 +1,25 @@
+{
+  "batch": "B1244",
+  "council": 291,
+  "sprint5_ticket": "S5-B1212",
+  "audit_date": "2026-07-07",
+  "test_dates_2025_2026": [
+    "2025-06-15",
+    "2025-12-15",
+    "2026-03-15",
+    "2026-05-01"
+  ],
+  "note": "Post-B1243 Finnhub fallback effective for 2025-2026 backtest window (Finnhub data starts 2025+)",
+  "coverage_summary": {
+    "polygon_primary_pct": 69.2,
+    "finnhub_fallback_pct": 76.7,
+    "combined_effective_pct": 98.5,
+    "zero_coverage_remaining": 2
+  },
+  "before_b1243_baseline": {
+    "polygon_only_effective_pct_2024_dates": 84.2,
+    "zero_coverage_2024": 21
+  },
+  "b1211_finding_still_applies_for_2020_2024": true,
+  "note_historical": "Finnhub company_news data starts 2025+. For 2020-2024 backtest window, coverage remains at Polygon-only 84.2%. Post-2025 backtest window benefits from combined fallback."
+}

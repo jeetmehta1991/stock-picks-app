@@ -105,9 +105,64 @@ def _spof_record(outcome: str) -> None:
 
 _NEWS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "news"
 
+# B1243 (2026-07-07 Council 291 Sprint 5 S5-B1212):
+# Finnhub company_news secondary source for tickers with zero Polygon coverage.
+# B1211 audit found 21 zero-coverage tickers in Polygon; B1242 investigation
+# verified 21/21 have Finnhub data (48-246 articles per ticker).
+_FINNHUB_NEWS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "finnhub" / "company_news"
+
 # Batch 535 OPT-A: per-ticker news parquet cache. Polygon news prefetch
 # has ~1926 tickers; each parquet ~50-500KB; max ~1GB if all loaded.
 _NEWS_BY_TICKER: dict[str, pd.DataFrame] = {}
+_FINNHUB_NEWS_BY_TICKER: dict[str, pd.DataFrame] = {}
+
+
+def _load_finnhub_news_parquet(ticker: str) -> pd.DataFrame:
+    """B1243 (Council 291 S5-B1212): return Finnhub company_news normalized
+    to Polygon news schema.
+
+    Finnhub schema: {headline, summary, datetime (unix), category, source, url}
+    Polygon schema: {title, description, published_utc, sentiment, ...}
+
+    Normalization:
+      - headline -> title
+      - summary -> description
+      - datetime (unix ts) -> published_utc (ISO string) + published_dt
+      - No 'sentiment' field (Finnhub doesn't emit one) -> rule-based scorer used
+
+    Returns empty DataFrame on data miss.
+    """
+    safe_ticker = ticker.replace(".", "-")
+    cached = _FINNHUB_NEWS_BY_TICKER.get(safe_ticker)
+    if cached is not None:
+        return cached
+    path = _FINNHUB_NEWS_DIR / f"{safe_ticker}.parquet"
+    if not path.exists():
+        _FINNHUB_NEWS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _FINNHUB_NEWS_BY_TICKER[safe_ticker]
+    try:
+        df = pd.read_parquet(path)
+        if df.empty:
+            _FINNHUB_NEWS_BY_TICKER[safe_ticker] = pd.DataFrame()
+            return _FINNHUB_NEWS_BY_TICKER[safe_ticker]
+        # Normalize to Polygon schema
+        df = df.copy()
+        df["title"] = df.get("headline", "")
+        df["description"] = df.get("summary", "")
+        # datetime is unix timestamp; convert to pandas datetime
+        df["published_dt"] = pd.to_datetime(df["datetime"], unit="s", errors="coerce")
+        df = df.dropna(subset=["published_dt"])
+        df["published_date"] = df["published_dt"].dt.date
+        df["published_utc"] = df["published_dt"].dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+        # No sentiment field - rule-based scorer will be used
+        df["sentiment"] = None
+        # Pre-score articles (same as Polygon path)
+        df = _precompute_article_scores(df)
+        _FINNHUB_NEWS_BY_TICKER[safe_ticker] = df
+        return df
+    except Exception:
+        _FINNHUB_NEWS_BY_TICKER[safe_ticker] = pd.DataFrame()
+        return _FINNHUB_NEWS_BY_TICKER[safe_ticker]
 
 
 def _precompute_article_scores(df: pd.DataFrame) -> pd.DataFrame:
@@ -355,13 +410,38 @@ def compute_news_sentiment_signals(
     # B545 OPT-C: date conversion pre-computed at cache fill; producer
     # now just consumes published_date column directly.
     df = _load_news_parquet(ticker)
+    # B1243 (2026-07-07 Council 291 S5-B1212): Finnhub fallback for tickers
+    # with zero Polygon news coverage. B1211 audit found 21 zero-coverage tickers
+    # in Batch A; B1242 verified 21/21 have Finnhub company_news data (48-246
+    # articles per ticker; range 2025-2026). Fallback strategy:
+    # (1) Load Polygon news file
+    # (2) If entirely empty OR current 7-day window has 0 articles, try Finnhub
+    # (3) If Finnhub has articles in the same 7-day window, use Finnhub
+    news_source = "polygon" if not df.empty and "published_date" in df.columns else "empty"
     if df.empty or "published_date" not in df.columns:
-        _spof_record("empty")  # B832 SPOF SENTINEL: vendor cache exhausted
-        return {}
+        df = _load_finnhub_news_parquet(ticker)
+        if df.empty or "published_date" not in df.columns:
+            _spof_record("empty")  # B832 SPOF SENTINEL: vendor cache exhausted
+            return {}
+        news_source = "finnhub_fallback"
 
     # Current window: [as_of - lookback_days, as_of]
     cur_start = as_of - timedelta(days=lookback_days)
     cur = df[(df["published_date"] >= cur_start) & (df["published_date"] <= as_of)]
+    # B1243: If Polygon window empty, try Finnhub for the same window
+    if news_source == "polygon" and cur.empty:
+        finnhub_df = _load_finnhub_news_parquet(ticker)
+        if not finnhub_df.empty and "published_date" in finnhub_df.columns:
+            finnhub_cur = finnhub_df[
+                (finnhub_df["published_date"] >= cur_start)
+                & (finnhub_df["published_date"] <= as_of)
+            ]
+            if not finnhub_cur.empty:
+                # Finnhub has articles in this window - use it as fallback source
+                df = finnhub_df
+                cur = finnhub_cur
+                news_source = "finnhub_fallback"
+
     # Prior window: [as_of - 2*lookback_days, as_of - lookback_days)
     prior_start = as_of - timedelta(days=2 * lookback_days)
     prior_end   = as_of - timedelta(days=lookback_days)
@@ -473,4 +553,6 @@ def compute_news_sentiment_signals(
         "news_sentiment_30d":        round(float(avg_30d), 4),
         "news_volume_zscore_5d":     round(float(vol_zscore_5d), 4),
         "news_count_5d":             count_5d,
+        # B1243 (Council 291 S5-B1212): diagnostic - which source populated this signal
+        "news_source":               news_source,
     }

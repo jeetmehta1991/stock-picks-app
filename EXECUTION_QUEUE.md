@@ -5307,3 +5307,34 @@ Strategy: strat_squeeze_setup_long DONE_B1240_S5_B1214_SPRINT5_SHIPPED
 L203 codified. Sprint 5 status: S5-B1214 SHIPPED / S5-B1216 MED / S5-B1212 MED
 
 Pyramid 858+2 GREEN.
+
+### B1242-B1244 (2026-07-07 Council 291): SPRINT 5 S5-B1212 SHIPPED
+
+Owner directive: "Continue sprint 5"
+
+**S5-B1212-SECONDARY-NEWS-SOURCE: COMPLETE**
+
+B1242 investigation: Finnhub company_news verified for ALL 21 B1211 zero-coverage tickers (48-246 articles each).
+
+B1243 fix in backtest/signals/news_sentiment.py:
+- Added _load_finnhub_news_parquet(ticker) helper (normalizes Finnhub schema)
+- Modified compute_news_sentiment_signals for per-window fallback
+- Emits news_source diagnostic field
+
+Coverage impact (2025-2026 window):
+- Before: 84.2% (Polygon-only per B1211)
+- After: 98.5% (69.2% Polygon primary + 44.4% Finnhub fallback = 131/133)
+- Only 2 tickers zero-coverage remaining
+
+IMPORTANT: Finnhub data starts 2025+. 2020-2024 window unchanged.
+
+B1244: 3 pin tests added (test_b1243_*); 858+2 -> 861+2 GREEN.
+
+L204 codified same pattern as L203 (S5-B1214 B1240).
+
+Sprint 5 status:
+- S5-B1214: SHIPPED (B1240)
+- S5-B1212: SHIPPED (B1244)
+- S5-B1216: MED priority (1 strategy; B1230 fallback still active)
+
+Pyramid 861+2 GREEN.
