@@ -4408,3 +4408,18 @@ Pyramid 850+2 GREEN.
 
 Pyramid 850+2 GREEN.
 
+
+### B1201 (2026-07-06 Council 278 APPROVED 31-35/40): Misc widening
+
+Producer-additive: calendar_effects.py is_january_extended (Dec 26 - Feb 3).
+
+Applied:
+- bollinger_upper_short: rsi_14 >70 -> >65 (spirit-match; rec rsi_2>95 didn't match source)
+- short_borrow_trap_avoid: DTC>8.0 -> DTC>5.0 (owner picked option b lower threshold)
+- pre_fomc_quality_momentum_long: xs_momentum_top_decile -> top_quintile (spirit-match; rec targeted xs_quality_decile which isn't in source)
+- poc_magnet_long: vp_close_near_poc_pct <0.02 -> <0.03 (spirit-match; rec targeted volume_below_avg which isn't in source)
+- january_effect_small_cap_long: is_january -> is_january_extended (Dec 26 - Feb 3 canonical)
+- test_batch224 fixture updated
+
+Pyramid 850+2 GREEN.
+

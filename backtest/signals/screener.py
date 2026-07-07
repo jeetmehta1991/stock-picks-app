@@ -1880,13 +1880,16 @@ def strat_bollinger_upper_short(s):
     Note: separate from B800 strat_bollinger_lower SHORT-branch which received
     its own EVENT-conversion per dual-direction strategy structure.
     """
+    # B1201 (2026-07-06 Council 278 owner-approved): CSV rec was "Drop rsi_2 > 95"
+    # but source uses rsi_14 > 70 (rec threshold doesn't match source). Spirit-match:
+    # widen rsi_14 > 70 -> > 65 (5-pt shift matching B1184 camarilla_s3_bounce).
     fires = (s.get("bb_20_20_touch_upper") and
-             s.get("rsi_14", 50) > 70 and
+             s.get("rsi_14", 50) > 65 and  # B1201: was >70
              s.get("shooting_star") and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "mean_reversion",
-        ["bb_20_20_touch_upper","rsi_14>70","shooting_star", "borrow_ok"],
+        ["bb_20_20_touch_upper","rsi_14>65","shooting_star", "borrow_ok"],
         [f"Price at upper Bollinger Band (20,2)  -  overbought extreme",
-         f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought above 70",
+         f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought above 65 (B1201: was >70)",
          "Shooting star candle  -  sellers rejecting the high"])
 
 
@@ -3596,15 +3599,19 @@ def strat_pre_fomc_quality_momentum_long(s):
     alone may still have edge but is not tested here. B652 W5m + B722
     po3 precedent: cube measures + records; no production deployment.
     """
+    # B1201 (2026-07-06 Council 278 owner-approved): CSV rec targeted
+    # xs_quality_decile >= 8 -> >= 7 but source uses xs_momentum_top_decile
+    # (boolean). Spirit-match per DEC-321 quintile scaling: widen decile ->
+    # quintile via B1193 producer-additive xs_momentum_top_quintile.
     fires = (
         s.get("pre_fomc_d1", False)
-        and s.get("xs_momentum_top_decile", False)
+        and s.get("xs_momentum_top_quintile", False)  # B1201: was top_decile
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "event_driven",
-        ["pre_fomc_d1", "xs_momentum_top_decile", "price_above_ema_200"],
+        ["pre_fomc_d1", "xs_momentum_top_quintile", "price_above_ema_200"],
         ["Pre-FOMC day-1 (Lucca-Moench drift)",
-         "Top-decile cross-sectional 12-1 momentum (quality momentum)",
+         "Top-quintile cross-sectional 12-1 momentum (B1201 loosened from decile)",
          "Above 200 EMA - regime gate"])
 
 
@@ -5069,11 +5076,15 @@ def strat_short_borrow_trap_avoid(s):
     high DTC have higher subsequent positive returns (the 'borrow
     constraint' premium).
     """
+    # B1201 (2026-07-06 Council 278 owner-approved "lower threshold to DTC>5"):
+    # Reverse B671 Q6 tightening (8.0 -> 5.0) per rec option (b) more sensitive
+    # monitoring. Note: consult helper _short_borrow_trap_active also uses 5.0
+    # per B718a reversal - now aligned.
     dtc = s.get("days_to_cover", 0.0) or 0.0
-    fires = dtc > 8.0  # B671 Q6 owner-approved 5.0 -> 8.0
+    fires = dtc > 5.0  # B1201: 8.0 -> 5.0 per owner directive "lower threshold to DTC>5"
     return _strat(fires, "avoid", "smart_money_sleeve",
-        ["days_to_cover>8"],
-        [f"Days-to-cover {dtc:.1f} (>8 threshold; B671 Q6 tighten from 5.0)",
+        ["days_to_cover>5"],
+        [f"Days-to-cover {dtc:.1f} (>5 threshold; B1201 owner-lowered from 8.0 for more sensitive monitoring)",
          "Hard-to-borrow -> squeeze risk asymmetric vs upside expectancy",
          "Cohen-Diether-Malloy 2007 borrow-constraint premium"])
 
@@ -6701,15 +6712,19 @@ def strat_poc_magnet_long(s):
     Direct threshold-revert is simpler than narrow-scope parallel
     variant since the strategy is the only consumer at this threshold.
     """
+    # B1201 (2026-07-06 Council 278 owner-approved): CSV rec was "Drop
+    # volume_below_avg gate" but source has no such gate. Spirit-match:
+    # widen vp_close_near_poc_pct < 0.02 -> < 0.03 (POC magnet effect per
+    # Dalton 1990 - broader proximity to POC).
     fires = (
-        s.get("vp_close_near_poc_pct", 1.0) < 0.02  # B724: 0.04 -> 0.02
+        s.get("vp_close_near_poc_pct", 1.0) < 0.03  # B1201: 0.02 -> 0.03 spirit-match
         and s.get("vp_close_above_poc", False)
         and s.get("price_above_ema_200", False)
     )
     dist = s.get("vp_close_near_poc_pct", 0.0)
     return _strat(fires, "long", "volume_profile",
-        ["vp_close_near_poc_pct<0.04", "vp_close_above_poc", "price_above_ema_200"],
-        [f"Within {dist*100:.1f}% of 60d POC (volume magnetism)",
+        ["vp_close_near_poc_pct<0.03", "vp_close_above_poc", "price_above_ema_200"],
+        [f"Within {dist*100:.1f}% of 60d POC (B1201 loosened 2% -> 3% per Dalton 1990 magnet effect)",
          "Bullish bias (close above POC)",
          "Above 200 EMA (regime gate)"])
 
@@ -6843,14 +6858,18 @@ def strat_january_effect_small_cap_long(s):
     .md: NON-DELETION marker; cube runs per `--no-regime-affinity` to
     measure empirical edge.
     """
+    # B1201 (2026-07-06 Council 278 owner-approved): widen January window
+    # Jan-only -> is_january_extended (Dec 26 - Feb 3 canonical per
+    # Ariel-Ritter-Chopra). Producer-additive is_january_extended in
+    # calendar_effects.py.
     fires = (
-        s.get("is_january", False)
+        s.get("is_january_extended", False)  # B1201: was is_january
         and s.get("cap_band", "") in ("micro", "small")
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "calendar",
-        ["is_january", "cap_band in (micro,small)", "price_above_ema_200"],
-        ["January Effect (Rozeff-Kinney 1976; small-cap subset)",
+        ["is_january_extended", "cap_band in (micro,small)", "price_above_ema_200"],
+        ["January Effect extended window Dec 26 - Feb 3 (B1201: Ariel-Ritter-Chopra canonical)",
          "Easterday-Sen-Stephan 2009: persists in micro/small-cap",
          "Above 200 EMA (regime gate)"])
 

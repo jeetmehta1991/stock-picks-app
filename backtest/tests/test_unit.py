@@ -8053,16 +8053,16 @@ def test_batch224_pre_fomc_long_sleeve_fires_on_d1():
 
 
 def test_batch224_pre_fomc_quality_momentum_long():
-    """Batch 224: combines pre-FOMC timing + top-decile XS momentum
-    + 200-EMA. Higher conviction variant."""
+    """Batch 224 (post-B1201 owner-approved LOOSEN): combines pre-FOMC timing
+    + top-quintile XS momentum (widened from decile per DEC-321) + 200-EMA."""
     from backtest.signals.screener import strat_pre_fomc_quality_momentum_long
     s = {
         "pre_fomc_d1": True,
-        "xs_momentum_top_decile": True,
+        "xs_momentum_top_quintile": True,
         "price_above_ema_200": True,
     }
     assert strat_pre_fomc_quality_momentum_long(s)["fires"] is True
-    s["xs_momentum_top_decile"] = False
+    s["xs_momentum_top_quintile"] = False
     assert strat_pre_fomc_quality_momentum_long(s)["fires"] is False
 
 

@@ -173,6 +173,12 @@ def compute_calendar_signals(as_of: date) -> dict:
     # precedent: ~85% (window has 7 days; first-day-only = 1/7).
     out["is_totm_window_first_day"] = bool((tdl == 4) or (tdm == 1))
     out["is_january"] = (as_of.month == 1)
+    # B1201 (2026-07-06 Council 278 owner-approved): Ariel-Ritter-Chopra
+    # January-effect canonical window Dec 26 - Feb 3. Producer-additive
+    # is_january_extended widens January-only to late-Dec + all-Jan + early-Feb.
+    is_late_december = (as_of.month == 12 and as_of.day >= 26)
+    is_early_february = (as_of.month == 2 and as_of.day <= 3)
+    out["is_january_extended"] = (as_of.month == 1) or is_late_december or is_early_february
     # Pre-holiday: next CALENDAR day (after weekend gap) is a US market
     # holiday. _next_business_day skips holidays by design and would
     # always evaluate False here; walk forward through weekend until
