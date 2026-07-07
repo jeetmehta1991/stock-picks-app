@@ -2586,3 +2586,25 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Enforcement.** CSV populators must decompose action-tag lists into ordered sub-actions BEFORE marking DONE. If any sub-action pending: status is PENDING_SUB_<tag>.
 
      **Cross-references.** L197; Council 274 B1169; CHECKLIST #150/#151/#152.
+
+
+154. **HARD RULE -- DATA-SOURCE COVERAGE AUDIT BEFORE "PRODUCER VERIFIED" CLAIMS.** (Owner directive 2026-07-07 Council 280 + L199.)
+
+     **Trigger.** Every audit report claiming "producer verified working" for a data-source-dependent signal (news sentiment, options, insider, institutional, corporate action, calendar).
+
+     **Rule.** Before publishing "PRODUCER VERIFIED WORKING" verdict:
+       (a) Sample must be REPRESENTATIVE of the target universe (not mega-cap-only)
+       (b) Sample size must be >= 25 tickers OR >= 10% of universe (whichever larger)
+       (c) Temporal robustness: test across >= 4 dates spanning >= 12 months
+       (d) Report per-ticker coverage rate + per-date coverage rate + effective universe
+       (e) Distinguish 3 categories: ALWAYS_COVERED / PARTIAL / ALWAYS_ZERO
+       (f) Save canonical measurement to output_audit/<producer>_coverage_<universe>.json
+       (g) If effective universe < 90%, queue Sprint 5 secondary-source ticket
+
+     **Rationale.** B1204 news_sentiment audit was mega-cap-only (8 tickers, 1 date). Reported "PRODUCER VERIFIED WORKING" without noting coverage bias. B1209 25-non-mega-sample corrected to 48% but was also incomplete. B1211 full 133-ticker x 4-date audit found 84.2% effective universe with 15.8% zero-coverage. Each smaller sample gave misleading verdict.
+
+     **Retroactive coverage demo (per #136).** Rule catches B1204 miss immediately: 8 tickers < 25 minimum + single date < 4 minimum + mega-cap-only fails representativeness. Would have required B1211-scale audit before "producer verified" claim.
+
+     **Enforcement.** scripts/measure_news_coverage_batch_a.py is canonical template for new coverage audits. Copy pattern for options/insider/institutional/corporate-action producers.
+
+     **Cross-references.** L199; Council 280 B1211-B1213; CHECKLIST #106 (data-consumption audit) + #128 (adversarial happy-path); scripts/measure_news_coverage_batch_a.py; output_audit/news_coverage_batch_a.json.

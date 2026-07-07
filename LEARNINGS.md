@@ -2697,3 +2697,34 @@ audits recognize it as accepted-in-place rather than re-flagging.
 
 **Cross-references:** B1195/B1201/B1203 code + B1210 codify commit; Council 279
 adversarial review; CHECKLIST #150/#151.
+
+
+## L199 -- DATA-SOURCE COVERAGE AUDITS MUST BE REPRESENTATIVE (Council 280 B1213 2026-07-07)
+
+Owner directive 2026-07-07 Council 280 ("proceed council this" post-B1211 full audit): codify the coverage-audit methodology as a mandatory pre-condition for "producer verified" claims.
+
+**Root cause chain (3 audits, 3 different verdicts):**
+
+- B1204 (2026-07-06): mega-cap-only 8-ticker probe on 2024-06-15 -> reported "PRODUCER VERIFIED WORKING". Correct for the 8 tickers tested but coverage-biased sample.
+- B1209 (2026-07-07): non-mega 25-ticker probe on 2024-06-15 -> reported 48% coverage. Corrected mega-cap bias but non-mega-only introduced OPPOSITE bias.
+- B1211 (2026-07-07): full 133-ticker x 4 quarterly 2024 dates -> effective universe 84.2%, zero-coverage 15.8%. Temporally + universe-representatively honest verdict.
+
+Each audit's sample selection biased the verdict. Only the full audit produced actionable numbers.
+
+**Universal principle:** For any data-source-dependent producer, "verified" verdicts depend heavily on WHICH tickers + WHICH dates were sampled. Mega-cap-only, small-cap-only, single-date, or non-representative samples all produce misleading verdicts.
+
+**Rule triad:**
+- CHECKLIST #106 requires data-consumption audit (upstream)
+- CHECKLIST #128 requires adversarial happy-path check
+- CHECKLIST #154 (NEW) requires REPRESENTATIVE + TEMPORALLY-ROBUST coverage audit before "producer verified"
+
+**Sample size gates:**
+- Minimum 25 tickers OR 10% of universe (whichever larger)
+- Minimum 4 dates spanning 12+ months
+- Representative sampling (not mega-cap-only, not small-cap-only)
+- Distinguish ALWAYS_COVERED / PARTIAL / ALWAYS_ZERO
+- Save canonical output_audit/<producer>_coverage_<universe>.json for downstream consumers
+
+**Canonical implementation:** scripts/measure_news_coverage_batch_a.py (B1211). Copy pattern for future producer coverage audits.
+
+**Cross-references:** B1204 initial audit (biased); B1209 corrected but still biased; B1211 full audit (honest); B1213 codification; CHECKLIST #154; scripts/measure_news_coverage_batch_a.py; output_audit/news_coverage_batch_a.json.

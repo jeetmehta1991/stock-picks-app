@@ -4598,3 +4598,22 @@ NEW SPRINT 5 TICKET:
 
 Pyramid 852+2 GREEN.
 
+
+### B1213 (2026-07-07 Council 280): CHECKLIST #154 + L199 codification
+
+Codified to prevent recurrence of B1204 mega-cap-only misleading audit:
+
+**CHECKLIST #154 (NEW):** Data-source coverage audit before "PRODUCER VERIFIED" claims
+- Sample must be REPRESENTATIVE (not mega-cap-only)
+- Sample size >= 25 tickers OR 10% of universe (whichever larger)
+- >= 4 test dates spanning 12+ months
+- Distinguish ALWAYS_COVERED / PARTIAL / ALWAYS_ZERO
+- Save canonical output_audit/<producer>_coverage_<universe>.json
+- If effective universe < 90%, queue Sprint 5 secondary-source ticket
+
+**L199 (NEW):** 3-audit root-cause chain codified (B1204 biased -> B1209 opposite-biased -> B1211 honest). Universal principle: coverage-audit verdicts depend heavily on sample selection.
+
+**Canonical implementation:** scripts/measure_news_coverage_batch_a.py (B1211 template for future producer audits).
+
+Pyramid 852+2 GREEN.
+
