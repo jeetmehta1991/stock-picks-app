@@ -4471,3 +4471,15 @@ Low fire counts on news_momentum_short / news_reversal_long / news_reversal_shor
 
 Rec spirit-match delivered via B1192 threshold loosening; no additional producer fix needed.
 
+
+### B1205 (2026-07-07 Council 279 Fix 1+3+4): CSV regen + CLAUDE.md line 95 + dead test delete
+
+Owner directive "Approve council this" - approve Council 279 11 silent misses remediation.
+
+Applied (3 doc/data cleanup items):
+1. **Fix #1**: Re-ran scripts/fix_change_from_original_and_gate_structure.py to refresh 40+ strategies' updated_producer_signals + change_from_original columns for post-B1189-B1203 state. Result: 101 verified real code changes (was 59 pre-B1189-B1203); columns now accurately reflect current source.
+2. **Fix #3**: Updated CLAUDE.md line 95 - strategy count 220 -> 219 post-B1189 dxy_headwind DELETE; STRATEGIES_DISABLED_MISSING_PRODUCER changed from **1** to **0**.
+3. **Fix #4**: Deleted dead `_test_batch372_dxy_headwind_disabled_missing_producer_DISABLED_B1189` function (was renamed underscore-prefix in B1189 but should have been deleted; ~75 lines dead code).
+
+Pyramid 850+2 GREEN.
+
