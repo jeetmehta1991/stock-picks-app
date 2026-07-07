@@ -4731,3 +4731,26 @@ Canonical output: output_audit/strategy_vs_producer_coverage_matrix.json (192-st
 
 Pyramid 852+2 GREEN.
 
+
+### B1218 (2026-07-07 Council 282): Congressional + SEC EDGAR coverage audits
+
+Applied CHECKLIST #154 to 2 more producers.
+
+**CONGRESSIONAL (House trading via QuiverQuant):**
+- Effective universe: 67.7% (90/133 tickers)
+- ALWAYS_ZERO: 43 tickers = 32.3%
+- Constant per-date = data source gap (not event-rarity)
+- 43 zero-coverage tickers are mostly small/mid caps + foreign ADRs where congressional trading is uncommon
+- No strategies in Batch A use house_ signals per B1217 cross-audit (safe to note without CSV updates)
+
+**SEC EDGAR (8-K + Item 1.01 M&A + other filings):**
+- Effective universe: 97.7% (130/133 tickers)
+- ALWAYS_ZERO: 3 tickers = 2.3%
+- Excellent coverage - producer reliable for m_and_a_target_long, insider_cluster_concentrated_sell_short, etc.
+
+Canonical outputs:
+- output_audit/congressional_coverage_batch_a.json
+- output_audit/sec_edgar_coverage_batch_a.json
+
+Pyramid 852+2 GREEN.
+

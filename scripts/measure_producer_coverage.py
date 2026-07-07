@@ -66,6 +66,19 @@ PRODUCERS = {
         "primary_signal": "institutional_buy",
         "check": lambda r: bool(r) and any(k.startswith("institutional") for k in r),
     },
+    "congressional": {
+        "module": "backtest.signals.congressional_alt_data",
+        "func": "compute_housetrading_signals",
+        "primary_signal": "house_cluster_buy",
+        # B1218 fix: producer emits house_* keys, not congressional_*
+        "check": lambda r: bool(r) and any(k.startswith("house_") for k in r),
+    },
+    "sec_edgar": {
+        "module": "backtest.signals.sec_edgar_extractor",
+        "func": "compute_sec_edgar_signals",
+        "primary_signal": "recent_8k_filed",
+        "check": lambda r: bool(r),
+    },
 }
 
 
