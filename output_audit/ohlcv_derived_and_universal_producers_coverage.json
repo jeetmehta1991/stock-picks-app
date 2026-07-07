@@ -1,0 +1,31 @@
+{
+  "batch": "B1222",
+  "council": 283,
+  "producers_probed": {
+    "volume_profile": {
+      "type": "OHLCV-derived",
+      "sample_coverage_30": 30,
+      "pct_effective_sample": 100.0,
+      "note": "Sample-based; full coverage limited by OHLCV cache (~84% of Batch A)"
+    },
+    "ict_po3": {
+      "type": "OHLCV-derived",
+      "sample_coverage_30": 30,
+      "pct_effective_sample": 100.0,
+      "note": "Sample-based; ICT signals from ohlcv data"
+    },
+    "macro_events_pre_fomc": {
+      "type": "UNIVERSAL",
+      "dates_with_data": 4,
+      "total_dates": 4,
+      "pct_effective": 100
+    },
+    "calendar_effects": {
+      "type": "UNIVERSAL",
+      "dates_with_data": 4,
+      "total_dates": 4,
+      "pct_effective": 100,
+      "note": "Already verified in B1180 - is_totm/halloween/pre_holiday all working"
+    }
+  }
+}

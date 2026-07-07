@@ -4821,3 +4821,27 @@ Canonical outputs:
 
 Pyramid 852+2 GREEN.
 
+
+### B1222 (2026-07-07 Council 283): OHLCV-derived + universal producer audits
+
+Composite sample-based + universal producer coverage checks:
+
+**volume_profile (OHLCV-derived):**
+- 100% (30-ticker sample) - naked_poc, vp_close_near_poc all working
+- Coverage limited by OHLCV cache (~84% of Batch A per B1211 note)
+
+**ict_po3 (OHLCV-derived):**
+- 100% (30-ticker sample) - PO3 phase detection working on all sampled tickers
+
+**macro_events pre_fomc (UNIVERSAL):**
+- 100% on 4 test dates - pre_fomc_d0, pre_fomc_d1, pre_fomc_window all emitted
+
+**calendar_effects (UNIVERSAL):**
+- 100% on 4 test dates - already verified B1180 (is_totm, is_halloween_period, is_pre_holiday, is_january_extended)
+
+All OHLCV-derived + universal producers WORKING with no gaps.
+
+Canonical output: output_audit/ohlcv_derived_and_universal_producers_coverage.json
+
+Pyramid 852+2 GREEN.
+
