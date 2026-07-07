@@ -4447,3 +4447,27 @@ Pyramid 850+2 GREEN.
 
 Remaining action: B1204 news_sentiment audit (owner-flagged in B1192 3 news strategies).
 
+
+### B1204 (2026-07-06 Council 278 NEWS AUDIT): news_sentiment producer verified working
+
+Owner audit request (B1192 flagged 3 news strategies): "audit if news_sentiment is firing correctly"
+
+Runtime probe 2024-06-15 across 8 tickers (AAPL, TSLA, NVDA, META, MSFT, AMZN, GOOG, GME):
+
+| Ticker | 5d_sent | mean | shift | cnt_5d | vol_z |
+|--------|---------|------|-------|--------|-------|
+| AAPL | 0.364 | 0.405 | -0.053 | 100 | 7.20 |
+| TSLA | 0.344 | 0.351 | -0.031 | 48 | 3.48 |
+| NVDA | 0.363 | 0.385 | -0.059 | 183 | 1.49 |
+| META | 0.281 | 0.352 | 0.103 | 29 | 0.82 |
+| MSFT | 0.326 | 0.383 | -0.081 | 85 | 4.31 |
+| AMZN | 0.409 | 0.410 | -0.025 | 60 | 1.40 |
+| GOOG | -0.130 | 0.145 | -0.295 | 37 | 1.23 |
+| GME | 0.229 | 0.173 | 0.019 | 23 | 2.93 |
+
+VERDICT: PRODUCER VERIFIED WORKING. All 8 tickers returned real values (not zeros; not failures). Sentiment range -0.13 to +0.41; article counts 23-183 per 5d; volume z-scores 0.82 to 7.20.
+
+Low fire counts on news_momentum_short / news_reversal_long / news_reversal_short are consequence of strict multi-gate stack (sentiment + volume z-score + candle + AVWAP + regime), NOT producer bug. Sample shows most tickers have sentiment in +0.1 to +0.4 range; hitting <-0.3 (B1192 loosened threshold) requires genuine negative news event.
+
+Rec spirit-match delivered via B1192 threshold loosening; no additional producer fix needed.
+
