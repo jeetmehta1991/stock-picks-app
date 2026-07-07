@@ -4796,3 +4796,28 @@ Canonical outputs:
 
 Pyramid 852+2 GREEN.
 
+
+### B1221 (2026-07-07 Council 283): earnings_yoy + cot_positioning + cross_asset audits
+
+**earnings_yoy (compute_yoy_surprise_signal):**
+- Effective universe: 78.9% (105/133)
+- ALWAYS_ZERO: 28 tickers = 21.1%
+- Producer works; some tickers lack earnings history in cache
+
+**cot_positioning (CFTC COT - UNIVERSAL):**
+- All 7 macro series (sp500/ndx/rut/dow/dxy/gold/copper) x 4 dates: 100% populated
+- Coverage type: UNIVERSAL_SIGNAL (not per-ticker)
+- Producer WORKING - not affected by per-ticker gaps
+
+**cross_asset (bond/equity - UNIVERSAL):**
+- 6 signals x 4 dates: 100% populated (bond_equity_ratio, risk_off/on_regime_bond_signal, etc.)
+- Coverage type: UNIVERSAL_SIGNAL
+- Producer WORKING
+
+Canonical outputs:
+- output_audit/earnings_yoy_coverage_batch_a.json
+- output_audit/cot_positioning_coverage_batch_a.json
+- output_audit/cross_asset_coverage_batch_a.json
+
+Pyramid 852+2 GREEN.
+

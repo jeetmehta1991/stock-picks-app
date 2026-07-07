@@ -94,8 +94,9 @@ PRODUCERS = {
     "earnings_yoy": {
         "module": "backtest.signals.earnings_surprise_yoy",
         "func": "compute_yoy_surprise_signal",
-        "primary_signal": "yoy_growth",
-        "check": lambda r: bool(r) and r.get("yoy_growth") is not None,
+        "primary_signal": "earnings_eps_yoy_growth",
+        # B1221 fix: producer emits earnings_eps_yoy_growth (not yoy_growth)
+        "check": lambda r: bool(r) and r.get("earnings_eps_yoy_growth") is not None,
         "needs_ohlcv": True,
     },
 }

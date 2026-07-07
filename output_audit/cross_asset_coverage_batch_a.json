@@ -1,0 +1,21 @@
+{
+  "batch": "B1221",
+  "council": 283,
+  "producer": "cross_asset_bond_equity",
+  "coverage_type": "UNIVERSAL_SIGNAL",
+  "notes": "TLT/SPY bond-equity ratio - universal not per-ticker. Signals: bond_equity_ratio, risk_off/on_regime_bond_signal, bond_equity_20d_pct_change.",
+  "test_dates_2024": [
+    "2024-03-15",
+    "2024-06-15",
+    "2024-09-15",
+    "2024-12-15"
+  ],
+  "signals_emitted_per_date": {
+    "2024-03-15": 6,
+    "2024-06-15": 6,
+    "2024-09-15": 6,
+    "2024-12-15": 6
+  },
+  "effective_universe_pct": 100.0,
+  "producer_verdict": "WORKING - all 6 bond-equity signals populated across all 4 dates"
+}

@@ -1,0 +1,33 @@
+{
+  "batch": "B1221",
+  "council": 283,
+  "producer": "cot_positioning",
+  "coverage_type": "UNIVERSAL_SIGNAL",
+  "notes": "CFTC COT data - universal not per-ticker. Signals emitted for 7 macro series (sp500/ndx/rut/dow/dxy/gold/copper).",
+  "series_tested": [
+    "sp500",
+    "ndx",
+    "rut",
+    "dow",
+    "dxy",
+    "gold",
+    "copper"
+  ],
+  "test_dates_2024": [
+    "2024-03-15",
+    "2024-06-15",
+    "2024-09-15",
+    "2024-12-15"
+  ],
+  "per_series_dates_with_data": {
+    "sp500": 4,
+    "ndx": 4,
+    "rut": 4,
+    "dow": 4,
+    "dxy": 4,
+    "gold": 4,
+    "copper": 4
+  },
+  "effective_universe_pct": 100.0,
+  "producer_verdict": "WORKING - all 7 series populated across all 4 dates"
+}
