@@ -12312,3 +12312,73 @@ def test_b1207_pead_positive_surprise_fires_at_1pct_return():
         f"B1207 pead threshold must accept +1% to +1.5% returns per Council 278 "
         f"rec loosening; effective threshold {default*100:.2f}% is too tight."
     )
+
+
+def test_b1229_squeeze_setup_long_graceful_degradation_fires_with_dtc_only():
+    """B1229 (Council 285 Fix B1214): strat_squeeze_setup_long must fire when
+    si_pct is 0 (producer bug) AND dtc >= 12 (fallback threshold) AND other L1/L2/L3
+    gates met. Graceful degradation for FINRA shares_outstanding=NULL bug.
+    """
+    from backtest.signals.screener import strat_squeeze_setup_long
+    s = {
+        # L1: si_pct=0 (bug) but dtc=15 triggers fallback path
+        "short_interest_pct": 0.0,
+        "days_to_cover": 15.0,
+        "institutional_buy": True,
+        # L2: news catalyst
+        "news_sentiment_shift": 0.5,
+        # L3: confirmation
+        "above_avwap_20low": True,
+        "vol_spike_15x": True,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
+    }
+    r = strat_squeeze_setup_long(s)
+    assert r["fires"] is True, (
+        "B1229 fix: strategy must fire under graceful-degradation path when "
+        "si_pct is 0 (producer bug) AND dtc>=12 fallback threshold met"
+    )
+
+
+def test_b1229_squeeze_setup_long_dtc_below_fallback_threshold_no_fire():
+    """B1229 companion: gate must NOT fire when si_pct=0 and dtc between 8 and 12
+    (baseline squeeze but not extreme enough for fallback path).
+    """
+    from backtest.signals.screener import strat_squeeze_setup_long
+    s = {
+        "short_interest_pct": 0.0,
+        "days_to_cover": 10.0,  # meets baseline dtc>=8 but not fallback dtc>=12
+        "institutional_buy": True,
+        "news_sentiment_shift": 0.5,
+        "above_avwap_20low": True,
+        "vol_spike_15x": True,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
+    }
+    r = strat_squeeze_setup_long(s)
+    assert r["fires"] is False, (
+        "B1229 fix: fallback requires dtc>=12 (higher urgency); dtc=10 must not "
+        "fire the si_pct==0 fallback path"
+    )
+
+
+def test_b1229_squeeze_setup_long_original_path_still_works_when_si_pct_populated():
+    """B1229 companion: original strict path (si_pct>=0.20) still triggers L1
+    positioning when Sprint 5 shares_outstanding fix ships.
+    """
+    from backtest.signals.screener import strat_squeeze_setup_long
+    s = {
+        "short_interest_pct": 0.25,  # 25% - meets original threshold
+        "days_to_cover": 10.0,       # meets baseline dtc>=8
+        "institutional_buy": True,
+        "news_sentiment_shift": 0.5,
+        "above_avwap_20low": True,
+        "vol_spike_15x": True,
+        "close_above_open": True,
+        "close_in_top_40pct_of_range": True,
+    }
+    r = strat_squeeze_setup_long(s)
+    assert r["fires"] is True, (
+        "B1229 fix: original strict path (si_pct>=0.20 AND dtc>=8) must still "
+        "fire when producer emits real si_pct value"
+    )

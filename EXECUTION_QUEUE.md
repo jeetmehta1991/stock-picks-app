@@ -5022,3 +5022,28 @@ Sprint 5 prioritization updated with historical backfill requirements:
 
 Pyramid 852+2 GREEN.
 
+
+### B1229 (2026-07-07 Council 285 Fix B1214): squeeze_setup_long GRACEFUL DEGRADATION
+
+Owner directive: "Address now" for unresolved silent misses.
+
+Fix approach: modify strat_squeeze_setup_long L1 gate to gracefully degrade when short_interest_pct producer bug active (FINRA shares_outstanding=NULL).
+
+Original: `si_pct >= 0.20 AND dtc >= 8.0 AND smart_money_present`
+Fixed: `(si_pct >= 0.20 OR (si_pct == 0.0 AND dtc >= 12.0)) AND dtc >= 8.0 AND smart_money_present`
+
+Rationale:
+- Original strict path preserved for when Sprint 5 fix ships
+- Fallback path (dtc >= 12) captures squeeze-urgency intent per Cohen-Diether-Malloy 2007
+- DTC >= 12 (higher than baseline 8) approximates si_pct >= 20% threshold effect
+- Auto-reverts to strict form when producer emits valid short_interest_pct
+
+Applied:
+- backtest/signals/screener.py: L1 gate modification with B1229 comment
+- backtest/tests/test_unit.py: 3 pin tests (graceful degradation fires, dtc<12 no-fire, original strict path)
+- CSV: strat_squeeze_setup_long status DONE_B1229_GRACEFUL_DEGRADATION
+
+Pyramid 855+2 GREEN (3 new tests).
+
+Sprint 5 S5-B1214 ticket UPDATED: when shares_outstanding data fix ships, remove fallback path.
+

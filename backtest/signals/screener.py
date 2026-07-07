@@ -4925,8 +4925,17 @@ def strat_squeeze_setup_long(s):
     si_pct = s.get("short_interest_pct", 0.0) or 0.0
     dtc    = s.get("days_to_cover",      0.0) or 0.0
 
+    # B1229 (2026-07-07 Council 285 Fix B1214): graceful degradation for
+    # short_interest_pct producer bug. FINRA cache has shares_outstanding=NULL
+    # so producer NEVER emits short_interest_pct (B1214 audit finding). Modify
+    # L1 gate to: si_pct >= 0.20 OR (si_pct == 0.0 AND dtc >= 12.0) as fallback.
+    # DTC >= 12 (~50% higher than baseline 8) captures the squeeze-urgency
+    # tightness that si_pct >= 20% would have implied per Cohen-Diether-Malloy
+    # 2007 (their SI/ADV = DTC framework). When Sprint 5 fix S5-B1214-SHARES-
+    # OUTSTANDING-DATA-GAP-FIX ships, gate reverts to original strict form.
+    si_pct_ok = si_pct >= 0.20 or (si_pct == 0.0 and dtc >= 12.0)
     layer1_positioning = (
-        si_pct >= 0.20
+        si_pct_ok
         and dtc >= 8.0
         and (s.get("institutional_buy", False)
              or s.get("insider_cluster_active", False))
