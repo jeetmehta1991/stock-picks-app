@@ -4307,3 +4307,17 @@ Applied:
 
 Pyramid 850+2 GREEN.
 
+
+### B1192 (2026-07-06 Council 278 APPROVED 6-8/40): News family sentiment widening
+
+Owner "Approve. But audit if news_sentiment is firing correctly" - audit queued as B1203.
+
+Applied:
+- news_momentum_short: news_sentiment_5d <= -0.5 -> <= -0.3
+- news_reversal_long: news_sentiment_5d <= -0.5 -> <= -0.3
+- news_reversal_short: news_sentiment_5d >= 0.5 -> >= 0.3 AND pct_change_5d > 0.10 -> > 0.08
+
+Pyramid 850+2 GREEN.
+
+Queued: B1203 audit if news_sentiment_5d producer is firing correctly on Batch A.
+

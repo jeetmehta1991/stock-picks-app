@@ -7133,8 +7133,11 @@ def strat_news_momentum_short(s):
     # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
     # `not s.get("above_avwap_20high", True)` -> `below_avwap_20high`
     # (B612 producer) for positive symmetric signal.
+    # B1192 (2026-07-06 Council 278 owner-approved): widen sentiment threshold
+    # -0.5 -> -0.3 per B1136 news_momentum_long precedent. Owner also flagged
+    # "audit if news_sentiment is firing correctly" - see B1203 deferred audit.
     fires = (
-        s.get("news_sentiment_5d", 0.0) <= -0.5
+        s.get("news_sentiment_5d", 0.0) <= -0.3  # B1192: -0.5 -> -0.3
         and s.get("news_volume_zscore_5d", 0.0) >= 1.5
         and s.get("dc20_breakout_dn", False)
         and s.get("close_below_open", False)
@@ -7190,9 +7193,13 @@ def strat_news_reversal_short(s):
     windows tend to partially reverse over 5-10 trading days. De Bondt-
     Thaler 1985 overreaction hypothesis adapted to the news cycle.
     """
+    # B1192 (2026-07-06 Council 278 owner-approved): widen sentiment 0.5 -> 0.3
+    # (symmetric to news_reversal_long B1192); widen pct_change_5d 0.10 -> 0.08
+    # correspondingly per rec "widen pct_change threshold correspondingly".
+    # Owner flagged: "audit if news_sentiment is firing correctly" (B1203 deferred).
     fires = (
-        s.get("news_sentiment_5d", 0.0) >= 0.5  # B614 (d): 0.7 -> 0.5
-        and s.get("pct_change_5d", 0.0) > 0.10
+        s.get("news_sentiment_5d", 0.0) >= 0.3  # B1192: 0.5 -> 0.3
+        and s.get("pct_change_5d", 0.0) > 0.08  # B1192: 0.10 -> 0.08 (correspondingly)
         and s.get("news_count_5d", 0) >= 3       # B614 (c): article_count -> count_5d
         and s.get("news_sentiment_shift", 0.0) < -0.2  # B614 (b): tone turning
         and s.get("close_below_open", False)     # B614 (a): EVENT bar gate
@@ -7244,8 +7251,11 @@ def strat_news_reversal_long(s):
     macro-tolerable. In bear-trend the down move is real, not
     overreaction.
     """
+    # B1192 (2026-07-06 Council 278 owner-approved): widen sentiment -0.5 -> -0.3
+    # per B1136 news family precedent. Owner flagged "audit if news_sentiment is
+    # firing correctly" (B1203 deferred).
     fires = (
-        s.get("news_sentiment_5d", 0.0) <= -0.5  # B614 (d): -0.7 -> -0.5
+        s.get("news_sentiment_5d", 0.0) <= -0.3  # B1192: -0.5 -> -0.3
         and s.get("pct_change_5d", 0.0) < -0.10
         and s.get("news_count_5d", 0) >= 3       # B614 (c)
         and s.get("news_sentiment_shift", 0.0) > 0.2  # B614 (b): tone turning UP
