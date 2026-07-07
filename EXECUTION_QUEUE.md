@@ -5279,3 +5279,31 @@ Council 289 sync banner applied post-regen.
 
 Pyramid 858+2 GREEN.
 
+
+### B1239-B1241 (2026-07-07 Council 290): SPRINT 5 S5-B1214 SHIPPED
+
+Owner directive: "Continue sprint 5"
+
+**S5-B1214-SHARES-OUTSTANDING-DATA-GAP-FIX: COMPLETE**
+
+B1239 investigation evaluated 4 shares_outstanding sources:
+- Polygon financials basic_average_shares: 3-97x off, UNUSABLE
+- info_cache.json: all NULL
+- FINRA shares_outstanding: 100% NULL (original bug)
+- Finnhub profile2 shareOutstanding: 95-102% accurate, 95.5% Batch A coverage - SELECTED
+
+B1240 fix in backtest/signals/short_interest.py:
+- Added _load_shares_outstanding_from_finnhub(ticker) helper
+- Modified compute_short_interest_signals to fall back to Finnhub profile2
+
+Coverage: short_interest_pct 0.0% -> 93.2% Batch A (124/133 tickers)
+
+B1241 rollback of B1229 graceful degradation:
+- Restored strict si_pct >= 0.20 AND dtc >= 8 L1 gate
+- 3 pin tests updated (test_b1229_* -> test_b1240_*)
+
+Strategy: strat_squeeze_setup_long DONE_B1240_S5_B1214_SPRINT5_SHIPPED
+
+L203 codified. Sprint 5 status: S5-B1214 SHIPPED / S5-B1216 MED / S5-B1212 MED
+
+Pyramid 858+2 GREEN.

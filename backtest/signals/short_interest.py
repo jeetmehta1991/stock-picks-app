@@ -44,6 +44,53 @@ _SI_CACHE_DIR = (
     / "data_prefetch" / "finra" / "short_interest"
 )
 
+# B1240 (2026-07-07 Council 290 S5-B1214 fix):
+# FINRA cache has shares_outstanding = NULL for all rows (upstream data gap).
+# Finnhub profile2 has shareOutstanding field with 95.5% Batch A coverage +
+# 95-102% accuracy vs authoritative sources (per B1239 investigation).
+# Use as fallback when FINRA row's shares_outstanding is missing.
+_FINNHUB_PROFILE2_DIR = (
+    Path(__file__).resolve().parent.parent.parent
+    / "data_prefetch" / "finnhub" / "profile2"
+)
+
+_FINNHUB_SHARES_CACHE: dict[str, Optional[float]] = {}
+
+
+def _load_shares_outstanding_from_finnhub(ticker: str) -> Optional[float]:
+    """B1240 (Council 290 S5-B1214): return shares_outstanding for a ticker
+    from Finnhub profile2 cache. Returns None on data miss.
+
+    Finnhub profile2 has `shareOutstanding` field expressed in MILLIONS of
+    shares. This helper multiplies by 1e6 to return raw share count.
+
+    Validation (B1239): 95-102% accuracy vs SEC-authoritative shares_outstanding
+    for AAPL/MSFT/GOOG/NVDA/AMZN/META; some deviation on high-turnover names
+    (TSLA 117%, GME 147%) but sufficient for the >= 20% threshold check in
+    strat_squeeze_setup_long.
+    """
+    if ticker in _FINNHUB_SHARES_CACHE:
+        return _FINNHUB_SHARES_CACHE[ticker]
+    path = _FINNHUB_PROFILE2_DIR / f"{ticker}.parquet"
+    if not path.exists():
+        _FINNHUB_SHARES_CACHE[ticker] = None
+        return None
+    try:
+        df = pd.read_parquet(path)
+        if df.empty:
+            _FINNHUB_SHARES_CACHE[ticker] = None
+            return None
+        so_millions = df.iloc[0].get("shareOutstanding")
+        if so_millions is None or so_millions <= 0:
+            _FINNHUB_SHARES_CACHE[ticker] = None
+            return None
+        raw_shares = float(so_millions) * 1_000_000
+        _FINNHUB_SHARES_CACHE[ticker] = raw_shares
+        return raw_shares
+    except Exception:
+        _FINNHUB_SHARES_CACHE[ticker] = None
+        return None
+
 # Schema of the expected per-ticker parquet (when prefetch lands):
 #   settlement_date   : YYYY-MM-DD biweekly settlement date
 #   short_interest    : float  -- shares short on that date
@@ -129,6 +176,16 @@ def compute_short_interest_signals(
         "short_interest_observations": int(len(past)),
         "short_interest_settlement_date": most_recent["settlement_date"],
     }
+    # B1240 (2026-07-07 Council 290 S5-B1214 fix): if FINRA shares_outstanding
+    # is missing (upstream data gap, 100% NULL as of 2026-07-07 per B1214/B1239
+    # findings), fall back to Finnhub profile2 shareOutstanding (95.5% Batch A
+    # coverage + 95-102% accuracy). This unblocks strat_squeeze_setup_long
+    # from the graceful-degradation fallback path added in B1229.
+    if so <= 0:
+        finnhub_so = _load_shares_outstanding_from_finnhub(ticker)
+        if finnhub_so and finnhub_so > 0:
+            so = finnhub_so
+            out["short_interest_shares_outstanding_source"] = "finnhub_profile2"
     if so > 0:
         out["short_interest_pct"] = round(si / so, 6)
     if adv > 0:

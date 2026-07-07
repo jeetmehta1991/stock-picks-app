@@ -12314,40 +12314,58 @@ def test_b1207_pead_positive_surprise_fires_at_1pct_return():
     )
 
 
-def test_b1229_squeeze_setup_long_graceful_degradation_fires_with_dtc_only():
-    """B1229 (Council 285 Fix B1214): strat_squeeze_setup_long must fire when
-    si_pct is 0 (producer bug) AND dtc >= 12 (fallback threshold) AND other L1/L2/L3
-    gates met. Graceful degradation for FINRA shares_outstanding=NULL bug.
+# B1229 graceful-degradation tests SUPERSEDED by B1240 (Council 290 S5-B1214 SHIPPED).
+# Sprint 5 fix: short_interest.compute_short_interest_signals now falls back to
+# Finnhub profile2 shareOutstanding when FINRA cache shares_outstanding is NULL.
+# Coverage: 0.0% -> 93.2% Batch A. Original strict L1 gate restored.
+
+
+def test_b1240_shares_outstanding_finnhub_fallback_populates_short_interest_pct():
+    """B1240 (Council 290 S5-B1214): compute_short_interest_signals must emit
+    short_interest_pct via Finnhub profile2 fallback when FINRA shares_outstanding
+    is NULL (~100% of FINRA cache rows as of B1214 finding).
+    """
+    from datetime import date
+    from backtest.signals.short_interest import compute_short_interest_signals
+    # AAPL is a canonical test - FINRA data known present but shares_outstanding NULL
+    r = compute_short_interest_signals("AAPL", date(2024, 6, 15))
+    assert "short_interest_pct" in r, (
+        "B1240 fix: short_interest_pct must be emitted for AAPL via Finnhub fallback"
+    )
+    assert r["short_interest_pct"] > 0, (
+        f"B1240 fix: short_interest_pct must be positive; got {r.get('short_interest_pct')}"
+    )
+    # Verify source annotation
+    assert r.get("short_interest_shares_outstanding_source") == "finnhub_profile2", (
+        "B1240 fix: source annotation must indicate finnhub_profile2 fallback"
+    )
+
+
+def test_b1240_squeeze_setup_long_fires_via_strict_path_post_sprint5_fix():
+    """B1240 companion: strat_squeeze_setup_long fires on strict L1 gate
+    (si_pct>=0.20 AND dtc>=8) now that producer emits si_pct via Finnhub fallback.
     """
     from backtest.signals.screener import strat_squeeze_setup_long
     s = {
-        # L1: si_pct=0 (bug) but dtc=15 triggers fallback path
-        "short_interest_pct": 0.0,
-        "days_to_cover": 15.0,
+        "short_interest_pct": 0.25,  # 25% - meets strict threshold
+        "days_to_cover": 10.0,
         "institutional_buy": True,
-        # L2: news catalyst
         "news_sentiment_shift": 0.5,
-        # L3: confirmation
         "above_avwap_20low": True,
         "vol_spike_15x": True,
         "close_above_open": True,
         "close_in_top_40pct_of_range": True,
     }
     r = strat_squeeze_setup_long(s)
-    assert r["fires"] is True, (
-        "B1229 fix: strategy must fire under graceful-degradation path when "
-        "si_pct is 0 (producer bug) AND dtc>=12 fallback threshold met"
-    )
+    assert r["fires"] is True
 
 
-def test_b1229_squeeze_setup_long_dtc_below_fallback_threshold_no_fire():
-    """B1229 companion: gate must NOT fire when si_pct=0 and dtc between 8 and 12
-    (baseline squeeze but not extreme enough for fallback path).
-    """
+def test_b1240_squeeze_setup_long_no_fire_below_strict_threshold():
+    """B1240 companion: strict path requires si_pct>=0.20. Below threshold = no fire."""
     from backtest.signals.screener import strat_squeeze_setup_long
     s = {
-        "short_interest_pct": 0.0,
-        "days_to_cover": 10.0,  # meets baseline dtc>=8 but not fallback dtc>=12
+        "short_interest_pct": 0.15,  # 15% - below threshold
+        "days_to_cover": 10.0,
         "institutional_buy": True,
         "news_sentiment_shift": 0.5,
         "above_avwap_20low": True,
@@ -12357,30 +12375,7 @@ def test_b1229_squeeze_setup_long_dtc_below_fallback_threshold_no_fire():
     }
     r = strat_squeeze_setup_long(s)
     assert r["fires"] is False, (
-        "B1229 fix: fallback requires dtc>=12 (higher urgency); dtc=10 must not "
-        "fire the si_pct==0 fallback path"
-    )
-
-
-def test_b1229_squeeze_setup_long_original_path_still_works_when_si_pct_populated():
-    """B1229 companion: original strict path (si_pct>=0.20) still triggers L1
-    positioning when Sprint 5 shares_outstanding fix ships.
-    """
-    from backtest.signals.screener import strat_squeeze_setup_long
-    s = {
-        "short_interest_pct": 0.25,  # 25% - meets original threshold
-        "days_to_cover": 10.0,       # meets baseline dtc>=8
-        "institutional_buy": True,
-        "news_sentiment_shift": 0.5,
-        "above_avwap_20low": True,
-        "vol_spike_15x": True,
-        "close_above_open": True,
-        "close_in_top_40pct_of_range": True,
-    }
-    r = strat_squeeze_setup_long(s)
-    assert r["fires"] is True, (
-        "B1229 fix: original strict path (si_pct>=0.20 AND dtc>=8) must still "
-        "fire when producer emits real si_pct value"
+        "B1240: si_pct=0.15 below strict >=0.20 threshold; must not fire"
     )
 
 

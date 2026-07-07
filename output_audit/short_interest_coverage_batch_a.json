@@ -180,5 +180,6 @@
     }
   },
   "effective_universe_pct": 97.7,
-  "zero_coverage_pct": 2.3
+  "zero_coverage_pct": 2.3,
+  "b1240_sprint5_fix_note": "B1240 (2026-07-07 Council 290) Sprint 5 S5-B1214 SHIPPED: producer compute_short_interest_signals now falls back to Finnhub profile2 shareOutstanding when FINRA shares_outstanding is NULL. short_interest_pct effective coverage: 0.0% -> 93.2% Batch A (124/133 tickers). Remaining 9 zero-coverage are small-caps not in Finnhub profile2 cache."
 }
