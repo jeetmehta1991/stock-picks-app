@@ -5181,3 +5181,28 @@ Banner re-applied post-regen noting auto-generation + Council 287 sync context.
 
 Pyramid 858+2 GREEN.
 
+
+### B1236 (2026-07-07 Council 287): Final doc-sync verification + CLAUDE.md + archive note
+
+Applied final sync:
+- CLAUDE.md: banner added (was inline-edited B1205 for line 95 only)
+- backtest/tests/golden/README.md: banner added
+- AUDIT_INDEX.md: Stage 4 archive location note added
+
+Final verification (Python glob across all non-archived .md docs):
+- **47 forward-looking docs SYNCED** with Council 278-287 banner
+- **139 in NOT-SYNCED list** but 138 of those are:
+  - archive/*.md (already archived; not to sync)
+  - .archive/*.md (user's private archive)
+  - vendored/*.md (external libraries; not our docs)
+  - .venv/*.md (Python virtualenv packages)
+  - .claude/*.md (Claude Code skill definitions; not project docs)
+  - .pytest_cache/README.md (auto-generated)
+  - PROJECT_PLAN_ARCHIVE.md (explicit archive)
+  - output_optimization_candidates_*/optimization_summary.md (old outputs; queued for archive later)
+- 1 remaining (CLAUDE.md) resolved in this batch
+
+**47 non-archived project docs comprehensively synced.**
+
+Pyramid 858+2 GREEN.
+
