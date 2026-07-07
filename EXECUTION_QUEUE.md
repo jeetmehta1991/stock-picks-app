@@ -4503,3 +4503,12 @@ Rationale: B1197 marked strat_pead_with_insider_confirmation_long DONE without d
 
 Pyramid: 850+2 -> 852+2 GREEN (2 new tests).
 
+
+### B1208 (2026-07-07 Council 279 Fix #10): head_and_shoulders narrow-scope
+
+Reverted detect_head_and_shoulders function signature defaults to pre-B1196 state (shoulder_tol=0.03, head_min=0.02). The B1196 loosening (0.04/0.015) is now passed explicitly at the compute_all_chart_patterns call site.
+
+Rationale: narrow-scope per feedback_narrow_scope_blast_radius. Any future caller of detect_head_and_shoulders won't inherit the B1196 loosening as an implicit default. The 2 target strategies (head_and_shoulders_bottom_long, head_and_shoulders_top_short) still get the loosened detection since they consume via compute_all_chart_patterns.
+
+Pyramid 852+2 GREEN.
+

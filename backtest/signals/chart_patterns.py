@@ -67,8 +67,8 @@ def _find_swings(close: pd.Series, window: int = 5) -> tuple[list[int], list[int
 def detect_head_and_shoulders(
     df: pd.DataFrame,
     window: int = 5,
-    shoulder_tol: float = 0.04,  # B1196 (2026-07-06 Council 278 owner-approved): 0.03 -> 0.04 loosen shoulder symmetry per Bulkowski canonical + rec "1% -> 2%" spirit-match for detection tolerance
-    head_min: float = 0.015,      # B1196: 0.02 -> 0.015 loosen head-height minimum per rec spirit-match
+    shoulder_tol: float = 0.03,  # B1208 (2026-07-07 Council 279 Fix #10): reverted default 0.04 -> 0.03 for narrow-scope. Call site in compute_all_chart_patterns now passes 0.04 explicitly.
+    head_min: float = 0.02,       # B1208: reverted default 0.015 -> 0.02. Call site passes 0.015 explicitly.
     lookback: int = 60,
 ) -> dict:
     """Head-and-shoulders top + inverse-bottom detector (DEC-355).
@@ -410,7 +410,11 @@ def compute_all_chart_patterns(df: pd.DataFrame) -> dict:
         return {}
     out: dict = {}
     try:
-        out.update(detect_head_and_shoulders(df))
+        # B1208 (2026-07-07 Council 279 Fix #10): explicit kwargs preserving
+        # B1196 loosening for the 2 target strategies (head_and_shoulders_
+        # bottom_long, head_and_shoulders_top_short) without changing the
+        # function default (narrow-scope per feedback_narrow_scope_blast_radius).
+        out.update(detect_head_and_shoulders(df, shoulder_tol=0.04, head_min=0.015))
     except Exception:
         pass
     try:
