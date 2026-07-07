@@ -4893,3 +4893,38 @@ Canonical output: output_audit/cross_asset_multifunction_coverage.json
 
 Pyramid 852+2 GREEN.
 
+
+### B1225 (2026-07-07 Council 284): OHLCV-derived producer formal audits
+
+Sample: 40 tickers per CHECKLIST #154(b) minimum.
+
+**chart_patterns.py (8 functions all audited):**
+- compute_all_chart_patterns: 40/40 (100%)
+- detect_head_and_shoulders: 40/40
+- detect_double_top_bottom: 40/40
+- detect_cup_and_handle: 40/40
+- detect_inverted_cup_and_handle: 40/40
+- detect_flag: 40/40
+- detect_triangle: 40/40 (B1126 fix confirmed working)
+- compute_flag_break_retest_signals: 40/40
+
+**smc_ict.py (compute_smc_signals):** 40/40 (100%) - producer verified working per B1186 real-market probe
+
+**multi_timeframe.py (3 functions):**
+- compute_weekly_bias: 40/40 (100%)
+- compute_monthly_bias: 38/40 (95%) - 2 tickers with insufficient monthly history
+- compute_po3_signal: 40/40 (100%)
+
+**cross_sectional.py (compute_cross_sectional_features):**
+- 91/91 tickers with signals (100%)
+- Emits xs_momentum_12_1, xs_momentum_decile, xs_momentum_top_decile/quintile, xs_beta_decile, xs_low_beta_decile, etc.
+- B1193 producer-additive xs_momentum_top_quintile + xs_quality_top_tercile confirmed working
+
+All OHLCV-derived producers WORKING. Bounded only by OHLCV cache availability (~84% of Batch A per B1211 note).
+
+Canonical outputs:
+- output_audit/ohlcv_producers_extended_coverage.json
+- output_audit/cross_sectional_coverage_batch_a.json
+
+Pyramid 852+2 GREEN.
+

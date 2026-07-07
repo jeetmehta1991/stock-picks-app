@@ -1,0 +1,21 @@
+{
+  "batch": "B1225",
+  "council": 284,
+  "sample_size": 40,
+  "test_date": "2024-06-15",
+  "note": "OHLCV-derived producers - coverage bounded by OHLCV cache (~84% of Batch A per B1211)",
+  "producers": {
+    "chart_patterns.compute_all_chart_patterns": "40/40 (100.0%)",
+    "chart_patterns.detect_head_and_shoulders": "40/40 (100.0%)",
+    "chart_patterns.detect_double_top_bottom": "40/40 (100.0%)",
+    "chart_patterns.detect_cup_and_handle": "40/40 (100.0%)",
+    "chart_patterns.detect_inverted_cup_and_handle": "40/40 (100.0%)",
+    "chart_patterns.detect_flag": "40/40 (100.0%)",
+    "chart_patterns.detect_triangle": "40/40 (100.0%)",
+    "chart_patterns.compute_flag_break_retest_signals": "40/40 (100.0%)",
+    "smc_ict.compute_smc_signals": "40/40 (100.0%)",
+    "multi_timeframe.compute_weekly_bias": "40/40 (100.0%)",
+    "multi_timeframe.compute_monthly_bias": "38/40 (95.0%)",
+    "multi_timeframe.compute_po3_signal": "40/40 (100.0%)"
+  }
+}

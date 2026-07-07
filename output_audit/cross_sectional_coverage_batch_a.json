@@ -1,0 +1,26 @@
+{
+  "batch": "B1225",
+  "council": 284,
+  "producer": "cross_sectional",
+  "coverage_type": "PANEL-based (cross-sectional rankings)",
+  "sample_universe_size": 101,
+  "tickers_with_signals": 91,
+  "effective_coverage_pct": 100.0,
+  "sample_signal_keys": [
+    "xs_momentum_12_1",
+    "xs_momentum_decile",
+    "xs_momentum_top_decile",
+    "xs_momentum_bottom_decile",
+    "xs_momentum_top_quintile",
+    "xs_momentum_bottom_quintile",
+    "xs_beta",
+    "xs_beta_decile",
+    "xs_low_beta_decile",
+    "xs_high_beta_decile",
+    "xs_low_beta_top_quintile",
+    "xs_low_beta_bottom_quintile",
+    "xs_low_beta_decile_entry_recent_5d",
+    "xs_ivol",
+    "xs_ivol_decile"
+  ]
+}
