@@ -4512,3 +4512,25 @@ Rationale: narrow-scope per feedback_narrow_scope_blast_radius. Any future calle
 
 Pyramid 852+2 GREEN.
 
+
+### B1209 (2026-07-07 Council 279 Fix #11): Extended news audit reveals coverage gap
+
+Extended B1204 news_sentiment producer audit to 25 non-mega Batch A tickers (test date 2024-06-15).
+
+CRITICAL FINDING:
+- 12 of 25 (48%) tickers with REAL news data: BA/AFRM/ALGN/APA/APTV/APLS/DK/FIGS/AEHR/ADT/FLNC + others
+- 13 of 25 (52%) tickers with ZERO news coverage: FSLY/AUR/ALNY/GPRE/AJG/IBRX/BTU/ARMK/HUT/APD/AA/CENX/ARWR
+
+VERDICT: Producer works CORRECTLY when data exists. Coverage skewed toward high-news names (mega-caps, high-liquidity growth). Small/mid/growth tickers have gaps.
+
+IMPLICATIONS:
+- B1204 mega-cap-only audit was MISLEADING (said "PRODUCER VERIFIED WORKING" without noting coverage bias)
+- Effective universe for news_momentum_short / news_reversal_long / news_reversal_short is ~50% of Batch A
+- Low fire counts on news strategies are compound of: (a) strict multi-gate stack (B1204 finding), AND (b) news data coverage gaps (B1209 finding, NOT surfaced by B1204)
+
+Not a producer bug - data source coverage limitation. Could be improved via:
+- Additional news data source (Finnhub, Alpha Vantage) for low-coverage tickers
+- News-strategy fire-count expectations calibrated to ~50% effective universe
+
+Documented in CSV execution_comments for 3 news strategies.
+
