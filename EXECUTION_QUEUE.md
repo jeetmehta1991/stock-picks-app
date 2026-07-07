@@ -4547,3 +4547,33 @@ Codified L198 covering:
 
 Prevents future audits from re-flagging these as CHECKLIST #150 violations.
 
+
+### B1211 (2026-07-07 Council 280): Full news coverage audit - REFINED B1209 finding
+
+Scaled B1209 25-sample to FULL Batch A (133 tickers x 4 quarterly 2024 dates = 532 probes).
+
+REFINED FINDING (more honest than B1209's 25-sample pessimism):
+- Effective universe: 112/133 = **84.2%** (any-date coverage; not 50% as B1209 suggested)
+- ALWAYS_COVERED (4/4 dates): 27 tickers = 20.3% (news strategies eligible all quarters)
+- PARTIAL (1-3/4 dates): 85 tickers = 63.9% (news strategies fire sometimes)
+- ALWAYS_ZERO (0/4 dates): 21 tickers = 15.8% (news strategies NEVER fire on these)
+
+Per-date variation reveals data vintage limitation:
+- 2024-03-15: 66.2% with data
+- 2024-06-15: 57.9% with data
+- 2024-09-15: 33.8% with data (major drop)
+- 2024-12-15: 34.6% with data
+
+Zero-coverage tickers: AES, AG, AHR, ALH, ALM, ALMS, AMRZ, ARMK, AS, BG, BORR, BTU, CIFR, CLMT, CRML, ECG, FORM, GPRE, IBRX, IMMX, INBX (small/growth/energy skew)
+
+Always-covered tickers: AAPL, ABBV, ABT, ADBE, ADM, ADSK, AEP, AFRM, ALLE, AMAT, AMD, AMZN, ANET, APA, APD, APO, APP, ARES, ASTS, AXP, BA, BAC, BDX, BLK, CLS, DIA, SPY (mega-caps + high-liquidity growth + broad ETFs)
+
+Canonical output: output_audit/news_coverage_batch_a.json
+
+Impact:
+- News strategy fire-count expectations should assume ~84% effective universe
+- Sprint 5 candidate: secondary news source (Finnhub/AlphaVantage) for 21 zero-coverage tickers
+- Per-date data-vintage issue (Q3/Q4 2024 sparse) may warrant re-prefetch
+
+Pyramid 852+2 GREEN.
+
