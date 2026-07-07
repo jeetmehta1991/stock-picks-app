@@ -62,7 +62,7 @@ PRODUCERS = {
     },
     "institutional": {
         "module": "backtest.signals.institutional_persistence_consumer",
-        "func": "compute_institutional_persistence_signals",
+        "func": "compute_persistence_signals",
         "primary_signal": "institutional_buy",
         "check": lambda r: bool(r) and any(k.startswith("institutional") for k in r),
     },

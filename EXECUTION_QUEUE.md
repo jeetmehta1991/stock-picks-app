@@ -4675,3 +4675,37 @@ Canonical output: output_audit/pead_coverage_batch_a.json.
 
 Pyramid 852+2 GREEN.
 
+
+### B1216 (2026-07-07 Council 281): Insider + Institutional coverage audits
+
+Applied CHECKLIST #154 to 2 more producers (grouped per Council 201 root-cause similarity).
+
+**INSIDER (compute_insider_cluster_signals):**
+- Effective universe: 18.8% (25/133 tickers have data in any of 4 quarterly 30-day windows)
+- ALWAYS_ZERO: 108 tickers = 81.2%
+- Note: PARTIALLY event-rarity - Form 4 filings are sporadic transactions; strategies expected rare-fire
+- Data source: data_prefetch/quiver/insiders/global.parquet (1M rows; mega-caps have hundreds of records each)
+- Root cause: on any random 30-day window, most tickers have no insider transactions
+
+**INSTITUTIONAL (compute_persistence_signals):**
+- Effective universe: 30.1% (40/133 tickers)
+- CONSTANT across all 4 dates - suggests 13F data fundamentally missing 70% of Batch A
+- Data source: 13F quarterly snapshots
+- Root cause: DATA SOURCE GAP, not event-rarity (13F filings are periodic + all funds file)
+
+AFFECTED STRATEGIES (already loosened in B1173/B1174/B1197 but limited by upstream coverage):
+- strat_institutional_committed_growth_long (effective on ~30% of Batch A)
+- strat_institutional_increased_with_directors_long
+- strat_institutional_recent_init_momentum_long
+- strat_institutional_insider_combo_long
+- strat_institutional_with_directors_long
+- strat_insider_cluster_long
+
+Sprint 5 candidate: S5-B1216-INSTITUTIONAL-13F-COVERAGE-EXPANSION - expand snapshot ingestion to cover 70% gap tickers. Higher priority than B1214/B1215 findings.
+
+Canonical outputs:
+- output_audit/insider_coverage_batch_a.json
+- output_audit/institutional_coverage_batch_a.json
+
+Pyramid 852+2 GREEN.
+
