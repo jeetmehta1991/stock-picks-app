@@ -2632,3 +2632,27 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Enforcement.** scripts/cross_audit_strategies_vs_coverage.py canonical implementation. Run after any CHECKLIST #154 producer audit to update strategy classifications.
 
      **Cross-references.** L200; Council 282 B1217-B1219; CHECKLIST #154; scripts/cross_audit_strategies_vs_coverage.py; output_audit/strategy_vs_producer_coverage_matrix.json.
+
+
+156. **HARD RULE -- TEMPORAL COVERAGE CHECK FOR HISTORICAL BACKTESTS.** (Owner directive 2026-07-07 Council 284 + L201.)
+
+     **Trigger.** Every producer coverage audit intended to inform a backtest that spans multiple years.
+
+     **Rule.** Coverage audit MUST include historical dates matching the backtest window:
+       (a) Test at LEAST 1 date per year in backtest window (e.g., 2020-2024 = 5 dates minimum)
+       (b) Report per-year effective universe separately - not aggregated
+       (c) Flag producers with year-over-year coverage transition (e.g., "absent in 2020, 80% from 2021+")
+       (d) Backtest interpretation for coverage-transitioning years must annotate FALSE-NEGATIVE risk
+
+     **Rationale.** Council 280-283 audits used 2024-only dates. B1227 historical spot-check found:
+       - news_sentiment 0/20 in 2020, 80%+ from 2021+
+       - short_interest_dtc 0/20 in 2020, 100% from 2021+
+       - institutional 13F 0/20 in 2020 AND 2021, 30% from 2022+
+
+     Data-dependent strategies had ZERO effective universe in 2020-2021 - not because of strict gates, but because upstream data source did not exist yet. Aggregated audit numbers (84%, 30%) HIDE this timeline.
+
+     **Retroactive coverage demo (per #136).** Rule catches: Council 278 loosening of institutional strategies (B1173/B1174/B1197) - would have been flagged as ZERO effective universe in 2020-2021 backtest years.
+
+     **Enforcement.** scripts/measure_producer_coverage.py accepts --historical-dates flag (extension pending). Ad-hoc B1227 template for now.
+
+     **Cross-references.** L201; Council 284 B1227-B1228; CHECKLIST #154 (representative sampling) + #155 (BLOCKED_UPSTREAM classification); output_audit/historical_dates_producer_spotcheck.json.

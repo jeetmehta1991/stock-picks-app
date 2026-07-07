@@ -2773,3 +2773,47 @@ Council 282 (B1217) cross-audited: 20 institutional strategies (10% of Batch A) 
 - output_audit/strategy_vs_producer_coverage_matrix.json (canonical strategy classifications)
 
 **Cross-references:** B1214/B1215/B1216 producer audits; B1217 cross-audit; B1218 additional audits; B1219 codification; CHECKLIST #155; scripts/cross_audit_strategies_vs_coverage.py.
+
+
+## L201 -- HISTORICAL PRODUCER COVERAGE TIMELINE (Council 284 B1227-B1228 2026-07-07)
+
+Owner directive 2026-07-07 Council 284 ("Any silent misses?"): the coverage audits in Councils 280-283 tested only 2024 dates. B1227 spot-check revealed massive historical variation.
+
+**Root cause chain (4-audit-timeline):**
+
+- B1204 (Council 280 initial): mega-cap-only 8-ticker probe on ONE 2024 date -> misleading "verified"
+- B1211 (Council 280 refined): full Batch A x 4 quarterly 2024 dates -> 84.2% news effective
+- B1214-B1216 (Council 281): 4 quarterly 2024 dates for all producers
+- **B1227 (Council 284 historical spot-check)**: 8 dates spanning 2020-2023 -> found MAJOR data-source timeline gaps
+
+**Historical coverage findings (20-ticker sample):**
+
+- **news_sentiment**: 0/20 in 2020, 80%+ from 2021+
+- **short_interest_dtc**: 0/20 in 2020, 100% from 2021+
+- **institutional 13F**: 0/20 in 2020 AND 2021, 30% from 2022+
+- **calendar + cot + cross_asset**: 100% across all dates (universal)
+
+**Universal principle:** Producer coverage varies across time. A 2024-only audit hides:
+1. 2020 news_sentiment producer completely absent (data-source not backfilled)
+2. 2020 short_interest producer completely absent
+3. 2020-2021 institutional 13F producer completely absent
+
+**Strategic implications:**
+- Council 278 loosening of 20 institutional strategies had ZERO effective universe in 2020-2021
+- News strategies produced zero signals in 2020 due to data absence NOT strict gates
+- Backtest 2020-2021 for data-dependent strategies is FALSE-NEGATIVE
+- Cube run interpretation must account for producer coverage TIMELINE
+
+**Rule triad:**
+- CHECKLIST #154 requires representative coverage audit
+- CHECKLIST #155 classifies BLOCKED_UPSTREAM strategies
+- CHECKLIST #156 (see below) requires TEMPORAL coverage check for historical backtests
+
+**Sprint 5 data-source expansion tickets must include HISTORICAL BACKFILL:**
+- S5-B1216-INSTITUTIONAL-13F-COVERAGE-EXPANSION: expand to 2020-2021 (currently gap)
+- S5-B1214-SHARES-OUTSTANDING-DATA-GAP-FIX: verify 2020 availability
+- S5-B1212-SECONDARY-NEWS-SOURCE: prioritize 2020 backfill (news_sentiment 0% in 2020)
+
+**Canonical output:** output_audit/historical_dates_producer_spotcheck.json (B1227)
+
+**Cross-references:** B1211 (2024-only baseline); B1227 historical spot-check; L199 (initial coverage principle); L200 (cross-audit methodology).

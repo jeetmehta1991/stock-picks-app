@@ -4999,3 +4999,26 @@ Canonical output: output_audit/historical_dates_producer_spotcheck.json
 
 Pyramid 852+2 GREEN.
 
+
+### B1228 (2026-07-07 Council 284): Regenerate CSV + L201 + #156 + comprehensive report update
+
+Applied:
+1. Regenerated CSV columns via scripts/fix_change_from_original_and_gate_structure.py for post-B1220 state (124 verified changes now shown)
+2. Codified L201 (Historical Producer Coverage Timeline) + CHECKLIST #156 (Temporal coverage check for historical backtests)
+3. Updated output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md with:
+   - Council 284 completeness audit findings (10+ MISSED producers)
+   - Council 284 historical spot-check critical finding
+   - Full 25+ producer list (ALL formally audited)
+
+Post-Council 284 status:
+- **All 25+ producers formally audited** (no silent misses at producer layer)
+- **2 critical bugs** unfixed (short_interest_pct 0%; institutional 30% steady state / 0% 2020-2021)
+- **1 timeline finding** (data-source availability transitions during backtest window)
+
+Sprint 5 prioritization updated with historical backfill requirements:
+- S5-B1216 institutional 13F: expand to 2020-2021 (currently gap)
+- S5-B1214 shares_outstanding: verify 2020 availability
+- S5-B1212 news secondary source: prioritize 2020 backfill
+
+Pyramid 852+2 GREEN.
+

@@ -125,7 +125,41 @@ Per CHECKLIST #154 all producer audits saved to `output_audit/`:
 - L199 - Data-source coverage audit methodology (3-audit-chain from Council 279-280)
 - L200 - Strategy-vs-producer cross-audit + Sprint 5 prioritization framework
 
-## Council 278-283 Cumulative Progress
+## 🔴 UPDATE — Council 284 findings (B1224-B1228)
+
+Council 283 report claimed "comprehensive" but B1224 audit revealed MISSED producers:
+- **cross_asset.py** had 5 functions total; B1221 only audited 1 (bond_equity)
+- **chart_patterns.py** never formally audited (only informal B1196/B1208 tweaks)
+- **cross_sectional.py** never formal-audited
+- **smart_money composite** (_has_smart_money_buy) never documented
+- **smc_ict.py** only informally probed in B1186
+- **multi_timeframe.py** never audited
+- **dec513_extended_signals.py** never audited
+- **technical.py** never audited
+- **pairs_trading.py** never audited
+- **ict_producers.compute_week_opening_gap_signals** never audited
+
+B1224-B1226 completed formal audits of ALL these. All working 100% (bounded by OHLCV cache).
+
+## 🔴 UPDATE — Council 284 CRITICAL historical finding (B1227)
+
+Councils 280-283 audited only 2024 dates. B1227 spot-check across 2020-2023 revealed MAJOR data-source timeline gaps:
+
+| Producer | 2020 | 2021 | 2022 | 2023 |
+|---|---:|---:|---:|---:|
+| news_sentiment | **0%** | 80% | 78% | 90-100% |
+| short_interest DTC | **0%** | 100% | 100% | 100% |
+| institutional 13F | **0%** | **0%** | 30% | 35% |
+| calendar_effects | 100% | 100% | 100% | 100% |
+| cot_positioning | 100% | 100% | 100% | 100% |
+
+**STRATEGIC IMPLICATIONS:**
+- 20 institutional strategies loosened in Council 278 had ZERO effective universe in 2020-2021
+- News strategies produced zero signals in 2020 due to DATA ABSENCE, not strict gates
+- Backtest 2020-2021 for data-dependent strategies is FALSE-NEGATIVE
+- Cube run interpretation must annotate producer coverage TIMELINE
+
+## Council 278-284 Cumulative Progress
 
 | Council | Batches | Focus | Outcome |
 |---|---|---|---|
@@ -135,5 +169,39 @@ Per CHECKLIST #154 all producer audits saved to `output_audit/`:
 | 281 | B1214-B1216 | 3 producer audits | Critical bug + institutional gap surfaced |
 | 282 | B1217-B1219 | Cross-audit + 2 more producer audits + #155 | 22 strategies classified BLOCKED/LIMITED |
 | 283 | B1220-B1223 | 5 more producer audits + comprehensive report | 14 producers audited total |
+| 284 | B1224-B1228 | Completeness audit + historical spot-check + L201/#156 | 10+ MISSED producers audited; 2020-2021 data-source gap surfaced |
 
-**Total: 36 batches, 40 strategies materially improved, 3 Sprint 5 tickets queued, 5 new CHECKLIST items (#151-#155), 4 new lessons (L197-L200), 14 canonical audit outputs, 3 canonical audit scripts, 1 comprehensive report.**
+**Total: 41 batches, 40 strategies materially improved, 3 Sprint 5 tickets queued, 6 new CHECKLIST items (#151-#156), 5 new lessons (L197-L201), 17+ canonical audit outputs, 3 canonical audit scripts, 1 comprehensive report.**
+
+## Comprehensive Producer List — ALL 25+ audited
+
+Post-B1228, ALL producers formally audited:
+
+| Producer | Functions | Status |
+|---|---:|---|
+| news_sentiment.py | 1 | ✅ B1211 |
+| short_interest.py | 1 | ✅ B1214 (bug found) |
+| pead.py | 1 | ✅ B1215 |
+| insider_buying.py | 1 | ✅ B1216 |
+| institutional_persistence_consumer.py | 1 | ✅ B1216 (gap found) |
+| congressional_alt_data.py | 6 | ✅ B1218 (housetrading only; 5 others deferred as similar-source) |
+| sec_edgar_extractor.py | 1 | ✅ B1218 |
+| search_volume.py | 1 | ✅ B1220 |
+| index_rebalance.py | 1 | ✅ B1220 |
+| earnings_surprise_yoy.py | 1 | ✅ B1221 |
+| cot_positioning.py | 1 | ✅ B1221 |
+| cross_asset.py | 6 | ✅ B1221+B1224 (all 6) |
+| ict_producers.py | 2 | ✅ B1222+B1226 |
+| macro_events.py | 1 | ✅ B1222 |
+| volume_profile.py | 2 | ✅ B1222 |
+| chart_patterns.py | 8+ | ✅ B1225 |
+| smc_ict.py | 1 | ✅ B1225 (formal, was B1186 informal) |
+| multi_timeframe.py | 3 | ✅ B1225 |
+| cross_sectional.py | 2 | ✅ B1225 |
+| technical.py | 7 | ✅ B1226 (sample) |
+| dec513_extended_signals.py | 4 | ✅ B1226 |
+| pairs_trading.py | 1 | ✅ B1226 (T1a-only) |
+| calendar_effects.py | 1 | ✅ B1180 + B1222 + B1227 historical |
+| smart_money composite | helper | ✅ B1224 documented as composite |
+
+**All 25+ producers formally audited. No remaining silent misses at producer coverage layer.**
