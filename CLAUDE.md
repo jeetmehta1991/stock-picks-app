@@ -43,6 +43,7 @@
 
 ## Critical Rules
 
+- **MANDATORY (owner directive 2026-07-07 B1246): the `/execution-discipline` skill (.claude/skills/execution-discipline/SKILL.md) applies UNPROMPTED at the start of every working turn — 6-phase protocol + Truth & Evidence Standard. Non-application is itself a recordable miss.**
 - **MANDATORY PRE-FLIGHT CHECKLIST (Pass 52 owner directive — no exceptions):** Every recommendation in every response must be preceded by a visible pre-flight verification block applying the full CHECKLIST.md (currently 55 items). Format:
   - Pre-flight executes BEFORE the recommendation is stated, not after
   - Each applicable checklist item explicitly noted as ✅ / ⚠ / 🔴 with brief evidence (grep output, audit cross-reference, project scope check)

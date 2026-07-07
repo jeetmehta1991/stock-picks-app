@@ -5372,3 +5372,10 @@ Quick-reference commitments extended 5 -> 7 (added zero-fabrication + unprompted
 Memory `feedback_execution_discipline_skill_every_turn` updated with Council 293 additions.
 
 No CHECKLIST addition (operationalizes existing items; #136 anti-theater guard applied).
+
+### B1247 (2026-07-07 Council 293 cont.): CLAUDE.md EXECUTION-DISCIPLINE LINE APPLIED
+
+Owner approved the exact diff shown in B1246 turn ("approve"). Added as FIRST line of CLAUDE.md Critical Rules per CHECKLIST #6 (diff shown + explicit written approval):
+"MANDATORY (owner directive 2026-07-07 B1246): the /execution-discipline skill applies UNPROMPTED at the start of every working turn — 6-phase protocol + Truth & Evidence Standard. Non-application is itself a recordable miss."
+
+Enforcement now triple-redundant: skill description (auto-trigger) + memory feedback_execution_discipline_skill_every_turn (cross-session) + CLAUDE.md Critical Rules (always-in-context).
