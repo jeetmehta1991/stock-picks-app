@@ -5338,3 +5338,22 @@ Sprint 5 status:
 - S5-B1216: MED priority (1 strategy; B1230 fallback still active)
 
 Pyramid 861+2 GREEN.
+
+### B1245 (2026-07-07 Council 292): EXECUTION-DISCIPLINE SKILL CREATED
+
+Owner directive: "create a skill that will help streamline this projects execution... Checklist adherence each turn + keep adding on misses; LEARNINGS updated on misses + re-read to improve; no silent misses; test pyramid on every code change; audits deep (code-verified + all docs); strict compliance."
+
+Shipped: `.claude/skills/execution-discipline/SKILL.md` — 6-phase mandatory turn protocol:
+- Phase 0 RECALL: read CHECKLIST + relevant LEARNINGS + memory feedback_* rules before work
+- Phase 1 SCOPE LEDGER: enumerate every in-scope item; terminal disposition required (DONE / DEFERRED(ticket) / N/A(reason) / BLOCKED); reconciliation arithmetic; ACKNOWLEDGED-NOT-REMEDIATED heading mandatory
+- Phase 2 PRE-FLIGHT: visible CHECKLIST block before every recommendation (Pass 52 rule)
+- Phase 3 PYRAMID GATE: pyramid per addressal per commit, no carve-outs; pin test per fix; batch cap <=3 (Council 201)
+- Phase 4 AUDIT DEPTH: 7-point standard (code-verified via runtime probes; codebase AND docs; happy-path artifacts; #154 sampling; #124 evidence artifacts; #106 default-empty; line-by-line extraction)
+- Phase 5 MISS-CAPTURE: same-turn L-entry + CHECKLIST addition only if new class AND passes #136 anti-theater guard + memory write + fix-or-ticket
+- Phase 6 END-OF-TURN SWEEP: #67 doc-sync + #94 queue update + ledger close + #45 compliance + commit/push + retired-language discipline
+
+Lineage encoded: B1119 doc-sync suspension, PIVOT #41 fabrication, ~150 false wired=yes RESOLVED claims, Pass 52 six owner catches, Council 197 audit-theater verdict.
+
+Skill auto-registered; invocable as /execution-discipline. No CHECKLIST addition needed (skill operationalizes existing items #45/#67/#69/#94/#106/#124/#128/#136/#154/#157 — adding a new item would itself be audit theater per #136).
+
+Pyramid: run pre-commit this batch (doc/skill-only change; pyramid still mandatory per feedback_pyramid_no_exceptions).
