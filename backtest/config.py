@@ -1167,9 +1167,11 @@ DEPRECATED_STRATEGIES: set[str] = set()
 #     EXPLORATORY pending SM-4 feasibility cube verdict
 #     (S4-B673-SM4-FEASIBILITY-FAILURE-RECLASSIFICATION ticket
 #     tracks separately). NOT in this set.
-STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = {
-    "dxy_headwind_multinational_short",
-}
+STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = set()
+# B1189 (2026-07-06 Council 278 owner-approved DELETE): dxy_headwind_multinational_short
+# ELIMINATED per owner directive. Was disabled since Batch 372 pending foreign_rev_pct
+# producer that was never built. Owner-decision 2026-07-06 to eliminate strategy
+# entirely rather than continue waiting. Function body + registry entry removed.
 
 
 # B1038 (2026-06-27) Council 130 + Council 131 Option-A owner-approved

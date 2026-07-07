@@ -6910,17 +6910,10 @@ def strat_gold_silver_risk_off_long(s):
          f"Defensive sector {s.get('sector', '')}"])
 
 
-def strat_dxy_headwind_multinational_short(s):
-    """Batch 254: short SPY-multinational names when DXY strengthening.
-    Fratzscher 2009 JoB."""
-    fires = (
-        s.get("usd_strengthening", False)
-        and s.get("foreign_rev_pct", 0.0) > 40.0
-     and not _short_borrow_trap_active(s))
-    return _strat(fires, "short", "cross_asset",
-        ["usd_strengthening", "foreign_rev_pct>40", "borrow_ok"],
-        ["DXY strengthening 20d > 2% (multinational headwind)",
-         f"Foreign rev {s.get('foreign_rev_pct', 0):.0f}% (translation risk)"])
+# B1189 (2026-07-06 Council 278 owner-approved DELETE):
+# strat_dxy_headwind_multinational_short ELIMINATED. Was disabled since
+# Batch 372 pending foreign_rev_pct producer that was never built.
+# Owner-decision 2026-07-06: eliminate rather than wait.
 
 
 # ---------------------------------------------------------------------------
@@ -7969,7 +7962,6 @@ ALL_STRATEGIES = {
     "vix_backwardation_long":           strat_vix_backwardation_long,
     "sector_rotation_defensive_long":   strat_sector_rotation_defensive_long,
     "gold_silver_risk_off_long":        strat_gold_silver_risk_off_long,
-    "dxy_headwind_multinational_short": strat_dxy_headwind_multinational_short,
     # Volume profile / VPVR (3 - Batch 255 2026-05-20 / Batch 233 module)
     "poc_magnet_long":                  strat_poc_magnet_long,
     "value_area_breakout_long":         strat_value_area_breakout_long,

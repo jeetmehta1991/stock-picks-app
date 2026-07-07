@@ -10600,10 +10600,13 @@ def test_batch373_e1_doc_count_pin_against_code():
     # Council 95 walk-3 cross-reference. Narrow-threshold concentrated_sell
     # SHORT mirror (>50% threshold) per feedback_asymmetric_data_sources_
     # break_mechanical_inverse + B613 narrow-scope precedent.
-    assert len(ALL_STRATEGIES) == 220, (
-        f"F-002 drift: ALL_STRATEGIES expected 220 post-B1010 Class 7 NEW + "
-        f"B722/B874/B975/B984 prior changes; "
-        f"got {len(ALL_STRATEGIES)}. Update doc count references in the same commit."
+    # B1189 (2026-07-06 Council 278 owner-approved DELETE): 220 -> 219 via
+    # dxy_headwind_multinational_short elimination (was disabled since Batch 372
+    # pending foreign_rev_pct producer that was never built).
+    assert len(ALL_STRATEGIES) == 219, (
+        f"F-002 drift: ALL_STRATEGIES expected 219 post-B1189 (dxy_headwind "
+        f"DELETED; was 220 post-B1010); got {len(ALL_STRATEGIES)}. "
+        f"Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
         f"F-002 drift: DEPRECATED_STRATEGIES expected 0 (Batch 316a empty); "
@@ -10618,29 +10621,20 @@ def test_batch373_e1_doc_count_pin_against_code():
     # long DELETED precedent + Batch 372 / B975 missing-producer
     # taxonomy; signal `8k_item_1_01_filed_within_30d` never reliable
     # per M&A Item 1.01 SM-4 feasibility-failure carry).
-    # B1035 (2026-06-27 Council 129 Option-6 owner-approved): disabled
-    # count 3 -> 1 (naked_poc + m_and_a both REVERSED after F2/F3
-    # sub-agent runtime probes confirmed producers EXIST; B975 was
-    # BLIND-SPOT-3 false-positive; B984 was citation-slip from EV-7).
-    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 1, (
-        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 1 "
-        f"(Batch 372 dxy_headwind only; B1035 reversed B975 naked_poc + "
-        f"B984 m_and_a_target_long); got {len(STRATEGIES_DISABLED_MISSING_PRODUCER)}."
+    # B1189 (2026-07-06 Council 278 owner-approved DELETE dxy_headwind):
+    # disabled count 1 -> 0 (dxy_headwind eliminated entirely rather than
+    # waiting for foreign_rev_pct producer).
+    assert len(STRATEGIES_DISABLED_MISSING_PRODUCER) == 0, (
+        f"F-002 drift: STRATEGIES_DISABLED_MISSING_PRODUCER expected 0 "
+        f"post-B1189 (dxy_headwind DELETED); got {len(STRATEGIES_DISABLED_MISSING_PRODUCER)}."
     )
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    # B899 (2026-06-18) migration: B874 deleted 2 strategies reducing
-    # 221 -> 219 registered / 218 active. B975 (2026-06-21) disabled
-    # naked_poc_retest_long -> 217 active. B984 (2026-06-21) disabled
-    # m_and_a_target_long -> 216 active. B1010 (2026-06-22 Council 103
-    # Option-6) added Class 7 NEW strat_insider_cluster_concentrated_
-    # sell_short -> 220 registered / 217 active. B1035 (2026-06-27)
-    # re-enabled naked_poc + m_and_a -> 219 active.
+    # B1189: dxy_headwind DELETED -> 220 registered - 1 = 219 registered / 219 active.
     assert active == 219, (
-        f"F-002 drift: active strategy count expected 219 (220 registered "
-        f"minus 1 disabled dxy_headwind; B1035 re-enabled naked_poc + "
-        f"m_and_a); got {active}."
+        f"F-002 drift: active strategy count expected 219 (219 registered "
+        f"post-B1189 dxy_headwind DELETE); got {active}."
     )
 
     # F-004 exit method count
@@ -10650,11 +10644,11 @@ def test_batch373_e1_doc_count_pin_against_code():
         f"{len(EXIT_STRATEGIES)}. Update doc count references."
     )
 
-    # Cube cells = active strategies x exits (B1035: 219 active x 26 = 5694)
+    # Cube cells = active strategies x exits (B1189: 219 active x 26 = 5694)
     expected_cells = 219 * 26
     assert expected_cells == 5694, (
         f"Phase 1A-beta cube cells: expected 5,694 (219 active x 26 exits "
-        f"post-B1035 naked_poc + m_and_a re-enable); got {expected_cells}."
+        f"post-B1189 dxy_headwind DELETE); got {expected_cells}."
     )
 
 
@@ -10693,7 +10687,22 @@ def test_batch373_e1_drift_audit_live_values_match_code():
     assert snapshot["cube_cells_active"] == (len(ALL_STRATEGIES) - len(blocked)) * len(EXIT_STRATEGIES)
 
 
-def test_batch372_dxy_headwind_disabled_missing_producer():
+def test_batch372_dxy_headwind_deleted_b1189():
+    """B1189 (2026-07-06 Council 278 owner-approved DELETE): dxy_headwind_multinational_short
+    ELIMINATED. STRATEGIES_DISABLED_MISSING_PRODUCER now empty (was {dxy_headwind}
+    since Batch 372). Strategy function body + registry entry removed.
+    """
+    from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert STRATEGIES_DISABLED_MISSING_PRODUCER == set(), (
+        f"B1189: STRATEGIES_DISABLED_MISSING_PRODUCER must be empty; got {STRATEGIES_DISABLED_MISSING_PRODUCER}"
+    )
+    assert "dxy_headwind_multinational_short" not in ALL_STRATEGIES, (
+        "B1189: dxy_headwind_multinational_short must be removed from ALL_STRATEGIES"
+    )
+
+
+def _test_batch372_dxy_headwind_disabled_missing_producer_DISABLED_B1189():
     """Batch 372 (owner-approved 2026-05-26): dxy_headwind_multinational_short
     is disabled until a foreign_rev_pct producer lands.
 

@@ -4266,3 +4266,22 @@ Notable spec highlights:
 
 Pyramid 850+2 GREEN (data-only change; no code touched).
 
+
+### B1189 (2026-07-06 Council 278 DELETE 1/40): dxy_headwind_multinational_short
+
+Owner directive "Eliminate strategy" post-B1188 review.
+
+Applied:
+- backtest/signals/screener.py: strat_dxy_headwind_multinational_short function body REMOVED; registry entry REMOVED
+- backtest/config.py: STRATEGIES_DISABLED_MISSING_PRODUCER cleared to empty set
+- backtest/tests/test_unit.py: F-002 drift test updated 220 -> 219; test_batch372 renamed to test_batch372_dxy_headwind_deleted_b1189
+- output_audit/drift_audit_live_values.json regenerated
+
+Count changes:
+- ALL_STRATEGIES: 220 -> 219
+- STRATEGIES_DISABLED_MISSING_PRODUCER: {dxy_headwind} -> set()
+- Active: 219
+- Cube cells: 219 x 26 = 5694 (unchanged since disabled was excluded from active count already)
+
+Pyramid 850+2 GREEN.
+
