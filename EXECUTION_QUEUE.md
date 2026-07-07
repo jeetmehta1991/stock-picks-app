@@ -4869,3 +4869,27 @@ Coverage summary:
 
 Pyramid 852+2 GREEN.
 
+
+### B1224 (2026-07-07 Council 284): cross_asset multi-function + smart_money composite audit
+
+**cross_asset.py (5 functions total; only 1 audited in B1221):**
+- compute_bond_equity_signals: 100% (B1221 confirmed)
+- compute_vix_term_structure_signals: 100% (4/4 dates)
+- compute_gold_silver_ratio_signals: 100%
+- compute_dxy_signals: 100%
+- compute_sector_rotation_signals: 100%
+- compute_cross_asset_signals (composite): 100%
+
+All 5 cross_asset functions work universally on 4 test dates.
+
+**smart_money composite (_has_smart_money_buy):**
+- Not a standalone producer - COMPOSITE helper in screener.py:7375
+- Unions: insider_cluster_active + cfo_buy + large_dollar_buy + institutional_strong_buy + institutional_buy
+- Effective coverage: 30-50% (UNION of insider ~19% + institutional ~30%; overlap unknown)
+- Bounded by source producer coverages per B1216 findings
+- No independent audit needed - inherits from upstream coverage
+
+Canonical output: output_audit/cross_asset_multifunction_coverage.json
+
+Pyramid 852+2 GREEN.
+

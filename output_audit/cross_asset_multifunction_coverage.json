@@ -1,0 +1,85 @@
+{
+  "batch": "B1224",
+  "council": 284,
+  "cross_asset_multi_function_audit": {
+    "compute_vix_term_structure_signals": {
+      "dates_with_data": 4,
+      "total_dates": 4,
+      "pct": 100,
+      "keys_sample": [
+        "vix_today",
+        "vix_vix3m_ratio",
+        "vix_term_contango",
+        "vix_term_backwardation"
+      ]
+    },
+    "compute_gold_silver_ratio_signals": {
+      "dates_with_data": 4,
+      "total_dates": 4,
+      "pct": 100,
+      "keys_sample": [
+        "gold_silver_ratio",
+        "gold_silver_20d_pct_change",
+        "risk_off_regime_gold_signal"
+      ]
+    },
+    "compute_dxy_signals": {
+      "dates_with_data": 4,
+      "total_dates": 4,
+      "pct": 100,
+      "keys_sample": [
+        "dxy_proxy_close",
+        "dxy_20d_pct_change",
+        "usd_strengthening",
+        "usd_weakening"
+      ]
+    },
+    "compute_cross_asset_signals": {
+      "dates_with_data": 4,
+      "total_dates": 4,
+      "pct": 100,
+      "keys_sample": [
+        "bond_equity_ratio",
+        "bond_equity_20d_pct_change",
+        "risk_off_regime_bond_signal",
+        "risk_on_regime_bond_signal",
+        "risk_off_regime_bond_signal_strong",
+        "risk_on_regime_bond_signal_strong",
+        "vix_today",
+        "vix_vix3m_ratio"
+      ]
+    },
+    "compute_sector_rotation_signals": {
+      "dates_with_data": 4,
+      "total_dates": 4,
+      "pct": 100,
+      "keys_sample": [
+        "sector_strongest",
+        "sector_strongest_rs",
+        "sector_weakest",
+        "sector_weakest_rs",
+        "sector_rs_map"
+      ]
+    }
+  },
+  "test_dates_2024": [
+    "2024-03-15",
+    "2024-06-15",
+    "2024-09-15",
+    "2024-12-15"
+  ],
+  "producer_verdict": "cross_asset multi-function producers - see per-function coverage",
+  "smart_money_composite_note": {
+    "location": "backtest/signals/screener.py:_has_smart_money_buy (line 7375)",
+    "type": "COMPOSITE helper (not standalone producer)",
+    "sources": [
+      "insider_cluster_active (18.8% coverage)",
+      "cfo_buy",
+      "large_dollar_buy",
+      "institutional_strong_buy (30.1% coverage)",
+      "institutional_buy"
+    ],
+    "effective_coverage_estimate": "30-50% (UNION of insider ~19% + institutional ~30%; overlap unknown)",
+    "note": "Coverage bounded by union of source producer coverages per B1216 findings"
+  }
+}
