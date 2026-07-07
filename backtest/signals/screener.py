@@ -3644,15 +3644,20 @@ def strat_insider_cluster_long(s):
     Source: Cohen-Malloy-Pomorski 2012 JF "Decoding Inside Information";
     Akbas-Jiang-Koch 2024 RFS update confirming post-publication.
     """
+    # B1197 (2026-07-06 Council 278 owner-approved): widen with OR-alternative
+    # persistence proxy. insider_persistence_positive_30d does not exist in
+    # producer per CHECKLIST #150(a); use insider_unique_buyers_30d >= 3 as
+    # persistence proxy (Cohen-Malloy-Pomorski cluster canonical). Retain EMA200.
+    n = s.get("insider_unique_buyers_30d", 0)
     fires = (
-        s.get("insider_cluster_active", False)
+        (s.get("insider_cluster_active", False) or n >= 3)
         and s.get("price_above_ema_200", False)
     )
-    n = s.get("insider_unique_buyers_30d", 0)
     return _strat(fires, "long", "event_driven",
-        ["insider_cluster_active", "price_above_ema_200"],
+        ["(insider_cluster_active OR insider_unique_buyers_30d>=3)",
+         "price_above_ema_200"],
         [f"Insider buying cluster: {n} unique insiders bought "
-         f"open-market in last 30 days",
+         f"open-market in last 30 days (B1197: added OR unique_buyers>=3 persistence proxy)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -5931,16 +5936,17 @@ def strat_institutional_insider_combo_long(s):
     RFS (institutions) - when BOTH sources accumulate simultaneously, the
     edge is multiplicative not additive (independent information channels).
     Stronger conviction than either alone."""
+    # B1197 (2026-07-06 Council 278 owner-approved): change (institutional_buy AND
+    # insider_cluster_active) -> (institutional_buy OR insider_cluster_active).
+    # Per rec "either signal counts vs requiring both". Retain EMA200.
     fires = (
-        s.get("institutional_buy", False)
-        and s.get("insider_cluster_active", False)
+        (s.get("institutional_buy", False) or s.get("insider_cluster_active", False))
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "smart_money_combo",
-        ["institutional_buy","insider_cluster_active","price_above_ema_200"],
-        ["13F institutional new/increased positions",
-         "Insider cluster active (>=2 insiders buying open-market 30d)",
-         "Dual smart-money sources agree (multiplicative edge)",
+        ["(institutional_buy OR insider_cluster_active)","price_above_ema_200"],
+        ["13F institutional new/increased positions OR insider cluster active",
+         "(B1197: AND -> OR - either smart-money source is sufficient per rec)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -6593,17 +6599,18 @@ def strat_institutional_with_directors_long(s):
     owner trades (Akbas-Jiang-Koch 2024 RFS). When combined with
     institutional accumulation, dual board-level + fund-manager
     confirmation = strongest smart-money agreement signature."""
+    # B1197 (2026-07-06 Council 278 owner-approved): widen insider set from
+    # director-only to any insider (unique 30d buyers) per rec + B1174 precedent.
     fires = (
         s.get("institutional_buy", False)
-        and s.get("insider_director_buyers_30d", 0) >= 1
+        and s.get("insider_unique_buyers_30d", 0) >= 1
         and s.get("price_above_ema_200", False)
     )
-    n_dir = s.get("insider_director_buyers_30d", 0)
+    n_ins = s.get("insider_unique_buyers_30d", 0)
     return _strat(fires, "long", "smart_money_combo",
-        ["institutional_buy","insider_director_buyers_30d>=1","price_above_ema_200"],
+        ["institutional_buy","insider_unique_buyers_30d>=1","price_above_ema_200"],
         ["13F institutional new/increased positions",
-         f"{n_dir} director(s) buying open-market in 30d",
-         "Akbas-Jiang-Koch 2024 RFS - director-level signal premium",
+         f"{n_ins} unique insider(s) buying open-market in 30d (B1197: director-only -> any-insider per B1174 precedent)",
          "Above 200 EMA (regime gate)"])
 
 

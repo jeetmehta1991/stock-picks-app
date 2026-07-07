@@ -4366,3 +4366,15 @@ Affects: cup_and_handle_retest_long, head_and_shoulders_bottom_long, head_and_sh
 
 Pyramid 850+2 GREEN.
 
+
+### B1197 (2026-07-06 Council 278 APPROVED 19-22/40): Insider widening family
+
+Applied:
+- insider_cluster_long: add OR insider_unique_buyers_30d>=3 (persistence proxy per #150(a) - insider_persistence_positive_30d not in producer)
+- institutional_insider_combo_long: (institutional_buy AND insider_cluster_active) -> OR
+- institutional_with_directors_long: insider_director_buyers_30d -> insider_unique_buyers_30d per B1174 precedent
+- pead_with_insider_confirmation_long: NO CODE CHANGE - already loosened at producer via B1136 (pead.py announcement_return_threshold 0.02 -> 0.01)
+- test_batch222_insider_cluster_long fixture updated for OR-semantics
+
+Pyramid 850+2 GREEN.
+

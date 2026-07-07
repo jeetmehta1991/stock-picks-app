@@ -8215,8 +8215,9 @@ def test_batch222_strategies_registered():
 
 
 def test_batch222_insider_cluster_long_requires_cluster_and_regime():
-    """Batch 222: insider_cluster_long fires only on insider_cluster_active
-    + 200-EMA gate. Cohen-Malloy-Pomorski 2012 documented ~7pct alpha."""
+    """Batch 222 (post-B1197 owner-approved LOOSEN): insider_cluster_long fires
+    on (insider_cluster_active OR insider_unique_buyers_30d>=3) + 200-EMA gate.
+    Cohen-Malloy-Pomorski 2012 documented ~7pct alpha."""
     from backtest.signals.screener import strat_insider_cluster_long
     s = {
         "insider_cluster_active": True,
@@ -8225,8 +8226,15 @@ def test_batch222_insider_cluster_long_requires_cluster_and_regime():
     }
     r = strat_insider_cluster_long(s)
     assert r["fires"] is True and r["direction"] == "long"
+    # B1197: even without cluster_active, unique_buyers>=3 fires the strategy
     s["insider_cluster_active"] = False
+    s["insider_unique_buyers_30d"] = 3
+    assert strat_insider_cluster_long(s)["fires"] is True
+    # Neither cluster_active nor unique_buyers>=3 -> no fire
+    s["insider_cluster_active"] = False
+    s["insider_unique_buyers_30d"] = 1
     assert strat_insider_cluster_long(s)["fires"] is False
+    # Regime gate still blocks
     s["insider_cluster_active"] = True
     s["price_above_ema_200"] = False
     assert strat_insider_cluster_long(s)["fires"] is False
