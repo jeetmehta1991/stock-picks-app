@@ -50,6 +50,8 @@ PRODUCERS = {
         # PEAD coverage = has ANY earnings data (within_pead_window is bool but
         # populated from days_since_last_earnings which requires earnings data)
         "check": lambda r: (r.get("days_since_last_earnings", -1) >= 0),
+        # B1215 (2026-07-07): pead requires ohlcv_df signature
+        "needs_ohlcv": True,
     },
     "insider": {
         "module": "backtest.signals.insider_buying",
@@ -88,13 +90,32 @@ def main() -> int:
     per_ticker: dict[str, dict] = {}
     per_date: dict[str, dict] = {d.isoformat(): {"has_data": 0, "zero": 0, "error": 0} for d in TEST_DATES}
 
+    needs_ohlcv = spec.get("needs_ohlcv", False)
+    if needs_ohlcv:
+        from pathlib import Path
+        cache_dir = _REPO / "backtest" / "data" / "cache" / "ohlcv"
+
+        def _load_ohlcv(t):
+            p = cache_dir / f"{t}.parquet"
+            if not p.exists():
+                return None
+            df = pd.read_parquet(p)
+            df["date"] = pd.to_datetime(df["date"])
+            return df.set_index("date").sort_index()
+
     for i, ticker in enumerate(tickers):
         if i % 20 == 0:
             print(f"  progress: {i}/{len(tickers)}...")
         per_ticker[ticker] = {"dates_with_data": 0, "dates_zero": 0, "errors": 0}
+        ohlcv_df = _load_ohlcv(ticker) if needs_ohlcv else None
         for d in TEST_DATES:
             try:
-                r = func(ticker, d)
+                if needs_ohlcv:
+                    if ohlcv_df is None:
+                        raise ValueError("no ohlcv")
+                    r = func(ticker, ohlcv_df, d)
+                else:
+                    r = func(ticker, d)
                 if spec["check"](r):
                     per_ticker[ticker]["dates_with_data"] += 1
                     per_date[d.isoformat()]["has_data"] += 1

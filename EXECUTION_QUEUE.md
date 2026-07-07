@@ -4652,3 +4652,26 @@ Canonical output: output_audit/short_interest_coverage_batch_a.json.
 
 Pyramid 852+2 GREEN.
 
+
+### B1215 (2026-07-07 Council 281): PEAD coverage audit
+
+Applied CHECKLIST #154 to PEAD earnings producer.
+
+FINDINGS:
+- Effective universe: 113/133 = **85.0%**
+- ALWAYS_COVERED (4/4 dates): 106 tickers = 79.7%
+- PARTIAL: 7 tickers = 5.3%
+- ALWAYS_ZERO: 20 tickers = 15.0%
+
+Zero-coverage tickers: ABNB, AG, ALH, ALM, AMRZ, ARES, ARM, AS, ASM, ASML, BORR, CLS, CRML, DIA, ECG, EEM, EFA, GDX, GLUE, SPY
+
+Note: 5 of 20 (DIA/EEM/EFA/GDX/SPY) are ETFs - expected no earnings data. Real earnings-data gap is 15 non-ETF tickers (small caps + foreign ADRs).
+
+Per-date coverage improves: Q1 79.7% -> Q4 85.0%.
+
+Producer works when data exists. No bug found - reasonable coverage.
+
+Canonical output: output_audit/pead_coverage_batch_a.json.
+
+Pyramid 852+2 GREEN.
+
