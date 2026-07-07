@@ -4962,3 +4962,40 @@ Canonical output: output_audit/ohlcv_remaining_producers_coverage.json (updated 
 
 Pyramid 852+2 GREEN.
 
+
+### B1227 (2026-07-07 Council 284): Historical dates spot-check 2020-2023
+
+🔴 CRITICAL FINDING: Data availability varies MASSIVELY across backtest window.
+
+**news_sentiment historical coverage (20-ticker sample):**
+- 2020: 0/20 both dates (0% coverage - all zeros)
+- 2021: 16/20 both dates (80% - steady state emerges)
+- 2022: 15-16/20
+- 2023: 18-20/20
+
+**short_interest_dtc historical coverage:**
+- 2020: 0/20 both dates (0% - FINRA data absent)
+- 2021+: 20/20 (100%)
+
+**institutional (13F) historical coverage:**
+- 2020: 0/20 both dates
+- 2021: 0/20 both dates (STILL absent!)
+- 2022-06-15+: 6-7/20 (30-35% - matches B1216 2024 steady state)
+
+**calendar_effects + cot_positioning: 100% across ALL 2020-2023 dates**
+
+CRITICAL IMPLICATIONS:
+- Council 278 loosening of 20 institutional strategies had ZERO effective universe in 2020-2021 backtest (data absent)
+- News strategies produced ZERO signals in 2020 - not because of strict gates but because no news data
+- Backtest 2020-2021 for these strategies is FALSE-NEGATIVE (no fires ≠ no edge; no data)
+- B1204/B1211/B1215/B1216 audits were 2024-only - historical picture significantly worse
+
+STRATEGIC IMPACT:
+- Sprint 5 data-source fixes must include HISTORICAL BACKFILL for 2020-2021
+- Cube run interpretation must account for producer coverage timeline
+- Consider excluding 2020-2021 from analysis for data-dependent strategies OR annotate results accordingly
+
+Canonical output: output_audit/historical_dates_producer_spotcheck.json
+
+Pyramid 852+2 GREEN.
+
