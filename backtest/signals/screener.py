@@ -2651,8 +2651,12 @@ def strat_golden_cross_volume(s):
     cross_50_200 fires 504/yr without the vol gate; adding vol_spike_2x
     drops to 23/yr (= ~22x reduction).
     """
-    fl = (s.get("ema_50_200_golden_cross") and s.get("vol_spike_2x"))
-    fs = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
+    # B1190 (2026-07-06 Council 278 owner-approved MODIFIED): vol_spike_2x -> vol_above_avg
+    # (1.0x; owner picked vol_above_avg over drop entirely). Retains volume confirmation
+    # at Shannon canonical 'above-average volume' level per B1179 htf_aligned_breakout_long
+    # precedent. Producer emits vol_above_avg (technical.py:171 area).
+    fl = (s.get("ema_50_200_golden_cross") and s.get("vol_above_avg"))
+    fs = (s.get("ema_50_200_death_cross") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["ema_50_200_golden_cross","vol_spike_2x"], ["ema_50_200_death_cross","vol_spike_2x", "borrow_ok"],
         ["Golden cross with 2x volume  -  institutional confirmation of bullish shift"],
@@ -2796,7 +2800,9 @@ def strat_death_cross_50_200_volume(s):
     SHORT-side asymmetry per Pattern S adds further drag (drift bias +
     borrow cost + squeeze risk).
     """
-    fires = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x")) and not _short_borrow_trap_active(s)
+    # B1190 (2026-07-06 Council 278 owner-approved MODIFIED): vol_spike_2x -> vol_above_avg
+    # symmetric with strat_golden_cross_volume LONG/SHORT change same batch.
+    fires = (s.get("ema_50_200_death_cross") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "trend",
         ["ema_50_200_death_cross", "vol_spike_2x", "borrow_ok"],
         ["EMA-50 crossed below EMA-200  -  death cross",

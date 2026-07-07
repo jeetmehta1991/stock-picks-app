@@ -4285,3 +4285,14 @@ Count changes:
 
 Pyramid 850+2 GREEN.
 
+
+### B1190 (2026-07-06 Council 278 MODIFIED 2-3/40): Golden/Death Cross vol_above_avg
+
+Owner MODIFIED my rec: instead of drop vol_spike_2x, REPLACE with vol_above_avg (Shannon canonical 'above-average volume' per B1179).
+
+Applied to:
+- strat_golden_cross_volume: LONG (golden_cross AND vol_above_avg); SHORT (death_cross AND vol_above_avg)
+- strat_death_cross_50_200_volume: (death_cross AND vol_above_avg)
+
+Pyramid 850+2 GREEN.
+
