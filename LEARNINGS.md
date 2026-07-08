@@ -2856,6 +2856,16 @@ Owner directive 2026-07-07 Council 285 ("Address now" for silent misses): B1216 
 
 
 
+## L203 -- SPRINT 5 S5-B1214 SHIPPED VIA FINNHUB PROFILE2 FALLBACK (Council 290 B1239-B1240 2026-07-07; RETRO-WRITTEN B1262 2026-07-08)
+
+**RETRO-WRITE NOTE (B1262):** this section number was cited by L204, memory, and queue entries since B1240 but the LEARNINGS section itself was NEVER WRITTEN -- a silent miss discovered by the B1262 owner-prompted verification sweep ("Any silent misses?"), via grep for the L203 heading. Content below reconstructs the B1240 pattern from its queue entry + L204's cross-references. Meta-lesson: citing an L-number does not create the L-entry; the C9 gate checks ticket IDs but NOT L-number references -- L-reference integrity added to the verification repertoire.
+
+**What happened (B1239-B1240):** FINRA short-interest cache had shares_outstanding = NULL for 100% of rows (upstream gap) -> short_interest_pct never computable -> strat_squeeze_setup_long starved. B1239 investigation found Finnhub profile2 shareOutstanding (95.5% Batch A coverage, 95-102% accuracy vs SEC-authoritative). B1240 added _load_shares_outstanding_from_finnhub fallback in short_interest.py (raw = shareOutstanding * 1e6; source-tagged via short_interest_shares_outstanding_source field). Coverage 0.0% -> 93.2%.
+
+**Universal principle (first instance of the pattern L204 generalized):** Sprint 5 data-gap tickets can be satisfied via producer-side fallback to an already-cached alternate provider instead of new prefetch. Schema-normalize, fall back per-field (not per-file), emit a _source diagnostic, pin-test both directions.
+
+**Cross-references:** B1239 investigation; B1240 fix (short_interest.py); L204 (S5-B1212 same pattern, news); CHECKLIST #154/#155.
+
 ## L204 -- SPRINT 5 S5-B1212 SHIPPED VIA FINNHUB COMPANY_NEWS FALLBACK (Council 291 B1242-B1244 2026-07-07)
 
 Owner directive 2026-07-07 Council 291 "Continue sprint 5". Selected S5-B1212-SECONDARY-NEWS-SOURCE (6 strategies affected, larger blast radius than remaining S5-B1216).

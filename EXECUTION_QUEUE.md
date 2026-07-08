@@ -5554,6 +5554,26 @@ Owner directives 2026-07-08 (verbatim decisions on B1258 questions):
 | S6-B1259-DATA-READINESS-AUDIT | ONE upfront audit of every data source vs R5 requirements (coverage %, temporal span, NULL columns, producer-consumable) before scope lock — replaces serial gap discovery (news/shares_outstanding/rebalance/triangle pattern) | **P0 — before scope lock** |
 | S6-B1259-R5-PHASE-LADDER | R5 execution plan: dry run (3-5 tickers local) -> small batch (25-50 tickers) -> mid batch (150, Batch-A-scale revalidation) -> full universe (owner gate at each rung; resume checkpoints armed per rung) | **P0 — structure for step 4** |
 
+### B1262 (2026-07-08 Council 304): SILENT-MISS VERIFICATION SWEEP (owner-prompted) — 3 found, 2 fixed, 1 proposed
+
+Owner: "Any silent misses?" Executed checks (grep L-headings, ATR-fallback site census, mini-run atr-key probe, queue coverage):
+
+FOUND + FIXED:
+1. **L203 heading NEVER WRITTEN** — cited by L204/memory/queue since B1240 but section absent from LEARNINGS.md (grep-verified). RETRO-WRITTEN this batch with explicit retro-note. Meta-lesson: L-number references don't create L-entries; C9 gate covers ticket IDs, not L-refs.
+2. **Unticketed B1248 observation**: strategies.csv `category` column = "unknown" for all rows (writer does not populate strategy category in the roster CSV; per-trade category is separately correct per B415). Ticket: S6-B1262-STRATEGIES-CSV-CATEGORY (P3, reporting-only).
+
+FOUND + PROPOSED (owner approval needed per CHECKLIST #6):
+3. **CLAUDE.md banner stale**: claims 858 tests (actual 869), latest batch B1235 (actual B1261-in-progress), LEARNINGS through L202 (actual L205). Diff proposal in chat; not edited without approval.
+
+VERIFIED NOT MISSES (evidence): atr key PRESENT in real signals dict (mini-run: 703 keys, atr=4.0977 — validates B1261 ENG-2 premise); single ATR-fallback builder site (pool worker only re-attaches df, exit_strategies.py:1779-1789); B1261 queue entry + uncommitted .py = DISCLOSED-pending (test run denied by owner last turn), not silent.
+
+KNOWN-WEAK disclosed: test_b1261_eng3 contains a stray no-op line + pytest.skip soft-fallback — will be cleaned when the B1261 test run is permitted.
+
+| Ticket | Content | P |
+|---|---|---|
+| S6-B1262-STRATEGIES-CSV-CATEGORY | strategies.csv category column populated (currently "unknown" for all 220 rows) | P3 |
+| S6-B1262-L-REF-INTEGRITY-CHECK | add L-number-reference vs L-heading cross-check to verification repertoire (candidate preflight extension; #136 retro-test: catches L203 class) | P3 |
+
 ### B1260 (2026-07-08 Council 303 cont.): ENG-1 SHIPPED — signals_at_entry round-trip fixed
 
 S6-B1250-ENG1-SIGNALS-ROUNDTRIP: SHIPPED. New `backtest/util/signals_serde.py` writer-reader contract: `dumps_signals` (numpy->native, nan/inf->None, canonical JSON) + `loads_signals` (tolerant: JSON -> literal_eval -> legacy-numpy-repr regex rescue -> default + LOADS_FAILED_COUNT observability counter). Wired at all 3 sites: resume reader `_parse_literal` (backtest.py), checkpoint writer (backtest.py, dict/list fields serialized pre-to_csv), final-CSV writer (writer.py, replaces json.dumps(default=str)). Legacy pre-B1260 checkpoint files RESCUED (numpy-repr regex), not just new format. 3 pin tests (test_b1260_*) incl. the exact CSV round-trip that wiped Batch A. Pyramid green pre-commit.
