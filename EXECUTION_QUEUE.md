@@ -5427,3 +5427,33 @@ Owner directives: (1) EXECUTION_QUEUE updated each turn; parallel tracks must re
 Plus the full 10-lever program + P0-P3 queue already in the review doc Section 5-6 (levers 1-10 reference these tickets where overlapping).
 
 Skill updated: Phase 6.2 queue-anchor rule (per-turn entry + parallel-track return + findings-without-tickets-don't-exist) + commitment #8.
+
+### B1250 (2026-07-08 Council 296): ENGINE BUG AUDIT — 11 GENUINE FINDINGS + 8 VERIFIED-BENIGN (R5 readiness)
+
+Owner directive: "comprehensive review of the backtest engine to identify all bugs... incorrect fires, quiet or no fires, incomplete or incorrect data fetch... optimize for R5. No silent misses!"
+
+Deliverable: `output_audit/B1250_ENGINE_BUG_AUDIT_2026_07_08.md` (method: source reads + bug-class greps + 4 runtime probes + fresh 3-ticker mini-run; layer-coverage table states audit depth per layer explicitly).
+
+**HEADLINE ENG-1 (P0 VERIFIED): signals_at_entry WIPED on every checkpoint/resume round-trip.** Engine checkpoint writes Python reprs (np.float64/np.True_/nan); writer.py writes JSON (true/false); resume reader `_parse_literal` = ast.literal_eval fails on BOTH -> silent `{}` default. Batch A forensic: 255/255 sampled trades across 2022-2026 have 0-4 signal keys; fresh mini-run has full ~20K-char dict incl vix_band. ROOT-CAUSES: B1248 "conditional exits identical to atr_trail_1x" finding + B1249 S6-B1248-MAE-CONDITIONAL-NOOP + partially S6-B1248-REGIME-FLIP-DEGENERACY (both tickets updated: root cause = ENG-1). B1248 review doc carries new contamination caveat banner: cube replay ran on 2%-of-price proxy ATR; conditional-exit verdicts + ATR-distance conclusions must be re-derived post-fix.
+
+**TICKET BLOCK (S6-B1250-*):**
+
+| Ticket | Finding | P |
+|---|---|---|
+| S6-B1250-ENG1-SIGNALS-ROUNDTRIP | JSON round-trip serialization both writers + tolerant reader + PIVOT-#37 pin test (numpy/nan/nested) | **P0 pre-R5 BLOCKER** |
+| S6-B1250-ENG2-ATR-FALLBACK-GUARD | Cube replay silent 2pct-ATR fallback: add log-once counter + <5pct fallback-rate assert; re-run exit cube post-ENG1 | **P0 pre-R5 BLOCKER** |
+| S6-B1250-ENG3-PARQUET-ASSERT | trade_log.parquet missing Batch A; warning-only failure (writer.py:76-82); add success-check + post-run artifact assert | **P1 pre-R5** |
+| S6-B1250-ENG4-LEADLAG-REGISTRY | lead_lag_sector_rotation bypasses ALL_STRATEGIES via DEC-458 merge (792 unregistered trades); register or remove; RESOLVES S6-B1248-LEAD-LAG-ORPHAN | P1 pre-R5 |
+| S6-B1250-ENG5-POOL-WORKER-LOG | screener.py:8956 bare except returns None = silent ticker drop; add one-shot log + counter | P1 pre-R5 |
+| S6-B1250-ENG6-AVWAP-BANNED-PATTERN | screener.py:5225 `not s.get(above_avwap_20high, True)` missed in B612 sweep + vol_spike label/gate mismatch | P1 pre-R5 |
+| S6-B1250-ENG7-DEAD-CANDLE-ARMS | hanging_man + dark_cloud_cover consumed-never-produced (screener.py:2549); add producers or drop arms | P1 pre-R5 |
+| S6-B1250-ENG8-RELATIVE-PATHS | cwd-sensitive Path("data_prefetch/...") in backtest.py:1332 + run_phase1a + config; anchor to __file__ | P2 |
+| S6-B1250-ENG9-FILL-DATE | entry_date=signal date vs next-bar fill; time-stops 1-day biased; add fill_date field | P2 |
+| S6-B1250-ENG10-CHECKPOINT-EXCEPT-LOG | backtest.py:888 checkpoint write except:pass unlogged | P2 |
+| S6-B1250-ENG11-POOL-PANEL-PERF | pool path discards panel pre-pass (perf only; correctness verified safe) | P3 |
+
+**8 VERIFIED-BENIGN confirmations** (SMC lookahead masked; 52w/DC/pivots exclude today; next-bar-open entry; exit ordering; B657 defaults live; yfinance HARD CUT stub; VIX wiring healthy on fresh runs; earnings PIT B1009) — documented in audit doc to prevent re-audit churn.
+
+Mid-audit retraction (truth standard): initial "VIX never reached Batch A signals" hypothesis DISPROVEN by mini-run (vix_band present); superseded by ENG-1 as the actual mechanism.
+
+R5 gate: ENG-1/2/3 are pre-R5 blockers (resume is the default rollback; resumed R5 without fix = invalid exit-cube replay).
