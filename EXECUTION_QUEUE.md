@@ -5491,3 +5491,21 @@ Fixes shipped this batch (skill is the load-bearing layer; no new CHECKLIST item
 3. Memory feedback_execution_discipline_skill_every_turn updated with the tightened clauses.
 
 Detection signal codified: any completeness claim without accompanying grep/script output in the same message = UNVERIFIED-stated-as-fact (Truth Standard violation).
+
+### B1253 (2026-07-08 Council 299): MECHANICAL COMPLIANCE-GATE PROPOSAL (awaiting owner approval)
+
+Owner question: "How do we ensure strictest execution compliance in each turn? Been a lot of misses."
+
+Assessment: session miss-ledger shows 100% of catches came from executable checks (219/219 script, grep cross-checks, source probes, pre-commit preflight) and 0% from prose rules at prevention time. Pre-commit preflight is the only layer with a 100% fire rate (blocks, does not warn). Proposal: move every mechanically-checkable rule from the skill into gates; skill retains judgment-only surface (truth standard, audit depth, recommendation quality).
+
+| Ticket | Content | Status |
+|---|---|---|
+| S6-B1253-GATE-A1-PYRAMID-STAMP | pytest wrapper writes .pyramid_stamp (HEAD+result); preflight blocks *.py commits on stale/missing/red stamp | PROPOSED |
+| S6-B1253-GATE-A2-BANNED-PATTERN-DIFF | preflight staged-diff scan: not-s.get / unlogged except-swallow / default-True gates / relative data_prefetch paths | PROPOSED |
+| S6-B1253-GATE-A3-QUEUE-ENTRY | every commit stages EXECUTION_QUEUE.md OR carries [queue-exempt] tag (logged, auditable) | PROPOSED |
+| S6-B1253-GATE-A4-DOC-QUEUE-XCHECK | staged output_audit/*.md ticket-IDs grepped vs queue; unmatched IDs block | PROPOSED |
+| S6-B1253-GATE-B-STOP-HOOK | .claude/settings.json Stop hook runs verify_turn_compliance.py; non-zero blocks turn end (uncommitted-changes / queue / pyramid checks; fast-pass for no-change turns) | PROPOSED |
+
+Anti-theater retroactive test (#136): gates A1-A4+B would have caught B1119 doc-sync suspension, B1251 queue gaps, ENG-6/8/10 pattern introductions, and any pyramid skip = 4 of 5 session miss classes. 5th class (judgment/content errors, Pass 52 type) explicitly NOT claimed - remains skill + owner review.
+
+Sequencing if approved: batch 1 = A1+A2+A3 (<=3 fixes per Council 201); batch 2 = A4+B. Each with pin tests + pyramid.
