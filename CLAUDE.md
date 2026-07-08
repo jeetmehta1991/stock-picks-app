@@ -3,15 +3,16 @@
 <!-- COUNCIL 278-287 SYNC BANNER (B1236 2026-07-07) — CLAUDE.md is the master status doc; body already partially synced (line 95 updated B1205) -->
 > **CLAUDE.md is source-of-truth per L143.** Line 95 strategy count already updated B1205 (220 -> 219 post-B1189). This banner is here for consistency with the 46 other synced docs.
 >
-> Current canonical values as of 2026-07-07 (B1231):
+> Current canonical values as of 2026-07-08 (B1263, owner-approved banner sync):
 > - 219 strategies registered; STRATEGIES_DISABLED_MISSING_PRODUCER empty
-> - Test count: 858 passed, 2 skipped
-> - CHECKLIST #1-#157, LEARNINGS L1-L202
-> - Latest batch: B1235 (Council 287 doc-sync in progress)
-> - Councils 278-287: 40 SKIP loosen + 11 silent misses fixed + 25+ producer audits + 2 critical bugs FIXED
+> - Test count: 869 passed, 2 skipped
+> - CHECKLIST #1-#157, LEARNINGS L1-L205
+> - Latest batch: B1263 (Council 305); ENG-1 pre-R5 blocker fixed B1260; compliance gates C6-C9 + Stop hook live B1254-B1255
+> - Owner decisions 2026-07-08 (B1259): scope freeze after data-readiness audit; blockers-only R5 gate SUPERSEDES entire-queue gate; R5 phased ladder (dry->small->mid->full, owner-gated rungs); 1B before Stage 3
+> - Councils 278-287 (historical): 40 SKIP loosen + 11 silent misses fixed + 25+ producer audits + 2 critical bugs FIXED
 > - Stage 4 walks archived to `archive/2026-07-07-stage-4-walks-complete/`
-> - 3 Sprint 5 tickets queued
-> - Comprehensive coverage report: `output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md`
+> - Sprint 5: S5-B1214 + S5-B1212 SHIPPED; S5-B1216 open
+> - Comprehensive coverage report: `output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md`; engine audit: `output_audit/B1250_ENGINE_BUG_AUDIT_2026_07_08.md`
 
 ---
 

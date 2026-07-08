@@ -12673,3 +12673,53 @@ def test_b1260_eng1_checkpoint_resume_roundtrip_via_csv(tmp_path):
         "(B1250 ENG-1: pre-fix this returned {})")
     bullets = loads_signals(read["context_bullets"].iloc[0], [])
     assert bullets == ["bullet one", "bullet two"]
+
+
+# ---------------------------------------------------------------------------
+# B1261 (Council 303, S6-B1250-ENG2 + ENG3 owner-approved 2026-07-08)
+# ---------------------------------------------------------------------------
+
+def test_b1261_eng2_replay_atr_resolver_and_report():
+    """ENG-2: real ATR used when present; proxy counted when absent/invalid;
+    report classifies the 5% threshold correctly."""
+    from backtest.engine.backtest import (
+        resolve_replay_atr, emit_replay_atr_fallback_report)
+    c = {}
+    assert resolve_replay_atr({"atr": 2.5}, 100.0, c) == 2.5
+    assert c.get("total") == 1 and c.get("fallback", 0) == 0
+    assert resolve_replay_atr({}, 100.0, c) == 2.0  # 2% proxy
+    assert resolve_replay_atr({"atr": 0.0}, 100.0, c) == 2.0  # zero invalid
+    assert resolve_replay_atr("not-a-dict", 100.0, c) == 2.0
+    assert c["total"] == 4 and c["fallback"] == 3
+    msg = emit_replay_atr_fallback_report(c)
+    assert "EXCEEDS-5PCT-THRESHOLD" in msg
+    ok = {"total": 100, "fallback": 2}
+    assert "[OK]" in emit_replay_atr_fallback_report(ok)
+    assert "no trades replayed" in emit_replay_atr_fallback_report({})
+
+
+def test_b1261_eng3_parquet_failure_writes_marker(tmp_path, monkeypatch):
+    """ENG-3: a failing trade_log.parquet write leaves an explicit .FAILED
+    marker (previously warning-only = silent absence, B1250 ENG-3) and the
+    CSV fallback still lands. The trade-log block runs early in
+    write_all_outputs; later blocks failing on minimal inputs is tolerated
+    by the try wrapper (the marker assertion is the pin)."""
+    import pandas as pd
+    from backtest.results.writer import write_all_outputs
+    df = pd.DataFrame([{
+        "ticker": "AAPL", "strategy": "s", "exit_reason": "x",
+        "regime": "bull", "combo_id": "s__x__bull",
+        "signals_at_entry": {"a": 1},
+    }])
+    monkeypatch.setattr(
+        pd.DataFrame, "to_parquet",
+        lambda self, *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
+    try:
+        write_all_outputs(
+            df_trades=df, metrics=pd.DataFrame(), skipped=[], cb_log=[],
+            exit_compare=pd.DataFrame(), output_dir=tmp_path)
+    except Exception:
+        pass  # later output blocks may reject minimal inputs; ENG-3 block already ran
+    assert (tmp_path / "trade_log.parquet.FAILED").exists(), (
+        "failed parquet write must leave explicit marker (ENG-3)")
+    assert (tmp_path / "trade_log.csv").exists(), "CSV fallback still written"

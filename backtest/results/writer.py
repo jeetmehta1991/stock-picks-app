@@ -77,9 +77,20 @@ def write_all_outputs(
             logger.info("Wrote trade_log.parquet (%d trades; nested types preserved)",
                         len(df_trades))
         except Exception as exc:
-            # Fall back to CSV-only if Parquet write fails (rare; usually
-            # mixed-type columns)
-            logger.warning("trade_log.parquet write failed (%s); CSV only", exc)
+            # B1261 (Council 303, S6-B1250-ENG3 owner-approved): the DEC-491
+            # CANONICAL artifact failing to write was previously warning-only
+            # (CHECKLIST #122 unpaired-silent-failure class) -- Batch A ran
+            # to completion with trade_log.parquet silently ABSENT (B1250
+            # ENG-3). Now: ERROR-level log + explicit .FAILED marker file so
+            # post-run artifact asserts (and humans listing the dir) see the
+            # failure instead of inferring it from absence.
+            logger.error("trade_log.parquet write FAILED (%s); CSV only. "
+                         "DEC-491 canonical artifact MISSING for this run.", exc)
+            try:
+                (output_dir / "trade_log.parquet.FAILED").write_text(
+                    f"parquet write failed: {exc}\n", encoding="utf-8")
+            except Exception:
+                pass  # preflight-allow: C7d - marker is best-effort; ERROR already logged above
         # CSV (legacy / human-readable). Stringify complex columns first.
         df_csv = df_trades.copy()
         for col in df_csv.columns:

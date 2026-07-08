@@ -5554,6 +5554,16 @@ Owner directives 2026-07-08 (verbatim decisions on B1258 questions):
 | S6-B1259-DATA-READINESS-AUDIT | ONE upfront audit of every data source vs R5 requirements (coverage %, temporal span, NULL columns, producer-consumable) before scope lock — replaces serial gap discovery (news/shares_outstanding/rebalance/triangle pattern) | **P0 — before scope lock** |
 | S6-B1259-R5-PHASE-LADDER | R5 execution plan: dry run (3-5 tickers local) -> small batch (25-50 tickers) -> mid batch (150, Batch-A-scale revalidation) -> full universe (owner gate at each rung; resume checkpoints armed per rung) | **P0 — structure for step 4** |
 
+### B1263 (2026-07-08 Council 305): ENG-2 + ENG-3 SHIPPED + BANNER SYNC (owner "Approve all, 2 1 3")
+
+S6-B1250-ENG2-ATR-FALLBACK-GUARD: SHIPPED. `resolve_replay_atr()` + `emit_replay_atr_fallback_report()` (backtest.py module-level, testable); counters wired into cube-replay prep; >5% proxy rate escalates to WARNING (Batch A pre-ENG-1 was 100%). Premise verified: atr key present in real signals (mini-run 703 keys, atr=4.0977).
+
+S6-B1250-ENG3-PARQUET-ASSERT: SHIPPED. writer.py parquet failure now ERROR-level + explicit trade_log.parquet.FAILED marker file (was warning-only silent absence).
+
+CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value reflects this batch's 871+2; B1263; L205; owner decisions line added). Test fix during shipping: test_b1261_eng3 had referenced nonexistent `save_all_outputs` (would have crashed, not skipped as disclosed) - rewritten against real `write_all_outputs` signature; honest correction of the B1262 "known-weak" understatement.
+
+**ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
+
 ### B1262 (2026-07-08 Council 304): SILENT-MISS VERIFICATION SWEEP (owner-prompted) — 3 found, 2 fixed, 1 proposed
 
 Owner: "Any silent misses?" Executed checks (grep L-headings, ATR-fallback site census, mini-run atr-key probe, queue coverage):

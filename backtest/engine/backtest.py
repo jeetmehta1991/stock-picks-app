@@ -61,6 +61,45 @@ logger = logging.getLogger(__name__)
 # cube fan-out to fall back to a broken sequential path (Bug B) producing
 # empty trade_exit_detail.csv. Council 231 CHECKLIST #130 EQUAL-count gate
 # will now catch this class of bug pre-Batch-B.
+def resolve_replay_atr(sig, entry_price: float, counters: dict) -> float:
+    """B1261 (Council 303, S6-B1250-ENG2 owner-approved 2026-07-08): resolve
+    ATR for cube-replay from signals_at_entry, tallying proxy fallbacks.
+
+    Returns sig['atr'] when present and positive; otherwise the crude
+    2pct-of-price proxy, incrementing counters['fallback']. B1250 ENG-1
+    made the proxy fire for 100% of Batch A replayed trades silently --
+    this helper makes the rate observable (post-loop >5% warning).
+    """
+    counters["total"] = counters.get("total", 0) + 1
+    if isinstance(sig, dict):
+        atr_val = sig.get("atr")
+        try:
+            if atr_val is not None and float(atr_val) > 0:
+                return float(atr_val)
+        except (TypeError, ValueError):
+            pass
+    counters["fallback"] = counters.get("fallback", 0) + 1
+    return entry_price * 0.02
+
+
+REPLAY_ATR_FALLBACK_WARN_RATE = 0.05  # B1261: >5% proxy usage = data problem
+
+
+def emit_replay_atr_fallback_report(counters: dict) -> str:
+    """B1261 (S6-B1250-ENG2): format + threshold-classify the ATR-proxy
+    fallback rate. Returns the message (caller logs it); WARNING-level
+    escalation left to caller when rate exceeds REPLAY_ATR_FALLBACK_WARN_RATE.
+    """
+    total = counters.get("total", 0)
+    fb = counters.get("fallback", 0)
+    if total == 0:
+        return "replay-ATR: no trades replayed"
+    rate = fb / total
+    status = "OK" if rate <= REPLAY_ATR_FALLBACK_WARN_RATE else "EXCEEDS-5PCT-THRESHOLD"
+    return (f"replay-ATR proxy fallback: {fb}/{total} trades ({rate:.1%}) "
+            f"[{status}] (B1261 ENG-2; 100% pre-ENG-1-fix on Batch A)")
+
+
 def _b1070_starmap_wrapper(args):
     """Module-level unpacker so multiprocessing.Pool.imap_unordered can pickle
     it on Windows spawn. Delegates to _pool_cube_replay_worker with unpacked args."""
@@ -2938,6 +2977,9 @@ class BacktestEngine:
         from backtest.engine.exit_context import build_entry_context
         from backtest.engine.exit_strategies import _pool_cube_replay_worker
 
+        # B1261 (S6-B1250-ENG2): ATR-proxy fallback observability counters.
+        self._replay_atr_counters = {"total": 0, "fallback": 0}
+
         # Build per-strategy task list (without df_full in payload).
         strategy_tasks = []
         for strategy in df_trades["strategy"].unique():
@@ -2953,8 +2995,15 @@ class BacktestEngine:
                     from datetime import datetime as _dt
                     entry_date = _dt.strptime(entry_date[:10], "%Y-%m-%d").date()
                 sig = row.get("signals_at_entry", {})
-                atr = (sig.get("atr", row["entry_price"] * 0.02)
-                       if isinstance(sig, dict) else row["entry_price"] * 0.02)
+                # B1261 (Council 303, S6-B1250-ENG2 owner-approved): count
+                # ATR-proxy fallbacks instead of falling back silently. In
+                # Batch A the ENG-1 wipe made this fallback fire for 100%
+                # of replayed trades (crude 2pct-of-price proxy) with zero
+                # visibility. resolve_replay_atr tallies into
+                # self._replay_atr_counters; rate warning emitted after the
+                # replay loop (>5% threshold).
+                atr = resolve_replay_atr(
+                    sig, row["entry_price"], self._replay_atr_counters)
 
                 entry_context = build_entry_context(
                     row=row,
@@ -2985,6 +3034,15 @@ class BacktestEngine:
                 })
             if trades_data_lite:
                 strategy_tasks.append((strategy, trades_data_lite))
+
+        # B1261 (S6-B1250-ENG2): emit the ATR-proxy fallback rate; escalate
+        # to WARNING above the 5% threshold (pre-ENG-1-fix Batch A was 100%).
+        _atr_msg = emit_replay_atr_fallback_report(self._replay_atr_counters)
+        _atr_rate_bad = (self._replay_atr_counters.get("total", 0) > 0 and
+                         self._replay_atr_counters.get("fallback", 0) /
+                         self._replay_atr_counters["total"]
+                         > REPLAY_ATR_FALLBACK_WARN_RATE)
+        (logger.warning if _atr_rate_bad else logger.info)(_atr_msg)
 
         exit_frames = []
         trade_detail_frames = []
