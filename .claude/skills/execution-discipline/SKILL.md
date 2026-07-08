@@ -210,6 +210,23 @@ deferral:
      doc or chat but absent from the queue is a silent miss (the B1248
      review's 9 findings were initially doc-only — the trigger for this
      rule).
+   - **"Finding" means ALL of (B1251 lesson — the lenient reading caused
+     5 gaps):** bugs, recommendations/levers, new-strategy candidates,
+     structural decisions awaiting owner input, disclosed-partial audit
+     scopes, and open owner questions. A doc's own "priority queue"
+     section is NOT a queue substitute.
+   - **Mechanical cross-check, not memory:** any turn that produces a
+     deliverable doc ends with an executed doc→queue cross-check (grep
+     the doc's finding IDs / lever numbers / decision items against
+     EXECUTION_QUEUE.md; every non-matched item gets a ticket or an
+     explicit N/A). Prose rules without an executable verifier decay —
+     the only no-silent-miss catches that have worked were programmatic
+     (219/219 coverage script, B1251 grep cross-check).
+   - **New-rule retroactive sweep:** when a discipline rule is added or
+     tightened mid-stream, the same turn re-scans the last 3 batches'
+     outputs against it (mirror of CHECKLIST #136's retroactive spirit).
+     B1249 added the queue-anchor rule without re-scanning B1248 — that
+     omission was the gap.
 3. **Scope ledger closed**: restate the Phase 1 ledger with final dispositions
    and the reconciliation arithmetic.
 4. **Compliance statement** (CHECKLIST #45): enumerate which checklist items

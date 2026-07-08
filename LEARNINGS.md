@@ -2900,3 +2900,26 @@ Sprint 5 tickets can be satisfied via producer fallback logic rather than requir
 5. Add pin tests: (a) fallback activates for gap ticker, (b) primary preferred when available, (c) empty when both missing
 
 **Cross-references:** B1242 investigation; B1243 fix; B1244 verification; L200 Sprint 5 prioritization; L203 (S5-B1214 same pattern); B1211 initial coverage finding; CHECKLIST #154/#155; output_audit/news_coverage_with_finnhub_fallback.json.
+
+## L205 -- PROSE RULES WITHOUT MECHANICAL VERIFIERS DECAY; RULE CHANGES NEED RETROACTIVE SWEEPS (Council 298 B1252 2026-07-08)
+
+**What happened:** Owner asked "has everything been added to the execution queue?" (B1251) and the grep cross-check found 5 gaps: B1248's optimization levers 3-7/9/10, the M1-M15 missing-strategy candidates, F23/F24 structural decisions, B1250's disclosed-partial scopes, and the B1246 open owner question -- all existed as doc prose but had no queue tickets. This despite the execution-discipline skill's queue-anchor rule ("findings without tickets don't exist") being ACTIVE since B1249. Owner then asked WHY the gap occurred despite the active skill (B1252) -- an owner-caught process miss.
+
+**Root causes (three, in order of weight):**
+
+1. **Prose rule, no mechanical verifier.** The queue-anchor rule demanded compliance-by-memory. Every no-silent-miss catch that has actually worked in this project was PROGRAMMATIC: the 219/219 doc-coverage script (caught 9 missed strategies in B1248), the B1251 grep cross-check (caught the 5 gaps). A rule that is not executable is a hope -- same lesson class as Council 197's audit-theater verdict about non-load-bearing audit layers.
+
+2. **Lenient reading of "finding."** The rule was applied to DEFECTS only; recommendations/levers, new-strategy candidates, pending decisions, disclosed-partial scopes, and open owner questions were rationalized as "already in the doc's priority-queue section." The B1249 queue entry explicitly wrote down this rationalization ("the full 10-lever program + P0-P3 queue already in the review doc Section 5-6") -- the ambiguity was resolved in the lenient direction IN WRITING and nobody flagged it.
+
+3. **No retroactive sweep on rule adoption.** The queue-anchor rule was added in B1249 BECAUSE of B1248's doc-only findings, but the same turn never re-scanned the full B1248 doc against the new rule -- it ticketed the 12 bugs and stopped. A rule adopted mid-stream that does not re-scan recent output inherits all pre-existing gaps.
+
+**Generalized rules (codified in execution-discipline skill Phase 6.2 same turn):**
+- "Finding" = bugs + recommendations + candidates + decisions-awaiting-owner + disclosed-partials + open owner questions. A doc's own priority-queue section is NOT a queue substitute.
+- Every deliverable-doc turn ends with an EXECUTED doc->queue cross-check (grep finding IDs vs EXECUTION_QUEUE), not an asserted one.
+- Every rule addition/tightening triggers a same-turn retroactive sweep of the last 3 batches' outputs (mirror of CHECKLIST #136's retroactive-coverage spirit).
+
+**Detection signal that would have caught it earlier:** any completeness claim ("all findings ticketed") not accompanied by grep/script output in the same message. Per the Truth & Evidence Standard, that claim was UNVERIFIED-stated-as-fact until B1251 executed the check.
+
+**No new CHECKLIST item** (per #136 anti-theater guard: existing #94 covers queue-per-turn; the failure was compliance granularity + missing verifier, both fixed in the skill, which IS the load-bearing layer here).
+
+**Cross-references:** B1248 review doc; B1249 queue-anchor rule adoption; B1251 gap closure (12 tickets); execution-discipline SKILL.md Phase 6.2; CHECKLIST #94/#124/#136; Council 197 audit-theater precedent; L199 (representative-verification methodology).

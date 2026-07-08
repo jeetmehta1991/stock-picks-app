@@ -5478,3 +5478,16 @@ Owner question: "Has everything been added to the execution queue?" Verification
 | DOC-SKILLS-CATALOG-DECISION | B1246 open owner decision: catalog .claude/skills/ in DOCUMENTATION_REGISTER.md or leave uncataloged | P3 |
 
 Post-closure queue-completeness statement: every finding, lever, missing-strategy candidate, disclosed-partial scope, and open owner decision from B1245-B1250 now has a queue ticket. Verified by this batch's grep cross-check.
+
+### B1252 (2026-07-08 Council 298): ROOT-CAUSE OF B1251 QUEUE GAPS + SKILL HARDENING (owner-caught miss)
+
+Owner question: "Why this gap despite the skill being active?" -- treated as Phase 5 miss-capture (owner corrections are ALWAYS misses).
+
+Root causes (full analysis in L205): (1) prose rule with no mechanical verifier -- only programmatic checks have ever caught silent misses here (219/219 script, B1251 grep); (2) lenient reading of "finding" -- rule applied to defects only, with the rationalization WRITTEN INTO the B1249 queue entry ("levers already in doc Section 5-6"); (3) queue-anchor rule adopted B1249 without retroactively sweeping B1248's outputs.
+
+Fixes shipped this batch (skill is the load-bearing layer; no new CHECKLIST item per #136 anti-theater guard):
+1. SKILL.md Phase 6.2 hardened: finding-class enumeration (bugs + recommendations + candidates + decisions + disclosed-partials + open owner questions); EXECUTED doc->queue cross-check mandatory on deliverable-doc turns; new-rule retroactive sweep of last 3 batches.
+2. L205 codified in LEARNINGS.md.
+3. Memory feedback_execution_discipline_skill_every_turn updated with the tightened clauses.
+
+Detection signal codified: any completeness claim without accompanying grep/script output in the same message = UNVERIFIED-stated-as-fact (Truth Standard violation).
