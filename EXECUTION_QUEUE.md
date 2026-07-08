@@ -5457,3 +5457,24 @@ Deliverable: `output_audit/B1250_ENGINE_BUG_AUDIT_2026_07_08.md` (method: source
 Mid-audit retraction (truth standard): initial "VIX never reached Batch A signals" hypothesis DISPROVEN by mini-run (vix_band present); superseded by ENG-1 as the actual mechanism.
 
 R5 gate: ENG-1/2/3 are pre-R5 blockers (resume is the default rollback; resumed R5 without fix = invalid exit-cube replay).
+
+### B1251 (2026-07-08 Council 297): QUEUE-COMPLETENESS VERIFICATION — 5 GAPS CLOSED
+
+Owner question: "Has everything been added to the execution queue?" Verification by grep cross-check of B1248/B1249/B1250 outputs vs queue tickets. Result: 23/23 audit tickets present; 5 items were doc-prose-only without tickets (queue-anchor rule violation caught). Closed below:
+
+| Ticket | Content (source) | P |
+|---|---|---|
+| S6-B1248-LEVER3-STATE-EVENT-SWEEP | STATE->EVENT conversion for 6 volume-bleeders: smc_breaker_block_long/short, smc_order_block_bounce, risk_off_bond_equity_short, mmbm_long/mmsm_short (B655/B722 proven pattern; supertrend_short + ichi_breakdown covered by existing tickets) | P1 |
+| S6-B1248-LEVER4-GATE-BUDGET | 3-gate-budget (k-of-m score) conversion for top-25 gate-stacked FS strategies (B1248 review Section 3 flags per-strategy) | P2 |
+| S6-B1248-LEVER5-PRODUCER-TOLERANCE | Producer-tolerance audits: 6 too-loose (morning_star n=151, three_white_soldiers n=98, three_black_crows n=83, mmbm/mmsm, m_and_a_8k-parse, yoy_surprise n=253/139, smc_choch n=73) + 4 too-strict (detect_triangle 0-fire known, cup_handle, squeeze_fire, weekly_bias coverage) | P2 |
+| S6-B1248-LEVER6-RETEST-INTEGRITY | Level-held qualifier (close back above/below + 1-2 bar persistence) for 8 retest strategies: dc20_break_retest, cup_and_handle_retest_long, smc_bos_retest_entry, avwap_50_reclaim, smc_equal_lows/highs sweeps, 52wh/52wl retests | P2 |
+| S6-B1248-LEVER7-OR-ARM-GREP-SWEEP | Grep roster for OTHER OR-arms that bypass a strategy's named thesis (beyond the 2 known B1202 arms) | P2 |
+| S6-B1248-LEVER9-EXIT-SUITE | 3 new exits (ma_exit_sma5_cross Connors; opposite-band; k*ATR-target+time pair) + 2 re-tunes (multi_tier 1/2-at-2R; break_even_at_1r +0.25R buffer already ticketed separately) + 6 dead-trail deprecation decision post-ENG1-refit | P1 (sequenced AFTER S6-B1250-ENG1 + cube re-run) |
+| S6-B1248-LEVER10-MAE-FITTED-STOPS | Reuse per_strategy_mae_75th_pct_of_winners() for per-strategy INITIAL stop distances | P3 |
+| S6-B1248-NEW-STRATEGIES-M1-M15 | 15 missing-strategy candidates (doc Section 4): tranche A cached-data trivial producers (M1 RS-line-vs-sector, M2 earnings-anchored-AVWAP, M4 pocket-pivot, M5 gap-and-go, M14 failed-breakout-2B, M15 consecutive-down-days-quality); tranche B parser/producer work (M3 VCP, M6 buyback-restore, M7 dividend-initiation, M8 officer-weighted-insider, M9 SI-decline-long, M10 sector-rotation-ETF-restore, M11 QMJ-short, M13 vol-target-ETF-trend). M12 skipped (options out of scope). Owner approval per Class 7 NEW required per strategy | P3 |
+| S6-B1248-F23-F24-DECISIONS | F23 classification-change 10->1 consolidation decision + F24 pairs hedge-leg decision (implement dollar-neutral or EXPLORATORY re-scope) | P2 |
+| S6-B1250-PRODUCER-SWALLOW-VERIFY | Disclosed-partial from B1250: chart_patterns.py 9x bare `except: pass` + congressional_alt_data.py 8x `return {}` swallow-blocks individually unverified; verify each hides no systematic failure (CHECKLIST #106) | P2 |
+| S6-B1250-UNIVERSE-METRICS-DEPTH | Disclosed-partial from B1250: universe.py PIT loader + metrics.py 14-criteria formulas audited at LIGHT depth only; schedule deep pass pre-R5-verdict (not pre-R5-launch) | P2 |
+| DOC-SKILLS-CATALOG-DECISION | B1246 open owner decision: catalog .claude/skills/ in DOCUMENTATION_REGISTER.md or leave uncataloged | P3 |
+
+Post-closure queue-completeness statement: every finding, lever, missing-strategy candidate, disclosed-partial scope, and open owner decision from B1245-B1250 now has a queue ticket. Verified by this batch's grep cross-check.
